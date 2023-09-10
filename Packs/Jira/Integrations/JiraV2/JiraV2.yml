@@ -599,7 +599,7 @@ script:
     - contextPath: Ticket.Status
       description: The ticket status.
       type: String
-  dockerimage: demisto/oauthlib:1.0.0.72372
+  dockerimage: devdemisto/auth-utils:1.0.0.73117
   isfetch: true
   ismappable: true
   isremotesyncin: true
