@@ -891,7 +891,11 @@ class BranchTestCollector(TestCollector):
                         integration_using_apimodule = self.id_set.api_modules_to_integrations.get(yml.id_, [])
                         for integrtion in integration_using_apimodule:
                             logger.info(f"The integrations which using this apimodule = {integration_using_apimodule}")
-                            self._collect_yml(integrtion.path)
+                            try:
+                                self._collect_yml(integrtion.path)
+                            except NothingToCollectException as e:
+                                logger.info(e)
+                                continue
                     tests = tuple(yml.tests)  # raises NoTestsConfiguredException if 'no tests' in the tests field
                     reason = CollectionReason.SCRIPT_PLAYBOOK_CHANGED
 
