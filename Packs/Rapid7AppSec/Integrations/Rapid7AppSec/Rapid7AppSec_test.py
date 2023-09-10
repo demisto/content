@@ -172,6 +172,8 @@ def test_pooling_commands(
     Then:
      - Ensure that readable outputs is correct.
     """
+    from unittest.mock import patch
+
     from Rapid7AppSec import submit_scan_action_command
 
     excepted_output = generate_readable_output_message(object_type=ReadableOutputs.SCAN,
@@ -190,8 +192,12 @@ def test_pooling_commands(
     )
     requests_mock.put(url=url)
 
-    result = submit_scan_action_command(client=mock_client, args={"scan_id": EXAMPLE_ID, "action": "Resume"})
-    assert result.readable_output == excepted_output
+    with patch.object(demisto, 'demistoVersion', return_value={
+        'version': '6.5.0',
+        'buildNumber': '12345'
+    }):
+        result = submit_scan_action_command(client=mock_client, args={"scan_id": EXAMPLE_ID, "action": "Resume"})
+        assert result.readable_output == excepted_output
 
 
 @pytest.mark.parametrize(
