@@ -236,6 +236,15 @@ xpanse-prepare-testing-bucket:
       optional: true
   script:
     - EXIT_CODE=0
+    - section_start "Check if should run Server Master"
+    - |
+      echo "Instance role:${INSTANCE_ROLE}"
+      if [ -n "${NIGHTLY}" ] && [ "${INSTANCE_ROLE}" != "Server Master" ]; then
+        echo "Not running the instance flow, not a Server Master instance and we are in a nightly build."
+        job-done
+        exit 0
+      fi
+    - section_end "Check if should run Server Master"
     - !reference [.download-demisto-conf]
     - export TEMP=$(cat $ARTIFACTS_FOLDER/filter_envs.json | jq ".\"$INSTANCE_ROLE\"")
     # If instance was not created
@@ -292,43 +301,7 @@ xpanse-prepare-testing-bucket:
     - job-done
     - exit $EXIT_CODE
 
-xsoar_server_6_8:
-  extends: .test_content_on_xsoar_server_instances_base
-  #  No need to trigger in case of release branch or docker update branches (non-nightly packs)
-  rules:
-    - !reference [.filter-non-nightly-docker-updates-rule, rules]
-    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
-  variables:
-    INSTANCE_ROLE: "Server 6.8"
-
-xsoar_server_6_9:
-  extends: .test_content_on_xsoar_server_instances_base
-  #  No need to trigger in case of release branch or docker update branches (non-nightly packs)
-  rules:
-    - !reference [.filter-non-nightly-docker-updates-rule, rules]
-    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
-  variables:
-    INSTANCE_ROLE: "Server 6.9"
-
-xsoar_server_6_10:
-  extends: .test_content_on_xsoar_server_instances_base
-  #  No need to trigger in case of release branch or docker update branches (non-nightly packs)
-  rules:
-    - !reference [.filter-non-nightly-docker-updates-rule, rules]
-    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
-  variables:
-    INSTANCE_ROLE: "Server 6.10"
-
-xsoar_server_6_11:
-  extends: .test_content_on_xsoar_server_instances_base
-  #  No need to trigger in case of release branch or docker update branches (non-nightly packs)
-  rules:
-    - !reference [.filter-non-nightly-docker-updates-rule, rules]
-    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
-  variables:
-    INSTANCE_ROLE: "Server 6.11"
-
-xsoar_server_master:
+tests_xsoar_server:
   extends:
     - .test_content_on_xsoar_server_instances_base
   #  No need to trigger in case of release branch or docker update branches (non-nightly packs)
@@ -339,9 +312,14 @@ xsoar_server_master:
       when: always
       variables:
         KUBERNETES_CPU_REQUEST: 2000m
-  variables:
-    INSTANCE_ROLE: "Server Master"
-
+  parallel:
+    matrix:
+      - INSTANCE_ROLE:
+        - "Server 6.8"
+        - "Server 6.9"
+        - "Server 6.10"
+        - "Server 6.11"
+        - "Server Master"
 
 fan-in-nightly:
   tags:
@@ -356,7 +334,7 @@ fan-in-nightly:
 jobs-done-check-nightly:
   extends:
     - .jobs-done-check
-  needs: ['run-unittests-and-lint', 'run-validations', 'trigger-private-build', 'mpv2-prepare-testing-bucket', 'xpanse-prepare-testing-bucket', 'xsoar-prepare-testing-bucket', 'xsoar-saas-prepare-testing-bucket', 'xsiam_server_ga', 'xsoar_server_master']
+  needs: ['run-unittests-and-lint', 'run-validations', 'trigger-private-build', 'mpv2-prepare-testing-bucket', 'xpanse-prepare-testing-bucket', 'xsoar-prepare-testing-bucket', 'xsoar-saas-prepare-testing-bucket', 'xsiam_server_ga', 'tests_xsoar_server']
   tags:
     - gke
   rules:
@@ -384,15 +362,7 @@ jobs-done-check-on-push:
       optional: true
     - job: xsiam_server_ga
       optional: true
-    - job: xsoar_server_6_8
-      optional: true
-    - job: xsoar_server_6_9
-      optional: true
-    - job: xsoar_server_6_10
-      optional: true
-    - job: xsoar_server_6_11
-      optional: true
-    - job: xsoar_server_master
+    - job: tests_xsoar_server
       optional: true
   tags:
     - gke
@@ -656,11 +626,13 @@ merge-dev-secrets:
     - section_end "Merging and deleting dev secrets"
   allow_failure: true
 
-xsoar_server_master-test_playbooks_results:
+tests_xsoar_server-test_playbooks_results:
   variables:
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
   extends: .server_test_playbooks_report
-  needs: ["xsoar_server_master"]
+  needs: ["tests_xsoar_server: [Server Master]"]
+  dependencies:
+    - "tests_xsoar_server: [Server Master]"
 
 xsiam_server_ga-test_playbooks_results:
   variables:
