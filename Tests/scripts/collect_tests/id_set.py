@@ -109,7 +109,7 @@ class IdSet(DictFileBased):
 
         self.implemented_scripts_to_tests: dict[str, list] = defaultdict(list)
         self.implemented_playbooks_to_tests: dict[str, list] = defaultdict(list)
-        self.api_modules_to_integrations = {}
+        self.api_modules_to_integrations: dict[str, list] = defaultdict(list)
 
         for test in self.test_playbooks:
             for script in test.implementing_scripts:
