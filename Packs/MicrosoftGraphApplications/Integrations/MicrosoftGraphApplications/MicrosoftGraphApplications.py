@@ -82,6 +82,24 @@ class Client:
                 results.extend(res.get('value'))
             return results
 
+    def get_single_service_principal(
+            self,
+            object_or_app_id: str
+    ):
+        """
+
+        Arguments:
+            object_or_app_id: Maximum of services to get.
+
+        Returns:
+            Retrieve the properties and relationships of a servicePrincipal object.
+
+        Docs:
+            https://learn.microsoft.com/en-us/graph/api/serviceprincipal-get?view=graph-rest-1.0&tabs=http
+        """
+        suffix = f'v1.0/servicePrincipals{object_or_app_id}'
+        return self.ms_client.http_request('GET', suffix)
+
     def delete_service_principals(
             self,
             service_id: str
@@ -101,7 +119,7 @@ class Client:
             https://docs.microsoft.com/en-us/graph/api/serviceprincipal-delete?view=graph-rest-1.0&tabs=http
         """
         self.ms_client.http_request(
-            'DELETE', f'v1.0/servicePrincipals/{service_id}', return_empty_response=True
+            'DELETE', f'v1.0/servicePrincipals{service_id}', return_empty_response=True
         )
 
 
@@ -152,6 +170,55 @@ def list_service_principals_command(ms_client: Client, args: dict) -> CommandRes
     )
 
 
+def validate_service_principal_input(args: dict) -> tuple:
+    """
+    Ensure at least one argument is given.
+
+    Args:
+        args: The arguments were passed with the command.
+
+    Returns:
+        If the two arguments are missing, raise an exception, otherwise return them.
+    """
+    object_id = args.get('id')
+    app_client_id = args.get('app_id')
+    if not (object_id or app_client_id):
+        raise DemistoException("User must provide one of (object) id or application id.")
+
+    return object_id, app_client_id
+
+
+def get_service_principal_command(ms_client: Client, args: dict) -> CommandResults:
+    """
+
+    Args:
+        ms_client: The Client
+        args: demisto.args()
+
+    Returns:
+        Results to post in demisto
+    """
+    object_id, app_client_id = validate_service_principal_input(args=args)
+
+    # if both are provided, pass the object_id
+    if object_id:
+        results = ms_client.get_single_service_principal(f"/{object_id}")
+    else:
+        results = ms_client.get_single_service_principal(f"(appId='{app_client_id}')")
+
+    return CommandResults(
+        'MSGraphApplication',
+        'id',
+        outputs=results,
+        readable_output=tableToMarkdown(
+            'Available service (application):',
+            results,
+            headers=['id', 'appId', 'appDisplayName', 'accountEnabled', 'deletedDateTime'],
+            removeNull=True
+        )
+    )
+
+
 def remove_service_principals_command(ms_client: Client, args: dict) -> CommandResults:
     """Remove an authorized app.
 
@@ -162,10 +229,18 @@ def remove_service_principals_command(ms_client: Client, args: dict) -> CommandR
     Returns:
         Results to post in demisto
     """
-    app_id = str(args.get('id'))
-    ms_client.delete_service_principals(app_id)
+    object_id, app_client_id = validate_service_principal_input(args=args)
+
+    # if both are provided, pass the object_id
+    if object_id:
+        ms_client.delete_service_principals(f"/{object_id}")
+        service_id = object_id
+    else:
+        ms_client.delete_service_principals(f"(appId='{app_client_id}')")
+        service_id = app_client_id
+
     return CommandResults(
-        readable_output=f'Service {app_id} was deleted.'
+        readable_output=f'Service {service_id} was deleted.'
     )
 
 
@@ -227,6 +302,8 @@ def main():
             return_results(list_service_principals_command(client, args))
         elif command == 'msgraph-apps-service-principal-remove':
             return_results(remove_service_principals_command(client, args))
+        elif command == 'msgraph-apps-service-principal-get':
+            return_results(get_service_principal_command(client, args))
         else:
             raise NotImplementedError(f"Command '{command}' not found.")
 
