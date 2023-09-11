@@ -115,6 +115,12 @@ def is_good_query_result(raw_result):
     return 'NOT FOUND' not in raw_result and 'No match' not in raw_result
 
 
+def value_to_entry_if_list(whois_result, key):
+    if isinstance(whois_result.get(key), list):
+        return whois_result.get(key)[0]
+    return whois_result.get(key)
+
+
 def create_outputs(whois_result, domain, reliability, query=None):
     md = {'Name': domain}
     ec = {'Name': domain,
@@ -128,32 +134,33 @@ def create_outputs(whois_result, domain, reliability, query=None):
         md['Domain Status'] = whois_result.get('status')
     if 'raw' in whois_result:
         ec['Raw'] = whois_result.get('raw')
-    if 'nameservers' in whois_result:
-        ec['NameServers'] = whois_result.get('nameservers')
-        standard_ec['NameServers'] = whois_result.get('nameservers')
-        standard_ec['WHOIS']['NameServers'] = whois_result.get('nameservers')
-        md['NameServers'] = whois_result.get('nameservers')
+    if 'name_servers' in whois_result:
+        ec['NameServers'] = whois_result.get('name_servers')
+        standard_ec['NameServers'] = whois_result.get('name_servers')
+        standard_ec['WHOIS']['NameServers'] = whois_result.get('name_servers')
+        md['NameServers'] = whois_result.get('name_servers')
     try:
         if 'creation_date' in whois_result:
-            ec['CreationDate'] = whois_result.get('creation_date')[0].strftime('%d-%m-%Y')
-            standard_ec['CreationDate'] = whois_result.get('creation_date')[0].strftime('%d-%m-%Y')
-            standard_ec['WHOIS']['CreationDate'] = whois_result.get('creation_date')[0].strftime(
-                '%d-%m-%Y')
-            md['Creation Date'] = whois_result.get('creation_date')[0].strftime('%d-%m-%Y')
+            creation_date = value_to_entry_if_list(whois_result, 'creation_date')
+            str_creation_date = creation_date.strftime('%d-%m-%Y')
+            ec['CreationDate'] = str_creation_date
+            standard_ec['CreationDate'] = str_creation_date
+            standard_ec['WHOIS']['CreationDate'] = str_creation_date
+            md['Creation Date'] = str_creation_date
         if 'updated_date' in whois_result:
-            ec['UpdatedDate'] = whois_result.get('updated_date')[0].strftime('%d-%m-%Y')
-            standard_ec['UpdatedDate'] = whois_result.get('updated_date')[0].strftime('%d-%m-%Y')
-            standard_ec['WHOIS']['UpdatedDate'] = whois_result.get('updated_date')[0].strftime(
-                '%d-%m-%Y')
-            md['Updated Date'] = whois_result.get('updated_date')[0].strftime('%d-%m-%Y')
+            updated_date = value_to_entry_if_list(whois_result, 'updated_date')
+            str_updated_date = updated_date.strftime('%d-%m-%Y')
+            ec['UpdatedDate'] = str_updated_date
+            standard_ec['UpdatedDate'] = str_updated_date
+            standard_ec['WHOIS']['UpdatedDate'] = str_updated_date
+            md['Updated Date'] = str_updated_date
         if 'expiration_date' in whois_result:
-            ec['ExpirationDate'] = whois_result.get('expiration_date')[0].strftime('%d-%m-%Y')
-            standard_ec['ExpirationDate'] = whois_result.get('expiration_date')[0].strftime(
-                '%d-%m-%Y')
-            standard_ec['WHOIS']['ExpirationDate'] = whois_result.get('expiration_date')[
-                0].strftime(
-                '%d-%m-%Y')
-            md['Expiration Date'] = whois_result.get('expiration_date')[0].strftime('%d-%m-%Y')
+            expiration_date = value_to_entry_if_list(whois_result, 'expiration_date')
+            str_expiration_date = expiration_date.strftime('%d-%m-%Y')
+            ec['ExpirationDate'] = str_expiration_date
+            standard_ec['ExpirationDate'] = str_expiration_date
+            standard_ec['WHOIS']['ExpirationDate'] = str_expiration_date
+            md['Expiration Date'] = str_expiration_date
     except ValueError as e:
         return_error('Date could not be parsed. Please check the date again.\n{}'.format(e))
     if 'registrar' in whois_result:
