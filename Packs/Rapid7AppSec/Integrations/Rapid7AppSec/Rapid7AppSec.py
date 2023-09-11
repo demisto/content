@@ -87,6 +87,7 @@ class RequestAction(str, Enum):
 class ReadableOutputs(str, Enum):
     VULNERABILITY = "Vulnerability"
     SCAN = "Scan"
+    SCAN_ACTION = "Scan action"
     VULNERABILITY_COMMENT = "Vulnerability Comment"
     UPDATED = "updated"
     DELETED = "deleted"
@@ -1085,15 +1086,20 @@ def submit_scan_action_command(args: dict[str, Any], client: Client) -> PollResu
     """
     action = args.get("action", "")
     scan_id = args.get(XsoarArgKey.SCAN, "")
+    partial_result = None
 
     if args.get("first_run", "") == "0":
         scan_data = client.list_scan(obj_id=scan_id)
-        validate_submit_scan_action(action=action, scan_data=scan_data)
+        # validate_submit_scan_action(action=action, scan_data=scan_data)
         args['first_run'] = "1"
         client.submit_scan_action(
             scan_id=scan_id,
             action=action.upper(),
         )
+        partial_result = CommandResults(
+            readable_output=generate_readable_output_message(object_type=ReadableOutputs.SCAN_ACTION,
+                                                             action=ReadableOutputs.SUBMITTED.value,
+                                                             object_id=args.get(XsoarArgKey.SCAN, "")))
 
     get_response = client.get_scan_action(obj_id=scan_id)
     if isinstance(get_response, requests.Response) and get_response.status_code == HTTPStatus.OK:
@@ -1101,16 +1107,18 @@ def submit_scan_action_command(args: dict[str, Any], client: Client) -> PollResu
             response={},
             continue_to_poll=True,
             args_for_next_run=args,
+            partial_result=partial_result
         )
 
     return PollResult(
         response=CommandResults(
-            readable_output=generate_readable_output_message(object_type=ReadableOutputs.SCAN,
+            readable_output=generate_readable_output_message(object_type=ReadableOutputs.SCAN_ACTION,
                                                              action=ReadableOutputs.CHANGED.value.format(
                                                                  args.get("action", "")),
                                                              object_id=args.get(XsoarArgKey.SCAN, ""))
         ),
         continue_to_poll=False,
+        partial_result=partial_result
     )
 
 
@@ -1696,7 +1704,7 @@ def generate_api_endpoint(url_prefix: str, obj_id: str | None) -> str:
     return urljoin(url_prefix, obj_id) if obj_id else url_prefix
 
 
-@logger
+@ logger
 def validate_submit_scan_action(action: str, scan_data: dict):
     """
     Validate the scan action.
