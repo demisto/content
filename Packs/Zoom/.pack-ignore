@@ -6,6 +6,7 @@ ignore=IM111
 
 [known_words]
 zoomapimodule
+JWT
 
 [file:Zoom.yml]
 ignore=MR108
