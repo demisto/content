@@ -38,7 +38,7 @@ configuration:
   name: longRunning
   section: Collect
   type: 8
-- defaultvalue: 'true'
+- defaultvalue: 'false'
   display: Enable Incident Mirroring
   name: mirroring
   type: 8
@@ -47,6 +47,7 @@ configuration:
 - display: Listen Port
   name: longRunningPort
   type: 0
+  section: Collect
   required: false
   additionalinfo: You most enable Long running instance to run the web server on this port from within Cortex XSOAR. Requires a unique port for each long-running integration instance. Do not use the same port for multiple instances.
 - display: Use system proxy settings
@@ -229,11 +230,11 @@ script:
       description: Meeting start time. When using a format like “yyyy-MM-ddTHH:mm:ssZ”, always use GMT time. When using a format like “yyyy-MM-ddTHH:mm:ss”, you should use local time and you will need to specify the time zone. Only used for scheduled meetings and recurring meetings with fixed time.
     - name: timezone
       description: "Timezone to format start_time. For example, “America/Los_Angeles”. For scheduled meetings only. "
-    description: Create a new zoom meeting (scheduled ,instant, or recurring).
+    description: Create a new zoom meeting scheduled, instant or recurring.
     name: zoom-create-meeting
     outputs:
     - contextPath: Zoom.Meeting.join_url
-      description: Join url for the meeting
+      description: Join url for the meeting.
       type: string
     - contextPath: Zoom.Meeting.id
       description: Meeting id of the new meeting that is created.
@@ -1106,7 +1107,7 @@ script:
       description: The queried date value.
     - contextPath: Zoom.ChatMessage.from
       type: date-time
-      description: The queried from value. (Returned only if the from query parameter is used.)
+      description: The queried from value. (Returned only if the from query parameter is used.) .
     - contextPath: Zoom.ChatMessage.messages
       type: array of object
       description: Information about received messages and files.
@@ -1166,10 +1167,10 @@ script:
       description: The message content.
     - contextPath: Zoom.ChatMessage.messages.reply_main_message_id
       type: string
-      description: The unique identifier of a reply message. (Returned only for reply messages)
+      description: The unique identifier of a reply message. (Returned only for reply messages) .
     - contextPath: Zoom.ChatMessage.messages.reply_main_message_timestamp
       type: integer
-      description: The timestamp of when the reply message was sent. (Returned only for reply messages)
+      description: The timestamp of when the reply message was sent. (Returned only for reply messages) .
     - contextPath: Zoom.ChatMessage.messages.sender
       type: string
       description: The email address of the message sender. Empty if the sender does not belong to the same account as the current user or is not a contact.
@@ -1181,7 +1182,7 @@ script:
       description: The display name of the message sender.
     - contextPath: Zoom.ChatMessage.messages.status
       type: enum
-      description: Indicates the status of the message. Allowed values Deleted, Edited, Normal. (Returned only when include_deleted_and_edited_message query parameter is set to true)
+      description: Indicates the status of the message. Allowed values Deleted, Edited, Normal. (Returned only when include_deleted_and_edited_message query parameter is set to true) .
     - contextPath: Zoom.ChatMessage.messages.timestamp
       type: integer
       description: The timestamp of the message in microseconds.
@@ -1211,7 +1212,7 @@ script:
     description: Delete a mirrored zoom channel.
     name: close-channel
   - name: send-notification
-    description: Send a message using chatbot app.
+    description: Send a message using a chatbot app.
     arguments:
     - name: message
       description: the message
