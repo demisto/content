@@ -17,9 +17,7 @@ from Whois import (
     WhoisInvalidDomain,
     whois_command,
     domain_command,
-    get_domain_from_query,
     ip_command,
-    get_root_server
 )
 import ipwhois
 import socket
@@ -51,20 +49,9 @@ def assert_results_ok():
 def test_test_command(mocker: MockerFixture):
     mocker.patch.object(demisto, 'results')
     mocker.patch.object(demisto, 'command', return_value='test-module')
-    mocker.patch("Whois.get_whois_raw", return_value=load_test_data('./test_data/whois_raw_response.json')['result'])
+    mocker.patch("whois.whoiswhois_raw", return_value=load_test_data('./test_data/whois_raw_response.json')['result'])
     Whois.main()
     assert_results_ok()
-
-
-@pytest.mark.parametrize(
-    'query,expected',
-    [("app.paloaltonetwork.com", "paloaltonetwork.com"),
-     ("test.this.google.co.il", "google.co.il"),
-     ("app.XSOAR.test", "app.XSOAR.test")
-     ]
-)
-def test_get_domain_from_query(query, expected):
-    assert get_domain_from_query(query) == expected
 
 
 def test_socks_proxy_fail(mocker: MockerFixture, capfd: pytest.CaptureFixture):
@@ -242,38 +229,6 @@ def test_get_whois_ip_proxy_param(mocker: MockerFixture):
     assert result
 
 
-def test_indian_tld():
-    """
-    Given:
-        - indian domain
-
-    When:
-        - running the get_root_server function
-
-    Then:
-        - Verify the function returns the correct Whois server
-    """
-    from Whois import get_root_server
-    result = get_root_server("google.in")
-    assert result == "in.whois-servers.net"
-
-
-def test_ph_tld():
-    """
-    Given:
-        - A domain that its extension (tld) is '.ph'
-
-    When:
-        - running the get_root_server function
-
-    Then:
-        - Verify the function returns the correct Whois server
-    """
-    from Whois import get_root_server
-    host = get_root_server("test.com.ph")
-    assert host == "whois.iana.org"
-
-
 def test_parse_raw_whois():
     with open('test_data/EU domains.text') as f:
         raw_data = f.read()
@@ -328,10 +283,9 @@ def test_whois_with_verbose(args, expected_res, mocker: MockerFixture):
     mocker.patch.object(ExecutionMetrics, 'is_supported', return_value=True)
     mocker.patch.object(demisto, 'command', 'whois')
     mocker.patch.object(demisto, 'args', return_value=args)
-    mocker.patch('Whois.get_domain_from_query', return_value='cnn.com')
     with open('test_data/cnn_pickled', 'rb') as f:
         get_whois_ret_value = pickle.load(f)  # guardrails-disable-line
-    mocker.patch('Whois.get_whois', return_value=get_whois_ret_value)
+    mocker.patch('whois.whoiswhois', return_value=get_whois_ret_value)
 
     result = Whois.whois_command(
         reliability='B - Usually reliable'
@@ -396,38 +350,6 @@ def test_parse_nic_contact():
                  'street4': None, 'country': 'US', 'phone': '+1.2083895740', 'fax': '+1.2083895771',
                  'email': 'ccops@markmonitor.com', 'changedate': '2021-10-05T15:17:57Z nic.fr'}]
     assert res == expected
-
-
-def test_get_raw_response_with_non_recursive_data_query(mocker: MockerFixture):
-    """
-    Given:
-        - A domain to query, non-recursive data query and a mock response which simulates a
-          Whois server response that includes a name of a refer server.
-    When:
-        - running the Whois.get_whois_raw(domain, server) function
-
-    Then:
-        - Verify that the final response of the get_whois_raw() includes only the response of the first server which was
-          queried, without the response of the refer server.
-    """
-    import socket
-    from Whois import get_whois_raw
-
-    def connect_mocker(curr_server):
-        """
-        This function is a mocker for the function socket.connect()
-        """
-        return
-
-    mock_response1 = "Domain Name: test.plus\n WHOIS Server: whois.test.com/\n"
-    mock_response2 = "Domain Name: test_refer_server\n"
-
-    mocker.patch.object(socket.socket, 'connect', side_effect=connect_mocker)
-    mocker.patch('Whois.whois_request_get_response', side_effect=[mock_response1, mock_response2])
-
-    domain = "test.plus"
-    response = get_whois_raw(domain=domain, is_recursive=False)
-    assert response == [mock_response1]
 
 
 @pytest.mark.parametrize('param_key, param_value, arg_key, arg_value, expected_res',
@@ -604,46 +526,6 @@ def test_exception_type_to_metrics(
     assert actual_count == expected[1]
 
 
-@pytest.mark.parametrize("domain,expected", [
-    ("google.com", "whois.verisign-grs.com")
-])
-def test_get_root_server(domain: str, expected: str):
-    """
-    Test to get the root server from the domain. The root server resolution is handled inside
-    ``Whois`` by `tlds` and `dble_ext` dictionaries.
-
-    Given: a domain.
-
-    When: The domain is google.com.
-
-    Then: The root server is whois.verisign-grs.com.
-
-    """
-    assert expected == get_root_server(domain)
-
-
-@pytest.mark.parametrize("domain", [
-    ("com"),
-    ("1.1.1.1"),
-])
-def test_get_root_server_invalid_domain(domain: str, capfd: pytest.CaptureFixture):
-    """
-    Test to get the root server from the domain when an invalid domain is supplied.
-
-    Given: a domain.
-
-    When:
-        - Case A: An `str` that has no '.' in it.
-        - Case B: An IP address.
-
-    Then:
-        - `WhoisInvalidDomain` expected
-
-    """
-    with capfd.disabled(), pytest.raises(WhoisInvalidDomain):
-        get_root_server(domain)
-
-
 @pytest.mark.parametrize('args, expected_res', [
     ({"domain": "cnn.com", "is_recursive": "true", "verbose": "true", "should_error": "false"}, 2),
     ({"domain": "cnn.com", "is_recursive": "true", "should_error": "false"}, 2)
@@ -660,10 +542,9 @@ def test_domain_command(args: dict[str, Any], expected_res, mocker: MockerFixtur
     mocker.patch.object(ExecutionMetrics, 'is_supported', return_value=True)
     mocker.patch.object(demisto, 'command', 'domain')
     mocker.patch.object(demisto, 'args', return_value=args)
-    mocker.patch('Whois.get_domain_from_query', return_value='cnn.com')
     with open('test_data/cnn_pickled', 'rb') as f:
         get_whois_ret_value = pickle.load(f)  # guardrails-disable-line
-    mocker.patch('Whois.get_whois', return_value=get_whois_ret_value)
+    mocker.patch('whois.whois', return_value=get_whois_ret_value)
 
     result = domain_command(
         reliability='B - Usually reliable'
