@@ -437,11 +437,6 @@ def test_get_remote_data_command(mocker):
             self.last_update = 1234567890
             self.remote_incident_id = 0
 
-    class GetIncidentRequest:
-        def __init__(self) -> dict:
-            self.response = {"id": 1, "status": 1, "alert_count": 2}
-            return self.response
-
     mocker.patch.object(RSANetWitnessv115, "GetRemoteDataArgs", return_value=GetRemoteDataArgsResponse())
     mocker.patch.object(RSANetWitnessv115, "argToBoolean", return_value=True)
     mocker.patch.object(RSANetWitnessv115, "arg_to_number", return_value=2)
