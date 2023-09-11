@@ -1,17 +1,17 @@
 args:
-- description: The domain to query
+- description: The domain to query.
   name: domain
   required: true
-- description: "IP of the DNS Server to use (default: system settings)"
+- description: "IP of the DNS Server to use (default: system settings)."
   name: server
-- description: "Use TCP for the query (default: false)"
+- description: "Use TCP for the query (default: false)."
   name: use_tcp
   auto: PREDEFINED
   predefined:
   - 'true'
   - 'false'
   defaultValue: 'false'
-- description: "Comma separated list of query types (default: CNAME,NS,A,AAAA)"
+- description: "Comma separated list of query types (default: CNAME,NS,A,AAAA)."
   name: qtype
   defaultValue: CNAME,NS,A,AAAA
 comment: Returns DNS details for a domain.
