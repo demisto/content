@@ -251,16 +251,8 @@
     DOCKER_HOST: tcp://docker:2375
     DOCKER_DRIVER: overlay2
     DOCKER_TLS_CERTDIR: ""
-    PIPELINE_TO_QUERY: $CI_PIPELINE_ID
-    WORKFLOW: "Run Unit Testing and Lint"     #not sure about these tow lines
-    JOB_NAME: ".run-unittests-and-lint"
-    # Passes the environment variable from the parent pipeline to the child which can be useful for cases
-    # when triggering pipeline with alternate env variable value passed in the API call
-    SLACK_CHANNEL: $SLACK_CHANNEL
-    SLACK_JOB: "true"
   extends:
     - .default-job-settings
-    - .trigger-slack-notification
 
 
 .run-unittests-and-lint:
