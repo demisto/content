@@ -70,16 +70,19 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 3900a875-d087-431b-843a-e4f064de8b61
+    taskid: 7f918e20-4cd2-430a-8569-63433c9996e9
     type: regular
     task:
-      id: 3900a875-d087-431b-843a-e4f064de8b61
+      id: 7f918e20-4cd2-430a-8569-63433c9996e9
       version: -1
-      name: google-drive-create
-      script: '|||google-drive-create'
+      name: google-drive-drive-create
+      script: '|||google-drive-drive-create'
       type: regular
       iscommand: true
       brand: ""
+      description: |-
+        Creates a new Team Drive. The name argument specifies the name of the Team Drive. The specified user will be the first organizer.
+        This shared drive/team drive feature is available only with G Suite Enterprise, Enterprise for Education, G Suite Essentials, Business, Education, and Nonprofits edition.
     nexttasks:
       '#none#':
       - "3"
@@ -109,10 +112,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 363f50fd-4b23-4f3d-84c3-3156a9723559
+    taskid: f4c11ee7-40ff-485c-8e76-aa9d3b6d6a42
     type: condition
     task:
-      id: 363f50fd-4b23-4f3d-84c3-3156a9723559
+      id: f4c11ee7-40ff-485c-8e76-aa9d3b6d6a42
       version: -1
       name: Verify Outputs
       type: condition
@@ -128,12 +131,16 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: GoogleDrive.Drive.id
+              complex:
+                root: GoogleDrive.Drive
+                accessor: id
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: GoogleDrive.Drive.name
+              complex:
+                root: GoogleDrive.Drive
+                accessor: name
             iscontext: true
     view: |-
       {
