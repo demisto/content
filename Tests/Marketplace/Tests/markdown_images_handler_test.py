@@ -2,7 +2,7 @@ import os
 from google.cloud.storage.blob import Blob
 from pathlib import Path
 from Tests.Marketplace.marketplace_constants import GCPConfig, BucketUploadFlow
-from Tests.Marketplace.pack_readme_handler import (
+from Tests.Marketplace.markdown_images_handler import (
     copy_markdown_images,
     download_markdown_images_from_artifacts,
 )
