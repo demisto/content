@@ -367,7 +367,7 @@ def test_get_mapping_fields_command():
     res = get_mapping_fields_command()
 
     assert paging_data['get_mapping_fields'] == res.extract_mapping()
-    
+
 
 @pytest.mark.parametrize(
     'xsoar_status, xsoar_close_reason, expected_rsa_status',
@@ -388,8 +388,8 @@ def test_xsoar_status_to_rsa_status(mocker, xsoar_status: int, xsoar_close_reaso
         - Return RSA Status
     """
     assert xsoar_status_to_rsa_status(xsoar_status, xsoar_close_reason) == expected_rsa_status
-    
-    
+
+
 def test_update_remote_system_command(mocker):
     """
         Given:
@@ -409,12 +409,12 @@ def test_update_remote_system_command(mocker):
         def __init__(self) -> dict:
             self.delta = {"key": "value"}
             self.remote_incident_id = "INC-1"
-            self.data =  {"status": 1, "closeReason": None}
-    
+            self.data = {"status": 1, "closeReason": None}
+
     mocker.patch.object(RSANetWitnessv115, "UpdateRemoteSystemArgs", return_value=UpdateRemoteSystemArgsResponse())
     mocker.patch.object(client, "get_incident_request", return_value={"id": "INC-1", "status": 1})
     mocker.patch.object(client, "update_incident_request", return_value={"id": "INC-1", "status": 1, "assignee": None})
-    
+
     assert update_remote_system_command(client, {}, {}) == paging_data
 
 
@@ -437,21 +437,16 @@ def test_get_remote_data_command(mocker):
         def __init__(self) -> dict:
             self.last_update = 1234567890
             self.remote_incident_id = 0
-            
-    class GetIncidentRequest:
-        def __init__(self) -> dict:  
-            self.response = {"id": 1, "status": 1, "alert_count": 2}
-            return self.response
-    
-    mocker.patch.object(RSANetWitnessv115, "GetRemoteDataArgs", return_value=GetRemoteDataArgsResponse())        
+
+    mocker.patch.object(RSANetWitnessv115, "GetRemoteDataArgs", return_value=GetRemoteDataArgsResponse())
     mocker.patch.object(RSANetWitnessv115, "argToBoolean", return_value=True)
     mocker.patch.object(RSANetWitnessv115, "arg_to_number", return_value=2)
     mocker.patch.object(client, "get_incident_request", return_value={"id": 1, "status": 1, "alertCount": 2})
     mocker.patch.object(RSANetWitnessv115, "fetch_alerts_related_incident", return_value={"alerts": [{"INC-2"}]})
-    
+
     res = get_remote_data_command(client, {}, {'close_incident': 0, 'import_alerts': True, 'max_alerts': 1})
     assert res.mirrored_object == paging_data
-    
+
 
 def test_get_modified_remote_data_command(mocker):
     """
@@ -466,24 +461,22 @@ def test_get_modified_remote_data_command(mocker):
         Then:
             check the updated incidents list.
     """
-    paging_data = {'alertCount': 2, 'alerts': {'alerts': [{'INC-2'}]}, 'id': 1, 'status': 1}
+    paging_data = ['INC-1']
 
     class GetModifiedRemoteDataArgsResponse:
         def __init__(self) -> dict:
             self.last_update = "1694188115"
-    
-    mocker.patch.object(RSANetWitnessv115, "GetModifiedRemoteDataArgs", return_value=GetModifiedRemoteDataArgsResponse())        
-    mocker.patch.object(client, "get_incident_request", return_value={"id": 1, "status": 1, "alertCount": 2})
-    mocker.patch.object(RSANetWitnessv115, "argToBoolean", return_value=True)
-    mocker.patch.object(RSANetWitnessv115, "arg_to_number", return_value=2)
-    mocker.patch.object(RSANetWitnessv115, "paging_command", return_value=({}, [{"1234": "incident"}]))
+
+    mocker.patch.object(RSANetWitnessv115, "GetModifiedRemoteDataArgs", return_value=GetModifiedRemoteDataArgsResponse())
+    mocker.patch.object(client, "get_incident_request", return_value={"id": "INC-1", "status": 1, "alertCount": 1})
+    mocker.patch.object(RSANetWitnessv115, "paging_command", return_value=({}, [{"id": "INC-1", "lastUpdated": 1694188116}]))
     mocker.patch.object(RSANetWitnessv115, "clean_old_inc_context", return_value=False)
-    mocker.patch.object(RSANetWitnessv115, "get_integration_context", return_value={"id": 1234})
-        
-    res = get_modified_remote_data_command(client, {}, {"max_fetch": 2, "max_alerts": 1, "max_mirror_time": 1})
-    assert res.mirrored_object == paging_data
-    
-    
+    mocker.patch.object(RSANetWitnessv115, "get_integration_context", return_value={"INC-1": {"alertCount": 2, "eventCount": 2}})
+
+    res = get_modified_remote_data_command(client, {}, {"max_fetch": 2, "max_alerts": 2, "max_mirror_time": 0})
+    assert res.modified_incident_ids == paging_data
+
+
 def test_struct_inc_context():
     """
         Given:
@@ -499,8 +492,8 @@ def test_struct_inc_context():
     """
     expected_result = {"alertCount": 1, "eventCount": 1, "Created": True}
     assert struct_inc_context(1, 1, True) == expected_result
-    
-    
+
+
 def test_clean_old_inc_context(mocker):
     """
         Given:
@@ -514,14 +507,14 @@ def test_clean_old_inc_context(mocker):
     """
     from datetime import datetime, timedelta
     max_time_mirror_inc = 24
-    
+
     mocker.patch.object(demisto, "getIntegrationContext", return_value={"IncidentsDataCount": {}})
     mocker.patch.object(RSANetWitnessv115, "arg_to_datetime", return_value=datetime.now() + timedelta(days=max_time_mirror_inc+1))
-    
+
     assert clean_old_inc_context(max_time_mirror_inc) == None
-    
-    
-def clean_secret_integration_context(mocker):
+
+
+def test_clean_secret_integration_context(mocker):
     """
         Given:
         - Nothing
@@ -534,5 +527,5 @@ def clean_secret_integration_context(mocker):
     """
     expected_result = {"refresh_token": "SECRET REPLACED", "token": "SECRET REPLACED"}
     mocker.patch.object(demisto, "getIntegrationContext", return_value={"refresh_token": "refresh_token", "token": "token"})
-    
+
     assert clean_secret_integration_context() == expected_result
