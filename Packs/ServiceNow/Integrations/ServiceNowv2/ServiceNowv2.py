@@ -2544,7 +2544,6 @@ def converts_state_close_reason(ticket_type: str, ticket_state: Optional[str], s
     # default states for incident - closed (6) and resolved (7)
     # default state for the rest - closed (3)
     elif (ticket_type == 'incident' and ticket_state in ['6', '7']) or (ticket_type in ['sc_task', 'sc_req_item', SIR_INCIDENT] and ticket_state == '3'):
-        demisto.debug('Shelly is HERE')
         demisto.debug(f'incident should be closed using default state. State Code: {ticket_state}')
         return 'Resolved'
     demisto.debug(f'incident is closed using default close reason "Other". State Code: {ticket_state}')
@@ -2576,7 +2575,6 @@ def update_remote_system_command(client: Client, args: Dict[str, Any], params: D
     closure_case = get_closure_case(params)
     is_custom_close = False
     close_custom_state = params.get('close_custom_state', None)
-    # entries = []
 
     if parsed_args.incident_changed:
         demisto.debug(f'Incident changed: {parsed_args.incident_changed}')
@@ -2593,21 +2591,6 @@ def update_remote_system_command(client: Client, args: Dict[str, Any], params: D
                 is_custom_close = True
                 parsed_args.data['state'] = close_custom_state
 
-        # When using default mappers/layout we convert the closing state to the right one according to the ticket type,
-        # in order to close the ticket/incident via XSOAR
-        if closure_case and ticket_type in {'sc_task', 'sc_req_item', SIR_INCIDENT}:
-            demisto.debug(f'Getting ticket state to close incident - "{parsed_args.data["state"]}"')
-            if parsed_args.data['state'] == '7 - Closed':
-                parsed_args.data['state'] = '3'
-            # entries.append({
-            #     'Type': EntryType.NOTE,
-            #     'Contents': {
-            #         'dbotIncidentClose': True,
-            #         'closeNotes': 'Incident is closed.'
-            #     },
-            #     'ContentsFormat': EntryFormat.JSON
-            # })
-
         fields = get_ticket_fields(parsed_args.data, ticket_type=ticket_type)
         if closure_case:
             fields = {key: val for key, val in fields.items() if key != 'closed_at' and key != 'resolved_at'}
@@ -2615,19 +2598,18 @@ def update_remote_system_command(client: Client, args: Dict[str, Any], params: D
         demisto.debug(f'Sending update request to server {ticket_type}, {ticket_id}, {fields}')
         result = client.update(ticket_type, ticket_id, fields)
 
-        # Handle case of custom state doesn't exist, reverting to the original close state
-        if is_custom_close and demisto.get(result, 'result.state') != close_custom_state:
+        # When using default mappers/layout we convert the closing state to the right one according to the ticket type,
+        # in order to close the ticket/incident via XSOAR
+        # Also, Handle case of custom state doesn't exist, reverting to the original close state
+        if (is_custom_close and demisto.get(result, 'result.state') != close_custom_state) \
+            or (closure_case and ticket_type in {'sc_task', 'sc_req_item', SIR_INCIDENT}):
             fields['state'] = TICKET_TYPE_TO_CLOSED_STATE[ticket_type]
-            demisto.debug(f'Given custom state doesn\'t exist - Sending second update request to server with '
-                          f'default closed state: {ticket_type}, {ticket_id}, {fields}')
+            demisto.debug(f'Sending second update request to server with default closed state: {ticket_type}, {ticket_id}, '
+                          f'{fields}')
             result = client.update(ticket_type, ticket_id, fields)
 
         demisto.info(f'Ticket Update result {result}')
 
-    # if entries:
-    # entries.extend(parsed_args.entries)
-    # else:
-    #     entries = parsed_args.entries
     entries = parsed_args.entries
     if entries:
         demisto.debug(f'New entries {entries}')
