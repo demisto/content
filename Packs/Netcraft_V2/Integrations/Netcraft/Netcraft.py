@@ -3,6 +3,7 @@ from CommonServerPython import *  # noqa: F401
 from collections.abc import Callable, Generator, Iterable
 from functools import partial
 import base64
+import yaml
 
 
 ''' CONSTANTS '''
@@ -83,12 +84,8 @@ class Client(BaseClient):
         '''Error handler for Netcraft API call error'''
         err_msg = f'Error in Netcraft API call [{res.status_code}] - {res.reason}\n'
         try:
-            # Try to parse json error response
-            error_entry: dict[str, Any] = res.json()
-            err_msg += '\n'.join(
-                f'{string_to_table_header(k)}: {v}'
-                for k, v in error_entry.items()
-            )
+            # return a more readable error
+            err_msg += yaml.safe_dump(res.json())
         except ValueError:
             err_msg += res.text
         raise DemistoException(err_msg, res=res)
@@ -162,9 +159,9 @@ class Client(BaseClient):
             'POST', 'submission', 'report/urls/', json_data=body,
         )
 
-    def submission_mail_get(self, uuid: str) -> dict:
+    def submission_mail_get(self, submission_uuid: str) -> dict:
         return self._http_request(
-            'GET', 'submission', f'submission/{uuid}/mail',
+            'GET', 'submission', f'submission/{submission_uuid}/mail',
         )
 
     def mail_screenshot_get(self, submission_uuid: str) -> bytes:
@@ -792,7 +789,7 @@ def submission_file_list_command(args: dict, client: Client) -> CommandResults:
         client.submission_file_list,
         sub_dict(args, 'submission_uuid'),
         **sub_dict(args, 'limit', 'page_size', 'page'),
-        pages_key_path='files',
+        pages_key_path=('files',)
     )
     return CommandResults(
         readable_output=response_to_readable(files),
@@ -883,7 +880,7 @@ def submission_url_list_command(args: dict, client: Client) -> CommandResults:
         client.submission_file_list,
         sub_dict(args, 'submission_uuid'),
         **sub_dict(args, 'limit', 'page_size', 'page'),
-        pages_key_path='urls',
+        pages_key_path=('urls',)
     )
     return CommandResults(
         outputs=urls,

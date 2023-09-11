@@ -2,8 +2,8 @@ args:
   all_results: 'false'
   attack_types: attack_types,attack_types2
   auth_given: 'Yes'
-  date_from: 2023-09-10 14:13:55.120309
-  date_to: 2023-09-10 14:13:55.120309
+  date_from: '2023-09-10 14:13:55.120309'
+  date_to: '2023-09-10 14:13:55.120309'
   escalated: 'Yes'
   false_positive: 'true'
   id: id
@@ -28,10 +28,10 @@ api_response:
   country_code: us
   customer_label: 'Internal Issue #12345'
   customer_tag: ''
-  date_authed: 2023-09-10 14:13:55.120309
-  date_escalated: 2023-09-10 14:13:55.120309
-  date_first_actioned: 2023-09-10 14:13:55.120309
-  date_submitted: 2023-09-10 14:13:55.120309
+  date_authed: '2023-09-10 14:13:55.120309'
+  date_escalated: '2023-09-10 14:13:55.120309'
+  date_first_actioned: '2023-09-10 14:13:55.120309'
+  date_submitted: '2023-09-10 14:13:55.120309'
   deceptive_domain_score: 9.85
   domain: examp1eb4nk.com
   domain_attack: 'yes'

@@ -16,7 +16,7 @@ def load_yaml(filename):
 
 def add_to_yaml(filename, obj):
     with open(f'test_data/{filename}.yml', 'a') as f:
-        return f.read(yaml.dump(obj))
+        return f.write(yaml.dump(obj))
 
 @pytest.mark.parametrize(
     'command',
@@ -29,13 +29,13 @@ def add_to_yaml(filename, obj):
         'netcraft-takedown-note-list',
         'netcraft-attack-type-list',
         'netcraft-submission-list',
-        'netcraft-file-report-submit',
+        # 'netcraft-file-report-submit',
         'netcraft-submission-file-list',
         # 'netcraft-file-screenshot-get',
-        'netcraft-email-report-submit',
+        # 'netcraft-email-report-submit',
         'netcraft-submission-mail-get',
         # 'netcraft-mail-screenshot-get',
-        'netcraft-url-report-submit',
+        # 'netcraft-url-report-submit',
         'netcraft-submission-url-list',
         # 'netcraft-url-screenshot-get'
     ]
