@@ -86,7 +86,7 @@ script:
       description: The location of the attack to take down, e.g. a phishing URL, or a fraudulent email address.
     - name: comment
       required: true
-      description: 	The reason for the report, such as a description of the attack.
+      description: The reason for the report, such as a description of the attack.
     - description: The brand to report the takedown under. If no brand is specified, the brand of the provided "region" will be used.
       name: brand
     - defaultValue: phishing_url

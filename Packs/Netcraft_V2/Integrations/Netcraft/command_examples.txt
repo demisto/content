@@ -1,2 +1,23 @@
-netcraft-submission-file-list submission_uuid=FNVOZqnhmD8mTbebJeY78kl6kkFsiuHP
+netcraft-attack-report attack= comment= brand= attack_type= inactive= force_auth= malware= suspected_fraud_domain= password= entry_id= phishkit_fetch_url= phishkit_phish_url= customer_label= tags= region=
+netcraft-takedown-list id= statuses= url= false_positive= ip= id_before= id_after= date_from= date_to= reporter_email= report_source= attack_types= auth_given= escalated= sort= sort_direction= limit= all_results= region=
+netcraft-takedown-update takedown_id= customer_label= description= brand= suspected_fraud_domain= suspected_fraud_hostname= add_tags= remove_tags= region=
+netcraft-takedown-escalate takedown_id=
+netcraft-takedown-note-create takedown_id= note_text= notify=
+netcraft-takedown-note-list takedown_id= author_mail= all_results=false
+netcraft-attack-type-list automated= auto_escalation= auto_authorise= region= all_results=
+
+netcraft-submission-list date_start= date_end= source_name= state= submission_reason= submitter_email= limit= page_size= next_token= polling= interval_in_seconds= timeout= hide_polling_output=
+netcraft-submission-list submission_uuid=
+netcraft-file-report-submit reporter_email= file_content= file_name= entry_id= reason= polling= interval_in_seconds= timeout=
+
+netcraft-submission-file-list submission_uuid=FNVOZqnhmD8mTbebJeY78kl6kkFsiuHP page=2 page_size=2 limit=50
+
+netcraft-file-screenshot-get submission_uuid= file_hash=
+netcraft-email-report-submit reporter_email= message= password= polling=false
+netcraft-submission-mail-get submission_uuid=
+netcraft-mail-screenshot-get submission_uuid=
+
+netcraft-url-report-submit reporter_email=spadan@paloaltonetworks.com urls= reason= polling=true interval_in_seconds=30 timeout=300
+
+netcraft-submission-url-list submission_uuid=0qQt98P04o0qk46UXveNsCHhUN7zLopY page=2 page_size=2 limit=50
 netcraft-url-screenshot-get submission_uuid=0qQt98P04o0qk46UXveNsCHhUN7zLopY url_uuid=BZqSBm5i4KIoCq6TItXLWKZwGAm3nN08 screenshot_hash=06f8715ba1b1ca5dee4af05e98bbc63a

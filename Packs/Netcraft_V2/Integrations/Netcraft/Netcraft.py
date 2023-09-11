@@ -277,7 +277,7 @@ def paginate_with_token(
         yield limit
 
     get_page = partial(dict_safe_get, keys=pages_key_path or (), return_type=list)
-    page_size = min(api_limit, arg_to_number(page_size, 'page_size', True))
+    page_size = min(api_limit, arg_to_number(page_size) or api_limit)
 
     if next_token:
         pagination_args = {api_token_key: next_token, api_page_size_key: page_size}
@@ -359,6 +359,7 @@ def test_module(client: Client) -> str:
 def fetch_incidents(client: Client) -> list[dict[str, str]]:
     # demisto.getLastRun and demisto.setLastRun hold takedown IDs
     def to_xsoar_incident(incident: dict) -> dict:
+        
         demisto.debug(incident_id := incident['id'])
         return {
             'name': f'Takedown-{incident_id}',
@@ -491,7 +492,7 @@ def takedown_list_command(args: dict, client: Client) -> CommandResults:
 
     def response_to_context(response: list[dict]) -> list[dict]:
         for takedown in response:
-            convert_keys_to_bool(takedown, 'authgiven', 'has_phishing_kit', 'escalated')
+            (takedown, 'authgiven', 'has_phishing_kit', 'escalated')
         return response
 
     response = client.get_takedowns(
@@ -626,13 +627,6 @@ def attack_type_list_command(args: dict, client: Client) -> CommandResults:
     poll_message='Submission pending:'
 )
 def get_submission(args: dict, submission_uuid: str, client: Client) -> PollResult:
-    def response_to_readable(submission: dict) -> str:
-        # TODO get UI layout as there is none
-        return tableToMarkdown(
-            f'Submission {submission_uuid}',
-            submission, list(submission),
-            headerTransform=string_to_table_header
-        )
 
     def response_to_context(response: dict, uuid: str) -> dict:
         '''
@@ -655,27 +649,50 @@ def get_submission(args: dict, submission_uuid: str, client: Client) -> PollResu
         )
         return response
 
+    def response_to_readable(submission: dict) -> str:
+        table = {
+            'Source': submission.get('source', {}).get('name'),
+            'Submitter': submission.get('submitter', {}).get('email'),
+            'Submission Date': str(arg_to_datetime(submission.get('date'))),
+            'State': submission.get('state'),
+            'Last Update': str(arg_to_datetime(submission.get('last_update'))),
+            'List URLs':
+                f'netcraft-submission-url-list {submission_uuid=}'
+                if submission['has_urls']  # key added by response_to_context
+                else '*This submission has no URLs*',
+            'List Files':
+                f'netcraft-submission-file-list {submission_uuid=}'
+                if submission['has_files']  # key added by response_to_context
+                else '*This submission has no  Files*',
+        }
+        return tableToMarkdown(
+            f'Submission {submission_uuid}',
+            table, list(table),
+            removeNull=True,
+        )
+
     response = client.get_submission(submission_uuid)
     return PollResult(
         CommandResults(
             outputs_prefix='Netcraft.Submission',
             outputs_key_field='uuid',
-            outputs=response_to_context(response, args['submission_uuid']),
+            outputs=response_to_context(response, submission_uuid),
             readable_output=response_to_readable(response),
         ),
         continue_to_poll=(response.get('state') == 'processing'),
-        args_for_next_run=args | {'submission_uuid': submission_uuid}
+        args_for_next_run=(args | {'submission_uuid': submission_uuid})
     )
 
 
 def submission_list(args: dict, client: Client) -> CommandResults:
+
     def response_to_readable(submissions: list[dict]) -> str:
         return tableToMarkdown(
             'Netcraft Submissions',
             [
                 {
                     'Submission UUID': sub.get('uuid'),
-                    'Submission Date': arg_to_datetime(sub.get('date')),
+                    'Submission Date': str(arg_to_datetime(sub.get('date'))),
                     'Submitter Email': sub.get('submitter_email'),
                     'State': sub.get('state'),
                     'Source': sub.get('source_name')
@@ -690,9 +707,11 @@ def submission_list(args: dict, client: Client) -> CommandResults:
         client.submission_list,
         api_params=sub_dict(
             args,
-            'date_start', 'date_end', 'source_name',
-            'state', 'submission_reason', 'submitter_email'
-        ),
+            'source_name', 'state', 'submission_reason', 'submitter_email'
+        ) | {
+            'date_start': str(arg_to_datetime(args.get('date_start')) or ''),  # TODO doesn't work
+            'date_end': str(arg_to_datetime(args.get('date_end')) or ''),
+        },
         **sub_dict(args, 'limit', 'page_size', 'next_token'),
         pages_key_path=['submissions']
     )
