@@ -472,13 +472,13 @@ def test_get_modified_remote_data_command(mocker):
             self.last_update = "1694188115"
 
     mocker.patch.object(RSANetWitnessv115, "GetModifiedRemoteDataArgs", return_value=GetModifiedRemoteDataArgsResponse())
-    mocker.patch.object(client, "get_incident_request", return_value={"id": 1, "status": 1, "alertCount": 1})
+    mocker.patch.object(client, "get_incident_request", return_value={"id": "INC-1", "status": 1, "alertCount": 1})
     mocker.patch.object(RSANetWitnessv115, "paging_command", return_value=({}, [{"id": "INC-1", "lastUpdated": 1694188116}]))
     mocker.patch.object(RSANetWitnessv115, "clean_old_inc_context", return_value=False)
     mocker.patch.object(RSANetWitnessv115, "get_integration_context", return_value={"INC-1": {"alertCount": 2, "eventCount": 2}})
 
     res = get_modified_remote_data_command(client, {}, {"max_fetch": 2, "max_alerts": 2, "max_mirror_time": 0})
-    assert res.modified_incidents_ids == paging_data
+    assert res.modified_incident_ids == paging_data
 
 
 def test_struct_inc_context():
