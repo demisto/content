@@ -9,7 +9,7 @@
         "User Profile"
     ],
     "caseInsensitive": true,
-    "cliName": "identitylifecyclemanagement-coresuccessfulprovisioning",
+    "cliName": "successfulprovisioning",
     "closeForm": false,
     "columns": [
         {
@@ -83,10 +83,10 @@
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_identitylifecyclemanagement-coresuccessfulprovisioning",
+    "id": "incident_successfulprovisioning",
     "isReadOnly": false,
     "locked": false,
-    "name": "Identity Lifecycle Management - Core SuccessfulProvisioning",
+    "name": "SuccessfulProvisioning",
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "required": false,

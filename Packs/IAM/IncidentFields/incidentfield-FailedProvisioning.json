@@ -9,7 +9,7 @@
         "IAM - Rehire User"
     ],
     "caseInsensitive": true,
-    "cliName": "identitylifecyclemanagement-corefailedprovisioning",
+    "cliName": "failedprovisioning",
     "closeForm": false,
     "columns": [
         {
@@ -81,10 +81,10 @@
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_identitylifecyclemanagement-corefailedprovisioning",
+    "id": "incident_failedprovisioning",
     "isReadOnly": false,
     "locked": false,
-    "name": "Identity Lifecycle Management - Core FailedProvisioning",
+    "name": "FailedProvisioning",
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "required": false,
