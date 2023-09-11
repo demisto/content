@@ -17,16 +17,13 @@ SAMPLE_EVENT = {
     "sourceIP": "10.8.8.8",
                 "occurred": "2023-01-01T00:00:01.000Z",
                 "sourceUser": "james.bond@xsoar.local",
-                "url": "https://notthedomainyouarelookingfor.com/login.zip",
+                "url": "https://xsoar.pan.dev/login.zip",
                 "userAgent": "Mozilla/5.0(WindowsNT6.1;WOW64;rv:27.0)Gecko/20100101Firefox/27.0"
 }
 
 TYPES = ["url allowed", "url blocked"]
-ALLOWED_CATEGORIES = ["PHISH", "MALWARE", "SPAM"]
-BLOCKED_CATEGORIES = ["PHISH", "MALWARE", "SPAM"]
+CATEGORIES = ["PHISH", "MALWARE", "SPAM"]
 
-SOURCEIPS = ["10.8.8.8", "10.8.8.9", "10.8.8.10", "10.8.8.10", "10.8.8.10", "10.8.8.10", "10.8.8.10",
-             "10.8.8.10", "88.8.8.8", "88.8.8.9", "88.8.8.10", "88.8.8.11", "88.8.8.12", "88.8.8.13"]
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 
 ''' ACTIVE DIRECTORY QUERY V2 INTEGRATION '''
@@ -99,18 +96,18 @@ def mock_data(total):
         item['eventID'] = str(randrange(100, 10000))
         item['type'] = choice(TYPES)
         if item['type'] == 'url blocked':
-            item['urlCategory'] = choice(BLOCKED_CATEGORIES)
+            item['urlCategory'] = choice(CATEGORIES)
         else:
-            item['urlCategory'] = choice(ALLOWED_CATEGORIES)
+            item['urlCategory'] = choice(CATEGORIES)
         item['sourceUser'] = choice(users)
-        item['sourceIP'] = choice(SOURCEIPS)
+        item['sourceIP'] = f"10.8.8.{randrange(2,250)}"
 
         if item["urlCategory"] == "MALWARE":
-            item["url"] = f"https://notthedomainyouarelookingfor{randrange(1,88)}.com/download.zip"
+            item["url"] = f"https://xsoar.pan.dev/{randrange(1,88)}/download.zip"
         if item["urlCategory"] == "PHISH":
-            item["url"] = f"https://notthedomainyouarelookingfor{randrange(1,88)}.com/login.php"
+            item["url"] = f"https://xsoar.pan.dev/{randrange(1,88)}/login.php"
         if item["urlCategory"] == "SPAM":
-            item["url"] = f"https://nplusone{randrange(1,10)}.ca/getnewbike"
+            item["url"] = f"https://xsoar.pan.dev/{randrange(1,88)}/getnewbike"
 
         data.append(item)
         count += 1
