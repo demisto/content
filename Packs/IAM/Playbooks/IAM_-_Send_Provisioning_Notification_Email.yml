@@ -38,8 +38,7 @@ tasks:
       id: 958e503d-571f-4377-8c22-83b0bfcd399a
       version: -1
       name: Are there emails to notify about user creation?
-      description: Checks whether there are emails that should be notified about the
-        instance provisioning.
+      description: Checks whether there are emails that should be notified about the instance provisioning.
       type: condition
       iscommand: false
       brand: ""
@@ -79,8 +78,7 @@ tasks:
       id: a31f0675-25df-4e89-882a-2469f6a95226
       version: -1
       name: What should we notify about?
-      description: Determines the user action that ran which requires notification.
-        For example, if a user was rehired - then notify about a rehire.
+      description: Determines the user action that ran which requires notification. For example, if a user was rehired - then notify about a rehire.
       type: condition
       iscommand: false
       brand: ""
@@ -186,8 +184,7 @@ tasks:
       id: 12d9c68d-6ad6-4890-8f2a-47ae9efd63f7
       version: -1
       name: Is there an HTML template input?
-      description: Checks whether there is a playbook input for the HTML template
-        to use in the notification email.
+      description: Checks whether there is a playbook input for the HTML template to use in the notification email.
       type: condition
       iscommand: false
       brand: ""
@@ -340,8 +337,7 @@ tasks:
       id: 9ba560c4-92d3-4f8f-8e10-c1fca04fa7ac
       version: -1
       name: Are there emails to notify about user termination?
-      description: Checks whether there are emails that should be notified about the
-        instance provisioning.
+      description: Checks whether there are emails that should be notified about the instance provisioning.
       type: condition
       iscommand: false
       brand: ""
@@ -381,8 +377,7 @@ tasks:
       id: ffd4a674-ec9e-407b-84e4-37857e36b928
       version: -1
       name: Are there emails to notify about user rehire?
-      description: Checks whether there are emails that should be notified about the
-        instance provisioning.
+      description: Checks whether there are emails that should be notified about the instance provisioning.
       type: condition
       iscommand: false
       brand: ""
@@ -505,8 +500,7 @@ inputs:
 - key: InstanceDataForNotification
   value: {}
   required: false
-  description: Instance information for instances that need email notification. This
-    must contain only 1 instance (use this playbook as a loop).
+  description: Instance information for instances that need email notification. This must contain only 1 instance (use this playbook as a loop).
   playbookInputQuery:
 - key: NotificationEmailHTMLList
   value: {}
@@ -517,5 +511,4 @@ outputs: []
 tests:
 - No tests (auto formatted)
 fromversion: 6.0.0
-description: Sends emails for successful application provisionings. Uses the app-provisioning-settings
-  list.
+description: Sends emails for successful application provisionings. Uses the app-provisioning-settings list.

@@ -77,9 +77,7 @@ tasks:
       id: d5c94eab-6066-4f90-8ba7-9b2a0c019265
       version: -1
       name: Notify IT about failures
-      description: Sends an email to the email configured in the "ITNotificationEmail"
-        playbook input, notifying them about instances that failed while running CRUD
-        commands.
+      description: Sends an email to the email configured in the "ITNotificationEmail" playbook input, notifying them about instances that failed while running CRUD commands.
       script: '|||send-mail'
       type: regular
       iscommand: true
@@ -215,8 +213,7 @@ tasks:
       id: 6a65ad57-95f3-46a9-89ab-5d671ea56fad
       version: -1
       name: Create a link to the current incident
-      description: Creates a link to the current incident, using the URL of this server
-        and the current incident ID.
+      description: Creates a link to the current incident, using the URL of this server and the current incident ID.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false

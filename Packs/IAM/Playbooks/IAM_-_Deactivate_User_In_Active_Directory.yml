@@ -141,8 +141,7 @@ tasks:
       id: 0b69be4a-7786-4700-86d6-cf7d8d0681c5
       version: -1
       name: Get the User Profile from XSOAR
-      description: Gets the User Profile indicator belonging to the employee from
-        XSOAR.
+      description: Gets the User Profile indicator belonging to the employee from XSOAR.
       script: Builtin|||findIndicators
       type: regular
       iscommand: true
@@ -306,8 +305,7 @@ tasks:
       id: 1837b78a-66cb-4f5d-87a7-a57f9f6f42a8
       version: -1
       name: Fix the current issue
-      description: Asks the user to fix and then re-run the IAM - New Hire incident
-        of the user.
+      description: Asks the user to fix and then re-run the IAM - New Hire incident of the user.
       scriptName: PrintErrorEntry
       type: regular
       iscommand: false
@@ -317,18 +315,7 @@ tasks:
       - "43"
     scriptarguments:
       message:
-        simple: "The incident failed for one of two reasons:\n\n1. A connectivity\
-          \ issue with Active Directory. In this case, check your Active Directory\
-          \ instance configuration (are you using port 636?).\n\n2. User creation\
-          \ failed. Make sure you have a valid transformer script which determines\
-          \ the OU where the user will be created. \nThe transformer script should\
-          \ be in the Active Directory outgoing mapper, in the User Profile incident\
-          \ type and schema type, under the \"ou\" field.\n\n3. The User Initialization\
-          \ Script failed, usually for one of the following reasons:\nA. The password-generation\
-          \ script configured in the playbook inputs does not meet the password complexity\
-          \ policy of your organization.\nB. The user account could not be enabled\
-          \ for any reason. \n\nReview the error message in the incident layout and\
-          \ determine the cause of error.\nAfter fixing the issue, re-run this playbook."
+        simple: "The incident failed for one of two reasons:\n\n1. A connectivity issue with Active Directory. In this case, check your Active Directory instance configuration (are you using port 636?).\n\n2. User creation failed. Make sure you have a valid transformer script which determines the OU where the user will be created. \nThe transformer script should be in the Active Directory outgoing mapper, in the User Profile incident type and schema type, under the \"ou\" field.\n\n3. The User Initialization Script failed, usually for one of the following reasons:\nA. The password-generation script configured in the playbook inputs does not meet the password complexity policy of your organization.\nB. The user account could not be enabled for any reason. \n\nReview the error message in the incident layout and determine the cause of error.\nAfter fixing the issue, re-run this playbook."
     separatecontext: false
     view: |-
       {
@@ -350,8 +337,7 @@ tasks:
       id: 02227bb3-4e0f-4e0a-843c-0f2c95bbf581
       version: -1
       name: Clear the context
-      description: Deletes the context to ensure that if the playbook is re-run for
-        any reason, it will not be negatively affected by old data.
+      description: Deletes the context to ensure that if the playbook is re-run for any reason, it will not be negatively affected by old data.
       scriptName: DeleteContext
       type: regular
       iscommand: false
@@ -390,8 +376,7 @@ tasks:
       id: 8de4a529-c58b-4459-8dae-53cbdad3f812
       version: -1
       name: Deactivation Not Required
-      description: Creates an Active Directory user. This command requires a secure
-        connection (SSL,TLS).
+      description: Creates an Active Directory user. This command requires a secure connection (SSL,TLS).
       type: title
       iscommand: false
       brand: Active Directory Query v2
@@ -424,8 +409,7 @@ tasks:
       id: 871e9c44-1e35-419b-83f9-2d660b955d3e
       version: -1
       name: Display error information in the incident layout
-      description: Displays information about the error that occurred in the incident
-        layout.
+      description: Displays information about the error that occurred in the incident layout.
       script: Builtin|||setIncident
       type: regular
       iscommand: true
@@ -456,8 +440,7 @@ tasks:
     fieldMapping:
     - incidentfield: details
       output:
-        simple: There was an issue with the Active Directory user deactivation. See
-          the error section for more details.
+        simple: There was an issue with the Active Directory user deactivation. See the error section for more details.
     skipunavailable: false
     quietmode: 0
   "20":
@@ -496,8 +479,7 @@ tasks:
       id: 07b0691a-9537-4317-8066-b00cd9705e50
       version: -1
       name: Send an email to the IT confirming user deactivation
-      description: Sends an email to IT confirming that the user was disabled in Active
-        Directory.
+      description: Sends an email to IT confirming that the user was disabled in Active Directory.
       script: '|||send-mail'
       type: regular
       iscommand: true
@@ -614,8 +596,7 @@ tasks:
       id: 1f75e18f-7701-4617-8f5a-16459d882641
       version: -1
       name: Create a link to the current incident
-      description: Creates a link to the current incident, using the URL of this server
-        and the current incident ID.
+      description: Creates a link to the current incident, using the URL of this server and the current incident ID.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -781,16 +762,14 @@ tasks:
       id: 4e6c159f-d5ba-4603-8170-29e214294042
       version: -1
       name: Show an error and request inputs to be filled in
-      description: Please configure the required ServiceDeskEmail playbook input.
-        Then re-run the flow.
+      description: Please configure the required ServiceDeskEmail playbook input. Then re-run the flow.
       scriptName: PrintErrorEntry
       type: regular
       iscommand: false
       brand: ""
     scriptarguments:
       message:
-        simple: Please configure the required ITNotificationEmail playbook input.
-          Then re-run the playbook.
+        simple: Please configure the required ITNotificationEmail playbook input. Then re-run the playbook.
     reputationcalc: 1
     separatecontext: false
     view: |-
@@ -813,8 +792,7 @@ tasks:
       id: 41319f17-b55f-4f3f-8847-8e5314ee96eb
       version: -1
       name: Find duplicate incidents
-      description: Searches for older incidents that are duplicates of this incident
-        according to the user email field.
+      description: Searches for older incidents that are duplicates of this incident according to the user email field.
       scriptName: FindSimilarIncidents
       type: regular
       iscommand: false
@@ -893,8 +871,7 @@ tasks:
       id: 8e7c2aa0-d14b-4674-8e15-a8f5c26072cc
       version: -1
       name: Close duplicate incidents
-      description: Closes the duplicate incidents that were found, with a close reason
-        indicating that they are duplicates of the current incident.
+      description: Closes the duplicate incidents that were found, with a close reason indicating that they are duplicates of the current incident.
       script: Builtin|||closeInvestigation
       type: regular
       iscommand: true
@@ -1012,8 +989,7 @@ inputs:
 - key: ITNotificationEmail
   value: {}
   required: true
-  description: Email to confirm user deactivation and to notify about errors in the
-    provisioning process.
+  description: Email to confirm user deactivation and to notify about errors in the provisioning process.
   playbookInputQuery:
 outputs: []
 tests:

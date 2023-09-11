@@ -1,25 +1,31 @@
 This playbook creates users across all available organization applications from new hire events fetched from Workday.
 
 ## Dependencies
+
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
+
 * IAM - Create User In Active Directory
 * IAM - Send Provisioning Notification Email
 
 ### Integrations
+
 This playbook does not use any integrations.
 
 ### Scripts
+
 * SetAndHandleEmpty
 * GetEnabledInstances
 * Set
 
 ### Commands
+
 * setIndicator
 * iam-create-user
 
 ## Playbook Inputs
+
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
@@ -30,6 +36,7 @@ This playbook does not use any integrations.
 | NotificationEmailHTMLList | Optional - the name of the list that contains an HTML template for the email that will be sent to the users that need to be notified for successful app provisioning. <br/><br/>Note: the list of emails of users that need to be notified can be configured in the "app-provisioning-settings" list, for each instance configured, in fields called "create_user_email_notification_ids", <br/>"enable_user_email_notification_ids" and<br/>"disable_user_email_notification_ids". |  | Optional |
 
 ## Playbook Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |
@@ -49,5 +56,6 @@ This playbook does not use any integrations.
 | IAM.UserProfile | The user's profile. | unknown |
 
 ## Playbook Image
+
 ---
 ![IAM - New Hire](./../doc_files/IAM_-_New_Hire.png)

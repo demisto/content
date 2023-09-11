@@ -18,10 +18,10 @@
     "content": true,
     "group": 2,
     "hidden": false,
-	"associatedToAll": false,
-	"associatedTypes": [
-	 "User Profile"
-	],
+    "associatedToAll": false,
+    "associatedTypes": [
+        "User Profile"
+    ],
     "unmapped": false,
     "unsearchable": false,
     "caseInsensitive": true,

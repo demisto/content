@@ -1,24 +1,30 @@
 This playbook updates users in the organization by updating the incident information and User Profile indicator with the updated values, and updating the account in the supported apps. with the new information.
 
 ## Dependencies
+
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
+
 This playbook does not use any sub-playbooks.
 
 ### Integrations
+
 * Active Directory Query v2
 
 ### Scripts
+
 * SetAndHandleEmpty
 * GetEnabledInstances
 * Set
 
 ### Commands
+
 * iam-update-user
 * setIndicator
 
 ## Playbook Inputs
+
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
@@ -28,6 +34,7 @@ This playbook does not use any sub-playbooks.
 | SuccessfulVendors | Vendors where provisioning was successful. This input is used to ensure that on playbook reruns, provisioning will be retried only with vendors that previously failed. | IAM.Vendor.None | Optional |
 
 ## Playbook Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |
@@ -47,5 +54,6 @@ This playbook does not use any sub-playbooks.
 | IAM.UserProfile | The user's profile. | unknown |
 
 ## Playbook Image
+
 ---
 ![IAM - Update User](./../doc_files/IAM_-_Update_User.png)

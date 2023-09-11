@@ -18,8 +18,6 @@
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "required": false,
-    "script": "",
-    "fieldCalcScript": "",
     "sla": 0,
     "system": false,
     "threshold": 72,

@@ -1,10 +1,7 @@
 id: IAM - Activate User In Active Directory
 version: -1
 name: IAM - Activate User In Active Directory
-description: This playbook activates users in Active Directory. It generates a password,
-  sets the account with the new password, and enables the account. Additionally, it
-  sends out an email to the email provided in the "ITNotificationEmail" input which includes
-  the new user’s temporary password for preparing new hires’ environments.
+description: This playbook activates users in Active Directory. It generates a password, sets the account with the new password, and enables the account. Additionally, it sends out an email to the email provided in the "ITNotificationEmail" input which includes the new user’s temporary password for preparing new hires’ environments.
 starttaskid: "0"
 tasks:
   "0":
@@ -122,8 +119,7 @@ tasks:
       id: 40012949-d8ad-4140-8cc8-88fc6f7b5b0a
       version: -1
       name: Show an error and request inputs to be filled in
-      description: Please configure the required ITNotificationEmail playbook input.
-        Then re-run the flow.
+      description: Please configure the required ITNotificationEmail playbook input. Then re-run the flow.
       scriptName: PrintErrorEntry
       type: regular
       iscommand: false
@@ -133,8 +129,7 @@ tasks:
       - "7"
     scriptarguments:
       message:
-        simple: Please configure the required ITNotificationEmail playbook input. Then
-          re-run the playbook.
+        simple: Please configure the required ITNotificationEmail playbook input. Then re-run the playbook.
     reputationcalc: 1
     separatecontext: false
     view: |-
@@ -216,9 +211,7 @@ tasks:
       id: 574adc1d-98cc-4ed3-8edf-5097746ea2b7
       version: -1
       name: Set the User Profile's AD Account Status to Enabled
-      description: Updates the User Profile's AD Account Status field to Enabled,
-        to signify that the user is enabled in Active Directory. Also updates the
-        incident details.
+      description: Updates the User Profile's AD Account Status field to Enabled, to signify that the user is enabled in Active Directory. Also updates the incident details.
       script: Builtin|||setIndicator
       type: regular
       iscommand: true
@@ -259,8 +252,7 @@ tasks:
       id: 550daa2f-7e16-4bb4-8fc1-6ae5fb94994b
       version: -1
       name: Get the User Profile from XSOAR
-      description: Gets the User Profile indicator belonging to the employee from
-        XSOAR.
+      description: Gets the User Profile indicator belonging to the employee from XSOAR.
       script: Builtin|||findIndicators
       type: regular
       iscommand: true
@@ -377,8 +369,7 @@ tasks:
       id: 7ff21607-ab07-478b-80d7-073aa65f40d7
       version: -1
       name: Fix the current issue
-      description: Asks the user to fix and then re-run the IAM - New Hire incident
-        of the user.
+      description: Asks the user to fix and then re-run the IAM - New Hire incident of the user.
       scriptName: PrintErrorEntry
       type: regular
       iscommand: false
@@ -388,18 +379,7 @@ tasks:
       - "47"
     scriptarguments:
       message:
-        simple: "The incident failed for one of two reasons:\n\n1. A connectivity\
-          \ issue with Active Directory. In this case, check your Active Directory\
-          \ instance configuration (are you using port 636?).\n\n2. User creation\
-          \ failed. Make sure you have a valid transformer script which determines\
-          \ the OU where the user will be created. \nThe transformer script should\
-          \ be in the Active Directory outgoing mapper, in the User Profile incident\
-          \ type and schema type, under the \"ou\" field.\n\n3. The User Initialization\
-          \ Script failed, usually for one of the following reasons:\nA. The password-generation\
-          \ script configured in the playbook inputs does not meet the password complexity\
-          \ policy of your organization.\nB. The user account could not be enabled\
-          \ for any reason. \n\nReview the error message in the incident layout and\
-          \ determine the cause of error.\nAfter fixing the issue, re-run this playbook."
+        simple: "The incident failed for one of two reasons:\n\n1. A connectivity issue with Active Directory. In this case, check your Active Directory instance configuration (are you using port 636?).\n\n2. User creation failed. Make sure you have a valid transformer script which determines the OU where the user will be created. \nThe transformer script should be in the Active Directory outgoing mapper, in the User Profile incident type and schema type, under the \"ou\" field.\n\n3. The User Initialization Script failed, usually for one of the following reasons:\nA. The password-generation script configured in the playbook inputs does not meet the password complexity policy of your organization.\nB. The user account could not be enabled for any reason. \n\nReview the error message in the incident layout and determine the cause of error.\nAfter fixing the issue, re-run this playbook."
     separatecontext: false
     view: |-
       {
@@ -421,8 +401,7 @@ tasks:
       id: fbdcfd0a-baa9-49a4-8747-01119598d9fd
       version: -1
       name: Clear the context
-      description: Deletes the context to ensure that if the playbook is re-run for
-        any reason, it will not be negatively affected by old data.
+      description: Deletes the context to ensure that if the playbook is re-run for any reason, it will not be negatively affected by old data.
       scriptName: DeleteContext
       type: regular
       iscommand: false
@@ -545,8 +524,7 @@ tasks:
       id: 3d1a4c11-57cd-4526-8c30-8ea4b1cd5a2e
       version: -1
       name: Did user creation succeed?
-      description: Checks whether the script that initializes the user in Active Directory
-        executed successfully.
+      description: Checks whether the script that initializes the user in Active Directory executed successfully.
       type: condition
       iscommand: false
       brand: ""
@@ -591,8 +569,7 @@ tasks:
       id: a3818ad2-55fc-417a-8438-072595d11292
       version: -1
       name: Display error information in the incident layout
-      description: Displays information about the error that occurred in the incident
-        layout.
+      description: Displays information about the error that occurred in the incident layout.
       script: Builtin|||setIncident
       type: regular
       iscommand: true
@@ -623,8 +600,7 @@ tasks:
     fieldMapping:
     - incidentfield: details
       output:
-        simple: There was an issue with the Active Directory user creation or activation.
-          See the error section for more details.
+        simple: There was an issue with the Active Directory user creation or activation. See the error section for more details.
     skipunavailable: false
     quietmode: 0
   "20":
@@ -840,8 +816,7 @@ tasks:
       id: 5366c23e-8302-4fab-88e2-1ab48079aee7
       version: -1
       name: Create a link to the current incident
-      description: Creates a link to the current incident, using the URL of this server
-        and the current incident ID.
+      description: Creates a link to the current incident, using the URL of this server and the current incident ID.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -892,8 +867,7 @@ tasks:
       id: 592c7a98-6d26-4215-8c29-8b8ae855fa4d
       version: -1
       name: Wait before sending welcome email
-      description: Waits the amount of seconds specified in the SecondsToWaitBeforeWelcomeEmail
-        before sending the welcome email to the activated user and their manager.
+      description: Waits the amount of seconds specified in the SecondsToWaitBeforeWelcomeEmail before sending the welcome email to the activated user and their manager.
       scriptName: Sleep
       type: regular
       iscommand: false
@@ -1040,8 +1014,7 @@ tasks:
       id: a096fd0f-3517-46b4-8fee-9902be8634f0
       version: -1
       name: Is there an HTML template input?
-      description: Checks whether there is a playbook input for the HTML template
-        to use in the welcome email.
+      description: Checks whether there is a playbook input for the HTML template to use in the welcome email.
       type: condition
       iscommand: false
       brand: ""
@@ -1210,8 +1183,7 @@ tasks:
       id: 8c071cd2-8440-4165-88fb-c162de95cf77
       version: -1
       name: Find duplicate incidents
-      description: Searches for older incidents that are duplicates of this incident
-        according to the user email field.
+      description: Searches for older incidents that are duplicates of this incident according to the user email field.
       scriptName: FindSimilarIncidents
       type: regular
       iscommand: false
@@ -1290,8 +1262,7 @@ tasks:
       id: eccec0c6-d2e0-4295-8dbc-a234bffdce62
       version: -1
       name: Close duplicate incidents
-      description: Closes the duplicate incidents that were found, with a close reason
-        indicating that they are duplicates of the current incident.
+      description: Closes the duplicate incidents that were found, with a close reason indicating that they are duplicates of the current incident.
       script: Builtin|||closeInvestigation
       type: regular
       iscommand: true
@@ -1357,8 +1328,7 @@ tasks:
       id: 37808ba2-7e2f-442b-8cf2-872df87595d3
       version: -1
       name: Remove requirement to change password on next login
-      description: Changes the pwdLastSet attribute to -1, thus removing the restriction
-        of having to change the password at next user login.
+      description: Changes the pwdLastSet attribute to -1, thus removing the restriction of having to change the password at next user login.
       script: '|||ad-update-user'
       type: regular
       iscommand: true
@@ -1473,9 +1443,7 @@ tasks:
       id: b92ba8b6-bf7f-48ba-8422-aee8ede00a63
       version: -1
       name: Set the User Profile's AD Account Status to Disabled
-      description: Updates the User Profile's AD Account Status field to Enabled,
-        to signify that the user is enabled in Active Directory. Also updates the
-        incident details.
+      description: Updates the User Profile's AD Account Status field to Enabled, to signify that the user is enabled in Active Directory. Also updates the incident details.
       script: Builtin|||setIndicator
       type: regular
       iscommand: true
@@ -1575,29 +1543,23 @@ inputs:
   value:
     simple: "30"
   required: true
-  description: Determines how many seconds to wait before sending the welcome email
-    to the user and their manager after activation.
+  description: Determines how many seconds to wait before sending the welcome email to the user and their manager after activation.
   playbookInputQuery:
 - key: ManuallyApprovePastHireDates
   value:
     simple: "False"
   required: false
-  description: Whether to ask the user to manually approve activations for users who
-    have past hire dates (hire date is 1 day or more before the current date). Can
-    be True or False.
+  description: Whether to ask the user to manually approve activations for users who have past hire dates (hire date is 1 day or more before the current date). Can be True or False.
   playbookInputQuery:
 - key: WelcomeEmailHTMLList
   value: {}
   required: false
-  description: Optional - the name of an XSOAR list that contains an HTML template
-    for new hire welcome emails. If no list is specified, an email with a  generic
-    structure will be sent.
+  description: Optional - the name of an XSOAR list that contains an HTML template for new hire welcome emails. If no list is specified, an email with a  generic structure will be sent.
   playbookInputQuery:
 - key: SendEmail
   value: {}
   required: false
-  description: Whether to send a welcome email to newly activated users. Any value
-    other than "True" means no email will be sent.
+  description: Whether to send a welcome email to newly activated users. Any value other than "True" means no email will be sent.
   playbookInputQuery:
 outputs: []
 tests:

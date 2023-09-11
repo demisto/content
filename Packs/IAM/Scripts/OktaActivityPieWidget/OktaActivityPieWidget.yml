@@ -6,7 +6,7 @@ script: ''
 type: python
 tags:
 - dynamic-indicator-section
-comment: Activity PIE Widget
+comment: Activity PIE Widget.
 enabled: true
 scripttarget: 0
 subtype: python3

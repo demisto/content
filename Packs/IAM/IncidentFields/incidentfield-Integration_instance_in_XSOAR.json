@@ -18,7 +18,6 @@
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "required": false,
-    "script": "",
     "fieldCalcScript": "IAMGetAvailableInstances",
     "sla": 0,
     "system": false,

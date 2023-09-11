@@ -1,10 +1,7 @@
 id: IAM - Test Instances
 version: -1
 name: IAM - Test Instances
-description: This playbook is used to test configured Identity Lifecycle Management
-  integration instances by executing generic CRUD commands. If one of the instances
-  fails to execute a command, the playbook will fail and the errors are printed to
-  the Print Errors task at the end of the playbook.
+description: This playbook is used to test configured Identity Lifecycle Management integration instances by executing generic CRUD commands. If one of the instances fails to execute a command, the playbook will fail and the errors are printed to the Print Errors task at the end of the playbook.
 starttaskid: "0"
 tasks:
   "0":
@@ -191,8 +188,7 @@ tasks:
       id: c7ca5be1-7de3-4b5c-874d-e5aae94ea405
       version: -1
       name: Update User
-      description: Updates an existing user with the data passed in the user-profile
-        argument.
+      description: Updates an existing user with the data passed in the user-profile argument.
       script: '|||iam-update-user'
       type: regular
       iscommand: true
@@ -355,10 +351,7 @@ tasks:
       - "10"
     scriptarguments:
       message:
-        simple: "The following instances failed: ${IAM.Vendor(val.success==false).instanceName}
-          \nwith error codes: ${IAM.Vendor(val.success==false).errorCode}\nand the
-          following error messages: ${IAM.Vendor(val.success==false).errorMessage}.\n\nPlease
-          work to fix the errors and proceed only once the incident can be closed."
+        simple: "The following instances failed: ${IAM.Vendor(val.success==false).instanceName} \nwith error codes: ${IAM.Vendor(val.success==false).errorCode}\nand the following error messages: ${IAM.Vendor(val.success==false).errorMessage}.\n\nPlease work to fix the errors and proceed only once the incident can be closed."
     separatecontext: false
     view: |-
       {
@@ -519,9 +512,8 @@ inputs:
 - key: userprofile
   value: {}
   required: true
-  description: 'A test user profile json, e.g. ''{"email": "test@paloaltonetworks.com",
-    "givenname": "test", "surname": "test", "locationregion": "Americas"}''.'
-  playbookInputQuery: null
+  description: 'A test user profile json, e.g. ''{"email": "test@paloaltonetworks.com", "givenname": "test", "surname": "test", "locationregion": "Americas"}''.'
+  playbookInputQuery:
 outputs: []
 tests:
 - No tests (auto formatted)

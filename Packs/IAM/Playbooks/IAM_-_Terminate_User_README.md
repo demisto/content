@@ -1,26 +1,32 @@
 This playbook sets the user status to terminated in the organization by updating the incident information and User Profile indicator with values indicating termination, and disabling the account in the supported apps.
 
 ## Dependencies
+
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
+
 * IAM - Send Provisioning Notification Email
 
 ### Integrations
+
 * Okta IAM
 * Active Directory Query v2
 
 ### Scripts
+
 * GetEnabledInstances
 * SetAndHandleEmpty
 * Set
 
 ### Commands
+
 * iam-disable-user
 * iam-get-user
 * setIndicator
 
 ## Playbook Inputs
+
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
@@ -32,6 +38,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | NotificationEmailHTMLList | Optional - the name of the list that contains an HTML template for the email that will be sent to the users that need to be notified for successful app provisioning. The list of emails of users that need to be notified can be configured in the "app-provisioning-settings" list, for each instance configured, in fields called "create_user_email_notification_ids", <br/>"enable_user_email_notification_ids" and<br/>"disable_user_email_notification_ids". |  | Optional |
 
 ## Playbook Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |
@@ -52,5 +59,6 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | LeaveUserProfileAsProcessed | Whether the User Profile should stay as processed or not. Can be True or False. | unknown |
 
 ## Playbook Image
+
 ---
 ![IAM - Terminate User](./../doc_files/IAM_-_Terminate_User.png)

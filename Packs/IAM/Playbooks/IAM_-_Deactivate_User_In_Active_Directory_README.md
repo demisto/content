@@ -1,15 +1,19 @@
 This playbook deactivates users in Active Directory.
 
 ## Dependencies
+
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
+
 This playbook does not use any sub-playbooks.
 
 ### Integrations
+
 * Active Directory Query v2
 
 ### Scripts
+
 * SetAndHandleEmpty
 * DeleteContext
 * GetServerURL
@@ -17,6 +21,7 @@ This playbook does not use any sub-playbooks.
 * PrintErrorEntry
 
 ### Commands
+
 * findIndicators
 * iam-get-user
 * closeInvestigation
@@ -26,6 +31,7 @@ This playbook does not use any sub-playbooks.
 * setIncident
 
 ## Playbook Inputs
+
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
@@ -33,9 +39,11 @@ This playbook does not use any sub-playbooks.
 | ITNotificationEmail | Email to confirm user deactivation and to notify about errors in the provisioning process. |  | Required |
 
 ## Playbook Outputs
+
 ---
 There are no outputs for this playbook.
 
 ## Playbook Image
+
 ---
 ![IAM - Deactivate User In Active Directory](./../doc_files/IAM_-_Deactivate_User_In_Active_Directory.png)

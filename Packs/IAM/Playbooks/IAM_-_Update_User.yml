@@ -1,9 +1,7 @@
 id: IAM - Update User
 version: -1
 name: IAM - Update User
-description: This playbook updates users in the organization by updating the incident
-  information and User Profile indicator with the updated values, and updating the
-  account in the supported apps. with the new information.
+description: This playbook updates users in the organization by updating the incident information and User Profile indicator with the updated values, and updating the account in the supported apps. with the new information.
 starttaskid: "0"
 tasks:
   "0":
@@ -66,9 +64,7 @@ tasks:
       id: 900391e3-edb5-4367-820d-520cc8afbb34
       version: -1
       name: Update user profile information & incident type
-      description: Updates the User Profile indicator information in Cortex XSOAR
-        with the updated information retrieved from the Workday report. Also sets
-        the event action to Update.
+      description: Updates the User Profile indicator information in Cortex XSOAR with the updated information retrieved from the Workday report. Also sets the event action to Update.
       script: Builtin|||setIndicator
       type: regular
       iscommand: true
@@ -131,8 +127,7 @@ tasks:
       id: 6e06da3c-294c-4614-8b32-a160b62c1149
       version: -1
       name: Update user in in all apps & create if missing
-      description: Updates an existing user with the data passed in the user-profile
-        argument.
+      description: Updates an existing user with the data passed in the user-profile argument.
       script: '|||iam-update-user'
       type: regular
       iscommand: true
@@ -176,8 +171,7 @@ tasks:
       id: 66c55522-8be3-463c-8401-a08bc1a6692b
       version: -1
       name: Update the user in Active Directory
-      description: Updates an existing user with the data in the User Profile indicator
-        that is passed in the user-profile argument.
+      description: Updates an existing user with the data in the User Profile indicator that is passed in the user-profile argument.
       script: Active Directory Query v2|||iam-update-user
       type: regular
       iscommand: true
@@ -214,8 +208,7 @@ tasks:
       id: 84c84480-2289-4ed4-80c8-d11b45210d00
       version: -1
       name: Save instances for provisioning from list
-      description: Saves the instances names were provisioning should occur according
-        to the app-provisioning-settings list.
+      description: Saves the instances names were provisioning should occur according to the app-provisioning-settings list.
       scriptName: Set
       type: regular
       iscommand: false
@@ -271,8 +264,7 @@ tasks:
       id: 4bd5461e-63b3-4b86-852f-e7d44125af1c
       version: -1
       name: Are there instances where provisioning should occur?
-      description: Checks whether there is any instance where provisioning was not
-        yet run successfully and should run.
+      description: Checks whether there is any instance where provisioning was not yet run successfully and should run.
       type: condition
       iscommand: false
       brand: ""
@@ -310,8 +302,7 @@ tasks:
       id: 63b0052a-4208-4ace-8959-37c8b728ded4
       version: -1
       name: Was the user already provisioned in AD successfully?
-      description: Checks whether the user was already provisioned successfully to
-        Active Directory.
+      description: Checks whether the user was already provisioned successfully to Active Directory.
       type: condition
       iscommand: false
       brand: ""
@@ -458,16 +449,14 @@ inputs:
     complex:
       root: indicator
   required: false
-  description: The User Profile indicator, if the indicator was found on the system
-    during previous search.
+  description: The User Profile indicator, if the indicator was found on the system during previous search.
   playbookInputQuery:
 - key: CreatedIndicator
   value:
     complex:
       root: CreatedIndicator
   required: false
-  description: The created User Profile indicator, if created previously in the IAM
-    - Sync User playbook.
+  description: The created User Profile indicator, if created previously in the IAM - Sync User playbook.
   playbookInputQuery:
 - key: SuccessfulVendors
   value:
@@ -480,9 +469,7 @@ inputs:
               simple: IAM.Vendor.success
             iscontext: true
   required: false
-  description: Vendors where provisioning was successful. This input is used to ensure
-    that on playbook reruns, provisioning will be retried only with vendors that previously
-    failed.
+  description: Vendors where provisioning was successful. This input is used to ensure that on playbook reruns, provisioning will be retried only with vendors that previously failed.
   playbookInputQuery:
 outputs:
 - contextPath: IAM.Vendor

@@ -1,10 +1,7 @@
 id: IAM - App Update
 version: -1
 name: IAM - App Update
-description: Syncs user information in the apps to which they are assigned in Okta.
-  The playbook utilizes the "IAM Configuration" incident type to determine which integration
-  instance the update needs to execute in. In addition it tracks errors if there are
-  any, and assigns an analyst to review the incident when needed.
+description: Syncs user information in the apps to which they are assigned in Okta. The playbook utilizes the "IAM Configuration" incident type to determine which integration instance the update needs to execute in. In addition it tracks errors if there are any, and assigns an analyst to review the incident when needed.
 starttaskid: "0"
 tasks:
   "0":
@@ -98,8 +95,7 @@ tasks:
       id: 64e01d31-a1db-487d-85e4-7da930474349
       version: -1
       name: Did the update fail in any of the apps?
-      description: Checks whether the app sync process failed for any reason, by checking
-        whether IAM.Vendor.success is equal to "false".
+      description: Checks whether the app sync process failed for any reason, by checking whether IAM.Vendor.success is equal to "false".
       type: condition
       iscommand: false
       brand: ""
@@ -154,10 +150,7 @@ tasks:
       - "26"
     scriptarguments:
       message:
-        simple: "The following instance failed: ${IAM.Vendor(val.success==false).instanceName}\
-          \ \nwith error code: ${IAM.Vendor(val.success==false).errorCode}\nand the\
-          \ following error message: ${IAM.Vendor(val.success==false).errorMessage}.\n\
-          \nPlease fix the errors and proceed only once the incident can be closed."
+        simple: "The following instance failed: ${IAM.Vendor(val.success==false).instanceName} \nwith error code: ${IAM.Vendor(val.success==false).errorCode}\nand the following error message: ${IAM.Vendor(val.success==false).errorMessage}.\n\nPlease fix the errors and proceed only once the incident can be closed."
     reputationcalc: 1
     separatecontext: false
     view: |-
@@ -180,8 +173,7 @@ tasks:
       id: 8abc7706-136f-465b-8f91-f55582b819a7
       version: -1
       name: Assign a user to review the incident
-      description: Assigns a user to review the incident according to the playbook
-        inputs specified, or chooses them randomly if none were specified.
+      description: Assigns a user to review the incident according to the playbook inputs specified, or chooses them randomly if none were specified.
       scriptName: AssignAnalystToIncident
       type: regular
       iscommand: false
@@ -221,8 +213,7 @@ tasks:
       id: 8958e169-bc7d-49b7-8896-eaadd95587ae
       version: -1
       name: Were instance names found for the app IDs?
-      description: Checks whether an instance name that corresponds to the Okta App
-        ID was found in the app provisioning configuration.
+      description: Checks whether an instance name that corresponds to the Okta App ID was found in the app provisioning configuration.
       type: condition
       iscommand: false
       brand: ""
@@ -260,8 +251,7 @@ tasks:
       id: 307ee8da-9ad5-4abc-8e65-090a3035a554
       version: -1
       name: App-sync configuration required
-      description: Explains that the IAM - Configuration incident used for app-sync
-        was never created or is invalid. of instance name to Okta App ID.
+      description: Explains that the IAM - Configuration incident used for app-sync was never created or is invalid. of instance name to Okta App ID.
       scriptName: PrintErrorEntry
       type: regular
       iscommand: false
@@ -334,8 +324,7 @@ tasks:
       id: 4cd8c058-b48a-42d9-8467-a4227e5002a6
       version: -1
       name: Update user in the instance
-      description: Updates an existing user with the data passed in the user-profile
-        argument.
+      description: Updates an existing user with the data passed in the user-profile argument.
       script: '|||iam-update-user'
       type: regular
       iscommand: true
@@ -414,8 +403,7 @@ tasks:
       id: f7f161fb-ea2e-4be4-82da-84c13b6bd50b
       version: -1
       name: Was the User Profile found?
-      description: Checks whether a User Profile indicator with the specified email
-        was found in the system.
+      description: Checks whether a User Profile indicator with the specified email was found in the system.
       type: condition
       iscommand: false
       brand: ""
@@ -455,14 +443,7 @@ tasks:
       id: eb018e64-a391-4ad5-85db-6c674f442f3d
       version: -1
       name: Initial user sync required
-      description: The User Profile indicator was not found in Cortex XSOAR. Please
-        make sure that a User Profile indicator with the same email as the user that
-        was assigned to the app exists in the system. If the user does not exist,
-        make sure you follow the User Provisioning flow, as outlined in the ILM (Identity
-        Lifecycle Management) article before running this playbook. Once the initial
-        user sync is performed, you can delete the context in this incident using
-        the “DeleteContext” command, using the “all=yes” argument. After deleting
-        the context, please re-run this playbook.
+      description: The User Profile indicator was not found in Cortex XSOAR. Please make sure that a User Profile indicator with the same email as the user that was assigned to the app exists in the system. If the user does not exist, make sure you follow the User Provisioning flow, as outlined in the ILM (Identity Lifecycle Management) article before running this playbook. Once the initial user sync is performed, you can delete the context in this incident using the “DeleteContext” command, using the “all=yes” argument. After deleting the context, please re-run this playbook.
       scriptName: PrintErrorEntry
       type: regular
       iscommand: false
@@ -472,14 +453,7 @@ tasks:
       - "37"
     scriptarguments:
       message:
-        simple: 'The User Profile indicator was not found in Cortex XSOAR. Please
-          make sure that a User Profile indicator with the same email as the user
-          that was assigned to the app exists in the system. If the user does not
-          exist, make sure you follow the User Provisioning flow, as outlined in the
-          ILM (Identity Lifecycle Management) article before running this playbook.
-          Once the initial user sync is performed, you can delete the context in this
-          incident using the "DeleteContext" command, using the "all=yes" argument.
-          After deleting the context, please re-run this playbook. '
+        simple: 'The User Profile indicator was not found in Cortex XSOAR. Please make sure that a User Profile indicator with the same email as the user that was assigned to the app exists in the system. If the user does not exist, make sure you follow the User Provisioning flow, as outlined in the ILM (Identity Lifecycle Management) article before running this playbook. Once the initial user sync is performed, you can delete the context in this incident using the "DeleteContext" command, using the "all=yes" argument. After deleting the context, please re-run this playbook. '
     reputationcalc: 1
     separatecontext: false
     view: |-
@@ -502,8 +476,7 @@ tasks:
       id: 54b97c82-bac8-4b37-8d0b-e0dec560895e
       version: -1
       name: Get instance names by Okta App IDs
-      description: Saves the integration instance names that correspond to the Okta
-        App IDs that the user is assigned to in Okta, in a separate context key.
+      description: Saves the integration instance names that correspond to the Okta App IDs that the user is assigned to in Okta, in a separate context key.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -580,8 +553,7 @@ tasks:
       id: 95b4cff9-f45b-4d9e-84e2-67dae1cffc26
       version: -1
       name: Did the update succeed in any of the apps?
-      description: Checks whether the app update process succeeded in any integration,
-        by checking whether IAM.Vendor.success is equal to "true".
+      description: Checks whether the app update process succeeded in any integration, by checking whether IAM.Vendor.success is equal to "true".
       type: condition
       iscommand: false
       brand: ""
@@ -626,8 +598,7 @@ tasks:
       id: 2bca99d2-6f37-4c24-8e7f-c41877f0fcdb
       version: -1
       name: Display successful applications in layout
-      description: Displays information about applications where app-sync was successful
-        in the incident layout.
+      description: Displays information about applications where app-sync was successful in the incident layout.
       scriptName: SetGridField
       type: regular
       iscommand: false
@@ -726,8 +697,7 @@ tasks:
       id: c4bf57f3-7bfb-404f-8906-c02ab55c2d1d
       version: -1
       name: Display failed applications in layout
-      description: Displays information about the applications where app-sync failed
-        in a grid field in the incident layout.
+      description: Displays information about the applications where app-sync failed in a grid field in the incident layout.
       scriptName: SetGridField
       type: regular
       iscommand: false
@@ -770,8 +740,7 @@ tasks:
       id: c9201d61-1b8b-460c-8228-d345cdb98c32
       version: -1
       name: Save successful vendors
-      description: Saves instances that were successful in executing the CRUD commands
-        in a separate context key.
+      description: Saves instances that were successful in executing the CRUD commands in a separate context key.
       scriptName: Set
       type: regular
       iscommand: false
@@ -813,8 +782,7 @@ tasks:
       id: 9e2228fd-1949-4030-8d18-bd19469d5037
       version: -1
       name: Save failed vendors
-      description: Saves instances that were unsuccessful in executing the CRUD commands
-        in a separate context key.
+      description: Saves instances that were unsuccessful in executing the CRUD commands in a separate context key.
       scriptName: Set
       type: regular
       iscommand: false
@@ -856,8 +824,7 @@ tasks:
       id: e3df5ff3-47dd-428c-819d-1aa3011d465f
       version: -1
       name: Clear the context
-      description: Deletes the context to ensure that if the playbook is re-run for
-        any reason, it will not be negatively affected by old data.
+      description: Deletes the context to ensure that if the playbook is re-run for any reason, it will not be negatively affected by old data.
       scriptName: DeleteContext
       type: regular
       iscommand: false
@@ -890,9 +857,7 @@ tasks:
       id: 34ed30ba-7cf1-4c0c-80c9-262442a288eb
       version: -1
       name: Clear the layout grids
-      description: Deletes the data in the grid fields that are displayed in the incident
-        layout, to ensure that if the playbook is re-run for any reason, it will not
-        be negatively affected by old data.
+      description: Deletes the data in the grid fields that are displayed in the incident layout, to ensure that if the playbook is re-run for any reason, it will not be negatively affected by old data.
       script: Builtin|||setIncident
       type: regular
       iscommand: true
@@ -927,8 +892,7 @@ tasks:
       id: 1026f2b0-8db3-4e37-840c-cb51250e71cc
       version: -1
       name: Is the user assigned to any app?
-      description: Checks whether the user is currently assigned to any application.
-        in Okta.
+      description: Checks whether the user is currently assigned to any application. in Okta.
       type: condition
       iscommand: false
       brand: ""
@@ -1000,8 +964,7 @@ tasks:
       id: f5c4329f-b52f-4f76-8a3c-7c0561420050
       version: -1
       name: Are apps configured in the Okta Configuration incident?
-      description: Checks whether any apps were configured in an "IAM - Configuration"
-        incident.
+      description: Checks whether any apps were configured in an "IAM - Configuration" incident.
       type: condition
       iscommand: false
       brand: ""
@@ -1046,9 +1009,7 @@ tasks:
       brand: ""
     scriptarguments:
       message:
-        simple: Please verify that the Demisto Lock integration is installed and is
-          enabled. The integration is needed to ensure that the User Profile indicators
-          are updated correctly.
+        simple: Please verify that the Demisto Lock integration is installed and is enabled. The integration is needed to ensure that the User Profile indicators are updated correctly.
     separatecontext: false
     view: |-
       {
@@ -1070,8 +1031,7 @@ tasks:
       id: 761ce5a6-2a83-47f6-8638-fb9be3474663
       version: -1
       name: Is the Demisto Lock integration enabled?
-      description: Returns 'yes' if integration brand is available. Otherwise returns
-        'no'
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -1108,9 +1068,7 @@ tasks:
       id: 9a758947-5e84-4f15-888b-5fa85b72944a
       version: -1
       name: Lock the User Profile before modification
-      description: Locks changes for the User Profile by the UserID of the user in
-        Okta. This is used to prevent simultaneous changes to the same User Profile
-        which may result in incorrect updates.
+      description: Locks changes for the User Profile by the UserID of the user in Okta. This is used to prevent simultaneous changes to the same User Profile which may result in incorrect updates.
       script: '|||demisto-lock-get'
       type: regular
       iscommand: true
@@ -1283,8 +1241,7 @@ inputs:
 - key: UserRoleToAssignForFailures
   value: {}
   required: false
-  description: The Cortex XSOAR role from which to assign users to the incident when
-    a CRUD operation fails. This can be left empty to assign users from all roles.
+  description: The Cortex XSOAR role from which to assign users to the incident when a CRUD operation fails. This can be left empty to assign users from all roles.
   playbookInputQuery:
 - key: UserAssignmentMethod
   value: {}
@@ -1297,9 +1254,7 @@ inputs:
 - key: AssignOnlyOnCall
   value: {}
   required: false
-  description: Determines whether to assign only users that are currently on a shift
-    to failed incidents. Set to "true" to assign only users that are currently working,
-    or set to "false" or leave empty to assign any user.
+  description: Determines whether to assign only users that are currently on a shift to failed incidents. Set to "true" to assign only users that are currently working, or set to "false" or leave empty to assign any user.
   playbookInputQuery:
 outputs: []
 tests:

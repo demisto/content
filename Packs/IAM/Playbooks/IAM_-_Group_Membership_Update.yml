@@ -1,8 +1,7 @@
 id: IAM - Group Membership Update
 version: -1
 name: IAM - Group Membership Update
-description: Updates user permissions in apps according to their group memberships
-  in Okta.
+description: Updates user permissions in apps according to their group memberships in Okta.
 starttaskid: "0"
 tasks:
   "0":
@@ -40,8 +39,7 @@ tasks:
       id: e56d42b0-736e-4e5b-8470-7d4a15bcdf6b
       version: -1
       name: Clear the context
-      description: Deletes the context to ensure that if the playbook is re-run for
-        any reason, it will not be negatively affected by old data.
+      description: Deletes the context to ensure that if the playbook is re-run for any reason, it will not be negatively affected by old data.
       scriptName: DeleteContext
       type: regular
       iscommand: false
@@ -164,8 +162,7 @@ tasks:
       id: 68db22a8-ec46-4924-8c11-40da5367d29d
       version: -1
       name: Ask admins before syncing new group membership
-      description: Sends an email to the admins asking whether the change of permissions
-        to the user is approved in the app.
+      description: Sends an email to the admins asking whether the change of permissions to the user is approved in the app.
       type: condition
       iscommand: false
       brand: ""
@@ -318,8 +315,7 @@ tasks:
       id: 219fb12f-f822-409b-83c3-a2706390735d
       version: -1
       name: Was the User Profile found?
-      description: Checks whether a User Profile indicator with the specified email
-        was found in the system.
+      description: Checks whether a User Profile indicator with the specified email was found in the system.
       type: condition
       iscommand: false
       brand: ""
@@ -402,8 +398,7 @@ tasks:
       id: 5fe5e6f3-22ce-4a2a-8d7b-3e360a49c6d9
       version: -1
       name: Update the user permissions in the app
-      description: Updates an existing user with the data passed in the user-profile
-        argument.
+      description: Updates an existing user with the data passed in the user-profile argument.
       script: '|||iam-update-user'
       type: regular
       iscommand: true
@@ -467,14 +462,7 @@ tasks:
       id: bcd97969-aa2d-45b9-8ecc-d8c6be67a316
       version: -1
       name: Initial user sync required
-      description: The User Profile indicator was not found in Cortex XSOAR. Please
-        make sure that a User Profile indicator with the same email as the user that
-        was assigned to the app exists in the system. If the user does not exist,
-        make sure you follow the User Provisioning flow, as outlined in the ILM (Identity
-        Lifecycle Management) article before running this playbook. Once the initial
-        user sync is performed, you can delete the context in this incident using
-        the “DeleteContext” command, using the “all=yes” argument. After deleting
-        the context, please re-run this playbook.
+      description: The User Profile indicator was not found in Cortex XSOAR. Please make sure that a User Profile indicator with the same email as the user that was assigned to the app exists in the system. If the user does not exist, make sure you follow the User Provisioning flow, as outlined in the ILM (Identity Lifecycle Management) article before running this playbook. Once the initial user sync is performed, you can delete the context in this incident using the “DeleteContext” command, using the “all=yes” argument. After deleting the context, please re-run this playbook.
       scriptName: PrintErrorEntry
       type: regular
       iscommand: false
@@ -484,14 +472,7 @@ tasks:
       - "77"
     scriptarguments:
       message:
-        simple: 'The User Profile indicator was not found in Cortex XSOAR. Please
-          make sure that a User Profile indicator with the same email as the user
-          that was assigned to the app exists in the system. If the user does not
-          exist, make sure you follow the User Provisioning flow, as outlined in the
-          ILM (Identity Lifecycle Management) article before running this playbook.
-          Once the initial user sync is performed, you can delete the context in this
-          incident using the "DeleteContext" command, using the "all=yes" argument.
-          After deleting the context, please re-run this playbook. '
+        simple: 'The User Profile indicator was not found in Cortex XSOAR. Please make sure that a User Profile indicator with the same email as the user that was assigned to the app exists in the system. If the user does not exist, make sure you follow the User Provisioning flow, as outlined in the ILM (Identity Lifecycle Management) article before running this playbook. Once the initial user sync is performed, you can delete the context in this incident using the "DeleteContext" command, using the "all=yes" argument. After deleting the context, please re-run this playbook. '
     reputationcalc: 1
     separatecontext: false
     view: |-
@@ -514,8 +495,7 @@ tasks:
       id: 20eaf660-b135-4046-83d9-1ea61f7d7efa
       version: -1
       name: Assign a user to review the incident
-      description: Assigns a user to review the incident according to the playbook
-        inputs specified, or chooses them randomly if none were specified.
+      description: Assigns a user to review the incident according to the playbook inputs specified, or chooses them randomly if none were specified.
       scriptName: AssignAnalystToIncident
       type: regular
       iscommand: false
@@ -555,8 +535,7 @@ tasks:
       id: c9b6aadb-8d69-47bf-8ca4-4ee42620339f
       version: -1
       name: Did the update fail?
-      description: Checks whether the app sync process failed for any reason, by checking
-        whether IAM.Vendor.success is equal to "false".
+      description: Checks whether the app sync process failed for any reason, by checking whether IAM.Vendor.success is equal to "false".
       type: condition
       iscommand: false
       brand: ""
@@ -607,10 +586,7 @@ tasks:
       - "75"
     scriptarguments:
       message:
-        simple: "The following instance failed: ${IAM.Vendor(val.success==false).instanceName}\
-          \ \nwith error code: ${IAM.Vendor(val.success==false).errorCode}\nand the\
-          \ following error message: ${IAM.Vendor(val.success==false).errorMessage}.\n\
-          \nPlease fix the errors and proceed only once the incident can be closed."
+        simple: "The following instance failed: ${IAM.Vendor(val.success==false).instanceName} \nwith error code: ${IAM.Vendor(val.success==false).errorCode}\nand the following error message: ${IAM.Vendor(val.success==false).errorMessage}.\n\nPlease fix the errors and proceed only once the incident can be closed."
     reputationcalc: 1
     separatecontext: false
     view: |-
@@ -648,8 +624,7 @@ inputs:
 - key: UserRoleToAssignForFailures
   value: {}
   required: false
-  description: The Cortex XSOAR role from which to assign users to the incident when
-    a CRUD operation fails. This can be left empty to assign users from all roles.
+  description: The Cortex XSOAR role from which to assign users to the incident when a CRUD operation fails. This can be left empty to assign users from all roles.
   playbookInputQuery:
 - key: UserAssignmentMethod
   value: {}
@@ -662,9 +637,7 @@ inputs:
 - key: AssignOnlyOnCall
   value: {}
   required: false
-  description: Determines whether to assign only users that are currently on a shift
-    to failed incidents. Set to "true" to assign only users that are currently working,
-    or set to "false" or leave empty to assign any user.
+  description: Determines whether to assign only users that are currently on a shift to failed incidents. Set to "true" to assign only users that are currently working, or set to "false" or leave empty to assign any user.
   playbookInputQuery:
 - key: AdminEmail
   value: {}

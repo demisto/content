@@ -1,9 +1,11 @@
 This playbook runs on fetched Workday events. The events are changes to employee data, which in turn require a CRUD operation across your organization's apps. The playbook examines the data received from Workday, and provisions the changes in a User Profile indicator in Cortex XSOAR as well as all the supported IAM integrations that are active.
 
 ## Dependencies
+
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
+
 * IAM - Rehire User
 * IAM - Custom User Sync
 * IAM - New Hire
@@ -11,9 +13,11 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 * IAM - Update User
 
 ### Integrations
+
 This playbook does not use any integrations.
 
 ### Scripts
+
 * AssignAnalystToIncident
 * DeleteContext
 * SetGridField
@@ -24,6 +28,7 @@ This playbook does not use any integrations.
 * GetServerURL
 
 ### Commands
+
 * findIndicators
 * createNewIndicator
 * setIncident
@@ -33,6 +38,7 @@ This playbook does not use any integrations.
 * setIndicator
 
 ## Playbook Inputs
+
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
@@ -44,9 +50,11 @@ This playbook does not use any integrations.
 | AssignOnlyOnCall | Determines whether to assign only users that are currently on a shift to failed incidents. Set to "true" to assign only users that are currently working, or set to "false" or leave empty to assign any user. |  | Optional |
 
 ## Playbook Outputs
+
 ---
 There are no outputs for this playbook.
 
 ## Playbook Image
+
 ---
 ![IAM - Sync User](./../doc_files/IAM_-_Sync_User.png)

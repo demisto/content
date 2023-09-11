@@ -1,8 +1,7 @@
 id: IAM - New Hire
 version: -1
 name: IAM - New Hire
-description: This playbook creates users across all available organization applications
-  from new hire events fetched from Workday.
+description: This playbook creates users across all available organization applications from new hire events fetched from Workday.
 starttaskid: "0"
 tasks:
   "0":
@@ -65,8 +64,7 @@ tasks:
       id: 515fc308-6c46-498d-81ce-b356a1096e3d
       version: -1
       name: Initialize User Profile & update incident type
-      description: Sets the event action to Create, and sets the AD Account Status
-        to Pending.
+      description: Sets the event action to Create, and sets the AD Account Status to Pending.
       script: Builtin|||setIndicator
       type: regular
       iscommand: true
@@ -119,8 +117,7 @@ tasks:
       id: 15eb34da-6612-4c4b-8c3d-d21ea6cde04c
       version: -1
       name: Create and enable user in all apps
-      description: Creates a user in all the apps where "create_user_group" is defined
-        as "All" in the XSOAR list "app-provisioning-settings".
+      description: Creates a user in all the apps where "create_user_group" is defined as "All" in the XSOAR list "app-provisioning-settings".
       script: '|||iam-create-user'
       type: regular
       iscommand: true
@@ -159,8 +156,7 @@ tasks:
       id: 0aa362c0-075e-492b-8e97-fe8460659986
       version: -1
       name: Save instances for provisioning from list
-      description: Saves the instances names were provisioning should occur according
-        to the app-provisioning-settings list.
+      description: Saves the instances names were provisioning should occur according to the app-provisioning-settings list.
       scriptName: Set
       type: regular
       iscommand: false
@@ -225,8 +221,7 @@ tasks:
       id: 4140dd6a-c7bd-4f16-8087-34d509cd2410
       version: -1
       name: Are there instances where provisioning should occur?
-      description: Checks whether there is any instance where provisioning was not
-        yet run successfully and should run.
+      description: Checks whether there is any instance where provisioning was not yet run successfully and should run.
       type: condition
       iscommand: false
       brand: ""
@@ -355,8 +350,7 @@ tasks:
       id: aa11151d-9707-4c03-8563-b5774b300803
       version: -1
       name: Save instance data for instances that need notification
-      description: Set a value in context under the key you entered. If no value is
-        entered, the script doesn't do anything.
+      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -401,8 +395,7 @@ tasks:
       id: ca2e9b49-d571-448f-8b63-cea036c06973
       version: -1
       name: Save instances where provisioning was successful
-      description: Saves vendors where provisioning was successful in a separate context
-        key so provisioning notification will apply only in cases of successful provisioning.
+      description: Saves vendors where provisioning was successful in a separate context key so provisioning notification will apply only in cases of successful provisioning.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -780,8 +773,7 @@ inputs:
     complex:
       root: CreatedIndicator
   required: false
-  description: The created User Profile indicator, if created previously in the IAM
-    - Sync User playbook.
+  description: The created User Profile indicator, if created previously in the IAM - Sync User playbook.
   playbookInputQuery:
 - key: indicator
   value:
@@ -801,9 +793,7 @@ inputs:
               simple: IAM.Vendor.success
             iscontext: true
   required: false
-  description: Vendors where provisioning was successful. This input is used to ensure
-    that on playbook reruns, provisioning will be retried only with vendors that previously
-    failed.
+  description: Vendors where provisioning was successful. This input is used to ensure that on playbook reruns, provisioning will be retried only with vendors that previously failed.
   playbookInputQuery:
 outputs:
 - contextPath: IAM.Vendor

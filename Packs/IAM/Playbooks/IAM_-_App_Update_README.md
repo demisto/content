@@ -1,15 +1,19 @@
 Syncs user information in the apps to which they are assigned in Okta. The playbook utilizes the "IAM Configuration" incident type to determine which integration instance the update needs to execute in. In addition it tracks errors if there are any, and assigns an analyst to review the incident when needed.
 
 ## Dependencies
+
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
+
 This playbook does not use any sub-playbooks.
 
 ### Integrations
+
 This playbook does not use any integrations.
 
 ### Scripts
+
 * AssignAnalystToIncident
 * PrintErrorEntry
 * IAMUpdateApplicationsField
@@ -20,6 +24,7 @@ This playbook does not use any integrations.
 * SetGridField
 
 ### Commands
+
 * setIndicator
 * okta-iam-list-user-applications
 * closeInvestigation
@@ -31,6 +36,7 @@ This playbook does not use any integrations.
 * iam-update-user
 
 ## Playbook Inputs
+
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
@@ -40,9 +46,11 @@ This playbook does not use any integrations.
 | AssignOnlyOnCall | Determines whether to assign only users that are currently on a shift to failed incidents. Set to "true" to assign only users that are currently working, or set to "false" or leave empty to assign any user. |  | Optional |
 
 ## Playbook Outputs
+
 ---
 There are no outputs for this playbook.
 
 ## Playbook Image
+
 ---
 ![IAM - App Update](./../doc_files/IAM_-_App_Update.png)

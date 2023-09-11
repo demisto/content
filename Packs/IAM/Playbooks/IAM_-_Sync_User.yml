@@ -1,11 +1,7 @@
 id: IAM - Sync User
 version: -1
 name: IAM - Sync User
-description: This playbook runs on fetched Workday events. The events are changes
-  to employee data, which in turn require a CRUD operation across your organization's
-  apps. The playbook examines the data received from Workday, and provisions the changes
-  in a User Profile indicator in Cortex XSOAR as well as all the supported IAM integrations
-  that are active.
+description: This playbook runs on fetched Workday events. The events are changes to employee data, which in turn require a CRUD operation across your organization's apps. The playbook examines the data received from Workday, and provisions the changes in a User Profile indicator in Cortex XSOAR as well as all the supported IAM integrations that are active.
 starttaskid: "0"
 tasks:
   "0":
@@ -118,8 +114,7 @@ tasks:
       id: 4fc46f01-af9c-40b7-870c-0a436d26e023
       version: -1
       name: Search user profile in XSOAR
-      description: Searches for the User Profile indicator by the user's email or
-        the user's employee ID in Cortex XSOAR.
+      description: Searches for the User Profile indicator by the user's email or the user's employee ID in Cortex XSOAR.
       script: Builtin|||findIndicators
       type: regular
       iscommand: true
@@ -133,8 +128,7 @@ tasks:
       fromdate: {}
       page: {}
       query:
-        simple: type:"User Profile" (employeeid:"${incident.employeeid}" or email:"${incident.email}")
-          and temporaryuserprofile:F
+        simple: type:"User Profile" (employeeid:"${incident.employeeid}" or email:"${incident.email}") and temporaryuserprofile:F
       size: {}
       todate: {}
       value: {}
@@ -160,8 +154,7 @@ tasks:
       id: 59e1dda2-ef8b-45e3-8fa6-70095455d3c2
       version: -1
       name: Does the user profile exist?
-      description: Checks if a User Profile indicator with the same email that was
-        searched was found in Cortex XSOAR.
+      description: Checks if a User Profile indicator with the same email that was searched was found in Cortex XSOAR.
       type: condition
       iscommand: false
       brand: ""
@@ -409,8 +402,7 @@ tasks:
       id: c9cd0bc1-c164-444c-8fee-b7b6ce60b387
       version: -1
       name: Review and fix issues in the incident
-      description: Shows an entry with the error details, explaining which instance
-        failed and why.
+      description: Shows an entry with the error details, explaining which instance failed and why.
       scriptName: PrintErrorEntry
       type: regular
       iscommand: false
@@ -420,11 +412,7 @@ tasks:
       - "93"
     scriptarguments:
       message:
-        simple: "The following instances failed: ${IAM.Vendor(val.success==false).instanceName}\
-          \ \nwith error codes: ${IAM.Vendor(val.success==false).errorCode}\nand the\
-          \ following error messages: ${IAM.Vendor(val.success==false).errorMessage}.\n\
-          \nPlease work to fix the errors and proceed only once the incident can be\
-          \ closed."
+        simple: "The following instances failed: ${IAM.Vendor(val.success==false).instanceName} \nwith error codes: ${IAM.Vendor(val.success==false).errorCode}\nand the following error messages: ${IAM.Vendor(val.success==false).errorMessage}.\n\nPlease work to fix the errors and proceed only once the incident can be closed."
     separatecontext: false
     view: |-
       {
@@ -446,8 +434,7 @@ tasks:
       id: 525e9e3c-f8e3-4ec6-8446-113446ccfe64
       version: -1
       name: Save failed instances
-      description: Saves instances that were unsuccessful in executing the CRUD commands
-        in a separate context key.
+      description: Saves instances that were unsuccessful in executing the CRUD commands in a separate context key.
       scriptName: Set
       type: regular
       iscommand: false
@@ -488,8 +475,7 @@ tasks:
       id: c08793fc-c43f-4953-8e7c-d632d10234b2
       version: -1
       name: Display failed instances in incident layout
-      description: Displays instances that were unsuccessful in executing the CRUD
-        commands in the incident layout.
+      description: Displays instances that were unsuccessful in executing the CRUD commands in the incident layout.
       scriptName: SetGridField
       type: regular
       iscommand: false
@@ -531,8 +517,7 @@ tasks:
       id: 37175154-50d1-4f1a-8273-a13177233260
       version: -1
       name: Were any of the actions successful?
-      description: Checks whether there were successful CRUD operations that were
-        executed so that the data can be saved in the incident layout.
+      description: Checks whether there were successful CRUD operations that were executed so that the data can be saved in the incident layout.
       type: condition
       iscommand: false
       brand: ""
@@ -657,8 +642,7 @@ tasks:
       id: d76b1e17-aada-4dfe-85bf-d809f3588480
       version: -1
       name: Display successful instances in incident layout
-      description: Displays instances that were successful in executing the CRUD commands
-        in the incident layout.
+      description: Displays instances that were successful in executing the CRUD commands in the incident layout.
       scriptName: SetGridField
       type: regular
       iscommand: false
@@ -750,8 +734,7 @@ tasks:
       id: 4c4adb20-d72a-494a-83bc-fa963d3ba60f
       version: -1
       name: Show an error and request additional data to be filled in
-      description: Please configure the required playbook inputs. Then re-run the
-        flow.
+      description: Please configure the required playbook inputs. Then re-run the flow.
       scriptName: PrintErrorEntry
       type: regular
       iscommand: false
@@ -761,9 +744,7 @@ tasks:
       - "129"
     scriptarguments:
       message:
-        simple: Please make sure that the required playbook inputs and Workday fields
-          as stated in the ILM Article documentation are mapped in the mapper. Then
-          re-run this playbook.
+        simple: Please make sure that the required playbook inputs and Workday fields as stated in the ILM Article documentation are mapped in the mapper. Then re-run this playbook.
     reputationcalc: 1
     separatecontext: false
     view: |-
@@ -786,8 +767,7 @@ tasks:
       id: d8cdfb5d-5e8d-4776-8e4d-805e1ef0ac82
       version: -1
       name: Clear the context
-      description: Deletes the context to ensure that if the playbook is re-run for
-        any reason, it will not be negatively affected by old data.
+      description: Deletes the context to ensure that if the playbook is re-run for any reason, it will not be negatively affected by old data.
       scriptName: DeleteContext
       type: regular
       iscommand: false
@@ -822,8 +802,7 @@ tasks:
       id: 9d8100ee-2166-4d83-842e-6c62b1e60ffe
       version: -1
       name: Find duplicate incidents
-      description: Searches for older incidents that are duplicates of this incident
-        according to the user email field.
+      description: Searches for older incidents that are duplicates of this incident according to the user email field.
       scriptName: FindSimilarIncidents
       type: regular
       iscommand: false
@@ -833,8 +812,7 @@ tasks:
       - "125"
     scriptarguments:
       filterQuery:
-        simple: type:"IAM - Sync User" or type:"IAM - New Hire" or type:"IAM - Update
-          User" or type:"IAM - Terminate User" or type:"IAM - Rehire User"
+        simple: type:"IAM - Sync User" or type:"IAM - New Hire" or type:"IAM - Update User" or type:"IAM - Terminate User" or type:"IAM - Rehire User"
       hoursBack:
         simple: "48"
       ignoreClosedIncidents:
@@ -903,8 +881,7 @@ tasks:
       id: d33f3f9c-157d-4554-8c2a-8b8171b7b984
       version: -1
       name: Close duplicate incidents
-      description: Closes the duplicate incidents that were found, with a close reason
-        indicating that they are duplicates of the current incident.
+      description: Closes the duplicate incidents that were found, with a close reason indicating that they are duplicates of the current incident.
       script: Builtin|||closeInvestigation
       type: regular
       iscommand: true
@@ -1026,9 +1003,7 @@ tasks:
       id: 0965ccd8-3ecb-4e0e-8d4e-f6b050a80694
       version: -1
       name: Clear the layout grids
-      description: Deletes the data in the grid fields that are displayed in the incident
-        layout, to ensure that if the playbook is re-run for any reason, it will not
-        be negatively affected by old data.
+      description: Deletes the data in the grid fields that are displayed in the incident layout, to ensure that if the playbook is re-run for any reason, it will not be negatively affected by old data.
       script: Builtin|||setIncident
       type: regular
       iscommand: true
@@ -1252,8 +1227,7 @@ tasks:
       id: 6ee4dd66-c537-4164-8fba-11d3b517e3b4
       version: -1
       name: Delete the indicator from context
-      description: Deletes the found indicator from the context so that the IAM-command-specific
-        playbooks won't attempt to perform actions on the older, deleted indicator.
+      description: Deletes the found indicator from the context so that the IAM-command-specific playbooks won't attempt to perform actions on the older, deleted indicator.
       scriptName: DeleteContext
       type: regular
       iscommand: false
@@ -1442,9 +1416,7 @@ tasks:
       id: 799a6d7b-c458-4cfc-8fe3-8e2d5bb29d76
       version: -1
       name: Save successful applications as a separate context key
-      description: Saves vendors where provisioning was successful in a separate context
-        key which will be saved throughout playbook re-runs. This will ensure that
-        when the playbook is re-run, only failed ones will run again.
+      description: Saves vendors where provisioning was successful in a separate context key which will be saved throughout playbook re-runs. This will ensure that when the playbook is re-run, only failed ones will run again.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1518,8 +1490,7 @@ tasks:
       id: 52c10d85-7330-4725-8755-2959dbeafa99
       version: -1
       name: Is this a partial name match?
-      description: Checks whether the incident is a partial name match by checking
-        if there is a merged User Profile available for provisioning.
+      description: Checks whether the incident is a partial name match by checking if there is a merged User Profile available for provisioning.
       type: condition
       iscommand: false
       brand: ""
@@ -1566,10 +1537,7 @@ tasks:
       id: 31c6edfa-d609-45f4-8649-d09b1a73b2a2
       version: -1
       name: Change incident type and user data to provision
-      description: Changes the incident type to IAM - Rehire User or IAM - Update
-        User according to the status of the Active Directory account, and changes
-        the data that is provisioned to ensure that the update command knows which
-        user to update rather than create a new one.
+      description: Changes the incident type to IAM - Rehire User or IAM - Update User according to the status of the Active Directory account, and changes the data that is provisioned to ensure that the update command knows which user to update rather than create a new one.
       script: Builtin|||setIncident
       type: regular
       iscommand: true
@@ -1737,9 +1705,7 @@ tasks:
       id: 1c843dff-ae78-4c15-8a10-8aefe00e3d44
       version: -1
       name: Create new user profile in XSOAR and set as processed
-      description: Creates a new User Profile indicator with the user's data received
-        from Workday, in Cortex XSOAR. Also sets the AD Account Status field of the
-        User Profile to Pending.
+      description: Creates a new User Profile indicator with the user's data received from Workday, in Cortex XSOAR. Also sets the AD Account Status field of the User Profile to Pending.
       script: Builtin|||createNewIndicator
       type: regular
       iscommand: true
@@ -1822,8 +1788,7 @@ tasks:
       id: 88e09b99-c655-4156-86f6-99c6a584fa9e
       version: -1
       name: Search user profile in XSOAR with the old conflicting email
-      description: Searches for the User Profile indicator by the user's email or
-        the user's employee ID in Cortex XSOAR.
+      description: Searches for the User Profile indicator by the user's email or the user's employee ID in Cortex XSOAR.
       script: Builtin|||findIndicators
       type: regular
       iscommand: true
@@ -1858,8 +1823,7 @@ tasks:
       id: e2a310b3-fd76-49a3-8f3a-4db3388dc395
       version: -1
       name: Delete the indicator from context
-      description: Deletes the found indicator from the context so that the IAM-command-specific
-        playbooks won't attempt to perform actions on the older, deleted indicator.
+      description: Deletes the found indicator from the context so that the IAM-command-specific playbooks won't attempt to perform actions on the older, deleted indicator.
       scriptName: DeleteContext
       type: regular
       iscommand: false
@@ -1892,11 +1856,7 @@ tasks:
       id: 29d3d797-35cf-4d9c-83af-92b580f6a810
       version: -1
       name: Mark User Profile as being processed
-      description: Marks the existing User Profile as processed. As long as there
-        are no changes in the report, new incidents for this User Profile won't be
-        created. This is also used to prevent the previous User Profile from being
-        detected as "orphan" (because its email was changed, so it doesn't appear
-        in the report with the same email anymore).
+      description: Marks the existing User Profile as processed. As long as there are no changes in the report, new incidents for this User Profile won't be created. This is also used to prevent the previous User Profile from being detected as "orphan" (because its email was changed, so it doesn't appear in the report with the same email anymore).
       script: Builtin|||setIndicator
       type: regular
       iscommand: true
@@ -1932,9 +1892,7 @@ tasks:
       id: acfd0696-1e32-43f4-8b83-98b32a5a7ad2
       version: -1
       name: Create new user profile in XSOAR, set as processed & temp
-      description: Creates a new User Profile indicator with the user's data received
-        from Workday, in Cortex XSOAR. Also sets the AD Account Status field of the
-        User Profile to Pending.
+      description: Creates a new User Profile indicator with the user's data received from Workday, in Cortex XSOAR. Also sets the AD Account Status field of the User Profile to Pending.
       script: Builtin|||createNewIndicator
       type: regular
       iscommand: true
@@ -1981,12 +1939,7 @@ tasks:
       id: 39837c28-3b88-436b-8850-7caebc29b2e7
       version: -1
       name: Waiting to free up the User Profile email
-      description: "The email ${incident.email} is now occupied and cannot be used\
-        \ for any new employee. \nYou should proceed with this incident only after\
-        \ you fix the issue in the HR system report.\nYou should revert the change\
-        \ back from the new email ${incident.email} to the old email ${indicator.[0].value}.\n\
-        After reverting the change in the report, ${incident.email} will be free to\
-        \ use by other employees again."
+      description: "The email ${incident.email} is now occupied and cannot be used for any new employee. \nYou should proceed with this incident only after you fix the issue in the HR system report.\nYou should revert the change back from the new email ${incident.email} to the old email ${indicator.[0].value}.\nAfter reverting the change in the report, ${incident.email} will be free to use by other employees again."
       type: condition
       iscommand: false
       brand: ""
@@ -2050,8 +2003,7 @@ tasks:
       id: 6e85e4fd-910a-4f9d-8fc9-d4738d3cfd57
       version: -1
       name: Fix the report before proceeding
-      description: Make sure that the irrelevant report entry is removed in the HR
-        system before proceeding.
+      description: Make sure that the irrelevant report entry is removed in the HR system before proceeding.
       type: condition
       iscommand: false
       brand: ""
@@ -2141,9 +2093,7 @@ tasks:
       id: 37a41bbf-b798-43d0-8e43-16cb24f455fd
       version: -1
       name: IAM - Terminate User
-      description: This playbook sets the user status to terminated in the organization
-        by updating the incident information and User Profile indicator with values
-        indicating termination, and disabling the account in the supported apps.
+      description: This playbook sets the user status to terminated in the organization by updating the incident information and User Profile indicator with values indicating termination, and disabling the account in the supported apps.
       playbookName: IAM - Terminate User
       type: playbook
       iscommand: false
@@ -2192,9 +2142,7 @@ tasks:
       id: d5b6bf45-3ef3-444b-8ea5-0af4fced2b82
       version: -1
       name: IAM - Rehire User
-      description: This playbook set a user's status in the organization to rehired
-        by updating the incident information and User Profile indicator with values
-        indicating a rehire, and enabling the account in the supported apps.
+      description: This playbook set a user's status in the organization to rehired by updating the incident information and User Profile indicator with values indicating a rehire, and enabling the account in the supported apps.
       playbookName: IAM - Rehire User
       type: playbook
       iscommand: false
@@ -2240,9 +2188,7 @@ tasks:
       id: 1e1912e5-9d25-4d47-85d6-f9b4d4d871ba
       version: -1
       name: IAM - Update User
-      description: This playbook updates users in the organization by updating the
-        incident information and User Profile indicator with the updated values, and
-        updating the account in the supported apps. with the new information.
+      description: This playbook updates users in the organization by updating the incident information and User Profile indicator with the updated values, and updating the account in the supported apps. with the new information.
       playbookName: IAM - Update User
       type: playbook
       iscommand: false
@@ -2288,8 +2234,7 @@ tasks:
       id: e91ff08c-a5ae-4c19-8000-27f51378ee89
       version: -1
       name: IAM - New Hire
-      description: This playbook creates users across all available organization applications
-        from new hire events fetched from Workday.
+      description: This playbook creates users across all available organization applications from new hire events fetched from Workday.
       playbookName: IAM - New Hire
       type: playbook
       iscommand: false
@@ -2496,8 +2441,7 @@ inputs:
 - key: UserRoleToAssignForFailures
   value: {}
   required: false
-  description: The Cortex XSOAR role from which to assign users to the incident when
-    a CRUD operation fails. This can be left empty to assign users from all roles.
+  description: The Cortex XSOAR role from which to assign users to the incident when a CRUD operation fails. This can be left empty to assign users from all roles.
   playbookInputQuery:
 - key: UserAssignmentMethod
   value: {}
@@ -2510,9 +2454,7 @@ inputs:
 - key: AssignOnlyOnCall
   value: {}
   required: false
-  description: Determines whether to assign only users that are currently on a shift
-    to failed incidents. Set to "true" to assign only users that are currently working,
-    or set to "false" or leave empty to assign any user.
+  description: Determines whether to assign only users that are currently on a shift to failed incidents. Set to "true" to assign only users that are currently working, or set to "false" or leave empty to assign any user.
   playbookInputQuery:
 outputs: []
 tests:

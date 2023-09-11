@@ -18,7 +18,6 @@
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "required": false,
-    "script": "",
     "fieldCalcScript": "IAMGetOktaInstances",
     "sla": 0,
     "system": false,

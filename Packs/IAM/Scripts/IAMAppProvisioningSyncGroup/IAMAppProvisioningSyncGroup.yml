@@ -17,7 +17,7 @@ args:
   name: okta_instance
   required: true
   secret: false
-comment: Triggers group sync for app instance
+comment: Triggers group sync for app instance.
 commonfields:
   id: IAMAppProvisioningSyncGroup
   version: -1

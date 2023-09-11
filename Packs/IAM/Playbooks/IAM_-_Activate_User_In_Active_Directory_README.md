@@ -1,15 +1,19 @@
 This playbook activates users in Active Directory. It generates a password, sets the account with the new password, and enables the account. Additionally, it sends out an email to the email provided in the “ServiceDeskEmail” input which includes the new user’s temporary password for preparing new hires’ environments.
 
 ## Dependencies
+
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
+
 * IAM - Create User In Active Directory
 
 ### Integrations
+
 * Active Directory Query v2
 
 ### Scripts
+
 * PrintErrorEntry
 * Sleep
 * SetAndHandleEmpty
@@ -19,6 +23,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 * GetServerURL
 
 ### Commands
+
 * send-mail
 * iam-update-user
 * setIndicator
@@ -28,6 +33,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 * closeInvestigation
 
 ## Playbook Inputs
+
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
@@ -40,9 +46,11 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | WelcomeEmailHTMLList | Optional - the name of an XSOAR list that contains an HTML template for new hire welcome emails. If no list is specified, an email with a  generic structure will be sent. |  | Optional |
 
 ## Playbook Outputs
+
 ---
 There are no outputs for this playbook.
 
 ## Playbook Image
+
 ---
 ![IAM - Activate User In Active Directory](./../doc_files/IAM_-_Activate_User_In_Active_Directory.png)

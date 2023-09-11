@@ -6,7 +6,7 @@ script: ''
 type: python
 tags:
 - dynamic-indicator-section
-comment: Show Last Auth Records For User
+comment: Show Last Auth Records For User.
 enabled: true
 scripttarget: 0
 subtype: python3

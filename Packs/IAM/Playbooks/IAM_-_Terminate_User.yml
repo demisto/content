@@ -1,9 +1,7 @@
 id: IAM - Terminate User
 version: -1
 name: IAM - Terminate User
-description: This playbook sets the user status to terminated in the organization
-  by updating the incident information and User Profile indicator with values indicating
-  termination, and disabling the account in the supported apps.
+description: This playbook sets the user status to terminated in the organization by updating the incident information and User Profile indicator with values indicating termination, and disabling the account in the supported apps.
 starttaskid: "0"
 tasks:
   "0":
@@ -338,8 +336,7 @@ tasks:
       subject:
         simple: 'TUFE triggered but account is active in Okta: ${incident.username}'
       body:
-        simple: 'TUFE event was pulled from Okta for: ${incident.username}. but the
-          account is active in Okta. Please review.'
+        simple: 'TUFE event was pulled from Okta for: ${incident.username}. but the account is active in Okta. Please review.'
       methods:
       - email
       format: ""
@@ -362,8 +359,7 @@ tasks:
       id: 5566481c-5e5d-45c6-878d-62f1e42a682d
       version: -1
       name: Save instances for provisioning from list
-      description: Saves the instances names were provisioning should occur according
-        to the app-provisioning-settings list.
+      description: Saves the instances names were provisioning should occur according to the app-provisioning-settings list.
       scriptName: Set
       type: regular
       iscommand: false
@@ -418,8 +414,7 @@ tasks:
       id: 9983ac2c-bf9a-4952-836b-10beaf8ef050
       version: -1
       name: Are there instances where provisioning should occur?
-      description: Checks whether there is any instance where provisioning was not
-        yet run successfully and should run.
+      description: Checks whether there is any instance where provisioning was not yet run successfully and should run.
       type: condition
       iscommand: false
       brand: ""
@@ -457,8 +452,7 @@ tasks:
       id: a0e2d2a1-2018-41b4-8e2d-2dbbbfbf6fc7
       version: -1
       name: Was the user already provisioned in AD successfully?
-      description: Checks whether the user was already provisioned successfully to
-        Active Directory.
+      description: Checks whether the user was already provisioned successfully to Active Directory.
       type: condition
       iscommand: false
       brand: ""
@@ -597,8 +591,7 @@ tasks:
       id: ee397451-1edc-45b8-8ce4-01aa58218231
       version: -1
       name: Save instance data for instances that need notification
-      description: Set a value in context under the key you entered. If no value is
-        entered, the script doesn't do anything.
+      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -643,8 +636,7 @@ tasks:
       id: a7fa57d7-5d44-40d7-8b57-e75d164a1bd8
       version: -1
       name: Save instances where provisioning was successful
-      description: Saves vendors where provisioning was successful in a separate context
-        key so provisioning notification will apply only in cases of successful provisioning.
+      description: Saves vendors where provisioning was successful in a separate context key so provisioning notification will apply only in cases of successful provisioning.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -913,9 +905,7 @@ tasks:
       id: 284005a9-103f-4630-8e67-04d440f99c7d
       version: -1
       name: Orphan user detected. Terminate account?
-      description: An orphan user was detected - this means a User Profile exists
-        with an email that does not exist in the HR system report. Should that account
-        be terminated?
+      description: An orphan user was detected - this means a User Profile exists with an email that does not exist in the HR system report. Should that account be terminated?
       type: condition
       iscommand: false
       brand: ""
@@ -973,8 +963,7 @@ tasks:
       id: e3b905bc-24b4-40c7-884e-81fbb193f7ea
       version: -1
       name: Set orphan user as processed
-      description: Sets the User Profile as "Is Processed" = true, so that new orphan
-        events won't be created for that user unless added again to the HR system.
+      description: Sets the User Profile as "Is Processed" = true, so that new orphan events won't be created for that user unless added again to the HR system.
       script: Builtin|||setIndicator
       type: regular
       iscommand: true
@@ -1030,9 +1019,7 @@ tasks:
       id: dd6d2a36-d27a-4219-8f60-081adf2bcde2
       version: -1
       name: Set the output to indicate User Profile must stay processed
-      description: Sets the LeaveUserProfileAsProcessed output to True to make sure
-        that the user profile does not go back to being not processed. This ensures
-        that new orphan events won't be generated.
+      description: Sets the LeaveUserProfileAsProcessed output to True to make sure that the user profile does not go back to being not processed. This ensures that new orphan events won't be generated.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1076,8 +1063,7 @@ tasks:
       - "91"
     scriptarguments:
       message:
-        simple: The user was not found in Active Directory, so it could not be terminated.
-          Please find the user and disable it before proceeding.
+        simple: The user was not found in Active Directory, so it could not be terminated. Please find the user and disable it before proceeding.
     reputationcalc: 1
     separatecontext: false
     view: |-
@@ -1142,8 +1128,7 @@ tasks:
       id: 8bc13951-1a76-47ff-8e3b-ade30469618b
       version: -1
       name: Termination
-      description: Checks whether the maximum number of deactivations allowed at a
-        given time is limited.
+      description: Checks whether the maximum number of deactivations allowed at a given time is limited.
       type: title
       iscommand: false
       brand: ""
@@ -1171,8 +1156,7 @@ tasks:
       id: 715924f8-1f17-4d42-8294-add8bee57c18
       version: -1
       name: Are deactivations limited?
-      description: Checks whether the maximum number of deactivations allowed at a
-        given time is limited.
+      description: Checks whether the maximum number of deactivations allowed at a given time is limited.
       type: condition
       iscommand: false
       brand: ""
@@ -1228,10 +1212,7 @@ tasks:
       id: 2cc078e1-f141-4ea2-8063-eb324d80555a
       version: -1
       name: Max deactivation limit reached. Please Review
-      description: Please decide on the action for the deactivation event. If you
-        choose not to deactivate the account, then make sure the data that triggered
-        the termination to begin with is reverted, so that a new termination event
-        is not created.
+      description: Please decide on the action for the deactivation event. If you choose not to deactivate the account, then make sure the data that triggered the termination to begin with is reverted, so that a new termination event is not created.
       type: condition
       iscommand: false
       brand: ""
@@ -1258,9 +1239,7 @@ tasks:
       subject:
         simple: 'Max deactivation limit reached. Please Review Event: ${incident.id}'
       body:
-        simple: "Max deactivation limit reached. Please review and approve. \nUsername:\
-          \ ${incident.username} <====>\nMax Limit: ${inputs.MaxDeactivationList}\
-          \ <====>\nCurrent Count: ${inputs.MaxDeactivationLimit}"
+        simple: "Max deactivation limit reached. Please review and approve. \nUsername: ${incident.username} <====>\nMax Limit: ${inputs.MaxDeactivationList} <====>\nCurrent Count: ${inputs.MaxDeactivationLimit}"
       methods:
       - email
       format: ""
@@ -1477,8 +1456,7 @@ inputs:
     complex:
       root: CreatedIndicator
   required: false
-  description: The created User Profile indicator, if created previously in the IAM
-    - Sync User playbook.
+  description: The created User Profile indicator, if created previously in the IAM - Sync User playbook.
   playbookInputQuery:
 - key: ITNotificationEmail
   value: {}
@@ -1496,17 +1474,12 @@ inputs:
               simple: IAM.Vendor.success
             iscontext: true
   required: false
-  description: Vendors where provisioning was successful. This input is used to ensure
-    that on playbook reruns, provisioning will be retried only with vendors that previously
-    failed.
+  description: Vendors where provisioning was successful. This input is used to ensure that on playbook reruns, provisioning will be retried only with vendors that previously failed.
   playbookInputQuery:
 - key: MaxDeactivationLimit
   value: {}
   required: false
-  description: 'Optional - the amount of maximum Active Directory user deactivations
-    allowed. When this number is reached, new user deactivation events will require
-    admin approval. Use this only in conjunction with the MaxDeactivationList and
-    MaxDeactivationListName inputs. An example of a value can be: 50 '
+  description: 'Optional - the amount of maximum Active Directory user deactivations allowed. When this number is reached, new user deactivation events will require admin approval. Use this only in conjunction with the MaxDeactivationList and MaxDeactivationListName inputs. An example of a value can be: 50 '
   playbookInputQuery:
 - key: MaxDeactivationList
   value: {}
@@ -1552,8 +1525,7 @@ outputs:
   description: The user's profile.
   type: unknown
 - contextPath: LeaveUserProfileAsProcessed
-  description: Whether the User Profile should stay as processed or not. Can be True
-    or False.
+  description: Whether the User Profile should stay as processed or not. Can be True or False.
   type: unknown
 tests:
 - No tests (auto formatted)
