@@ -448,7 +448,7 @@ for key in os.environ:
 
 
 def rollback_system():
-    os.environ = {}
+    os.environ.clear()
     for key in backup_env_vars:
         os.environ[key] = backup_env_vars[key]
 
