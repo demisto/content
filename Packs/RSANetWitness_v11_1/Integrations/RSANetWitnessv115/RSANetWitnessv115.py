@@ -1,9 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from requests import HTTPError
-import pytz
 from datetime import datetime, timedelta, timezone
-
 
 
 ERROR_TITLES = {
@@ -12,7 +10,6 @@ ERROR_TITLES = {
     403: "403 Forbidden - he user might not have the necessary permissions for a resource.\n ",
     404: "404 Not Found - The requested resource does not exist.\n",
     500: "500 Internal Server Error - An unexpected error has occurred.\n"
-
 }
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%MZ'
 DEFAULT_MAX_INCIDENT_ALERTS = 50
@@ -879,8 +876,8 @@ def fetch_incidents(client: Client, params: dict) -> list:
                     "rawJSON": json.dumps(item)}
         # items arrived from last to first - change order
         incidents.insert(0, incident)
-        inc_data[inc_id] =  struct_inc_context(item.get('alertCount'), item.get('eventCount'), item.get('created'))
-    #store some data for mirroring purposes
+        inc_data[inc_id] = struct_inc_context(item.get('alertCount'), item.get('eventCount'), item.get('created'))
+    # store some data for mirroring purposes
     demisto.setIntegrationContext(context_dict)
 
     new_last_run = incidents[-1].get('occurred') if incidents else timestamp
@@ -1191,7 +1188,7 @@ def get_mapping_fields_command() -> GetMappingFieldsResponse:
     return mapping_response
 
 
-def xsoar_status_to_rsa_status(xsoar_status: int, xsoar_close_reason: str) -> str|None:
+def xsoar_status_to_rsa_status(xsoar_status: int, xsoar_close_reason: str) -> str | None:
     """
     xsoar_status_to_rsa_status: Convert XSOAR status to RSA status
     Args:
@@ -1267,7 +1264,6 @@ def get_remote_data_command(client: Client, args: dict, params: dict):
 
     entries = []
     remote_args = GetRemoteDataArgs(args)
-    last_update = remote_args.last_update
     inc_id = remote_args.remote_incident_id
     close_incident = argToBoolean(params.get('close_incident', True))
     fetch_alert = argToBoolean(params.get("import_alerts", False))
@@ -1277,7 +1273,6 @@ def get_remote_data_command(client: Client, args: dict, params: dict):
 
     # check if the user enable alerts fetching
     if fetch_alert:
-        grid_alerts = []
         demisto.debug(f'Pulling alerts from incident {inc_id} !')
         inc_alert_count = int(response['alertCount'])
         if inc_alert_count <= max_fetch_alerts:
@@ -1286,7 +1281,6 @@ def get_remote_data_command(client: Client, args: dict, params: dict):
             response['alerts'] = alerts
         else:
             demisto.debug("Skipping this step, max number of pull alerts reached for this incident !")
-
 
     if (response.get('status') == 'Closed' or response.get('status') == 'ClosedFalsePositive') and close_incident:
         demisto.info(f'Closing incident related to incident {inc_id}')
@@ -1307,7 +1301,6 @@ def get_remote_data_command(client: Client, args: dict, params: dict):
     return GetRemoteDataResponse(mirrored_object=response, entries=entries)
 
 
-
 def get_modified_remote_data_command(client: Client, args: dict, params: dict):
     """ Gets the list of all incident ids that have change since a given time
 
@@ -1321,10 +1314,8 @@ def get_modified_remote_data_command(client: Client, args: dict, params: dict):
     """
     modified_incidents_ids = []
     remote_args = GetModifiedRemoteDataArgs(args)
-    max_fetch_incidents = int(params.get("max_fetch", 100))
     max_fetch_alerts = min(arg_to_number(params.get('max_alerts')) or DEFAULT_MAX_INCIDENT_ALERTS, DEFAULT_MAX_INCIDENT_ALERTS)
     max_time_mirror_inc = min(arg_to_number(params.get("max_mirror_time")) or 3, 24)
-    fetch_alert = argToBoolean(params.get("import_alerts", False))
     last_update = remote_args.last_update
     last_update_format = dateparser.parse(last_update, settings={'TIMEZONE': 'UTC'})  # converts to a UTC timestamp
 
@@ -1335,8 +1326,8 @@ def get_modified_remote_data_command(client: Client, args: dict, params: dict):
     since = datetime_now - timedelta(days=max_time_mirror_inc)
     since_format = since.strftime(DATE_FORMAT)
     until_format = datetime_now.strftime(DATE_FORMAT)
-    response, items = paging_command(MAX_NB_MIRROR_PULL, None, None, client.list_incidents_request,\
-                                    until=until_format, since=since_format)
+    response, items = paging_command(MAX_NB_MIRROR_PULL, None, None, client.list_incidents_request,
+                                     until=until_format, since=since_format)
 
     demisto.debug(f"Total Retrieved Incidents : {len(items)} in {response.get('totalPages')} pages")
 
@@ -1354,7 +1345,7 @@ def get_modified_remote_data_command(client: Client, args: dict, params: dict):
                 # compare the save nb of alert to see if we need to pull the alert or not
                 if save_alert_count <= max_fetch_alerts:
                     modified_incidents_ids.append(inc.get("id"))
-                    continue # if added no need to do it twice
+                    continue  # if added no need to do it twice
                 else:
                     demisto.debug(f"Skipping this step, max number of pull alerts already reached"
                                   f"({save_alert_count} > {max_fetch_alerts}) for the incident {inc.get('id')} !")
@@ -1365,7 +1356,7 @@ def get_modified_remote_data_command(client: Client, args: dict, params: dict):
                           f"Need update => {last_update_format.timestamp() < inc_last_update.timestamp()}")
             if last_update_format.timestamp() < inc_last_update.timestamp():
                 modified_incidents_ids.append(inc.get("id"))
-                continue # if added no need to do it twice
+                continue  # if added no need to do it twice
 
     return GetModifiedRemoteDataResponse(modified_incidents_ids)
 
@@ -1384,16 +1375,16 @@ def clean_old_inc_context(max_time_mirror_inc: int):
     demisto.debug(f"Current context integration before cleaning => {json.dumps(clean_secret_integration_context())}")
     int_cont = demisto.getIntegrationContext()
     inc_data = int_cont.get("IncidentsDataCount", {})
-    current_time =  datetime.now()
+    current_time = datetime.now()
     current_time = current_time.replace(tzinfo=timezone.utc)
     total_know = 0
     res = {}
     for inc_id, inc in inc_data.items():
-        inc_created =  arg_to_datetime(inc["Created"])
+        inc_created = arg_to_datetime(inc["Created"])
         if inc_created:
             inc_created = inc_created.replace(tzinfo=timezone.utc)
             diff = current_time - inc_created
-            if diff.days <= max_time_mirror_inc: # maximum RSA aggregation time 24 days
+            if diff.days <= max_time_mirror_inc:  # maximum RSA aggregation time 24 days
                 res[inc_id] = inc
             else:
                 demisto.debug(f"Incident {inc_id} has expired => {diff.days}")
@@ -1492,4 +1483,3 @@ def main() -> None:
 
 if __name__ in ['__main__', 'builtin', 'builtins']:
     main()
-
