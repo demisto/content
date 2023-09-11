@@ -47,7 +47,6 @@ configuration:
   name: insecure
   defaultvalue: "false"
   type: 8
-  hidden: true
   section: Connect
   advanced: true
   required: false
