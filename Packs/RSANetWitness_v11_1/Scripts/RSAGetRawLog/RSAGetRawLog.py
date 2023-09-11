@@ -1,15 +1,13 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-from typing import Dict, Any
 import json
-import traceback
 
 
 ''' STANDALONE FUNCTION '''
 
 
 class RSAError(Exception):
-    #exception when an element is not found
+    # exception when an element is not found
     pass
 
 
@@ -17,7 +15,7 @@ def is_json(myjson):
     try:
         json_object = json.loads(myjson)
         return json_object
-    except ValueError as e:
+    except ValueError:
         return None
 
 
@@ -41,12 +39,12 @@ def merge_dict(first_dict: dict, second_dict: dict):
 
 
 def get_raw_log(event_source_id: str, concentrator_ip: str, concentrator_port: str) -> list:
-    if isCommandAvailable("netwitness-packets") == False:
+    if isCommandAvailable("netwitness-packets") is False:
         return [{"log": "Please add RSA Netwitness Packet & Logs to see more details"}]
 
     params = {
         "sessions": event_source_id,
-        "concentratorIP":concentrator_ip,
+        "concentratorIP": concentrator_ip,
         "concentratorPort": concentrator_port,
         "render": "application/json",
         "renderToContext": "true"
@@ -60,12 +58,12 @@ def get_raw_log(event_source_id: str, concentrator_ip: str, concentrator_port: s
 
 
 def get_metas_log(event_source_id: str, concentrator_ip: str, concentrator_port: str) -> list:
-    if isCommandAvailable("netwitness-packets") == False:
+    if isCommandAvailable("netwitness-packets") is False:
         return ["Please add/configure RSA Netwitness Packet & Logs to see more details"]
 
     params = {
         "query": f"select * where sessionid={event_source_id}",
-        "concentratorIP":concentrator_ip,
+        "concentratorIP": concentrator_ip,
         "concentratorPort": concentrator_port
     }
     res = demisto.executeCommand("netwitness-query", params)
@@ -89,7 +87,6 @@ def create_id_set(list_metas):
 
 def main():
     inc = demisto.incident()
-    args = demisto.args()
     rsa_alerts = inc.get("CustomFields").get("rsaalerts", [])
     rsa_rawlogs = inc.get("CustomFields").get("rsarawlogslist", [])
     rsa_nb_meta = 1
@@ -158,4 +155,3 @@ def main():
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
-
