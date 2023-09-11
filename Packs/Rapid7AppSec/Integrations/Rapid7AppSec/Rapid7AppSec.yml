@@ -8,6 +8,11 @@ configuration:
   name: url
   required: true
   type: 0
+- display: API Key
+  hiddenpassword: true
+  name: api_key
+  required: true
+  type: 9
 - defaultvalue: 'false'
   display: Use system proxy settings
   name: proxy
@@ -18,11 +23,6 @@ configuration:
   name: insecure
   required: false
   type: 8
-- display: API Key
-  hiddenpassword: true
-  name: api_key
-  required: true
-  type: 9
 description: Rapid7 AppSec integration allows the management of applications vulnerabilities and scans.
 display: Rapid7AppSec
 name: rapid7appsec
@@ -372,7 +372,7 @@ script:
       hidden: true
       defaultValue: '0'
       required: true
-    description: "Submit a new scan action. “Scan actions values are: \"PAUSE\", \"RESUME\", \"STOP\", \"AUTHENTICATE\", and \"CANCEL\". Relevant when Scan status is RUNNING."
+    description: "Submit a new scan action. Scan actions values are: \"PAUSE\", \"RESUME\", \"STOP\", \"AUTHENTICATE\", and \"CANCEL\". Relevant when Scan status is RUNNING. In case the action is Stop/ Cancel, the the status of the scan should be Queued/ Pending/ Running/ Provisioning."
     execution: false
     polling: true
     name: app-sec-scan-action-submit

@@ -127,13 +127,15 @@ def test_no_content_commands(
      - app-sec-vulnerability-comment-create called.
      - app-sec-vulnerability-comment-update called.
      - app-sec-vulnerability-comment-delete called.
+     - app-sec-scan-submit called.
+     - app-sec-scan-delete called.
     Then:
      - Ensure that readable outputs is correct.
     """
     from Rapid7AppSec import (create_vulnerability_comment_command,
                               delete_scan_command,
                               delete_vulnerability_comment_command,
-                              submit_scan_action_command, submit_scan_command,
+                              submit_scan_command,
                               update_vulnerability_command,
                               update_vulnerability_comment_command)
     commands: Dict[str, Callable] = {
@@ -143,8 +145,6 @@ def test_no_content_commands(
         f"{INTEGRATION_COMMAND_PREFIX}-{VULNERABILITY_COMMENT}-delete": delete_vulnerability_comment_command,
         f"{INTEGRATION_COMMAND_PREFIX}-{SCAN}-submit": submit_scan_command,
         f"{INTEGRATION_COMMAND_PREFIX}-{SCAN}-delete": delete_scan_command,
-        f"{INTEGRATION_COMMAND_PREFIX}-{SCAN_ACTION}-submit": submit_scan_action_command,
-
     }
     url = urljoin(mock_client._base_url, endpoint)
     match request_action:
@@ -419,25 +419,55 @@ def test_list_commands(
     Scenario: List and Get commands using list_handler command.
     Given:
      - User has provided correct parameters.
+     - Case 1: List vulnerabilities.
+     - Case 2: List vulnerabilities with a specific vulnerability_id.
+     - Case 3: List vulnerability history.
+     - Case 4: List vulnerability comments.
+     - Case 5: List vulnerability comment with a specific comment_id.
+     - Case 6: List scans.
+     - Case 7: List scan with specific scan_id.
+     - Case 8: List scan engine events.
+     - Case 9: List scan platform events.
+     - Case 10: List scan execution details.
+     - Case 11: Get scan action.
+     - Case 12: Get attack.
+     - Case 13: Get attack documentation.
+     - Case 14: List scan configs.
+     - Case 15: List scan config with a specific scan_config_id.
+     - Case 16: List apps.
+     - Case 17: List app with a specific app_id.
+     - Case 18: List modules.
+     - Case 19: List module with a specific module_id.
+     - Case 20: List attack templates.
+     - Case 21: List attack template with a specific attack template_id.
+     - Case 22: List engine groups.
+     - Case 23: List engine group with a specific engine_group_id.
+     - Case 24: List engines.
+     - Case 25: List engine with a specific engine_id.
+
     When:
      - app-sec-vulnerability-list called.
      - app-sec-vulnerability-history-list called.
      - app-sec-vulnerability-comment-list called.
+     - app-sec-scan-list called.
+     - app-sec-scan-engine-event-list.
+     - app-sec-scan-platform-event-list.
+     - app-sec-scan-execution-details-list.
+     - app-sec-scan-action-get called.
      - app-sec-attack-get called.
      - app-sec-attack-documentation-get called.
-     - app-sec-scan-action-get called.
-     - app-sec-scan-execution-details-list called.
-     - app-sec-scan-platform-event-list called.
-     - app-sec-scan-engine-event-list called.
-     - app-sec-app-list called.
-     - app-sec-engine-list called.
-     - app-sec-module-list called.
      - app-sec-scan-config-list called.
+     - app-sec-app-list called.
+     - app-sec-module-list called.
+     - app-sec-attack-template-list called.
+     - app-sec-engine-list called.
+     - app-sec-engine-group-list called.
 
     Then:
      - Ensure that output prefix is correct.
      - Ensure that outputs key field is correct.
      - Ensure that outputs id is correct.
+     - Ensure that raw_response id is correct.
     """
 
     from Rapid7AppSec import (get_attack_command,

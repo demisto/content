@@ -1090,7 +1090,7 @@ def submit_scan_action_command(args: dict[str, Any], client: Client) -> PollResu
 
     if args.get("first_run", "") == "0":
         scan_data = client.list_scan(obj_id=scan_id)
-        # validate_submit_scan_action(action=action, scan_data=scan_data)
+        validate_submit_scan_action(action=action, scan_data=scan_data)
         args['first_run'] = "1"
         client.submit_scan_action(
             scan_id=scan_id,
@@ -1707,7 +1707,8 @@ def generate_api_endpoint(url_prefix: str, obj_id: str | None) -> str:
 @ logger
 def validate_submit_scan_action(action: str, scan_data: dict):
     """
-    Validate the scan action.
+    Validate the scan action. If the action is Stop or Cancel, we want to make sure that the status is one of
+    ["QUEUED", "PENDING", "RUNNING", "PROVISIONING"].
 
     Args:
         action (str): Scan action.
@@ -1720,7 +1721,7 @@ def validate_submit_scan_action(action: str, scan_data: dict):
         scan_status = scan_data.get("status", "")
         allowed_statuses = ["QUEUED", "PENDING", "RUNNING", "PROVISIONING"]
         if scan_status not in allowed_statuses:
-            raise ValueError(f"Scan status must be one of {allowed_statuses}")
+            raise ValueError(f"If the action is Stop or Cancel then the scan status must be one of {allowed_statuses}.")
 
 
 def main() -> None:
