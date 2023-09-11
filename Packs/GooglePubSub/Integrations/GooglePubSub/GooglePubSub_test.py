@@ -169,7 +169,7 @@ class TestHelperFunctions:
             # invalid message_data
             e_thrown = False
             try:
-                get_publish_body("", message_data={"test": "val"})
+                get_publish_body("", message_data={"test": "val"}, delim_char=",")
             except AttributeError:
                 e_thrown = True
             assert e_thrown
@@ -177,7 +177,7 @@ class TestHelperFunctions:
             # invalid message_attributes
             e_thrown = False
             try:
-                get_publish_body(message_attributes={"test": "val"}, message_data="")
+                get_publish_body(message_attributes={"test": "val"}, message_data="", delim_char=",")
             except AttributeError:
                 e_thrown = True
             assert e_thrown
@@ -192,7 +192,7 @@ class TestHelperFunctions:
                 - return a body with no messages
             """
             expected = {"messages": [{}]}
-            assert expected == get_publish_body("", "")
+            assert expected == get_publish_body("", "", "")
 
         def test_get_publish_body__valid(self):
             """
@@ -218,7 +218,7 @@ class TestHelperFunctions:
                 "messages": [{"data": expected_data, "attributes": expected_attributes}]
             }
             assert expected == get_publish_body(
-                attrs_str, TestHelperFunctions.DECODED_B64_MESSAGE
+                attrs_str, TestHelperFunctions.DECODED_B64_MESSAGE, delim_char=",",
             )
 
     class TestAttributePairsToDict:

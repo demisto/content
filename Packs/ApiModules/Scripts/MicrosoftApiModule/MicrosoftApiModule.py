@@ -150,6 +150,9 @@ MANAGED_IDENTITIES_SYSTEM_ASSIGNED = 'SYSTEM_ASSIGNED'
 TOKEN_EXPIRED_ERROR_CODES = {50173, 700082, 70008, 54005, 7000222,
                              }  # See: https://login.microsoftonline.com/error?code=
 
+# Moderate Retry Mechanism
+MAX_DELAY_REQUEST_COUNTER = 6
+
 
 class CloudEndpointNotSetException(Exception):
     pass
@@ -613,6 +616,11 @@ def get_azure_cloud(params, integration_name):
                                                  'active_directory': params.get('azure_ad_endpoint')
                                                  or 'https://login.microsoftonline.com'
                                              })
+        # in multiple Graph integrations, the url is called 'url' instead of 'server_url' and the default url is different.
+        if 'url' in params:
+            return create_custom_azure_cloud(integration_name, defaults=AZURE_WORLDWIDE_CLOUD,
+                                             endpoints={'microsoft_graph_resource_id': params.get('url')
+                                                        or 'https://graph.microsoft.com'})
 
     # There is no need for backward compatibility support, as the integration didn't support it to begin with.
     return AZURE_CLOUDS.get(AZURE_CLOUD_NAME_MAPPING.get(azure_cloud_arg), AZURE_WORLDWIDE_CLOUD)  # type: ignore[arg-type]
@@ -904,6 +912,7 @@ class MicrosoftClient(BaseClient):
             integration_context.update(self.resource_to_access_token)
 
         set_integration_context(integration_context)
+        demisto.debug('Set integration context successfully.')
 
         if self.multi_resource:
             return self.resource_to_access_token[resource]
@@ -975,11 +984,21 @@ class MicrosoftClient(BaseClient):
         """
         content = self.refresh_token or self.tenant_id
         headers = self._add_info_headers()
+        context = get_integration_context()
+        next_request_time = context.get("next_request_time", 0.0)
+        delay_request_counter = min(int(context.get('delay_request_counter', 1)), MAX_DELAY_REQUEST_COUNTER)
+
+        should_delay_request(next_request_time)
         oproxy_response = self._oproxy_authorize_build_request(headers, content, scope, resource)
 
         if not oproxy_response.ok:
+            next_request_time = calculate_next_request_time(delay_request_counter=delay_request_counter)
+            set_retry_mechanism_arguments(next_request_time=next_request_time, delay_request_counter=delay_request_counter,
+                                          context=context)
             self._raise_authentication_error(oproxy_response)
 
+        # In case of success, reset the retry mechanism arguments.
+        set_retry_mechanism_arguments(context=context)
         # Oproxy authentication succeeded
         try:
             gcloud_function_exec_id = oproxy_response.headers.get('Function-Execution-Id')
@@ -1396,6 +1415,48 @@ class NotFoundError(Exception):
 
     def __init__(self, message):
         self.message = message
+
+
+def calculate_next_request_time(delay_request_counter: int) -> float:
+    """
+        Calculates the next request time based on the delay_request_counter.
+        This is an implication of the Moderate Retry Mechanism for the Oproxy requests.
+    """
+    # The max delay time should be limited to ~60 sec.
+    next_request_time = get_current_time() + timedelta(seconds=(2 ** delay_request_counter))
+    return next_request_time.timestamp()
+
+
+def set_retry_mechanism_arguments(context: dict, next_request_time: float = 0.0, delay_request_counter: int = 1):
+    """
+        Sets the next_request_time in the integration context.
+        This is an implication of the Moderate Retry Mechanism for the Oproxy requests.
+    """
+    context = context or {}
+    next_counter = delay_request_counter + 1
+
+    context['next_request_time'] = next_request_time
+    context['delay_request_counter'] = next_counter
+    # Should reset the context retry arguments.
+    if next_request_time == 0.0:
+        context['delay_request_counter'] = 1
+    set_integration_context(context)
+
+
+def should_delay_request(next_request_time: float):
+    """
+        Checks if the request should be delayed based on context variables.
+        This is an implication of the Moderate Retry Mechanism for the Oproxy requests.
+    """
+    now = get_current_time().timestamp()
+
+    # If the next_request_time is 0 or negative, it means that the request should not be delayed because no error has occurred.
+    if next_request_time <= 0.0:
+        return
+    # Checking if the next_request_time has passed.
+    if now >= next_request_time:
+        return
+    raise Exception(f"The request will be delayed until {datetime.fromtimestamp(next_request_time)}")
 
 
 def get_azure_managed_identities_client_id(params: dict) -> str | None:
