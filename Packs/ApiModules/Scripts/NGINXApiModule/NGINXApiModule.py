@@ -93,7 +93,7 @@ def create_nginx_server_conf(file_path: str, port: int, params: Dict):
     certificate: str = params.get('certificate', '')
     private_key: str = params.get('key', '')
     timeout: str = params.get('timeout') or '3600'
-    ssl, extra_header, sslcerts, proxy_set_range_header = '', '', '', ''
+    ssl, extra_headers, sslcerts, proxy_set_range_header = '', '', '', ''
     serverport = port + 1
     extra_cache_keys = []
     if (certificate and not private_key) or (private_key and not certificate):
@@ -107,7 +107,7 @@ def create_nginx_server_conf(file_path: str, port: int, params: Dict):
         ssl = 'ssl'  # to be included in the listen directive
         sslcerts = NGINX_SSL_CERTS
         if argToBoolean(params.get("hsts_header")):
-            extra_header = "Strict-Transport-Security: max-age=31536000"
+            extra_headers = "Strict-Transport-Security: max-age=31536000"
     credentials = params.get('credentials') or {}
     if credentials.get('identifier'):
         extra_cache_keys.append("$http_authorization")
@@ -121,7 +121,7 @@ def create_nginx_server_conf(file_path: str, port: int, params: Dict):
     server_conf = Template(template_str).safe_substitute(port=port, serverport=serverport, ssl=ssl,
                                                          sslcerts=sslcerts, extra_cache_key=extra_cache_keys_str,
                                                          proxy_set_range_header=proxy_set_range_header, timeout=timeout,
-                                                         extra_header=extra_header)
+                                                         extra_headers=extra_headers)
     with open(file_path, mode='wt+') as f:
         f.write(server_conf)
 
