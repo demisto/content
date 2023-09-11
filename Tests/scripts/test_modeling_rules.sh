@@ -58,22 +58,30 @@ demisto-sdk modeling-rules test --xsiam-url="$XSIAM_URL" --auth-id="$AUTH_ID" --
   --xsiam-token="$XSIAM_TOKEN" --non-interactive "${MODELING_RULES_RESULTS_ARG[@]}" \
   ${MODELING_RULES_TO_TEST}
 exit_code=$?
-echo "Finished testing Modeling Rules, exit_code=$exit_code"
+echo "Finished testing Modeling Rules, exit code:${exit_code}"
 
-if [[ "${exit_code}" -ne 0 ]]; then
-  echo "Failed to test modeling rules"
-  if [ -n "${NIGHTLY}" ] && [ -n "${MODELING_RULES_RESULTS_FILE_NAME}" ]; then
-    echo "This is a nightly build, converting the results to Jira issues and exiting with 0"
-    python3 "${CURRENT_DIR}/Tests/scripts/convert_test_result_to_jira_issues.py" --junit-path "${MODELING_RULES_RESULTS_FILE_NAME}"
-    exit_code=$?
-    if [[ "${exit_code}" -ne 0 ]]; then
-      echo "Failed to convert the results to Jira issues"
+if [ -n "${NIGHTLY}" ]; then
+  if [ -n "${MODELING_RULES_RESULTS_FILE_NAME}" ]; then
+    if [ "${TEST_MODELING_RULE_JIRA_TICKETS,,}" == "true" ]; then
+      echo "This is a nightly build, converting the results to Jira issues and exiting with 0"
+      echo "The current directory is ${CURRENT_DIR}"
+      python3 "${CURRENT_DIR}/Tests/scripts/convert_test_result_to_jira_issues.py" --junit-path "${MODELING_RULES_RESULTS_FILE_NAME}"
+      exit_code=$?
+      if [[ "${exit_code}" -ne 0 ]]; then
+        echo "Failed to convert the results to Jira issues, exiting code:${exit_code}"
+        exit ${exit_code}
+      fi
+      echo "Finished converting the results to Jira issues, exiting with 0"
+      exit 0  # Exiting with 0 so that the build will not fail, because we successfully converted the results to Jira issues.
+    else
+      echo "This is a nightly build, but TEST_MODELING_RULE_JIRA_TICKETS is not set to true, exiting with ${exit_code}"
       exit ${exit_code}
     fi
-    exit 0  # Exiting with 0 so that the build will not fail, because we successfully converted the results to Jira issues.
-  else
+  else # MODELING_RULES_RESULTS_FILE_NAME is empty
+    echo "This is a nightly build, but MODELING_RULES_RESULTS_FILE_NAME is empty, exiting with ${exit_code}"
     exit ${exit_code}
   fi
+else
+  echo "This is not a nightly build, exiting with ${exit_code}"
+  exit ${exit_code}
 fi
-
-exit ${exit_code}
