@@ -33,7 +33,7 @@ script:
     description: This command returns agent name, status, agent type, platform and also mitigation devices and attack modules using the agent ID.
     name: picus-get-agent-detail
   - arguments:
-    - description: ID of the agent
+    - description: ID of the agent.
       name: agent_id
       required: true
     - defaultValue: this simulation created with cortex app
