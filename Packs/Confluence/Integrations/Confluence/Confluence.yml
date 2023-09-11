@@ -4,7 +4,7 @@ commonfields:
 name: Atlassian Confluence Server
 display: Atlassian Confluence Server
 category: Utilities
-description: Atlassian Confluence Server API
+description: Atlassian Confluence Server API.
 configuration:
 - display: Server URL (e.g. http://1.2.3.4:8090)
   name: url
@@ -142,7 +142,7 @@ script:
     arguments:
     - name: id
       required: true
-      description: Content ID
+      description: Content ID.
     outputs:
     - contextPath: Confluence.Content.Result
       description: Content delete result.
