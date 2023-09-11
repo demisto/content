@@ -106,8 +106,10 @@ def create_nginx_server_conf(file_path: str, port: int, params: Dict):
             f.write(private_key)
         ssl = 'ssl'  # to be included in the listen directive
         sslcerts = NGINX_SSL_CERTS
+        demisto.debug(f"The params I got are {params.get('hsts_header')}")
         if argToBoolean(params.get("hsts_header")):
-            extra_headers = "Strict-Transport-Security: max-age=31536000"
+            demisto.debug("got here")
+            extra_headers = 'add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;'
     credentials = params.get('credentials') or {}
     if credentials.get('identifier'):
         extra_cache_keys.append("$http_authorization")
