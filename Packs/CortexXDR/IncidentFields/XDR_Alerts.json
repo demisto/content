@@ -185,7 +185,7 @@
 	"ownerOnly": false,
 	"placeholder": "",
 	"required": false,
-	"script": "",
+	"script": "XDRIRStatusCHange_trigger",
 	"selectValues": [],
 	"sla": 0,
 	"system": false,
