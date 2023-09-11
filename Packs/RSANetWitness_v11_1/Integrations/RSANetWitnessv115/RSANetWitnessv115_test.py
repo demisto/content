@@ -519,7 +519,7 @@ def test_clean_old_inc_context(mocker):
     assert clean_old_inc_context(max_time_mirror_inc) is None
 
 
-def clean_secret_integration_context(mocker):
+def test_clean_secret_integration_context(mocker):
     """
         Given:
         - Nothing
