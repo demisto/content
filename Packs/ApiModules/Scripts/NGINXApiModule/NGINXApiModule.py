@@ -47,12 +47,12 @@ NGINX_SERVER_CONF = '''
 server {
 
     listen $port default_server $ssl;
-    $extra_headers
 
     $sslcerts
 
     proxy_cache_key $scheme$proxy_host$request_uri$extra_cache_key;
     $proxy_set_range_header
+    $extra_headers
     
     # Static test file
     location = /nginx-test {
@@ -64,6 +64,7 @@ server {
     location / {
         proxy_pass http://localhost:$serverport/;
         add_header X-Proxy-Cache $upstream_cache_status;
+        $extra_headers
         # allow bypassing the cache with an arg of nocache=1 ie http://server:7000/?nocache=1
         proxy_cache_bypass $arg_nocache;
         proxy_read_timeout $timeout;
@@ -108,7 +109,7 @@ def create_nginx_server_conf(file_path: str, port: int, params: Dict):
         ssl = 'ssl'  # to be included in the listen directive
         sslcerts = NGINX_SSL_CERTS
         if argToBoolean(params.get("hsts_header")):
-            extra_headers = 'add_header Strict-Transport-Security: max-age=31536000'
+            extra_headers = 'add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;'
     credentials = params.get('credentials') or {}
     if credentials.get('identifier'):
         extra_cache_keys.append("$http_authorization")
