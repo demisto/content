@@ -176,7 +176,7 @@ def test_pooling_commands(
 
     from Rapid7AppSec import submit_scan_action_command
 
-    excepted_output = generate_readable_output_message(object_type=ReadableOutputs.SCAN,
+    excepted_output = generate_readable_output_message(object_type=ReadableOutputs.SCAN_ACTION,
                                                        action=ReadableOutputs.CHANGED.value.format("Resume"),
                                                        object_id=EXAMPLE_ID)
 

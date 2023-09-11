@@ -46,8 +46,8 @@ class Pagination():
         if any([page is not None and page_size is None, page_size is not None and page is None]):
             raise ValueError("In order to use pagination, please insert both page and page_size or insert limit.")
 
-        self.page = arg_to_number(page_size and page)
-        self.page_size = arg_to_number(page and page_size)
+        self.page = arg_to_number(page)
+        self.page_size = arg_to_number(page_size)
 
         if self.page_size and self.page_size > API_LIMIT:
             raise ValueError(f"Page size maximum value is {API_LIMIT}.")
