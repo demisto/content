@@ -2068,7 +2068,7 @@ async def test_process_entitlement_reply(mocker):
 @pytest.mark.asyncio
 async def test_close_channel(mocker):
     """
-    Test the close_channel function 
+    Test the close_channel function
     Given:
     - Mocked input parameters.
     When:
@@ -2108,7 +2108,7 @@ async def test_close_channel(mocker):
 @pytest.mark.asyncio
 async def test_handle_zoom_response(event_type, expected_status,
                                     mocker):
-    """ 
+    """
     Test the handle_zoom_response function with different event types and payload conditions.
 
     Given:
@@ -2194,7 +2194,7 @@ async def test_handle_text(mocker):
     with patch('Zoom.demisto') as mock_demisto:
         # Call the function
         await handle_text_received_from_zoom(investigation_id, text, operator_email, operator_name)
-     # Assert that the `demisto.addEntry` method was called with the expected arguments
+        # Assert that the `demisto.addEntry` method was called with the expected arguments
         mock_demisto.addEntry.assert_called_once_with(
             id=investigation_id,
             entry=text,

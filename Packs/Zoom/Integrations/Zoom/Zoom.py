@@ -104,7 +104,7 @@ Otherwise, please use the channel ID instead."""
 MISSING_ARGUMENT_JID = """Missing argument: You must provide either a user ID or a channel ID.
 If you're using a mirrored channel, you have the option to specify the channel name as well."""
 TOO_MANY_JID = """Too many argument you must provide either a user JID or a channel id and not both """
-BOT_PARAM_CHECK = """If you're using the Zoom chatbot, it's essential to provide all the necessary bot parameters, 
+BOT_PARAM_CHECK = """If you're using the Zoom chatbot, it's essential to provide all the necessary bot parameters,
 including the botJID, bot_client_id, and bot_client_secret.
 you can find these values in the Zoom Chatbot app configuration"""
 OAUTH_PARAM_CHECK = """if you are using zoom APIs you must provide Oauth client_id and client_secret
@@ -481,7 +481,7 @@ def extract_entitlement(entitlement: str) -> tuple[str, str, str]:
 async def check_for_unanswered_messages():
     demisto.debug('check for unanswered messages')
     integration_context = fetch_context()
-    messages = integration_context.get('messages', None)
+    messages = integration_context.get('messages')
     if messages:
         messages = json.loads(messages)
         now = datetime.utcnow()
@@ -588,7 +588,7 @@ async def answer_question(text: str, question: dict, email: str = ''):
 
 async def handle_text_received_from_zoom(investigation_id: str, text: str, operator_email: str, operator_name: str):
     """
-    Handles text received from Zoom 
+    Handles text received from Zoom
 
     Args:
         investigation_id: The mirrored investigation ID
@@ -678,7 +678,7 @@ async def event_url_validation(payload):
 
 @app.post('/')
 async def handle_zoom_response(request: Request):
-    """handle any response that came from Zoom app 
+    """handle any response that came from Zoom app
     Args:
         request : zoom request
     Returns:
@@ -727,9 +727,9 @@ def test_module(client: Client):
     try:
         if MIRRORING_ENABLED and (not LONG_RUNNING or not SECRET_TOKEN or not client.bot_client_id or not
                                   client.bot_client_secret or not client.bot_jid):
-            raise DemistoException("""Mirroring is enabled, however long running is disabled 
-or the necessary bot authentication parameters are missing. 
-For mirrors to work correctly, long running must be enabled and you must provide all 
+            raise DemistoException("""Mirroring is enabled, however long running is disabled
+or the necessary bot authentication parameters are missing.
+For mirrors to work correctly, long running must be enabled and you must provide all
 the zoom-bot following parameters:
 secret token,
 Bot JID,
@@ -2400,9 +2400,9 @@ def main():  # pragma: no cover
     CACHED_INTEGRATION_CONTEXT = get_integration_context(SYNC_CONTEXT)
 
     if MIRRORING_ENABLED and (not LONG_RUNNING or not SECRET_TOKEN or not bot_client_id or not bot_client_secret or not bot_jid):
-        raise DemistoException("""Mirroring is enabled, however long running is disabled 
-or the necessary bot authentication parameters are missing. 
-For mirrors to work correctly, long running must be enabled and you must provide all 
+        raise DemistoException("""Mirroring is enabled, however long running is disabled
+or the necessary bot authentication parameters are missing.
+For mirrors to work correctly, long running must be enabled and you must provide all
 the zoom-bot following parameters:
 secret token,
 Bot JID,
