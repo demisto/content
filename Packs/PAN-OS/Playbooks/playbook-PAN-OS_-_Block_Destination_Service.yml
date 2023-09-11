@@ -205,6 +205,9 @@ tasks:
       '#none#':
       - "11"
     scriptarguments:
+      device-group:
+        complex:
+          root: inputs.DeviceGroup
       ip_netmask:
         complex:
           root: inputs.IP
@@ -852,7 +855,7 @@ tasks:
     task:
       id: 705cbce1-bd94-44e8-89fa-bf45694bd8a0
       version: -1
-      name: Set
+      name: Set Address Name
       description: Set a value in context under the key you entered.
       scriptName: Set
       type: regular
