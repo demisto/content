@@ -408,7 +408,7 @@ def test_update_remote_system_command(mocker):
         def __init__(self) -> dict:
             self.delta = {"key": "value"}
             self.remote_incident_id = "INC-1"
-            self.data =  {"status": 1, "closeReason": None}
+            self.data = {"status": 1, "closeReason": None}
 
     mocker.patch.object(RSANetWitnessv115, "UpdateRemoteSystemArgs", return_value=UpdateRemoteSystemArgsResponse())
     mocker.patch.object(client, "get_incident_request", return_value={"id": "INC-1", "status": 1})
