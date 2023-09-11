@@ -1915,7 +1915,7 @@ script:
   - arguments:
     description: Reverse nameserver lookup
     name: reverseNameServer
-  dockerimage: demisto/domaintools
+  dockerimage: demisto/vendors-sdk:1.0.0.73926
   isfetch: false
   longRunning: false
   longRunningPort: false
