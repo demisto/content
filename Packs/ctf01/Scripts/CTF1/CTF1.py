@@ -63,7 +63,7 @@ To re-run this task -> Click on "Complete Task" -> clear the Secret value using 
 ''' % (bad_images[random.randint(0, len(bad_images) - 1)])
 
 answers = {
-    "01": ["4", "four", "04"],
+    "01": ["5", "five", "05"],
     "02": ["playbooksareawesome", "playbooks are awesome"],
     "03": ["ctf 01", "ctf01"],
     "04": ["reportsarecool"],
