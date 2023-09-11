@@ -61,6 +61,14 @@ stop-running-pipelines:
     - Utils/gitlab/stop_running_pipelines.sh $CI_COMMIT_BRANCH $CI_PIPELINE_ID
     - section_end "Stop running pipelines on current branch"
 
+send_slack_notify:
+  extends:
+    - .default-job-settings
+  stage: unittests-and-validations
+  needs:
+    - run-unittests-and-lint
+  script:
+    - echo "====Send Slack Notify===="
 
 # runs in gitlab for the on-push flow (except for contributors)
 run-unittests-and-lint:
