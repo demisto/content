@@ -118,13 +118,9 @@ script:
       - "True"
       - "False"
     description: >-
-      Creates a new Team Drive. The name argument specifies the name of the
-      Team Drive. The specified user will be the first organizer.
-
-      This shared drive/team drive feature is available only with G Suite Enterprise,
-      Enterprise for Education, G Suite Essentials, Business, Education, and Nonprofits
-      edition.
+      Deprecated. Use the 'google-drive-drive-create' command instead.
     name: google-drive-create
+    deprecated: true
     outputs:
     - contextPath: GoogleDrive.Drive.kind
       description: Identifies what kind of resource this is.
@@ -138,6 +134,39 @@ script:
     - contextPath: GoogleDrive.Drive.hidden
       description: Whether the shared drive is hidden from the default view.
       type: Boolean
+  - arguments:
+      - description: The user's primary email address.
+        name: user_id
+      - description: The name of this shared drive.
+        name: name
+        required: true
+      - auto: PREDEFINED
+        description: 'Whether the shared drive is hidden from the default view. Possible values: "True" and "False".'
+        name: hidden
+        predefined:
+          - "True"
+          - "False"
+    description: >-
+      Creates a new Team Drive. The name argument specifies the name of the
+      Team Drive. The specified user will be the first organizer.
+
+      This shared drive/team drive feature is available only with G Suite Enterprise,
+      Enterprise for Education, G Suite Essentials, Business, Education, and Nonprofits
+      edition.
+    name: google-drive-drive-create
+    outputs:
+      - contextPath: GoogleDrive.Drive.kind
+        description: Identifies what kind of resource this is.
+        type: String
+      - contextPath: GoogleDrive.Drive.id
+        description: The ID of the shared drive which is also the ID of the top level folder of the shared drive.
+        type: String
+      - contextPath: GoogleDrive.Drive.name
+        description: The name of the shared drive.
+        type: String
+      - contextPath: GoogleDrive.Drive.hidden
+        description: Whether the shared drive is hidden from the default view.
+        type: Boolean
   - arguments:
     - description: The token for continuing a previous list request on the next page.
       name: page_token

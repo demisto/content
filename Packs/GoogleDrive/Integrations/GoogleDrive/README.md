@@ -33,12 +33,18 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### google-drive-create
 
 ***
+Deprecated. Use the `google-drive-drive-create` command instead.
+
+
+### google-drive-drive-create
+
+***
 Creates a new Team Drive. The name argument specifies the name of the Team Drive. The specified user will be the first organizer.
 This shared drive/team drive feature is available only with G Suite Enterprise, Enterprise for Education, G Suite Essentials, Business, Education, and Nonprofits edition.
 
 #### Base Command
 
-`google-drive-create`
+`google-drive-drive-create`
 
 #### Input
 
