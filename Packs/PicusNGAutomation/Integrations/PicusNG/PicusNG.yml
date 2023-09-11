@@ -168,7 +168,7 @@ script:
     - description: Simulation Agent ID.
       name: agent_id
       required: true
-    - description: 'Device ID '.
+    - description: Device ID.
       name: device_id
     - description: Simulation ID.
       name: simulation_id
