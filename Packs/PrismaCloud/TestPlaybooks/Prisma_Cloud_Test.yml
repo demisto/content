@@ -193,7 +193,7 @@ tasks:
       - "6"
     scriptarguments:
       filters:
-        simple: alert.status=open,policy.remediable=true,cloud.type=gcp,policy.type=config
+        simple: alert.status=open,policy.remediable=true,policy.type=config
       limit:
         simple: "1"
     separatecontext: false
@@ -883,12 +883,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: PrismaCloud.Network.Connection.[0].from
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: PrismaCloud.Network.Connection.[0].to
+              simple: PrismaCloud.Network.Connection
             iscontext: true
     continueonerrortype: ""
     view: |-
@@ -1229,7 +1224,7 @@ tasks:
       limit:
         simple: "5"
       repository:
-        simple: prashmp/iac-samples
+        simple: kyle9021/testing-iac
       source_types:
         simple: Github
     separatecontext: false
