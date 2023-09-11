@@ -360,8 +360,8 @@ def change_timestamp_to_datestring_in_dict(readable_response: dict) -> None:
     """
     for field in TIME_FIELDS:
         if epoch_value := readable_response.get(field):
-            # if epoch_value == -1:
-            #     continue
+            if epoch_value == -1:
+                continue
             readable_response[field] = timestamp_to_datestring(epoch_value, DATE_FORMAT)
 
 
@@ -1388,14 +1388,11 @@ def remediation_command_list_command(client: Client, args: Dict[str, Any]) -> Co
     except DemistoException as de:
         if not (hasattr(de, 'res') and hasattr(de.res, 'status_code')):
             raise
-        if de.res.status_code == 405:
-            return CommandResults(
-                readable_output=f'Remediation unavailable'
-                                f'{" for the time given" if time_filter != TIME_FILTER_BASE_CASE else ""}.')
-        elif de.res.status_code == 400:
+        if de.res.status_code == 400:
             return CommandResults(
                 readable_output='Policy type disallowed using this remediation api. Cannot remediate multiple policy alerts.')
-        raise
+        return CommandResults(
+            readable_output=f'Remediation unavailable{" for the time given" if time_filter != TIME_FILTER_BASE_CASE else ""}.')
 
     command_results = CommandResults(
         outputs_prefix='PrismaCloud.AlertRemediation',
@@ -1416,7 +1413,7 @@ def alert_remediate_command(client: Client, args: Dict[str, Any]) -> CommandResu
 
     try:
         client.alert_remediate_request(str(alert_id))
-        readable_response = {'alertId': alert_id, 'successful': True}
+        readable_response = {'alertId': alert_id, 'successful': True}  # context output that states the remediation was successful
         readable_output = f'Alert {alert_id} remediated successfully.'
 
     except DemistoException as de:
