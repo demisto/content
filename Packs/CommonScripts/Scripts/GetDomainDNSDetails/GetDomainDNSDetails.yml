@@ -14,7 +14,7 @@ args:
 - description: "Comma separated list of query types (default: CNAME,NS,A,AAAA)"
   name: qtype
   defaultValue: CNAME,NS,A,AAAA
-comment: Returns DNS details for a domain
+comment: Returns DNS details for a domain.
 commonfields:
   id: GetDomainDNSDetails
   version: -1
@@ -43,5 +43,7 @@ tags: []
 timeout: '0'
 type: python
 subtype: python3
-dockerimage: demisto/dnspython:1.0.0.12410
+dockerimage: demisto/dnspython:1.0.0.73453
 fromversion: 5.0.0
+tests:
+- No tests (auto formatted)
