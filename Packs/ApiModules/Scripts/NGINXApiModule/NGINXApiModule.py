@@ -108,7 +108,7 @@ def create_nginx_server_conf(file_path: str, port: int, params: Dict):
         ssl = 'ssl'  # to be included in the listen directive
         sslcerts = NGINX_SSL_CERTS
         if argToBoolean(params.get("hsts_header")):
-            extra_headers = 'add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;'
+            extra_headers = 'add_header Strict-Transport-Security: max-age=31536000'
     credentials = params.get('credentials') or {}
     if credentials.get('identifier'):
         extra_cache_keys.append("$http_authorization")
