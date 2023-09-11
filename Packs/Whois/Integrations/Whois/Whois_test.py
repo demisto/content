@@ -2,6 +2,7 @@ import datetime
 import pickle
 import Whois
 import demistomock as demisto
+import pathlib
 import pytest
 import subprocess
 import time
@@ -669,3 +670,18 @@ def test_domain_command(args: dict[str, Any], expected_res, mocker: MockerFixtur
         reliability='B - Usually reliable'
     )
     assert len(result) == expected_res
+
+
+def test_parse_nic_contact_new_regex():
+    """
+    Given:
+        - Data fetched from the API.
+    When:
+        - calling the whois/domain command.
+    Then:
+        - validate that the data extracted without timeout.
+    """
+    from Whois import parse_nic_contact
+    data = pathlib.Path('test_data/whois_response_text.txt').read_text()
+    res = parse_nic_contact([data])
+    assert len(res) == 25
