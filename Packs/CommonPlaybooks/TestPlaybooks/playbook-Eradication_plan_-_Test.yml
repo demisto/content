@@ -1,0 +1,875 @@
+id: Eradication plan - Test
+version: -1
+name: Eradication plan - Test
+description: |
+  This playbook tests the ‘Eradication Plan’ playbook which is part of the ‘Common Playbooks’ pack.
+  he playbook includes the following conducted tests to check if the eradication actions were performed properly.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: b6e92da3-1700-46d9-86b9-5afb44ee9f00
+    type: start
+    task:
+      id: b6e92da3-1700-46d9-86b9-5afb44ee9f00
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 83977c56-6701-4b37-8842-49b85b72eed1
+    type: title
+    task:
+      id: 83977c56-6701-4b37-8842-49b85b72eed1
+      version: -1
+      name: Test without inputs
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "17"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -795
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 54357bf5-0911-47ed-88e5-c75eb76aa6ca
+    type: title
+    task:
+      id: 54357bf5-0911-47ed-88e5-c75eb76aa6ca
+      version: -1
+      name: Test with inputs
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "18"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 1ccb44da-d4e4-4242-8de4-089517d7724b
+    type: regular
+    task:
+      id: 1ccb44da-d4e4-4242-8de4-089517d7724b
+      version: -1
+      name: Set Path
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Path
+      value:
+        simple: C:\Windows\System32\notepad.exe
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 9fa8f623-1b36-4610-893a-a6463414a5dc
+    type: condition
+    task:
+      id: 9fa8f623-1b36-4610-893a-a6463414a5dc
+      version: -1
+      name: Verify eradication action succeed
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "11"
+      "yes":
+      - "29"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: TerminatedProcessFromEndpoints
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2020
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 5507444c-048d-4259-8aa1-85661696a565
+    type: regular
+    task:
+      id: 5507444c-048d-4259-8aa1-85661696a565
+      version: -1
+      name: Make test fail
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      message:
+        simple: The eradication plan playbook has failed. Please check the output of the eradication sub-playbooks.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 750,
+          "y": 2210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 93c4740c-74b3-42e2-8e37-3d8630728eeb
+    type: playbook
+    task:
+      id: 93c4740c-74b3-42e2-8e37-3d8630728eeb
+      version: -1
+      name: Eradication Plan
+      playbookName: Eradication Plan
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 8ec5d52c-fe98-4a9c-88bf-2278d03e0e1d
+    type: playbook
+    task:
+      id: 8ec5d52c-fe98-4a9c-88bf-2278d03e0e1d
+      version: -1
+      name: Eradication Plan
+      description: "This playbook handles all the eradication actions available with Cortex XSIAM, including the following sub-playbooks:\n* Eradication Plan - Reset user password\n* Eradication Plan - Delete file\n* Eradication Plan - Kill process (currently, the playbook supports terminating a process by name)  \n\nNote: The playbook inputs enable manipulating the execution flow. Read the input descriptions for details."
+      playbookName: Eradication Plan
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      AutoEradicate:
+        simple: "True"
+      EndpointID:
+        complex:
+          root: Core.Endpoint
+          accessor: endpoint_id
+      FilePath:
+        complex:
+          root: Path
+      FileRemediation:
+        simple: "False"
+      ProcessTermination:
+        simple: Name
+      UserRemediation:
+        simple: "True"
+      Username:
+        complex:
+          root: foundIncidents.CustomFields
+          accessor: username
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1830
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 9eb18de0-45b2-4baa-842a-1cca96cced50
+    type: regular
+    task:
+      id: 9eb18de0-45b2-4baa-842a-1cca96cced50
+      version: -1
+      name: Delete all context
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -665
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: f5325ab9-2821-45ac-85eb-47cf05efb2b1
+    type: regular
+    task:
+      id: f5325ab9-2821-45ac-85eb-47cf05efb2b1
+      version: -1
+      name: Delete all context
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -185
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 1b0c28c8-4c99-4b12-8d8b-5fd34c5b2959
+    type: regular
+    task:
+      id: 1b0c28c8-4c99-4b12-8d8b-5fd34c5b2959
+      version: -1
+      name: run process
+      description: Initiate a new endpoint script execution of shell commands.
+      script: '|||core-run-script-execute-commands'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      commands:
+        simple: notepad.exe
+      endpoint_ids:
+        complex:
+          root: Core.Endpoint
+          accessor: endpoint_id
+      timeout:
+        simple: "500"
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 1660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 7e91d536-1d90-463b-8807-2176d3204244
+    type: regular
+    task:
+      id: 7e91d536-1d90-463b-8807-2176d3204244
+      version: -1
+      name: Set alert agentid
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setAlert
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      agentid:
+        complex:
+          root: Core.Endpoint
+          accessor: endpoint_id
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 9f1a846a-1e81-4d52-8481-22e63157545b
+    type: regular
+    task:
+      id: 9f1a846a-1e81-4d52-8481-22e63157545b
+      version: -1
+      name: Get Endpoints
+      description: Gets a list of endpoints, according to the passed filters. If there are no filters, all endpoints are returned. Filtering by multiple fields will be concatenated using AND condition (OR is not supported). Maximum result set size is 100. Offset is the zero-based number of endpoint from the start of the result set (start by counting from 0).
+      script: '|||core-get-endpoints'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      alias_name:
+        simple: TestPlaybook
+      status:
+        simple: connected
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -20
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 677b1863-fd26-4c1a-8eea-ea5d16611fdd
+    type: condition
+    task:
+      id: 677b1863-fd26-4c1a-8eea-ea5d16611fdd
+      version: -1
+      name: Is the EndpointID defined?
+      description: Checks if the EndpointID is defined.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "23"
+      "yes":
+      - "20"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Core.Endpoint
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: Core.Endpoint.alias
+                      iscontext: true
+                    right:
+                      value:
+                        simple: TestPlaybook
+                    ignorecase: true
+                accessor: endpoint_id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: bfb38afa-bea0-45d1-82b3-c01f728ec342
+    type: regular
+    task:
+      id: bfb38afa-bea0-45d1-82b3-c01f728ec342
+      version: -1
+      name: Make test fail
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      message:
+        simple: "Please check the endpoint status. \nNote: The Endpoint's alias is `TestPlaybook`"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 710,
+          "y": 330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 3b6a7886-b697-4f15-804f-343a4aedf507
+    type: title
+    task:
+      id: 3b6a7886-b697-4f15-804f-343a4aedf507
+      version: -1
+      name: Test process termination
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "7"
+      - "19"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 6c4e2c6b-55f1-4020-8d85-edf1dfe73ab3
+    type: regular
+    task:
+      id: 6c4e2c6b-55f1-4020-8d85-edf1dfe73ab3
+      version: -1
+      name: Create file
+      description: Initiate a new endpoint script execution of shell commands.
+      script: '|||core-run-script-execute-commands'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      commands:
+        simple: echo Hello2 >> "C:\Users\administrator\Downloads\fortestplaybook2.txt"
+      endpoint_ids:
+        complex:
+          root: Core.Endpoint
+          accessor: endpoint_id
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 980
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: 10dc7a4f-8892-416a-8e08-958f24e3800e
+    type: regular
+    task:
+      id: 10dc7a4f-8892-416a-8e08-958f24e3800e
+      version: -1
+      name: Set Path
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Path2
+      value:
+        simple: C:\Users\administrator\Downloads\fortestplaybook2.txt
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: fec9fab5-fc7c-4602-817b-b946b20d59ef
+    type: playbook
+    task:
+      id: fec9fab5-fc7c-4602-817b-b946b20d59ef
+      version: -1
+      name: Eradication Plan
+      description: "This playbook handles all the eradication actions available with Cortex XSIAM, including the following sub-playbooks:\n* Eradication Plan - Reset user password\n* Eradication Plan - Delete file\n* Eradication Plan - Kill process (currently, the playbook supports terminating a process by name)  \n\nNote: The playbook inputs enable manipulating the execution flow. Read the input descriptions for details."
+      playbookName: Eradication Plan
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      AutoEradicate:
+        simple: "True"
+      EndpointID:
+        complex:
+          root: Core.Endpoint
+          accessor: endpoint_id
+      FilePath:
+        complex:
+          root: Path2
+      FileRemediation:
+        simple: Delete
+      ProcessTermination:
+        simple: "False"
+      UserRemediation:
+        simple: "True"
+      Username:
+        complex:
+          root: foundIncidents.CustomFields
+          accessor: username
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: 82332d15-458b-466f-8cfc-7e275d3c38ba
+    type: title
+    task:
+      id: 82332d15-458b-466f-8cfc-7e275d3c38ba
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: 6831c572-4a9c-4571-8970-f078517affc6
+    type: title
+    task:
+      id: 6831c572-4a9c-4571-8970-f078517affc6
+      version: -1
+      name: Test file deletion
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "31"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: eb6c588c-9131-415a-86e3-59fb81f882df
+    type: regular
+    task:
+      id: eb6c588c-9131-415a-86e3-59fb81f882df
+      version: -1
+      name: Auto file deletion
+      description: Initiates a new endpoint script execution to delete the specified file.
+      script: '|||core-run-script-delete-file'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      endpoint_ids:
+        complex:
+          root: Core.Endpoint
+          accessor: endpoint_id
+      file_path:
+        simple: C:\Users\administrator\Downloads\fortestplaybook2.txt
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 3385,
+        "width": 1090,
+        "x": 40,
+        "y": -940
+      }
+    }
+  }
+inputs: []
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.6.0
+marketplaces:
+- marketplacev2

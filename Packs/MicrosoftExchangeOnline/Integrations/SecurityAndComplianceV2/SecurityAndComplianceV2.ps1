@@ -913,6 +913,7 @@ class SecurityAndComplianceClient {
         }
         if ($action -eq "Preview") {
             $cmd_params.Preview = $true
+            $cmd_params.Confirm = $false
         } elseif ($action -eq "Purge") {
             $cmd_params.Purge = $true
             $cmd_params.PurgeType = $purge_type
@@ -1796,7 +1797,7 @@ function Main {
         $Demisto.Debug("Command being called is $Command")
 
         # Creating Compliance and search client
-        $oauth2_client = [OAuth2DeviceCodeClient]::CreateClientFromIntegrationContext($insecure, $no_proxy)
+        $oauth2_client = [OAuth2DeviceCodeClient]::CreateClientFromIntegrationContext($insecure, $false)
 
         # Executing oauth2 commands
         switch ($command) {
