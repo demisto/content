@@ -13,9 +13,9 @@ netcraft-file-report-submit reporter_email= file_content= file_name= entry_id= r
 netcraft-submission-file-list submission_uuid=FNVOZqnhmD8mTbebJeY78kl6kkFsiuHP page=2 page_size=2 limit=50
 
 netcraft-file-screenshot-get submission_uuid= file_hash=
-netcraft-email-report-submit reporter_email= message= password= polling=false
-netcraft-submission-mail-get submission_uuid=
-netcraft-mail-screenshot-get submission_uuid=
+netcraft-email-report-submit reporter_email=mmatyas@paloaltonetworks.com message= password= polling=false
+netcraft-submission-mail-get submission_uuid=eSc0PHhI3RYB79CCQkNmXx4yp3CLi4KO
+netcraft-mail-screenshot-get submission_uuid=eSc0PHhI3RYB79CCQkNmXx4yp3CLi4KO
 
 netcraft-url-report-submit reporter_email=spadan@paloaltonetworks.com urls= reason= polling=true interval_in_seconds=30 timeout=300
 

@@ -359,7 +359,7 @@ def test_module(client: Client) -> str:
 def fetch_incidents(client: Client) -> list[dict[str, str]]:
     # demisto.getLastRun and demisto.setLastRun hold takedown IDs
     def to_xsoar_incident(incident: dict) -> dict:
-        
+
         demisto.debug(incident_id := incident['id'])
         return {
             'name': f'Takedown-{incident_id}',
@@ -709,8 +709,14 @@ def submission_list(args: dict, client: Client) -> CommandResults:
             args,
             'source_name', 'state', 'submission_reason', 'submitter_email'
         ) | {
-            'date_start': str(arg_to_datetime(args.get('date_start')) or ''),  # TODO doesn't work
-            'date_end': str(arg_to_datetime(args.get('date_end')) or ''),
+            'date_start':
+                str(date.date())
+                if (date := arg_to_datetime(args.get('date_start')))
+                else None,
+            'date_end':
+                str(date.date())
+                if (date := arg_to_datetime(args.get('date_end')))
+                else None,
         },
         **sub_dict(args, 'limit', 'page_size', 'next_token'),
         pages_key_path=['submissions']
