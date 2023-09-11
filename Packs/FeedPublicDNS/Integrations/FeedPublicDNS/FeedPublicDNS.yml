@@ -96,7 +96,7 @@ script:
       name: limit
     description: Gets indicators from the feed.
     name: public-dns-get-indicators
-  dockerimage: devdemisto/netutils:1.0.0.73081
+  dockerimage: demisto/netutils:1.0.0.73928
   feed: true
   runonce: false
   script: '-'
