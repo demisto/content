@@ -16,7 +16,7 @@
             "selectValues": null,
             "type": "shortText",
             "width": 150,
-            "_comment": "The source of related item. Ex: Alerts, ServiceNOW, JIRA, etc."
+            "_comment": "Optional: The source of related item. Ex: Alerts, ServiceNOW, JIRA, etc."
         },
         {
             "displayName": "Link",
@@ -30,7 +30,7 @@
             "selectValues": null,
             "type": "shortText",
             "width": 150,
-            "_comment": "Link to object (if available)."
+            "_comment": "Optional: Link to object (if available)."
         }
     ],
     "content": true,

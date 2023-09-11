@@ -16,7 +16,7 @@
             "selectValues": null,
             "type": "shortText",
             "width": 150,
-            "_comment": "URL to display/download summary."
+            "_comment": "Mandatory: URL to display/download summary."
         },
         {
             "displayName": "EntryID",
@@ -30,7 +30,7 @@
             "selectValues": null,
             "type": "shortText",
             "width": 150,
-            "_comment": "File entryID."
+            "_comment": "Mandatory: File entryID."
         }
     ],
     "content": true,

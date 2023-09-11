@@ -16,7 +16,7 @@
             "selectValues": null,
             "type": "shortText",
             "width": 150,
-            "_comment": "The stage of playbook that was completed."
+            "_comment": "Mandatory: The stage of playbook that was completed."
         },
         {
             "displayName": "timestamp",
@@ -30,7 +30,7 @@
             "selectValues": null,
             "type": "shortText",
             "width": 150,
-            "_comment": "The timestamp of the completed playbook stage."
+            "_comment": "Mandatory: The timestamp of the completed playbook stage."
         }
     ],
     "content": true,

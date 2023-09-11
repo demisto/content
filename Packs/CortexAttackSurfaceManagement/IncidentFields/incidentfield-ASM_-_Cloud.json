@@ -16,7 +16,7 @@
             "selectValues": null,
             "type": "shortText",
             "width": 150,
-            "_comment": "The cloud provider: AWS, GCP, Azure, etc."
+            "_comment": "Mandatory: The cloud provider: AWS, GCP, Azure, etc."
         },
         {
             "displayName": "Organization",
@@ -30,7 +30,7 @@
             "selectValues": null,
             "type": "shortText",
             "width": 150,
-            "_comment": "Highest level cloud management object."
+            "_comment": "Optional: Highest level cloud management object."
         },
         {
             "displayName": "Project",
@@ -44,7 +44,7 @@
             "selectValues": null,
             "type": "shortText",
             "width": 150,
-            "_comment": "Second highest level cloud management object."
+            "_comment": "Mandatory: Second highest level cloud management object."
         },
         {
             "displayName": "Region",
@@ -58,7 +58,7 @@
             "selectValues": null,
             "type": "shortText",
             "width": 150,
-            "_comment": "Region being used for the asset."
+            "_comment": "Mandatory: Region being used for the asset."
         },
         {
             "displayName": "Other",
@@ -72,7 +72,7 @@
             "selectValues": null,
             "type": "shortText",
             "width": 150,
-            "_comment": "Availability zone or other information."
+            "_comment": "Optional: Availability zone or other information."
         }
     ],
     "content": true,
