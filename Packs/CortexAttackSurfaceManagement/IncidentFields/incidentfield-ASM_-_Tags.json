@@ -44,7 +44,7 @@
             "selectValues": null,
             "type": "shortText",
             "width": 150,
-            "_comment": "The source of tag. Ex: ServiceNOW, AWS, GCP, Tenable, etc."
+            "_comment": "Mandatory: The source of tag. Ex: ServiceNOW, AWS, GCP, Tenable, etc."
         }
     ],
     "content": true,

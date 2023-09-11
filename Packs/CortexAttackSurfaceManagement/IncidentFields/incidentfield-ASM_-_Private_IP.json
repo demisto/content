@@ -16,7 +16,7 @@
             "selectValues": null,
             "type": "shortText",
             "width": 150,
-            "_comment": "The IP address of the relevant asset."
+            "_comment": "Mandatory: The IP address of the relevant asset."
         },
         {
             "displayName": "Source",
@@ -30,7 +30,7 @@
             "selectValues": null,
             "type": "shortText",
             "width": 150,
-            "_comment": "The source of the IP address."
+            "_comment": "Mandatory: The source of the IP address."
         }
     ],
     "content": true,
