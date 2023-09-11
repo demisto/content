@@ -1831,7 +1831,7 @@ def fetch_incidents(client: 'GSuiteClient', last_run: dict, params: dict, is_tes
     return incidents, {'last_fetch': last_fetch}
 
 
-def main() -> None:
+def main() -> None:  # pragma: no cover
     """
          PARSE AND VALIDATE INTEGRATION PARAMS
     """
