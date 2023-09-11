@@ -52,6 +52,7 @@ class WhoisEmptyResponse(Exception):
 class WhoisException(Exception):
     pass
 
+
 # whois domain exception to execution metrics attribute mapping
 whois_exception_mapping: Dict[Type, str] = {
     socket.error: "connection_error",
@@ -80,6 +81,7 @@ class InvalidDateHandler:
         if self.year == 2000:
             return f'{self.day}-{self.month}-{0}'
         return f'{self.day}-{self.month}-{self.year}'
+
 
 def increment_metric(execution_metrics: ExecutionMetrics, mapping: Dict[type, str], caught_exception: Type) -> ExecutionMetrics:
     """
@@ -373,7 +375,8 @@ def ip_command(reliability: str, should_error: bool) -> List[CommandResults]:
 
     return append_metrics(execution_metrics=execution, results=results)
 
-def generic_domain_command(reliability: str,args: dict, execution_metrics: ExecutionMetrics) -> List[CommandResults]:
+
+def generic_domain_command(reliability: str, args: dict, execution_metrics: ExecutionMetrics) -> List[CommandResults]:
     results: List[CommandResults] = []
 
     query = args.get("query", "paloaltonetworks.com")
@@ -385,7 +388,7 @@ def generic_domain_command(reliability: str,args: dict, execution_metrics: Execu
     domains = domain or query
     for domain in argToList(domains):
         try:
-            whois_result = whois.whois(domain=domain, is_recursive=is_recursive)
+            whois_result = whois.whois(domain, flags=is_recursive)
             execution_metrics.success += 1
             md, standard_ec, dbot_score = create_outputs(whois_result, domain, reliability, query)
             context_res = {}
@@ -445,6 +448,7 @@ def generic_domain_command(reliability: str,args: dict, execution_metrics: Execu
 
     return append_metrics(execution_metrics=execution_metrics, results=results)
 
+
 def whois_command(reliability: str) -> List[CommandResults]:
     """
     Runs Whois domain query.
@@ -458,13 +462,11 @@ def whois_command(reliability: str) -> List[CommandResults]:
     args = demisto.args()
     query = args.get("query", "paloaltonetworks.com")
 
-
     demisto.info(f"whois command is called with the query '{query}'")
 
     execution_metrics = ExecutionMetrics()
 
     return generic_domain_command(reliability=reliability, args=args, execution_metrics=execution_metrics)
-
 
 
 def domain_command(reliability: str) -> List[CommandResults]:
@@ -492,7 +494,7 @@ def test_command():
     whois_result = whois.whois(test_domain)
 
     try:
-        if whois_result['nameservers'][0] == 'ns1.google.com':
+        if whois_result.name_servers == 'ns1.google.com':
             return 'ok'
     except Exception as e:
         raise WhoisException(f"Failed testing module using domain '{test_domain}': {e.__class__.__name__} {e}")
