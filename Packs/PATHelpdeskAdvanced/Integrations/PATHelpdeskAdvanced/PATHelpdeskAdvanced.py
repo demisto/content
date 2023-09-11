@@ -1,3 +1,4 @@
+from json import JSONDecodeError
 from pathlib import Path
 from typing import Literal, NamedTuple
 from collections.abc import Callable
@@ -85,53 +86,6 @@ TICKET_PRIORITY = Field("ticket_priority")
 _PRIORITY = Field("priority")
 _TICKET_SOURCE = Field("ticket_source")
 
-HARDCODED_COLUMNS = [
-    # sent on every listing request
-    field.hda_name
-    for field in (
-        OBJECT_DESCTIPTION,
-        OBJECT_ENTITY,
-        SOLUTION,
-        TICKET_CLASSIFICATION_ID,
-        SERVICE_ID,
-        PROBLEM_HTML,
-        CONTACT_ID,
-        NEXT_EXPIRATION_ID,
-        TASK_EFFORT,
-        ID,
-        SUPPLIER_ID,
-        SOLUTION_HTML,
-        IS_NEW,
-        EXPIRATION_DATE,
-        LOCATION_ID,
-        ESTIMATED_TASK_START_DATE,
-        FIRST_UPDATE_USER_ID,
-        ACCOUNT_ID,
-        MAIL_BOX_ID,
-        CLOSURE_DATE,
-        BILLED_TOKENS,
-        TICKET_TYPE_ID,
-        OWNER_USER_ID,
-        PARENT_TICKET_ID,
-        CUSTOMER_CONTRACT_ID,
-        LANGUAGE_ID,
-        KNOWN_ISSUE,
-        ASSET_ID,
-        DATE,
-        URGENCY_ID,
-        SCORE,
-        SUBJECT,
-        ESTIMATED_TASK_DURATION,
-        SOLICITS,
-        SITE,
-        CALENDAR_ID,
-        LAST_EXPIRATION_DATE,
-        SITE_UNREAD,
-        PROBLEM,
-        NEXT_EXPIRATION_DATE,
-        ASSIGNED_USER_OR_GROUP_ID,
-    )
-]
 
 ID_DESCRIPTION_COLUMN_NAMES = [field.hda_name for field in (ID, DESCRIPTION)]
 
@@ -200,18 +154,19 @@ class Client(BaseClient):
         method: Literal["GET", "POST"],
         attempted_action: str,
         **kwargs,
-    ):
-        response = self._http_request(method, url_suffix, **kwargs)
+    ) -> dict:
+        response = self._http_request(
+            method, url_suffix, resp_type="response",  **kwargs
+        )
+        try:
+            response_body = json.loads(response.text)
+            if response_body["success"] is not True:  # request failed
+                raise RequestNotSuccessfulError(response, attempted_action)
+            return response_body
 
-        if (
-            isinstance(response, str)
-            and "A server error has occurred. Please, contact portal administrator"
-            in response  # TODO test
-        ) or (isinstance(response, dict) and response["success"] is not True):
-            # request failed
-            raise RequestNotSuccessfulError(response, attempted_action)
-
-        return response
+        except JSONDecodeError as e:
+            # TODO parse error response
+            raise RequestNotSuccessfulError(response, attempted_action) from e
 
     def __init__(
         self,
@@ -275,15 +230,17 @@ class Client(BaseClient):
 
         else:
             demisto.debug(
-                "refresh token expired, logging in with username and password"
+                "refresh token expired or missing, logging in with username and password"
             )
             response = generate_new_token()
+
 
         self.request_token = response["requestToken"]
         self.refresh_token = response["refreshToken"]
         self.token_expiry_utc = datetime.utcnow() + timedelta(
             seconds=response["expiresIn"]
         )
+        self._headers = {"Authorization": f"Bearer {self.request_token}"}
         demisto.setIntegrationContext(
             integration_context
             | {
@@ -316,26 +273,72 @@ class Client(BaseClient):
         )
 
         return self.http_request(
-            "HDAPortal/WSC/Set",
+            "WSC/Set",
             "POST",
             params={"entity": "Ticket", "data": data},
             attempted_action="creating ticket",
         )
 
     def list_tickets(self, **kwargs) -> dict:
+        columns = [
+            field.hda_name
+            for field in (
+                OBJECT_DESCTIPTION,
+                OBJECT_ENTITY,
+                SOLUTION,
+                TICKET_CLASSIFICATION_ID,
+                SERVICE_ID,
+                PROBLEM_HTML,
+                CONTACT_ID,
+                NEXT_EXPIRATION_ID,
+                TASK_EFFORT,
+                ID,
+                SUPPLIER_ID,
+                SOLUTION_HTML,
+                IS_NEW,
+                EXPIRATION_DATE,
+                LOCATION_ID,
+                ESTIMATED_TASK_START_DATE,
+                FIRST_UPDATE_USER_ID,
+                ACCOUNT_ID,
+                MAIL_BOX_ID,
+                CLOSURE_DATE,
+                BILLED_TOKENS,
+                TICKET_TYPE_ID,
+                OWNER_USER_ID,
+                PARENT_TICKET_ID,
+                CUSTOMER_CONTRACT_ID,
+                LANGUAGE_ID,
+                KNOWN_ISSUE,
+                ASSET_ID,
+                DATE,
+                URGENCY_ID,
+                SCORE,
+                SUBJECT,
+                ESTIMATED_TASK_DURATION,
+                SOLICITS,
+                SITE,
+                CALENDAR_ID,
+                LAST_EXPIRATION_DATE,
+                SITE_UNREAD,
+                PROBLEM,
+                NEXT_EXPIRATION_DATE,
+                ASSIGNED_USER_OR_GROUP_ID,
+            )
+        ]
+
         params: dict[str, str | list | int] = {
-            "entity": "Ticket",  # hardcoded
-            "columnExpressions": HARDCODED_COLUMNS,  # hardcoded
-            "columnNames": HARDCODED_COLUMNS,  # hardcoded
+            "entity": "Ticket",
+            "columnExpressions": columns,
+            "columnNames": columns,
             "start": safe_arg_to_number(kwargs.get("start", 0), "start"),
             "limit": safe_arg_to_number(kwargs["limit"], "limit"),
         }
 
         if filter_params := parse_filter_conditions(kwargs.get("filter") or ()):
             params["filter"] = filter_params
-
         return self.http_request(
-            url_suffix="HDAPortal/WSC/Projection",
+            url_suffix="WSC/Projection",
             method="POST",
             attempted_action="listing tickets",
             params=params,
@@ -343,7 +346,7 @@ class Client(BaseClient):
 
     def add_ticket_attachment(self, entry_ids: list[str], **kwargs) -> dict:
         return self.http_request(
-            url_suffix="HDAPortal/Ticket/UploadNewAttachment",
+            url_suffix="Ticket/UploadNewAttachment",
             method="POST",
             attempted_action="uploading a new attachment",
             params={
@@ -373,7 +376,7 @@ class Client(BaseClient):
         }
 
         return self.http_request(
-            url_suffix="/HDAPortal/WSC/List",
+            url_suffix="/WSC/List",
             method="POST",
             params=params,
             attempted_action="listing ticket attachments",
@@ -381,7 +384,7 @@ class Client(BaseClient):
 
     def add_ticket_comment(self, **kwargs) -> dict:
         return self.http_request(
-            url_suffix="HDAPortal/WSC/Set",
+            url_suffix="WSC/Set",
             method="POST",
             params={
                 "entity": "TicketConversationItem",
@@ -397,7 +400,7 @@ class Client(BaseClient):
 
     def list_ticket_statuses(self, **kwargs) -> dict:
         return self.http_request(
-            url_suffix="HDAPortal/WSC/Projection",
+            url_suffix="WSC/Projection",
             method="POST",
             attempted_action="listing ticket statuses",
             params={
@@ -433,7 +436,7 @@ class Client(BaseClient):
             params["note"] = note
 
         return self.http_request(
-            url_suffix="HDAPortal/Ticket/DoChangeStatus",
+            url_suffix="Ticket/DoChangeStatus",
             method="POST",
             attempted_action="changing ticket status",
             params=params,
@@ -441,7 +444,7 @@ class Client(BaseClient):
 
     def list_ticket_priorities(self) -> dict:
         return self.http_request(
-            url_suffix="HDAPortal/WSC/Projection",
+            url_suffix="WSC/Projection",
             method="POST",
             attempted_action="listing ticket priorities",
             params={
@@ -453,7 +456,7 @@ class Client(BaseClient):
 
     def list_ticket_sources(self, limit: int) -> dict:
         return self.http_request(
-            url_suffix="HDAPortal/WSC/Projection",
+            url_suffix="WSC/Projection",
             method="POST",
             attempted_action="listing ticket priorities",
             params={
@@ -467,7 +470,7 @@ class Client(BaseClient):
 
     def get_ticket_history(self, ticket_id: str) -> dict:
         return self.http_request(
-            url_suffix=f"HDAPortal/Ticket/History?ObjectID={ticket_id}",
+            url_suffix=f"Ticket/History?ObjectID={ticket_id}",
             method="POST",
             attempted_action="getting ticket history",
         )
@@ -496,7 +499,7 @@ class Client(BaseClient):
             )
 
         return self.http_request(
-            url_suffix="/HDAPortal/WSC/Projection",
+            url_suffix="WSC/Projection",
             method="POST",
             attempted_action="listing user(s)",
             params=params,
@@ -519,7 +522,7 @@ class Client(BaseClient):
             ]
 
         return self.http_request(
-            url_suffix="/HDAPortal/WSC/Projection",
+            url_suffix="WSC/Projection",
             method="POST",
             attempted_action="listing group(s)",
             params=params,
@@ -702,9 +705,10 @@ commands: dict[str, Callable] = {
 def main() -> None:
     demisto.debug(f"Command being called is {demisto.command()}")
     params = demisto.params()
+
     try:
         client = Client(
-            base_url=params["server_url"],
+            base_url=urljoin(params["base_url"].removesuffix("HDAPortal"), "HDAPortal"),
             username=params["credentials"]["identifier"],
             password=params["credentials"]["password"],
             verify=not params["insecure"],
@@ -713,7 +717,7 @@ def main() -> None:
 
         if (command := demisto.command()) == "test-module":
             # TODO client ctor checks credentials - should we just return "ok"?
-            client.list_ticket_statuses()
+            # client.list_ticket_statuses(limit=1)
             result = "ok"
 
         elif command in commands:
@@ -726,12 +730,7 @@ def main() -> None:
 
     except Exception as e:
         return_error(
-            "\n".join(
-                (
-                    f"Failed to execute {demisto.command()}.",
-                    f"Error: {e!s}",
-                )
-            )
+            "\n".join((f"Failed to execute {demisto.command()}.", f"Error: {e!s}"))
         )
 
 

@@ -3,15 +3,16 @@ commonfields:
   id: PATHelpdeskAdvanced
   version: -1
 configuration:
-- display: Your server URL
-  name: url
+- display: PAT Helpdesk URL
+  name: base_url
   required: true
   type: 0
-- displaypassword: API Key
-  additionalinfo: The API Key to use for connection
-  name: credentials
+  defaultvalue: "***REMOVED***/HDAPortal"
+- name: credentials
+  display: User name
+  displaypassword: Password
   required: true
-  hiddenusername: true
+  hiddenusername: false
   type: 9
 - display: Trust any certificate (not secure)
   name: insecure
