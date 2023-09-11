@@ -787,7 +787,7 @@ class BranchTestCollector(TestCollector):
         collected = []
         for raw_path in changed_files:
             path = PATHS.content_path / raw_path
-            logger.info(f'Collecting tests for {raw_path}')
+            logger.debug(f'Collecting tests for {raw_path}')
             try:
                 collected.append(self._collect_single(path))
             except NonXsoarSupportedPackException as e:
@@ -827,7 +827,6 @@ class BranchTestCollector(TestCollector):
         collecting a yaml-based content item (including py-based, whose names match a yaml based one)
         """
         yml_path = content_item_path.with_suffix('.yml') if content_item_path.suffix != '.yml' else content_item_path
-        logger.info(f"ENTERED _collect_yml content_item_path = {content_item_path}")
         try:
             yml = ContentItem(yml_path)
             if not yml.id_:
@@ -888,24 +887,8 @@ class BranchTestCollector(TestCollector):
                 try:
 
                     if "ApiModule" in yml.id_:
-                        logger.info(f"Found changes in ApiModule = {yml.id_}")
-                        integration_using_apimodule = self.id_set.api_modules_to_integrations.get(yml.id_, [])
-                        logger.info(f"The integrations which using this apimodule = {integration_using_apimodule}")
-                        collection_result_of_apimodule = None
-                        for integration in integration_using_apimodule:
-                            try:
-                                logger.info(f"The integration now = {integration.object_id}")
-                                integration_collected = self._collect_yml(integration.path)
-                                if collection_result_of_apimodule:
-                                    collection_result_of_apimodule += integration_collected
-                                else:
-                                    collection_result_of_apimodule = integration_collected
-                            except Exception as e:
-                                logger.info(e)
-                                continue
-                        logger.info(f"WE FINISHED")
-                        logger.info(f"collection_result_of_apimodule = {collection_result_of_apimodule}")
-                        return collection_result_of_apimodule
+                        logger.debug(f"Found changes in ApiModule = {yml.id_}")
+                        return self._collect_integrations_using_apimodule(yml.id_)
 
                     tests = tuple(yml.tests)  # raises NoTestsConfiguredException if 'no tests' in the tests field
                     reason = CollectionReason.SCRIPT_PLAYBOOK_CHANGED
@@ -948,6 +931,22 @@ class BranchTestCollector(TestCollector):
                 content_item_range=yml.version_range,
                 allow_incompatible_marketplace=override_support_level_compatibility,
             )
+
+    def _collect_integrations_using_apimodule(self, api_module_id) -> CollectionResult | None:
+        integrations_using_apimodule = self.id_set.api_modules_to_integrations.get(api_module_id, [])
+        collection_result_of_apimodule = None
+        for integration in integrations_using_apimodule:
+            try:
+                integration_collected = self._collect_yml(integration.path)
+                if collection_result_of_apimodule:
+                    collection_result_of_apimodule += integration_collected
+                else:
+                    collection_result_of_apimodule = integration_collected
+            except Exception as e:
+                logger.info(e)
+                continue
+        logger.debug(f"collection_result_of_apimodule = {collection_result_of_apimodule}")
+        return collection_result_of_apimodule
 
     def _collect_xsiam_and_modeling_pack(self,
                                          file_type: FileType | None,
@@ -1042,7 +1041,6 @@ class BranchTestCollector(TestCollector):
         if file_type in {FileType.PYTHON_FILE, FileType.POWERSHELL_FILE, FileType.JAVASCRIPT_FILE}:
             if path.name.lower().endswith(('_test.py', 'tests.ps1')):
                 raise NothingToCollectException(path, 'changing unit tests does not trigger collection')
-            logger.info("WE ARE HERE!!!!!")
             return self._collect_yml(path)
 
         elif file_type == FileType.REPUTATION:
