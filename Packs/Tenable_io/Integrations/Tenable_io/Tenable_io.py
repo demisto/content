@@ -1,12 +1,16 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+
+
 import os
 import sys
 import time
 import traceback
 from datetime import datetime
 import urllib3
+
 import requests
+
 from requests.exceptions import HTTPError
 
 # Disable insecure warnings
@@ -711,34 +715,37 @@ def get_scanner_info():
     Returns:
         CommandResults: Command object with relevant data.
     """
-    headers = ['Scanner ID', 'Name', 'Status', 'Timestamp']
-    full_url = f'{BASE_URL}/scanners'
-    response = requests.get(full_url, headers=NEW_HEADERS, verify=USE_SSL)
-    response_data = response.json()
-    scanners = response_data['scanners']
-    if response.status_code != 200:
-        raise DemistoException(raw_resposne.text)
-    scanner_data = []
-    for scanner in scanners:
-        scanner_results = {
-            'scanner_id': scanner['id'],
-            'scanner_name': scanner['name'],
-            'scanner_status': scanner['status'],
-            'timestamp': scanner['timestamp']
-        }
-        scanner_data.append(scanner_results)
+    full_url = f'{BASE_URL}scanners'
+    try:
+        response = requests.get(full_url, headers=NEW_HEADERS, verify=USE_SSL)
+        if response.status_code != 200:
+            raise DemistoException(response.text)
+        if response:
+            response_data = response.json()
+            scanners = response_data.get('scanners')
+        if scanners:
+            scanner_data = []
+            for scanner in scanners:
+                scanner_results = {
+                    'scanner_id': scanner['id'],
+                    'scanner_name': scanner['name'],
+                    'scanner_status': scanner['status'],
+                    'timestamp': scanner['timestamp']
+                }
+                scanner_data.append(scanner_results)
+        name = 'Scanner Info'
+        t = scanner_data
+        markdown = tableToMarkdown(name, t, headerTransform=underscoreToCamelCase)
+        results = CommandResults(
+            readable_output=markdown,
+            outputs_prefix='TenableIO.Scanner',
+            outputs=scanner_data,
+            raw_response=response_data
+        )
+        return results
 
-    name = 'Scanner Info'
-    t = scanner_data
-    markdown = tableToMarkdown(name, t,
-    headerTransform=underscoreToCamelCase)
-    results = CommandResults(
-        readable_output = markdown,
-        outputs_prefix = 'TenableIO.Scanner',
-        outputs = scanner_data,
-        raw_response = response_data
-    )
-    return results
+    except DemistoException as e:
+        raise DemistoException(response.text, e)
 
 
 def get_chunks_request(export_uuid: str, chunk_id: str, assets_or_vulns: str) -> dict:

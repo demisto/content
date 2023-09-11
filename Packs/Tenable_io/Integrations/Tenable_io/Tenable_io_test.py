@@ -419,6 +419,12 @@ def test_export_vulnerabilities_command(mocker, args, return_value_export_reques
         assert response.raw_response == export_vulnerabilities_response
 
 
-def test_get_scanner_info():
+def test_get_scanner_info(requests_mock):
+    requests_mock.get(MOCK_PARAMS['url'] + '/scanners',
+                      json={'scanners': [{'status': 'on',
+                                          'id': 42,
+                                          'name': "mock_scanner",
+                                          'timestamp': 0000}]})
     from Tenable_io import get_scanner_info
-    
+    results = get_scanner_info()
+    assert results.outputs[0]['scanner_status'] == 'on'
