@@ -1,6 +1,5 @@
-import io
 
-from pytest import raises, fixture
+import pytest
 
 from CommonServerPython import *
 
@@ -10,7 +9,7 @@ MOCK_PARAMS = {
 }
 
 
-@fixture
+@pytest.fixture
 def client():
     from MobileIronCLOUD import MobileIronCloudClient
 
@@ -22,7 +21,7 @@ def client():
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -95,7 +94,7 @@ class TestGetPartitionId:
 
 class TestClientGetDevicesData:
 
-    @fixture
+    @pytest.fixture
     def prepare_mock(self, requests_mock):
         mock_response_page_one = util_load_json('test_data/get_devices_response_page.json')
         mock_response_page_two = util_load_json('test_data/get_devices_response_page2.json')
@@ -183,7 +182,7 @@ def test_execute_device_action_command(client, requests_mock, mocker):
 
     requests_mock.put('/api/v1/device/unlock', json={'errors': None, 'result': 0})
 
-    with raises(ValueError):
+    with pytest.raises(ValueError):
         execute_device_action_command(client, 'unlock')
 
 
@@ -205,7 +204,7 @@ def test_execute_send_message_command(client, requests_mock, mocker):
 
     requests_mock.put('/api/v1/device/message', json={'errors': None, 'result': 0})
 
-    with raises(ValueError):
+    with pytest.raises(ValueError):
         execute_send_message_command(client)
 
 

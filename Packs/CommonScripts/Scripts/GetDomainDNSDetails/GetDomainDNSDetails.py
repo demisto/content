@@ -87,7 +87,7 @@ def get_domain_dns_details_command(args: Dict[str, Any]) -> CommandResults:
     }
 
     markdown = tableToMarkdown(
-        f' Domain DNS Details for {qname}',
+        f'Domain DNS Details for {qname}',
         answer,
         headers=["domain", "server"] + qtypes
     )
