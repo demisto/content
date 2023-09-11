@@ -33,12 +33,18 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### google-drive-create
 
 ***
+Deprecated. Use the `google-drive-drive-create` command instead.
+
+
+### google-drive-drive-create
+
+***
 Creates a new Team Drive. The name argument specifies the name of the Team Drive. The specified user will be the first organizer.
 This shared drive/team drive feature is available only with G Suite Enterprise, Enterprise for Education, G Suite Essentials, Business, Education, and Nonprofits edition.
 
 #### Base Command
 
-`google-drive-create`
+`google-drive-drive-create`
 
 #### Input
 
@@ -653,6 +659,27 @@ Gets a user shared drives.
 | GoogleDrive.Drive.Drive.restrictions.domainUsersOnly | Boolean | Whether access to this shared drive and items inside this shared drive is restricted to users of the domain to which this shared drive belongs. This restriction may be overridden by other sharing policies controlled outside of this shared drive. | 
 | GoogleDrive.Drive.Drive.restrictions.driveMembersOnly | Boolean | Whether access to items inside this shared drive is restricted to its members. | 
 
+### google-drive-drive-delete
+
+***
+Deletes a shared drive.
+
+#### Base Command
+
+`google-drive-drive-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| use_domain_admin_access | If set to true, then the requester will be granted access if they are an administrator of the domain to which the shared drive belongs. Possible values are: true, false. Default is false. | Optional | 
+| allow_item_deletion | Whether any items inside the shared drive should also be deleted. This option is only supported when use_domain_admin_access argument is set to true. Possible values are: true, false. Default is false. | Optional | 
+| user_id | The user's primary email address. | Optional | 
+| drive_id | ID of the shared drive. Can be retrieved using the `google-drive-drives-list` command. | Required | 
+
+#### Context Output
+There is no context output for this command.
+
 ### google-drive-files-list
 
 ***
@@ -673,6 +700,8 @@ Lists the user's shared drives.
 | user_id | The user's primary email address. | Optional | 
 | fields | The fields you want included in the response. Default is kind, id, name, mimeType, description, starred, trashed, explicitlyTrashed, trashingUser, trashedTime, parents, properties, appProperties, spaces, version, webContentLink, webViewLink, iconLink, hasThumbnail, thumbnailLink, thumbnailVersion, viewedByMe, viewedByMeTime, createdTime, modifiedTime, modifiedByMeTime, modifiedByMe, sharedWithMeTime, sharingUser, owners, teamDriveId, driveId, lastModifyingUser, shared, ownedByMe, capabilities, viewersCanCopyContent, copyRequiresWriterPermission, writersCanShare, permissions, permissionIds, hasAugmentedPermissions, folderColorRgb, originalFilename, fullFileExtension, fileExtension, md5Checksum, size, quotaBytesUsed, headRevisionId, contentHints, isAppAuthorized, exportLinks, shortcutDetails, contentRestrictions, resourceKey, linkShareMetadata. | Optional | 
 | supports_all_drives | Whether the requesting application supports both My Drives and shared drives. Possible values are: True, False. Default is False. | Optional | 
+| corpora | Files or documents to which the query applies. Prefer 'User' or 'Drive' to 'All Drives' for efficiency. By default, corpora is set to 'User'. However, this can change depending on the filter set through the 'query' argument. Possible values are: User, Domain, Drive, All Drivers. Default is User. | Optional | 
+| drive_id | ID of the shared drive to search. Can be retrieved using the `google-drive-drives-list` command. When a drive ID is specified the value of the corpora argument is automatically set to 'Drive' regardless of its selected value. | Optional | 
 
 #### Context Output
 
@@ -700,6 +729,7 @@ Get a single file.
 | user_id | The user's primary email address. | Optional | 
 | include_items_from_all_drives | Whether both My Drive and shared drive items should be included in the results. Possible values: "true" and "false". Possible values are: true, false. Default is false. | Optional | 
 | fields | The fields you want included in the response. Default is kind, id, name, mimeType, description, starred, trashed, explicitlyTrashed, trashingUser, trashedTime, parents, properties, appProperties, spaces, version, webContentLink, webViewLink, iconLink, hasThumbnail, thumbnailLink, thumbnailVersion, viewedByMe, viewedByMeTime, createdTime, modifiedTime, modifiedByMeTime, modifiedByMe, sharedWithMeTime, sharingUser, owners, teamDriveId, driveId, lastModifyingUser, shared, ownedByMe, capabilities, viewersCanCopyContent, copyRequiresWriterPermission, writersCanShare, permissions, permissionIds, hasAugmentedPermissions, folderColorRgb, originalFilename, fullFileExtension, fileExtension, md5Checksum, size, quotaBytesUsed, headRevisionId, contentHints, isAppAuthorized, exportLinks, shortcutDetails, contentRestrictions, resourceKey, linkShareMetadata. | Optional | 
+| supports_all_drives | Whether the requesting application supports both My Drives and shared drives. Possible values are: True, False. Default is False. | Optional | 
 
 #### Context Output
 
