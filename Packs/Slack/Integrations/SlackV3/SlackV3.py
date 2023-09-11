@@ -651,7 +651,7 @@ def mirror_investigation():
     channel_name = demisto.args().get('channelName', '')
     channel_topic = demisto.args().get('channelTopic', '')
     kick_admin = bool(strtobool(demisto.args().get('kickAdmin', 'false')))
-    private = demisto.args().get('private', '')
+    private = argToBoolean(demisto.args().get('private', 'false'))
 
     investigation = demisto.investigation()
 
