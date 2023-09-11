@@ -1,7 +1,7 @@
 {
     "fromDate": "0001-01-01T00:00:00Z",
     "fromDateLicense": "0001-01-01T00:00:00Z",
-    "id": "CTF 1 \u0026 2 Dashboard",
+    "id": "CTF 1 And 2 Dashboard",
     "layout": [
         {
             "forceRange": false,
@@ -590,7 +590,7 @@
             "y": 0
         }
     ],
-    "name": "CTF 1 \u0026 2 Dashboard",
+    "name": "CTF 1 And 2 Dashboard",
     "period": {
         "by": "",
         "byFrom": "days",
