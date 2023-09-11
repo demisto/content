@@ -1451,7 +1451,7 @@ script:
     - contextPath: Okta.ExpiredPassword.Username
       description: Unique identifier for the user.
       type: String
-  dockerimage: demisto/python3:3.10.13.72123
+  dockerimage: demisto/python3:3.10.13.73190
   runonce: false
   script: ""
   subtype: python3
