@@ -153,6 +153,7 @@ TOKEN_EXPIRED_ERROR_CODES = {50173, 700082, 70008, 54005, 7000222,
 # Moderate Retry Mechanism
 MAX_DELAY_REQUEST_COUNTER = 6
 
+
 class CloudEndpointNotSetException(Exception):
     pass
 
@@ -583,11 +584,11 @@ def create_custom_azure_cloud(origin: str,
             attestation_endpoint=suffixes.get('attestation_endpoint', defaults.suffixes.attestation_endpoint),
         ))
 
+
 def microsoft_defender_for_endpoint_get_base_url(endpoint_type, url, is_gcc=None):
     # Backward compatible argument parsing, preserve the url and is_gcc functionality if provided, otherwise use endpoint_type.
     log_message_append = ""
     if is_gcc:  # Backward compatible.
-        demisto.info("YESSSSS")
         endpoint_type = "US GCC"
         log_message_append = f" ,Overriding endpoint to {endpoint_type}, backward compatible."
     elif (endpoint_type == MICROSOFT_DEFENDER_FOR_ENDPOINT_TYPE_CUSTOM or not endpoint_type) and not url:
