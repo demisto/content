@@ -47,12 +47,12 @@ NGINX_SERVER_CONF = '''
 server {
 
     listen $port default_server $ssl;
+    $extra_headers
 
     $sslcerts
 
     proxy_cache_key $scheme$proxy_host$request_uri$extra_cache_key;
     $proxy_set_range_header
-    $extra_headers
     
     # Static test file
     location = /nginx-test {
