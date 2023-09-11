@@ -20,6 +20,7 @@ args:
     For more information:
     https://xsoar.pan.dev/docs/reference/scripts/if-elif
   required: true
+  type: textArea
 - name: flags
   description: 'Flags to control comparison and regular expression behavior. Possible values are: case_insensitive, regex_dot_all, regex_multiline, regex_full_match'
   isArray: true
