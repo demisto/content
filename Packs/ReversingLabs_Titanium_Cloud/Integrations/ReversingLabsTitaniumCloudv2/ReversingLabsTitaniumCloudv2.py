@@ -965,15 +965,26 @@ def dynamic_analysis_results_command():
 
 
 def dynamic_analysis_results_output(response_json, sha1):
+    classification = response_json.get("rl", {}).get("report", {}).get("classification")
+    classification = classification.upper()
+    md5 = response_json.get("rl", {}).get("report", {}).get("md5")
+    sha256 = response_json.get("rl", {}).get("report", {}).get("sha256")
+
+    d_bot_score = classification_to_score(classification)
+
     dbot_score = Common.DBotScore(
         indicator=sha1,
         indicator_type=DBotScoreType.FILE,
         integration_name='ReversingLabs TitaniumCloud v2',
-        score=0
+        malicious_description=classification,
+        score=d_bot_score,
+        reliability=RELIABILITY
     )
 
     indicator = Common.File(
         sha1=sha1,
+        md5=md5,
+        sha256=sha256,
         dbot_score=dbot_score
     )
 
