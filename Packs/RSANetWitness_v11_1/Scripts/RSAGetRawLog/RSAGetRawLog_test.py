@@ -66,7 +66,7 @@ def test_get_metas_log(mocker):
                                 "id": 1,
                                 "title": "title",
                                 "created": "2023-08-29T11:46:22.529Z",
-                                "events": [{"eventSource": "1.2.4.3:56005", "eventSourceId": "157970808811"}]
+                                "events": [{"eventSource": "1.2.3.4:56005", "eventSourceId": "157970808811"}]
                             }],
                         "rsarawlogslist": [{"id": 2}, {"id": 3}],
                         "metasevents": []
