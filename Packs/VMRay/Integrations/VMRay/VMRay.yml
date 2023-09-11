@@ -1122,7 +1122,7 @@ script:
   - arguments: []
     name: vmray-get-license-usage-reports
     description: Get the used quota of reports
-  dockerimage: demisto/python3:3.10.12.68300
+  dockerimage: demisto/python3:3.10.13.72123
   runonce: false
   script: ''
   subtype: python3
