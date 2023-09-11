@@ -40,18 +40,18 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Endpoint Investigation Plan
 * Containment Plan
-* Ticket Management - Generic
-* Handle False Positive Alerts
-* NGFW Internal Scan
-* Block IP - Generic v3
+* Endpoint Investigation Plan
 * Recovery Plan
+* Handle False Positive Alerts
+* Block IP - Generic v3
+* Ticket Management - Generic
+* NGFW Internal Scan
 
 ### Integrations
 
-* CortexCoreIR
 * CoreIOCs
+* CortexCoreIR
 
 ### Scripts
 
@@ -60,10 +60,10 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 ### Commands
 
 * setParentIncidentFields
-* closeInvestigation
 * ip
 * abuseipdb-report-ip
 * send-mail
+* closeInvestigation
 
 ## Playbook Inputs
 
@@ -98,6 +98,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | description | The ticket description. | ${parentIncidentFields.description}. ${parentIncidentFields.xdr_url} | Optional |
 | addCommentPerEndpoint | Whether to append a new comment to the ticket for each endpoint in the incident. Possible values: True/False. | True | Optional |
 | CommentToAdd | Comment for the ticket. | ${alert.name}. Alert ID: ${alert.id} | Optional |
+| UserVerification | Possible values: True/False.  Default: True.<br/>Whether to provide user verification for blocking IP addresses. | True | Optional |
 
 ## Playbook Outputs
 
