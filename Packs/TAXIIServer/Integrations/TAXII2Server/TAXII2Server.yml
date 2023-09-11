@@ -141,7 +141,7 @@ script:
       description: The default URL.
       type: String
     - contextPath: TAXIIServer.ServerInfo.description
-      description: The server description
+      description: The server description.
       type: String
   dockerimage: demisto/flask-nginx:1.0.0.72369
   longRunning: true
