@@ -782,7 +782,7 @@ def api_call(client, args):
     api_method = args.get('api_method', 'GET')
     api_endpoint = args.get('api_endpoint', '/api/version')
     params = args.get('parameters', {})
-    json_data = args.get('data', {})
+    json_data = json.loads(args.get('data', {}))
 
     result = client.api_call(api_method, api_endpoint, params, json_data)
 
