@@ -12,6 +12,22 @@
       - .npm/
     policy: pull
 
+.setup-locale: &setup-locale
+    - section_start "Setup locale" --collapsed
+    - echo "Before:"
+    - locale
+    - echo "Setting locale to en_US.UTF-8"
+    - export LANG=en_US.UTF-8
+    - export LC_CTYPE="C.UTF-8"
+    - export LC_NUMERIC="C.UTF-8"
+    - export LC_TIME="C.UTF-8"
+    - export LC_COLLATE="C.UTF-8"
+    - export LC_MONETARY="C.UTF-8"
+    - export LC_MESSAGES="C.UTF-8"
+    - export LC_ALL="C.UTF-8"
+    - echo "After:"
+    - locale
+    - section_end "Setup locale"
 
 .setup-network-certs: &setup-network-certs
   - section_start "Setup network certs" --collapsed
@@ -172,6 +188,7 @@
 .default-before-script:
   before_script:
     - source .gitlab/helper_functions.sh
+    - *setup-locale
     - *setup-network-certs
     - *setup-artifactory
     - *stop_contrib_external_build
