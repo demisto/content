@@ -52,11 +52,11 @@ tasks:
           transformers:
           - operator: uniq
       MD5:
-        simple: B10CB004D83B2347343FF5E3718BBDFE
+        simple: 523613A7B9DFA398CBD5EBD2DD0F4F38
       Path:
         simple: C:\\Windows\\system32\\drivers\\etc\\HOSTS
       SHA256:
-        simple: 6bc2aa391b8ef260e79b99409e44011874630c2631e4487e82b76e5cb0a49307
+        simple: 3e59379f585ebf0becb6b4e06d0fbbf806de28a4bb256e837b4555f1b4245571
       Sensor ID:
         simple: "24"
       UseD2: {}
