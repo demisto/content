@@ -95,7 +95,7 @@ def update_playbook(source_path, destination_path):
     print("Starting...")
 
     with open(source_path) as f:
-        playbook = yaml.load(f, Loader=yamlordereddictloader.SafeLoader)
+        playbook = yaml.safe_load(f)
 
     playbook = update_replace_copy_dev(playbook)
 

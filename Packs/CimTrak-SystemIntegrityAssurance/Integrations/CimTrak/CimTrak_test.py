@@ -45,7 +45,7 @@ def test_cimtrak(requests_mock):
         pre_script += "    }\n"
         pre_script += ")\n"
 
-        exec(pre_script + test_json["execute"], globals())
+        exec(pre_script + test_json["execute"], globals())  # noqa: S102
         dict_expected_result = test_json["response"]
         dict_actual_result = response
 

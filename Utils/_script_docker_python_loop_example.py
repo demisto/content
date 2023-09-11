@@ -480,7 +480,7 @@ while True:
             'win': win
         }
 
-        exec(code, sub_globals, sub_globals)  # guardrails-disable-line  # pylint: disable=W0122
+        exec(code, sub_globals, sub_globals)  # guardrails-disable-line  # pylint: disable=W0122 # noqa: S102
 
     except Exception:
         exc_type, exc_value, exc_traceback = sys.exc_info()
