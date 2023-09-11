@@ -1,0 +1,19 @@
+args:
+  attack: attack
+  attack_type: attack_type
+  brand: brand
+  comment: comment
+  customer_label: customer_label
+  entry_id: entry_id
+  force_auth: 'true'
+  inactive: 'true'
+  malware: 'true'
+  password: password
+  phishkit_fetch_url: phishkit_fetch_url.com
+  phishkit_phish_url: phishkit_phish_url.com
+  region: region
+  suspected_fraud_domain: 'true'
+  tags: tags,tags2
+api_response: |
+  TD_OK
+  30480489

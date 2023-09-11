@@ -1,0 +1,6 @@
+args:
+  note_text: note_text
+  notify: 'true'
+  takedown_id: takedown_id
+api_response:
+  note_id: 12345

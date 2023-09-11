@@ -1,0 +1,10 @@
+args:
+  interval_in_seconds: '30'
+  message: message
+  password: password
+  polling: 'true'
+  reporter_email: reporter_email
+  timeout: '600'
+api_response:
+  message: Successfully reported
+  uuid: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa

@@ -1,0 +1,12 @@
+args:
+  entry_id: entry_id,entry_id2
+  file_content: file_content
+  file_name: file_name
+  interval_in_seconds: '30'
+  polling: 'true'
+  reason: reason
+  reporter_email: reporter_email
+  timeout: '600'
+api_response:
+  message: Successfully reported
+  uuid: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa

@@ -1,0 +1,21 @@
+args:
+  add_tags: add_tags,add_tags2
+  brand: brand
+  customer_label: customer_label
+  description: description
+  region: region
+  remove_tags: remove_tags,remove_tags2
+  suspected_fraud_domain: 'true'
+  suspected_fraud_hostname: 'true'
+  takedown_id: takedown_id
+api_response:
+  customer_label: 'Internal Issue #12345'
+  description: New description of takedown
+  region: example_region
+  suspected_fraudulent_domain: 'false'
+  suspected_fraudulent_hostname: 'false'
+  tags:
+  - tag1
+  - tag2
+  takedown_id: '30480489'
+  target_brand: Example Brand

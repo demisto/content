@@ -1,0 +1,17 @@
+args:
+  all_results: 'false'
+  author_mail: author_mail
+  takedown_id: takedown_id
+api_response:
+- author: Netcraft
+  group_id: '30480489'
+  note: This is an important message!
+  note_id: 12345
+  takedown_id: '30480489'
+  time: 2023-09-11 12:04:01 UTC
+- author: Netcraft
+  group_id: '123456'
+  note: This is a very important message!
+  note_id: 678910
+  takedown_id: '123456'
+  time: 2023-09-11 12:04:01 UTC

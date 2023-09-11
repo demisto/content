@@ -1,0 +1,16 @@
+args:
+  submission_uuid: submission_uuid
+api_response:
+  classification_log:
+  - date: 1000000000
+    from_state: processing
+    to_state: no threats
+  from:
+  - user@example.com
+  hash: string
+  reply_to:
+  - user@example.com
+  state: string
+  subject: string
+  to:
+  - user@example.com

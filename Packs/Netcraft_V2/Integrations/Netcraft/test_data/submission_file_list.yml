@@ -1,0 +1,25 @@
+args:
+  limit: '50'
+  page: '2'
+  page_size: '2'
+  submission_uuid: submission_uuid
+api_response:
+  files:
+  - classification_log:
+    - date: 1000000000
+      from_state: processing
+      to_state: no threats
+    file_state: string
+    filename: malicious.exe
+    has_screenshot: '1'
+    hash: d41d8cd98f00b204e9800998ecf8427e
+  - classification_log:
+    - date: 1100000000
+      from_state: no threats
+      to_state: processing
+    file_state: string2
+    filename: malicious2.exe
+    has_screenshot: '0'
+    hash: d41d8cd98f00b504e9800998ecf8427e
+  filtered_count: 50
+  total_count: 1
