@@ -158,7 +158,7 @@ script:
   commands:
   - arguments:
     - defaultValue: '50'
-      description: limits the number of context indicators to output
+      description: limits the number of context indicators to output.
       name: limit
     description: Fetches indicators from the feed.
     name: aws-get-indicators
