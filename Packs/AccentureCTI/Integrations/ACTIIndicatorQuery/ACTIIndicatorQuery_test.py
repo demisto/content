@@ -1,7 +1,7 @@
 import requests_mock
 from ACTIIndicatorQuery import IDEFENSE_URL_TEMPLATE, Client, domain_command, url_command, ip_command, uuid_command, _calculate_dbot_score, getThreatReport_command, fix_markdown, addBaseUrlToPartialPaths, convert_inline_image_to_encoded, fundamental_uuid_command                         # noqa: E501
 from CommonServerPython import DemistoException, DBotScoreReliability
-from test_data.response_constants import *
+from test_data.response_constants import URL_RES_JSON, URL_INTEL_JSON, IP_RES_JSON, IP_INTEL_JSON, DOMAIN_RES_JSON, DOMAIN_INTEL_JSON, UUID_RES_JSON, RES_JSON_IA, RES_JSON_IR, expected_output_ia, expected_output_ir, MALWARE_FAMILY_RES_JSON, THREAT_GROUP_RES_JSON, THREAT_ACTOR_RES_JSON, expected_output_malware_family, RAW_MALWARE_FAMILY_RES_JSON
 import demistomock as demisto
 import pytest
 

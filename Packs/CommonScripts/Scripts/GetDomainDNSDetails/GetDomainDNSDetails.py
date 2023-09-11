@@ -8,7 +8,6 @@ from typing import (
 )
 import traceback
 
-import dns.message
 import dns.resolver
 import dns.rdatatype
 import dns.rdataclass

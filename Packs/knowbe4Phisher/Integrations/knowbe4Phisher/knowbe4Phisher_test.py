@@ -1,6 +1,7 @@
 import knowbe4Phisher as phisher
 import pytest
-from test_data.mock_tests import *
+from test_data.mock_tests import create_request_test, pagination_response, response_fetch, expected_fetch, events_example, \
+    expected_time
 import json
 
 

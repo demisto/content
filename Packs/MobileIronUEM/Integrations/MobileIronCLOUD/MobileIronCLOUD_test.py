@@ -27,7 +27,6 @@ def util_load_json(path):
 
 
 class TestGetPartitionId:
-    from MobileIronCLOUD import get_partition_id
 
     @staticmethod
     def test_get_partition_id_return_param(mocker, client):

@@ -32,7 +32,7 @@ from typing import Any, Dict, List, Optional, Tuple, Union, Callable, ValuesView
 import re
 import requests
 import urllib3
-from urllib.parse import urlparse, quote
+from urllib.parse import urlparse
 
 # disable insecure warnings
 urllib3.disable_warnings()

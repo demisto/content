@@ -10,7 +10,6 @@ from contextlib import contextmanager
 from queue import Queue
 from typing import Union, Any, Generator
 
-import demisto_client.demisto_api
 import pytz
 import requests
 import urllib3
