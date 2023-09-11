@@ -1,8 +1,10 @@
 import pytest
 from RSADisplayMetasEvents import CamelCaseToDotCase, display_metas
 
+
 def test_CamelCaseToDotCase():
     assert CamelCaseToDotCase("eventSource") == "event.source"
+
 
 @pytest.mark.parametrize(
     "alerts_incident, expected_results",
