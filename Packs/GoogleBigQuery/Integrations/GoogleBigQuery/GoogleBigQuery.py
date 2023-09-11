@@ -102,9 +102,7 @@ def build_query_job_config(allow_large_results, default_dataset_string, destinat
 
 def convert_to_string_if_datetime(object_that_may_be_datetime):
     if isinstance(object_that_may_be_datetime, datetime):
-        return object_that_may_be_datetime.strftime("%m/%d/%Y %H:%M:%S")
-    if isinstance(object_that_may_be_datetime, date):
-        return object_that_may_be_datetime.strftime("%m/%d/%Y")
+        return object_that_may_be_datetime.strftime("%Y-%m-%d %H:%M:%S")
     else:
         return object_that_may_be_datetime
 
@@ -320,16 +318,8 @@ def verify_params():
 
 def sort_rows(bigquery_rows):
     if bigquery_rows:
-        row = bigquery_rows[0]._xxx_field_to_index
-        additional_fields = 'additional_fields'
-        generated_time_field_name = 'generatedTime' if 'generatedTime' in row else\
-            'generated_time' if 'generated_time' in row else 'GeneratedTime'
-        event_id_field_name = 'event_id' if 'event_id' in row else 'EventId' if 'EventId' in row else 'eventId'
-        instance_id_field_name = 'instance_id' if 'instance_id' in row else 'InstanceId' if 'InstanceId' in row else 'instanceId'
-        agent_id_field_name = 'agent_id' if 'agent_id' in row else 'AgentId' if 'AgentId' in row else 'agentId'
-        return sorted(bigquery_rows, key=lambda row: (
-            row[additional_fields], row[generated_time_field_name], row[event_id_field_name], row[instance_id_field_name],
-            row[agent_id_field_name]))
+        rows_with_incident_id = [dict(row) | {'hashed_id': get_incident_id(row)} for row in bigquery_rows]
+        return sorted(rows_with_incident_id, key=lambda row: (row["creation_time"], row["hashed_id"]))
     return []
 
 
@@ -359,7 +349,7 @@ def fetch_incidents():
         # We iterate backwards since the incidents' time is in increasing order
         if len(new_incidents) == fetch_limit:
             break
-        row_incident_id = get_incident_id(row)
+        row_incident_id = row['hashed_id']
         row_date = get_row_date_string(row)
 
         if last_date and last_incident_id and (
