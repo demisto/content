@@ -2189,11 +2189,11 @@ async def test_handle_text(mocker):
     operator_email = "test@example.com"
     operator_name = "Test User"
     MESSAGE_FOOTER = '\n**From Zoom**'
-    from Zoom import handle_text
+    from Zoom import handle_text_received_from_zoom
 
     with patch('Zoom.demisto') as mock_demisto:
         # Call the function
-        await handle_text(investigation_id, text, operator_email, operator_name)
+        await handle_text_received_from_zoom(investigation_id, text, operator_email, operator_name)
      # Assert that the `demisto.addEntry` method was called with the expected arguments
         mock_demisto.addEntry.assert_called_once_with(
             id=investigation_id,

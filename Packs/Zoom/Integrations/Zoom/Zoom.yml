@@ -219,7 +219,7 @@ script:
       description: email address or id of user for meeting.
     - name: topic
       required: true
-      description: The topic of the meeting
+      description: The topic of the meeting.
     - name: waiting_room
       auto: PREDEFINED
       predefined:
@@ -1215,7 +1215,7 @@ script:
     description: Send a message using a chatbot app.
     arguments:
     - name: message
-      description: the message
+      description: the message.
       required: true
       type: string
     - name: to

@@ -122,7 +122,7 @@ CACHE_EXPIRY: float
 '''CLIENT CLASS'''
 
 
-class ZoomAccessFormatter(AccessFormatter):
+class UserAgentFormatter(AccessFormatter):
     """This formatter extracts and includes the 'User-Agent' header information
     in the log messages."""
 
@@ -464,7 +464,7 @@ def extract_entitlement(entitlement: str) -> tuple[str, str, str]:
     """
     parts = entitlement.split('@')
     if len(parts) < 2:
-        raise DemistoException("entitlement can't be parsed")
+        raise DemistoException("Entitlement cannot be parsed")
     guid = parts[0]
     id_and_task = parts[1].split('|')
     incident_id = id_and_task[0]
@@ -512,7 +512,7 @@ def run_log_running(port: int, is_test: bool = False):
             log_config['handlers']['default']['stream'] = integration_logger
             log_config['handlers']['access']['stream'] = integration_logger
             log_config['formatters']['access'] = {
-                '()': ZoomAccessFormatter,
+                '()': UserAgentFormatter,
                 'fmt': '%(levelprefix)s %(client_addr)s - "%(request_line)s" %(status_code)s "%(user_agent)s"'
             }
             uvicorn.run(app, host='0.0.0.0', port=port, log_config=log_config)
@@ -586,7 +586,7 @@ async def answer_question(text: str, question: dict, email: str = ''):
     return incident_id
 
 
-async def handle_text(investigation_id: str, text: str, operator_email: str, operator_name: str):
+async def handle_text_received_from_zoom(investigation_id: str, text: str, operator_email: str, operator_name: str):
     """
     Handles text received from Zoom 
 
@@ -624,7 +624,7 @@ async def handle_mirroring(payload):
     :param payload: str: The request payload from zoom
     :return: None
     """
-    channel_id = payload["object"].get("channel_id")
+    channel_id = payload.get("object", {}).get("channel_id")
     if not channel_id:
         return
     integration_context = fetch_context()
@@ -656,7 +656,7 @@ async def handle_mirroring(payload):
         operator_email = payload["operator"]
         operator_name = zoom_get_user_name_by_email(CLIENT, operator_email)
         investigation_id = mirror['investigation_id']
-        await handle_text(investigation_id, message, operator_email, operator_name)
+        await handle_text_received_from_zoom(investigation_id, message, operator_email, operator_name)
 
 
 async def event_url_validation(payload):
@@ -678,7 +678,7 @@ async def event_url_validation(payload):
 
 @app.post('/')
 async def handle_zoom_response(request: Request):
-    """handle anything that came from Zoom app 
+    """handle any response that came from Zoom app 
     Args:
         request : zoom request
     Returns:
@@ -694,9 +694,9 @@ async def handle_zoom_response(request: Request):
             return JSONResponse(content=res)
 
         if event_type == 'interactive_message_actions':
-            if payload.get('actionItem', False):
+            if 'actionItem' in payload:
                 action = payload['actionItem']['value']
-            elif payload.get('selectedItems', False):
+            elif 'selectedItems' in payload:
                 action = payload['selectedItems'][0]['value']
             else:
                 return Response(status_code=status.HTTP_400_BAD_REQUEST)
@@ -709,7 +709,7 @@ async def handle_zoom_response(request: Request):
             if entitlement_reply:
                 await process_entitlement_reply(entitlement_reply, account_id, robot_jid, to_jid, user_name, action)
                 demisto.updateModuleHealth("")
-            demisto.debug(f"button was clicked {action} on message {message_id}")
+            demisto.debug(f"{action} was clicked  on message {message_id}")
             return Response(status_code=status.HTTP_200_OK)
         if event_type == "chat_message.sent" and MIRRORING_ENABLED:
             await handle_mirroring(payload)
@@ -2341,7 +2341,7 @@ def find_mirror_by_investigation() -> dict:
     investigation = demisto.investigation()
     if investigation:
         integration_context = get_integration_context(SYNC_CONTEXT)
-        if integration_context.get('mirrors'):
+        if 'mirrors' in integration_context:
             mirrors = json.loads(integration_context['mirrors'])
             investigation_filter = list(filter(lambda m: investigation.get('id') == m['investigation_id'],
                                                mirrors))
@@ -2387,7 +2387,7 @@ def main():  # pragma: no cover
     bot_client_secret = params.get('bot_credentials', {}).get('password')
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
-    botJID = params.get('botJID', None)
+    bot_jid = params.get('botJID', None)
     secret_token = params.get('secret_token', {}).get('password')
 
     global SECRET_TOKEN, LONG_RUNNING, MIRRORING_ENABLED, CACHE_EXPIRY, CACHED_INTEGRATION_CONTEXT
@@ -2399,7 +2399,7 @@ def main():  # pragma: no cover
     CACHE_EXPIRY = next_expiry_time()
     CACHED_INTEGRATION_CONTEXT = get_integration_context(SYNC_CONTEXT)
 
-    if MIRRORING_ENABLED and (not LONG_RUNNING or not SECRET_TOKEN or not bot_client_id or not bot_client_secret or not botJID):
+    if MIRRORING_ENABLED and (not LONG_RUNNING or not SECRET_TOKEN or not bot_client_id or not bot_client_secret or not bot_jid):
         raise DemistoException("""Mirroring is enabled, however long running is disabled 
 or the necessary bot authentication parameters are missing. 
 For mirrors to work correctly, long running must be enabled and you must provide all 
@@ -2418,14 +2418,14 @@ bot client id and secret id""")
     args = {key.replace('-', '_'): val for key, val in args.items()}
 
     try:
-        check_authentication_bot_parameters(botJID, bot_client_id, bot_client_secret)
+        check_authentication_bot_parameters(bot_jid, bot_client_id, bot_client_secret)
         check_authentication_parameters(client_id, client_secret)
         global CLIENT
         client = Client(
             base_url=base_url,
             verify=verify_certificate,
             proxy=proxy,
-            bot_jid=botJID,
+            bot_jid=bot_jid,
             account_id=account_id,
             client_id=client_id,
             client_secret=client_secret,

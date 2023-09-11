@@ -95,7 +95,7 @@ def main():
     lifetime = demisto_args.get('lifetime', '1 day')
     try:
         parsed_date = dateparser.parse('in ' + lifetime, settings={'TIMEZONE': 'UTC'})
-        assert parsed_date is not None, f'could not parse in {lifetime}'
+        assert parsed_date is not None, f'Could not parse in {lifetime}'
         expiry = datetime.strftime(parsed_date,
                                    DATE_FORMAT)
     except Exception:
@@ -135,7 +135,7 @@ def main():
     elif channel_name:
         args['channel'] = channel_name
     else:
-        return_error('Either a user or a channel_id must be specified')
+        return_error('Either a user or a channel_id or channel_name must be specified')
 
     args['zoom_ask'] = 'true'
     try:

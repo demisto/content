@@ -59,10 +59,10 @@ class Zoom_Client(BaseClient):
 
     def generate_oauth_token(self):
         """
-    Generate an OAuth Access token using the app credentials (AKA: client id and client secret) and the account id
+        Generate an OAuth Access token using the app credentials (AKA: client id and client secret) and the account id
 
-    :return: valid token
-    """
+        :return: valid token
+        """
         token_res = self._http_request(method="POST", full_url=OAUTH_TOKEN_GENERATOR_URL,
                                        params={"account_id": self.account_id,
                                                "grant_type": "account_credentials"},
@@ -71,10 +71,10 @@ class Zoom_Client(BaseClient):
 
     def generate_oauth_client_token(self):
         """
-    Generate an OAuth Access token using the app credentials (AKA: client id and client secret) and the account id
+        Generate an OAuth Access token using the app credentials (AKA: client id and client secret) and the account id
 
-    :return: valid token
-    """
+        :return: valid token
+        """
         token_res = self._http_request(method="POST", full_url=OAUTH_TOKEN_GENERATOR_URL,
                                        params={"account_id": self.account_id,
                                                "grant_type": "client_credentials"},
@@ -101,7 +101,6 @@ class Zoom_Client(BaseClient):
                 oauth_token = self.generate_oauth_token()
             if self.bot_client_id and self.bot_client_secret:
                 client_oauth_token = self.generate_oauth_client_token()
-                demisto.debug(f"token was generate: {client_oauth_token}")
             ctx = {}
         else:
             if generation_time := dateparser.parse(
@@ -120,7 +119,6 @@ class Zoom_Client(BaseClient):
                     oauth_token = self.generate_oauth_token()
                 if self.bot_client_id and self.bot_client_secret:
                     client_oauth_token = self.generate_oauth_client_token()
-                    demisto.debug(f"token was generate: {client_oauth_token}")
 
         ctx.update({'token_info': {'oauth_token': oauth_token, 'client_oauth_token': client_oauth_token,
                    'generation_time': now.strftime("%Y-%m-%dT%H:%M:%S")}})
