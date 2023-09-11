@@ -1844,6 +1844,7 @@ def main() -> None:  # pragma: no cover
 
         'google-drive-drives-list': drives_list_command,
         'google-drive-drive-get': drive_get_command,
+        'google-drive-drive-create': drive_create_command,
         'google-drive-drive-delete': drive_delete_command,
 
         'google-drive-files-list': files_list_command,
