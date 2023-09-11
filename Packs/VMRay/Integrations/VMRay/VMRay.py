@@ -1397,6 +1397,66 @@ def get_screenshots_command():
     return_results(file_results)
 
 
+def vmray_get_license_usage_verdicts_command():
+    """
+
+    Returns:
+        dict: response
+    """
+    suffix = 'billing_info'
+    raw_response = http_request('GET', suffix)
+    data = raw_response.get('data')
+
+    entry = dict()
+    entry['VerdictsQuota'] = data.get('verdict_quota')
+    entry['VerdictsRemaining'] = data.get('verdict_remaining')
+    entry['VerdictsUsage'] = round((100 / float(data.get('verdict_quota')))
+                                     * (float(data.get('verdict_quota')) - float(data.get('verdict_remaining'))), 2)
+    entry['PeriodEndDate'] = data.get('end_date')
+
+    markdown = tableToMarkdown('VMRay Verdicts Quota Information', entry, headers=[
+                               'VerdictsQuota', 'VerdictsRemaining', 'VerdictsUsage', 'PeriodEndDate'])
+
+    results = CommandResults(
+        readable_output=markdown,
+        outputs_prefix='VMRay.VerdicsQuota',
+        outputs_key_field='PeriodEndDate',
+        outputs=entry
+    )
+
+    return_results(results)
+
+
+def vmray_get_license_usage_reports_command():
+    """
+
+    Returns:
+        dict: response
+    """
+    suffix = 'billing_info'
+    raw_response = http_request('GET', suffix)
+    data = raw_response.get('data')
+
+    entry = dict()
+    entry['ReportQuota'] = data.get('report_quota')
+    entry['ReportRemaining'] = data.get('report_remaining')
+    entry['ReportUsage'] = round((100 / float(data.get('report_quota')))
+                                 * (float(data.get('report_quota')) - float(data.get('report_remaining'))), 2)
+    entry['PeriodEndDate'] = data.get('end_date')
+
+    markdown = tableToMarkdown('VMRay Reports Quota Information', entry, headers=[
+                               'ReportQuota', 'ReportRemaining', 'ReportUsage', 'PeriodEndDate'])
+
+    results = CommandResults(
+        readable_output=markdown,
+        outputs_prefix='VMRay.ReportsQuota',
+        outputs_key_field='PeriodEndDate',
+        outputs=entry
+    )
+
+    return_results(results)
+
+
 def main():
     try:
         command = demisto.command()

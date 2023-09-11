@@ -71,6 +71,7 @@ Submits a sample to VMRay for analysis.
 | max_jobs | Maximum number of jobs to create (number). Default is 1. | Optional | 
 | tags | A CSV list of tags to add to the sample. | Optional | 
 | reanalyze | Deprecated. Analyze even if analyses already exist. To control analysis caching, use the API Key settings instead, which are available via the Analysis Settings page, in the VMRay Web Interface. Possible values are: true, false. | Optional | 
+| net_scheme_name | The Network Scheme to use | Optional |
 
 #### Context Output
 
