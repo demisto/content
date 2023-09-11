@@ -221,11 +221,10 @@ def test_alert_remediate_command_fail(mocker, prisma_cloud_v2_client):
         def __init__(self, headers) -> None:
             self.headers = headers
 
+    error_header = '[{"i18nKey":"remediation_unavailable","severity":"error","subject":null}]'
     http_request = mocker.patch.object(prisma_cloud_v2_client, '_http_request',
-                                       side_effect=
-                                       DemistoException(message='Error in API call [405] - Method Not Allowed',
-                                                        res=MockRes({'x-redlock-status':
-                                                                         '[{"i18nKey":"remediation_unavailable","severity":"error","subject":null}]'})))
+                                       side_effect=DemistoException(message='Error in API call [405] - Method Not Allowed',
+                                                                    res=MockRes({'x-redlock-status': error_header})))
     args = {'alert_id': 'P-123456'}
     command_results = alert_remediate_command(prisma_cloud_v2_client, args)
     http_request.assert_called_with('PATCH', 'alert/remediation/P-123456', resp_type='response')
@@ -370,7 +369,7 @@ def test_user_roles_list_command_with_user(mocker, prisma_cloud_v2_client):
     """
     from PrismaCloudV2 import user_roles_list_command
     http_request = mocker.patch.object(prisma_cloud_v2_client, '_http_request', return_value={'id': 'a1b2-a1b2'})
-    args = {'user_id': 'a1b2-a1b2'}
+    args = {'role_id': 'a1b2-a1b2'}
     user_roles_list_command(prisma_cloud_v2_client, args)
     http_request.assert_called_with('GET', 'user/role/a1b2-a1b2')
 

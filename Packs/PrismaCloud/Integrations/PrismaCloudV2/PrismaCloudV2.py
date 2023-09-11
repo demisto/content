@@ -1390,7 +1390,8 @@ def remediation_command_list_command(client: Client, args: Dict[str, Any]) -> Co
             raise
         if de.res.status_code == 405:
             return CommandResults(
-                readable_output=f'Remediation unavailable{" for the time given" if time_filter != TIME_FILTER_BASE_CASE else ""}.')
+                readable_output=f'Remediation unavailable'
+                                f'{" for the time given" if time_filter != TIME_FILTER_BASE_CASE else ""}.')
         elif de.res.status_code == 400:
             return CommandResults(
                 readable_output='Policy type disallowed using this remediation api. Cannot remediate multiple policy alerts.')
