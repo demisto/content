@@ -1,5 +1,6 @@
 
 import pytest
+from MobileIronCLOUD import get_partition_id
 
 from CommonServerPython import *
 
@@ -26,13 +27,12 @@ def util_load_json(path):
 
 
 class TestGetPartitionId:
-
     @staticmethod
     def test_get_partition_id_return_param(mocker, client):
         """It returns the value of partition id from params"""
 
         mocker.patch.object(demisto, 'params', return_value=MOCK_PARAMS)
-        result = TestGetPartitionId.get_partition_id(client)
+        result = get_partition_id(client)
 
         assert result == '12345'
 
@@ -50,7 +50,7 @@ class TestGetPartitionId:
         mock_response = util_load_json('test_data/tenant_spaces.json')
         requests_mock.get('/api/v1/tenant/partition/device', json=mock_response)
 
-        result = TestGetPartitionId.get_partition_id(client)
+        result = get_partition_id(client)
 
         assert result == '100001'
 
@@ -68,7 +68,7 @@ class TestGetPartitionId:
             'for_user': 'useremail',
             'default_partition_id': '10101'
         })
-        result = TestGetPartitionId.get_partition_id(client)
+        result = get_partition_id(client)
         assert result == '10101'
 
     @staticmethod
@@ -87,7 +87,7 @@ class TestGetPartitionId:
         mock_response = util_load_json('test_data/tenant_spaces.json')
         requests_mock.get('/api/v1/tenant/partition/device', json=mock_response)
 
-        result = TestGetPartitionId.get_partition_id(client)
+        result = get_partition_id(client)
 
         assert result == '100001'
 
