@@ -118,11 +118,12 @@ def test_module(host: str, cluster_id: str, api_key: str):
 def perform_long_running_loop(message_connection: Connection, maillog_connection: Connection, fetch_interval: int):
     message_events = fetch_events(EventType.MESSAGE, message_connection, fetch_interval)
     maillog_events = fetch_events(EventType.MAILLOG, maillog_connection, fetch_interval)
-    demisto.info(f"Adding {len(message_events)} Message Events, and {len(maillog_events)} MailLog Events to XSIAM")
     # Send the events to the XSIAM, with events from the context
     integration_context = demisto.getIntegrationContext()
     message_events_from_context = integration_context.get("message_events", [])
     message_maillog_from_context = integration_context.get("maillog_events", [])
+    demisto.info(f"Adding {len(message_events)} Message Events, and {len(maillog_events)} MailLog Events to XSIAM")
+
     message_events.extend(message_events_from_context)
     maillog_events.extend(message_maillog_from_context)
 
