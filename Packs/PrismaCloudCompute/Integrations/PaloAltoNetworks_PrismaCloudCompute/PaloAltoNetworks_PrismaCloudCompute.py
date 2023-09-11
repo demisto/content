@@ -420,7 +420,8 @@ class PrismaCloudComputeClient(BaseClient):
         headers = self._headers
         return self._http_request('get', 'logs/defender/download', params=params, headers=headers, resp_type="content")
 
-    def get_file_integrity_events(self, limit, sort, hostname=None, event_id=None, from_date=None, to_date=None, search_term=None):
+    def get_file_integrity_events(self, limit, sort, hostname=None, event_id=None, from_date=None,
+                                  to_date=None, search_term=None):
         """
         Get runtime file integrity audit events
 
