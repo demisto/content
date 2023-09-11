@@ -12,7 +12,9 @@
     ],
     "tags": [],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Fortinet"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2"
