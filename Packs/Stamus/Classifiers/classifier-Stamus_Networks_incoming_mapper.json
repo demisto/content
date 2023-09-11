@@ -1,0 +1,62 @@
+{
+    "description": "Stamus Networks Incoming Mapper",
+    "feed": false,
+    "id": "Stamus Networks incoming mapper",
+    "mapping": {
+        "Stamus Networks DoC": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Threat Family Name": {
+                    "simple": "family"
+                },
+                "StamusFamilyDescription": {
+                    "simple": "family_description"
+                },
+                "StamusFamilyID": {
+                    "simple": "family_id"
+                },
+                "StamusFamilyLink": {
+                    "simple": "family_link"
+                },
+                "StamusID": {
+                    "simple": "id"
+                },
+                "StamusKillchain": {
+                    "simple": "kill_chain"
+                },
+                "StamusTarget": {
+                    "simple": "target"
+                },
+                "StamusTargettype": {
+                    "simple": "target_type"
+                },
+                "StamusTenant": {
+                    "simple": "tenant"
+                },
+                "StamusThreatDescription": {
+                    "simple": "threat_description"
+                },
+                "StamusThreatId": {
+                    "simple": "threat_id"
+                },
+                "StamusThreatLink": {
+                    "simple": "threat_link"
+                },
+                "Start Time": {
+                    "simple": "timestamp"
+                },
+                "Threat Name": {
+                    "simple": "threat"
+                }
+            }
+        },
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {}
+        }
+    },
+    "name": "Stamus Networks incoming mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.9.0"
+}
