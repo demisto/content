@@ -1145,3 +1145,100 @@ Retrieves screenshots taken during a specific dynamic analysis. The screenshots 
     ]
 }
 ```
+
+
+### vmray-get-license-usage-verdicts
+***
+Gets the usage of verdicts from VMRay
+
+
+#### Base Command
+
+`vmray-get-license-usage-verdicts`
+#### Input
+
+There is no input for this command.
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| VMRay.VerdictQuota.PeriodEndDate | string | License end date | 
+| VMRay.VerdictQuota.VerdictQuota | number | Total number of available verdicts (per month) |
+| VMRay.VerdictQuota.VerdictRemaining | number | Remaining number of verdicts (per month)|
+| VMRay.VerdictQuota.VerdictUsage | number | Percentages used | 
+
+
+#### Command Example
+```
+vmray-get-license-usage-verdicts
+```
+
+#### Context Example
+
+```json
+{
+    "VMRay.VerdictQuota": {
+        "PeriodEndDate": "2024-02-03 14:12 (UTC+1)",
+        "VerdictQuota": 100,
+        "VerdictRemaining": 90,
+        "VerdictUsage": 10
+    }
+}
+```
+
+#### Human Readable Output
+
+| VerdictQuota | 100 |
+| VerdictRemaining | 90 |
+| VerdictUsage | 10.0 |
+| PeriodEndDate | 	2024-02-03 14:12 (UTC+1) |
+
+
+### vmray-get-license-usage-reports
+***
+Gets the usage of reports from VMRay
+
+
+#### Base Command
+
+`vmray-get-license-usage-reports`
+#### Input
+
+There is no input for this command.
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| VMRay.ReportQuota.PeriodEndDate | string | License end date | 
+| VMRay.ReportQuota.VerdictQuota | number | Total number of available reports (per month) |
+| VMRay.ReportQuota.VerdictRemaining | number | Remaining number of reports (per month)|
+| VMRay.ReportQuota.VerdictUsage | number | Percentages used | 
+
+#### Context Example
+
+```json
+{
+    "VMRay.ReportsQuota": {
+        "PeriodEndDate": "2024-02-03 14:12 (UTC+1)",
+        "ReportQuota": 100,
+        "ReportRemaining": 90,
+        "ReportUsage": 10
+    }
+}
+```
+
+#### Command Example
+```
+vmray-get-license-usage-reports
+```
+
+#### Human Readable Output
+
+| ReportQuota | 100 |
+| ReportRemaining | 90 |
+| ReportUsage | 10.0 |
+| PeriodEndDate | 	2024-02-03 14:12 (UTC+1) |
