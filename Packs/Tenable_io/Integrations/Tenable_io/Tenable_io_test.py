@@ -436,7 +436,6 @@ def test_export_vulnerabilities_command(mocker, args, return_value_export_reques
         assert response.raw_response == export_vulnerabilities_response
 
 
-<<<<<<< HEAD
 def test_get_scanner_info(requests_mock):
     requests_mock.get(MOCK_PARAMS['url'] + '/scanners',
                       json={'scanners': [{'status': 'on',
@@ -446,7 +445,7 @@ def test_get_scanner_info(requests_mock):
     from Tenable_io import get_scanner_info
     results = get_scanner_info()
     assert results.outputs[0]['scanner_status'] == 'on'
-=======
+
 @pytest.mark.parametrize(
     'args, expected_result',
     [
@@ -701,4 +700,4 @@ def test_scan_history_pagination_params(args, expected_result):
     result = scan_history_pagination_params(args)
 
     assert result == expected_result
->>>>>>> 9e897ffb000b7fdf1cb6d7d05945bd8e78648340
+
