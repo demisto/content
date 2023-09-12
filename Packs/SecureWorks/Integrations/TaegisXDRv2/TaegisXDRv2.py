@@ -972,7 +972,7 @@ def fetch_incidents(
             "orderByField": "created_at",
             "orderDirection": "asc",
             "page": 0,
-            "perPage": max_fetch,
+            "perPage": arg_to_number(max_fetch),
             "query": f"status in ('Open', 'Active', 'Awaiting Action') AND earliest = '{start_time}'"
         }
 
@@ -1203,8 +1203,8 @@ def fetch_investigation_command(client: Client, env: str, args=None):
         }
         """ % (fields)
         variables = {
-            "page": args.get("page", 0),
-            "perPage": args.get("page_size", 10),
+            "page": arg_to_number(args.get("page", 0)),
+            "perPage": arg_to_number(args.get("page_size", 10)),
             "query": args.get("query", "deleted_at is null"),
             "orderByField": args.get("order_by", "created_at"),
             "orderDirection": args.get("order_direction", "desc")
