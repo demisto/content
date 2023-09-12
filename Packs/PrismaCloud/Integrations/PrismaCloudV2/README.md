@@ -646,7 +646,7 @@ There are no input arguments for this command.
 ### prisma-cloud-remediation-command-list
 
 ***
-Generates and returns a list of remediation commands for the specified alerts and policies. Data returned for a successful call include fully constructed commands for remediation. Either policy ID or alert IDs must be provided. The returned information can be retrieved in the UI by clicking the "Remediate" button under the "Actions" column for supported alerts. When no absolute time nor relative time arguments are provided, the default time range is all times.
+Generates and returns a list of remediation commands for the specified alerts and policies. Data returned for a successful call include fully constructed commands for remediation. Either a policy ID or alert IDs must be provided. The returned information can be retrieved in the UI by clicking the "Remediate" button under the "Actions" column for supported alerts. When no absolute time nor relative time arguments are provided, the default time range is all times.
 
 #### Base Command
 
@@ -2148,7 +2148,7 @@ Get users lists.
 | PrismaCloud.Users.lastModifiedTs | Date | User last modified time. | 
 | PrismaCloud.Users.lastLoginTs | Date | User last login time. | 
 | PrismaCloud.Users.displayName | String | User display name. | 
-| PrismaCloud.Users.ssoBypassAllowed | Boolean | Whether sso bypass is allowed for the user role. | 
+| PrismaCloud.Users.ssoBypassAllowed | Boolean | Whether SSO bypass is allowed for the user role. | 
 | PrismaCloud.Users.accessKeysAllowed | Boolean | Whether access keys are allowed for the user role. | 
 | PrismaCloud.Users.defaultRoleId | String | User default role ID. | 
 | PrismaCloud.Users.roleIds | Unknown | User role IDs. | 

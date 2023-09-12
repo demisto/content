@@ -306,7 +306,7 @@ script:
       predefined:
       - 'true'
       - 'false'
-    description: Generates and returns a list of remediation commands for the specified alerts and policies. Data returned for a successful call include fully constructed commands for remediation. Either policy ID or alert IDs must be provided. The returned information can be retrieved in the UI by clicking the "Remediate" button under the "Actions" column for supported alerts. When no absolute time nor relative time arguments are provided, the default time range is all times.
+    description: Generates and returns a list of remediation commands for the specified alerts and policies. Data returned for a successful call include fully constructed commands for remediation. Either a policy ID or alert IDs must be provided. The returned information can be retrieved in the UI by clicking the "Remediate" button under the "Actions" column for supported alerts. When no absolute time nor relative time arguments are provided, the default time range is all times.
     name: prisma-cloud-remediation-command-list
     outputs:
     - contextPath: PrismaCloud.AlertRemediation.description
@@ -1104,7 +1104,7 @@ script:
       description: User display name.
       type: String
     - contextPath: PrismaCloud.Users.ssoBypassAllowed
-      description: Whether sso bypass is allowed for the user role.
+      description: Whether SSO bypass is allowed for the user role.
       type: Boolean
     - contextPath: PrismaCloud.Users.accessKeysAllowed
       description: Whether access keys are allowed for the user role.
