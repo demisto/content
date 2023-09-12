@@ -499,7 +499,7 @@ tasks:
       keys:
         simple: type,id,link
       val1:
-        simple: Tenable.io-Asset_id
+        simple: TENABLE-ASSET-ID
       val2:
         complex:
           root: TenableIO.AssetDetails

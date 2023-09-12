@@ -455,7 +455,7 @@ Retrieves ticket information by ticket ID.
 | id | Ticket system ID for which to retrieve information. | Optional | 
 | ticket_type | Ticket type. Can be "incident", "problem", "change_request", "sc_request", "sc_task", "sc_req_item", or "sn_si_incident". Default is "incident". | Optional |
 | number | Ticket number to retrieve. | Optional | 
-| get_attachments | If "true" will retrieve ticket attachments. Default is "false". | Optional | 
+| get_attachments | If "true" will retrieve ticket attachments.Note this option will always use the v1 API version, as it is not supported in v2. Default is "false". | Optional | 
 | custom_fields | Custom fields on which to query. For example: state_code=AR,time_zone=PST. | Optional | 
 | additional_fields | Additional fields to display in the War Room entry and incident context. | Optional | 
 
