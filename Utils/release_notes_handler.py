@@ -7,7 +7,6 @@ from datetime import datetime
 import logging
 
 from packaging.version import Version
-import requests
 from demisto_sdk.commands.common.tools import run_command, get_dict_from_file
 
 PACKS_DIR = 'Packs'
@@ -417,4 +416,3 @@ def get_pack_version_suffix(pack_metadata):
     elif is_community_supported_in_metadata(pack_metadata):
         suffix = ' (Community Contributed)'
     return suffix
-
