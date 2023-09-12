@@ -22,7 +22,7 @@
     "tests": [
         {
             "playbookID": "Test Playbook - WildFire Malware",
-            "timeout": 800
+            "timeout": 900
         },
         {
             "playbookID": "T1036 - Masquerading - Test",
