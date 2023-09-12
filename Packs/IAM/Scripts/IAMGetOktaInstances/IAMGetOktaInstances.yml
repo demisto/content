@@ -10,9 +10,9 @@ comment: Updates "Okta IAM Instance" field with the list of Okta IAM instances.
 enabled: true
 args:
 - name: incident
-  description: Incident object
+  description: Incident object.
 - name: field
-  description: Field definition object
+  description: Field definition object.
 scripttarget: 0
 subtype: python3
 dockerimage: demisto/python3:3.10.13.73190

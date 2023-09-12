@@ -1,18 +1,18 @@
 args:
 - default: false
-  description: Name of the app instance where the group needs to be synced
+  description: Name of the app instance where the group needs to be synced.
   isArray: true
   name: app_instance
   required: true
   secret: false
 - default: false
-  description: 'Dict which has id and displayName for Okta group. Eg: {"id":"00gf1h0cmqFnqf0lL1t7", "displayName": "la-cm-all"}'
+  description: 'Dict which has id and displayName for Okta group. Eg: {"id":"00gf1h0cmqFnqf0lL1t7", "displayName": "la-cm-all"}.'
   isArray: false
   name: group_data
   required: true
   secret: false
 - default: false
-  description: Okta Instance Name
+  description: Okta Instance Name.
   isArray: false
   name: okta_instance
   required: true
