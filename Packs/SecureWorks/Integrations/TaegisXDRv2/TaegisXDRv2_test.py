@@ -465,6 +465,11 @@ def test_update_investigation(requests_mock):
     with pytest.raises(ValueError, match="No valid investigation fields provided. Supported Update Fields"):
         assert update_investigation_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
 
+    # Tags defined
+    args["tags"] = "test_tag01"
+    response = update_investigation_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
+    assert response.outputs["id"] == args["id"]
+
     # Successful Update
     args = {
         "id": UPDATE_INVESTIGATION_RESPONSE["data"]["updateInvestigationV2"]["id"],

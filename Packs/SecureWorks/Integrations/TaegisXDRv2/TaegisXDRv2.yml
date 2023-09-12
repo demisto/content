@@ -180,6 +180,9 @@ script:
       - CLOSED_THREAT_MITIGATED
       description: The investigation status
       defaultValue: OPEN
+    - name: tags
+      description: A list of tags or string of comma-separated tags to add to the investigation
+      isArray: true
     outputs:
     - contextPath: TaegisXDR.Investigation
       description: The investigation ID that was created
@@ -233,6 +236,13 @@ script:
       description: The type of investigation
     - name: title
       description: The title of the investigation
+    - name: serviceDeskId
+      description: A 3rd party ticket to associate with the Taegis Investigation (usually the XSOAR incident)
+    - name: serviceDeskType
+      description: The type of 3rd party ticket to associate with the Taegis Investigation (e.g. XSOAR)
+    - name: tags
+      description: A list of tags or string of comma-separated tags to add to the investigation
+      isArray: true
     outputs:
     - contextPath: TaegisXDR.InvestigationUpdate
       description: ID of the updated Taegis investigation

@@ -69,6 +69,9 @@ INVESTIGATION_UPDATE_FIELDS = {
     "assigneeId",
     "title",
     "type",
+    "serviceDeskId",
+    "serviceDeskType",
+    "tags",
 }
 SHARELINK_TYPES = {
     "alertId",
@@ -284,6 +287,7 @@ def create_investigation_command(client: Client, env: str, args=None):
             "keyFindings": args.get("key_findings", ""),
             "type": args.get("type", "SECURITY_INVESTIGATION"),
             "assigneeId": args.get("assignee_id", "@secureworks"),
+            "tags": split_and_trim(args.get("tags", [])),
         }
     }
 
@@ -1531,7 +1535,10 @@ def update_investigation_command(client: Client, env: str, args=None):
                 f"The provided type, {args['type']}, is not valid for updating an investigation. "
                 f"Supported Type Values: {INVESTIGATION_TYPES}")
 
-        variables["input"][field] = args.get(field)
+        if field == "tags":
+            variables["input"]["tags"] = split_and_trim(args["tags"])
+        else:
+            variables["input"][field] = args.get(field)
 
     if len(variables["input"]) < 2:
         raise ValueError(f"No valid investigation fields provided. Supported Update Fields: {INVESTIGATION_UPDATE_FIELDS}")
