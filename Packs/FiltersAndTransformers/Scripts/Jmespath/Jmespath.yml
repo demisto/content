@@ -12,13 +12,13 @@ enabled: true
 args:
 - name: expression
   required: true
-  description: Jmespath expression
+  description: Jmespath expression.
 - name: value
   required: true
-  description: Original input value
+  description: Original input value.
 scripttarget: 0
 subtype: python3
-dockerimage: demisto/py3-tools:1.0.0.71964
+dockerimage: demisto/py3-tools:1.0.0.73055
 runas: DBotWeakRole
 fromversion: 5.0.0
 tests:
