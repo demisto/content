@@ -1095,7 +1095,7 @@ def fetch_incidents(
                     raise
         if is_rate_limit:
             demisto.info(f"Cortex XDR - rate limit exceeded, number of non created incidents is: "
-                        f"'{len(non_created_incidents)}'.\n The incidents will be created in the next fetch")
+                         f"'{len(non_created_incidents)}'.\n The incidents will be created in the next fetch")
 
     if non_created_incidents:
         next_run['incidents_from_previous_run'] = non_created_incidents
