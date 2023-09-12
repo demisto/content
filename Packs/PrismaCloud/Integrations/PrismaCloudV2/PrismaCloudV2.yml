@@ -960,6 +960,8 @@ script:
   - arguments:
     - description: The resource list type.
       name: list_type
+    - description: The namespace to return only resources associated with it.
+      name: namespace
     - defaultValue: '50'
       description: Maximum number of entries to return.
       name: limit
@@ -993,9 +995,14 @@ script:
     - contextPath: PrismaCloud.ResourceList.members
       description: Resource list members.
       type: Unknown
+    - contextPath: PrismaCloud.ResourceList.namespaces
+      description: Resource list namespaces.
+      type: Unknown
   - arguments:
     - description: The role id to get details of.
       name: role_id
+    - description: The resource list name to return only user roles associated with it.
+      name: resource_list_name
     - defaultValue: '50'
       description: Maximum number of entries to return.
       name: limit

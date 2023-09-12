@@ -513,6 +513,17 @@ def calculate_offset(page_size: int, page_number: int) -> tuple[int, int]:
     return page_size, page_size * (page_number - 1)
 
 
+def extract_namespace(response_items: List[Dict[str, Any]]):
+    """
+    Extract namespaces from resource list items.
+    """
+    for item in response_items:
+        for member in item.get('members', []):  # members is a list of dicts
+            if item_namespace := member.get('namespaces', []):
+                item['namespaces'] = item_namespace
+                break
+
+
 ''' FETCH AND MIRRORING HELPER FUNCTIONS '''
 
 
@@ -1417,7 +1428,7 @@ def alert_remediate_command(client: Client, args: Dict[str, Any]) -> CommandResu
         readable_output = f'Alert {alert_id} remediated successfully.'
 
     except DemistoException as de:
-        if not hasattr(de, 'res'):
+        if not (hasattr(de, 'res') and hasattr(de.res, 'status_code')):
             raise
 
         status = json.loads(get_response_status_header(de.res))
@@ -1425,6 +1436,10 @@ def alert_remediate_command(client: Client, args: Dict[str, Any]) -> CommandResu
 
         error_value = status.get('subject', '')
         failure_reason = str(status.get('i18nKey', '')).replace('_', ' ')
+
+        if de.res.status_code == 406:
+            raise DemistoException(f'Remediation failed for alert {alert_id}.\n'
+                                   f'Failure reason: {failure_reason}.\nError value: {error_value}', exception=de) from de
 
         readable_response = {'alertId': alert_id, 'successful': False, 'failureReason': failure_reason, 'errorValue': error_value}
         readable_output = tableToMarkdown(f'Remediation For Alert {alert_id}:',
@@ -1643,10 +1658,15 @@ def resource_get_command(client: Client, args: Dict[str, Any]) -> CommandResults
 
 def resource_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     list_type = args.get('list_type')
+    namespace = args.get('namespace')
     limit = arg_to_number(args.get('limit', DEFAULT_LIMIT))
     all_results = argToBoolean(args.get('all_results', 'false'))
 
     response_items = client.resource_list_request(list_type)
+    extract_namespace(response_items)
+    if namespace and response_items:
+        response_items = [item for item in response_items if namespace in item.get('namespaces', [])]
+
     total_response_amount = len(response_items)
     if not all_results and limit and response_items:
         demisto.debug(f'Returning results only up to {limit=}, from {len(response_items)} results returned.')
@@ -1655,18 +1675,13 @@ def resource_list_command(client: Client, args: Dict[str, Any]) -> CommandResult
     for response_item in response_items:
         change_timestamp_to_datestring_in_dict(response_item)
 
-    readable_responses = deepcopy(response_items)
-    nested_headers = {'resourceListType': 'Type'}
-    for readable_response in readable_responses:
-        extract_nested_values(readable_response, nested_headers)
-
-    headers = ['name', 'id', 'Type', 'description', 'lastModifiedBy']
+    headers = ['name', 'id', 'resourceListType', 'description', 'lastModifiedBy']
     command_results = CommandResults(
         outputs_prefix='PrismaCloud.ResourceList',
         outputs_key_field='id',
-        readable_output=f'Showing {len(readable_responses)} of {total_response_amount} results:\n'
+        readable_output=f'Showing {len(response_items)} of {total_response_amount} results:\n'
                         + tableToMarkdown('Resources Details:',
-                                          readable_responses,
+                                          response_items,
                                           headers=headers,
                                           removeNull=True,
                                           headerTransform=pascalToSpace),
@@ -1678,6 +1693,7 @@ def resource_list_command(client: Client, args: Dict[str, Any]) -> CommandResult
 
 def user_roles_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     role_id = args.get('role_id')
+    resource_list_name = args.get('resource_list_name')
     limit = arg_to_number(args.get('limit', DEFAULT_LIMIT))
     all_results = argToBoolean(args.get('all_results', 'false'))
 
@@ -1686,6 +1702,12 @@ def user_roles_list_command(client: Client, args: Dict[str, Any]) -> CommandResu
         response_items = [response_items] if response_items else []
     else:
         response_items = client.all_user_roles_list_request()
+
+    # reduce response to hold only items that are associated with resource_list_name
+    if resource_list_name and response_items:
+        response_items = [item for item in response_items
+                          if resource_list_name in
+                          [resource.get('name') for resource in item.get('resourceLists', [])]]
 
     total_response_amount = len(response_items)
     if not all_results and limit and response_items:
