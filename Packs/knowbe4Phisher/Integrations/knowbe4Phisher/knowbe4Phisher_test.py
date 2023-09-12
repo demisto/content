@@ -1,11 +1,13 @@
+from CommonServerPython import CommandResults
 import knowbe4Phisher as phisher
 import pytest
-from test_data.mock_tests import *
+from test_data.mock_tests import create_request_test, pagination_response, response_fetch, expected_fetch, events_example, \
+    expected_time
 import json
 
 
 def util_load_json(path):
-    with open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.load(f)
 
 
@@ -50,7 +52,7 @@ def test_caclulate_event(mocker, query, expected, return_value):
     mocker.patch.object(client, "phisher_gql_request", return_value=return_value)
     result = phisher.calculate_number_of_events(client, query)
     assert result == expected
-    assert "X-KB4-Integration" in client._headers.keys()
+    assert "X-KB4-Integration" in client._headers
     assert client._headers["X-KB4-Integration"] == "Cortex XSOAR PhishER"
 
 
