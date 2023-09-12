@@ -1,5 +1,5 @@
 # Rapid7 AppSec Pack
-Rapid7 AppSec content pack is designed to help users manage applications vulnerabilities and scans.
+The Rapid7 AppSec content pack is designed to help users manage application vulnerabilities and scans.
 
 ## What does this pack do?
 

@@ -25,7 +25,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### app-sec-vulnerability-update
 
 ***
-Update the severity or the status of the vulnerability.
+Update the severity or The status of the vulnerability.
 
 #### Base Command
 
@@ -35,9 +35,9 @@ Update the severity or the status of the vulnerability.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| vulnerability_id | The ID of the Vulnerability (dependencies - use app-sec-vulnerability-list to get all vulnerability IDs). | Required |
-| severity | The severity of the Vulnerability. Possible values are: Safe, Informational, Low, Medium, High. | Optional |
-| status | The status of the Vulnerability. Possible values are: Unreviewed, False Positive, Verified, Ignored, Remediated, Duplicate. | Optional |
+| vulnerability_id | The ID of the vulnerability (use app-sec-vulnerability-list to get all vulnerability IDs). | Required |
+| severity | The severity of the vulnerability. Possible values are: Safe, Informational, Low, Medium, High. | Optional |
+| status | The status of the vulnerability. Possible values are: Unreviewed, False Positive, Verified, Ignored, Remediated, Duplicate. | Optional |
 
 #### Context Output
 
@@ -51,7 +51,7 @@ There is no context output for this command.
 ### app-sec-vulnerability-list
 
 ***
-List vulnerabilities. Vulnerabilities are aspects of your app that can make it susceptible to attackers. If a vulnerability_id is given, the command will return the information about the wanted vulnerability.
+List vulnerabilities. Vulnerabilities are aspects of your app that can make it susceptible to attackers. If a vulnerability_id is given, the command will return the information about that specific vulnerability.
 
 #### Base Command
 
@@ -61,9 +61,9 @@ List vulnerabilities. Vulnerabilities are aspects of your app that can make it s
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| vulnerability_id | The vulnerability ID to get. In case of using this argument, the pagination arguments not relevant. | Optional |
+| vulnerability_id | The vulnerability ID to get. If using this argument, the pagination arguments are not relevant. | Optional |
 | page | Page number of paginated results. Minimum value: 1. | Optional |
-| page_size | The number of items per page. Maximum value is 1000. | Optional |
+| page_size | The number of items per page. Maximum value: 1000. | Optional |
 | limit | The maximum number of records to retrieve. Default is 50. | Optional |
 
 #### Context Output
@@ -71,21 +71,21 @@ List vulnerabilities. Vulnerabilities are aspects of your app that can make it s
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Rapid7AppSec.Vulnerability.id | String | The ID of the vulnerability. |
-| Rapid7AppSec.Vulnerability.app_id | String | The ID of the app of the vulnerability \(dependencies - use app-sec-app-list to get more information about the app\). |
+| Rapid7AppSec.Vulnerability.app_id | String | The ID of the app of the vulnerability \(use app-sec-app-list to get more information about the app\). |
 | Rapid7AppSec.Vulnerability.root_cause_url | String | The vulnerability root cause URL. For example: test.com |
 | Rapid7AppSec.Vulnerability.root_cause_method | String | The vulnerability root cause method. For example: GET. |
 | Rapid7AppSec.Vulnerability.root_cause_parameter | String | The vulnerability root cause parameter. For example: password. |
 | Rapid7AppSec.Vulnerability.severity | String | The severity of the vulnerability. |
 | Rapid7AppSec.Vulnerability.status | String | The status of the vulnerability. |
-| Rapid7AppSec.Vulnerability.first_discovered | Date | First discover time. |
-| Rapid7AppSec.Vulnerability.last_discovered | Date | Last discover time. |
+| Rapid7AppSec.Vulnerability.first_discovered | Date | The date the vulnerability was first discovered. |
+| Rapid7AppSec.Vulnerability.last_discovered | Date | The date the vulnerability was last discovered. |
 | Rapid7AppSec.Vulnerability.newly_discovered | Boolean | Whether the vulnerability is newly discovered. |
 | Rapid7AppSec.Vulnerability.Variances.id | String | The ID of the vulnerability variance. |
 | Rapid7AppSec.Vulnerability.Variances.original_exchange.id | String | The ID of the original exchange. Original exchange contains the request and the response of the variance. |
 | Rapid7AppSec.Vulnerability.Variances.original_exchange.request | String | The request details. |
 | Rapid7AppSec.Vulnerability.Variances.original_exchange.response | String | The response details. |
-| Rapid7AppSec.Vulnerability.Variances.module_id | String | The module ID. Module ID is a reference to the Model Type that related to the vulnerability \(dependencies - use app-sec-module-list to get more information about the module\). |
-| Rapid7AppSec.Vulnerability.Variances.attack_id | String | The attack ID. The attack ID is a reference to the attack that related to the Model Type \(dependencies - use app-sec-attack-get or app-sec-attack-documentation-get to get more information about the attack\). |
+| Rapid7AppSec.Vulnerability.Variances.module_id | String | The module ID. Module ID is a reference to the Model Type that related to the vulnerability \(use app-sec-module-list to get more information about the module\). |
+| Rapid7AppSec.Vulnerability.Variances.attack_id | String | The attack ID. The attack ID is a reference to the attack that is related to the model type \(use app-sec-attack-get or app-sec-attack-documentation-get to get more information about the attack\). |
 | Rapid7AppSec.Vulnerability.Variances.message | String | The attack variance message. |
 | Rapid7AppSec.Vulnerability.Variances.proof | String | The attack variance proof. |
 | Rapid7AppSec.Vulnerability.Variances.proof_description | String | The attack variance proof description. |
@@ -149,15 +149,15 @@ List the history of changes for a vulnerability.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| vulnerability_id | The ID of the Vulnerability to show history (dependencies - use app-sec-vulnerability-list to get all vulnerability IDs). | Required |
+| vulnerability_id | The ID of the vulnerability for which to display the history (use app-sec-vulnerability-list to get all vulnerability IDs). | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Rapid7AppSec.VulnerabilityHistory.vulnerability_id | String | The ID of the vulnerability. |
-| Rapid7AppSec.VulnerabilityHistory.id | String | The ID of the Vulnerability History. |
-| Rapid7AppSec.VulnerabilityHistory.create_time | Date | The vulnerability created time. |
+| Rapid7AppSec.VulnerabilityHistory.id | String | The ID of the vulnerability history. |
+| Rapid7AppSec.VulnerabilityHistory.create_time | Date | The time the vulnerability was created. |
 | Rapid7AppSec.VulnerabilityHistory.source_type | String | The vulnerability source type. |
 | Rapid7AppSec.VulnerabilityHistory.source_id | String | The ID of the vulnerability source. |
 | Rapid7AppSec.VulnerabilityHistory.Changes.field | String | The vulnerability change's field. |
@@ -199,7 +199,7 @@ List the history of changes for a vulnerability.
 ### app-sec-vulnerability-comment-create
 
 ***
-Create a new Vulnerability Comment. A vulnerability comment is a resource that allows users to add context to the vulnerability.
+Create a new vulnerability comment. A vulnerability comment is a resource that allows users to add context to the vulnerability.
 
 #### Base Command
 
@@ -209,8 +209,8 @@ Create a new Vulnerability Comment. A vulnerability comment is a resource that a
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| vulnerability_id | The ID of the Vulnerability to create a comment (dependencies - use app-sec-vulnerability-list to get all vulnerability IDs). | Required |
-| comment_content | The content of the Vulnerability Comment. | Required |
+| vulnerability_id | The ID of the vulnerability for which to create a comment (use app-sec-vulnerability-list to get all vulnerability IDs). | Required |
+| comment_content | The content of the vulnerability comment. | Required |
 
 #### Context Output
 
@@ -234,9 +234,9 @@ Update an existing vulnerability comment.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| vulnerability_id | The ID of the Vulnerability to update a comment (dependencies - use app-sec-vulnerability-list to get all vulnerability IDs). | Required |
-| comment_id | The ID of the Comment to update (dependencies - use app-sec-vulnerability-comment-list to get all comment IDs). | Required |
-| comment_content | The new content of the Vulnerability Comment. | Required |
+| vulnerability_id | The ID of the vulnerability for which to update a comment (use app-sec-vulnerability-list to get all vulnerability IDs). | Required |
+| comment_id | The ID of the Comment to update (use app-sec-vulnerability-comment-list to get all comment IDs). | Required |
+| comment_content | The new content of the vulnerability comment. | Required |
 
 #### Context Output
 
@@ -260,8 +260,8 @@ Delete an existing vulnerability comment.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| vulnerability_id | The ID of the Vulnerability to delete a comment (dependencies - use app-sec-vulnerability-list to get all vulnerability IDs). | Required |
-| comment_id | The ID of the Comment to delete (dependencies - use app-sec-vulnerability-comment-list to get all comment IDs). | Required |
+| vulnerability_id | The ID of the vulnerability for which to delete a comment (use app-sec-vulnerability-list to get all vulnerability IDs). | Required |
+| comment_id | The ID of the comment to delete (use app-sec-vulnerability-comment-list to get all comment IDs). | Required |
 
 #### Context Output
 
@@ -275,7 +275,7 @@ There is no context output for this command.
 ### app-sec-vulnerability-comment-list
 
 ***
-List vulnerabilities comments. If a comment_id is given, the command will return the information about the wanted comment.
+List the vulnerability comments. If a comment_id is given, the command will return the information about the specific comment.
 
 #### Base Command
 
@@ -285,8 +285,8 @@ List vulnerabilities comments. If a comment_id is given, the command will return
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| vulnerability_id | The ID of the Vulnerability to get it comments (dependencies - use app-sec-vulnerability-list to get all vulnerability IDs). | Required |
-| comment_id | The ID of the Comment to get (dependencies - use app-sec-vulnerability-comment-list to get all vulnerability comment IDs). | Optional |
+| vulnerability_id | The ID of the vulnerability for which to get comments (use app-sec-vulnerability-list to get all vulnerability IDs). | Required |
+| comment_id | The ID of the comment to get (use app-sec-vulnerability-comment-list to get all vulnerability comment IDs). | Optional |
 
 #### Context Output
 
@@ -294,11 +294,11 @@ List vulnerabilities comments. If a comment_id is given, the command will return
 | --- | --- | --- |
 | Rapid7AppSec.VulnerabilityComment.vulnerability_id | String | The ID of the vulnerability. |
 | Rapid7AppSec.VulnerabilityComment.id | String | The ID of the comment. |
-| Rapid7AppSec.VulnerabilityComment.author_id | String | The ID of the author that created the comment. |
-| Rapid7AppSec.VulnerabilityComment.last_update_author_id | String | The ID of the last updated author of the comment. |
+| Rapid7AppSec.VulnerabilityComment.author_id | String | The ID of the author who created the comment. |
+| Rapid7AppSec.VulnerabilityComment.last_update_author_id | String | The ID of the author who last updated the comment. |
 | Rapid7AppSec.VulnerabilityComment.content | String | The comment content attached to the vulnerability. |
-| Rapid7AppSec.VulnerabilityComment.create_time | Date | Comment created time. |
-| Rapid7AppSec.VulnerabilityComment.update_time | Date | Comment updated time. |
+| Rapid7AppSec.VulnerabilityComment.create_time | Date | The date the comment was created. |
+| Rapid7AppSec.VulnerabilityComment.update_time | Date | The date the comment was updated. |
 
 #### Command example
 ```!app-sec-vulnerability-comment-list vulnerability_id=1111```
@@ -352,8 +352,8 @@ Get the metadata of an attack. AppSec can attempt multiple variations of the sam
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| module_id | The ID of the module of the attack (dependencies - use app-sec-vulnerability-list in order to get the module ID of vulnerability). | Required |
-| attack_id | The ID of the attack (dependencies - use app-sec-vulnerability-list in order to get the attack ID of vulnerability). | Required |
+| module_id | The ID of the module of the attack (use app-sec-vulnerability-list in order to get the module ID of vulnerability). | Required |
+| attack_id | The ID of the attack (use app-sec-vulnerability-list in order to get the attack ID of vulnerability). | Required |
 
 #### Context Output
 
@@ -393,7 +393,7 @@ Get the metadata of an attack. AppSec can attempt multiple variations of the sam
 ### app-sec-attack-documentation-get
 
 ***
-Get the documentation of an attack. The documentation contains the references of the attack, description about the attack and recommendations for handling it.
+Get the documentation of an attack. The documentation contains the references and description about the attack and recommendations for handling it.
 
 #### Base Command
 
@@ -403,8 +403,8 @@ Get the documentation of an attack. The documentation contains the references of
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| module_id | The ID of the module of the attack (dependencies - use app-sec-vulnerability-list in order to get the module ID of vulnerability). | Required |
-| attack_id | The ID of the attack (dependencies - use app-sec-vulnerability-list in order to get the attack ID of vulnerability). | Required |
+| module_id | The ID of the module of the attack (use app-sec-vulnerability-list in order to get the module ID of vulnerability). | Required |
+| attack_id | The ID of the attack (use app-sec-vulnerability-list in order to get the attack ID of vulnerability). | Required |
 
 #### Context Output
 
@@ -448,7 +448,7 @@ Get the documentation of an attack. The documentation contains the references of
 ### app-sec-scan-submit
 
 ***
-Submit a new Scan. A scan encapsulates all the information for a single execution of the criteria defined in the provided Scan Config.
+Submit a new scan. A scan encapsulates all the information for a single execution of the criteria defined in the provided scan configuration.
 
 #### Base Command
 
@@ -458,9 +458,9 @@ Submit a new Scan. A scan encapsulates all the information for a single executio
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| scan_config_id | The ID of the scan configuration (dependencies - use app-sec-scan-config-list to get all scan config IDs). | Required |
+| scan_config_id | The ID of the scan configuration (use app-sec-scan-config-list to get all scan config IDs). | Required |
 | scan_type | The type of the scan. Incremental scans reference the crawl map of the previous scan to identify and attack only new and updated code. Validation/ Verification scans automatically change the vulnerability status depending on whether the vulnerability was found, not found, or unknown when run against the parent_scan_id. Regular scans are designed to crawl all URLs listed in the scan config and provide in-depth results that are relevant to your needs. Possible values are: Regular, Verification, Incremental, Validation. Default is Regular. | Optional |
-| parent_scan_id | The ID of the parent scan. Relevant when scant_type=Validation/ Verification. The parent scan ID is the scan that will be updated (In case vulnerability statuses has changed) after submitting the scan. (dependencies - use app-sec-scan-list to get all scan IDs). | Optional |
+| parent_scan_id | The ID of the parent scan. Relevant when scant_type=Validation/ Verification. The parent scan ID is the scan that will be updated (in case vulnerability statuses have changed) after submitting the scan. (use app-sec-scan-list to get all scan IDs). | Optional |
 
 #### Context Output
 
@@ -474,7 +474,7 @@ There is no context output for this command.
 ### app-sec-scan-action-get
 
 ***
-Get any current scan action. Scan actions values are: "PAUSE", "RESUME", "STOP", "AUTHENTICATE", and "CANCEL". Relevant when Scan is RUNNING and when scan is on action (Scan is on action when moving between statuses. For example: after submitting new action, the scan has an action before the new status is updated).
+Get any current scan action. Scan actions values are: "PAUSE", "RESUME", "STOP", "AUTHENTICATE", and "CANCEL". Relevant when the scan is Running and when the scan is on an action (Scan is on an action when moving between statuses. For example: After submitting a new action, the scan has an action before the new status is updated).
 
 #### Base Command
 
@@ -484,7 +484,7 @@ Get any current scan action. Scan actions values are: "PAUSE", "RESUME", "STOP",
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| scan_id | The scan ID to get the action (dependencies - use app-sec-scan-list to get all scan IDs). | Required |
+| scan_id | The scan ID to get the action (use app-sec-scan-list to get all scan IDs). | Required |
 
 #### Context Output
 
@@ -518,7 +518,7 @@ Get any current scan action. Scan actions values are: "PAUSE", "RESUME", "STOP",
 ### app-sec-scan-action-submit
 
 ***
-Submit a new scan action. Scan actions values are: "PAUSE", "RESUME", "STOP", "AUTHENTICATE", and "CANCEL". Relevant when Scan status is RUNNING. In case the action is Stop/ Cancel, the the status of the scan should be Queued/ Pending/ Running/ Provisioning.
+Submit a new scan action. Scan actions values are: "PAUSE", "RESUME", "STOP", "AUTHENTICATE", and "CANCEL". Relevant when the scan status is Running. In case the action is Stop/ Cancel, the status of the scan should be Queued/ Pending/ Running/ Provisioning.
 
 #### Base Command
 
@@ -528,7 +528,7 @@ Submit a new scan action. Scan actions values are: "PAUSE", "RESUME", "STOP", "A
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| scan_id | The scan ID to submit the action (dependencies - use app-sec-scan-list to get all scan IDs). | Required |
+| scan_id | The scan ID to submit the action (use app-sec-scan-list to get all scan IDs). | Required |
 | action | The action to submit. Possible values are: Pause, Resume, Stop, Authenticate, Cancel. | Required |
 | interval_in_seconds | The interval in seconds between each poll. Default is 30. | Optional |
 | timeout_in_seconds | The timeout in seconds until polling ends. Default is 600. | Optional |
@@ -550,7 +550,7 @@ Delete a scan. The scan must be FAILED or marked as FutureObsolete to be deleted
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| scan_id | The scan ID to delete (dependencies - use app-sec-scan-list to get all scan IDs). | Required |
+| scan_id | The scan ID to delete (use app-sec-scan-list to get all scan IDs). | Required |
 
 #### Context Output
 
@@ -564,7 +564,7 @@ There is no context output for this command.
 ### app-sec-scan-list
 
 ***
-List scans. Scans attack the URLs in your app to identify behaviors that could be exploited by attackers. The specific attack types, URLs, and many other options are set in the scan configs.  If a scan_id is given, the command will return the information about the wanted scan.
+List scans. Scans attack the URLs in your app to identify behaviors that could be exploited by attackers. The specific attack types, URLs, and many other options are set in the scan configuration.  If a scan_id is given, the command will return the information about the specific scan.
 
 #### Base Command
 
@@ -574,9 +574,9 @@ List scans. Scans attack the URLs in your app to identify behaviors that could b
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| scan_id | The scan ID to get. In case of using this argument, the pagination arguments not relevant. | Optional |
+| scan_id | The scan ID to get. If using this argument, the pagination arguments are not relevant. | Optional |
 | page | Page number of paginated results. Minimum value: 1. | Optional |
-| page_size | The number of items per page. Maximum value is 1000. | Optional |
+| page_size | The number of items per page. Maximum value: 1000. | Optional |
 | limit | The maximum number of records to retrieve. Default is 50. | Optional |
 
 #### Context Output
@@ -584,7 +584,7 @@ List scans. Scans attack the URLs in your app to identify behaviors that could b
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Rapid7AppSec.Scan.id | String | The ID of the scan. |
-| Rapid7AppSec.Scan.app_id | String | The ID of the app that related to the scan. |
+| Rapid7AppSec.Scan.app_id | String | The ID of the app that is related to the scan. |
 | Rapid7AppSec.Scan.scan_config_id | String | The ID of the scan configuration. |
 | Rapid7AppSec.Scan.submitter_type | String | The type of the submitter of the scan. The values are: USER or ORGANIZATION. |
 | Rapid7AppSec.Scan.submitter_id | String | The ID of the submitter of the scan. |
@@ -627,7 +627,7 @@ List scans. Scans attack the URLs in your app to identify behaviors that could b
 ### app-sec-scan-engine-event-list
 
 ***
-List the engine events from a Scan. These logs typically capture specific events that occur during the scanning process.
+List the engine events from a scan. These logs typically capture specific events that occur during the scanning process.
 
 #### Base Command
 
@@ -637,7 +637,7 @@ List the engine events from a Scan. These logs typically capture specific events
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| scan_id | The scan ID to get the engine events (dependencies - use app-sec-scan-list to get all scan IDs). | Required |
+| scan_id | The scan ID for which to get the engine events (use app-sec-scan-list to get all scan IDs). | Required |
 
 #### Context Output
 
@@ -682,7 +682,7 @@ List the engine events from a Scan. These logs typically capture specific events
 ### app-sec-scan-platform-event-list
 
 ***
-List the platform events from a Scan. Platform logs are broader in scope and usually cover various activities and events related to the platform hosting the security scanning tool.
+List the platform events from a scan. Platform logs are broader in scope and usually cover various activities and events related to the platform hosting the security scanning tool.
 
 #### Base Command
 
@@ -692,7 +692,7 @@ List the platform events from a Scan. Platform logs are broader in scope and usu
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| scan_id | The scan ID to get the platform events (dependencies - use app-sec-scan-list to get all scan IDs). | Required |
+| scan_id | The scan ID for which to get the platform events (use app-sec-scan-list to get all scan IDs). | Required |
 
 #### Context Output
 
@@ -737,7 +737,7 @@ List the platform events from a Scan. Platform logs are broader in scope and usu
 ### app-sec-scan-execution-details-get
 
 ***
-Get real-time details of the execution of a Scan (for example: Coverage, Attack, and Network details).
+Get real-time details of the execution of a scan (for example: Coverage, Attack, and Network details).
 
 #### Base Command
 
@@ -747,7 +747,7 @@ Get real-time details of the execution of a Scan (for example: Coverage, Attack,
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| scan_id | The scan ID to get the platform events (dependencies - use app-sec-scan-list to get all scan IDs). | Required |
+| scan_id | The scan ID for which to get the platform events (use app-sec-scan-list to get all scan IDs). | Required |
 
 #### Context Output
 
@@ -755,9 +755,9 @@ Get real-time details of the execution of a Scan (for example: Coverage, Attack,
 | --- | --- | --- |
 | Rapid7AppSec.ExecutionDetail.id | String | The ID of the scan. |
 | Rapid7AppSec.ExecutionDetail.logged_in | Boolean | Whether the scan succeeded to log in to the app \(in case the scan should log in\). |
-| Rapid7AppSec.ExecutionDetail.links_in_queue | Number | The number of links in queue. |
+| Rapid7AppSec.ExecutionDetail.links_in_queue | Number | The number of links in the queue. |
 | Rapid7AppSec.ExecutionDetail.links_crawled | Number | The number of links crawled. |
-| Rapid7AppSec.ExecutionDetail.attacks_in_queue | Number | The number of attacks in queue. |
+| Rapid7AppSec.ExecutionDetail.attacks_in_queue | Number | The number of attacks in the queue. |
 | Rapid7AppSec.ExecutionDetail.attacked | Number | The number of attacks attempted. |
 | Rapid7AppSec.ExecutionDetail.vulnerable | Number | The number of vulnerabilities. |
 | Rapid7AppSec.ExecutionDetail.requests | Number | The number of network requests. |
@@ -799,7 +799,7 @@ Get real-time details of the execution of a Scan (for example: Coverage, Attack,
 ### app-sec-scan-config-list
 
 ***
-List scan configs. A Scan Config defines all the necessary information required to perform a scan of an app. If a scan_config_id is given, the command will return the information about the wanted scan config. Mainly used to submit scans.
+List the scan configuration. A scan configuration defines all the necessary information required to perform a scan of an app. If a scan_config_id is given, the command will return the information about the specific scan configuration. Mainly used to submit scans.
 
 #### Base Command
 
@@ -809,22 +809,22 @@ List scan configs. A Scan Config defines all the necessary information required 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| scan_config_id | The scan config ID to get. In case of using this argument, the pagination arguments not relevant. | Optional |
+| scan_config_id | The scan config ID to get. If using this argument, the pagination arguments are not relevant. | Optional |
 | page | Page number of paginated results. Minimum value: 1. | Optional |
-| page_size | The number of items per page. Maximum value is 1000. | Optional |
+| page_size | The number of items per page. Maximum value: 1000. | Optional |
 | limit | The maximum number of records to retrieve. Default is 50. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Rapid7AppSec.ScanConfig.id | String | The ID of the scan config. |
-| Rapid7AppSec.ScanConfig.name | String | The name of the scan config. |
-| Rapid7AppSec.ScanConfig.app_id | String | The ID of the app that related to the scan config \(dependencies - use app-sec-app-list to get all app IDs\). |
-| Rapid7AppSec.ScanConfig.attack_template_id | String | The ID of the attack template that related to the scan config \(dependencies - use app-sec-attack-template-list to get more information about the attack template\). |
+| Rapid7AppSec.ScanConfig.id | String | The ID of the scan configuration. |
+| Rapid7AppSec.ScanConfig.name | String | The name of the scan configuration. |
+| Rapid7AppSec.ScanConfig.app_id | String | The ID of the app that is related to the scan configuration \(use app-sec-app-list to get all app IDs\). |
+| Rapid7AppSec.ScanConfig.attack_template_id | String | The ID of the attack template that is related to the scan configuration \(use app-sec-attack-template-list to get more information about the attack template\). |
 | Rapid7AppSec.ScanConfig.incremental | Boolean | Whether incremental scanning is enabled. |
 | Rapid7AppSec.ScanConfig.assignment_type | String | The type of the assignment. For example: ENGINE_GROUP. |
-| Rapid7AppSec.ScanConfig.assignment_id | String | The ID of the assignment \(Supported for On-Premise engines\) \(dependencies - use app-sec-engine-group-list to get more information about the assignment ID\). |
+| Rapid7AppSec.ScanConfig.assignment_id | String | The ID of the assignment \(supported for On-Premise engines\) \(use app-sec-engine-group-list to get more information about the assignment ID\). |
 | Rapid7AppSec.ScanConfig.assignment_environment | String | The environment of the assignment. Values can be CLOUD and ON_PREMISE. |
 
 #### Command example
@@ -857,7 +857,7 @@ List scan configs. A Scan Config defines all the necessary information required 
 ### app-sec-app-list
 
 ***
-List apps. An App owns Scan Configs, Schedules, Scans, and Vulnerabilities.  Mainly used to understand vulnerabilities and scan config outputs. If a app_id is given, the command will return the information about the wanted app.
+List apps. An app owns scan configurations, schedules, scans, and vulnerabilities.  Mainly used to understand vulnerabilities and scan configuration outputs. If an app_id is given, the command will return the information about the specific app.
 
 #### Base Command
 
@@ -867,9 +867,9 @@ List apps. An App owns Scan Configs, Schedules, Scans, and Vulnerabilities.  Mai
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| app_id | The app ID to get. In case of using this argument, the pagination arguments not relevant. | Optional |
+| app_id | The app ID to get. In case of using this argument, the pagination arguments are not relevant. | Optional |
 | page | Page number of paginated results. Minimum value: 1. | Optional |
-| page_size | The number of items per page. Maximum value is 1000. | Optional |
+| page_size | The number of items per page. Maximum value: 1000. | Optional |
 | limit | The maximum number of records to retrieve. Default is 50. | Optional |
 
 #### Context Output
@@ -904,7 +904,7 @@ List apps. An App owns Scan Configs, Schedules, Scans, and Vulnerabilities.  Mai
 ### app-sec-module-list
 
 ***
-List modules. If a module_id is given, the command will return the information about the wanted module. Mainly used to understand vulnerabilities outputs.
+List the modules. If a module_id is given, the command will return the information about the specific module. Mainly used to understand the vulnerability outputs.
 
 #### Base Command
 
@@ -968,9 +968,9 @@ List attack templates. An Attack Template describes if and how Attacks should be
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| attack_template_id | The attack template ID to get. In case of using this argument, the pagination arguments not relevant. | Optional |
+| attack_template_id | The attack template ID to get. If using this argument, the pagination arguments are not relevant. | Optional |
 | page | Page number of paginated results. Minimum value: 1. | Optional |
-| page_size | The number of items per page. Maximum value is 1000. | Optional |
+| page_size | The number of items per page. Maximum value: 1000. | Optional |
 | limit | The maximum number of records to retrieve. Default is 50. | Optional |
 
 #### Context Output
@@ -979,10 +979,10 @@ List attack templates. An Attack Template describes if and how Attacks should be
 | --- | --- | --- |
 | Rapid7AppSec.AttackTemplate.id | String | The ID of the module. |
 | Rapid7AppSec.AttackTemplate.name | String | The name of the module. |
-| Rapid7AppSec.AttackTemplate.system_defined | String | Whether the attack templated defined by system. |
+| Rapid7AppSec.AttackTemplate.system_defined | String | Whether the attack template was defined by the system. |
 | Rapid7AppSec.AttackTemplate.browser_encoding_enabled | String | A flag that is used to enforce browser encoding on all attacks. |
-| Rapid7AppSec.AttackTemplate.attack_prioritization | String | The Attack Prioritization type. The values are: SEQUENTIAL, SMART, and RANDOMIZED". |
-| Rapid7AppSec.AttackTemplate.advanced_attacks_enabled | String | A flag to enable advanced Attacks. |
+| Rapid7AppSec.AttackTemplate.attack_prioritization | String | The attack prioritization type. The values are: SEQUENTIAL, SMART, and RANDOMIZED. |
+| Rapid7AppSec.AttackTemplate.advanced_attacks_enabled | String | A flag to enable advanced attacks. |
 
 #### Command example
 ```!app-sec-attack-template-list limit=1```
@@ -1013,7 +1013,7 @@ List attack templates. An Attack Template describes if and how Attacks should be
 ### app-sec-engine-list
 
 ***
-List engines. An Engine encapsulates the state and high-level attributes of the components which may be installed and running on a specific On-Premise host. If a engine_id is given, the command will return the information about the wanted engine.
+List the engines. An engine encapsulates the state and high-level attributes of the components which may be installed and running on a specific on-premise host. If an engine_id is given, the command will return the information about the specific engine.
 
 #### Base Command
 
@@ -1023,9 +1023,9 @@ List engines. An Engine encapsulates the state and high-level attributes of the 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| engine_id | The engine ID to get. In case of using this argument, the pagination arguments not relevant. | Optional |
+| engine_id | The engine ID to get. If using this argument, the pagination arguments are not relevant. | Optional |
 | page | Page number of paginated results. Minimum value: 1. | Optional |
-| page_size | The number of items per page. Maximum value is 1000. | Optional |
+| page_size | The number of items per page. Maximum value: 1000. | Optional |
 | limit | The maximum number of records to retrieve. Default is 50. | Optional |
 
 #### Context Output
@@ -1035,7 +1035,7 @@ List engines. An Engine encapsulates the state and high-level attributes of the 
 | Rapid7AppSec.Engine.id | String | The ID of the engine. |
 | Rapid7AppSec.Engine.name | String | The name of the engine. |
 | Rapid7AppSec.Engine.engine_group_id | String | The ID of the engine group. |
-| Rapid7AppSec.Engine.failure_reason | String | Failure reason \(In case it failed\). |
+| Rapid7AppSec.Engine.failure_reason | String | Failure reason \(in case it failed\). |
 | Rapid7AppSec.Engine.status | String | The engine status. |
 | Rapid7AppSec.Engine.auto_upgrade | String | Whether the engine is auto upgraded. |
 | Rapid7AppSec.Engine.latest_version | String | Whether the engine has the latest version. |
@@ -1070,7 +1070,7 @@ List engines. An Engine encapsulates the state and high-level attributes of the 
 ### app-sec-engine-group-list
 
 ***
-List engine groups. An Engine Group is a resource which defines a container for a logical grouping of Engines and therefore the purpose of assigning Scans to one of those Engines. Mainly used to understand the scan config outputs. If a engine_group_id is given, the command will return the information about the wanted engine group.
+List the engine groups. An engine group is a resource which defines a container for a logical grouping of engines and therefore the purpose of assigning scans to one of those engines. Mainly used to understand the scan configuration outputs. If an engine_group_id is given, the command will return the information about the specific engine group.
 
 #### Base Command
 
@@ -1080,9 +1080,9 @@ List engine groups. An Engine Group is a resource which defines a container for 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| engine_group_id | The engine group ID to get. In case of using this argument, the pagination arguments not relevant. | Optional |
+| engine_group_id | The engine group ID to get. If using this argument, the pagination arguments are not relevant. | Optional |
 | page | Page number of paginated results. Minimum value: 1. | Optional |
-| page_size | The number of items per page. Maximum value is 1000. | Optional |
+| page_size | The number of items per page. Maximum value: 1000. | Optional |
 | limit | The maximum number of records to retrieve. Default is 50. | Optional |
 
 #### Context Output
