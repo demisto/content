@@ -82,8 +82,8 @@ filter
     check_securityContext_isProxy = if(securityContext_isProxy = "true", to_boolean("TRUE"), to_boolean("FALSE")),
     check_debugData_risk_reasons1 = if(debugContext_debugData_risk_reasons ~= "Anonymizing Proxy", to_boolean("TRUE"), to_boolean("FALSE")),
     check_debugData_risk_reasons2 = if(debugContext_debugData_risk_reasons ~= "Anonymizing Proxy", "anonymized_ip: TRUE", "anonymized_ip: FALSE"),
-    check_ipChain_v4 = arraymap(request_ipChain -> [], if("@element" -> ip !~= ":", "@element" -> ip, null)),
-    check_ipChain_v6 = arraymap(request_ipChain -> [], if("@element" -> ip ~= ":", "@element" -> ip, null))
+    check_ipChain_v4 = arraymap(request_ipChain, if("@element" -> ip !~= ":", "@element" -> ip, null)),
+    check_ipChain_v6 = arraymap(request_ipChain, if("@element" -> ip ~= ":", "@element" -> ip, null))
 | alter
     xdm.event.log_level = if(severity = "DEBUG", XDM_CONST.LOG_LEVEL_DEBUG, severity = "INFO", XDM_CONST.LOG_LEVEL_INFORMATIONAL, severity = "WARN", XDM_CONST.LOG_LEVEL_WARNING, severity = "ERROR", XDM_CONST.LOG_LEVEL_ERROR, severity = null, null, to_string(severity)),
     xdm.event.operation_sub_type = if(eventType != "user.authentication.auth_via_mfa", null, debugdata_factor ~= "yubikey", "hardware_token", target_displaynames ~= "touch id", "hardware_token", target_displaynames ~= "hardware", "hardware_token", debugdata_factor = "fido_webauthn", "hardware_token", debugdata_factor = "password_as_factor", "password", target_displaynames = "authenticator", "application", target_displaynames = "android authenticator with safetyNet attestation", "application", target_displaynames = "okta verify", "application", target_displaynames = "windows hello software authenticator", "application", debugdata_factor = "okta_soft_token", "application", debugdata_factor = "okta_verify_push", "application", debugdata_factor = "email_factor", "email", debugdata_factor = "sms_factor", "sms", debugdata_factor = "call_factor", "voice", null),
@@ -200,8 +200,8 @@ alter
     check_securityContext_isProxy = if(securityContext_isProxy = "true", to_boolean("TRUE"), to_boolean("FALSE")),
     check_debugData_risk_reasons1 = if(debugContext_debugData_risk_reasons ~= "Anonymizing Proxy", to_boolean("TRUE"), to_boolean("FALSE")),
     check_debugData_risk_reasons2 = if(debugContext_debugData_risk_reasons ~= "Anonymizing Proxy", "anonymized_ip: TRUE", "anonymized_ip: FALSE"),
-    check_ipChain_v4 = arraymap(request_ipChain -> [], if("@element" -> ip !~= ":", "@element" -> ip, null)),
-    check_ipChain_v6 = arraymap(request_ipChain -> [], if("@element" -> ip ~= ":", "@element" -> ip, null))
+    check_ipChain_v4 = arraymap(request_ipChain, if("@element" -> ip !~= ":", "@element" -> ip, null)),
+    check_ipChain_v6 = arraymap(request_ipChain, if("@element" -> ip ~= ":", "@element" -> ip, null))
 | alter
     xdm.event.log_level = if(severity = "DEBUG", XDM_CONST.LOG_LEVEL_DEBUG, severity = "INFO", XDM_CONST.LOG_LEVEL_INFORMATIONAL, severity = "WARN", XDM_CONST.LOG_LEVEL_WARNING, severity = "ERROR", XDM_CONST.LOG_LEVEL_ERROR, severity = null, null, to_string(severity)),
     xdm.event.operation_sub_type = if(eventType != "user.authentication.auth_via_mfa", null, debugdata_factor ~= "yubikey", "hardware_token", target_displaynames ~= "touch id", "hardware_token", target_displaynames ~= "hardware", "hardware_token", debugdata_factor = "fido_webauthn", "hardware_token", debugdata_factor = "password_as_factor", "password", target_displaynames = "authenticator", "application", target_displaynames = "android authenticator with safetyNet attestation", "application", target_displaynames = "okta verify", "application", target_displaynames = "windows hello software authenticator", "application", debugdata_factor = "okta_soft_token", "application", debugdata_factor = "okta_verify_push", "application", debugdata_factor = "email_factor", "email", debugdata_factor = "sms_factor", "sms", debugdata_factor = "call_factor", "voice", null),
