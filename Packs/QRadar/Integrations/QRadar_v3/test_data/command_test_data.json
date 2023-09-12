@@ -1999,7 +1999,7 @@
     ],
     "source_network": "other",
     "category_count": 1,
-    "close_time": null,
+    "close_time": 1633399051536,
     "remote_destination_count": 0,
     "start_time": 1613399051536,
     "magnitude": 1,
@@ -2030,7 +2030,7 @@
      1
     ],
     "local_destination_count": 1,
-    "status": "OPEN"
+    "status": "CLOSED"
    },
    {
     "username_count": 1,

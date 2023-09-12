@@ -1,6 +1,7 @@
 # This is a template, used and modified by the demisto-sdk pre-commit command.
 
 exclude: .devcontainer/|.vscode|Pipfile.lock|.gitlab/ci/|.circleci/|docs
+files: ''
 
 repos:
 - repo: https://github.com/pre-commit/pre-commit-hooks
@@ -66,10 +67,10 @@ repos:
 
   - id: format
           # update docker image to the latest version, assume no
-    args: ["-ud", "-n", "--no-validate", "-g"]
+    args: ["-ud", "-n", "--no-validate"]
 
   - id: validate
-    args: ["-g", "--skip-pack-dependencies"]
+    args: ["--skip-pack-dependencies"]
 
   - id: secrets
     args: ["--ignore-entropy"]
@@ -82,14 +83,14 @@ repos:
   rev: "v1.6.0"
   hooks:
   - id: sourcery
-    args: [--no-summary, --fix, --diff, "git diff HEAD"]
+    args: [--no-summary, --diff, "git diff HEAD"]
     skip: true
 
 - repo: https://github.com/pre-commit/mirrors-mypy
   rev: v0.982
   hooks:
   - id: mypy
-    args: [--ignore-missing-imports, --check-untyped-defs, --show-error-codes, --follow-imports=silent, --allow-redefinition, --python-version=3.10]
+    args: [--ignore-missing-imports, --check-untyped-defs, --show-error-codes, --follow-imports=silent, --allow-redefinition]
     exclude: "test_data|tests_data|.venv|.*_test.py$|infrastructure_tests"
 
     additional_dependencies:
@@ -269,6 +270,7 @@ repos:
     - types-setuptools==67.8.0.0 ; python_version >= "3.8" and python_version < "3.11"
     - types-six==1.16.21.9 ; python_version >= "3.8" and python_version < "3.11"
     - types-tabulate==0.9.0.3 ; python_version >= "3.8" and python_version < "3.11"
+    - types-tqdm==4.66.0.2 ; python_version >= "3.8" and python_version < "3.11"
     - types-ujson==5.8.0.1 ; python_version >= "3.8" and python_version < "3.11"
     - types-urllib3==1.26.25.14 ; python_version >= "3.8" and python_version < "3.11"
     - typing-extensions==4.7.1 ; python_version >= "3.8" and python_version < "3.11"
