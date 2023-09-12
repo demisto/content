@@ -1057,15 +1057,12 @@ def fetch_incidents(client: FortiSIEMClient, max_fetch: int, first_fetch: str, s
     formatted_incidents = format_incidents(relevant_incidents)  # for Layout
 
     incidents = []
-
     for incident in formatted_incidents:
         if fetch_with_events:
             events = get_related_events_for_fetch_command(incident['incidentId'], max_events_fetch, client)
         else:
             events = []
         incident['events'] = events
-        if not incident.get('incidentTitle') or not incident.get('incidentId'):
-            demisto.debug(f'Get incident: {str(incident)} from the server.')
 
         incidents.append({
             'name': get_incident_name(incident),
