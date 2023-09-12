@@ -1,4 +1,4 @@
-category: Utilities
+category: Network Security
 commonfields:
   id: Roksit DNS Security Integration - Sarp
   version: -1
