@@ -1,11 +1,12 @@
 {
     "associatedToAll": false,
     "associatedTypes": [
-        "Prisma Cloud Compute Audit"
+        "Prisma Cloud Compute Audit",
+        "Prisma Cloud Compute Audit v2"
     ],
     "breachScript": "",
     "caseInsensitive": true,
-    "cliName": "prismacloudcomputeactivitytype",
+    "cliName": "prismacloudcomputeactivitytype_test",
     "closeForm": false,
     "columns": null,
     "content": true,
@@ -15,10 +16,10 @@
     "fieldCalcScript": "",
     "group": 0,
     "hidden": false,
-    "id": "incident_prismacloudcomputeactivitytype",
+    "id": "incident_prismacloudcomputeactivitytype_test",
     "isReadOnly": false,
     "locked": false,
-    "name": "Prisma Cloud Compute Activity Type",
+    "name": "Prisma Cloud Compute Activity Type test",
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "placeholder": "",
