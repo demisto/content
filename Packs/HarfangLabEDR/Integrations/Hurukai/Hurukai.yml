@@ -255,7 +255,6 @@ script:
         - POST
         - PUT
         - PATCH
-      required: true
       type: 15
     - name: api_endpoint
       description: API endpoint (/api/version, /api/data/alert/alert/Alert/...)
