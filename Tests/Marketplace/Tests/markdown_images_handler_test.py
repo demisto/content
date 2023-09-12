@@ -52,7 +52,7 @@ def test_download_markdown_images_from_artifacts(mocker):
     )
 
     mocker.patch(
-        "Tests.Marketplace.pack_readme_handler.download_markdown_image_from_url_and_upload_to_gcs",
+        "Tests.Marketplace.markdown_images_handler.download_markdown_image_from_url_and_upload_to_gcs",
         return_value=None,
     )
     pack_images_names = download_markdown_images_from_artifacts(
