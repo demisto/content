@@ -88,9 +88,9 @@ case_insensitive,regex_dot_all,regex_multiline
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| value | The object from which to grab values, for the full context use "$\{.\}" |
+| value | The object from which to grab values, for the full context use "$\{.\}". |
 | conditions | A JSON formatted list, where all but the last items are dictionaries with the keys "condition" (holding a boolean expression) and "return" (holding the value to return if "condition" is true).<br/>The last dictionary should have the key "else" which can hold any valid JSON object to return if no "condition" was true. |
-| flags | Flags to control comparison and regular expression behavior. Possible values are: case_insensitive, regex_dot_all, regex_multiline, regex_full_match |
+| flags | Flags to control comparison and regular expression behavior. Possible values are: case_insensitive, regex_dot_all, regex_multiline, regex_full_match. |
 
 ## Outputs
 
