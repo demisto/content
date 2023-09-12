@@ -3,6 +3,7 @@ from CommonServerPython import *  # noqa: F401
 import hashlib
 import secrets
 import string
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from itertools import zip_longest
 
 from CoreIRApiModule import *
@@ -608,38 +609,28 @@ def check_if_incident_was_modified_in_xdr(incident_id, last_mirrored_in_time_tim
 
 
 def get_last_mirrored_in_time(args):
-    demisto_incidents = demisto.get_incidents()  # type: ignore
-
-    if demisto_incidents:  # handling 5.5 version
-        demisto_incident = demisto_incidents[0]
-        last_mirrored_in_time = demisto_incident.get('CustomFields', {}).get('lastmirroredintime')
-        if not last_mirrored_in_time:  # this is an old incident, update anyway
-            return 0
-        last_mirrored_in_timestamp = arg_to_timestamp(last_mirrored_in_time, 'last_mirrored_in_time')
-
-    else:  # handling 6.0 version
-        last_mirrored_in_time = arg_to_timestamp(args.get('last_update'), 'last_update')
-        last_mirrored_in_timestamp = (last_mirrored_in_time - (120 * 1000))
+    last_mirrored_in_time = arg_to_timestamp(args.get('last_update'), 'last_update')
+    last_mirrored_in_timestamp = (last_mirrored_in_time - (120 * 1000))
 
     return last_mirrored_in_timestamp
 
 
-def get_incident_extra_data_command(client, args):
+def get_incident_extra_data_command(client, args, is_fetch: bool = False):
     incident_id = args.get('incident_id')
     alerts_limit = int(args.get('alerts_limit', 1000))
     return_only_updated_incident = argToBoolean(args.get('return_only_updated_incident', 'False'))
 
-    if return_only_updated_incident:
+    if return_only_updated_incident and not is_fetch:
         last_mirrored_in_time = get_last_mirrored_in_time(args)
         last_modified_incidents_dict = get_integration_context().get('modified_incidents', {})
 
         if check_if_incident_was_modified_in_xdr(incident_id, last_mirrored_in_time, last_modified_incidents_dict):
-            pass  # the incident was modified. continue to perform extra-data request
+            # the incident was modified. continue to perform extra-data request
+            demisto.debug(f"Performing extra-data request on incident: {incident_id}")
 
         else:  # the incident was not modified
             return "The incident was not modified in XDR since the last mirror in.", {}, {}
 
-    demisto.debug(f"Performing extra-data request on incident: {incident_id}")
     raw_incident = client.get_incident_extra_data(incident_id, alerts_limit)
 
     incident = raw_incident.get('incident')
@@ -1010,8 +1001,17 @@ def update_remote_system_command(client, args):
         return remote_args.remote_incident_id
 
 
-def fetch_incidents(client, first_fetch_time, integration_instance, last_run: dict = None, max_fetch: int = 10,
-                    statuses: List = [], starred: Optional[bool] = None, starred_incidents_fetch_window: str = None):
+def fetch_incidents(
+    client,
+    first_fetch_time,
+    integration_instance,
+    params: dict,
+    last_run: dict = None,
+    max_fetch: int = 10,
+    statuses: List = [],
+    starred: Optional[bool] = None,
+    starred_incidents_fetch_window: str = None,
+) -> tuple[dict, list]:
     # Get the last fetch time, if exists
     last_fetch = last_run.get('time') if isinstance(last_run, dict) else None
     incidents_from_previous_run = last_run.get('incidents_from_previous_run', []) if isinstance(last_run,
@@ -1046,51 +1046,56 @@ def fetch_incidents(client, first_fetch_time, integration_instance, last_run: di
     # maintain a list of non created incidents in a case of a rate limit exception
     non_created_incidents: list = raw_incidents.copy()
     next_run = {}
-    try:
-        # The count of incidents, so as not to pass the limit
-        count_incidents = 0
 
-        for raw_incident in raw_incidents:
-            incident_id = raw_incident.get('incident_id')
+    raw_incidents = raw_incidents[:max_fetch]
 
-            incident_data = get_incident_extra_data_command(client, {"incident_id": incident_id,
-                                                                     "alerts_limit": 1000})[2].get('incident')
+    with ThreadPoolExecutor(max_workers=10) as executor:
+        is_rate_limit = False
+        futures = [
+            executor.submit(
+                get_incident_extra_data_command,
+                client,
+                {"incident_id": inc.get("incident_id"), "alerts_limit": 1000},
+                True,
+            ) for inc in raw_incidents
+        ]
+        for raw_incident, future in zip(raw_incidents, as_completed(futures)):
+            try:
+                incident_id = raw_incident.get('incident_id')
+                demisto.debug(f"Performing extra-data request on incident: {incident_id}")
+                incident_data = future.result()[2].get('incident')
+                sort_all_list_incident_fields(incident_data)
 
-            sort_all_list_incident_fields(incident_data)
+                incident_data['mirror_direction'] = MIRROR_DIRECTION.get(params.get('mirror_direction', 'None'), None)
+                incident_data['mirror_instance'] = integration_instance
+                incident_data['last_mirrored_in'] = int(datetime.now().timestamp() * 1000)
 
-            incident_data['mirror_direction'] = MIRROR_DIRECTION.get(demisto.params().get('mirror_direction', 'None'),
-                                                                     None)
-            incident_data['mirror_instance'] = integration_instance
-            incident_data['last_mirrored_in'] = int(datetime.now().timestamp() * 1000)
+                description = raw_incident.get('description')
+                occurred = timestamp_to_datestring(raw_incident['creation_time'], TIME_FORMAT + 'Z')
+                incident = {
+                    'name': f'XDR Incident {incident_id} - {description}',
+                    'occurred': occurred,
+                    'rawJSON': json.dumps(incident_data),
+                }
 
-            description = raw_incident.get('description')
-            occurred = timestamp_to_datestring(raw_incident['creation_time'], TIME_FORMAT + 'Z')
-            incident = {
-                'name': f'XDR Incident {incident_id} - {description}',
-                'occurred': occurred,
-                'rawJSON': json.dumps(incident_data),
-            }
+                if params.get('sync_owners') and incident_data.get('assigned_user_mail'):
+                    incident['owner'] = demisto.findUser(email=incident_data.get('assigned_user_mail')).get('username')
 
-            if demisto.params().get('sync_owners') and incident_data.get('assigned_user_mail'):
-                incident['owner'] = demisto.findUser(email=incident_data.get('assigned_user_mail')).get('username')
+                # Update last run and add incident if the incident is newer than last fetch
+                if raw_incident['creation_time'] > last_fetch:
+                    last_fetch = raw_incident['creation_time']
 
-            # Update last run and add incident if the incident is newer than last fetch
-            if raw_incident['creation_time'] > last_fetch:
-                last_fetch = raw_incident['creation_time']
+                incidents.append(incident)
+                non_created_incidents.remove(raw_incident)
 
-            incidents.append(incident)
-            non_created_incidents.remove(raw_incident)
-
-            count_incidents += 1
-            if count_incidents == max_fetch:
-                break
-
-    except Exception as e:
-        if "Rate limit exceeded" in str(e):
+            except Exception as e:
+                if "Rate limit exceeded" in str(e):
+                    is_rate_limit = True
+                else:
+                    raise
+        if is_rate_limit:
             demisto.info(f"Cortex XDR - rate limit exceeded, number of non created incidents is: "
-                         f"'{len(non_created_incidents)}'.\n The incidents will be created in the next fetch")
-        else:
-            raise
+                        f"'{len(non_created_incidents)}'.\n The incidents will be created in the next fetch")
 
     if non_created_incidents:
         next_run['incidents_from_previous_run'] = non_created_incidents
@@ -1251,9 +1256,17 @@ def main():  # pragma: no cover
 
         elif command == 'fetch-incidents':
             integration_instance = demisto.integrationInstance()
-            next_run, incidents = fetch_incidents(client, first_fetch_time, integration_instance,
-                                                  demisto.getLastRun().get('next_run'), max_fetch, statuses, starred,
-                                                  starred_incidents_fetch_window)
+            next_run, incidents = fetch_incidents(
+                client,
+                first_fetch_time,
+                integration_instance,
+                params,
+                demisto.getLastRun().get('next_run'),
+                max_fetch,
+                statuses,
+                starred,
+                starred_incidents_fetch_window,
+            )
             last_run_obj = demisto.getLastRun()
             last_run_obj['next_run'] = next_run
             demisto.setLastRun(last_run_obj)
