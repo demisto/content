@@ -1,0 +1,108 @@
+{
+  "qualys_qualys_raw": {
+    "User_Name": {
+      "type": "string",
+      "is_array": false
+    },
+    "User_Role": {
+      "type": "string",
+      "is_array": false
+    },
+    "User_IP": {
+      "type": "string",
+      "is_array": false
+    },
+    "Action": {
+      "type": "string",
+      "is_array": false
+    },
+    "Module": {
+      "type": "string",
+      "is_array": false
+    },
+    "Details": {
+      "type": "string",
+      "is_array": false
+    },
+    "ID": {
+      "type": "string",
+      "is_array": false
+    },
+    "ASSET_ID": {
+      "type": "string",
+      "is_array": false
+    },
+    "IP": {
+      "type": "string",
+      "is_array": false
+    },
+    "IPV6": {
+      "type": "string",
+      "is_array": false
+    },
+    "TRACKING_METHOD": {
+      "type": "string",
+      "is_array": false
+    },
+    "NETWORK_ID": {
+      "type": "string",
+      "is_array": false
+    },
+    "OS": {
+      "type": "string",
+      "is_array": false
+    },
+    "OS_CPE": {
+      "type": "string",
+      "is_array": false
+    },
+    "DNS_DATA": {
+      "type": "string",
+      "is_array": false
+    },
+    "CLOUD_PROVIDER": {
+      "type": "string",
+      "is_array": false
+    },
+    "DETECTION": {
+      "type": "string",
+      "is_array": false
+    },
+    "METADATA": {
+      "type": "string",
+      "is_array": false
+    },
+    "NETBIOS": {
+      "type": "string",
+      "is_array": false
+    },
+    "QG_HOSTID": {
+      "type": "string",
+      "is_array": false
+    },
+    "TAG": {
+      "type": "string",
+      "is_array": false
+    },
+    "CLOUD_PROVIDER_TAGS": {
+      "type": "string",
+      "is_array": false
+    },
+    "event_type": {
+      "type": "string",
+      "is_array": false
+    },
+    "CLOUD_SERVICE": {
+      "type": "string",
+      "is_array": false
+    },
+    "EC2_INSTANCE_ID": {
+      "type": "string",
+      "is_array": false
+    },
+    "CLOUD_RESOURCE_ID": {
+      "type": "string",
+      "is_array": false
+    }
+  }
+}

@@ -23,4 +23,4 @@ subtype: python3
 tests:
 - stripChars - Test
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.9.7.24076
+dockerimage: demisto/python3:3.10.12.63474

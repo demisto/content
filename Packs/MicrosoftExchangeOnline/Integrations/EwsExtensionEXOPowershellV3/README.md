@@ -2,7 +2,7 @@ Use the EWS Extension Online Powershell v3 integration to get information about 
 This integration was integrated and tested with version v3 of EWS Extension Online Powershell v3
 
 **Note:** This integration does not replace the **O365 - EWS - Extension** integration, but an additional EWS extension integration
-which utilizes the [EXO v3 module](https://docs.microsoft.com/en-us/powershell/exchange/exchange-online-powershell-v3?view=exchange-ps).
+which utilizes the [EXO v3 module](https://learn.microsoft.com/en-us/powershell/exchange/exchange-online-powershell-v2?view=exchange-ps).
 
 ## Configure EWS Extension Online Powershell v3 on Cortex XSOAR
 
@@ -12,8 +12,9 @@ which utilizes the [EXO v3 module](https://docs.microsoft.com/en-us/powershell/e
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | Exchange Online URL |  | True |
-    | Certificate | A pfx certificate encoded in Base64. | True |
+    | Name | The name of the integration | True |
+    | Exchange Online URL | https://outlook.office365.com | True |
+    | Certificate | A txt certificate encoded in Base64. | True |
     | The organization used in app-only authentication. |  | True |
     | The application ID from the Azure portal |  | True |
 

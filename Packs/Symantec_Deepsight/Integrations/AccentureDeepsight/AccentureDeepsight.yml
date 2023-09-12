@@ -15,9 +15,11 @@ configuration:
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 - display: Trust any certificate (not secure)
   name: unsecure
   type: 8
+  required: false
 description: Deprecated. Use ACTI Vulnerability Query instead.
 display: Accenture Deepsight Intelligence (Deprecated)
 name: Symantec Deepsight Intelligence

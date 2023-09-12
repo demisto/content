@@ -7,21 +7,26 @@ configuration:
   name: service_account_json
   type: 4
   hidden: true
+  required: false
 - display: Project in Google Cloud Translate
   name: project_creds
   type: 9
   displaypassword: Service Account Private Key file contents (JSON)
+  required: false
 - display: Project in Google Cloud Translate
   name: project
   type: 0
   hidden: true
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
 
+  required: false
 description: A Google API cloud based translation service.
 display: Google Cloud Translate
 name: GoogleCloudTranslate

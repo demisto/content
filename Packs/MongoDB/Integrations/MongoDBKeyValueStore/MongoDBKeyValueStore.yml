@@ -24,9 +24,11 @@ configuration:
 - display: Use an SSL/TLS secured connection
   name: use_ssl
   type: 8
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 description: Manipulates key/value pairs according to an incident utilizing the MongoDB collection.
 display: MongoDB Key Value Store
 name: MongoDB Key Value Store

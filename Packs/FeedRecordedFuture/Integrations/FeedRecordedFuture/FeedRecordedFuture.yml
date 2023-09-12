@@ -7,6 +7,7 @@ configuration:
   name: feed
   defaultvalue: 'true'
   type: 8
+  required: false
 - display: Indicator Reputation
   name: feedReputation
   defaultvalue: feedInstanceReputationNotSet
@@ -17,6 +18,7 @@ configuration:
   - Suspicious
   - Bad
   additionalinfo: Indicators from this integration instance will be marked with this reputation
+  required: false
 - defaultvalue: A - Completely reliable
   display: Source Reliability
   name: feedReliability
@@ -39,6 +41,7 @@ configuration:
   - GREEN
   - WHITE
   type: 15
+  required: false
 - display: ""
   name: feedExpirationPolicy
   defaultvalue: suddenDeath
@@ -48,25 +51,31 @@ configuration:
   - interval
   - indicatorType
   - suddenDeath
+  required: false
 - name: feedExpirationInterval
   defaultvalue: "20160"
   type: 1
   display: ""
+  required: false
 - defaultvalue: '60'
   display: Feed Fetch Interval
   name: feedFetchInterval
   type: 19
+  required: false
 - display: Bypass exclusion list
   name: feedBypassExclusionList
   type: 8
   additionalinfo: |-
     When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 - additionalinfo: Type of the indicator in the feed.
   display: Indicator Type
   name: indicator_type
@@ -82,10 +91,12 @@ configuration:
   name: api_token
   type: 4
   hidden: true
+  required: false
 - displaypassword: API Token
   name: credentials_api_token
   hiddenusername: true
   type: 9
+  required: false
 - defaultvalue: connectApi
   display: Services
   name: services
@@ -104,6 +115,7 @@ configuration:
   display: Risk Rule
   name: risk_rule
   type: 0
+  required: false
 - additionalinfo: |-
     Load a custom risklist from a specified Recorded Future file path.
     If no file path is specified, the default risklist file is used. This parameter
@@ -111,10 +123,12 @@ configuration:
   display: Fusion File Path
   name: fusion_file_path
   type: 0
+  required: false
 - additionalinfo: Supports CSV values.
   display: Tags
   name: feedTags
   type: 0
+  required: false
 - additionalinfo: Time in seconds before HTTP requests timeout.
   defaultvalue: '20'
   display: Request Timeout
@@ -127,11 +141,13 @@ configuration:
   display: Malicious Threshold
   name: threshold
   type: 0
+  required: false
 - additionalinfo: If selected, will be used to filter out the ingested indicators, and only indicators with equivalent and higher risk score will be ingested into XSOAR.
   defaultvalue: '0'
   display: IOC Risk Score Threshold
   name: risk_score_threshold
   type: 0
+  required: false
 description: Ingests indicators from Recorded Future feeds into Demisto.
 display: Recorded Future RiskList Feed
 name: Recorded Future Feed

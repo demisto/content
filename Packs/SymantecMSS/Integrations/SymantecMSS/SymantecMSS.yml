@@ -16,24 +16,30 @@ configuration:
   name: passphrase
   type: 4
   hidden: true
+  required: false
 - name: passphrase_creds
   type: 9
   displaypassword: Certificate Passphrase
   hiddenusername: true
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 - display: Fetch incidents
   name: isFetch
   type: 8
+  required: false
 - display: Incident type
   name: incidentType
   type: 13
+  required: false
 - defaultvalue: Emergency,Critical
   display: Fetch incidents for severities
   name: severities
   type: 0
 
+  required: false
 description: Leverage the power of Symantec Managed Security Services for continual threat monitoring and customized guidance 24x7
 display: Symantec Managed Security Services
 name: Symantec MSS

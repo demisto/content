@@ -27,25 +27,30 @@ configuration:
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Fetch incidents
   name: isFetch
   type: 8
   section: Collect
+  required: false
 - display: Incident type
   name: incidentType
   type: 13
   section: Connect
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: 'Comma-separated list of threat behaviors to generate incidents for, e.g., "Exfiltration: SSL upload from non-browser to notable domain, Lateral Movement: Unix-based PSEXEC, C2: Possible ICMP tunnel"'
   name: threat_behaviors
   defaultvalue: ""
   type: 0
   section: Collect
   advanced: true
+  required: false
 - display: Period between incident fetch interval (in minutes)
   name: fetch_interval
   defaultvalue: "1"
@@ -80,6 +85,7 @@ configuration:
   type: 15
   section: Connect
   advanced: true
+  required: false
 - defaultvalue: indicatorType
   name: feedExpirationPolicy
   display: ''
@@ -91,12 +97,14 @@ configuration:
   type: 17
   section: Connect
   advanced: true
+  required: false
 - defaultvalue: '20160'
   name: feedExpirationInterval
   display: ''
   type: 1
   section: Connect
   advanced: true
+  required: false
 script:
   script: ''
   type: python

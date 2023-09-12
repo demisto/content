@@ -7,24 +7,30 @@ configuration:
   name: credentials_json
   type: 4
   hidden: true
+  required: false
 - display: Default project ID
   name: project_id_creds
   type: 9
   displaypassword: Service account private key file contents (JSON)
+  required: false
 - display: Default project ID
   name: project_id
   type: 0
   hidden: true
+  required: false
 - display: Default region
   name: region
   type: 0
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
 
+  required: false
 description: Google Cloud Functions is an event-driven serverless compute platform that enables you to run your code locally or in the cloud without having to provision servers.
 display: Google Cloud Functions
 name: Google Cloud Functions

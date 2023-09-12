@@ -488,6 +488,8 @@ Returns a verdict regarding multiple hashes, stored in a TXT file or given as li
 ***
 Uploads a URL of a webpage to WildFire for analysis.
 
+Notice: Submitting indicators using this command might make the indicator data publicly available. See the vendor’s documentation for more details.
+
 
 #### Base Command
 
@@ -620,6 +622,8 @@ There is no human-readable output for this command.
 ### wildfire-get-url-webartifacts
 ***
 Get web artifacts for a URL webpage. An empty tgz will be returned, no matter what the verdict, or even if the URL is malformed.
+
+Notice: Submitting indicators using this command might make the indicator data publicly available. See the vendor’s documentation for more details.
 
 
 #### Base Command

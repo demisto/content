@@ -156,4 +156,4 @@ quiet: true
 fromversion: 6.10.0
 tests:
 - Run all tests
-description: '""'
+description: 'This Playbook creates the HTML Use Case Builder document list'

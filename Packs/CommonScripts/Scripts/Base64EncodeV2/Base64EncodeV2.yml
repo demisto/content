@@ -13,7 +13,7 @@ outputs:
   type: string
 script: '-'
 subtype: python3
-dockerimage: demisto/python3:3.10.9.45313
+dockerimage: demisto/python3:3.10.12.63474
 tags:
 - Utility
 - incident-action-button

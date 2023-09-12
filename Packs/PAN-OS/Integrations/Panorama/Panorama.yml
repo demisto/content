@@ -16,54 +16,64 @@ configuration:
   type: 9
   hiddenusername: true
   section: Connect
+  required: false
 - defaultvalue: '443'
   display: Port (e.g 443)
   name: port
   type: 0
   section: Connect
   advanced: true
+  required: false
 - additionalinfo: Located in the Panorama UI. Go to Panorama, Device Groups and select the desired Device Group
   display: Device group - Panorama instances only (write shared for Shared location)
   name: device_group
   type: 0
   section: Connect
   advanced: true
+  required: false
 - additionalinfo: Located in the Firewall URL; by default of PAN-OS it is vsys1
   display: Vsys - Firewall instances only
   name: vsys
   type: 0
   section: Connect
+  required: false
 - display: Template - Panorama instances only
   name: template
   type: 0
   section: Connect
   advanced: true
+  required: false
 - additionalinfo: If selected, when running the !url command, the command will execute using pan-os with PAN_DB (with applied filters). The URL filtering categories determine DBot score (malicious, suspicious, benign).
   display: Use URL Filtering for auto enrichment
   name: use_url_filtering
   type: 8
   section: Collect
   advanced: true
+  required: false
 - display: URL Filtering Additional suspicious categories. CSV list of categories that will be considered suspicious.
   name: additional_suspicious
   type: 12
   section: Collect
   advanced: true
+  required: false
 - display: URL Filtering Additional malicious categories. CSV list of categories that will be considered malicious.
   name: additional_malicious
   type: 12
   section: Collect
   advanced: true
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: API Key (Deprecated)
   name: key
   type: 4
@@ -71,6 +81,7 @@ configuration:
   additionalinfo: Use the "API Key (Recommended)" parameter instead.
   section: Connect
   advanced: true
+  required: false
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: B - Usually reliable
   display: Source Reliability
@@ -86,6 +97,7 @@ configuration:
   type: 15
   section: Collect
   advanced: true
+  required: false
 - defaultvalue: indicatorType
   name: feedExpirationPolicy
   display: ''
@@ -97,27 +109,32 @@ configuration:
   type: 17
   section: Collect
   advanced: true
+  required: false
 - defaultvalue: '20160'
   name: feedExpirationInterval
   display: ''
   type: 1
   section: Collect
   advanced: true
+  required: false
 - display: Fetch incidents
   name: isFetch
   type: 8
   section: Collect
+  required: false
 - defaultvalue: 24 hours
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: first_fetch
   type: 0
   section: Collect
+  required: false
 - defaultvalue: "100"
   display: Max incidents per fetch (for each selected Log Type Query)
   additionalinfo: The maximum number of incidents to fetch per Log Type Query. To ensure optimal efficiency, it is strongly advised to keep the limit as low as possible.
   name: max_fetch
   type: 0
   section: Collect
+  required: false
 - display: Log Type
   name: log_types
   type: 16
@@ -134,59 +151,69 @@ configuration:
   - All
   section: Connect
   advanced: true
+  required: false
 - display: Traffic Log Type Query
   name: traffic_query
   additionalinfo: "Traffic Log Type query example: (addr.src in {source}) and (addr.dst in {destination}) and (action eq {action}).\nIn case of multiple devices, for the sake of speed it is recommended to narrow the query to a specific device. \nFor example:(device_name eq dummy_device)"
   type: 12
   section: Collect
   advanced: true
+  required: false
 - display: Threat Log Type Query
   name: threat_query
   additionalinfo: "Threat Log Type query example: (severity geq high).\nIn case of multiple devices, for the sake of speed it is recommended to narrow the query to a specific device. \nFor example:(device_name eq dummy_device)"
   type: 12
   section: Collect
   advanced: true
+  required: false
 - display: URL Log Type Query
   name: url_query
   additionalinfo: "URL Log Type query example: ((action eq block-override) or (action eq block-url)) and (severity geq high).\nIn case of multiple devices, for the sake of speed it is recommended to narrow the query to a specific device. \nFor example:(device_name eq dummy_device)"
   type: 12
   section: Collect
   advanced: true
+  required: false
 - display: Data Log Type Query
   name: data_query
   additionalinfo: "Data Log Type query example: ((action eq alert) or (action eq wildfire-upload-success) or (action eq forward)) and (severity geq high).\nIn case of multiple devices, for the sake of speed it is recommended to narrow the query to a specific device. \nFor example:(device_name eq dummy_device)"
   type: 12
   section: Collect
   advanced: true
+  required: false
 - display: Correlation Log Type Query
   name: correlation_query
   additionalinfo: "Correlation Log Type query example: (hostid eq {host_id}) and (match_time in {last_x_time}) and (objectname eq {object_name}) and (severity geq '{severity}'') and (src in {source_address}).\nIn case of multiple devices, for the sake of speed it is recommended to narrow the query to a specific device. \nFor example:(device_name eq dummy_device)"
   type: 12
   section: Collect
   advanced: true
+  required: false
 - display: System Log Type Query
   name: system_query
   additionalinfo: "System Log Type query example: (subtype eq {sub_type}) and (severity geq {severity}). \nIn case of multiple devices, for the sake of speed it is recommended to narrow the query to a specific device. \nFor example:(device_name eq dummy_device)"
   type: 12
   section: Collect
   advanced: true
+  required: false
 - display: Wildfire Submission Log Type Query
   name: wildfire_query
   additionalinfo: "Wildfire Submission Log Type query example: ((action eq wildfire-upload-fail) or (action eq wildfire-upload-skip) or (action eq sinkhole)). \nIn case of multiple devices, for the sake of speed it is recommended to narrow the query to a specific device. \nFor example:(device_name eq dummy_device)"
   type: 12
   section: Collect
   advanced: true
+  required: false
 - display: Decryption Log Type Query
   name: decryption_query
   additionalinfo: "Decryption Log Type query example: (app eq {application}) and (policy_name geq {policy_name}) and ((src in {source}) or (dst in {destination})). \nIn case of multiple devices, for the sake of speed it is recommended to narrow the query to a specific device. \nFor example:(device_name eq dummy_device)"
   type: 12
   section: Collect
   advanced: true
+  required: false
 - display: Incident type
   name: incidentType
   type: 13
   section: Connect
-description: Manage Palo Alto Networks Firewall and Panorama. Use this pack to manage Prisma Access through Panorama. For more information, see the Panorama documentation
+  required: false
+description: Manage Palo Alto Networks Firewall and Panorama. Use this pack to manage Prisma Access through Panorama. For more information, see the Panorama documentation.
 display: Palo Alto Networks PAN-OS
 name: Panorama
 script:
@@ -212,7 +239,7 @@ script:
       name: category
     - description: The XML structure that defines the command. Used for operation commands.
       name: cmd
-    - description: The command to run. For example, command =<show><arp><entry name='all'/></arp></show>
+    - description: The command to run. For example, command =<show><arp><entry name='all'/></arp></show>.
       name: command
     - description: The specified destination.
       name: dst
@@ -228,9 +255,9 @@ script:
       name: log-type
     - description: The type of move operation (for example, where=after, where=before, where=top, where=bottom).
       name: where
-    - description: The time period. For example, period=last-24-hrs
+    - description: The time period. For example, period=last-24-hrs.
       name: period
-    - description: The xpath location. For example, xpath=/config/predefined/application/entry[@name='hotmail']
+    - description: The xpath location. For example, xpath=/config/predefined/application/entry[@name='hotmail'].
       name: xpath
     - description: The PCAP ID included in the threat log.
       name: pcap-id
@@ -505,9 +532,9 @@ script:
       name: description
     - description: The FQDN of the new address.
       name: fqdn
-    - description: The IP Netmask of the new address. For example, 10.10.10.10/24
+    - description: The IP Netmask of the new address. For example, 10.10.10.10/24.
       name: ip_netmask
-    - description: The IP range of the new address IP. For example, 10.10.10.0-10.10.10.255
+    - description: The IP range of the new address IP. For example, 10.10.10.0-10.10.10.255.
       name: ip_range
     - description: The device group for which to return addresses (Panorama instances).
       name: device-group
@@ -634,7 +661,7 @@ script:
       - dynamic
       - static
       required: true
-    - description: The dynamic address group match. For example "1.1.1.1 or 2.2.2.2"
+    - description: The dynamic address group match. For example "1.1.1.1 or 2.2.2.2".
       name: match
     - description: The static address group list of addresses.
       isArray: true
@@ -1719,7 +1746,7 @@ script:
       description: The blocked direction.
       type: string
     - contextPath: Panorama.SecurityRule.Target
-      description: The target firewall (Panorama instances)
+      description: The target firewall (Panorama instances).
       type: string
     - contextPath: Panorama.SecurityRule.LogForwarding
       description: The log forwarding profile (Panorama instances).
@@ -1924,7 +1951,7 @@ script:
       description: The job ID details.
       type: string
     - contextPath: Panorama.Commit.Warnings
-      description: The job ID warnings
+      description: The job ID warnings.
       type: String
   - arguments:
     - description: The job ID to check.
@@ -1961,7 +1988,7 @@ script:
       required: true
     - description: The serial number of the firewall to download the PCAP from.
       name: serialNumber
-    - description: The
+    - description: The.
       name: from
     - description: The new name for the PCAP file after downloading. If this argument is not specified, the file name is the PCAP file name set in the firewall.
       name: localName
@@ -2363,7 +2390,7 @@ script:
       name: query
     - description: |-
         The time the log was generated from the timestamp and prior to it.
-        For example "2019/08/11 01:10:44".
+        For example "2019/08/11 01:10:44", will get logs before the specified date.
       name: time-generated
     - description: The source address.
       isArray: true
@@ -3534,7 +3561,7 @@ script:
       description: The name of the user interface.
       type: String
     - contextPath: Panorama.UserInterfaces.Zone
-      description: The zone to which the interface is connected
+      description: The zone to which the interface is connected.
       type: String
     - contextPath: Panorama.UserInterfaces.EnableUserIdentification
       description: Whether user identification is enabled.
@@ -3682,7 +3709,7 @@ script:
       name: category
     - description: Specifies the XML structure that defines the command. Used for operation commands (op type command). Can be retrieved from the PAN-OS web UI debugger or enabling debugging via the CLI using `debug cli on`.
       name: cmd
-    - description: The command to run. For example, command =<show><arp><entry name='all'/></arp></show>
+    - description: The command to run. For example, command =<show><arp><entry name='all'/></arp></show>.
       name: command
     - description: The specified destination.
       name: dst
@@ -3698,7 +3725,7 @@ script:
       name: log-type
     - description: The type of move operation (for example, where=after, where=before, where=top, where=bottom).
       name: where
-    - description: The time period, for example period=last-24-hrs
+    - description: The time period, for example period=last-24-hrs.
       name: period
     - description: xpath location. xpath defines the location of the object. For example, xpath=/config/predefined/application/entry[@name='hotmail']. Documentation - https://docs.paloaltonetworks.com/pan-os/9-1/pan-os-panorama-api/about-the-pan-os-xml-api/structure-of-a-pan-os-xml-api-request/xml-and-xpath.
       name: xpath
@@ -3737,7 +3764,7 @@ script:
       name: vsys
     - description: The device group in which to run the command.
       name: device-group
-    - description: Return raw XML
+    - description: Return raw XML.
       name: is_xml
     description: Runs any command supported in the API.
     name: pan-os
@@ -3965,11 +3992,11 @@ script:
       name: description
     - description: The FQDN of the new address.
       name: fqdn
-    - description: The IP netmask of the new address. For example, 10.10.10.10/24
+    - description: The IP netmask of the new address. For example, 10.10.10.10/24.
       name: ip_netmask
-    - description: The IP range of the new address IP. For example, 10.10.10.0-10.10.10.255
+    - description: The IP range of the new address IP. For example, 10.10.10.0-10.10.10.255.
       name: ip_range
-    - description: The IP wildcard of the new address. For example, 10.20.1.0/0.0.248.255
+    - description: The IP wildcard of the new address. For example, 10.20.1.0/0.0.248.255.
       name: ip_wildcard
     - description: The device group for which to return addresses (Panorama instances).
       name: device-group
@@ -4073,7 +4100,7 @@ script:
       required: true
     - description: The device group for which to return addresses (Panorama instances).
       name: device-group
-    description: Gets details for the specified address group
+    description: Gets details for the specified address group.
     name: pan-os-get-address-group
     outputs:
     - contextPath: Panorama.AddressGroups.Name
@@ -4108,7 +4135,7 @@ script:
       - dynamic
       - static
       required: true
-    - description: The dynamic address group match. For example "1.1.1.1 or 2.2.2.2"
+    - description: The dynamic address group match. For example "1.1.1.1 or 2.2.2.2".
       name: match
     - description: The static address group list of addresses.
       isArray: true
@@ -4861,7 +4888,7 @@ script:
       required: true
     - description: The device group for which to return addresses for the EDL (Panorama instances).
       name: device-group
-    description: Returns information for an external dynamic list
+    description: Returns information for an external dynamic list.
     name: pan-os-get-edl
     outputs:
     - contextPath: Panorama.EDL.Name
@@ -4994,12 +5021,12 @@ script:
   - arguments:
     - description: The serial number of the device.
       name: target
-    description: Pull the running config file
+    description: Pull the running config file.
     name: pan-os-get-running-config
   - arguments:
     - description: The serial number of the device.
       name: target
-    description: Pull the merged config file
+    description: Pull the merged config file.
     name: pan-os-get-merged-config
   - arguments:
     - description: The name of the EDL.
@@ -5467,7 +5494,7 @@ script:
       description: The job ID details.
       type: string
     - contextPath: Panorama.Commit.Warnings
-      description: The job ID warnings
+      description: The job ID warnings.
       type: String
   - arguments:
     - description: The job ID to check.
@@ -5489,7 +5516,7 @@ script:
       description: The job ID details.
       type: string
     - contextPath: Panorama.Push.Warnings
-      description: The job ID warnings
+      description: The job ID warnings.
       type: String
   - arguments:
     - description: The type of packet capture.
@@ -5909,8 +5936,12 @@ script:
       name: query
     - description: |-
         The time the log was generated from the timestamp and prior to it.
-        For example "2019/08/11 01:10:44".
+        For example "2019/08/11 01:10:44, will get logs before the specified date.".
       name: time-generated
+    - description: |-
+        The time the log was generated from the timestamp and prior to it.
+        For example "2019/08/11 01:10:44", will get logs after the specified date.
+      name: time-generated-after
     - description: The source address.
       isArray: true
       name: addr-src
@@ -7607,7 +7638,7 @@ script:
   - arguments:
     - description: The string by which to filter the results to only show specific hostnames or serial numbers.
       name: device_filter_string
-    description: Gets the operational information of the device groups in the topology.
+    description: Gets the operational information of the device groups in the topology(only device groups with associated devices will be listed by this command).
     name: pan-os-platform-get-device-groups
     outputs:
     - contextPath: PANOS.DeviceGroupOp.hostid
@@ -7712,7 +7743,7 @@ script:
     outputs:
     - contextPath: PANOS.ShowBGPPeers.Summary.hostid
       type: String
-      description: The host ID
+      description: The host ID.
     - contextPath: PANOS.ShowBGPPeers.Summary.peer
       description: The name of the Border Gateway Protocol (BGP) peer.
       type: String
@@ -7750,7 +7781,7 @@ script:
       description: The total accepted routes from the peer.
       type: String
     - contextPath: PANOS.ShowBGPPeers.Result.incoming_rejected
-      description: The total rejected routes from peer
+      description: The total rejected routes from peer.
       type: String
     - contextPath: PANOS.ShowBGPPeers.Result.policy_rejected
       description: The total routes rejected by the peer by policy.
@@ -7876,7 +7907,7 @@ script:
       required: true
     - description: The string by which to filter the results to only install to specific devices or serial numbers.
       name: device_filter_string
-    - defaultValue: false
+    - defaultValue: 'false'
       description: If provided, runs the download synchronously. Make sure 'execution-timeout' is increased.
       name: sync
     - description: The target number of the firewall. Used only on a Panorama instance.
@@ -7901,7 +7932,7 @@ script:
     outputs:
     - contextPath: PANOS.RestartStatus.Summary.hostid
       type: String
-      description: The host ID
+      description: The host ID.
     - contextPath: PANOS.RestartStatus.Summary.started
       description: Whether the download process started.
       type: String
@@ -8020,7 +8051,7 @@ script:
       required: true
     - description: The string by which to filter to only install to specific devices or serial numbers.
       name: device_filter_string
-    - defaultValue: false
+    - defaultValue: 'false'
       description: If provided, runs the download synchronously. Make sure 'execution-timeout' is increased.
       name: sync
     - description: The target number of the firewall. Used only on a Panorama instance.
@@ -8274,7 +8305,7 @@ script:
     outputs:
     - contextPath: PANOS.ConfigurationHygieneFix.hostid
       type: String
-      description: The host ID
+      description: The host ID.
     - contextPath: PANOS.ConfigurationHygieneFix.container_name
       description: What parent container (DG, Template, VSYS) this object belongs to.
       type: String
@@ -8768,7 +8799,7 @@ script:
       description: The filter interface(s).
       type: Unknown
     - contextPath: Panorama.RedistributionProfile.FilterType
-      description: The filter type(s)
+      description: The filter type(s).
       type: Unknown
     - contextPath: Panorama.RedistributionProfile.FilterDestination
       description: The filter destination(s).
@@ -9157,7 +9188,7 @@ script:
       description: The list of the applications that the application-group has.
       type: Unknown
     - contextPath: Panorama.ApplicationGroup.Members
-      description: The number of the application that are part of the application-group
+      description: The number of the application that are part of the application-group.
       type: Number
   - arguments:
     - description: The name for the application-group to be created with.
@@ -9209,7 +9240,7 @@ script:
       description: The list of the applications that the application-group has.
       type: Unknown
     - contextPath: Panorama.ApplicationGroup.Members
-      description: The number of the applications that are part of the application-group
+      description: The number of the applications that are part of the application-group.
       type: Number
   - arguments:
     - description: The name of the application-group to delete. Can be retrieved from the pan-os-list-application-groups command.
@@ -9217,7 +9248,7 @@ script:
       required: true
     - description: The device-group in which the application-group is part of. Only for a Panorama instance.
       name: device-group
-    description: Deletes an application-group
+    description: Deletes an application-group.
     name: pan-os-delete-application-group
     outputs: []
   - arguments:
@@ -9254,7 +9285,7 @@ script:
       required: true
     - description: The device group that the tag will be part of.
       name: device-group
-    - description: Whether to disable overriding the tag.
+    - description: Whether to disable overriding the tag (Panorama instances).
       name: disable_override
       auto: PREDEFINED
       predefined:
@@ -9280,7 +9311,7 @@ script:
       name: new_name
     - description: The device group of the tag.
       name: device-group
-    - description: Whether to disable overriding the tag.
+    - description: Whether to disable overriding the tag (Panorama instances).
       name: disable_override
       auto: PREDEFINED
       predefined:
@@ -9296,7 +9327,14 @@ script:
       required: true
     description: Deletes a tag from Panorama.
     name: pan-os-delete-tag
-  dockerimage: demisto/pan-os-python:1.0.0.63723
+  - arguments: []
+    name: pan-os-list-device-groups
+    description: Returns all device groups from Panorama (use only in Panorama instances).
+    outputs:
+    - contextPath: Panorama.DeviceGroupNames
+      description: The list of device groups.
+      type: string
+  dockerimage: demisto/pan-os-python:1.0.0.73711
   isfetch: true
   runonce: false
   script: ''

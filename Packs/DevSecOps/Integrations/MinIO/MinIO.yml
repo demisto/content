@@ -23,6 +23,7 @@ configuration:
 - display: Connect over SSL
   name: ssl
   type: 8
+  required: false
 description: An Integration with MinIO Object Storage
 display: MinIO
 name: MinIO

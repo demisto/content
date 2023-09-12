@@ -35,6 +35,6 @@ tags:
 - entirelist
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.9.7.24076
+dockerimage: demisto/python3:3.10.12.63474
 tests:
 - Email Address Enrichment - Generic v2.1 - Test

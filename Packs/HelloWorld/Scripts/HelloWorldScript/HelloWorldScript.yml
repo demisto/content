@@ -1,7 +1,7 @@
 args:
 - description: 'Hello command - prints hello to anyone.'
   name: name
-comment: Hello World Script
+comment: Hello World Script.
 commonfields:
   id: HelloWorldScript
   version: -1
@@ -16,5 +16,5 @@ tags:
 timeout: '0'
 type: python
 subtype: python3
-dockerimage: demisto/python3:3.10.10.48392
+dockerimage: demisto/python3:3.10.12.63474
 fromversion: 5.0.0

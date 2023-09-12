@@ -1,4 +1,5 @@
 Use the Generic Export Indicators Service integration to provide an endpoint with a list of indicators as a service for the system indicators.
+For Cortex XSOAR 8, see [Manage External Dynamic Lists in the Cortex XSOAR Administrator Guide](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Administrator-Guide/Manage-External-Dynamic-Lists).
 
 ## PAN-OS EDL Management to Export Indicators Service (PAN-OS EDL Service) migration steps
 Unlike `PAN-OS EDL Management`, this integration hosts the EDL on the Cortex XSOAR server. Follow these steps to migrate your EDLs.

@@ -18,33 +18,42 @@ configuration:
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 - defaultvalue: 3 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: fetch_time
   type: 0
+  required: false
 - defaultvalue: incident
   display: 'CSV list of objects to fetch. The default is incident, for example: incident,problem,service)'
   name: objects_to_fetch
   type: 0
+  required: false
 - defaultvalue: '30'
   display: Max results to fetch (defualt is 30)
   name: max_results
   type: 0
+  required: false
 - display: Advanced Query to fetch (see integration detailed instructions)
   name: query_string
   type: 0
+  required: false
 - display: Fetch attachments (include attachements in fetch process)
   name: fetch_attachments
   type: 8
+  required: false
 - display: Fetch incidents
   name: isFetch
   type: 8
+  required: false
 - display: Incident type
   name: incidentType
   type: 13
+  required: false
 description: Cloud-based IT service management solution
 display: Cherwell
 name: Cherwell

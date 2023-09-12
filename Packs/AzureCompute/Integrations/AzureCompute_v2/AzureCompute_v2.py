@@ -2,6 +2,7 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 import urllib3
+from MicrosoftApiModule import *  # noqa: E402
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -309,7 +310,7 @@ def get_single_ip_details_from_list_of_ip_details(list_of_ip_details: list, ip_a
 
     Args:
         list_of_ip_details (list):  List of PublicIPAddressListResult objects.
-        ip_address (_type_): IP Address to search for in list of PublicIPAddressListResult objects.
+        ip_address (list | dict): IP Address to search for in list of PublicIPAddressListResult objects.
     """
     def search_entry_for_ip(data, key, value):
         if isinstance(data, list):
@@ -330,6 +331,7 @@ def get_single_ip_details_from_list_of_ip_details(list_of_ip_details: list, ip_a
         result = search_entry_for_ip(entry, "ipAddress", ip_address)
         if result:
             return entry
+    return None
 
 
 class MsGraphClient:
@@ -343,7 +345,10 @@ class MsGraphClient:
         self.ms_client = MicrosoftClient(
             tenant_id=tenant_id, auth_id=auth_id, enc_key=enc_key, app_name=app_name, base_url=base_url, verify=verify,
             proxy=proxy, self_deployed=self_deployed, ok_codes=ok_codes, scope=Scopes.management_azure,
-            certificate_thumbprint=certificate_thumbprint, private_key=private_key)
+            certificate_thumbprint=certificate_thumbprint, private_key=private_key,
+            command_prefix="azure-vm",
+        )
+
         self.server = server
         self.subscription_id = subscription_id
 
@@ -462,7 +467,7 @@ class MsGraphClient:
             # being raised, then raise the below exception with a more general error message
             err_msg = 'Cannot execute this command because the ProvisioningState of the VM is \'Failed\'.'
             raise Exception(err_msg)
-        elif provisioning_state.lower() in PROVISIONING_STATE_TO_ERRORS.keys():
+        elif provisioning_state.lower() in PROVISIONING_STATE_TO_ERRORS:
             err_msg = PROVISIONING_STATE_TO_ERRORS.get(provisioning_state.lower())
             raise Exception(err_msg)
 
@@ -587,7 +592,7 @@ def list_vms_command(client: MsGraphClient, args: dict):
         }
         vms.append(vm)
 
-    title = 'Microsoft Azure - List of Virtual Machines in Resource Group "{}"'.format(resource_group)
+    title = f'Microsoft Azure - List of Virtual Machines in Resource Group "{resource_group}"'
     table_headers = ['Name', 'ID', 'Size', 'OS', 'Location', 'ProvisioningState', 'ResourceGroup']
     human_readable = tableToMarkdown(title, vms, headers=table_headers, removeNull=True)
     entry_context = {'Azure.Compute(val.Name && val.Name === obj.Name)': vms}
@@ -640,7 +645,7 @@ def get_vm_command(client: MsGraphClient, args: dict):
         'NetworkInterfaces': network_interfaces
     }
 
-    title = 'Properties of VM "{}"'.format(vm_name)
+    title = f'Properties of VM "{vm_name}"'
     table_headers = ['Name', 'ID', 'Size', 'OS', 'ProvisioningState', 'Location', 'PowerState']
     human_readable = tableToMarkdown(title, vm, headers=table_headers, removeNull=True)
     entry_context = {'Azure.Compute(val.Name && val.Name === obj.Name)': vm}
@@ -713,7 +718,7 @@ def create_vm_command(client: MsGraphClient, args: dict):
         'ResourceGroup': args.get('resource_group')
     }
 
-    title = 'Created Virtual Machine "{}"'.format(vm_name)
+    title = f'Created Virtual Machine "{vm_name}"'
     human_readable = tableToMarkdown(title, vm, removeNull=True)
     entry_context = {'Azure.Compute(val.Name && val.Name === obj.Name)': vm}
     return human_readable, entry_context, response
@@ -736,7 +741,7 @@ def delete_vm_command(client: MsGraphClient, args: dict):
     vm_name = args.get('virtual_machine_name')
 
     client.delete_vm(resource_group, vm_name)
-    success_msg = '"{}" VM Deletion Successfully Initiated'.format(vm_name)
+    success_msg = f'"{vm_name}" VM Deletion Successfully Initiated'
     return success_msg, None, None
 
 
@@ -767,7 +772,7 @@ def start_vm_command(client: MsGraphClient, args: dict):
         'PowerState': 'VM starting'
     }
 
-    title = 'Power-on of Virtual Machine "{}" Successfully Initiated'.format(vm_name)
+    title = f'Power-on of Virtual Machine "{vm_name}" Successfully Initiated'
     human_readable = tableToMarkdown(title, vm, removeNull=True)
     entry_context = {'Azure.Compute(val.Name && val.Name === obj.Name)': vm}
 
@@ -802,7 +807,7 @@ def poweroff_vm_command(client: MsGraphClient, args: dict):
         'PowerState': 'VM stopping'
     }
 
-    title = 'Power-off of Virtual Machine "{}" Successfully Initiated'.format(vm_name)
+    title = f'Power-off of Virtual Machine "{vm_name}" Successfully Initiated'
     human_readable = tableToMarkdown(title, vm, removeNull=True)
     entry_context = {'Azure.Compute(val.Name && val.Name === obj.Name)': vm}
 
@@ -873,7 +878,7 @@ def get_network_interface_command(client: MsGraphClient, args: dict):
         'AttachedVirtualMachine': attached_virtual_machine
     }
 
-    title = 'Properties of Network Interface "{}"'.format(interface_name)
+    title = f'Properties of Network Interface "{interface_name}"'
     table_headers = ['Name', 'ID', 'MACAddress', 'PrivateIPAddresses', 'NetworkSecurityGroup',
                      'Location', 'NICType', 'AttachedVirtualMachine']
     human_readable = tableToMarkdown(title, human_readable_network_config, headers=table_headers, removeNull=True)
@@ -941,7 +946,7 @@ def get_public_ip_details_command(client: MsGraphClient, args: dict):
         "ResourceGroup": resource_group
     }
 
-    title = 'Properties of Public Address "{}"'.format(address_name)
+    title = f'Properties of Public Address "{address_name}"'
     table_headers = ['PublicConfigName', 'Location', 'PublicIPAddress', 'PublicIPAddressVersion',
                      'PublicIPAddressAllocationMethod', 'ResourceGroup']
     human_readable = tableToMarkdown(title, human_readable_ip_config, headers=table_headers, removeNull=True)
@@ -990,7 +995,7 @@ def get_all_public_ip_details_command(client: MsGraphClient, args: dict):
         }
         ips.append(ip_config)
 
-    title = 'Microsoft Azure - List of Virtual Machines in Subscription "{}"'.format(client.subscription_id)
+    title = f'Microsoft Azure - List of Virtual Machines in Subscription "{client.subscription_id}"'
     table_headers = ['PublicConfigName', 'Location', 'PublicIPAddress', 'PublicIPAddressVersion',
                      'PublicIPAddressAllocationMethod']
     human_readable = tableToMarkdown(title, ips, headers=table_headers, removeNull=True)
@@ -1119,7 +1124,7 @@ def main():
         'azure-vm-get-nic-details': get_network_interface_command,
         'azure-vm-get-public-ip-details': get_public_ip_details_command,
         'azure-vm-get-all-public-ip-details': get_all_public_ip_details_command,
-        'azure-vm-create-nic': create_nic_command
+        'azure-vm-create-nic': create_nic_command,
     }
 
     '''EXECUTION'''
@@ -1138,15 +1143,15 @@ def main():
             subscription_id=subscription_id, certificate_thumbprint=certificate_thumbprint,
             private_key=private_key)
 
-        human_readable, entry_context, raw_response = commands[command](client, demisto.args())  # type: ignore
-        return_outputs(readable_output=human_readable, outputs=entry_context, raw_response=raw_response)
+        if command == 'azure-vm-auth-reset':
+            return_results(reset_auth())
+        else:
+            human_readable, entry_context, raw_response = commands[command](client, demisto.args())
+            return_outputs(readable_output=human_readable, outputs=entry_context, raw_response=raw_response)
 
     except Exception as e:
         screened_error_message = screen_errors(str(e), tenant)
         return_error(screened_error_message)
-
-
-from MicrosoftApiModule import *  # noqa: E402
 
 
 if __name__ in ['__main__', 'builtin', 'builtins']:

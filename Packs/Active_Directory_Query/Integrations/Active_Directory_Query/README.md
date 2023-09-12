@@ -88,6 +88,10 @@ Expires the password of an Active Directory user.
 #### Base Command
 
 `ad-expire-password`
+
+##### Required Permissions
+Requires `Reset user passwords and force password change at next logon` permissions.
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -109,6 +113,10 @@ Modifies the AD account attribute "Password Never Expire".
 #### Base Command
 
 `ad-modify-password-never-expire`
+
+##### Required Permissions
+Requires `Read userAccountControl` and `write userAccountControl` permissions.
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -138,6 +146,10 @@ Creates an Active Directory user. This command requires a secure connection (SSL
 #### Base Command
 
 `ad-create-user`
+
+##### Required Permissions
+Requires `Create, delete, and manage user accounts` permissions.
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -178,6 +190,10 @@ For more information on LDAP filters, see the [LDAP documentation](https://ldap.
 #### Base Command
 
 `ad-search`
+
+##### Required Permissions
+Requires `Read` and `Read and read all properties` permissions in `General` permissions.
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -234,6 +250,10 @@ Adds an Active Directory user or computer to a group.
 #### Base Command
 
 `ad-add-to-group`
+
+##### Required Permissions
+Requires `Create, delete, and manage groups` permissions.
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -264,6 +284,10 @@ Removes an Active Directory user or computer from a group.
 #### Base Command
 
 `ad-remove-from-group`
+
+##### Required Permissions
+Requires `Create, delete, and manage groups` permissions.
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -295,6 +319,10 @@ Updates attributes of an existing Active Directory user.
 #### Base Command
 
 `ad-update-user`
+
+##### Required Permissions
+Requires `Write All Properties` and `Read All Properties` permission from `User objects`.
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -323,10 +351,13 @@ Updated user's description to Samurai
 ***
 Deletes an Active Directory user.
 
-
 #### Base Command
 
 `ad-delete-user`
+
+##### Required Permissions
+Requires `Create, delete, and manage user accounts` permissions.
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -355,6 +386,10 @@ Creates an Active Directory contact.
 #### Base Command
 
 `ad-create-contact`
+
+##### Required Permissions
+Requires `full control` permission from `Contact objects`.
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -390,6 +425,10 @@ Updates attributes of an existing Active Directory contact.
 #### Base Command
 
 `ad-update-contact`
+
+##### Required Permissions
+Requires `Write All Properties` and `Read All Properties` permission from `Contact objects`.
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -490,6 +529,10 @@ Unlocks a previously locked Active Directory user account.
 #### Base Command
 
 `ad-unlock-account`
+
+##### Required Permissions
+Requires `Read lockoutTime` and `write lockoutTime` permissions.
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -519,6 +562,10 @@ Sets a new password for an Active Directory user. This command requires a secure
 #### Base Command
 
 `ad-set-new-password`
+
+##### Required Permissions
+Requires `Reset password` permissions.
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -549,6 +596,10 @@ Modifies the computer organizational unit within a domain.
 #### Base Command
 
 `ad-modify-computer-ou`
+
+##### Required Permissions
+Requires `Write All Properties` permission from `Computer objects`.
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -578,6 +629,10 @@ Modifies the user organizational unit within a domain.
 #### Base Command
 
 `ad-modify-user-ou`
+
+##### Required Permissions
+Requires `Write All Properties` permission from `Computer objects`.
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -607,6 +662,10 @@ Retrieves detailed information about a user account. The user can be specified b
 #### Base Command
 
 `ad-get-user`
+
+##### Required Permissions
+Requires `Read all user information` permissions.
+
 #### Input
 
 | **Argument Name** | **Description**                                                                                                                            | **Required** |
@@ -688,6 +747,10 @@ Retrieves detailed information about a computer account. The computer can be spe
 #### Base Command
 
 `ad-get-computer`
+
+##### Required Permissions
+Requires `Read` and `Read and read all properties` permissions from `Computer objects`.
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -746,6 +809,10 @@ Retrieves the list of users or computers that are members of the specified group
 #### Base Command
 
 `ad-get-group-members`
+
+##### Required Permissions
+Requires `Read members` permissions.
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -818,6 +885,10 @@ Creates a new security or distribution Active Directory group.
 #### Base Command
 
 `ad-create-group`
+
+##### Required Permissions
+Requires `Create, delete, and manage groups` permissions.
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -840,6 +911,10 @@ Deletes an existing Active Directory security or distribution group.
 #### Base Command
 
 `ad-delete-group`
+
+##### Required Permissions
+Requires `Create, delete, and manage groups` permissions.
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -859,6 +934,10 @@ Updates attributes of an existing Active Directory group.
 #### Base Command
 
 `ad-update-group`
+
+##### Required Permissions
+Requires `Create, delete, and manage groups` permissions.
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -881,6 +960,10 @@ Used in the IAM premium pack.
 #### Base Command
 
 `iam-create-user`
+
+##### Required Permissions
+Requires `Create, delete, and manage user accounts` permissions.
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -926,6 +1009,10 @@ Used in the IAM premium pack.
 #### Base Command
 
 `iam-get-user`
+
+##### Required Permissions
+Requires `Read all user information` permissions.
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -970,6 +1057,10 @@ Used in the IAM premium pack.
 #### Base Command
 
 `iam-update-user`
+
+##### Required Permissions
+Requires `Create, delete, and manage user accounts` permissions.
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1016,6 +1107,10 @@ Used in the IAM premium pack.
 #### Base Command
 
 `iam-disable-user`
+
+##### Required Permissions
+Requires `Read userAccountControl` and `write userAccountControl` permissions.
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1070,6 +1165,10 @@ Retrieves a User Profile schema which holds all of the user fields in the applic
 #### Base Command
 
 `get-mapping-fields`
+
+##### Required Permissions
+Requires `Read` and `Read and read all properties` permissions in `General` permissions.
+
 #### Input
 
 There are no input arguments for this command.

@@ -63,4 +63,4 @@ scripttarget: 0
 tests:
 - "No test"
 fromversion: 6.5.0
-dockerimage: demisto/python3:3.10.11.54132
+dockerimage: demisto/python3:3.10.12.63474

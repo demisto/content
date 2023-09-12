@@ -23,6 +23,7 @@ configuration:
   additionalinfo: Whether to sync the integration cache with the database (Available from Cortex XSOAR 6.2.0).
   section: Connect
   advanced: true
+  required: false
 script:
   script: ''
   type: javascript

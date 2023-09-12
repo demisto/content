@@ -12,16 +12,20 @@ configuration:
   name: credentials
   type: 9
   hiddenusername: true
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 - name: redirect_std_out
   display: Redirect stdout
   type: 8
   additionalinfo: Used for troubleshooting purposes.
+  required: false
 description: Manages indicators from OpenCTI. Compatible with OpenCTI 4.X API and OpenCTI 5.X API versions.
 display: OpenCTI
 name: OpenCTI

@@ -16,13 +16,16 @@ configuration:
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - additionalinfo: If the domain's Alexa rank is over this threshold, the domain is marked as suspicious. If the rank is between the threshold for suspicious domains and top domains, the domain is marked as unknown.
   display: Rank Threshold For Suspicious Domain
   name: suspicious_domain_threshold
   type: 0
+  required: false
 - additionalinfo: If the domain's Alexa rank is under this threshold, the domain is considered trusted and marked as good. If the rank is between the threshold for suspicious domains and top domains, the domain is marked as unknown.
   defaultvalue: '1000'
   display: Rank Threshold For Top Domains
