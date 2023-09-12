@@ -1,6 +1,9 @@
-## Hello World
-- This section explains how to configure the instance of HelloWorld in Cortex XSOAR.
-- You can use the following API Key: `43ea9b2d-4998-43a6-ae91-aba62a26868c`
+Generating an API Token
+- You need to navigate to portal.dnssense.com.
+- Go to settings.
+- Choose API Keys section.
+- Select 'Create New API Key' option.
+- Give a name to the API key and click save.
 
 ---
 [View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/hello-world)
