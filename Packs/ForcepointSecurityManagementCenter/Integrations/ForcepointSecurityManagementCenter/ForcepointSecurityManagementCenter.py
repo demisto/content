@@ -32,6 +32,7 @@ class Client:
     Most calls use _http_request() that handles proxy, SSL verification, etc.
     For this  implementation, no special attributes defined
     """
+
     def __init__(self, url: str, api_key: str, verify: bool, proxy: bool, port: str):
         self.url = url + ':' + port
         self.api_key = api_key

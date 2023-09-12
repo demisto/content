@@ -26,7 +26,7 @@ def test_module(client):  # pragma: no cover
         # We'll use a default file hash, accessible by all, to test the connection
         response = client.get_file_reputation("e7762f90024c5366807c7c145d3456f0ac3be086c0ec3557427d3c2c10a2052d")
         response = json.dumps(response)
-        if("attributes" in response):
+        if ("attributes" in response):
             return 'ok'
     except Exception:
         return 'Authorization Error: make sure API Key is correctly set'
@@ -99,14 +99,14 @@ def file_enrichment_command(client, file_hash):
                 outputs_prefix='Inception.File_Details',
                 outputs=responseJson,
             )
-            return(results)
+            return (results)
     except DemistoException as err:
         # API will return 404 if the file is not found
         if "404" in str(err):
             results = CommandResults(
                 readable_output="File not found: " + file_hash
             )
-            return(results)
+            return (results)
         else:
             raise err
 
@@ -115,7 +115,7 @@ def variant_discovery_command(client, file_hash):
     try:
         response = client.get_file_reputation(file_hash)
         response = json.dumps(response)
-        if("similarity" in response):
+        if ("similarity" in response):
             response_json = json.loads(response)
             md_string = tableToMarkdown("File Variants Discovered", response_json['variants'])
             results = CommandResults(
@@ -123,19 +123,19 @@ def variant_discovery_command(client, file_hash):
                 readable_output=md_string,
                 outputs=response_json,
             )
-            return(results)
-        elif("variants" in response):
+            return (results)
+        elif ("variants" in response):
             results = CommandResults(
                 readable_output="No variants discovered for: " + file_hash
             )
-            return(results)
+            return (results)
     except DemistoException as err:
         # API will return 500 if the file is not found
         if "500" in str(err):
             results = CommandResults(
                 readable_output="File not found: " + file_hash
             )
-            return(results)
+            return (results)
         else:
             raise err
 
