@@ -1,5 +1,5 @@
 This integration provides adding selected domains to the Roksit Secure DNS's Blacklisted Domain List through API .
-This integration was integrated and tested with version xx of Roksit DNS Security (DNSSense).
+This integration was integrated and tested with version 1.0.0 of Roksit DNS Security (DNSSense).
 
 ## Configure Roksit DNS Security (DNSSense) on Cortex XSOAR
 
