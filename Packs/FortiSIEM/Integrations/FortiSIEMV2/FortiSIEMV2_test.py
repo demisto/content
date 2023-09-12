@@ -749,4 +749,5 @@ def test_fetch_incidents_without_incident_title(requests_mock):
     events_number = len(events) if events else 0
     assert len(incidents) == expected_incidents_number
     assert updated_last_run == expected_last_run
+    assert incidents[0].get("name") == 'FortiSIEM incident: 1'
     assert events_number == expected_events_number
