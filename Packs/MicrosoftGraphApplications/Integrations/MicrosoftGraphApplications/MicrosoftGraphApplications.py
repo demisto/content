@@ -89,7 +89,7 @@ class Client:
         """
 
         Arguments:
-            object_or_app_id: Maximum of services to get.
+            object_or_app_id: object id or application id of the service.
 
         Returns:
             Retrieve the properties and relationships of a servicePrincipal object.
@@ -98,7 +98,27 @@ class Client:
             https://learn.microsoft.com/en-us/graph/api/serviceprincipal-get?view=graph-rest-1.0&tabs=http
         """
         suffix = f'v1.0/servicePrincipals{object_or_app_id}'
-        return self.ms_client.http_request('GET', suffix)
+        return self.ms_client.http_request(method='GET', url_suffix=suffix)
+
+    def update_single_service_principal(
+            self,
+            object_or_app_id: str,
+            data: dict
+    ):
+        """
+
+        Arguments:
+            object_or_app_id: object id or application id of the service.
+            data: Fields to update.
+
+        Returns:
+            Update the properties of servicePrincipal object.
+
+        Docs:
+            https://learn.microsoft.com/en-us/graph/api/serviceprincipal-update?view=graph-rest-1.0&tabs=http
+        """
+        suffix = f'v1.0/servicePrincipals{object_or_app_id}'
+        return self.ms_client.http_request(method='PATCH', url_suffix=suffix, json_data=data, return_empty_response=True)
 
     def delete_service_principals(
             self,
@@ -118,9 +138,7 @@ class Client:
         Docs:
             https://docs.microsoft.com/en-us/graph/api/serviceprincipal-delete?view=graph-rest-1.0&tabs=http
         """
-        self.ms_client.http_request(
-            'DELETE', f'v1.0/servicePrincipals{service_id}', return_empty_response=True
-        )
+        self.ms_client.http_request(method='DELETE', url_suffix=f'v1.0/servicePrincipals{service_id}', return_empty_response=True)
 
 
 ''' COMMAND FUNCTIONS '''
@@ -219,6 +237,94 @@ def get_service_principal_command(ms_client: Client, args: dict) -> CommandResul
     )
 
 
+def update_service_principal_command(ms_client: Client, args: dict) -> CommandResults:
+    """
+    Update the properties of servicePrincipal object.
+    Args:
+        ms_client: The Client
+        args: demisto.args()
+
+    Returns:
+
+    """
+    object_id, app_client_id = validate_service_principal_input(args=args)
+    data = {}
+
+    if account_enabled := args.get("account_enabled"):
+        data["accountEnabled"] = argToBoolean(account_enabled)
+
+    # Dict
+    if add_ins := args.get("add_ins"):
+        data["addIns"] = add_ins
+
+    # String collection
+    if alternative_names := args.get("alternative_names"):
+        data["alternativeNames"] = alternative_names
+
+    if app_role_assignment_required := args.get("app_role_assignment_required"):
+        data["appRoleAssignmentRequired"] = argToBoolean(app_role_assignment_required)
+
+    # Dict collection
+    if app_roles := args.get("app_roles"):
+        data["appRoles"] = app_roles
+
+    # Dict
+    if custom_security_attributes := args.get("custom_security_attributes"):
+        data["customSecurityAttributes"] = custom_security_attributes
+
+    # String
+    if display_name := args.get("display_name"):
+        data["displayName"] = display_name
+
+    # String
+    if home_page := args.get("home_page"):
+        data["homepage"] = home_page
+
+    # Dict collection
+    if key_credentials := args.get("key_credentials"):
+        data["keyCredentials"] = key_credentials
+
+    # String
+    if logout_url := args.get("logout_url"):
+        data["logoutUrl"] = logout_url
+
+    # Dict collection
+    if oauth2_permission_scopes := args.get("oauth2_permission_scopes"):
+        data["oauth2PermissionScopes"] = oauth2_permission_scopes
+
+    # String
+    if preferred_single_sign_on_mode := args.get("preferred_single_sign_on_mode"):
+        data["preferredSingleSignOnMode"] = preferred_single_sign_on_mode
+
+    # String collection
+    if reply_urls := args.get("reply_urls"):
+        data["replyUrls"] = reply_urls
+
+    # String collection
+    if service_principal_names := args.get("service_principal_names"):
+        data["servicePrincipalNames"] = service_principal_names
+
+    # String collection
+    if tags := args.get("tags"):
+        data["tags"] = tags
+
+    # String
+    if token_encryption_key_id := args.get("token_encryption_key_id"):
+        data["tokenEncryptionKeyId"] = token_encryption_key_id
+
+    # if both are provided, pass the object_id
+    if object_id:
+        ms_client.update_single_service_principal(f"/{object_id}", data=data)
+        service_id = object_id
+    else:
+        ms_client.update_single_service_principal(f"(appId='{app_client_id}')", data=data)
+        service_id = app_client_id
+
+    return CommandResults(
+        readable_output=f'Service {service_id} was updated successfully.'
+    )
+
+
 def remove_service_principals_command(ms_client: Client, args: dict) -> CommandResults:
     """Remove an authorized app.
 
@@ -304,6 +410,8 @@ def main():
             return_results(remove_service_principals_command(client, args))
         elif command == 'msgraph-apps-service-principal-get':
             return_results(get_service_principal_command(client, args))
+        elif command == 'msgraph-apps-service-principal-update':
+            return_results(update_service_principal_command(client, args))
         else:
             raise NotImplementedError(f"Command '{command}' not found.")
 

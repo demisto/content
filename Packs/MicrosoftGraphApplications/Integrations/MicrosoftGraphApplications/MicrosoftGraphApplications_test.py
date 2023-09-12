@@ -226,4 +226,34 @@ def test_get_service_principal_command(requests_mock):
     assert results.outputs == GET_SERVICE_PRINCIPAL_RESPONSE
 
 
+@pytest.mark.parametrize('args, expected_id, expected_args',
+                         [
+                             ({'id': 'TEST', 'app_id': None, 'account_enabled': 'true'}, "/TEST",
+                              {'data': {'accountEnabled': True}}),
+                             ({'id': None, 'app_id': 'TEST', 'app_role_assignment_required': 'true'}, "(appId='TEST')",
+                              {'data': {'appRoleAssignmentRequired': True}}),
+                             ({'id': 'TEST', 'app_id': 'TEST'}, "/TEST", {'data': {}})
+                         ])
+def test_update_service_principals_command(mocker, requests_mock, args, expected_id, expected_args):
+    """
+        Given:
+            - Required arguments (id or app_id or both)
+        When:
+            - Executing msgraph-apps-service-principal-update command
+        Then:
+            - Ensure update_service_principals client's method was called with the right argument
+    """
+    from MicrosoftGraphApplications import Client, update_service_principal_command
+
+    mock_token = {'access_token': 'test_token', 'expires_in': '86400'}
+    requests_mock.post('https://login.microsoftonline.com/organizations/oauth2/v2.0/token', json=mock_token)
+    client = Client(app_id='TEST', verify=False, proxy=False, connection_type='TEST', tenant_id='TEST', enc_key='TEST')
+    requests_mock.patch("https://graph.microsoft.com/v1.0/servicePrincipals/TEST", json={})
+    mock_update_service_principals = mocker.patch.object(client, "update_single_service_principal")
+    update_service_principal_command(client, args=args)
+
+    assert mock_update_service_principals.call_args[0][0] == expected_id
+    assert mock_update_service_principals.call_args[1] == expected_args
+
+
 
