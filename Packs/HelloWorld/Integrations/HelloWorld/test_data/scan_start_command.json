@@ -1,0 +1,66 @@
+{
+    "real_response": {
+        "policy_break_count": 2,
+        "policies": [
+            "File extensions",
+            "Filenames",
+            "Secrets detection"
+        ],
+        "policy_breaks": [
+            {
+                "type": ".env",
+                "policy": "Filenames",
+                "matches": [
+                    {
+                        "type": "filename",
+                        "match": ".env"
+                    }
+                ],
+                "incident_url": "",
+                "known_secret": false
+            },
+            {
+                "type": "Basic Auth String",
+                "policy": "Secrets detection",
+                "matches": [
+                    {
+                        "type": "username",
+                        "match": "example_user",
+                        "index_start": 37,
+                        "index_end": 46,
+                        "line_start": 3,
+                        "line_end": 3
+                    },
+                    {
+                        "type": "password",
+                        "match": "correcthorsebatterystaple",
+                        "index_start": 48,
+                        "index_end": 72,
+                        "line_start": 3,
+                        "line_end": 3
+                    },
+                    {
+                        "type": "host",
+                        "match": "cake.gitguardian.com",
+                        "index_start": 74,
+                        "index_end": 93,
+                        "line_start": 3,
+                        "line_end": 3
+                    }
+                ],
+                "incident_url": "",
+                "known_secret": false,
+                "validity": "no_checker"
+            }
+        ]
+    },
+
+    "mock_ok_response": {
+        "policy_break_count": 2,
+        "policies": [
+            "Policy1",
+            "Policy2"
+        ],
+        "policy_breaks": "Dummy Data"
+    }
+}

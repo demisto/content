@@ -3,7 +3,7 @@ sectionOrder:
 - Connect
 - Collect
 commonfields:
-  id: HelloWorld
+  id: HelloWorld Dev
   version: -1
 configuration:
 - additionalinfo: Reliability of the source providing the intelligence data.
@@ -21,8 +21,8 @@ configuration:
   type: 15
   section: Collect
   required: false
-- defaultvalue: https://soar.monstersofhack.com
-  display: Server URL (e.g. https://soar.monstersofhack.com)
+- defaultvalue: https://api.gitguardian.com
+  display: Server URL (e.g. https://api.gitguardian.com)
   name: url
   required: true
   type: 0
@@ -57,39 +57,14 @@ configuration:
   section: Collect
   advanced: true
   required: false
-- defaultvalue: '65'
-  display: Score threshold for domain reputation command
-  additionalinfo: Set this to determine the HelloWorld score that will determine if a domain is malicious (0-100)
-  name: threshold_domain
-  type: 0
-  section: Collect
-  advanced: true
-  required: false
-- defaultvalue: ACTIVE
-  display: Fetch alerts with status (ACTIVE, CLOSED)
-  name: alert_status
+- defaultvalue: 'low'
+  display: Severity of alerts to fetch
+  name: severity
   options:
-  - ACTIVE
-  - CLOSED
-  type: 15
-  section: Collect
-  advanced: true
-  required: false
-- display: Fetch alerts with type
-  additionalinfo: Comma-separated list of types of alerts to fetch. Types might change over time. Some examples are 'Bug' and 'Vulnerability'
-  name: alert_type
-  type: 0
-  section: Collect
-  advanced: true
-  required: false
-- defaultvalue: 'Low'
-  display: Minimum severity of alerts to fetch
-  name: min_severity
-  options:
-  - Low
-  - Medium
-  - High
-  - Critical
+  - low
+  - medium
+  - high
+  - critical
   required: true
   type: 15
   section: Collect
@@ -112,8 +87,8 @@ configuration:
   advanced: true
   required: false
 description: This is the Hello World integration for getting started.
-display: HelloWorld
-name: HelloWorld
+display: HelloWorld Dev
+name: HelloWorld Dev
 script:
   commands:
   - arguments:
@@ -127,9 +102,11 @@ script:
       type: String
   - arguments:
     - description: Filter by alert incident ID. If not provided, all IDs will be retrieved.
-      name: incident_id
-    - description: How many alerts to fetch per page.
+      name: incident_id  
+    - description: How many alerts to fetch. Default is 10.
       name: limit
+    - description: How many alerts to fetch per page. Default is 1.
+      name: page_size
     - description: Token to get next page manually.
       name: next_token
     description: Lists the incidents found in the api
@@ -299,6 +276,117 @@ script:
       type: String
     - contextPath: HelloWorld.Incident.severity
       description: The severity of the incident
+      type: String
+  - arguments:
+    - description: Filter by alert incident ID. If not provided, all IDs will be retrieved.
+      name: incident_id
+      required: true
+    - description: How many alerts to fetch. Default is 10.
+      name: limit
+    - description: How many alerts to fetch per page. Default is 1.
+      name: page_size
+    - description: Token to get next page manually.
+      name: next_token
+    description: Lists the incidents found in the api
+    name: helloworld-incident-note-list
+    outputs:
+    - contextPath: HelloWorld.Note.id
+      description: The id of the note.
+      type: Number
+    - contextPath: HelloWorld.Note.member_id
+      description: Id of the member who created this note. Can be null if the note was not created by a member or if the member was deleted.
+      type: Number
+    - contextPath: HelloWorld.Note.api_token_id
+      description: ID of the API key which created this note. Can be null if the note was not created via the API.
+      type: String
+    - contextPath: HelloWorld.Note.created_at
+      description: Creation date of the note.
+      type: Date
+    - contextPath: HelloWorld.Note.updated_at
+      description: Last time the content of the note was updated. Null if the comment was never modified.
+      type: Date
+    - contextPath: HelloWorld.Note.comment
+      description: The comment on the note.
+      type: String
+    - contextPath: HelloWorld.Note.incident_id
+      description: Id of the related Incident.
+      type: Number
+  - arguments:
+    - description: The incident's id to add note to.
+      name: incident_id
+      required: true
+    - description: The comment to add to note.
+      name: note_text
+      required: true
+    name: helloworld-incident-note-create
+    outputs:
+    - contextPath: HelloWorld.Note.id
+      description: The id of the note
+      type: Number
+    - contextPath: HelloWorld.Note.member_id
+      description: Id of the member who created this note. Can be null if the note was not created by a member or if the member was deleted.
+      type: Number
+    - contextPath: HelloWorld.Note.api_token_id
+      description: ID of the API key which created this note. Can be null if the note was not created via the API.
+      type: String
+    - contextPath: HelloWorld.Note.created_at
+      description: Creation date of the note.
+      type: Date
+    - contextPath: HelloWorld.Note.updated_at
+      description: Last time the content of the note was updated. Null if the comment was never modified.
+      type: Date
+    - contextPath: HelloWorld.Note.comment
+      description: The comment in the incident note.
+      type: String
+    - contextPath: HelloWorld.Note.incident_id
+      description: Id of the related Incident.
+      type: Number
+  - arguments: 
+    - description: The file name to scan.
+      name: file_name
+    - description: The Content of the file to scan.
+      name: file_content
+      required: True
+    name: helloworld-file-scan-start
+    outputs:
+    - contextPath: HelloWorld.Scan.policy_break_count
+      description: Number of policy breaks on this document.
+      type: Number
+    - contextPath: HelloWorld.Scan.policies
+      description: Policies checked on this document.
+      type: String
+    - contextPath: HelloWorld.Scan.policy_breaks.type
+      description: Type of detected policy.
+      type: String
+    - contextPath: HelloWorld.Scan.policy_breaks.policy
+      description: Name of failing policy.
+      type: String
+    - contextPath: HelloWorld.Scan.policy_breaks.matches.type
+      description: Type of match.
+      type: String
+    - contextPath: HelloWorld.Scan.policy_breaks.matches.match
+      description: Matched string of failure
+      type: String
+    - contextPath: HelloWorld.Scan.policy_breaks.incident_url
+      description: The incident's URL on your GitGuardian dashboard, if it is a known secret, or an empty string otherwise.
+      type: String
+    - contextPath: HelloWorld.Scan.policy_breaks.known_secret
+      description: Indicates whether the secret is known by your GitGuardian dashboard.
+      type: Boolean
+    - contextPath: HelloWorld.Scan.policy_breaks.matches.index_start
+      description: start index of match in file as an array (index origin = 0).
+      type: Number
+    - contextPath: HelloWorld.Scan.policy_breaks.matches.index_end
+      description: end index of match in file as an array (index origin = 0).
+      type: Number
+    - contextPath: HelloWorld.Scan.policy_breaks.matches.line_start
+      description: start line number of match (index origin = 1).
+      type: Number
+    - contextPath: HelloWorld.Scan.policy_breaks.matches.line_end
+      description: end line number of match (index origin = 1).
+      type: Number
+    - contextPath: HelloWorld.Scan.policy_breaks.validity
+      description: 'Validity of the found secret. Can be "no_checker", "valid", "invalid", "failed_to_check" or "unknown"'
       type: String
   dockerimage: demisto/python3:3.10.12.63474
   isfetch: true

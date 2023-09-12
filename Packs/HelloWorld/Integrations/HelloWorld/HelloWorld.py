@@ -1,3 +1,6 @@
+from requests.models import Response
+from urllib.parse import unquote
+from typing import Union
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
@@ -244,23 +247,22 @@ Python 3) and then calls the ``main()`` function. Just keep this convention.
 
 """
 import json
-from typing import Any, Dict, List, Optional, Tuple, Union, cast
+from typing import Any, Callable, Dict, List, Optional, Tuple, Union, cast
 
 import dateparser
 import urllib3
 
 from CommonServerUserPython import *
 
-# Disable insecure warnings
-urllib3.disable_warnings()
 
 ''' CONSTANTS '''
-
+LOG_LINE = 'HelloWorldDebugLog: '  # Make sure to use a line easily to search and read in logs.
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 MAX_INCIDENTS_TO_FETCH = 50
 DEFAULT_INDICATORS_THRESHOLD = 65
 HELLOWORLD_SEVERITIES = ['Low', 'Medium', 'High', 'Critical']
 LIMIT = 10
+DEFAULT_PAGE_SIZE = 5
 
 ''' CLIENT CLASS '''
 
@@ -275,76 +277,49 @@ class Client(BaseClient):
     For this HelloWorld implementation, no special attributes defined
     """
 
-#     def get_ip_reputation(self, ip: str) -> Dict[str, Any]:
-#         """Gets the IP reputation using the '/ip' API endpoint
-#
-#         Args:
-#             ip (str): IP address to get the reputation for.
-#
-#         Returns:
-#             dict: dict containing the IP reputation as returned from the API
-#         """
-#         mocked_response = {}
-#         return mocked_response
-#
-#     def search_alerts(self, alert_status: Optional[str], severity: Optional[str],
-#                       alert_type: Optional[str], max_results: Optional[int],
-#                       start_time: Optional[int]) -> List[Dict[str, Any]]:
-#         """
-#         Searches for HelloWorld alerts using the '/get_alerts' API endpoint.
-#         All the parameters are passed directly to the API as HTTP POST parameters in the request
-#
-#         Args:
-#             alert_status (str): status of the alert to search for. Options are: 'ACTIVE' or 'CLOSED'
-#             severity (str): severity of the alert to search for. Comma-separated values. Options are: "Low", "Medium",
-#                 "High", "Critical".
-#             alert_type (str): type of alerts to search for. There is no list of predefined types.
-#             max_results (int): maximum number of results to return.
-#             start_time (int): start timestamp (epoch in seconds) for the alert search.
-#
-#         Returns:
-#             list: list of HelloWorld alerts as dicts.
-#         """
-#
-#         request_params: Dict[str, Any] = {}
-#
-#         if alert_status:
-#             request_params['alert_status'] = alert_status
-#
-#         if alert_type:
-#             request_params['alert_type'] = alert_type
-#
-#         if severity:
-#             request_params['severity'] = severity
-#
-#         if max_results:
-#             request_params['max_results'] = max_results
-#
-#         if start_time:
-#             request_params['start_time'] = start_time
-#
-#         return self._http_request(
-#             method='GET',
-#             url_suffix='/get_alerts',
-#             params=request_params
-#         )
-#
-#         """Gets the results of a HelloWorld scan
-#
-#         Args:
-#             scan_id (str): ID of the scan to retrieve results for.
-#
-#         Returns:
-#             dict: dict containing the scan results as returned from the API.
-#         """
-#
-#         return self._http_request(
-#             method='GET',
-#             url_suffix='/get_scan_results',
-#             params={
-#                 'scan_id': scan_id
-#             }
-#         )
+    def get_ip_reputation(self, ip: str) -> Dict[str, Any]:
+        """Gets the IP reputation using the '/ip' API endpoint. Due to no support for this command in the API, this is a dummy response.
+
+        Args:
+            ip (str): IP address to get the reputation for.
+
+        Returns:
+            dict: dict containing the dummy IP reputation for an example ip as it should be returned from the API.
+        """
+        mocked_response = {
+            "attributes": {
+                "as_owner": "EMERALD-ONION",
+                "asn": 396507,
+                "continent": "NA",
+                "country": "US",
+                "jarm": ":jarm:",
+                "last_analysis_stats": {
+                    "harmless": 72,
+                    "malicious": 5,
+                    "suspicious": 2,
+                    "timeout": 0,
+                    "undetected": 8
+                },
+                "last_modification_date": 1613300914,
+                "network": ":cidr:",
+                "regional_internet_registry": "ARIN",
+                "reputation": -4,
+                "tags": [],
+                "total_votes": {
+                    "harmless": 0,
+                    "malicious": 1
+                },
+                "whois": "NetRange: :range:\nCIDR: :cidr:\nNetName: ENCRYPTED-TRANSIT-IPV4\nNetHandle: :net-handle:\nParent: :parent:\nNetType: Direct Allocation\nOriginAS: :oas:\nOrganization: :org name: (:org-id:)\nRegDate: 2017-07-19\nUpdated: 2017-07-19\nComment: :comment:\nRef: :ref:\nOrgName: :org name:\nOrgId: :org-id:\nAddress: 815 1st Ave # 331\nCity: Seattle\nStateProv: WA\nPostalCode: :code:\nCountry: US\nRegDate: 2017-06-20\nUpdated: 2018-11-15\nRef: :ref:\nOrgTechHandle: :handle:\nOrgTechName: Technical Support\nOrgTechPhone: :phone: \nOrgTechEmail: tech@example.com\nOrgTechRef: :ref:/:handle:\nOrgAbuseHandle: :abuse-handle:\nOrgAbuseName: Abuse Management\nOrgAbusePhone: :phone: \nOrgAbuseEmail: abuse@example.com\nOrgAbuseRef: :ref:/:abuse-handle:\nOrgNOCHandle: NETWO8737-ARIN\nOrgNOCName: Network Operations\nOrgNOCPhone: :phone: \nOrgNOCEmail: noc@example.com\nOrgNOCRef: :ref::ref\n",
+                "whois_date": 1611870274
+            },
+            "id": "x.x.x.x",
+            "links": {
+                "self": "https://www.virustotal.com/api/v3/ip_addresses/x.x.x.x"
+            },
+            "type": "ip_address"
+        }
+
+        return mocked_response
 
     def say_hello(self, name: str) -> str:
         """
@@ -359,22 +334,147 @@ class Client(BaseClient):
 
         return f'Hello {name}'
 
-    def get_incident_list(self, page_size, cursor: str = None) -> dict:
-        params = {"per_page": page_size}
-        if cursor:
-            params['cursor'] = cursor
+    def get_incident_list(self, page_size, cursor: str = None, start_time: str = None, severity: str = None, ordering='date') -> Response:
+        """This function calls the api without any incident information.
 
+        Args:
+            page_size (_type_):  The number of result to include in a page.
+            cursor (str, optional): A token to continued a previous call. Defaults to None.
+            start_time (str, optional): The time to start the fetching query from. Defaults to None.
+            severity (str, optional): The severity of the incident to fetch. Defaults to None.
+            ordering (str, optional): By which field should the result ordered by . Defaults to 'date'.
+
+        Returns:
+            Response: The full response from the API, containing all the headers and data.
+        """
+        params = {"per_page": page_size}
+
+        # INTEGRATION DEVELOPER TIP
+        # You can use the assign_params function to easily create a dictionary with non-empty arguments only.
+        # In this case when the function is called for the incident_list_command the dictionary is empty (unless cursor provided).
+        # When it is called for fetch-incidents command it will contain the filters the user requested.
+
+        additional_params = assign_params(
+            cursor=cursor,
+            severity=severity,
+            date_after=start_time,
+            ordering=ordering
+        )
+        params |= additional_params
         return self._http_request(
             method='GET',
             url_suffix='v1/incidents/secrets',
+            params=params,
+            resp_type='response'
+        )
+
+    def get_incident(self, incident_id: int) -> list[dict]:
+        """ This function calls the api with the requested incident id.
+
+        Args:
+            incident_id (int): a number represent an incident.
+
+        Returns:
+            dict: The response from the API with data on the incident.
+        """
+        res = self._http_request(
+            method='GET',
+            url_suffix=f'v1/incidents/secrets/{incident_id}',
+            resp_type='json'
+        )
+        if isinstance(res, dict):
+            return [res]
+        return res
+
+    def get_incident_note_list_as_response(self, incident_id: int, page_size: int, cursor: str = None) -> Response:
+        """ This function calls the api with the requested incident data.
+
+        Args:
+            incident_id (int): a number represent an incident.
+            page_size (int): The number of result to include in a page.
+            cursor (str, optional): A token to continued a previous call. Defaults to None.
+
+        Returns:
+            urllib.response: The full response from the API of the incident's notes.
+        """
+        # INTEGRATION DEVELOPER TIP
+        # If there is a need to get the response's header, one can get the whole response and not just the data part, using the resp_type argument.
+        params: dict[str, object] = {"per_page": page_size}
+        if cursor:
+            params['cursor'] = cursor
+        return self._http_request(
+            method='GET',
+            url_suffix=f'v1/incidents/secrets/{incident_id}/notes',
+            resp_type='response',
             params=params
         )
 
-    def get_incident(self, incident_id: int) -> dict:
+    def create_incident_note(self, incident_id: int, comment: str) -> dict:
+        """ This function calls the api to create a new note in an incident.
+
+        Args:
+            incident_id (int): a number represent an incident.
+            comment (str): A text comment to add to the incident as a note.
+
+        Returns:
+            dict: The summary of the newly created note from the API response.
+        """
+        # INTEGRATION DEVELOPER TIP
+        # When the response returns with 201 status for success (or uses other statuses then 200 in general), one can use 'ok_codes' argument so the _http_request method won't fail on parsing it.
+
         return self._http_request(
-            method='GET',
-            url_suffix=f'v1/incidents/secrets/{incident_id}'
+            method='POST',
+            url_suffix=f'v1/incidents/secrets/{incident_id}/notes',
+            ok_codes=[201],
+            json_data={"comment": comment}
         )
+
+    def file_scan_start(self, file_content: str, file_name: str = None) -> dict:
+        """ This function calls the api to start a new scan on a file given.
+
+        Args:
+            file_content (str): A file's content to check.
+            file_name(str, optional): A file name to check.
+
+        Returns:
+            dict: The data returned from the scan.
+        """
+        # INTEGRATION DEVELOPER TIP
+        # In this case we will use the json_data to pass some params in the request's body.
+        # In some cases (complex body) it is better practice to build the body outside of this function and pass it as an argument.
+
+        body = {"document": file_content}
+        if file_name:
+            body["filename"] = file_name
+
+        return self._http_request(
+            method='POST',
+            url_suffix='v1/scan',
+            json_data=body
+        )
+
+    def get_incident_list_for_fetch(self, page_size, cursor: str = None, last_id: int = 0,
+                                    start_time: str = None, severity: str = None, ordering='date') -> list[dict]:
+        """This function return dummy events for fetch.
+
+        Args:
+            page_size (_type_): _description_
+            cursor (str, optional): _description_. Defaults to None.
+            start_time (str, optional): _description_. Defaults to None.
+            severity (str, optional): _description_. Defaults to None.
+            ordering (str, optional): _description_. Defaults to 'date'.
+        """
+        def mock_time(item):
+            item['id'] = last_id + 1
+            item['date'] = datetime.strftime(datetime.now(), DATE_FORMAT)
+
+        res = self.get_incident_list(page_size, severity=severity)  # Will always bring all incidents
+        incidents = res.json() if res.status_code == 200 else []
+        demisto.debug("Setting incidents time to now.")
+        for item in incidents:
+            mock_time(item)
+            last_id += 1
+        return incidents
 
 
 ''' HELPER FUNCTIONS '''
@@ -398,17 +498,66 @@ def convert_to_demisto_severity(severity: str) -> int:
     # might be required in your integration, so a dedicated function is
     # recommended. This mapping should also be documented.
     return {
-        'Low': IncidentSeverity.LOW,
-        'Medium': IncidentSeverity.MEDIUM,
-        'High': IncidentSeverity.HIGH,
-        'Critical': IncidentSeverity.CRITICAL
+        'low': IncidentSeverity.LOW,
+        'medium': IncidentSeverity.MEDIUM,
+        'high': IncidentSeverity.HIGH,
+        'critical': IncidentSeverity.CRITICAL,
+        'unknown': IncidentSeverity.UNKNOWN
     }[severity]
+
+
+def get_next_cursor(data: Response) -> Optional[str]:
+    """ Gets a full response. The headers should contain _store attribute and inside the link attribute. link is a tuple, containing: '<http://api.gitguardian.com/v1/incidents/secrets?cursor=cD0xNTA%3D>; rel=\"next\",<http://api.gitguardian.com/v1/incidents/secrets?cursor=cD0xNTA%3D>; rel=\"prev\"'
+    Returns: the next page token
+    """
+    next_token = None
+    # next_page_link = data.headers._store.get('link')
+    page_link = data.links
+    if page_link:
+        next_token = get_next_token(page_link.get('next', {}).get('url', ''))
+    return next_token
+
+
+def get_next_token(url) -> Optional[str]:
+    """ Gets a link in format "<https://api.gitguardian.com/v1/incidents/secrets?cursor=cD03MjE4NDU5&per_page=1>; rel=\"next\"" and extract the cursor.
+    Return the substring representing the next page token
+    """
+    TOKEN_PATTERN = r'cursor=(.*)'
+    res = re.findall(TOKEN_PATTERN, unquote(url))
+    return res[0] if res else None
+#     cursor_start_index = url.find('cursor=') + 7
+#     cursor_end_index = url[cursor_start_index:].find('&')
+#     if url[cursor_start_index:].find('%') != -1:
+#         cursor_end_index = min(cursor_end_index, url[cursor_start_index:].find('%'))
+#     return url[cursor_start_index:cursor_start_index+cursor_end_index]
+
+
+def dedup_by_ids(alerts: list[dict], ids_to_compare: list[str]) -> Tuple[list[dict], int]:
+    """ Gets A list of new ids and a list of existing, and return a united list with only new values.
+    For example, if new_ids=['a','b'] and ids_to_compare=['b','c'], ['a'] is returned.
+
+    Args:
+        new_ids (list[dict]): A list of alerts to compare. Assuming the existence of "id" key.
+        ids_to_compare (list[str]): A list of existing strings
+
+    Returns:
+        list[dict]: A united list of only new unique alerts.
+        int: The number of duplicates found.
+    """
+    dups = []
+    dedup = []
+    for alert in alerts:
+        if id := alert["id"] in ids_to_compare:
+            dups.append(id)
+        else:
+            dedup.append(alert)
+    return dedup, len(dups)
 
 
 ''' COMMAND FUNCTIONS '''
 
 
-def test_module(client: Client, params: Dict[str, Any], first_fetch_time: int) -> str:
+def test_module(client: Client, params: Dict[str, Any]) -> str:
     """
     Tests API connectivity and authentication'
     When 'ok' is returned it indicates the integration works like it is supposed to and connection to the service is
@@ -434,23 +583,20 @@ def test_module(client: Client, params: Dict[str, Any], first_fetch_time: int) -
     # Cortex XSOAR will print everything you return different than 'ok' as
     # an error
     try:
+        time = dateparser.parse('1 minute')
+        assert time
         if params.get('isFetch'):  # Tests fetch incident:
-            alert_status = params.get('alert_status', None)
-            alert_type = params.get('alert_type', None)
-            min_severity = params.get('min_severity', None)
+            severity = params.get('severity', None)
 
             fetch_incidents(
                 client=client,
                 max_results=1,
                 last_run={},
-                first_fetch_time=first_fetch_time,
-                alert_status=alert_status,
-                min_severity=min_severity,
-                alert_type=alert_type
+                first_fetch_time=time.isoformat(),
+                severity=severity
             )
         else:
-            client.search_alerts(max_results=1, start_time=first_fetch_time, alert_status=None, alert_type=None,
-                                 severity=None)
+            client.get_incident_list(page_size=1, start_time=time.isoformat())
 
     except DemistoException as e:
         if 'Forbidden' in str(e):
@@ -461,7 +607,7 @@ def test_module(client: Client, params: Dict[str, Any], first_fetch_time: int) -
     return 'ok'
 
 
-# def say_hello_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def say_hello_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
     helloworld-say-hello command: Returns Hello {somename}
 
@@ -506,10 +652,9 @@ def test_module(client: Client, params: Dict[str, Any], first_fetch_time: int) -
     )
 
 
-def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int],
-                    first_fetch_time: Optional[int], alert_status: Optional[str],
-                    min_severity: str, alert_type: Optional[str]
-                    ) -> Tuple[Dict[str, int], List[dict]]:
+def fetch_incidents(client: Client, max_results: int, last_run: dict,
+                    first_fetch_time: str, severity: str = None, page_size: int = DEFAULT_PAGE_SIZE
+                    ) -> Tuple[dict, List[dict]]:
     """
     This function retrieves new alerts every interval (default is 1 minute).
     It has to implement the logic of making sure that incidents are fetched only onces and no incidents are missed.
@@ -523,97 +668,112 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int],
         last_run (dict): A dict with a key containing the latest incident created time we got from last fetch.
         first_fetch_time(int): If last_run is None (first time we are fetching), it contains the timestamp in
             milliseconds on when to start fetching incidents.
-        alert_status (str): status of the alert to search for. Options are: 'ACTIVE' or 'CLOSED'.
-        min_severity (str): minimum severity of the alert to search for. Options are: "Low", "Medium", "High" and
-            "Critical".
-        alert_type (str): type of alerts to search for. There is no list of predefined types.
+        severity (str): severity of the alert to search for.
     Returns:
         dict: Next run dictionary containing the timestamp that will be used in ``last_run`` on the next fetch.
         list: List of incidents that will be created in XSOAR.
     """
+    # INTEGRATION DEVELOPER TIP
+    # You can use the last_run to save important information between fetches (For example, the last fetched incident's ids.
+    # Note that the last_run can store only small amounts of data, abusing it might cause unexpected behavior.
+
+    # INTEGRATION DEVELOPER TIP
+    # The fetch-incident function is usually *very* hard to debug in client's environment.
+    # Logging the steps correctly can save a lot of time and effort. Make sure to use demisto.debug() to avoid flooding the general log.
 
     # Get the last fetch time, if exists
-    # last_run is a dict with a single key, called last_fetch
     last_fetch = last_run.get('last_fetch', None)
+    last_ids: list[int] = last_run.get('last_ids', []) or []
+
     # Handle first fetch time
     if last_fetch is None:
         # if missing, use what provided via first_fetch_time
         last_fetch = first_fetch_time
     else:
         # otherwise use the stored last fetch
-        last_fetch = int(last_fetch)
+        last_fetch = last_fetch
 
-    # for type checking, making sure that latest_created_time is int
-    latest_created_time = cast(int, last_fetch)
+    assert last_fetch
 
     # Initialize an empty list of incidents to return
     # Each incident is a dict with a string as a key
     incidents: List[Dict[str, Any]] = []
+    last_dummy_id = max(last_ids) if last_ids else 0
+    demisto.debug(f'Running API query with {last_fetch=}, {severity=}')
+    alerts = client.get_incident_list_for_fetch(page_size=max_results, start_time=last_fetch,
+                                                severity=severity, ordering='date',
+                                                last_id=last_dummy_id)
+    demisto.debug(f'Received {len(alerts)} alerts from server.')
 
-    # Get the CSV list of severities from min_severity
-    severity = ','.join(HELLOWORLD_SEVERITIES[HELLOWORLD_SEVERITIES.index(min_severity):])
+    # INTEGRATION DEVELOPER TIP
+    # One should make sure incidents are not being duplicate. This might happen in 2 cases:
+    # 1. Pagination done without next page's token (the exact time of the last incident is queried again so the same incident will return again).
+    # 2. Limit is exceeded but there are more incident in the same time to fetch in the next run (Especially happen when API does not support milliseconds).
+    # In this case we will comment it out as all the dummy incidents have the same ids.
 
-    alerts = client.search_alerts(
-        alert_type=alert_type,
-        alert_status=alert_status,
-        max_results=max_results,
-        start_time=last_fetch,
-        severity=severity
-    )
+    # alerts, number_of_dups = dedup_by_ids(alerts, last_ids)
+    # demisto.debug(f'recieved {number_of_dups} duplicates incidents to skip.')
 
+    # Get the last alert time.
+    # We assume asc order so we can get all the incidents fetched with the exact same time and avoid it in the next run.
+    # If no results returned from API, we use the last incident fetched from last_run.
+    last_fetched_time = alerts[-1]['date'] if alerts else last_fetch
+    last_ids = []
+    demisto.debug(f'{alerts=}')
     for alert in alerts:
-        # If no created_time set is as epoch (0). We use time in ms so we must
-        # convert it from the HelloWorld API response
-        incident_created_time = int(alert.get('created', '0'))
-        incident_created_time_ms = incident_created_time * 1000
+        # to prevent duplicates, we are only adding incidents with creation_time > last fetched incident.
+        # When we cannot assume incidents order in the response, we can use this code:
 
-        # to prevent duplicates, we are only adding incidents with creation_time > last fetched incident
-        if last_fetch:
-            if incident_created_time <= last_fetch:
-                continue
+        # if last_fetch:
+        # if incident_created_time <= last_fetch:
+        #     continue
 
-        # If no name is present it will throw an exception
-        incident_name = alert['name']
+        # Update last run and add incident if the incident is newer than last fetch
+        # if incident_created_time > latest_created_time:
+        #     latest_created_time = incident_created_time
+
+        # Otherwise, we might need to add the incident id to the last_ids so it will be avoided in the next run.
+        if alert['date'] == last_fetched_time:
+            last_ids.append(alert['id'])
+
+        # Formatting the incidents as needed (Adding fields, Removing sensitive ones, etc.)
+        alert_detector_name = alert.get('detector', {}).get('display_name')
+        alert['name'] = f'Hello World Alert - {alert_detector_name}'
 
         # INTEGRATION DEVELOPER TIP
         # The incident dict is initialized with a few mandatory fields:
         # name: the incident name
-        # occurred: the time on when the incident occurred, in ISO8601 format
-        # we use timestamp_to_datestring() from CommonServerPython.py to
-        # handle the conversion.
-        # rawJSON: everything else is packed in a string via json.dumps()
-        # and is included in rawJSON. It will be used later for classification
-        # and mapping inside XSOAR.
+        # occurred: the time on when the incident occurred, in ISO8601 format, Which match the API response in this case.
+        # we can use timestamp_to_datestring() from CommonServerPython.py to handle the conversion when dealing with timestamps.
+        # rawJSON: everything else is packed in a string via json.dumps() and is included in rawJSON.
+        # It will be used later for classification and mapping inside XSOAR.
         # severity: it's not mandatory, but is recommended. It must be
         # converted to XSOAR specific severity (int 1 to 4)
         # Note that there are other fields commented out here. You can do some
         # mapping of fields (either out of the box fields, like "details" and
         # "type") or custom fields (like "helloworldid") directly here in the
-        # code, or they can be handled in the classification and mapping phase.
-        # In either case customers can override them. We leave the values
-        # commented out here, but you can use them if you want.
+        # code, or they can be handled in the classification and mapping phase (Most Recommended).
+        # In either case customers can override them. We leave the values commented out here, but you can use them if you want.
         incident = {
-            'name': incident_name,
+            'name': alert['name'],
             # 'details': alert['name'],
-            'occurred': timestamp_to_datestring(incident_created_time_ms),
+            'occurred': alert['date'],
             'rawJSON': json.dumps(alert),
             # 'type': 'Hello World Alert',  # Map to a specific XSOAR incident Type
-            'severity': convert_to_demisto_severity(alert.get('severity', 'Low')),
+            'severity': convert_to_demisto_severity(alert.get('severity', 'low')),
             # 'CustomFields': {  # Map specific XSOAR Custom Fields
-            #     'helloworldid': alert.get('alert_id'),
-            #     'helloworldstatus': alert.get('alert_status'),
-            #     'helloworldtype': alert.get('alert_type')
+            #     'helloworldid': alert.get('id'),
+            #     'helloworldstatus': alert.get('status'),
+            #     'helloworldvalidity': alert.get('validity')
             # }
         }
 
         incidents.append(incident)
 
-        # Update last run and add incident if the incident is newer than last fetch
-        if incident_created_time > latest_created_time:
-            latest_created_time = incident_created_time
-
-    # Save the next_run as a dict with the last_fetch key to be stored
-    next_run = {'last_fetch': latest_created_time}
+    # Save the next_run as a dict with the last_fetch key to be stored.
+    # When we reached limit but there is still incidents to get from this run, The leftovers will return in the next run by time.
+    demisto.debug(f"setting next run- {last_fetched_time=}")
+    next_run = {'last_fetch': last_fetched_time, 'last_ids': last_ids}
     return next_run, incidents
 
 
@@ -625,7 +785,7 @@ def ip_reputation_command(client: Client, args: Dict[str, Any], default_threshol
     Args:
         client (Client): HelloWorld client to use.
         args (dict): all command arguments, usually passed from ``demisto.args()``.
-            ``args['ip']`` is a list of IPs or a single IP.
+            ``args['ip']`` is a list of IPs or a single IP. Due to lack of example in this API we are providing a dummy response for the ip 8.8.8.8.
             ``args['threshold']`` threshold to determine whether an IP is malicious.
         default_threshold (int): default threshold to determine whether an IP is malicious if threshold is not
             specified in the XSOAR arguments.
@@ -637,13 +797,13 @@ def ip_reputation_command(client: Client, args: Dict[str, Any], default_threshol
 
     # INTEGRATION DEVELOPER TIP
     # Reputation commands usually support multiple inputs (i.e. arrays), so
-    # they can be invoked once in XSOAR. In this case the API supports a single
-    # IP at a time, so we will cycle this for all the members of the array.
+    # they can be invoked once in XSOAR. In case the API supports a single
+    # IP at a time, we will cycle this for all the members of the array.
     # We use argToList(), implemented in CommonServerPython.py to automatically
     # return a list of a single element even if the provided input is a scalar.
 
     ips = argToList(args.get('ip'))
-    if len(ips) == 0:
+    if not ips:
         raise ValueError('IP(s) not specified')
 
     # It's a good practice to document the threshold you use to determine
@@ -668,7 +828,7 @@ def ip_reputation_command(client: Client, args: Dict[str, Any], default_threshol
         # See https://xsoar.pan.dev/docs/integrations/generic-commands-reputation#relationships
 
         relationships_list = []
-        links = ip_data.get('network', {}).get('links', [])
+        links = ip_data.get('links', {}).get('self', '')
         for link in links:
             relationships_list.append(EntityRelationship(
                 entity_a=ip,
@@ -683,12 +843,12 @@ def ip_reputation_command(client: Client, args: Dict[str, Any], default_threshol
         # We are using Common.DBotScore as macros to simplify
         # the mapping.
 
-        reputation = int(ip_data.get('score', 0))
+        reputation = int(ip_data.get('reputation', 0))
         if reputation == 0:
             score = Common.DBotScore.NONE  # unknown
-        elif reputation >= threshold:
+        elif reputation < threshold / 2:
             score = Common.DBotScore.BAD  # bad
-        elif reputation >= threshold / 2:
+        elif reputation < threshold:
             score = Common.DBotScore.SUSPICIOUS  # suspicious
         else:
             score = Common.DBotScore.GOOD  # good
@@ -735,119 +895,160 @@ def ip_reputation_command(client: Client, args: Dict[str, Any], default_threshol
         # ``json-to-outputs`` option.
 
         # Define which fields we want to exclude from the context output as
-        # they are too verbose.
-        ip_context_excluded_fields = ['objects', 'nir']
-        ip_data = {k: ip_data[k] for k in ip_data if k not in ip_context_excluded_fields}
+        # they are too verbose. Just make sure to keep the whole response somewhere.
+        ip_context_excluded_fields = ['whois']
+        ip_data_outputs = {k: ip_data[k] for k in ip_data if k not in ip_context_excluded_fields}
 
         # In this case we want to use an custom markdown to specify the table title,
         # but otherwise ``CommandResults()`` will call ``tableToMarkdown()``
         #  automatically
-        readable_output = tableToMarkdown('IP', ip_data)
+        readable_output = tableToMarkdown('IP (Sample Data)', ip_data_outputs)
 
         # INTEGRATION DEVELOPER TIP
         # The output key will be ``HelloWorld.IP``, using ``ip`` as the key field.
         # ``indicator`` is used to provide the context standard (IP)
         command_results.append(CommandResults(
             readable_output=readable_output,
+            raw_response=ip_data,
             outputs_prefix='HelloWorld.IP',
             outputs_key_field='ip',
-            outputs=ip_data,
+            outputs=ip_data_outputs,
             indicator=ip_standard_context,
             relationships=relationships_list
         ))
     return command_results
 
 
-# def search_alerts_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    """
-    helloworld-search-alerts command: Search alerts in HelloWorld
-
-    Args:
-        client (Client): HelloWorld client to use.
-        args (dict): all command arguments, usually passed from ``demisto.args()``.
-            ``args['status']`` alert status. Options are 'ACTIVE' or 'CLOSED'.
-            ``args['severity']`` alert severity CSV.
-            ``args['alert_type']`` alert type.
-            ``args['start_time']``  start time as ISO8601 date or seconds since epoch.
-            ``args['max_results']`` maximum number of results to return.
-
-    Returns:
-        CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains an alerts.
-    """
-
-    status = args.get('status')
-
-    # Check if severity contains allowed values, use all if default
-    severities: List[str] = HELLOWORLD_SEVERITIES
-    severity = args.get('severity', None)
-    if severity:
-        severities = severity.split(',')
-        if not all(s in HELLOWORLD_SEVERITIES for s in severities):
-            raise ValueError(
-                f'severity must be a comma-separated value '
-                f'with the following options: {",".join(HELLOWORLD_SEVERITIES)}')
-
-    alert_type = args.get('alert_type')
-
-    # Convert the argument to a timestamp using helper function
-    start_time = arg_to_datetime(
-        arg=args.get('start_time'),
-        arg_name='start_time',
-        required=False
-    )
-
-    # Convert the argument to an int using helper function
-    max_results = arg_to_number(
-        arg=args.get('max_results'),
-        arg_name='max_results',
-        required=False
-    )
-
-    # Severity is passed to the API as a CSV
-    alerts = client.search_alerts(
-        severity=','.join(severities),
-        alert_status=status,
-        alert_type=alert_type,
-        start_time=int(start_time.timestamp()) if start_time else None,
-        max_results=max_results
-    )
-
-    # INTEGRATION DEVELOPER TIP
-    # We want to convert the "created" time from timestamp(s) to ISO8601 as
-    # Cortex XSOAR customers and integrations use this format by default
-    for alert in alerts:
-        if 'created' not in alert:
-            continue
-        created_time_ms = int(alert.get('created', '0')) * 1000
-        alert['created'] = timestamp_to_datestring(created_time_ms)
-
-    # in this example we are not providing a custom markdown, we will
-    # let ``CommandResults`` generate it by default.
-    return CommandResults(
-        outputs_prefix='HelloWorld.Alert',
-        outputs_key_field='alert_id',
-        outputs=alerts
-    )
-
-
 def incident_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    incident_id = arg_to_number(args.get("incident_id"))
-    page_size = arg_to_number(args.get("limit") or LIMIT)
-    cursor = args.get("next_token")
 
-    if incident_id:
-        res = client.get_incident(incident_id)
-    else:
-        res = client.get_incident_list(page_size=page_size, cursor=cursor)
-    if not isinstance(res, list):
-        res = [res]
-    readable_output = tableToMarkdown('Incident List', res)
+    outputs: dict = {}
+    incident_id = arg_to_number(args.get("incident_id"))
+
+    # Pagination params. If API supports, all the 3 should be implemented. See https://xsoar.pan.dev/docs/integrations/code-conventions#pagination-in-integration-commands
+
+    page_size = arg_to_number(args.get("page_size")) or DEFAULT_PAGE_SIZE
+    cursor = args.get("next_token")
+    limit = arg_to_number(args.get("limit")) or LIMIT
+
+    # Checking if API calls should be manual (one call with page_size + token) or automatic (Multiple API calls until one reaches limit.
+    if incident_id:  # If incident_id is provided, we only need one call to API and pagination is not needed.
+        full_res = client.get_incident(incident_id)
+
+    elif cursor:  # Pagination might be needed but customer want to manually control it,
+        raw_res = client.get_incident_list(page_size=page_size, cursor=cursor)
+        full_res = raw_res.json() if raw_res.status_code == 200 else {}
+        cursor = get_next_cursor(raw_res)
+
+    else:  # Automatic pagination.
+        full_res = []
+        res_num = 0
+        cursor = None
+        while res_num < limit:
+            # calling the API with page_size needed. If limit < page_size, we want smaller page size.
+            print(f'{cursor=}')
+            raw_res = client.get_incident_list(page_size=min(limit - res_num, page_size), cursor=cursor)
+            res_data = raw_res.json() if raw_res.status_code == 200 else {}
+            if not res_data:
+                break
+            full_res.extend(res_data)
+            res_num += len(res_data)
+            cursor = get_next_cursor(raw_res)
+            if not cursor:
+                break
+
+    readable_output = tableToMarkdown('Incident List', full_res)
+    outputs['HelloWorld.Incident(val.id && val.id == obj.id)'] = full_res
+    if cursor:
+        outputs['HelloWorld.IncidentNextToken(val.NextPageToken)'] = {'NextPageToken': cursor}
 
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix='HelloWorld.Incident',
         outputs_key_field='id',
-        outputs=res
+        outputs=outputs
+    )
+
+
+def incident_note_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    incident_id = int(args["incident_id"])
+    page_size = arg_to_number(args.get("page_size")) or DEFAULT_PAGE_SIZE
+    cursor = args.get("next_token")
+    limit = arg_to_number(args.get("limit")) or LIMIT
+    outputs = dict()
+
+    # Checking if API calls should be manual (one call with page_size + token) or automatic (Multiple API calls until one reaches limit.
+
+    if cursor:  # Pagination might be needed but customer want to manually control it,
+        raw_res = client.get_incident_note_list_as_response(incident_id=incident_id, page_size=page_size, cursor=cursor)
+        full_res = raw_res.json() if raw_res.status_code == 200 else {}
+        cursor = get_next_cursor(raw_res)
+
+    else:  # Automatic pagination.
+        full_res = []
+        res_num = 0
+        cursor = None
+        while res_num < limit:
+            # calling the API with page_size needed. If limit < page_size, we want smaller page size.
+            raw_res = client.get_incident_note_list_as_response(
+                incident_id, page_size=min(limit - res_num, page_size), cursor=cursor)
+            res_data = raw_res.json() if raw_res.status_code == 200 else {}
+            if not res_data:
+                break
+            full_res.extend(res_data)
+            res_num += len(res_data)
+            cursor = get_next_cursor(raw_res)
+            if not cursor:
+                break
+
+    readable_output = tableToMarkdown('Incident Note List', full_res)
+
+    # We want to rewrite the next token's value, so we "build" the outputs.
+    # If "overriding" only some values in the output is not needed, One can just pass the full_res as the output argument in the CommandResult.
+    outputs['HelloWorld.Note(val.id && val.id == obj.id)'] = full_res
+    if cursor:
+        outputs['HelloWorld.NoteNextToken(val.NextPageToken)'] = {'NextPageToken': cursor}
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_key_field='HelloWorld.Note.id',
+        outputs=outputs
+    )
+
+
+def incident_note_create_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    incident_id = arg_to_number(args["incident_id"], required=True)
+    note = args['note_text']
+
+    if not incident_id:
+        raise DemistoException("Please provide incident id.")
+
+    res_data = client.create_incident_note(incident_id=incident_id, comment=note)
+
+    return CommandResults(
+        readable_output="Note was created successfully.",
+        outputs_prefix='HelloWorld.Note',
+        outputs_key_field='id',
+        outputs=res_data
+    )
+
+
+def file_scan_start_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    file_content = args['file_content']
+    file_name = args.get('file_name')
+
+    res_data = client.file_scan_start(file_name=file_name, file_content=file_content)
+
+    md_title = f"Scan Results For File '{file_name}'" if file_name else 'Scan Results'
+    readable_results = tableToMarkdown(md_title, res_data, is_auto_json_transform=True)
+
+    if not file_name:
+        file_name = f'Unknown File Name ({datetime.now()})'
+    outputs = {'file_name': file_name, 'scan_results': res_data}
+
+    return CommandResults(
+        readable_output=readable_results,
+        outputs_prefix='HelloWorld.Scan',
+        outputs_key_field='file_name',
+        outputs=outputs
     )
 
 
@@ -859,6 +1060,7 @@ def main() -> None:
     main function, parses params and runs command functions
     """
 
+    params = demisto.params()
     params = demisto.params()
     args = demisto.args()
     command = demisto.command()
@@ -879,17 +1081,14 @@ def main() -> None:
         arg_name='First fetch time',
         required=True
     )
-    first_fetch_timestamp = int(first_fetch_time.timestamp()) if first_fetch_time else None
-    # Using assert as a type guard (since first_fetch_time is always an int when required=True)
-    assert isinstance(first_fetch_timestamp, int)
-
+    assert first_fetch_time
     # if your Client class inherits from BaseClient, system proxy is handled
     # out of the box by it, just pass ``proxy`` to the Client constructor
     proxy = params.get('proxy', False)
 
     # Integration that implements reputation commands (e.g. url, ip, domain,..., etc) must have
     # a reliability score of the source providing the intelligence data.
-    reliability = params.get('integrationReliability', DBotScoreReliability.C)
+    reliability = params.get('integrationReliability') or DBotScoreReliability.C
 
     # INTEGRATION DEVELOPER TIP
     # You can use functions such as ``demisto.debug()``, ``demisto.info()``,
@@ -910,7 +1109,7 @@ def main() -> None:
 
         if command == 'test-module':
             # This is the call made when pressing the integration Test button.
-            result = test_module(client, params, first_fetch_timestamp)
+            result = test_module(client, params)
             return_results(result)
 
         elif command == 'ip':
@@ -919,9 +1118,7 @@ def main() -> None:
 
         elif command == 'fetch-incidents':
             # Set and define the fetch incidents command to run after activated via integration settings.
-            alert_status = params.get('alert_status', None)
-            alert_type = params.get('alert_type', None)
-            min_severity = params.get('min_severity', None)
+            severity = params.get('severity', None)
 
             # Convert the argument to an int using helper function or set to MAX_INCIDENTS_TO_FETCH
             max_results = arg_to_number(
@@ -936,10 +1133,8 @@ def main() -> None:
                 client=client,
                 max_results=max_results,
                 last_run=demisto.getLastRun(),  # getLastRun() gets the last run dict
-                first_fetch_time=first_fetch_timestamp,
-                alert_status=alert_status,
-                min_severity=min_severity,
-                alert_type=alert_type
+                first_fetch_time=datetime.strftime(first_fetch_time, DATE_FORMAT),
+                severity=severity
             )
 
             # saves next_run for the time fetch-incidents is invoked
@@ -951,14 +1146,17 @@ def main() -> None:
         elif command == 'helloworld-incident-list':
             return_results(incident_list_command(client, args))
 
-#         elif command == 'helloworld-incident-note-list':
-#             return_results(incident_note_list_command(client, args))
-#
-#         elif command == 'helloworld-incident-note-create':
-#             return_results(incident - note - create_command(client, args))
-#
-#         elif command == 'helloworld-file-scan-start':
-            return_results(file - scan - start_command(client, args))
+        elif command == 'helloworld-incident-note-list':
+            return_results(incident_note_list_command(client, args))
+
+        elif command == 'helloworld-incident-note-create':
+            return_results(incident_note_create_command(client, args))
+
+        elif command == 'helloworld-file-scan-start':
+            return_results(file_scan_start_command(client, args))
+
+        elif command == 'helloworld-say-hello':
+            return_results(say_hello_command(client, args))
 
         else:
             raise NotImplementedError(f'Command {command} is not implemented')

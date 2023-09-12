@@ -88,20 +88,25 @@ def util_load_json(path):
     with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
 
-
-class TestCommands:
-
-    def setup_method(self, test_method):
-        self.mock_client = Client(
+def create_mock_client():
+    Client(
             base_url='https://test.com/',
             verify=False,
             headers={
-                'Authentication': 'Bearer some_api_key'
+                'Authentication': 'Token some_api_key'
             }
         )
+class TestIncidentListCommand:
 
-    def teardown_method(self, test_method):
-        pass
+    @classmethod
+    def setup_class(cls):
+        cls.mock_client = create_mock_client()
+    
+#     def setup_method(self, test_method):
+#         
+# 
+#     def teardown_method(self, test_method):
+#         pass
 
     @pytest.mark.parametrize(
         'mock_response, mock_url, args',
@@ -118,6 +123,14 @@ class TestCommands:
                          id="given id")  # expecting only one incident
         ))
     def test_incident_list(self, requests_mock, mock_response, mock_url, args):
+        """_summary_
+
+        Args:
+            requests_mock (_type_): _description_
+            mock_response (_type_): _description_
+            mock_url (_type_): _description_
+            args (_type_): _description_
+        """
         from HelloWorld import incident_list_command
 
         requests_mock.get(mock_url, json=mock_response)
@@ -127,6 +140,45 @@ class TestCommands:
         assert response.outputs_prefix == 'HelloWorld.Incident'
         assert response.outputs_key_field == 'id'
         assert response.outputs == mock_response
+
+    @pytest.mark.parametrize(
+        'mock_response, mock_url, args',
+        (
+            pytest.param(EXAMPLE_RES_LIST, 'https://test.com/v1/scan', {"file_name": "test",
+                                                                                                 "file_content": "dummy_content"},
+                         id="given file content, given file name"),  # expecting all results
+            pytest.param(EXAMPLE_RES_LIST[:1], 'https://test.com/v1/scan', {'limit': 1},
+                         id="given file content, no file name"),  # expecting only first incident
+        ))
+class TestIncidentNoteListCommand:
+    
+    def setup_class(cls):
+        cls.mock_client = create_mock_client()
+        cls.mocked_data = util_load_json("test_data/incident_note_list_command.json")
+    
+    
+    
+    def test_file_scan_start_command(self, requests_mock, mock_response, mock_url, args):
+
+        # def file_scan_start_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+        #     file_content = args['file_content']
+        #     file_name = args.get('file_name')
+        #
+        #     res_data = client.file_scan_start(file_name=file_name, file_content=file_content)
+        #
+        #     md_title = f"Scan Results For File '{file_name}'" if file_name else 'Scan Results'
+        #     readable_results = tableToMarkdown(md_title, res_data)
+        #
+        #     if not file_name:
+        #         file_name = f'Unknown File Name ({datetime.now()})'
+        #     outputs = {'file_name': file_name, 'scan_results': res_data}
+        #
+        #     return CommandResults(
+        #         readable_output=readable_results,
+        #         outputs_prefix='HelloWorld.Scan',
+        #         outputs_key_field='file_name',
+        #         outputs=outputs
+        #     )
 
 
 def test_say_hello():

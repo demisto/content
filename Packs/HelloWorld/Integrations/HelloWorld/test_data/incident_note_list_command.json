@@ -1,0 +1,38 @@
+[
+    {
+        "id": 18250673,
+        "member_id": 491786,
+        "api_token_id": "5fc3437c-7cf4-4e92-ba42-fca707ab8bce",
+        "created_at": "2023-07-05T15:10:20.248243Z",
+        "updated_at": null,
+        "comment": "Test",
+        "issue_id": 7218459,
+        "incident_id": 7218459,
+        "user_id": 491019,
+        "api_token": "XsoarTest"
+    },
+    {
+        "id": 18250674,
+        "member_id": 491786,
+        "api_token_id": "5fc3437c-7cf4-4e92-ba42-fca707ab8bce",
+        "created_at": "2023-07-05T15:10:21.527612Z",
+        "updated_at": null,
+        "comment": "Test",
+        "issue_id": 7218459,
+        "incident_id": 7218459,
+        "user_id": 491019,
+        "api_token": "XsoarTest"
+    },
+    {
+        "id": 18334147,
+        "member_id": 491786,
+        "api_token_id": "5fc3437c-7cf4-4e92-ba42-fca707ab8bce",
+        "created_at": "2023-07-12T12:41:25.644291Z",
+        "updated_at": null,
+        "comment": "Test",
+        "issue_id": 7218459,
+        "incident_id": 7218459,
+        "user_id": 491019,
+        "api_token": "XsoarTest"
+    }
+]

@@ -1,32 +1,103 @@
 {
-    "id": "HelloWorld-mapper",
-    "name": "Hello World - Incoming Mapper",
-    "type": "mapping-incoming",
-    "description": "Maps incoming Hello World alert fields.",
-    "fromVersion": "6.0.0",
+    "brands": null,
+    "cacheVersn": 0,
     "defaultIncidentType": "",
+    "definitionId": "",
+    "description": "Maps incoming Hello World alert fields.",
+    "feed": false,
+    "fromServerVersion": "6.0.0",
+    "id": "347ea718-8970-45cf-82c7-bb5055efa555",
+    "incidentSamples": null,
+    "indicatorSamples": null,
+    "instanceIds": null,
+    "itemVersion": "1.2.18",
+    "keyTypeMap": {},
+    "locked": false,
+    "logicalVersion": 1,
     "mapping": {
+        "dontMapEventToLabels": false,
+        "internalMapping": {
+            "Alert ID": {
+                "simple": "id"
+            },
+            "Alert Name": {
+                "simple": "name"
+            },
+            "Alert Source": {
+                "simple": "detector.name"
+            },
+            "Assigned User": {
+                "simple": "assignee_email"
+            },
+            "File Hash": {
+                "simple": "secret_hash"
+            },
+            "severity": {
+                "simple": "severity"
+            },
+            "Tags": {
+                "simple": "tags"
+            },
+            "URLs": {
+                "simple": "gitguardian_url"
+            }
+        },
         "Hello World Alert": {
             "dontMapEventToLabels": false,
             "internalMapping": {
+                "details": {
+                    "simple": "name"
+                },
                 "Hello World ID": {
-                    "complex": null,
-                    "simple": "alert_id"
+                    "simple": "id"
                 },
                 "Hello World Status": {
-                    "complex": null,
-                    "simple": "alert_status"
+                    "simple": "status"
+                }
+            }
+        },
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Alert ID": {
+                    "simple": "id"
                 },
-                "Hello World Type": {
-                    "complex": null,
-                    "simple": "alert_type"
-                },
-                "details": {
-                    "complex": null,
+                "Alert Name": {
                     "simple": "name"
+                },
+                "Alert Source": {
+                    "simple": "detector.name"
+                },
+                "Assigned User": {
+                    "simple": "assignee_email"
+                },
+                "File Hash": {
+                    "simple": "secret_hash"
+                },
+                "Tags": {
+                    "simple": "tags"
+                },
+                "URLs": {
+                    "simple": "gitguardian_url"
+                },
+                "severity": {
+                    "simple": "severity"
                 }
             }
         }
     },
+    "name": "Hello World - Incoming Mapper_copy",
+    "nameRaw": "Hello World - Incoming Mapper_copy",
+    "packID": "",
+    "packName": "HelloWorld",
+    "propagationLabels": [
+        "all"
+    ],
+    "sourceClassifierId": "HelloWorld-mapper",
+    "system": false,
+    "toServerVersion": "",
+    "transformer": {},
+    "type": "mapping-incoming",
+    "unclassifiedCases": null,
     "version": -1
 }
