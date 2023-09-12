@@ -51,6 +51,10 @@
         "site": {
             "type": "string",
             "is_array": false
+        },
+        "connectionIds": {
+            "type": "string",
+            "is_array": false
         }
     }
 }
