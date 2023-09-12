@@ -999,9 +999,9 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int], 
 
         # Append incidents to the signal list so the signals will be created first:
         final_incidents.extend(signal_incidents)
-        del(signal_incidents)
+        del (signal_incidents)
     final_incidents.extend(incidents)
-    del(incidents)
+    del (incidents)
 
     # Save the next_run as a dict with the last_fetch and last_fetch_ids keys to be stored
     next_run = cast(

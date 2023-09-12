@@ -27,6 +27,7 @@ VENDOR = 'aws'
 
 class DatetimeEncoder(json.JSONEncoder):
     """Json encoder class for encoding datetime objects. Use with json.dumps method."""
+
     def default(self, obj):
         if isinstance(obj, datetime) or isinstance(obj, date):
             return obj.strftime('%Y-%m-%dT%H:%M:%S.%f')
