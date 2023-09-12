@@ -25,7 +25,7 @@ trigger-private-build:
   script:
     - echo "====Trigger Private Build===="
     - |
-      if [ 'true' = $(./Tests/scripts/check_if_branch_exist.sh -t $GITHUB_TOKEN --repo demisto/content-private -b $CI_COMMIT_BRANCH) ]; then
+      if [ 'true' = $(./Tests/scripts/check_if_branch_exist.sh -t "${GITHUB_TOKEN}" --repo "demisto/content-private" -b "${CI_COMMIT_BRANCH}") ]; then
         PRIVATE_BRANCH_NAME=$CI_COMMIT_BRANCH
       else
         PRIVATE_BRANCH_NAME='master'
@@ -69,6 +69,8 @@ run-unittests-and-lint:
   rules:
     - if: '$BUCKET_UPLOAD == "true"'
       when: never
+    - if: '$SECURITY_SCANS == "true"'
+      when: never
     - if: '$FORCE_BUCKET_UPLOAD == "true"'
       when: never
     - if: '$DEMISTO_TEST_NATIVE_CANDIDATE == "true"'
@@ -97,25 +99,7 @@ validate-content-conf:
   rules:
     - if: '$CI_PIPELINE_SOURCE =~ /^(push)$/'
   script:
-    - section_start "Validate content-test-conf Branch Merged"
-    - |
-      if [[ $CI_COMMIT_BRANCH = "master" ]]; then
-        echo "Skipping, Should not run on master branch."
-      else
-        # replace slashes ('/') in the branch name, if exist, with underscores ('_')
-        UNDERSCORE_CI_BRANCH=${CI_COMMIT_BRANCH//\//_}
-        RESP=$(curl --location --request GET "https://code.pan.run/api/v4/projects/3734/repository/branches?search=$UNDERSCORE_CI_BRANCH" --header "PRIVATE-TOKEN: $GITLAB_API_READ_TOKEN") # disable-secrets-detection
-        EXIST=$(echo $RESP | jq --arg branch $UNDERSCORE_CI_BRANCH -c '.[] | select(.name==$branch)')
-        if [ -n "$EXIST" ]; then
-            RED='\033[0;31m'
-            NC='\033[0m'
-            echo -e "${RED}ERROR: Found a branch with the same name in contest-test-conf conf.json - $UNDERSCORE_CI_BRANCH.\n Merge it in order to merge the current branch into content repo.${NC}"
-            job-done
-            exit 1
-        fi
-            echo "No branch with the name *$UNDERSCORE_CI_BRANCH* were found in contest-test-conf repo."
-      fi
-    - section_end "Validate content-test-conf Branch Merged"
+    - !reference [ .validate_content_test_conf_branch_merged ]
     - job-done
 
 .generic-prepare-testing-bucket:
@@ -136,7 +120,6 @@ validate-content-conf:
   script:
     - !reference [.download-demisto-conf]
     - !reference [.create-release-notes-and-common-docs]
-
     - section_start "Create or update content graph" --collapsed
 
     - echo "Updating the content graph"
@@ -149,10 +132,10 @@ validate-content-conf:
     - section_start "Create Content Artifacts and Update Conf" --collapsed
     - export DEMISTO_SDK_MARKETPLACE=$MARKETPLACE_VERSION  # This is done because the demisto-sdk uses this environment variable.
     - |
-      if [[ $MARKETPLACE_VERSION == "xsoar" ]];
+      if [[ $MARKETPLACE_VERSION == "xsoar" || $MARKETPLACE_VERSION == "xsoar_saas" ]];  # later the non xsoar will be edited to remove xsoar naming.
       then
         echo "Starting to create artifacts with zip for XSOAR."
-        python Tests/scripts/create_artifacts_graph/create_artifacts.py --marketplace "xsoar" --artifacts-output $ARTIFACTS_FOLDER/content_packs --dependencies-output $ARTIFACTS_FOLDER/packs_dependencies.json --packs-output $ARTIFACTS_FOLDER/packs.json --bucket-upload "$BUCKET_UPLOAD"
+        python Tests/scripts/create_artifacts_graph/create_artifacts.py --marketplace "$MARKETPLACE_VERSION" --artifacts-output $ARTIFACTS_FOLDER/content_packs --dependencies-output $ARTIFACTS_FOLDER/packs_dependencies.json --packs-output $ARTIFACTS_FOLDER/packs.json --bucket-upload "$BUCKET_UPLOAD"
       else
         echo "Starting to create artifacts without zip."
         python Tests/scripts/create_artifacts_graph/create_artifacts.py --marketplace "$MARKETPLACE_VERSION" --artifacts-output $ARTIFACTS_FOLDER/content_packs --dependencies-output $ARTIFACTS_FOLDER/packs_dependencies.json --packs-output $ARTIFACTS_FOLDER/packs.json --no-zip --bucket-upload "$BUCKET_UPLOAD"
@@ -165,7 +148,7 @@ validate-content-conf:
 
     - section_start "Replace Cortex XSOAR" --collapsed
     - |
-      if [[ $MARKETPLACE_VERSION != "xsoar" ]];
+      if [[ $MARKETPLACE_VERSION == "marketplacev2" ||  $MARKETPLACE_VERSION == "xpanse" ]];
       then
         echo "Replace Cortex XSOAR for non-xsoar build."
         pushd "$ARTIFACTS_FOLDER"
@@ -203,13 +186,19 @@ validate-content-conf:
     - echo "create instances done" > "$ARTIFACTS_FOLDER/create_instances_done.txt"
     - job-done
 
-
-
 xsoar-prepare-testing-bucket:
   variables:
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
     MARKETPLACE_VERSION: "xsoar"
     MARKETPLACE_BUCKET: "$GCS_MARKET_BUCKET"
+  extends:
+    - .generic-prepare-testing-bucket
+
+xsoar-saas-prepare-testing-bucket:
+  variables:
+    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR_SAAS}"
+    MARKETPLACE_VERSION: "xsoar_saas"
+    MARKETPLACE_BUCKET: "$GCS_MARKET_XSOAR_SAAS_BUCKET"
   extends:
     - .generic-prepare-testing-bucket
 
@@ -247,6 +236,15 @@ xpanse-prepare-testing-bucket:
       optional: true
   script:
     - EXIT_CODE=0
+    - section_start "Check if should run Server Master"
+    - |
+      echo "Instance role:${INSTANCE_ROLE}"
+      if [ -n "${NIGHTLY}" ] && [ "${INSTANCE_ROLE}" != "Server Master" ]; then
+        echo "Not running the instance flow, not a Server Master instance and we are in a nightly build."
+        job-done
+        exit 0
+      fi
+    - section_end "Check if should run Server Master"
     - !reference [.download-demisto-conf]
     - export TEMP=$(cat $ARTIFACTS_FOLDER/filter_envs.json | jq ".\"$INSTANCE_ROLE\"")
     # If instance was not created
@@ -303,43 +301,7 @@ xpanse-prepare-testing-bucket:
     - job-done
     - exit $EXIT_CODE
 
-xsoar_server_6_8:
-  extends: .test_content_on_xsoar_server_instances_base
-  #  No need to trigger in case of release branch or docker update branches (non-nightly packs)
-  rules:
-    - !reference [.filter-non-nightly-docker-updates-rule, rules]
-    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
-  variables:
-    INSTANCE_ROLE: "Server 6.8"
-
-xsoar_server_6_9:
-  extends: .test_content_on_xsoar_server_instances_base
-  #  No need to trigger in case of release branch or docker update branches (non-nightly packs)
-  rules:
-    - !reference [.filter-non-nightly-docker-updates-rule, rules]
-    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
-  variables:
-    INSTANCE_ROLE: "Server 6.9"
-
-xsoar_server_6_10:
-  extends: .test_content_on_xsoar_server_instances_base
-  #  No need to trigger in case of release branch or docker update branches (non-nightly packs)
-  rules:
-    - !reference [.filter-non-nightly-docker-updates-rule, rules]
-    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
-  variables:
-    INSTANCE_ROLE: "Server 6.10"
-
-xsoar_server_6_11:
-  extends: .test_content_on_xsoar_server_instances_base
-  #  No need to trigger in case of release branch or docker update branches (non-nightly packs)
-  rules:
-    - !reference [.filter-non-nightly-docker-updates-rule, rules]
-    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
-  variables:
-    INSTANCE_ROLE: "Server 6.11"
-
-xsoar_server_master:
+tests_xsoar_server:
   extends:
     - .test_content_on_xsoar_server_instances_base
   #  No need to trigger in case of release branch or docker update branches (non-nightly packs)
@@ -350,9 +312,14 @@ xsoar_server_master:
       when: always
       variables:
         KUBERNETES_CPU_REQUEST: 2000m
-  variables:
-    INSTANCE_ROLE: "Server Master"
-
+  parallel:
+    matrix:
+      - INSTANCE_ROLE:
+        - "Server 6.8"
+        - "Server 6.9"
+        - "Server 6.10"
+        - "Server 6.11"
+        - "Server Master"
 
 fan-in-nightly:
   tags:
@@ -367,7 +334,7 @@ fan-in-nightly:
 jobs-done-check-nightly:
   extends:
     - .jobs-done-check
-  needs: ['run-unittests-and-lint', 'run-validations', 'trigger-private-build', 'mpv2-prepare-testing-bucket', 'xpanse-prepare-testing-bucket', 'xsoar-prepare-testing-bucket', 'xsiam_server_ga', 'xsoar_server_master']
+  needs: ['run-unittests-and-lint', 'run-validations', 'trigger-private-build', 'mpv2-prepare-testing-bucket', 'xpanse-prepare-testing-bucket', 'xsoar-prepare-testing-bucket', 'xsoar-saas-prepare-testing-bucket', 'xsiam_server_ga', 'tests_xsoar_server']
   tags:
     - gke
   rules:
@@ -391,17 +358,11 @@ jobs-done-check-on-push:
       optional: true
     - job: xsoar-prepare-testing-bucket
       optional: true
+    - job: xsoar-saas-prepare-testing-bucket
+      optional: true
     - job: xsiam_server_ga
       optional: true
-    - job: xsoar_server_6_8
-      optional: true
-    - job: xsoar_server_6_9
-      optional: true
-    - job: xsoar_server_6_10
-      optional: true
-    - job: xsoar_server_6_11
-      optional: true
-    - job: xsoar_server_master
+    - job: tests_xsoar_server
       optional: true
   tags:
     - gke
@@ -432,7 +393,6 @@ slack-notify-nightly-build:
     - .push-rule
   variables:
     EXTRACT_PRIVATE_TESTDATA: "true"
-    CLOUD_MACHINES_TYPE: "build"
   stage: run-instances
   script:
     - EXIT_CODE=0
@@ -462,14 +422,7 @@ slack-notify-nightly-build:
     - section_end "Clean Machine"
 
     - section_start "Install Packs and run Test-Module"
-    - ./Tests/scripts/install_content_and_test_integrations.sh "$INSTANCE_ROLE" "$SERVER_TYPE"|| EXIT_CODE=$?
-    - |
-      if [[ $EXIT_CODE != 0 ]]
-      then
-        echo "Failed to install packs. Exiting"
-        job-done
-        exit $EXIT_CODE
-      fi
+    - ./Tests/scripts/install_content_and_test_integrations.sh "$INSTANCE_ROLE" "$SERVER_TYPE" || EXIT_CODE=$?
     - section_end "Install Packs and run Test-Module"
 
     - section_start "Run Tests"
@@ -486,12 +439,7 @@ slack-notify-nightly-build:
     - section_end "Run Tests"
 
     - section_start "Test Modeling Rules"
-    - |
-      if [[ -s "$ARTIFACTS_FOLDER/modeling_rules_to_test.txt" ]]; then
-        ./Tests/scripts/test_modeling_rules.sh || EXIT_CODE=$?
-      else
-        echo "No modeling rules were marked for testing during test collection"
-      fi
+    - ./Tests/scripts/test_modeling_rules.sh || EXIT_CODE=$?
     - section_end "Test Modeling Rules"
 
     - section_start "Cloud Machine information"
@@ -532,7 +480,11 @@ xsiam_server_ga:
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
     - if: '$NIGHTLY'
       when: always
+      variables:
+        CLOUD_MACHINES_TYPE: "nightly"
+        GCS_LOCKS_PATH: "content-locks/locks-xsiam-ga-nightly"
   variables:
+    CLOUD_MACHINES_TYPE: "build"
     INSTANCE_ROLE: "XSIAM"
     GCS_QUEUE_FILE: "queue-ga"
     GCS_LOCKS_PATH: "content-locks/locks-xsiam-ga"
@@ -546,9 +498,28 @@ xsiam_server_ga:
     SERVER_TYPE: "XSIAM"
     MARKETPLACE_NAME: "marketplacev2"
     UNREMOVABLE_PACKS: "Base"
+    JIRA_COMPONENT: "Test Modeling Failure"
+    JIRA_ISSUE_TYPE: "XSOAR Dev Bug"
+    JIRA_ISSUE_UNRESOLVED_TRANSITION_NAME: "Backlog"
+    JIRA_PROJECT_ID: "CIAC"
+    JIRA_SERVER_URL: "https://jira-hq.paloaltonetworks.local"
+    JIRA_VERIFY_SSL: "False"
+    JIRA_LABELS: '["XSIAM"]'
+    # Jira additional fields are a json string that will be parsed into a dictionary containing the name of the field as the key and the value as a dictionary containing the value of the field.
+    JIRA_ADDITIONAL_FIELDS: '{"customfield_17166":{"value": "IN"},"customfield_17167":{"value": "FALSE"},"customfield_17168":{"value": "Single"}}'
   needs:
     - job: mpv2-prepare-testing-bucket
       optional: true
+  artifacts:
+    when: always
+    expire_in: 30 days
+    reports:
+      junit:
+        - ${ARTIFACTS_FOLDER}/modeling_rules_results.xml
+    paths:
+      - ${ARTIFACTS_FOLDER}/modeling_rules_results.xml
+      - /builds/xsoar/content/artifacts/*  # restoring the default artifacts path from the job default settings
+      - /builds/xsoar/content/pipeline_jobs_folder/*  # restoring the default artifacts path from the job default settings
 
 xsoar_ng_server_ga:
   extends:
@@ -558,6 +529,7 @@ xsoar_ng_server_ga:
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
       when: always
   variables:
+    CLOUD_MACHINES_TYPE: "build"
     INSTANCE_ROLE: "XSIAM"
     GCS_QUEUE_FILE: "queue-ga"
     GCS_LOCKS_PATH: "content-locks/locks-xsoar-ng"
@@ -646,15 +618,21 @@ merge-dev-secrets:
     - if: '$CI_PIPELINE_SOURCE =~ /^(push)$/ && $CI_COMMIT_BRANCH == $master_branch_name'
   stage: unittests-and-validations
   script:
-    - ./Tests/scripts/download_conf_repos.sh  >> $ARTIFACTS_FOLDER/logs/merge-secrets.log
+    - section_start "Download content-test-conf and infra" --collapsed
+    - ./Tests/scripts/download_conf_repos.sh 2>&1 | tee --append "${ARTIFACTS_FOLDER}/logs/download_conf_repos.log"
+    - section_end "Download content-test-conf and infra"
+    - section_start "Merging and deleting dev secrets" --collapsed
     - python3 ./Tests/scripts/merge_and_delete_dev_secrets.py -sa "$GSM_SERVICE_ACCOUNT" -gpidd "$GSM_PROJECT_ID_DEV" -gpidp "$GSM_PROJECT_ID" >> $ARTIFACTS_FOLDER/logs/merge_secrets.log
+    - section_end "Merging and deleting dev secrets"
   allow_failure: true
 
-xsoar_server_master-test_playbooks_results:
+tests_xsoar_server-test_playbooks_results:
   variables:
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
   extends: .server_test_playbooks_report
-  needs: ["xsoar_server_master"]
+  needs: ["tests_xsoar_server: [Server Master]"]
+  dependencies:
+    - "tests_xsoar_server: [Server Master]"
 
 xsiam_server_ga-test_playbooks_results:
   variables:
