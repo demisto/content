@@ -26,3 +26,50 @@ api_response:
     submitter_email: example2@netcraft.com
     submitter_uuid: bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
     uuid: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+http_func_args:
+  args:
+  - GET
+  - submission
+  - submission/submission_uuid
+  kwargs: {}
+outputs:
+  outputs: &id001
+    count: 25
+    has_cryptocurrency_addresses: null
+    has_files: null
+    has_issues: null
+    has_mail: null
+    has_phone_numbers: null
+    has_urls: null
+    is_archived: null
+    marker: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+    pending: null
+    source_name: null
+    submissions:
+    - date: 1000000000
+      source_name: scam@netcraft.com
+      state: string
+      submitter_email: example@netcraft.com
+      submitter_uuid: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+      uuid: bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+    - date: 1200000000
+      source_name: scam2@netcraft.com
+      state: string2
+      submitter_email: example2@netcraft.com
+      submitter_uuid: bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+      uuid: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+    submitter_email: null
+    uuid: submission_uuid
+  outputs_key_field: uuid
+  outputs_prefix: Netcraft.Submission
+  raw_response: *id001
+  readable_output: '### Submission submission_uuid
+
+    |Submission Date|Last Update|List URLs|List Files|
+
+    |---|---|---|---|
+
+    | None | None | *This submission has no URLs* | *This submission has no  Files*
+    |
+
+    '

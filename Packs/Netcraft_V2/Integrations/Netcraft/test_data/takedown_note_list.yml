@@ -15,3 +15,42 @@ api_response:
   note_id: 678910
   takedown_id: '123456'
   time: 2023-09-11 12:04:01 UTC
+http_func_args:
+  args:
+  - GET
+  - takedown
+  - notes/
+  kwargs:
+    params:
+      author: author_mail
+      takedown_id: takedown_id
+outputs:
+  outputs: &id001
+  - author: Netcraft
+    group_id: '30480489'
+    note: This is an important message!
+    note_id: 12345
+    takedown_id: '30480489'
+    time: 2023-09-11 12:04:01 UTC
+  - author: Netcraft
+    group_id: '123456'
+    note: This is a very important message!
+    note_id: 678910
+    takedown_id: '123456'
+    time: 2023-09-11 12:04:01 UTC
+  outputs_key_field: note_id
+  outputs_prefix: Netcraft.TakedownNote
+  raw_response: *id001
+  readable_output: '### Takedown Notes
+
+    |Note ID|Takedown ID|Group ID|Time|Author|Note|
+
+    |---|---|---|---|---|---|
+
+    | 12345 | 30480489 | 30480489 | 2023-09-11 12:04:01 UTC | Netcraft | This is an
+    important message! |
+
+    | 678910 | 123456 | 123456 | 2023-09-11 12:04:01 UTC | Netcraft | This is a very
+    important message! |
+
+    '

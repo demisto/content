@@ -19,3 +19,39 @@ api_response:
   - tag2
   takedown_id: '30480489'
   target_brand: Example Brand
+http_func_args:
+  args:
+  - POST
+  - takedown
+  - update-attack/
+  kwargs:
+    json_data:
+      add_tags: add_tags,add_tags2
+      brand: brand
+      customer_label: customer_label
+      description: description
+      region: region
+      remove_tags: remove_tags,remove_tags2
+      set_brand: brand
+      set_customer_label: customer_label
+      set_description: description
+      set_region: region
+      set_suspected_fraudulent_domain: 'true'
+      set_suspected_fraudulent_hostname: 'true'
+      suspected_fraud_domain: 'true'
+      suspected_fraud_hostname: 'true'
+      takedown_id: takedown_id
+outputs:
+  outputs: null
+  outputs_key_field: null
+  outputs_prefix: null
+  raw_response: null
+  readable_output: '### Takedown successfully updated.
+
+    |Takedown ID|
+
+    |---|
+
+    | 30480489 |
+
+    '

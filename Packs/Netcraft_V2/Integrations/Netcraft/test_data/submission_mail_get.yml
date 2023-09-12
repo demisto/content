@@ -14,3 +14,36 @@ api_response:
   subject: string
   to:
   - user@example.com
+http_func_args:
+  args:
+  - GET
+  - submission
+  - submission/submission_uuid/mail
+  kwargs: {}
+outputs:
+  outputs: &id001
+    classification_log:
+    - date: 1000000000
+      from_state: processing
+      to_state: no threats
+    from:
+    - user@example.com
+    hash: string
+    reply_to:
+    - user@example.com
+    state: string
+    subject: string
+    to:
+    - user@example.com
+  outputs_key_field: hash
+  outputs_prefix: Netcraft.SubmissionMail
+  raw_response: *id001
+  readable_output: '### Submission Mails
+
+    |Subject|From|To|Classification|
+
+    |---|---|---|---|
+
+    | string | user@example.com | user@example.com | string |
+
+    '

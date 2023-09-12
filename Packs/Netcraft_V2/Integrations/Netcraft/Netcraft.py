@@ -139,7 +139,7 @@ class Client(BaseClient):
 
     def file_report_submit(self, body: dict) -> dict:
         return self._http_request(
-            'POST', 'submission', 'report/files/', json_data=body,
+            'POST', 'submission', 'report/files', json_data=body,
         )
 
     def submission_file_list(self, params: dict) -> dict:
@@ -156,7 +156,7 @@ class Client(BaseClient):
 
     def url_report_submit(self, body: dict) -> dict:
         return self._http_request(
-            'POST', 'submission', 'report/urls/', json_data=body,
+            'POST', 'submission', 'report/urls', json_data=body,
         )
 
     def submission_mail_get(self, submission_uuid: str) -> dict:
@@ -173,7 +173,7 @@ class Client(BaseClient):
 
     def email_report_submit(self, body: dict) -> dict:
         return self._http_request(
-            'POST', 'submission', 'report/mail/', json_data=body,
+            'POST', 'submission', 'report/mail', json_data=body,
         )
 
     def submission_url_list(self, params: dict) -> dict:
@@ -465,7 +465,7 @@ def takedown_list_command(args: dict, client: Client) -> CommandResults:
     def response_to_readable(response: list[dict]) -> str:
         return tableToMarkdown(
             'Netcraft Takedowns',
-            table := [
+            [
                 {
                     'ID': d.get('id'),
                     'Auth': int_to_readable_bool(d.get('authgiven')),
@@ -483,7 +483,11 @@ def takedown_list_command(args: dict, client: Client) -> CommandResults:
                 }
                 for d in response
             ],
-            list(table),
+            [
+                'ID', 'Auth', 'Brand', 'Attack Type', 'Status', 'Attack URL',
+                'Date Reported', 'Last Updated', 'Date Authorised', 'Date Escalated',
+                'First Contact', 'First Inactive (Monitoring)', 'First Resolved'
+            ],
             removeNull=True
         )
 
@@ -528,7 +532,7 @@ def takedown_update_command(args: dict, client: Client) -> CommandResults:
     return CommandResults(
         readable_output=tableToMarkdown(
             'Takedown successfully updated.',
-            {'Takedown ID': response['id']},
+            {'Takedown ID': response['takedown_id']},
             ['Takedown ID']
         )
     )
@@ -574,7 +578,7 @@ def takedown_note_list_command(args: dict, client: Client) -> CommandResults:
             'note': 'Note'
         }
         return tableToMarkdown(
-            'Takedown Notes', response, header_map,
+            'Takedown Notes', response, list(header_map),
             headerTransform=header_map.get,
             removeNull=True
         )

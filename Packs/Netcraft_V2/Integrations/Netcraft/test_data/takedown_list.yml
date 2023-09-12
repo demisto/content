@@ -102,3 +102,128 @@ api_response:
   targeted_url: https://examplebank.com/
   whois_data: string
   whois_server: whois.exampleregistrar.com
+http_func_args:
+  args:
+  - GET
+  - takedown
+  - attacks/
+  - attack_types: attack_types,attack_types2
+    authgiven: 'yes'
+    date_from: '2023-09-10 14:13:55.120309'
+    date_to: '2023-09-10 14:13:55.120309'
+    dir: asc
+    escalated: 'Yes'
+    false_positive: 'true'
+    id: id
+    id_after: id_after
+    id_before: id_before
+    ip: ip
+    max_results: 50
+    region: region
+    report_source: interface
+    reporter_email: reporter_email
+    sort: auth_given
+    statuses: unverified
+    url: url
+  kwargs: {}
+outputs:
+  outputs: &id001
+  - attack_type: phishing_url
+    attack_url: https://l0gin.examp1eb4nk.com/app/
+    authgiven: true
+    authorisation_source: netcraft
+    certificate: []
+    certificate_revoked: 2023-09-11 12:04:01 UTC
+    country_code: us
+    customer_label: 'Internal Issue #12345'
+    customer_tag: ''
+    date_authed: '2023-09-10 14:13:55.120309'
+    date_escalated: '2023-09-10 14:13:55.120309'
+    date_first_actioned: '2023-09-10 14:13:55.120309'
+    date_submitted: '2023-09-10 14:13:55.120309'
+    deceptive_domain_score: 9.85
+    domain: examp1eb4nk.com
+    domain_attack: 'yes'
+    domain_risk_rating: 10
+    escalated: 'false'
+    escalation_source: ''
+    evidence_url: https://incident.netcraft.com/1b24dexample/
+    false_positive: false
+    final_outage: 00:45:00
+    final_resolved: 2023-09-11 12:19:01 UTC
+    first_contact: 2023-09-11 11:29:01 UTC
+    first_inactive: ''
+    first_outage: 00:35:00
+    first_resolved: 2023-09-11 12:09:01 UTC
+    fwd_owner: exampleregistrar.com
+    group_id: '30480489'
+    gsb_block_status:
+    - is_blocked: true
+      platform: android
+      test_date: 2023-09-11 12:04:01 UTC
+    - is_blocked: false
+      platform: ios
+      test_date: 2023-09-11 12:01:01 UTC
+    - is_blocked: true
+      platform: desktop
+      test_date: 2023-09-11 12:05:01 UTC
+    gsb_first_blocked:
+    - first_blocked: 2023-09-11 12:04:01 UTC
+      platform: android
+    - first_blocked: 2023-09-11 12:01:01 UTC
+      platform: desktop
+    - first_blocked: 2023-09-11 12:05:01 UTC
+      platform: ios
+    has_phishing_kit: true
+    host: Example Host
+    hostname: l0gin.examp1eb4nk.com
+    hostname_attack: yes_low_confidence
+    hostname_ddss_score: 8.25
+    id: '30480489'
+    ip: 192.0.2.1
+    is_redirect: final
+    language: english
+    last_updated: 2023-09-11 12:19:01 UTC
+    logged_credential_injections:
+    - type: username
+      value: user@example.com
+    - type: password
+      value: 3w45gw34
+    malware_category: ''
+    malware_family: ''
+    managed: false
+    phishing_kit_hash: 2818a25d2f839c3e0608f00af34bb98ca2571c74
+    region: example_region
+    registrar: Example Registrar
+    report_source: Takedown Interface
+    reported_url: https://l0gin.examp1eb4nk.com/app/
+    reporter: user@examplebank.com
+    restart_date: ''
+    rev_owner: examplehost.com
+    reverse_dns: 192-0-2-1.examplehost.com
+    screenshot_url: https://screenshot.netcraft.com/images/archive/<date>/s3e93b5d93ed97ebd2c3d0876dae9b57.png
+    site_risk_rating: 9
+    status: Monitoring
+    status_change_uptime: 00:40:00
+    stop_monitoring_date: ''
+    tags: []
+    target_brand: Example Brand
+    targeted_url: https://examplebank.com/
+    whois_data: string
+    whois_server: whois.exampleregistrar.com
+  outputs_key_field: id
+  outputs_prefix: Netcraft.Takedown
+  raw_response: *id001
+  readable_output: '### Netcraft Takedowns
+
+    |ID|Brand|Attack Type|Status|Attack URL|Date Reported|Last Updated|Date Authorised|Date
+    Escalated|First Contact|First Inactive (Monitoring)|First Resolved|
+
+    |---|---|---|---|---|---|---|---|---|---|---|---|
+
+    | 30480489 | Example Brand | phishing_url | Monitoring | https://l0gin.examp1eb4nk.com/app/
+    | 2023-09-10 14:13:55.120309 | 2023-09-11 12:19:01 UTC | 2023-09-10 14:13:55.120309
+    | 2023-09-10 14:13:55.120309 | 2023-09-11 11:29:01 UTC | N/A | 2023-09-11 12:09:01
+    UTC |
+
+    '

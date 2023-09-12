@@ -17,3 +17,46 @@ args:
 api_response: |
   TD_OK
   30480489
+http_func_args:
+  args:
+  - POST
+  - takedown
+  - report/
+  kwargs:
+    files: null
+    json_data:
+      attack: attack
+      brand: brand
+      comment: comment
+      customer_label: customer_label
+      entry_id: entry_id
+      force_auth: true
+      inactive: true
+      malware: true
+      password: password
+      phishkit_fetch_url: phishkit_fetch_url.com
+      phishkit_phish_url: phishkit_phish_url.com
+      region: region
+      suspected_fraudulent_domain: true
+      tags: tags,tags2
+      type: attack_type
+    resp_type: text
+outputs:
+  outputs:
+    id: '30480489'
+  outputs_key_field: id
+  outputs_prefix: Netcraft.Takedown
+  raw_response: 'TD_OK
+
+    30480489
+
+    '
+  readable_output: '### Netcraft Takedown
+
+    |Report status|Takedown ID|Response code|
+
+    |---|---|---|
+
+    | The attack was submitted to Netcraft successfully. | 30480489 | TD_OK |
+
+    '

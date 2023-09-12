@@ -19,3 +19,44 @@ api_response:
   description: description2
   display_name: Phishing URL2
   name: phishing_url2
+http_func_args:
+  args:
+  - GET
+  - takedown
+  - attack-types/
+  kwargs:
+    params:
+      auto_authorise: 'true'
+      auto_escalation: 'true'
+      automated: 'true'
+      region: region
+outputs:
+  outputs: &id001
+  - auto_authorise: true
+    auto_escalation: true
+    automated: true
+    base_type: url
+    description: description
+    display_name: Phishing URL
+    name: phishing_url
+  - auto_authorise: false
+    auto_escalation: false
+    automated: true
+    base_type: url2
+    description: description2
+    display_name: Phishing URL2
+    name: phishing_url2
+  outputs_key_field: null
+  outputs_prefix: Netcraft.AttackType
+  raw_response: *id001
+  readable_output: '### Takedown Notes
+
+    |Name|Display Name|Base Type|Description|Automated|Auto Escalation|Auto Authorise|
+
+    |---|---|---|---|---|---|---|
+
+    | phishing_url | Phishing URL | url | description | true | true | true |
+
+    | phishing_url2 | Phishing URL2 | url2 | description2 | true | false | false |
+
+    '

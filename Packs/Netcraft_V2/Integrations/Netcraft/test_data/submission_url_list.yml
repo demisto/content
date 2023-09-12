@@ -37,3 +37,57 @@ api_response:
     url_state: string
     url_takedown_state: not injected
     uuid: 46b1921f9b4e4b34b547bdf20c0c0263
+http_func_args:
+  args:
+  - GET
+  - submission
+  - submission/submission_uuid/files
+  kwargs:
+    params:
+      count: 2
+      page: 2
+outputs:
+  outputs: &id001
+  - classification_log:
+    - date: 1000000000
+      from_state: processing
+      to_state: no threats
+    country_code: GB
+    file_hash: d41d8cd98f00b204e9800998ecf8427e
+    hostname: example.com
+    incident_report_url: https://incident.netcraft.com/aaaaaaaaaaaa/
+    ip: 127.0.0.1
+    reason: This site impersonates an official brand website.
+    screenshots:
+    - hash: XswLgTyECQur1DxIisHiwmk6pScJ6rDl
+      type: gif
+    source: mail
+    sources:
+    - file_hash: 3707006ea361435383622df81feffad6
+      file_name: a.file
+      source: mail
+      source_id: 1
+    tags:
+    - description: This is a phishing tag.
+      name: phishing
+      submitter_tag: 1
+    takedown_link: https://takedown.netcraft.com/1
+    takedown_url_id: 1
+    url: http://example.com/
+    url_classification_reason: Already reported and rejected.
+    url_state: string
+    url_takedown_state: not injected
+    uuid: 46b1921f9b4e4b34b547bdf20c0c0263
+  outputs_key_field: uuid
+  outputs_prefix: Netcraft.SubmissionURL
+  raw_response: *id001
+  readable_output: '### Submission URLs
+
+    |URL|Hostname|Classification|URL Classification Log|
+
+    |---|---|---|---|
+
+    | http://example.com/ | example.com | string | {''date'': 1000000000, ''from_state'':
+    ''processing'', ''to_state'': ''no threats''} |
+
+    '

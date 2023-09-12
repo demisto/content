@@ -4,3 +4,28 @@ args:
   takedown_id: takedown_id
 api_response:
   note_id: 12345
+http_func_args:
+  args:
+  - POST
+  - takedown
+  - notes/
+  kwargs:
+    json_data:
+      notify: 'true'
+      takedown_id: takedown_id
+      text: note_text
+outputs:
+  outputs: &id001
+    note_id: 12345
+  outputs_key_field: note_id
+  outputs_prefix: Netcraft.TakedownNote
+  raw_response: *id001
+  readable_output: '### Note successfully added to takedown.
+
+    |Note ID|Takedown ID|
+
+    |---|---|
+
+    | 12345 | takedown_id |
+
+    '
