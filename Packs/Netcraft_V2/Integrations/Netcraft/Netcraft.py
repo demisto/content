@@ -33,7 +33,7 @@ RES_CODE_TO_MESSAGE = {
 
 class Client(BaseClient):
 
-    def __init__(self, verify, proxy, ok_codes, headers, **kwargs):
+    def __init__(self, verify: bool, proxy: bool, ok_codes: tuple, headers: dict, **kwargs):
         super().__init__(None, verify, proxy, ok_codes, headers, **kwargs)
 
     def _http_request(self, method: str, service: str, url_suffix: str,
@@ -658,13 +658,13 @@ def get_submission(args: dict, submission_uuid: str, client: Client) -> PollResu
             'State': submission.get('state'),
             'Last Update': str(arg_to_datetime(submission.get('last_update'))),
             'List URLs':
-                f'netcraft-submission-url-list {submission_uuid=}'
+                f'!netcraft-submission-url-list {submission_uuid=}'
                 if submission['has_urls']  # key added by response_to_context
                 else '*This submission has no URLs*',
             'List Files':
-                f'netcraft-submission-file-list {submission_uuid=}'
+                f'!netcraft-submission-file-list {submission_uuid=}'
                 if submission['has_files']  # key added by response_to_context
-                else '*This submission has no  Files*',
+                else '*This submission has no Files*',
         }
         return tableToMarkdown(
             f'Submission {submission_uuid}',
@@ -725,6 +725,7 @@ def submission_list(args: dict, client: Client) -> CommandResults:
     return CommandResults(
         # this method is used so that the key Netcraft.SubmissionNextToken is overridden on each run
         outputs={
+            # TODO doesn't work
             'Netcraft.Submission(val.uuid && val.uuid == obj.uuid)': submissions,
             'Netcraft.SubmissionNextToken(val.NextPageToken)': {'NextPageToken': next_token}
         },
@@ -821,7 +822,7 @@ def email_report_submit_command(args: dict, client: Client) -> CommandResults:
 
 def submission_mail_get_command(args: dict, client: Client) -> CommandResults:
 
-    def response_to_readable(mail: dict) -> str:
+    def response_to_readable(mail: dict) -> str:  # TODO add command references
         return tableToMarkdown(
             'Submission Mails',
             mail,

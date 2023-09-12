@@ -1,341 +1,497 @@
 import pytest
-from CommonServerPython import *
-import json
-import yaml
-from unittest import mock
+from test_data.test_data import *
 from Netcraft import Client
+# import CommonServerPython
+# import json
+# import yaml
+# from unittest import mock
+# import Netcraft
+# import requests
 
-# import io
-# from Netcraft import Client, attack_report_command, takedown_list_command, takedown_update_command, takedown_escalate_command, takedown_note_create_command, takedown_note_list_command, attack_type_list_command, submission_list_command, file_report_submit_command, submission_file_list_command, file_screenshot_get_command, email_report_submit_command, submission_mail_get_command, mail_screenshot_get_command, url_report_submit_command, submission_url_list_command, url_screenshot_get_command
-# SERVER_URL = 'https://test_url.com'
-
-
-def load_yaml(filename):
-    with open(f'test_data/{filename}.yml') as f:
-        return yaml.safe_load(f.read())
-
-def add_to_yaml(filename, obj):
-    with open(f'test_data/{filename}.yml', 'a') as f:
-        return f.write(yaml.dump(obj))
-
-@pytest.mark.parametrize(
-    'command',
-    [
-        'netcraft-attack-report',
-        'netcraft-takedown-list',
-        'netcraft-takedown-update',
-        'netcraft-takedown-escalate',
-        'netcraft-takedown-note-create',
-        'netcraft-takedown-note-list',
-        'netcraft-attack-type-list',
-        'netcraft-submission-list',
-        # 'netcraft-file-report-submit',
-        'netcraft-submission-file-list',
-        # 'netcraft-file-screenshot-get',
-        # 'netcraft-email-report-submit',
-        'netcraft-submission-mail-get',
-        # 'netcraft-mail-screenshot-get',
-        # 'netcraft-url-report-submit',
-        'netcraft-submission-url-list',
-        # 'netcraft-url-screenshot-get'
-    ]
+MOCK_CLIENT = Client(
+    verify=True,
+    proxy=True,
+    ok_codes=(200,),
+    headers={}
 )
-def test_generate(mocker, command):
-    _command_ = command.removeprefix('netcraft-').replace('-', '_')
-    data = load_yaml(_command_)
-    req = mocker.patch.object(Client, '_http_request', return_value=data['api_response'])
-    cr: CommandResults = getattr(__import__('Netcraft'), f'{_command_}_command')(data['args'], Client(True, False, ok_codes=(200,), headers={}))
-    # my_mock.call_args_list[0].args
-    cr_dict = {
-        'outputs': cr.outputs,
-        'outputs_key_field': cr.outputs_key_field,
-        'outputs_prefix': cr.outputs_prefix,
-        'raw_response': cr.raw_response,
-        'readable_output': cr.readable_output,
-    }
-    add_to_yaml(
-        _command_,
-        {
-            'http_func_args': {
-                'args': list(req.call_args.args),
-                'kwargs': req.call_args.kwargs
-            },
-            'outputs': cr_dict
-        },
+
+
+def test_attack_report_command(mocker):
+    '''
+    Given:
+        - TODO.
+
+    When:
+        - Running the "netcraft-attack-report" command.
+
+    Then:
+        - Report a new attack or authorise an existing attack in the Takedown service.
+    '''
+    from Netcraft import attack_report_command
+
+    request = mocker.patch.object(Client, '_http_request', return_value=attack_report.api_response)
+
+    result = attack_report_command(attack_report.args, MOCK_CLIENT)
+
+    assert attack_report.outputs.outputs == result.outputs
+    assert attack_report.outputs.outputs_key_field == result.outputs_key_field
+    assert attack_report.outputs.outputs_prefix == result.outputs_prefix
+    assert attack_report.outputs.raw_response == result.raw_response
+    assert attack_report.outputs.readable_output == result.readable_output
+
+    request.assert_called_with(
+        *attack_report.http_func_args['args'],
+        **attack_report.http_func_args['kwargs']
     )
-    
-
-# @pytest.fixture()
-# def client():
-#     return Client(verify=None, proxy=None, ok_codes=None, headers=None)
 
 
-# def test_attack_report_command(client, requests_mock):
-#     """
-#         When:
-#         Given:
-#         Then:
-#         """
-#     args = {}
-#     mock_response_attack_report = load_json(
-#         './test_data/outputs/attack_report.json')
-#     mock_results = load_json(
-#         './test_data/outputs/attack_report_command.json')
-#     requests_mock.post(SERVER_URL, json=mock_response_attack_report)
-#     results = attack_report_command(client=client)
-#     assert results.outputs_prefix == 'Netcraft.Takedown'
-#     assert results.outputs_key_field == 'id'
-#     assert results.raw_response == mock_response_attack_report
+def test_takedown_list_command(mocker):
+    '''
+    Given:
+        - TODO.
+
+    When:
+        - Running the "netcraft-takedown-list" command.
+
+    Then:
+        - Get a list of takedown objects.
+    '''
+    from Netcraft import takedown_list_command
+
+    request = mocker.patch.object(Client, '_http_request', return_value=takedown_list.api_response)
+
+    result = takedown_list_command(takedown_list.args, MOCK_CLIENT)
+
+    assert takedown_list.outputs.outputs == result.outputs
+    assert takedown_list.outputs.outputs_key_field == result.outputs_key_field
+    assert takedown_list.outputs.outputs_prefix == result.outputs_prefix
+    assert takedown_list.outputs.raw_response == result.raw_response
+    assert takedown_list.outputs.readable_output == result.readable_output
+
+    request.assert_called_with(
+        *takedown_list.http_func_args['args'],
+        **takedown_list.http_func_args['kwargs']
+    )
 
 
-# def test_takedown_list_command(client, requests_mock):
-#     """
-#         When:
-#         Given:
-#         Then:
-#         """
-#     args = {}
-#     mock_response_get_takedowns = load_json(
-#         './test_data/outputs/get_takedowns.json')
-#     mock_results = load_json(
-#         './test_data/outputs/takedown_list_command.json')
-#     requests_mock.post(SERVER_URL, json=mock_response_get_takedowns)
-#     results = takedown_list_command(client=client)
-#     assert results.readable_output == mock_results.get('readable_output')
-#     assert results.outputs_prefix == 'Netcraft.Takedown'
-#     assert results.outputs_key_field == 'id'
-#     assert results.outputs == mock_results.get('outputs')
+def test_takedown_update_command(mocker):
+    '''
+    Given:
+        - TODO.
+
+    When:
+        - Running the "netcraft-takedown-update" command.
+
+    Then:
+        - Update one or more fields related to a takedown.
+    '''
+    from Netcraft import takedown_update_command
+
+    request = mocker.patch.object(Client, '_http_request', return_value=takedown_update.api_response)
+
+    result = takedown_update_command(takedown_update.args, MOCK_CLIENT)
+
+    assert takedown_update.outputs.outputs == result.outputs
+    assert takedown_update.outputs.outputs_key_field == result.outputs_key_field
+    assert takedown_update.outputs.outputs_prefix == result.outputs_prefix
+    assert takedown_update.outputs.raw_response == result.raw_response
+    assert takedown_update.outputs.readable_output == result.readable_output
+
+    request.assert_called_with(
+        *takedown_update.http_func_args['args'],
+        **takedown_update.http_func_args['kwargs']
+    )
 
 
-# def test_takedown_update_command(client, requests_mock):
-#     """
-#     When:
-#     Given:
-#     Then:
-#     """
-#     args = {}
-#     mock_response_takedown_update = load_json('./test_data/outputs/takedown_update.json')
-#     mock_results = load_json(
-#         './test_data/outputs/takedown_update_command.json')
-#     requests_mock.post(SERVER_URL, json=mock_response_takedown_update)
-#     results = takedown_update_command(client=client)
-#     assert results.readable_output == mock_results.get('readable_output')
+def test_takedown_escalate_command(mocker):
+    '''
+    Given:
+        - TODO.
+
+    When:
+        - Running the "netcraft-takedown-escalate" command.
+
+    Then:
+        - Escalate an automated takedown to a managed takedown.
+    '''
+    from Netcraft import takedown_escalate_command
+
+    request = mocker.patch.object(Client, '_http_request', return_value=takedown_escalate.api_response)
+
+    result = takedown_escalate_command(takedown_escalate.args, MOCK_CLIENT)
+
+    assert takedown_escalate.outputs.outputs == result.outputs
+    assert takedown_escalate.outputs.outputs_key_field == result.outputs_key_field
+    assert takedown_escalate.outputs.outputs_prefix == result.outputs_prefix
+    assert takedown_escalate.outputs.raw_response == result.raw_response
+    assert takedown_escalate.outputs.readable_output == result.readable_output
+
+    request.assert_called_with(
+        *takedown_escalate.http_func_args['args'],
+        **takedown_escalate.http_func_args['kwargs']
+    )
 
 
-# def test_takedown_escalate_command(client, requests_mock):
-#     """
-#         When:
-#         Given:
-#         Then:
-#         """
-#     args = {}
-#     mock_response_takedown_escalate = load_json(
-#         './test_data/outputs/takedown_escalate.json')
-#     mock_results = load_json(
-#         './test_data/outputs/takedown_escalate_command.json')
-#     requests_mock.post(SERVER_URL, json=mock_response_takedown_escalate)
-#     results = takedown_escalate_command(client=client)
-#     assert results.readable_output == mock_results.get('readable_output')
+def test_takedown_note_create_command(mocker):
+    '''
+    Given:
+        - TODO.
+
+    When:
+        - Running the "netcraft-takedown-note-create" command.
+
+    Then:
+        - Add a new note to an existing takedown.
+    '''
+    from Netcraft import takedown_note_create_command
+
+    request = mocker.patch.object(Client, '_http_request', return_value=takedown_note_create.api_response)
+
+    result = takedown_note_create_command(takedown_note_create.args, MOCK_CLIENT)
+
+    assert takedown_note_create.outputs.outputs == result.outputs
+    assert takedown_note_create.outputs.outputs_key_field == result.outputs_key_field
+    assert takedown_note_create.outputs.outputs_prefix == result.outputs_prefix
+    assert takedown_note_create.outputs.raw_response == result.raw_response
+    assert takedown_note_create.outputs.readable_output == result.readable_output
+
+    request.assert_called_with(
+        *takedown_note_create.http_func_args['args'],
+        **takedown_note_create.http_func_args['kwargs']
+    )
 
 
-# def test_takedown_note_create_command(client, requests_mock):
-#     """
-#         When:
-#         Given:
-#         Then:
-#         """
-#     args = {}
-#     mock_response_takedown_note_create = load_json(
-#         './test_data/outputs/takedown_note_create.json')
-#     mock_results = load_json(
-#         './test_data/outputs/takedown_note_create_command.json')
-#     requests_mock.post(SERVER_URL, json=mock_response_takedown_note_create)
-#     results = takedown_note_create_command(client=client)
-#     assert results.outputs_prefix == 'Netcraft.TakedownNote'
-#     assert results.outputs == mock_results.get('outputs')
-#     assert results.outputs_key_field == 'note_id'
-#     assert results.readable_output == mock_results.get('readable_output')
+def test_takedown_note_list_command(mocker):
+    '''
+    Given:
+        - TODO.
+
+    When:
+        - Running the "netcraft-takedown-note-list" command.
+
+    Then:
+        - Retrieve details of notes that have been added to takedowns.
+    '''
+    from Netcraft import takedown_note_list_command
+
+    request = mocker.patch.object(Client, '_http_request', return_value=takedown_note_list.api_response)
+
+    result = takedown_note_list_command(takedown_note_list.args, MOCK_CLIENT)
+
+    assert takedown_note_list.outputs.outputs == result.outputs
+    assert takedown_note_list.outputs.outputs_key_field == result.outputs_key_field
+    assert takedown_note_list.outputs.outputs_prefix == result.outputs_prefix
+    assert takedown_note_list.outputs.raw_response == result.raw_response
+    assert takedown_note_list.outputs.readable_output == result.readable_output
+
+    request.assert_called_with(
+        *takedown_note_list.http_func_args['args'],
+        **takedown_note_list.http_func_args['kwargs']
+    )
 
 
-# def test_takedown_note_list_command(client, requests_mock):
-#     """
-#         When:
-#         Given:
-#         Then:
-#         """
-#     args = {}
-#     mock_response_takedown_note_list = load_json(
-#         './test_data/outputs/takedown_note_list.json')
-#     mock_results = load_json(
-#         './test_data/outputs/takedown_note_list_command.json')
-#     requests_mock.post(SERVER_URL, json=mock_response_takedown_note_list)
-#     results = takedown_note_list_command(client=client)
-#     assert results.outputs_prefix == 'Netcraft.TakedownNote'
-#     assert results.outputs == mock_results.get('outputs')
-#     assert results.outputs_key_field == 'note_id'
-#     assert results.readable_output == mock_results.get('readable_output')
+def test_attack_type_list_command(mocker):
+    '''
+    Given:
+        - TODO.
+
+    When:
+        - Running the "netcraft-attack-type-list" command.
+
+    Then:
+        - Get information on the attack types that are available under a given region.
+    '''
+    from Netcraft import attack_type_list_command
+
+    request = mocker.patch.object(Client, '_http_request', return_value=attack_type_list.api_response)
+
+    result = attack_type_list_command(attack_type_list.args, MOCK_CLIENT)
+
+    assert attack_type_list.outputs.outputs == result.outputs
+    assert attack_type_list.outputs.outputs_key_field == result.outputs_key_field
+    assert attack_type_list.outputs.outputs_prefix == result.outputs_prefix
+    assert attack_type_list.outputs.raw_response == result.raw_response
+    assert attack_type_list.outputs.readable_output == result.readable_output
+
+    request.assert_called_with(
+        *attack_type_list.http_func_args['args'],
+        **attack_type_list.http_func_args['kwargs']
+    )
 
 
-# def test_attack_type_list_command(client, requests_mock):
-#     """
-#         When:
-#         Given:
-#         Then:
-#         """
-#     args = {}
-#     mock_response_attack_type_list = load_json(
-#         './test_data/outputs/attack_type_list.json')
-#     mock_results = load_json(
-#         './test_data/outputs/attack_type_list_command.json')
-#     requests_mock.post(SERVER_URL, json=mock_response_attack_type_list)
-#     results = attack_type_list_command(client=client)
-#     assert results.outputs_prefix == 'Netcraft.AttackType'
-#     assert results.outputs == mock_results.get('outputs')
-#     assert results.readable_output == mock_results.get('readable_output')
+def test_submission_list_command(mocker):
+    '''
+    Given:
+        - TODO.
+
+    When:
+        - Running the "netcraft-submission-list" command.
+
+    Then:
+        - Get basic information about a submissions.
+    '''
+    from Netcraft import submission_list_command
+
+    request = mocker.patch.object(Client, '_http_request', return_value=submission_list.api_response)
+
+    result = submission_list_command(submission_list.args, MOCK_CLIENT)
+
+    assert submission_list.outputs.outputs == result.outputs
+    assert submission_list.outputs.outputs_key_field == result.outputs_key_field
+    assert submission_list.outputs.outputs_prefix == result.outputs_prefix
+    assert submission_list.outputs.raw_response == result.raw_response
+    assert submission_list.outputs.readable_output == result.readable_output
+
+    request.assert_called_with(
+        *submission_list.http_func_args['args'],
+        **submission_list.http_func_args['kwargs']
+    )
 
 
-# def test_submission_list_command(client, requests_mock):
-#     """
-#         When:
-#         Given:
-#         Then:
-#         """
-#     args = {}
-#     results = submission_list_command(client=client)
+def test_file_report_submit_command(mocker):
+    '''
+    Given:
+        - TODO.
+
+    When:
+        - Running the "netcraft-file-report-submit" command.
+
+    Then:
+        - Report files to Netcraft for analysis.
+    '''
+    from Netcraft import file_report_submit_command
+
+    request = mocker.patch.object(Client, '_http_request', return_value=file_report_submit.api_response)
+
+    result = file_report_submit_command(file_report_submit.args, MOCK_CLIENT)
+
+    assert file_report_submit.outputs.outputs == result.outputs
+    assert file_report_submit.outputs.outputs_key_field == result.outputs_key_field
+    assert file_report_submit.outputs.outputs_prefix == result.outputs_prefix
+    assert file_report_submit.outputs.raw_response == result.raw_response
+    assert file_report_submit.outputs.readable_output == result.readable_output
+
+    request.assert_called_with(
+        *file_report_submit.http_func_args['args'],
+        **file_report_submit.http_func_args['kwargs']
+    )
 
 
-# def test_file_report_submit_command(client, requests_mock):
-#     """
-#         When:
-#         Given:
-#         Then:
-#         """
-#     args = {}
-#     mock_response_file_report_submit = load_json(
-#         './test_data/outputs/file_report_submit.json')
-#     mock_results = load_json(
-#         './test_data/outputs/file_report_submit_command.json')
-#     requests_mock.post(SERVER_URL, json=mock_response_file_report_submit)
-#     results = file_report_submit_command(client=client)
+def test_submission_file_list_command(mocker):
+    '''
+    Given:
+        - TODO.
+
+    When:
+        - Running the "netcraft-submission-file-list" command.
+
+    Then:
+        - Get basic information about a submission's files.
+    '''
+    from Netcraft import submission_file_list_command
+
+    request = mocker.patch.object(Client, '_http_request', return_value=submission_file_list.api_response)
+
+    result = submission_file_list_command(submission_file_list.args, MOCK_CLIENT)
+
+    assert submission_file_list.outputs.outputs == result.outputs
+    assert submission_file_list.outputs.outputs_key_field == result.outputs_key_field
+    assert submission_file_list.outputs.outputs_prefix == result.outputs_prefix
+    assert submission_file_list.outputs.raw_response == result.raw_response
+    assert submission_file_list.outputs.readable_output == result.readable_output
+
+    request.assert_called_with(
+        *submission_file_list.http_func_args['args'],
+        **submission_file_list.http_func_args['kwargs']
+    )
 
 
-# def test_submission_file_list_command(client, requests_mock):
-#     """
-#         When:
-#         Given:
-#         Then:
-#         """
-#     args = {}
-#     results = submission_file_list_command(client=client)
-#     assert results.readable_output == mock_results.get('readable_output')
-#     assert results.outputs == mock_results.get('outputs')
-#     assert results.outputs_prefix == 'Netcraft.SubmissionFile'
-#     assert results.outputs_key_field == 'hash'
+def test_email_report_submit_command(mocker):
+    '''
+    Given:
+        - TODO.
+
+    When:
+        - Running the "netcraft-email-report-submit" command.
+
+    Then:
+        - Report email messages to Netcraft for analysis.
+    '''
+    from Netcraft import email_report_submit_command
+
+    request = mocker.patch.object(Client, '_http_request', return_value=email_report_submit.api_response)
+
+    result = email_report_submit_command(email_report_submit.args, MOCK_CLIENT)
+
+    assert email_report_submit.outputs.outputs == result.outputs
+    assert email_report_submit.outputs.outputs_key_field == result.outputs_key_field
+    assert email_report_submit.outputs.outputs_prefix == result.outputs_prefix
+    assert email_report_submit.outputs.raw_response == result.raw_response
+    assert email_report_submit.outputs.readable_output == result.readable_output
+
+    request.assert_called_with(
+        *email_report_submit.http_func_args['args'],
+        **email_report_submit.http_func_args['kwargs']
+    )
 
 
-# def test_file_screenshot_get_command(client, requests_mock):
-#     """
-#         When:
-#         Given:
-#         Then:
-#         """
-#     args = {}
-#     mock_response_file_screenshot_get = load_json(
-#         './test_data/outputs/file_screenshot_get.json')
-#     mock_results = load_json(
-#         './test_data/outputs/file_screenshot_get_command.json')
-#     requests_mock.post(SERVER_URL, json=mock_response_file_screenshot_get)
-#     results = file_screenshot_get_command(client=client)
+def test_submission_mail_get_command(mocker):
+    '''
+    Given:
+        - TODO.
+
+    When:
+        - Running the "netcraft-submission-mail-get" command.
+
+    Then:
+        - Get basic information about a submission's mail.
+    '''
+    from Netcraft import submission_mail_get_command
+
+    request = mocker.patch.object(Client, '_http_request', return_value=submission_mail_get.api_response)
+
+    result = submission_mail_get_command(submission_mail_get.args, MOCK_CLIENT)
+
+    assert submission_mail_get.outputs.outputs == result.outputs
+    assert submission_mail_get.outputs.outputs_key_field == result.outputs_key_field
+    assert submission_mail_get.outputs.outputs_prefix == result.outputs_prefix
+    assert submission_mail_get.outputs.raw_response == result.raw_response
+    assert submission_mail_get.outputs.readable_output == result.readable_output
+
+    request.assert_called_with(
+        *submission_mail_get.http_func_args['args'],
+        **submission_mail_get.http_func_args['kwargs']
+    )
 
 
-# def test_email_report_submit_command(client, requests_mock):
-#     """
-#         When:
-#         Given:
-#         Then:
-#         """
-#     args = {}
-#     mock_response_email_report_submit = load_json(
-#         './test_data/outputs/email_report_submit.json')
-#     mock_results = load_json(
-#         './test_data/outputs/email_report_submit_command.json')
-#     requests_mock.post(SERVER_URL, json=mock_response_email_report_submit)
-#     results = email_report_submit_command(client=client)
+def test_url_report_submit_command(mocker):
+    '''
+    Given:
+        - TODO.
+
+    When:
+        - Running the "netcraft-url-report-submit" command.
+
+    Then:
+        - Report URLs to Netcraft for analysis.
+    '''
+    from Netcraft import url_report_submit_command
+
+    request = mocker.patch.object(Client, '_http_request', return_value=url_report_submit.api_response)
+
+    result = url_report_submit_command(url_report_submit.args, MOCK_CLIENT)
+
+    assert url_report_submit.outputs.outputs == result.outputs
+    assert url_report_submit.outputs.outputs_key_field == result.outputs_key_field
+    assert url_report_submit.outputs.outputs_prefix == result.outputs_prefix
+    assert url_report_submit.outputs.raw_response == result.raw_response
+    assert url_report_submit.outputs.readable_output == result.readable_output
+
+    request.assert_called_with(
+        *url_report_submit.http_func_args['args'],
+        **url_report_submit.http_func_args['kwargs']
+    )
 
 
-# def test_submission_mail_get_command(client, requests_mock):
-#     """
-#         When:
-#         Given:
-#         Then:
-#         """
-#     args = {}
-#     mock_response_submission_mail_get = load_json(
-#         './test_data/outputs/submission_mail_get.json')
-#     mock_results = load_json(
-#         './test_data/outputs/submission_mail_get_command.json')
-#     requests_mock.post(SERVER_URL, json=mock_response_submission_mail_get)
-#     results = submission_mail_get_command(client=client)
-#     assert results.outputs == mock_results.get('outputs')
-#     assert results.outputs_prefix == 'Netcraft.SubmissionMail'
-#     assert results.outputs_key_field == 'hash'
-#     assert results.readable_output == mock_results.get('readable_output')
+def test_submission_url_list_command(mocker):
+    '''
+    Given:
+        - TODO.
+
+    When:
+        - Running the "netcraft-submission-url-list" command.
+
+    Then:
+        - Get basic information about a submission's URLs.
+    '''
+    from Netcraft import submission_url_list_command
+
+    request = mocker.patch.object(Client, '_http_request', return_value=submission_url_list.api_response)
+
+    result = submission_url_list_command(submission_url_list.args, MOCK_CLIENT)
+
+    assert submission_url_list.outputs.outputs == result.outputs
+    assert submission_url_list.outputs.outputs_key_field == result.outputs_key_field
+    assert submission_url_list.outputs.outputs_prefix == result.outputs_prefix
+    assert submission_url_list.outputs.raw_response == result.raw_response
+    assert submission_url_list.outputs.readable_output == result.readable_output
+
+    request.assert_called_with(
+        *submission_url_list.http_func_args['args'],
+        **submission_url_list.http_func_args['kwargs']
+    )
 
 
-# def test_mail_screenshot_get_command(client, requests_mock):
-#     """
-#         When:
-#         Given:
-#         Then:
-#         """
-#     args = {}
-#     mock_response_mail_screenshot_get = load_json(
-#         './test_data/outputs/mail_screenshot_get.json')
-#     mock_results = load_json(
-#         './test_data/outputs/mail_screenshot_get_command.json')
-#     requests_mock.post(SERVER_URL, json=mock_response_mail_screenshot_get)
-#     results = mail_screenshot_get_command(client=client)
+def test_file_screenshot_get_command(mocker):
+    '''
+    Given:
+        - TODO.
+
+    When:
+        - Running the "netcraft-file-screenshot-get" command.
+
+    Then:
+        - Get a screenshot for a file associated with a submission.
+    '''
+    from Netcraft import file_screenshot_get_command
+
+    request = mocker.patch.object(Client, '_http_request', return_value=file_screenshot_get.api_response)
+
+    result = file_screenshot_get_command(file_screenshot_get.args, MOCK_CLIENT)
+
+    assert file_screenshot_get.outputs == result['File']
+
+    request.assert_called_with(
+        *file_screenshot_get.http_func_args['args'],
+        **file_screenshot_get.http_func_args['kwargs']
+    )
 
 
-# def test_url_report_submit_command(client, requests_mock):
-#     """
-#         When:
-#         Given:
-#         Then:
-#         """
-#     args = {}
-#     mock_response_url_report_submit = load_json(
-#         './test_data/outputs/url_report_submit.json')
-#     mock_results = load_json(
-#         './test_data/outputs/url_report_submit_command.json')
-#     requests_mock.post(SERVER_URL, json=mock_response_url_report_submit)
-#     results = url_report_submit_command(client=client)
+def test_mail_screenshot_get_command(mocker):
+    '''
+    Given:
+        - TODO.
+
+    When:
+        - Running the "netcraft-mail-screenshot-get" command.
+
+    Then:
+        - Get a screenshot for the mail associated with a submission.
+    '''
+    from Netcraft import mail_screenshot_get_command
+
+    request = mocker.patch.object(Client, '_http_request', return_value=mail_screenshot_get.api_response)
+
+    result = mail_screenshot_get_command(mail_screenshot_get.args, MOCK_CLIENT)
+
+    assert mail_screenshot_get.outputs == result['File']
+
+    request.assert_called_with(
+        *mail_screenshot_get.http_func_args['args'],
+        **mail_screenshot_get.http_func_args['kwargs']
+    )
 
 
-# def test_submission_url_list_command(client, requests_mock):
-#     """
-#         When:
-#         Given:
-#         Then:
-#         """
-#     args = {}
-#     results = submission_url_list_command(client=client)
-#     assert results.outputs == mock_results.get('outputs')
-#     assert results.outputs_key_field == 'uuid'
-#     assert results.outputs_prefix == 'Netcraft.SubmissionURL'
-#     assert results.readable_output == mock_results.get('readable_output')
+def test_url_screenshot_get_command(mocker):
+    '''
+    Given:
+        - TODO.
 
+    When:
+        - Running the "netcraft-url-screenshot-get" command.
 
-# def test_url_screenshot_get_command(client, requests_mock):
-#     """
-#         When:
-#         Given:
-#         Then:
-#         """
-#     args = {}
-#     mock_response_url_screenshot_get = load_json(
-#         './test_data/outputs/url_screenshot_get.json')
-#     mock_results = load_json(
-#         './test_data/outputs/url_screenshot_get_command.json')
-#     requests_mock.post(SERVER_URL, json=mock_response_url_screenshot_get)
-#     results = url_screenshot_get_command(client=client)
+    Then:
+        - Download associated screenshots for a specified URL.
+    '''
+    from Netcraft import url_screenshot_get_command
+
+    request = mocker.patch.object(Client, '_http_request', return_value=url_screenshot_get.api_response)
+
+    result = url_screenshot_get_command(url_screenshot_get.args, MOCK_CLIENT)
+
+    assert url_screenshot_get.outputs == result['File']
+
+    request.assert_called_with(
+        *url_screenshot_get.http_func_args['args'],
+        **url_screenshot_get.http_func_args['kwargs']
+    )

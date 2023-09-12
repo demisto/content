@@ -1,2 +1,11 @@
 args:
   submission_uuid: submission_uuid
+api_response: null
+http_func_args:
+  args:
+  - GET
+  - submission
+  - submission/submission_uuid/mail/screenshot
+  kwargs:
+    resp_type: content
+outputs: mail_screenshot_submission_uuid.png

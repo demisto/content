@@ -2,3 +2,12 @@ args:
   screenshot_hash: screenshot_hash
   submission_uuid: submission_uuid
   url_uuid: url_uuid
+api_response: null
+http_func_args:
+  args:
+  - GET
+  - submission
+  - submission/submission_uuid/urls/url_uuid/screenshots/screenshot_hash
+  kwargs:
+    resp_type: response
+outputs: url_screenshot_screenshot_hash.
