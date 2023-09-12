@@ -218,13 +218,14 @@ def test_alert_remediate_command_fail(mocker, prisma_cloud_v2_client):
     from PrismaCloudV2 import alert_remediate_command
 
     class MockRes:
-        def __init__(self, headers) -> None:
+        def __init__(self, headers, status_code) -> None:
             self.headers = headers
+            self.status_code = status_code
 
     error_header = '[{"i18nKey":"remediation_unavailable","severity":"error","subject":null}]'
     http_request = mocker.patch.object(prisma_cloud_v2_client, '_http_request',
                                        side_effect=DemistoException(message='Error in API call [405] - Method Not Allowed',
-                                                                    res=MockRes({'x-redlock-status': error_header})))
+                                                                    res=MockRes({'x-redlock-status': error_header}, 405)))
     args = {'alert_id': 'P-123456'}
     command_results = alert_remediate_command(prisma_cloud_v2_client, args)
     http_request.assert_called_with('PATCH', 'alert/remediation/P-123456', resp_type='response')
