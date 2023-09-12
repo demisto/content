@@ -1673,6 +1673,6 @@ inputs:
   playbookInputQuery:
 outputs: []
 tests:
-- No tests (auto formatted).
+- Test Playbook - NGFW Scan
 marketplaces: ["marketplacev2"]
 fromversion: 6.6.0
