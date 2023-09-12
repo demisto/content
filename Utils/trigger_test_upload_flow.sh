@@ -30,7 +30,7 @@ _bucket_xsoar_saas="marketplace-saas-dist-dev"
 _bucket_upload="true"
 _slack_channel="dmst-bucket-upload"
 _storage_base_path=""
-_sdk_ref=$SDK_REF
+_sdk_ref=${SDK_REF:-master}
 # Parsing the user inputs.
 
 while [[ "$#" -gt 0 ]]; do
