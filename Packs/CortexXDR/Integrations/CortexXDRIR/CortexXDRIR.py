@@ -1051,16 +1051,18 @@ def fetch_incidents(
 
     with ThreadPoolExecutor(max_workers=10) as executor:
         is_rate_limit = False
-        futures = [
+        future_to_incident = {
             executor.submit(
                 get_incident_extra_data_command,
                 client,
                 {"incident_id": inc.get("incident_id"), "alerts_limit": 1000},
                 True,
-            ) for inc in raw_incidents
-        ]
-        for raw_incident, future in zip(raw_incidents, as_completed(futures)):
+            ): inc
+            for inc in raw_incidents
+        }
+        for future in as_completed(future_to_incident):
             try:
+                raw_incident = future_to_incident[future]
                 incident_id = raw_incident.get('incident_id')
                 demisto.debug(f"Performing extra-data request on incident: {incident_id}")
                 incident_data = future.result()[2].get('incident')
