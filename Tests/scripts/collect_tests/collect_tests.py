@@ -936,12 +936,8 @@ class BranchTestCollector(TestCollector):
         integrations_using_apimodule = self.id_set.api_modules_to_integrations.get(api_module_id, [])
         collection_result_of_apimodule = tuple()
         for integration in integrations_using_apimodule:
-            try:
-                integration_collected = self._collect_yml(integration.path)
-                collection_result_of_apimodule += integration_collected
-            except Exception as e:
-                logger.info(e)
-                continue
+            integration_collected = self._collect_yml(integration.path)
+            collection_result_of_apimodule += integration_collected
         logger.debug(f"collection_result_of_apimodule = {collection_result_of_apimodule}")
         return CollectionResult.union(collection_result_of_apimodule)
 

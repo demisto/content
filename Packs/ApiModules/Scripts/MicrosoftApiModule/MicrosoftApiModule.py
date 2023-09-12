@@ -218,6 +218,7 @@ class AzureCloudEndpoints:  # pylint: disable=too-few-public-methods,too-many-in
             return False
 
     def __getattribute__(self, name):
+        demisto.log("ILAN TEST")
         val = object.__getattribute__(self, name)
         if val is None:
             raise CloudEndpointNotSetException("The endpoint '{}' for this cloud is not set but is used.")
