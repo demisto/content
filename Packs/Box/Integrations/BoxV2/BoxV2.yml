@@ -747,7 +747,7 @@ script:
     name: box-remove-file-share-link
     outputs:
     - contextPath: Box.ShareLink.id
-      description: The ID of the item found,
+      description: The ID of the item found,.
       type: String
     - contextPath: Box.ShareLink.etag
       description: The entry tag for the item found.

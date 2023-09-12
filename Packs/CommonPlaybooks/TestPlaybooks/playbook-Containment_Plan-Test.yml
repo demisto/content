@@ -399,6 +399,10 @@ tasks:
         complex:
           root: Core.Endpoint
           accessor: endpoint_id
+      timeout:
+        simple: "120"
+      timeout_in_seconds:
+        simple: "180"
     separatecontext: false
     continueonerrortype: ""
     view: |-
