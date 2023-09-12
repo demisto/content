@@ -99,7 +99,7 @@ def test_alert_acknowledge_already_acknowledged(mocker):
 
     command_results = alert_acknowledge(client=client, args={'uuid': 'uuid'})
     assert command_results[0].readable_output == \
-           'Alert uuid was not found or cannot update. It may have been acknowledged in the past.'
+        'Alert uuid was not found or cannot update. It may have been acknowledged in the past.'
 
 
 def test_get_artifacts_metadata(mocker):

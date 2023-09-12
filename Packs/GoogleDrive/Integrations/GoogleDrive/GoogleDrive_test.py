@@ -824,7 +824,7 @@ class TestFilePermissionMethods:
 
         assert 'modifiedLabels' in result.outputs.get('GoogleDrive.Labels')
         assert result.outputs.get('GoogleDrive.Labels').get('modifiedLabels')[0].get('id') \
-               == 'vFmXsMA1fQMz1BdE59YSkisZV4DiKdpxxLQRNNEbbFcb'
+            == 'vFmXsMA1fQMz1BdE59YSkisZV4DiKdpxxLQRNNEbbFcb'
 
         assert result.raw_response == mock_response
 

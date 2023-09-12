@@ -90,9 +90,9 @@ IP_RES_JSON = {
           'last_seen': '2020-10-06T00:59:33.000Z',
           'last_seen_as': ['MALWARE_DOWNLOAD', 'MALWARE_C2'],
           'malware_family': ['Hive'], 'replication_id': 1602190558122000000,
-          'threat_campaigns': [{'display_text': 'FBI Flash CU-000141-MW','uuid':'7q2b129s-6421-4e22-a276-22be5f76cba8'}],
-          'threat_actors': [{'display_text': 'RastaFarEye','uuid': '7q2b129s-6421-4e22-a276-22be5f76cba8'}],
-          'threat_groups': [{'display_text': 'Black Shadow','uuid': '7q2b129s-6421-4e22-a276-22be5f76cba8'}],
+          'threat_campaigns': [{'display_text': 'FBI Flash CU-000141-MW', 'uuid': '7q2b129s-6421-4e22-a276-22be5f76cba8'}],
+          'threat_actors': [{'display_text': 'RastaFarEye', 'uuid': '7q2b129s-6421-4e22-a276-22be5f76cba8'}],
+          'threat_groups': [{'display_text': 'Black Shadow', 'uuid': '7q2b129s-6421-4e22-a276-22be5f76cba8'}],
           'severity': 4,
           'threat_types': ['Cyber Espionage'],
           'type': 'ip',
@@ -186,27 +186,27 @@ DOMAIN_INTEL_JSON = {'results': [
 }
 
 
-UUID_RES_JSON={
-            'confidence': 100,
-            'display_text': 'mydomain.com',
-            'key': 'mydomain.com',
-            'last_published': '2021-08-12T19:12:58.000Z',
-            'last_seen': '2020-10-06T00:59:33.000Z',
-            'last_seen_as': [
-                'MALWARE_C2'
-            ],
-            'malware_family': ['Hive'],
-            'threat_campaigns': [{'display_text': 'FBI Flash CU-000141-MW','uuid':'7q2b129s-6421-4e22-a276-22be5f76cba8'}],
-            'threat_actors': [{'display_text': 'RastaFarEye','uuid': '7q2b129s-6421-4e22-a276-22be5f76cba8'}],
-            'threat_groups': [{'display_text': 'Black Shadow','uuid': '7q2b129s-6421-4e22-a276-22be5f76cba8'}],
-            'severity': 3,
-            'threat_types': [
-                'Cyber Espionage',
-                'Cyber Crime'
-            ],
-            'type': 'domain',
+UUID_RES_JSON = {
+    'confidence': 100,
+    'display_text': 'mydomain.com',
+    'key': 'mydomain.com',
+    'last_published': '2021-08-12T19:12:58.000Z',
+    'last_seen': '2020-10-06T00:59:33.000Z',
+    'last_seen_as': [
+        'MALWARE_C2'
+    ],
+    'malware_family': ['Hive'],
+    'threat_campaigns': [{'display_text': 'FBI Flash CU-000141-MW', 'uuid': '7q2b129s-6421-4e22-a276-22be5f76cba8'}],
+    'threat_actors': [{'display_text': 'RastaFarEye', 'uuid': '7q2b129s-6421-4e22-a276-22be5f76cba8'}],
+    'threat_groups': [{'display_text': 'Black Shadow', 'uuid': '7q2b129s-6421-4e22-a276-22be5f76cba8'}],
+    'severity': 3,
+    'threat_types': [
+        'Cyber Espionage',
+        'Cyber Crime'
+    ],
+    'type': 'domain',
             'uuid': '461b5ba2-d4fe-4b5c-ac68-35b6636c6edf'
-        }
+}
 
 
 RES_JSON_IA = {
@@ -403,7 +403,7 @@ RES_JSON_IA = {
     "key": "5ca1bcc4-843f-4a2b-9673-ec294e05a509",
     "last_modified": "2021-07-14T09:17:37.000Z",
     "last_published": "2021-03-05T21:47:36.000Z",
-    "attachment_links": ["/6a/7f/fb/0f7be51f6fd40e1361a2b22135cab45f12ce755af5d089e8cc5d086afa/USEIAOnOilPrices2021-02-08cropped.png","/6a/7f/fb/0f7be51f6fd40e1361a2b22135cab45f12ce755af5d089e8cc5d086afa/USEIAOnOilPrices2021-03-08cropped.png"],
+    "attachment_links": ["/6a/7f/fb/0f7be51f6fd40e1361a2b22135cab45f12ce755af5d089e8cc5d086afa/USEIAOnOilPrices2021-02-08cropped.png", "/6a/7f/fb/0f7be51f6fd40e1361a2b22135cab45f12ce755af5d089e8cc5d086afa/USEIAOnOilPrices2021-03-08cropped.png"],
     "links": [
         {
             "created_on": "2017-05-04T17:45:51.000Z",
@@ -2779,559 +2779,559 @@ expected_output_malware_family = {
 
 RAW_MALWARE_FAMILY_RES_JSON = {
     "results": [{
-    "created_on": "2021-08-27T15:54:07.000Z",
-    "display_text": "Hive",
-    "dynamic_properties": {},
-    "index_timestamp": "2022-04-05T15:00:05.654Z",
-    "key": "Hive",
-    "last_modified": "2022-04-04T15:52:25.000Z",
-    "last_published": "2022-03-20T19:46:58.000Z",
-    "links": [
-        {
-            "created_on": "2022-04-05T14:59:19.000Z",
-            "display_text": "Hive Ransomware Group Compromises Railway Transportation Company Rete Ferroviaria Italiana",
-            "key": "0193037c-fda0-43fb-9847-c8c64560090d",
-            "relationship": "uses",
-            "relationship_created_on": "2022-04-05T14:59:19.000Z",
-            "relationship_last_published": "2022-04-05T14:59:19.000Z",
-            "type": "malicious_event",
-            "uuid": "f21741c7-6200-4490-a2bd-c443a50bd3bd",
-            "href": "/rest/fundamental/v0/f21741c7-6200-4490-a2bd-c443a50bd3bd"
-        },
-        {
-            "created_on": "2022-03-03T09:05:16.000Z",
-            "display_text": "fce6a04dfa8a955fbe626c3f04491444",
-            "key": "fce6a04dfa8a955fbe626c3f04491444",
-            "relationship": "belongsTo",
-            "relationship_created_on": "2022-03-03T09:05:16.000Z",
-            "relationship_last_published": "2022-03-03T09:05:16.000Z",
-            "type": "file",
-            "uuid": "fafd3e32-d75e-4f28-b43e-3627ea406165",
-            "href": "/rest/fundamental/v0/fafd3e32-d75e-4f28-b43e-3627ea406165"
-        },
-        {
-            "created_on": "2022-03-03T09:01:17.000Z",
-            "display_text": "514b741214951b9d39d66688839a223d",
-            "key": "514b741214951b9d39d66688839a223d",
-            "relationship": "belongsTo",
-            "relationship_created_on": "2022-03-03T13:02:00.000Z",
-            "relationship_last_published": "2022-03-03T13:02:00.000Z",
-            "type": "file",
-            "uuid": "e663897a-7ed9-45e2-a9ce-e5ce9380affb",
-            "href": "/rest/fundamental/v0/e663897a-7ed9-45e2-a9ce-e5ce9380affb"
-        },
-        {
-            "created_on": "2022-01-26T18:17:38.000Z",
-            "display_text": "2c358fdf4c85c4352e1d297727b957f0",
-            "key": "2c358fdf4c85c4352e1d297727b957f0",
-            "relationship": "belongsTo",
-            "relationship_created_on": "2022-02-01T01:08:10.000Z",
-            "relationship_last_published": "2022-02-01T01:08:10.000Z",
-            "type": "file",
-            "uuid": "d569fe23-409d-4c36-b6ec-bca16eb1aefd",
-            "href": "/rest/fundamental/v0/d569fe23-409d-4c36-b6ec-bca16eb1aefd"
-        },
-        {
-            "created_on": "2022-01-26T18:02:54.000Z",
-            "display_text": "095715a96975ef7b9e17d0a39739e0cc",
-            "key": "095715a96975ef7b9e17d0a39739e0cc",
-            "relationship": "belongsTo",
-            "relationship_created_on": "2022-02-09T03:07:06.000Z",
-            "relationship_last_published": "2022-02-09T03:07:06.000Z",
-            "type": "file",
-            "uuid": "5af5afb1-b893-44f8-b756-a4a8c6149948",
-            "href": "/rest/fundamental/v0/5af5afb1-b893-44f8-b756-a4a8c6149948"
-        },
-        {
-            "created_on": "2022-01-26T18:17:38.000Z",
-            "display_text": "8e26cf1b3222ea0059aeb2aed6115fc5",
-            "key": "8e26cf1b3222ea0059aeb2aed6115fc5",
-            "relationship": "belongsTo",
-            "relationship_created_on": "2022-03-03T21:04:44.000Z",
-            "relationship_last_published": "2022-03-03T21:04:44.000Z",
-            "type": "file",
-            "uuid": "1608025e-11a6-4589-86f2-8e1a6b8d3b11",
-            "href": "/rest/fundamental/v0/1608025e-11a6-4589-86f2-8e1a6b8d3b11"
-        },
-        {
-            "created_on": "2021-12-06T23:07:05.000Z",
-            "display_text": "Cyber Threats to Nonprofit Organizations",
-            "key": "81fd35e0-8b99-43ef-a1f8-45cb7bfadb49",
-            "relationship": "mentions",
-            "relationship_created_on": "2021-12-06T23:07:05.000Z",
-            "relationship_last_published": "2021-12-06T23:08:22.000Z",
-            "type": "intelligence_report",
-            "uuid": "a8676cc1-5386-4492-b39e-b4064e42193d",
-            "href": "/rest/document/v0/a8676cc1-5386-4492-b39e-b4064e42193d"
-        },
-        {
-            "created_on": "2022-03-03T09:06:22.000Z",
-            "display_text": "http://193.233.48.64:20001/bot/cache/10795314.exe",
-            "key": "http://193.233.48.64:20001/bot/cache/10795314.exe",
-            "relationship": "seenAt",
-            "relationship_created_on": "2022-03-03T09:06:22.000Z",
-            "relationship_last_published": "2022-03-03T09:06:22.000Z",
-            "type": "url",
-            "uuid": "81cfeb63-525e-462d-942d-9f1cc32dada9",
-            "href": "/rest/fundamental/v0/81cfeb63-525e-462d-942d-9f1cc32dada9"
-        },
-        {
-            "created_on": "2022-03-03T09:05:31.000Z",
-            "display_text": "http://193.233.48.64:20001/bot/cache/36712604.exe",
-            "key": "http://193.233.48.64:20001/bot/cache/36712604.exe",
-            "relationship": "seenAt",
-            "relationship_created_on": "2022-03-03T09:05:31.000Z",
-            "relationship_last_published": "2022-03-03T09:05:31.000Z",
-            "type": "url",
-            "uuid": "43a9beac-9a6a-42dd-9385-86ed5f1c735b",
-            "href": "/rest/fundamental/v0/43a9beac-9a6a-42dd-9385-86ed5f1c735b"
-        },
-        {
-            "created_on": "2022-01-26T18:17:38.000Z",
-            "display_text": "http://85.202.169.245/build.exe",
-            "key": "http://85.202.169.245/build.exe",
-            "relationship": "seenAt",
-            "relationship_created_on": "2022-01-28T21:00:56.000Z",
-            "relationship_last_published": "2022-01-28T21:00:56.000Z",
-            "type": "url",
-            "uuid": "06bb16a3-7de6-43b3-a025-27bfbdfb3737",
-            "href": "/rest/fundamental/v0/06bb16a3-7de6-43b3-a025-27bfbdfb3737"
-        },
-        {
-            "created_on": "2022-01-12T16:27:02.000Z",
-            "display_text": "Makop and Hive Ransomware Downloaded from GitHub Repository",
-            "key": "2403d723-9875-479c-b8a5-ff1181284588",
-            "relationship": "uses",
-            "relationship_created_on": "2022-01-12T16:27:02.000Z",
-            "relationship_last_published": "2022-01-12T16:27:02.000Z",
-            "type": "malicious_event",
-            "uuid": "f5fab130-70d6-4f3e-8ae2-dada98626b51",
-            "href": "/rest/fundamental/v0/f5fab130-70d6-4f3e-8ae2-dada98626b51"
-        },
-        {
-            "created_on": "2021-08-25T17:38:11.000Z",
-            "display_text": "504bd1695de326bc533fde29b8a69319",
-            "key": "504bd1695de326bc533fde29b8a69319",
-            "relationship": "belongsTo",
-            "relationship_created_on": "2021-09-29T19:19:09.000Z",
-            "relationship_last_published": "2021-09-29T19:19:09.000Z",
-            "type": "file",
-            "uuid": "a7bc5402-1d74-42b1-b6e1-6e43f52bfcc3",
-            "href": "/rest/fundamental/v0/a7bc5402-1d74-42b1-b6e1-6e43f52bfcc3"
-        },
-        {
-            "created_on": "2022-01-26T18:02:54.000Z",
-            "display_text": "de56cde528237db0bafb21e16e5d2660",
-            "key": "de56cde528237db0bafb21e16e5d2660",
-            "relationship": "belongsTo",
-            "relationship_created_on": "2022-01-26T18:02:54.000Z",
-            "relationship_last_published": "2022-01-26T18:02:54.000Z",
-            "type": "file",
-            "uuid": "9f3b8b8f-b776-4cd2-9ba7-887aaf186a6d",
-            "href": "/rest/fundamental/v0/9f3b8b8f-b776-4cd2-9ba7-887aaf186a6d"
-        },
-        {
-            "created_on": "2022-03-21T17:01:13.000Z",
-            "display_text": "http://file-coin-coin-10.com/files/3146_1647797189_9799.exe",
-            "key": "http://file-coin-coin-10.com/files/3146_1647797189_9799.exe",
-            "relationship": "seenAt",
-            "relationship_created_on": "2022-03-21T17:01:13.000Z",
-            "relationship_last_published": "2022-03-21T17:01:13.000Z",
-            "type": "url",
-            "uuid": "ee9e9f7c-a599-4009-96f8-d5ac5beabe55",
-            "href": "/rest/fundamental/v0/ee9e9f7c-a599-4009-96f8-d5ac5beabe55"
-        },
-        {
-            "created_on": "2022-03-03T09:06:00.000Z",
-            "display_text": "http://193.233.48.64:20001/bot/cache/32311396.exe",
-            "key": "http://193.233.48.64:20001/bot/cache/32311396.exe",
-            "relationship": "seenAt",
-            "relationship_created_on": "2022-03-03T09:06:00.000Z",
-            "relationship_last_published": "2022-03-03T09:06:00.000Z",
-            "type": "url",
-            "uuid": "ad48f931-e83f-4312-ad38-5b51744b14e8",
-            "href": "/rest/fundamental/v0/ad48f931-e83f-4312-ad38-5b51744b14e8"
-        },
-        {
-            "created_on": "2022-03-03T09:05:12.000Z",
-            "display_text": "http://193.233.48.64:20001/bot/cache/68950155.exe",
-            "key": "http://193.233.48.64:20001/bot/cache/68950155.exe",
-            "relationship": "seenAt",
-            "relationship_created_on": "2022-03-03T09:05:12.000Z",
-            "relationship_last_published": "2022-03-03T09:05:12.000Z",
-            "type": "url",
-            "uuid": "97551dc6-e59a-450b-899c-b2d1e11c4dd8",
-            "href": "/rest/fundamental/v0/97551dc6-e59a-450b-899c-b2d1e11c4dd8"
-        },
-        {
-            "created_on": "2022-01-30T11:30:44.000Z",
-            "display_text": "http://62.197.136.229/build.exe",
-            "key": "http://62.197.136.229/build.exe",
-            "relationship": "seenAt",
-            "relationship_created_on": "2022-03-03T21:04:44.000Z",
-            "relationship_last_published": "2022-03-03T21:04:44.000Z",
-            "type": "url",
-            "uuid": "8195b155-dd97-4ba4-82ea-897fc9f0e75a",
-            "href": "/rest/fundamental/v0/8195b155-dd97-4ba4-82ea-897fc9f0e75a"
-        },
-        {
-            "created_on": "2022-03-03T09:00:56.000Z",
-            "display_text": "http://193.233.48.64:20001/bot/cache/33132493.exe",
-            "key": "http://193.233.48.64:20001/bot/cache/33132493.exe",
-            "relationship": "seenAt",
-            "relationship_created_on": "2022-03-03T09:00:56.000Z",
-            "relationship_last_published": "2022-03-03T09:00:56.000Z",
-            "type": "url",
-            "uuid": "3a597bdb-5848-4585-9a5e-58453fab2eba",
-            "href": "/rest/fundamental/v0/3a597bdb-5848-4585-9a5e-58453fab2eba"
-        },
-        {
-            "created_on": "2022-02-11T03:01:52.000Z",
-            "display_text": "http://82.157.108.230:8000/%E4%B8%AA%E4%BA%BA%E7%AE%80%E5%8E%86.pdf%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20.exe",
-            "key": "http://82.157.108.230:8000/%E4%B8%AA%E4%BA%BA%E7%AE%80%E5%8E%86.pdf%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20.exe",
-            "relationship": "seenAt",
-            "relationship_created_on": "2022-02-11T03:01:52.000Z",
-            "relationship_last_published": "2022-02-11T03:01:52.000Z",
-            "type": "url",
-            "uuid": "0e9a21fd-bce5-48c2-8506-d06e1b497c0b",
-            "href": "/rest/fundamental/v0/0e9a21fd-bce5-48c2-8506-d06e1b497c0b"
-        },
-        {
-            "created_on": "2022-03-21T17:01:13.000Z",
-            "display_text": "92d0366537308d4b6e0ca530f49adb6d",
-            "key": "92d0366537308d4b6e0ca530f49adb6d",
-            "relationship": "belongsTo",
-            "relationship_created_on": "2022-03-21T17:01:13.000Z",
-            "relationship_last_published": "2022-03-21T17:01:13.000Z",
-            "type": "file",
-            "uuid": "e1cf3272-6d75-418e-8168-870b8d4367dc",
-            "href": "/rest/fundamental/v0/e1cf3272-6d75-418e-8168-870b8d4367dc"
-        },
-        {
-            "created_on": "2022-01-26T18:17:38.000Z",
-            "display_text": "3e6c6230b55a1cce968197736af2a89b",
-            "key": "3e6c6230b55a1cce968197736af2a89b",
-            "relationship": "belongsTo",
-            "relationship_created_on": "2022-02-09T09:11:23.000Z",
-            "relationship_last_published": "2022-02-09T09:11:23.000Z",
-            "type": "file",
-            "uuid": "cb95d9f6-1dce-4cc0-9baa-925879fb83f6",
-            "href": "/rest/fundamental/v0/cb95d9f6-1dce-4cc0-9baa-925879fb83f6"
-        },
-        {
-            "created_on": "2022-03-03T09:06:00.000Z",
-            "display_text": "689d783fdaeeff17f2c3a9471ad716d7",
-            "key": "689d783fdaeeff17f2c3a9471ad716d7",
-            "relationship": "belongsTo",
-            "relationship_created_on": "2022-03-03T09:06:00.000Z",
-            "relationship_last_published": "2022-03-03T09:06:00.000Z",
-            "type": "file",
-            "uuid": "95c555b5-4ac1-4f9a-a0c4-57fd12adc62e",
-            "href": "/rest/fundamental/v0/95c555b5-4ac1-4f9a-a0c4-57fd12adc62e"
-        },
-        {
-            "created_on": "2022-01-26T18:02:54.000Z",
-            "display_text": "e804bf3e7b1395a2a3d348d5e4b0d1f4",
-            "key": "e804bf3e7b1395a2a3d348d5e4b0d1f4",
-            "relationship": "belongsTo",
-            "relationship_created_on": "2022-02-16T15:04:03.000Z",
-            "relationship_last_published": "2022-02-16T15:04:03.000Z",
-            "type": "file",
-            "uuid": "7a2caf7a-1349-4345-b0d7-1a6ef276757b",
-            "href": "/rest/fundamental/v0/7a2caf7a-1349-4345-b0d7-1a6ef276757b"
-        },
-        {
-            "created_on": "2022-03-03T09:05:57.000Z",
-            "display_text": "7d4220c9e78fdf518621c113a8649176",
-            "key": "7d4220c9e78fdf518621c113a8649176",
-            "relationship": "belongsTo",
-            "relationship_created_on": "2022-03-03T09:05:57.000Z",
-            "relationship_last_published": "2022-03-03T09:05:57.000Z",
-            "type": "file",
-            "uuid": "25bea5dd-fc28-4b27-ac88-8bd2091310de",
-            "href": "/rest/fundamental/v0/25bea5dd-fc28-4b27-ac88-8bd2091310de"
-        },
-        {
-            "created_on": "2022-02-11T03:01:52.000Z",
-            "display_text": "79b5eb5b92a2245b42d82a2c106ecf30",
-            "key": "79b5eb5b92a2245b42d82a2c106ecf30",
-            "relationship": "belongsTo",
-            "relationship_created_on": "2022-02-11T03:01:52.000Z",
-            "relationship_last_published": "2022-02-11T03:01:52.000Z",
-            "type": "file",
-            "uuid": "114705ce-be03-4498-861d-c72ec73f797c",
-            "href": "/rest/fundamental/v0/114705ce-be03-4498-861d-c72ec73f797c"
-        },
-        {
-            "created_on": "2021-11-05T18:18:10.000Z",
-            "display_text": "Technical Analysis of Hive Ransomware",
-            "key": "5684299e-5bdc-4af5-b829-da7a8c95e7f7",
-            "relationship": "mentions",
-            "relationship_created_on": "2021-11-05T18:18:10.000Z",
-            "relationship_last_published": "2021-11-05T18:18:10.000Z",
-            "type": "intelligence_alert",
-            "uuid": "995e4c09-dd66-420c-8e35-b1edb022e7ee",
-            "href": "/rest/document/v0/995e4c09-dd66-420c-8e35-b1edb022e7ee"
-        },
-        {
-            "created_on": "2021-10-13T16:08:00.000Z",
-            "display_text": "iDefense Global Research Intelligence Digest for 13 October 2021",
-            "key": "cabde77f-68ff-45fc-9e84-3f624d8038e5",
-            "relationship": "mentions",
-            "relationship_created_on": "2021-10-13T16:08:00.000Z",
-            "relationship_last_published": "2021-10-13T16:08:00.000Z",
-            "type": "intelligence_alert",
-            "uuid": "54745848-9166-4387-9fc3-137b3e07022e",
-            "href": "/rest/document/v0/54745848-9166-4387-9fc3-137b3e07022e"
-        },
-        {
-            "created_on": "2022-01-26T18:02:54.000Z",
-            "display_text": "http://185.112.83.96:20001/build_dl",
-            "key": "http://185.112.83.96:20001/build_dl",
-            "relationship": "seenAt",
-            "relationship_created_on": "2022-02-09T03:07:06.000Z",
-            "relationship_last_published": "2022-02-09T03:07:06.000Z",
-            "type": "url",
-            "uuid": "f688be80-466b-4f9e-8914-747b1da441aa",
-            "href": "/rest/fundamental/v0/f688be80-466b-4f9e-8914-747b1da441aa"
-        },
-        {
-            "created_on": "2022-03-03T09:05:57.000Z",
-            "display_text": "http://193.233.48.64:20001/bot/cache/49495799.exe",
-            "key": "http://193.233.48.64:20001/bot/cache/49495799.exe",
-            "relationship": "seenAt",
-            "relationship_created_on": "2022-03-03T09:05:57.000Z",
-            "relationship_last_published": "2022-03-03T09:05:57.000Z",
-            "type": "url",
-            "uuid": "d9264aff-df75-4d33-8c4b-cef938a4a683",
-            "href": "/rest/fundamental/v0/d9264aff-df75-4d33-8c4b-cef938a4a683"
-        },
-        {
-            "created_on": "2022-01-25T03:00:15.000Z",
-            "display_text": "http://5.255.100.227/myblog/posts/32.exe",
-            "key": "http://5.255.100.227/myblog/posts/32.exe",
-            "relationship": "seenAt",
-            "relationship_created_on": "2022-01-25T03:00:15.000Z",
-            "relationship_last_published": "2022-01-25T03:00:15.000Z",
-            "type": "url",
-            "uuid": "8ec32443-d904-4f4c-b3e3-da6c8538b5be",
-            "href": "/rest/fundamental/v0/8ec32443-d904-4f4c-b3e3-da6c8538b5be"
-        },
-        {
-            "created_on": "2022-03-21T18:13:26.000Z",
-            "display_text": "http://file-coin-coin-10.com/files/7060_1647109264_3109.exe",
-            "key": "http://file-coin-coin-10.com/files/7060_1647109264_3109.exe",
-            "relationship": "seenAt",
-            "relationship_created_on": "2022-03-21T18:13:26.000Z",
-            "relationship_last_published": "2022-03-21T18:13:26.000Z",
-            "type": "url",
-            "uuid": "22a9b797-d2ad-40e5-a4d1-f7db7b693183",
-            "href": "/rest/fundamental/v0/22a9b797-d2ad-40e5-a4d1-f7db7b693183"
-        },
-        {
-            "created_on": "2018-12-04T19:10:01.000Z",
-            "display_text": "Healthcare Providers",
-            "key": "Healthcare Providers",
-            "relationship": "targets",
-            "relationship_created_on": "2021-08-27T15:54:07.000Z",
-            "relationship_last_published": "2021-08-27T15:54:07.000Z",
-            "type": "vertical",
-            "uuid": "baa08cb8-89cd-45a3-a302-4a307edc5708",
-            "href": "/rest/fundamental/v0/baa08cb8-89cd-45a3-a302-4a307edc5708"
-        },
-        {
-            "created_on": "2022-03-03T09:05:12.000Z",
-            "display_text": "56069652e0a95bb25da5cad6ac8e070e",
-            "key": "56069652e0a95bb25da5cad6ac8e070e",
-            "relationship": "belongsTo",
-            "relationship_created_on": "2022-03-03T09:06:22.000Z",
-            "relationship_last_published": "2022-03-03T09:06:22.000Z",
-            "type": "file",
-            "uuid": "d663d2f5-bde5-4685-9d87-0e27c2eb8acd",
-            "href": "/rest/fundamental/v0/d663d2f5-bde5-4685-9d87-0e27c2eb8acd"
-        },
-        {
-            "created_on": "2022-01-03T16:38:23.000Z",
-            "display_text": "032760a6afd808e9eaf2979b72bcebf4",
-            "key": "032760a6afd808e9eaf2979b72bcebf4",
-            "relationship": "belongsTo",
-            "relationship_created_on": "2022-01-10T13:38:32.000Z",
-            "relationship_last_published": "2022-01-10T15:43:03.000Z",
-            "type": "file",
-            "uuid": "c279fa1d-712d-46ae-965b-0d5f653a121b",
-            "href": "/rest/fundamental/v0/c279fa1d-712d-46ae-965b-0d5f653a121b"
-        },
-        {
-            "created_on": "2021-08-30T16:01:06.000Z",
-            "display_text": "iDefense Global Research Intelligence Digest for 30 August 2021",
-            "key": "c036ec6d-12a5-4672-9173-3c424d473781",
-            "relationship": "mentions",
-            "relationship_created_on": "2021-08-30T16:01:06.000Z",
-            "relationship_last_published": "2021-08-30T16:01:05.000Z",
-            "type": "intelligence_alert",
-            "uuid": "94af0110-5706-4bc2-aca1-92a2f78c801d",
-            "href": "/rest/document/v0/94af0110-5706-4bc2-aca1-92a2f78c801d"
-        },
-        {
-            "created_on": "2022-03-03T09:01:17.000Z",
-            "display_text": "http://193.233.48.64:20001/bot/cache/22092005.exe",
-            "key": "http://193.233.48.64:20001/bot/cache/22092005.exe",
-            "relationship": "seenAt",
-            "relationship_created_on": "2022-03-03T09:01:17.000Z",
-            "relationship_last_published": "2022-03-03T09:01:17.000Z",
-            "type": "url",
-            "uuid": "f95eb4f0-7ca1-42bb-9bd3-9309f976fb6c",
-            "href": "/rest/fundamental/v0/f95eb4f0-7ca1-42bb-9bd3-9309f976fb6c"
-        },
-        {
-            "created_on": "2022-03-03T13:02:00.000Z",
-            "display_text": "http://193.233.48.64:20001/bot/cache/99608309.exe",
-            "key": "http://193.233.48.64:20001/bot/cache/99608309.exe",
-            "relationship": "seenAt",
-            "relationship_created_on": "2022-03-03T13:02:00.000Z",
-            "relationship_last_published": "2022-03-03T13:02:00.000Z",
-            "type": "url",
-            "uuid": "036e0339-c616-4bed-bcab-979e130dbf07",
-            "href": "/rest/fundamental/v0/036e0339-c616-4bed-bcab-979e130dbf07"
-        },
-        {
-            "created_on": "2022-01-26T18:17:38.000Z",
-            "display_text": "addfdc6395f84f4a377423f212e1fa27",
-            "key": "addfdc6395f84f4a377423f212e1fa27",
-            "relationship": "belongsTo",
-            "relationship_created_on": "2022-01-26T18:17:38.000Z",
-            "relationship_last_published": "2022-01-26T18:17:38.000Z",
-            "type": "file",
-            "uuid": "c6a0aa62-7773-46d5-8a5c-82d745c8c5d6",
-            "href": "/rest/fundamental/v0/c6a0aa62-7773-46d5-8a5c-82d745c8c5d6"
-        },
-        {
-            "created_on": "2022-01-26T18:17:38.000Z",
-            "display_text": "78d6b9e2eba0867155d9f3489e4554bc",
-            "key": "78d6b9e2eba0867155d9f3489e4554bc",
-            "relationship": "belongsTo",
-            "relationship_created_on": "2022-01-26T18:17:38.000Z",
-            "relationship_last_published": "2022-01-26T18:17:38.000Z",
-            "type": "file",
-            "uuid": "5cc0fac4-639b-4423-9b0e-af38eec6b434",
-            "href": "/rest/fundamental/v0/5cc0fac4-639b-4423-9b0e-af38eec6b434"
-        },
-        {
-            "created_on": "2022-03-21T18:13:26.000Z",
-            "display_text": "0df23d0344989230bd0333c37ca598fd",
-            "key": "0df23d0344989230bd0333c37ca598fd",
-            "relationship": "belongsTo",
-            "relationship_created_on": "2022-03-21T18:13:26.000Z",
-            "relationship_last_published": "2022-03-21T18:13:26.000Z",
-            "type": "file",
-            "uuid": "0c562fff-70bf-4e23-a54c-5f9db177b21c",
-            "href": "/rest/fundamental/v0/0c562fff-70bf-4e23-a54c-5f9db177b21c"
-        },
-        {
-            "created_on": "2022-02-22T21:33:12.000Z",
-            "display_text": "SITREP: Ukraine Crisis",
-            "key": "0ae44727-6fef-4dcb-9928-8eed0c3bcd3e",
-            "relationship": "mentions",
-            "relationship_created_on": "2022-03-20T19:46:59.000Z",
-            "relationship_last_published": "2022-03-20T19:46:58.000Z",
-            "type": "intelligence_alert",
-            "uuid": "f1862833-80de-4880-a180-11fad373e896",
-            "href": "/rest/document/v0/f1862833-80de-4880-a180-11fad373e896"
-        },
-        {
-            "created_on": "2021-08-25T15:38:48.000Z",
-            "display_text": "iDefense Global Research Intelligence Digest for 25 August 2021",
-            "key": "429ca269-8d25-46a3-8b83-5b666a2e7182",
-            "relationship": "mentions",
-            "relationship_created_on": "2022-03-20T21:40:13.000Z",
-            "relationship_last_published": "2022-03-20T21:40:13.000Z",
-            "type": "intelligence_alert",
-            "uuid": "4b3c7699-ff95-4650-9f24-6dee2be84112",
-            "href": "/rest/document/v0/4b3c7699-ff95-4650-9f24-6dee2be84112"
-        },
-        {
-            "created_on": "2022-01-16T15:01:07.000Z",
-            "display_text": "http://91.243.59.17/build.exe",
-            "key": "http://91.243.59.17/build.exe",
-            "relationship": "seenAt",
-            "relationship_created_on": "2022-01-16T15:01:07.000Z",
-            "relationship_last_published": "2022-01-16T15:01:07.000Z",
-            "type": "url",
-            "uuid": "85962156-eeba-43d3-8cc5-ee4f0cd2007a",
-            "href": "/rest/fundamental/v0/85962156-eeba-43d3-8cc5-ee4f0cd2007a"
-        },
-        {
-            "created_on": "2022-01-10T13:38:32.000Z",
-            "display_text": "https://raw.githubusercontent.com/flicker32/tyupo/main/release.txt",
-            "key": "https://raw.githubusercontent.com/flicker32/tyupo/main/release.txt",
-            "relationship": "seenAt",
-            "relationship_created_on": "2022-01-10T13:38:32.000Z",
-            "relationship_last_published": "2022-01-10T13:38:32.000Z",
-            "type": "url",
-            "uuid": "45acec3a-faf6-4c25-8c55-4fbe2859b447",
-            "href": "/rest/fundamental/v0/45acec3a-faf6-4c25-8c55-4fbe2859b447"
-        },
-        {
-            "created_on": "2022-03-03T09:05:16.000Z",
-            "display_text": "http://193.233.48.64:20001/bot/cache/42663002.exe",
-            "key": "http://193.233.48.64:20001/bot/cache/42663002.exe",
-            "relationship": "seenAt",
-            "relationship_created_on": "2022-03-03T09:05:16.000Z",
-            "relationship_last_published": "2022-03-03T09:05:16.000Z",
-            "type": "url",
-            "uuid": "058afbb7-57be-4378-8d49-e36fb60361bc",
-            "href": "/rest/fundamental/v0/058afbb7-57be-4378-8d49-e36fb60361bc"
-        }
-    ],
-    "replication_id": 1649087545647000061,
-    "sources_external": [
-        {
-            "datetime": "2021-08-23T04:00:00.000Z",
-            "description": "Hive Attacks | Analysis of the Human-Operated Ransomware Targeting Healthcare",
-            "name": "SentinelOne",
-            "url": "https://labs.sentinelone.com/hive-attacks-analysis-of-the-human-operated-ransomware-targeting-healthcare/"
-        }
-    ],
-    "type": "malware_family",
-    "uuid": "c1b3216e-8b2e-4a9f-b0a9-2e184b7182f7",
-    "description": "##Overview\nThe Hive ransomware, written in the Go programming language, first came to the attention of researchers in June 2021. In August 2021, actors used the [Hive ransomware against a healthcare provider in Ohio]( https://labs.sentinelone.com/hive-attacks-analysis-of-the-human-operated-ransomware-targeting-healthcare/). Hive actors conduct double extortion tactics and maintain a leak site at hxxp://hiveleakdbtnp76ulyhi52eag6c6tyc3xw7ez7iqy6wc34gd2nekazyd[.]onion/ and an instructions and  payment site at  hxxp://hivecust6vhekztbqgdnkks64ucehqacge3dij3gyrrpdp57zoq3ooqd[.]onion/, which requires login and password credentials.\n\n##Functionality and Behavior\nA preliminary iDefense analysis of the Hive ransomware revealed the following functionality:\n\n- Once Hive is deployed on the target machine, the operator can issue command-line parameters that perform functions listed in Exhibit 1.\n \n\n   \n *Exhibit 1: Command-Line Parameters*\n\n- When run without command-line parameters, Hive executes its default functionality as listed in Exhibit 2. Some of the functions include deleting itself, stopping default services shown in Exhibit 1, skipping files more than five years old, and deleting shadow copies.\n \n\n   \n *Exhibit 2: Default Execution*\n\n- During its default encryption activities in a test directory, Hive encrypted an executable file and encrypted PPT files but skipped an XLS file. When encrypting executables in an analysis sandbox, the sandbox environment became unstable. Exhibit 3 shows the encrypted and unencrypted files in the test directory. Hive added the file extension `.[key string][alphanumeric string].hive` to files it encrypted.\n \n   \n *Exhibit 3: Default Execution*\n\n- Hive drops its ransom note in directories it examined during encryption activities. Exhibit 4 shows the ransom note.\n  \n   \n *Exhibit 4: Ransom Note*\n\n##Mitigation\n\nTo protect against the Hive ransomware and possible data exfiltration, iDefense suggests:\n* Implementing the appropriate mitigations selected in the left-hand MITRE ATT&CK techniques tab.\n- Training users to identify and safely handle social engineering emails that could be part of a phishing campaign.\n\n- Avoiding opening or downloading suspicious links and attachments in emails from external sources until confirming with the sender using other means that the message and its contents are valid.\n- Securing networks from malware through best practices for patching, configuring firewalls, maintaining up-to-date anti-virus signatures, running regular scans, retaining backups separate from the network on which they reside, and using application whitelists.\n- Preparing and implementing a robust incident response plan in case a data breach or malware incident occurs.\n- Immediately disconnecting compromised systems from the network on which they reside.\n- Refraining from paying ransoms, as doing so provides an incentive to threat actors to continue making demands.\n- Consider developing continuity of operations plans  that account for massive ransomware or wiper attacks that can spread across the entire business.\n- For additional mitigation advice on how to protect against ransomware attacks, see iDefense’s Intelligence Alert titled [“Overview of Ransomware Activity.”](/#/node/intelligence_alert/view/5afaf6fc-30eb-4635-960b-e92df530787f)\n\nFor threat hunting against Hive samples, iDefense suggests looking for the following files:\n* Encrypted files with extension `.[key string][alphanumeric string].hive`\n* Ransom note “HOW\\_TO_DECRYPT.txt in various directories\n* Hive batch files hive.bat or shadow.bat\n* Key files [key string].key, [key string].key.hiv\n* temp[integer]_swamp.hive of unknown use",
-    "severity": 3,
-    "threat_types": [
-        "Cyber Crime"
-    ],
-    "variety": [
-        "Ransomware"
-    ],
-    "attack_techniques": [
-        {
-            "id": "T1489",
-            "label": "Service Stop"
-        },
-        {
-            "id": "T1007",
-            "label": "System Service Discovery"
-        },
-        {
-            "id": "T1192",
-            "label": "Spearphishing Link"
-        },
-        {
-            "id": "T1490",
-            "label": "Inhibit System Recovery"
-        },
-        {
-            "id": "T1486",
-            "label": "Data Encrypted for Impact"
-        },
-        {
-            "id": "T1045",
-            "label": "Software Packing"
-        },
-        {
-            "id": "T1059",
-            "label": "Command-Line Interface"
-        }
-    ]
+        "created_on": "2021-08-27T15:54:07.000Z",
+        "display_text": "Hive",
+        "dynamic_properties": {},
+        "index_timestamp": "2022-04-05T15:00:05.654Z",
+        "key": "Hive",
+        "last_modified": "2022-04-04T15:52:25.000Z",
+        "last_published": "2022-03-20T19:46:58.000Z",
+        "links": [
+            {
+                "created_on": "2022-04-05T14:59:19.000Z",
+                "display_text": "Hive Ransomware Group Compromises Railway Transportation Company Rete Ferroviaria Italiana",
+                "key": "0193037c-fda0-43fb-9847-c8c64560090d",
+                "relationship": "uses",
+                "relationship_created_on": "2022-04-05T14:59:19.000Z",
+                "relationship_last_published": "2022-04-05T14:59:19.000Z",
+                "type": "malicious_event",
+                "uuid": "f21741c7-6200-4490-a2bd-c443a50bd3bd",
+                "href": "/rest/fundamental/v0/f21741c7-6200-4490-a2bd-c443a50bd3bd"
+            },
+            {
+                "created_on": "2022-03-03T09:05:16.000Z",
+                "display_text": "fce6a04dfa8a955fbe626c3f04491444",
+                "key": "fce6a04dfa8a955fbe626c3f04491444",
+                "relationship": "belongsTo",
+                "relationship_created_on": "2022-03-03T09:05:16.000Z",
+                "relationship_last_published": "2022-03-03T09:05:16.000Z",
+                "type": "file",
+                "uuid": "fafd3e32-d75e-4f28-b43e-3627ea406165",
+                "href": "/rest/fundamental/v0/fafd3e32-d75e-4f28-b43e-3627ea406165"
+            },
+            {
+                "created_on": "2022-03-03T09:01:17.000Z",
+                "display_text": "514b741214951b9d39d66688839a223d",
+                "key": "514b741214951b9d39d66688839a223d",
+                "relationship": "belongsTo",
+                "relationship_created_on": "2022-03-03T13:02:00.000Z",
+                "relationship_last_published": "2022-03-03T13:02:00.000Z",
+                "type": "file",
+                "uuid": "e663897a-7ed9-45e2-a9ce-e5ce9380affb",
+                "href": "/rest/fundamental/v0/e663897a-7ed9-45e2-a9ce-e5ce9380affb"
+            },
+            {
+                "created_on": "2022-01-26T18:17:38.000Z",
+                "display_text": "2c358fdf4c85c4352e1d297727b957f0",
+                "key": "2c358fdf4c85c4352e1d297727b957f0",
+                "relationship": "belongsTo",
+                "relationship_created_on": "2022-02-01T01:08:10.000Z",
+                "relationship_last_published": "2022-02-01T01:08:10.000Z",
+                "type": "file",
+                "uuid": "d569fe23-409d-4c36-b6ec-bca16eb1aefd",
+                "href": "/rest/fundamental/v0/d569fe23-409d-4c36-b6ec-bca16eb1aefd"
+            },
+            {
+                "created_on": "2022-01-26T18:02:54.000Z",
+                "display_text": "095715a96975ef7b9e17d0a39739e0cc",
+                "key": "095715a96975ef7b9e17d0a39739e0cc",
+                "relationship": "belongsTo",
+                "relationship_created_on": "2022-02-09T03:07:06.000Z",
+                "relationship_last_published": "2022-02-09T03:07:06.000Z",
+                "type": "file",
+                "uuid": "5af5afb1-b893-44f8-b756-a4a8c6149948",
+                "href": "/rest/fundamental/v0/5af5afb1-b893-44f8-b756-a4a8c6149948"
+            },
+            {
+                "created_on": "2022-01-26T18:17:38.000Z",
+                "display_text": "8e26cf1b3222ea0059aeb2aed6115fc5",
+                "key": "8e26cf1b3222ea0059aeb2aed6115fc5",
+                "relationship": "belongsTo",
+                "relationship_created_on": "2022-03-03T21:04:44.000Z",
+                "relationship_last_published": "2022-03-03T21:04:44.000Z",
+                "type": "file",
+                "uuid": "1608025e-11a6-4589-86f2-8e1a6b8d3b11",
+                "href": "/rest/fundamental/v0/1608025e-11a6-4589-86f2-8e1a6b8d3b11"
+            },
+            {
+                "created_on": "2021-12-06T23:07:05.000Z",
+                "display_text": "Cyber Threats to Nonprofit Organizations",
+                "key": "81fd35e0-8b99-43ef-a1f8-45cb7bfadb49",
+                "relationship": "mentions",
+                "relationship_created_on": "2021-12-06T23:07:05.000Z",
+                "relationship_last_published": "2021-12-06T23:08:22.000Z",
+                "type": "intelligence_report",
+                "uuid": "a8676cc1-5386-4492-b39e-b4064e42193d",
+                "href": "/rest/document/v0/a8676cc1-5386-4492-b39e-b4064e42193d"
+            },
+            {
+                "created_on": "2022-03-03T09:06:22.000Z",
+                "display_text": "http://193.233.48.64:20001/bot/cache/10795314.exe",
+                "key": "http://193.233.48.64:20001/bot/cache/10795314.exe",
+                "relationship": "seenAt",
+                "relationship_created_on": "2022-03-03T09:06:22.000Z",
+                "relationship_last_published": "2022-03-03T09:06:22.000Z",
+                "type": "url",
+                "uuid": "81cfeb63-525e-462d-942d-9f1cc32dada9",
+                "href": "/rest/fundamental/v0/81cfeb63-525e-462d-942d-9f1cc32dada9"
+            },
+            {
+                "created_on": "2022-03-03T09:05:31.000Z",
+                "display_text": "http://193.233.48.64:20001/bot/cache/36712604.exe",
+                "key": "http://193.233.48.64:20001/bot/cache/36712604.exe",
+                "relationship": "seenAt",
+                "relationship_created_on": "2022-03-03T09:05:31.000Z",
+                "relationship_last_published": "2022-03-03T09:05:31.000Z",
+                "type": "url",
+                "uuid": "43a9beac-9a6a-42dd-9385-86ed5f1c735b",
+                "href": "/rest/fundamental/v0/43a9beac-9a6a-42dd-9385-86ed5f1c735b"
+            },
+            {
+                "created_on": "2022-01-26T18:17:38.000Z",
+                "display_text": "http://85.202.169.245/build.exe",
+                "key": "http://85.202.169.245/build.exe",
+                "relationship": "seenAt",
+                "relationship_created_on": "2022-01-28T21:00:56.000Z",
+                "relationship_last_published": "2022-01-28T21:00:56.000Z",
+                "type": "url",
+                "uuid": "06bb16a3-7de6-43b3-a025-27bfbdfb3737",
+                "href": "/rest/fundamental/v0/06bb16a3-7de6-43b3-a025-27bfbdfb3737"
+            },
+            {
+                "created_on": "2022-01-12T16:27:02.000Z",
+                "display_text": "Makop and Hive Ransomware Downloaded from GitHub Repository",
+                "key": "2403d723-9875-479c-b8a5-ff1181284588",
+                "relationship": "uses",
+                "relationship_created_on": "2022-01-12T16:27:02.000Z",
+                "relationship_last_published": "2022-01-12T16:27:02.000Z",
+                "type": "malicious_event",
+                "uuid": "f5fab130-70d6-4f3e-8ae2-dada98626b51",
+                "href": "/rest/fundamental/v0/f5fab130-70d6-4f3e-8ae2-dada98626b51"
+            },
+            {
+                "created_on": "2021-08-25T17:38:11.000Z",
+                "display_text": "504bd1695de326bc533fde29b8a69319",
+                "key": "504bd1695de326bc533fde29b8a69319",
+                "relationship": "belongsTo",
+                "relationship_created_on": "2021-09-29T19:19:09.000Z",
+                "relationship_last_published": "2021-09-29T19:19:09.000Z",
+                "type": "file",
+                "uuid": "a7bc5402-1d74-42b1-b6e1-6e43f52bfcc3",
+                "href": "/rest/fundamental/v0/a7bc5402-1d74-42b1-b6e1-6e43f52bfcc3"
+            },
+            {
+                "created_on": "2022-01-26T18:02:54.000Z",
+                "display_text": "de56cde528237db0bafb21e16e5d2660",
+                "key": "de56cde528237db0bafb21e16e5d2660",
+                "relationship": "belongsTo",
+                "relationship_created_on": "2022-01-26T18:02:54.000Z",
+                "relationship_last_published": "2022-01-26T18:02:54.000Z",
+                "type": "file",
+                "uuid": "9f3b8b8f-b776-4cd2-9ba7-887aaf186a6d",
+                "href": "/rest/fundamental/v0/9f3b8b8f-b776-4cd2-9ba7-887aaf186a6d"
+            },
+            {
+                "created_on": "2022-03-21T17:01:13.000Z",
+                "display_text": "http://file-coin-coin-10.com/files/3146_1647797189_9799.exe",
+                "key": "http://file-coin-coin-10.com/files/3146_1647797189_9799.exe",
+                "relationship": "seenAt",
+                "relationship_created_on": "2022-03-21T17:01:13.000Z",
+                "relationship_last_published": "2022-03-21T17:01:13.000Z",
+                "type": "url",
+                "uuid": "ee9e9f7c-a599-4009-96f8-d5ac5beabe55",
+                "href": "/rest/fundamental/v0/ee9e9f7c-a599-4009-96f8-d5ac5beabe55"
+            },
+            {
+                "created_on": "2022-03-03T09:06:00.000Z",
+                "display_text": "http://193.233.48.64:20001/bot/cache/32311396.exe",
+                "key": "http://193.233.48.64:20001/bot/cache/32311396.exe",
+                "relationship": "seenAt",
+                "relationship_created_on": "2022-03-03T09:06:00.000Z",
+                "relationship_last_published": "2022-03-03T09:06:00.000Z",
+                "type": "url",
+                "uuid": "ad48f931-e83f-4312-ad38-5b51744b14e8",
+                "href": "/rest/fundamental/v0/ad48f931-e83f-4312-ad38-5b51744b14e8"
+            },
+            {
+                "created_on": "2022-03-03T09:05:12.000Z",
+                "display_text": "http://193.233.48.64:20001/bot/cache/68950155.exe",
+                "key": "http://193.233.48.64:20001/bot/cache/68950155.exe",
+                "relationship": "seenAt",
+                "relationship_created_on": "2022-03-03T09:05:12.000Z",
+                "relationship_last_published": "2022-03-03T09:05:12.000Z",
+                "type": "url",
+                "uuid": "97551dc6-e59a-450b-899c-b2d1e11c4dd8",
+                "href": "/rest/fundamental/v0/97551dc6-e59a-450b-899c-b2d1e11c4dd8"
+            },
+            {
+                "created_on": "2022-01-30T11:30:44.000Z",
+                "display_text": "http://62.197.136.229/build.exe",
+                "key": "http://62.197.136.229/build.exe",
+                "relationship": "seenAt",
+                "relationship_created_on": "2022-03-03T21:04:44.000Z",
+                "relationship_last_published": "2022-03-03T21:04:44.000Z",
+                "type": "url",
+                "uuid": "8195b155-dd97-4ba4-82ea-897fc9f0e75a",
+                "href": "/rest/fundamental/v0/8195b155-dd97-4ba4-82ea-897fc9f0e75a"
+            },
+            {
+                "created_on": "2022-03-03T09:00:56.000Z",
+                "display_text": "http://193.233.48.64:20001/bot/cache/33132493.exe",
+                "key": "http://193.233.48.64:20001/bot/cache/33132493.exe",
+                "relationship": "seenAt",
+                "relationship_created_on": "2022-03-03T09:00:56.000Z",
+                "relationship_last_published": "2022-03-03T09:00:56.000Z",
+                "type": "url",
+                "uuid": "3a597bdb-5848-4585-9a5e-58453fab2eba",
+                "href": "/rest/fundamental/v0/3a597bdb-5848-4585-9a5e-58453fab2eba"
+            },
+            {
+                "created_on": "2022-02-11T03:01:52.000Z",
+                "display_text": "http://82.157.108.230:8000/%E4%B8%AA%E4%BA%BA%E7%AE%80%E5%8E%86.pdf%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20.exe",
+                "key": "http://82.157.108.230:8000/%E4%B8%AA%E4%BA%BA%E7%AE%80%E5%8E%86.pdf%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20.exe",
+                "relationship": "seenAt",
+                "relationship_created_on": "2022-02-11T03:01:52.000Z",
+                "relationship_last_published": "2022-02-11T03:01:52.000Z",
+                "type": "url",
+                "uuid": "0e9a21fd-bce5-48c2-8506-d06e1b497c0b",
+                "href": "/rest/fundamental/v0/0e9a21fd-bce5-48c2-8506-d06e1b497c0b"
+            },
+            {
+                "created_on": "2022-03-21T17:01:13.000Z",
+                "display_text": "92d0366537308d4b6e0ca530f49adb6d",
+                "key": "92d0366537308d4b6e0ca530f49adb6d",
+                "relationship": "belongsTo",
+                "relationship_created_on": "2022-03-21T17:01:13.000Z",
+                "relationship_last_published": "2022-03-21T17:01:13.000Z",
+                "type": "file",
+                "uuid": "e1cf3272-6d75-418e-8168-870b8d4367dc",
+                "href": "/rest/fundamental/v0/e1cf3272-6d75-418e-8168-870b8d4367dc"
+            },
+            {
+                "created_on": "2022-01-26T18:17:38.000Z",
+                "display_text": "3e6c6230b55a1cce968197736af2a89b",
+                "key": "3e6c6230b55a1cce968197736af2a89b",
+                "relationship": "belongsTo",
+                "relationship_created_on": "2022-02-09T09:11:23.000Z",
+                "relationship_last_published": "2022-02-09T09:11:23.000Z",
+                "type": "file",
+                "uuid": "cb95d9f6-1dce-4cc0-9baa-925879fb83f6",
+                "href": "/rest/fundamental/v0/cb95d9f6-1dce-4cc0-9baa-925879fb83f6"
+            },
+            {
+                "created_on": "2022-03-03T09:06:00.000Z",
+                "display_text": "689d783fdaeeff17f2c3a9471ad716d7",
+                "key": "689d783fdaeeff17f2c3a9471ad716d7",
+                "relationship": "belongsTo",
+                "relationship_created_on": "2022-03-03T09:06:00.000Z",
+                "relationship_last_published": "2022-03-03T09:06:00.000Z",
+                "type": "file",
+                "uuid": "95c555b5-4ac1-4f9a-a0c4-57fd12adc62e",
+                "href": "/rest/fundamental/v0/95c555b5-4ac1-4f9a-a0c4-57fd12adc62e"
+            },
+            {
+                "created_on": "2022-01-26T18:02:54.000Z",
+                "display_text": "e804bf3e7b1395a2a3d348d5e4b0d1f4",
+                "key": "e804bf3e7b1395a2a3d348d5e4b0d1f4",
+                "relationship": "belongsTo",
+                "relationship_created_on": "2022-02-16T15:04:03.000Z",
+                "relationship_last_published": "2022-02-16T15:04:03.000Z",
+                "type": "file",
+                "uuid": "7a2caf7a-1349-4345-b0d7-1a6ef276757b",
+                "href": "/rest/fundamental/v0/7a2caf7a-1349-4345-b0d7-1a6ef276757b"
+            },
+            {
+                "created_on": "2022-03-03T09:05:57.000Z",
+                "display_text": "7d4220c9e78fdf518621c113a8649176",
+                "key": "7d4220c9e78fdf518621c113a8649176",
+                "relationship": "belongsTo",
+                "relationship_created_on": "2022-03-03T09:05:57.000Z",
+                "relationship_last_published": "2022-03-03T09:05:57.000Z",
+                "type": "file",
+                "uuid": "25bea5dd-fc28-4b27-ac88-8bd2091310de",
+                "href": "/rest/fundamental/v0/25bea5dd-fc28-4b27-ac88-8bd2091310de"
+            },
+            {
+                "created_on": "2022-02-11T03:01:52.000Z",
+                "display_text": "79b5eb5b92a2245b42d82a2c106ecf30",
+                "key": "79b5eb5b92a2245b42d82a2c106ecf30",
+                "relationship": "belongsTo",
+                "relationship_created_on": "2022-02-11T03:01:52.000Z",
+                "relationship_last_published": "2022-02-11T03:01:52.000Z",
+                "type": "file",
+                "uuid": "114705ce-be03-4498-861d-c72ec73f797c",
+                "href": "/rest/fundamental/v0/114705ce-be03-4498-861d-c72ec73f797c"
+            },
+            {
+                "created_on": "2021-11-05T18:18:10.000Z",
+                "display_text": "Technical Analysis of Hive Ransomware",
+                "key": "5684299e-5bdc-4af5-b829-da7a8c95e7f7",
+                "relationship": "mentions",
+                "relationship_created_on": "2021-11-05T18:18:10.000Z",
+                "relationship_last_published": "2021-11-05T18:18:10.000Z",
+                "type": "intelligence_alert",
+                "uuid": "995e4c09-dd66-420c-8e35-b1edb022e7ee",
+                "href": "/rest/document/v0/995e4c09-dd66-420c-8e35-b1edb022e7ee"
+            },
+            {
+                "created_on": "2021-10-13T16:08:00.000Z",
+                "display_text": "iDefense Global Research Intelligence Digest for 13 October 2021",
+                "key": "cabde77f-68ff-45fc-9e84-3f624d8038e5",
+                "relationship": "mentions",
+                "relationship_created_on": "2021-10-13T16:08:00.000Z",
+                "relationship_last_published": "2021-10-13T16:08:00.000Z",
+                "type": "intelligence_alert",
+                "uuid": "54745848-9166-4387-9fc3-137b3e07022e",
+                "href": "/rest/document/v0/54745848-9166-4387-9fc3-137b3e07022e"
+            },
+            {
+                "created_on": "2022-01-26T18:02:54.000Z",
+                "display_text": "http://185.112.83.96:20001/build_dl",
+                "key": "http://185.112.83.96:20001/build_dl",
+                "relationship": "seenAt",
+                "relationship_created_on": "2022-02-09T03:07:06.000Z",
+                "relationship_last_published": "2022-02-09T03:07:06.000Z",
+                "type": "url",
+                "uuid": "f688be80-466b-4f9e-8914-747b1da441aa",
+                "href": "/rest/fundamental/v0/f688be80-466b-4f9e-8914-747b1da441aa"
+            },
+            {
+                "created_on": "2022-03-03T09:05:57.000Z",
+                "display_text": "http://193.233.48.64:20001/bot/cache/49495799.exe",
+                "key": "http://193.233.48.64:20001/bot/cache/49495799.exe",
+                "relationship": "seenAt",
+                "relationship_created_on": "2022-03-03T09:05:57.000Z",
+                "relationship_last_published": "2022-03-03T09:05:57.000Z",
+                "type": "url",
+                "uuid": "d9264aff-df75-4d33-8c4b-cef938a4a683",
+                "href": "/rest/fundamental/v0/d9264aff-df75-4d33-8c4b-cef938a4a683"
+            },
+            {
+                "created_on": "2022-01-25T03:00:15.000Z",
+                "display_text": "http://5.255.100.227/myblog/posts/32.exe",
+                "key": "http://5.255.100.227/myblog/posts/32.exe",
+                "relationship": "seenAt",
+                "relationship_created_on": "2022-01-25T03:00:15.000Z",
+                "relationship_last_published": "2022-01-25T03:00:15.000Z",
+                "type": "url",
+                "uuid": "8ec32443-d904-4f4c-b3e3-da6c8538b5be",
+                "href": "/rest/fundamental/v0/8ec32443-d904-4f4c-b3e3-da6c8538b5be"
+            },
+            {
+                "created_on": "2022-03-21T18:13:26.000Z",
+                "display_text": "http://file-coin-coin-10.com/files/7060_1647109264_3109.exe",
+                "key": "http://file-coin-coin-10.com/files/7060_1647109264_3109.exe",
+                "relationship": "seenAt",
+                "relationship_created_on": "2022-03-21T18:13:26.000Z",
+                "relationship_last_published": "2022-03-21T18:13:26.000Z",
+                "type": "url",
+                "uuid": "22a9b797-d2ad-40e5-a4d1-f7db7b693183",
+                "href": "/rest/fundamental/v0/22a9b797-d2ad-40e5-a4d1-f7db7b693183"
+            },
+            {
+                "created_on": "2018-12-04T19:10:01.000Z",
+                "display_text": "Healthcare Providers",
+                "key": "Healthcare Providers",
+                "relationship": "targets",
+                "relationship_created_on": "2021-08-27T15:54:07.000Z",
+                "relationship_last_published": "2021-08-27T15:54:07.000Z",
+                "type": "vertical",
+                "uuid": "baa08cb8-89cd-45a3-a302-4a307edc5708",
+                "href": "/rest/fundamental/v0/baa08cb8-89cd-45a3-a302-4a307edc5708"
+            },
+            {
+                "created_on": "2022-03-03T09:05:12.000Z",
+                "display_text": "56069652e0a95bb25da5cad6ac8e070e",
+                "key": "56069652e0a95bb25da5cad6ac8e070e",
+                "relationship": "belongsTo",
+                "relationship_created_on": "2022-03-03T09:06:22.000Z",
+                "relationship_last_published": "2022-03-03T09:06:22.000Z",
+                "type": "file",
+                "uuid": "d663d2f5-bde5-4685-9d87-0e27c2eb8acd",
+                "href": "/rest/fundamental/v0/d663d2f5-bde5-4685-9d87-0e27c2eb8acd"
+            },
+            {
+                "created_on": "2022-01-03T16:38:23.000Z",
+                "display_text": "032760a6afd808e9eaf2979b72bcebf4",
+                "key": "032760a6afd808e9eaf2979b72bcebf4",
+                "relationship": "belongsTo",
+                "relationship_created_on": "2022-01-10T13:38:32.000Z",
+                "relationship_last_published": "2022-01-10T15:43:03.000Z",
+                "type": "file",
+                "uuid": "c279fa1d-712d-46ae-965b-0d5f653a121b",
+                "href": "/rest/fundamental/v0/c279fa1d-712d-46ae-965b-0d5f653a121b"
+            },
+            {
+                "created_on": "2021-08-30T16:01:06.000Z",
+                "display_text": "iDefense Global Research Intelligence Digest for 30 August 2021",
+                "key": "c036ec6d-12a5-4672-9173-3c424d473781",
+                "relationship": "mentions",
+                "relationship_created_on": "2021-08-30T16:01:06.000Z",
+                "relationship_last_published": "2021-08-30T16:01:05.000Z",
+                "type": "intelligence_alert",
+                "uuid": "94af0110-5706-4bc2-aca1-92a2f78c801d",
+                "href": "/rest/document/v0/94af0110-5706-4bc2-aca1-92a2f78c801d"
+            },
+            {
+                "created_on": "2022-03-03T09:01:17.000Z",
+                "display_text": "http://193.233.48.64:20001/bot/cache/22092005.exe",
+                "key": "http://193.233.48.64:20001/bot/cache/22092005.exe",
+                "relationship": "seenAt",
+                "relationship_created_on": "2022-03-03T09:01:17.000Z",
+                "relationship_last_published": "2022-03-03T09:01:17.000Z",
+                "type": "url",
+                "uuid": "f95eb4f0-7ca1-42bb-9bd3-9309f976fb6c",
+                "href": "/rest/fundamental/v0/f95eb4f0-7ca1-42bb-9bd3-9309f976fb6c"
+            },
+            {
+                "created_on": "2022-03-03T13:02:00.000Z",
+                "display_text": "http://193.233.48.64:20001/bot/cache/99608309.exe",
+                "key": "http://193.233.48.64:20001/bot/cache/99608309.exe",
+                "relationship": "seenAt",
+                "relationship_created_on": "2022-03-03T13:02:00.000Z",
+                "relationship_last_published": "2022-03-03T13:02:00.000Z",
+                "type": "url",
+                "uuid": "036e0339-c616-4bed-bcab-979e130dbf07",
+                "href": "/rest/fundamental/v0/036e0339-c616-4bed-bcab-979e130dbf07"
+            },
+            {
+                "created_on": "2022-01-26T18:17:38.000Z",
+                "display_text": "addfdc6395f84f4a377423f212e1fa27",
+                "key": "addfdc6395f84f4a377423f212e1fa27",
+                "relationship": "belongsTo",
+                "relationship_created_on": "2022-01-26T18:17:38.000Z",
+                "relationship_last_published": "2022-01-26T18:17:38.000Z",
+                "type": "file",
+                "uuid": "c6a0aa62-7773-46d5-8a5c-82d745c8c5d6",
+                "href": "/rest/fundamental/v0/c6a0aa62-7773-46d5-8a5c-82d745c8c5d6"
+            },
+            {
+                "created_on": "2022-01-26T18:17:38.000Z",
+                "display_text": "78d6b9e2eba0867155d9f3489e4554bc",
+                "key": "78d6b9e2eba0867155d9f3489e4554bc",
+                "relationship": "belongsTo",
+                "relationship_created_on": "2022-01-26T18:17:38.000Z",
+                "relationship_last_published": "2022-01-26T18:17:38.000Z",
+                "type": "file",
+                "uuid": "5cc0fac4-639b-4423-9b0e-af38eec6b434",
+                "href": "/rest/fundamental/v0/5cc0fac4-639b-4423-9b0e-af38eec6b434"
+            },
+            {
+                "created_on": "2022-03-21T18:13:26.000Z",
+                "display_text": "0df23d0344989230bd0333c37ca598fd",
+                "key": "0df23d0344989230bd0333c37ca598fd",
+                "relationship": "belongsTo",
+                "relationship_created_on": "2022-03-21T18:13:26.000Z",
+                "relationship_last_published": "2022-03-21T18:13:26.000Z",
+                "type": "file",
+                "uuid": "0c562fff-70bf-4e23-a54c-5f9db177b21c",
+                "href": "/rest/fundamental/v0/0c562fff-70bf-4e23-a54c-5f9db177b21c"
+            },
+            {
+                "created_on": "2022-02-22T21:33:12.000Z",
+                "display_text": "SITREP: Ukraine Crisis",
+                "key": "0ae44727-6fef-4dcb-9928-8eed0c3bcd3e",
+                "relationship": "mentions",
+                "relationship_created_on": "2022-03-20T19:46:59.000Z",
+                "relationship_last_published": "2022-03-20T19:46:58.000Z",
+                "type": "intelligence_alert",
+                "uuid": "f1862833-80de-4880-a180-11fad373e896",
+                "href": "/rest/document/v0/f1862833-80de-4880-a180-11fad373e896"
+            },
+            {
+                "created_on": "2021-08-25T15:38:48.000Z",
+                "display_text": "iDefense Global Research Intelligence Digest for 25 August 2021",
+                "key": "429ca269-8d25-46a3-8b83-5b666a2e7182",
+                "relationship": "mentions",
+                "relationship_created_on": "2022-03-20T21:40:13.000Z",
+                "relationship_last_published": "2022-03-20T21:40:13.000Z",
+                "type": "intelligence_alert",
+                "uuid": "4b3c7699-ff95-4650-9f24-6dee2be84112",
+                "href": "/rest/document/v0/4b3c7699-ff95-4650-9f24-6dee2be84112"
+            },
+            {
+                "created_on": "2022-01-16T15:01:07.000Z",
+                "display_text": "http://91.243.59.17/build.exe",
+                "key": "http://91.243.59.17/build.exe",
+                "relationship": "seenAt",
+                "relationship_created_on": "2022-01-16T15:01:07.000Z",
+                "relationship_last_published": "2022-01-16T15:01:07.000Z",
+                "type": "url",
+                "uuid": "85962156-eeba-43d3-8cc5-ee4f0cd2007a",
+                "href": "/rest/fundamental/v0/85962156-eeba-43d3-8cc5-ee4f0cd2007a"
+            },
+            {
+                "created_on": "2022-01-10T13:38:32.000Z",
+                "display_text": "https://raw.githubusercontent.com/flicker32/tyupo/main/release.txt",
+                "key": "https://raw.githubusercontent.com/flicker32/tyupo/main/release.txt",
+                "relationship": "seenAt",
+                "relationship_created_on": "2022-01-10T13:38:32.000Z",
+                "relationship_last_published": "2022-01-10T13:38:32.000Z",
+                "type": "url",
+                "uuid": "45acec3a-faf6-4c25-8c55-4fbe2859b447",
+                "href": "/rest/fundamental/v0/45acec3a-faf6-4c25-8c55-4fbe2859b447"
+            },
+            {
+                "created_on": "2022-03-03T09:05:16.000Z",
+                "display_text": "http://193.233.48.64:20001/bot/cache/42663002.exe",
+                "key": "http://193.233.48.64:20001/bot/cache/42663002.exe",
+                "relationship": "seenAt",
+                "relationship_created_on": "2022-03-03T09:05:16.000Z",
+                "relationship_last_published": "2022-03-03T09:05:16.000Z",
+                "type": "url",
+                "uuid": "058afbb7-57be-4378-8d49-e36fb60361bc",
+                "href": "/rest/fundamental/v0/058afbb7-57be-4378-8d49-e36fb60361bc"
+            }
+        ],
+        "replication_id": 1649087545647000061,
+        "sources_external": [
+            {
+                "datetime": "2021-08-23T04:00:00.000Z",
+                "description": "Hive Attacks | Analysis of the Human-Operated Ransomware Targeting Healthcare",
+                "name": "SentinelOne",
+                "url": "https://labs.sentinelone.com/hive-attacks-analysis-of-the-human-operated-ransomware-targeting-healthcare/"
+            }
+        ],
+        "type": "malware_family",
+        "uuid": "c1b3216e-8b2e-4a9f-b0a9-2e184b7182f7",
+        "description": "##Overview\nThe Hive ransomware, written in the Go programming language, first came to the attention of researchers in June 2021. In August 2021, actors used the [Hive ransomware against a healthcare provider in Ohio]( https://labs.sentinelone.com/hive-attacks-analysis-of-the-human-operated-ransomware-targeting-healthcare/). Hive actors conduct double extortion tactics and maintain a leak site at hxxp://hiveleakdbtnp76ulyhi52eag6c6tyc3xw7ez7iqy6wc34gd2nekazyd[.]onion/ and an instructions and  payment site at  hxxp://hivecust6vhekztbqgdnkks64ucehqacge3dij3gyrrpdp57zoq3ooqd[.]onion/, which requires login and password credentials.\n\n##Functionality and Behavior\nA preliminary iDefense analysis of the Hive ransomware revealed the following functionality:\n\n- Once Hive is deployed on the target machine, the operator can issue command-line parameters that perform functions listed in Exhibit 1.\n \n\n   \n *Exhibit 1: Command-Line Parameters*\n\n- When run without command-line parameters, Hive executes its default functionality as listed in Exhibit 2. Some of the functions include deleting itself, stopping default services shown in Exhibit 1, skipping files more than five years old, and deleting shadow copies.\n \n\n   \n *Exhibit 2: Default Execution*\n\n- During its default encryption activities in a test directory, Hive encrypted an executable file and encrypted PPT files but skipped an XLS file. When encrypting executables in an analysis sandbox, the sandbox environment became unstable. Exhibit 3 shows the encrypted and unencrypted files in the test directory. Hive added the file extension `.[key string][alphanumeric string].hive` to files it encrypted.\n \n   \n *Exhibit 3: Default Execution*\n\n- Hive drops its ransom note in directories it examined during encryption activities. Exhibit 4 shows the ransom note.\n  \n   \n *Exhibit 4: Ransom Note*\n\n##Mitigation\n\nTo protect against the Hive ransomware and possible data exfiltration, iDefense suggests:\n* Implementing the appropriate mitigations selected in the left-hand MITRE ATT&CK techniques tab.\n- Training users to identify and safely handle social engineering emails that could be part of a phishing campaign.\n\n- Avoiding opening or downloading suspicious links and attachments in emails from external sources until confirming with the sender using other means that the message and its contents are valid.\n- Securing networks from malware through best practices for patching, configuring firewalls, maintaining up-to-date anti-virus signatures, running regular scans, retaining backups separate from the network on which they reside, and using application whitelists.\n- Preparing and implementing a robust incident response plan in case a data breach or malware incident occurs.\n- Immediately disconnecting compromised systems from the network on which they reside.\n- Refraining from paying ransoms, as doing so provides an incentive to threat actors to continue making demands.\n- Consider developing continuity of operations plans  that account for massive ransomware or wiper attacks that can spread across the entire business.\n- For additional mitigation advice on how to protect against ransomware attacks, see iDefense’s Intelligence Alert titled [“Overview of Ransomware Activity.”](/#/node/intelligence_alert/view/5afaf6fc-30eb-4635-960b-e92df530787f)\n\nFor threat hunting against Hive samples, iDefense suggests looking for the following files:\n* Encrypted files with extension `.[key string][alphanumeric string].hive`\n* Ransom note “HOW\\_TO_DECRYPT.txt in various directories\n* Hive batch files hive.bat or shadow.bat\n* Key files [key string].key, [key string].key.hiv\n* temp[integer]_swamp.hive of unknown use",
+        "severity": 3,
+        "threat_types": [
+            "Cyber Crime"
+        ],
+        "variety": [
+            "Ransomware"
+        ],
+        "attack_techniques": [
+            {
+                "id": "T1489",
+                "label": "Service Stop"
+            },
+            {
+                "id": "T1007",
+                "label": "System Service Discovery"
+            },
+            {
+                "id": "T1192",
+                "label": "Spearphishing Link"
+            },
+            {
+                "id": "T1490",
+                "label": "Inhibit System Recovery"
+            },
+            {
+                "id": "T1486",
+                "label": "Data Encrypted for Impact"
+            },
+            {
+                "id": "T1045",
+                "label": "Software Packing"
+            },
+            {
+                "id": "T1059",
+                "label": "Command-Line Interface"
+            }
+        ]
     }],
     "total_size": 1, 'page': 1, 'page_size': 25, 'more': False
 }

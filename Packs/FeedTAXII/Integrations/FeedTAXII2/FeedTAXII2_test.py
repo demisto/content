@@ -20,6 +20,7 @@ class TestFetchIndicators:
     """
     Scenario: Test fetch_indicators_command
     """
+
     def test_single_no_context(self, mocker):
         """
         Scenario: Test single collection fetch with no last run

@@ -41,4 +41,4 @@ def test_error_for_sentence_and_word(mocker):
     error_mock = mocker.patch('HighlightWords.return_error', return_value=None)
     main()
     assert error_mock.call_args.args[0] ==\
-           'The word "test" is a substring of the sentance: "this is a test"'
+        'The word "test" is a substring of the sentance: "this is a test"'

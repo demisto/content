@@ -1459,8 +1459,8 @@ def test_direct_message_handler(mocker, requests_mock):
 
     assert response['type'] == "message"
     assert response['text'] == \
-           "I\'m sorry but I was unable to find you as a Cortex XSOAR user for bwillis@email.com. " \
-           "You're not allowed to run any command"
+        "I\'m sorry but I was unable to find you as a Cortex XSOAR user for bwillis@email.com. " \
+        "You're not allowed to run any command"
 
     # verify create incident successfully
     mocker.patch.object(demisto, 'findUser', return_value={'id': 'nice-demisto-id'})

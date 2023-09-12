@@ -1,4 +1,4 @@
-#adding so null don't get seen as variable.
+# adding so null don't get seen as variable.
 null = None
 false = False
 
