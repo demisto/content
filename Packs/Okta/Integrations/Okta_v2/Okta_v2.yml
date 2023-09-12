@@ -1421,35 +1421,35 @@ script:
     execution: true
     name: okta-expire-password
     outputs:
-    - contextPath: Okta.ExpiredPassword.Activated
-      description: Timestamp when transition to ACTIVE status completed.
+    - contextPath: Account.Activated
+      description: Timestamp for when the user was activated.
       type: Date
-    - contextPath: Okta.ExpiredPassword.Created
-      description: Timestamp when user was created.
+    - contextPath: Account.Created
+      description: Timestamp for when the user was created.
       type: Date
-    - contextPath: Okta.ExpiredPassword.DisplayName
-      description: Name of the user, suitable for display to end users.
+    - contextPath: Account.DisplayName
+      description: Okta account display name.
       type: String
-    - contextPath: Okta.ExpiredPassword.Email
-      description: Primary email address of user.
+    - contextPath: Account.Email
+      description: Okta account email.
       type: String
-    - contextPath: Okta.ExpiredPassword.ID
-      description: Unique key for user.
+    - contextPath: Account.ID
+      description: Created Okta account ID.
       type: String
-    - contextPath: Okta.ExpiredPassword.PasswordChanged
-      description: Timestamp when password last changed.
+    - contextPath: Account.PasswordChanged
+      description: Timestamp for when the user's password was last changed.
       type: Date
-    - contextPath: Okta.ExpiredPassword.Status
-      description: Current status of user.
+    - contextPath: Account.Status
+      description: Okta account current status.
       type: String
-    - contextPath: Okta.ExpiredPassword.StatusChanged
-      description: Timestamp when status last changed.
+    - contextPath: Account.StatusChanged
+      description: Timestamp for when the user's status was last changed.
       type: Date
-    - contextPath: Okta.ExpiredPassword.Type
-      description: User type that determines the schema for the user's profile.
+    - contextPath: Account.Type
+      description: Okta account type.
       type: String
-    - contextPath: Okta.ExpiredPassword.Username
-      description: Unique identifier for the user.
+    - contextPath: Account.Username
+      description: Okta account usernames returned by the search.
       type: String
   dockerimage: demisto/python3:3.10.13.73190
   runonce: false

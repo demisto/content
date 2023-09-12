@@ -825,7 +825,7 @@ def expire_password_command(client, args):
 
     readable_output = tableToMarkdown('Okta Expired Password', raw_response, removeNull=True)
     outputs = {
-        'Okta.ExpiredPassword': createContext(user_context, removeNull=True)
+        'Account(val.ID && val.ID === obj.ID)': createContext(user_context, removeNull=True)
     }
 
     return (

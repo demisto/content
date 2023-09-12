@@ -2425,37 +2425,33 @@ Expires a password for an existing Okta user.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Okta.ExpiredPassword.Activated | Date |  | 
-| Okta.ExpiredPassword.Created | Date |  | 
-| Okta.ExpiredPassword.DisplayName | String |  | 
-| Okta.ExpiredPassword.Email | String |  | 
-| Okta.ExpiredPassword.ID | String |  | 
-| Okta.ExpiredPassword.PasswordChanged | Date |  | 
-| Okta.ExpiredPassword.Status | String |  | 
-| Okta.ExpiredPassword.StatusChanged | Date |  | 
-| Okta.ExpiredPassword.Type | String |  | 
-| Okta.ExpiredPassword.Username | String |  | 
+| Account.Activated | Date | Timestamp for when the user was activated. | 
+| Account.Created | Date | Timestamp for when the user was created. | 
+| Account.DisplayName | String | Okta account display name. | 
+| Account.Email | String | Okta account email. | 
+| Account.ID | String | Created Okta account ID. | 
+| Account.PasswordChanged | Date | Timestamp for when the user's password was last changed. | 
+| Account.Status | String | Okta account current status. | 
+| Account.StatusChanged | Date | Timestamp for when the user's status was last changed. | 
+| Account.Type | String | Okta account type. | 
+| Account.Username | String | Okta account usernames returned by the search. | 
 
 #### Command example
 ```!okta-expire-password username="4x1xh5rl@test.com" temporary_password="false"```
 #### Context Example
 ```json
 {
-    "Okta": {
-        "ExpiredPassword": [
-            {
-                "Activated": "2022-06-20T04:48:04.000Z",
-                "Created": "2022-06-20T04:47:59.000Z",
-                "DisplayName": "Test 1  Test1",
-                "Email": "4x1xh5rl@test.com",
-                "ID": "00u19cr5qv91HjELI0h8",
-                "PasswordChanged": "2022-06-20T04:48:07.000Z",
-                "Status": "PASSWORD_EXPIRED",
-                "StatusChanged": "2023-09-10T12:56:04.000Z",
-                "Type": "Okta",
-                "Username": "4x1xh5rl@test.com"
-            }
-        ]
+    "Account": {
+        "Activated": "2022-06-20T04:48:04.000Z",
+        "Created": "2022-06-20T04:47:59.000Z",
+        "DisplayName": "Test 1  Test1",
+        "Email": "4x1xh5rl@test.com",
+        "ID": "00u19cr5qv91HjELI0h8",
+        "PasswordChanged": "2022-06-20T04:48:07.000Z",
+        "Status": "PASSWORD_EXPIRED",
+        "StatusChanged": "2023-09-10T12:56:04.000Z",
+        "Type": "Okta",
+        "Username": "4x1xh5rl@test.com"
     }
 }
 ```
