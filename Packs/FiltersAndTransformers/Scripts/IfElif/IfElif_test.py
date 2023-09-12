@@ -16,11 +16,11 @@ def test_modify_functions_with_flags():
     assert int(if_elif1.regex_flags) == 24
 
     if_elif2 = MockConditionParser()
-    assert if_elif2.operator_functions[ast.Eq]('a', 'A') is False
-    assert if_elif2.operator_functions[ast.NotEq]('a', 'A') is True
+    assert if_elif2.comparison_operators[ast.Eq]('a', 'A') is False
+    assert if_elif2.comparison_operators[ast.NotEq]('a', 'A') is True
     if_elif2.modify_functions_with_flags(['case_insensitive'])
-    assert if_elif2.operator_functions[ast.Eq]('a', 'A') is True
-    assert if_elif2.operator_functions[ast.NotEq]('a', 'A') is False
+    assert if_elif2.comparison_operators[ast.Eq]('a', 'A') is True
+    assert if_elif2.comparison_operators[ast.NotEq]('a', 'A') is False
 
     if_elif3 = MockConditionParser()
     if_elif3.modify_functions_with_flags([])
@@ -52,6 +52,9 @@ def test_modify_functions_with_flags():
         ('(true and not false and (0 or 2) in {2:3})'
          ' and (1 not in [[[1]]] or false)'
          ' and (1 < 2 < 3 > 2 > 1) in [true, null]', True),
+        ('1 < "hi"', False),
+        ('"a" < [1,2,3]', False),
+        ('3 + [1,2]', False)
     ]
 )
 def test_parse_conditions(expression, expected_result):
@@ -90,9 +93,7 @@ def test_parse_conditions(expression, expected_result):
         'unknown_word or 1',
         '__import__("os").system("RM -RF /")',
         '1 if 0 else 2',
-        'sys.exit()',
-        '1 < "hi"',
-        '"a" < [1,2,3]'
+        'sys.exit()'
     ]
 )
 def test_evaluate_error(expression):
