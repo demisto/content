@@ -16,8 +16,12 @@
       "type": "string",
       "is_array": false
     },
+    "request_id": {
+      "type": "int",
+      "is_array": false
+    },
     "dstport": {
-      "type": "string",
+      "type": "int",
       "is_array": false
     },
     "hostname": {
@@ -49,7 +53,7 @@
       "is_array": false
     },
     "srcport": {
-      "type": "string",
+      "type": "int",
       "is_array": false
     },
     "timestamp": {
@@ -335,6 +339,10 @@
         "object_type": {
           "type": "string",
           "is_array": false  
+    },
+        "site": {
+          "type": "string",
+          "is_array": false
     }
   }
 }
