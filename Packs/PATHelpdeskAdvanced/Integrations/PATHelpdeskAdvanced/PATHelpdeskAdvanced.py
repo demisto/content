@@ -1,8 +1,11 @@
+import contextlib
 from json import JSONDecodeError
 from pathlib import Path
 from typing import Literal, NamedTuple
 from collections.abc import Callable
 from collections.abc import Sequence
+
+from requests import Response
 
 import demistomock as demisto
 from CommonServerPython import *  # noqa: F401
@@ -87,7 +90,7 @@ _PRIORITY = Field("priority")
 _TICKET_SOURCE = Field("ticket_source")
 
 
-ID_DESCRIPTION_COLUMN_NAMES = [field.hda_name for field in (ID, DESCRIPTION)]
+ID_DESCRIPTION_COLUMN_NAMES = str([field.hda_name for field in (ID, DESCRIPTION)])
 
 
 def safe_arg_to_number(argument: str | None, argument_name: str) -> int:
@@ -129,13 +132,14 @@ def create_params_dict(
 
 
 class RequestNotSuccessfulError(DemistoException):
-    def __init__(self, response: dict | str, attempted_action: str):
+    def __init__(self, response: Response, attempted_action: str):
+        json_response = {}
+        with contextlib.suppress(JSONDecodeError):
+            json_response = response.json()
+
         suffix = (
             f": {description}."
-            if (
-                isinstance(response, dict)
-                and (description := response["result"]["desc"])
-            )
+            if (description := json_response.get("result", {}).get("desc"))
             else "."
         )
         super().__init__(
@@ -156,7 +160,7 @@ class Client(BaseClient):
         **kwargs,
     ) -> dict:
         response = self._http_request(
-            method, url_suffix, resp_type="response",  **kwargs
+            method, url_suffix, resp_type="response", **kwargs
         )
         try:
             response_body = json.loads(response.text)
@@ -200,7 +204,7 @@ class Client(BaseClient):
             return self.http_request(
                 method="POST",
                 url_suffix="Authentication/RefreshToken",
-                params={"token": refresh_token},
+                data={"token": refresh_token},
                 attempted_action="generating request token using refresh token",
                 headers={"Content-Type": "multipart/form-data"},
             )
@@ -233,7 +237,6 @@ class Client(BaseClient):
                 "refresh token expired or missing, logging in with username and password"
             )
             response = generate_new_token()
-
 
         self.request_token = response["requestToken"]
         self.refresh_token = response["refreshToken"]
@@ -275,60 +278,63 @@ class Client(BaseClient):
         return self.http_request(
             "WSC/Set",
             "POST",
-            params={"entity": "Ticket", "data": data},
+            data={"entity": "Ticket", "data": data},
             attempted_action="creating ticket",
         )
 
     def list_tickets(self, **kwargs) -> dict:
-        columns = [
-            field.hda_name
-            for field in (
-                OBJECT_DESCTIPTION,
-                OBJECT_ENTITY,
-                SOLUTION,
-                TICKET_CLASSIFICATION_ID,
-                SERVICE_ID,
-                PROBLEM_HTML,
-                CONTACT_ID,
-                NEXT_EXPIRATION_ID,
-                TASK_EFFORT,
-                ID,
-                SUPPLIER_ID,
-                SOLUTION_HTML,
-                IS_NEW,
-                EXPIRATION_DATE,
-                LOCATION_ID,
-                ESTIMATED_TASK_START_DATE,
-                FIRST_UPDATE_USER_ID,
-                ACCOUNT_ID,
-                MAIL_BOX_ID,
-                CLOSURE_DATE,
-                BILLED_TOKENS,
-                TICKET_TYPE_ID,
-                OWNER_USER_ID,
-                PARENT_TICKET_ID,
-                CUSTOMER_CONTRACT_ID,
-                LANGUAGE_ID,
-                KNOWN_ISSUE,
-                ASSET_ID,
-                DATE,
-                URGENCY_ID,
-                SCORE,
-                SUBJECT,
-                ESTIMATED_TASK_DURATION,
-                SOLICITS,
-                SITE,
-                CALENDAR_ID,
-                LAST_EXPIRATION_DATE,
-                SITE_UNREAD,
-                PROBLEM,
-                NEXT_EXPIRATION_DATE,
-                ASSIGNED_USER_OR_GROUP_ID,
-            )
-        ]
+        columns = str(
+            [
+                field.hda_name
+                for field in (
+                    OBJECT_DESCTIPTION,
+                    OBJECT_ENTITY,
+                    SOLUTION,
+                    TICKET_CLASSIFICATION_ID,
+                    SERVICE_ID,
+                    PROBLEM_HTML,
+                    CONTACT_ID,
+                    NEXT_EXPIRATION_ID,
+                    TASK_EFFORT,
+                    ID,
+                    SUPPLIER_ID,
+                    SOLUTION_HTML,
+                    IS_NEW,
+                    EXPIRATION_DATE,
+                    LOCATION_ID,
+                    ESTIMATED_TASK_START_DATE,
+                    FIRST_UPDATE_USER_ID,
+                    ACCOUNT_ID,
+                    MAIL_BOX_ID,
+                    CLOSURE_DATE,
+                    BILLED_TOKENS,
+                    TICKET_TYPE_ID,
+                    OWNER_USER_ID,
+                    PARENT_TICKET_ID,
+                    CUSTOMER_CONTRACT_ID,
+                    LANGUAGE_ID,
+                    KNOWN_ISSUE,
+                    ASSET_ID,
+                    DATE,
+                    URGENCY_ID,
+                    SCORE,
+                    SUBJECT,
+                    ESTIMATED_TASK_DURATION,
+                    SOLICITS,
+                    SITE,
+                    CALENDAR_ID,
+                    LAST_EXPIRATION_DATE,
+                    SITE_UNREAD,
+                    PROBLEM,
+                    NEXT_EXPIRATION_DATE,
+                    ASSIGNED_USER_OR_GROUP_ID,
+                )
+            ]
+        )
 
-        params: dict[str, str | list | int] = {
+        params: dict[str, str | list | int | None] = {
             "entity": "Ticket",
+            "filter": None,
             "columnExpressions": columns,
             "columnNames": columns,
             "start": safe_arg_to_number(kwargs.get("start", 0), "start"),
@@ -349,7 +355,7 @@ class Client(BaseClient):
             url_suffix="Ticket/UploadNewAttachment",
             method="POST",
             attempted_action="uploading a new attachment",
-            params={
+            data={
                 "entity": "Ticket",
                 "entityID": kwargs["ticket_id"],
             }
@@ -386,7 +392,7 @@ class Client(BaseClient):
         return self.http_request(
             url_suffix="WSC/Set",
             method="POST",
-            params={
+            data={
                 "entity": "TicketConversationItem",
                 "data": {
                     TICKET_ID.hda_name: kwargs[TICKET_ID.demisto_name],
@@ -403,7 +409,7 @@ class Client(BaseClient):
             url_suffix="WSC/Projection",
             method="POST",
             attempted_action="listing ticket statuses",
-            params={
+            data={
                 "entity": TICKET_STATUS.hda_name,
                 "start": 0,
                 "limit": safe_arg_to_number(kwargs["limit"], "limit"),
@@ -447,7 +453,7 @@ class Client(BaseClient):
             url_suffix="WSC/Projection",
             method="POST",
             attempted_action="listing ticket priorities",
-            params={
+            data={
                 "entity": TICKET_PRIORITY.hda_name,
                 "columnExpressions": ID_DESCRIPTION_COLUMN_NAMES,
                 "columenNames": ID_DESCRIPTION_COLUMN_NAMES,
@@ -459,7 +465,7 @@ class Client(BaseClient):
             url_suffix="WSC/Projection",
             method="POST",
             attempted_action="listing ticket priorities",
-            params={
+            data={
                 "entity": _TICKET_SOURCE.hda_name,
                 "columnExpressions": ID_DESCRIPTION_COLUMN_NAMES,
                 "columenNames": ID_DESCRIPTION_COLUMN_NAMES,
@@ -662,7 +668,7 @@ def list_ticket_sources_command(client: Client, args: dict) -> CommandResults:
     )
 
 
-def get_ticket_history_command(client: Client, args: dict):
+def get_ticket_history_command(client: Client, args: dict) -> CommandResults:
     response = client.get_ticket_history(args["ticket_id"])
 
     return CommandResults(
@@ -677,7 +683,7 @@ def get_ticket_history_command(client: Client, args: dict):
     )
 
 
-def list_users_command(client: Client, args: dict):
+def list_users_command(client: Client, args: dict) -> CommandResults:
     response = client.list_users(**args)
 
     return CommandResults(
@@ -716,8 +722,7 @@ def main() -> None:
         )
 
         if (command := demisto.command()) == "test-module":
-            # TODO client ctor checks credentials - should we just return "ok"?
-            # client.list_ticket_statuses(limit=1)
+            client.list_ticket_statuses(limit=1)
             result = "ok"
 
         elif command in commands:
@@ -729,6 +734,7 @@ def main() -> None:
         return_results(result)
 
     except Exception as e:
+        raise  # TODO remove
         return_error(
             "\n".join((f"Failed to execute {demisto.command()}.", f"Error: {e!s}"))
         )
