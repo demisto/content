@@ -1047,10 +1047,11 @@ def fetch_incidents(
     non_created_incidents: list = raw_incidents.copy()
     next_run = {}
 
-    raw_incidents = raw_incidents[:max_fetch]
+    raw_incidents = raw_incidents[:max_fetch]  # no need to process more than `max_fetch` incidents
 
     with ThreadPoolExecutor(max_workers=10) as executor:
         is_rate_limit = False
+        should_update_last_run_time = False
         future_to_incident = {
             executor.submit(
                 get_incident_extra_data_command,
@@ -1085,6 +1086,7 @@ def fetch_incidents(
 
                 # Update last run and add incident if the incident is newer than last fetch
                 if raw_incident['creation_time'] > last_fetch:
+                    should_update_last_run_time = True
                     last_fetch = raw_incident['creation_time']
 
                 incidents.append(incident)
@@ -1092,6 +1094,8 @@ def fetch_incidents(
 
             except Exception as e:
                 if "Rate limit exceeded" in str(e):
+                    # it's irrelevant to break the loop because all futures were already submitted; it's even safer to
+                    # proceed, because it's not guaranteed the API calls in the next futures returned a rate limit err.
                     is_rate_limit = True
                 else:
                     raise
@@ -1104,8 +1108,12 @@ def fetch_incidents(
     else:
         next_run['incidents_from_previous_run'] = []
 
-    next_run['time'] = last_fetch + 1
+    if should_update_last_run_time:
+        next_run['time'] = last_fetch + 1
 
+    incidents.sort(
+        key=lambda inc: dateparser.parse(inc["occurred"]),
+    )  # multithreading may cause incidents to be returned unsorted
     return next_run, incidents
 
 
