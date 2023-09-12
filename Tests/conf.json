@@ -22,6 +22,7 @@
     "tests": [
         {
             "playbookID": "Test Playbook - WildFire Malware",
+            "integrations": "VirusTotal (API v3)",
             "timeout": 900
         },
         {
