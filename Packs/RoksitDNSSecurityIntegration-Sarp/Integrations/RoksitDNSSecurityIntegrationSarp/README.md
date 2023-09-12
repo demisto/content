@@ -1,10 +1,10 @@
 This integration provides adding selected domains to the Roksit Secure DNS's Blacklisted Domain List through API .
-This integration was integrated and tested with version xx of Roksit DNS Security Integration - Sarp.
+This integration was integrated and tested with version xx of Roksit DNS Security (DNSSense).
 
-## Configure Roksit DNS Security Integration - Sarp on Cortex XSOAR
+## Configure Roksit DNS Security (DNSSense) on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Roksit DNS Security Integration - Sarp.
+2. Search for Roksit DNS Security (DNSSense).
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Required** |
