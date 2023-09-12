@@ -22,7 +22,14 @@
     "tests": [
         {
             "playbookID": "Test Playbook - NGFW Scan",
-            "integrations": "Cortex XDR - IR"
+            "integrations": [
+				"Cortex XDR - IR",
+				"VirusTotal (API v3)"
+			],
+			"instance_names": [
+				"Cortex_XDR_-_IR",
+				"virus_total_v3"
+            ]
         },
         {
             "playbookID": "T1036 - Masquerading - Test",

@@ -416,10 +416,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: 6d0ee6c6-9176-4340-8ca9-91577c3b4e71
+    taskid: f66f90fc-cbe0-4dc1-84e4-7aa74a1ad10f
     type: regular
     task:
-      id: 6d0ee6c6-9176-4340-8ca9-91577c3b4e71
+      id: f66f90fc-cbe0-4dc1-84e4-7aa74a1ad10f
       version: -1
       name: Verify Parent Incident Field Error - Manual Severity
       description: Prints an error entry with a given message
@@ -430,7 +430,7 @@ tasks:
     scriptarguments:
       message:
         simple: |-
-          The 'manual_severity' parent incident field was not set correctly. This may indicate that the following change has been made to the 'WildFire Malware' playbook:
+          The 'manual_severity' parent incident field was not set correctly. This may indicate that the following change has been made to the 'NGFW Scan' playbook:
           1- The 'manual_severity' input configuration was changed for the 'setParentIncidentFields' automation used in the 'Set Alert Severity to High' task.
     separatecontext: false
     continueonerrortype: ""
@@ -496,10 +496,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: b7796e21-3552-4684-8253-580b42011a2a
+    taskid: 5a0849bb-4380-42b4-8635-479cd4a2b289
     type: regular
     task:
-      id: b7796e21-3552-4684-8253-580b42011a2a
+      id: 5a0849bb-4380-42b4-8635-479cd4a2b289
       version: -1
       name: Verify Context Error - ASN
       description: Prints an error entry with a given message
@@ -510,7 +510,7 @@ tasks:
     scriptarguments:
       message:
         simple: |-
-          The 'IP.ASN' context key was not extracted properly. This may indicate that the following change has been made to the 'WildFire Malware' playbook:
+          The 'IP.ASN' context key was not extracted properly. This may indicate that the following change has been made to the 'NGFW Scan' playbook:
           1- The 'ip' input configuration was changed for the 'ip' automation used in the 'Enrich scanner IP Address' task.
           2- The 'ip' automation outputs have been modified and no longer contain the 'IP.ASN' context key.
     separatecontext: false
@@ -623,10 +623,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: 78b0aa8f-b185-4dc4-85e0-54cd90ccb386
+    taskid: e01cbe25-83ba-4973-80e7-86519e1e118d
     type: regular
     task:
-      id: 78b0aa8f-b185-4dc4-85e0-54cd90ccb386
+      id: e01cbe25-83ba-4973-80e7-86519e1e118d
       version: -1
       name: Verify Alert Field Error - Alert Status
       description: Prints an error entry with a given message
@@ -637,7 +637,7 @@ tasks:
     scriptarguments:
       message:
         simple: |-
-          The 'status' alert field was not set correctly. This may indicate that the following change has been made to the 'WildFire Malware' playbook:
+          The 'status' alert field was not set correctly. This may indicate that the following change has been made to the 'NGFW Scan' playbook:
           1- The 'closeInvestigation' automation used in the 'Close alert' task failed to execute.
           2- The automation used in the 'Close alert' task was changed and no longer utilizes the 'closeInvestigation' automation.
     separatecontext: false
@@ -830,10 +830,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: 6eb4df62-e02d-443e-8aee-f4feb6218c86
+    taskid: 60b43e81-c919-4357-899f-596be835ed3e
     type: regular
     task:
-      id: 6eb4df62-e02d-443e-8aee-f4feb6218c86
+      id: 60b43e81-c919-4357-899f-596be835ed3e
       version: -1
       name: Verify Context Error - ASOwner
       description: Prints an error entry with a given message
@@ -844,7 +844,7 @@ tasks:
     scriptarguments:
       message:
         simple: |-
-          The 'IP.ASOwner' context key was not extracted properly. This may indicate that the following change has been made to the 'WildFire Malware' playbook:
+          The 'IP.ASOwner' context key was not extracted properly. This may indicate that the following change has been made to the 'NGFW Scan' playbook:
           1- The 'ip' input configuration was changed for the 'ip' automation used in the 'Enrich scanner IP Address' task.
           2- The 'ip' automation outputs have been modified and no longer contain the 'IP.ASOwner' context key.
     separatecontext: false
@@ -865,12 +865,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: 128dce77-04d2-4a04-8a4e-6da4fe083a7b
+    taskid: 42fb5423-d551-4906-8e4c-f365dee0d940
     type: condition
     task:
-      id: 128dce77-04d2-4a04-8a4e-6da4fe083a7b
+      id: 42fb5423-d551-4906-8e4c-f365dee0d940
       version: -1
-      name: Verify Address
+      name: Verify IP Address
       description: Verify that the ‘IP.Address’ context key was extracted correctly.
       type: condition
       iscommand: false
@@ -902,7 +902,7 @@ tasks:
       {
         "position": {
           "x": 4590,
-          "y": 2535
+          "y": 2530
         }
       }
     note: false
@@ -914,12 +914,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: 59b0795b-8a37-48d8-8ab6-b750425c218d
+    taskid: 943e1b36-eb97-4016-8fab-9b6147d93070
     type: regular
     task:
-      id: 59b0795b-8a37-48d8-8ab6-b750425c218d
+      id: 943e1b36-eb97-4016-8fab-9b6147d93070
       version: -1
-      name: Verify Context Error - Address
+      name: Verify Context Error - IP Address
       description: Prints an error entry with a given message
       scriptName: PrintErrorEntry
       type: regular
@@ -928,7 +928,7 @@ tasks:
     scriptarguments:
       message:
         simple: |-
-          The 'IP.Address' context key was not extracted properly. This may indicate that the following change has been made to the 'WildFire Malware' playbook:
+          The 'IP.Address' context key was not extracted properly. This may indicate that the following change has been made to the 'NGFW Scan' playbook:
           1- The 'ip' input configuration was changed for the 'ip' automation used in the 'Enrich scanner IP Address' task.
           2- The 'ip' automation outputs have been modified and no longer contain the 'IP.Address' context key.
     separatecontext: false
@@ -995,10 +995,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: 4cd2f79a-c209-40a9-8435-bbd70f238c69
+    taskid: 6a6c0a27-cfcc-411c-8d3c-7fc152484da9
     type: regular
     task:
-      id: 4cd2f79a-c209-40a9-8435-bbd70f238c69
+      id: 6a6c0a27-cfcc-411c-8d3c-7fc152484da9
       version: -1
       name: Verify Context Error - DetectionEngines
       description: Prints an error entry with a given message
@@ -1009,7 +1009,7 @@ tasks:
     scriptarguments:
       message:
         simple: |-
-          The 'IP.DetectionEngines' context key was not extracted properly. This may indicate that the following change has been made to the 'WildFire Malware' playbook:
+          The 'IP.DetectionEngines' context key was not extracted properly. This may indicate that the following change has been made to the 'NGFW Scan' playbook:
           1- The 'ip' input configuration was changed for the 'ip' automation used in the 'Enrich scanner IP Address' task.
           2- The 'ip' automation outputs have been modified and no longer contain the 'IP.DetectionEngines' context key.
     separatecontext: false
@@ -1076,10 +1076,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: 6486cd2e-7ee4-47de-871e-89316444c672
+    taskid: 728c8b62-bf91-4954-8c06-50fed94d11b8
     type: regular
     task:
-      id: 6486cd2e-7ee4-47de-871e-89316444c672
+      id: 728c8b62-bf91-4954-8c06-50fed94d11b8
       version: -1
       name: Verify Context Error - Positive Detections
       description: Prints an error entry with a given message
@@ -1090,7 +1090,7 @@ tasks:
     scriptarguments:
       message:
         simple: |-
-          The 'IP.PositiveDetections' context key was not extracted properly. This may indicate that the following change has been made to the 'WildFire Malware' playbook:
+          The 'IP.PositiveDetections' context key was not extracted properly. This may indicate that the following change has been made to the 'NGFW Scan' playbook:
           1- The 'ip' input configuration was changed for the 'ip' automation used in the 'Enrich scanner IP Address' task.
           2- The 'ip' automation outputs have been modified and no longer contain the 'IP.PositiveDetections' context key.
     separatecontext: false
@@ -1157,10 +1157,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "33":
     id: "33"
-    taskid: ab2f63ad-e6e8-4623-8bef-0a93c89e859a
+    taskid: cd591b2a-bf41-4c1d-890e-277069d5f860
     type: regular
     task:
-      id: ab2f63ad-e6e8-4623-8bef-0a93c89e859a
+      id: cd591b2a-bf41-4c1d-890e-277069d5f860
       version: -1
       name: Verify Context Error - Geo Country
       description: Prints an error entry with a given message
@@ -1171,7 +1171,7 @@ tasks:
     scriptarguments:
       message:
         simple: |-
-          The 'IP.Geo.Country' context key was not extracted properly. This may indicate that the following change has been made to the 'WildFire Malware' playbook:
+          The 'IP.Geo.Country' context key was not extracted properly. This may indicate that the following change has been made to the 'NGFW Scan' playbook:
           1- The 'ip' input configuration was changed for the 'ip' automation used in the 'Enrich scanner IP Address' task.
           2- The 'ip' automation outputs have been modified and no longer contain the 'IP.Geo.Country' context key.
     separatecontext: false
@@ -1238,10 +1238,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "35":
     id: "35"
-    taskid: f2748112-7bfc-48d9-8228-d6826abb8586
+    taskid: 69101eb0-de19-4306-873d-2c9d1ddc25d9
     type: regular
     task:
-      id: f2748112-7bfc-48d9-8228-d6826abb8586
+      id: 69101eb0-de19-4306-873d-2c9d1ddc25d9
       version: -1
       name: Verify Context Error - Malicious Description
       description: Prints an error entry with a given message
@@ -1252,7 +1252,7 @@ tasks:
     scriptarguments:
       message:
         simple: |-
-          The 'IP.Malicious.Description' context key was not extracted properly. This may indicate that the following change has been made to the 'WildFire Malware' playbook:
+          The 'IP.Malicious.Description' context key was not extracted properly. This may indicate that the following change has been made to the 'NGFW Scan' playbook:
           1- The 'ip' input configuration was changed for the 'ip' automation used in the 'Enrich scanner IP Address' task.
           2- The 'ip' automation outputs have been modified and no longer contain the 'IP.Malicious.Description' context key.
     separatecontext: false
@@ -1319,10 +1319,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "37":
     id: "37"
-    taskid: f8507dfc-b768-4350-8b84-e01fe453dccf
+    taskid: 404a9cf1-35dc-480e-83a8-f13a2d65c691
     type: regular
     task:
-      id: f8507dfc-b768-4350-8b84-e01fe453dccf
+      id: 404a9cf1-35dc-480e-83a8-f13a2d65c691
       version: -1
       name: Verify Context Error - Malicious Vendor
       description: Prints an error entry with a given message
@@ -1333,7 +1333,7 @@ tasks:
     scriptarguments:
       message:
         simple: |-
-          The 'IP.Malicious.Vendor' context key was not extracted properly. This may indicate that the following change has been made to the 'WildFire Malware' playbook:
+          The 'IP.Malicious.Vendor' context key was not extracted properly. This may indicate that the following change has been made to the 'NGFW Scan' playbook:
           1- The 'ip' input configuration was changed for the 'ip' automation used in the 'Enrich scanner IP Address' task.
           2- The 'ip' automation outputs have been modified and no longer contain the 'IP.Malicious.Vendor' context key.
     separatecontext: false
@@ -1400,10 +1400,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "39":
     id: "39"
-    taskid: aaa20f76-ba86-4c21-8a78-92843d7fed09
+    taskid: ae082755-02c9-4340-8cf4-4b1b616aa240
     type: regular
     task:
-      id: aaa20f76-ba86-4c21-8a78-92843d7fed09
+      id: ae082755-02c9-4340-8cf4-4b1b616aa240
       version: -1
       name: Verify Context Error - Relationships Entity A
       description: Prints an error entry with a given message
@@ -1414,7 +1414,7 @@ tasks:
     scriptarguments:
       message:
         simple: |-
-          The 'IP.Relationships.EntityA' context key was not extracted properly. This may indicate that the following change has been made to the 'WildFire Malware' playbook:
+          The 'IP.Relationships.EntityA' context key was not extracted properly. This may indicate that the following change has been made to the 'NGFW Scan' playbook:
           1- The 'ip' input configuration was changed for the 'ip' automation used in the 'Enrich scanner IP Address' task.
           2- The 'ip' automation outputs have been modified and no longer contain the 'IP.Relationships.EntityA' context key.
     separatecontext: false
@@ -1481,10 +1481,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "41":
     id: "41"
-    taskid: a7094527-aca6-4c4f-8c79-904f07da201a
+    taskid: 1124d821-9fc8-4789-8381-37d9110843f2
     type: regular
     task:
-      id: a7094527-aca6-4c4f-8c79-904f07da201a
+      id: 1124d821-9fc8-4789-8381-37d9110843f2
       version: -1
       name: Verify Context Error - Relationships Entity A Type
       description: Prints an error entry with a given message
@@ -1495,7 +1495,7 @@ tasks:
     scriptarguments:
       message:
         simple: |-
-          The 'IP.Relationships.EntityAType' context key was not extracted properly. This may indicate that the following change has been made to the 'WildFire Malware' playbook:
+          The 'IP.Relationships.EntityAType' context key was not extracted properly. This may indicate that the following change has been made to the 'NGFW Scan' playbook:
           1- The 'ip' input configuration was changed for the 'ip' automation used in the 'Enrich scanner IP Address' task.
           2- The 'ip' automation outputs have been modified and no longer contain the 'IP.Relationships.EntityAType' context key.
     separatecontext: false
@@ -1562,10 +1562,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "43":
     id: "43"
-    taskid: adaea79b-79e0-41ba-8b75-8929b214a15a
+    taskid: f711068a-5e2d-4c0e-869b-3cf68eee6bf6
     type: regular
     task:
-      id: adaea79b-79e0-41ba-8b75-8929b214a15a
+      id: f711068a-5e2d-4c0e-869b-3cf68eee6bf6
       version: -1
       name: Verify Context Error - Relationships Entity B
       description: Prints an error entry with a given message
@@ -1576,7 +1576,7 @@ tasks:
     scriptarguments:
       message:
         simple: |-
-          The 'IP.Relationships.EntityB' context key was not extracted properly. This may indicate that the following change has been made to the 'WildFire Malware' playbook:
+          The 'IP.Relationships.EntityB' context key was not extracted properly. This may indicate that the following change has been made to the 'NGFW Scan' playbook:
           1- The 'ip' input configuration was changed for the 'ip' automation used in the 'Enrich scanner IP Address' task.
           2- The 'ip' automation outputs have been modified and no longer contain the 'IP.Relationships.EntityB' context key.
     separatecontext: false
@@ -1643,10 +1643,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "45":
     id: "45"
-    taskid: bb06c94d-c1f0-4d89-8f84-7afa1fdfcd3c
+    taskid: c24b7cbb-57d1-4f51-85a6-31b56a034176
     type: regular
     task:
-      id: bb06c94d-c1f0-4d89-8f84-7afa1fdfcd3c
+      id: c24b7cbb-57d1-4f51-85a6-31b56a034176
       version: -1
       name: Verify Context Error - Relationships Entity B Type
       description: Prints an error entry with a given message
@@ -1657,7 +1657,7 @@ tasks:
     scriptarguments:
       message:
         simple: |-
-          The 'IP.Relationships.EntityBType' context key was not extracted properly. This may indicate that the following change has been made to the 'WildFire Malware' playbook:
+          The 'IP.Relationships.EntityBType' context key was not extracted properly. This may indicate that the following change has been made to the 'NGFW Scan' playbook:
           1- The 'ip' input configuration was changed for the 'ip' automation used in the 'Enrich scanner IP Address' task.
           2- The 'ip' automation outputs have been modified and no longer contain the 'IP.Relationships.EntityBType' context key.
     separatecontext: false
@@ -1724,10 +1724,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "47":
     id: "47"
-    taskid: 03530687-fc58-432e-819a-0f51bfcd32c8
+    taskid: ad7c5270-7239-4351-848a-f83ea77ef18d
     type: regular
     task:
-      id: 03530687-fc58-432e-819a-0f51bfcd32c8
+      id: ad7c5270-7239-4351-848a-f83ea77ef18d
       version: -1
       name: Verify Context Error - Relationships
       description: Prints an error entry with a given message
@@ -1738,7 +1738,7 @@ tasks:
     scriptarguments:
       message:
         simple: |-
-          The 'IP.Relationships.Relationship' context key was not extracted properly. This may indicate that the following change has been made to the 'WildFire Malware' playbook:
+          The 'IP.Relationships.Relationship' context key was not extracted properly. This may indicate that the following change has been made to the 'NGFW Scan' playbook:
           1- The 'ip' input configuration was changed for the 'ip' automation used in the 'Enrich scanner IP Address' task.
           2- The 'ip' automation outputs have been modified and no longer contain the 'IP.Relationships.Relationship' context key.
     separatecontext: false
@@ -1840,10 +1840,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "50":
     id: "50"
-    taskid: 10ed6b58-cab1-416c-80df-2593ef23db27
+    taskid: b170a809-f8f3-4a7b-882b-f47fb1599359
     type: regular
     task:
-      id: 10ed6b58-cab1-416c-80df-2593ef23db27
+      id: b170a809-f8f3-4a7b-882b-f47fb1599359
       version: -1
       name: Verify Context Error - Reliability
       description: Prints an error entry with a given message
@@ -1854,7 +1854,7 @@ tasks:
     scriptarguments:
       message:
         simple: |-
-          The 'DBotScore.Reliability' context key was not extracted properly. This may indicate that the following change has been made to the 'WildFire Malware' playbook:
+          The 'DBotScore.Reliability' context key was not extracted properly. This may indicate that the following change has been made to the 'NGFW Scan' playbook:
           1- The 'ip' input configuration was changed for the 'ip' automation used in the 'Enrich scanner IP Address' task.
           2- The 'ip' automation outputs have been modified and no longer contain the 'DBotScore.Reliability' context key.
     separatecontext: false
@@ -1921,10 +1921,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "52":
     id: "52"
-    taskid: 29533fe6-34d3-4953-85e1-41fdf6aa9600
+    taskid: f784d731-7e6a-440a-8fca-775d14e357b9
     type: regular
     task:
-      id: 29533fe6-34d3-4953-85e1-41fdf6aa9600
+      id: f784d731-7e6a-440a-8fca-775d14e357b9
       version: -1
       name: Verify Context Error - Score
       description: Prints an error entry with a given message
@@ -1935,7 +1935,7 @@ tasks:
     scriptarguments:
       message:
         simple: |-
-          The 'DBotScore.Score' context key was not extracted properly. This may indicate that the following change has been made to the 'WildFire Malware' playbook:
+          The 'DBotScore.Score' context key was not extracted properly. This may indicate that the following change has been made to the 'NGFW Scan' playbook:
           1- The 'ip' input configuration was changed for the 'ip' automation used in the 'Enrich scanner IP Address' task.
           2- The 'ip' automation outputs have been modified and no longer contain the 'DBotScore.Score' context key.
     separatecontext: false
@@ -2003,10 +2003,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "54":
     id: "54"
-    taskid: df81fa32-d678-4c9c-842b-2eec234e1f56
+    taskid: 823df802-8830-4c22-87f4-3ff472068825
     type: regular
     task:
-      id: df81fa32-d678-4c9c-842b-2eec234e1f56
+      id: 823df802-8830-4c22-87f4-3ff472068825
       version: -1
       name: Verify Context Error - Type
       description: Prints an error entry with a given message
@@ -2017,7 +2017,7 @@ tasks:
     scriptarguments:
       message:
         simple: |-
-          The 'DBotScore.Type' context key was not extracted properly. This may indicate that the following change has been made to the 'WildFire Malware' playbook:
+          The 'DBotScore.Type' context key was not extracted properly. This may indicate that the following change has been made to the 'NGFW Scan' playbook:
           1- The 'ip' input configuration was changed for the 'ip' automation used in the 'Enrich scanner IP Address' task.
           2- The 'ip' automation outputs have been modified and no longer contain the 'DBotScore.Type' context key.
     separatecontext: false
@@ -2087,10 +2087,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "56":
     id: "56"
-    taskid: 566a03b7-e149-43ee-80eb-da4575c731bc
+    taskid: 6701249e-13f1-4a7f-8ce5-a449ed910fa9
     type: regular
     task:
-      id: 566a03b7-e149-43ee-80eb-da4575c731bc
+      id: 6701249e-13f1-4a7f-8ce5-a449ed910fa9
       version: -1
       name: Verify Context Error - Indicator
       description: Prints an error entry with a given message
@@ -2101,7 +2101,7 @@ tasks:
     scriptarguments:
       message:
         simple: |-
-          The 'DBotScore.Indicator' context key was not extracted properly. This may indicate that the following change has been made to the 'WildFire Malware' playbook:
+          The 'DBotScore.Indicator' context key was not extracted properly. This may indicate that the following change has been made to the 'NGFW Scan' playbook:
           1- The 'ip' input configuration was changed for the 'ip' automation used in the 'Enrich scanner IP Address' task.
           2- The 'ip' automation outputs have been modified and no longer contain the 'DBotScore.Indicator' context key.
     separatecontext: false
@@ -2169,10 +2169,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "58":
     id: "58"
-    taskid: 35037579-f60b-4a89-82ea-eecf1b60dedc
+    taskid: ab3bd74a-d407-42c9-8d72-a80054d4b1f2
     type: regular
     task:
-      id: 35037579-f60b-4a89-82ea-eecf1b60dedc
+      id: ab3bd74a-d407-42c9-8d72-a80054d4b1f2
       version: -1
       name: Verify Context Error - Vendor
       description: Prints an error entry with a given message
@@ -2183,7 +2183,7 @@ tasks:
     scriptarguments:
       message:
         simple: |-
-          The 'DBotScore.Vendor' context key was not extracted properly. This may indicate that the following change has been made to the 'WildFire Malware' playbook:
+          The 'DBotScore.Vendor' context key was not extracted properly. This may indicate that the following change has been made to the 'NGFW Scan' playbook:
           1- The 'ip' input configuration was changed for the 'ip' automation used in the 'Enrich scanner IP Address' task.
           2- The 'ip' automation outputs have been modified and no longer contain the 'DBotScore.Vendor' context key.
     separatecontext: false
@@ -2297,10 +2297,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "61":
     id: "61"
-    taskid: 3a604e4a-e3ce-4ccc-828e-6a15bff68d65
+    taskid: 76ac6e99-53f5-4966-86fc-c65ef34d8cc8
     type: regular
     task:
-      id: 3a604e4a-e3ce-4ccc-828e-6a15bff68d65
+      id: 76ac6e99-53f5-4966-86fc-c65ef34d8cc8
       version: -1
       name: Verify Context Error - AS Owner
       description: Prints an error entry with a given message
@@ -2311,7 +2311,7 @@ tasks:
     scriptarguments:
       message:
         simple: |-
-          The 'VirusTotal.IP.attributes.as_owner' context key was not extracted properly. This may indicate that the following change has been made to the 'WildFire Malware' playbook:
+          The 'VirusTotal.IP.attributes.as_owner' context key was not extracted properly. This may indicate that the following change has been made to the 'NGFW Scan' playbook:
           1- The 'ip' input configuration was changed for the 'ip' automation used in the 'Enrich scanner IP Address' task.
           2- The 'ip' automation outputs have been modified and no longer contain the 'VirusTotal.IP.attributes.as_owner' context key.
     separatecontext: false
@@ -2378,10 +2378,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "63":
     id: "63"
-    taskid: b9e52a26-d5cc-4e79-8e2a-7d673547e15c
+    taskid: bd1a8e2a-fb30-4ba4-8294-16827db24088
     type: regular
     task:
-      id: b9e52a26-d5cc-4e79-8e2a-7d673547e15c
+      id: bd1a8e2a-fb30-4ba4-8294-16827db24088
       version: -1
       name: Verify Context Error - ASN
       description: Prints an error entry with a given message
@@ -2392,7 +2392,7 @@ tasks:
     scriptarguments:
       message:
         simple: |-
-          The 'VirusTotal.IP.attributes.asn' context key was not extracted properly. This may indicate that the following change has been made to the 'WildFire Malware' playbook:
+          The 'VirusTotal.IP.attributes.asn' context key was not extracted properly. This may indicate that the following change has been made to the 'NGFW Scan' playbook:
           1- The 'ip' input configuration was changed for the 'ip' automation used in the 'Enrich scanner IP Address' task.
           2- The 'ip' automation outputs have been modified and no longer contain the 'VirusTotal.IP.attributes.asn' context key.
     separatecontext: false
@@ -2459,10 +2459,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "65":
     id: "65"
-    taskid: 5f4444c8-979b-4217-8acb-f41209e75913
+    taskid: 4d254d04-ce1d-4631-818c-4bb91702c712
     type: regular
     task:
-      id: 5f4444c8-979b-4217-8acb-f41209e75913
+      id: 4d254d04-ce1d-4631-818c-4bb91702c712
       version: -1
       name: Verify Context Error - Continent
       description: Prints an error entry with a given message
@@ -2473,7 +2473,7 @@ tasks:
     scriptarguments:
       message:
         simple: |-
-          The 'VirusTotal.IP.attributes.continent' context key was not extracted properly. This may indicate that the following change has been made to the 'WildFire Malware' playbook:
+          The 'VirusTotal.IP.attributes.continent' context key was not extracted properly. This may indicate that the following change has been made to the 'NGFW Scan' playbook:
           1- The 'ip' input configuration was changed for the 'ip' automation used in the 'Enrich scanner IP Address' task.
           2- The 'ip' automation outputs have been modified and no longer contain the 'VirusTotal.IP.attributes.continent' context key.
     separatecontext: false
@@ -2538,10 +2538,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "67":
     id: "67"
-    taskid: c2059e56-020d-4921-80ce-02a75c5c088e
+    taskid: e2440356-58b9-47ca-8a7a-3cb6d633b965
     type: regular
     task:
-      id: c2059e56-020d-4921-80ce-02a75c5c088e
+      id: e2440356-58b9-47ca-8a7a-3cb6d633b965
       version: -1
       name: Verify Context Error - Country
       description: Prints an error entry with a given message
@@ -2552,7 +2552,7 @@ tasks:
     scriptarguments:
       message:
         simple: |-
-          The 'VirusTotal.IP.attributes.country' context key was not extracted properly. This may indicate that the following change has been made to the 'WildFire Malware' playbook:
+          The 'VirusTotal.IP.attributes.country' context key was not extracted properly. This may indicate that the following change has been made to the 'NGFW Scan' playbook:
           1- The 'ip' input configuration was changed for the 'ip' automation used in the 'Enrich scanner IP Address' task.
           2- The 'ip' automation outputs have been modified and no longer contain the 'VirusTotal.IP.attributes.country' context key.
     separatecontext: false
@@ -2619,10 +2619,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "69":
     id: "69"
-    taskid: f84e24f3-6408-4a45-8dd8-69b8c32201fb
+    taskid: ab22949a-b2fc-476e-8fa4-f88ac23ca595
     type: regular
     task:
-      id: f84e24f3-6408-4a45-8dd8-69b8c32201fb
+      id: ab22949a-b2fc-476e-8fa4-f88ac23ca595
       version: -1
       name: Verify Context Error - Last Analysis Date
       description: Prints an error entry with a given message
@@ -2633,7 +2633,7 @@ tasks:
     scriptarguments:
       message:
         simple: |-
-          The 'VirusTotal.IP.attributes.last_analysis_date' context key was not extracted properly. This may indicate that the following change has been made to the 'WildFire Malware' playbook:
+          The 'VirusTotal.IP.attributes.last_analysis_date' context key was not extracted properly. This may indicate that the following change has been made to the 'NGFW Scan' playbook:
           1- The 'ip' input configuration was changed for the 'ip' automation used in the 'Enrich scanner IP Address' task.
           2- The 'ip' automation outputs have been modified and no longer contain the 'VirusTotal.IP.attributes.last_analysis_date' context key.
     separatecontext: false
@@ -2700,10 +2700,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "71":
     id: "71"
-    taskid: a28ef844-2595-4c07-8e75-861d0c1aa4ec
+    taskid: bbb950df-ebc2-4ea4-81e4-50f0fdfeee11
     type: regular
     task:
-      id: a28ef844-2595-4c07-8e75-861d0c1aa4ec
+      id: bbb950df-ebc2-4ea4-81e4-50f0fdfeee11
       version: -1
       name: Verify Context Error - Last Modification Date
       description: Prints an error entry with a given message
@@ -2714,7 +2714,7 @@ tasks:
     scriptarguments:
       message:
         simple: |-
-          The 'VirusTotal.IP.attributes.last_modification_date' context key was not extracted properly. This may indicate that the following change has been made to the 'WildFire Malware' playbook:
+          The 'VirusTotal.IP.attributes.last_modification_date' context key was not extracted properly. This may indicate that the following change has been made to the 'NGFW Scan' playbook:
           1- The 'ip' input configuration was changed for the 'ip' automation used in the 'Enrich scanner IP Address' task.
           2- The 'ip' automation outputs have been modified and no longer contain the 'VirusTotal.IP.attributes.last_modification_date' context key.
     separatecontext: false
@@ -2781,10 +2781,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "73":
     id: "73"
-    taskid: 20bd6851-4825-42b1-8429-437e5f81073b
+    taskid: 22fa05ac-b54a-4f10-85d1-d9feb33eb8ed
     type: regular
     task:
-      id: 20bd6851-4825-42b1-8429-437e5f81073b
+      id: 22fa05ac-b54a-4f10-85d1-d9feb33eb8ed
       version: -1
       name: Verify Context Error - Network
       description: Prints an error entry with a given message
@@ -2795,7 +2795,7 @@ tasks:
     scriptarguments:
       message:
         simple: |-
-          The 'VirusTotal.IP.attributes.network' context key was not extracted properly. This may indicate that the following change has been made to the 'WildFire Malware' playbook:
+          The 'VirusTotal.IP.attributes.network' context key was not extracted properly. This may indicate that the following change has been made to the 'NGFW Scan' playbook:
           1- The 'ip' input configuration was changed for the 'ip' automation used in the 'Enrich scanner IP Address' task.
           2- The 'ip' automation outputs have been modified and no longer contain the 'VirusTotal.IP.attributes.network' context key.
     separatecontext: false
@@ -2862,10 +2862,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "75":
     id: "75"
-    taskid: 1ebfb0de-c73f-4d89-812a-c51969947c0e
+    taskid: 6a54b257-3301-4f36-8ca1-077cc63af9d6
     type: regular
     task:
-      id: 1ebfb0de-c73f-4d89-812a-c51969947c0e
+      id: 6a54b257-3301-4f36-8ca1-077cc63af9d6
       version: -1
       name: Verify Context Error - Regional Internet Registry
       description: Prints an error entry with a given message
@@ -2876,7 +2876,7 @@ tasks:
     scriptarguments:
       message:
         simple: |-
-          The 'VirusTotal.IP.attributes.regional_internet_registry' context key was not extracted properly. This may indicate that the following change has been made to the 'WildFire Malware' playbook:
+          The 'VirusTotal.IP.attributes.regional_internet_registry' context key was not extracted properly. This may indicate that the following change has been made to the 'NGFW Scan' playbook:
           1- The 'ip' input configuration was changed for the 'ip' automation used in the 'Enrich scanner IP Address' task.
           2- The 'ip' automation outputs have been modified and no longer contain the 'VirusTotal.IP.attributes.regional_internet_registry' context key.
     separatecontext: false
@@ -2943,10 +2943,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "77":
     id: "77"
-    taskid: e940c6c8-366e-4e74-887b-73ef40000ee9
+    taskid: 389c5af0-8ddb-4144-813e-76c0fbe844c5
     type: regular
     task:
-      id: e940c6c8-366e-4e74-887b-73ef40000ee9
+      id: 389c5af0-8ddb-4144-813e-76c0fbe844c5
       version: -1
       name: Verify Context Error - Reputation
       description: Prints an error entry with a given message
@@ -2957,7 +2957,7 @@ tasks:
     scriptarguments:
       message:
         simple: |-
-          The 'VirusTotal.IP.attributes.reputation' context key was not extracted properly. This may indicate that the following change has been made to the 'WildFire Malware' playbook:
+          The 'VirusTotal.IP.attributes.reputation' context key was not extracted properly. This may indicate that the following change has been made to the 'NGFW Scan' playbook:
           1- The 'ip' input configuration was changed for the 'ip' automation used in the 'Enrich scanner IP Address' task.
           2- The 'ip' automation outputs have been modified and no longer contain the 'VirusTotal.IP.attributes.reputation' context key.
     separatecontext: false
@@ -3024,10 +3024,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "79":
     id: "79"
-    taskid: 537a6775-2188-4582-811b-3fdf00f84cfd
+    taskid: 104f342c-48de-4299-80a8-c5db22d215fc
     type: regular
     task:
-      id: 537a6775-2188-4582-811b-3fdf00f84cfd
+      id: 104f342c-48de-4299-80a8-c5db22d215fc
       version: -1
       name: Verify Context Error - Tags
       description: Prints an error entry with a given message
@@ -3038,7 +3038,7 @@ tasks:
     scriptarguments:
       message:
         simple: |-
-          The 'VirusTotal.IP.attributes.tags' context key was not extracted properly. This may indicate that the following change has been made to the 'WildFire Malware' playbook:
+          The 'VirusTotal.IP.attributes.tags' context key was not extracted properly. This may indicate that the following change has been made to the 'NGFW Scan' playbook:
           1- The 'ip' input configuration was changed for the 'ip' automation used in the 'Enrich scanner IP Address' task.
           2- The 'ip' automation outputs have been modified and no longer contain the 'VirusTotal.IP.attributes.tags' context key.
     separatecontext: false
@@ -3105,10 +3105,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "81":
     id: "81"
-    taskid: 39390106-a349-4436-8484-271a44cf1042
+    taskid: 9d18dd53-30f1-479a-82e4-85cb23264ae1
     type: regular
     task:
-      id: 39390106-a349-4436-8484-271a44cf1042
+      id: 9d18dd53-30f1-479a-82e4-85cb23264ae1
       version: -1
       name: Verify Context Error - Last Analysis Stats - Harmless
       description: Prints an error entry with a given message
@@ -3119,7 +3119,7 @@ tasks:
     scriptarguments:
       message:
         simple: |-
-          The 'VirusTotal.IP.attributes.last_analysis_stats.harmless' context key was not extracted properly. This may indicate that the following change has been made to the 'WildFire Malware' playbook:
+          The 'VirusTotal.IP.attributes.last_analysis_stats.harmless' context key was not extracted properly. This may indicate that the following change has been made to the 'NGFW Scan' playbook:
           1- The 'ip' input configuration was changed for the 'ip' automation used in the 'Enrich scanner IP Address' task.
           2- The 'ip' automation outputs have been modified and no longer contain the 'VirusTotal.IP.attributes.last_analysis_stats.harmless' context key.
     separatecontext: false
@@ -3186,10 +3186,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "83":
     id: "83"
-    taskid: 35cf718d-7f2b-46cf-8d1f-680eec850f62
+    taskid: 23132230-db1b-4a46-8172-d852f831ed69
     type: regular
     task:
-      id: 35cf718d-7f2b-46cf-8d1f-680eec850f62
+      id: 23132230-db1b-4a46-8172-d852f831ed69
       version: -1
       name: Verify Context Error - Malicious Count Stats
       description: Prints an error entry with a given message
@@ -3200,7 +3200,7 @@ tasks:
     scriptarguments:
       message:
         simple: |-
-          The 'VirusTotal.IP.attributes.last_analysis_stats.malicious' context key was not extracted properly. This may indicate that the following change has been made to the 'WildFire Malware' playbook:
+          The 'VirusTotal.IP.attributes.last_analysis_stats.malicious' context key was not extracted properly. This may indicate that the following change has been made to the 'NGFW Scan' playbook:
           1- The 'ip' input configuration was changed for the 'ip' automation used in the 'Enrich scanner IP Address' task.
           2- The 'ip' automation outputs have been modified and no longer contain the 'VirusTotal.IP.attributes.last_analysis_stats.malicious' context key.
     separatecontext: false
@@ -3267,10 +3267,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "85":
     id: "85"
-    taskid: e63ff15a-1f43-4564-83fb-59c9aaf4bc87
+    taskid: 6edaabee-d8c8-4659-884a-75cf6eaec1f8
     type: regular
     task:
-      id: e63ff15a-1f43-4564-83fb-59c9aaf4bc87
+      id: 6edaabee-d8c8-4659-884a-75cf6eaec1f8
       version: -1
       name: Verify Context Error - Suspicious Count Stats
       description: Prints an error entry with a given message
@@ -3281,7 +3281,7 @@ tasks:
     scriptarguments:
       message:
         simple: |-
-          The 'VirusTotal.IP.attributes.last_analysis_stats.suspicious' context key was not extracted properly. This may indicate that the following change has been made to the 'WildFire Malware' playbook:
+          The 'VirusTotal.IP.attributes.last_analysis_stats.suspicious' context key was not extracted properly. This may indicate that the following change has been made to the 'NGFW Scan' playbook:
           1- The 'ip' input configuration was changed for the 'ip' automation used in the 'Enrich scanner IP Address' task.
           2- The 'ip' automation outputs have been modified and no longer contain the 'VirusTotal.IP.attributes.last_analysis_stats.suspicious' context key.
     separatecontext: false
@@ -3348,10 +3348,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "87":
     id: "87"
-    taskid: ddb20812-d850-4793-82f7-fb994133cc1b
+    taskid: 6b8ab0b1-9ed6-4bf7-8ff7-98cb26aa9e9c
     type: regular
     task:
-      id: ddb20812-d850-4793-82f7-fb994133cc1b
+      id: 6b8ab0b1-9ed6-4bf7-8ff7-98cb26aa9e9c
       version: -1
       name: Verify Context Error - Timeout Count Stats
       description: Prints an error entry with a given message
@@ -3362,7 +3362,7 @@ tasks:
     scriptarguments:
       message:
         simple: |-
-          The 'VirusTotal.IP.attributes.last_analysis_stats.timeout' context key was not extracted properly. This may indicate that the following change has been made to the 'WildFire Malware' playbook:
+          The 'VirusTotal.IP.attributes.last_analysis_stats.timeout' context key was not extracted properly. This may indicate that the following change has been made to the 'NGFW Scan' playbook:
           1- The 'ip' input configuration was changed for the 'ip' automation used in the 'Enrich scanner IP Address' task.
           2- The 'ip' automation outputs have been modified and no longer contain the 'VirusTotal.IP.attributes.last_analysis_stats.timeout' context key.
     separatecontext: false
@@ -3429,10 +3429,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "89":
     id: "89"
-    taskid: 2dec2e5b-77d0-4f0f-8b3e-83eadb2ebdac
+    taskid: 9bb68c37-9996-4b7d-824f-fbb0300f4841
     type: regular
     task:
-      id: 2dec2e5b-77d0-4f0f-8b3e-83eadb2ebdac
+      id: 9bb68c37-9996-4b7d-824f-fbb0300f4841
       version: -1
       name: Verify Context Error - Undetected Count Stats
       description: Prints an error entry with a given message
@@ -3443,7 +3443,7 @@ tasks:
     scriptarguments:
       message:
         simple: |-
-          The 'VirusTotal.IP.attributes.last_analysis_stats.undetected' context key was not extracted properly. This may indicate that the following change has been made to the 'WildFire Malware' playbook:
+          The 'VirusTotal.IP.attributes.last_analysis_stats.undetected' context key was not extracted properly. This may indicate that the following change has been made to the 'NGFW Scan' playbook:
           1- The 'ip' input configuration was changed for the 'ip' automation used in the 'Enrich scanner IP Address' task.
           2- The 'ip' automation outputs have been modified and no longer contain the 'VirusTotal.IP.attributes.last_analysis_stats.undetected' context key.
     separatecontext: false
@@ -3510,10 +3510,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "93":
     id: "93"
-    taskid: cbbaee4e-e6a0-4b52-806c-7b65aa007558
+    taskid: ffbc45fe-6fea-4beb-8c17-830d8bbce4ae
     type: regular
     task:
-      id: cbbaee4e-e6a0-4b52-806c-7b65aa007558
+      id: ffbc45fe-6fea-4beb-8c17-830d8bbce4ae
       version: -1
       name: Verify Context Error - Last Analysis Date
       description: Prints an error entry with a given message
@@ -3524,7 +3524,7 @@ tasks:
     scriptarguments:
       message:
         simple: |-
-          The 'VirusTotal.IP.attributes.threat_severity.last_analysis_date' context key was not extracted properly. This may indicate that the following change has been made to the 'WildFire Malware' playbook:
+          The 'VirusTotal.IP.attributes.threat_severity.last_analysis_date' context key was not extracted properly. This may indicate that the following change has been made to the 'NGFW Scan' playbook:
           1- The 'ip' input configuration was changed for the 'ip' automation used in the 'Enrich scanner IP Address' task.
           2- The 'ip' automation outputs have been modified and no longer contain the 'VirusTotal.IP.attributes.threat_severity.last_analysis_date' context key.
     separatecontext: false
@@ -3591,10 +3591,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "95":
     id: "95"
-    taskid: 76c9d69d-8259-464f-8fa0-7fe075a86dd1
+    taskid: c1a2a24d-1fab-43bf-8b60-edb2e40b5b58
     type: regular
     task:
-      id: 76c9d69d-8259-464f-8fa0-7fe075a86dd1
+      id: c1a2a24d-1fab-43bf-8b60-edb2e40b5b58
       version: -1
       name: Verify Context Error - Threat Description
       description: Prints an error entry with a given message
@@ -3605,7 +3605,7 @@ tasks:
     scriptarguments:
       message:
         simple: |-
-          The 'VirusTotal.IP.attributes.threat_severity.level_description' context key was not extracted properly. This may indicate that the following change has been made to the 'WildFire Malware' playbook:
+          The 'VirusTotal.IP.attributes.threat_severity.level_description' context key was not extracted properly. This may indicate that the following change has been made to the 'NGFW Scan' playbook:
           1- The 'ip' input configuration was changed for the 'ip' automation used in the 'Enrich scanner IP Address' task.
           2- The 'ip' automation outputs have been modified and no longer contain the 'VirusTotal.IP.attributes.threat_severity.level_description' context key.
     separatecontext: false
@@ -3672,10 +3672,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "97":
     id: "97"
-    taskid: cb4e9ca3-e388-45a4-8ee0-39057c018f00
+    taskid: a5c64a5c-5ce3-4d45-8da6-0d9f64274916
     type: regular
     task:
-      id: cb4e9ca3-e388-45a4-8ee0-39057c018f00
+      id: a5c64a5c-5ce3-4d45-8da6-0d9f64274916
       version: -1
       name: Verify Context Error - Threat Severity
       description: Prints an error entry with a given message
@@ -3686,7 +3686,7 @@ tasks:
     scriptarguments:
       message:
         simple: |-
-          The 'VirusTotal.IP.attributes.threat_severity.threat_severity_level' context key was not extracted properly. This may indicate that the following change has been made to the 'WildFire Malware' playbook:
+          The 'VirusTotal.IP.attributes.threat_severity.threat_severity_level' context key was not extracted properly. This may indicate that the following change has been made to the 'NGFW Scan' playbook:
           1- The 'ip' input configuration was changed for the 'ip' automation used in the 'Enrich scanner IP Address' task.
           2- The 'ip' automation outputs have been modified and no longer contain the 'VirusTotal.IP.attributes.threat_severity.threat_severity_level' context key.
     separatecontext: false
@@ -3753,10 +3753,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "99":
     id: "99"
-    taskid: c9dcc126-0db6-4867-86a3-00b490092b47
+    taskid: a9009057-3d57-426f-8356-bb90f9dbd6c2
     type: regular
     task:
-      id: c9dcc126-0db6-4867-86a3-00b490092b47
+      id: a9009057-3d57-426f-8356-bb90f9dbd6c2
       version: -1
       name: Verify Context Error - Version
       description: Prints an error entry with a given message
@@ -3767,7 +3767,7 @@ tasks:
     scriptarguments:
       message:
         simple: |-
-          The 'VirusTotal.IP.attributes.threat_severity.version' context key was not extracted properly. This may indicate that the following change has been made to the 'WildFire Malware' playbook:
+          The 'VirusTotal.IP.attributes.threat_severity.version' context key was not extracted properly. This may indicate that the following change has been made to the 'NGFW Scan' playbook:
           1- The 'ip' input configuration was changed for the 'ip' automation used in the 'Enrich scanner IP Address' task.
           2- The 'ip' automation outputs have been modified and no longer contain the 'VirusTotal.IP.attributes.threat_severity.version' context key.
     separatecontext: false
@@ -3834,10 +3834,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "103":
     id: "103"
-    taskid: 2a635f6d-5061-40b3-831c-0b3bd5c7394b
+    taskid: c7315880-8fd7-486a-8e36-3a07f3dfd170
     type: regular
     task:
-      id: 2a635f6d-5061-40b3-831c-0b3bd5c7394b
+      id: c7315880-8fd7-486a-8e36-3a07f3dfd170
       version: -1
       name: Verify Context Error - Bad Collection
       description: Prints an error entry with a given message
@@ -3848,7 +3848,7 @@ tasks:
     scriptarguments:
       message:
         simple: |-
-          The 'VirusTotal.IP.attributes.threat_severity.threat_severity_data.belongs_to_bad_collection' context key was not extracted properly. This may indicate that the following change has been made to the 'WildFire Malware' playbook:
+          The 'VirusTotal.IP.attributes.threat_severity.threat_severity_data.belongs_to_bad_collection' context key was not extracted properly. This may indicate that the following change has been made to the 'NGFW Scan' playbook:
           1- The 'ip' input configuration was changed for the 'ip' automation used in the 'Enrich scanner IP Address' task.
           2- The 'ip' automation outputs have been modified and no longer contain the 'VirusTotal.IP.attributes.threat_severity.threat_severity_data.belongs_to_bad_collection' context key.
     separatecontext: false
@@ -3915,10 +3915,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "105":
     id: "105"
-    taskid: 157dfcc0-ed74-4438-8068-f94c35563f49
+    taskid: c7666fd0-c7bb-4cbd-8131-c5077f5b28bf
     type: regular
     task:
-      id: 157dfcc0-ed74-4438-8068-f94c35563f49
+      id: c7666fd0-c7bb-4cbd-8131-c5077f5b28bf
       version: -1
       name: Verify Context Error - Threat Actor
       description: Prints an error entry with a given message
@@ -3929,7 +3929,7 @@ tasks:
     scriptarguments:
       message:
         simple: |-
-          The 'VirusTotal.IP.attributes.threat_severity.threat_severity_data.belongs_to_threat_actor' context key was not extracted properly. This may indicate that the following change has been made to the 'WildFire Malware' playbook:
+          The 'VirusTotal.IP.attributes.threat_severity.threat_severity_data.belongs_to_threat_actor' context key was not extracted properly. This may indicate that the following change has been made to the 'NGFW Scan' playbook:
           1- The 'ip' input configuration was changed for the 'ip' automation used in the 'Enrich scanner IP Address' task.
           2- The 'ip' automation outputs have been modified and no longer contain the 'VirusTotal.IP.attributes.threat_severity.threat_severity_data.belongs_to_threat_actor' context key.
     separatecontext: false
@@ -3996,10 +3996,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "107":
     id: "107"
-    taskid: d412e728-0d58-439d-8c59-5d19f7b16ae3
+    taskid: 81dc9eb8-f237-4bcb-8511-e088d4ef62ec
     type: regular
     task:
-      id: d412e728-0d58-439d-8c59-5d19f7b16ae3
+      id: 81dc9eb8-f237-4bcb-8511-e088d4ef62ec
       version: -1
       name: Verify Context Error - High Severity Communicating Files
       description: Prints an error entry with a given message
@@ -4010,7 +4010,7 @@ tasks:
     scriptarguments:
       message:
         simple: |-
-          The 'VirusTotal.IP.attributes.threat_severity.threat_severity_data.has_bad_communicating_files_high' context key was not extracted properly. This may indicate that the following change has been made to the 'WildFire Malware' playbook:
+          The 'VirusTotal.IP.attributes.threat_severity.threat_severity_data.has_bad_communicating_files_high' context key was not extracted properly. This may indicate that the following change has been made to the 'NGFW Scan' playbook:
           1- The 'ip' input configuration was changed for the 'ip' automation used in the 'Enrich scanner IP Address' task.
           2- The 'ip' automation outputs have been modified and no longer contain the 'VirusTotal.IP.attributes.threat_severity.threat_severity_data.has_bad_communicating_files_high' context key.
     separatecontext: false
@@ -4077,10 +4077,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "109":
     id: "109"
-    taskid: 72ca974d-c579-492d-815a-0a2ade70ce6b
+    taskid: ec5b963b-352c-48f1-84f3-53186e6cd811
     type: regular
     task:
-      id: 72ca974d-c579-492d-815a-0a2ade70ce6b
+      id: ec5b963b-352c-48f1-84f3-53186e6cd811
       version: -1
       name: Verify Context Error - Medium Severity Communicating Files
       description: Prints an error entry with a given message
@@ -4091,7 +4091,7 @@ tasks:
     scriptarguments:
       message:
         simple: |-
-          The 'VirusTotal.IP.attributes.threat_severity.threat_severity_data.has_bad_communicating_files_medium' context key was not extracted properly. This may indicate that the following change has been made to the 'WildFire Malware' playbook:
+          The 'VirusTotal.IP.attributes.threat_severity.threat_severity_data.has_bad_communicating_files_medium' context key was not extracted properly. This may indicate that the following change has been made to the 'NGFW Scan' playbook:
           1- The 'ip' input configuration was changed for the 'ip' automation used in the 'Enrich scanner IP Address' task.
           2- The 'ip' automation outputs have been modified and no longer contain the 'VirusTotal.IP.attributes.threat_severity.threat_severity_data.has_bad_communicating_files_medium' context key.
     separatecontext: false
@@ -4158,10 +4158,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "111":
     id: "111"
-    taskid: 7105f90f-ae1c-4b95-8225-3acca8f68071
+    taskid: 1ac159ef-ddae-4cbe-848b-f1338bb394a7
     type: regular
     task:
-      id: 7105f90f-ae1c-4b95-8225-3acca8f68071
+      id: 1ac159ef-ddae-4cbe-848b-f1338bb394a7
       version: -1
       name: Verify Context Error - High Severity Downloaded Files
       description: Prints an error entry with a given message
@@ -4172,7 +4172,7 @@ tasks:
     scriptarguments:
       message:
         simple: |-
-          The 'VirusTotal.IP.attributes.threat_severity.threat_severity_data.has_bad_downloaded_files_high' context key was not extracted properly. This may indicate that the following change has been made to the 'WildFire Malware' playbook:
+          The 'VirusTotal.IP.attributes.threat_severity.threat_severity_data.has_bad_downloaded_files_high' context key was not extracted properly. This may indicate that the following change has been made to the 'NGFW Scan' playbook:
           1- The 'ip' input configuration was changed for the 'ip' automation used in the 'Enrich scanner IP Address' task.
           2- The 'ip' automation outputs have been modified and no longer contain the 'VirusTotal.IP.attributes.threat_severity.threat_severity_data.has_bad_downloaded_files_high' context key.
     separatecontext: false
@@ -4239,10 +4239,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "113":
     id: "113"
-    taskid: 0e16256e-e549-4498-841d-56f0ce9f4e04
+    taskid: 5c796e8a-0756-4a82-806f-2c7e6054f58e
     type: regular
     task:
-      id: 0e16256e-e549-4498-841d-56f0ce9f4e04
+      id: 5c796e8a-0756-4a82-806f-2c7e6054f58e
       version: -1
       name: Verify Context Error - Medium Severity Downloaded Files
       description: Prints an error entry with a given message
@@ -4253,7 +4253,7 @@ tasks:
     scriptarguments:
       message:
         simple: |-
-          The 'VirusTotal.IP.attributes.threat_severity.threat_severity_data.has_bad_downloaded_files_medium' context key was not extracted properly. This may indicate that the following change has been made to the 'WildFire Malware' playbook:
+          The 'VirusTotal.IP.attributes.threat_severity.threat_severity_data.has_bad_downloaded_files_medium' context key was not extracted properly. This may indicate that the following change has been made to the 'NGFW Scan' playbook:
           1- The 'ip' input configuration was changed for the 'ip' automation used in the 'Enrich scanner IP Address' task.
           2- The 'ip' automation outputs have been modified and no longer contain the 'VirusTotal.IP.attributes.threat_severity.threat_severity_data.has_bad_downloaded_files_medium' context key.
     separatecontext: false
@@ -4320,10 +4320,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "115":
     id: "115"
-    taskid: 92ad6498-eae3-4165-833c-dfb0d1b436ea
+    taskid: c1e4d6c1-6783-4c5d-87f0-dee3c68ebe08
     type: regular
     task:
-      id: 92ad6498-eae3-4165-833c-dfb0d1b436ea
+      id: c1e4d6c1-6783-4c5d-87f0-dee3c68ebe08
       version: -1
       name: Verify Context Error - Threat Detections Count
       description: Prints an error entry with a given message
@@ -4334,7 +4334,7 @@ tasks:
     scriptarguments:
       message:
         simple: |-
-          The 'VirusTotal.IP.attributes.threat_severity.threat_severity_data.num_detections' context key was not extracted properly. This may indicate that the following change has been made to the 'WildFire Malware' playbook:
+          The 'VirusTotal.IP.attributes.threat_severity.threat_severity_data.num_detections' context key was not extracted properly. This may indicate that the following change has been made to the 'NGFW Scan' playbook:
           1- The 'ip' input configuration was changed for the 'ip' automation used in the 'Enrich scanner IP Address' task.
           2- The 'ip' automation outputs have been modified and no longer contain the 'VirusTotal.IP.attributes.threat_severity.threat_severity_data.num_detections' context key.
     separatecontext: false
@@ -4401,10 +4401,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "117":
     id: "117"
-    taskid: cf3ad79d-b46d-494d-86e1-d77a76d66974
+    taskid: 307f905c-24c1-4202-8ddf-8493431c55c0
     type: regular
     task:
-      id: cf3ad79d-b46d-494d-86e1-d77a76d66974
+      id: 307f905c-24c1-4202-8ddf-8493431c55c0
       version: -1
       name: Verify Context Error - Total Votes - Harmless
       description: Prints an error entry with a given message
@@ -4415,7 +4415,7 @@ tasks:
     scriptarguments:
       message:
         simple: |-
-          The 'VirusTotal.IP.attributes.total_votes.harmless' context key was not extracted properly. This may indicate that the following change has been made to the 'WildFire Malware' playbook:
+          The 'VirusTotal.IP.attributes.total_votes.harmless' context key was not extracted properly. This may indicate that the following change has been made to the 'NGFW Scan' playbook:
           1- The 'ip' input configuration was changed for the 'ip' automation used in the 'Enrich scanner IP Address' task.
           2- The 'ip' automation outputs have been modified and no longer contain the 'VirusTotal.IP.attributes.total_votes.harmless' context key.
     separatecontext: false
@@ -4482,10 +4482,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "119":
     id: "119"
-    taskid: 4bd622cd-cdc8-4231-808e-d5f89e3e0d51
+    taskid: 1e35a3d3-54de-4671-8ff4-4e02be5de79c
     type: regular
     task:
-      id: 4bd622cd-cdc8-4231-808e-d5f89e3e0d51
+      id: 1e35a3d3-54de-4671-8ff4-4e02be5de79c
       version: -1
       name: Verify Context Error - Total Votes - Malicious
       description: Prints an error entry with a given message
@@ -4496,7 +4496,7 @@ tasks:
     scriptarguments:
       message:
         simple: |-
-          The 'VirusTotal.IP.attributes.total_votes.malicious' context key was not extracted properly. This may indicate that the following change has been made to the 'WildFire Malware' playbook:
+          The 'VirusTotal.IP.attributes.total_votes.malicious' context key was not extracted properly. This may indicate that the following change has been made to the 'NGFW Scan' playbook:
           1- The 'ip' input configuration was changed for the 'ip' automation used in the 'Enrich scanner IP Address' task.
           2- The 'ip' automation outputs have been modified and no longer contain the 'VirusTotal.IP.attributes.total_votes.malicious' context key.
     separatecontext: false
@@ -4699,10 +4699,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "125":
     id: "125"
-    taskid: b89fbe54-7986-40c9-8072-ce2c9944fabb
+    taskid: b5826910-cc3e-4c21-8f0c-98cf7efc8372
     type: regular
     task:
-      id: b89fbe54-7986-40c9-8072-ce2c9944fabb
+      id: b5826910-cc3e-4c21-8f0c-98cf7efc8372
       version: -1
       name: Verify Context Error - Whois
       description: Prints an error entry with a given message
@@ -4713,7 +4713,7 @@ tasks:
     scriptarguments:
       message:
         simple: |-
-          The 'VirusTotal.IP.attributes.whois' context key was not extracted properly. This may indicate that the following change has been made to the 'WildFire Malware' playbook:
+          The 'VirusTotal.IP.attributes.whois' context key was not extracted properly. This may indicate that the following change has been made to the 'NGFW Scan' playbook:
           1- The 'ip' input configuration was changed for the 'ip' automation used in the 'Enrich scanner IP Address' task.
           2- The 'ip' automation outputs have been modified and no longer contain the 'VirusTotal.IP.attributes.whois' context key.
     separatecontext: false
@@ -4780,10 +4780,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "127":
     id: "127"
-    taskid: 05f9e157-42ae-4b0e-8eef-46f8d4ef10dc
+    taskid: 54fe7e18-4f3e-4218-8932-8ddc11f8f747
     type: regular
     task:
-      id: 05f9e157-42ae-4b0e-8eef-46f8d4ef10dc
+      id: 54fe7e18-4f3e-4218-8932-8ddc11f8f747
       version: -1
       name: Verify Context Error - Whois Date
       description: Prints an error entry with a given message
@@ -4794,7 +4794,7 @@ tasks:
     scriptarguments:
       message:
         simple: |-
-          The 'VirusTotal.IP.attributes.whois_date' context key was not extracted properly. This may indicate that the following change has been made to the 'WildFire Malware' playbook:
+          The 'VirusTotal.IP.attributes.whois_date' context key was not extracted properly. This may indicate that the following change has been made to the 'NGFW Scan' playbook:
           1- The 'ip' input configuration was changed for the 'ip' automation used in the 'Enrich scanner IP Address' task.
           2- The 'ip' automation outputs have been modified and no longer contain the 'VirusTotal.IP.attributes.whois_date' context key.
     separatecontext: false
@@ -4896,10 +4896,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "130":
     id: "130"
-    taskid: 988a0324-620f-41a6-8b22-de70dfe1387d
+    taskid: be752e49-4e9c-4748-8e40-a3cf22c7c75b
     type: regular
     task:
-      id: 988a0324-620f-41a6-8b22-de70dfe1387d
+      id: be752e49-4e9c-4748-8e40-a3cf22c7c75b
       version: -1
       name: Verify Context Error - ID
       description: Prints an error entry with a given message
@@ -4910,7 +4910,7 @@ tasks:
     scriptarguments:
       message:
         simple: |-
-          The 'VirusTotal.IP.id' context key was not extracted properly. This may indicate that the following change has been made to the 'WildFire Malware' playbook:
+          The 'VirusTotal.IP.id' context key was not extracted properly. This may indicate that the following change has been made to the 'NGFW Scan' playbook:
           1- The 'ip' input configuration was changed for the 'ip' automation used in the 'Enrich scanner IP Address' task.
           2- The 'ip' automation outputs have been modified and no longer contain the 'VirusTotal.IP.id' context key.
     separatecontext: false
@@ -4977,10 +4977,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "132":
     id: "132"
-    taskid: bd2b68f0-9f1a-4a84-86cd-056b2678bb66
+    taskid: 279ff773-7657-485f-86fc-ba5d9e5240ea
     type: regular
     task:
-      id: bd2b68f0-9f1a-4a84-86cd-056b2678bb66
+      id: 279ff773-7657-485f-86fc-ba5d9e5240ea
       version: -1
       name: Verify Context Error - Links
       description: Prints an error entry with a given message
@@ -4991,7 +4991,7 @@ tasks:
     scriptarguments:
       message:
         simple: |-
-          The 'VirusTotal.IP.links.self' context key was not extracted properly. This may indicate that the following change has been made to the 'WildFire Malware' playbook:
+          The 'VirusTotal.IP.links.self' context key was not extracted properly. This may indicate that the following change has been made to the 'NGFW Scan' playbook:
           1- The 'ip' input configuration was changed for the 'ip' automation used in the 'Enrich scanner IP Address' task.
           2- The 'ip' automation outputs have been modified and no longer contain the 'VirusTotal.IP.links.self' context key.
     separatecontext: false
@@ -5059,10 +5059,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "134":
     id: "134"
-    taskid: c7fec165-61a5-4cd4-83d9-5306e425bfb7
+    taskid: c24bfaab-c310-48db-80d5-099b2e3823a5
     type: regular
     task:
-      id: c7fec165-61a5-4cd4-83d9-5306e425bfb7
+      id: c24bfaab-c310-48db-80d5-099b2e3823a5
       version: -1
       name: Verify Context Error - Type
       description: Prints an error entry with a given message
@@ -5073,7 +5073,7 @@ tasks:
     scriptarguments:
       message:
         simple: |-
-          The 'VirusTotal.IP.type' context key was not extracted properly. This may indicate that the following change has been made to the 'WildFire Malware' playbook:
+          The 'VirusTotal.IP.type' context key was not extracted properly. This may indicate that the following change has been made to the 'NGFW Scan' playbook:
           1- The 'ip' input configuration was changed for the 'ip' automation used in the 'Enrich scanner IP Address' task.
           2- The 'ip' automation outputs have been modified and no longer contain the 'VirusTotal.IP.type' context key.
     separatecontext: false
@@ -5174,10 +5174,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "137":
     id: "137"
-    taskid: 58ef1722-0ce7-4f85-8c4d-f992cd896bc4
+    taskid: 0385310f-4a38-4b29-8753-41f45da0d18c
     type: regular
     task:
-      id: 58ef1722-0ce7-4f85-8c4d-f992cd896bc4
+      id: 0385310f-4a38-4b29-8753-41f45da0d18c
       version: -1
       name: Verify Context Error - Communicating Files
       description: Prints an error entry with a given message
@@ -5188,7 +5188,7 @@ tasks:
     scriptarguments:
       message:
         simple: |-
-          The 'VirusTotal.IP.relationships.communicating_files' context key was not extracted properly. This may indicate that the following change has been made to the 'WildFire Malware' playbook:
+          The 'VirusTotal.IP.relationships.communicating_files' context key was not extracted properly. This may indicate that the following change has been made to the 'NGFW Scan' playbook:
           1- The 'ip' input configuration was changed for the 'ip' automation used in the 'Enrich scanner IP Address' task.
           2- The 'ip' automation outputs have been modified and no longer contain the 'VirusTotal.IP.relationships.communicating_files' context key.
     separatecontext: false
@@ -5255,10 +5255,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "139":
     id: "139"
-    taskid: 1a52e936-9a3c-4385-8a27-28b05f0763ee
+    taskid: fabcef16-df0f-49f2-85ba-57a5d356a10f
     type: regular
     task:
-      id: 1a52e936-9a3c-4385-8a27-28b05f0763ee
+      id: fabcef16-df0f-49f2-85ba-57a5d356a10f
       version: -1
       name: Verify Context Error - Downloaded Files
       description: Prints an error entry with a given message
@@ -5269,7 +5269,7 @@ tasks:
     scriptarguments:
       message:
         simple: |-
-          The 'VirusTotal.IP.relationships.downloaded_files' context key was not extracted properly. This may indicate that the following change has been made to the 'WildFire Malware' playbook:
+          The 'VirusTotal.IP.relationships.downloaded_files' context key was not extracted properly. This may indicate that the following change has been made to the 'NGFW Scan' playbook:
           1- The 'ip' input configuration was changed for the 'ip' automation used in the 'Enrich scanner IP Address' task.
           2- The 'ip' automation outputs have been modified and no longer contain the 'VirusTotal.IP.relationships.downloaded_files' context key.
     separatecontext: false
@@ -5336,10 +5336,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "141":
     id: "141"
-    taskid: 3055d20c-9f61-4fe4-8626-b38bde3df8f1
+    taskid: 84ee94b4-a92b-47ba-8703-7f558bc7fc57
     type: regular
     task:
-      id: 3055d20c-9f61-4fe4-8626-b38bde3df8f1
+      id: 84ee94b4-a92b-47ba-8703-7f558bc7fc57
       version: -1
       name: Verify Context Error - Referrer Files
       description: Prints an error entry with a given message
@@ -5350,7 +5350,7 @@ tasks:
     scriptarguments:
       message:
         simple: |-
-          The 'VirusTotal.IP.relationships.referrer_files' context key was not extracted properly. This may indicate that the following change has been made to the 'WildFire Malware' playbook:
+          The 'VirusTotal.IP.relationships.referrer_files' context key was not extracted properly. This may indicate that the following change has been made to the 'NGFW Scan' playbook:
           1- The 'ip' input configuration was changed for the 'ip' automation used in the 'Enrich scanner IP Address' task.
           2- The 'ip' automation outputs have been modified and no longer contain the 'VirusTotal.IP.relationships.referrer_files' context key.
     separatecontext: false
@@ -5417,10 +5417,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "143":
     id: "143"
-    taskid: 0dc91f97-e65b-47a2-84b7-66c7981411e6
+    taskid: 68839872-c920-4c1e-8b83-42e87dbd7b0d
     type: regular
     task:
-      id: 0dc91f97-e65b-47a2-84b7-66c7981411e6
+      id: 68839872-c920-4c1e-8b83-42e87dbd7b0d
       version: -1
       name: Verify Context Error - URLs
       description: Prints an error entry with a given message
@@ -5431,7 +5431,7 @@ tasks:
     scriptarguments:
       message:
         simple: |-
-          The 'VirusTotal.IP.relationships.urls' context key was not extracted properly. This may indicate that the following change has been made to the 'WildFire Malware' playbook:
+          The 'VirusTotal.IP.relationships.urls' context key was not extracted properly. This may indicate that the following change has been made to the 'NGFW Scan' playbook:
           1- The 'ip' input configuration was changed for the 'ip' automation used in the 'Enrich scanner IP Address' task.
           2- The 'ip' automation outputs have been modified and no longer contain the 'VirusTotal.IP.relationships.urls' context key.
     separatecontext: false
@@ -5525,10 +5525,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "146":
     id: "146"
-    taskid: 8635701a-0d2a-4bc3-8010-bcb9e3923762
+    taskid: 00d63daa-22d4-4d35-86ea-206ffdbac75b
     type: regular
     task:
-      id: 8635701a-0d2a-4bc3-8010-bcb9e3923762
+      id: 00d63daa-22d4-4d35-86ea-206ffdbac75b
       version: -1
       name: Verify Context Error - Found Incidents
       description: Prints an error entry with a given message
@@ -5539,7 +5539,7 @@ tasks:
     scriptarguments:
       message:
         simple: |-
-          The 'foundIncidents' context key was not extracted properly. This may indicate that the following change has been made to the 'WildFire Malware' playbook:
+          The 'foundIncidents' context key was not extracted properly. This may indicate that the following change has been made to the 'NGFW Scan' playbook:
           1- The 'ip' input configuration was changed for the 'ip' automation used in the 'Enrich scanner IP Address' task.
           2- The 'ip' automation outputs have been modified and no longer contain the 'foundIncidents' context key.
     separatecontext: false
