@@ -1088,13 +1088,11 @@ script:
     - contextPath: TenableIO.Vulnerability.indexed
       description: The date and time (in Unix time) when the vulnerability was indexed into Tenable.io.
       type: Date
-<<<<<<< HEAD
     polling: true
   - arguments: []
     description: List the Tenable.io Cloud Scanners
     name: tenable-io-list-scanners
   dockerimage: demisto/python3:3.10.12.63474
-=======
   - arguments: []
     description: Lists the filtering, sorting, and pagination capabilities available for scan records on endpoints/commands that support them.
     name: tenable-io-list-scan-filters
@@ -1272,15 +1270,11 @@ script:
       type: string
     - contextPath: InfoFile.Extension
       description: The file extension of the file.
->>>>>>> 9e897ffb000b7fdf1cb6d7d05945bd8e78648340
   runonce: false
   script: ''
   subtype: python3
   type: python
-<<<<<<< HEAD
 fromversion: 5.0.0
-=======
   dockerimage: demisto/python3:3.10.12.68714
->>>>>>> 9e897ffb000b7fdf1cb6d7d05945bd8e78648340
 tests:
 - Tenable.io test
