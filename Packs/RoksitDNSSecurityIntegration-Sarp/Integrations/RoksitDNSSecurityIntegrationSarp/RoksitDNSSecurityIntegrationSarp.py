@@ -11,7 +11,7 @@ def send_to_roksit_blacklist(url, yourkey, domain):
     x = requests.post(url, headers=headers, json=blacklist)
     if x.status_code == 200:
         return CommandResults(
-            readable_output=f"{domain} was successfully added to blacklist."
+            readable_output=f"{domain} was successfully added to the blacklist."
         )
     else:
         raise DemistoException(message="Failed to add domain to blacklist")

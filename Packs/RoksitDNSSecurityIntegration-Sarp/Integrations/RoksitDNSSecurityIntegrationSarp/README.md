@@ -42,4 +42,4 @@ There is no context output for this command.
 ```!Roksit-add-to-blacklist Domain=dummy.com```
 #### Human Readable Output
 
->dummy.com was successfully added to blacklist.
+>dummy.com was successfully added to the blacklist.
