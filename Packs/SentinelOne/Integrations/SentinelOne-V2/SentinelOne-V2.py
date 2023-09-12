@@ -3307,7 +3307,7 @@ def fetch_threats(client: Client, args):
     threats = client.get_threats_request(limit=args.get('fetch_limit'),
                                          created_after=args.get('last_fetch_date_string'),
                                          site_ids=args.get('fetch_site_ids'),
-                                         incident_statuses=','.join(incident_statuses).lower(),
+                                         incident_statuses=','.join(incident_statuses).lower() if incident_statuses else None,
                                          resolved=resolved)
     for threat in threats:
         rank = threat.get('rank')
