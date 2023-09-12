@@ -736,9 +736,6 @@ script:
     name: msgraph-mail-generate-login-url
     arguments: []
   - arguments:
-    - description: User ID or principal ID (usually an email address in the format someuser@example.com).
-      name: user_id
-      required: true
     - description: display name of new folder
       name: new_folder_name
       required: true
@@ -774,9 +771,6 @@ script:
     - description: The ID of the destination folder
       name: destination_folder_id
       required: true
-    - description: User ID or principal ID (usually an email address in the format someuser@example.com).
-      name: user_id
-      required: true
     - description: flag for rate limit retry
       name: ran_once_flag
     description: Moves a message to a different folder.
@@ -791,9 +785,6 @@ script:
     - contextPath: MSGraphMail.MovedEmails.UserID
       description: The user ID.
   - arguments:
-    - description: User ID or principal ID (usually an email address in the format someuser@example.com).
-      name: user_id
-      required: true
     - description: The maximum number of mail folder lists to return. Default is 20.
       name: limit
     - description: flag for rate limit retry
