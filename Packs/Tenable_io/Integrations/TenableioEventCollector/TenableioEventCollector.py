@@ -1,7 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import time
-from typing import Dict
+from typing import Dict, Union
 
 import urllib3
 
@@ -187,6 +187,7 @@ def try_get_chunks(client: Client, export_uuid: str):
             vulnerabilities.extend(client.download_vulnerabilities_chunk(export_uuid=export_uuid, chunk_id=chunk_id))
     return vulnerabilities, status
 
+
 def try_get_assets_chunks(client: Client, export_uuid: str):
     """
     If job has succeeded (status FINISHED) get all information from all chunks available.
@@ -205,7 +206,8 @@ def try_get_assets_chunks(client: Client, export_uuid: str):
             assets.extend(client.download_assets_chunk(export_uuid=export_uuid, chunk_id=chunk_id))
     return assets, status
 
-def generate_export_uuid(client: Client, first_fetch: datetime, last_run: Dict[str, str | float | None],
+
+def generate_export_uuid(client: Client, first_fetch: datetime, last_run: Dict[str, Union[str, float, None]],
                          severity: List[str]):
     """
     Generate a job export uuid in order to fetch vulnerabilities.
@@ -306,7 +308,7 @@ def get_audit_logs_command(client: Client, from_date: Optional[str] = None, to_d
 
 
 @polling_function('tenable-get-vulnerabilities', requires_polling_arg=False)
-def get_vulnerabilities_command(args: Dict[str, Any], client: Client) -> CommandResults | PollResult:
+def get_vulnerabilities_command(args: Dict[str, Any], client: Client) -> Union[CommandResults, PollResult]:
     """
     Getting vulnerabilities from Tenable. Polling as long as the report is not ready (status FINISHED or failed)
     Args:
@@ -389,7 +391,7 @@ def get_assets_command(client: Client, args: Dict[str, Any]):
                           response=results)
 
 
-def generate_assets_export_uuid(client: Client, first_fetch: datetime, assets_last_run: Dict[str, str | float | None]):
+def generate_assets_export_uuid(client: Client, first_fetch: datetime, assets_last_run: Dict[str, Union[str, float, None]]):
     """
     Generate a job export uuid in order to fetch assets.
 
@@ -403,7 +405,7 @@ def generate_assets_export_uuid(client: Client, first_fetch: datetime, assets_la
     demisto.info("Getting export uuid.")
     last_fetch: float = assets_last_run.get('last_fetch') or time.mktime(first_fetch.timetuple())
 
-    export_uuid = client.export_assets_request(chunk_size=MAX_CHUNK_SIZE, fetch_from=last_fetch)
+    export_uuid = client.export_assets_request(chunk_size=MAX_CHUNK_SIZE, fetch_from=last_fetch)    # todo: to keep chunk size as 5000 max?
     next_assets_fetch = time.mktime(datetime.now(tz=timezone.utc).timetuple())
     demisto.info(f'assets export uuid is {export_uuid}')
 
@@ -424,8 +426,8 @@ def fetch_assets_command(client: Client, assets_last_run, max_fetch):   # todo: 
         assets fetched from the API.
     """
     assets = []
-    export_uuid = assets_last_run.get('export_uuid')    # if already in lastrun meaning its still polling chunks from api
-    last_fetch = assets_last_run.get('last_fetch')  # last run fetch time
+    export_uuid = assets_last_run.get('export_uuid')    # if already in assets_last_run meaning its still polling chunks from api
+    last_fetch = assets_last_run.get('last_fetch')  # assets last run fetch time
     if export_uuid:
         demisto.info(f'Got export uuid from API {export_uuid}')
         assets, status = try_get_assets_chunks(client=client, export_uuid=export_uuid)
@@ -540,11 +542,11 @@ def main() -> None:  # pragma: no cover
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
     max_fetch = arg_to_number(params.get('max_fetch')) or 1000
-    max_assets_fetch = arg_to_number(params.get("max_assets_fetch")) # todo: set default value
+    max_assets_fetch = arg_to_number(params.get("max_assets_fetch"))  # todo: how to use it? and how much is the max?
 
     # transform minutes to seconds
     first_fetch: datetime = arg_to_datetime(params.get('first_fetch', '3 days'))  # type: ignore
-    first_assets_fetch: datetime = arg_to_datetime(params.get("first_fetch_time_assets", "3 days")) # todo: add param to the dropdown
+    first_assets_fetch: datetime = arg_to_datetime(params.get("first_fetch_time_assets", "3 years"))  # todo: do we need the second param that's similar to this one?
 
     demisto.debug(f'Command being called is {command}')
     try:
@@ -601,9 +603,11 @@ def main() -> None:  # pragma: no cover
             if not assets_last_run.get('export_uuid'):
                 generate_assets_export_uuid(client, first_assets_fetch, assets_last_run)
 
-            assets, new_assets_last_run = fetch_assets_command(client,assets_last_run, max_fetch)
+            assets, new_assets_last_run = fetch_assets_command(client, assets_last_run, max_fetch)
             # todo: check if to move fetch vulnerabilities to here instead of fetch events.
-            send_assets_to_xsiam(assets=assets) # todo: to be implemented in CSP once we have the api endpoint from server
+            # send assets as events for now
+            send_events_to_xsiam(vendor=VENDOR, product=PRODUCT, events=assets)
+            # send_assets_to_xsiam(assets=assets) # todo: to be implemented in CSP once we have the api endpoint from server
             demisto.setAssetsLastRun(new_assets_last_run)
         elif command == 'tenable-export-assets':
             results = get_assets_command(client, args)
