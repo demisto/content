@@ -26,6 +26,9 @@
                 },
                 "occurred": {
                     "simple": "triggered"
+                },
+                "aiinsights": {
+                    "simple": "ai_insights"
                 }
             }
         },
