@@ -2,10 +2,10 @@ import json
 import pytest
 import demistomock as demisto
 
-from CommonServerPython import DemistoException, ThreatIntel
+from CommonServerPython import DemistoException, ThreatIntel, FeedIndicatorType
 from FeedMISP import clean_user_query, build_indicators_iterator, \
     handle_file_type_fields, get_galaxy_indicator_type, build_indicators_from_galaxies, update_indicators_iterator, \
-    update_indicator_fields
+    update_indicator_fields, get_ip_type
 
 
 def test_build_indicators_iterator_success():
@@ -438,3 +438,13 @@ def test_update_indicator_fields(
 
     update_indicator_fields(indicator, None, "test", feed_tags)
     assert handle_tags_fields_mock.call_count == expected_calls
+
+
+@pytest.mark.parametrize('indicator, indicator_type', [
+    ({'value': '1.1.1.1'}, FeedIndicatorType.IP),
+    ({'value': '1.1.1.1/24'}, FeedIndicatorType.CIDR),
+    ({'value': '2001:0db8:85a3:0000:0000:8a2e:0370:7334'}, FeedIndicatorType.IPv6),
+    ({'value': '2001:0db8:85a3:0000:0000:8a2e:0370:7334/64'}, FeedIndicatorType.IPv6CIDR),
+])
+def test_get_ip_type(indicator, indicator_type):
+    assert get_ip_type(indicator) == indicator_type

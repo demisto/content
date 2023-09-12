@@ -14,7 +14,7 @@ args:
   - 'True'
   - 'False'
 - defaultValue: ','
-  description: Separator to split the list by.
+  description: Separator to split the list by (use \\t in case of tab separated list).
   name: list_separator
 comment: Parses a list by header and value.
 commonfields:
@@ -42,7 +42,7 @@ script: '-'
 subtype: python3
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.10.12.63474
+dockerimage: demisto/python3:3.10.12.65389
 runas: DBotWeakRole
 tests:
 - No tests (auto formatted)

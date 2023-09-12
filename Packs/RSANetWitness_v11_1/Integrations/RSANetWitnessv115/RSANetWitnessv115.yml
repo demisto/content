@@ -15,29 +15,45 @@ configuration:
   display: Service Id
   name: service_id
   type: 0
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - additionalinfo: The maximum number of incidents to fetch
   defaultvalue: '50'
   display: Fetch Limit
   name: max_fetch
   type: 0
+  required: false
 - additionalinfo: First fetch timestamp (<number> <time unit>, for example, 12 hours, 7 days)
   defaultvalue: 1 days
   display: Fetch Time
   name: first_fetch
   type: 0
+- defaultvalue: 'false'
+  display: On 'Fetch incidents' import all alerts related to the incident
+  name: import_alerts
+  type: 8
+- display: Alerts Limit
+  name: max_alerts
+  type: 0
+  required: false
+  additionalinfo: The maximum number of alerts to fetch for each incident. The maximum allowed is 50.
+  defaultvalue: '50'
 - defaultvalue: NetWitness Incident
   display: Incident type
   name: incidentType
   type: 13
+  required: false
 - display: Fetch incidents
   name: isFetch
   type: 8
+  required: false
 description: The RSA NetWitness integration provides system log, network, and endpoint visibility for real-time collection, detection, and automated response with the Cortex XSOAR Enterprise platform. Using full session analysis, customers can extract critical data and effectively run security operations automated playbooks.
 display: RSANetWitness v11.5
 name: RSANetWitnessv115
@@ -54,7 +70,7 @@ script:
       name: page_number
     - description: Maximum number of results to be returned. If not set, the first 50 results are returned. Cannot be supplied with page_size/page_number arguments.
       name: limit
-    - description: Enter an incident ID to receive its full details. For example, 'INC-40'
+    - description: Enter an incident ID to receive its full details. For example, `INC-40`.
       name: id
     description: Retrieves a single incident by ID or multiple incidents by the date and time they were created using the start time ('since') or end time ('until'). You can limit the results using the limit argument or the page size argument. If no arguments are entered the last 50 results are returned.
     name: rsa-nw-list-incidents
@@ -305,7 +321,7 @@ script:
       name: notes
       required: true
     - auto: PREDEFINED
-      description: The incident milestone classifier. Can be Reconnaissance, Delivery, Exploitation, Installation, CommandAndControl, ActionOnObjective, Containment, Eradication, Closure
+      description: The incident milestone classifier. Can be Reconnaissance, Delivery, Exploitation, Installation, CommandAndControl, ActionOnObjective, Containment, Eradication, Closure.
       name: milestone
       predefined:
       - Reconnaissance
@@ -1884,7 +1900,7 @@ script:
       required: true
     - description: The service ID of the specific endpoint server. View all service IDs using the 'rsa-nw-services-list' command. If none is given, the service ID configured in the integration configuration is used.
       name: service_id
-    - description: The path where the files may be present, either specify a single file path or use a wild card. for example - "C:\Users\sample\*" . To see scanned files paths use the command 'rsa-nw-snapshot-details-get'
+    - description: The path where the files may be present. Either specify a single file path or use a wild card. For example - "C:\Users\sample\*" . To see scanned file paths, use the command 'rsa-nw-snapshot-details-get'.
       name: path
       required: true
     - defaultValue: '10'
@@ -1901,6 +1917,8 @@ script:
       required: true
     - description: The service ID of the endpoint server to be connected.
       name: service_id
+    - description: Drive or NTFS mount path for which MFT is requested. this parameter is required when using API version 11.5 onwards.
+      name: path
     description: Initiates the MFT download to the endpoint server.
     name: rsa-nw-mft-download-request
   - arguments:
@@ -1948,7 +1966,7 @@ script:
       predefined:
       - 'True'
       - 'False'
-    - description: A comma-separated list of IPv4 or IPv6 addresses to excluded from isolation. For example, 1.2.3.4,11:22:33:44
+    - description: A comma-separated list of IPv4 or IPv6 addresses to excluded from isolation. For example, 1.2.3.4,11:22:33:44.
       name: exclusion_list
     - description: Additional information.
       name: comment
@@ -1963,7 +1981,7 @@ script:
       name: service_id
     - description: Allows DNS communication.
       name: allow_dns_only_by_system
-    - description: ' A comma-separated list of IPv4 or IPv6 addresses to excluded from isolation. For example, 1.2.3.4,11:22:33:44'
+    - description: 'A comma-separated list of IPv4 or IPv6 addresses to excluded from isolation. For example, 1.2.3.4,11:22:33:44.'
       name: exclusion_list
       required: true
     - description: Additional information.
@@ -1984,9 +2002,8 @@ script:
       required: true
     description: Restores the network connection and removes IP addresses added to the exclusion list for the host with the specified agent ID.
     name: rsa-nw-endpoint-isolation-remove
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.12.66339
   isfetch: true
-  runonce: false
   script: '-'
   subtype: python3
   type: python

@@ -16,6 +16,7 @@ ERROR_CODES_TO_SKIP = [
 
 class Client(BaseClient):
     """ A client class that implements logic to authenticate with the application. """
+
     def __init__(self, base_url, api_key, headers, proxy=False, verify=True, ok_codes=None, manager_email=None):
         super().__init__(base_url, verify, proxy, ok_codes, headers)
         self.api_key = api_key

@@ -1,6 +1,4 @@
-import io
 import json
-from typing import Dict
 
 import pytest
 from VirusTotalV3 import (ScoreCalculator, encode_to_base64,
@@ -77,7 +75,7 @@ class TestScoreCalculator:
         ({'vendor1': {'rank': 300}, 'vendor2': {'rank': 300}}, True),
         ({}, None)
     ])
-    def test_is_good_by_popularity_ranks(self, ranks: Dict[str, dict], result: bool):
+    def test_is_good_by_popularity_ranks(self, ranks: dict[str, dict], result: bool):
         self.score_calculator.domain_popularity_ranking = 5000
         assert self.score_calculator.is_good_by_popularity_ranks(ranks) is result
 
@@ -200,11 +198,11 @@ def test_get_whois_unexpected_value():
     Then:
     - Validate empty dict is returned
     """
-    assert get_whois('g. [Organization] Reserved Domain Name\nl. [Organization Type] Reserved Domain Name') == dict()
+    assert get_whois('g. [Organization] Reserved Domain Name\nl. [Organization Type] Reserved Domain Name') == {}
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -313,7 +311,8 @@ def test_ip_command(mocker, requests_mock):
         client=client,
         score_calculator=mocked_score_calculator,
         args=demisto.args(),
-        relationships=ip_relationships
+        relationships=ip_relationships,
+        disable_private_ip_lookup=False
     )
 
     assert results[1].execution_metrics == [{'APICallsCount': 1, 'Type': 'Successful'}]

@@ -1,7 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from abc import ABCMeta
-from typing import Callable, Tuple
+from collections.abc import Callable
 from collections import defaultdict
 from bs4 import BeautifulSoup
 from datetime import timezone
@@ -102,7 +102,10 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
     AGILE_API_ENDPOINT = 'rest/agile/1.0'
 
     def __init__(self, base_url: str, proxy: bool, verify: bool,
-                 callback_url: str, api_version: str):
+                 callback_url: str, api_version: str, username: str, api_key: str):
+        self.username = username
+        self.api_key = api_key
+        self.is_basic_auth = bool(self.username and self.api_key)
         headers: Dict[str, str] = {'Accept': 'application/json'}
         self.callback_url = callback_url
         self.api_version = api_version
@@ -114,24 +117,40 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
         their own connectivity test
         """
 
-    def http_request_with_access_token(self, method: str, headers: Dict[str, str] | None = None, url_suffix='', params=None,
-                                       data=None, json_data=None, resp_type='json', ok_codes=None, full_url='',
-                                       files: Dict[str, Any] | None = None) -> Any:
-        """This method wraps the _http_request that comes from the BaseClient class, and adds the access_token
-        of the client to the headers request, by calling the get_access_token method, which is an abstract method,
-        and every child class must implement it.
+    def http_request(self, method: str, headers: dict[str, str] | None = None, url_suffix='', params=None,
+                     data=None, json_data=None, resp_type='json', ok_codes=None, full_url='',
+                     files: Dict[str, Any] | None = None) -> Any:
+        """This method wraps the _http_request that comes from the BaseClient class,
+        and adds the headers request, by calling one of both method `get_headers_with_access_token` or
+        `get_headers_with_basic_auth` depends on the type of authentication the customer has chosen.
         Returns:
             Depends on the resp_type parameter: The response of the API endpoint.
         """
-        if headers is None:
-            headers = {}
-        access_token = self.get_access_token()
-        # We unite multiple headers (using the '|' character, pipe operator) since some requests may require extra headers
-        # to work, and this way, we have the option to receive the extra headers and send them in the API request.
-        request_headers = self._headers | headers | {'Authorization': f'Bearer {access_token}'}
+        if self.is_basic_auth:
+            request_headers = self.get_headers_with_basic_auth(headers=headers)
+        else:
+            request_headers = self.get_headers_with_access_token(headers=headers)
         return self._http_request(method, url_suffix=url_suffix, full_url=full_url, params=params, data=data,
                                   json_data=json_data, resp_type=resp_type, ok_codes=ok_codes, files=files,
                                   headers=request_headers)
+
+    def get_headers_with_access_token(self, headers: dict[str, str] | None = None) -> dict[str, str]:
+        """This method inserts the access_token of the client to the headers request,
+        by calling the get_access_token method, which is an abstract method,
+        and every child class must implement it.
+        """
+        access_token = self.get_access_token()
+        # We unite multiple headers (using the '|' character, pipe operator) since some requests may require extra headers
+        # to work, and this way, we have the option to receive the extra headers and send them in the API request.
+        return self._headers | (headers or {}) | {'Authorization': f'Bearer {access_token}'}
+
+    def get_headers_with_basic_auth(self, headers: Dict[str, str] | None = None) -> dict[str, str]:
+        """
+        This method inserts the encoded key into the request headers.
+        """
+        basic_auth_bytes = f"{self.username}:{self.api_key}".encode()
+        encoded_key = base64.b64encode(basic_auth_bytes).decode("utf-8")
+        return self._headers | (headers or {}) | {"Authorization": f"Basic {encoded_key}"}
 
     # Authorization methods
     def get_access_token(self) -> str:
@@ -149,16 +168,16 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
         integration_context = get_integration_context()
         token = integration_context.get('token', '')
         if not token:
-            raise DemistoException(('No access token was configured, please complete the authorization process'
-                                    ' as shown in the documentation'))
+            raise DemistoException('No access token was configured, please complete the authorization process'
+                                   ' as shown in the documentation')
         # The valid_until key stores the valid date in seconds to make it easier for comparison
         valid_until = integration_context.get('valid_until', 0)
         current_time = get_current_time_in_seconds()
         if current_time >= valid_until - 10:
             refresh_token = integration_context.get('refresh_token', '')
             if not refresh_token:
-                raise DemistoException(('No refresh token was configured, please complete the authorization process'
-                                        ' as shown in the documentation'))
+                raise DemistoException('No refresh token was configured, please complete the authorization process'
+                                       ' as shown in the documentation')
             # We try to retrieve a new access token and store it in the integration's context using the method bellow
             self.oauth2_retrieve_access_token(refresh_token=refresh_token)
             integration_context = get_integration_context()
@@ -217,7 +236,7 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
         # We also supply the fields: *all to return all the fields from an issue (specifically the field that holds
         # data about the attachments in the issue), otherwise, it won't get returned in the query.
         query_params |= {'expand': 'renderedFields,transitions,names', 'fields': ['*all']}
-        return self.http_request_with_access_token(
+        return self.http_request(
             method='GET', url_suffix=f'rest/api/{self.api_version}/search', params=query_params
         )
 
@@ -240,7 +259,7 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
             startAt=start_at,
             maxResults=max_results,
         )
-        return self.http_request_with_access_token(
+        return self.http_request(
             method='GET',
             url_suffix=f'{self.AGILE_API_ENDPOINT}/board/{board_id}/backlog',
             params=query_params
@@ -264,7 +283,7 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
             startAt=start_at,
             maxResults=max_results
         )
-        return self.http_request_with_access_token(
+        return self.http_request(
             method='GET',
             url_suffix=f'{self.AGILE_API_ENDPOINT}/board/{board_id}/issue',
             params=query_params
@@ -286,7 +305,7 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
             startAt=start_at,
             maxResults=max_results
         )
-        return self.http_request_with_access_token(
+        return self.http_request(
             method='GET',
             url_suffix=f'{self.AGILE_API_ENDPOINT}/board/{board_id}/sprint',
             params=query_params
@@ -310,7 +329,7 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
             maxResults=max_results,
             done=done
         )
-        return self.http_request_with_access_token(
+        return self.http_request(
             method='GET',
             url_suffix=f'{self.AGILE_API_ENDPOINT}/board/{board_id}/epic',
             params=query_params
@@ -326,7 +345,7 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
         Returns:
             requests.Response: The raw response of the endpoint.
         """
-        return self.http_request_with_access_token(
+        return self.http_request(
             method='POST',
             url_suffix=f'{self.AGILE_API_ENDPOINT}/backlog/issue',
             json_data=json_data,
@@ -356,7 +375,7 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
             startAt=start_at,
             maxResults=max_results
         )
-        return self.http_request_with_access_token(
+        return self.http_request(
             method='GET',
             url_suffix=f'{self.AGILE_API_ENDPOINT}/board',
             params=query_params
@@ -371,7 +390,7 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
         Returns:
             Dict[str, Any]: The result of the API, which will hold the relevant board.
         """
-        return self.http_request_with_access_token(
+        return self.http_request(
             method='GET',
             url_suffix=f'{self.AGILE_API_ENDPOINT}/board/{board_id}',
         )
@@ -394,7 +413,7 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
             startAt=start_at,
             maxResults=max_results
         )
-        return self.http_request_with_access_token(
+        return self.http_request(
             method='GET',
             url_suffix=f'{self.AGILE_API_ENDPOINT}/sprint/{sprint_id}/issue',
             params=query_params
@@ -419,7 +438,7 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
             startAt=start_at,
             maxResults=max_results
         )
-        return self.http_request_with_access_token(
+        return self.http_request(
             method='GET',
             url_suffix=f'{self.AGILE_API_ENDPOINT}/board/{board_id}/sprint/{sprint_id}/issue',
             params=query_params
@@ -435,7 +454,7 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
         Returns:
             requests.Response: The raw response of the endpoint.
         """
-        return self.http_request_with_access_token(
+        return self.http_request(
             method='POST',
             url_suffix=f'{self.AGILE_API_ENDPOINT}/sprint/{sprint_id}/issue',
             json_data=json_data,
@@ -449,7 +468,7 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
         Returns:
             List[Dict[str, Any]]: The result of the API, which will hold the issue fields.
         """
-        return self.http_request_with_access_token(
+        return self.http_request(
             method='GET', url_suffix=f'rest/api/{self.api_version}/field'
         )
 
@@ -464,7 +483,7 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
         Returns:
             requests.Response: The raw response of the endpoint.
         """
-        return self.http_request_with_access_token(
+        return self.http_request(
             method='POST',
             url_suffix=f'rest/api/{self.api_version}/issue/{issue_id_or_key}/transitions',
             json_data=json_data,
@@ -481,7 +500,7 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
         Returns:
             Dict[str, Any]: The result of the API, which will hold data about the added web link.
         """
-        return self.http_request_with_access_token(
+        return self.http_request(
             method='POST',
             url_suffix=f'rest/api/{self.api_version}/issue/{issue_id_or_key}/remotelink',
             json_data=json_data,
@@ -498,7 +517,7 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
             Dict[str, Any]: The result of the API, which will hold the comments of the issue.
         """
         query_params = {'expand': 'renderedBody', 'maxResults': max_results}
-        return self.http_request_with_access_token(
+        return self.http_request(
             method='GET',
             url_suffix=f'rest/api/{self.api_version}/issue/{issue_id_or_key}/comment',
             params=query_params,
@@ -514,7 +533,7 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
         Returns:
             requests.Response: The raw response of the endpoint.
         """
-        return self.http_request_with_access_token(
+        return self.http_request(
             method='DELETE',
             url_suffix=f'rest/api/{self.api_version}/issue/{issue_id_or_key}/comment/{comment_id}',
             resp_type='response',
@@ -531,7 +550,7 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
             Dict[str, Any]: The result of the API, which will hold the newly added comment.
         """
         query_params = {'expand': 'renderedBody'}
-        return self.http_request_with_access_token(
+        return self.http_request(
             method='POST',
             url_suffix=f'rest/api/{self.api_version}/issue/{issue_id_or_key}/comment',
             json_data=json_data,
@@ -550,7 +569,7 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
             Dict[str, Any]: The result of the API, which will hold the edited comment.
         """
         query_params = {'expand': 'renderedBody'}
-        return self.http_request_with_access_token(
+        return self.http_request(
             method='PUT',
             url_suffix=f'rest/api/{self.api_version}/issue/{issue_id_or_key}/comment/{comment_id}',
             json_data=json_data,
@@ -569,7 +588,7 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
             Dict[str, Any]: The result of the API, which will hold issue.
         """
         query_params = {'expand': 'renderedFields,transitions,names'}
-        return self.http_request_with_access_token(
+        return self.http_request(
             method='GET',
             url_suffix=f'rest/api/{self.api_version}/issue/{issue_id_or_key}',
             params=query_params,
@@ -587,7 +606,7 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
         Returns:
             requests.Response: The raw response of the endpoint.
         """
-        return self.http_request_with_access_token(
+        return self.http_request(
             method='PUT',
             url_suffix=f'rest/api/{self.api_version}/issue/{issue_id_or_key}',
             json_data=json_data,
@@ -604,7 +623,7 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
             requests.Response: The raw response of the endpoint.
         """
         query_params = {'deleteSubtasks': 'true'}
-        return self.http_request_with_access_token(
+        return self.http_request(
             method='DELETE',
             url_suffix=f'rest/api/{self.api_version}/issue/{issue_id_or_key}',
             params=query_params,
@@ -620,7 +639,7 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
         Returns:
             Dict[str, Any]: The result of the API, which will hold available transitions.
         """
-        return self.http_request_with_access_token(
+        return self.http_request(
             method='GET',
             url_suffix=f'rest/api/{self.api_version}/issue/{issue_id_or_key}/transitions',
         )
@@ -634,7 +653,7 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
         Returns:
             Dict[str, Any]: The results of the API, which will hold the newly created issue.
         """
-        return self.http_request_with_access_token(
+        return self.http_request(
             method='POST', url_suffix=f'rest/api/{self.api_version}/issue', json_data=json_data
         )
 
@@ -656,7 +675,7 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
             startAt=start_at,
             maxResults=max_results
         )
-        return self.http_request_with_access_token(
+        return self.http_request(
             method='GET',
             url_suffix=f'{self.AGILE_API_ENDPOINT}/epic/{epic_id_or_key}/issue',
             params=query_params
@@ -668,7 +687,7 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
         Returns:
             Dict[str, Any]: The results of the API, which will hold the issue link types.
         """
-        return self.http_request_with_access_token(
+        return self.http_request(
             method='GET',
             url_suffix=f'rest/api/{self.api_version}/issueLinkType',
         )
@@ -682,7 +701,7 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
         Returns:
             requests.Response: The raw response of the endpoint.
         """
-        return self.http_request_with_access_token(
+        return self.http_request(
             method='POST',
             url_suffix=f'rest/api/{self.api_version}/issueLink',
             json_data=json_data,
@@ -703,7 +722,7 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
         headers = {
             'X-Atlassian-Token': 'no-check',
         }
-        return self.http_request_with_access_token(
+        return self.http_request(
             method='POST',
             url_suffix=f'rest/api/{self.api_version}/issue/{issue_id_or_key}/attachments',
             files=files,
@@ -719,7 +738,7 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
         Returns:
             Dict[str, Any]: The results of the API, which will hold the metadata of the attachment.
         """
-        return self.http_request_with_access_token(
+        return self.http_request(
             method='GET', url_suffix=f'rest/api/{self.api_version}/attachment/{attachment_id}'
         )
 
@@ -756,7 +775,7 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
         Returns:
             Dict[str, Any]: The results of the API, which will hold the current user info.
         """
-        return self.http_request_with_access_token(
+        return self.http_request(
             method='GET',
             url_suffix=f'rest/api/{self.api_version}/myself'
         )
@@ -770,7 +789,7 @@ class JiraCloudClient(JiraBaseClient):
     ATLASSIAN_AUTH_URL = 'https://auth.atlassian.com'
 
     def __init__(self, proxy: bool, verify: bool, client_id: str, client_secret: str,
-                 callback_url: str, cloud_id: str, server_url: str):
+                 callback_url: str, cloud_id: str, server_url: str, username: str, api_key: str):
         self.client_id = client_id
         self.client_secret = client_secret
         self.cloud_id = cloud_id
@@ -788,8 +807,8 @@ class JiraCloudClient(JiraBaseClient):
             # For refresh token
             'offline_access']
         super().__init__(proxy=proxy, verify=verify, callback_url=callback_url,
-                         base_url=urljoin(server_url, cloud_id),
-                         api_version='3')
+                         base_url=urljoin(server_url, cloud_id), api_version='3',
+                         username=username, api_key=api_key)
 
     def test_instance_connection(self) -> None:
         self.get_user_info()
@@ -834,12 +853,12 @@ class JiraCloudClient(JiraBaseClient):
             # (which uses the callback URL), and the refresh_token is used when we want to authenticate the user using a
             # refresh token saved in the integration's context.
             demisto.debug('Both the code, and refresh token were given to obtain a new access token, this is not normal behavior')
-            raise DemistoException(('Both authorization code and refresh token were given to retrieve an'
-                                   ' access token, please only provide one'))
+            raise DemistoException('Both authorization code and refresh token were given to retrieve an'
+                                   ' access token, please only provide one')
         if not (code or refresh_token):
             # If reached here, that means both the authorization code and refresh tokens were empty.
-            demisto.debug(('Both the code, and refresh token were not given to obtain a new access token, this could'
-                           ' happen if the user deleted the integration"s context'))
+            demisto.debug('Both the code, and refresh token were not given to obtain a new access token, this could'
+                          ' happen if the user deleted the integration"s context')
             raise DemistoException('No authorization code or refresh token were supplied in order to authenticate.')
 
         data = assign_params(
@@ -877,7 +896,7 @@ class JiraCloudClient(JiraBaseClient):
         Returns:
             Dict[str, Any]: The results of the queried projects.
         """
-        return self.http_request_with_access_token(
+        return self.http_request(
             method='GET', url_suffix='rest/api/3/project/search', params=query_params
         )
 
@@ -891,7 +910,7 @@ class JiraCloudClient(JiraBaseClient):
         Returns:
             requests.Response: The raw response of the endpoint.
         """
-        return self.http_request_with_access_token(
+        return self.http_request(
             method='POST',
             url_suffix=f'{self.AGILE_API_ENDPOINT}/backlog/{board_id}/issue',
             json_data=json_data,
@@ -909,7 +928,7 @@ class JiraCloudClient(JiraBaseClient):
         Returns:
             requests.Response: The raw response of the endpoint.
         """
-        return self.http_request_with_access_token(
+        return self.http_request(
             method='POST',
             url_suffix=f'{self.AGILE_API_ENDPOINT}/board/{board_id}/issue',
             json_data=json_data,
@@ -917,7 +936,7 @@ class JiraCloudClient(JiraBaseClient):
         )
 
     def get_attachment_content(self, attachment_id: str = '', attachment_content_url: str = '') -> str:
-        return self.http_request_with_access_token(
+        return self.http_request(
             method='GET',
             url_suffix=f'rest/api/3/attachment/content/{attachment_id}',
             resp_type='content',
@@ -926,7 +945,7 @@ class JiraCloudClient(JiraBaseClient):
     # User Requests
     def get_id_by_attribute(self, attribute: str, max_results: int = DEFAULT_PAGE_SIZE) -> List[Dict[str, Any]]:
         query = {'query': attribute, 'maxResults': max_results}
-        return self.http_request_with_access_token(
+        return self.http_request(
             method='GET', url_suffix=f'rest/api/{self.api_version}/user/search', params=query
         )
 
@@ -938,13 +957,13 @@ class JiraOnPremClient(JiraBaseClient):
     """
 
     def __init__(self, proxy: bool, verify: bool, client_id: str, client_secret: str,
-                 callback_url: str, server_url: str):
+                 callback_url: str, server_url: str, username: str, api_key: str):
         self.client_id = client_id
         self.client_secret = client_secret
         self.scopes = 'WRITE'
         super().__init__(proxy=proxy, verify=verify, callback_url=callback_url,
-                         base_url=f'{server_url}',
-                         api_version='2')
+                         base_url=f'{server_url}', api_version='2',
+                         username=username, api_key=api_key)
 
     def oauth_start(self) -> str:
         return self.oauth2_start(scopes=self.scopes)
@@ -1004,12 +1023,12 @@ class JiraOnPremClient(JiraBaseClient):
             # (which uses the callback URL), and the refresh_token is used when we want to authenticate the user using a
             # refresh token saved in the integration's context.
             demisto.debug('Both the code, and refresh token were given to get a new access token, this is not normal behavior')
-            raise DemistoException(('Both authorization code and refresh token were given to retrieve an'
-                                   ' access token, please only provide one'))
+            raise DemistoException('Both authorization code and refresh token were given to retrieve an'
+                                   ' access token, please only provide one')
         if not (code or refresh_token):
             # If reached here, that means both the authorization code and refresh tokens were empty.
-            demisto.debug(('Both the code, and refresh token were not given to obtain a new access token, this could'
-                           ' happen if the user deleted the integration"s context'))
+            demisto.debug('Both the code, and refresh token were not given to obtain a new access token, this could'
+                          ' happen if the user deleted the integration"s context')
             raise DemistoException('No authorization code or refresh token were supplied in order to authenticate.')
         integration_context = get_integration_context()
         # We pop the key code_verifier, since we only want to use it when the user is authenticating using an authorization code,
@@ -1044,7 +1063,7 @@ class JiraOnPremClient(JiraBaseClient):
         self.get_user_info()
 
     def get_attachment_content(self, attachment_id: str = '', attachment_content_url: str = '') -> str:
-        return self.http_request_with_access_token(
+        return self.http_request(
             method='GET',
             full_url=attachment_content_url,
             resp_type='content',
@@ -1054,7 +1073,7 @@ class JiraOnPremClient(JiraBaseClient):
 
     def get_id_by_attribute(self, attribute: str, max_results: int = DEFAULT_PAGE_SIZE) -> List[Dict[str, Any]]:
         query = {'username': attribute, 'maxResults': max_results}
-        return self.http_request_with_access_token(
+        return self.http_request(
             method='GET', url_suffix=f'rest/api/{self.api_version}/user/search', params=query
         )
 
@@ -1064,7 +1083,7 @@ class JiraOnPremClient(JiraBaseClient):
         Returns:
             List[Dict[str, Any]]: A list of all the projects found in the Jira instance.
         """
-        return self.http_request_with_access_token(
+        return self.http_request(
             method='GET',
             url_suffix='rest/api/2/project'
         )
@@ -1496,8 +1515,8 @@ def create_issue_fields_for_appending(client: JiraBaseClient, issue_args: Dict[s
             issue_fields[issue_field] = current_issue_fields.get(issue_field, []) + value
         else:
             raise DemistoException(
-                ('Only strings and arrays support appending when editing an issue,'
-                    f' the field that caused this error is "{issue_field}", of type {type(value)}'))
+                'Only strings and arrays support appending when editing an issue,'
+                f' the field that caused this error is "{issue_field}", of type {type(value)}')
     return {'fields': issue_fields}
 
 
@@ -2036,7 +2055,7 @@ def get_comments_command(client: JiraBaseClient, args: Dict[str, str]) -> Comman
 
 
 def create_comments_command_results(comments_response: List[Dict[str, Any]],
-                                    issue_id_or_key: str) -> Tuple[str, Dict[str, Any]]:
+                                    issue_id_or_key: str) -> tuple[str, Dict[str, Any]]:
     """Returns the human readable and context output of the get_comments_command.
 
     Args:
@@ -2210,17 +2229,15 @@ def get_id_offset_command(client: JiraBaseClient, args: Dict[str, Any]) -> Comma
     Returns:
         CommandResults: CommandResults to return to XSOAR.
     """
-    jql_query = 'ORDER BY created ASC'
-    query_params = create_query_params(jql_query=jql_query)
-    res = client.run_query(query_params=query_params)
-    if not (issues := res.get('issues', [])):
+    res, first_issue_id = get_smallest_id_offset_for_query(client=client, query=args.get('query', ''))
+    if not first_issue_id:
         return CommandResults(readable_output='No issues found to retrieve the ID offset', raw_response=res)
-    first_issue_id = issues[0].get('id', '')
     return (
         CommandResults(
             outputs_prefix='Ticket',
             readable_output=f'ID Offset: {first_issue_id}',
             outputs={'idOffSet': first_issue_id},
+            raw_response=res
         )
     )
 
@@ -2673,8 +2690,8 @@ def issues_to_backlog_command(client: JiraBaseClient, args: Dict[str, Any]) -> C
     rank_before_issue = args.get('rank_before_issue', '')
     rank_after_issue = args.get('rank_after_issue', '')
     if (rank_after_issue or rank_before_issue) and not board_id:
-        raise DemistoException(('Please supply the board_id argument when supplying the rank_after_issue, and'
-                                ' rank_before_issue arguments'))
+        raise DemistoException('Please supply the board_id argument when supplying the rank_after_issue, and'
+                               ' rank_before_issue arguments')
     json_data = {'issues': issues}
     if board_id:
         # The endpoint that accepts the board id is only supported by Jira Cloud and not Jira Server API.
@@ -2956,16 +2973,41 @@ def test_authorization(client: JiraBaseClient, args: Dict[str, Any]) -> CommandR
     return CommandResults(readable_output='Successful connection.')
 
 
-def test_module() -> str:
+def test_module(client: JiraBaseClient) -> str:
     """This method will return an error since in order for the user to test the connectivity of the instance,
     they have to run a separate command, therefore, pressing the `test` button on the configuration screen will
     show them the steps in order to test the instance.
     """
-    raise DemistoException(('In order to authorize the instance, first run the command `!jira-oauth-start`,'
-                            ' and complete the process in the URL that is returned. You will then be redirected'
-                            ' to the callback URL . Copy the authorization code found in the query parameter'
-                            ' `code`, and paste that value in the command `!jira-ouath-complete` as an argument to finish'
-                            ' the process.'))
+    if client.is_basic_auth:
+        client.test_instance_connection()  # raises on failure
+        return "ok"
+    else:
+        raise DemistoException(
+            'In order to authorize the instance, first run the command `!jira-oauth-start`,'
+            ' and complete the process in the URL that is returned. You will then be redirected'
+            ' to the callback URL. Copy the authorization code found in the query parameter'
+            ' `code`, and paste that value in the command `!jira-ouath-complete` as an argument to finish'
+            ' the process.'
+        )
+
+
+def get_smallest_id_offset_for_query(client: JiraBaseClient, query: str) -> tuple[Dict[str, Any], int | None]:
+    """Returns the smallest issue ID with respect to the query argument.
+
+    Args:
+        client (JiraBaseClient): The Jira client.
+        query (str): The query that will be used to retrieve the first issue ID in it.
+
+    Returns:
+        int | None: The smallest issue ID with respect to the query argument, and None if the query
+        returns an empty list.
+    """
+    jql_query = f'{query} ORDER BY created ASC' if query else 'ORDER BY created ASC'
+    query_params = create_query_params(jql_query=jql_query, max_results=1)
+    res = client.run_query(query_params=query_params)
+    if (issues := res.get('issues', [])):
+        return res, issues[0].get('id', '')
+    return res, None
 
 
 # Fetch Incidents
@@ -2977,7 +3019,7 @@ def fetch_incidents(client: JiraBaseClient, issue_field_to_fetch_from: str, fetc
 
     Args:
         client (JiraBaseClient): The Jira client.
-        issue_field_to_fetch_from (str): The issue field to fetch from, id or created time.
+        issue_field_to_fetch_from (str): The issue field to fetch from, id, created time, or updated time.
         fetch_query (str): The fetch query configured.
         id_offset (int): The id from which to start the fetching from if we are fetching using id.
         fetch_attachments (bool): Whether to fetch the attachments or not.
@@ -2998,11 +3040,20 @@ def fetch_incidents(client: JiraBaseClient, issue_field_to_fetch_from: str, fetc
     last_run = demisto.getLastRun()
     demisto.debug(f'last_run: {last_run}' if last_run else 'last_run is empty')
     # This list will hold all the ids of the issues that were fetched in the last fetch, to eliminate fetching duplicate
-    # incidents. Since when we get the list from the last run, and all the values in the list are strings, and we may need them
+    # incidents. Since when we get the list from the last run, all the values in the list are strings, and we may need them
     # to be integers (if we want to use the issues' ids in the query, they must be passed on as integers and not strings),
     # we convert the list to hold integer values
     last_fetch_issue_ids: List[int] = convert_list_of_str_to_int(last_run.get('issue_ids', []))
     last_fetch_id = last_run.get('id', id_offset)
+    if last_fetch_id in [0, '0'] and issue_field_to_fetch_from == 'id':
+        # If last_fetch_id is equal to zero, and the user wants to fetch using the issue ID, then we automatically
+        # acquire the smallest issue ID with respect to the query
+        _, smallest_id_offset = get_smallest_id_offset_for_query(client=client, query=fetch_query)
+        if not smallest_id_offset:
+            raise DemistoException('The fetch query configured returned no Jira issues, please update it.')
+        last_fetch_id = smallest_id_offset
+        demisto.debug(f'The smallest ID offset with respect to the fetch query is {last_fetch_id}' if last_fetch_id else
+                      'No smallest ID found since the fetch query returns 0 results')
     new_fetch_created_time = last_fetch_created_time = last_run.get('created_date', '')
     new_fetch_updated_time = last_fetch_updated_time = last_run.get('updated_date', '')
     incidents: List[Dict[str, Any]] = []
@@ -3020,24 +3071,37 @@ def fetch_incidents(client: JiraBaseClient, issue_field_to_fetch_from: str, fetc
     query_params = create_query_params(jql_query=fetch_incidents_query, max_results=max_fetch_incidents)
     new_issue_ids: List[int] = []
     demisto.debug(f'Running the query with the following parameters {query_params}')
-    if query_res := client.run_query(query_params=query_params):
-        for issue in query_res.get('issues', []):
-            issue_id: int = int(issue.get('id'))  # The ID returned by the API is an integer
-            demisto.debug(f'Creating an incident for Jira issue with ID: {str(issue_id)}')
-            new_issue_ids.append(issue_id)
-            last_fetch_id = issue_id
-            new_fetch_created_time = convert_string_date_to_specific_format(
-                string_date=demisto.get(issue, 'fields.created') or '')
-            new_fetch_updated_time = convert_string_date_to_specific_format(
-                string_date=demisto.get(issue, 'fields.updated') or '')
-            parse_custom_fields(issue=issue, issue_fields_id_to_name_mapping=query_res.get('names', {}))
-            incidents.append(create_incident_from_issue(
-                client=client, issue=issue, fetch_attachments=fetch_attachments, fetch_comments=fetch_comments,
-                mirror_direction=mirror_direction,
-                comment_tag_from_jira=comment_tag_from_jira,
-                comment_tag_to_jira=comment_tag_to_jira,
-                attachment_tag_from_jira=attachment_tag_from_jira,
-                attachment_tag_to_jira=attachment_tag_to_jira))
+    try:
+        if query_res := client.run_query(query_params=query_params):
+            for issue in query_res.get('issues', []):
+                issue_id: int = int(issue.get('id'))  # The ID returned by the API is an integer
+                demisto.debug(f'Creating an incident for Jira issue with ID: {issue_id}')
+                new_issue_ids.append(issue_id)
+                last_fetch_id = issue_id
+                new_fetch_created_time = convert_string_date_to_specific_format(
+                    string_date=demisto.get(issue, 'fields.created') or '')
+                new_fetch_updated_time = convert_string_date_to_specific_format(
+                    string_date=demisto.get(issue, 'fields.updated') or '')
+                parse_custom_fields(issue=issue, issue_fields_id_to_name_mapping=query_res.get('names', {}))
+                incidents.append(create_incident_from_issue(
+                    client=client, issue=issue, fetch_attachments=fetch_attachments, fetch_comments=fetch_comments,
+                    mirror_direction=mirror_direction,
+                    comment_tag_from_jira=comment_tag_from_jira,
+                    comment_tag_to_jira=comment_tag_to_jira,
+                    attachment_tag_from_jira=attachment_tag_from_jira,
+                    attachment_tag_to_jira=attachment_tag_to_jira))
+    except Exception as e:
+        if 'Issue does not exist' in str(e) and issue_field_to_fetch_from == 'id' and str(id_offset) == str(last_fetch_id):
+            # If entered here, this means the user wants to fetch using the issue ID, and has given an incorrect issue ID
+            # to start fetching from, other than 0.
+            _, smallest_issue_id = get_smallest_id_offset_for_query(client=client, query=fetch_query)
+            raise DemistoException(
+                f'The smallest issue ID with respect to the fetch query is {smallest_issue_id}, please configure it in the'
+                ' "Issue index to start fetching incidents from" parameter.'
+                if smallest_issue_id
+                else 'The id that was configured does not exist in the Jira instance, '
+                'and the fetch query returned no results, therefore, could not start fetching.'
+            ) from e
     # If we did no progress in terms of time (the created, or updated time stayed the same as the last fetch), we should keep the
     # ids of the last fetch until progress is made, so we exclude them in the next fetch.
     if (
@@ -3235,7 +3299,7 @@ def create_incident_from_issue(client: JiraBaseClient, issue: Dict[str, Any], fe
         issue['extractedComments'] = comments_entries
         labels.append({'type': 'comments', 'value': str(comments_entries)})
 
-    issue['mirror_direction'] = MIRROR_DIRECTION_DICT.get(mirror_direction, None)
+    issue['mirror_direction'] = MIRROR_DIRECTION_DICT.get(mirror_direction)
 
     issue['mirror_tags'] = [
         comment_tag_from_jira,
@@ -3375,8 +3439,8 @@ def get_user_timezone(client: JiraBaseClient) -> str:
     """
     user_info_res = client.get_user_info()
     if not (timezone_name := user_info_res.get('timeZone', '')):
-        raise DemistoException(('Could not get Jira\'s timezone, the following response was'
-                                f' returned:\n{user_info_res}, with timezone:\n{timezone_name}'))
+        raise DemistoException('Could not get Jira\'s timezone, the following response was'
+                               f' returned:\n{user_info_res}, with timezone:\n{timezone_name}')
     demisto.debug(f'Timezone of the Jira user: {timezone_name}')
     return timezone_name
 
@@ -3540,16 +3604,15 @@ def get_updated_remote_data(client: JiraBaseClient, issue: Dict[str, Any], updat
         List[Dict[str, Any]]:  Parsed entries of the updated incident, which will be supplied to the class GetRemoteDataResponse.
     """
     parsed_entries: List[Dict[str, Any]] = []
-    demisto.debug((f"Update incident, Incident name: Jira issue {issue.get('id')}"
-                  f"Reason: Issue modified in remote"))
+    demisto.debug(f"Update incident, Incident name: Jira issue {issue.get('id')}"
+                  f"Reason: Issue modified in remote")
     # Close incident if the Jira issue gets resolved, or its status gets updated to Done.
-    if mirror_resolved_issue:
-        if closed_issue := handle_incoming_resolved_issue(
-            updated_incident
-        ):
-            demisto.debug(
-                f'Closing incident with ID: {issue_id}, since corresponding issue was resolved')
-            parsed_entries.append(closed_issue)
+    if mirror_resolved_issue and (closed_issue := handle_incoming_resolved_issue(
+        updated_incident
+    )):
+        demisto.debug(
+            f'Closing incident with ID: {issue_id}, since corresponding issue was resolved')
+        parsed_entries.append(closed_issue)
 
     # Mirroring attachments
     if fetch_attachments:
@@ -3680,7 +3743,7 @@ def update_remote_system_command(client: JiraBaseClient, args: Dict[str, Any], c
                 f'Got the following delta keys {list(delta.keys())} to update JiraV3 Incident {remote_id}'
             )
             # take the val from data as it's the updated value
-            delta = {k: remote_args.data.get(k) for k in delta.keys()}
+            delta = {k: remote_args.data.get(k) for k in delta}
             demisto.debug(f'Sending the following data to edit the issue with: {delta}')
             if issue_fields := create_issue_fields(
                 client=client,
@@ -3772,17 +3835,44 @@ def get_issue_id_or_key(issue_id: str = '', issue_key: str = '') -> str:
     return issue_id or issue_key
 
 
+def validate_auth_params(
+    username: str, api_key: str, client_id: str, client_secret: str
+) -> None:
+    is_basic_auth = bool(username or api_key)
+    is_oauth2 = bool(client_id or client_secret)
+
+    if (not is_basic_auth) and (not is_oauth2):
+        raise DemistoException("The required parameters were not provided. See the help window for more information.")
+    if is_basic_auth and is_oauth2:
+        raise DemistoException("The `User name` or `API key` parameters cannot be provided together"
+                               " with the `Client ID` or `Client Secret` parameters. See the help window for more information.")
+    if is_basic_auth and not (username and api_key):
+        raise DemistoException(
+            "To use basic authentication, the 'User name' and 'API key' parameters are mandatory."
+        )
+    if is_oauth2 and not (client_id and client_secret):
+        raise DemistoException(
+            "To use OAuth 2.0, the 'Client ID' and 'Client Secret' parameters are mandatory."
+        )
+
+
 def main():  # pragma: no cover
     params: Dict[str, Any] = demisto.params()
     args = map_v2_args_to_v3(demisto.args())
     verify_certificate: bool = not params.get('insecure', False)
     proxy = params.get('proxy', False)
 
+    # Basic authentication configuration params
+    username = params.get("basic_credentials", {}).get('identifier', '')
+    api_key = params.get("basic_credentials", {}).get('password', '')
+
     # Cloud + on-prem configuration params
     server_url = params.get('server_url', 'https://api.atlassian.com/ex/jira')
     client_id = params.get('credentials', {}).get('identifier', '')
     client_secret = params.get('credentials', {}).get('password', '')
     callback_url = params.get('callback_url', '')
+
+    validate_auth_params(username, api_key, client_id, client_secret)
 
     # Cloud configuration params
     cloud_id = params.get('cloud_id', '')
@@ -3801,14 +3891,14 @@ def main():  # pragma: no cover
     comment_tag_to_jira = params.get('comment_tag_to_jira', 'comment tag')
     comment_tag_from_jira = params.get('comment_tag_from_jira', 'comment tag from Jira')
     if comment_tag_to_jira == comment_tag_from_jira:
-        raise DemistoException(('Comment Entry Tag to Jira and Comment Entry Tag '
-                               'from jira cannot have the same value.'))
+        raise DemistoException('Comment Entry Tag to Jira and Comment Entry Tag '
+                               'from jira cannot have the same value.')
 
     attachment_tag_to_jira = params.get('attachment_tag_to_jira', 'attachment tag')
     attachment_tag_from_jira = params.get('attachment_tag_from_jira', 'attachment tag from Jira')
     if attachment_tag_to_jira == attachment_tag_from_jira:
-        raise DemistoException(('Attachment Entry Tag to Jira and Attachment Entry Tag '
-                               'from jira cannot have the same value.'))
+        raise DemistoException('Attachment Entry Tag to Jira and Attachment Entry Tag '
+                               'from jira cannot have the same value.')
     # Mirroring params
     mirror_resolved_issue = argToBoolean(params.get('close_incident', False))
     command = demisto.command()
@@ -3859,7 +3949,9 @@ def main():  # pragma: no cover
                 client_id=client_id,
                 client_secret=client_secret,
                 callback_url=callback_url,
-                server_url=server_url)
+                server_url=server_url,
+                username=username,
+                api_key=api_key)
         else:
             # Configure JiraOnPremClient
             client = JiraOnPremClient(
@@ -3868,11 +3960,13 @@ def main():  # pragma: no cover
                 client_id=client_id,
                 client_secret=client_secret,
                 callback_url=callback_url,
-                server_url=server_url)
+                server_url=server_url,
+                username=username,
+                api_key=api_key)
         demisto.debug(f'The configured Jira client is: {type(client)}')
 
         if command == 'test-module':
-            return_results(test_module())
+            return_results(test_module(client=client))
         elif command in commands:
             return_results(commands[command](client, args))
         elif command == 'fetch-incidents':

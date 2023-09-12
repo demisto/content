@@ -1,0 +1,40 @@
+{
+  "GoogleChronicleBackstory.CuratedRules(val.ruleId == obj.ruleId)": [
+    {
+      "ruleId": "ur_ttp_GCP__Global",
+      "ruleName": "GCE SSH Keys",
+      "severity": "Low",
+      "ruleType": "SINGLE_EVENT",
+      "precision": "BROAD",
+      "tactics": [
+        "TA0000"
+      ],
+      "techniques": [
+        "T0000.000"
+      ],
+      "updateTime": "2023-05-01T21:56:43.352504Z",
+      "ruleSet": "00000000-0000-0000-0000-000000000000",
+      "description": "Identifies the addition of project-wide SSH keys where there were previously none."
+    },
+    {
+      "ruleId": "ur_ttp_GCP__Editor",
+      "ruleName": "GCP Service Account Editor",
+      "severity": "Low",
+      "ruleType": "MULTI_EVENT",
+      "precision": "BROAD",
+      "tactics": [
+        "TA0000"
+      ],
+      "techniques": [
+        "T0000.000"
+      ],
+      "updateTime": "2023-05-01T21:56:43.352504Z",
+      "ruleSet": "00000000-0000-0000-0000-000000000000",
+      "description": "Identifies a new Service Account created with Editor role within the project."
+    }
+  ],
+  "GoogleChronicleBackstory.Token(val.name == obj.name)": {
+    "name": "gcb-list-curatedrules",
+    "nextPageToken": "next_page_token"
+  }
+}

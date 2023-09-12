@@ -18,15 +18,7 @@ Collects the events log for authentication and Audit provided by Okta admin API
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
 You can execute these commands in a playbook.
-#### test-module
-***
-Integration command for testing.
 
-#### fetch-events
-***
-Command that is activated by the engine to fetch event.
-###### params
-product the name of the product to name the dataset after
-####$ okta-get-events
+### okta-get-events
 ***
 Manual command to fetch events and display them.

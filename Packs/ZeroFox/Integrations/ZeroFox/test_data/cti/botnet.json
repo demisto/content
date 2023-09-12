@@ -1,0 +1,109 @@
+{
+    "next": null,
+    "results": [
+        {
+            "ip_address": "ip_address",
+            "listed_at": "2023-02-09T23:44:09Z",
+            "bot_name": "andromeda",
+            "c2_ip_address": "184.105.192.2",
+            "c2_domain": "differentia.ru",
+            "is_common_domain": true,
+            "file_location": null,
+            "operating_system": null,
+            "anti_viruses": null,
+            "country_code": "US",
+            "zip_code": null,
+            "location": null,
+            "current_language": null,
+            "available_keyboards": null,
+            "uac": null,
+            "process_elevation": null,
+            "acquired_at": null,
+            "logged_at": null,
+            "estimated_infected_at": null,
+            "breached_at": null,
+            "tags": [
+                "c2_domain_top_1m",
+                "c2_root_domain_top_1m"
+            ]
+        },
+        {
+            "ip_address": "ip_address",
+            "listed_at": "2023-02-09T23:44:09Z",
+            "bot_name": "andromeda",
+            "c2_ip_address": "184.105.192.2",
+            "c2_domain": "differentia.ru",
+            "is_common_domain": true,
+            "file_location": null,
+            "operating_system": null,
+            "anti_viruses": null,
+            "country_code": "US",
+            "zip_code": null,
+            "location": null,
+            "current_language": null,
+            "available_keyboards": null,
+            "uac": null,
+            "process_elevation": null,
+            "acquired_at": null,
+            "logged_at": null,
+            "estimated_infected_at": null,
+            "breached_at": null,
+            "tags": [
+                "c2_domain_top_1m",
+                "c2_root_domain_top_1m"
+            ]
+        },
+        {
+            "ip_address": "ip_address",
+            "listed_at": "2023-02-09T23:44:09Z",
+            "bot_name": "andromeda",
+            "c2_ip_address": "184.105.192.2",
+            "c2_domain": "disorderstatus.ru",
+            "is_common_domain": true,
+            "file_location": null,
+            "operating_system": null,
+            "anti_viruses": null,
+            "country_code": "US",
+            "zip_code": null,
+            "location": null,
+            "current_language": null,
+            "available_keyboards": null,
+            "uac": null,
+            "process_elevation": null,
+            "acquired_at": null,
+            "logged_at": null,
+            "estimated_infected_at": null,
+            "breached_at": null,
+            "tags": [
+                "c2_domain_top_1m",
+                "c2_root_domain_top_1m"
+            ]
+        },
+        {
+            "ip_address": "ip_address",
+            "listed_at": "2023-02-27T11:12:35.375167Z",
+            "bot_name": "andromeda",
+            "c2_ip_address": "184.105.192.2",
+            "c2_domain": "differentia.ru",
+            "is_common_domain": true,
+            "file_location": null,
+            "operating_system": null,
+            "anti_viruses": null,
+            "country_code": "US",
+            "zip_code": null,
+            "location": null,
+            "current_language": null,
+            "available_keyboards": null,
+            "uac": null,
+            "process_elevation": null,
+            "acquired_at": null,
+            "logged_at": null,
+            "estimated_infected_at": null,
+            "breached_at": null,
+            "tags": [
+                "c2_domain_top_1m",
+                "c2_root_domain_top_1m"
+            ]
+        }
+    ]
+}

@@ -6,9 +6,11 @@ configuration:
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Client ID
   name: ID
   required: true
@@ -20,6 +22,7 @@ configuration:
 - display: Authentication Code (OAuth2) - View documentation to generate the Authentication Code
   name: Authentication_Code
   type: 4
+  required: false
 - display: Project ID
   name: ProjectID
   required: true

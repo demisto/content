@@ -43,3 +43,5 @@ args:
   defaultValue: "false"
 scripttarget: 0
 fromversion: 5.0.0
+skipprepare:
+- script-name-incident-to-alert

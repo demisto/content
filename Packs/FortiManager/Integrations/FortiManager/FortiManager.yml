@@ -19,9 +19,11 @@ configuration:
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 description: FortiManager is a single console central management system that manages Fortinet devices.
 display: FortiManager
 name: FortiManager

@@ -58,6 +58,7 @@ ATOMs
 Mappers
 mapper
 AlienVault
+outputted
 BitcoinAbuse
 BruteForceBlocker
 NetwitnessSearch
@@ -240,3 +241,8 @@ Qradar
 XSIAM
 fromversion
 xpanse
+JavaScript
+sdk
+RFC
+datetime
+

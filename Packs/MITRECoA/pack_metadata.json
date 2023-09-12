@@ -63,5 +63,9 @@
             "display_name": "Malware",
             "mandatory": false
         }
-    }
+    },
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

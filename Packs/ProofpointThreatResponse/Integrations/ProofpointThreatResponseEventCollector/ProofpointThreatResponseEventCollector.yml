@@ -24,27 +24,32 @@ configuration:
   name: first_fetch
   type: 0
   section: Collect
+  required: false
 - defaultvalue: '100'
   display: Fetch limit - maximum number of incidents per fetch
   name: fetch_limit
   type: 0
   section: Collect
+  required: false
 - defaultvalue: '6 hours'
   additionalinfo: The time range between create_after and created_before that is sent to the API when fetching older incidents. If timeout errors occur, consider changing this value.
   display: Fetch delta - The delta time in each batch. e.g., 1 hour, 3 minutes.
   name: fetch_delta
   type: 0
   section: Collect
+  required: false
 - display: Fetch incidents with specific event sources. Can be a list of comma-separated values.
   name: event_sources
   type: 0
   section: Collect
   advanced: true
+  required: false
 - display: Fetch incidents with specific 'Abuse Disposition' values. Can be a list of comma-separated values.
   name: abuse_disposition
   type: 0
   section: Collect
   advanced: true
+  required: false
 - display: Fetch incident with specific states.
   name: states
   options:
@@ -56,23 +61,27 @@ configuration:
   type: 16
   section: Collect
   advanced: true
+  required: false
 - additionalinfo: You can find this value by navigating to Sources > JSON event source > POST URL.
   display: POST URL of the JSON alert source.
   name: post_url_id
   type: 0
   section: Collect
   advanced: true
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   section: Connect
   advanced: true
+  required: false
 - defaultvalue: 'false'
   display: Use system proxy settings
   name: proxy
   type: 8
   section: Connect
   advanced: true
+  required: false
 description: Use the Proofpoint Threat Response integration to orchestrate and automate incident response.
 display: Proofpoint Threat Response Event Collector
 name: ProofpointThreatResponseEventCollector

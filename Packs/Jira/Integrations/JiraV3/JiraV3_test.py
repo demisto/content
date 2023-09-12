@@ -18,26 +18,26 @@ def util_load_bytes_file(path: str):
 
 
 @patch.object(JiraBaseClient, '__abstractmethods__', set())
-def jira_base_client_mock() -> JiraBaseClient:
+def jira_base_client_mock(username: str = "", api_key: str = "") -> JiraBaseClient:
     """The way to mock an abstract class is using the trick @patch.object(Abstract_Class, __abstractmethods__, set()),
     since Python, behind the scenes, checks the __abstractmethods__ property, which contains a set of the names of all
     the abstract methods defined on the abstract class, if it is not empty, we won't be able to instantiate the abstract class,
     however, if this set is empty, the Python interpreter will happily instantiate our class without any problems.
     """
     return JiraBaseClient(base_url='dummy_url', proxy=False, verify=False, callback_url='dummy_callback',
-                          api_version='999')
+                          api_version='999', username=username, api_key=api_key)
 
 
 def jira_cloud_client_mock() -> JiraCloudClient:
     return JiraCloudClient(proxy=False, verify=False, client_id='dummy_client_id',
                            client_secret='dummy_secret', callback_url='dummy_url', cloud_id='dummy_cloud_id',
-                           server_url='dummy_server_url')
+                           server_url='dummy_server_url', username="", api_key="")
 
 
 def jira_onprem_client_mock() -> JiraOnPremClient:
     return JiraOnPremClient(proxy=False, verify=False, client_id='dummy_client_id',
                             client_secret='dummy_secret', callback_url='dummy_url',
-                            server_url='dummy_server_url')
+                            server_url='dummy_server_url', username="", api_key="")
 
 
 def test_v2_args_to_v3():
@@ -226,6 +226,179 @@ def test_get_issue_id_or_key(issue_id, issue_key, expected_issue_id_or_key):
     from JiraV3 import get_issue_id_or_key
     issue_id_or_key = get_issue_id_or_key(issue_id, issue_key)
     assert issue_id_or_key == expected_issue_id_or_key
+
+
+@pytest.mark.parametrize(
+    "username, api_key",
+    [
+        (
+            "dummy_username",
+            "dummy_api_key",
+        ),
+        ("", ""),
+    ],
+)
+def test_http_request(mocker, username: str, api_key: str):
+    """
+    Given:
+        - username and api_key
+    When:
+        - run http_request method
+    Then:
+        - Ensure when the username and api_key are provided then only the 'get_headers_with_basic_auth' method is called
+        - Ensure when the username and api_key are not provided then only the 'get_headers_with_access_token' method is called
+    """
+    client = jira_base_client_mock(username=username, api_key=api_key)
+
+    basic_auth_mock = mocker.patch.object(
+        client, "get_headers_with_basic_auth", return_value={}
+    )
+    oauth2_mock = mocker.patch.object(
+        client, "get_headers_with_access_token", return_value={}
+    )
+    mocker.patch.object(client, "_http_request")
+    client.http_request("GET")
+
+    assert basic_auth_mock.call_count == int(bool(client.username))
+    assert oauth2_mock.call_count == int(not bool(client.username))
+
+
+def test_test_module_basic_auth(mocker):
+    """
+    Given:
+        - mock client with username and api_key (basic auth)
+    When:
+        - run `test_module` function
+    Then:
+        - Ensure no error is raised, and return `ok`
+    """
+    from JiraV3 import test_module
+    client = jira_base_client_mock("dummy_username", "dummy_api_key")
+    mocker.patch.object(client, "test_instance_connection")
+    assert test_module(client) == "ok"
+
+
+def test_module_oauth2(mocker):
+    """
+    Given:
+        - mock client without username and api_key (oauth2)
+    When:
+        - run `test_module` function
+    Then:
+        - Ensure that error msg is raised, with a guide how to connect through oauth2
+    """
+    from JiraV3 import test_module
+    client = jira_base_client_mock()
+    mocker.patch.object(client, "test_instance_connection")
+    with pytest.raises(
+        DemistoException,
+        match="In order to authorize the instance, first run the command `!jira-oauth-start`."
+    ):
+        test_module(client)
+
+
+@pytest.mark.parametrize(
+    "params, expected_exception",
+    [
+        pytest.param(
+            {"username": "", "api_key": "", "client_id": "", "client_secret": ""},
+            "The required parameters were not provided. See the help window for more information.",
+            id="no auth params provided"
+        ),
+        pytest.param(
+            {
+                "username": "dummy_username",
+                "api_key": "dummy_api_key",
+                "client_id": "dummy_client_id",
+                "client_secret": "dummy_client_secret"
+            },
+            "The `User name` or `API key` parameters cannot be provided together"
+            " with the `Client ID` or `Client Secret` parameters. See the help window"
+            " for more information.",
+            id="both types of auth params are provided"
+        ),
+        pytest.param(
+            {"username": "dummy_username", "api_key": "", "client_id": "", "client_secret": ""},
+            "To use basic authentication, the 'User name' and 'API key' parameters are mandatory",
+            id="only `username` parameter was provided"
+        ),
+        pytest.param(
+            {"username": "", "api_key": "", "client_id": "dummy_client_id", "client_secret": ""},
+            "To use OAuth 2.0, the 'Client ID' and 'Client Secret' parameters are mandatory",
+            id="only `client_id` parameter was provided"
+        )
+    ]
+)
+def test_validate_params_failure(params: dict[str, str], expected_exception: str):
+    """
+    Given:
+        - auth params
+    When:
+        - run `validate_auth_params` function
+    Then:
+        - Ensure that as long as no valid auth params are sent an error is raised with a special message
+    """
+    from JiraV3 import validate_auth_params
+    with pytest.raises(DemistoException, match=expected_exception):
+        validate_auth_params(**params)
+
+
+@pytest.mark.parametrize(
+    "params",
+    [
+        pytest.param(
+            {
+                "username": "dummy_username",
+                "api_key": "dummy_api_key",
+                "client_id": "",
+                "client_secret": ""
+            },
+            id="Only basic auth params were provided"
+        ),
+        pytest.param(
+            {
+                "username": "",
+                "api_key": "",
+                "client_id": "dummy_client_id",
+                "client_secret": "dummy_client_secret"
+            },
+            id="Only oauth2 params were provided oauth2"
+        )
+    ]
+)
+def test_validate_auth_params(params: dict[str, str]):
+    """
+    Given:
+        - auth params
+    When:
+        - run `validate_auth_params` function
+    Then:
+        - Ensure that when provided valid auth params
+          the function does not raise
+    """
+    from JiraV3 import validate_auth_params
+    validate_auth_params(**params)
+
+
+@pytest.mark.parametrize(
+    "username, api_key",
+    [
+        ("dummy_username", "dummy_api_key"),
+        ("", "")
+    ]
+)
+def test_client_is_basic_auth_or_oauth(username: str, api_key: str):
+    """
+    Given:
+        - username and api_key
+    When:
+        - run `__init__` method for `JiraBaseClient` class
+    Then:
+        - Ensure that when the client class receives both username and api_key,
+          the `is_basic_auth` flag is True otherwise False
+    """
+    client = jira_base_client_mock(username, api_key)
+    assert client.is_basic_auth == bool(username)
 
 
 class TestJiraGetIssueCommand:
@@ -607,9 +780,40 @@ class TestJiraGetIDOffsetCommand:
         assert run_query_mocker.call_args[1].get('query_params', {}).get('jql') == 'ORDER BY created ASC'
         assert {'Ticket': {'idOffSet': '10161'}} == command_result.to_context()['EntryContext']
 
+    def test_get_id_offset_command_with_custom_query_argument(self, mocker):
+        """
+        Given:
+            - A Jira client
+        When
+            - Calling the get_id_offset_command, with the argument `query` in order to retrieve the first issue id with respect
+            to the given query.
+        Then
+            - Validate that the correct query is being sent with the API call.
+        """
+        from JiraV3 import get_id_offset_command
+        client = jira_base_client_mock()
+        raw_response = util_load_json('test_data/issue_query_test/raw_response.json')
+        run_query_mocker = mocker.patch.object(client, 'run_query', return_value=raw_response)
+        get_id_offset_command(client=client, args={'query': 'project = "Dummy Project"'})
+        assert run_query_mocker.call_args[1].get('query_params', {}).get(
+            'jql') == 'project = "Dummy Project" ORDER BY created ASC'
 
-class TestJiraEditCommentCommand:
-    def test_get_id_offset_command(self, mocker):
+    def test_get_id_offset_empty_results(self, mocker):
+        """
+        Given:
+            - A Jira client
+        When
+            - Calling the get_id_offset_command, and getting no issues from the API.
+        Then
+            - Validate that the correct message is returned to the user.
+        """
+        from JiraV3 import get_id_offset_command
+        client = jira_base_client_mock()
+        mocker.patch.object(client, 'run_query', return_value={})
+        command_result = get_id_offset_command(client=client, args={})
+        assert command_result.to_context().get('HumanReadable') == 'No issues found to retrieve the ID offset'
+
+    def test_edit_comment_command(self, mocker):
         """
         Given:
             - A Jira client
@@ -634,7 +838,7 @@ class TestJiraListIssueFieldsCommand:
     @ pytest.mark.parametrize('pagination_args', [
         ({'start_at': 0, 'max_results': 2}), ({'start_at': 1, 'max_results': 3})
     ])
-    def test_get_id_offset_command(self, mocker, pagination_args):
+    def test_list_fields_command(self, mocker, pagination_args):
         """
         Given:
             - A Jira client
@@ -2023,3 +2227,110 @@ class TestJiraFetchIncidents:
             attachment_tag_from_jira='attachment_tag_from_jira'
         )
         assert json.dumps(issue_incident) == incidents[0].get('rawJSON')
+
+    def test_retrieve_smallest_issue_id_when_fetching_by_id_and_offset_is_zero(self, mocker):
+        """
+        Given:
+            - Arguments to use when calling the fetch incidents mechanism
+        When
+            - We are fetching by the issue ID, and the ID offset is set to 0
+        Then
+            - Validate that the correct query is being called in order to retrieve the smallest issue ID
+            with respect to the fetch query
+        """
+        from JiraV3 import (fetch_incidents, DEFAULT_FETCH_LIMIT)
+        client = jira_base_client_mock()
+        mocker.patch('JiraV3.create_incident_from_issue', return_value={})
+        smallest_issue_id = '10161'
+        run_query_mocker = mocker.patch.object(client, 'run_query', side_effect=[{'issues': [{'id': smallest_issue_id}]}, {}])
+        fetch_query = 'status!=done'
+        fetch_incidents(
+            client=client,
+            issue_field_to_fetch_from='id',
+            fetch_query=fetch_query,
+            id_offset=0,
+            fetch_attachments=True,
+            fetch_comments=True,
+            max_fetch_incidents=DEFAULT_FETCH_LIMIT,
+            first_fetch_interval='3 days',
+            mirror_direction='Incoming And Outgoing',
+            comment_tag_to_jira='comment_tag_to_jira',
+            comment_tag_from_jira='comment_tag_from_jira',
+            attachment_tag_to_jira='attachment_tag_to_jira',
+            attachment_tag_from_jira='attachment_tag_from_jira'
+        )
+        assert run_query_mocker.call_args_list[0][1].get('query_params', {}).get(
+            'jql', '') == f'{fetch_query} ORDER BY created ASC'
+        assert run_query_mocker.call_args_list[1][1].get('query_params', {
+        }).get('jql', '') == f'{fetch_query} AND id >= {smallest_issue_id} ORDER BY id ASC'
+
+    def test_fetch_incidents_by_id_incorrect_id_offset_error(self, mocker):
+        """
+        Given:
+            - Arguments to use when calling the fetch incidents mechanism
+        When
+            - We are fetching by the issue ID, and the ID offset is set to an arbitrary number, other than 0
+        Then
+            - Validate that the error is caught, that stems from configuring an incorrect (does not exist) ID offset
+        """
+        from JiraV3 import (fetch_incidents, DEFAULT_FETCH_LIMIT)
+        client = jira_base_client_mock()
+        mocker.patch('JiraV3.create_incident_from_issue', return_value={})
+        smallest_issue_id = '10161'
+        mocker.patch.object(
+            client, 'run_query',
+            side_effect=[Exception('Issue does not exist or you do not have permission to see it'),
+                         {'issues': [{'id': smallest_issue_id}]}])
+        fetch_query = 'status!=done'
+        with pytest.raises(DemistoException) as e:
+            fetch_incidents(
+                client=client,
+                issue_field_to_fetch_from='id',
+                fetch_query=fetch_query,
+                id_offset=1,
+                fetch_attachments=True,
+                fetch_comments=True,
+                max_fetch_incidents=DEFAULT_FETCH_LIMIT,
+                first_fetch_interval='3 days',
+                mirror_direction='Incoming And Outgoing',
+                comment_tag_to_jira='comment_tag_to_jira',
+                comment_tag_from_jira='comment_tag_from_jira',
+                attachment_tag_to_jira='attachment_tag_to_jira',
+                attachment_tag_from_jira='attachment_tag_from_jira'
+            )
+        assert f'The smallest issue ID with respect to the fetch query is {smallest_issue_id}' in str(e)
+
+    def test_fetch_incidents_by_id_and_offset_is_zero_error(self, mocker):
+        """
+        Given:
+            - Arguments to use when calling the fetch incidents mechanism
+        When
+            - We are fetching by the issue ID, the ID offset is set to 0, we try to acquire the smallest issue ID
+            with respect to the fetch query, but there are no issues returned from the fetch query
+        Then
+            - Validate that an error is returned, stating that there are no issues with respect to the configured fetch query
+        """
+        from JiraV3 import (fetch_incidents, DEFAULT_FETCH_LIMIT)
+        client = jira_base_client_mock()
+        mocker.patch('JiraV3.create_incident_from_issue', return_value={})
+        mocker.patch.object(
+            client, 'run_query',
+            return_value={'issues': []})
+        fetch_query = 'status!=done'
+        with pytest.raises(DemistoException) as e:
+            fetch_incidents(
+                client=client,
+                issue_field_to_fetch_from='id',
+                fetch_query=fetch_query,
+                id_offset=0,
+                fetch_attachments=True,
+                fetch_comments=True,
+                max_fetch_incidents=DEFAULT_FETCH_LIMIT,
+                first_fetch_interval='3 days',
+                mirror_direction='Incoming And Outgoing',
+                comment_tag_to_jira='comment_tag_to_jira',
+                comment_tag_from_jira='comment_tag_from_jira',
+                attachment_tag_to_jira='attachment_tag_to_jira',
+                attachment_tag_from_jira='attachment_tag_from_jira'
+            )
+        assert 'The fetch query configured returned no Jira issues, please update it' in str(e)
