@@ -2585,8 +2585,13 @@ def update_remote_system_command(client: Client, args: Dict[str, Any], params: D
                 demisto.debug(f'Closing by custom state = {close_custom_state}')
                 is_custom_close = True
                 parsed_args.data['state'] = close_custom_state
+
         fields = get_ticket_fields(parsed_args.data, ticket_type=ticket_type)
         if closure_case:
+            # Convert the closng state to the right one if the ticket type is not incident in order to close the
+            # ticket/incident via XSOAR
+            if ticket_type in {'sc_task', 'sc_req_item', SIR_INCIDENT}:
+                fields['state'] = TICKET_TYPE_TO_CLOSED_STATE[ticket_type]
             fields = {key: val for key, val in fields.items() if key != 'closed_at' and key != 'resolved_at'}
 
         demisto.debug(f'Sending update request to server {ticket_type}, {ticket_id}, {fields}')
