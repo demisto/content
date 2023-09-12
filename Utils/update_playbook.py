@@ -1,3 +1,4 @@
+import logging
 import sys
 import ntpath
 import yaml
@@ -92,7 +93,7 @@ def update_replace_copy_dev(playbook):
 
 
 def update_playbook(source_path, destination_path):
-    print("Starting...")
+    logging.info("Starting...")
 
     with open(source_path) as f:
         playbook = yaml.safe_load(f)
@@ -132,12 +133,12 @@ def update_playbook(source_path, destination_path):
             Dumper=yamlordereddictloader.SafeDumper,
             default_flow_style=False)
 
-    print(f"Finished - new yml saved at {destination_path}")
+    logging.info(f"Finished - new yml saved at {destination_path}")
 
 
 def main(argv):
     if len(argv) < 1:
-        print("Please provide <source playbook path>, <optional - destination playbook path>")
+        logging.info("Please provide <source playbook path>, <optional - destination playbook path>")
         sys.exit(1)
 
     source_path = argv[0]
