@@ -92,7 +92,8 @@ if [ -n "$_force" ]; then
   _variables="variables[FORCE_BUCKET_UPLOAD]=true"
 fi
 
-source Utils/gitlab_triggers/trigger_build_url.sh
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+source ${SCRIPT_DIR}/trigger_build_url.sh
 
 curl -k -v --request POST \
   --form token="${_ci_token}" \
