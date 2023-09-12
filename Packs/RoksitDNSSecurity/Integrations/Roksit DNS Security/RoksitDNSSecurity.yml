@@ -1,6 +1,6 @@
 category: Network Security
 commonfields:
-  id: Roksit DNS Security (DNSSense)
+  id: Roksit DNS Security
   version: -1
 configuration:
 - defaultvalue: https://portal.roksit.com/api/integration/blacklist
@@ -20,7 +20,7 @@ configuration:
   type: 8
 description: This integration provides adding selected domains to the Roksit Secure DNS's Blacklisted Domain List through API .
 display: Roksit DNS Security (DNSSense)
-name: Roksit DNS Security (DNSSense)
+name: Roksit DNS Security
 script:
   commands:
   - arguments:
