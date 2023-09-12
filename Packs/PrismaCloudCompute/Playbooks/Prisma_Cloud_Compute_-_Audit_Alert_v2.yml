@@ -24,7 +24,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 152.5,
           "y": -220
         }
       }
@@ -38,10 +38,10 @@ tasks:
     continueonerrortype: ""
   "1":
     id: "1"
-    taskid: 360f5aa0-896d-4ec2-8678-d4b2d0de15f6
+    taskid: 84a32223-8565-4fa8-8829-b4f59794cd40
     type: regular
     task:
-      id: 360f5aa0-896d-4ec2-8678-d4b2d0de15f6
+      id: 84a32223-8565-4fa8-8829-b4f59794cd40
       version: -1
       name: Parse Audit Alert
       description: Parse raw vulnerabilities JSON data
@@ -52,15 +52,18 @@ tasks:
     nexttasks:
       '#none#':
       - "2"
+      - "40"
     scriptarguments:
       alert_raw_json:
-        simple: ${incident.prismacloudcomputerawalertjson}
+        complex:
+          root: incident
+          accessor: prismacloudcomputerawalertjson
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 70
+          "x": 152.5,
+          "y": 250
         }
       }
     note: false
@@ -86,7 +89,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "40"
+      - "41"
     scriptarguments:
       name:
         simple: ${PrismaCloudCompute.AuditAlert.image}
@@ -94,8 +97,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 245
+          "x": 360,
+          "y": 420
         }
       }
     note: false
@@ -143,8 +146,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1615
+          "x": -60,
+          "y": 1610
         }
       }
     note: false
@@ -157,10 +160,10 @@ tasks:
     continueonerrortype: ""
   "4":
     id: "4"
-    taskid: cef22999-7f33-4262-8852-0b8246e23279
+    taskid: 38f9bf8c-e925-42f6-85d1-6a10a88349ef
     type: regular
     task:
-      id: cef22999-7f33-4262-8852-0b8246e23279
+      id: 38f9bf8c-e925-42f6-85d1-6a10a88349ef
       version: -1
       name: Gather Image Compliance Issues
       description: Grab the compliance issues under the image details from PCC.
@@ -172,7 +175,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "36"
+      - "29"
     scriptarguments:
       columns:
         simple: Severity,Title,Description
@@ -180,7 +183,7 @@ tasks:
         complex:
           root: PrismaCloudCompute.ReportsImagesScan
           filters:
-          - - operator: isNotEmpty
+          - - operator: isExists
               left:
                 value:
                   simple: PrismaCloudCompute.ReportsImagesScan
@@ -194,8 +197,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 2185
+          "x": 562.5,
+          "y": 2130
         }
       }
     note: false
@@ -224,13 +227,13 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "1"
+      - "50"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": -75
+          "x": 152.5,
+          "y": -85
         }
       }
     note: false
@@ -287,6 +290,9 @@ tasks:
     nexttasks:
       '#none#':
       - "48"
+      - "36"
+      - "8"
+      - "9"
     separatecontext: false
     view: |-
       {
@@ -320,13 +326,13 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "9"
+      - "29"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 2555
+          "x": -240,
+          "y": 1930
         }
       }
     note: false
@@ -359,8 +365,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 2730
+          "x": -637.5,
+          "y": 1930
         }
       }
     note: false
@@ -391,7 +397,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 4450
+          "y": 3340
         }
       }
     note: false
@@ -423,7 +429,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 4770
+          "y": 3650
         }
       }
     note: false
@@ -436,12 +442,12 @@ tasks:
     continueonerrortype: ""
   "27":
     id: "27"
-    taskid: bf597d64-bb7c-415d-89bf-863c74a52a60
+    taskid: aaac1ae4-577c-478d-8bb5-1a9266353c6f
     type: title
     task:
-      id: bf597d64-bb7c-415d-89bf-863c74a52a60
+      id: aaac1ae4-577c-478d-8bb5-1a9266353c6f
       version: -1
-      name: Fin
+      name: Done
       type: title
       iscommand: false
       brand: ""
@@ -451,7 +457,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 4945
+          "y": 3825
         }
       }
     note: false
@@ -477,12 +483,14 @@ tasks:
     nexttasks:
       '#none#':
       - "39"
+      - "37"
+      - "30"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 162.5,
-          "y": 2905
+          "y": 2305
         }
       }
     note: false
@@ -495,10 +503,10 @@ tasks:
     continueonerrortype: ""
   "30":
     id: "30"
-    taskid: 0dda275e-567c-486e-81de-de61857e6366
+    taskid: ec5520bf-c3d5-4d46-8783-6d45fa2941de
     type: regular
     task:
-      id: 0dda275e-567c-486e-81de-de61857e6366
+      id: ec5520bf-c3d5-4d46-8783-6d45fa2941de
       version: -1
       name: Get Defender Logs
       description: DefenderLogs returns the last Defender logs.
@@ -509,6 +517,8 @@ tasks:
     nexttasks:
       '#none#':
       - "34"
+      '#error#':
+      - "49"
     scriptarguments:
       hostname:
         simple: ${incident.prismacloudcomputehost}
@@ -519,7 +529,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 3575
+          "y": 2450
         }
       }
     note: false
@@ -529,7 +539,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
+    continueonerror: true
+    continueonerrortype: errorPath
   "31":
     id: "31"
     taskid: 9ef59bcc-e809-4cfc-8f13-21319879dc2e
@@ -552,8 +563,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 4100
+          "x": 160,
+          "y": 2940
         }
       }
     note: false
@@ -566,10 +577,10 @@ tasks:
     continueonerrortype: ""
   "32":
     id: "32"
-    taskid: 778b86c5-6e7b-457a-80f1-63031dceb702
+    taskid: 2ecea136-94b6-4be1-8c43-4bd31a10c7d6
     type: regular
     task:
-      id: 778b86c5-6e7b-457a-80f1-63031dceb702
+      id: 2ecea136-94b6-4be1-8c43-4bd31a10c7d6
       version: -1
       name: Download Defender Logs
       description: DownloadDefenderLogs downloads all defender logs and metadata.
@@ -580,6 +591,8 @@ tasks:
     nexttasks:
       '#none#':
       - "31"
+      '#error#':
+      - "49"
     scriptarguments:
       hostname:
         simple: ${incident.prismacloudcomputehost}
@@ -591,8 +604,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 3925
+          "x": 160,
+          "y": 2775
         }
       }
     note: false
@@ -602,7 +615,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
+    continueonerror: true
+    continueonerrortype: errorPath
   "34":
     id: "34"
     taskid: e0246d36-18d3-4142-8117-fc60de36e90e
@@ -628,8 +642,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 3750
+          "x": 160,
+          "y": 2610
         }
       }
     note: false
@@ -661,7 +675,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "8"
+      - "29"
     scriptarguments:
       extend-context:
         simple: PCC=.
@@ -670,7 +684,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 2380
+          "y": 1930
         }
       }
     note: false
@@ -706,8 +720,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 3225
+          "x": -237.5,
+          "y": 2450
         }
       }
     note: false
@@ -720,10 +734,10 @@ tasks:
     continueonerrortype: ""
   "38":
     id: "38"
-    taskid: 357a1a54-9d3c-4cc7-811b-a7c8663f3ed9
+    taskid: 9f771b94-ee61-4191-835c-61a4b16d54e9
     type: regular
     task:
-      id: 357a1a54-9d3c-4cc7-811b-a7c8663f3ed9
+      id: 9f771b94-ee61-4191-835c-61a4b16d54e9
       version: -1
       name: Get container forensics
       description: Get runtime forensics data for a specific container on a specific host
@@ -733,7 +747,9 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "30"
+      - "11"
+      '#error#':
+      - "49"
     scriptarguments:
       hostname:
         simple: ${incident.prismacloudcomputefqdn}
@@ -743,8 +759,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 3400
+          "x": -237.5,
+          "y": 2610
         }
       }
     note: false
@@ -754,7 +770,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
+    continueonerror: true
+    continueonerrortype: errorPath
   "39":
     id: "39"
     taskid: 15b8c345-33d7-41ea-8deb-b552d8f0cbea
@@ -770,7 +787,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "37"
+      - "11"
     scriptarguments:
       hostname:
         simple: ${incident.prismacloudcomputehost}
@@ -778,8 +795,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 3050
+          "x": 562.5,
+          "y": 2450
         }
       }
     note: false
@@ -821,7 +838,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": -40,
           "y": 420
         }
       }
@@ -887,7 +904,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
-      description: ''
+      description: 'Manual Remediation.'
     nexttasks:
       '#none#':
       - "26"
@@ -896,7 +913,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 4595
+          "y": 3475
         }
       }
     note: false
@@ -934,8 +951,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 4275
+          "x": 160,
+          "y": 3105
         }
       }
     note: false
@@ -948,17 +965,17 @@ tasks:
     continueonerrortype: ""
   "44":
     id: "44"
-    taskid: c09ec1db-55d6-42e7-8efa-8e3f27df41fb
+    taskid: 0a8b55f1-1816-44a3-891e-38c92b5a95f4
     type: regular
     task:
-      id: c09ec1db-55d6-42e7-8efa-8e3f27df41fb
+      id: 0a8b55f1-1816-44a3-891e-38c92b5a95f4
       version: -1
       name: Create Link Back
       scriptName: CreatePrismaCloudComputeLink
       type: regular
       iscommand: false
       brand: ""
-      description: ''
+      description: 'Create the link URL back to Prisma Cloud Compute.'
     nexttasks:
       '#none#':
       - "45"
@@ -971,7 +988,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": -50,
           "y": 945
         }
       }
@@ -985,10 +1002,10 @@ tasks:
     continueonerrortype: ""
   "45":
     id: "45"
-    taskid: 47d5c36b-7434-44f5-8719-145e80a16f7d
+    taskid: ed64e1ef-ef73-4e01-84bb-adc1301f0362
     type: regular
     task:
-      id: 47d5c36b-7434-44f5-8719-145e80a16f7d
+      id: ed64e1ef-ef73-4e01-84bb-adc1301f0362
       version: -1
       name: Set Incident Link
       description: commands.local.cmd.set.incident
@@ -1006,7 +1023,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": -50,
           "y": 1120
         }
       }
@@ -1020,16 +1037,16 @@ tasks:
     continueonerrortype: ""
   "46":
     id: "46"
-    taskid: d0944ccf-4ec2-464e-8a43-38472218a992
+    taskid: 48dcb0af-868e-4b71-811b-0672ae8cabba
     type: condition
     task:
-      id: d0944ccf-4ec2-464e-8a43-38472218a992
+      id: 48dcb0af-868e-4b71-811b-0672ae8cabba
       version: -1
       name: Check if Alert has Vulnerabilities
       type: condition
       iscommand: false
       brand: ""
-      description: ''
+      description: 'Condition to check if any vulnerabilities are part of the alert.'
     nexttasks:
       '#default#':
       - "7"
@@ -1044,10 +1061,12 @@ tasks:
             value:
               simple: PrismaCloudCompute.Images.Vulnerabilities
             iscontext: true
+          right:
+            value: {}
       - - operator: isExists
           left:
             value:
-              simple: ${PrismaCloudCompute.Images.Vulnerabilities.Cve}
+              simple: PrismaCloudCompute.Images.Vulnerabilities.Cve
             iscontext: true
     view: |-
       {
@@ -1075,7 +1094,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: ''
+      description: 'Check if there is a custom base url passed as input.'
     nexttasks:
       '#default#':
       - "6"
@@ -1107,19 +1126,19 @@ tasks:
     continueonerrortype: ""
   "48":
     id: "48"
-    taskid: b63e9f74-2d4b-4862-8b2a-afa4590dddec
+    taskid: 940df01d-b29e-4d85-86be-9c78cee2eef0
     type: condition
     task:
-      id: b63e9f74-2d4b-4862-8b2a-afa4590dddec
+      id: 940df01d-b29e-4d85-86be-9c78cee2eef0
       version: -1
       name: Check if Image Compliance Issues Exist
-      description: Check if Image Compliance Issues Exist
+      description: Check if any Compliance Issues exist for the image.
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
       '#default#':
-      - "36"
+      - "29"
       "yes":
       - "4"
     separatecontext: false
@@ -1131,12 +1150,92 @@ tasks:
             value:
               simple: PrismaCloudCompute.ReportsImagesScan.complianceIssues
             iscontext: true
+          right:
+            value: {}
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 160,
-          "y": 1970
+          "x": 562.5,
+          "y": 1930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "49":
+    id: "49"
+    taskid: 67f3cbdd-c9df-480b-802b-9267c15c5eae
+    type: regular
+    task:
+      id: 67f3cbdd-c9df-480b-802b-9267c15c5eae
+      version: -1
+      name: Print Error
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      value:
+        simple: An Error Occured - check previous task for the exact error message.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -240,
+          "y": 3095
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "50":
+    id: "50"
+    taskid: 4d4965da-d2aa-449e-8c6e-5a6a0a7ecf2b
+    type: condition
+    task:
+      id: 4d4965da-d2aa-449e-8c6e-5a6a0a7ecf2b
+      version: -1
+      name: Check if Raw Alert JSON exist
+      description: Condition to check if incident contains the alert raw json.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "27"
+      "yes":
+      - "1"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: prismacloudcomputerawalertjson
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 152.5,
+          "y": 50
         }
       }
     note: false
@@ -1148,12 +1247,15 @@ tasks:
     isautoswitchedtoquietmode: false
 view: |-
   {
-    "linkLabelsPosition": {},
+    "linkLabelsPosition": {
+      "30_49_#error#": 0.2,
+      "38_49_#error#": 0.18
+    },
     "paper": {
       "dimensions": {
-        "height": 5230,
-        "width": 492.5,
-        "x": 50,
+        "height": 4110,
+        "width": 1580,
+        "x": -637.5,
         "y": -220
       }
     }
