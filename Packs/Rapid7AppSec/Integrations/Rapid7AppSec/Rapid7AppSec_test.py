@@ -121,7 +121,12 @@ def test_no_content_commands(
     """
     Scenario: Test commands with action.
     Given:
-     - User has provided correct parameters.
+     - Case 1: Update vulnerability severity and status.
+     - Case 2: Create a comment to specific vulnerability.
+     - Case 3: Update a comment to specific vulnerability.
+     - Case 4: Delete a comment from specific vulnerability.
+     - Case 5: Submit a scan.
+     - Case 5: Delete a scan.
     When:
      - app-sec-vulnerability-update called.
      - app-sec-vulnerability-comment-create called.
