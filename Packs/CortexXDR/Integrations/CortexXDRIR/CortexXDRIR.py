@@ -1066,7 +1066,8 @@ def fetch_incidents(
                 raw_incident = future_to_incident[future]
                 incident_id = raw_incident.get('incident_id')
                 demisto.debug(f"Performing extra-data request on incident: {incident_id}")
-                incident_data = future.result()[2].get('incident')
+                _, _, inc = future.result()
+                incident_data = inc.get('incident')
                 sort_all_list_incident_fields(incident_data)
 
                 incident_data['mirror_direction'] = MIRROR_DIRECTION.get(params.get('mirror_direction', 'None'), None)
@@ -1094,8 +1095,8 @@ def fetch_incidents(
 
             except Exception as e:
                 if "Rate limit exceeded" in str(e):
-                    # it's irrelevant to break the loop because all futures were already submitted; it's even safer to
-                    # proceed, because it's not guaranteed the API calls in the next futures returned a rate limit err.
+                    # it's irrelevant to break the loop because all futures were already submitted; we will
+                    # proceed, perhaps the API calls in the next futures did not return a rate limit error.
                     is_rate_limit = True
                 else:
                     raise
@@ -1111,9 +1112,8 @@ def fetch_incidents(
     if should_update_last_run_time:
         next_run['time'] = last_fetch + 1
 
-    incidents.sort(
-        key=lambda inc: dateparser.parse(inc["occurred"]),
-    )  # multithreading may cause incidents to be returned unsorted
+    # multithreading may cause incidents to be returned unsorted
+    incidents.sort(key=lambda inc: arg_to_datetime(inc["occurred"]))  # type: ignore
     return next_run, incidents
 
 
