@@ -7,7 +7,6 @@ SUSPICIOUS = 2
 LOW = 1
 NONE = 0
 
-indicators = []
 scores = {HIGH: 0, SUSPICIOUS: 0, LOW: 0, NONE: 0}
 incident_id = demisto.incidents()[0].get("id")
 

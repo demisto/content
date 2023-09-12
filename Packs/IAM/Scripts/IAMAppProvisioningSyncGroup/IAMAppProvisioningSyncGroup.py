@@ -56,12 +56,9 @@ okta_group_name = okta_group_data.get("displayName")
 
 app_instance = args.get("app_instance")
 okta_instance = args.get("okta_instance")
+group_mappings_updated: dict[Any, Any] = {}
 
-group_mappings_updated = {}
-failed_groups_list = []
-failed_groups_responses = []
-
-war_room_warning_logs = []
+war_room_warning_logs: list[str] = []
 
 log_prefix = f"[{okta_group_id}][{okta_group_name}][{app_instance}]"
 
@@ -212,7 +209,7 @@ def create_group(app_instance, group_name):
         demisto.info(
             f"{log_prefix} Create group completed. Id: {create_group_data.get('id')}"
         )
-        demisto.log(
+        demisto.info(
             f"{log_prefix} Create group completed. Id: {create_group_data.get('id')}"
         )
 
@@ -293,7 +290,7 @@ def update_group(app_instance, app_group_data):
         )
     else:
         demisto.info(f"{log_prefix} No change in Group")
-        demisto.log(f"{log_prefix} No change in Group")
+        demisto.info(f"{log_prefix} No change in Group")
         update_group_mapping(app_instance, app_group_data, current_date)
 
 
@@ -371,8 +368,9 @@ def get_group_member_changes_since_last_sync(last_synced, to_date):
         # Get the target id for the user. There can be multiple targets. We need the AppUser which will have the username
         if event_type == OKTA_IMPORTED_GROUP_MEMBER_CHANGE_EVENT_TYPE:
             target_user_type = OKTA_IMPORTED_USER_TYPE
-        elif (
-            event_type in (OKTA_LOCAL_GROUP_MEMBER_ADD_EVENT_TYPE, OKTA_LOCAL_GROUP_MEMBER_REMOVE_EVENT_TYPE)
+        elif event_type in (
+            OKTA_LOCAL_GROUP_MEMBER_ADD_EVENT_TYPE,
+            OKTA_LOCAL_GROUP_MEMBER_REMOVE_EVENT_TYPE,
         ):
             target_user_type = OKTA_LOCAL_USER_TYPE
         else:
@@ -749,7 +747,7 @@ def get_iam_html_body(app_instance_responses):
 
             htmlResults += "</table><br/>"
     except Exception:
-        demisto.log(f"Error while creating HTML Email body. {traceback.format_exc()}")
+        demisto.info(f"Error while creating HTML Email body. {traceback.format_exc()}")
 
     return htmlResults
 
