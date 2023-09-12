@@ -23,5 +23,9 @@
             "name": "Generic Webhook"
         }
     },
-    "githubUser": "ariel-wiz"
+    "githubUser": "ariel-wiz",
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }
