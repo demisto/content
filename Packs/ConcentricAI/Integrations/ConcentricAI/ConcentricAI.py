@@ -373,7 +373,7 @@ def get_file_360_link(cid: str):
     p1 = url.find("api")
     p2 = url.find("-")
     length = len(url)
-    if(p1 < 0 or p2 < 0):
+    if (p1 < 0 or p2 < 0):
         return None
     else:
         link = url[0:p1] + url[p2 + 1:length]
@@ -467,7 +467,7 @@ def fetch_incidents(loginClient: LoginClient, queryClient: QueryClient, last_run
     response = res['data']['allAlerts']['allContents']['rows']
     SCROLL_ID_INCIDENT = res['data']['allAlerts']['allContents']['_scroll_id']
     count = len(response)
-    if(count == 0):
+    if (count == 0):
         newAlerts = False
     else:
         answers.extend(response)
@@ -589,7 +589,7 @@ def get_user_details(loginClient: LoginClient, queryClient: QueryClient, user: s
             max_records = res['data']['allContents']['allContents']['pagination']['totalRecords']
         SCROLL_ID_USER_DETAIL = res['data']['allContents']['allContents']['_scroll_id']
         count = len(response)
-        if(count == 0):
+        if (count == 0):
             flag = False
         else:
             answers.extend(response)
