@@ -887,7 +887,7 @@ class BranchTestCollector(TestCollector):
                 try:
 
                     if "ApiModule" in yml.id_:
-                        logger.debug(f"Found changes in ApiModule = {yml.id_}")
+                        logger.debug(f"Found changes in ApiModule = {yml.id_}, starting collecting related integrations")
                         return self._collect_integrations_using_apimodule(yml.id_)
 
                     tests = tuple(yml.tests)  # raises NoTestsConfiguredException if 'no tests' in the tests field
@@ -934,19 +934,16 @@ class BranchTestCollector(TestCollector):
 
     def _collect_integrations_using_apimodule(self, api_module_id) -> CollectionResult | None:
         integrations_using_apimodule = self.id_set.api_modules_to_integrations.get(api_module_id, [])
-        collection_result_of_apimodule = None
+        collection_result_of_apimodule = tuple()
         for integration in integrations_using_apimodule:
             try:
                 integration_collected = self._collect_yml(integration.path)
-                if collection_result_of_apimodule:
-                    collection_result_of_apimodule += integration_collected
-                else:
-                    collection_result_of_apimodule = integration_collected
+                collection_result_of_apimodule += integration_collected
             except Exception as e:
                 logger.info(e)
                 continue
         logger.debug(f"collection_result_of_apimodule = {collection_result_of_apimodule}")
-        return collection_result_of_apimodule
+        return CollectionResult.union(collection_result_of_apimodule)
 
     def _collect_xsiam_and_modeling_pack(self,
                                          file_type: FileType | None,
