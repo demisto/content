@@ -1,7 +1,5 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-
-
 import os
 import sys
 import time
@@ -9,9 +7,7 @@ import traceback
 from datetime import datetime
 import urllib3
 import re
-
 import requests
-
 from requests.exceptions import HTTPError
 
 # Disable insecure warnings
@@ -1458,14 +1454,12 @@ def main():  # pragma: no cover
         demisto.results(resume_scan_command())
     elif command == 'tenable-io-get-asset-details':
         return_results(get_asset_details_command())
-<<<<<<< HEAD
     elif demisto.command() == 'tenable-io-export-assets':
         return_results(export_assets_command(demisto.args()))
     elif demisto.command() == 'tenable-io-export-vulnerabilities':
         return_results(export_vulnerabilities_command(demisto.args()))
     elif demisto.command() == 'tenable-io-list-scanners':
         return_results(get_scanner_info())
-=======
     elif command == 'tenable-io-export-assets':
         return_results(export_assets_command(args))
     elif command == 'tenable-io-export-vulnerabilities':
@@ -1476,7 +1470,7 @@ def main():  # pragma: no cover
         return_results(get_scan_history_command(args, client))
     elif command == 'tenable-io-export-scan':
         return_results(export_scan_command(args, client))
->>>>>>> 9e897ffb000b7fdf1cb6d7d05945bd8e78648340
+
 
 
 if __name__ in ['__main__', 'builtin', 'builtins']:
