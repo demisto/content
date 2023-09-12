@@ -30,7 +30,7 @@ def merge_dict(first_dict: dict, second_dict: dict):
                     res[key].append(value)
             elif value != res[key]:
                 if isinstance(value, list):
-                    res[key] = list(set([res[key], *value]))
+                    res[key] = list({res[key], *value})
                 else:
                     res[key] = [res[key], value]
         else:
