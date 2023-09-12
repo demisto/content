@@ -519,7 +519,7 @@ class Client(BaseClient):
 
         return self._http_request(
             method='GET',
-            url_suffix='/api/data/threat_intelligence/IOCIndicator/',
+            url_suffix='/api/data/threat_intelligence/IOCRule/',
             params=data
         )
 
@@ -541,14 +541,14 @@ class Client(BaseClient):
 
         return self._http_request(
             method='POST',
-            url_suffix='/api/data/threat_intelligence/IOCIndicator/',
+            url_suffix='/api/data/threat_intelligence/IOCRule/',
             json_data=data
         )
 
     def delete_ioc(self, ioc_id):
         return self._http_request(
             method='DELETE',
-            url_suffix=f'/api/data/threat_intelligence/IOCIndicator/{ioc_id}/',
+            url_suffix=f'/api/data/threat_intelligence/IOCRule/{ioc_id}/',
             return_empty_response=True
         )
 
@@ -780,7 +780,9 @@ def api_call(client, args):
     api_method = args.get('api_method', 'GET')
     api_endpoint = args.get('api_endpoint', '/api/version')
     params = args.get('parameters', {})
-    json_data = json.loads(args.get('data', {}))
+    json_data = args.get('data')
+    if json_data:
+        json_data = json.loads(json_data)
 
     result = client.api_call(api_method, api_endpoint, params, json_data)
 
@@ -1032,7 +1034,12 @@ def result_prefetchlist(client, args):
 
 def job_runkeylist(client, args):
     args['action'] = 'getHives'
-    ret, job_id = job_create(client, args)
+    parameters = {
+        'bSystemHives': True,
+        'bUsersHives': True,
+        'bWantSlowPlugins': False
+    }
+    ret, job_id = job_create(client, args, parameters)
 
     if not ret:
         return False
@@ -1170,7 +1177,12 @@ def result_driverlist(client, args):
 
 def job_servicelist(client, args):
     args['action'] = 'getHives'
-    ret, job_id = job_create(client, args)
+    parameters = {
+        'bSystemHives': True,
+        'bUsersHives': True,
+        'bWantSlowPlugins': False
+    }
+    ret, job_id = job_create(client, args, parameters)
 
     if not ret:
         return False
@@ -1223,7 +1235,7 @@ def result_startuplist(client, args):
     for x in data['results']:
         output.append({
             'startup_name': x['filename'],
-            'startup_fullpath': x['fullpathfilename'],
+            'startup_fullpath': x.get('fullpathfilename',x.get('fullpathname')),
             'fullpath': x.get('binaryinfo', {}).get('fullpath', ''),
             'signed': x.get('binaryinfo', {}).get('binaryinfo', {}).get('signed', False),
             'md5': x.get('binaryinfo', {}).get('binaryinfo', {}).get('md5'),
@@ -1970,7 +1982,7 @@ def hunt_search_hash(client, args):
 
         return_results(results)
 
-        return data
+        return outputs
 
 
 def hunt_search_running_process_hash(client, args):
@@ -1996,18 +2008,18 @@ def hunt_search_running_process_hash(client, args):
                 "Create timestamp": x['create_time'],
                 "Is maybe hollow": x['maybe_hollow']
             })
-            contextData.append({
-                'hash': filehash,
-                "hostname": x['agent']['hostname'],
-                "domain": x['agent'].get('domainname', ''),
-                "username": x['username'],
-                "os": x['agent']['osproducttype'],
-                "os_version": x['agent']['osversion'],
-                "path": x['binaryinfo']['fullpath'],
-                "create_time": x['create_time'],
-                "maybe_hollow": x['maybe_hollow'],
-                "binary_info": x['binaryinfo']['binaryinfo']
-            })
+#            contextData.append({
+#                'hash': filehash,
+#                "hostname": x['agent']['hostname'],
+#                "domain": x['agent'].get('domainname', ''),
+#                "username": x['username'],
+#                "os": x['agent']['osproducttype'],
+#                "os_version": x['agent']['osversion'],
+#                "path": x['binaryinfo']['fullpath'],
+#                "create_time": x['create_time'],
+#                "maybe_hollow": x['maybe_hollow'],
+#                "binary_info": x['binaryinfo']['binaryinfo']
+#            })
 
         readable_output = tableToMarkdown('War room overview', prefetchs, headers=[
                                           "Hostname",
@@ -2021,7 +2033,7 @@ def hunt_search_running_process_hash(client, args):
         return CommandResults(
                 outputs_prefix='Harfanglab.HuntRunningProcessSearch',
                 outputs_key_field='hash',
-                outputs=contextData,
+                outputs=prefetchs,
                 readable_output=readable_output
             )
 
@@ -2048,17 +2060,17 @@ def hunt_search_runned_process_hash(client, args):
                 "Binary Path": x['image_name'],
                 "Create timestamp": x.get('pe_timestamp', '')
             })
-            contextData.append({
-                'hash': filehash,
-                "hostname": x['agent']['hostname'],
-                "domain": x['agent'].get('domainname', ''),
-                "username": x['username'],
-                "os": x['agent']['osproducttype'],
-                "os_version": x['agent']['osversion'],
-                "path": x['image_name'],
-                "create_time": x.get('pe_timestamp', ''),
-                "binary_info": x.get('pe_info', '')
-            })
+#            contextData.append({
+#                'hash': filehash,
+#                "hostname": x['agent']['hostname'],
+#                "domain": x['agent'].get('domainname', ''),
+#                "username": x['username'],
+#                "os": x['agent']['osproducttype'],
+#                "os_version": x['agent']['osversion'],
+#                "path": x['image_name'],
+#                "create_time": x.get('pe_timestamp', ''),
+#                "binary_info": x.get('pe_info', '')
+#            })
 
         readable_output = tableToMarkdown('War room overview', prefetchs, headers=[
                                           "Hostname", "Domain", "Username", "OS", "Binary Path", "Create timestamp"],
@@ -2067,7 +2079,7 @@ def hunt_search_runned_process_hash(client, args):
         return CommandResults(
                 outputs_prefix='Harfanglab.HuntRunnedProcessSearch',
                 outputs_key_field='hash',
-                outputs=contextData,
+                outputs=prefetchs,
                 readable_output=readable_output
             )
 
@@ -3214,7 +3226,7 @@ def main():
             args['alert_type'] = demisto.params().get('alert_type', None)
             args['min_severity'] = demisto.params().get(
                 'min_severity', SEVERITIES[0])
-            args['max_fetch'] = demisto.params().get('max_fetch', None)
+            args['max_results'] = demisto.params().get('max_results', None)
             args['mirror_direction'] = demisto.params().get('mirror_direction', None)
             args['fetch_types'] = demisto.params().get('fetch_types', None)
         return_results(target_function(client, args))
