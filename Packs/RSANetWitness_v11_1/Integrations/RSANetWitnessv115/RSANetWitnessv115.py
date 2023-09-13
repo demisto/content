@@ -1345,7 +1345,7 @@ def get_modified_remote_data_command(client: Client, args: dict, params: dict):
             save_event_count = intCont.get(inc.get('id'), {}).get('eventCount')
             demisto.debug(f"Last run incident {inc.get('id')} => "
                           f"Alert count: {save_alert_count} "
-                          f"Event count: {save_event_count)"
+                          f"Event count: {save_event_count}")
             if save_alert_count != inc.get('alertCount') or save_event_count != inc.get('eventCount'):
                 # compare the save nb of alert to see if we need to pull the alert or not
                 if save_alert_count <= max_fetch_alerts:
