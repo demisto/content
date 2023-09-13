@@ -11,41 +11,23 @@ configuration:
 - display: Client token
   name: clientToken
   type: 4
-  hidden: true
-  required: false
+  required: true
 - display: Access token
   name: accessToken
   type: 4
-  hidden: true
-  required: false
+  required: true
 - display: Client secret
   name: clientSecret
   type: 4
-  hidden: true
-  required: false
-- displaypassword: Client token
-  name: credentials_client_token
-  hiddenusername: true
-  type: 9
-  required: false
-- displaypassword: Access token
-  name: credentials_access_token
-  hiddenusername: true
-  type: 9
-  required: false
-- displaypassword: Client secret
-  name: credentials_client_secret
-  hiddenusername: true
-  type: 9
-  required: false
-- display: Trust any certificate (not secure)
-  name: insecure
+  required: true
+- name: insecure
   type: 8
   required: false
-- display: Use system proxy settings
-  name: proxy
+  display: Trust any certificate (not secure)
+- name: proxy
   type: 8
   required: false
+  display: Use system proxy settings
 description: |-
   Use the Akamai WAF integration to manage common sets of lists used by various Akamai security products and features.
 
@@ -307,7 +289,7 @@ script:
     name: akamai-create-group
   - arguments:
     - defaultValue: US
-      description: The country code (two letter format) for the country where your organization is located.
+      description: Country.
       name: country
       required: true
       type: textArea
@@ -373,7 +355,7 @@ script:
       name: org_name
       required: true
       type: textArea
-    - description: The organization country name.
+    - description: The organization country.
       name: org_country
       required: true
       type: textArea
@@ -428,9 +410,6 @@ script:
     - defaultValue: 'True'
       description: SNI settings for your enrollment. Set to true to enable SNI-only for the enrollment.
       name: network_configuration_sni_only
-    - description: Multiple sans adding into the Common name
-      isArray: true
-      name: sans
     description: Create a new enrollment.
     name: akamai-create-enrollment
     outputs:
@@ -511,6 +490,12 @@ script:
     - description: The updated trust chain.
       name: trust_chain
       type: textArea
+    - auto: PREDEFINED
+      description: RSA or ECDSA
+      name: keyAlgorithm
+      predefined:
+      - RSA
+      - ECDSA
     description: Update the certs and trust chains.
     name: akamai-update-change
   - arguments:
@@ -1348,10 +1333,95 @@ script:
     outputs:
     - contextPath: Akamai.SiteShieldMaps
       description: Akamai SiteShield Maps
-  dockerimage: demisto/akamai:1.0.0.65229
+  - arguments:
+    - description: Unique Identifier of the Enrollment on which to perform the desired operation.
+      name: enrollment_id
+      required: true
+    - auto: PREDEFINED
+      description: 'Environment where the certificate is deployed: production or staging'
+      name: environment
+      predefined:
+      - production
+      - staging
+    description: 'Returns the certification/Enarollment deployment status for specific a environtment: production or staging.'
+    name: akamai-get-cps-enrollment-deployment
+  - arguments:
+    - auto: PREDEFINED
+      description: Whether a CIDR block was added, updated, or removed from service. You can use this parameter as a sorting mechanism and return only CIDR blocks with a change status of add, update, or delete. Note that a status of delete means the CIDR block is no longer in service, and you can remove it from your firewall rules.
+      name: last_action
+      predefined:
+      - all
+      - add
+      - delete
+      - update
+      type: textArea
+    - description: The ISO 8601 date the CIDR block starts serving traffic to your origin. Ensure your firewall rules are updated to allow this traffic to pass through before the effective date. Expected format MM-DD-YYYY or YYYY-MM-DD
+      name: effective_date_gt
+      type: textArea
+    description: List all CIDR blocks for all services you are subscribed to. To see additional CIDR blocks, subscribe yourself to more services and run this operation again.
+    name: akamai-list-cidr-blocks
+    outputs:
+    - contextPath: Akamai.CidrBlocks
+      description: A List of CIDR Blocks
+  - arguments:
+    - description: Enrollment on which to perform the desired operation.
+      name: enrollment_id
+      required: true
+    - description: the modification(s) to the enrollment in the dict format.
+      isArray: true
+      name: updates
+      required: true
+    - description: Enrollment info in dict format. If provided, the script will not make another API call to get the enrollmont info.             if not, another API call will be issued to retrieve the Enrollment info.
+      isArray: true
+      name: enrollment
+    - description: All pending changes to be cancelled when updating an enrollment.
+      name: allow_cancel_pending_changes
+    - description: Bypass staging and push meta_data updates directly to production network. Current change will also be updated with the same changes.
+      name: allow_staging_bypass
+    - description: "Don't deploy after this date (UTC). Sample: 2021-01-31T00:00:00.000Z"
+      name: deploy_not_after
+    - description: "Don't deploy before this date (UTC). Sample: 2021-01-31T00:00:00.000Z"
+      name: deploy_not_before
+    - description: Force certificate renewal for Enrollment
+      name: force_renewal
+    - description: CPS will automatically start a Change to renew certificates in time before they expire.
+      name: renewal_date_check_override
+    - description: Applicable for Third Party Dual Stack Enrollments, allows to update missing certificate. Option supported from v10.
+      name: allow_missing_certificate_addition
+    description: 'Updates an enrollment with changes. Response type will vary depending on the type and impact of change. For example, changing SANs list may return HTTP 202 Accepted since the operation require a new certificate and network deployment operations, and thus cannot be completed without a change. On the contrary, for example a Technical Contact name change may return HTTP 200 OK assuming there are no active change and when the operation does not require a new certificate. Reference: https://techdocs.akamai.com/cps/reference/put-enrollment  NOTES: Depending on the type of the modification, additional steps might be required to complete the update. These additional steps could be carrying out a "renew" change by resubmitting the CSR, acknowleging the warnings raised then waiting for the certificate to be deployed into PRODUCTION. However these additional steps are not included in this command. User needs to conduct those steps once the update command is completed.'
+    name: akamai-update-cps-enrollment
+    outputs:
+    - contextPath: Akamai.Enrollment.Changes
+  - arguments:
+    - description: Enrollment path found in the pending change location field.
+      name: enrollment_path
+    - description: Enrollment ID on which to perform the desired operation.
+      name: enrollment_id
+    - description: Chnage ID on which to perform the desired operation.
+      name: change_id
+    - description: 'The time after when the change will no longer be in effect.             This value is an ISO-8601 timestamp. (UTC)             Sample: 2021-01-31T00:00:00.000Z'
+      name: deploy_not_after
+    - description: 'The time that you want change to take effect. If you do not set this, the change occurs immediately,             although most changes take some time to take effect even when they are immediately effective.             This value is an ISO-8601 timestamp. (UTC)             Sample: 2021-01-31T00:00:00.000Z'
+      name: deploy_not_before
+      required: true
+    description: Updates the current deployment schedule.
+    name: akamai-update-cps-enrollment-schedule
+    outputs:
+    - contextPath: Akamai.Enrollment.Changes
+  - arguments:
+    - description: ' Enrollment path found in the pending change location field'
+      name: enrollment_path
+    - description: The change for this enrollment on which to perform the desired operation.
+      name: enrollment_id
+    - description: The change for this enrollment on which to perform the desired operation.
+      name: change_id
+    description: Gets the status of a pending change.
+    name: akamai-get-cps-change-status
+  dockerimage: demisto/akamai:1.0.0.73558
   script: ''
   subtype: python3
   type: python
+  runonce: false
 tests:
 - Akamai_WAF-Test
 fromversion: 5.0.0

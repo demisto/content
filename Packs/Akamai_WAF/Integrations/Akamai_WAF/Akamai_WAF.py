@@ -2,6 +2,8 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 
+
+
 """ IMPORTS """
 # Std imports
 import re
@@ -199,7 +201,8 @@ class Client(BaseClient):
                       change_path: str,
                       certificate: str,
                       trust_chain: str,
-                      allowed_input_type_param: str = "third-party-cert-and-trust-chain"
+                      allowed_input_type_param: str = "third-party-cert-and-trust-chain",
+                      keyAlgorithm: str = "RSA"
                       ) -> dict:
         """
             Update a change
@@ -210,13 +213,20 @@ class Client(BaseClient):
             changeId: Specify the ChangeID on which to operate or view.
             enrollmentId: Specify the enrollmentID on which to operate or view.
             allowed_input_type_param: Specify the contract on which to operate or view.
+            keyAlgorithm: RSA and ECDSA
 
         Returns:
             Json response as dictionary
         """
-        payload = '{\"certificatesAndTrustChains\":[{\"certificate\":\"' + certificate + '\",' \
-            ' \"keyAlgorithm\":\"RSA\",' \
-            '\"trustChain\":\"' + trust_chain + '\"}]}'
+        if keyAlgorithm == "RSA":
+            payload = '{\"certificatesAndTrustChains\":[{\"certificate\":\"' + certificate + '\",' \
+                ' \"keyAlgorithm\":\"RSA\",' \
+                '\"trustChain\":\"' + trust_chain + '\"}]}'
+
+        if keyAlgorithm == "ECDSA":
+            payload = '{\"certificatesAndTrustChains\":[{\"certificate\":\"' + certificate + '\",' \
+                ' \"keyAlgorithm\":\"ECDSA\",' \
+                '\"trustChain\":\"' + trust_chain + '\"}]}'
 
         headers = {
             "Accept": "application/vnd.akamai.cps.change-id.v1+json",
@@ -1894,6 +1904,199 @@ class Client(BaseClient):
                                   headers={"accept": "application/json"},
                                   )
 
+    def list_cidr_blocks(self, last_action: str = '', effective_date_gt: str = '') -> dict:
+        """
+            List all CIDR blocks for all services you are subscribed to.
+            To see additional CIDR blocks, subscribe yourself to more services and run this operation again
+        Args:
+            last_action:
+                Whether a CIDR block was added, updated, or removed from service.
+                You can use this parameter as a sorting mechanism and return only CIDR blocks with a change status of add, update, or delete.
+                Note that a status of delete means the CIDR block is no longer in service, and you can remove it from your firewall rules.
+            effective_date_gt:
+                The ISO 8601 date the CIDR block starts serving traffic to your origin.
+                Expected format MM-DD-YYYY or YYYY-MM-DD
+                Ensure your firewall rules are updated to allow this traffic to pass through before the effective date.
+
+        Returns:
+            The response provides a list of siteshield maps
+
+        """
+        headers = {"accept": "application/json"}
+        params = {
+            "lastAction": last_action,
+            "effectiveDateGt": effective_date_gt,
+        }
+        method = "GET"
+        return self._http_request(method=method,
+                                  url_suffix='firewall-rules-manager/v1/cidr-blocks',
+                                  headers=headers,
+                                  params=params,
+                                  )
+
+    def get_cps_enrollment_deployment(self,
+                                      enrollment_id: int,
+                                      environment: str,) -> dict:
+        """
+            Returns the certification/Enarollment deployment status for specific a environtment: production or staging.
+        Args:
+            enrollment_id: Unique Identifier of the Enrollment on which to perform the desired operation.
+            environment: Environment where the certificate is deployed: production or staging
+
+        Returns:
+            The response provides a deployment associcated to the enrollment id
+
+        """
+        headers = {"accept": "application/vnd.akamai.cps.deployment.v7+json"}
+        method = "GET"
+        return self._http_request(method=method,
+                                  url_suffix=f'cps/v2/enrollments/{enrollment_id}/deployments/{environment}',
+                                  headers=headers,
+                                  )
+
+    def update_cps_enrollment(self,
+                          enrollment_id: str,
+                          updates: dict,
+                          allow_cancel_pending_changes: str = 'true',
+                          allow_staging_bypass: str = 'true',
+                          deploy_not_after: str = "",
+                          deploy_not_before: str = "",
+                          force_renewal: str = 'true',
+                          renewal_date_check_override: str = 'true',
+                          allow_missing_certificate_addition: str = 'true') -> dict:
+        """
+            Returns the enrollment change path.
+        Args:
+            enrollment_id: Unique Identifier of the Enrollment on which to perform the desired operation.
+            updates: updates in dict format
+
+        Returns:
+            The response provides the enrollment change path
+
+        """
+        method = "PUT"
+        headers = {
+            'Accept': 'application/vnd.akamai.cps.enrollment-status.v1+json',
+            'content-type': 'application/vnd.akamai.cps.enrollment.v11+json',
+        }
+        params = {
+            "allow-cancel-pending-changes": allow_cancel_pending_changes,
+            "allow-staging-bypass": allow_staging_bypass,
+            "deploy-not-after": deploy_not_after,
+            "deploy-not-before": deploy_not_before,
+            "force-renewal": force_renewal,
+            "renewal-date-check-override": renewal_date_check_override,
+            "allow-missing-certificate-addition": allow_missing_certificate_addition
+        }
+
+        return self._http_request(method=method,
+                                  url_suffix=f'cps/v2/enrollments/{enrollment_id}',
+                                  headers=headers,
+                                  params=params,
+                                  json_data=updates
+                                  )
+
+    def get_enrollment_byid(self,
+                            enrollment_id: str,
+                            json_version: str = '11') -> dict:
+        """
+            Returns the enrollment with the ID specified.
+        Args:
+            enrollment_id: Unique Identifier of the Enrollment on which to perform the desired operation.
+            json_version: the version of the data structure in Json format
+
+        Reference:
+            https://techdocs.akamai.com/cps/reference/get-enrollment
+
+        Returns:
+            The response provides the enrollment
+
+        """
+        method = "GET"
+        headers = {
+            'Accept': f'application/vnd.akamai.cps.enrollment.v{json_version}+json',
+        }
+
+        return self._http_request(method=method,
+                                  url_suffix=f'cps/v2/enrollments/{enrollment_id}',
+                                  headers=headers
+                                  )
+
+    def update_cps_enrollment_schedule(self,
+                                       enrollment_path: str = '',
+                                       enrollment_id: str = '',
+                                       change_id: str = '',
+                                       deploy_not_before: str = '',
+                                       deploy_not_after: str = None,
+                          ) -> dict:
+        """
+            Returns the enrollment change path.
+        Args:
+            enrollment_path:
+                Enrollment path found in the pending change location field.
+            enrollment_id:
+                Unique Identifier of the Enrollment on which to perform the desired operation.
+            change_id:
+                Chnage ID on which to perform the desired operation.
+            deploy_not_after:
+                The time after when the change will no longer be in effect.
+                This value is an ISO-8601 timestamp. (UTC)
+                Sample: 2021-01-31T00:00:00.000Z
+            deploy_not_before:
+                The time that you want change to take effect. If you do not set this, the change occurs immediately,
+                although most changes take some time to take effect even when they are immediately effective.
+                This value is an ISO-8601 timestamp. (UTC)
+                Sample: 2021-01-31T00:00:00.000Z
+
+        Returns:
+            The response provides the enrollment change path
+
+        """
+        method = "PUT"
+        headers = {
+            'Accept': 'application/vnd.akamai.cps.change-id.v1+json',
+            'content-type': 'application/vnd.akamai.cps.deployment-schedule.v1+json',
+        }
+        body = {
+            "notBefore": deploy_not_before,
+            "notAfter": deploy_not_after
+        }
+        if enrollment_path == '':
+            url_suffix=f'cps/v2/enrollments/{enrollment_id}/changes/{change_id}/deployment-schedule'
+        else:
+            url_suffix=f'{enrollment_path}/deployment-schedule'
+        return self._http_request(method=method,
+                                  url_suffix=url_suffix,
+                                  headers=headers,
+                                  json_data=body
+                                  )
+
+    def get_cps_change_status(self,
+                              enrollment_path: str = "",
+                              enrollment_id: str = "",
+                              change_id: str = "",) -> dict:
+        """
+            Gets the status of a pending change.
+        Args:
+            enrollment_path: Enrollment path found in the pending change location field.
+            enrollment_id: Unique Identifier of the Enrollment on which to perform the desired operation.
+            change_id: The change for this enrollment on which to perform the desired operation.
+
+        Returns:
+            The response to provide the change status
+
+        """
+        headers = {"accept": "application/vnd.akamai.cps.change.v2+json"}
+        method = "GET"
+        if enrollment_path == "":
+            url_suffix = f'cps/v2/enrollments/{enrollment_id}/changes/{change_id}'
+        else:
+            url_suffix = enrollment_path
+        return self._http_request(method=method,
+                                  url_suffix=url_suffix,
+                                  headers=headers,
+                                  )
+
 
 ''' HELPER FUNCTIONS '''
 
@@ -2011,9 +2214,8 @@ def list_papi_property_bygroup_ec(raw_response: dict) -> Tuple[list, list]:
         human_readable = entry_context
     return entry_context, human_readable
 
+
 # Created by D.S.
-
-
 def clone_papi_property_command_ec(raw_response: dict) -> Tuple[list, list]:
     """
         Parse papi propertyLink
@@ -2043,9 +2245,8 @@ def clone_papi_property_command_ec(raw_response: dict) -> Tuple[list, list]:
 
     return entry_context, human_readable
 
+
 # Created by D.S.
-
-
 def add_papi_property_hostname_command_ec(raw_response: dict) -> Tuple[list, list]:
     """
         Parse papi property
@@ -2075,9 +2276,8 @@ def add_papi_property_hostname_command_ec(raw_response: dict) -> Tuple[list, lis
 
     return entry_context, human_readable
 
+
 # Created by D.S.
-
-
 def list_papi_edgehostname_bygroup_ec(raw_response: dict) -> Tuple[list, list]:
     """
         parse edgehostnameId
@@ -2104,9 +2304,8 @@ def list_papi_edgehostname_bygroup_ec(raw_response: dict) -> Tuple[list, list]:
 
     return entry_context, human_readable
 
+
 # Created by D.S.
-
-
 def new_papi_edgehostname_command_ec(raw_response: dict) -> Tuple[list, list]:
     """
         parse edgehostnameId
@@ -2137,9 +2336,8 @@ def new_papi_edgehostname_command_ec(raw_response: dict) -> Tuple[list, list]:
 
     return entry_context, human_readable
 
+
 # Created by D.S.
-
-
 def get_cps_enrollment_by_cnname(raw_response: dict, cnname: str) -> Dict:
     """
         get cps enrollment info by common name
@@ -2159,9 +2357,8 @@ def get_cps_enrollment_by_cnname(raw_response: dict, cnname: str) -> Dict:
     err_msg = f'Error in {INTEGRATION_NAME} Integration - get_cps_enrollment_by_cnname'
     raise DemistoException(err_msg)
 
+
 # Created by D.S.
-
-
 def get_cps_enrollment_by_cnname_ec(raw_response: dict) -> Tuple[list, list]:
     """
         parse enrollment and abstract enrollmentId
@@ -2188,9 +2385,8 @@ def get_cps_enrollment_by_cnname_ec(raw_response: dict) -> Tuple[list, list]:
 
     return entry_context, human_readable
 
+
 # Created by D.S.
-
-
 def list_papi_cpcodeid_bygroup_ec(raw_response: dict) -> Tuple[list, list]:
     """
         parse cpcode cpcId
@@ -2215,9 +2411,8 @@ def list_papi_cpcodeid_bygroup_ec(raw_response: dict) -> Tuple[list, list]:
 
     return entry_context, human_readable
 
+
 # Created by D.S.
-
-
 def new_papi_cpcode_ec(raw_response: dict) -> Tuple[list, list]:
     """
         parse cpcode cpcId
@@ -2248,9 +2443,8 @@ def new_papi_cpcode_ec(raw_response: dict) -> Tuple[list, list]:
 
     return entry_context, human_readable
 
+
 # Created by D.S.
-
-
 def patch_papi_property_rule_ec(raw_response: dict) -> Tuple[list, list]:
     """
         parse property etag
@@ -2274,9 +2468,8 @@ def patch_papi_property_rule_ec(raw_response: dict) -> Tuple[list, list]:
 
     return entry_context, human_readable
 
+
 # Created by D.S.
-
-
 def activate_papi_property_command_ec(raw_response: dict) -> Tuple[list, list]:
     """
         parse property activation_id
@@ -2303,9 +2496,8 @@ def activate_papi_property_command_ec(raw_response: dict) -> Tuple[list, list]:
 
     return entry_context, human_readable
 
+
 # Created by D.S.
-
-
 def clone_security_policy_command_ec(raw_response: dict) -> Tuple[list, list]:
     """
         parse security policy_id
@@ -2333,9 +2525,8 @@ def clone_security_policy_command_ec(raw_response: dict) -> Tuple[list, list]:
 
     return entry_context, human_readable
 
+
 # Created by D.S.
-
-
 def new_match_target_command_ec(raw_response: dict) -> Tuple[list, list]:
     """
         parse match target Id
@@ -2366,9 +2557,8 @@ def new_match_target_command_ec(raw_response: dict) -> Tuple[list, list]:
 
     return entry_context, human_readable
 
+
 # Created by D.S.
-
-
 def activate_appsec_config_version_command_ec(raw_response: dict) -> Tuple[list, list]:
     """
         parse appsec config activation_id
@@ -2736,7 +2926,6 @@ def list_papi_property_by_hostname_ec(raw_response: dict,
 
     return entry_context, human_readable
 
-
 def list_siteshield_maps_ec(raw_response: dict) -> Tuple[list, list]:
     """
         Parse siteshield map
@@ -2752,6 +2941,82 @@ def list_siteshield_maps_ec(raw_response: dict) -> Tuple[list, list]:
     if raw_response:
         entry_context.append(raw_response.get('siteShieldMaps'))
         human_readable.append(raw_response.get('siteShieldMaps'))
+    return entry_context, human_readable
+
+def list_cidr_blocks_ec(raw_response: dict) -> Tuple[list, list]:
+    """
+        Parse siteshield map
+
+    Args:
+        raw_response:
+
+    Returns:
+        List of site shield maps
+    """
+    entry_context = []
+    human_readable = []
+    if raw_response:
+        entry_context.append(raw_response.get('cidrBlocks'))
+        human_readable.append(raw_response.get('cidrBlocks'))
+    return entry_context, human_readable
+
+def update_cps_enrollment_ec(raw_response: dict) -> Tuple[list, list]:
+    """
+        Parse enrollment change path
+
+    Args:
+        raw_response:
+
+    Returns:
+        List of enrollment change path
+    """
+    entry_context = []
+    human_readable = []
+    if raw_response:
+        enrollment = raw_response.get('enrollment', {})
+        changes = raw_response.get('changes', [])
+        if enrollment != {}:
+            enrollmentId = enrollment.split('/')[4]
+        else:
+            enrollmentId = ""
+        if changes != []:
+            changeId = changes[0].split('/')[6]
+        else:
+            changeId = ""
+        entry_context.append(assign_params(**{
+            "id": enrollmentId,
+            "enrollment": enrollment,
+            "changeId": changeId,
+            "changes": changes
+        }))
+        human_readable = entry_context
+    return entry_context, human_readable
+
+def update_cps_enrollment_schedule_ec(raw_response: dict) -> Tuple[list, list]:
+    """
+        Parse enrollment change path
+
+    Args:
+        raw_response:
+
+    Returns:
+        List of enrollment change path
+    """
+    entry_context = []
+    human_readable = []
+    if raw_response:
+        change = raw_response.get('change', '')
+        if change != '':
+            enrollmentId = change.split('/')[4]
+            changeId = change.split('/')[6]
+        else:
+            changeId = ""
+        entry_context.append(assign_params(**{
+            "id": enrollmentId,
+            "changeId": changeId,
+            "change": change
+        }))
+        human_readable = entry_context
     return entry_context, human_readable
 
 
@@ -3021,7 +3286,9 @@ def get_change_command(client: Client, enrollment_path: str, allowed_input_type_
 # Created by C.L.
 @logger
 def update_change_command(client: Client, change_path: str,
-                          certificate: str, trust_chain: str, allowed_input_type_param: str = "third-party-cert-and-trust-chain"
+                          certificate: str, trust_chain: str,
+                          allowed_input_type_param: str = "third-party-cert-and-trust-chain",
+                          keyAlgorithm: str = "RSA"
                           ) -> Tuple[object, dict, Union[List, Dict]]:
     """
         Update a change
@@ -3030,12 +3297,13 @@ def update_change_command(client: Client, change_path: str,
         certificate :certificate,
         trust_chain: trust_chain,
         allowed_input_type_param: Specify the contract on which to operate or view.
+        keyAlgorithm: RSA or ECDSA
 
     Returns:
         Json response as dictionary
     """
     raw_response: Dict = client.update_change(change_path,
-                                              certificate, trust_chain, allowed_input_type_param)
+                                              certificate, trust_chain, allowed_input_type_param, keyAlgorithm)
 
     if raw_response:
         human_readable = f'{INTEGRATION_NAME} - Update_change'
@@ -3422,7 +3690,7 @@ def update_network_list_elements_command(client: Client, network_list_id: str, e
     elements = argToList(elements)
     # demisto.results(elements)
 
-    raw_response = client.update_network_list_elements(network_list_id=network_list_id, elements=elements)  # type: ignore # noqa
+    raw_response = client.update_network_list_elements(network_list_id=network_list_id, elements=elements)  #type: ignore # noqa
 
     if raw_response:
         human_readable = f'**{INTEGRATION_NAME} - network list {network_list_id} updated**'
@@ -4181,13 +4449,13 @@ def clone_security_policy_command(client: Client,
     Returns:
         human readable (markdown format), entry context and raw response
     """
-
+    policy_name = policy_name.strip()
     if check_existence_before_create.lower() == "yes":
         raw_response: Dict = client.list_security_policy(config_id=config_id,
                                                          config_version=config_version)
         lookupKey = 'policyName'
         lookupValue = policy_name
-        returnDict = next((item for item in raw_response['policies'] if item[lookupKey].lower() == lookupValue.lower()), None)
+        returnDict = next((item for item in raw_response['policies'] if item[lookupKey].lower().strip() == lookupValue.lower()), None)
         if returnDict is not None:
             title = f'{INTEGRATION_NAME} - clone security policy command - found existing Security Policy'
             entry_context, human_readable_ec = clone_security_policy_command_ec(returnDict)
@@ -5319,6 +5587,276 @@ def list_siteshield_maps_command(client: Client) -> Tuple[str, Dict[str, Any], U
     return human_readable, context_entry, raw_response
 
 
+# Created by D.S. 2023-05-03
+@logger
+def get_cps_enrollment_deployment_command(client: Client,
+                                          enrollment_id: int,
+                                          environment: str = 'production',) -> Tuple[str, Dict[str, Any], Union[List, Dict]]:
+    """
+        Returns the certification/Enarollment deployment status for specific a environtment: production or staging.
+
+    Args:
+        client:
+        enrollment_id: Unique Identifier of the Enrollment on which to perform the desired operation.
+        environment: Environment where the certificate is deployed: production or staging
+
+    Returns:
+        human readable (markdown format), entry context and raw response
+    """
+
+    raw_response: Dict = client.get_cps_enrollment_deployment(enrollment_id=enrollment_id, environment=environment)
+
+    title = f'{INTEGRATION_NAME} - get cps enrollment deployment command'
+    entry_context = raw_response
+    human_readable_ec = raw_response
+    context_entry: Dict = {
+        f"{INTEGRATION_CONTEXT_NAME}.Cps.Enrollments.Deployment": entry_context
+    }
+
+    human_readable = tableToMarkdown(
+        name=title,
+        t=human_readable_ec,
+        removeNull=True,
+    )
+    return human_readable, context_entry, raw_response
+
+
+@logger
+def list_cidr_blocks_command(client: Client,
+                             last_action: str = '',
+                             effective_date_gt: str='') -> Tuple[str, Dict[str, Any], Union[List, Dict]]:
+    """
+        List all CIDR blocks for all services you are subscribed to.
+        To see additional CIDR blocks, subscribe yourself to more services and run this operation again.
+
+    Args:
+        client:
+        last_action: Whether a CIDR block was added, updated, or removed from service.
+                     You can use this parameter as a sorting mechanism and return only CIDR blocks with a change status of add, update, or delete.
+                     Note that a status of delete means the CIDR block is no longer in service, and you can remove it from your firewall rules.
+        effective_date_gt: The ISO 8601 date the CIDR block starts serving traffic to your origin.
+                           Expected format MM-DD-YYYY or YYYY-MM-DD.
+                           Ensure your firewall rules are updated to allow this traffic to pass through before the effective date.
+
+    Returns:
+        human readable (markdown format), entry context and raw response
+    """
+
+    raw_response: Dict = client.list_cidr_blocks()
+
+    title = f'{INTEGRATION_NAME} - list cidr blocks command'
+    entry_context, human_readable_ec = list_cidr_blocks_ec(raw_response=raw_response)
+    context_entry: Dict = {
+        f"{INTEGRATION_CONTEXT_NAME}.CdirBlocks": entry_context
+    }
+
+    human_readable = tableToMarkdown(
+        name=title,
+        t=human_readable_ec,
+        removeNull=True,
+    )
+    return human_readable, context_entry, raw_response
+
+
+@logger
+def update_cps_enrollment_command(client: Client,
+                              enrollment_id: str,
+                              updates: dict,
+                              enrollment: dict = {},
+                              allow_cancel_pending_changes: str = 'true',
+                              allow_staging_bypass: str = 'true',
+                              deploy_not_after: str = "",
+                              deploy_not_before: str = "",
+                              force_renewal: str = 'false',
+                              renewal_date_check_override: str = 'true',
+                              allow_missing_certificate_addition: str = 'false') -> Tuple[str, Dict[str, Any], Union[List, Dict]]:
+    import json
+    """
+        Updates an enrollment with changes. Response type will vary depending on the type and impact of change.
+        For example, changing SANs list may return HTTP 202 Accepted since the operation require a new certificate
+        and network deployment operations, and thus cannot be completed without a change. On the contrary, for
+        example a Technical Contact name change may return HTTP 200 OK assuming there are no active change and
+        when the operation does not require a new certificate.
+        Reference: https://techdocs.akamai.com/cps/reference/put-enrollment
+
+        NOTES:
+        Depending on the type of the modification, additional steps might be required to complete the update.
+        These additional steps could be carrying out a "renew" change by resubmitting the CSR, acknowleging the
+        warnings raised then waiting for the certificate to be deployed into PRODUCTION.
+        However these additional steps are not included in this command. User needs to conduct those steps once
+        the update command is completed.
+
+    Args:
+        client:
+        enrollmentId:
+            Enrollment ID on which to perform the desired operation.
+        enrollment:
+            Enrollment info in dict format. If provided, the script will not make another API call to get the enrollmont info.
+            if not, another API call will be issued to retrieve the Enrollment info.
+        updates:
+            the modification(s) to the enrollment in the dict format.
+            Possible modification are:
+            ra, validationType, certificateType, networkConfiguration, changeManagement,
+            csr, org, adminContact, techContact, thirdParty, enableMultiStackedCertificates
+            Sample "updates":
+            {
+                "thirdParty": {
+                    "excludeSans": false
+                }
+            }
+        allow_cancel_pending_changes:
+            All pending changes to be cancelled when updating an enrollment.
+        allow_staging_bypass:
+            Bypass staging and push meta_data updates directly to production network. Current change will also be updated with the same changes.
+        deploy_not_after:
+            Don't deploy after this date (UTC). Sample: 2021-01-31T00:00:00.000Z
+        deploy_not_before:
+            Don't deploy before this date (UTC). Sample: 2021-01-31T00:00:00.000Z
+        force_renewal:
+            Force certificate renewal for Enrollment.
+        renewal_date_check_override:
+            CPS will automatically start a Change to renew certificates in time before they expire.
+            This automatic Change is started when Certificate's expiration is within a renewal window,
+            and system will protect against other changes started during this renewal window.
+            Setting renewal_date_check_override=true will allow creating a Change during the renewal window,
+            potentially running the risk of ending up with an expired certificate on the network.
+        allow_missing_certificate_addition:
+            Applicable for Third Party Dual Stack Enrollments, allows to update missing certificate. Option supported from v10.
+
+    Returns:
+        human readable (markdown format), entry context and raw response
+    """
+    if enrollment == {}:
+        enrollment = client.get_enrollment_byid(enrollment_id = enrollment_id, json_version = '11')
+    # Remove the fields that are not supposed to be changed.
+    enrollment.pop('id')
+    enrollment.pop('productionSlots')
+    enrollment.pop('stagingSlots')
+    enrollment.pop('assignedSlots')
+    enrollment.pop('location')
+    enrollment.pop('autoRenewalStartTime')
+    enrollment.pop('pendingChanges')
+    if not isinstance(updates, dict):
+        enrollment.update(json.loads(updates))
+    raw_response: Dict = client.update_cps_enrollment(enrollment_id=enrollment_id,
+                                                      updates=enrollment,
+                                                      allow_cancel_pending_changes=allow_cancel_pending_changes,
+                                                      allow_staging_bypass=allow_staging_bypass,
+                                                      deploy_not_after=deploy_not_after,
+                                                      deploy_not_before=deploy_not_before,
+                                                      force_renewal=force_renewal,
+                                                      renewal_date_check_override=renewal_date_check_override,
+                                                      allow_missing_certificate_addition=allow_missing_certificate_addition)
+
+    title = f'{INTEGRATION_NAME} - update enrollment command'
+    entry_context, human_readable_ec = update_cps_enrollment_ec(raw_response=raw_response)
+    context_entry: Dict = {
+        f"{INTEGRATION_CONTEXT_NAME}.Enrollment.Changes": entry_context
+    }
+
+    human_readable = tableToMarkdown(
+        name=title,
+        t=human_readable_ec,
+        removeNull=True,
+    )
+    return human_readable, context_entry, raw_response
+
+
+@logger
+def update_cps_enrollment_schedule_command(client: Client,
+                                           enrollment_path: str = '',
+                                           enrollment_id: str = '',
+                                           change_id: str = '',
+                                           deploy_not_before: str = '',
+                                           deploy_not_after: str = None) -> Tuple[str, Dict[str, Any], Union[List, Dict]]:
+    import json
+    """
+        Updates the current deployment schedule.
+        Reference: https://techdocs.akamai.com/cps/reference/put-change-deployment-schedule
+
+    Args:
+        client:
+        enrollment_path:
+            Enrollment path found in the pending change location field.
+        enrollment_id:
+            Enrollment ID on which to perform the desired operation.
+        change_id:
+            Chnage ID on which to perform the desired operation.
+        deploy_not_after:
+            The time after when the change will no longer be in effect.
+            This value is an ISO-8601 timestamp. (UTC)
+            Sample: 2021-01-31T00:00:00.000Z
+        deploy_not_before:
+            The time that you want change to take effect. If you do not set this, the change occurs immediately,
+            although most changes take some time to take effect even when they are immediately effective.
+            This value is an ISO-8601 timestamp. (UTC)
+            Sample: 2021-01-31T00:00:00.000Z
+
+    Returns:
+        human readable (markdown format), entry context and raw response
+    """
+    enrollment_path
+    if enrollment_path == enrollment_id == change_id == "":
+        raise DemistoException('enrollment_path, enrollment_id, change_id can not all be blank.')
+    raw_response: Dict = client.update_cps_enrollment_schedule(enrollment_path=enrollment_path,
+                                                               enrollment_id=enrollment_id,
+                                                               change_id=change_id,
+                                                               deploy_not_after=deploy_not_after,
+                                                               deploy_not_before=deploy_not_before)
+
+    title = f'{INTEGRATION_NAME} - update enrollment schedule command'
+    entry_context, human_readable_ec = update_cps_enrollment_schedule_ec(raw_response=raw_response)
+    context_entry: Dict = {
+        f"{INTEGRATION_CONTEXT_NAME}.Enrollment.Changes": entry_context
+    }
+
+    human_readable = tableToMarkdown(
+        name=title,
+        t=human_readable_ec,
+        removeNull=True,
+    )
+    return human_readable, context_entry, raw_response
+
+# Created by D.S.
+@logger
+def get_cps_change_status_command(client: Client,
+                                  enrollment_path: str = "",
+                                  enrollment_id: str = "",
+                                  change_id: str = "",) -> Tuple[str, Dict[str, Any], Union[List, Dict]]:
+    """
+        Gets the status of a pending change.
+
+    Args:
+        client:
+        enrollment_path: Enrollment path found in the pending change location field.
+        enrollment_id: Unique Identifier of the Enrollment on which to perform the desired operation.
+        change_id: The change for this enrollment on which to perform the desired operation.
+
+    Returns:
+        human readable (markdown format), entry context and raw response
+    """
+    if enrollment_path == enrollment_id == change_id == "":
+        raise DemistoException('enrollment_path, enrollment_id, change_id can not all be blank.')
+
+    raw_response: Dict = client.get_cps_change_status(enrollment_path=enrollment_path,
+                                                      enrollment_id=enrollment_id,
+                                                      change_id=change_id)
+
+    title = f'{INTEGRATION_NAME} - get cps change status command'
+    entry_context = raw_response
+    human_readable_ec = raw_response
+    context_entry: Dict = {
+        f"{INTEGRATION_CONTEXT_NAME}.Enrollments.Change.Status": entry_context
+    }
+
+    human_readable = tableToMarkdown(
+        name=title,
+        t=human_readable_ec,
+        removeNull=True,
+    )
+    return human_readable, context_entry, raw_response
+
+
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 
@@ -5329,7 +5867,7 @@ def main():
     client_token = params.get('credentials_client_token', {}).get('password') or params.get('clientToken')
     access_token = params.get('credentials_access_token', {}).get('password') or params.get('accessToken')
     client_secret = params.get('credentials_client_secret', {}).get('password') or params.get('clientSecret')
-    if not (client_token and access_token and client_secret):
+    if not(client_token and access_token and client_secret):
         raise DemistoException('Client token, Access token and Client secret must be provided.')
     client = Client(
         base_url=params.get('host'),
@@ -5408,6 +5946,11 @@ def main():
             list_appsec_configuration_activation_history_command,
         f'{INTEGRATION_COMMAND_NAME}-list-papi-property-by-hostname': list_papi_property_by_hostname_command,
         f'{INTEGRATION_COMMAND_NAME}-list-siteshield-map': list_siteshield_maps_command,
+        f'{INTEGRATION_COMMAND_NAME}-get-cps-enrollment-deployment': get_cps_enrollment_deployment_command,
+        f'{INTEGRATION_COMMAND_NAME}-list-cidr-blocks': list_cidr_blocks_command,
+        f'{INTEGRATION_COMMAND_NAME}-update-cps-enrollment': update_cps_enrollment_command,
+        f'{INTEGRATION_COMMAND_NAME}-update-cps-enrollment-schedule': update_cps_enrollment_schedule_command,
+        f'{INTEGRATION_COMMAND_NAME}-get-cps-change-status': get_cps_change_status_command,
     }
     try:
         readable_output, outputs, raw_response = commands[command](client=client, **demisto.args())
@@ -5420,3 +5963,4 @@ def main():
 
 if __name__ == 'builtins':
     main()
+
