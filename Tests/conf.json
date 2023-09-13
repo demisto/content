@@ -23,12 +23,10 @@
         {
             "playbookID": "Test Playbook - NGFW Scan",
 			"integrations": [
-				"VirusTotal (API v3)",
-				"Cortex XDR - IR"
+				"VirusTotal (API v3)"
 			],
 			"instance_names": [
-				"virus_total_v3",
-				"Cortex_XDR_-_IR"
+				"virus_total_v3"
 			],
             "timeout": 800
         },
