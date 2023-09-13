@@ -15,5 +15,9 @@
     "devEmail": [
         "pam360-support@manageengine.com"
     ],
-    "githubUser": []
+    "githubUser": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }
