@@ -98,14 +98,10 @@ def util_load_json(path: str) -> dict:
 @pytest.mark.parametrize(
     ("args", "kwargs", "input_to_output_keys", "expected_results"),
     [
-        ({"a": 1}, {}, {"a": "A"}, {"A": 1}),
-        ({}, {"b": 2}, {}, {"b": 2}),
-        ({"a": 1}, {"b": 2}, {"a": "A"}, {"A": 1, "b": 2}),
-    ],
-    ids=[
-        "add args to empty  kwargs",
-        "keep kwargs the same, when no args",
-        "add args to kwargs that already have values",
+        pytest.param({"a": 1}, {}, {"a": "A"}, {"A": 1}, id="add args to empty  kwargs"),
+        pytest.param({}, {"b": 2}, {}, {"b": 2}, id="keep kwargs the same, when no args"),
+        pytest.param({"a": 1}, {"b": 2}, {"a": "A"}, {"A": 1, "b": 2}, id="add args to kwargs that already have values"),
+        pytest.param({},{},{},{}, id="empty args and kwargs"),
     ],
 )
 def test_update_if_value(
@@ -232,7 +228,7 @@ def test_next_token_command_result(next_token: str, prefix: str) -> None:
     """
     response = next_token_command_result(next_token, prefix)
     to_context = response.to_context()
-    assert to_context.get("EntryContext") == {
+    assert to_context["EntryContext"] == {
         f"AWS.SSM.{prefix}(val.NextToken)": {"NextToken": next_token},
     }
 
@@ -457,7 +453,7 @@ def test_list_inventory_command_with_next_token_response(mocker: MockerFixture) 
     response: list[CommandResults] = list_inventory_command({}, MockClient())
 
     to_context = response[0].to_context()
-    assert to_context.get("EntryContext") == {
+    assert to_context["EntryContext"] == {
         "AWS.SSM.InventoryNextToken(val.NextToken)": {"NextToken": "test_token"},
     }
 

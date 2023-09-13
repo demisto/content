@@ -23,13 +23,13 @@ if TYPE_CHECKING:
 SERVICE_NAME = "ssm"  # Amazon Simple Systems Manager (SSM).
 DEFAULT_TIMEOUT = 600  # Default timeout for polling commands.
 DEFAULT_INTERVAL_IN_SECONDS = 30  # Interval for polling commands.
-FINAL_AUTOMATION_STATUSES = {
+TERMINAL_AUTOMATION_STATUSES = {
     "Success": "The automation completed successfully.",
     "TimedOut": "A step or approval wasn't completed before the specified timeout period.",
     "Cancelled": "The automation was stopped by a requester before it completed.",
     "Failed": "The automation didn't complete successfully. This is a terminal state.",
 }
-FINAL_COMMAND_STATUSES = {
+TERMINAL_COMMAND_STATUSES = {
     "Success": "The command was received by SSM Agent on all specified or targeted managed nodes and returned\
         an exit code of zero.\
         All command invocations have reached a terminal state, and the value of max-errors wasn't reached.\
@@ -114,18 +114,6 @@ def update_if_value(
     return output_dictionary
 
 
-def parsed_inventory(data: dict[str, Any]) -> dict[str, Any]:
-    return {
-        "Instance Id": data.get("InstanceId"),
-        "Computer Name": data.get("ComputerName"),
-        "Platform Type": data.get("PlatformType"),
-        "Platform Name": data.get("PlatformName"),
-        "Agent version": data.get("AgentVersion"),
-        "IP address": data.get("IpAddress"),
-        "Resource Type": data.get("ResourceType"),
-    }
-
-
 def format_parameters_arguments(parameters: str) -> dict[str, Any]:
     """Formats the 'parameters' string into a dictionary.
 
@@ -199,11 +187,7 @@ def format_document_version(document_version: str) -> str:
         >>> print(Formatted version)
         $LATEST
     """
-    if document_version == "latest":
-        return "$LATEST"
-    elif document_version == "default":
-        return "$DEFAULT"
-    return document_version
+    return {"latest": "$LATEST", "default": "$DEFAULT"}.get(document_version, document_version)
 
 
 def validate_args(args: dict[str, Any]) -> NoReturn | None:
@@ -230,17 +214,17 @@ def validate_args(args: dict[str, Any]) -> NoReturn | None:
         >>>     print(f"Validation error: {e}")
             Validation error: Invalid association id: 0000
     """
-    for validate in [
+    for validator in (
         ASSOCIATION_ID_VALIDATOR,
         ASSOCIATION_VERSION_VALIDATOR,
         INSTANCE_ID_VALIDATOR,
-    ]:
-        if (arg_value := args.get(validate.name)) and not re.search(
-            validate.regex,
+    ):
+        if (arg_value := args.get(validator.name)) and not re.search(
+            validator.regex,
             arg_value,
         ):
             raise DemistoException(
-                validate.error_template.format(**{validate.name: arg_value}),
+                validator.error_template.format(**{validator.name: arg_value}),
             )
     return None
 
@@ -369,8 +353,7 @@ def get_automation_execution_status(execution_id: str, ssm_client: "SSMClient") 
            - 'CompletedWithFailure',
 
     """
-    response = ssm_client.get_automation_execution(AutomationExecutionId=execution_id)
-    return response["AutomationExecution"]["AutomationExecutionStatus"]
+    return ssm_client.get_automation_execution(AutomationExecutionId=execution_id)["AutomationExecution"]["AutomationExecutionStatus"]
 
 
 def get_command_status(command_id: str, ssm_client: "SSMClient") -> str:
@@ -520,13 +503,22 @@ def list_inventory_command(
         -------
             list of dict containing relevant information.
         """
+        def _parse_inventory(data: dict[str, Any]) -> dict[str, Any]:
+            return {
+                "Instance Id": data.get("InstanceId"),
+                "Computer Name": data.get("ComputerName"),
+                "Platform Type": data.get("PlatformType"),
+                "Platform Name": data.get("PlatformName"),
+                "Agent version": data.get("AgentVersion"),
+                "IP address": data.get("IpAddress"),
+                "Resource Type": data.get("ResourceType"),
+            }
         parsed_entities = []
         for entity in entities:
             entity_content = entity.get("Content", {})
             parsed_entity = {"Id": entity.get("Id")}
             for content in entity_content:
-                parsed_entity.update(parsed_inventory(content))
-                parsed_entities.append(parsed_entity)
+                parsed_entities.append(parsed_entity | _parse_inventory(content))
         return parsed_entities
 
     kwargs: "GetInventoryRequestRequestTypeDef" = {
@@ -735,7 +727,7 @@ def get_association_command(
     document_name = args.get("document_name")
 
     if not (association_id or (instance_id and document_name)):
-        msg = "This command  must provide either association id or instance_id and document_name."
+        msg = "This command must provide either association id or instance_id and document_name."
         raise DemistoException(msg)
 
     kwargs = {
@@ -1140,10 +1132,10 @@ def run_automation_execution_command(
             args_for_next_run=args,
         )
     status = get_automation_execution_status(execution_id, ssm_client)
-    if status in FINAL_AUTOMATION_STATUSES:
+    if status in TERMINAL_AUTOMATION_STATUSES:
         return PollResult(  # if execution not in progress, return the status and end the polling loop
             response=CommandResults(
-                readable_output=FINAL_AUTOMATION_STATUSES[status],
+                readable_output=TERMINAL_AUTOMATION_STATUSES[status],
             ),
             continue_to_poll=False,
         )
@@ -1191,10 +1183,10 @@ def cancel_automation_execution_command(
 
     if not argToBoolean(args["first_run"]):
         status = get_automation_execution_status(automation_execution_id, ssm_client)
-        if status in FINAL_AUTOMATION_STATUSES:  # STOP POLLING
+        if status in TERMINAL_AUTOMATION_STATUSES:  # STOP POLLING
             return PollResult(
                 response=CommandResults(
-                    readable_output=FINAL_AUTOMATION_STATUSES[status],
+                    readable_output=TERMINAL_AUTOMATION_STATUSES[status],
                 ),
                 continue_to_poll=False,
             )
@@ -1267,10 +1259,8 @@ def list_commands_command(
     kwargs: "ListCommandsRequestRequestTypeDef" = {
         "MaxResults": arg_to_number(args.get("limit", 50)) or 50,
     }
-    if next_token := args.get("next_token"):
-        kwargs["NextToken"] = next_token
-    if command_id := args.get("command_id"):
-        kwargs["CommandId"] = command_id
+    kwargs = update_if_value(args, kwargs, {"next_token": "NextToken", "command_id": "CommandId"})
+
     response = ssm_client.list_commands(**kwargs)
     response = convert_datetime_to_iso(response)
 
@@ -1317,10 +1307,10 @@ def list_commands_command(
 def run_command_command(args: dict[str, Any], ssm_client: "SSMClient") -> PollResult:
     if command_id := args.get("command_id"):
         status = get_command_status(command_id, ssm_client)
-        if status in FINAL_COMMAND_STATUSES:
+        if status in TERMINAL_COMMAND_STATUSES:
             return PollResult(
                 response=CommandResults(
-                    readable_output=FINAL_COMMAND_STATUSES[status],
+                    readable_output=TERMINAL_COMMAND_STATUSES[status],
                 ),
                 continue_to_poll=False,
             )
@@ -1384,10 +1374,10 @@ def cancel_command_command(args: dict[str, Any], ssm_client: "SSMClient") -> Pol
 
     if not argToBoolean(args["first_run"]):
         status = get_command_status(command_id, ssm_client)
-        if status in FINAL_COMMAND_STATUSES:  # STOP POLLING
+        if status in TERMINAL_COMMAND_STATUSES:  # STOP POLLING
             return PollResult(
                 response=CommandResults(
-                    readable_output=FINAL_COMMAND_STATUSES[status],
+                    readable_output=TERMINAL_COMMAND_STATUSES[status],
                 ),
                 continue_to_poll=False,
             )
