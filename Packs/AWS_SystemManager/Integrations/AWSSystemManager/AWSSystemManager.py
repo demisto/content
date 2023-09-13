@@ -1210,10 +1210,10 @@ def cancel_automation_execution_command(
     # otherwise this will be the partial result
     return PollResult(
         response=CommandResults(
-            readable_output="Cancellation command was sent successful.",
+            readable_output="Cancellation command was sent successfully.",
         ),
         partial_result=CommandResults(
-            readable_output="Cancellation command was sent successful.",
+            readable_output="Cancellation command was sent successfully.",
         ),
         continue_to_poll=include_polling,
     )
