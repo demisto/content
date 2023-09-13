@@ -1363,7 +1363,7 @@ def get_modified_remote_data_command(client: Client, args: dict, params: dict):
                 modified_incidents_ids.append(inc.get("id"))
                 continue  # if added no need to do it twice
 
-    return GetModifiedRemoteDataResponse(modified_incidents_ids)
+    return GetModifiedRemoteDataResponse(list(set(modified_incidents_ids)))
 
 
 def struct_inc_context(alert_count, event_count, created):
