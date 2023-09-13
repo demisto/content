@@ -22,6 +22,7 @@ PRODUCT = 'Endpoint Protection'
 class Client(BaseClient):
     """Client class to interact with the service API
     """
+
     def __init__(self, base_url, verify, proxy, client_id, client_secret):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy)
         self.client_id = client_id
