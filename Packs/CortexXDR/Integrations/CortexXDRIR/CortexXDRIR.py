@@ -1080,6 +1080,7 @@ def fetch_incidents(
                     'name': f'XDR Incident {incident_id} - {description}',
                     'occurred': occurred,
                     'rawJSON': json.dumps(incident_data),
+                    'sortKey': (raw_incident["creation_time"], incident_id)  # will be removed during sort
                 }
 
                 if params.get('sync_owners') and incident_data.get('assigned_user_mail'):
@@ -1113,7 +1114,7 @@ def fetch_incidents(
         next_run['time'] = last_fetch + 1
 
     # multithreading may cause incidents to be returned unsorted
-    incidents.sort(key=lambda inc: arg_to_datetime(inc["occurred"]))  # type: ignore
+    incidents.sort(key=lambda inc: inc.pop("sortKey"))
     return next_run, incidents
 
 
