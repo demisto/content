@@ -374,6 +374,8 @@ def fetch_incidents_command(
             })
 
         new_last_run = incidents_report[-1].get('occurred')
+    if not new_last_run:
+        new_last_run = datetime_new_last_run
     # Return results
     return incidents_report, {'lastRun': new_last_run}
 
