@@ -95,7 +95,7 @@ EXTERNAL_FORM = "external/form"
 MAX_SAMPLES = 10
 
 TOKEN_EXPIRED_ERROR_CODES = {50173, 700082, }  # See: https://login.microsoftonline.com/error?code=
-REGEX_SEARCH_ERROR_DESC = r"^.*?:\s(?P<desc>.*?\.)"
+REGEX_SEARCH_ERROR_DESC = r"^[^:]*:\s(?P<desc>.*?\.)"
 
 
 class Handler:
