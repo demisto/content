@@ -764,8 +764,8 @@ class MsGraphMailBaseClient(MicrosoftClient):
         :type folder_id: ``str``
         :param folder_id: Folder id
 
-        :type last_fetch: ``dict``
-        :param last_fetch: Previous fetch data
+        :type last_fetch: ``str``
+        :param last_fetch: Previous fetch date
 
         :type exclude_ids: ``list``
         :param exclude_ids: List of previous fetch email ids to exclude in current run
@@ -773,7 +773,7 @@ class MsGraphMailBaseClient(MicrosoftClient):
         :return: Fetched emails and exclude ids list that contains the new ids of fetched emails
         :rtype: ``list`` and ``list``
         """
-        demisto.debug(f'Fetching emails since from {last_fetch}')
+        demisto.debug(f'Fetching emails since {last_fetch}')
         fetched_emails = self.get_emails(exclude_ids=exclude_ids, last_fetch=last_fetch,
                                          folder_id=folder_id, overwrite_rate_limit_retry=True,
                                          mark_emails_as_read=self._mark_fetched_read)
@@ -832,7 +832,7 @@ class MsGraphMailBaseClient(MicrosoftClient):
                                                   limit=len(exclude_ids) + self._emails_fetch_limit,  # fetch extra incidents
                                                   overwrite_rate_limit_retry=overwrite_rate_limit_retry)
 
-        if mark_emails_as_read:  # pragma: no cover
+        if mark_emails_as_read:
             for email in emails_as_html:
                 if email.get('id'):
                     self.update_email_read_status(
