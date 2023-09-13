@@ -3,7 +3,7 @@
     "description": "XSOAR Engineer Training Pack, this pack contains content utilized to train you on how to be an XSOAR Engineer.",
     "support": "community",
     "currentVersion": "1.0.0",
-    "author": "beauchompers",
+    "author": "Mike Beauchamp",
     "url": "",
     "email": "",
     "categories": [
@@ -18,5 +18,5 @@
     "devEmail": [
         "mbeauchamp@paloaltonetworks.com"
     ],
-    "githubUser": []
+    "githubUser": ["beauchompers"]
 }
