@@ -507,7 +507,9 @@ def convert_to_demisto_severity(severity: str) -> int:
 
 
 def get_next_cursor(data: Response) -> Optional[str]:
-    """ Gets a full response. The headers should contain _store attribute and inside the link attribute. link is a tuple, containing: '<http://api.gitguardian.com/v1/incidents/secrets?cursor=cD0xNTA%3D>; rel=\"next\",<http://api.gitguardian.com/v1/incidents/secrets?cursor=cD0xNTA%3D>; rel=\"prev\"'
+    """ Gets a full response. It should contain 'links' attribute. 
+    links is a dict, in the format: "{'next': {'url': 'https://api.gitguardian.com/v1/incidents/secrets?cursor=bz0x&ordering=date&per_page=1', 'rel': 'next'}}"
+    We only need the next page, even if there is aldo a previous.
     Returns: the next page token
     """
     next_token = None
