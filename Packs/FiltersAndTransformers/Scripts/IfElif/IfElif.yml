@@ -21,7 +21,7 @@ args:
   required: true
   type: textArea
 - name: flags
-  description: 'Flags to control comparison and regular expression behavior. Possible values are: case_insensitive, regex_dot_all, regex_multiline, regex_full_match.'
+  description: Flags to control comparison and regular expression behavior. 
   isArray: true
   auto: PREDEFINED
   predefined:

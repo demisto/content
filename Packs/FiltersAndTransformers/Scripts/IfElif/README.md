@@ -1,8 +1,8 @@
 ### A transformer for if-elif-else logic.
 
-The **If-Elif** transformer simulates a python *"if elif else"* tree using a JSON provided in the ***conditions*** argument.
-The JSON should be a list of dictionaries where all have the keys "*condition*", which holds a boolean expression, and "*return*", which holds the value to return if "*condition*" is evaluated to be true. To return a default value if all "*condition*"s were false, the last dictionary should have only the key "*default*" holding the valid JSON value. If this is not provided an empty string will be returned as a default.
-In order to prevent injections Context values should be retrieved from the value entered in the ***value (Get)*** of the transformer with the hash-curly brackets `#{...}` syntax. This syntax has the same behavior as the classic XSOAR `${...}` syntax and uses the [Cortex XSOAR Transform Language (DT)](https://xsoar.pan.dev/docs/integrations/dt). To provide the full context to the transformer, use `${.}` as the ***value (Get)*** argument. **Note:** when used as a "*return*" value, this syntax should *not* be surrounded by quotes.  
+The **If-Elif** transformer simulates a python *"if elif else"* tree using a JSON provided in the *conditions* argument.
+The JSON should be a list of dictionaries where all have the keys "*condition*", which holds a boolean expression, and "*return*", which holds the value to return if "*condition*" is evaluated to be true. To return a default value if all "*condition*"s were false, the last dictionary should have only the key "*default*" holding the valid JSON value. If this is not provided, an empty string will be returned as a default.
+In order to prevent injections, context values should be retrieved from the value entered in the *value (Get)* of the transformer with the hash-curly brackets `#{...}` syntax. This syntax has the same behavior as the classic XSOAR `${...}` syntax and uses the [Cortex XSOAR Transform Language (DT)](https://xsoar.pan.dev/docs/integrations/dt). To provide the full context to the transformer, use `${.}` as the *value (Get)* argument. **Note:** when used as a "*return*" value, this syntax should *not* be surrounded by quotes.  
 
 #### Supported operators for conditions:
 
@@ -25,17 +25,17 @@ In order to prevent injections Context values should be retrieved from the value
 | or | Returns True if one of the statements is true | x < 5 or x < 4 |
 | not | Reverse the result, returns False if the result is true | not(x < 5 and x < 10) |
 
-**Regular expressions** are implemented with the "regex_match" function, in the format: `regex_match('pattern', 'string')`. The behavior of the function is controlled with the ***flags*** argument.
+**Regular expressions** are implemented with the "regex_match" function, in the format: `regex_match('pattern', 'string')`. The behavior of the function is controlled with the *flags* argument.
 
-**Literal strings** should preferably be surrounded by single quotes. Please do _not_ use `#{...}` in a string, instead, use the `+` operator. For example: `'first ' + #{second.string} + ' third'` will be equal to the common `"first ${second.string} third"`. (This method can be used for lists too.)
+**Literal strings** should preferably be surrounded by single quotes. Do _not_ use `#{...}` in a string, instead, use the `+` operator. For example: `'first ' + #{second.string} + ' third'` will be equal to the common `"first ${second.string} third"`. (This method can be used for lists too.)
 
-The following flags can be used in the ***flags*** argument to control the transformer's behavior:
+The following flags can be used in the *flags**argument to control the transformer's behavior:
 |Flag|Effect|Example|
 |---|---|---|
 | case_insensitive | Comparisons between strings and regex matches are case-insensitive. | `'WoRd' == 'wOrD'` |
 | list_compare | Comparing an object with a list also compares the object with all values in the list and evaluates to true if *any* comparison is true.<br>Works on operators: `<` `>` `<=` `>=` `in` `not in` `+` | `'word' in ['word1', 'word2']` |
 | regex_dot_all | Make the `.` special character match any character at all, including a newline. Without this flag, `.` will match anything *except* a newline. | `regex_match('a.b', 'a\nb')` |
-| regex_multiline | The patterns `^` and `$` will match the beginning and end of each line respectively as apposed to the beginning and end of the *string*. | `regex_match('^\d$', '1\n2\n')` |
+| regex_multiline | The patterns `^` and `$` will match the beginning and end of each line respectively as opposed to the beginning and end of the *string*. | `regex_match('^\d$', '1\n2\n')` |
 | regex_full_match | Regex patterns will be compared with the whole string to find a match. | `not regex_match('\d+', 'a12345')` |
 
 ### Example:
