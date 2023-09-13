@@ -43,6 +43,10 @@
       "event_type": {
           "type": "string",
           "is_array": false
+      },
+      "envelope": {
+          "type": "string",
+          "is_array": false
       }
   }
 }
