@@ -2,6 +2,7 @@ from CommonServerPython import *
 
 ''' IMPORTS '''
 import requests
+import base64
 from datetime import datetime, timezone
 import urllib3
 from typing import Dict
@@ -22,6 +23,13 @@ INCIDENT_SEVERITY = {
     'high': 3,
     'critical': 4
 }
+INCIDENT_STATUS = [
+    "VIEWED",
+    "UNREVIEWED",
+    "CONFIRMED_INCIDENT",
+    "UNDER_REVIEW",
+    "INFORMATIONAL"
+]
 
 ROUTES = {
     "services": r"/apollo/api/v1/y/services",
@@ -37,7 +45,8 @@ COMMAND = {
     "cyble-vision-subscribed-services": "services",
     "cyble-vision-fetch-iocs": "iocs",
     "test-module": "test",
-    "fetch-incidents": "alerts"
+    "fetch-incidents": "alerts",
+    "update-remote-system": "alerts"
 }
 
 
@@ -47,7 +56,7 @@ class Client(BaseClient):
     Should only do requests and return data.
     """
 
-    def get_response(self, url, headers, payload, method='POST'):
+    def get_response(self, url, headers, payload, method):
         """
         Generic call to the API for all the methods
         :param url: Contains the API url
@@ -56,10 +65,10 @@ class Client(BaseClient):
         :param payload: Contains the request body
         """
 
-        for retry in range(MAX_RETRIES):
+        for _ in range(MAX_RETRIES):
 
             try:
-                if method == 'POST':
+                if method == 'POST' or method == 'PUT':
                     response = requests.request(method, url, headers=headers, json=payload)
                 else:
                     response = requests.request(method, url, headers=headers, params=payload)
@@ -226,7 +235,8 @@ def format_incidents(alerts, hide_cvv_expiry):
                 "event_id": "{}".format(alert['id']),
                 "data_message": "{}".format(alert['data_message']),
                 "keyword": "{}".format(alert['metadata']['entity']['keyword']['tag_name']),
-                "created_at": "{}".format(alert['created_at'])
+                "created_at": "{}".format(alert['created_at']),
+                'mirrorInstance': demisto.integrationInstance()
             }
 
             events.append(alert_details)
@@ -398,7 +408,7 @@ def cyble_events(client, method, token, url, args, base_url, last_run, hide_cvv_
                 'alert_group_id': event.get('alert_group_id'),
                 'event_id': event.get('event_id'),
                 'keyword': event.get('keyword'),
-                'created': event.get('created_at'),
+                'created': event.get('created_at')
             }
             incidents.append(inci)
 
@@ -407,6 +417,84 @@ def cyble_events(client, method, token, url, args, base_url, last_run, hide_cvv_
         return incidents, next_run
     else:
         return [], {'event_pull_start_date': latest_created_time}
+
+
+def update_remote_system(client, method, token, args, url):
+
+    parsed_args = UpdateRemoteSystemArgs(args)
+
+    if parsed_args.delta:
+
+        severities = {
+            "1": "LOW",
+            "2": "MEDIUM",
+            "3": "HIGH",
+            "4": "CRITICAL"
+        }
+
+        data = parsed_args.data
+
+        incident_id = data.get('id')
+        status = data.get('status')
+        assignee_id = data.get('assignee_id')
+        updated_severity = str(data.get('severity'))
+
+        updated_event = {
+            "id": incident_id
+        }
+
+        if status in INCIDENT_STATUS:
+            updated_event["status"] = status
+
+        if assignee_id:
+            updated_event["assignee_id"] = assignee_id
+
+        if updated_severity:
+            if updated_severity == "0.5" or updated_severity == "0":
+                updated_event["user_severity"] = None
+            else:
+                updated_event["user_severity"] = severities.get(updated_severity)
+
+        body = {
+            "alerts": [updated_event]
+        }
+
+        set_request(client, method, token, body, url)
+
+    return None
+
+
+def get_mapping_fields(client, token):
+
+    input_params = {}
+
+    input_params['order_by'] = "asc"
+    input_params['from_da'] = 0
+    input_params['limit'] = 500
+
+    initial_interval = 1
+
+    event_pull_start_date = datetime.utcnow() - timedelta(days=int(initial_interval))
+
+    input_params['start_date'] = event_pull_start_date.astimezone().isoformat()
+    input_params['end_date'] = datetime.utcnow().astimezone().isoformat()
+
+    final_input_structure = alert_input_structure(input_params)
+
+    alerts = set_request(client, 'POST', token, final_input_structure, 'https://api.cyble.ai/apollo/api/v1/y/alerts')
+
+    fields = {}
+
+    for alert in alerts:
+        for key in alert.keys():
+            fields[key] = alert[key]
+
+    incident_type_scheme = SchemeTypeMapping(type_name='cyble_outgoing_mapper')
+
+    for field, description in fields.items():
+        incident_type_scheme.add_field(field, description)
+
+    return GetMappingFieldsResponse([incident_type_scheme])
 
 
 def fetch_subscribed_services_alert(client, method, base_url, token):
@@ -589,6 +677,7 @@ def main():
     proxy = params.get('proxy', False)
     hide_cvv_expiry = params.get('hide_data', False)
     demisto.debug(f'Command being called is {params}')
+    mirror = params.get('mirror', False)
 
     try:
 
@@ -611,6 +700,17 @@ def main():
 
             demisto.setLastRun(next_run)
             demisto.incidents(data)
+
+        elif demisto.command() == 'update-remote-system':
+
+            if mirror:
+                url = base_url + str(ROUTES[COMMAND[demisto.command()]])
+                return_results(update_remote_system(client, 'PUT', token, args, url))
+
+            return
+
+        elif demisto.command() == 'get-mapping-fields':
+            return_results(get_mapping_fields(client, token))
 
         elif demisto.command() == "cyble-vision-subscribed-services":
             # This is the call made when subscribed-services command.
