@@ -2,14 +2,12 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 import botocore.exceptions
-
 import urllib3.util
 
 # Disable insecure warnings
 urllib3.disable_warnings()
 
 param = demisto.params()
-
 SERVICE = 'identitystore'
 IDENTITYSTOREID = param.get('IdentityStoreId')
 
@@ -118,7 +116,7 @@ def list_users(args, client):  # pragma: no cover
     ec = {'AWS.IAM.IdentityCenter.Users': data}
     human_readable = tableToMarkdown('AWS IAM Identity Center Users', data, removeNull=True)
     return_outputs(human_readable, ec)
-    
+
 
 def list_groups(args, client):  # pragma: no cover
     data = []
