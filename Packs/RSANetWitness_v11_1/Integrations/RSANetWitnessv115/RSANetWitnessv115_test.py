@@ -626,7 +626,6 @@ def test_clean_old_inc_context_with_non_expired_incident(mocker):
     """
     from datetime import datetime, timedelta
     max_time_mirror_inc = 24
-    expected_result = {'IncidentsDataCount': {'INC-1': {'Created': 0}}, 'refresh_token': 'SECRET REPLACED', 'token': 'SECRET REPLACED'}
 
     mocker.patch.object(demisto, "getIntegrationContext", return_value={"IncidentsDataCount": {"INC-1": {"Created": 0}}})
     mocker.patch.object(RSANetWitnessv115, "arg_to_datetime",
