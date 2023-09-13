@@ -1113,14 +1113,11 @@ script:
       name: sample_id
       required: true
   - deprecated: true
-    description: Retrieves a sample using the sample ID. (Deprecated)
+  - description: Retrieves a sample using the sample ID. (Deprecated)
     name: upload_sample
-    arguments: []
-  - arguments: []
-    name: vmray-get-license-usage-verdicts
+  - name: vmray-get-license-usage-verdicts
     description: Get the used quota of verdicts
-  - arguments: []
-    name: vmray-get-license-usage-reports
+  - name: vmray-get-license-usage-reports
     description: Get the used quota of reports
   dockerimage: demisto/python3:3.10.13.72123
   runonce: false
