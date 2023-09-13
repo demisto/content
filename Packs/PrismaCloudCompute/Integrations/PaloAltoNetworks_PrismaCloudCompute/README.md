@@ -3327,3 +3327,7 @@ Use this command to unstuck the fetch stream in case it's getting duplicated inc
 #### Human Readable Output
 
 ```The fetch stream was released successfully.```
+
+## General Note:
+- Do not use the reset last run button as it will cause incidents duplications to the instance. 
+- In case you pressed reset last run button and you get duplicated incidents, run **prisma-cloud-compute-unstuck-fetch-stream** command.
