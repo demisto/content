@@ -22,12 +22,8 @@
     "tests": [
         {
             "playbookID": "Test Playbook - NGFW Scan",
-			"integrations": [
-				"VirusTotal (API v3)"
-			],
-			"instance_names": [
-				"virus_total_v3"
-			],
+			"integrations": "VirusTotal (API v3)",
+			"instance_names": "virus_total_v3",
             "timeout": 800
         },
         {
