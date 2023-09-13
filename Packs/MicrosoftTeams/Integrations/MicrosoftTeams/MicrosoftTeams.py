@@ -94,8 +94,9 @@ MAX_ITEMS_PER_RESPONSE = 50
 EXTERNAL_FORM = "external/form"
 MAX_SAMPLES = 10
 
-TOKEN_EXPIRED_ERROR_CODES = {50173, 700082,}  # See: https://login.microsoftonline.com/error?code=
+TOKEN_EXPIRED_ERROR_CODES = {50173, 700082, }  # See: https://login.microsoftonline.com/error?code=
 REGEX_SEARCH_ERROR_DESC = r"^.*?:\s(?P<desc>.*?\.)"
+
 
 class Handler:
     @staticmethod
@@ -173,7 +174,7 @@ def reset_graph_auth(error_codes: list, error_desc: str):
     re_search = re.search(REGEX_SEARCH_ERROR_DESC, error_desc)
     err_str = re_search['desc'] if re_search else ""
     raise DemistoException(f"{err_str} Please regenerate the 'Authorization code' "
-        "parameter and then run !microsoft-teams-auth-test to re-authenticate")
+                           "parameter and then run !microsoft-teams-auth-test to re-authenticate")
 
 
 def translate_severity(severity: str) -> float:
