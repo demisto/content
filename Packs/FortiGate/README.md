@@ -8,7 +8,7 @@ You need to configure Fortigate to forward Syslog messages.
 
 1. Log in to the FortiGate web interface using your admin credentials.
 2. Open a CLI console by clicking the **_>** icon in the top right corner
-4. Run the below command:
+4. Run the following command:
 ```bash 
    config log syslogd setting
     set status enable
