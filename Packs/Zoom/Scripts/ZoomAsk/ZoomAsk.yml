@@ -1,7 +1,7 @@
 args:
-- description: The Zoom user ID, JID or email to whom to send the message, You must provide this parameter or the channel_id parameter.
+- description: The Zoom user ID, JID or email to whom to send the message. You must provide this parameter or the channel_id parameter.
   name: user
-- description: The ID or the JID of the channel where you intend to send the message, You must provide this parameter or the user parameter.
+- description: The ID or the JID of the channel where you intend to send the message. You must provide this parameter or the user parameter.
   name: channel_id
 - name: channel_name
   description: The channel name can be provided only if the channel is part of a mirroring incident, instead of the channel JID.
@@ -33,7 +33,7 @@ args:
 - description: A comma-separated list of additional options in the format of "option#color", for example, "maybe#red". The default color is "black".
   name: additionalOptions
 - defaultValue: Thank you {user}. you have answered {response} .
-  description: The reply to send to the user. Use the templates {user} and {response} to incorporate these in the reply. (i.e. "Thank you {user}. You have answered {response}.").
+  description: The reply to send to the user. Use the templates {user} and {response} to incorporate these in the reply. (i.e., "Thank you {user}. You have answered {response}.").
   name: reply
 - defaultValue: 1 day
   description: Time until the question expires. For example - 1 day. When it expires, a default response is sent.
