@@ -1,11 +1,11 @@
 [file:IAM_-_App_Sync.yml]
 ignore=PB105,PB106
 [file:IAM_-_Sync_User.yml]
-ignore=PB105,PB110,PB112
+ignore=PB105,PB110
 [file:IAM_-_App_Update.yml]
 ignore=PB105,PB106
 [file:IAM_-_Activate_User_In_Active_Directory.yml]
-ignore=PB105,PB112
+ignore=PB105
 [file:IAM_-_App_Sync_README.md]
 ignore=RM106
 [file:IAM_-_App_Update_README.md]
@@ -19,11 +19,9 @@ ignore=PB106
 [file:IAM_-_Rehire_User.yml]
 ignore=PB106,GR103
 [file:IAM_-_Terminate_User.yml]
-ignore=PB106,PB112,GR103
+ignore=PB106,GR103
 [file:IAM_-_Group_Membership_Update.yml]
 ignore=PB105,PB106,GR103
-[file:IAM_-_Send_Provisioning_Notification_Email.yml]
-ignore=PB112
 [file:incidentfield-Termination_Trigger.json]
 ignore=IF116,IF113,IF115
 [file:incidentfield-Prehire_Flag.json]

@@ -25,7 +25,7 @@ except ValueError:
 
 content = results[0]["Contents"]
 total_count = int(len(content))
-demisto.log(json.dumps(content))
+demisto.info(json.dumps(content))
 sys.exit(1)
 
 error_count = 0
