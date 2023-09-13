@@ -13,13 +13,13 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Jira Ticket State Polling
 * Mirror Jira Ticket
+* Jira Ticket State Polling
 
 ### Integrations
 
-* JiraV3
 * JiraV2
+* JiraV3
 
 ### Scripts
 

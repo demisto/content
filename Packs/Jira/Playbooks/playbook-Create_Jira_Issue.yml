@@ -24,8 +24,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 377.5,
-          "y": 50
+          "x": 50,
+          "y": 10
         }
       }
     note: false
@@ -102,7 +102,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 370,
           "y": 1245
         }
       }
@@ -276,7 +276,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 680,
           "y": 1070
         }
       }
@@ -414,8 +414,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 377.5,
-          "y": 195
+          "x": 50,
+          "y": 185
         }
       }
     note: false
@@ -454,7 +454,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
+          "x": 370,
           "y": 370
         }
       }
@@ -470,14 +470,16 @@ view: |-
   {
     "linkLabelsPosition": {
       "16_3_yes": 0.52,
-      "9_14_State Polling": 0.52
+      "17_8_no": 0.27,
+      "9_14_State Polling": 0.64,
+      "9_8_#default#": 0.55
     },
     "paper": {
       "dimensions": {
-        "height": 1260,
-        "width": 1025,
+        "height": 1300,
+        "width": 1010,
         "x": 50,
-        "y": 50
+        "y": 10
       }
     }
   }
