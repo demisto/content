@@ -389,7 +389,7 @@ def test_xsoar_status_to_rsa_status(mocker, xsoar_status: int, xsoar_close_reaso
     assert xsoar_status_to_rsa_status(xsoar_status, xsoar_close_reason) == expected_rsa_status
 
 
-def test_update_remote_system_command(mocker):
+def test_update_remote_system_command_with_updated_incident(mocker):
     """
         Given:
         - client with fetch parameters
@@ -408,11 +408,39 @@ def test_update_remote_system_command(mocker):
         def __init__(self) -> dict:
             self.delta = {"key": "value"}
             self.remote_incident_id = "INC-1"
-            self.data = {"status": 1, "closeReason": None}
+            self.data = {"status": 2, "closeReason": "False positive"}
 
     mocker.patch.object(RSANetWitnessv115, "UpdateRemoteSystemArgs", return_value=UpdateRemoteSystemArgsResponse())
-    mocker.patch.object(client, "get_incident_request", return_value={"id": "INC-1", "status": 1})
-    mocker.patch.object(client, "update_incident_request", return_value={"id": "INC-1", "status": 1, "assignee": None})
+    mocker.patch.object(client, "get_incident_request", return_value={"id": "INC-1", "status": "New"})
+    mocker.patch.object(client, "update_incident_request", return_value={"id": "INC-1", "status": "ClosedFalsePositive", "assignee": None})
+
+    assert update_remote_system_command(client, {}, {}) == paging_data
+
+
+def test_update_remote_system_command_with_nonupdated_incident(mocker):
+    """
+        Given:
+        - client with fetch parameters
+        - args with incident ID, status, delta_keys
+        - param no used by integration
+
+        When:
+            Calling the update_remote_system_command.
+
+        Then:
+            Check if RSA status has been updated.
+    """
+    paging_data = "INC-1"
+
+    class UpdateRemoteSystemArgsResponse:
+        def __init__(self) -> dict:
+            self.delta = {"key": "value"}
+            self.remote_incident_id = "INC-1"
+            self.data = {"status": 1, "closeReason": "New"}
+
+    mocker.patch.object(RSANetWitnessv115, "UpdateRemoteSystemArgs", return_value=UpdateRemoteSystemArgsResponse())
+    mocker.patch.object(client, "get_incident_request", return_value={"id": "INC-1", "status": "New"})
+    mocker.patch.object(client, "update_incident_request", return_value={"id": "INC-1", "status": "New", "assignee": None})
 
     assert update_remote_system_command(client, {}, {}) == paging_data
 
