@@ -71,13 +71,11 @@ script:
       - rateLimit
       - waf
     - description: >-
-        The priority of the rule to allow control of processing order. A
-        lower number indicates high priority. If not provided, any rules
-        with a priority will be sequenced before those without.
+        The priority of the rule to allow control of processing order. A lower number indicates high priority. If not provided, any rules with a priority will be sequenced before those without.
 
         min value: 0.
 
-        max value: 2147483647
+        max value: 2147483647.
       name: priority
     - auto: PREDEFINED
       description: Whether this firewall rule is currently paused.
@@ -144,13 +142,11 @@ script:
       - rateLimit
       - waf
     - description: >-
-        The priority of the rule to allow control of processing order. A
-        lower number indicates high priority. If not provided, any rules
-        with a priority will be sequenced before those without.
+        The priority of the rule to allow control of processing order. A lower number indicates high priority. If not provided, any rules with a priority will be sequenced before those without.
 
         min value: 0.
 
-        max value: 2147483647
+        max value: 2147483647.
       name: priority
     - auto: PREDEFINED
       description: Whether this firewall rule is currently paused.
@@ -592,7 +588,7 @@ script:
     - description: The ID of the pipeline run to retrieve when polling argument is true. Intended for use by the Polling process and does not need to be provided by the user.
       name: operation_id
       deprecated: true
-    description: Replace the IP-list items with a new items
+    description: Replace the IP-list items with a new items.
     name: cloudflare-waf-ip-list-item-update
     outputs: []
     polling: true
@@ -649,7 +645,7 @@ script:
     - contextPath: CloudflareWAF.IpListItem.list_id
       description: The list ID.
       type: String
-  dockerimage: demisto/python3:3.10.12.68714
+  dockerimage: demisto/python3:3.10.13.73190
   runonce: false
   script: '-'
   subtype: python3
