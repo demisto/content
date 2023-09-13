@@ -16,6 +16,7 @@ VENDOR = "HelpdeskAdvanced"
 FILTER_CONDITION_REGEX = re.compile(
     r"\A(?P<key>\".*?\") (?P<op>eq|gt|lt|ge|lt|sw|ne) (?P<value>(?:\".*?\"|null))\Z"
 )
+DATE_VALUE_REGEX = re.compile(r"/Date\((\d+)\)/")
 
 
 class Field:
@@ -148,6 +149,37 @@ class RequestNotSuccessfulError(DemistoException):
 
 def map_id_to_description(response: dict) -> dict[str, str]:
     return {item[ID.hda_name]: item[DESCRIPTION.hda_name] for item in response["data"]}
+
+
+def convert_response_dates(response: dict) -> dict:
+    """
+    Converts date fields in the given response dict to datetime objects.
+
+    Args:
+        response (dict): The response dict containing date fields to convert.
+
+    Returns:
+        dict: The response dict with date fields converted to datetime.
+
+    Iterates through the keys in the response dict. For any key containing "Date", 
+    converts the corresponding value to datetime using DATE_VALUE_REGEX to parse 
+    the date string.
+
+    Non-date fields are unchanged.
+    """
+    def fix(value: str) -> str | datetime:
+        if value and (match := DATE_VALUE_REGEX.match(value)):
+            return datetime.fromtimestamp(int(match[1][:-3]))
+        return value
+
+    for key, value in response.items():
+        if "Date" in key:
+            if isinstance(value, str):
+                response[key] = fix(value)
+            elif isinstance(value,list):
+                response[key] = [fix(v) for v in value]
+
+    return response
 
 
 class Client(BaseClient):
@@ -568,6 +600,8 @@ def paginate(**kwargs) -> PaginateArgs:
 
 def create_ticket_command(client: Client, **kwargs) -> CommandResults:
     response = client.create_ticket(**kwargs)
+    response = convert_response_dates(response)
+    
     response_for_human_readable = response.copy()
     if not response_for_human_readable.get(SOLUTION.hda_name):
         # do not show empty or missing `Solution` value
@@ -585,6 +619,8 @@ def create_ticket_command(client: Client, **kwargs) -> CommandResults:
 
 def list_tickets_command(client: Client, args: dict) -> CommandResults:
     response = client.list_tickets(**args)
+    response = convert_response_dates(response)
+
     return CommandResults(
         outputs=response["data"],
         outputs_prefix=f"{VENDOR}.Ticket",
@@ -604,6 +640,8 @@ def add_ticket_attachment_command(client: Client, args: dict) -> CommandResults:
 
 def list_ticket_attachments_command(client: Client, args: dict) -> CommandResults:
     response = client.list_ticket_attachments(**args)
+    response = convert_response_dates(response)
+    
     attachment_ids_str = ",".join(
         attachment[ID.hda_name] for attachment in response["data"]
     )
@@ -618,6 +656,8 @@ def list_ticket_attachments_command(client: Client, args: dict) -> CommandResult
 
 def list_ticket_statuses_command(client: Client, args: dict) -> CommandResults:
     response = client.list_ticket_statuses(**args)
+    response = convert_response_dates(response)
+    
     return CommandResults(
         outputs=response["data"],
         outputs_prefix=f"{VENDOR}.{TICKET_STATUS.hda_name}",
@@ -634,7 +674,6 @@ def add_ticket_comment_command(client: Client, args: dict) -> CommandResults:
 
 def change_ticket_status_command(client: Client, args: dict) -> CommandResults:
     response = client.change_ticket_status(**args)
-
     return CommandResults(
         readable_output=f"Changed status of ticket {args['ticket_id']} to {args['status']} successfully.",
         raw_response=response,
@@ -643,6 +682,8 @@ def change_ticket_status_command(client: Client, args: dict) -> CommandResults:
 
 def list_ticket_priorities_command(client: Client, _: dict) -> CommandResults:
     response = client.list_ticket_priorities()
+    response = convert_response_dates(response)
+    
     return CommandResults(
         outputs=response["data"],
         outputs_prefix=f"{VENDOR}.{_PRIORITY.hda_name}",
@@ -654,6 +695,8 @@ def list_ticket_sources_command(client: Client, args: dict) -> CommandResults:
     limit = safe_arg_to_number(args["limit"], "limit")
 
     response = client.list_ticket_sources(limit)
+    response = convert_response_dates(response)
+    
     outputs = map_id_to_description(response["data"])
     return CommandResults(
         outputs=outputs,
@@ -669,7 +712,7 @@ def list_ticket_sources_command(client: Client, args: dict) -> CommandResults:
 
 def get_ticket_history_command(client: Client, args: dict) -> CommandResults:
     response = client.get_ticket_history(args["ticket_id"])
-
+    response = convert_response_dates(response)
     return CommandResults(
         outputs=response["data"],
         outputs_prefix=f"{VENDOR}.Ticket",
@@ -684,7 +727,8 @@ def get_ticket_history_command(client: Client, args: dict) -> CommandResults:
 
 def list_users_command(client: Client, args: dict) -> CommandResults:
     response = client.list_users(**args)
-
+    response = convert_response_dates(response)
+    
     return CommandResults(
         outputs=response["data"],
         outputs_prefix=f"{VENDOR}.User",
@@ -733,7 +777,6 @@ def main() -> None:
         return_results(result)
 
     except Exception as e:
-        raise  # TODO remove
         return_error(
             "\n".join((f"Failed to execute {demisto.command()}.", f"Error: {e!s}"))
         )
