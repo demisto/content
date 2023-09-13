@@ -77,6 +77,7 @@ configuration:
   type: 8
 - additionalinfo: This parameter represents the number of days the integration will mirror RSA incidents. The default value is 3 days, the maximum is 24 days.
   display: Mirroring Days Limit
+  defaultvalue: '3'
   name: max_mirror_time
   required: false
   type: 0
