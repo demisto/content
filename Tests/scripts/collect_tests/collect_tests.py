@@ -936,8 +936,12 @@ class BranchTestCollector(TestCollector):
         integrations_using_apimodule = self.id_set.api_modules_to_integrations.get(api_module_id, [])
         collection_result_of_apimodule = []
         for integration in integrations_using_apimodule:
-            integration_collected = self._collect_yml(integration.path)
-            collection_result_of_apimodule.append(integration_collected)
+            try:
+                integration_collected = self._collect_yml(integration.path)
+                collection_result_of_apimodule.append(integration_collected)
+            except (NothingToCollectException, NonXsoarSupportedPackException) as e:
+                logger.info(str(e))
+                continue
         logger.debug(f"collection_result_of_apimodule = {collection_result_of_apimodule}")
         return CollectionResult.union(collection_result_of_apimodule)
 
