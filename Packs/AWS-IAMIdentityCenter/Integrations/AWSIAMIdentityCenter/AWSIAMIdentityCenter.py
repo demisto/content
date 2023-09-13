@@ -104,9 +104,9 @@ def get_user_by_email(args, client):  # pragma: no cover
                     'DisplayName': user['DisplayName']
                 }
                 userID = user['UserId']
-                data.append(user_details)
-    ec = {'AWS.IAM.IdentityCenter.Users': data}
-    human_readable = tableToMarkdown('AWS IAM Users ', data, removeNull=True)
+            data.append(user_details)
+    ec = {'AWS.IAM.IdentityCenter.Users': data[0]}
+    human_readable = tableToMarkdown('AWS IAM Users ', data[0], removeNull=True)
     return_outputs(human_readable, ec)
     return userID
 
@@ -235,8 +235,10 @@ def remove_user_from_groups(args, client):  # pragma: no cover
                                                                       args.get('groupName')))
 
 
-def test_function(client):
-    response = client.list_users()
+def test_function(args, client):
+    response = client.list_users(
+        IdentityStoreId=f'{IDENTITYSTOREID}',
+    )
     if response['ResponseMetadata']['HTTPStatusCode'] == 200:
         demisto.results('ok')
 
@@ -284,7 +286,7 @@ def main():     # pragma: no cover
         elif command == 'aws-iam-identitycenter-list-groups':
             list_groups(args, client)
         elif command == 'aws-iam-identitycenter-get-group':
-            get_user(args, client)
+            get_group(args, client)
         elif command == 'aws-iam-identitycenter-list-groups-for-user':
             list_groups_for_user(args, client)
         elif command == 'aws-iam-identitycenter-add-user-to-group':
