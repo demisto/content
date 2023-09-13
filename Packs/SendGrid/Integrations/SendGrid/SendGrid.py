@@ -6,7 +6,7 @@ import time
 
 import dateutil.parser
 from sendgrid import SendGridAPIClient
-from sendgrid.helpers.mail import *
+from sendgrid.helpers.mail import *  # nopycln: import
 
 # IMPORTS
 
