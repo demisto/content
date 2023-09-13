@@ -1,13 +1,13 @@
 import os
 
 from AnsibleApiModule import dict2md, rec_ansible_key_strip, generate_ansible_inventory, generic_ansible
-from TestsInput.markdown import MOCK_SINGLE_LEVEL_LIST, EXPECTED_MD_LIST, MOCK_SINGLE_LEVEL_DICT, EXPECTED_MD_DICT
-from TestsInput.markdown import MOCK_MULTI_LEVEL_DICT, EXPECTED_MD_MULTI_DICT, MOCK_MULTI_LEVEL_LIST
-from TestsInput.markdown import EXPECTED_MD_MULTI_LIST, MOCK_MULTI_LEVEL_LIST_ID_NAMES, EXPECTED_MD_MULTI_LIST_ID_NAMES
-from TestsInput.ansible_keys import MOCK_ANSIBLE_DICT, EXPECTED_ANSIBLE_DICT, MOCK_ANSIBLELESS_DICT, \
+from test_data.markdown import MOCK_SINGLE_LEVEL_LIST, EXPECTED_MD_LIST, MOCK_SINGLE_LEVEL_DICT, EXPECTED_MD_DICT
+from test_data.markdown import MOCK_MULTI_LEVEL_DICT, EXPECTED_MD_MULTI_DICT, MOCK_MULTI_LEVEL_LIST
+from test_data.markdown import EXPECTED_MD_MULTI_LIST, MOCK_MULTI_LEVEL_LIST_ID_NAMES, EXPECTED_MD_MULTI_LIST_ID_NAMES
+from test_data.ansible_keys import MOCK_ANSIBLE_DICT, EXPECTED_ANSIBLE_DICT, MOCK_ANSIBLELESS_DICT, \
     EXPECTED_ANSIBLELESS_DICT
-from TestsInput.ansible_inventory import ANSIBLE_INVENTORY_HOSTS_LIST, ANSIBLE_INVENTORY_HOSTS_CSV_LIST
-from TestsInput.ansible_inventory import ANSIBLE_INVENTORY_HOST_w_PORT, ANSIBLE_INVENTORY_INT_PARAMS
+from test_data.ansible_inventory import ANSIBLE_INVENTORY_HOSTS_LIST, ANSIBLE_INVENTORY_HOSTS_CSV_LIST
+from test_data.ansible_inventory import ANSIBLE_INVENTORY_HOST_w_PORT, ANSIBLE_INVENTORY_INT_PARAMS
 from unittest.mock import patch
 
 fixture_path = os.path.join(os.path.dirname(__file__), "fixtures", "network")
@@ -250,7 +250,7 @@ def test_generic_ansible_with_problematic_stdout():
     # Mock results from Ansible run
     mock_ansible_results = Object()
 
-    with open(os.path.join(os.path.join("TestsInput", "stdout.txt")), encoding='unicode_escape') as f:
+    with open(os.path.join(os.path.join("test_data", "stdout.txt")), encoding='unicode_escape') as f:
         stdout = f.read()
 
     mock_ansible_results.events = [{'uuid': 'cf26f7c4-6eca-48b2-8294-4bd263cfb2e0', 'counter': 1, 'stdout': '',
