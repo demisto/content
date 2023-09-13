@@ -359,7 +359,6 @@ def fetch_incidents_command(
                                             sort='created_at',
                                             direction='asc')
     # Gather incidents by demisto format
-    new_last_run: Optional[str] = None
     incidents_report = []
     if incidents_raw:
         demisto.debug(f'Got {len(incidents_raw)} incidents from the API.')
@@ -374,7 +373,7 @@ def fetch_incidents_command(
             })
 
         new_last_run = incidents_report[-1].get('occurred')
-    if not new_last_run:
+    else:
         new_last_run = datetime_new_last_run
     # Return results
     return incidents_report, {'lastRun': new_last_run}
