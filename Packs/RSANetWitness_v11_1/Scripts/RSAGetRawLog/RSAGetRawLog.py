@@ -87,13 +87,13 @@ def create_id_set(list_metas):
 
 def main():
     inc = demisto.incident()
-    rsa_alerts = inc.get("CustomFields").get("rsaalerts", [])
-    rsa_rawlogs = inc.get("CustomFields").get("rsarawlogslist", [])
+    rsa_alerts = inc.get("CustomFields", {}).get("rsaalerts", [])
+    rsa_rawlogs = inc.get("CustomFields", {}).get("rsarawlogslist", [])
     rsa_nb_meta = 1
-    rsa_metas = inc.get("CustomFields").get("metasevents", [])
+    rsa_metas = inc.get("CustomFields", {}).get("metasevents", [])
     # check in case we forgot to set XSOAR parameter right
     if not rsa_alerts:
-        return_results(CommandResults(readable_output="No alert/event found in this incident."))
+        return_results(CommandResults(readable_output="No alert/event was found in this incident."))
         return
 
     id_set_alerts = create_id_set(rsa_alerts)
@@ -102,7 +102,7 @@ def main():
 
     # in order to get only the new raw log, we only get the nb of changed line
     if set(id_set_alerts) == set(id_set_rawlogs):
-        return_results(CommandResults(readable_output="Nothing as changed !"))
+        return_results(CommandResults(readable_output="Nothing has changed !"))
         return
 
     change = 0
