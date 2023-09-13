@@ -200,12 +200,16 @@ script:
       name: emailAddress
     outputs:
     - contextPath: AWS.IAM.IdentityCenter.Users.UserName
+      description: The friendly name identifying the user.
       type: string
     - contextPath: AWS.IAM.IdentityCenter.Users.Email
+      description: The email address identifying the user.
       type: string
     - contextPath: AWS.IAM.IdentityCenter.Users.UserId
+      description: The user ID of the queried user.
       type: string
     - contextPath: AWS.IAM.IdentityCenter.Users.DisplayName
+      description: The display name of the queried user.
       type: string
     description: This will get user information using email address.
     name: aws-iam-identitycenter-get-user-by-email
