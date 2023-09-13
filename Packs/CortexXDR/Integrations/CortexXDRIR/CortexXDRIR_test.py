@@ -166,8 +166,6 @@ def return_extra_data_result(*args):
         raise Exception("Rate limit exceeded")
     else:
         incident_from_extra_data_command = load_test_data('./test_data/incident_example_from_extra_data_command.json')
-        if args[1].get('incident_id') == '4':
-            incident_from_extra_data_command['creation_time'] += 1
         return {}, {}, {"incident": incident_from_extra_data_command}
 
 
@@ -215,6 +213,61 @@ def test_fetch_incidents_with_rate_limit_error(requests_mock, mocker):
     assert incidents_from_previous_run[0].get('incident_id') == '2'
     assert 'network_artifacts' in json.loads(incidents[0]['rawJSON'])
     assert incidents[0]['rawJSON'] == json.dumps(modified_raw_incident)
+
+
+def test_fetch_incidents_rate_limit(requests_mock):
+    """
+    Given:
+        - 99 incidents to fetch.
+        - max_fetch is set to 25.
+    When
+        - calling fetch_incidents.
+        - The rate limit is exceeded after 15 calls.
+    Then
+        - Ensure 15 incidents are returned in a sorted order.
+        - Ensure `incidents_from_previous_run` holds 84 incidents for the next run.
+    """
+    num_of_incidents_to_fetch = 99
+    max_fetch = 25
+    rate_limit = 15
+
+    from CortexXDRIR import fetch_incidents, Client
+    import threading
+    client = Client(
+        base_url=f"{XDR_URL}/public_api/v1", verify=False, timeout=120, proxy=False
+    )
+    requests_mock.post(
+        f"{XDR_URL}/public_api/v1/incidents/get_incidents/",
+        json={"reply": {"incidents": [
+            {"incident_id": i + 1, "creation_time": i + 1}
+            for i in range(num_of_incidents_to_fetch)
+        ]}},
+    )
+
+    get_extra_data_call_count = 0
+
+    def mock_get_extra_data(request, context):
+        nonlocal rate_limit, get_extra_data_call_count
+        with threading.Lock():
+            if get_extra_data_call_count >= rate_limit:
+                raise Exception("Rate limit exceeded")
+            get_extra_data_call_count += 1
+        return load_test_data("./test_data/get_incident_extra_data.json")
+
+    requests_mock.post(
+        f"{XDR_URL}/public_api/v1/incidents/get_incident_extra_data/", json=mock_get_extra_data)
+    next_run, incidents = fetch_incidents(
+        client,
+        "3 month",
+        "MyInstance",
+        {},
+        max_fetch=max_fetch,
+    )
+    fetched_incident_ids = [int(inc["name"].split()[2]) for inc in incidents]
+
+    assert len(incidents) == rate_limit
+    assert fetched_incident_ids == sorted(fetched_incident_ids)
+    assert len(next_run["incidents_from_previous_run"]) == num_of_incidents_to_fetch - len(incidents)
 
 
 def test_get_incident_extra_data(requests_mock):
