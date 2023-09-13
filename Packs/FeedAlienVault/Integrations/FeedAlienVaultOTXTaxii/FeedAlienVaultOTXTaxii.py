@@ -465,6 +465,7 @@ class Client:
             proxy(str): Use system proxy.
             all_collections(bool): Whether to run on all active collections.
         """
+
     def __init__(self, api_key: str, collection: str, insecure: bool = False, proxy: bool = False,
                  all_collections: bool = False, tags: list = [], tlp_color: Optional[str] = None):
 

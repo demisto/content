@@ -21,154 +21,154 @@ configuration:
   name: insecure
   type: 8
   required: false
-description: Malware detection and analysis based on code reuse
+description: Malware detection and analysis based on code reuse.
 display: Intezer v2
 name: Intezer v2
 script:
   commands:
   - name: intezer-submit-alert
     arguments:
-    - description: The raw alert as it stored in the context
+    - description: The raw alert as it stored in the context.
       name: raw_alert
       required: true
       default: false
       isArray: false
       type: string
       secret: false
-    - description: The mapping for the raw alert data
+    - description: The mapping for the raw alert data.
       name: mapping
       default: false
       isArray: false
       type: string
       required: true
       secret: false
-    - description: The source of the alert
+    - description: The source of the alert.
       name: source
       type: string
       default: false
       isArray: false
       required: false
       secret: false
-    description: Submit a new alert, including the raw alert information, to Intezer for processing
+    description: Submit a new alert, including the raw alert information, to Intezer for processing.
     outputs:
     - contextPath: Intezer.Alert.ID
-      description: Intezer alert id
+      description: Intezer alert id.
       type: string
     - contextPath: Intezer.Alert.Status
-      description: Status of the Alert
+      description: Status of the Alert.
       type: string
     deprecated: false
   - name: intezer-submit-suspected-phishing-email
     arguments:
-    - description: The email file entry id to upload
+    - description: The email file entry id to upload.
       name: email_file_entry_id
       required: true
       default: true
-    description: Submit a suspicious phishing email in a raw format (.MSG or .EML) to Intezer for processing
+    description: Submit a suspicious phishing email in a raw format (.MSG or .EML) to Intezer for processing.
     outputs:
     - contextPath: Intezer.Alert.ID
-      description: Intezer alert id
+      description: Intezer alert id.
       type: string
     - contextPath: Intezer.Alert.Status
-      description: status of the Alert
+      description: status of the Alert.
       type: string
     deprecated: false
   - name: intezer-get-alert-result
     arguments:
-    - description: The alert id to query
+    - description: The alert id to query.
       name: alert_id
       required: true
       default: true
-    - description: Should polling be enable for this command
+    - description: Should polling be enable for this command.
       name: wait_for_result
       defaultValue: false
-    description: Get an ingested alert triage and response information using alert ID
+    description: Get an ingested alert triage and response information using alert ID.
     outputs:
     - contextPath: Intezer.Alert.ID
-      description: Intezer alert id
+      description: Intezer alert id.
       type: string
     - contextPath: Intezer.Alert.Status
-      description: The status of the Alert
+      description: The status of the Alert.
       type: string
     - contextPath: Intezer.Alert.Result
-      description: The full report of the alert
+      description: The full report of the alert.
       type: object
     - contextPath: Intezer.Alert.Result.intezer_alert_url
-      description: The url of the alert in Intezer Analyze
+      description: The url of the alert in Intezer Analyze.
       type: string
     - contextPath: Intezer.Alert.Result.source_display
-      description: The source of the Alert
+      description: The source of the Alert.
       type: string
     - contextPath: Intezer.Alert.Result.response.user_recommended_actions_display
-      description: The actions recommended by Intezer to be taken
+      description: The actions recommended by Intezer to be taken.
       type: string
     - contextPath: Intezer.Alert.Result.triage_result.alert_verdict_display
-      description: The calculated verdict of the Alert
+      description: The calculated verdict of the Alert.
       type: string
     - contextPath: Intezer.Alert.Result.triage_result.risk_category_display
-      description: The risk category of the Alert
+      description: The risk category of the Alert.
       type: string
     - contextPath: Intezer.Alert.Result.raw_alert
-      description: The raw alert object
+      description: The raw alert object.
       type: object
     - contextPath: DBotScore.Indicator
-      description: The indicator we tested
+      description: The indicator we tested.
       type: string
     - contextPath: DBotScore.Type
-      description: The type of the indicator
+      description: The type of the indicator.
       type: string
     - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score
+      description: Vendor used to calculate the score.
       type: string
     - contextPath: DBotScore.Score
-      description: The actual score
+      description: The actual score.
       type: number
     - contextPath: File.SHA256
-      description: Hash SHA256
+      description: Hash SHA256.
       type: string
     - contextPath: File.MD5
-      description: Hash MD5
+      description: Hash MD5.
       type: string
     - contextPath: File.SHA1
-      description: Hash SHA1
+      description: Hash SHA1.
       type: string
     - contextPath: URL.Data
-      description: The submitted Url
+      description: The submitted Url.
       type: string
     - contextPath: URL.Malicious.Vendor
-      description: For malicious Url, the vendor that made the decision
+      description: For malicious Url, the vendor that made the decision.
       type: string
     - contextPath: URL.Relationships
-      description: The relationships between two urls
+      description: The relationships between two urls.
       type: Unknown
     deprecated: false
     polling: true
   - name: intezer-analyze-by-hash
     arguments:
-    - description: Hash of the file to query. Supports SHA256, MD5 and SHA1
+    - description: Hash of the file to query. Supports SHA256, MD5 and SHA1.
       name: file_hash
       required: true
-    - description: Should polling be enable for this command
+    - description: Should polling be enable for this command.
       defaultValue: false
       name: wait_for_result
-    - description: Number of seconds before polling throw timeout
+    - description: Number of seconds before polling throw timeout.
       defaultValue: 600
       name: timeout
       type: number
-    - description: Intervals in seconds between poll requests
+    - description: Intervals in seconds between poll requests.
       defaultValue: 30
       name: interval
       type: number
-    description: Checks file reputation of the given hash, supports SHA256, SHA1 and MD5
+    description: Checks file reputation of the given hash, supports SHA256, SHA1 and MD5.
     outputs:
     - contextPath: Intezer.Analysis.ID
-      description: Intezer analysis id
+      description: Intezer analysis id.
       type: string
     - contextPath: Intezer.Analysis.Status
-      description: status of the analysis
+      description: status of the analysis.
       type: string
     - contextPath: Intezer.Analysis.Type
-      description: type of the analysis
+      description: type of the analysis.
       type: string
     polling: true
   - name: intezer-analyze-url
@@ -177,142 +177,142 @@ script:
       name: url
       required: true
     - defaultValue: false
-      description: Should polling be enable for this command
+      description: Should polling be enable for this command.
       name: wait_for_result
-    - description: Number of seconds before polling throw timeout
+    - description: Number of seconds before polling throw timeout.
       name: timeout
       defaultValue: 600
       type: number
-    - description: Intervals in seconds between poll requests
+    - description: Intervals in seconds between poll requests.
       defaultValue: 30
       name: interval
       type: number
-    description: Checks reputation of an Url
+    description: Checks reputation of an Url.
     outputs:
     - contextPath: Intezer.Analysis.ID
-      description: Intezer analysis id
+      description: Intezer analysis id.
       type: string
     - contextPath: Intezer.Analysis.Status
-      description: status of the analysis
+      description: status of the analysis.
       type: string
     - contextPath: Intezer.Analysis.Type
-      description: type of the analysis
+      description: type of the analysis.
       type: string
     - contextPath: URL.Data
-      description: The submitted Url
+      description: The submitted Url.
       type: string
     - contextPath: URL.Malicious.Vendor
-      description: For malicious Url, the vendor that made the decision
+      description: For malicious Url, the vendor that made the decision.
       type: string
     - contextPath: URL.Metadata
-      description: Metadata returned from Intezer analysis
+      description: Metadata returned from Intezer analysis.
       type: Unknown
     - contextPath: URL.ExistsInIntezer
-      description: Does the url exists on intezer
+      description: Does the url exists on intezer.
       type: Boolean
     polling: true
   - name: intezer-get-latest-report
     arguments:
-    - description: Hash of the file to query. Supports SHA256, MD5 and SHA1
+    - description: Hash of the file to query. Supports SHA256, MD5 and SHA1.
       name: file_hash
       required: true
     - auto: PREDEFINED
-      description: Should get only private analysis
+      description: Should get only private analysis.
       name: should_get_only_private_analysis
       predefined:
       - 'true'
       - 'false'
-    description: Checks file reputation of the given hash, supports SHA256, SHA1 and MD5 by looking at the latest available report
+    description: Checks file reputation of the given hash, supports SHA256, SHA1 and MD5 by looking at the latest available report.
     outputs:
     - contextPath: File.SHA256
-      description: Hash SHA256
+      description: Hash SHA256.
       type: string
     - contextPath: File.Malicious.Vendor
-      description: For malicious files, the vendor that made the decision
+      description: For malicious files, the vendor that made the decision.
       type: string
     - contextPath: DBotScore.Indicator
-      description: The indicator we tested
+      description: The indicator we tested.
       type: string
     - contextPath: DBotScore.Type
-      description: The type of the indicator
+      description: The type of the indicator.
       type: string
     - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score
+      description: Vendor used to calculate the score.
       type: string
     - contextPath: DBotScore.Score
-      description: The actual score
+      description: The actual score.
       type: number
     - contextPath: File.Metadata
       description: Metadata returned from Intezer analysis (analysis id, analysis url, family, family type, sha256, verdict, sub_verdict). Metadata will be returned only for supported files.
       type: Unknown
     - contextPath: File.ExistsInIntezer
-      description: Does the file exists on intezer genome database
+      description: Does the file exists on intezer genome database.
       type: Boolean
   - name: intezer-analyze-by-file
     arguments:
     - name: file_entry_id
       required: true
-      description: The file entry id to upload
+      description: The file entry id to upload.
       default: true
-    - description: Should polling be enable for this command
+    - description: Should polling be enable for this command.
       defaultValue: false
       name: wait_for_result
-    - description: Number of seconds before polling throw timeout
+    - description: Number of seconds before polling throw timeout.
       defaultValue: 600
       name: timeout
-    - description: Intervals in seconds between poll requests
+    - description: Intervals in seconds between poll requests.
       defaultValue: 30
       name: interval
     - auto: PREDEFINED
-      description: Should disable sandox dynamic execution
+      description: Should disable sandox dynamic execution.
       name: disable_dynamic_execution
       predefined:
       - 'true'
       - 'false'
     - auto: PREDEFINED
-      description: Should disable static extraction
+      description: Should disable static extraction.
       name: disable_static_extraction
       predefined:
       - 'true'
       - 'false'
-    - description: An array of alert ids to associate with the file analysis. The ids should be comma separated
+    - description: An array of alert ids to associate with the file analysis. The ids should be comma separated.
       name: related_alert_ids
       type: Array
       isArray: true
-    - description: Given sandbox command line arguments
+    - description: Given sandbox command line arguments.
       name: sandbox_command_line_arguments
-    - description: Zip password in case the file is protected zip
+    - description: Zip password in case the file is protected zip.
       name: zip_password
     outputs:
     - contextPath: Intezer.Analysis.ID
-      description: Intezer analysis id
+      description: Intezer analysis id.
       type: string
     - contextPath: Intezer.Analysis.Status
-      description: status of the analysis
+      description: status of the analysis.
       type: string
     - contextPath: Intezer.Analysis.Type
-      description: type of the analysis
+      description: type of the analysis.
       type: string
     - contextPath: File.SHA256
-      description: Hash SHA256
+      description: Hash SHA256.
       type: string
     - contextPath: File.Malicious.Vendor
-      description: For malicious files, the vendor that made the decision
+      description: For malicious files, the vendor that made the decision.
       type: string
     - contextPath: File.Metadata
       description: Metadata returned from Intezer analysis (analysis id, analysis url, family, family type, sha256, verdict, sub_verdict). Metadata will be returned only for supported files.
       type: Unknown
     - contextPath: File.ExistsInIntezer
-      description: Does the file exists on intezer genome database
+      description: Does the file exists on intezer genome database.
       type: Boolean
-    description: Checks file reputation for uploaded file (up to 150MB)
+    description: Checks file reputation for uploaded file (up to 150MB).
     polling: true
   - name: intezer-get-analysis-result
     arguments:
-    - description: The analysis ID we want to get results for
+    - description: The analysis ID we want to get results for.
       name: analysis_id
       isArray: true
-    - description: The type of the analysis
+    - description: The type of the analysis.
       name: analysis_type
       auto: PREDEFINED
       defaultValue: File
@@ -320,281 +320,281 @@ script:
       - File
       - Endpoint
       - Url
-    - description: indicator to classify
+    - description: indicator to classify.
       name: indicator_name
-    description: Check the analysis status and get analysis result, support file and endpoint analysis
+    description: Check the analysis status and get analysis result, support file and endpoint analysis.
     outputs:
     - contextPath: File.SHA256
-      description: Hash SHA256
+      description: Hash SHA256.
       type: string
     - contextPath: File.MD5
-      description: Hash MD5
+      description: Hash MD5.
       type: string
     - contextPath: File.SHA1
-      description: Hash SHA1
+      description: Hash SHA1.
       type: string
     - contextPath: Url.URL
-      description: The submitted Url (deprecated)
+      description: The submitted Url (deprecated).
       type: string
     - contextPath: URL.Data
-      description: The submitted Url
+      description: The submitted Url.
       type: string
     - contextPath: Url.Malicious.Vendor
-      description: For malicious Url, the vendor that made the decision (deprecated)
+      description: For malicious Url, the vendor that made the decision (deprecated).
       type: string
     - contextPath: URL.Malicious.Vendor
-      description: For malicious Url, the vendor that made the decision
+      description: For malicious Url, the vendor that made the decision.
       type: string
     - contextPath: Url.Metadata
-      description: Metadata returned from Intezer analysis (deprecated)
+      description: Metadata returned from Intezer analysis (deprecated).
       type: Unknown
     - contextPath: URL.Metadata
-      description: Metadata returned from Intezer analysis
+      description: Metadata returned from Intezer analysis.
       type: Unknown
     - contextPath: Url.ExistsInIntezer
-      description: Does the url exists on intezer (deprecated)
+      description: Does the url exists on intezer (deprecated).
       type: Boolean
     - contextPath: URL.ExistsInIntezer
-      description: Does the url exists on intezer
+      description: Does the url exists on intezer.
       type: Boolean
     - contextPath: File.Malicious.Vendor
-      description: For malicious files, the vendor that made the decision
+      description: For malicious files, the vendor that made the decision.
       type: string
     - contextPath: DBotScore.Indicator
-      description: The indicator we tested
+      description: The indicator we tested.
       type: string
     - contextPath: DBotScore.Type
-      description: The type of the indicator
+      description: The type of the indicator.
       type: string
     - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score
+      description: Vendor used to calculate the score.
       type: string
     - contextPath: DBotScore.Score
-      description: The actual score
+      description: The actual score.
       type: number
     - contextPath: File.Metadata
       description: Metadata returned from Intezer analysis (analysis id, analysis url, family, family type, sha256, verdict, sub_verdict). Metadata will be returned only for supported files.
       type: Unknown
     - contextPath: Endpoint.Metadata
-      description: Metadata returned from Intezer analysis (endpoint analysis id, endpoint analysis url, families,  verdict, host_name)
+      description: Metadata returned from Intezer analysis (endpoint analysis id, endpoint analysis url, families,  verdict, host_name).
       type: Unknown
     - contextPath: File.ExistsInIntezer
-      description: Does the file exists on intezer genome database
+      description: Does the file exists on intezer genome database.
       type: Boolean
   - name: intezer-get-sub-analyses
     arguments:
-    - description: The analysis ID we want to get the sub analyses for
+    - description: The analysis ID we want to get the sub analyses for.
       name: analysis_id
       required: true
-    description: Get a list of the analysis sub analyses
+    description: Get a list of the analysis sub analyses.
     outputs:
     - contextPath: Intezer.Analysis.ID
-      description: Intezer analysis id
+      description: Intezer analysis id.
       type: string
     - contextPath: Intezer.Analysis.SubAnalysesIDs
-      description: List of all sub analyses of the give analysis
+      description: List of all sub analyses of the give analysis.
       type: Unknown
   - name: intezer-get-family-info
     arguments:
-    - description: The Family ID
+    - description: The Family ID.
       name: family_id
       required: true
-    description: Get family information from Intezer Analyze
+    description: Get family information from Intezer Analyze.
     outputs:
     - contextPath: Intezer.Family.ID
-      description: Family id in intezer genome database
+      description: Family id in intezer genome database.
       type: string
     - contextPath: Intezer.Family.Name
-      description: Family name
+      description: Family name.
       type: string
     - contextPath: Intezer.Family.Type
-      description: Family Type
+      description: Family Type.
       type: string
   - name: intezer-get-analysis-code-reuse
     arguments:
-    - description: The analysis ID we want to get the code reuse for
+    - description: The analysis ID we want to get the code reuse for.
       name: analysis_id
       required: true
-    - description: The Sub Analysis we want to get the code reuse for
+    - description: The Sub Analysis we want to get the code reuse for.
       name: sub_analysis_id
-    description: Get All code reuse report for an analysis. To get a sub analysis code-reuse you need to specify an analysis_id and a sub_analysis id!
+    description: Get All code reuse report for an analysis. To get a sub analysis code-reuse you need to specify an analysis_id and a sub_analysis id!.
     outputs:
     - contextPath: Intezer.Analysis.ID
-      description: The composed analysis ID
+      description: The composed analysis ID.
       type: string
     - contextPath: Intezer.Analysis.CodeReuse
-      description: General Code Reuse of the analysis
+      description: General Code Reuse of the analysis.
       type: Unknown
     - contextPath: Intezer.Analysis.CodeReuseFamilies
-      description: List of the families appearing in the code reuse
+      description: List of the families appearing in the code reuse.
       type: Unknown
     - contextPath: Intezer.Analysis.SubAnalyses.CodeReuse
-      description: General Code Reuse of the analysis
+      description: General Code Reuse of the analysis.
       type: Unknown
     - contextPath: Intezer.Analysis.SubAnalyses.CodeReuseFamilies
-      description: List of the families appearing in the code reuse
+      description: List of the families appearing in the code reuse.
       type: Unknown
     - contextPath: Intezer.Analysis.SubAnalyses.RootAnalysis
-      description: The Composed analysis id
+      description: The Composed analysis id.
       type: string
   - name: intezer-get-analysis-metadata
     arguments:
-    - description: The analysis ID we want to get the metadata for
+    - description: The analysis ID we want to get the metadata for.
       name: analysis_id
       required: true
-    - description: The Sub Analysis we want to get the metadata for
+    - description: The Sub Analysis we want to get the metadata for.
       name: sub_analysis_id
-    description: Get analysis metadata. To get a sub analysis metadata you need to specify an analysis_id and a sub_analysis id!
+    description: Get analysis metadata. To get a sub analysis metadata you need to specify an analysis_id and a sub_analysis id!.
     outputs:
     - contextPath: Intezer.Analysis.ID
-      description: The composed analysis ID
+      description: The composed analysis ID.
       type: string
     - contextPath: Intezer.Analysis.Metadata
-      description: The Analysis metadata
+      description: The Analysis metadata.
       type: Unknown
     - contextPath: Intezer.Analysis.SubAnalyses.Metadata
-      description: A Sub Analysis metadata
+      description: A Sub Analysis metadata.
       type: Unknown
   - name: intezer-get-analysis-iocs
     arguments:
-    - description: The analysis ID we want to get the metadata for
+    - description: The analysis ID we want to get the metadata for.
       name: analysis_id
       required: true
     description: Gets the list of network and files IOCs of a specific analysis id.
     outputs:
     - contextPath: Intezer.Analysis.ID
-      description: The composed analysis ID
+      description: The composed analysis ID.
       type: string
     - contextPath: Intezer.Analysis.IOCs
-      description: The Analysis IOCs
+      description: The Analysis IOCs.
       type: Dict
   - name: intezer-get-file-analysis-result
     arguments:
-    - description: The analysis ID we want to get the analysis result for
+    - description: The analysis ID we want to get the analysis result for.
       name: analysis_id
       required: true
-    - description: Should polling be enable for this command
+    - description: Should polling be enable for this command.
       defaultValue: true
       name: wait_for_result
-    - description: Number of seconds before polling throw timeout
+    - description: Number of seconds before polling throw timeout.
       defaultValue: 600
       name: timeout
       type: number
-    - description: Intervals in seconds between poll requests
+    - description: Intervals in seconds between poll requests.
       defaultValue: 30
       name: interval
       type: number
-    description: Returns the analysis result
+    description: Returns the analysis result.
     polling: true
     outputs:
     - contextPath: File.SHA256
-      description: Hash SHA256
+      description: Hash SHA256.
       type: string
     - contextPath: File.MD5
-      description: Hash MD5
+      description: Hash MD5.
       type: string
     - contextPath: File.SHA1
-      description: Hash SHA1
+      description: Hash SHA1.
       type: string
     - contextPath: File.Malicious.Vendor
-      description: For malicious files, the vendor that made the decision
+      description: For malicious files, the vendor that made the decision.
       type: string
     - contextPath: File.Metadata
       description: Metadata returned from Intezer analysis (analysis id, analysis url, family, family type, sha256, verdict, sub_verdict). Metadata will be returned only for supported files.
       type: Unknown
     - contextPath: File.ExistsInIntezer
-      description: Does the file exists on intezer genome database
+      description: Does the file exists on intezer genome database.
       type: Boolean
     - contextPath: DBotScore.Indicator
-      description: The indicator we tested
+      description: The indicator we tested.
       type: string
     - contextPath: DBotScore.Type
-      description: The type of the indicator
+      description: The type of the indicator.
       type: string
     - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score
+      description: Vendor used to calculate the score.
       type: string
     - contextPath: DBotScore.Score
-      description: The actual score
+      description: The actual score.
       type: number
   - name: intezer-get-url-analysis-result
     arguments:
-    - description: The analysis ID we want to get the analysis result for
+    - description: The analysis ID we want to get the analysis result for.
       name: analysis_id
       required: true
-    - description: Should polling be enable for this command
+    - description: Should polling be enable for this command.
       defaultValue: true
       name: wait_for_result
-    - description: Number of seconds before polling throw timeout
+    - description: Number of seconds before polling throw timeout.
       defaultValue: 600
       name: timeout
       type: number
-    - description: Intervals in seconds between poll requests
+    - description: Intervals in seconds between poll requests.
       defaultValue: 30
       name: interval
       type: number
-    description: Returns the analysis result
+    description: Returns the analysis result.
     polling: true
     outputs:
     - contextPath: URL.Data
-      description: The submitted Url
+      description: The submitted Url.
       type: string
     - contextPath: URL.Malicious.Vendor
-      description: For malicious Url, the vendor that made the decision
+      description: For malicious Url, the vendor that made the decision.
       type: string
     - contextPath: URL.Metadata
-      description: Metadata returned from Intezer analysis
+      description: Metadata returned from Intezer analysis.
       type: Unknown
     - contextPath: URL.ExistsInIntezer
-      description: Does the url exists on intezer
+      description: Does the url exists on intezer.
       type: Boolean
     - contextPath: DBotScore.Indicator
-      description: The indicator we tested
+      description: The indicator we tested.
       type: string
     - contextPath: DBotScore.Type
-      description: The type of the indicator
+      description: The type of the indicator.
       type: string
     - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score
+      description: Vendor used to calculate the score.
       type: string
     - contextPath: DBotScore.Score
-      description: The actual score
+      description: The actual score.
       type: number
   - name: intezer-get-endpoint-analysis-result
     arguments:
-    - description: The analysis ID we want to get the analysis result for
+    - description: The analysis ID we want to get the analysis result for.
       name: analysis_id
       required: true
-    - description: Should polling be enable for this command
+    - description: Should polling be enable for this command.
       defaultValue: true
       name: wait_for_result
-    - description: Number of seconds before polling throw timeout
+    - description: Number of seconds before polling throw timeout.
       defaultValue: 900
       name: timeout
       type: number
-    - description: Intervals in seconds between poll requests
+    - description: Intervals in seconds between poll requests.
       defaultValue: 30
       name: interval
       type: number
-    description: Returns the analysis result
+    description: Returns the analysis result.
     polling: true
     outputs:
     - contextPath: DBotScore.Indicator
-      description: The indicator we tested
+      description: The indicator we tested.
       type: string
     - contextPath: DBotScore.Type
-      description: The type of the indicator
+      description: The type of the indicator.
       type: string
     - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score
+      description: Vendor used to calculate the score.
       type: string
     - contextPath: DBotScore.Score
-      description: The actual score
+      description: The actual score.
       type: number
     - contextPath: Endpoint.Metadata
-      description: Metadata returned from Intezer analysis (endpoint analysis id, endpoint analysis url, families,  verdict, host_name)
+      description: Metadata returned from Intezer analysis (endpoint analysis id, endpoint analysis url, families,  verdict, host_name).
       type: Unknown
-  dockerimage: demisto/py3-tools:1.0.0.72621
+  dockerimage: demisto/py3-tools:1.0.0.73969
   runonce: false
   script: '-'
   type: python
