@@ -1171,9 +1171,8 @@ There is no input for this command.
 
 
 #### Command Example
-```
-vmray-get-license-usage-verdicts
-```
+
+```vmray-get-license-usage-verdicts```
 
 #### Context Example
 
