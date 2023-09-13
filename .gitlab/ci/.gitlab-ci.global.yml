@@ -217,7 +217,7 @@
   - |
     if [[ "${CI_COMMIT_BRANCH}" = "master" ]]; then
       echo "Skipping, Should not run on master branch."
-    elif [ 'true' = $(./Tests/scripts/check_if_branch_exist.sh -u "gitlab-ci-token" -t "${CI_JOB_TOKEN}" -h "code.pan.run" --repo "xsoar/content-test-conf" -b "${CI_COMMIT_BRANCH}") ]; then
+    elif [ 'true' = $(./Tests/scripts/check_if_branch_exist.sh -u "gitlab-ci-token" -t "${CI_JOB_TOKEN}" -h "${CI_SERVER_HOST}" --repo "xsoar/content-test-conf" -b "${CI_COMMIT_BRANCH}") ]; then
       RED='\033[0;31m'
       NC='\033[0m'
       echo -e "${RED}ERROR: Found a branch with the same name:${CI_COMMIT_BRANCH} in contest-test-conf repository.\n Merge it in order to merge the current branch into content repo.${NC}"

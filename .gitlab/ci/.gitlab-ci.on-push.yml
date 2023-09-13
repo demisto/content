@@ -584,7 +584,7 @@ test-upload-flow:
     -   echo "Sleeping for 10 seconds before retrying"
     -   sleep 10
     - done
-    - echo "Successful triggered test upload - https://code.pan.run/xsoar/content/-/pipelines/$pipeline_id"  # disable-secrets-detection
+    - echo "Successful triggered test upload - '$CI_SERVER_URL'/xsoar/content/-/pipelines/$pipeline_id"  # disable-secrets-detection
     - section_end "Trigger Test Upload Flow On Testing Branch"
 
     - section_start "Wait For Upload To Finish"
