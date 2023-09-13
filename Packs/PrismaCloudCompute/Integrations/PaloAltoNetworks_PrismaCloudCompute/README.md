@@ -23,16 +23,17 @@ To send alerts from Prisma Cloud Compute to Cortex XSOAR, you need to create an 
 2. Search for **Prisma Cloud Compute**.
 3. Click **Add instance** to create and configure a new integration.
    
-   | Parameter | Description | Example |
-   | -------------- | ----------- | ------- |
-   | **Name** | A meaningful name for the integration instance. | Prisma Cloud Compute_&lt;alertProfileName&gt; |
-   | **Fetches incidents** | Configures this integration instance to fetch alerts from Prisma Cloud Compute. | N/A |
-   | **Prisma Cloud Compute Console URL** | URL address and port of your Prisma Cloud Compute console. Copy the address from the alert profile created in Prisma Cloud Compute. | https:/<span></span>/proxyserver.com |
+   | Parameter                                             | Description | Example |
+-------------------------------------------------------| -------------- | ----------- | ------- |
+   | **Name**                                              | A meaningful name for the integration instance. | Prisma Cloud Compute_&lt;alertProfileName&gt; |
+   | **Fetches incidents**                                 | Configures this integration instance to fetch alerts from Prisma Cloud Compute. | N/A |
+   | **Prisma Cloud Compute Console URL**                  | URL address and port of your Prisma Cloud Compute console. Copy the address from the alert profile created in Prisma Cloud Compute. | https:/<span></span>/proxyserver.com |
    | **Prisma Cloud Compute Project Name (if applicable)** | Copy the project name from the alert profile created in Prisma Cloud Compute and paste in this field. | N/A |
-   | **Trust any certificate (not secure)** | Skips verification of the CA certificate (not recommended). | N/A |
-   | **Use system proxy settings** | Runs the integration instance using the proxy server (HTTP or HTTPS) that you defined in the server configuration. | <span></span>https://proxyserver.com |
-   | **Username** | Prisma Cloud Compute login credentials. | N/A |
-   | **Prisma Cloud Compute CA Certificate** | CA Certificate used by Prisma Cloud Compute. Copy the certificate from the alert profile created in Prisma Cloud Compute. | N/A |
+   | **Trust any certificate (not secure)**                | Skips verification of the CA certificate (not recommended). | N/A |
+   | **Use system proxy settings**                         | Runs the integration instance using the proxy server (HTTP or HTTPS) that you defined in the server configuration. | <span></span>https://proxyserver.com |
+   | **Username**                                          | Prisma Cloud Compute login credentials. | N/A |
+   | **Prisma Cloud Compute CA Certificate**               | CA Certificate used by Prisma Cloud Compute. Copy the certificate from the alert profile created in Prisma Cloud Compute. | N/A |
+   | **Source Reliability**                                   | Reliability of the source providing the intelligence data. | False |
 4. Click **Test** to validate the integration.
 5. Click **Done** to save the integration.
 
@@ -1056,6 +1057,7 @@ devOps
 | DBotScore.Score | Number | The indicator score. | 
 | DBotScore.Type | String | The indicator type. | 
 | DBotScore.Vendor | String | The vendor reporting the score of the indicator. | 
+| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. | 
 
 
 #### Command Example
