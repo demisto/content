@@ -166,6 +166,8 @@ def return_extra_data_result(*args):
         raise Exception("Rate limit exceeded")
     else:
         incident_from_extra_data_command = load_test_data('./test_data/incident_example_from_extra_data_command.json')
+        if args[1].get('incident_id') == '4':
+            incident_from_extra_data_command['creation_time'] += 1
         return {}, {}, {"incident": incident_from_extra_data_command}
 
 
