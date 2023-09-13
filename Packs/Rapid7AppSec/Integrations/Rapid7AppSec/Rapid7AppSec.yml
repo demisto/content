@@ -186,7 +186,7 @@ script:
       isArray: false
       name: comment_content
       required: true
-    description: Create a new Vulnerability Comment. A vulnerability comment is a resource that allows users to add context to the vulnerability.
+    description: Create a new vulnerability comment. A vulnerability comment is a resource that allows users to add context to the vulnerability.
     execution: false
     name: app-sec-vulnerability-comment-create
   - arguments:
@@ -625,7 +625,7 @@ script:
       isArray: false
       name: limit
       required: false
-    description: List attack templates. An Attack Template describes if and how Attacks should be executed during the execution of a Scan. Mainly used to understand the scan config outputs. If a attack_template_id is given, the command will return the information about the wanted attack.
+    description: List the attack templates. An attack template describes if and how attacks should be executed during the execution of a scan. Mainly used to understand the scan configuration outputs. If an attack_template_id is given, the command will return the information about the specific attack.
     execution: false
     name: app-sec-attack-template-list
     outputs:

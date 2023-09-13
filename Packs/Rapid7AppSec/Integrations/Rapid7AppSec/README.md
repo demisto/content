@@ -958,7 +958,7 @@ List the modules. If a module_id is given, the command will return the informati
 ### app-sec-attack-template-list
 
 ***
-List attack templates. An Attack Template describes if and how Attacks should be executed during the execution of a Scan. Mainly used to understand the scan config outputs. If a attack_template_id is given, the command will return the information about the wanted attack.
+List the attack templates. An attack template describes if and how attacks should be executed during the execution of a scan. Mainly used to understand the scan configuration outputs. If an attack_template_id is given, the command will return the information about the specific attack.
 
 #### Base Command
 
