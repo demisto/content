@@ -22,26 +22,94 @@ configuration:
   name: proxy
   type: 8
   required: false
-description: '[Enter a comprehensive, yet concise, description of what the integration does, what use cases it is designed for, etc.]'
+description: Improve the effectiveness of your service provision and resources, and the quality of your IT department.
 display: 'PATHelpdeskAdvanced'
 name: PATHelpdeskAdvanced
 script:
   commands:
-  - arguments:
-    - description: '[Enter a description of the argument, including any important information users need to know, for example, default values.]'
-      name: dummy
+  - name: hda-create-ticket
+    description: Create a new ticket in PAT Helpdesk Advanced.
+    arguments:
+    - name: object_type_id
+      description: The object type ID for the ticket.
       required: true
-    description: '[Enter a description of the command, including any important information users need to know, for example required permissions.]'
-    name: baseintegration-dummy
+    - name: ticket_status_id
+      description: The status ID for the ticket. Use hda-list-ticket-statuses to get a list of status IDs.
+      required: true
+    - name: ticket_priority_id
+      description: The priority ID for the ticket.
+      required: true
+    - name: object_description
+      description: The description of the object.
+    - name: ticket_classification_id
+      description: The classification ID for the ticket.
+    - name: ticket_type_id
+      description: The type ID for the ticket.
+    - name: contact_id
+      description: The contact ID for the ticket.
+    - name: subject
+      description: The subject for the ticket.
+    - name: problem
+      description: The problem description for the ticket.
+    - name: site
+      description: The site for the ticket.
     outputs:
-    - contextPath: BaseIntegration.Output
-      description: '[Enter a description of the data returned in this output.]'
-      type: String
+    - contextPath: HelpdeskAdvanced.Ticket.HRField
+      description: The HR field for the ticket.
+      type: string
+    - contextPath: HelpdeskAdvanced.Ticket.ID
+      description: The ticket ID.
+      type: string
+    - contextPath: HelpdeskAdvanced.Ticket.ObjectDescription
+      description: The object description for the ticket.
+      type: string
+    - contextPath: HelpdeskAdvanced.Ticket.ObjectEntity
+      description: The object entity for the ticket.
+      type: string
+    - contextPath: HelpdeskAdvanced.Ticket.Solution
+      description: The solution for resolving the ticket.
+      type: string
+    - contextPath: HelpdeskAdvanced.Ticket.ClassificationID
+      description: The classification ID for the ticket.
+      type: string
+    - contextPath: HelpdeskAdvanced.Ticket.IsNew
+      description: Whether the ticket is new.
+      type: boolean
+    - contextPath: HelpdeskAdvanced.Ticket.ExpirationDate
+      description: The expiration date for the ticket.
+      type: string
+    - contextPath: HelpdeskAdvanced.Ticket.FirstUpdateUserID
+      description: The first user to update the ticket.
+      type: string
+    - contextPath: HelpdeskAdvanced.Ticket.OwnerUserID
+      description: The owner user ID for the ticket.
+      type: string
+    - contextPath: HelpdeskAdvanced.Ticket.Date
+      description: The date the ticket was created.
+      type: string
+    - contextPath: HelpdeskAdvanced.Ticket.AssignedUserID
+      description: The assigned user ID for the ticket.
+      type: string
+  - name: hda-list-tickets
+    description: List tickets in PAT Helpdesk Advanced.
+    arguments:
+    - name: ticket_id
+      description: The ticket ID to retrieve details for.
+    - name: filter
+      description: Comma-separated list of strings to filter tickets by. Each should be of the form "key" operator "value" or "key" operator null. Valid operators are eq,gt,lt,ge,lt,sw,ne. See PAT Helpdesk Advanced documentation for valid filter keys.
+    - name: page
+      description: Page number of the tickets list pagination.
+    - name: page_size
+      description: Number of tickets to return per page.
+    - name: limit
+      defaultValue: 50
+      description: Maximum number of tickets to return.
+    outputs: []
   runonce: false
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.13.72123
-fromversion: 5.5.0
+  dockerimage: demisto/python3:3.10.13.73190
+fromversion: 6.9.0
 tests:
 - No tests (auto formatted)

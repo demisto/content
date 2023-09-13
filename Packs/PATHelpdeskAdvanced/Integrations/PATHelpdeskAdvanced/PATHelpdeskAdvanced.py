@@ -11,7 +11,6 @@ import demistomock as demisto
 from CommonServerPython import *  # noqa: F401
 from CommonServerUserPython import *  # noqa
 
-DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
 VENDOR = "HelpdeskAdvanced"
 
 FILTER_CONDITION_REGEX = re.compile(
