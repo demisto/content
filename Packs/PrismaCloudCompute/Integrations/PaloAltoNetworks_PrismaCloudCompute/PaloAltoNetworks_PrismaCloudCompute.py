@@ -27,6 +27,7 @@ HEADERS_BY_NAME = {
     'compliance': ['type', 'id', 'description']
 }
 MAX_API_LIMIT = 50
+INTEGRATION_NAME = 'PaloAltoNetworks_PrismaCloudCompute'
 
 ''' COMMANDS + REQUESTS FUNCTIONS '''
 
@@ -1209,13 +1210,14 @@ def add_custom_malware_feeds(client: PrismaCloudComputeClient, args: dict) -> Co
     return CommandResults(readable_output="Successfully updated the custom md5 malware feeds")
 
 
-def get_cves(client: PrismaCloudComputeClient, args: dict) -> List[CommandResults]:
+def get_cves(client: PrismaCloudComputeClient, args: dict, reliability: str = "B - Usually reliable") -> List[CommandResults]:
     """
     Get cves information, implement the command 'cve'.
 
     Args:
         client (PrismaCloudComputeClient): prisma-cloud-compute client.
         args (dict): cve command arguments.
+        reliability (str): reliability of the source providing the intelligence data.
 
     Returns:
         CommandResults: command-results object.
@@ -1242,14 +1244,20 @@ def get_cves(client: PrismaCloudComputeClient, args: dict) -> List[CommandResult
                 cve_data = {
                     "ID": cve_id, "CVSS": cvss, "Modified": modified, "Description": description
                 }
-
+                dbot_score = Common.DBotScore(indicator=cve_id,
+                                              indicator_type=DBotScoreType.CVE,
+                                              integration_name=INTEGRATION_NAME,
+                                              score=Common.DBotScore.NONE,
+                                              malicious_description=description,
+                                              reliability=DBotScoreReliability.get_dbot_score_reliability_from_str(reliability))
                 results.append(
                     CommandResults(
                         outputs_prefix="CVE",
                         outputs_key_field=["ID"],
                         outputs=cve_data,
                         indicator=Common.CVE(
-                            id=cve_id, cvss=cvss, published="", modified=modified, description=description
+                            id=cve_id, cvss=cvss, published="", modified=modified, description=description,
+                            dbot_score=dbot_score
                         ),
                         raw_response=filtered_cves_information,
                         readable_output=tableToMarkdown(name=cve_id, t=cve_data)
@@ -1989,6 +1997,7 @@ def main():
     verify_certificate = not params.get('insecure', False)
     cert = params.get('certificate')
     proxy = params.get('proxy', False)
+    reliability = params.get('integration_reliability', '')
 
     # If checked to verify and given a certificate, save the certificate as a temp file
     # and set the path to the requests client
@@ -2003,7 +2012,7 @@ def main():
 
     try:
         requested_command = demisto.command()
-        LOG(f'Command being called is {requested_command}')
+        demisto.info(f'Command being called is {requested_command}')
 
         # Init the client
         client = PrismaCloudComputeClient(
@@ -2017,8 +2026,7 @@ def main():
         if requested_command == 'test-module':
             # This is the call made when pressing the integration test button
             result = test_module(client)
-            demisto.results(result)
-
+            return_results(result)
         elif requested_command == 'fetch-incidents':
             # Fetch incidents from Prisma Cloud Compute
             # this method is called periodically when 'fetch incidents' is checked
@@ -2061,7 +2069,7 @@ def main():
         elif requested_command == 'prisma-cloud-compute-custom-feeds-malware-add':
             return_results(results=add_custom_malware_feeds(client=client, args=demisto.args()))
         elif requested_command == 'cve':
-            return_results(results=get_cves(client=client, args=demisto.args()))
+            return_results(results=get_cves(client=client, args=demisto.args(), reliability=reliability))
         elif requested_command == 'prisma-cloud-compute-defenders-list':
             return_results(results=get_defenders(client=client, args=demisto.args()))
         elif requested_command == 'prisma-cloud-compute-collections-list':
