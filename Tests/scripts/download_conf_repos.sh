@@ -110,6 +110,10 @@ cp ./content-test-conf/secrets_build_scripts/merge_and_delete_dev_secrets.py ./T
 cp -r ./content-test-conf/demisto.lic ${DEMISTO_LIC_PATH}
 cp -r ./content-test-conf/signDirectory ${DEMISTO_PACK_SIGNATURE_UTIL_PATH}
 
+echo "Cloning Hidden_Packs"
+cp -r ./content-test-conf/content/Hidden_Packs ./Packs
+echo "Cloned Hidden_Packs"
+
 if [[ "${NIGHTLY}" == "true" || "${EXTRACT_PRIVATE_TESTDATA}" == "true" ]]; then
     python ./Tests/scripts/extract_content_test_conf.py --content-path . --content-test-conf-path ./content-test-conf
 fi
