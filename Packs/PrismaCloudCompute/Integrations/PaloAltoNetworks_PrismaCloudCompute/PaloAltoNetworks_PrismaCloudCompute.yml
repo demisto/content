@@ -60,7 +60,7 @@ description: Use the Prisma Cloud Compute integration to fetch incidents from yo
 display: Palo Alto Networks - Prisma Cloud Compute
 name: PaloAltoNetworks_PrismaCloudCompute
 script:
-  dockerimage: demisto/python3:3.10.12.68714
+  dockerimage: demisto/python3:3.10.13.73190
   isfetch: true
   runonce: false
   script: "-"
@@ -1943,7 +1943,7 @@ script:
     - contextPath: PrismaCloudCompute.Backups.Time
       description: The time of the backup.
       type: Date
-  - description: Use this command to unstuck the fetch stream in case it keeps getting the same incidents.
+  - description: Use this command to unstuck the fetch stream in case it's getting duplicated incidents.
     name: prisma-cloud-compute-unstuck-fetch-stream
 tests:
 - PaloAltoNetworks_PrismaCloudCompute-Test
