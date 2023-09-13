@@ -1627,6 +1627,7 @@ def list_files_command():
     organization = args.get('organization')
     repository = args.get('repository')
     branch = args.get('branch')
+    pull_request = args.get('pull_request')
 
     if organization and repository:
         suffix = f'/repos/{organization}/{repository}/contents/{path}'
