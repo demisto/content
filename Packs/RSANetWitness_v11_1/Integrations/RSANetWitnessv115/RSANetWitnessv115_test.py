@@ -412,7 +412,7 @@ def test_update_remote_system_command_with_updated_incident(mocker):
 
     mocker.patch.object(RSANetWitnessv115, "UpdateRemoteSystemArgs", return_value=UpdateRemoteSystemArgsResponse())
     mocker.patch.object(client, "get_incident_request", return_value={"id": "INC-1", "status": "New"})
-    mocker.patch.object(client, "update_incident_request", return_value={"id": "INC-1", "status": "ClosedFalsePositive", "assignee": None})
+    mocker.patch.object(client, "update_incident_request", return_value={"id": "INC-1", "status": "ClosedFalsePositive"})
 
     assert update_remote_system_command(client, {}, {}) == paging_data
 
@@ -472,6 +472,66 @@ def test_get_remote_data_command(mocker):
     mocker.patch.object(RSANetWitnessv115, "fetch_alerts_related_incident", return_value={"alerts": [{"INC-2"}]})
 
     res = get_remote_data_command(client, {}, {'close_incident': 0, 'import_alerts': True, 'max_alerts': 1})
+    assert res.mirrored_object == paging_data
+
+
+def test_get_remote_data_command_with_closed_xsoar_incident(mocker):
+    """
+        Given:
+        - client with fetch parameters
+        - args with incident attributes
+        - params
+
+        When:
+            running get_remote_data_command.
+
+        Then:
+            Update context of incident if incident has been updated from RSA.
+    """
+    paging_data = {'alertCount': 2, 'alerts': {'alerts': [{'INC-2'}]}, 'id': 1, 'status': 'Closed'}
+
+    class GetRemoteDataArgsResponse:
+        def __init__(self) -> dict:
+            self.last_update = 1234567890
+            self.remote_incident_id = 0
+
+    mocker.patch.object(RSANetWitnessv115, "GetRemoteDataArgs", return_value=GetRemoteDataArgsResponse())
+    mocker.patch.object(RSANetWitnessv115, "argToBoolean", return_value=True)
+    mocker.patch.object(RSANetWitnessv115, "arg_to_number", return_value=2)
+    mocker.patch.object(client, "get_incident_request", return_value={"id": 1, "status": "Closed", "alertCount": 2})
+    mocker.patch.object(RSANetWitnessv115, "fetch_alerts_related_incident", return_value={"alerts": [{"INC-2"}]})
+
+    res = get_remote_data_command(client, {}, {'close_incident': 0, 'import_alerts': True, 'max_alerts': 1})
+    assert res.mirrored_object == paging_data
+
+
+def test_get_remote_data_command_with_new_xsoar_incident_entries(mocker):
+    """
+        Given:
+        - client with fetch parameters
+        - args with incident attributes
+        - params
+
+        When:
+            running get_remote_data_command.
+
+        Then:
+            Update context of incident if incident has been updated from RSA.
+    """
+    paging_data = {'alertCount': 3, 'alerts': [1,2,3], 'id': 'INC-1', 'status': 'New'}
+
+    class GetRemoteDataArgsResponse:
+        def __init__(self) -> dict:
+            self.last_update = 1234567890
+            self.remote_incident_id = 0
+
+    mocker.patch.object(RSANetWitnessv115, "GetRemoteDataArgs", return_value=GetRemoteDataArgsResponse())
+    mocker.patch.object(RSANetWitnessv115, "argToBoolean", return_value=True)
+    mocker.patch.object(RSANetWitnessv115, "arg_to_number", return_value=5)
+    mocker.patch.object(client, "get_incident_request", return_value={"id": "INC-1", "status": "New", "alertCount": 3})
+    mocker.patch.object(RSANetWitnessv115, "fetch_alerts_related_incident", return_value=[1,2,3])
+
+    res = get_remote_data_command(client, {}, {'close_incident': 0, 'import_alerts': True, 'max_alerts': 5})
     assert res.mirrored_object == paging_data
 
 
