@@ -17,6 +17,7 @@ urllib3.disable_warnings()
 class Client(BaseClient):
     """Client class to interact with the service API
     """
+
     def __init__(self, username, password, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.username = username
