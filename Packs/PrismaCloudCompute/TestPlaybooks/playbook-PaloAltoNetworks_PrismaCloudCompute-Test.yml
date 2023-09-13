@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: d890a0df-42cb-4887-8cd8-4322e76c9e69
+    taskid: 1023370c-0ef9-4214-804e-b827dc9efa9a
     type: start
     task:
-      id: d890a0df-42cb-4887-8cd8-4322e76c9e69
+      id: 1023370c-0ef9-4214-804e-b827dc9efa9a
       version: -1
       name: ""
       iscommand: false
@@ -22,7 +22,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": -270
+          "y": 50
         }
       }
     note: false
@@ -34,10 +34,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 6a1d10b8-9c9c-41ac-8e26-e8680c3bb5ec
+    taskid: 075aa673-26c5-4894-88fb-ac7788d5abe9
     type: regular
     task:
-      id: 6a1d10b8-9c9c-41ac-8e26-e8680c3bb5ec
+      id: 075aa673-26c5-4894-88fb-ac7788d5abe9
       version: -1
       name: DeleteContext
       scriptName: DeleteContext
@@ -55,7 +55,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": -65
+          "y": 195
         }
       }
     note: false
@@ -67,10 +67,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: c7f6e8a6-e044-4ae8-8d0a-5dd62c6fd301
+    taskid: 77be152a-10cf-43c9-88a6-0aa69f80bc4d
     type: regular
     task:
-      id: c7f6e8a6-e044-4ae8-8d0a-5dd62c6fd301
+      id: 77be152a-10cf-43c9-88a6-0aa69f80bc4d
       version: -1
       name: Get alert data using PrismaCloudComputeParseAuditAlert script
       scriptName: PrismaCloudComputeParseAuditAlert
@@ -87,8 +87,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 390
+          "x": 60,
+          "y": 720
         }
       }
     note: false
@@ -104,10 +104,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 49f9c63c-728c-4f4a-8481-2b8878d4808d
+    taskid: 497423f2-dc5f-4f75-8af9-c4273a722585
     type: condition
     task:
-      id: 49f9c63c-728c-4f4a-8481-2b8878d4808d
+      id: 497423f2-dc5f-4f75-8af9-c4273a722585
       version: -1
       name: Verify received audit data
       type: condition
@@ -130,27 +130,21 @@ tasks:
           right:
             value:
               simple: None
-      - - operator: containsGeneral
+      - - operator: isNotEmpty
           left:
             value:
               simple: PrismaCloudCompute.AuditAlert.message
             iscontext: true
-          right:
-            value:
-              simple: files modified
-      - - operator: isEqualString
+      - - operator: isNotEmpty
           left:
             value:
               simple: PrismaCloudCompute.AuditAlert.rule
             iscontext: true
-          right:
-            value:
-              simple: Default - alert on suspicious runtime behavior
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 600
+          "x": 60,
+          "y": 895
         }
       }
     note: false
@@ -162,10 +156,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 9ddba0d3-ed9b-4903-88b1-ac96e2f34309
+    taskid: 9b595caf-af1b-4ae8-8ee0-6667f6a649d5
     type: regular
     task:
-      id: 9ddba0d3-ed9b-4903-88b1-ac96e2f34309
+      id: 9b595caf-af1b-4ae8-8ee0-6667f6a649d5
       version: -1
       name: Test Failed
       scriptName: PrintErrorEntry
@@ -179,8 +173,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 645,
-          "y": 1115
+          "x": 50,
+          "y": 1245
         }
       }
     note: false
@@ -192,10 +186,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 631d0cd4-1942-4a2c-8711-53a564c0a6cf
+    taskid: 32f5c19d-f15d-4df5-8162-00279b98d4d8
     type: title
     task:
-      id: 631d0cd4-1942-4a2c-8711-53a564c0a6cf
+      id: 32f5c19d-f15d-4df5-8162-00279b98d4d8
       version: -1
       name: Done
       type: title
@@ -206,8 +200,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 40,
-          "y": 7650
+          "x": 480,
+          "y": 7195
         }
       }
     note: false
@@ -219,10 +213,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 5cb19a62-a816-4dcd-8474-aea42159b13d
+    taskid: 69d0f930-f14c-49b0-8a7e-857cf8619d13
     type: regular
     task:
-      id: 5cb19a62-a816-4dcd-8474-aea42159b13d
+      id: 69d0f930-f14c-49b0-8a7e-857cf8619d13
       version: -1
       name: Print the context
       scriptName: PrintContext
@@ -239,8 +233,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 645,
-          "y": 880
+          "x": 50,
+          "y": 1070
         }
       }
     note: false
@@ -252,10 +246,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 1b5ed26e-9ecf-40ad-8b55-aee501f882c1
+    taskid: 4a545072-6348-498f-8edb-2d336e7a8081
     type: regular
     task:
-      id: 1b5ed26e-9ecf-40ad-8b55-aee501f882c1
+      id: 4a545072-6348-498f-8edb-2d336e7a8081
       version: -1
       name: FetchFromInstance
       scriptName: FetchFromInstance
@@ -264,7 +258,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "2"
+      - "46"
     scriptarguments:
       add_to_context:
         simple: "true"
@@ -279,7 +273,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 160
+          "y": 370
         }
       }
     note: false
@@ -291,10 +285,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: ab7d3081-cd93-4bb0-8645-35a36c88cac5
+    taskid: 5b485b90-3a26-47ca-89f2-5bf5b2e6e555
     type: regular
     task:
-      id: ab7d3081-cd93-4bb0-8645-35a36c88cac5
+      id: 5b485b90-3a26-47ca-89f2-5bf5b2e6e555
       version: -1
       name: prisma-cloud-compute-profile-host-list
       description: Get information about the hosts and their profile events, this command supports asterisks which allows you to get host profiles that contain a specific substring
@@ -312,8 +306,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 40,
-          "y": 840
+          "x": 480,
+          "y": 1070
         }
       }
     note: false
@@ -325,10 +319,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 762ec5c4-601a-44b0-8e4a-f64b518e17f9
+    taskid: ab2b840a-b226-4075-8a87-a9e046b43c13
     type: regular
     task:
-      id: 762ec5c4-601a-44b0-8e4a-f64b518e17f9
+      id: ab2b840a-b226-4075-8a87-a9e046b43c13
       version: -1
       name: prisma-cloud-compute-profile-container-list
       description: Get information about the containers and their profile events, this command supports asterisks which allows you to get container profiles that contain a specific substring
@@ -339,15 +333,12 @@ tasks:
     nexttasks:
       '#none#':
       - "23"
-    scriptarguments:
-      id:
-        simple: '*5f2561fab84*'
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 40,
-          "y": 1630
+          "x": 480,
+          "y": 1770
         }
       }
     note: false
@@ -359,10 +350,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 0fa721f5-1c62-425a-83c2-113152c11706
+    taskid: 741b03e7-1222-4853-84a1-56eaedb2551e
     type: condition
     task:
-      id: 0fa721f5-1c62-425a-83c2-113152c11706
+      id: 741b03e7-1222-4853-84a1-56eaedb2551e
       version: -1
       name: Verify Outputs
       type: condition
@@ -434,8 +425,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 40,
-          "y": 1030
+          "x": 480,
+          "y": 1245
         }
       }
     note: false
@@ -447,10 +438,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: ace022b8-9074-4a00-8e18-f97d6e58add4
+    taskid: 6b1c7c59-0d0d-4c5f-8171-f2bef0000508
     type: regular
     task:
-      id: ace022b8-9074-4a00-8e18-f97d6e58add4
+      id: 6b1c7c59-0d0d-4c5f-8171-f2bef0000508
       version: -1
       name: prisma-cloud-compute-profile-container-hosts-list
       description: Get the hosts where a specific container is running.
@@ -468,8 +459,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 40,
-          "y": 1990
+          "x": 480,
+          "y": 2120
         }
       }
     note: false
@@ -481,10 +472,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: f998da11-a14c-44c6-86b2-8b7e4056916d
+    taskid: c6d688b7-f233-4862-8dc4-08e631be30ac
     type: condition
     task:
-      id: f998da11-a14c-44c6-86b2-8b7e4056916d
+      id: c6d688b7-f233-4862-8dc4-08e631be30ac
       version: -1
       name: Verify Outputs
       type: condition
@@ -512,8 +503,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 40,
-          "y": 2180
+          "x": 480,
+          "y": 2295
         }
       }
     note: false
@@ -525,10 +516,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 5a91122a-6cbb-4a49-8701-fa2e66803748
+    taskid: ed7e3aee-2214-448a-8317-a8f846f2e03e
     type: regular
     task:
-      id: 5a91122a-6cbb-4a49-8701-fa2e66803748
+      id: ed7e3aee-2214-448a-8317-a8f846f2e03e
       version: -1
       name: prisma-cloud-compute-profile-container-forensic-list
       description: Get runtime forensics data for a specific container on a specific host
@@ -558,8 +549,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 40,
-          "y": 2415
+          "x": 480,
+          "y": 2470
         }
       }
     note: false
@@ -571,10 +562,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: 6368d2be-911b-4512-82b0-d6cd56bbf4da
+    taskid: 28c08cdd-49fb-46c8-8dbb-2193d5377b10
     type: regular
     task:
-      id: 6368d2be-911b-4512-82b0-d6cd56bbf4da
+      id: 28c08cdd-49fb-46c8-8dbb-2193d5377b10
       version: -1
       name: prisma-cloud-compute-host-forensic-list
       description: Get forensics on a specific host
@@ -592,8 +583,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 40,
-          "y": 1220
+          "x": 480,
+          "y": 1420
         }
       }
     note: false
@@ -605,10 +596,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: acc934f8-6fbc-448d-89bf-f4d30b5c4239
+    taskid: fef9bc53-ee60-4630-83fe-ab9cc6685401
     type: regular
     task:
-      id: acc934f8-6fbc-448d-89bf-f4d30b5c4239
+      id: fef9bc53-ee60-4630-83fe-ab9cc6685401
       version: -1
       name: prisma-cloud-compute-console-version-info
       description: Get the console version
@@ -623,8 +614,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 40,
-          "y": 3490
+          "x": 480,
+          "y": 3345
         }
       }
     note: false
@@ -636,10 +627,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: b7401248-ca1f-42fa-870c-37b8af7ccdbd
+    taskid: 24f38b27-79e0-4417-8aa1-fa50e6de87a1
     type: condition
     task:
-      id: b7401248-ca1f-42fa-870c-37b8af7ccdbd
+      id: 24f38b27-79e0-4417-8aa1-fa50e6de87a1
       version: -1
       name: Verify Outputs
       type: condition
@@ -652,19 +643,19 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isEqualString
+      - - operator: inList
           left:
             value:
               simple: PrismaCloudCompute.Console.Version
             iscontext: true
           right:
             value:
-              simple: 21.04.439
+              simple: 21.04.439, 22.06.229
     view: |-
       {
         "position": {
-          "x": 40,
-          "y": 3690
+          "x": 480,
+          "y": 3520
         }
       }
     note: false
@@ -676,10 +667,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: 35d916b2-5a84-4f46-870e-c09ccf3e9574
+    taskid: 4bdcde65-e677-468b-8de3-ce440afad0dd
     type: regular
     task:
-      id: 35d916b2-5a84-4f46-870e-c09ccf3e9574
+      id: 4bdcde65-e677-468b-8de3-ce440afad0dd
       version: -1
       name: prisma-cloud-compute-custom-feeds-ip-list
       description: Get all the BlackListed IP addresses in the system
@@ -694,8 +685,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 40,
-          "y": 2860
+          "x": 480,
+          "y": 2820
         }
       }
     note: false
@@ -707,10 +698,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: 1c61b610-733d-48c6-834e-d776b70fdf94
+    taskid: 6051ef9b-f8a5-4dc3-8a07-73a4d6a7c55f
     type: condition
     task:
-      id: 1c61b610-733d-48c6-834e-d776b70fdf94
+      id: 6051ef9b-f8a5-4dc3-8a07-73a4d6a7c55f
       version: -1
       name: Verify outputs
       type: condition
@@ -736,8 +727,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 40,
-          "y": 3070
+          "x": 480,
+          "y": 2995
         }
       }
     note: false
@@ -749,10 +740,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: 25367076-c844-40dd-8330-9de6f2214791
+    taskid: 50d770df-6e25-4c2e-8206-9897a1990adf
     type: regular
     task:
-      id: 25367076-c844-40dd-8330-9de6f2214791
+      id: 50d770df-6e25-4c2e-8206-9897a1990adf
       version: -1
       name: prisma-cloud-compute-custom-feeds-ip-add
       description: Add a list of banned IPs to be blocked by the system
@@ -770,8 +761,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 40,
-          "y": 3280
+          "x": 480,
+          "y": 3170
         }
       }
     note: false
@@ -783,10 +774,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: ce0ad225-a4db-41e8-80d4-30261b8b6527
+    taskid: 41faf0d1-54dd-4bb7-8b16-a721953f30ea
     type: condition
     task:
-      id: ce0ad225-a4db-41e8-80d4-30261b8b6527
+      id: 41faf0d1-54dd-4bb7-8b16-a721953f30ea
       version: -1
       name: Verify Outputs
       type: condition
@@ -827,8 +818,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 40,
-          "y": 1810
+          "x": 480,
+          "y": 1945
         }
       }
     note: false
@@ -840,10 +831,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: cd308843-d45b-4f97-8c70-e425f9fe5d82
+    taskid: 0c71f40c-d665-4795-8944-9cb6adb73371
     type: condition
     task:
-      id: cd308843-d45b-4f97-8c70-e425f9fe5d82
+      id: 0c71f40c-d665-4795-8944-9cb6adb73371
       version: -1
       name: Verify Outputs
       type: condition
@@ -869,8 +860,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 40,
-          "y": 1430
+          "x": 480,
+          "y": 1595
         }
       }
     note: false
@@ -882,10 +873,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: 372770d5-6995-4a65-85d4-911cc58a02fc
+    taskid: ac43d618-9624-4736-824f-20c5ae87c1de
     type: condition
     task:
-      id: 372770d5-6995-4a65-85d4-911cc58a02fc
+      id: ac43d618-9624-4736-824f-20c5ae87c1de
       version: -1
       name: Verify Outputs
       type: condition
@@ -911,8 +902,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 40,
-          "y": 2625
+          "x": 480,
+          "y": 2645
         }
       }
     note: false
@@ -924,10 +915,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: 111fc899-8f06-4fde-82e8-85030b920979
+    taskid: f8536152-09e6-45f0-80dc-4fcd9b257a19
     type: regular
     task:
-      id: 111fc899-8f06-4fde-82e8-85030b920979
+      id: f8536152-09e6-45f0-80dc-4fcd9b257a19
       version: -1
       name: prisma-cloud-compute-custom-feeds-malware-list
       description: List all custom uploaded md5 malwares.
@@ -942,8 +933,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 40,
-          "y": 3905
+          "x": 480,
+          "y": 3695
         }
       }
     note: false
@@ -955,10 +946,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: e2a12175-2c5f-43f9-8116-9cfa9b58a937
+    taskid: b207be60-12c3-4f00-8a3c-3fa9895a9178
     type: condition
     task:
-      id: e2a12175-2c5f-43f9-8116-9cfa9b58a937
+      id: b207be60-12c3-4f00-8a3c-3fa9895a9178
       version: -1
       name: Verify Outputs
       type: condition
@@ -991,8 +982,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 40,
-          "y": 4060
+          "x": 480,
+          "y": 3870
         }
       }
     note: false
@@ -1004,10 +995,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: 0f99e2dd-d511-48ac-8758-2ae171edb7de
+    taskid: 3d908575-bafe-4a1a-8c04-20ab8379d2ab
     type: regular
     task:
-      id: 0f99e2dd-d511-48ac-8758-2ae171edb7de
+      id: 3d908575-bafe-4a1a-8c04-20ab8379d2ab
       version: -1
       name: cve
       description: Get infomration about the cves in the system, will return maximum of 50 records, it is possible to query for partial cve description such as cve-2020 or cve-2014 or by severity/distro/package
@@ -1027,8 +1018,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 40,
-          "y": 4380
+          "x": 480,
+          "y": 4220
         }
       }
     note: false
@@ -1040,10 +1031,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: 91f31361-815e-4e72-809c-61841979cbd6
+    taskid: eb1423d4-9e19-4e44-8be9-153138525f8c
     type: condition
     task:
-      id: 91f31361-815e-4e72-809c-61841979cbd6
+      id: eb1423d4-9e19-4e44-8be9-153138525f8c
       version: -1
       name: Verify Outputs
       type: condition
@@ -1080,8 +1071,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 40,
-          "y": 4550
+          "x": 480,
+          "y": 4395
         }
       }
     note: false
@@ -1093,10 +1084,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "30":
     id: "30"
-    taskid: ea39c9c6-c991-4dff-8af7-3ba687669e64
+    taskid: c2e65102-7f34-4b07-84b7-ae738f7ab950
     type: regular
     task:
-      id: ea39c9c6-c991-4dff-8af7-3ba687669e64
+      id: c2e65102-7f34-4b07-84b7-ae738f7ab950
       version: -1
       name: prisma-cloud-compute-vulnerabilities-impacted-resources-list
       description: prisma-cloud-compute-vulnerabilities-impacted-resources-list
@@ -1114,8 +1105,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 40,
-          "y": 4740
+          "x": 480,
+          "y": 4570
         }
       }
     note: false
@@ -1127,10 +1118,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: f3b98fa5-4689-47ba-892c-e916896036a4
+    taskid: 43d96464-64cb-4fc4-8614-cb2133789339
     type: condition
     task:
-      id: f3b98fa5-4689-47ba-892c-e916896036a4
+      id: 43d96464-64cb-4fc4-8614-cb2133789339
       version: -1
       name: Verify Outputs
       type: condition
@@ -1158,16 +1149,11 @@ tasks:
                       value:
                         simple: CVE-2018-14600
             iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: PrismaCloudCompute.VulnerabilitiesImpactedResource.riskTree
-            iscontext: true
     view: |-
       {
         "position": {
-          "x": 40,
-          "y": 4920
+          "x": 480,
+          "y": 4745
         }
       }
     note: false
@@ -1179,10 +1165,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: 5ada1f1f-eec2-4a45-8532-d0c4e95b5462
+    taskid: 7c97ce89-2e3a-46cd-8c6f-04de6365ac22
     type: regular
     task:
-      id: 5ada1f1f-eec2-4a45-8532-d0c4e95b5462
+      id: 7c97ce89-2e3a-46cd-8c6f-04de6365ac22
       version: -1
       name: prisma-cloud-compute-defenders-list
       description: Retrieve a list of defenders and their information
@@ -1192,7 +1178,7 @@ tasks:
       brand: PaloAltoNetworks_PrismaCloudCompute
     nexttasks:
       '#none#':
-      - "33"
+      - "47"
     scriptarguments:
       connected:
         simple: "true"
@@ -1202,77 +1188,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 40,
-          "y": 5110
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "33":
-    id: "33"
-    taskid: 2def76cc-bac8-4b7c-8c00-25f4b41753db
-    type: condition
-    task:
-      id: 2def76cc-bac8-4b7c-8c00-25f4b41753db
-      version: -1
-      name: Verify Outputs
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "34"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: PrismaCloudCompute.DefenderDetails.hostname
-                filters:
-                - - operator: containsGeneral
-                    left:
-                      value:
-                        simple: PrismaCloudCompute.DefenderDetails.hostname
-                      iscontext: true
-                    right:
-                      value:
-                        simple: "163"
-            iscontext: true
-          right:
-            value: {}
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: PrismaCloudCompute.DefenderDetails.connected
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: PrismaCloudCompute.DefenderDetails.version
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: PrismaCloudCompute.DefenderDetails.version
-                      iscontext: true
-                    right:
-                      value:
-                        simple: 21.04.439
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 40,
-          "y": 5310
+          "x": 480,
+          "y": 4920
         }
       }
     note: false
@@ -1284,10 +1201,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "34":
     id: "34"
-    taskid: 7eaf5e02-58ac-48ef-8309-ff121c84f9e0
+    taskid: 12f5679c-009c-4625-8624-8e967f1b035a
     type: regular
     task:
-      id: 7eaf5e02-58ac-48ef-8309-ff121c84f9e0
+      id: 12f5679c-009c-4625-8624-8e967f1b035a
       version: -1
       name: prisma-cloud-compute-collections-list
       description: Retrieves a list of all collections
@@ -1302,8 +1219,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 40,
-          "y": 5510
+          "x": 480,
+          "y": 5270
         }
       }
     note: false
@@ -1315,10 +1232,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "35":
     id: "35"
-    taskid: f470dc78-bbcd-4c9a-8e96-cb16a77ed9db
+    taskid: 6b6abd7e-f5dd-435f-8f82-fd649a9177a9
     type: condition
     task:
-      id: f470dc78-bbcd-4c9a-8e96-cb16a77ed9db
+      id: 6b6abd7e-f5dd-435f-8f82-fd649a9177a9
       version: -1
       name: Verify Outputs
       type: condition
@@ -1381,8 +1298,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 40,
-          "y": 5690
+          "x": 480,
+          "y": 5445
         }
       }
     note: false
@@ -1394,10 +1311,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "36":
     id: "36"
-    taskid: 66a9211b-0c4c-46db-8b04-3767d6c3451b
+    taskid: 63413878-c820-4ddd-8285-7320ca1f335a
     type: regular
     task:
-      id: 66a9211b-0c4c-46db-8b04-3767d6c3451b
+      id: 63413878-c820-4ddd-8285-7320ca1f335a
       version: -1
       name: prisma-cloud-compute-container-namespace-list
       description: Get the containers namespaces names
@@ -1412,8 +1329,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 40,
-          "y": 5900
+          "x": 480,
+          "y": 5620
         }
       }
     note: false
@@ -1425,10 +1342,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "37":
     id: "37"
-    taskid: c06e8d6c-0012-4596-86d2-f720f8a9f6b6
+    taskid: 85481801-74de-4eef-8f72-0b3c372f425b
     type: condition
     task:
-      id: c06e8d6c-0012-4596-86d2-f720f8a9f6b6
+      id: 85481801-74de-4eef-8f72-0b3c372f425b
       version: -1
       name: Verify Outputs
       type: condition
@@ -1449,8 +1366,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 40,
-          "y": 6110
+          "x": 480,
+          "y": 5795
         }
       }
     note: false
@@ -1462,10 +1379,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "38":
     id: "38"
-    taskid: f7533b75-6060-4bf1-8ac7-4968dda145b7
+    taskid: 0f1c05d3-09f0-4e2b-816e-876653d761a2
     type: regular
     task:
-      id: f7533b75-6060-4bf1-8ac7-4968dda145b7
+      id: 0f1c05d3-09f0-4e2b-816e-876653d761a2
       version: -1
       name: prisma-cloud-compute-images-scan-list
       description: Get images scan report, the report includes vulnerabilities, compliance issues, binaries, etc.
@@ -1479,16 +1396,14 @@ tasks:
     scriptarguments:
       compact:
         simple: "false"
-      id:
-        simple: '*699*'
       limit_stats:
         simple: "2"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 40,
-          "y": 6310
+          "x": 480,
+          "y": 5970
         }
       }
     note: false
@@ -1500,10 +1415,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "39":
     id: "39"
-    taskid: 188298c5-13bc-491b-86a1-3037b76a98cd
+    taskid: b54e1b29-2654-4e20-8fdc-ad7437e698de
     type: condition
     task:
-      id: 188298c5-13bc-491b-86a1-3037b76a98cd
+      id: b54e1b29-2654-4e20-8fdc-ad7437e698de
       version: -1
       name: Verify Outputs
       type: condition
@@ -1524,7 +1439,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: PrismaCloudCompute.ReportsImagesScan.distro
+              simple: PrismaCloudCompute.ReportsImagesScan.osDistro
             iscontext: true
       - - operator: isNotEmpty
           left:
@@ -1541,31 +1456,11 @@ tasks:
             value:
               simple: PrismaCloudCompute.ReportsImagesScan.vulnerabilitiesCount
             iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: PrismaCloudCompute.ReportsImagesScan.vulnerabilities
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: PrismaCloudCompute.ReportsImagesScan.complianceIssues
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: PrismaCloudCompute.ReportsImagesScan.vulnerabilities
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: PrismaCloudCompute.ReportsImagesScan.complianceIssues
-            iscontext: true
     view: |-
       {
         "position": {
-          "x": 40,
-          "y": 6490
+          "x": 480,
+          "y": 6135
         }
       }
     note: false
@@ -1577,10 +1472,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "40":
     id: "40"
-    taskid: ecc61859-d57a-471a-807d-ffdc50d22b62
+    taskid: 35402509-da48-49b4-8b14-6f59c95c5228
     type: regular
     task:
-      id: ecc61859-d57a-471a-807d-ffdc50d22b62
+      id: 35402509-da48-49b4-8b14-6f59c95c5228
       version: -1
       name: prisma-cloud-compute-hosts-scan-list
       description: Get images scan report, the report includes vulnerabilities, compliance issues, binaries, etc.
@@ -1602,8 +1497,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 40,
-          "y": 6660
+          "x": 480,
+          "y": 6320
         }
       }
     note: false
@@ -1615,10 +1510,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "41":
     id: "41"
-    taskid: 928eb9da-580c-4e84-8a30-c782470dfe39
+    taskid: b50b3242-d8db-4c04-8205-798a0d5a99d3
     type: condition
     task:
-      id: 928eb9da-580c-4e84-8a30-c782470dfe39
+      id: b50b3242-d8db-4c04-8205-798a0d5a99d3
       version: -1
       name: Verify Outputs
       type: condition
@@ -1644,11 +1539,6 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: PrismaCloudCompute.ReportHostScan.distro
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
               simple: PrismaCloudCompute.ReportHostScan.vulnerabilitiesCount
             iscontext: true
       - - operator: isNotEmpty
@@ -1656,31 +1546,11 @@ tasks:
             value:
               simple: PrismaCloudCompute.ReportHostScan.complianceIssuesCount
             iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: PrismaCloudCompute.ReportHostScan.vulnerabilities
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: PrismaCloudCompute.ReportHostScan.complianceIssues
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: PrismaCloudCompute.ReportHostScan.vulnerabilities
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: PrismaCloudCompute.ReportHostScan.complianceIssues
-            iscontext: true
     view: |-
       {
         "position": {
-          "x": 40,
-          "y": 6880
+          "x": 480,
+          "y": 6495
         }
       }
     note: false
@@ -1692,10 +1562,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "42":
     id: "42"
-    taskid: 5ccd5317-9e43-4878-852e-68b5c3d843e9
+    taskid: e6a20c37-00aa-4d7b-89ef-e693828d6bc4
     type: regular
     task:
-      id: 5ccd5317-9e43-4878-852e-68b5c3d843e9
+      id: e6a20c37-00aa-4d7b-89ef-e693828d6bc4
       version: -1
       name: prisma-cloud-compute-custom-feeds-malware-add
       description: Add custom md5 malware hashes
@@ -1715,8 +1585,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 40,
-          "y": 4220
+          "x": 480,
+          "y": 4045
         }
       }
     note: false
@@ -1728,10 +1598,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "43":
     id: "43"
-    taskid: f7259ce9-3f71-4682-8f59-2d63ac74d3ea
+    taskid: cbceaa3e-7eda-4a8c-8ff4-15bf27ad9347
     type: regular
     task:
-      id: f7259ce9-3f71-4682-8f59-2d63ac74d3ea
+      id: cbceaa3e-7eda-4a8c-8ff4-15bf27ad9347
       version: -1
       name: TagIndicatorButton
       description: This is a wrapper around the setIndicators script.
@@ -1751,8 +1621,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 40,
-          "y": 7090
+          "x": 480,
+          "y": 6670
         }
       }
     note: false
@@ -1764,10 +1634,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "44":
     id: "44"
-    taskid: 1cfc38b5-b485-4228-83be-e039f9f4568a
+    taskid: 452c18ed-3332-4372-8129-16b1abd6e0f4
     type: regular
     task:
-      id: 1cfc38b5-b485-4228-83be-e039f9f4568a
+      id: 452c18ed-3332-4372-8129-16b1abd6e0f4
       version: -1
       name: CreatePrismaCloudComputeLink
       description: This script creates a link back to the Prisma Cloud Compute instance.
@@ -1789,8 +1659,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 40,
-          "y": 7270
+          "x": 480,
+          "y": 6845
         }
       }
     note: false
@@ -1802,10 +1672,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "45":
     id: "45"
-    taskid: 9a9f3e58-5bad-426d-85af-ee1537be6916
+    taskid: 27c2da78-f9b2-4757-89df-b1c3ba4883a1
     type: condition
     task:
-      id: 9a9f3e58-5bad-426d-85af-ee1537be6916
+      id: 27c2da78-f9b2-4757-89df-b1c3ba4883a1
       version: -1
       name: Verify Outputs
       type: condition
@@ -1829,8 +1699,99 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 40,
-          "y": 7460
+          "x": 480,
+          "y": 7020
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "46":
+    id: "46"
+    taskid: d6dc164d-3131-4e21-8ca6-fe90b7396fd8
+    type: condition
+    task:
+      id: d6dc164d-3131-4e21-8ca6-fe90b7396fd8
+      version: -1
+      name: Verify received incident
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FetchedIncidents.[0].rawJSONAlert
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "47":
+    id: "47"
+    taskid: 19f2030d-a6ab-4b30-852d-136f219eb05a
+    type: condition
+    task:
+      id: 19f2030d-a6ab-4b30-852d-136f219eb05a
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "34"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PrismaCloudCompute.DefenderDetails.hostname
+                filters:
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: PrismaCloudCompute.DefenderDetails.hostname
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "163"
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaCloudCompute.DefenderDetails.connected
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 5090
         }
       }
     note: false
@@ -1845,10 +1806,10 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 7985,
-        "width": 985,
-        "x": 40,
-        "y": -270
+        "height": 7210,
+        "width": 810,
+        "x": 50,
+        "y": 50
       }
     }
   }

@@ -94,6 +94,9 @@ MAX_ITEMS_PER_RESPONSE = 50
 EXTERNAL_FORM = "external/form"
 MAX_SAMPLES = 10
 
+TOKEN_EXPIRED_ERROR_CODES = {50173, 700082, }  # See: https://login.microsoftonline.com/error?code=
+REGEX_SEARCH_ERROR_DESC = r"^[^:]*:\s(?P<desc>.*?\.)"
+
 
 class Handler:
     @staticmethod
@@ -135,19 +138,9 @@ def error_parser(resp_err: requests.Response, api: str = 'graph') -> str:
         response: dict = resp_err.json()
         demisto.debug(f"Error response from {api=}: {response=}")
         if api == 'graph':
-
-            # AADSTS50173 points to password change https://login.microsoftonline.com/error?code=50173.
-            # In that case, the integration context should be overwritten
-            # and the user should execute the auth process from the beginning.
-            if "AADSTS50173" in response.get('error_description', ''):
-                integration_context: dict = get_integration_context()
-                integration_context['current_refresh_token'] = ''
-                integration_context['graph_access_token'] = ''
-                set_integration_context(integration_context)
-                demisto.debug("Detected Error: AADSTS50173, Successfully reset the current_refresh_token and graph_access_token.")
-                raise DemistoException(
-                    "The account password has been changed or reset. Please regenerate the 'Authorization code' "
-                    "parameter and then run !microsoft-teams-auth-test to re-authenticate")
+            error_codes = response.get("error_codes", [""])
+            if set(error_codes).issubset(TOKEN_EXPIRED_ERROR_CODES):
+                reset_graph_auth(error_codes, response.get('error_description', ''))
 
             error = response.get('error', {})
             err_str = (f"{error.get('code', '')}: {error.get('message', '')}" if isinstance(error, dict)
@@ -162,6 +155,26 @@ def error_parser(resp_err: requests.Response, api: str = 'graph') -> str:
         raise ValueError
     except ValueError:
         return resp_err.text
+
+
+def reset_graph_auth(error_codes: list, error_desc: str):
+    """
+    Reset the Graph API authorization in the integration context.
+    This function clears the current authorization data and informs the user to regenerate the Authorization code.
+    :raises DemistoException: Raised with a message instructing the user to regenerate the authorization code.
+    """
+    integration_context: dict = get_integration_context()
+
+    integration_context['current_refresh_token'] = ''
+    integration_context['graph_access_token'] = ''
+    integration_context['graph_valid_until'] = ''
+    set_integration_context(integration_context)
+
+    demisto.debug(f"Detected Error: {error_codes}, Successfully reset the current_refresh_token and graph_access_token.")
+    re_search = re.search(REGEX_SEARCH_ERROR_DESC, error_desc)
+    err_str = re_search['desc'] if re_search else ""
+    raise DemistoException(f"{err_str} Please regenerate the 'Authorization code' "
+                           "parameter and then run !microsoft-teams-auth-test to re-authenticate")
 
 
 def translate_severity(severity: str) -> float:
