@@ -360,7 +360,7 @@ def change_timestamp_to_datestring_in_dict(readable_response: dict) -> None:
     """
     for field in TIME_FIELDS:
         if epoch_value := readable_response.get(field):
-            if epoch_value == -1:
+            if epoch_value == -1:  # we are not converting it to date because it means no time is provided
                 continue
             readable_response[field] = timestamp_to_datestring(epoch_value, DATE_FORMAT)
 

@@ -164,8 +164,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1555,
-          "y": 2645
+          "x": 1605,
+          "y": 2785
         }
       }
     note: false
@@ -1385,7 +1385,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "4"
+      - "47"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -1640,13 +1640,50 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "47":
+    id: "47"
+    taskid: 31743d61-29ef-4669-84e3-03ff8043e11a
+    type: regular
+    task:
+      id: 31743d61-29ef-4669-84e3-03ff8043e11a
+      version: -1
+      name: Reopen snoozed alert (for next playbook run)
+      description: Re-open the alerts matching the given filter. Either policy IDs
+        or alert IDs must be provided. When no absolute time nor relative time arguments
+        are provided, default time range is all times.
+      script: '|||prisma-cloud-alert-reopen'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      alert_ids:
+        simple: ${PrismaCloud.Alert.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 2645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 system: true
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2660,
+        "height": 2800,
         "width": 2580,
         "x": 910,
         "y": 50
