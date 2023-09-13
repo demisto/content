@@ -16,7 +16,7 @@ alter
     resource_url = json_extract_scalar(resource, "$.url"),
     src_ip1_v4 = if(sourceIp !~= ":", sourceIp, null),
     src_ip1_v6 = if(sourceIp ~= ":", sourceIp, null),    
-    src_ip2_v4 = if(sourceIPAddress !~= ":", sourceIPAddress, null),
+    src_ip2_v4 = if(sourceIPAddress ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", sourceIPAddress, null),
     src_ip2_v6 = if(sourceIPAddress ~= ":", sourceIPAddress, null),
     tls_cipher = json_extract_scalar(tlsDetails, "$.cipherSuite"),
     tls_server = json_extract_scalar(tlsDetails, "$.clientProvidedHostHeader"), 
@@ -27,7 +27,8 @@ alter
     additionalEventData_bytesin = json_extract_scalar(additionalEventData, "$.bytesTransferredIn"), 
     additionalEventData_bytesout = json_extract_scalar(additionalEventData, "$.bytesTransferredOut"),
     lowercase_os_platform = lowercase(userAgentOsName),
-    lowercase_role = lowercase(role)    
+    lowercase_role = lowercase(role),
+    lowercase_type = lowercase(type)
 | alter
     srchost_ip_v4 = if(srchost !~= ":", srchost, null),
     srchost_ip_v6 = if(srchost ~= ":", srchost, null),
@@ -50,7 +51,7 @@ alter
     xdm.source.agent.identifier = resource_account,
     xdm.source.user.identifier = resource_accountId,
     xdm.source.user.groups = resource_cloudaccountgroups,
-    xdm.source.user.username = resource_cloudaccountowners,
+    xdm.source.user.username = arraystring(resource_cloudaccountowners, " | "),
     xdm.target.resource.name = resource_id,
     xdm.source.host.hostname = coalesce(source, eventSource, resource_name),
     xdm.intermediate.host.device_category = resource_resourcetype,
