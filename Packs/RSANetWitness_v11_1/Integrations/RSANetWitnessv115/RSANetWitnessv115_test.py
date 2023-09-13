@@ -613,7 +613,7 @@ def test_struct_inc_context():
     assert struct_inc_context(1, 1, True) == expected_result
 
 
-def test_clean_old_inc_context(mocker):
+def test_clean_old_inc_context_with_non_expired_incident(mocker):
     """
         Given:
         - Max mirror time aggregration (int for days)
@@ -630,7 +630,28 @@ def test_clean_old_inc_context(mocker):
 
     mocker.patch.object(demisto, "getIntegrationContext", return_value={"IncidentsDataCount": {"INC-1": {"Created": 0}}})
     mocker.patch.object(RSANetWitnessv115, "arg_to_datetime",
-                        return_value=datetime.now() + timedelta(days=max_time_mirror_inc + 1))
+                        return_value=datetime.now() - timedelta(days=max_time_mirror_inc - 1))
+
+    assert clean_old_inc_context(max_time_mirror_inc) is None
+
+
+def test_clean_old_inc_context_with_expired_incident(mocker):
+    """
+        Given:
+        - Max mirror time aggregration (int for days)
+
+        When:
+            running get_modified_remote_data_command.
+
+        Then:
+            Clean old incident.
+    """
+    from datetime import datetime, timedelta
+    max_time_mirror_inc = 24
+
+    mocker.patch.object(demisto, "getIntegrationContext", return_value={"IncidentsDataCount": {"INC-1": {"Created": 0}}})
+    mocker.patch.object(RSANetWitnessv115, "arg_to_datetime",
+                        return_value=datetime.now() - timedelta(days=max_time_mirror_inc + 1))
 
     assert clean_old_inc_context(max_time_mirror_inc) is None
 
