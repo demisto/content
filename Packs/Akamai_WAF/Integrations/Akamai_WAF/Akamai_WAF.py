@@ -5329,7 +5329,7 @@ def main():
     client_token = params.get('credentials_client_token', {}).get('password') or params.get('clientToken')
     access_token = params.get('credentials_access_token', {}).get('password') or params.get('accessToken')
     client_secret = params.get('credentials_client_secret', {}).get('password') or params.get('clientSecret')
-    if not(client_token and access_token and client_secret):
+    if not (client_token and access_token and client_secret):
         raise DemistoException('Client token, Access token and Client secret must be provided.')
     client = Client(
         base_url=params.get('host'),
