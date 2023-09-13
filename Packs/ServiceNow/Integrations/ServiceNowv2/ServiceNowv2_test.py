@@ -1627,7 +1627,7 @@ def test_get_ticket_attachments(mocker, sys_created_on, expected):
     mocker.patch.object(client, 'send_request', return_value=[])
 
     client.get_ticket_attachments('id', sys_created_on)
-    client.send_request.assert_called_with('attachment', 'GET', params={'sysparm_query': f'{expected}'})
+    client.send_request.assert_called_with('attachment', 'GET', params={'sysparm_query': f'{expected}'}, get_attachments=True)
 
 
 @pytest.mark.parametrize('args,expected_ticket_fields', [

@@ -412,7 +412,7 @@ script:
     - description: Any commands run against an offline-queued session will be queued up and executed when the host comes online.
       name: queue_offline
       defaultValue: false
-    - description: A comma-separated list of host agent IDs to run commands for. (Can be retrieved by running the 'cs-falcon-search-device' command.)
+    - description: A comma-separated list of host agent IDs to run commands for. (Can be retrieved by running the 'cs-falcon-search-device' command.).
       name: host_ids
       required: true
     - description: The type of command to run.
@@ -423,7 +423,7 @@ script:
       required: true
     - auto: PREDEFINED
       defaultValue: read
-      description: 'The scope to run the command for. Possible values are: "read", "write", and "admin". (NOTE: In order to run the CrowdStrike RTR `put` command, it is necessary to pass `scope=admin`.)'
+      description: 'The scope to run the command for. Possible values are: "read", "write", and "admin". (NOTE: In order to run the CrowdStrike RTR `put` command, it is necessary to pass `scope=admin`.).'
       name: scope
       predefined:
       - read
@@ -491,7 +491,7 @@ script:
     - description: The file entry ID to upload.
       name: entry_id
       required: true
-    description: Uploads a file to the CrowdStrike cloud. (Can be used for the RTR 'put' command.)
+    description: Uploads a file to the CrowdStrike cloud. (Can be used for the RTR 'put' command.).
     name: cs-falcon-upload-file
   - arguments:
     - description: The ID of the file to delete. (The ID of the file can be retrieved by running the 'cs-falcon-list-files' command).
@@ -500,7 +500,7 @@ script:
     description: Deletes a file based on the provided ID. Can delete only one file at a time.
     name: cs-falcon-delete-file
   - arguments:
-    - description: A comma-separated list of file IDs to get. (The list of file IDs can be retrieved by running the 'cs-falcon-list-files' command.)
+    - description: A comma-separated list of file IDs to get. (The list of file IDs can be retrieved by running the 'cs-falcon-list-files' command.).
       name: file_id
       required: true
     description: Returns files based on the provided IDs. These files are used for the RTR 'put' command.
@@ -531,7 +531,7 @@ script:
       description: The full name of the file.
       type: String
     - contextPath: CrowdStrike.File.Permission
-      description: 'The permission type of the file. Possible values are: "private", which is used only by the user who uploaded it, "group", which is used by all RTR Admins, and "public", which is used by all active-responders and RTR admins'
+      description: 'The permission type of the file. Possible values are: "private", which is used only by the user who uploaded it, "group", which is used by all RTR Admins, and "public", which is used by all active-responders and RTR admins.'
       type: String
     - contextPath: CrowdStrike.File.SHA256
       description: The SHA-256 hash of the file.
@@ -595,7 +595,7 @@ script:
       description: The size of the file in bytes.
       type: Number
   - arguments:
-    - description: A comma-separated list of script IDs to return. (The script IDs can be retrieved by running the 'cs-falcon-list-scripts' command.)
+    - description: A comma-separated list of script IDs to return. (The script IDs can be retrieved by running the 'cs-falcon-list-scripts' command.).
       name: script_id
       required: true
     description: Returns custom scripts based on the provided ID. Used for the RTR 'runscript' command.
@@ -641,7 +641,7 @@ script:
       description: Whether the user has write access to the script.
       type: Boolean
   - arguments:
-    - description: The script ID to delete. (Script IDs can be retrieved by running the 'cs-falcon-list-scripts' command.)
+    - description: The script ID to delete. (Script IDs can be retrieved by running the 'cs-falcon-list-scripts' command.).
       name: script_id
       required: true
     description: Deletes a custom-script based on the provided ID. Can delete only one script at a time.
@@ -692,7 +692,7 @@ script:
   - arguments:
     - description: The name of the script to run.
       name: script_name
-    - description: A comma-separated list of host agent IDs to run commands. (The list of host agent IDs can be retrieved by running the 'cs-falcon-search-device' command.)
+    - description: A comma-separated list of host agent IDs to run commands. (The list of host agent IDs can be retrieved by running the 'cs-falcon-search-device' command.).
       name: host_ids
       required: true
     - description: The PowerShell script code to run.
@@ -1290,7 +1290,7 @@ script:
       description: The identity of the user/process who last updated the IOC.
       type: string
     - contextPath: CrowdStrike.NextPageToken
-      description: A pagination token used with the limit parameter to manage pagination of results
+      description: A pagination token used with the limit parameter to manage pagination of results.
   - arguments:
     - auto: PREDEFINED
       description: 'The IOC type to retrieve. Possible values are: "sha256", "sha1", "md5", "domain", "ipv4", and "ipv6". Either ioc_id or ioc_type and value must be provided.'
@@ -2274,7 +2274,7 @@ script:
     - description: The ID of the host group.
       name: host_group_id
       required: true
-    - description: A comma-separated list of host agent IDs to run commands. (The list of host agent IDs can be retrieved by running the 'cs-falcon-search-device' command.)
+    - description: A comma-separated list of host agent IDs to run commands. (The list of host agent IDs can be retrieved by running the 'cs-falcon-search-device' command.).
       isArray: true
       name: host_ids
       required: true
@@ -2309,7 +2309,7 @@ script:
     - description: The ID of the host group.
       name: host_group_id
       required: true
-    - description: A comma-separated list of host agent IDs to run commands. (The list of host agent IDs can be retrieved by running the 'cs-falcon-search-device' command.)
+    - description: A comma-separated list of host agent IDs to run commands. (The list of host agent IDs can be retrieved by running the 'cs-falcon-search-device' command.).
       isArray: true
       name: host_ids
       required: true
@@ -2627,7 +2627,7 @@ script:
     description: Updates the remote incident or detection with local incident or detection changes. This method is only used for debugging purposes and will not update the current incident or detection.
     name: update-remote-system
   - arguments:
-    - description: Limit the vulnerabilities returned to specific properties. Each value must be enclosed in single quotes and placed immediately after the colon with no space. For example, 'filter=status:'open'+cve.id:['CVE-2013-3900','CVE-2021-1675']'
+    - description: Limit the vulnerabilities returned to specific properties. Each value must be enclosed in single quotes and placed immediately after the colon with no space. For example, 'filter=status:'open'+cve.id:['CVE-2013-3900','CVE-2021-1675']'.
       name: filter
     - description: Unique agent identifier (AID) of a sensor.
       name: aid
@@ -2652,7 +2652,7 @@ script:
     - description: Type of host a sensor is running on.
       name: host_type
       isArray: true
-    - description: Filter for vulnerabilities based on the number of days since a host last connected to CrowdStrike Falcon. Enter a numeric value from 3 to 45 to indicate the number of days you want to look back. Example- last_seen_within:10
+    - description: Filter for vulnerabilities based on the number of days since a host last connected to CrowdStrike Falcon. Enter a numeric value from 3 to 45 to indicate the number of days you want to look back. Example- last_seen_within:10.
       name: last_seen_within
     - auto: PREDEFINED
       description: Indicates if the vulnerability is suppressed by a suppression rule.
@@ -3864,7 +3864,7 @@ script:
       description: A unique identifier for the scan profile used in the scan.
       type: String
     - contextPath: CrowdStrike.ODSScanHost.host_id
-      description: A unique identifier for the host that was scanned
+      description: A unique identifier for the host that was scanned.
       type: String
     - contextPath: CrowdStrike.ODSScanHost.host_scan_id
       description: A unique identifier for the scan that was performed on the host.
@@ -3882,10 +3882,10 @@ script:
       description: The number of files that were skipped during the scan.
       type: Number
     - contextPath: CrowdStrike.ODSScanHost.status
-      description: The status of the scan. (e.g., "completed", "pending", "cancelled", "running", or "failed")
+      description: The status of the scan. (e.g., "completed", "pending", "cancelled", "running", or "failed").
       type: String
     - contextPath: CrowdStrike.ODSScanHost.severity
-      description: A severity score assigned to the scan, ranging from 0 to 100
+      description: A severity score assigned to the scan, ranging from 0 to 100.
       type: Number
     - contextPath: CrowdStrike.ODSScanHost.started_on
       description: The date and time when the scan was started.
@@ -4375,7 +4375,7 @@ script:
     - contextPath: CrowdStrike.IDPEntity.EmailAddresses
       description: The identity entity email address.
       type: String
-  dockerimage: demisto/py3-tools:1.0.0.72003
+  dockerimage: demisto/py3-tools:1.0.0.73055
   isfetch: true
   ismappable: true
   isremotesyncin: true
