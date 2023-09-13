@@ -1,0 +1,102 @@
+[
+    {
+        "CreatedAt": "2020-08-18T08:30:21.760579Z",
+        "DeletedAt": null,
+        "ID": 1,
+        "UpdatedAt": "2023-06-21T18:47:44.371539Z",
+        "account_scope": "",
+        "alert_logic": "1. List all IAM users.|\n2. Filter on users with active access keys.|\n3. Filter on access keys that have not been rotated in 90 days.|\n4. Alert on each user.",
+        "api_command": "ListUsers, ListAccessKeys",
+        "asset_type_id": 8,
+        "attack_types": [
+            "Credential policy violation"
+        ],
+        "cis_benchmark_ids": [
+            108,
+            641,
+            740
+        ],
+        "cli_command": "aws2 iam list-users, aws2 iam list-access-keys",
+        "cloud_asset_type": "user",
+        "cloud_document": "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html",
+        "cloud_platform_type": "aws",
+        "cloud_service_subtype": "Access Keys",
+        "cloud_service_type": "IAM",
+        "default_severity": "informational",
+        "description": "Because IAM access keys are long-term credentials, as time goes on, the risk of these keys being exposed is increased.\n\nKeys are often left on old servers, accidentally published through Git, or stolen from developer machines. The longer the keys are valid, the more likely they are to be discovered in one of these places. By ensuring keys are rotated at least every 90 days, you can be confident that if those keys are discovered, they cannot be abused.",
+        "is_enabled": true,
+        "is_remediable": false,
+        "mitre_attack_cloud_matrix": "https://attack.mitre.org/tactics/TA0006/",
+        "mitre_attack_cloud_subtype": "https://attack.mitre.org/techniques/T1528/",
+        "nist_benchmark_ids": [
+            2,
+            3,
+            281,
+            941
+        ],
+        "pci_benchmark_ids": [
+            120
+        ],
+        "policy_remediation": "Step 1. From the AWS Console, navigate to the IAM page.|\nStep 2. Locate and click on the offending IAM User.|\nStep 3. Click on the Security Credentials tab.|\nStep 4. Navigate to the Access Keys section and choose between making the access key inactive, deleting the key, or rotating the key.",
+        "policy_statement": "IAM user access key active longer than 90 days",
+        "policy_type": "Configuration",
+        "tactic": "Credential Access",
+        "tactic_id": "TA0006",
+        "tactic_url": "https://attack.mitre.org/tactics/TA0006/",
+        "technique": "Steal Application Access Token",
+        "technique_id": "T1528",
+        "technique_url": "https://attack.mitre.org/techniques/T1528/"
+    },
+    {
+        "CreatedAt": "2022-10-19T15:00:00Z",
+        "DeletedAt": null,
+        "ID": 2,
+        "UpdatedAt": "2023-07-20T19:14:47.972998Z",
+        "account_scope": "",
+        "alert_logic": "1. List Launch Configurations.|\n2. Decode Base64-encoded User Data field.|\n3. Search for strings indicating credentials are present.|\n4. Alert on each instance.",
+        "api_command": "DescribeLaunchConfigurations",
+        "asset_type_id": 81,
+        "cis_benchmark_ids": [
+            714
+        ],
+        "cisa_benchmark_ids": [
+            16
+        ],
+        "cli_command": "aws autoscaling describe-launch-configurations",
+        "cloud_asset_type": "launchconfig",
+        "cloud_document": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/user-data.html",
+        "cloud_platform_type": "aws",
+        "cloud_service_type": "Auto Scaling",
+        "default_severity": "informational",
+        "description": "EC2 instance data is used to pass start up information into the EC2 instance. This User Data must not contain any sort of credentials. Instead, use an IAM Instance Profile assigned to the instance to grant access to other AWS Services.",
+        "is_enabled": true,
+        "is_remediable": false,
+        "iso_benchmark_ids": [
+            10,
+            15,
+            62,
+            63
+        ],
+        "mitre_attack_cloud_matrix": "https://attack.mitre.org/tactics/TA0006/",
+        "mitre_attack_cloud_subtype": "https://attack.mitre.org/techniques/T1552/005/",
+        "nist_benchmark_ids": [
+            16,
+            65,
+            66,
+            531
+        ],
+        "policy_remediation": "Step 1. From the console navigate to the EC2 page.|\nStep 2. From the sub-menu, click on 'Launch Configurations' under 'Auto Scaling'.|\nStep 3. Select the offending launch configuration.|\nStep 4. Scroll down to the 'Details' section and click 'View user data'.|\nStep 5. Validate whether or not any credentials are present.|\nStep 6. If credentials are present, re-create the launch configuration without exposing any credentials in the user data field.",
+        "policy_statement": "Auto Scaling group launch configuration User Data with potential credentials exposed",
+        "policy_type": "Configuration",
+        "soc2_benchmark_ids": [
+            15,
+            17
+        ],
+        "tactic": "Credential Access",
+        "tactic_id": "TA0006",
+        "tactic_url": "https://attack.mitre.org/tactics/TA0006/",
+        "technique": "Unsecured Credentials: Cloud Instance Metadata API",
+        "technique_id": "T1552.005",
+        "technique_url": "https://attack.mitre.org/techniques/T1552/005/"
+    }
+]

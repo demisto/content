@@ -1,3 +1,4 @@
+from ctypes import pointer
 import pytest
 import os
 import json
@@ -6,7 +7,8 @@ from urllib.parse import unquote
 from _pytest.python_api import raises
 
 import demistomock as demisto
-from CommonServerPython import outputPaths, entryTypes, DemistoException, IncidentStatus, ScheduledCommand
+from CommonServerPython import (outputPaths, entryTypes, DemistoException, IncidentStatus, ScheduledCommand,
+                                CommandResults, requests)
 from test_data import input_data
 from freezegun import freeze_time
 
@@ -2213,7 +2215,8 @@ class TestFetch:
                                           'incident_offset': 4,
                                           })
         fetch_incidents()
-        assert demisto.setLastRun.mock_calls[0][1][0] == [{'time': '2020-09-04T09:16:10Z'}, {'time': '2020-09-04T09:22:10Z'}, {}]
+        assert demisto.setLastRun.mock_calls[0][1][0] == [
+            {'time': '2020-09-04T09:16:10Z'}, {'time': '2020-09-04T09:22:10Z'}, {}, {}, {}]
 
     @freeze_time("2020-08-26 17:22:13 UTC")
     def delete_offset_test(self, set_up_mocks, mocker):
@@ -5483,3 +5486,227 @@ def test_run_batch_write_cmd_timeout_argument(mocker, timeout, expected_timeout)
     request_mock = mocker.patch('CrowdStrikeFalcon.http_request', return_value={})
     run_batch_write_cmd(batch_id, command_type, full_command, timeout=timeout)
     assert request_mock.call_args[1].get('params').get('timeout') == expected_timeout
+
+# New Tests
+
+
+def assert_command_results(command_results_to_assert: CommandResults, expected_outputs: list | dict, expected_outputs_key_field: str | list[str],
+                           expected_outputs_prefix: str):
+    """This function is used to assert the command results object returned from running command using mocked data.
+    It checks the three important fields, which are:
+    1. outputs
+    2. outputs_key_field
+    3. outputs_prefix
+
+    Args:
+        command_results_to_check (CommandResults): The command results object to assert.
+        expected_outputs (list | dict): The expected outputs object.
+        expected_outputs_key_field (str | list[str]): The expected outputs key field object.
+        expected_outputs_prefix (str): The expected outputs prefix object.
+    """
+    assert command_results_to_assert.outputs == expected_outputs
+    assert command_results_to_assert.outputs_key_field == expected_outputs_key_field
+    assert command_results_to_assert. outputs_prefix == expected_outputs_prefix
+
+
+class TestCSFalconCSPMListPolicyDetialsCommand:
+
+    def test_http_request_with_status_code_400_500_207(self, mocker):
+        """
+        Validate that the http request of the command cs-falcon-cspm-list-policy-details
+        accepts the status codes 500, 400, and 207, since we deal with them manually.
+        """
+        from CrowdStrikeFalcon import cspm_list_policy_details_request
+        http_request_mocker = mocker.patch('CrowdStrikeFalcon.http_request')
+        cspm_list_policy_details_request(policy_ids=['1', '2'])
+        assert http_request_mocker.call_args_list[0][1].get('status_code') == [500, 400, 207]
+
+    def test_get_policy_details(self, mocker):
+        """
+        Given:
+            - Policy IDs to retrieve their details
+        When
+            - Calling the cs-falcon-cspm-list-policy-details command
+        Then
+            - Validate the data of the CommandResults object returned
+        """
+        from CrowdStrikeFalcon import cs_falcon_cspm_list_policy_details_command
+        raw_response = load_json('test_data/policy_details/policy_details_raw_response.json')
+        mocker.patch('CrowdStrikeFalcon.http_request', return_value=raw_response)
+        command_results = cs_falcon_cspm_list_policy_details_command(args={'policy_ids': '1,2'})
+        expected_context_data = load_json('test_data/policy_details/policy_details_context_data.json')
+        assert_command_results(command_results_to_assert=command_results, expected_outputs=expected_context_data,
+                               expected_outputs_key_field='ID', expected_outputs_prefix='CrowdStrike.CSPMPolicy')
+
+    def test_get_policy_details_error_500(self, mocker):
+        from CrowdStrikeFalcon import cs_falcon_cspm_list_policy_details_command
+        raw_response = load_json('test_data/policy_details/policy_details_error_500_raw_response.json')
+        mocker.patch('CrowdStrikeFalcon.http_request', return_value=raw_response)
+        with pytest.raises(DemistoException) as e:
+            cs_falcon_cspm_list_policy_details_command(args={'policy_ids': '12123123123123'})
+        assert 'Perhaps the policy IDs are invalid?' in str(e)
+
+    def test_get_policy_details_error_400(self, mocker):
+        from CrowdStrikeFalcon import cs_falcon_cspm_list_policy_details_command
+        raw_response = load_json('test_data/policy_details/policy_details_error_400_raw_response.json')
+        mocker.patch('CrowdStrikeFalcon.http_request', return_value=raw_response)
+        demisto_results_mocker = mocker.patch.object(demisto, 'results')
+        command_results = cs_falcon_cspm_list_policy_details_command(args={'policy_ids': '1,121231'})
+        expected_context_data = load_json('test_data/policy_details/policy_details_error_400_context_data.json')
+        assert_command_results(command_results_to_assert=command_results, expected_outputs=expected_context_data,
+                               expected_outputs_key_field='ID', expected_outputs_prefix='CrowdStrike.CSPMPolicy')
+        # Entry type '11' means warning
+        assert demisto_results_mocker.call_args_list[0][0][0].get('Type') == 11
+        assert 'Invalid policy ID 121231 provided' in demisto_results_mocker.call_args_list[0][0][0].get('Contents')
+
+
+class TestCSFalconCSPMListServicePolicyDetialsCommand:
+
+    def test_http_request_arguments(self, mocker):
+        """
+        Validate that the http request of the command cs-falcon-cspm-list-service-policy-settings
+        accepts the status code 207, and that the arguments are mapped correctly to the query parameters.
+        """
+        from CrowdStrikeFalcon import cspm_list_service_policy_settings_request
+        http_request_mocker = mocker.patch('CrowdStrikeFalcon.http_request')
+        cspm_list_service_policy_settings_request(policy_id='1', cloud_platform='aws', service='IAM')
+        assert http_request_mocker.call_args_list[0][1].get('status_code') == [207]
+        assert http_request_mocker.call_args_list[0][1].get('params') == {'service': 'IAM', 'policy-id': '1',
+                                                                          'cloud-platform': 'aws'}
+
+    def test_get_service_policy_settings(self, mocker):
+        from CrowdStrikeFalcon import cs_falcon_cspm_list_service_policy_settings_command
+        raw_response = load_json('test_data/service_policy_settings/policy_settings_raw_response.json')
+        mocker.patch('CrowdStrikeFalcon.http_request', return_value=raw_response)
+        command_results = cs_falcon_cspm_list_service_policy_settings_command(args={'cloud_platform': 'aws',
+                                                                                    'service': 'IAM'})
+        expected_context_data = load_json('test_data/service_policy_settings/policy_settings_context_data.json')
+        assert_command_results(command_results_to_assert=command_results, expected_outputs=expected_context_data,
+                               expected_outputs_key_field='policy_id', expected_outputs_prefix='CrowdStrike.CSPMPolicySetting')
+
+    def test_get_service_policy_settings_manual_pagination(self, mocker):
+        # The raw response in the test data has 2 values, we set a limit of 1 to assert the manual pagination
+        from CrowdStrikeFalcon import cs_falcon_cspm_list_service_policy_settings_command
+        raw_response = load_json('test_data/service_policy_settings/policy_settings_raw_response.json')
+        mocker.patch('CrowdStrikeFalcon.http_request', return_value=raw_response)
+        command_results = cs_falcon_cspm_list_service_policy_settings_command(args={'cloud_platform': 'aws',
+                                                                                    'service': 'IAM', 'limit': '1'})
+        assert isinstance(command_results.outputs, list)
+        assert len(command_results.outputs) == 1
+
+
+class TestCSFalconCSPMUpdatePolicySettingsCommand:
+
+    def test_http_request_arguments(self, mocker):
+        """
+        Validate that the http request of the command cs-falcon-cspm-update-policy_settings
+        accepts the status code 500, and that the arguments are mapped correctly to the json body.
+        """
+        from CrowdStrikeFalcon import cspm_update_policy_settings_request
+        http_request_mocker = mocker.patch('CrowdStrikeFalcon.http_request')
+        cspm_update_policy_settings_request(account_id='12', enabled=True, policy_id=1,
+                                            regions=['eu-west', 'eu-east'], severity='high', tag_excluded=False)
+        assert http_request_mocker.call_args_list[0][1].get('status_code') == 500
+        assert http_request_mocker.call_args_list[0][1].get('json') == {'resources':
+                                                                        [{'account_id': '12', 'enabled': True, 'policy_id': 1,
+                                                                          'regions': ['eu-west', 'eu-east'], 'severity': 'high',
+                                                                          'tag_excluded': False}]}
+
+    def test_update_policy_settings_error_500(self, mocker):
+        """
+        Test that we catch the 500 error code.
+        """
+        from CrowdStrikeFalcon import cs_falcon_cspm_update_policy_settings_command
+        raw_response = load_json('test_data/update_policy_settings/update_settings_error_500_raw_response.json')
+        mocker.patch('CrowdStrikeFalcon.http_request', return_value=raw_response)
+        with pytest.raises(DemistoException) as e:
+            cs_falcon_cspm_update_policy_settings_command(args={'account_id': 'wrong_account_id',
+                                                                'policy_id': 1})
+        assert 'Perhaps the policy ID or account ID are invalid?' in str(e)
+
+    def test_update_policy_settings(self, mocker):
+        """
+        Test a succesfull command run.
+        """
+        from CrowdStrikeFalcon import cs_falcon_cspm_update_policy_settings_command
+        raw_response = load_json('test_data/update_policy_settings/update_settings_raw_response.json')
+        mocker.patch('CrowdStrikeFalcon.http_request', return_value=raw_response)
+        command_results = cs_falcon_cspm_update_policy_settings_command(args={'policy_id': 1})
+        assert isinstance(command_results.readable_output, str)
+        assert 'Policy 1 was updated successfully' in command_results.readable_output
+
+
+class TestCSFalconResolveIdentityDetectionCommand:
+    def test_http_request_arguments(self, mocker):
+        """
+        Validate http request body of the command cs-falcon-resolve-identity-detection,
+        and that the arguments are mapped correctly to the json body.
+        """
+        from CrowdStrikeFalcon import resolve_identity_detection_request
+        http_request_mocker = mocker.patch('CrowdStrikeFalcon.http_request')
+        ids = ['1,2']
+        action_param_values = {'update_status': 'new', 'assign_to_name': 'bot'}
+        action_params_http_body = [{'name': 'update_status', 'value': 'new'}, {'name': 'assign_to_name', 'value': 'bot'}]
+        resolve_identity_detection_request(ids=ids, **action_param_values)
+        assert http_request_mocker.call_args_list[0][1].get('json') == {'action_parameters': action_params_http_body,
+                                                                        'ids': ids}
+
+    def test_resolve_identity_detection(self, mocker):
+        """
+        Test a succesfull command run.
+        """
+        from CrowdStrikeFalcon import cs_falcon_resolve_identity_detection
+        mocker.patch('CrowdStrikeFalcon.http_request', return_value=requests.Response())
+        command_results = cs_falcon_resolve_identity_detection(args={'ids': '1,2'})
+        assert isinstance(command_results.readable_output, str)
+        assert 'IDP Detection(s) 1, 2 were successfully updated' in command_results.readable_output
+
+
+class TestIOAFetch:
+    def test_validate_ioa_fetch_query(self):
+        ...
+
+    def test_format_time_to_custom_date_format(self):
+        # TODO Make this a general unit test
+        ...
+
+    def test_fetch_query_with_paginating(self):
+        # Test that we take the last_fetch_query
+        ...
+
+    def test_fetch_query_without_pagination(self):
+        # Test that we append 'date_time_since' to the given fetch query
+        ...
+
+    def test_request_get_ioa_events(self):
+        # Test that we construct the fetch query correctly, especially when supplying a next token
+        ...
+
+    def test_return_values_get_ioa_events(self):
+        # Test that we return the correct data when we do, or do not, get a next token
+        ...
+
+    def test_ioa_events_pagination(self):
+        # Save two responses, where both of them return a next token with them. Make the api_limit=2,
+        # and the fetch_limit=3, that way, we would need to do a request twice, and on the second request,
+        # we would make it while having a limit of 1. We will check the arguments of the method get_ioa_events_for_fetch,
+        # and the return values of ioa_events_pagination.
+        ...
+
+    def test_no_ioa_events_added_if_found_in_last_run(self):
+        # Make last_event_ids have the values ['1', '2'], and return the values ['2', '3'] when fetching,
+        # and once we enter the for loop to go over the fetched events, '2' will not get picked up, since it
+        # was already fetched, therfore, we check that in the returned incidents object, only the event with id '3'
+        # was added as an incident
+        ...
+
+    def test_save_fetched_events_from_start_when_paginating(self):
+        # Make sure that we save all the events that have been fetched throught the whole pagination process,
+        # which can span on many fetches. We will have ids in last_event_ids (['1']), and configure that we are
+        # doing pagination, and that we fetched event '2', and in the new returned last run, the key last_event_ids
+        # has a value of ['1', '2']
+        ...
+
+    def test_fetch_ioa_events(self):
+        # A successful fetch of incidents
+        ...

@@ -3,7 +3,7 @@ sectionOrder:
 - Connect
 - Collect
 commonfields:
-  id: CrowdstrikeFalcon
+  id: CrowdstrikeFalcon Test
   version: -1
 configuration:
 - defaultvalue: https://api.crowdstrike.com
@@ -77,6 +77,20 @@ configuration:
   type: 0
   section: Collect
   advanced: true
+- display: IOM fetch query
+  name: iom_fetch_query
+  required: false
+  type: 0
+  section: Collect
+  advanced: true
+  additionalinfo: "Use the Falcon Query Language to configure the fetch query: https://falconpy.io/Usage/Falcon-Query-Language.html"
+- display: IOA fetch query
+  name: ioa_fetch_query
+  required: false
+  type: 0
+  section: Collect
+  advanced: true
+  additionalinfo: "In the format: cloud_provider=aws&aws_account_id=1234. The query must have the argument 'cloud_provider' configured."
 - defaultvalue: 'true'
   display: Fetch incidents
   name: isFetch
@@ -137,6 +151,8 @@ configuration:
   - IDP Detection
   - Endpoint Incident
   - Endpoint Detection
+  - Indicator of Misconfiguration
+  - Indicator of Attack
   section: Collect
   advanced: true
   required: false
@@ -156,8 +172,8 @@ configuration:
   advanced: true
   required: false
 description: The CrowdStrike Falcon OAuth 2 API (formerly the Falcon Firehose API), enables fetching and resolving detections, searching devices, getting behaviors by ID, containing hosts, and lifting host containment.
-display: CrowdStrike Falcon
-name: CrowdstrikeFalcon
+display: CrowdStrike Falcon Test
+name: CrowdstrikeFalcon Test
 script:
   commands:
   - arguments:
@@ -4375,6 +4391,108 @@ script:
     - contextPath: CrowdStrike.IDPEntity.EmailAddresses
       description: The identity entity email address.
       type: String
+  - arguments:
+    - description: Comma separated list of policy IDs to look for.
+      name: policy_ids
+      isArray: true
+      required: true
+    description: Given a CSV list of policy IDs, returns detailed policy information.
+    name: cs-falcon-cspm-list-policy-details
+    outputs: # TODO Will need to change
+    - contextPath: CrowdStrike.IDPEntity.IsHuman
+      description: Whether the identity entity is human made.
+      type: Boolean
+  - arguments:
+    - description: The policy ID to look for its settings.
+      name: policy_id
+    - description: The cloud provider.
+      name: cloud_platform
+      defaultValue: 'aws'
+      predefined:
+      - 'aws'
+      - 'gcp'
+      - 'azure'
+      auto: PREDEFINED
+    - description: Service type to filter by.
+      name: service
+    - description: The maximum number of entities to list.
+      name: limit
+      defaultValue: 50
+    description: Returns information about current policy settings.
+    name: cs-falcon-cspm-list-service-policy-settings
+    outputs: # TODO Will need to change
+    - contextPath: CrowdStrike.IDPEntity.IsHuman
+      description: Whether the identity entity is human made.
+      type: Boolean
+  - arguments:
+    - description: Policy ID to be updated.
+      name: policy_id
+      required: true
+    - description: Cloud Account ID to impact.
+      name: account_id
+    - description: Flag indicating if this policy is enabled.
+      name: enabled
+      defaultValue: 'true'
+      predefined:
+      - 'false'
+      - 'true'
+      auto: PREDEFINED
+    - description: List of regions where this policy is enforced.
+      name: regions
+      isArray: true
+    - description: Policy severity value.
+      name: severity
+      predefined:
+      - 'critical'
+      - 'high'
+      - 'medium'
+      - 'informational'
+      auto: PREDEFINED
+    - description: Tag exclusion flag.
+      name: tag_excluded
+      predefined:
+      - 'false'
+      - 'true'
+      auto: PREDEFINED
+    description: Updates a policy setting - can be used to override policy severity or to disable a policy entirely.
+    name: cs-falcon-cspm-update-policy_settings
+  - arguments:
+    - description: IDs of the alerts to update.
+      name: ids
+      isArray: true
+      required: true
+    - description: Assign the specified detections to a user based on their username.
+      name: assign_to_name
+    - description: Assign the specified detections to a user based on their UUID.
+      name: assign_to_uuid
+    - description: Appends a new comment to any existing comments for the specified detections.
+      name: append_comment
+    - description: Add a tag to the specified detections.
+      name: add_tag
+    - description: Remove a tag from the specified detections.
+      name: remove_tag
+    - description: Update status of the alert to the specified value.
+      name: update_status
+      predefined:
+      - 'new'
+      - 'in_progress'
+      - 'closed'
+      - 'reopened'
+      auto: PREDEFINED
+    - description: Whether to unassign any assigned users to the specified detections.
+      name: unassign
+      predefined:
+      - 'false'
+      - 'true'
+      auto: PREDEFINED
+    - description: If true, displays the detection in the UI.
+      name: show_in_ui
+      predefined:
+      - 'false'
+      - 'true'
+      auto: PREDEFINED
+    description: Perform actions on alerts.
+    name: cs-falcon-resolve-identity-detection
   dockerimage: demisto/py3-tools:1.0.0.70543
   isfetch: true
   ismappable: true
