@@ -56,6 +56,20 @@ configuration:
   type: 13
   section: Connect
   required: false
+- additionalinfo: Reliability of the source providing the intelligence data.
+  defaultvalue: B - Usually reliable
+  display: Source Reliability
+  name: integration_reliability
+  options:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  type: 15
+  required: false
 description: Use the Prisma Cloud Compute integration to fetch incidents from your Prisma Cloud Compute environment.
 display: Palo Alto Networks - Prisma Cloud Compute
 name: PaloAltoNetworks_PrismaCloudCompute
@@ -812,6 +826,9 @@ script:
     - contextPath: DBotScore.Vendor
       description: The vendor reporting the score of the indicator.
       type: String
+    - contextPath: DBotScore.Reliability
+      type: String
+      description: Reliability of the source providing the intelligence data.
   - name: prisma-cloud-compute-defenders-list
     description: Retrieve a list of defenders and their information.
     arguments:
@@ -847,7 +864,7 @@ script:
       description: The cloud provider metadata of the host.
       type: Unknown
     - contextPath: PrismaCloudCompute.DefenderDetails.cluster
-      description: The provided cluster name. (Fallback is the internal IP address.).
+      description: The provided cluster name. (Fallback is the internal IP address).
       type: String
     - contextPath: PrismaCloudCompute.DefenderDetails.clusterID
       description: The unique ID generated for each daemon set and used to group defenders by clusters. Note - Kubernetes does not provide a cluster name as part of its API.
@@ -1186,7 +1203,7 @@ script:
       description: Total number of vulnerabilities.
       type: Number
     - contextPath: PrismaCloudCompute.ReportsImagesScan.vulnerabilityDistribution
-      description: The number of vulnerabilities per type,.
+      description: The number of vulnerabilities per type.
       type: Unknown
     - contextPath: PrismaCloudCompute.ReportsImagesScan.vulnerabilityRiskScore
       description: Image's CVE risk score.
