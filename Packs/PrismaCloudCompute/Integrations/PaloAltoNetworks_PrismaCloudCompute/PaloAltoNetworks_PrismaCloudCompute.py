@@ -1960,11 +1960,18 @@ def get_logs_defender_download_command(client: PrismaCloudComputeClient, args: d
 
 
 def unstuck_fetch_stream_command():
+    """
+    Adds a field to ensure that is_command_is_fetch will recognize the next fetch incidents run as fetch.
+    This command is for unstacking the fetch stream in case the fetch incidents yields duplications.
+
+    Returns:
+        CommandResults: command-results object.
+    """
     ctx = demisto.getIntegrationContext()
-    demisto.debug(f"Integration Context before update = {ctx}")
+    demisto.debug(f"unstuck field before update = {ctx.get('unstuck', False)}")
     ctx["unstuck"] = True
     demisto.setIntegrationContext(ctx)
-    demisto.debug(f"Integration Context after update = {ctx}")
+    demisto.debug(f"unstuck field after update = {ctx.get('unstuck', False)}")
     return CommandResults(
         readable_output="The fetch stream was released successfully."
     )
