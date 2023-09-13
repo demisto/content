@@ -175,7 +175,7 @@
         "is_array": false
       },
       "spt": {
-        "type": "string",
+        "type": "int",
         "is_array": false
       },
       "dst": {
@@ -183,7 +183,7 @@
         "is_array": false
       },
       "dpt": {
-        "type": "string",
+        "type": "int",
         "is_array": false
       },
       "destinationTranslatedAddress": {
@@ -215,11 +215,11 @@
         "is_array": false
       },
       "in": {
-        "type": "string",
+        "type": "int",
         "is_array": false
       },
       "out": {
-        "type": "string",
+        "type": "int",
         "is_array": false
       },
       "cs6": {
@@ -227,11 +227,7 @@
         "is_array": false
       },
       "cn1": {
-        "type": "string",
-        "is_array": false
-      },
-      "cs5": {
-        "type": "string",
+        "type": "int",
         "is_array": false
       },
       "destCountry": {
