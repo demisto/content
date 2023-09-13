@@ -84,12 +84,12 @@ class Client:
 
     def get_single_service_principal(
             self,
-            object_or_app_id: str
+            service_id: str
     ):
         """
 
         Arguments:
-            object_or_app_id: object id or application id of the service.
+            service_id: object id or application id of the service.
 
         Returns:
             Retrieve the properties and relationships of a servicePrincipal object.
@@ -97,18 +97,18 @@ class Client:
         Docs:
             https://learn.microsoft.com/en-us/graph/api/serviceprincipal-get?view=graph-rest-1.0&tabs=http
         """
-        suffix = f'v1.0/servicePrincipals{object_or_app_id}'
+        suffix = f'v1.0/servicePrincipals{service_id}'
         return self.ms_client.http_request(method='GET', url_suffix=suffix)
 
     def update_single_service_principal(
             self,
-            object_or_app_id: str,
+            service_id: str,
             data: dict
     ):
         """
 
         Arguments:
-            object_or_app_id: object id or application id of the service.
+            service_id: object id or application id of the service.
             data: Fields to update.
 
         Returns:
@@ -117,7 +117,7 @@ class Client:
         Docs:
             https://learn.microsoft.com/en-us/graph/api/serviceprincipal-update?view=graph-rest-1.0&tabs=http
         """
-        suffix = f'v1.0/servicePrincipals{object_or_app_id}'
+        suffix = f'v1.0/servicePrincipals{service_id}'
         return self.ms_client.http_request(method='PATCH', url_suffix=suffix, json_data=data, return_empty_response=True)
 
     def delete_service_principals(
@@ -139,6 +139,47 @@ class Client:
             https://docs.microsoft.com/en-us/graph/api/serviceprincipal-delete?view=graph-rest-1.0&tabs=http
         """
         self.ms_client.http_request(method='DELETE', url_suffix=f'v1.0/servicePrincipals{service_id}', return_empty_response=True)
+
+    def add_password_application(
+            self,
+            service_id: str,
+            data: dict
+    ):
+        """
+
+        Arguments:
+            service_id: object id or application id of the service.
+            data: the body request.
+
+        Returns:
+            Adds a strong password or secret to an application.
+
+        Docs:
+            https://learn.microsoft.com/en-us/graph/api/application-addpassword?view=graph-rest-1.0&tabs=http
+        """
+        suffix = f'v1.0/applications{service_id}/addPassword'
+        json_data = {"passwordCredential": data}
+        return self.ms_client.http_request(method='POST', url_suffix=suffix, json_data=json_data)
+
+    def remove_password_application(
+            self,
+            service_id: str,
+            data: dict
+    ):
+        """
+
+        Arguments:
+            service_id: object id or application id of the service.
+            data: the body request.
+
+        Returns:
+            Remove a password from an application.
+
+        Docs:
+            https://learn.microsoft.com/en-us/graph/api/application-removepassword?view=graph-rest-1.0&tabs=http
+        """
+        suffix = f'v1.0/applications{service_id}/removePassword'
+        return self.ms_client.http_request(method='POST', url_suffix=suffix, json_data=data,  return_empty_response=True)
 
 
 ''' COMMAND FUNCTIONS '''
@@ -196,14 +237,17 @@ def validate_service_principal_input(args: dict) -> tuple:
         args: The arguments were passed with the command.
 
     Returns:
-        If the two arguments are missing, raise an exception, otherwise return them.
+        If the two arguments are missing, raise an exception, otherwise return one of them.
     """
     object_id = args.get('id')
     app_client_id = args.get('app_id')
     if not (object_id or app_client_id):
         raise DemistoException("User must provide one of (object) id or application id.")
 
-    return object_id, app_client_id
+    # if both are provided, pass the object_id
+    if object_id:
+        return f"/{object_id}", object_id
+    return f"(appId='{app_client_id}')", app_client_id
 
 
 def get_service_principal_command(ms_client: Client, args: dict) -> CommandResults:
@@ -216,14 +260,8 @@ def get_service_principal_command(ms_client: Client, args: dict) -> CommandResul
     Returns:
         Results to post in demisto
     """
-    object_id, app_client_id = validate_service_principal_input(args=args)
-
-    # if both are provided, pass the object_id
-    if object_id:
-        results = ms_client.get_single_service_principal(f"/{object_id}")
-    else:
-        results = ms_client.get_single_service_principal(f"(appId='{app_client_id}')")
-
+    id_for_request, service_id = validate_service_principal_input(args=args)
+    results = ms_client.get_single_service_principal(id_for_request)
     return CommandResults(
         'MSGraphApplication',
         'id',
@@ -245,9 +283,9 @@ def update_service_principal_command(ms_client: Client, args: dict) -> CommandRe
         args: demisto.args()
 
     Returns:
-
+        an informative message.
     """
-    object_id, app_client_id = validate_service_principal_input(args=args)
+    id_for_request, service_id = validate_service_principal_input(args=args)
     data = {}
 
     if account_enabled := args.get("account_enabled"):
@@ -312,13 +350,7 @@ def update_service_principal_command(ms_client: Client, args: dict) -> CommandRe
     if token_encryption_key_id := args.get("token_encryption_key_id"):
         data["tokenEncryptionKeyId"] = token_encryption_key_id
 
-    # if both are provided, pass the object_id
-    if object_id:
-        ms_client.update_single_service_principal(f"/{object_id}", data=data)
-        service_id = object_id
-    else:
-        ms_client.update_single_service_principal(f"(appId='{app_client_id}')", data=data)
-        service_id = app_client_id
+    ms_client.update_single_service_principal(id_for_request, data=data)
 
     return CommandResults(
         readable_output=f'Service {service_id} was updated successfully.'
@@ -335,18 +367,64 @@ def remove_service_principals_command(ms_client: Client, args: dict) -> CommandR
     Returns:
         Results to post in demisto
     """
-    object_id, app_client_id = validate_service_principal_input(args=args)
-
-    # if both are provided, pass the object_id
-    if object_id:
-        ms_client.delete_service_principals(f"/{object_id}")
-        service_id = object_id
-    else:
-        ms_client.delete_service_principals(f"(appId='{app_client_id}')")
-        service_id = app_client_id
-
+    id_for_request, service_id = validate_service_principal_input(args=args)
+    ms_client.delete_service_principals(id_for_request)
     return CommandResults(
         readable_output=f'Service {service_id} was deleted.'
+    )
+
+
+def add_password_application_command(ms_client: Client, args: dict) -> CommandResults:
+    """
+    Adds a strong password or secret to an application.
+
+    Arguments:
+        ms_client: The Client
+        args: demisto.args()
+
+    Returns:
+        Results to post in demisto
+    """
+    id_for_request, service_id = validate_service_principal_input(args=args)
+
+    data = {}
+
+    if display_name := args.get("display_name"):
+        data["displayName"] = display_name
+    if end_date_time := args.get("end_date_time"):
+        data["endDateTime"] = end_date_time
+    if start_date_time := args.get("start_date_time"):
+        data["startDateTime"] = start_date_time
+
+    results = ms_client.add_password_application(id_for_request, data=data)
+
+    return CommandResults(
+        'MSGraphApplication',
+        'id',
+        outputs=results,
+        readable_output=f'A password was added to application {service_id} successfully.'
+    )
+
+
+def remove_password_application_command(ms_client: Client, args: dict) -> CommandResults:
+    """
+    Remove a password from an application.
+
+    Arguments:
+        ms_client: The Client
+        args: demisto.args()
+
+    Returns:
+        Results to post in demisto
+    """
+    id_for_request, service_id = validate_service_principal_input(args=args)
+
+    data = {"keyId": args["key_id"]}
+
+    ms_client.remove_password_application(id_for_request, data=data)
+
+    return CommandResults(
+        readable_output=f'The password of the unique identifier {args["key_id"]} was removed successfully.'
     )
 
 
@@ -412,6 +490,10 @@ def main():
             return_results(get_service_principal_command(client, args))
         elif command == 'msgraph-apps-service-principal-update':
             return_results(update_service_principal_command(client, args))
+        elif command == 'msgraph-apps-application-password-add':
+            return_results(add_password_application_command(client, args))
+        elif command == 'msgraph-apps-application-password-remove':
+            return_results(remove_password_application_command(client, args))
         else:
             raise NotImplementedError(f"Command '{command}' not found.")
 
