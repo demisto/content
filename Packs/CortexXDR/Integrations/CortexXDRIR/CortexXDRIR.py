@@ -1051,7 +1051,7 @@ def fetch_incidents(
 
     with ThreadPoolExecutor(max_workers=10) as executor:
         is_rate_limit = False
-        should_update_last_run_time = False
+        should_increase_last_run_time = False
         future_to_incident = {
             executor.submit(
                 get_incident_extra_data_command,
@@ -1086,9 +1086,9 @@ def fetch_incidents(
                 if params.get('sync_owners') and incident_data.get('assigned_user_mail'):
                     incident['owner'] = demisto.findUser(email=incident_data.get('assigned_user_mail')).get('username')
 
-                # Update last run and add incident if the incident is newer than last fetch
+                # Update last run if the incident is newer than last fetch
                 if raw_incident['creation_time'] > last_fetch:
-                    should_update_last_run_time = True
+                    should_increase_last_run_time = True
                     last_fetch = raw_incident['creation_time']
 
                 incidents.append(incident)
@@ -1096,8 +1096,8 @@ def fetch_incidents(
 
             except Exception as e:
                 if "Rate limit exceeded" in str(e):
-                    # it's irrelevant to break the loop because all futures were already submitted; we will
-                    # proceed, perhaps the API calls in the next futures did not return a rate limit error.
+                    # we don't break the loop because all futures were already submitted
+                    # and perhaps some of the next futures succeeded
                     is_rate_limit = True
                 else:
                     raise
@@ -1110,8 +1110,7 @@ def fetch_incidents(
     else:
         next_run['incidents_from_previous_run'] = []
 
-    if should_update_last_run_time:
-        next_run['time'] = last_fetch + 1
+    next_run['time'] = last_fetch + 1 if should_increase_last_run_time else last_fetch
 
     # multithreading may cause incidents to be returned unsorted
     incidents.sort(key=lambda inc: inc.pop("sortKey"))
