@@ -74,7 +74,7 @@ description: Use the Prisma Cloud Compute integration to fetch incidents from yo
 display: Palo Alto Networks - Prisma Cloud Compute
 name: PaloAltoNetworks_PrismaCloudCompute
 script:
-  dockerimage: demisto/python3:3.10.13.72123
+  dockerimage: demisto/python3:3.10.13.73190
   isfetch: true
   runonce: false
   script: "-"
@@ -541,7 +541,7 @@ script:
       description: The list of hosts where this container is running.
       type: String
   - name: prisma-cloud-compute-profile-container-forensic-list
-    description: Get runtime forensics data for a specific container on a specific. host
+    description: Get runtime forensics data for a specific container on a specific. host.
     arguments:
     - name: id
       description: The container ID. Can be retrieved from the prisma-cloud-compute-profile-container-list command.
@@ -1459,7 +1459,7 @@ script:
       type: integer
   - name: prisma-cloud-compute-get-waas-policies
     arguments: []
-    description: "Get the Waas Container Policies from Defend >> WAAS >> Containers"
+    description: "Get the Waas Container Policies from Defend >> WAAS >> Containers."
     outputs:
     - contextPath: PrismaCloudCompute.Policies.Name
       description: The Policy Name.
@@ -1528,7 +1528,7 @@ script:
     - name: rule_name
       required: true
       description: The rule name for the WaaS policy settings.
-    description: Update the Waas Policy for containers
+    description: Update the Waas Policy for containers.
   - name: prisma-cloud-compute-get-audit-firewall-container-alerts
     arguments:
     - name: ImageName
@@ -1541,7 +1541,7 @@ script:
       description: The type of audit alert to retrieve.
     - name: limit
       description: The limit of the number of alerts to return.
-    description: Get the audits for the firewall container policies
+    description: Get the audits for the firewall container policies.
     outputs: []
   - arguments:
     - description: The project to get the alert profiles for.
