@@ -45,14 +45,14 @@ configuration:
   required: false
 - display: Timeout
   name: timeout
-  defaultvalue: 60,10
+  defaultValue: 60,10
   additionalinfo: "The time in seconds till a timeout exception is reached. You can specify just the read timeout (for example 60) or also the connect timeout followed after a comma (for example 60,10). If a connect timeout is not specified, a default of 10 seconds will be used."
   type: 0
   required: false
 - display: Retries
   name: retries
   type: 0
-  defaultvalue: 5
+  defaultValue: 5
   additionalinfo: "The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time."
   required: false
 - display: Trust any certificate (not secure)
@@ -111,7 +111,9 @@ script:
       - OpsMetadata
       - PatchBaseline
       - Parameter
-    - description: 'The resource ID to be tagged.(e.g., MaintenanceWindow: mw-012345abcde, PatchBaseline: pb-012345abcde).'
+    - description: |-
+         'The resource ID to be tagged.
+          Note: The format of the id depends on the selected resource type (e.g.. MaintenanceWindow: mw-012345abcde, PatchBaseline: pb-012345abcde).'
       name: resource_id
       required: true
     - description: 'The name of the tag. Note: Don’t enter personally identifiable information in this field.'
@@ -171,7 +173,9 @@ script:
       - OpsMetadata
       - PatchBaseline
       - Parameter
-    - description: 'The ID of the resource to remove tags.(e.g.. MaintenanceWindow: mw-012345abcde, PatchBaseline: pb-012345abcde).'
+    - description: |-
+       'The ID of the resource to remove tags.
+        Note: The format of the id depends on the selected resource type (e.g.. MaintenanceWindow: mw-012345abcde, PatchBaseline: pb-012345abcde).'
       name: resource_id
       required: true
     - description: The name of the tag to remove.
@@ -206,12 +210,74 @@ script:
       name: roleSessionName
     - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       name: roleSessionDuration
+    - auto: PREDEFINED
+      description: Returns a list of tags for a specific resource type.
+      name: resource_type
+      required: true
+      predefined:
+      - Association
+      - Automation
+      - Document
+      - MaintenanceWindow
+      - ManagedInstance
+      - OpsItem
+      - OpsMetadata
+      - PatchBaseline
+      - Parameter
+    - description: |-
+             'The ID of the resource to list tags.
+              Note: The format of the id depends on the selected resource type (e.g.. MaintenanceWindow: mw-012345abcde, PatchBaseline: pb-012345abcde).'
+      name: resource_id
+      required: true
+    description: Returns a list of the tags assigned to the specified resource.
+    name: aws-ssm-tag-list
+    outputs:
+    - contextPath: AWS.SSM.Tag.Key
+      description: The name of the tag.
+      type: String
+    - contextPath: AWS.SSM.Tag.Value
+      description: The value of the tag.
+      type: String
+  - arguments:
+    - auto: PREDEFINED
+      description: The AWS Region. If not specified, the default region will be used.
+      name: region
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - ca-central-1
+      - eu-west-1
+      - eu-central-1
+      - eu-west-2
+      - ap-northeast-1
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-south-1
+      - sa-east-1
+      - eu-north-1
+      - eu-west-3
+    - description: The Amazon Resource Name (ARN) of the role to assume.
+      name: roleArn
+    - description: An identifier for the assumed role session.
+      name: roleSessionName
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      name: roleSessionDuration
     - description: The maximum number of items to return for this call,. The default and max is 50. The call also returns a token that you can specify in a subsequent call to get the next set of results.
       name: limit
     - description: The token for the next set of items to return. (Received this token from a previous call).
       name: next_token
+    - auto: PREDEFINED
+      description: Determines whether to include inactive instances in the query results.
+      name: include_inactive_instance
+      predefined:
+      - true
+      - false
+      defaultValue: false
     description: Query inventory information. This includes the managed node status, such as Stopped or Terminated.
-    name: aws-ssm-inventory-get
+    name: aws-ssm-inventory-list
     outputs:
     - contextPath: AWS.SSM.InventoryNextToken.NextToken
       description: The token for the next set of items to return.
@@ -219,43 +285,43 @@ script:
     - contextPath: AWS.SSM.Inventory.Id
       description: ID of the inventory result entity. For example, for managed node inventory the result will be the managed node ID. For EC2 instance inventory, the result will be the instance ID.
       type: String
-    - contextPath: AWS.SSM.Inventory.AWS:InstanceInformation.TypeName
+    - contextPath: AWS.SSM.Inventory.TypeName
       description: The name of the inventory result item type.
       type: String
-    - contextPath: AWS.SSM.Inventory.AWS:InstanceInformation.SchemaVersion
+    - contextPath: AWS.SSM.Inventory.SchemaVersion
       description: The schema version for the inventory result item.
       type: String
-    - contextPath: AWS.SSM.Inventory.AWS:InstanceInformation.CaptureTime
+    - contextPath: AWS.SSM.Inventory.CaptureTime
       description: The time inventory item data was captured.
       type: String
-    - contextPath: AWS.SSM.Inventory.AWS:InstanceInformation.ContentHash
+    - contextPath: AWS.SSM.Inventory.ContentHash
       description: MD5 hash of the inventory item type contents. The content hash is used to determine whether to update inventory information. The PutInventory API doesn’t update the inventory item type contents if the MD5 hash hasn’t changed since last update.
       type: String
-    - contextPath: AWS.SSM.Inventory.AWS:InstanceInformation.Content.AgentType
+    - contextPath: AWS.SSM.Inventory.Content.AgentType
       description: The type of SSM agent running on the instance.
       type: String
-    - contextPath: AWS.SSM.Inventory.AWS:InstanceInformation.Content.AgentVersion
+    - contextPath: AWS.SSM.Inventory.Content.AgentVersion
       description: The version of the SSM agent running on the instance.
       type: String
-    - contextPath: AWS.SSM.Inventory.AWS:InstanceInformation.Content.ComputerName
+    - contextPath: AWS.SSM.Inventory.Content.ComputerName
       description: The fully qualified host name of the managed node.
       type: String
-    - contextPath: AWS.SSM.Inventory.AWS:InstanceInformation.Content.IpAddress
+    - contextPath: AWS.SSM.Inventory.Content.IpAddress
       description: The IP address of the managed node.
       type: String
-    - contextPath: AWS.SSM.Inventory.AWS:InstanceInformation.Content.PlatformName
+    - contextPath: AWS.SSM.Inventory.Content.PlatformName
       description: The name of the operating system platform running on the managed node.
       type: String
-    - contextPath: AWS.SSM.Inventory.AWS:InstanceInformation.Content.PlatformType
+    - contextPath: AWS.SSM.Inventory.Content.PlatformType
       description: The operating system platform type.
       type: String
-    - contextPath: AWS.SSM.Inventory.AWS:InstanceInformation.Content.PlatformVersion
+    - contextPath: AWS.SSM.Inventory.Content.PlatformVersion
       description: The version of the OS platform running on the managed node.
       type: String
-    - contextPath: AWS.SSM.Inventory.AWS:InstanceInformation.Content.ResourceType
+    - contextPath: AWS.SSM.Inventory.Content.ResourceType
       description: The type of instance. Instances are either EC2 instances or managed instances.
       type: String
-    - contextPath: AWS.SSM.Inventory.AWS:InstanceInformation.Content.InstanceId
+    - contextPath: AWS.SSM.Inventory.Content.InstanceId
       description: The managed node ID.
       type: String
   - arguments:
@@ -288,7 +354,26 @@ script:
     - description: 'The managed node ID to get inventory information for. Note: to get the instance ID, run the aws-ssm-inventory-get command.'
       name: instance_id
       required: true
-    - description: The type of inventory item to get information for.
+    - auto: PREDEFINED
+      predefined:
+      - InstanceInformation
+      - File
+      - Process
+      - WindowsUpdate
+      - Network
+      - PatchSummary
+      - PatchCompliance
+      - ComplianceItem
+      - InstanceDetailedInformation
+      - Service
+      - WindowsRegistry
+      - WindowsRole
+      - Tag
+      - ResourceGroup
+      - BillingInfo
+      - Application
+      - AWSComponents
+      description: The type of inventory item to get information for.
       name: type_name
       required: true
     - description: The maximum number of items to return for this call. The default and max is 50. The call also returns a token that you can specify in a subsequent call to get the next set of results.
@@ -301,41 +386,515 @@ script:
     - contextPath: AWS.SSM.InventoryEntryNextToken.NextToken
       description: The token for the next set of items to return.
       type: String
-    - contextPath: AWS.SSM.InventoryEntry.TypeName
+    - contextPath: AWS.SSM.InventoryEntry.AWS:InstanceInformation.TypeName
       description: The type of inventory item returned by the request.
       type: String
-    - contextPath: AWS.SSM.InventoryEntry.InstanceId
+    - contextPath: AWS.SSM.InventoryEntry.AWS:InstanceInformation.InstanceId
       description: The managed node ID targeted by the request to query inventory information.
       type: String
-    - contextPath: AWS.SSM.InventoryEntry.SchemaVersion
+    - contextPath: AWS.SSM.InventoryEntry.AWS:InstanceInformation.SchemaVersion
       description: The inventory schema version used by the managed node(s).
       type: String
-    - contextPath: AWS.SSM.InventoryEntry.CaptureTime
+    - contextPath: AWS.SSM.InventoryEntry.AWS:InstanceInformation.CaptureTime
       description: The time that inventory information was collected for the managed node(s).
       type: String
-    - contextPath: AWS.SSM.InventoryEntry.Entries.AgentVersion
+    - contextPath: AWS.SSM.InventoryEntry.AWS:InstanceInformation.Entries.AgentVersion
       description: The version of the SSM agent running on the instance.
       type: String
-    - contextPath: AWS.SSM.InventoryEntry.Entries.AgentType
+    - contextPath: AWS.SSM.InventoryEntry.AWS:InstanceInformation.Entries.AgentType
       description: The type of SSM agent running on the instance.
       type: String
-    - contextPath: AWS.SSM.InventoryEntry.Entries.ComputerName
+    - contextPath: AWS.SSM.InventoryEntry.AWS:InstanceInformation.Entries.ComputerName
       description: The fully qualified host name of the managed node.
       type: String
-    - contextPath: AWS.SSM.InventoryEntry.Entries.IpAddress
+    - contextPath: AWS.SSM.InventoryEntry.AWS:InstanceInformation.Entries.IpAddress
       description: The IP address of the managed node.
       type: String
-    - contextPath: AWS.SSM.InventoryEntry.Entries.PlatformName
+    - contextPath: AWS.SSM.InventoryEntry.AWS:InstanceInformation.Entries.PlatformName
       description: The name of the operating system platform running on the managed node.
       type: String
-    - contextPath: AWS.SSM.InventoryEntry.Entries.PlatformType
+    - contextPath: AWS.SSM.InventoryEntry.AWS:InstanceInformation.Entries.PlatformType
       description: The operating system platform type.
       type: String
-    - contextPath: AWS.SSM.InventoryEntry.Entries.PlatformVersion
+    - contextPath: AWS.SSM.InventoryEntry.AWS:InstanceInformation.Entries.PlatformVersion
       description: The version of the OS platform running on the managed node.
       type: String
-    - contextPath: AWS.SSM.InventoryEntry.Entries.ResourceType
+    - contextPath: AWS.SSM.InventoryEntry.AWS:InstanceInformation.Entries.ResourceType
       description: The type of instance. Instances are either EC2 instances or managed instances.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:Application.Name
+      description: The name of the application.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:Application.ApplicationType
+      description: The type of application.
+      type: String  
+    - contextPath: AWS.SSM.InventoryEntry.AWS:Application.Publisher
+      description: The publisher of the application.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:Application.Version
+      description: The version of the application.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:Application.Release
+      description: The release version of the application.
+      type: String  
+    - contextPath: AWS.SSM.InventoryEntry.AWS:Application.Epoch
+      description: The epoch value of the application version.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:Application.InstalledTime
+      description: The time when the application was installed.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:Application.Architecture 
+      description: The architecture of the installed application.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:Application.URL
+      description: The URL of the application.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:Application.Summary
+      description: The summary information of the application.
+      type: String  
+    - contextPath: AWS.SSM.InventoryEntry.AWS:Application.PackageId
+      description: The package ID of the application.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:File.Name
+      description: The name of the file.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:File.Size
+      description: The size of the file in bytes.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:File.Description
+      description: The description of the file.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:File.FileVersion
+      description: The version of the file.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:File.InstalledDate
+      description: The date when the file was installed.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:File.ModificationTime
+      description: The date and time the file was last modified.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:File.LastAccessTime  
+      description: The date and time the file was last accessed.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:File.ProductName
+      description: The name of the product the file belongs to.
+      type: String  
+    - contextPath: AWS.SSM.InventoryEntry.AWS:File.InstalledDir
+      description: The directory where the file is installed.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:File.ProductLanguage
+      description: The language of the product the file belongs to.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:File.CompanyName
+      description: The name of the company that created the file.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:File.ProductVersion
+      description: The version of the product the file belongs to.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:Process.StartTime
+      description: The date and time the process started.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:Process.CommandLine
+      description: The full command line used to start the process.
+      type: String  
+    - contextPath: AWS.SSM.InventoryEntry.AWS:Process.User
+      description: The user account that ran the process.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:Process.FileName
+      description: The name of the executable file for the process.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:Process.FileVersion  
+      description: The version number of the executable file.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:Process.FileDescription
+      description: A description of the executable file.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:Process.FileSize
+      description: The size in bytes of the executable file.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:Process.CompanyName
+      description: The name of the company that released the process.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:Process.ProductName  
+      description: The name of the product the process belongs to.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:Process.ProductVersion
+      description: The version of the product the process belongs to.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:Process.InstalledDate
+      description: The date the process was installed.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:Process.InstalledDir
+      description: The directory where the process is installed.
+      type: String  
+    - contextPath: AWS.SSM.InventoryEntry.AWS:Process.UsageId
+      description: The usage ID for the process.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:AWSComponent.Name
+      description: The name of the AWS component.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:AWSComponent.ApplicationType
+      description: The application type of the AWS component.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:AWSComponent.Publisher
+      description: The publisher of the AWS component.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:AWSComponent.Version
+      description: The version of the AWS component.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:AWSComponent.InstalledTime
+      description: The time the AWS component was installed.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:AWSComponent.Architecture
+      description: The architecture of the AWS component.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:AWSComponent.URL
+      description: The URL for the AWS component.
+      type: String  
+    - contextPath: AWS.SSM.InventoryEntry.AWS:WindowsUpdate.HotFixId
+      description: The ID of the Windows hotfix.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:WindowsUpdate.Description
+      description: The description of the Windows hotfix.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:WindowsUpdate.InstalledTime 
+      description: The time the Windows hotfix was installed.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:WindowsUpdate.InstalledBy
+      description: Who installed the Windows hotfix.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:Network.Name
+      description: The name of the network interface.
+      type: String  
+    - contextPath: AWS.SSM.InventoryEntry.AWS:Network.SubnetMask
+      description: The subnet mask of the network interface.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:Network.Gateway
+      description: The gateway for the network interface.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:Network.DHCPServer
+      description: The DHCP server for the network interface.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:Network.DNSServer  
+      description: The DNS server for the network interface.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:Network.MacAddress
+      description: The MAC address of the network interface.
+      type: String  
+    - contextPath: AWS.SSM.InventoryEntry.AWS:Network.IPV4
+      description: The IPv4 address of the network interface.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:Network.IPV6
+      description: The IPv6 address of the network interface.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:PatchSummary.PatchGroup
+      description: The patch group for the patch summary.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:PatchSummary.BaselineId
+      description: The baseline ID for the patch summary.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:PatchSummary.SnapshotId
+      description: The snapshot ID for the patch summary.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:PatchSummary.OwnerInformation
+      description: The owner information for the patch summary.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:PatchSummary.InstalledCount
+      description: The number of patches installed for the patch summary.
+      type: String  
+    - contextPath: AWS.SSM.InventoryEntry.AWS:PatchSummary.InstalledPendingRebootCount
+      description: The number of patches installed pending reboot for the patch summary.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:PatchSummary.InstalledOtherCount
+      description: The number of other patches installed for the patch summary.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:PatchSummary.InstalledRejectedCount
+      description: The number of patches installed but rejected for the patch summary.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:PatchSummary.NotApplicableCount
+      description: The number of not applicable patches for the patch summary.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:PatchSummary.UnreportedNotApplicableCount
+      description: The number of unreported not applicable patches for the patch summary.
+      type: String  
+    - contextPath: AWS.SSM.InventoryEntry.AWS:PatchSummary.MissingCount
+      description: The number of missing patches for the patch summary.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:PatchSummary.FailedCount
+      description: The number of patches that failed for the patch summary.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:PatchSummary.OperationType
+      description: The type of operation for the patch summary.
+      type: String  
+    - contextPath: AWS.SSM.InventoryEntry.AWS:PatchSummary.OperationStartTime
+      description: The start time of the operation for the patch summary.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:PatchSummary.OperationEndTime
+      description: The end time of the operation for the patch summary.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:PatchSummary.InstallOverrideList
+      description: The override list for patch installation for the patch summary.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:PatchSummary.RebootOption
+      description: The reboot option for the patch summary.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:PatchSummary.LastNoRebootInstallOperationTime
+      description: The time of the last no-reboot patch installation operation for the patch summary.
+      type: String  
+    - contextPath: AWS.SSM.InventoryEntry.AWS:PatchSummary.ExecutionId
+      description: The execution ID for the patch summary.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:PatchSummary.NonCompliantSeverity
+      description: The severity level for non-compliant patches in the patch summary.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:PatchSummary.SecurityNonCompliantCount
+      description: The number of security patches that are non-compliant in the patch summary.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:PatchSummary.CriticalNonCompliantCount  
+      description: The number of critical patches that are non-compliant in the patch summary.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:PatchSummary.OtherNonCompliantCount
+      description: The number of other patches that are non-compliant in the patch summary.
+      type: String  
+    - contextPath: AWS.SSM.InventoryEntry.AWS:PatchCompliance.Title
+      description: The title of the patch compliance item.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:PatchCompliance.KBId
+      description: The KB ID for the patch compliance item.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:PatchCompliance.Classification
+      description: The classification for the patch compliance item.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:PatchCompliance.Severity
+      description: The severity level for the patch compliance item.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:PatchCompliance.State
+      description: The state of the patch compliance item.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:PatchCompliance.InstalledTime
+      description: The time the patch was installed for the patch compliance item.
+      type: String  
+    - contextPath: AWS.SSM.InventoryEntry.AWS:ComplianceItem.ComplianceType
+      description: The compliance type for the compliance item.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:ComplianceItem.ExecutionId
+      description: The execution ID for the compliance item.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:ComplianceItem.ExecutionType
+      description: The execution type for the compliance item.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:ComplianceItem.ExecutionTime
+      description: The execution time for the compliance item.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:ComplianceItem.Id
+      description: The ID for the compliance item.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:ComplianceItem.Title
+      description: The title of the compliance item.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:ComplianceItem.Status
+      description: The status of the compliance item.
+      type: String  
+    - contextPath: AWS.SSM.InventoryEntry.AWS:ComplianceItem.Severity
+      description: The severity of the compliance item.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:ComplianceItem.DocumentName
+      description: The name of the document for the compliance item.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:ComplianceItem.DocumentVersion
+      description: The version of the document for the compliance item.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:ComplianceItem.Classification
+      description: The classification of the compliance item.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:ComplianceItem.PatchBaselineId
+      description: The ID of the patch baseline for the compliance item.
+      type: String  
+    - contextPath: AWS.SSM.InventoryEntry.AWS:ComplianceItem.PatchSeverity
+      description: The severity of the patch for the compliance item.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:ComplianceItem.PatchState
+      description: The patch state for the compliance item.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:ComplianceItem.PatchGroup
+      description: The patch group for the compliance item.
+      type: String  
+    - contextPath: AWS.SSM.InventoryEntry.AWS:ComplianceItem.InstalledTime
+      description: The time the patch was installed for the compliance item.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:ComplianceItem.InstallOverrideList
+      description: The override list for installing the patch for the compliance item.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:ComplianceItem.DetailedText
+      description: Detailed text about the compliance item.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:ComplianceItem.DetailedLink
+      description: A detailed link related to the compliance item.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:ComplianceItem.CVEIds
+      description: CVE IDs associated with the compliance item.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:ComplianceSummary.ComplianceType
+      description: The type of compliance summary.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:ComplianceSummary.PatchGroup
+      description: The patch group for the compliance summary.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:ComplianceSummary.PatchBaselineId 
+      description: The ID of the patch baseline for the compliance summary.
+      type: String  
+    - contextPath: AWS.SSM.InventoryEntry.AWS:ComplianceSummary.Status
+      description: The compliance status for the compliance summary.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:ComplianceSummary.OverallSeverity
+      description: The overall severity level for the compliance summary.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:ComplianceSummary.ExecutionId
+      description: The execution ID for the compliance scan in the compliance summary.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:ComplianceSummary.ExecutionType
+      description: The execution type for the compliance scan in the compliance summary.
+      type: String  
+    - contextPath: AWS.SSM.InventoryEntry.AWS:ComplianceSummary.ExecutionTime
+      description: The time the compliance scan was executed for the compliance summary.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:ComplianceSummary.CompliantCriticalCount
+      description: The number of compliant critical severity findings in the compliance summary.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:ComplianceSummary.CompliantHighCount
+      description: The number of compliant findings with high severity in the compliance summary.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:ComplianceSummary.CompliantMediumCount
+      description: The number of compliant findings with medium severity in the compliance summary.
+      type: String  
+    - contextPath: AWS.SSM.InventoryEntry.AWS:ComplianceSummary.CompliantLowCount
+      description: The number of compliant findings with low severity in the compliance summary.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:ComplianceSummary.CompliantInformationalCount
+      description: The number of compliant findings with informational severity in the compliance summary.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:ComplianceSummary.CompliantUnspecifiedCount
+      description: The number of compliant findings with unspecified severity in the compliance summary.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:ComplianceSummary.NonCompliantCriticalCount
+      description: The number of non-compliant findings with critical severity in the compliance summary.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:ComplianceSummary.NonCompliantHighCount
+      description: The number of non-compliant findings with high severity in the compliance summary.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:ComplianceSummary.NonCompliantMediumCount
+      description: The number of non-compliant findings with medium severity in the compliance summary.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:ComplianceSummary.NonCompliantLowCount
+      description: The number of non-compliant findings with low severity in the compliance summary.
+      type: String  
+    - contextPath: AWS.SSM.InventoryEntry.AWS:ComplianceSummary.NonCompliantInformationalCount
+      description: The number of non-compliant findings with informational severity in the compliance summary.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:ComplianceSummary.NonCompliantUnspecifiedCount
+      description: The number of non-compliant findings with unspecified severity in the compliance summary.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:InstanceDetailedInformation.CPUModel
+      description: The model name of the CPU.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:InstanceDetailedInformation.CPUCores
+      description: The number of CPU cores.
+      type: String  
+    - contextPath: AWS.SSM.InventoryEntry.AWS:InstanceDetailedInformation.CPUs
+      description: The number of CPUs.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:InstanceDetailedInformation.CPUSpeedMHz
+      description: The clock speed of the CPU in MHz.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:InstanceDetailedInformation.CPUSockets
+      description: The number of CPU sockets.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:InstanceDetailedInformation.CPUHyperThreadEnabled
+      description: Whether hyperthreading is enabled on the CPU.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:InstanceDetailedInformation.OSServicePack
+      description: The service pack version of the operating system.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:Service.Name
+      description: The name of the service.
+      type: String  
+    - contextPath: AWS.SSM.InventoryEntry.AWS:Service.DisplayName
+      description: The display name of the service.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:Service.ServiceType
+      description: The type of the service.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:Service.Status
+      description: The status of the service.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:Service.DependentServices
+      description: List of services that this service depends on.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:Service.ServicesDependedOn
+      description: List of services that depend on this service.
+      type: String  
+    - contextPath: AWS.SSM.InventoryEntry.AWS:Service.StartType
+      description: The startup type of the service.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:WindowsRegistry.KeyPath
+      description: The path of the registry key.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:WindowsRegistry.ValueName 
+      description: The name of the registry value.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:WindowsRegistry.ValueType
+      description: The type of the registry value.
+      type: String 
+    - contextPath: AWS.SSM.InventoryEntry.AWS:WindowsRegistry.Value
+      description: The data contained in the registry value.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:WindowsRole.Name
+      description: The name of the Windows role.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:WindowsRole.DisplayName
+      description: The display name of the Windows role.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:WindowsRole.Path
+      description: The path of the Windows role.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:WindowsRole.FeatureType
+      description: The feature type of the Windows role.
+      type: String  
+    - contextPath: AWS.SSM.InventoryEntry.AWS:WindowsRole.DependsOn
+      description: List of Windows roles that this role depends on.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:WindowsRole.Description
+      description: Description of the Windows role.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:WindowsRole.Installed
+      description: Whether the Windows role is installed.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:WindowsRole.InstalledState
+      description: Install state of the Windows role.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:WindowsRole.SubFeatures
+      description: List of subfeatures for the Windows role.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:WindowsRole.ServerComponentDescriptor
+      description: Server component descriptor for the Windows role.
+      type: String  
+    - contextPath: AWS.SSM.InventoryEntry.AWS:WindowsRole.Parent
+      description: Parent Windows role.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:Tag.Key
+      description: The name of the tag.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:Tag.Value
+      description: The value of the tag.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:ResourceGroup.Name  
+      description: The name of the resource group.
+      type: String
+    - contextPath: AWS.SSM.InventoryEntry.AWS:ResourceGroup.Arn
+      description: The Amazon Resource Name (ARN) of the resource group.
+      type: String  
+    - contextPath: AWS.SSM.InventoryEntry.AWS:BillingInfo.BillingProductId
+      description: The ID of the billing product.
       type: String
   - arguments:
     - auto: PREDEFINED
@@ -746,6 +1305,20 @@ script:
       name: limit
     - description: The token for the next set of items to return. (Received this token from a previous call.)
       name: next_token
+    - auto: PREDEFINED
+      description: The type of the document. If not specified, the default is 'all'.
+      name: document_type
+      predefined:
+      - all
+      - ApplicationConfiguration
+      - ApplicationConfigurationSchema
+      - Automation
+      - ChangeCalendar
+      - Command
+      - Package
+      - Policy
+      - Session
+      defaultValue: all
     description: Returns all Systems Manager (SSM) documents in the current Amazon Web Services account and Amazon Web Services Region.
     name: aws-ssm-document-list
     outputs:

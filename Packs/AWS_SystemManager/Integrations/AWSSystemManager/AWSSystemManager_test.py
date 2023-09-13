@@ -16,7 +16,7 @@ from AWSSystemManager import (
     get_automation_execution_status,
     get_command_status,
     get_document_command,
-    get_inventory_command,
+    list_inventory_command,
     list_associations_command,
     list_automation_executions_command,
     list_commands_command,
@@ -391,14 +391,14 @@ def test_remove_tags_from_resource_command(mocker: MockerFixture) -> None:
     )
 
 
-def test_get_inventory_command(mocker: MockerFixture) -> None:
+def test_list_inventory_command(mocker: MockerFixture) -> None:
     """Given:
     ----
         mocker (MockerFixture): A mocker fixture for mocking external dependencies.
 
     When:
     ----
-        - The get_inventory_command function is called with the provided MockClient and
+        - The list_inventory_command function is called with the provided MockClient and
           an empty dictionary as arguments.
 
     Then:
@@ -417,7 +417,7 @@ def test_get_inventory_command(mocker: MockerFixture) -> None:
     """
     mock_response: dict = util_load_json("test_data/get_inventory_response.json")
     mocker.patch.object(MockClient, "get_inventory", return_value=mock_response)
-    res = get_inventory_command({}, MockClient())
+    res = list_inventory_command({}, MockClient())
 
     assert res[0].outputs == mock_response["Entities"]
     assert res[0].readable_output == (
@@ -432,13 +432,13 @@ def test_get_inventory_command(mocker: MockerFixture) -> None:
     )
 
 
-def test_get_inventory_command_with_next_token_response(mocker: MockerFixture) -> None:
+def test_list_inventory_command_with_next_token_response(mocker: MockerFixture) -> None:
     """Given:
         mocker (MockerFixture): A mocker fixture for mocking external dependencies.
         check `next_token_command_result` function for more details.
 
     When:
-        - The get_inventory_command function is called with the provided MockClient and
+        - The list_inventory_command function is called with the provided MockClient and
           an empty dictionary as arguments.
         - The mock response from 'get_inventory' is modified to include a "NextToken".
 
@@ -454,7 +454,7 @@ def test_get_inventory_command_with_next_token_response(mocker: MockerFixture) -
     mock_response: dict = util_load_json("test_data/get_inventory_response.json")
     mock_response["NextToken"] = "test_token"
     mocker.patch.object(MockClient, "get_inventory", return_value=mock_response)
-    response: list[CommandResults] = get_inventory_command({}, MockClient())
+    response: list[CommandResults] = list_inventory_command({}, MockClient())
 
     to_context = response[0].to_context()
     assert to_context.get("EntryContext") == {

@@ -467,7 +467,31 @@ def remove_tags_from_resource_command(
     )
 
 
-def get_inventory_command(
+def list_tags_for_resource_command(
+    args: dict[str, Any],
+    ssm_client: "SSMClient"
+):
+    # Get tags from resource
+    response = ssm_client.list_tags_for_resource(
+        ResourceType=args["resource_type"],
+        ResourceId=args["resource_id"]
+    )
+
+    tags = response["TagList"]
+
+    human_readable = tableToMarkdown(f"Tags for {args['resource_id']}", tags)
+    
+    command_results = CommandResults(
+        outputs_key_field="Key",
+        outputs_prefix="AWS.SSM.Tag",
+        outputs=tags,
+        readable_output=human_readable
+    )
+
+    return command_results
+
+
+def list_inventory_command(
     args: dict[str, Any],
     ssm_client: "SSMClient",
 ) -> list[CommandResults]:
@@ -498,11 +522,7 @@ def get_inventory_command(
         """
         parsed_entities = []
         for entity in entities:
-            entity_content = dict_safe_get(
-                entity,
-                ["AWS:InstanceInformation", "Content"],
-                [{}],
-            )
+            entity_content = entity.get("Content", {})
             parsed_entity = {"Id": entity.get("Id")}
             for content in entity_content:
                 parsed_entity.update(parsed_inventory(content))
@@ -511,8 +531,13 @@ def get_inventory_command(
 
     kwargs: "GetInventoryRequestRequestTypeDef" = {
         "MaxResults": arg_to_number(args.get("limit", 50)) or 50,
+        "Filters": [
+            {"Key": "AWS:InstanceInformation.InstanceStatus", "Values": ["active"]}
+        ]
     }
     kwargs = update_if_value(args, kwargs, {"next_token": "NextToken"})
+    if argToBoolean(args.get("include_inactive_instance")):
+        kwargs["Filters"][0]["Values"].extend(["stopped", "terminated", 'ConnectionLost'])
 
     response = ssm_client.get_inventory(**kwargs)
     command_results = []
@@ -525,6 +550,7 @@ def get_inventory_command(
     entities = response.get("Entities", [])
     # Extract the Data field from the object and add it to the main dictionary, Data contain a dict.
     for item in entities:
+        item["Data"].update(item["Data"].pop("AWS:InstanceInformation", None))
         item.update(item.pop("Data"))
 
     command_results.append(
@@ -565,9 +591,10 @@ def list_inventory_entry_command(
     ------
         DemistoException: If an invalid instance ID is provided.
     """
+    type_name = args["type_name"]
     kwargs = {
         "InstanceId": args["instance_id"],
-        "TypeName": args["type_name"],
+        "TypeName": f'AWS:{type_name}',
         "MaxResults": arg_to_number(args.get("limit", 50)) or 50,
     }
 
@@ -579,10 +606,11 @@ def list_inventory_entry_command(
 
     command_results = []
     if next_token := response.get("NextToken"):
+        response.pop("NextToken")
         command_results.append(
             next_token_command_result(next_token, "InventoryEntryNextToken"),
         )
-
+   
     command_results.append(
         CommandResults(
             outputs_prefix="AWS.SSM.InventoryEntry",
@@ -590,7 +618,7 @@ def list_inventory_entry_command(
             outputs_key_field="InstanceId",
             readable_output=tableToMarkdown(
                 name="AWS SSM Inventory Entry",
-                t=[parsed_inventory(entry) for entry in entries],
+                t=entries,
             ),
         ),
     )
@@ -816,6 +844,7 @@ def list_documents_command(
     args: dict[str, Any],
     ssm_client: "SSMClient",
 ) -> list[CommandResults]:
+
     """Lists the documents in AWS SSM using the provided SSM client and arguments.
 
     Args:
@@ -847,6 +876,9 @@ def list_documents_command(
     kwargs: "ListDocumentsRequestRequestTypeDef" = {
         "MaxResults": arg_to_number(args.get("limit", 50)) or 50,
     }
+    if (document_type := args.get("document_type")) and document_type != "all":
+        kwargs["DocumentFilterList"] = [{"key": "DocumentType", "value": document_type}]
+
     kwargs = update_if_value(args, kwargs, {"next_token": "NextToken"})
 
     response = ssm_client.list_documents(**kwargs)
@@ -1409,8 +1441,8 @@ def main():
     args = demisto.args()
     verify_certificate = not params.get("insecure", True)
 
-    aws_access_key_id = params["credentials"]["identifier"]
-    aws_secret_access_key = params["credentials"]["password"]
+    aws_access_key_id = dict_safe_get(params, ["credentials", "identifier"])
+    aws_secret_access_key = dict_safe_get(params, ["credentials", "password"])
     aws_default_region = params["defaultRegion"]
     aws_role_arn = params.get("roleArn")
     aws_role_session_name = params.get("roleSessionName")
@@ -1455,8 +1487,10 @@ def main():
                 results = add_tags_to_resource_command(args, ssm_client)
             case "aws-ssm-tag-remove":
                 results = remove_tags_from_resource_command(args, ssm_client)
-            case "aws-ssm-inventory-get":
-                results = get_inventory_command(args, ssm_client)
+            case "aws-ssm-tag-list":
+                results = list_tags_for_resource_command(args, ssm_client)
+            case "aws-ssm-inventory-list":
+                results = list_inventory_command(args, ssm_client)
             case "aws-ssm-inventory-entry-list":
                 results = list_inventory_entry_command(args, ssm_client)
             case "aws-ssm-association-list":
