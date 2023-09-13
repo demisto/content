@@ -1019,7 +1019,7 @@ def get_incident_name(incident: dict) -> str:
     """
     Gets the incident name.
     Args:
-        incident (dict): FortiSIEM client.
+        incident (dict): FortiSIEM incident.
     Returns:
        str: The incident name.
     """
