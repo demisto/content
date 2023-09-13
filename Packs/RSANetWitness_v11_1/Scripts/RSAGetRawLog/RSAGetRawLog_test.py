@@ -44,7 +44,7 @@ def test_get_metas_log(mocker):
                         "metasevents": []
                     }
             },
-            "No alert/event found in this incident."
+            "No alert/event was found in this incident."
         ),
         (
             {
@@ -55,7 +55,7 @@ def test_get_metas_log(mocker):
                         "metasevents": []
                     }
             },
-            "Nothing as changed !"
+            "Nothing has changed !"
         ),
         (
             {
