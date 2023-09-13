@@ -29,8 +29,8 @@ def display_metas() -> dict:
     if (
         not isinstance(incident, dict)
         or 'CustomFields' not in incident
-        or 'metasevents' not in incident['CustomFields']
-        or not len(incident['CustomFields']['metasevents'])
+        or 'rsametasevents' not in incident['CustomFields']
+        or not len(incident['CustomFields']['rsametasevents'])
     ):
         return {
             'Type': entryTypes['note'],
@@ -38,8 +38,8 @@ def display_metas() -> dict:
             'Contents': 'No event available for this incident.'
         }
 
-    metasevents = incident.get('CustomFields', {}).get('metasevents', [])[0]
-    markdown = tableToMarkdown('', metasevents, headers=metasevents.keys(), headerTransform=CamelCaseToDotCase)
+    rsametasevents = incident.get('CustomFields', {}).get('rsametasevents', [])[0]
+    markdown = tableToMarkdown('', rsametasevents, headers=rsametasevents.keys(), headerTransform=CamelCaseToDotCase)
     return {'Type': entryTypes['note'], 'ContentsFormat': formats['markdown'], 'Contents': markdown}
 
 

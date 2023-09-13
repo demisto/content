@@ -41,7 +41,7 @@ def test_get_metas_log(mocker):
                     {
                         "rsaalerts": [],
                         "rsarawlogslist": [],
-                        "metasevents": []
+                        "rsametasevents": []
                     }
             },
             "No alert/event was found in this incident."
@@ -52,7 +52,7 @@ def test_get_metas_log(mocker):
                     {
                         "rsaalerts": [{"id": 1}, {"id": 2}, {"id": 3}],
                         "rsarawlogslist": [{"id": 1}, {"id": 2}, {"id": 3}],
-                        "metasevents": []
+                        "rsametasevents": []
                     }
             },
             "Nothing has changed !"
@@ -69,7 +69,7 @@ def test_get_metas_log(mocker):
                                 "events": [{"eventSource": "1.2.3.4:56005", "eventSourceId": "157970808811"}]
                             }],
                         "rsarawlogslist": [{"id": 2}, {"id": 3}],
-                        "metasevents": []
+                        "rsametasevents": []
                     }
             },
             "1 raw log inserts !"

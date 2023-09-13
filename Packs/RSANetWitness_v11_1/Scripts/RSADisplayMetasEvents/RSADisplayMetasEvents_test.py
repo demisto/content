@@ -9,7 +9,7 @@ def test_CamelCaseToDotCase():
 @pytest.mark.parametrize(
     "alerts_incident, expected_results",
     [
-        ({"CustomFields": {"metasevents": [{"ip": "ip", "host": "host"}]}},
+        ({"CustomFields": {"rsametasevents": [{"ip": "ip", "host": "host"}]}},
          {'Contents': '|ip|host|\n|---|---|\n| ip | host |\n', 'ContentsFormat': 'markdown', 'Type': 1}),
     ],
 )

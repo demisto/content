@@ -1,7 +1,7 @@
 {
     "associatedToAll": true,
     "caseInsensitive": true,
-    "cliName": "metasevents",
+    "cliName": "rsametasevents",
     "closeForm": false,
     "columns": [
         {
@@ -23,10 +23,10 @@
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_metasevents",
+    "id": "incident_rsametasevents",
     "isReadOnly": true,
     "locked": false,
-    "name": "Metas Events",
+    "name": "RSA Metas Events",
     "neverSetAsRequired": false,
     "openEnded": false,
     "ownerOnly": false,

@@ -90,7 +90,7 @@ def main():
     rsa_alerts = inc.get("CustomFields", {}).get("rsaalerts", [])
     rsa_rawlogs = inc.get("CustomFields", {}).get("rsarawlogslist", [])
     rsa_nb_meta = 1
-    rsa_metas = inc.get("CustomFields", {}).get("metasevents", [])
+    rsa_metas = inc.get("CustomFields", {}).get("rsametasevents", [])
     # check in case we forgot to set XSOAR parameter right
     if not rsa_alerts:
         return_results(CommandResults(readable_output="No alert/event was found in this incident."))
@@ -146,7 +146,7 @@ def main():
             except ValueError as e:
                 return_results(f"Warning: {e}")
 
-    demisto.executeCommand("setIncident", {'customFields': {"rsarawlogslist": rsa_rawlogs, "metasevents": rsa_metas}})
+    demisto.executeCommand("setIncident", {'customFields': {"rsarawlogslist": rsa_rawlogs, "rsametasevents": rsa_metas}})
     return_results(CommandResults(readable_output=f"{change} raw log inserts !"))
 
 
