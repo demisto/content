@@ -198,10 +198,6 @@
         "type": "string",
         "is_array": false
       },
-      "cs1": {
-        "type": "string",
-        "is_array": false
-      },
       "spriv": {
         "type": "string",
         "is_array": false
