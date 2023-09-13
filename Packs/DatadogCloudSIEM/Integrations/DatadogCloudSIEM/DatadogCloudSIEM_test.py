@@ -11,10 +11,8 @@ you are implementing with your integration
 """
 
 import json
-import io
 import os
 import pytest
-from typing import Optional
 from unittest.mock import MagicMock
 from CommonServerPython import CommandResults, DemistoException
 from DatadogCloudSIEM import (
@@ -55,13 +53,20 @@ from datadog_api_client.v1.model.metric_search_response_results import (
     MetricSearchResponseResults,
 )
 from datadog_api_client.v1.model.metric_metadata import MetricMetadata
-from test_data.inputs import *
+from test_data.inputs import TIME_SERIES_POINT_QUERY_RESPONSE, TIME_SERIES_POINT_QUERY_CONTEXT, CREATE_INCIDENT_RESPONSE, \
+    CREATE_INCIDENT_CONTEXT, UPDATE_INCIDENT_RESPONSE, UPDATE_INCIDENT_CONTEXT, GET_INCIDENT_RESPONSE, GET_INCIDENT_CONTEXT, \
+    INCIDENT_LOOKUP_DATA, INCIDENT_LOOKUP_DATA_EXPECTED, METRIC_COMMAND_RESULT_INPUT, METRIC_COMMAND_RESULT_OUTPUT,  \
+    TAGS_CONTEXT_READABLE_OUTPUT, LIST_INCIDENT_RESPONSE, LIST_INCIDENT_CONTEXT, EVENT_CREATE_RESPONSE, TAGS_LIST_CONTEXT, \
+    EVENT_CREATE_CONTEXT, EVENT_LIST_RESPONSE, EVENT_LIST_CONTEXT, EVENT_GET_RESPONSE, EVENT_GET_CONTEXT, \
+    HOST_TAG_CREATE_CONTEXT, HOST_TAG_GET_CONTEXT, HOST_TAG_UPDATE_CONTEXT, ACTIVE_METRIC_LIST_RESPONSE, \
+    ACTIVE_METRIC_LIST_CONTEXT, METRIC_SEARCH_RESPONSE, METRIC_SEARCH_CONTEXT, METRIC_METADATA_GET_RESPONSE, \
+    METRIC_METADATA_GET_CONTEXT, METRIC_METADATA_UPDATE_RESPONSE, METRIC_METADATA_UPDATE_CONTEXT, EVENT_MOCK, EXPECTED_EVENT_MOCK
 import datetime
 import demistomock as demisto
 
 
 def util_load_json(path):
-    with io.open(path, mode="r", encoding="utf-8") as f:
+    with open(path, encoding="utf-8") as f:
         return json.loads(f.read())
 
 
@@ -146,7 +151,6 @@ def test_create_event_command(mocker, raw_resp, expected, configuration):
     mocker.patch("DatadogCloudSIEM.EventsApi", return_value=DATADOG_API_CLIENT_MOCK)
     with open(
         os.path.join("test_data", "readable_outputs/create_event_command_readable.md"),
-        "r",
     ) as f:
         readable_output = f.read()
     result = create_event_command(configuration, args)
@@ -186,7 +190,6 @@ def test_list_events_command(mocker, raw_resp, expected, configuration):
     result = get_events_command(configuration, args)
     with open(
         os.path.join("test_data", "readable_outputs/list_events_command_readable.md"),
-        "r",
     ) as f:
         readable_output = f.read()
     assert isinstance(result, CommandResults)
@@ -218,7 +221,6 @@ def test_get_events_command(mocker, raw_resp, expected, configuration):
     result = get_events_command(configuration, args)
     with open(
         os.path.join("test_data", "readable_outputs/get_events_command_readable.md"),
-        "r",
     ) as f:
         readable_output = f.read()
     assert isinstance(result, CommandResults)
@@ -255,7 +257,6 @@ def test_add_tags_to_host_command(mocker, raw_resp, expected, configuration):
         os.path.join(
             "test_data", "readable_outputs/add_tags_to_host_command_readable.md"
         ),
-        "r",
     ) as f:
         readable_output = f.read()
     assert isinstance(result, CommandResults)
@@ -287,7 +288,6 @@ def test_get_host_tags_command(mocker, raw_resp, expected, configuration):
     result = get_host_tags_command(configuration, args)
     with open(
         os.path.join("test_data", "readable_outputs/get_host_tags_command_readable.md"),
-        "r",
     ) as f:
         readable_output = f.read()
     assert isinstance(result, CommandResults)
@@ -324,7 +324,6 @@ def test_update_host_tags_command(mocker, raw_resp, expected, configuration):
         os.path.join(
             "test_data", "readable_outputs/update_host_tags_command_readable.md"
         ),
-        "r",
     ) as f:
         readable_output = f.read()
     assert isinstance(result, CommandResults)
@@ -360,7 +359,6 @@ def test_active_metrics_list_command(mocker, raw_resp, expected, configuration):
         os.path.join(
             "test_data", "readable_outputs/active_metrics_list_command_readable.md"
         ),
-        "r",
     ) as f:
         readable_output = f.read()
     assert isinstance(result, CommandResults)
@@ -397,7 +395,6 @@ def test_metrics_search_command(mocker, raw_resp, expected, configuration):
         os.path.join(
             "test_data", "readable_outputs/metrics_search_command_readable.md"
         ),
-        "r",
     ) as f:
         readable_output = f.read()
     assert isinstance(result, CommandResults)
@@ -432,7 +429,6 @@ def test_get_metric_metadata_command(mocker, raw_resp, expected, configuration):
         os.path.join(
             "test_data", "readable_outputs/get_metric_metadata_command_readable.md"
         ),
-        "r",
     ) as f:
         readable_output = f.read()
     assert isinstance(result, CommandResults)
@@ -475,7 +471,6 @@ def test_update_metric_metadata_command(mocker, raw_resp, expected, configuratio
         os.path.join(
             "test_data", "readable_outputs/update_metric_metadata_command_readable.md"
         ),
-        "r",
     ) as f:
         readable_output = f.read()
     assert isinstance(result, CommandResults)
@@ -510,7 +505,7 @@ def test_get_tags_command(mocker, raw_resp, expected, configuration):
     mocker.patch("DatadogCloudSIEM.TagsApi", return_value=DATADOG_API_CLIENT_MOCK)
     result = get_tags_command(configuration, args)
     with open(
-        os.path.join("test_data", "readable_outputs/get_tags_command_readable.md"), "r"
+        os.path.join("test_data", "readable_outputs/get_tags_command_readable.md")
     ) as f:
         readable_output = f.read()
     assert isinstance(result, CommandResults)
@@ -545,7 +540,6 @@ def test_query_timeseries_points_command(mocker, raw_resp, expected, configurati
         os.path.join(
             "test_data", "readable_outputs/query_timeseries_points_command_readable.md"
         ),
-        "r",
     ) as f:
         readable_output = f.read()
     assert isinstance(result[0], CommandResults)
@@ -641,7 +635,6 @@ def test_create_incident_command(mocker, raw_resp, expected, configuration):
         os.path.join(
             "test_data", "readable_outputs/create_incident_command_readable.md"
         ),
-        "r",
     ) as f:
         readable_output = f.read()
     assert isinstance(result, CommandResults)
@@ -689,7 +682,6 @@ def test_update_incident_command(mocker, raw_resp, expected, configuration):
         os.path.join(
             "test_data", "readable_outputs/update_incident_command_readable.md"
         ),
-        "r",
     ) as f:
         readable_output = f.read()
     assert isinstance(result, CommandResults)
@@ -721,7 +713,6 @@ def test_get_incident_command(mocker, raw_resp, expected, configuration):
     result = get_incident_command(configuration, args)
     with open(
         os.path.join("test_data", "readable_outputs/get_incident_command_readable.md"),
-        "r",
     ) as f:
         readable_output = f.read()
     assert isinstance(result, CommandResults)
@@ -753,7 +744,6 @@ def test_list_incident_command(mocker, raw_resp, expected, configuration):
     result = get_incident_command(configuration, args)
     with open(
         os.path.join("test_data", "readable_outputs/list_incident_command_readable.md"),
-        "r",
     ) as f:
         readable_output = f.read()
     assert isinstance(result, CommandResults)
@@ -959,7 +949,7 @@ def test_incident_for_lookup(raw, expected):
     ],
 )
 def test_pagination(
-    limit: Optional[int], page: Optional[int], page_size: Optional[int], expected
+    limit: int | None, page: int | None, page_size: int | None, expected
 ):
     """
     Test function for the pagination function in DatadogCloudSIEM.

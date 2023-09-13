@@ -20,6 +20,7 @@ stages:
 
 
 variables:
+  ARTIFACTORY_ENABLED: "true"
   PIP_DISABLE_PIP_VERSION_CHECK: "1"
   DONT_CACHE_LAST_RESPONSE: "true"
   GCS_MARKET_BUCKET: "marketplace-dist"
