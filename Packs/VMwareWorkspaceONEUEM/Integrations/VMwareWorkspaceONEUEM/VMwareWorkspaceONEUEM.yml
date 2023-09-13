@@ -367,7 +367,7 @@ script:
       description: The enrolled user UUID.
       type: String
     - contextPath: VMwareWorkspaceONEUEM.Device.ManagedBy
-      description: The device is managed by. = ['0', '1', '2', '3', '4', '5', '6', '998', '999']
+      description: The device is managed by. = ['0', '1', '2', '3', '4', '5', '6', '998', '999'].
       type: Number
     - contextPath: VMwareWorkspaceONEUEM.Device.WifiSsid
       description: The Wifi SSID, if available.
