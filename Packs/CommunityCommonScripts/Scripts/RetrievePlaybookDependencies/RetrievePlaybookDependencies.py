@@ -72,7 +72,7 @@ def get_subplaybook_tasks(playbooks, integrations, script_ids, commands, lists, 
     # recursively go through all subplaybook tasks and append to playbooks and integrations
     try:
         subplaybook_json = perform_rest_call('get', f"playbook/{task['task']['playbookId']}")
-    except:
+    except Exception:
         raise Exception(f"Playbook {task['task']['name']} not found")
     playbooks, integrations, script_ids, commands = append_to_playbooks_and_integrations(
         playbooks, integrations, script_ids, commands, subplaybook_json)
