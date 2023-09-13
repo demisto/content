@@ -1113,7 +1113,7 @@ script:
       name: sample_id
       required: true
   - deprecated: true
-  - description: Retrieves a sample using the sample ID. (Deprecated).
+    description: Retrieves a sample using the sample ID. (Deprecated).
     name: upload_sample
   - name: vmray-get-license-usage-verdicts
     description: Get the used quota of verdicts.
