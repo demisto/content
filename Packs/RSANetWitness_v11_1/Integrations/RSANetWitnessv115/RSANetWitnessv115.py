@@ -1177,6 +1177,11 @@ def get_now_time() -> str | None:
 
 
 def get_mapping_fields_command() -> GetMappingFieldsResponse:
+    """
+    This command pulls the remote schema for the different incident types, and their associated incident fields,
+    from the remote system.
+    Returns: A list of keys you want to map
+    """
     mapping_response = GetMappingFieldsResponse()
     incident_type_scheme = SchemeTypeMapping(type_name='RSA Netwitness incident')
 
