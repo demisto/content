@@ -1,5 +1,5 @@
 args:
-- description: Name of Playbook
+- description: Name of Playbook.
   name: playbook_name
   required: true
 - auto: PREDEFINED
