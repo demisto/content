@@ -13,7 +13,7 @@ description: |-
   * Sophos
   * Forcepoint
   * Checkpoint
-  * Netcraft
+  * Netcraft.
 starttaskid: "0"
 tasks:
   "0":
@@ -29,13 +29,13 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "36"
+      - "8"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 377.5,
-          "y": -470
+          "x": 367.5,
+          "y": -390
         }
       }
     note: false
@@ -128,23 +128,24 @@ tasks:
       '#default#':
       - "25"
       "yes":
-      - "5"
+      - "36"
     separatecontext: false
     conditions:
     - label: "yes"
       condition:
-      - - operator: isExists
+      - - operator: isNotEmpty
           left:
             value:
-              simple: Blocklist.URL
+              complex:
+                root: inputs.URL
             iscontext: true
           right:
             value: {}
     view: |-
       {
         "position": {
-          "x": 377.5,
-          "y": 195
+          "x": 367.5,
+          "y": -250
         }
       }
     note: false
@@ -237,7 +238,8 @@ tasks:
     scriptarguments:
       url:
         complex:
-          root: inputs.URL
+          root: Blocklist
+          accessor: URL
     separatecontext: false
     view: |-
       {
@@ -554,6 +556,23 @@ tasks:
     nexttasks:
       '#none#':
       - "2"
+    scriptarguments:
+      URL:
+        complex:
+          root: Blocklist
+          accessor: URL
+      URL_application_site_category:
+        simple: Suspicious
+      application_site_name:
+        simple: Bad_URLs
+      block_URL_error_handling:
+        simple: Stop
+      checkpoint_error_handling:
+        simple: Stop
+      install_policy:
+        simple: "True"
+      policy_package:
+        simple: Standard
     separatecontext: true
     loop:
       iscommand: false
@@ -591,6 +610,13 @@ tasks:
     nexttasks:
       '#none#':
       - "2"
+    scriptarguments:
+      URLBlockList:
+        simple: Blocked URLs for Default Policy
+      url:
+        complex:
+          root: Blocklist
+          accessor: URL
     separatecontext: true
     loop:
       iscommand: false
@@ -631,8 +657,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2080,
-          "y": 945
+          "x": 2050,
+          "y": 570
         }
       }
     note: false
@@ -805,8 +831,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 590,
-          "y": -160
+          "x": 580,
+          "y": 80
         }
       }
     note: false
@@ -874,7 +900,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "8"
+      - "5"
     scriptarguments:
       append:
         simple: "true"
@@ -886,8 +912,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 590,
-          "y": 10
+          "x": 580,
+          "y": 250
         }
       }
     note: false
@@ -985,8 +1011,13 @@ tasks:
       '#none#':
       - "2"
     scriptarguments:
+      categoryName:
+        complex:
+          root: inputs.CustomURLCategory
       urls:
-        simple: ${Blocklist.URL}
+        complex:
+          root: Blocklist
+          accessor: URL
     separatecontext: false
     view: |-
       {
@@ -1037,8 +1068,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 377.5,
-          "y": -330
+          "x": 367.5,
+          "y": -90
         }
       }
     note: false
@@ -1064,7 +1095,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "8"
+      - "5"
     scriptarguments:
       key:
         simple: Blocklist.URL
@@ -1075,8 +1106,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 170,
-          "y": -160
+          "x": 160,
+          "y": 80
         }
       }
     note: false
@@ -1103,6 +1134,7 @@ tasks:
       '#none#':
       - "40"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1117,7 +1149,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "40":
     id: "40"
     taskid: 35fcf7d9-19c6-48fe-831d-0b78cbf96323
@@ -1142,6 +1173,7 @@ tasks:
     results:
     - brandInstances
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1156,7 +1188,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "41":
     id: "41"
     taskid: 0e06c863-2829-4749-8d1a-6daeb34d89c6
@@ -1164,7 +1195,7 @@ tasks:
     task:
       id: 0e06c863-2829-4749-8d1a-6daeb34d89c6
       version: -1
-      name: Block URL with Netcraft
+      name: Block URL with Netcraft(Deprecated)
       description: Reports an attack to Netcraft.
       script: Netcraft|||netcraft-report-attack
       type: regular
@@ -1181,6 +1212,7 @@ tasks:
       comment:
         simple: Malicious - Added by Netcraft Integration
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1195,31 +1227,23 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "42":
-    continueonerrortype: ""
     id: "42"
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
+    taskid: f840dbdd-478b-445f-8f0b-a5527a54467b
+    type: title
+    task:
+      id: f840dbdd-478b-445f-8f0b-a5527a54467b
+      version: -1
+      name: Prisma SASE
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "43"
-    note: false
-    quietmode: 0
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: f840dbdd-478b-445f-8f0b-a5527a54467b
-      iscommand: false
-      name: Prisma SASE
-      type: title
-      version: -1
-      description: ''
-    taskid: f840dbdd-478b-445f-8f0b-a5527a54467b
-    timertriggers: []
-    type: title
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1227,38 +1251,38 @@ tasks:
           "y": 570
         }
       }
-  "43":
-    continueonerrortype: ""
-    id: "43"
+    note: false
+    timertriggers: []
     ignoreworker: false
-    isautoswitchedtoquietmode: false
+    skipunavailable: false
+    quietmode: 0
     isoversize: false
+    isautoswitchedtoquietmode: false
+  "43":
+    id: "43"
+    taskid: e5de9af1-33df-4064-82d9-b5b87f472d7f
+    type: condition
+    task:
+      id: e5de9af1-33df-4064-82d9-b5b87f472d7f
+      version: -1
+      name: Is Prisma SASE Enabled?
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
     nexttasks:
       '#default#':
       - "2"
       "yes":
       - "44"
-    note: false
-    quietmode: 0
-    results:
-    - brandInstances
     scriptarguments:
       brandname:
         simple: Palo Alto Networks - Prisma SASE
+    results:
+    - brandInstances
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
-      id: e5de9af1-33df-4064-82d9-b5b87f472d7f
-      iscommand: false
-      name: Is Prisma SASE Enabled?
-      scriptName: IsIntegrationAvailable
-      type: condition
-      version: -1
-    taskid: e5de9af1-33df-4064-82d9-b5b87f472d7f
-    timertriggers: []
-    type: condition
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1266,22 +1290,32 @@ tasks:
           "y": 700
         }
       }
-  "44":
-    continueonerrortype: ""
-    id: "44"
+    note: false
+    timertriggers: []
     ignoreworker: false
-    isautoswitchedtoquietmode: false
+    skipunavailable: false
+    quietmode: 0
     isoversize: false
-    loop:
-      exitCondition: ""
+    isautoswitchedtoquietmode: false
+  "44":
+    id: "44"
+    taskid: 7fa52bc1-010b-4de9-87e4-dbc537abd12b
+    type: playbook
+    task:
+      id: 7fa52bc1-010b-4de9-87e4-dbc537abd12b
+      version: -1
+      name: Prisma SASE - Block URL
+      description: |-
+        The playbook will handle the operation of blocking a URL within the organization.
+        If a category is provided, the URL will be added to the list.
+        If not, a new URL category will be created, and a new security rule that blocks that category.
+      playbookName: Prisma SASE - Block URL
+      type: playbook
       iscommand: false
-      max: 100
-      wait: 1
+      brand: ""
     nexttasks:
       '#none#':
       - "2"
-    note: false
-    quietmode: 0
     scriptarguments:
       AutoCommit:
         complex:
@@ -1296,27 +1330,17 @@ tasks:
           - operator: uniq
       URL:
         complex:
-          accessor: URL
           root: Blocklist
+          accessor: URL
           transformers:
           - operator: uniq
     separatecontext: true
-    skipunavailable: true
-    task:
-      brand: ""
-      description: |-
-        The playbook will handle the operation of blocking a URL within the organization.
-        If a category is provided, the URL will be added to the list.
-        If not, a new URL category will be created, and a new security rule that blocks that category.
-      id: 7fa52bc1-010b-4de9-87e4-dbc537abd12b
+    continueonerrortype: ""
+    loop:
       iscommand: false
-      name: Prisma SASE - Block URL
-      playbookId: Prisma SASE - Block URL
-      type: playbook
-      version: -1
-    taskid: 7fa52bc1-010b-4de9-87e4-dbc537abd12b
-    timertriggers: []
-    type: playbook
+      exitCondition: ""
+      wait: 1
+      max: 100
     view: |-
       {
         "position": {
@@ -1324,6 +1348,14 @@ tasks:
           "y": 915
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {
@@ -1332,14 +1364,14 @@ view: |-
       "20_2_#default#": 0.1,
       "21_2_#default#": 0.18,
       "27_2_#default#": 0.1,
-      "8_25_#default#": 0.1
+      "8_25_#default#": 0.18
     },
     "paper": {
       "dimensions": {
-        "height": 1625,
-        "width": 4070,
+        "height": 1545,
+        "width": 4040,
         "x": -1610,
-        "y": -470
+        "y": -390
       }
     }
   }
@@ -1390,8 +1422,7 @@ inputs:
 - key: EDLServerIP
   value: {}
   required: false
-  description: |-
-    EDL Server IP Address
+  description: EDL Server IP Address
   playbookInputQuery:
 - key: device-group
   value: {}
@@ -1411,9 +1442,8 @@ inputs:
     For prisma SASE usage - Specify the scope for a newly created security rule to be applied.
     Remember, this input will only be used when there is no input to the CategoryName.
     Default: Shared
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs: []
 tests:
 - Send Investigation Summary Reports - Test
 fromversion: 6.5.0
-system: true
