@@ -21,6 +21,10 @@ configuration:
     name: proxy
     type: 8
     required: false
+  - display: Fetch incidents
+    name: isFetch
+    required: false
+    type: 8
   - additionalinfo: Maximum number of incidents per fetch. The maximum is 200.
     defaultvalue: 50
     display: Maximum incidents to fetch.
@@ -36,10 +40,6 @@ configuration:
   - display: Incident type
     name: incidentType
     type: 13
-    required: false
-  - display: Fetch incidents
-    name: isFetch
-    type: 8
     required: false
 description: Abnormal Security detects the whole spectrum of email attacks, from vendor email compromise and spear-phishing to unwanted email spam and graymail. To stop these advanced attacks, Abnormal leverages the industry’s most advanced behavioral data science to baseline known good behavior and detects anomalies.
 display: Abnormal Security
@@ -704,6 +704,7 @@ script:
       name: abnormal-security-get-latest-threat-intel-feed
       deprecated: true
   dockerimage: demisto/python3:3.10.13.73190
+  isfetch: true
   script: ""
   subtype: python3
   type: python

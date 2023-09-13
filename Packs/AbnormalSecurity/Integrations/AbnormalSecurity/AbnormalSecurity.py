@@ -29,7 +29,7 @@ ISO_8601_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 
 class Client(BaseClient):
     def __init__(self, server_url, verify, proxy, headers, auth):
-        super().__init__(base_url=server_url, verify=verify, proxy=proxy, headers=headers, auth=auth, timeout=600)
+        super().__init__(base_url=server_url, verify=verify, proxy=proxy, headers=headers, auth=auth, timeout=2400)
 
     def check_the_status_of_an_action_requested_on_a_case_request(self, case_id, action_id, subtenant):
         params = assign_params(subtenant)
@@ -838,20 +838,20 @@ def get_a_list_of_unanalyzed_abuse_mailbox_campaigns_command(client, args):
 def generate_threat_incidents(threats, current_iso_format_time):
     incidents = []
     for threat in threats:
-        incident = {"name": threat["threatId"], "occurred": current_iso_format_time, 'details': "Threat"}
+        incident = {"dbotMirrorId": str(threat["threatId"]),"name":"Threat", "occurred": current_iso_format_time, 'details': "Threat"}
         incidents.append(incident)
     return incidents
 
 def generate_abuse_campaign_incidents(campaigns, current_iso_format_time):
     incidents = []
     for campaign in campaigns:
-        incident = {"name": campaign["campaignId"], "occurred": current_iso_format_time, 'details': "Abuse Campaign"}
+        incident = {"dbotMirrorId": str(campaign["campaignId"]),"name":"Abuse Campaign", "occurred": current_iso_format_time, 'details': "Abuse Campaign"}
         incidents.append(incident)
     return incidents
 def generate_account_takeover_cases_incidents(cases, current_iso_format_time):
     incidents = []
     for case in cases:
-        incident = {"name": case["caseId"], "occurred": current_iso_format_time, 'details': case['description']}
+        incident = {"dbotMirrorId": str(case["caseId"]),"name":"Account Takeover Case", "occurred": current_iso_format_time, 'details': case['description']}
         incidents.append(incident)
     return incidents
 
@@ -877,6 +877,7 @@ def fetch_incidents(
     last_fetch = last_run.get("last_fetch", first_fetch_time)
     last_fetch_datetime = datetime.fromisoformat(last_fetch[:-1]).astimezone(timezone.utc)
     last_fetch = last_fetch_datetime.strftime("%Y-%m-%dT%H:%M:%SZ")
+    last_fetch = "2023-07-16T01:01:01Z"
 
     current_datetime = datetime.utcnow().astimezone(timezone.utc)
     current_iso_format_time = current_datetime.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
@@ -912,14 +913,11 @@ def fetch_incidents(
 
     all_incidents = threat_incidents + abuse_campaigns_incidents + account_takeover_cases_incidents
 
-    logging.debug(f"willy log - all incidents {all_incidents}")
-
-
     next_run = {
         "last_fetch": current_iso_format_time
     }
 
-    return next_run, all_incidents
+    return next_run, all_incidents[:max_incidents_to_fetch]
 
 
 def test_module(client):
@@ -934,6 +932,7 @@ def main():
     url = params.get('url')
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
+    is_fetch = params.get('isFetch')
     headers = {}
     mock_data = str(args.get('mock-data', ''))
     if mock_data.lower() == "true":
@@ -1013,10 +1012,9 @@ def main():
             headers['Mock-Data'] = "True"
             test_client = Client(urljoin(url, ''), verify_certificate, proxy, headers=headers, auth=None)
             test_module(test_client)
-        elif command == 'fetch-incidents':
+        elif command == 'fetch-incidents' and is_fetch:
             max_incidents_to_fetch = arg_to_number(params.get("max_fetch", FETCH_LIMIT))
             first_fetch_datetime = arg_to_datetime(arg=params["first_fetch"], arg_name="First fetch time", required=True)
-            logging.debug(f"Willy log - the first fetch time is {first_fetch_datetime}")
             first_fetch_time = first_fetch_datetime.strftime(ISO_8601_FORMAT)
             next_run, incidents = fetch_incidents(
                 client=client,
