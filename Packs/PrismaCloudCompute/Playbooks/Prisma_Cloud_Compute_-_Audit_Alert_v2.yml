@@ -3,7 +3,7 @@ fromversion: 6.0.0
 contentitemexportablefields:
   contentitemfields: {}
 name: Prisma Cloud Compute - Audit Alert v2
-description: Default playbook for parsing Prisma Cloud Compute audit alerts.
+description: Default playbook for parsing and enrichment of Prisma Cloud Compute audit alerts.
 starttaskid: "0"
 tasks:
   "0":
@@ -76,10 +76,10 @@ tasks:
     continueonerrortype: ""
   "2":
     id: "2"
-    taskid: e6f58ee6-ef95-4ab3-8373-931e3c2df555
+    taskid: 4b4f6d7c-e750-40d6-8fac-62fe9ef5c71d
     type: regular
     task:
-      id: e6f58ee6-ef95-4ab3-8373-931e3c2df555
+      id: 4b4f6d7c-e750-40d6-8fac-62fe9ef5c71d
       version: -1
       name: Pull Images Details
       description: Returns images by the query specification.
@@ -92,7 +92,9 @@ tasks:
       - "41"
     scriptarguments:
       name:
-        simple: ${PrismaCloudCompute.AuditAlert.image}
+        complex:
+          root: PrismaCloudCompute.AuditAlert
+          accessor: image
     separatecontext: false
     view: |-
       {
@@ -111,10 +113,10 @@ tasks:
     continueonerrortype: ""
   "3":
     id: "3"
-    taskid: 212916c8-66b5-48c2-81d7-a1ef72a72fb3
+    taskid: b5db2a64-9264-4d81-8d75-6e57740006cb
     type: regular
     task:
-      id: 212916c8-66b5-48c2-81d7-a1ef72a72fb3
+      id: b5db2a64-9264-4d81-8d75-6e57740006cb
       version: -1
       name: Create Indicators from Image Vulnerabilities
       description: commands.local.cmd.new.indicator
@@ -127,19 +129,29 @@ tasks:
       - "7"
     scriptarguments:
       cvedescription:
-        simple: ${PrismaCloudCompute.Images.Vulnerabilities.Description}
+        complex:
+          root: PrismaCloudCompute.Images.Vulnerabilities
+          accessor: Description
       cvss:
-        simple: ${PrismaCloudCompute.Images.Vulnerabilities.Cvss}
+        complex:
+          root: PrismaCloudCompute.Images.Vulnerabilities
+          accessor: Cvss
       description:
-        simple: ${PrismaCloudCompute.Images.Vulnerabilities.Description}
+        complex:
+          root: PrismaCloudCompute.Images.Vulnerabilities
+          accessor: Description
       source:
         simple: Prisma Cloud Compute
       tags:
-        simple: ${PrismaCloudCompute.Images.Vulnerabilities.PackageName}
+        complex:
+          root: PrismaCloudCompute.Images.Vulnerabilities
+          accessor: PackageName
       type:
         simple: CVE
       value:
-        simple: ${PrismaCloudCompute.Images.Vulnerabilities.Cve}
+        complex:
+          root: PrismaCloudCompute.Images.Vulnerabilities
+          accessor: Cve
       verdict:
         simple: Suspicious
     separatecontext: false
@@ -160,10 +172,10 @@ tasks:
     continueonerrortype: ""
   "4":
     id: "4"
-    taskid: 38f9bf8c-e925-42f6-85d1-6a10a88349ef
+    taskid: 51992a22-894a-42ef-8dd0-fc653559a679
     type: regular
     task:
-      id: 38f9bf8c-e925-42f6-85d1-6a10a88349ef
+      id: 51992a22-894a-42ef-8dd0-fc653559a679
       version: -1
       name: Gather Image Compliance Issues
       description: Grab the compliance issues under the image details from PCC.
@@ -183,7 +195,7 @@ tasks:
         complex:
           root: PrismaCloudCompute.ReportsImagesScan
           filters:
-          - - operator: isExists
+          - - operator: isNotEmpty
               left:
                 value:
                   simple: PrismaCloudCompute.ReportsImagesScan
@@ -311,10 +323,10 @@ tasks:
     continueonerrortype: ""
   "8":
     id: "8"
-    taskid: b4fd8f72-715b-441a-84c9-dbd6efb3ad7f
+    taskid: ff89e4a9-aba3-43e8-8bb1-2cf9c07295dc
     type: regular
     task:
-      id: b4fd8f72-715b-441a-84c9-dbd6efb3ad7f
+      id: ff89e4a9-aba3-43e8-8bb1-2cf9c07295dc
       version: -1
       name: Get Defender Policy
       description: DefenderSettings returns the settings in the Defender policy.
@@ -331,7 +343,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -240,
+          "x": -237.5,
           "y": 1930
         }
       }
@@ -342,13 +354,17 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    scriptarguments:
+      hostname:
+        complex:
+          root: inputs.Hostname
     continueonerrortype: ""
   "9":
     id: "9"
-    taskid: 1eb223af-dfa4-4883-8254-f6e92444bad9
+    taskid: 4215ebf3-1e3b-4622-8d79-f9cfc8517cc5
     type: regular
     task:
-      id: 1eb223af-dfa4-4883-8254-f6e92444bad9
+      id: 4215ebf3-1e3b-4622-8d79-f9cfc8517cc5
       version: -1
       name: Get Alert Profiles
       description: AlertProfiles returns all the alert profiles.
@@ -376,6 +392,10 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    scriptarguments:
+      project:
+        complex:
+          root: inputs.Project
     continueonerrortype: ""
   "11":
     id: "11"
@@ -456,8 +476,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 3825
+          "x": -860,
+          "y": 3820
         }
       }
     note: false
@@ -503,10 +523,10 @@ tasks:
     continueonerrortype: ""
   "30":
     id: "30"
-    taskid: ec5520bf-c3d5-4d46-8783-6d45fa2941de
+    taskid: 5d1c22c5-ce15-4099-8775-da0166eef5fe
     type: regular
     task:
-      id: ec5520bf-c3d5-4d46-8783-6d45fa2941de
+      id: 5d1c22c5-ce15-4099-8775-da0166eef5fe
       version: -1
       name: Get Defender Logs
       description: DefenderLogs returns the last Defender logs.
@@ -517,13 +537,15 @@ tasks:
     nexttasks:
       '#none#':
       - "34"
-      '#error#':
-      - "49"
     scriptarguments:
       hostname:
-        simple: ${incident.prismacloudcomputehost}
+        complex:
+          root: incident
+          accessor: prismacloudcomputehost
       lines:
         simple: "20"
+      execution-timeout:
+        simple: "120"
     separatecontext: false
     view: |-
       {
@@ -539,14 +561,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerror: true
-    continueonerrortype: errorPath
+    continueonerrortype: ""
   "31":
     id: "31"
-    taskid: 9ef59bcc-e809-4cfc-8f13-21319879dc2e
+    taskid: f207d4d1-0310-44df-89d3-6ca37a21bf6d
     type: regular
     task:
-      id: 9ef59bcc-e809-4cfc-8f13-21319879dc2e
+      id: f207d4d1-0310-44df-89d3-6ca37a21bf6d
       version: -1
       name: List Defender Backups
       description: List returns the available backups.
@@ -574,13 +595,17 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    scriptarguments:
+      project:
+        complex:
+          root: inputs.Project
     continueonerrortype: ""
   "32":
     id: "32"
-    taskid: 2ecea136-94b6-4be1-8c43-4bd31a10c7d6
+    taskid: a55e5283-f032-4b84-887e-cfa917ddd83a
     type: regular
     task:
-      id: 2ecea136-94b6-4be1-8c43-4bd31a10c7d6
+      id: a55e5283-f032-4b84-887e-cfa917ddd83a
       version: -1
       name: Download Defender Logs
       description: DownloadDefenderLogs downloads all defender logs and metadata.
@@ -591,11 +616,11 @@ tasks:
     nexttasks:
       '#none#':
       - "31"
-      '#error#':
-      - "49"
     scriptarguments:
       hostname:
-        simple: ${incident.prismacloudcomputehost}
+        complex:
+          root: incident
+          accessor: prismacloudcomputehost
       ignore-outputs:
         simple: "true"
       lines:
@@ -615,14 +640,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerror: true
-    continueonerrortype: errorPath
+    continueonerrortype: ""
   "34":
     id: "34"
-    taskid: e0246d36-18d3-4142-8117-fc60de36e90e
+    taskid: 4547f477-6d5a-4e84-8263-78c0dd9b0337
     type: regular
     task:
-      id: e0246d36-18d3-4142-8117-fc60de36e90e
+      id: 4547f477-6d5a-4e84-8263-78c0dd9b0337
       version: -1
       name: Set Logs to Layout
       description: Convert an array to a nice table display (usually from the context).
@@ -635,7 +659,9 @@ tasks:
       - "32"
     scriptarguments:
       data:
-        simple: ${PrismaCloudCompute.Defenders.Logs}
+        complex:
+          root: PrismaCloudCompute.Defenders
+          accessor: Logs
       extend-context:
         simple: LogsTable=.
     separatecontext: false
@@ -697,10 +723,10 @@ tasks:
     continueonerrortype: ""
   "37":
     id: "37"
-    taskid: 09c73e4e-bc8e-4f6b-8563-387b7159ef4b
+    taskid: 79b89358-7e2a-46c2-8030-51745b3ea251
     type: regular
     task:
-      id: 09c73e4e-bc8e-4f6b-8563-387b7159ef4b
+      id: 79b89358-7e2a-46c2-8030-51745b3ea251
       version: -1
       name: Get container profile
       description: Get information about the containers and their profile events. This command supports asterisks which allows you to get container profiles by filtering its fields according to a specific substring.
@@ -715,7 +741,9 @@ tasks:
       - "38"
     scriptarguments:
       image:
-        simple: ${incident.prismacloudcomputeimage}
+        complex:
+          root: incident
+          accessor: prismacloudcomputeimage
     separatecontext: false
     view: |-
       {
@@ -734,10 +762,10 @@ tasks:
     continueonerrortype: ""
   "38":
     id: "38"
-    taskid: 9f771b94-ee61-4191-835c-61a4b16d54e9
+    taskid: 7f20b0cb-4b69-4f00-8b8b-414f04b6284d
     type: regular
     task:
-      id: 9f771b94-ee61-4191-835c-61a4b16d54e9
+      id: 7f20b0cb-4b69-4f00-8b8b-414f04b6284d
       version: -1
       name: Get container forensics
       description: Get runtime forensics data for a specific container on a specific host
@@ -748,13 +776,15 @@ tasks:
     nexttasks:
       '#none#':
       - "11"
-      '#error#':
-      - "49"
     scriptarguments:
       hostname:
-        simple: ${incident.prismacloudcomputefqdn}
+        complex:
+          root: incident
+          accessor: prismacloudcomputefqdn
       id:
-        simple: ${PrismaCloudCompute.ProfileContainer._id}
+        complex:
+          root: PrismaCloudCompute.ProfileContainer
+          accessor: _id
     separatecontext: false
     view: |-
       {
@@ -770,14 +800,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerror: true
-    continueonerrortype: errorPath
+    continueonerrortype: ""
   "39":
     id: "39"
-    taskid: 15b8c345-33d7-41ea-8deb-b552d8f0cbea
+    taskid: e13fe5b4-f24e-43b6-841c-d9bd7bb38417
     type: regular
     task:
-      id: 15b8c345-33d7-41ea-8deb-b552d8f0cbea
+      id: e13fe5b4-f24e-43b6-841c-d9bd7bb38417
       version: -1
       name: Get Host Profile
       description: Get information about the hosts and their profile events. This command supports asterisks which allows you to get host profiles by filtering its fields according to a specific substring.
@@ -790,7 +819,9 @@ tasks:
       - "11"
     scriptarguments:
       hostname:
-        simple: ${incident.prismacloudcomputehost}
+        complex:
+          root: incident
+          accessor: prismacloudcomputehost
     separatecontext: false
     view: |-
       {
@@ -809,10 +840,10 @@ tasks:
     continueonerrortype: ""
   "40":
     id: "40"
-    taskid: 2b732479-d128-4249-8585-505e4e857ceb
+    taskid: 8ee4a197-c75a-4086-8afc-8c1fe553ec67
     type: regular
     task:
-      id: 2b732479-d128-4249-8585-505e4e857ceb
+      id: 8ee4a197-c75a-4086-8afc-8c1fe553ec67
       version: -1
       name: Get Image Audits
       description: Get the audits for the firewall container policies.
@@ -827,11 +858,13 @@ tasks:
       FromDays:
         simple: "5"
       ImageName:
-        simple: ${PrismaCloudCompute.AuditAlert.image}
+        complex:
+          root: PrismaCloudCompute.AuditAlert
+          accessor: image
       audit_type:
         complex:
-          root: ${PrismaCloudCompute.AuditAlert
-          accessor: category}
+          root: PrismaCloudCompute.AuditAlert
+          accessor: category
           transformers:
           - operator: toLowerCase
     separatecontext: false
@@ -852,10 +885,10 @@ tasks:
     continueonerrortype: ""
   "41":
     id: "41"
-    taskid: 2bbe66eb-794d-4e81-8faf-b30d247246e2
+    taskid: 25cbf286-7964-4a9d-87e9-7536f9b15330
     type: regular
     task:
-      id: 2bbe66eb-794d-4e81-8faf-b30d247246e2
+      id: 25cbf286-7964-4a9d-87e9-7536f9b15330
       version: -1
       name: Set Audits to Table
       description: Convert an array to a nice table display (usually, from the context).
@@ -868,7 +901,9 @@ tasks:
       - "47"
     scriptarguments:
       data:
-        simple: ${PrismaCloudCompute.AuditAlert}
+        complex:
+          root: PrismaCloudCompute
+          accessor: AuditAlert
       extend-context:
         simple: AuditTable=.
       ignore-outputs:
@@ -895,16 +930,16 @@ tasks:
     continueonerrortype: ""
   "42":
     id: "42"
-    taskid: 3e856162-edd0-4355-840f-14c8a06773c5
+    taskid: 11732986-9502-4f54-89f1-764d6aa7fae2
     type: regular
     task:
-      id: 3e856162-edd0-4355-840f-14c8a06773c5
+      id: 11732986-9502-4f54-89f1-764d6aa7fae2
       version: -1
       name: Manually Remediate
       type: regular
       iscommand: false
       brand: ""
-      description: 'Manual Remediation.'
+      description: 'Perform manual remediation to ensure full incident resolution'
     nexttasks:
       '#none#':
       - "26"
@@ -926,10 +961,10 @@ tasks:
     continueonerrortype: ""
   "43":
     id: "43"
-    taskid: 64c9772e-8329-4a0d-8a7e-f304d09c3ade
+    taskid: 026f0016-5169-4008-8c5b-d9d278f4bdfc
     type: regular
     task:
-      id: 64c9772e-8329-4a0d-8a7e-f304d09c3ade
+      id: 026f0016-5169-4008-8c5b-d9d278f4bdfc
       version: -1
       name: Create Indicator Table
       description: commands.local.cmd.find.indicators
@@ -942,12 +977,14 @@ tasks:
       - "11"
     scriptarguments:
       extend-context:
-        simple: 'Indicators=.={"Value": val.value, "Description": val.CustomFields.description, "CVSS": val.CustomFields.cvss}'
+        simple: 'Indicators=.={"Value": val.value, "Description": val.CustomFields.description,
+          "CVSS": val.CustomFields.cvss}'
       ignore-outputs:
         simple: "true"
       query:
-        simple: ${incident.id:${incident.id} and type:CVE}
+        simple: incident.id:${incident.id} and type:CVE
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -962,28 +999,31 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "44":
     id: "44"
-    taskid: 0a8b55f1-1816-44a3-891e-38c92b5a95f4
+    taskid: cd7da102-4f9f-474b-8711-b84f62bd73bb
     type: regular
     task:
-      id: 0a8b55f1-1816-44a3-891e-38c92b5a95f4
+      id: cd7da102-4f9f-474b-8711-b84f62bd73bb
       version: -1
       name: Create Link Back
+      description: Create a URL link back to the alert in Prisma Cloud Compute
       scriptName: CreatePrismaCloudComputeLink
       type: regular
       iscommand: false
       brand: ""
-      description: 'Create the link URL back to Prisma Cloud Compute.'
     nexttasks:
       '#none#':
       - "45"
     scriptarguments:
       imageName:
-        simple: '${PrismaCloudCompute.AuditAlert.image} '
+        complex:
+          root: PrismaCloudCompute.AuditAlert
+          accessor: image
       type:
-        simple: '${PrismaCloudCompute.AuditAlert.category} '
+        complex:
+          root: PrismaCloudCompute.AuditAlert
+          accessor: category
     separatecontext: false
     view: |-
       {
@@ -1002,10 +1042,10 @@ tasks:
     continueonerrortype: ""
   "45":
     id: "45"
-    taskid: ed64e1ef-ef73-4e01-84bb-adc1301f0362
+    taskid: b34ca96a-a37e-4db9-851b-e454e3affcd0
     type: regular
     task:
-      id: ed64e1ef-ef73-4e01-84bb-adc1301f0362
+      id: b34ca96a-a37e-4db9-851b-e454e3affcd0
       version: -1
       name: Set Incident Link
       description: commands.local.cmd.set.incident
@@ -1018,7 +1058,8 @@ tasks:
       - "6"
     scriptarguments:
       externallink:
-        simple: ${link}
+        complex:
+          root: link
     separatecontext: false
     view: |-
       {
@@ -1037,16 +1078,16 @@ tasks:
     continueonerrortype: ""
   "46":
     id: "46"
-    taskid: 48dcb0af-868e-4b71-811b-0672ae8cabba
+    taskid: 53edaafd-d9af-4a6c-8a32-a353ee2ab101
     type: condition
     task:
-      id: 48dcb0af-868e-4b71-811b-0672ae8cabba
+      id: 53edaafd-d9af-4a6c-8a32-a353ee2ab101
       version: -1
       name: Check if Alert has Vulnerabilities
+      description: ''
       type: condition
       iscommand: false
       brand: ""
-      description: 'Condition to check if any vulnerabilities are part of the alert.'
     nexttasks:
       '#default#':
       - "7"
@@ -1056,17 +1097,19 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isExists
+      - - operator: isNotEmpty
           left:
             value:
-              simple: PrismaCloudCompute.Images.Vulnerabilities
+              complex:
+                root: PrismaCloudCompute.Images
+                accessor: Vulnerabilities
             iscontext: true
-          right:
-            value: {}
-      - - operator: isExists
+      - - operator: isNotEmpty
           left:
             value:
-              simple: PrismaCloudCompute.Images.Vulnerabilities.Cve
+              complex:
+                root: PrismaCloudCompute.Images.Vulnerabilities
+                accessor: Cve
             iscontext: true
     view: |-
       {
@@ -1094,7 +1137,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: 'Check if there is a custom base url passed as input.'
+      description: ''
     nexttasks:
       '#default#':
       - "6"
@@ -1126,13 +1169,13 @@ tasks:
     continueonerrortype: ""
   "48":
     id: "48"
-    taskid: 940df01d-b29e-4d85-86be-9c78cee2eef0
+    taskid: 5ab189a5-939a-47b1-8e24-c443e7e0c226
     type: condition
     task:
-      id: 940df01d-b29e-4d85-86be-9c78cee2eef0
+      id: 5ab189a5-939a-47b1-8e24-c443e7e0c226
       version: -1
       name: Check if Image Compliance Issues Exist
-      description: Check if any Compliance Issues exist for the image.
+      description: ''
       type: condition
       iscommand: false
       brand: ""
@@ -1145,54 +1188,17 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isExists
+      - - operator: isNotEmpty
           left:
             value:
               simple: PrismaCloudCompute.ReportsImagesScan.complianceIssues
             iscontext: true
-          right:
-            value: {}
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 562.5,
           "y": 1930
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "49":
-    id: "49"
-    taskid: 67f3cbdd-c9df-480b-802b-9267c15c5eae
-    type: regular
-    task:
-      id: 67f3cbdd-c9df-480b-802b-9267c15c5eae
-      version: -1
-      name: Print Error
-      description: Prints text to war room (Markdown supported)
-      scriptName: Print
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "11"
-    scriptarguments:
-      value:
-        simple: An Error Occured - check previous task for the exact error message.
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -240,
-          "y": 3095
         }
       }
     note: false
@@ -1210,7 +1216,7 @@ tasks:
       id: 4d4965da-d2aa-449e-8c6e-5a6a0a7ecf2b
       version: -1
       name: Check if Raw Alert JSON exist
-      description: Condition to check if incident contains the alert raw json.
+      description: ''
       type: condition
       iscommand: false
       brand: ""
@@ -1247,15 +1253,12 @@ tasks:
     isautoswitchedtoquietmode: false
 view: |-
   {
-    "linkLabelsPosition": {
-      "30_49_#error#": 0.2,
-      "38_49_#error#": 0.18
-    },
+    "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 4110,
-        "width": 1580,
-        "x": -637.5,
+        "height": 4105,
+        "width": 1802.5,
+        "x": -860,
         "y": -220
       }
     }
@@ -1265,6 +1268,22 @@ inputs:
   value: {}
   required: false
   description: The base URL of the Prisma Cloud Compute Instance used to create a link back to the alerts for an image.
+  playbookInputQuery:
+- key: Project
+  value:
+    complex:
+      root: PrismaCloudCompute.AlertProfiles.ServiceNow
+      accessor: Project
+  required: false
+  description: A specific project name to get alert profiles for
+  playbookInputQuery:
+- key: Hostname
+  value:
+    complex:
+      root: PrismaCloudCompute.AuditAlert
+      accessor: host
+  required: false
+  description: The Defender hostname
   playbookInputQuery:
 outputs: []
 tests:
