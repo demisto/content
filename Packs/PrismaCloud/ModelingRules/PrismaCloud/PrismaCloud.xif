@@ -12,7 +12,7 @@ alter
     resource_id = json_extract_scalar(resource, "$.id"),
     resource_name = json_extract_scalar(resource, "$.name"),
     resource_region = json_extract_scalar(resource, "$.region"),
-    resource_resourcetype = json_extract_scalar(resource, "$.region"),
+    resource_resourcetype = json_extract_scalar(resource, "$.resourceType"),
     resource_url = json_extract_scalar(resource, "$.url"),
     src_ip1_v4 = if(sourceIp !~= ":", sourceIp, null),
     src_ip1_v6 = if(sourceIp ~= ":", sourceIp, null),    
