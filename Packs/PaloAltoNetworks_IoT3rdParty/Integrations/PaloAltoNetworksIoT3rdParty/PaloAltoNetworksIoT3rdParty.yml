@@ -2,6 +2,7 @@ category: Network Security
 commonfields:
   id: Palo Alto Networks IoT 3rd Party
   version: -1
+deprecated: true
 configuration:
 - display: Server URL
   name: url
@@ -26,8 +27,9 @@ configuration:
   name: credentials
   type: 9
   required: false
-description: Base Integration for Palo Alto IoT third party integrations. This integration communicates with Palo Alto IoT Cloud to get alerts, vulnerabilities and devices.
-display: Palo Alto Networks IoT 3rd Party
+description: "Deprecated. Use the following link instead. To get the latest Palo Alto Networks IoT 3rd Party Integrations content pack, visit: https://docs.paloaltonetworks.com/iot/iot-security-integration/get-started-with-iot-security-integrations/third-party-integrations-using-a-full-featured-xsoar-server"
+
+display: Palo Alto Networks IoT 3rd Party (Deprecated)
 name: Palo Alto Networks IoT 3rd Party
 script:
   commands:
