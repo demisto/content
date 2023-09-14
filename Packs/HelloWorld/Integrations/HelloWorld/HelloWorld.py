@@ -1,6 +1,3 @@
-from requests.models import Response
-from urllib.parse import unquote
-from typing import Union
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
@@ -247,10 +244,9 @@ Python 3) and then calls the ``main()`` function. Just keep this convention.
 
 """
 import json
-from typing import Any, Callable, Dict, List, Optional, Tuple, Union, cast
+from typing import Any
 
 import dateparser
-import urllib3
 
 from CommonServerUserPython import *
 
@@ -263,7 +259,8 @@ DEFAULT_INDICATORS_THRESHOLD = 65
 HELLOWORLD_SEVERITIES = ['Low', 'Medium', 'High', 'Critical']
 LIMIT = 10
 DEFAULT_PAGE_SIZE = 5
-
+DUMMY_API_KEY = 'dummy-key'
+ITEM_TEMPLATE = '"id": {id}, "name": "XSOAR Test Item #{id}", "severity": "{severity}", "time": "{time}", "status": "{status}"'
 ''' CLIENT CLASS '''
 
 
@@ -277,8 +274,29 @@ class Client(BaseClient):
     For this HelloWorld implementation, no special attributes defined
     """
 
-    def get_ip_reputation(self, ip: str) -> Dict[str, Any]:
-        """Gets the IP reputation using the '/ip' API endpoint. Due to no support for this command in the API, this is a dummy response.
+    def specific_api_endpoint_call_example(self, param1, param2):
+        """Example of calling a real specific API endpoint"""
+        # INTEGRATION DEVELOPER TIP
+        # 1. The assign_params function (Found in CommonServerPython) can easily create a None-free dictionary.
+        #   Use it to send the ``json_data`` argument to ``self._http_request`` method (request body).
+        #   When request body is complex, best practice is to build the dictionary outside (pass as argument).
+        # 2. It's possible to get the whole response and not just the data part, using the ``resp_type`` argument.
+        # 3. It's possible to get responses for statuses other then 200 by using the ``ok_codes`` argument-
+        #   otherwise, the ``self._http_request method`` will fail when parsing it.
+        # 4. If the url parameters are complex (filters, etc) -
+        #   it is possible to pass it using the ``params`` argument.
+
+        url = f'/api/endpoint/{param1}/{param2}'
+        response = self._http_request(
+            method='GET',
+            url=url
+        )
+
+        return response
+
+    def get_ip_reputation(self, ip: str) -> dict[str, Any]:
+        """For developing walkthrough purposes, this is a dummy response.
+        For real API call see specific_api_endpoint_call_example method.
 
         Args:
             ip (str): IP address to get the reputation for.
@@ -334,83 +352,48 @@ class Client(BaseClient):
 
         return f'Hello {name}'
 
-    def get_incident_list(self, page_size, cursor: str = None, start_time: str = None, severity: str = None, ordering='date') -> Response:
-        """This function calls the api without any incident information.
+    def get_item_list(self, limit: int, severity: str = None) -> list[dict]:
+        """For developing walkthrough purposes, this is a dummy response.
+           For real API call see specific_api_endpoint_call_example method.
 
         Args:
-            page_size (_type_):  The number of result to include in a page.
-            cursor (str, optional): A token to continued a previous call. Defaults to None.
-            start_time (str, optional): The time to start the fetching query from. Defaults to None.
-            severity (str, optional): The severity of the incident to fetch. Defaults to None.
-            ordering (str, optional): By which field should the result ordered by . Defaults to 'date'.
+            limit (int): The number of item to generate.
+            severity (str) : The severity value of the items returned.
 
         Returns:
-            Response: The full response from the API, containing all the headers and data.
+            list[dict]: Dummy data of items as it would return from API.
         """
-        params = {"per_page": page_size}
+        mock_response: list[dict] = []
+        for i in range(limit):
+            item = ITEM_TEMPLATE.format(id=i,
+                                        severity=severity if severity else 'null',
+                                        time=datetime(2023, 9, 14, 11, 30, 39, 882955).isoformat(),
+                                        status='Testing')
+            dict_item = json.loads("{" + item + "}")
+            mock_response.append(dict_item)
 
-        # INTEGRATION DEVELOPER TIP
-        # You can use the assign_params function to easily create a dictionary with non-empty arguments only.
-        # In this case when the function is called for the incident_list_command the dictionary is empty (unless cursor provided).
-        # When it is called for fetch-incidents command it will contain the filters the user requested.
+        return mock_response
 
-        additional_params = assign_params(
-            cursor=cursor,
-            severity=severity,
-            date_after=start_time,
-            ordering=ordering
-        )
-        params |= additional_params
-        return self._http_request(
-            method='GET',
-            url_suffix='v1/incidents/secrets',
-            params=params,
-            resp_type='response'
-        )
-
-    def get_incident(self, incident_id: int) -> list[dict]:
-        """ This function calls the api with the requested incident id.
+    def get_incident(self, item_id: int) -> list[dict]:
+        """For developing walkthrough purposes, this is a dummy response.
+        For real API call see specific_api_endpoint_call_example method.
 
         Args:
-            incident_id (int): a number represent an incident.
+            item_id (int) : An item to retrieve.
 
         Returns:
-            dict: The response from the API with data on the incident.
+            dict: Dummy data of item as it would return from API.
         """
-        res = self._http_request(
-            method='GET',
-            url_suffix=f'v1/incidents/secrets/{incident_id}',
-            resp_type='json'
-        )
-        if isinstance(res, dict):
-            return [res]
-        return res
+        item = ITEM_TEMPLATE.format(id=item_id,
+                                    severity='low',
+                                    time=datetime(2023, 9, 14, 11, 30, 39, 882955).isoformat(),
+                                    status='Testing')
+        return json.loads("{" + item + "}")
 
-    def get_incident_note_list_as_response(self, incident_id: int, page_size: int, cursor: str = None) -> Response:
-        """ This function calls the api with the requested incident data.
-
-        Args:
-            incident_id (int): a number represent an incident.
-            page_size (int): The number of result to include in a page.
-            cursor (str, optional): A token to continued a previous call. Defaults to None.
-
-        Returns:
-            urllib.response: The full response from the API of the incident's notes.
-        """
-        # INTEGRATION DEVELOPER TIP
-        # If there is a need to get the response's header, one can get the whole response and not just the data part, using the resp_type argument.
-        params: dict[str, object] = {"per_page": page_size}
-        if cursor:
-            params['cursor'] = cursor
-        return self._http_request(
-            method='GET',
-            url_suffix=f'v1/incidents/secrets/{incident_id}/notes',
-            resp_type='response',
-            params=params
-        )
-
-    def create_incident_note(self, incident_id: int, comment: str) -> dict:
-        """ This function calls the api to create a new note in an incident.
+    def create_note(self, incident_id: int, comment: str) -> dict:
+        """ 
+        This function calls the api to create a new note in an incident.
+        For real API call see specific_api_endpoint_call_example method.
 
         Args:
             incident_id (int): a number represent an incident.
@@ -419,57 +402,24 @@ class Client(BaseClient):
         Returns:
             dict: The summary of the newly created note from the API response.
         """
-        # INTEGRATION DEVELOPER TIP
-        # When the response returns with 201 status for success (or uses other statuses then 200 in general), one can use 'ok_codes' argument so the _http_request method won't fail on parsing it.
 
-        return self._http_request(
-            method='POST',
-            url_suffix=f'v1/incidents/secrets/{incident_id}/notes',
-            ok_codes=[201],
-            json_data={"comment": comment}
-        )
+        return {'status': 'success',
+                'msg': f'Note was created for incident #{incident_id} successfully with {comment=}'}
 
-    def file_scan_start(self, file_content: str, file_name: str = None) -> dict:
-        """ This function calls the api to start a new scan on a file given.
-
-        Args:
-            file_content (str): A file's content to check.
-            file_name(str, optional): A file name to check.
-
-        Returns:
-            dict: The data returned from the scan.
-        """
-        # INTEGRATION DEVELOPER TIP
-        # In this case we will use the json_data to pass some params in the request's body.
-        # In some cases (complex body) it is better practice to build the body outside of this function and pass it as an argument.
-
-        body = {"document": file_content}
-        if file_name:
-            body["filename"] = file_name
-
-        return self._http_request(
-            method='POST',
-            url_suffix='v1/scan',
-            json_data=body
-        )
-
-    def get_incident_list_for_fetch(self, page_size, cursor: str = None, last_id: int = 0,
-                                    start_time: str = None, severity: str = None, ordering='date') -> list[dict]:
+    def get_incident_list_for_fetch(self, limit, last_id: int = 0,
+                                    start_time: str = None, severity: str = None) -> list[dict]:
         """This function return dummy events for fetch.
 
         Args:
-            page_size (_type_): _description_
-            cursor (str, optional): _description_. Defaults to None.
-            start_time (str, optional): _description_. Defaults to None.
-            severity (str, optional): _description_. Defaults to None.
-            ordering (str, optional): _description_. Defaults to 'date'.
+            limit (int): The number of incident to fetch.
+            start_time (str, optional): The time to start fetch incidents from. Defaults to None.
+            severity (str, optional): The severity of the incidents fetched. Defaults to None.
         """
         def mock_time(item):
             item['id'] = last_id + 1
-            item['date'] = datetime.strftime(datetime.now(), DATE_FORMAT)
+            item['time'] = datetime.strftime(datetime.now(), DATE_FORMAT)
 
-        res = self.get_incident_list(page_size, severity=severity)  # Will always bring all incidents
-        incidents = res.json() if res.status_code == 200 else []
+        incidents = self.get_item_list(limit=limit, severity=severity)
         demisto.debug("Setting incidents time to now.")
         for item in incidents:
             mock_time(item)
@@ -478,6 +428,23 @@ class Client(BaseClient):
 
 
 ''' HELPER FUNCTIONS '''
+
+
+def validate_api_key(api_key: str) -> None:
+    """
+    This is a validation that the api-key is valid. It is not needed when dealing with real API-
+    But we wanted to give you a full experience.
+    Some API handle invalid credential with invalid status code with nasty message, which user will not understand.
+    It can be handled in the commands or in the main when the status code implies wrong credentials.
+
+    Args:
+        api_key (str): api to connect to the API.
+
+    Raises:
+        DemistoException: Exception with a nicer error when credential are invalid.
+    """
+    if api_key != DUMMY_API_KEY:
+        raise DemistoException('Invalid Credentials. Please Verify your Connection parameters.')
 
 
 def convert_to_demisto_severity(severity: str) -> int:
@@ -506,37 +473,9 @@ def convert_to_demisto_severity(severity: str) -> int:
     }[severity]
 
 
-def get_next_cursor(data: Response) -> Optional[str]:
-    """ Gets a full response. It should contain 'links' attribute. 
-    links is a dict, in the format: "{'next': {'url': 'https://api.gitguardian.com/v1/incidents/secrets?cursor=bz0x&ordering=date&per_page=1', 'rel': 'next'}}"
-    We only need the next page, even if there is aldo a previous.
-    Returns: the next page token
-    """
-    next_token = None
-    # next_page_link = data.headers._store.get('link')
-    page_link = data.links
-    if page_link:
-        next_token = get_next_token(page_link.get('next', {}).get('url', ''))
-    return next_token
-
-
-def get_next_token(url) -> Optional[str]:
-    """ Gets a link in format "<https://api.gitguardian.com/v1/incidents/secrets?cursor=cD03MjE4NDU5&per_page=1>; rel=\"next\"" and extract the cursor.
-    Return the substring representing the next page token
-    """
-    TOKEN_PATTERN = r'cursor=(.*)'
-    res = re.findall(TOKEN_PATTERN, unquote(url))
-    return res[0] if res else None
-#     cursor_start_index = url.find('cursor=') + 7
-#     cursor_end_index = url[cursor_start_index:].find('&')
-#     if url[cursor_start_index:].find('%') != -1:
-#         cursor_end_index = min(cursor_end_index, url[cursor_start_index:].find('%'))
-#     return url[cursor_start_index:cursor_start_index+cursor_end_index]
-
-
-def dedup_by_ids(alerts: list[dict], ids_to_compare: list[str]) -> Tuple[list[dict], int]:
+def dedup_by_ids(alerts: list[dict], ids_to_compare: list[int]) -> tuple[list[dict], int]:
     """ Gets A list of new ids and a list of existing, and return a united list with only new values.
-    For example, if new_ids=['a','b'] and ids_to_compare=['b','c'], ['a'] is returned.
+    For example, if new_ids=[1,2] and ids_to_compare=[2,3], [1] is returned.
 
     Args:
         new_ids (list[dict]): A list of alerts to compare. Assuming the existence of "id" key.
@@ -559,7 +498,7 @@ def dedup_by_ids(alerts: list[dict], ids_to_compare: list[str]) -> Tuple[list[di
 ''' COMMAND FUNCTIONS '''
 
 
-def test_module(client: Client, params: Dict[str, Any]) -> str:
+def test_module(client: Client, params: dict[str, Any]) -> str:
     """
     Tests API connectivity and authentication'
     When 'ok' is returned it indicates the integration works like it is supposed to and connection to the service is
@@ -587,9 +526,8 @@ def test_module(client: Client, params: Dict[str, Any]) -> str:
     try:
         time = dateparser.parse('1 minute')
         assert time
+        severity = params.get('severity', None)
         if params.get('isFetch'):  # Tests fetch incident:
-            severity = params.get('severity', None)
-
             fetch_incidents(
                 client=client,
                 max_results=1,
@@ -598,7 +536,7 @@ def test_module(client: Client, params: Dict[str, Any]) -> str:
                 severity=severity
             )
         else:
-            client.get_incident_list(page_size=1, start_time=time.isoformat())
+            client.get_item_list(limit=1, severity=params.get('severity'))
 
     except DemistoException as e:
         if 'Forbidden' in str(e):
@@ -609,7 +547,7 @@ def test_module(client: Client, params: Dict[str, Any]) -> str:
     return 'ok'
 
 
-def say_hello_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def say_hello_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     helloworld-say-hello command: Returns Hello {somename}
 
@@ -656,7 +594,7 @@ def say_hello_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
 def fetch_incidents(client: Client, max_results: int, last_run: dict,
                     first_fetch_time: str, severity: str = None, page_size: int = DEFAULT_PAGE_SIZE
-                    ) -> Tuple[dict, List[dict]]:
+                    ) -> tuple[dict, list[dict]]:
     """
     This function retrieves new alerts every interval (default is 1 minute).
     It has to implement the logic of making sure that incidents are fetched only onces and no incidents are missed.
@@ -681,7 +619,8 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict,
 
     # INTEGRATION DEVELOPER TIP
     # The fetch-incident function is usually *very* hard to debug in client's environment.
-    # Logging the steps correctly can save a lot of time and effort. Make sure to use demisto.debug() to avoid flooding the general log.
+    # Logging the steps correctly can save a lot of time and effort.
+    # Make sure to use demisto.debug() to avoid flooding the general log.
 
     # Get the last fetch time, if exists
     last_fetch = last_run.get('last_fetch', None)
@@ -697,24 +636,25 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict,
 
     assert last_fetch
 
-    # Initialize an empty list of incidents to return
-    # Each incident is a dict with a string as a key
-    incidents: List[Dict[str, Any]] = []
+    # Initialize an empty list of incidents to return. Incidents are processed alerts.
+    incidents: list[dict[str, Any]] = []
     last_dummy_id = max(last_ids) if last_ids else 0
     demisto.debug(f'Running API query with {last_fetch=}, {severity=}')
-    alerts = client.get_incident_list_for_fetch(page_size=max_results, start_time=last_fetch,
-                                                severity=severity, ordering='date',
+
+    # Calling the relevant client method. Note that sometimes pagination is in order.
+    # For pagination related information, see https://xsoar.pan.dev/docs/integrations/code-conventions#pagination-in-integration-commands.
+    alerts = client.get_incident_list_for_fetch(limit=max_results, start_time=last_fetch,
+                                                severity=severity,
                                                 last_id=last_dummy_id)
     demisto.debug(f'Received {len(alerts)} alerts from server.')
 
     # INTEGRATION DEVELOPER TIP
-    # One should make sure incidents are not being duplicate. This might happen in 2 cases:
+    # Incidents might be duplicated in some cases:
     # 1. Pagination done without next page's token (the exact time of the last incident is queried again so the same incident will return again).
     # 2. Limit is exceeded but there are more incident in the same time to fetch in the next run (Especially happen when API does not support milliseconds).
-    # In this case we will comment it out as all the dummy incidents have the same ids.
 
-    # alerts, number_of_dups = dedup_by_ids(alerts, last_ids)
-    # demisto.debug(f'recieved {number_of_dups} duplicates incidents to skip.')
+    alerts, number_of_dups = dedup_by_ids(alerts, last_ids)
+    demisto.debug(f'recieved {number_of_dups} duplicates incidents to skip.')
 
     # Get the last alert time.
     # We assume asc order so we can get all the incidents fetched with the exact same time and avoid it in the next run.
@@ -739,8 +679,7 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict,
             last_ids.append(alert['id'])
 
         # Formatting the incidents as needed (Adding fields, Removing sensitive ones, etc.)
-        alert_detector_name = alert.get('detector', {}).get('display_name')
-        alert['name'] = f'Hello World Alert - {alert_detector_name}'
+        alert['name'] = 'Hello World Alert'
 
         # INTEGRATION DEVELOPER TIP
         # The incident dict is initialized with a few mandatory fields:
@@ -779,15 +718,15 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict,
     return next_run, incidents
 
 
-def ip_reputation_command(client: Client, args: Dict[str, Any], default_threshold: int,
-                          reliability: DBotScoreReliability) -> List[CommandResults]:
+def ip_reputation_command(client: Client, args: dict[str, Any], default_threshold: int,
+                          reliability: DBotScoreReliability | str) -> list[CommandResults]:
     """
     ip command: Returns IP reputation for a list of IPs
 
     Args:
         client (Client): HelloWorld client to use.
         args (dict): all command arguments, usually passed from ``demisto.args()``.
-            ``args['ip']`` is a list of IPs or a single IP. Due to lack of example in this API we are providing a dummy response for the ip 8.8.8.8.
+            ``args['ip']`` is a list of IPs or a single IP. We are providing a dummy response for the ip 8.8.8.8.
             ``args['threshold']`` threshold to determine whether an IP is malicious.
         default_threshold (int): default threshold to determine whether an IP is malicious if threshold is not
             specified in the XSOAR arguments.
@@ -816,7 +755,7 @@ def ip_reputation_command(client: Client, args: Dict[str, Any], default_threshol
 
     # Initialize an empty list of CommandResults to return
     # each CommandResult will contain context standard for IP
-    command_results: List[CommandResults] = []
+    command_results: list[CommandResults] = []
 
     for ip in ips:
         if not is_ip_valid(ip, accept_v6_ips=True):  # check IP's validity
@@ -840,12 +779,14 @@ def ip_reputation_command(client: Client, args: Dict[str, Any], default_threshol
                 entity_b_type=FeedIndicatorType.URL,
                 brand='HelloWorld'))
 
+        # We can use demisto.get to get nested values from dict.
+        reputation = int(demisto.get(ip_data, 'attributes.reputation', defaultParam=0))
+
         # HelloWorld score to XSOAR reputation mapping
         # See: https://xsoar.pan.dev/docs/integrations/dbot
         # We are using Common.DBotScore as macros to simplify
         # the mapping.
 
-        reputation = int(ip_data.get('reputation', 0))
         if reputation == 0:
             score = Common.DBotScore.NONE  # unknown
         elif reputation < threshold / 2:
@@ -896,15 +837,18 @@ def ip_reputation_command(client: Client, args: Dict[str, Any], default_threshol
         # To generate the Context Outputs on the YML use ``demisto-sdk``'s
         # ``json-to-outputs`` option.
 
-        # Define which fields we want to exclude from the context output as
-        # they are too verbose. Just make sure to keep the whole response somewhere.
-        ip_context_excluded_fields = ['whois']
+        # Define which fields we want to exclude from the context output as they are too verbose.
+        # We will use attributes key separately. Just make sure to keep the whole response somewhere.
+        ip_context_excluded_fields = ['whois', 'attributes']
         ip_data_outputs = {k: ip_data[k] for k in ip_data if k not in ip_context_excluded_fields}
 
         # In this case we want to use an custom markdown to specify the table title,
         # but otherwise ``CommandResults()`` will call ``tableToMarkdown()``
-        #  automatically
+        #  automatically.
+
+        readable_attributes = tableToMarkdown('Attributes', ip_data['attributes'], is_auto_json_transform=True)
         readable_output = tableToMarkdown('IP (Sample Data)', ip_data_outputs)
+        readable_output += readable_attributes
 
         # INTEGRATION DEVELOPER TIP
         # The output key will be ``HelloWorld.IP``, using ``ip`` as the key field.
@@ -921,136 +865,45 @@ def ip_reputation_command(client: Client, args: Dict[str, Any], default_threshol
     return command_results
 
 
-def incident_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def item_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
 
-    outputs: dict = {}
     incident_id = arg_to_number(args.get("incident_id"))
+    severity = args.get("severity")
 
-    # Pagination params. If API supports, all the 3 should be implemented. See https://xsoar.pan.dev/docs/integrations/code-conventions#pagination-in-integration-commands
-
-    page_size = arg_to_number(args.get("page_size")) or DEFAULT_PAGE_SIZE
-    cursor = args.get("next_token")
+    # Pagination params. See https://xsoar.pan.dev/docs/integrations/code-conventions#pagination-in-integration-commands
     limit = arg_to_number(args.get("limit")) or LIMIT
 
-    # Checking if API calls should be manual (one call with page_size + token) or automatic (Multiple API calls until one reaches limit.
     if incident_id:  # If incident_id is provided, we only need one call to API and pagination is not needed.
         full_res = client.get_incident(incident_id)
+        if isinstance(full_res, dict):
+            full_res = [full_res]
 
-    elif cursor:  # Pagination might be needed but customer want to manually control it,
-        raw_res = client.get_incident_list(page_size=page_size, cursor=cursor)
-        full_res = raw_res.json() if raw_res.status_code == 200 else {}
-        cursor = get_next_cursor(raw_res)
+    else:
+        full_res = client.get_item_list(limit=limit, severity=severity)
 
-    else:  # Automatic pagination.
-        full_res = []
-        res_num = 0
-        cursor = None
-        while res_num < limit:
-            # calling the API with page_size needed. If limit < page_size, we want smaller page size.
-            print(f'{cursor=}')
-            raw_res = client.get_incident_list(page_size=min(limit - res_num, page_size), cursor=cursor)
-            res_data = raw_res.json() if raw_res.status_code == 200 else {}
-            if not res_data:
-                break
-            full_res.extend(res_data)
-            res_num += len(res_data)
-            cursor = get_next_cursor(raw_res)
-            if not cursor:
-                break
-
-    readable_output = tableToMarkdown('Incident List', full_res)
-    outputs['HelloWorld.Incident(val.id && val.id == obj.id)'] = full_res
-    if cursor:
-        outputs['HelloWorld.IncidentNextToken(val.NextPageToken)'] = {'NextPageToken': cursor}
-
+    readable_output = tableToMarkdown('Items List (Example Data)', full_res)
     return CommandResults(
         readable_output=readable_output,
+        outputs_prefix='HelloWorld.Item',
         outputs_key_field='id',
-        outputs=outputs
+        outputs=full_res
     )
 
 
-def incident_note_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    incident_id = int(args["incident_id"])
-    page_size = arg_to_number(args.get("page_size")) or DEFAULT_PAGE_SIZE
-    cursor = args.get("next_token")
-    limit = arg_to_number(args.get("limit")) or LIMIT
-    outputs = dict()
-
-    # Checking if API calls should be manual (one call with page_size + token) or automatic (Multiple API calls until one reaches limit.
-
-    if cursor:  # Pagination might be needed but customer want to manually control it,
-        raw_res = client.get_incident_note_list_as_response(incident_id=incident_id, page_size=page_size, cursor=cursor)
-        full_res = raw_res.json() if raw_res.status_code == 200 else {}
-        cursor = get_next_cursor(raw_res)
-
-    else:  # Automatic pagination.
-        full_res = []
-        res_num = 0
-        cursor = None
-        while res_num < limit:
-            # calling the API with page_size needed. If limit < page_size, we want smaller page size.
-            raw_res = client.get_incident_note_list_as_response(
-                incident_id, page_size=min(limit - res_num, page_size), cursor=cursor)
-            res_data = raw_res.json() if raw_res.status_code == 200 else {}
-            if not res_data:
-                break
-            full_res.extend(res_data)
-            res_num += len(res_data)
-            cursor = get_next_cursor(raw_res)
-            if not cursor:
-                break
-
-    readable_output = tableToMarkdown('Incident Note List', full_res)
-
-    # We want to rewrite the next token's value, so we "build" the outputs.
-    # If "overriding" only some values in the output is not needed, One can just pass the full_res as the output argument in the CommandResult.
-    outputs['HelloWorld.Note(val.id && val.id == obj.id)'] = full_res
-    if cursor:
-        outputs['HelloWorld.NoteNextToken(val.NextPageToken)'] = {'NextPageToken': cursor}
-
-    return CommandResults(
-        readable_output=readable_output,
-        outputs_key_field='HelloWorld.Note.id',
-        outputs=outputs
-    )
-
-
-def incident_note_create_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def incident_note_create_command(client: Client, args: dict[str, Any]) -> CommandResults:
     incident_id = arg_to_number(args["incident_id"], required=True)
     note = args['note_text']
 
     if not incident_id:
         raise DemistoException("Please provide incident id.")
 
-    res_data = client.create_incident_note(incident_id=incident_id, comment=note)
+    res_data = client.create_note(incident_id=incident_id, comment=note)
 
     return CommandResults(
         readable_output="Note was created successfully.",
         outputs_prefix='HelloWorld.Note',
         outputs_key_field='id',
         outputs=res_data
-    )
-
-
-def file_scan_start_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    file_content = args['file_content']
-    file_name = args.get('file_name')
-
-    res_data = client.file_scan_start(file_name=file_name, file_content=file_content)
-
-    md_title = f"Scan Results For File '{file_name}'" if file_name else 'Scan Results'
-    readable_results = tableToMarkdown(md_title, res_data, is_auto_json_transform=True)
-
-    if not file_name:
-        file_name = f'Unknown File Name ({datetime.now()})'
-    outputs = {'file_name': file_name, 'scan_results': res_data}
-
-    return CommandResults(
-        readable_output=readable_results,
-        outputs_prefix='HelloWorld.Scan',
-        outputs_key_field='file_name',
-        outputs=outputs
     )
 
 
@@ -1069,12 +922,13 @@ def main() -> None:
 
     api_key = params.get('credentials', {}).get('password')
 
+    validate_api_key(api_key)
+
     # get the service API url
     base_url = params.get('url')
 
-    # if your Client class inherits from BaseClient, SSL verification is
-    # handled out of the box by it, just pass ``verify_certificate`` to
-    # the Client constructor
+    # if your Client class inherits from BaseClient, SSL verification is handled out of the box by it.
+    # Just pass ``verify_certificate`` to the Client constructor
     verify_certificate = not params.get('insecure', False)
 
     # How much time before the first fetch to retrieve incidents
@@ -1116,7 +970,7 @@ def main() -> None:
 
         elif command == 'ip':
             default_threshold_ip = arg_to_number(params.get('threshold_ip')) or DEFAULT_INDICATORS_THRESHOLD
-            return_results(dummy_ip_reputation_command(client, args, default_threshold_ip, reliability))
+            return_results(ip_reputation_command(client, args, default_threshold_ip, reliability))
 
         elif command == 'fetch-incidents':
             # Set and define the fetch incidents command to run after activated via integration settings.
@@ -1146,16 +1000,10 @@ def main() -> None:
             demisto.incidents(incidents)
 
         elif command == 'helloworld-incident-list':
-            return_results(incident_list_command(client, args))
-
-        elif command == 'helloworld-incident-note-list':
-            return_results(incident_note_list_command(client, args))
+            return_results(item_list_command(client, args))
 
         elif command == 'helloworld-incident-note-create':
             return_results(incident_note_create_command(client, args))
-
-        elif command == 'helloworld-file-scan-start':
-            return_results(file_scan_start_command(client, args))
 
         elif command == 'helloworld-say-hello':
             return_results(say_hello_command(client, args))
