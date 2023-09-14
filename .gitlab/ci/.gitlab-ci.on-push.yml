@@ -575,29 +575,17 @@ test-upload-flow:
     - section_end "Create Testing Branch"
 
     - section_start "Trigger Test Upload Flow On Testing Branch"
-      # Retry mechanism for triggering upload pipeline in case it fails due to GitLab connectivity issues.
-        - for _ in {1..3}; do
-        - export pipeline_id=$(./Utils/trigger_test_upload_flow.sh -ct $GITLAB_SVC_USER_TOKEN -g -b $BRANCH)
-        - if [ $? -eq 0 ]; then
-      # Extract the 'id' field from the JSON using Bash string manipulation
-        - pipeline_id="${pipeline_id#*\"id\":}"
-        - pipeline_id="${pipeline_id%%,*}"
-      # Remove any leading/trailing whitespace
-        - pipeline_id="${pipeline_id// /}"
-      # Print the extracted 'id'
-        - echo "Pipeline ID is set to: $pipeline_id"
-        - else
-          # Handle the case where the command failed
-            - echo "Error: The command failed"
-            - if [ "${pipeline_id}" != "null" ]; then
-              - break
-            - fi
-            - echo "Sleeping for 10 seconds before retrying"
-            - sleep 10
-        - done
-        - echo "Successful triggered test upload - $CI_SERVER_URL/xsoar/content/-/pipelines/$pipeline_id"  # disable-secrets-detection
+    # retry mechanism for trigger upload pipeline in case it failed because of gitlab connectivity issues.
+    - for _ in {1..3}; do
+    -   export pipeline_id=$(./Utils/trigger_test_upload_flow.sh -ct $GITLAB_SVC_USER_TOKEN -g -b $BRANCH | jq .id)
+    -   if [ "${pipeline_id}" != "null" ]; then
+    -     break
+    -   fi
+    -   echo "Sleeping for 10 seconds before retrying"
+    -   sleep 10
+    - done
+    - echo "Successful triggered test upload - $CI_SERVER_URL/xsoar/content/-/pipelines/$pipeline_id"  # disable-secrets-detection
     - section_end "Trigger Test Upload Flow On Testing Branch"
-
 
     - section_start "Wait For Upload To Finish"
     - python3 ./Utils/test_upload_flow/wait_for_upload.py -p $pipeline_id -g $GITLAB_API_TOKEN
