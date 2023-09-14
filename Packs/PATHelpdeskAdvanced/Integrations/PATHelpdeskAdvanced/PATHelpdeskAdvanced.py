@@ -194,6 +194,10 @@ class Client(BaseClient):
             return response_body
 
         except JSONDecodeError as e:
+            if error_parts := parse_html_h_tags(response.text):
+                raise DemistoException(
+                    ". ".join(error_parts), res=response
+                )  # TODO decide
             raise ValueError(f"could not parse json from {response.text}") from e
 
     def __init__(
@@ -235,7 +239,6 @@ class Client(BaseClient):
 
         # Check integration context
         integration_context = demisto.getIntegrationContext()
-        print(f"integration_context = {pformat(integration_context)}")
         refresh_token = integration_context.get("refresh_token")
         raw_token_expiry_utc: str | None = integration_context.get("token_expiry_utc")
 
@@ -246,7 +249,9 @@ class Client(BaseClient):
             and token_expiry_utc > (datetime.utcnow() + timedelta(seconds=5))
         ):
             try:
-                print("refresh token is valid, using it to generate a request token")
+                demisto.debug(
+                    "refresh token is valid, using it to generate a request token"
+                )
                 response = generate_request_token(refresh_token)
 
             except RequestNotSuccessfulError:
@@ -279,30 +284,28 @@ class Client(BaseClient):
         demisto.debug(f"login complete. {self.token_expiry_utc=}")
 
     def create_ticket(self, **kwargs) -> dict:
-        required_fields = (
-            OBJECT_TYPE_ID,
-            TICKET_STATUS_ID,
-            TICKET_PRIORITY_ID,
-        )
-        optional_fields = (
-            OBJECT_DESCTIPTION,
-            TICKET_CLASSIFICATION_ID,
-            TICKET_TYPE_ID,
-            CONTACT_ID,
-            SUBJECT,
-            PROBLEM,
-            SITE,
-        )
         data = create_params_dict(
-            required_fields,
-            optional_fields,
+            required_fields=(
+                OBJECT_TYPE_ID,
+                TICKET_STATUS_ID,
+                TICKET_PRIORITY_ID,
+            ),
+            optional_fields=(
+                OBJECT_DESCTIPTION,
+                TICKET_CLASSIFICATION_ID,
+                TICKET_TYPE_ID,
+                CONTACT_ID,
+                SUBJECT,
+                PROBLEM,
+                SITE,
+            ),
             **kwargs,
         )
 
         return self.http_request(
             "WSC/Set",
             "POST",
-            data={"entity": "Ticket", "data": data},
+            data={"entity": "Incident", "data": data},
             attempted_action="creating ticket",
         )
 
@@ -397,11 +400,13 @@ class Client(BaseClient):
             "entity": "Attachments",
             "start": 0,  # TODO necessary?
             "limit": safe_arg_to_number(kwargs["limit"], "limit"),
-            "filter": parse_filter_conditions(
-                (
-                    f'"{PARENT_OBJECT.hda_name}" eq "Ticket"',
-                    f'"{PARENT_OBJECT_ID.hda_name}" eq "{ticket_id}"',
-                )
+            "filter": str(
+                parse_filter_conditions(
+                    (
+                        f'"{PARENT_OBJECT.hda_name}" eq "Ticket"',
+                        f'"{PARENT_OBJECT_ID.hda_name}" eq "{ticket_id}"',
+                    )
+                ),
             ),
         }
 
@@ -591,8 +596,8 @@ def paginate(**kwargs) -> PaginateArgs:
     )
 
 
-def create_ticket_command(client: Client, **kwargs) -> CommandResults:
-    response = client.create_ticket(**kwargs)
+def create_ticket_command(client: Client, args: dict) -> CommandResults:
+    response = client.create_ticket(**args)
     response = convert_response_dates(response)
 
     response_for_human_readable = response.copy()
@@ -635,11 +640,7 @@ def list_ticket_attachments_command(client: Client, args: dict) -> CommandResult
     response = client.list_ticket_attachments(**args)
     response = convert_response_dates(response)
 
-    attachment_ids_str = ",".join(
-        attachment[ID.hda_name] for attachment in response["data"]
-    )
     return CommandResults(
-        readable_output=f"Added attachment ID(s) {attachment_ids_str} to ticket {args['ticket_id']} succesfully",
         outputs=response["data"],
         outputs_prefix=f"{VENDOR}.Ticket.Attachment",
         outputs_key_field=ID.hda_name,
@@ -731,6 +732,13 @@ def list_users_command(client: Client, args: dict) -> CommandResults:
     )
 
 
+HTML_H_TAG_REGEX = re.compile(r"<h\d>(.*?)<\/h\d>", flags=re.S)
+
+
+def parse_html_h_tags(html_text: str) -> list[str]:
+    return HTML_H_TAG_REGEX.findall(html_text)
+
+
 commands: dict[str, Callable] = {
     "hda-create-ticket": create_ticket_command,
     "hda-list-tickets": list_tickets_command,
@@ -738,6 +746,7 @@ commands: dict[str, Callable] = {
     "hda-change-ticket-status": change_ticket_status_command,
     "hda-add-ticket-attachment": add_ticket_attachment_command,
     "hda-list-ticket-attachments": list_ticket_attachments_command,
+    "hda-list-ticket-statuses": list_ticket_statuses_command,
     "hda-list-ticket-priorities": list_ticket_priorities_command,
     "hda-list-ticket-sources": list_ticket_sources_command,
     "hda-get-ticket-history": get_ticket_history_command,
