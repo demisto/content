@@ -1,5 +1,7 @@
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
+register_module_line('Tenable.io', 'start', __line__())
+### pack version: 2.1.13
+
+
 import os
 import sys
 import time
@@ -745,42 +747,33 @@ def export_request_with_export_uuid(export_uuid: str, assets_or_vulns: str) -> d
 def get_scanner_info():
     """
     Returns the scanner list and additional information about each scanner
-    Args:
-        NEW_HEADERS and USE_SSL
     Returns:
         CommandResults: Command object with relevant data.
     """
-    full_url = f'{BASE_URL}scanners'
-    try:
-        response = requests.get(full_url, headers=NEW_HEADERS, verify=USE_SSL)
-        if response.status_code != 200:
-            raise DemistoException(response.text)
-        if response:
-            response_data = response.json()
-            scanners = response_data.get('scanners')
-        if scanners:
-            scanner_data = []
-            for scanner in scanners:
-                scanner_results = {
-                    'scanner_id': scanner['id'],
-                    'scanner_name': scanner['name'],
-                    'scanner_status': scanner['status'],
-                    'timestamp': scanner['timestamp']
-                }
-                scanner_data.append(scanner_results)
-        name = 'Scanner Info'
-        t = scanner_data
-        markdown = tableToMarkdown(name, t, headerTransform=underscoreToCamelCase)
-        results = CommandResults(
-            readable_output=markdown,
-            outputs_prefix='TenableIO.Scanner',
-            outputs=scanner_data,
-            raw_response=response_data
-        )
-        return results
-
-    except DemistoException as e:
-        raise DemistoException(response.text, e)
+    full_url = f'{BASE_URL}/scanners'
+    response = requests.get(full_url, headers=HEADERS, verify=USE_SSL)
+    if response:
+        response_data = response.json()
+    response.raise_for_status()
+    if scanners := response_data.get('scanners'):
+        scanner_data = []
+        for scanner in scanners:
+            scanner_results = {
+                'scanner_id': scanner['id'],
+                'scanner_name': scanner['name'],
+                'scanner_status': scanner['status'],
+                'timestamp': scanner['timestamp']
+            }
+            scanner_data.append(scanner_results)
+    markdown = tableToMarkdown('Scanner Info', scanner_data,
+                               headerTransform=underscoreToCamelCase)
+    results = CommandResults(
+        readable_output=markdown,
+        outputs_prefix='TenableIO.Scanner',
+        outputs=scanner_data,
+        raw_response=response_data
+    )
+    return results
 
 
 def get_chunks_request(export_uuid: str, chunk_id: str, assets_or_vulns: str) -> dict:
@@ -1460,10 +1453,6 @@ def main():  # pragma: no cover
         return_results(export_vulnerabilities_command(demisto.args()))
     elif demisto.command() == 'tenable-io-list-scanners':
         return_results(get_scanner_info())
-    elif command == 'tenable-io-export-assets':
-        return_results(export_assets_command(args))
-    elif command == 'tenable-io-export-vulnerabilities':
-        return_results(export_vulnerabilities_command(args))
     elif command == 'tenable-io-list-scan-filters':
         return_results(list_scan_filters_command(client))
     elif command == 'tenable-io-get-scan-history':
@@ -1472,6 +1461,6 @@ def main():  # pragma: no cover
         return_results(export_scan_command(args, client))
 
 
-
 if __name__ in ['__main__', 'builtin', 'builtins']:
     main()
+register_module_line('Tenable.io', 'end', __line__())
