@@ -152,7 +152,7 @@ configuration:
   section: Connect
   advanced: true
   required: false
-- display: Log type max number of pull attempts
+- display: Log type max number of job pulling attempts
   name: fetch_job_polling_max_num_attempts
   additionalinfo: "The maximum number of attempts to try and pull results for each log type from a job that was created by its query. Each attempt takes around 1 second. Increasing this value is useful in case there are many logs to pull from a given log type.\nNote: When increasing this number, in case fetching more than 4 logs types together, it is recommended to split different log types for different integration instances"
   type: 0
