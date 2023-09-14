@@ -1,4 +1,3 @@
-import logging
 import os
 from pathlib import Path
 from typing import Any
@@ -181,13 +180,13 @@ def _test(monkeypatch, case_mocker: CollectTestsMocker, collector_class: Callabl
     assert Machine.MASTER in collected.machines
 
     for test in collected.tests:
-        logging.info(f'collected test {test}')
+        print(f'collected test {test}')
     for machine in collected.machines:
-        logging.info(f'machine {machine}')
+        print(f'machine {machine}')
     for pack in collected.packs_to_install:
-        logging.info(f'collected pack {pack}')
+        print(f'collected pack {pack}')
     for mr in collected.modeling_rules_to_test:
-        logging.info(f'collected modeling rule to test {mr}')
+        print(f'collected modeling rule to test {mr}')
 
 
 NIGHTLY_EXPECTED_TESTS = {'myTestPlaybook', 'myOtherTestPlaybook'}
