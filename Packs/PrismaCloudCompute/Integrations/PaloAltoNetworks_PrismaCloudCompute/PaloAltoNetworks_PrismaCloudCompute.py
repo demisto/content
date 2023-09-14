@@ -552,10 +552,11 @@ def is_command_is_fetch():
     :return: True if this is a fetch_incidents command, otherwise return false.
     :rtype: ``bool``
     """
-    if demisto.getLastRun():
+    ctx = demisto.getIntegrationContext()
+    if demisto.getLastRun() or ctx.get("unstuck", False):
         return True
     else:
-        return not demisto.getIntegrationContext().get('fetched_incidents_list', [])
+        return not ctx.get('fetched_incidents_list', [])
 
 
 def fetch_incidents(client):
@@ -633,6 +634,7 @@ def fetch_incidents(client):
 
         incidents_to_update = incidents or ctx.get('fetched_incidents_list')
         ctx.update({'fetched_incidents_list': incidents_to_update})
+        ctx["unstuck"] = False
         demisto.setIntegrationContext(ctx)
         demisto.debug(f"Integration Context after update = {ctx}")
 
@@ -2029,6 +2031,24 @@ def get_file_integrity_events_command(client: PrismaCloudComputeClient, args: di
     )
 
 
+def unstuck_fetch_stream_command():
+    """
+    Adds a field to ensure that is_command_is_fetch will recognize the next fetch incidents run as fetch.
+    This command is for unstacking the fetch stream in case the fetch incidents yields duplications.
+
+    Returns:
+        CommandResults: command-results object.
+    """
+    ctx = demisto.getIntegrationContext()
+    demisto.debug(f"unstuck field before update = {ctx.get('unstuck', False)}")
+    ctx["unstuck"] = True
+    demisto.setIntegrationContext(ctx)
+    demisto.debug(f"unstuck field after update = {ctx.get('unstuck', False)}")
+    return CommandResults(
+        readable_output="The fetch stream was released successfully."
+    )
+
+
 def main():
     """
     PARSE AND VALIDATE INTEGRATION PARAMS
@@ -2142,8 +2162,6 @@ def main():
             return_results(results=get_backups_command(client=client, args=demisto.args()))
         elif requested_command == "prisma-cloud-compute-logs-defender-download":
             return_results(results=get_logs_defender_download_command(client=client, args=demisto.args()))
-        elif requested_command == "prisma-cloud-compute-get-file-integrity-events":
-            return_results(results=get_file_integrity_events_command(client=client, args=demisto.args()))
     # Log exceptions
     except Exception as e:
         return_error(f'Failed to execute {requested_command} command. Error: {str(e)}')

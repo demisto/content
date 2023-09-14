@@ -3418,3 +3418,31 @@ Returns the available backups.
 >| 123 |  | All,<br/>123 | Process touch wrote to path (user: root) | write | 2 |  | host123 | /tmp/alert/test1 | touch | Default - alert on suspicious runtime behavior | 2023-08-30T00:16:01.883Z | root | 64ee8a4138b8ac44a6f3d460 |
 >| 123 |  | All,<br/>123 | Process touch wrote to path (user: root) | write | 2 |  | host123 | /tmp/alert/test1 | touch | Default - alert on suspicious runtime behavior | 2023-08-29T23:16:01.673Z | root | 64ee7c3138b8ac44a6f3d458 |
 
+### prisma-cloud-compute-unstuck-fetch-stream
+
+***
+Use this command to unstuck the fetch stream in case it's getting duplicated incidents.
+
+#### Base Command
+
+`prisma-cloud-compute-unstuck-fetch-stream`
+
+#### Input
+
+- No input.
+
+#### Context Output
+
+- No context output for this command.
+
+#### Command example
+```!prisma-cloud-compute-unstuck-fetch-stream```
+
+
+#### Human Readable Output
+
+```The fetch stream was released successfully.```
+
+## General Note:
+- Do not use the reset last run button as it will cause incidents duplications to the instance. 
+- In case you pressed reset last run button and you get duplicated incidents, run **prisma-cloud-compute-unstuck-fetch-stream** command.
