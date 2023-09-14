@@ -47,7 +47,7 @@ http_func_args:
       count: 2
       page: 2
 outputs:
-  outputs: &id001
+  outputs:
   - classification_log:
     - date: 1000000000
       from_state: processing
@@ -80,7 +80,7 @@ outputs:
     uuid: 46b1921f9b4e4b34b547bdf20c0c0263
   outputs_key_field: uuid
   outputs_prefix: Netcraft.SubmissionURL
-  raw_response: *id001
+  raw_response: null
   readable_output: '### Submission URLs
 
     |URL|Hostname|Classification|URL Classification Log|

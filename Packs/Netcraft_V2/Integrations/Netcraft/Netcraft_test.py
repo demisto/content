@@ -1,19 +1,139 @@
 import pytest
 from test_data.test_data import *
 from Netcraft import Client
-# import CommonServerPython
+import demistomock as demisto
+from CommonServerPython import ScheduledCommand
 # import json
 # import yaml
 # from unittest import mock
-# import Netcraft
 # import requests
 
 MOCK_CLIENT = Client(
+    {
+        'takedown_url': 'https://takedown.netcraft.com/api/v1/',
+        'submission_url': 'https://report.netcraft.com/api/v3/',
+    },
     verify=True,
     proxy=True,
     ok_codes=(200,),
     headers={}
 )
+
+
+def mock_demisto(mocker):
+    mocker.patch.object(demisto, 'params')
+    mocker.patch.object(demisto, 'args')
+    mocker.patch.object(demisto, 'incidents')
+    mocker.patch.object(demisto, 'debug')
+
+
+@pytest.mark.parametrize("input_dict,keys,expected", [
+    ({'a': 1, 'b': 0}, ['a'], {'a': True, 'b': 0}),
+    ({'a': '1', 'b': '0'}, ['a', 'b'], {'a': True, 'b': False}),
+    ({'x': 'yes', 'y': 'no'}, ['x'], {'x': None, 'y': 'no'}),
+])
+def test_convert_keys_to_bool(input_dict, keys, expected):
+    from Netcraft import convert_keys_to_bool
+    convert_keys_to_bool(input_dict, *keys)
+    assert input_dict == expected
+
+
+def mock_client_func_for_paginate_with_page_num_and_size(args, pagination_args):
+    page = pagination_args['page']
+    count = pagination_args['count']
+    assert args == 'args'
+    return {
+        "results": list(range((page - 1) * count, page * count))
+    }
+
+
+@pytest.mark.parametrize('page, page_size, limit, expected', [
+    (2, 10, None, list(range(10, 20))),
+    (None, 100, 50, list(range(50))),
+    (None, None, 45, list(range(45))),
+    (None, None, 2, list(range(2)))
+])
+def test_paginate_with_page_num_and_size(page, page_size, limit, expected):
+
+    from Netcraft import paginate_with_page_num_and_size
+
+    result = paginate_with_page_num_and_size(
+        mock_client_func_for_paginate_with_page_num_and_size,
+        'args',
+        page=page,
+        page_size=page_size,
+        limit=limit,
+        pages_key_path=['results'],
+        api_limit=10
+    )
+
+    assert result == expected
+
+
+def mock_client_func_for_paginate_with_token(args):
+    marker = args['marker'] or 0
+    page_size = args['page_size']
+    assert args['params'] == 'any'
+    return {
+        "results": list(range(marker, marker + page_size)),
+        "marker": marker + page_size
+    }
+
+
+@pytest.mark.parametrize('token, page_size, limit, expected', [
+    (1, 3, 10, ([1, 2, 3], 4)),
+    (None, 3, 10, ([0, 1, 2, 3, 4, 5, 6, 7, 8, 9], 10)),
+    (None, None, 13, ([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], 13)),
+])
+def test_paginate_with_token(token, page_size, limit, expected):
+
+    from Netcraft import paginate_with_token
+
+    result = paginate_with_token(
+        mock_client_func_for_paginate_with_token,
+        api_params={'params': 'any'},
+        next_token=token,
+        page_size=page_size,
+        limit=limit,
+        pages_key_path=['results'],
+        api_limit=5
+    )
+
+    assert result == expected
+
+
+@pytest.mark.parametrize(
+    'data',
+    [
+        fetch_incidents,
+        fetch_incidents_first_run,
+    ]
+)
+def test_fetch_incidents(mocker, data):
+    '''
+    Given:
+        - A server call to fetch incidents.
+
+    When:
+        - Fetching incidents.
+
+    Then:
+        - Fetch Netcraft takedowns as incidents.
+    '''
+    import Netcraft
+
+    Netcraft.PARAMS = data.params
+    mocker.patch.object(demisto, 'getLastRun', return_value=data.last_run)
+    mocker.patch.object(demisto, 'setLastRun')
+    request = mocker.patch.object(Client, '_http_request', return_value=data.api_response)
+
+    incidents = Netcraft.fetch_incidents(MOCK_CLIENT)
+
+    request.assert_called_with(
+        *data.http_func_args['args'],
+        **data.http_func_args['kwargs']
+    )
+    assert incidents == data.outputs
 
 
 def test_attack_report_command(mocker):
@@ -29,6 +149,7 @@ def test_attack_report_command(mocker):
     '''
     from Netcraft import attack_report_command
 
+    getFilePath = mocker.patch.object(demisto, 'getFilePath', return_value={'name': 'file name', 'path': 'test_data/mock_file.txt'})
     request = mocker.patch.object(Client, '_http_request', return_value=attack_report.api_response)
 
     result = attack_report_command(attack_report.args, MOCK_CLIENT)
@@ -38,7 +159,9 @@ def test_attack_report_command(mocker):
     assert attack_report.outputs.outputs_prefix == result.outputs_prefix
     assert attack_report.outputs.raw_response == result.raw_response
     assert attack_report.outputs.readable_output == result.readable_output
+    assert str(request.call_args.kwargs.pop('files')['evidence']) == "<_io.BufferedReader name='test_data/mock_file.txt'>"
 
+    getFilePath.assert_called_with(attack_report.args.get('entry_id'))
     request.assert_called_with(
         *attack_report.http_func_args['args'],
         **attack_report.http_func_args['kwargs']
@@ -65,7 +188,6 @@ def test_takedown_list_command(mocker):
     assert takedown_list.outputs.outputs == result.outputs
     assert takedown_list.outputs.outputs_key_field == result.outputs_key_field
     assert takedown_list.outputs.outputs_prefix == result.outputs_prefix
-    assert takedown_list.outputs.raw_response == result.raw_response
     assert takedown_list.outputs.readable_output == result.readable_output
 
     request.assert_called_with(
@@ -237,9 +359,6 @@ def test_submission_list_command(mocker):
     result = submission_list_command(submission_list.args, MOCK_CLIENT)
 
     assert submission_list.outputs.outputs == result.outputs
-    assert submission_list.outputs.outputs_key_field == result.outputs_key_field
-    assert submission_list.outputs.outputs_prefix == result.outputs_prefix
-    assert submission_list.outputs.raw_response == result.raw_response
     assert submission_list.outputs.readable_output == result.readable_output
 
     request.assert_called_with(
@@ -248,7 +367,43 @@ def test_submission_list_command(mocker):
     )
 
 
-def test_file_report_submit_command(mocker):
+def test_submission_list_command_with_uuid(mocker):
+    '''
+    Given:
+        - TODO.
+
+    When:
+        - Running the "netcraft-submission-list" command.
+
+    Then:
+        - Get basic information about a submissions.
+    '''
+    from Netcraft import submission_list_command
+
+    request = mocker.patch.object(Client, '_http_request', return_value=submission_list_with_uuid.api_response)
+
+    result = submission_list_command(submission_list_with_uuid.args, MOCK_CLIENT)
+
+    assert submission_list_with_uuid.outputs.outputs == result.outputs
+    assert submission_list_with_uuid.outputs.outputs_key_field == result.outputs_key_field
+    assert submission_list_with_uuid.outputs.outputs_prefix == result.outputs_prefix
+    assert submission_list_with_uuid.outputs.readable_output == result.readable_output
+
+    request.assert_called_with(
+        *submission_list_with_uuid.http_func_args['args'],
+        **submission_list_with_uuid.http_func_args['kwargs']
+    )
+
+
+# I'M HERE -----------------------------------------
+@pytest.mark.parametrize(
+    'data',
+    [
+        file_report_submit_with_entry_id,
+        file_report_submit_with_file_name_and_content
+    ]
+)
+def test_file_report_submit_command(mocker, data):
     '''
     Given:
         - TODO.
@@ -261,19 +416,22 @@ def test_file_report_submit_command(mocker):
     '''
     from Netcraft import file_report_submit_command
 
-    request = mocker.patch.object(Client, '_http_request', return_value=file_report_submit.api_response)
+    mocker.patch.object(ScheduledCommand, 'raise_error_if_not_supported')
+    getFilePath = mocker.patch.object(demisto, 'getFilePath', return_value={'name': 'file name', 'path': 'test_data/mock_file.txt'})
+    request = mocker.patch.object(Client, '_http_request', return_value=data.api_response)
 
-    result = file_report_submit_command(file_report_submit.args, MOCK_CLIENT)
+    result = file_report_submit_command(data.args, MOCK_CLIENT)
 
-    assert file_report_submit.outputs.outputs == result.outputs
-    assert file_report_submit.outputs.outputs_key_field == result.outputs_key_field
-    assert file_report_submit.outputs.outputs_prefix == result.outputs_prefix
-    assert file_report_submit.outputs.raw_response == result.raw_response
-    assert file_report_submit.outputs.readable_output == result.readable_output
+    assert data.outputs.outputs == result.outputs
+    assert data.outputs.outputs_key_field == result.outputs_key_field
+    assert data.outputs.outputs_prefix == result.outputs_prefix
+    assert data.outputs.raw_response == result.raw_response
+    assert data.outputs.readable_output == result.readable_output
 
+    assert getFilePath.call_args_list == [data.args.get('entry_id')] * 2
     request.assert_called_with(
-        *file_report_submit.http_func_args['args'],
-        **file_report_submit.http_func_args['kwargs']
+        *data.http_func_args['args'],
+        **data.http_func_args['kwargs']
     )
 
 
@@ -297,7 +455,6 @@ def test_submission_file_list_command(mocker):
     assert submission_file_list.outputs.outputs == result.outputs
     assert submission_file_list.outputs.outputs_key_field == result.outputs_key_field
     assert submission_file_list.outputs.outputs_prefix == result.outputs_prefix
-    assert submission_file_list.outputs.raw_response == result.raw_response
     assert submission_file_list.outputs.readable_output == result.readable_output
 
     request.assert_called_with(
@@ -319,6 +476,7 @@ def test_email_report_submit_command(mocker):
     '''
     from Netcraft import email_report_submit_command
 
+    mocker.patch.object(ScheduledCommand, 'raise_error_if_not_supported')
     request = mocker.patch.object(Client, '_http_request', return_value=email_report_submit.api_response)
 
     result = email_report_submit_command(email_report_submit.args, MOCK_CLIENT)
@@ -377,6 +535,7 @@ def test_url_report_submit_command(mocker):
     '''
     from Netcraft import url_report_submit_command
 
+    mocker.patch.object(ScheduledCommand, 'raise_error_if_not_supported')
     request = mocker.patch.object(Client, '_http_request', return_value=url_report_submit.api_response)
 
     result = url_report_submit_command(url_report_submit.args, MOCK_CLIENT)
@@ -485,11 +644,12 @@ def test_url_screenshot_get_command(mocker):
     '''
     from Netcraft import url_screenshot_get_command
 
+    fileResult = mocker.patch('Netcraft.fileResult')
     request = mocker.patch.object(Client, '_http_request', return_value=url_screenshot_get.api_response)
 
-    result = url_screenshot_get_command(url_screenshot_get.args, MOCK_CLIENT)
+    url_screenshot_get_command(url_screenshot_get.args, MOCK_CLIENT)
 
-    assert url_screenshot_get.outputs == result['File']
+    fileResult.assert_called_with(url_screenshot_get.outputs, None, 9)
 
     request.assert_called_with(
         *url_screenshot_get.http_func_args['args'],

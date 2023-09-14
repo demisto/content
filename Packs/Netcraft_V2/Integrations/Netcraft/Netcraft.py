@@ -33,50 +33,69 @@ RES_CODE_TO_MESSAGE = {
 
 class Client(BaseClient):
 
-    def __init__(self, verify: bool, proxy: bool, ok_codes: tuple, headers: dict, **kwargs):
-        super().__init__(None, verify, proxy, ok_codes, headers, **kwargs)
-
-    def _http_request(self, method: str, service: str, url_suffix: str,
-                      params: dict = None, json_data: dict = None,
-                      files: dict = None, resp_type: str = 'json',
-                      ok_codes: Any = None, **kwargs) -> Any:
+    def takedown_http_request(self, method: str, url_suffix: str,
+                              params: dict = None, data: dict = None,
+                              files: dict = None, resp_type: str = 'json',
+                              ok_codes: Any = None, **kwargs) -> Any:
         '''
-        A wrapper for BaseClient._http_request that supports Netcraft specific functions.
-
+        A wrapper for BaseClient._http_request that interacts with the Netcraft takedown service.
         Args:
             method (str):
                 The HTTP method, for example: GET, POST, and so on.
-
-            service (str):
-                The Netcraft service URL to use. should be a key in SERVICE_TO_URL_MAP.
-
             url_suffix (str):
                 The API endpoint.
-
             params (dict):
                 URL parameters to specify the query.
-
             json_data (dict):
                 The dictionary to send in a 'POST' request.
-
             files (dict):
                 The file data to send in a 'POST' request.
-
             resp_type (str):
                 Determines which data format to return from the HTTP request. The default
                 is 'json'. Other options are 'text', 'content', 'xml' or 'response'. Use 'response'
                     to return the full response object.
-
             ok_codes (tuple[int]):
                 The request codes to accept as OK, for example: (200, 201, 204). If you specify "None", will use self._ok_codes.
+        Returns:
+            dict | str | bytes | xml.etree.ElementTree.Element | requests.Response: Depends on the resp_type parameter
+        '''
+        remove_nulls_from_dictionary(params or {})
+        remove_nulls_from_dictionary(data or {})
+        return self._http_request(
+            method, full_url=urljoin(self._base_url['takedown_url'], url_suffix),
+            params=params, data=data, files=files, resp_type=resp_type,
+            ok_codes=ok_codes, **kwargs)
 
+    def submission_http_request(self, method: str, url_suffix: str,
+                                params: dict = None, json_data: dict = None,
+                                files: dict = None, resp_type: str = 'json',
+                                ok_codes: Any = None, **kwargs) -> Any:
+        '''
+        A wrapper for BaseClient._http_request that interacts with the Netcraft submission service.
+        Args:
+            method (str):
+                The HTTP method, for example: GET, POST, and so on.
+            url_suffix (str):
+                The API endpoint.
+            params (dict):
+                URL parameters to specify the query.
+            json_data (dict):
+                The dictionary to send in a 'POST' request.
+            files (dict):
+                The file data to send in a 'POST' request.
+            resp_type (str):
+                Determines which data format to return from the HTTP request. The default
+                is 'json'. Other options are 'text', 'content', 'xml' or 'response'. Use 'response'
+                    to return the full response object.
+            ok_codes (tuple[int]):
+                The request codes to accept as OK, for example: (200, 201, 204). If you specify "None", will use self._ok_codes.
         Returns:
             dict | str | bytes | xml.etree.ElementTree.Element | requests.Response: Depends on the resp_type parameter
         '''
         remove_nulls_from_dictionary(params or {})
         remove_nulls_from_dictionary(json_data or {})
-        return super()._http_request(
-            method, full_url=urljoin(SERVICE_TO_URL_MAP[service], url_suffix),
+        return self._http_request(
+            method, full_url=urljoin(self._base_url['submission_url'], url_suffix),
             params=params, json_data=json_data, files=files, resp_type=resp_type,
             ok_codes=ok_codes, **kwargs)
 
@@ -92,99 +111,96 @@ class Client(BaseClient):
 
     def get_takedowns(self, params: dict) -> list[dict]:
         '''Used by fetch-incidents and netcraft-takedown-list'''
-        return self._http_request(
-            'GET', 'takedown', 'attacks/', params,
+        return self.takedown_http_request(
+            'GET', 'attacks/', params=params,
         )
 
     def attack_report(self, body: dict, file: dict | None) -> str:
-        return self._http_request(
-            'POST', 'takedown', 'report/',
-            json_data=body, resp_type='text', files=file,
+        return self.takedown_http_request(
+            'POST', 'report/',
+            data=body, resp_type='text', files=file,
         )
 
     def takedown_update(self, body: dict) -> dict:
-        return self._http_request(
-            'POST', 'takedown', 'update-attack/', json_data=body,
+        return self.takedown_http_request(
+            'POST', 'update-attack/', data=body,
         )
 
     def takedown_escalate(self, body: dict) -> dict:
-        return self._http_request(
-            'POST', 'takedown', 'escalate/', json_data=body,
+        return self.takedown_http_request(
+            'POST', 'escalate/', data=body,
         )
 
     def takedown_note_create(self, body: dict) -> dict:
-        return self._http_request(
-            'POST', 'takedown', 'notes/', json_data=body,
+        return self.takedown_http_request(
+            'POST', 'notes/', data=body,
         )
 
     def takedown_note_list(self, params: dict) -> list[dict]:
-        return self._http_request(
-            'GET', 'takedown', 'notes/', params=params,
+        return self.takedown_http_request(
+            'GET', 'notes/', params=params,
         )
 
     def attack_type_list(self, params: dict) -> list[dict]:
-        return self._http_request(
-            'GET', 'takedown', 'attack-types/', params=params,
+        return self.takedown_http_request(
+            'GET', 'attack-types/', params=params,
         )
 
     def submission_list(self, params: dict) -> dict:
-        return self._http_request(
-            'GET', 'submission', 'submissions/', params=params,
+        return self.submission_http_request(
+            'GET', 'submissions/', params=params,
         )
 
     def get_submission(self, uuid: str) -> dict:
-        return self._http_request(
-            'GET', 'submission', f'submission/{uuid}',
+        return self.submission_http_request(
+            'GET', f'submission/{uuid}',
         )
 
     def file_report_submit(self, body: dict) -> dict:
-        return self._http_request(
-            'POST', 'submission', 'report/files', json_data=body,
+        return self.submission_http_request(
+            'POST', 'report/files', json_data=body,
         )
 
-    def submission_file_list(self, params: dict) -> dict:
-        return self._http_request(
-            'GET', 'submission', f'submission/{params.pop("submission_uuid")}/files', params=params,
+    def submission_file_list(self, submission_uuid, params: dict) -> dict:
+        return self.submission_http_request(
+            'GET', f'submission/{submission_uuid}/files', params=params,
         )
 
     def file_screenshot_get(self, submission_uuid: str, file_hash: str) -> bytes:
-        return self._http_request(
-            'GET', 'submission',
-            f'submission/{submission_uuid}/files/{file_hash}/screenshot',
+        return self.submission_http_request(
+            'GET', f'submission/{submission_uuid}/files/{file_hash}/screenshot',
             resp_type='content',
         )
 
     def url_report_submit(self, body: dict) -> dict:
-        return self._http_request(
-            'POST', 'submission', 'report/urls', json_data=body,
+        return self.submission_http_request(
+            'POST', 'report/urls', json_data=body,
         )
 
     def submission_mail_get(self, submission_uuid: str) -> dict:
-        return self._http_request(
-            'GET', 'submission', f'submission/{submission_uuid}/mail',
+        return self.submission_http_request(
+            'GET', f'submission/{submission_uuid}/mail',
         )
 
     def mail_screenshot_get(self, submission_uuid: str) -> bytes:
-        return self._http_request(
-            'GET', 'submission',
-            f'submission/{submission_uuid}/mail/screenshot',
+        return self.submission_http_request(
+            'GET', f'submission/{submission_uuid}/mail/screenshot',
             resp_type='content',
         )
 
     def email_report_submit(self, body: dict) -> dict:
-        return self._http_request(
-            'POST', 'submission', 'report/mail', json_data=body,
+        return self.submission_http_request(
+            'POST', 'report/mail', json_data=body,
         )
 
-    def submission_url_list(self, params: dict) -> dict:
-        return self._http_request(
-            'GET', 'submission', f'submission/{params.pop("submission_uuid")}/urls', params=params,
+    def submission_url_list(self, submission_uuid, params: dict) -> dict:
+        return self.submission_http_request(
+            'GET', f'submission/{submission_uuid}/urls', params=params,
         )
 
     def url_screenshot_get(self, submission_uuid: str, url_uuid: str, screenshot_hash: str) -> requests.Response:
-        return self._http_request(
-            'GET', 'submission',
-            f'submission/{submission_uuid}/urls/{url_uuid}/screenshots/{screenshot_hash}',
+        return self.submission_http_request(
+            'GET', f'submission/{submission_uuid}/urls/{url_uuid}/screenshots/{screenshot_hash}',
             resp_type='response',
         )
 
@@ -244,7 +260,7 @@ def paginate_with_token(
     api_limit: int = 1000,
     api_token_key: str = 'marker',
     api_page_size_key: str = 'page_size',
-) -> tuple[list, str]:
+) -> tuple[list, Any]:
     '''
     Paginates an API endpoint that accepts "page token" and "page size" parameters
     using the "limit", "next_token" and "page_size" args provided by demisto.args() as per the XSOAR pagination protocol.
@@ -264,7 +280,7 @@ def paginate_with_token(
         api_page_size_key (str, optional): The key used by the API as a page size. Defaults to 'page_size'.
 
     Returns:
-        tuple[list, str]: The combined pages and the next page token.
+        tuple[list, Any]: The combined pages and the next page token.
     '''
 
     def page_sizes(limit: int, api_limit: int) -> Generator[int, None, None]:
@@ -279,23 +295,24 @@ def paginate_with_token(
     if next_token:
         pagination_args = {api_token_key: next_token, api_page_size_key: page_size}
         response = client_func(api_params | pagination_args)
-        return get_page(response), response.get(api_token_key, '')
+        return get_page(response), response.get(api_token_key)
     else:
         pages = []
         for page_size in page_sizes(arg_to_number(limit) or 50, api_limit):
             pagination_args = {api_token_key: next_token, api_page_size_key: page_size}
             response = client_func(api_params | pagination_args)
+            next_token = response.get(api_token_key)
             pages += get_page(response)
-        return pages, str(response.get(api_token_key))
+        return pages, response.get(api_token_key)
 
 
 def paginate_with_page_num_and_size(
-    client_func: Callable[[dict], dict],
-    api_params: dict[str, Any],
-    limit: str | int | None,
-    page: str | None,
-    page_size: str | int | None,
-    pages_key_path: Iterable | None,
+    client_func: Callable,
+    *func_args,
+    limit: str | int | None = 50,
+    page: str | int | None = None,
+    page_size: str | int | None = None,
+    pages_key_path: Iterable | None = (),
     api_limit: int = 1000,
     api_page_num_key: str = 'page',
     api_page_size_key: str = 'count',
@@ -305,7 +322,7 @@ def paginate_with_page_num_and_size(
     using the "limit", "page" and "page_size" args provided by demisto.args() as per the XSOAR pagination protocol.
 
     Args:
-        client_func (Callable[[dict], dict]): The client function that calls the API endpoint.
+        client_func (Callable[[...], dict]): The client function that calls the API endpoint.
         api_params (dict[str, Any]): The parameters to call the endpoint with. The pagination args will be added to this arg.
         limit (str | int | None): The demisto.args() limit.
         page (str | None): The demisto.args() page.
@@ -320,22 +337,22 @@ def paginate_with_page_num_and_size(
     Returns:
         list: The combined pages.
     '''
+    def get_page(pagination_args: dict) -> list[dict]:
+        response = client_func(*func_args, pagination_args)
+        return dict_safe_get(response, keys=pages_key_path, return_type=list)
 
-    get_page = partial(dict_safe_get, keys=pages_key_path or (), return_type=list)
     page = arg_to_number(page)
     page_size = arg_to_number(page_size)
 
     if page and page_size:
         pagination_args = {api_page_num_key: page, api_page_size_key: min(api_limit, page_size)}
-        response = client_func(api_params | pagination_args)
-        return get_page(response)
+        return get_page(pagination_args)
     else:
         limit = arg_to_number(limit) or 50
         pages = []
-        for page in range(1, limit + api_limit - 1, api_limit):
+        for page in range(1, -(-limit // api_limit) + 1):  # ceiling(limit / api_limit)
             pagination_args = {api_page_num_key: page, api_page_size_key: api_limit}
-            response = client_func(api_params | pagination_args)
-            pages += get_page(response)
+            pages += get_page(pagination_args)
         del pages[limit:]  # remove the surplus
         return pages
 
@@ -346,10 +363,8 @@ def paginate_with_page_num_and_size(
 def test_module(client: Client) -> str:
     if PARAMS.get('isFetch') and not arg_to_datetime(PARAMS['first_fetch']):
         raise ValueError(f'{PARAMS["first_fetch"]!r} is not a valid time.')
-    # test takedown service
-    client.get_takedowns({'page_size': 1})
-    # test submission service
-    client.submission_list({'max_results': 1})
+    client.get_takedowns({'page_size': 1})  # test takedown service
+    client.submission_list({'max_results': 1})  # test submission service
     return 'ok'
 
 
@@ -360,8 +375,11 @@ def fetch_incidents(client: Client) -> list[dict[str, str]]:
         demisto.debug(incident_id := incident['id'])
         return {
             'name': f'Takedown-{incident_id}',
-            'occurred': arg_to_datetime(incident['date_submitted']).isoformat(),
-            'dbotMirrorId': incident_id,
+            'occurred': arg_to_datetime(
+                incident['date_submitted'],
+                required=True
+            ).isoformat(),
+            # 'dbotMirrorId': incident_id,  TODO check if is ok without
             'rawJSON': json.dumps(incident),
         }
 
@@ -398,7 +416,7 @@ def fetch_incidents(client: Client) -> list[dict[str, str]]:
 def attack_report_command(args: dict, client: Client) -> CommandResults:
 
     def args_to_api_body_and_file(args: dict) -> tuple[dict, dict | None]:
-        if entry_id := args.get('entryId'):
+        if entry_id := args.get('entry_id'):
             file_contents = demisto.getFilePath(entry_id)
             file = {'evidence': open(file_contents['path'], 'rb')}
         else:
@@ -446,14 +464,31 @@ def attack_report_command(args: dict, client: Client) -> CommandResults:
 def takedown_list_command(args: dict, client: Client) -> CommandResults:
 
     def args_to_params(args: dict) -> dict:
-        report_source = args.pop('report_source')
         return args | {
             'authgiven': args.pop('auth_given', '').lower().replace(' ', ':'),
-            'report_source':
-                'phish_feed'
-                if report_source == 'Phishing Feed'
-                else (report_source or '').lower().replace(' ', '_'),
-            'sort': args.pop('sort').lower().replace(' ', '_'),
+            'escalated': args.pop('escalated', '').lower().replace(' ', ':'),
+            'report_source': {
+                'Phishing Feed': 'phish_feed',
+                'Interface': 'interface',
+                'Referer': 'referer',
+                'Forensic': 'forensic',
+                'Api': 'api',
+                'Email Feed': 'email_feed',
+                'Fraud Detection': 'fraud_detection'
+            }.get(args.get('report_source', '')),
+            'sort': {
+                'Auth Given': 'authgiven',
+                'Customer Label': 'customer_label',
+                'Date Submitted': 'date_submitted',
+                'Hoster': 'hoster',
+                'Id': 'id',
+                'Ip': 'ip',
+                'Language': 'language',
+                'Last Updated': 'last_updated',
+                'Registrar': 'registrar',
+                'Status': 'status'
+            }.get(args.get('sort', '')),
+            'statuses': ','.join(argToList(args.get('statuses'))),
             'dir': args.pop('sort_direction'),
             'max_results':
                 arg_to_number(args.pop('limit'))
@@ -491,11 +526,6 @@ def takedown_list_command(args: dict, client: Client) -> CommandResults:
             removeNull=True
         )
 
-    def response_to_context(response: list[dict]) -> list[dict]:
-        for takedown in response:
-            (takedown, 'authgiven', 'has_phishing_kit', 'escalated')
-        return response
-
     response = client.get_takedowns(
         args_to_params(args)
     )
@@ -503,14 +533,14 @@ def takedown_list_command(args: dict, client: Client) -> CommandResults:
         readable_output=response_to_readable(response),
         outputs_prefix='Netcraft.Takedown',
         outputs_key_field='id',
-        outputs=response_to_context(response),
+        outputs=response,
     )
 
 
 def takedown_update_command(args: dict, client: Client) -> CommandResults:
 
     def args_to_params(args: dict) -> dict:
-        return args | {
+        return {
             key: args.get(value)
             for key, value in
             (
@@ -539,8 +569,13 @@ def takedown_update_command(args: dict, client: Client) -> CommandResults:
 
 
 def takedown_escalate_command(args: dict, client: Client) -> CommandResults:
+    response = client.takedown_escalate(args)
+    if response.get('status') != 'TD_OK':
+        raise DemistoException(
+            f'Error in Netcraft API call:\n{yaml.dump(response)}'
+        )
     return CommandResults(
-        raw_response=client.takedown_escalate(args),
+        raw_response=response,
         readable_output=tableToMarkdown(
             'Takedown successfully escalated.',
             {'Takedown ID': args['takedown_id']},
@@ -687,6 +722,21 @@ def get_submission(args: dict, submission_uuid: str, client: Client) -> PollResu
 
 def submission_list(args: dict, client: Client) -> CommandResults:
 
+    def args_to_params(args: dict) -> dict:
+        return sub_dict(
+            args,
+            'source_name', 'state', 'submission_reason', 'submitter_email'
+        ) | {
+            'date_start':
+                str(date.date())
+                if (date := arg_to_datetime(args.get('date_start')))
+                else None,
+            'date_end':
+                str(date.date())
+                if (date := arg_to_datetime(args.get('date_end')))
+                else None,
+        }
+
     def response_to_readable(submissions: list[dict]) -> str:
         return tableToMarkdown(
             'Netcraft Submissions',
@@ -706,19 +756,7 @@ def submission_list(args: dict, client: Client) -> CommandResults:
 
     submissions, next_token = paginate_with_token(
         client.submission_list,
-        api_params=sub_dict(
-            args,
-            'source_name', 'state', 'submission_reason', 'submitter_email'
-        ) | {
-            'date_start':
-                str(date.date())
-                if (date := arg_to_datetime(args.get('date_start')))
-                else None,
-            'date_end':
-                str(date.date())
-                if (date := arg_to_datetime(args.get('date_end')))
-                else None,
-        },
+        api_params=args_to_params(args),
         **sub_dict(args, 'limit', 'page_size', 'next_token'),
         pages_key_path=['submissions']
     )
@@ -792,7 +830,7 @@ def submission_file_list_command(args: dict, client: Client) -> CommandResults:
 
     files = paginate_with_page_num_and_size(
         client.submission_file_list,
-        sub_dict(args, 'submission_uuid'),
+        args['submission_uuid'],
         **sub_dict(args, 'limit', 'page_size', 'page'),
         pages_key_path=('files',)
     )
@@ -870,20 +908,22 @@ def submission_url_list_command(args: dict, client: Client) -> CommandResults:
     def response_to_readable(urls: list[dict]) -> str:
         return tableToMarkdown(
             'Submission URLs',
-            urls,
-            ['url', 'hostname', 'url_state', 'classification_log'],
-            headerTransform={
-                'url': 'URL',
-                'hostname': 'Hostname',
-                'classification_log': 'URL Classification Log',
-                'url_state': 'Classification',
-            }.get,
+            [
+                {
+                    'URL': url.get('url'),
+                    'Hostname': url.get('hostname'),
+                    'Classification': url.get('url_state'),
+                    'URL Classification Log': yaml.safe_dump(url.get('classification_log')),
+                }
+                for url in urls
+            ],
+            ['URL', 'Hostname', 'Classification', 'URL Classification Log'],
             removeNull=True,
         )
 
     urls = paginate_with_page_num_and_size(
-        client.submission_file_list,
-        sub_dict(args, 'submission_uuid'),
+        client.submission_url_list,
+        args['submission_uuid'],
         **sub_dict(args, 'limit', 'page_size', 'page'),
         pages_key_path=('urls',)
     )
@@ -915,6 +955,7 @@ def main() -> None:
     command = demisto.command()
 
     client = Client(
+        base_url=SERVICE_TO_URL_MAP,
         verify=(not PARAMS['insecure']),
         proxy=PARAMS['proxy'],
         ok_codes=(200,),
