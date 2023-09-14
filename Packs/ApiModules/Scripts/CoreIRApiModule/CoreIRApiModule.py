@@ -3910,7 +3910,7 @@ def list_risky_users_or_host_command(client: CoreClient, command: str, args: dic
             else:
                 raise
 
-        score = arg_to_number(outputs.get("score"))
+        score = arg_to_number(outputs.get("score"))  # type: ignore[union-attr]
         if score is None:
             return CommandResults(readable_output=f"The {id_key} {id_} does not have score")
         elif score == 0:
