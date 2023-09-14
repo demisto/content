@@ -91,10 +91,10 @@ def test_commands(mocker):
     for deprecated in deprecated_names:
         mocker.patch.object(demisto, "command", return_value=deprecated)
 
-        mock_error = mocker.patch("WAB.return_error")
+        mock_result = mocker.patch("WAB.return_results")
         main()
 
-        assert mock_error.call_count == 1
+        assert mock_result.call_count == 1
 
 
 deprecated_names = {

@@ -1,5 +1,5 @@
 Centralized Control and Monitoring of Privileged Access to Sensitive Assets.
-This integration was integrated and tested with version 10.4 of WALLIX Bastion.
+This integration was integrated and tested with version xx of WALLIX Bastion.
 
 ## Configure WALLIX Bastion on Cortex XSOAR
 

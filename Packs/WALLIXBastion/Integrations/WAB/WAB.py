@@ -16,10 +16,7 @@ def str_arg(args, name):
 
 
 def int_arg(args, name):
-    i = args.get(name, None)
-    if i is not None:
-        return int(i)
-    return None
+    return arg_to_number(args.get(name, None), arg_name=name)
 
 
 def bool_arg(args, name):
@@ -40,7 +37,7 @@ class Client(BaseClient):
 
     def _raise_client_exc(self, res: Response):
         if res.status_code == 401:
-            raise AuthError
+            raise AuthError()
         self.client_error_handler(res)
 
     def _http_request(self, *args, **kwargs):
@@ -1775,8 +1772,9 @@ def get_session_token():
     token = integration_context.get("session_token")
     last_request_at = integration_context.get("last_request_at")
     time_now = int(time.time())
-    if token and last_request_at and time_now - last_request_at < 100:
-        return token
+    if token and last_request_at:
+        if time_now - last_request_at < 100:
+            return token
     return None
 
 
@@ -1944,7 +1942,7 @@ def main() -> None:
         }
 
         deprecated = {
-            "wab-get-metadata-of-one-or-multiple-sessions": "wab-get-session-metadata",
+            "wab-get-metadata-of-one-or-multiple-sessions": client.get_session_metadata,
         }
 
         if command == "test-module":
@@ -1952,7 +1950,8 @@ def main() -> None:
         elif command in commands:
             return_results(commands[command](args))
         elif command in deprecated:
-            raise_deprecated(command, deprecated[command])
+            LOG(f"WARNING: use of deprecated command {command}")
+            return_results(deprecated[command](args))
         else:
             raise NotImplementedError(f"{command} command is not implemented.")
 
