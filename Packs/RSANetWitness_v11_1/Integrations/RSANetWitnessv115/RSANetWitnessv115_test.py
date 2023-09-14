@@ -412,7 +412,7 @@ def test_update_remote_system_command_with_updated_incident(mocker):
 
     mocker.patch.object(RSANetWitnessv115, "UpdateRemoteSystemArgs", return_value=UpdateRemoteSystemArgsResponse())
     mocker.patch.object(client, "get_incident_request", return_value={"id": "INC-1", "status": "New"})
-    mocker_update = mocker.patch.object(client, "update_incident_request", 
+    mocker_update = mocker.patch.object(client, "update_incident_request",
                                         return_value={"id": "INC-1", "status": "ClosedFalsePositive"})
     result = update_remote_system_command(client, {}, {})
     mocker_update.assert_called_with("INC-1", "ClosedFalsePositive", None)
