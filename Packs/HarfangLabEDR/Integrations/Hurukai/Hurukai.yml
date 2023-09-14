@@ -168,7 +168,7 @@ script:
     - name: provided_by_hlab
       description: Boolean indicating whether to search in whitelists provided by HarfangLab or not
       default: false
-      type: 8
+      type: boolean
     description: Search whitelists from a keyword
     name: harfanglab-whitelist-search
     outputs:
@@ -188,11 +188,9 @@ script:
     - name: case_insensitive
       description: Whether checking must be case sensitive or not
       default: true
-      type: 8
+      type: boolean
     - name: operator
       description: Operator used for the criterion (eq, contains, regex)
-      defaultvalue: eq
-      type: 0
     - name: value
       description: Value used for the criterion
     description: Add a whitelist
@@ -210,11 +208,9 @@ script:
     - name: case_insensitive
       description: Whether checking must be case sensitive or not
       default: true
-      type: 8
+      type: boolean
     - name: operator
       description: Operator used for the criterion (eq, contains, regex)
-      defaultvalue: eq
-      type: 0
     - name: value
       description: Value used for the criterion
     description: Add a criterion to an existing whitelist
@@ -250,12 +246,6 @@ script:
   - arguments:
     - name: api_method
       description: API method (GET, POST...)
-      options:
-        - GET
-        - POST
-        - PUT
-        - PATCH
-      type: 15
     - name: api_endpoint
       description: API endpoint (/api/version, /api/data/alert/alert/Alert/...)
     - name: parameters
@@ -341,7 +331,7 @@ script:
       description: Source IP address
     - name: success
       description: Whether authentication succeeded or not
-      type: 8
+      type: boolean
     - name: source_username
       description: Source username
     - name: target_username
@@ -370,7 +360,7 @@ script:
       description: Source IP address
     - name: success
       description: Whether authentication succeeded or not
-      type: 8
+      type: boolean
     - name: source_username
       description: Source username
     - name: target_username
@@ -395,7 +385,7 @@ script:
       description: Source IP address
     - name: success
       description: Whether authentication succeeded or not
-      type: 8
+      type: boolean
     - name: source_username
       description: Source username
     - name: target_username
@@ -1040,7 +1030,7 @@ script:
       required: true
     description: Delete an IOC from a Threat Intelligence source
     name: harfanglab-delete-ioc-from-source
-  dockerimage: demisto/python3:3.10.11.54132
+  dockerimage: demisto/python3:3.10.13.73190
   isfetch: true
   ismappable: true
   isremotesyncin: true

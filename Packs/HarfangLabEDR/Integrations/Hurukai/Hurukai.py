@@ -774,7 +774,7 @@ def get_endpoint_info(client, args):
 
 
 def api_call(client, args):
-    api_method = args.get('api_method', 'GET')
+    api_method = args.get('api_method', 'GET').upper()
     api_endpoint = args.get('api_endpoint', '/api/version')
     params = args.get('parameters', {})
     json_data = args.get('data')
@@ -1887,7 +1887,7 @@ def add_whitelist(client, args):
     target = args.get('target', "all")
     field = args.get('field', None)
     case_insensitive = args.get('case_insensitive', True)
-    operator = args.get('operator', None)
+    operator = args.get('operator', 'eq')
     value = args.get('value', None)
 
     message = None
@@ -1915,7 +1915,7 @@ def add_criterion_to_whitelist(client, args):
     id = args.get('id', None)
     field = args.get('field', None)
     case_insensitive = args.get('case_insensitive', True)
-    operator = args.get('operator', None)
+    operator = args.get('operator', 'eq')
     value = args.get('value', None)
 
     message = None
