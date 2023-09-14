@@ -16,7 +16,7 @@ FETCH_DEFAULT_LIMIT = '50'
 try:
     # if integration is using an older image (4.5 Server) we don't have expiringdict
     from expiringdict import ExpiringDict  # pylint: disable=E0401
-except Exception:
+except Exception:  # noqa: S110
     pass
 
 
@@ -69,8 +69,10 @@ class Client:
             connect_parameters_dict[key] = value
         if dialect == "Microsoft SQL Server":
             connect_parameters_dict['driver'] = 'FreeTDS'
+            connect_parameters_dict.setdefault('autocommit', 'True')
         elif dialect == 'Microsoft SQL Server - MS ODBC Driver':
             connect_parameters_dict['driver'] = 'ODBC Driver 18 for SQL Server'
+            connect_parameters_dict.setdefault('autocommit', 'True')
             if not verify_certificate:
                 connect_parameters_dict['TrustServerCertificate'] = 'yes'
         return connect_parameters_dict
@@ -462,8 +464,11 @@ def fetch_incidents(client: Client, params: dict):
     last_run = demisto.getLastRun()
     last_run = last_run if last_run else \
         initialize_last_run(params.get('fetch_parameters', ''), params.get('first_fetch', ''))
+    demisto.debug("GenericSQL - Start fetching")
+    demisto.debug(f"GenericSQL - Last run: {json.dumps(last_run)}")
     sql_query = create_sql_query(last_run, params.get('query', ''), params.get('column_name', ''),
                                  params.get('max_fetch', FETCH_DEFAULT_LIMIT))
+    demisto.debug(f"GenericSQL - Query sent to the server: {sql_query}")
     limit_fetch = len(last_run.get('ids', [])) + int(params.get('max_fetch', FETCH_DEFAULT_LIMIT))
     bind_variables = generate_bind_variables_for_fetch(params.get('column_name', ''),
                                                        params.get('max_fetch', FETCH_DEFAULT_LIMIT), last_run)
@@ -478,6 +483,10 @@ def fetch_incidents(client: Client, params: dict):
     if table:
         last_run = update_last_run_after_fetch(table, last_run, params.get('fetch_parameters', ''),
                                                params.get('column_name', ''), params.get('id_column', ''))
+    demisto.debug(f'GenericSQL - Next run after incidents fetching: {json.dumps(last_run)}')
+    demisto.debug(f"GenericSQL - Number of incidents before filtering: {len(result)}")
+    demisto.debug(f"GenericSQL - Number of incidents after filtering: {len(incidents)}")
+    demisto.debug(f"GenericSQL - Number of incidents skipped: {(len(result) - len(incidents))}")
 
     demisto.info(f'last record now is: {last_run}, '
                  f'number of incidents fetched is {len(incidents)}')
@@ -524,7 +533,6 @@ def main():
         if pool_ttl <= 0:
             pool_ttl = DEFAULT_POOL_TTL
         command = demisto.command()
-        LOG(f'Command being called in SQL is: {command}')
         client = Client(dialect=dialect, host=host, username=user, password=password,
                         port=port, database=database, connect_parameters=connect_parameters,
                         ssl_connect=ssl_connect, use_pool=use_pool, verify_certificate=verify_certificate,

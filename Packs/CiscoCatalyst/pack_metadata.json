@@ -1,0 +1,21 @@
+{
+    "name": "Cisco Catalyst",
+    "description": "Cisco Catalyst switch",
+    "support": "xsoar",
+    "currentVersion": "1.0.3",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "created": "2023-05-16T10:10:08Z",
+    "categories": [
+        "Network Security"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [
+        "Aironet"
+    ],
+    "marketplaces": [
+        "marketplacev2"
+    ]
+}

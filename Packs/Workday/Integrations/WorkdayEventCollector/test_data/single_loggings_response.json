@@ -1,0 +1,17 @@
+{
+    "systemAccount": "123",
+    "activityAction": "test_action",
+    "requestTime": "2023-04-24T07:00:00.000Z",
+    "userAgent": "test_agent",
+    "taskId": "1",
+    "deviceType": "test_device",
+    "ipAddress": "1.1.1.1",
+    "userActivityEntryCount": "1234",
+    "sessionId": "test_session_id",
+    "target": {
+      "id": "1234",
+      "descriptor": "test_descriptor",
+      "href": "test_href"
+    },
+    "taskDisplayName": "test_display"
+}

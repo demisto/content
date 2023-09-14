@@ -2178,6 +2178,7 @@ Creates a release.
 | name | The name of the release. | Optional | 
 | tag_name | The name of the release tag. | Required | 
 | body | Text describing the contents of the tag. | Optional | 
+| ref | The target branch/commit SHA from where to create the release. | Optional | 
 | draft | Set to true to create a draft (unpublished) release, set to false to create a published one. Default is True. | Optional | 
 
 
@@ -2888,4 +2889,98 @@ Adds up to 10 assignees to an issue. Users already assigned to an issue are not 
 | GitHub.Assignees.assignees.type | String | Type of user | 
 | GitHub.Assignees.assignees.id | String | User ID | 
 | GitHub.Assignees.assignees.html_url | String | HTML URL for user | 
+
+### GitHub-trigger-workflow
+
+***
+Triggers a GitHub workflow on a given repository and workflow.
+
+#### Base Command
+
+`GitHub-trigger-workflow`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| owner | The GitHub owner (organization or username) of the repository. | Optional | 
+| repository | The GitHub repository name. | Optional | 
+| branch | The branch to trigger the workflow on. | Optional | 
+| workflow | The name of your workflow file. | Required | 
+| inputs | The inputs for the workflow. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+### GitHub-list-workflows
+
+***
+Returns a list of GitHub workflows on a given repository.
+
+#### Base Command
+
+`GitHub-list-workflows`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| owner | The GitHub owner (organization or username) of the repository. | Optional | 
+| repository | The GitHub repository name. | Optional | 
+| workflow | The name of your workflow file. | Required | 
+| limit | The number of workflows to return. Default is 100. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GitHub.Workflow.id | Number | The GitHub workflow ID \(per run\). | 
+| GitHub.Workflow.name | String | The GitHub workflow name. | 
+| GitHub.Workflow.head_branch | String | The branch on which the workflow ran. | 
+| GitHub.Workflow.head_sha | String | The commit SHA on which the workflow ran. | 
+| GitHub.Workflow.path | String | The GitHub workflow name path. | 
+| GitHub.Workflow.display_title | String | The GitHub workflow title. | 
+| GitHub.Workflow.run_number | Number | The GitHub workflow run number. | 
+| GitHub.Workflow.event | String | The GitHub workflow trigger type \(scheduled, dispatch\). | 
+| GitHub.Workflow.status | String | The GitHub workflow status \(in_progress, completed\). | 
+| GitHub.Workflow.conclusion | String | The GitHub workflow conclusion \(cancelled, success\). | 
+| GitHub.Workflow.workflow_id | String | The GitHub workflow ID \(per workflow\). | 
+| GitHub.Workflow.url | String | The GitHub workflow API URL. | 
+| GitHub.Workflow.html_url | String | The GitHub workflow HTML URL. | 
+| GitHub.Workflow.created_at | Date | Datetime the GitHub workflow was created at. | 
+| GitHub.Workflow.updated_at | Date | Datetime the GitHub workflow was updated at. | 
+
+#### Command example
+```!GitHub-list-workflows workflow=nightly.yml limit=1```
+#### Context Example
+```json
+{
+    "GitHub": {
+        "Workflow": {
+            "conclusion": null,
+            "created_at": "2023-07-04T08:36:31Z",
+            "display_title": "Private repo nightly build",
+            "event": "workflow_dispatch",
+            "head_branch": "master",
+            "head_sha": "123456abcdef",
+            "html_url": "https://github.com/demisto/content-private/actions/runs/123456",
+            "id": 123456,
+            "name": "Private repo nightly build",
+            "path": ".github/workflows/nightly.yml",
+            "run_number": 1178,
+            "status": "in_progress",
+            "updated_at": "2023-07-04T08:36:41Z",
+            "url": "https://api.github.com/repos/demisto/content-private/actions/runs/123456",
+            "workflow_id": 1212121
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### GitHub workflows
+>|created_at|display_title|event|head_branch|head_sha|html_url|id|name|path|run_number|status|updated_at|url|workflow_id|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| 2023-07-04T08:36:31Z | Private repo nightly build | workflow_dispatch | master | 123456abcdef | https:<span>//</span>github.com/demisto/content-private/actions/runs/123456 | 123456 | Private repo nightly build | .github/workflows/nightly.yml | 1178 | in_progress | 2023-07-04T08:36:41Z | https:<span>//</span>api.github.com/repos/demisto/content-private/actions/runs/123456 | 1212121 |
 

@@ -1,0 +1,1 @@
+{"breakingChanges":true,"breakingChangesNotes":" This patch release may cause a situation where there will be a duplication of fetched incidents for a short period of time"}

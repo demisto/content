@@ -6,16 +6,15 @@ comment: Close the linked signal incidents when the main Insight incident is clo
 commonfields:
   id: SumoLogicCloseLinkSignalIncidents
   version: -1
-dockerimage: demisto/python3:3.10.11.54132
+dockerimage: demisto/python3:3.10.12.63474
 enabled: true
 name: SumoLogicCloseLinkSignalIncidents
 runas: DBotWeakRole
-runonce: false
 script: ''
 scripttarget: 0
 subtype: python3
-tags: 
-    - 'post-processing'
+tags:
+- 'post-processing'
 type: python
 fromversion: 6.5.0
 tests:

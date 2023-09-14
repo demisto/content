@@ -1,0 +1,24 @@
+{
+    "items": [
+        {
+            "id": "test",
+            "title": "sk_test300",
+            "detail": null,
+            "created": "2023-07-03T11: 04: 16.408Z",
+            "source": "NetWitness Investigate",
+            "riskScore": 50,
+            "type": "Log",
+            "events": []
+        },
+        {
+            "id": "test ",
+            "title": "sk_test300",
+            "detail": null,
+            "created": "2023-07-03T11: 04: 24.256Z",
+            "source": "NetWitness Investigate",
+            "riskScore": 50,
+            "type": "Log",
+            "events": []
+        }
+    ]
+}

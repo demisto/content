@@ -1,0 +1,6 @@
+fromversion: 6.10.0
+id: microsoft_defender_cloud_apps_ModelingRule
+name: Microsoft Defender Cloud Apps Modeling Rule
+rules: ''
+schema: ''
+tags: microsoft

@@ -13,7 +13,7 @@ The debug parameter will print certain properties of the command into the War Ro
 
 | **Name** | **Description** |
 | --- | --- |
-| Script Type | javascript |
+| Script Type | python |
 | Tags | Utility |
 
 
@@ -31,6 +31,10 @@ The debug parameter will print certain properties of the command into the War Ro
 | min_symbols | The minimum number of symbols to include in password. |
 | max_symbols | The maximum number of symbols to include in password. |
 | debug | Sees various values as they pass through the function if enabled. |
+
+
+**Note:** 
+At least one of the following arguments should be above 0: min_uppercase, min_lowercase, min_digits, min_symbols
 
 ## Outputs
 ---

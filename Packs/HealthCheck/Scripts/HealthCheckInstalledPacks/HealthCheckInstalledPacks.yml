@@ -9,7 +9,6 @@ outputs:
 - contextPath: FileData
   description: Data read from war room file
 runas: DBotWeakRole
-runonce: false
 script: ''
 scripttarget: 0
 subtype: python3

@@ -1,0 +1,18 @@
+{
+    "name": "Cisco Nexus",
+    "description": "Cisco Nexus is a series of switches that offer high-density, high-performance, and highly scalable networking solutions, designed to meet the demands of modern enterprise networks.",
+    "support": "xsoar",
+    "currentVersion": "1.0.1",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "categories": [
+        "Network Security"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "marketplacev2"
+    ]
+}

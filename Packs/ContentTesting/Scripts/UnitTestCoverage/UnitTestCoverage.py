@@ -1,17 +1,8 @@
-# Final Test: 6.10
-from typing import Dict, TypedDict
-
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 
-class Task(TypedDict):
-    name: str
-    completed: int
-    count: int
-
-
-def GetTasks(incid: str, playbookname: str) -> Dict:
+def GetTasks(incid: str, playbookname: str) -> dict:
     response = execute_command("demisto-api-get", {
         "uri": f"/inv-playbook/{incid}"})
 
@@ -28,7 +19,7 @@ def GetTasks(incid: str, playbookname: str) -> Dict:
                             if state == "Completed":
                                 completed = 1
                         if task['task']['name'] not in tasks:
-                            newtask: Task = {'name': task['task']['name'], 'completed': completed, 'count': 1}
+                            newtask = {'name': task['task']['name'], 'completed': completed, 'count': 1}
                             tasks[task['task']['name']] = newtask
                         else:
                             tasks[task['task']['name']]['count'] += 1

@@ -363,7 +363,7 @@ Creates a new AWS secret access key and corresponding AWS access key ID for the 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| userName | The name of the IAM user that the new key will belong to. | Required | 
+| userName | The name of the IAM user that the new key will belong to. If username is not provided, the account name configured in your integration will be used. | Optional | 
 | roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
 | roleSessionName | An identifier for the assumed role session. | Optional | 
 | roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
@@ -397,7 +397,7 @@ Changes the status of the specified access key from Active to Inactive, or vice 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| userName | The name of the user whose key you want to update. | Required | 
+| userName | The name of the user whose key you want to update. If username is not provided, the account name configured in your integration . | Optional | 
 | accessKeyId | The access key ID of the secret access key you want to update. | Required | 
 | status | The status you want to assign to the secret access key. Active means that the key can be used for API calls to AWS, while Inactive means that the key cannot be used. Possible values are: Active, Inactive. | Required | 
 | roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
@@ -710,7 +710,7 @@ Deletes the access key pair associated with the specified IAM user.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| userName | he name of the user whose access key pair you want to delete. | Required | 
+| userName | he name of the user whose access key pair you want to delete. If username is not provided, the account name configured in your integration will be used. | Optional | 
 | AccessKeyId | The access key ID for the access key ID and secret access key you want to delete. | Required | 
 | roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
 | roleSessionName | An identifier for the assumed role session. | Optional | 
@@ -1037,6 +1037,8 @@ Retrieves information about the specified role.
 | AWS.IAM.Roles.AssumeRolePolicyDocument | string | The policy that grants an entity permission to assume the role. | 
 | AWS.IAM.Roles.Description | string | A description of the role that you provide. | 
 | AWS.IAM.Roles.MaxSessionDuration | number | The maximum session duration \(in seconds\) for the specified role. | 
+| AWS.IAM.Roles.Tags.Key | string | The tag key. | 
+| AWS.IAM.Roles.Tags.Value | string | The tag value. | 
 
 
 #### Command Example
@@ -1690,3 +1692,286 @@ Lists all managed policies that are attached to the specified IAM user.
 #### Command Example
 ``` !aws-iam-get-user-login-profile userName=testUser```
 
+### aws-iam-put-role-policy
+
+***
+Adds or updates an inline policy document that is embedded in the specified IAM role.
+
+#### Base Command
+
+`aws-iam-put-role-policy`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| policyDocument | The policy document. You must provide policies in JSON format in IAM. | Required | 
+| policyName | The name of the policy document. | Required | 
+| roleName | The name of the role to associate the policy with. | Required | 
+
+#### Human Readable Output
+
+### Policy {policy_name} was added to role {role_name}
+
+#### Context Output
+
+There is no context output for this command.
+### aws-iam-put-user-policy
+
+***
+Adds or updates an inline policy document that is embedded in the specified IAM user.
+
+#### Base Command
+
+`aws-iam-put-user-policy`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| policyDocument | The policy document. You must provide policies in JSON format in IAM. | Required | 
+| policyName | The name of the policy document. | Required | 
+| userName | The name of the user to associate the policy with. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Human Readable Output
+
+### Policy {policy_name} was added to role {user_name}
+
+### aws-iam-put-group-policy
+
+***
+Adds or updates an inline policy document that is embedded in the specified IAM group.
+
+#### Base Command
+
+`aws-iam-put-group-policy`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| policyDocument | The policy document. You must provide policies in JSON format in IAM. | Required | 
+| policyName | The name of the policy document. | Required | 
+| groupName | The name of the group to associate the policy with. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Human Readable Output
+
+### Policy {policy_name} was added to role {group_name}
+
+### aws-iam-tag-role
+
+***
+Adds one or more tags to an IAM role. The role can be a regular role or a service-linked role. If a tag with the same key name already exists, then that tag is overwritten with the new value.
+
+#### Base Command
+
+`aws-iam-tag-role`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| roleName | The name of the IAM role to which you want to add tags. | Required | 
+| tags | A comma-separated list of Key:Value tag objects. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Human Readable Output
+
+### Added the following tags to role {role_name}
+|Key|Value|
+|---|---|
+| Key | Value |
+
+### aws-iam-tag-user
+
+***
+Adds one or more tags to an IAM user. If a tag with the same key name already exists, then that tag is overwritten with the new value.
+
+#### Base Command
+
+`aws-iam-tag-user`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| userName | The name of the IAM user to which you want to add tags. | Required | 
+| tags | A comma-separated list of Key:Value tag objects. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Human Readable Output
+
+### Added the following tags to user {user_name}
+|Key|Value|
+|---|---|
+| Key | Value |
+
+### aws-iam-untag-user
+
+***
+Removes the specified tags from the user.
+
+#### Base Command
+
+`aws-iam-untag-user`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| userName | The name of the IAM role to which you want to untag. | Required | 
+| tagKeys | A comma-separated list of tag keys. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Human Readable Output
+
+### Untagged the following tags from user {user_name}
+|Removed keys|
+|---|
+| Key1 |
+
+### aws-iam-untag-role
+
+***
+Removes the specified tags from the role.
+
+#### Base Command
+
+`aws-iam-untag-role`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| roleName | The name of the IAM role to which you want to untag. | Required | 
+| tagKeys | A comma-separated list of tag keys. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Human Readable Output
+
+### Untagged the following tags from role {role_name}
+|Removed keys|
+|---|
+| Key1 |
+
+### aws-iam-get-access-key-last-used
+
+***
+Retrieves information about when the specified access key was last used. The information includes the date and time of last use, along with the AWS service and region that were specified in the last request made with that key.
+
+#### Base Command
+
+`aws-iam-get-access-key-last-used`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| accessKeyId | The identifier of an access key. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.IAM.AccessKey.ID | string | The access key ID. | 
+| AWS.IAM.AccessKey.UserName | string | The username owning the given access key. | 
+| AWS.IAM.AccessKey.LastUsedServiceName | string | The name of the service that last used the given access key. | 
+| AWS.IAM.AccessKey.LastUsedRegion | string | The name of the region where the given access key was last used. | 
+| AWS.IAM.AccessKey.LastUsedDate | string | The date when the given access key was last used. | 
+
+#### Human Readable Output
+
+### Found the following information about access key access_Key_Id
+|ID|UserName|LastUsedDate|LastUsedServiceName|LastUsedRegion|
+|---|---|---|---|---|
+| access_Key_Id | user_name | 2023-06-06T14:32:00 | test | Here |
+### aws-iam-list-attached-role-policies
+
+***
+List all managed policies that are attached to the specified IAM role.
+
+#### Base Command
+
+`aws-iam-list-attached-role-policies`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| roleName | The name (friendly name, not ARN) of the role to list attached policies for. | Required | 
+| pathPrefix | The path prefix for filtering the results. This parameter is optional. If it is not included, it defaults to a slash (/), listing all policies. | Optional | 
+| maxItems | The maximum number of items to return in the command's output. | Optional | 
+| marker | Use this parameter only when paginating results and only after you receive a response indicating that the results are truncated. Set it to the value of the Marker element in the response that you received to indicate where the next call should start. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.IAM.Roles.AttachedPolicies.Policies.PolicyName | string | The policy name. | 
+| AWS.IAM.Roles.AttachedPolicies.Policies.PolicyArn | string | The policy ARN. | 
+| AWS.IAM.Roles.AttachedPolicies.Policies.RoleName | string | The queried role name. | 
+| AWS.IAM.Roles.AttachedPolicies.Query.IsTruncated | Boolean | Whether there are more items to return. If the results were truncated, make a subsequent pagination request using the Marker request parameter to retrieve more items. Note that IAM might return fewer than the MaxItems number of results even when there are more results available. AWS recommends checking IsTruncated after every call to ensure that all results are received. | 
+| AWS.IAM.Roles.AttachedPolicies.Query.Marker | string | When IsTruncated is true, this element is present and contains the value to use for the Marker parameter in a subsequent pagination request. | 
+
+#### Command example
+```!aws-iam-list-attached-role-policies roleName=myRoleName```
+#### Context Example
+```json
+{
+    "AWS": {
+        "IAM": {
+            "Roles": {
+                "AttachedPolicies": {
+                    "Policies": [
+                        {
+                            "PolicyArn": "arn:aws:iam::000000000000:policy/my-policy",
+                            "PolicyName": "my-policy-name",
+                            "RoleName": "myRoleName"
+                        },
+                        {
+                            "PolicyArn": "arn:aws:iam::000000000001:policy/my-other-policy",
+                            "PolicyName": "my-other-policy-name",
+                            "RoleName": "myRoleName"
+                        }
+                    ],
+                    "Query": {
+                        "IsTruncated": false
+                    }
+                }
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Results
+### Attached Policies for Role myRoleName
+|PolicyArn|PolicyName|RoleName|
+|---|---|---|
+| arn:aws:iam::000000000000:policy/my-policy | my-policy-name | myRoleName |
+| arn:aws:iam::000000000001:policy/my-other-policy | my-other-policy-name | myRoleName |
+
+
+Listed 2 attached policies for role test-role

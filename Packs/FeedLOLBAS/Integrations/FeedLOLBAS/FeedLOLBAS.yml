@@ -1,0 +1,175 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: LOLBAS Feed
+  version: -1
+sectionOrder:
+- Connect
+- Collect
+configuration:
+- defaultvalue: 'https://lolbas-project.github.io/api'
+  display: Base URL
+  name: base_url
+  required: true
+  type: 0
+  section: Connect
+- defaultvalue: 'true'
+  display: Fetch indicators
+  name: feed
+  type: 8
+  section: Collect
+  required: false
+- additionalinfo: Indicators from this integration instance will be marked with this reputation.
+  section: Collect
+  display: Indicator Reputation
+  name: feedReputation
+  defaultvalue: None
+  options:
+  - None
+  - Good
+  - Suspicious
+  - Bad
+  type: 18
+  required: false
+- additionalinfo: Reliability of the source providing the intelligence data.
+  defaultvalue: C - Fairly reliable
+  display: Source Reliability
+  name: feedReliability
+  options:
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: true
+  type: 15
+  section: Collect
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed.
+  defaultvalue: CLEAR
+  display: Traffic Light Protocol Color
+  name: tlp_color
+  options:
+  - RED
+  - AMBER+STRICT
+  - AMBER
+  - GREEN
+  - CLEAR
+  type: 15
+  section: Collect
+  required: false
+- defaultvalue: '20160'
+  display: ''
+  name: feedExpirationInterval
+  type: 1
+  required: false
+- additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
+  defaultvalue: 'false'
+  display: Bypass exclusion list
+  name: feedBypassExclusionList
+  type: 8
+  section: Collect
+  advanced: true
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  section: Connect
+  advanced: true
+  required: false
+- defaultvalue: 'false'
+  display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  section: Connect
+  advanced: true
+  required: false
+- additionalinfo: Supports CSV values.
+  display: Tags
+  name: feedTags
+  type: 0
+  section: Collect
+  advanced: true
+  required: false
+- defaultvalue: 'true'
+  display: Create relationships
+  name: create_relationships
+  type: 8
+  section: Collect
+  advanced: true
+  required: false
+- name: feedExpirationPolicy
+  display: ''
+  type: 17
+  options:
+  - never
+  - interval
+  - indicatorType
+  - suddenDeath
+  section: Collect
+  required: false
+- defaultvalue: '1440'
+  name: feedFetchInterval
+  display: Feed Fetch Interval
+  type: 19
+  section: Collect
+  advanced: true
+  required: false
+description: '"Living off the land binaries" is a term used to describe malware or hacking techniques that take advantage of legitimate tools and processes that are already present on a computer or network, rather than introducing new malware or malicious code. The goal is to blend in with normal activity and avoid detection. Examples of this include using built-in Windows commands to move laterally through a network, or using scripting languages that are commonly installed on a system to execute malicious code. LOLBAS project is documenting binaries, scripts, and libraries that can be used for Living Off The Land techniques.'
+display: 'LOLBAS Feed'
+name: LOLBAS Feed
+script:
+  commands:
+  - arguments:
+    - description: The maximum number of indicators to return.
+      name: limit
+      required: true
+    description: Retrieves a limited number of indicators.
+    name: lolbas-get-indicators
+    outputs:
+    - contextPath: LOLBAS.Indicators.Commands.category
+      description: 'The category of the command.'
+      type: String
+    - contextPath: LOLBAS.Indicators.Commands.command
+      description: 'The command.'
+      type: String
+    - contextPath: LOLBAS.Indicators.Commands.description
+      description: 'The description of the command.'
+      type: String
+    - contextPath: LOLBAS.Indicators.Commands.mitreid
+      description: 'The MITRE ID related to the command.'
+      type: String
+    - contextPath: LOLBAS.Indicators.Commands.operatingsystem
+      description: 'The operating system the command ran on.'
+      type: String
+    - contextPath: LOLBAS.Indicators.Commands.privileges
+      description: 'The privileges required to run the command.'
+      type: String
+    - contextPath: LOLBAS.Indicators.Commands.usecase
+      description: 'The use case of the command.'
+      type: String
+    - contextPath: LOLBAS.Indicators.Description
+      description: 'The description of the indicator.'
+      type: String
+    - contextPath: LOLBAS.Indicators.Detections.content
+      description: 'The content of the detection.'
+      type: String
+    - contextPath: LOLBAS.Indicators.Detections.type
+      description: 'The type of the detection.'
+      type: String
+    - contextPath: LOLBAS.Indicators.Name
+      description: 'The name of the indicator.'
+      type: String
+    - contextPath: LOLBAS.Indicators.Paths.path
+      description: 'The path of the indicator.'
+      type: String
+    - contextPath: LOLBAS.Indicators.Type
+      description: 'The type of the indicator.'
+      type: String
+  feed: true
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.10.13.72123
+fromversion: 6.8.0
+tests:
+- FeedLOLBas_test

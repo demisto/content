@@ -9,7 +9,7 @@
     "editForm": true,
     "required": false,
     "neverSetAsRequired": false,
-    "isReadOnly": false,
+    "isReadOnly": true,
     "useAsKpi": false,
     "locked": false,
     "system": false,
@@ -18,15 +18,17 @@
     "hidden": false,
     "associatedTypes": [
         "Jira Incident",
-        "Jira Create Issue and Mirror"
+        "Jira Create Issue and Mirror",
+        "JiraV3 Incident"
     ],
     "systemAssociatedTypes": [
         "Jira Incident",
-        "Jira Create Issue and Mirror"
+        "Jira Create Issue and Mirror",
+        "JiraV3 Incident"
     ],
     "associatedToAll": false,
     "unmapped": false,
-    "unsearchable": false,
+    "unsearchable": true,
     "caseInsensitive": true,
     "sla": 0,
     "threshold": 72,

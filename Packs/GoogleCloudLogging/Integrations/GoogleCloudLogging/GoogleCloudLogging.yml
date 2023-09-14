@@ -1,0 +1,193 @@
+category: Cloud Services
+commonfields:
+  id: GoogleCloudLogging
+  version: -1
+configuration:
+- displaypassword: Service Account JSON
+  additionalinfo: User's Service Account key in JSON format.
+  name: credentials
+  required: true
+  hiddenusername: true
+  type: 9
+  section: Connect
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  section: Connect
+  advanced: true
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  section: Connect
+  advanced: true
+  required: false
+description: With Google Cloud Logging, users can centralize all their logs in a single location, making it easier to troubleshoot issues and gain insights from their data.
+display: Google Cloud Logging
+name: GoogleCloudLogging
+script:
+  commands:
+  - arguments:
+    - description: 'A comma-separated list of projects names of parent resources from which to retrieve log entries. A maximum of 100 resources may be specified.'
+      name: project_name
+    - description: 'A comma-separated list of organizations names of parent resources from which to retrieve log entries. A maximum of 100 resources may be specified.'
+      name: organization_name
+    - description: 'A comma-separated list of billing accounts names of parent resources from which to retrieve log entries. A maximum of 100 resources may be specified.'
+      name: billing_account_name
+    - description: 'A comma-separated list of folders names of parent resources from which to retrieve log entries. A maximum of 100 resources may be specified.'
+      name: folder_name
+    - description: When specified, the results returned are limited to log entries that match the filter. Referencing a parent resource that is not listed in resourceNames will cause the filter to return no results. The maximum length of a filter is 20,000 characters. E.g., "protoPayload.requestMetadata.callerIp:1.1.1.1 AND protoPayload.serviceName:name"
+      name: filter
+    - auto: PREDEFINED
+      defaultValue: timestamp asc
+      description: How the results should be sorted.
+      name: order_by
+      predefined:
+      - timestamp asc
+      - timestamp desc
+    - description: The maximum number of objects to return.
+      name: limit
+    - description: The maximum number of results to return from this request. Default is 50. If the value is negative or exceeds 1000, the request is rejected.
+      name: page_size
+    - description: If present, then retrieve the next batch of results from the preceding call to this method. pageToken must be the value of nextPageToken from the previous response.
+      name: next_token
+    description: Lists log entries. Use this method to retrieve log entries that originated from a project/folder/organization/billing account.
+    name: gcp-logging-log-entries-list
+    outputs:
+    - contextPath: GoogleCloudLogging.LogsEntry.logName
+      description: The resource name of the log to which this log entry belongs.
+      type: String
+    - contextPath: GoogleCloudLogging.LogsEntry.resource.type
+      description: The monitored resource type.
+      type: String
+    - contextPath: GoogleCloudLogging.LogsEntry.resource.labels
+      description: Values for all of the labels listed in the associated monitored resource descriptor.
+      type: Unknown
+    - contextPath: GoogleCloudLogging.LogsEntry.resource.labels.project_id
+      description: The project ID.
+      type: Unknown
+    - contextPath: GoogleCloudLogging.LogsEntry.resource.labels.cluster_name
+      description: The cluster name.
+      type: Unknown
+    - contextPath: GoogleCloudLogging.LogsEntry.timestamp
+      description: The time the event described by the log entry occurred.
+      type: String
+    - contextPath: GoogleCloudLogging.LogsEntry.receiveTimestamp
+      description: The time the log entry was received by Logging.
+      type: String
+    - contextPath: GoogleCloudLogging.LogsEntry.severity
+      description: The severity of the log entry. The default value is LogSeverity.DEFAULT.
+      type: String
+    - contextPath: GoogleCloudLogging.LogsEntry.insertId
+      description: A unique identifier for the log entry.
+      type: String
+    - contextPath: GoogleCloudLogging.LogsEntry.httpRequest.requestMethod
+      description: The request method.
+      type: String
+    - contextPath: GoogleCloudLogging.LogsEntry.httpRequest.requestUrl
+      description: The scheme (http, https), the host name, the path and the query portion of the URL that was requested.
+      type: String
+    - contextPath: GoogleCloudLogging.LogsEntry.httpRequest.requestSize
+      description: The size of the HTTP request message in bytes, including the request headers and the request body.
+      type: String
+    - contextPath: GoogleCloudLogging.LogsEntry.httpRequest.status
+      description: The response code indicating the status of the response.
+      type: Number
+    - contextPath: GoogleCloudLogging.LogsEntry.httpRequest.responseSize
+      description: The size of the HTTP response message sent back to the client, in bytes, including the response headers and the response body.
+      type: String
+    - contextPath: GoogleCloudLogging.LogsEntry.httpRequest.userAgent
+      description: The user agent sent by the client.
+      type: String
+    - contextPath: GoogleCloudLogging.LogsEntry.httpRequest.remoteIp
+      description: The IP address (IPv4 or IPv6) of the client that issued the HTTP request.
+      type: String
+    - contextPath: GoogleCloudLogging.LogsEntry.httpRequest.serverIp
+      description: The IP address (IPv4 or IPv6) of the origin server that the request was sent to.
+      type: String
+    - contextPath: GoogleCloudLogging.LogsEntry.httpRequest.referer
+      description: The referer URL of the request.
+      type: String
+    - contextPath: GoogleCloudLogging.LogsEntry.httpRequest.latency
+      description: The request processing latency on the server, from the time the request was received until the response was sent.
+      type: String
+    - contextPath: GoogleCloudLogging.LogsEntry.httpRequest.cacheLookup
+      description: Whether or not a cache lookup was attempted.
+      type: Boolean
+    - contextPath: GoogleCloudLogging.LogsEntry.httpRequest.cacheHit
+      description: Whether or not an entity was served from cache (with or without validation).
+      type: Boolean
+    - contextPath: GoogleCloudLogging.LogsEntry.httpRequest.cacheValidatedWithOriginServer
+      description: Whether or not the response was validated with the origin server before being served from cache. This field is only meaningful if cacheHit is True.
+      type: Boolean
+    - contextPath: GoogleCloudLogging.LogsEntry.httpRequest.cacheFillBytes
+      description: The number of HTTP response bytes inserted into cache. Set only when a cache fill was attempted.
+      type: String
+    - contextPath: GoogleCloudLogging.LogsEntry.httpRequest.protocol
+      description: Protocol used for the request.
+      type: String
+    - contextPath: GoogleCloudLogging.LogsEntry.labels
+      description: A map of key, value pairs that provides additional information about the log entry. The labels can be user-defined or system-defined.
+      type: Unknown
+    - contextPath: GoogleCloudLogging.LogsEntry.operation.id
+      description: An arbitrary operation identifier. Log entries with the same identifier are assumed to be part of the same operation.
+      type: String
+    - contextPath: GoogleCloudLogging.LogsEntry.operation.producer
+      description: An arbitrary producer identifier. The combination of ID and producer must be globally unique.
+      type: String
+    - contextPath: GoogleCloudLogging.LogsEntry.operation.first
+      description: Set this to True if this is the first log entry in the operation.
+      type: Boolean
+    - contextPath: GoogleCloudLogging.LogsEntry.operation.last
+      description: Set this to True if this is the last log entry in the operation.
+      type: Boolean
+    - contextPath: GoogleCloudLogging.LogsEntry.trace
+      description: The REST resource name of the trace being written to Cloud Trace in association with this log entry.
+      type: String
+    - contextPath: GoogleCloudLogging.LogsEntry.spanId
+      description: The ID of the Cloud Trace span associated with the current operation in which the log is being written.
+      type: String
+    - contextPath: GoogleCloudLogging.LogsEntry.traceSampled
+      description: The sampling decision of the trace associated with the log entry.
+      type: Boolean
+    - contextPath: GoogleCloudLogging.LogsEntry.sourceLocation.file
+      description: Source file name. Depending on the runtime environment, this might be a simple name or a fully-qualified name.
+      type: String
+    - contextPath: GoogleCloudLogging.LogsEntry.sourceLocation.line
+      description: Line within the source file. 1-based; 0 indicates no line number available.
+      type: String
+    - contextPath: GoogleCloudLogging.LogsEntry.sourceLocation.function
+      description: Human-readable name of the function or method being invoked, with optional context such as the class or package name.
+      type: String
+    - contextPath: GoogleCloudLogging.LogsEntry.split.uid
+      description: A globally unique identifier for all log entries in a sequence of split log entries.
+      type: String
+    - contextPath: GoogleCloudLogging.LogsEntry.split.index
+      description: The index of this LogEntry in the sequence of split log entries.
+      type: Number
+    - contextPath: GoogleCloudLogging.LogsEntry.split.totalSplits
+      description: The total number of log entries that the original LogEntry was split into.
+      type: Number
+    - contextPath: GoogleCloudLogging.LogsEntry.protoPayload.@type
+      description: A URI identifying the type.
+      type: String
+    - contextPath: GoogleCloudLogging.LogsEntry.authenticationInfo.principalEmail
+      description: Identifies the principal that granted the role to the service account.
+      type: String
+    - contextPath: GoogleCloudLogging.LogsEntry.textPayload
+      description: The log entry payload, represented as a Unicode string (UTF-8).
+      type: String
+    - contextPath: GoogleCloudLogging.LogsEntry.jsonPayload
+      description: The log entry payload, represented as a structure that is expressed as a JSON object.
+      type: Unknown
+    - contextPath: GoogleCloudLogging.nextPageToken
+      description: If there might be more results than those appearing in this response, then nextPageToken is included.
+      type: String
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/google-api-py3:1.0.0.71892
+fromversion: 6.8.0
+tests:
+- No tests (auto formatted)

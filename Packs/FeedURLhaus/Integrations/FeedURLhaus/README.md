@@ -25,16 +25,10 @@ Fetch indicators from the URLhaus API.
 
 
 4. Click **Test** to validate the URLs, token, and connection.
+
 ## Commands
 You can execute these commands in a playbook.
-#### test-module
-***
-Integration command for testing.
 
-#### fetch-indicators
-***
-Command that is activated by the engine to fetch indicators.
-
-####$ urlhaus-get-indicators
+### urlhaus-get-indicators
 ***
 Manual command to fetch events and display them.

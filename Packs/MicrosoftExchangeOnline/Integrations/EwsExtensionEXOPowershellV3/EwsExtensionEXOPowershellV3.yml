@@ -1,0 +1,2063 @@
+category: Email
+sectionorder:
+- Connect
+- Collect
+commonfields:
+  id: EWS Extension Online Powershell v3
+  version: -1
+configuration:
+- defaultvalue: https://outlook.office365.com
+  display: Exchange Online URL
+  name: url
+  required: true
+  type: 0
+  section: Connect
+- displaypassword: Certificate
+  name: certificate
+  type: 9
+  required: true
+  additionalinfo: A pfx certificate encoded in Base64.
+  hiddenusername: true
+  section: Connect
+- displaypassword: Password
+  name: password
+  required: true
+  type: 9
+  hiddenusername: true
+  section: Connect
+- display: The organization used in app-only authentication.
+  name: organization
+  required: true
+  type: 0
+  section: Connect
+- display: The application ID from the Azure portal
+  name: app_id
+  required: true
+  type: 0
+  section: Connect
+description: Use the EWS Extension Online Powershell v3 integration to get information about mailboxes and users in your organization.  This integration can also retrieve and modify Tenant Allow/Block Lists.
+display: EWS Extension Online Powershell v3
+name: EWS Extension Online Powershell v3
+script:
+  commands:
+  - arguments:
+    - name: identity
+      description: The identity of the mailbox you want to view.
+    - isArray: true
+      name: property_sets
+      description: 'A comma-separated list of property sets to fetch. These property sets will supplement the outputs of this integration.  Available properties are: "All", "Minimum", "AddressList", "Archive", "Audit", "Delivery", "Hold", "Moderation", "Move", "Policy", "PublicFolder", "Quota", "Resource", "Retention", "SCL", "SoftDelete", "StatisticsSeed".'
+      defaultValue: Minimum
+    - description: The object's location in Active Directory by which to filter the results.
+      name: organizational_unit
+    - description: The primary SMTP email address of the mailbox you want to view. Cannot be used with the user_principal_name argument. Can be retrieved using the ews-user-list command.
+      name: primary_smtp_address
+    - description: The UPN of the mailbox you want to view. Cannot be used with the primary_smtp_address argument. Can be retrieved using the ews-user-list command.
+      name: user_principal_name
+    - description: The maximum number of results to retrieve. Default is 10.
+      name: limit
+      defaultValue: '10'
+    outputs:
+    - contextPath: EWS.Mailbox.EmailAddresses
+      description: Email addresses of the mailbox.
+      type: String
+    - contextPath: EWS.Mailbox.AuditBypassEnabled
+      description: Whether audit bypass is enabled.
+      type: Boolean
+    - contextPath: EWS.Mailbox.DistinguishedName
+      description: Distinguished name of the mailbox.
+      type: String
+    - contextPath: EWS.Mailbox.ExchangeObjectId
+      description: Exchange object ID of the mailbox.
+      type: String
+    - contextPath: EWS.Mailbox.ExchangeVersion
+      description: Exchange version of the mailbox.
+      type: String
+    - contextPath: EWS.Mailbox.Guid
+      description: GUID of the mailbox.
+      type: String
+    - contextPath: EWS.Mailbox.Id
+      description: ID of the mailbox.
+      type: String
+    - contextPath: EWS.Mailbox.Identity
+      description: Identity of the mailbox.
+      type: String
+    - contextPath: EWS.Mailbox.IsValid
+      description: Whether the mailbox is valid.
+      type: Boolean
+    - contextPath: EWS.Mailbox.Name
+      description: Name of the mailbox.
+      type: String
+    - contextPath: EWS.Mailbox.ObjectCategory
+      description: Object category of the mailbox.
+      type: String
+    - contextPath: EWS.Mailbox.ObjectClass
+      description: Object class of the mailbox.
+      type: String
+    - contextPath: EWS.Mailbox.ObjectId
+      description: Object ID of the of the mailbox.
+      type: String
+    - contextPath: EWS.Mailbox.ObjectState
+      description: Object state of the mailbox.
+      type: String
+    - contextPath: EWS.Mailbox.OrganizationId
+      description: Organization ID of the mailbox.
+      type: String
+    - contextPath: EWS.Mailbox.OriginatingServer
+      description: Originating server of the mailbox.
+      type: String
+    - contextPath: EWS.Mailbox.PSComputerName
+      description: PowerShell computer name of the mailbox.
+      type: String
+    - contextPath: EWS.Mailbox.PSShowComputerName
+      description: PowerShell show computer name of the mailbox.
+      type: Boolean
+    - contextPath: EWS.Mailbox.RunspaceId
+      description: Run space ID of the mailbox.
+      type: String
+    - contextPath: EWS.Mailbox.WhenChanged
+      description: Local time of when the mailbox was last changed.
+      type: Date
+    - contextPath: EWS.Mailbox.WhenChangedUTC
+      description: UTC time of when the mailbox was last changed.
+      type: Date
+    - contextPath: EWS.Mailbox.WhenCreated
+      description: Local time of when the mailbox was created.
+      type: Date
+    - contextPath: EWS.Mailbox.WhenCreatedUTC
+      description: UTC time of when the mailbox was created.
+      type: Date
+    description: Displays mailbox objects and attributes, populate property pages, or supplies mailbox information to other tasks.
+    name: ews-mailbox-list
+  - arguments:
+    - name: identity
+      description: The identity of the mailbox you want to view.
+    - description: The object's location in Active Directory by which to filter the results.
+      name: organizational_unit
+    - description: The primary SMTP email address of the mailbox you want to view. Cannot be used with the user_principal_name argument. Can be retrieved using the ews-user-list command.
+      name: primary_smtp_address
+    - description: The UPN of the mailbox you want to view. Cannot be used with the primary_smtp_address argument. Can be retrieved using the ews-user-list command.
+      name: user_principal_name
+    - description: The maximum number of results to retrieve. Default is 10.
+      name: limit
+      defaultValue: '10'
+    outputs:
+    - contextPath: EWS.CASMailbox.ActiveSyncEnabled
+      description: Whether active sync is enabled.
+      type: Boolean
+    - contextPath: EWS.CASMailbox.DisplayName
+      description: The display name of the mailbox.
+      type: String
+    - contextPath: EWS.CASMailbox.ECPEnabled
+      description: Whether the Exchange Control Panel (ECP) is enabled.
+      type: Boolean
+    - contextPath: EWS.CASMailbox.EmailAddresses
+      description: The email addresses retrieved.
+      type: String
+    - contextPath: EWS.CASMailbox.EwsEnabled
+      description: Whether the Exchange Web Services (EWS) is enabled.
+      type: Boolean
+    - contextPath: EWS.CASMailbox.ExchangeVersion
+      description: Exchange version of the client access server mailbox.
+      type: String
+    - contextPath: EWS.CASMailbox.ExternalDirectoryObjectId
+      description: External directory object ID of the client access server mailbox.
+      type: String
+    - contextPath: EWS.CASMailbox.Guid
+      description: The GUID of the client access server mailbox.
+      type: String
+    - contextPath: EWS.CASMailbox.Identity
+      description: Identity of the client access server mailbox.
+      type: String
+    - contextPath: EWS.CASMailbox.ImapEnabled
+      description: Whether the Internet Message Access Protocol (IMAP) is enabled.
+      type: Boolean
+    - contextPath: EWS.CASMailbox.MAPIEnabled
+      description: Whether the Messaging Application Programming Interface is enabled.
+      type: Boolean
+    - contextPath: EWS.CASMailbox.Name
+      description: Name of the client access server mailbox.
+      type: String
+    - contextPath: EWS.CASMailbox.OWAEnabled
+      description: Whether Outlook on the web (OWA) is enabled.
+      type: Boolean
+    - contextPath: EWS.CASMailbox.OrganizationId
+      description: Organization ID
+      type: String
+    - contextPath: EWS.CASMailbox.PopEnabled
+      description: Whether Post Office Protocol (POP) is enabled.
+      type: Boolean
+    - contextPath: EWS.CASMailbox.PrimarySmtpAddress
+      description: Primary SMTP address.
+      type: String
+    - contextPath: EWS.CASMailbox.ServerLegacyDN
+      description: Server legacy distinguished name (DN).
+      type: String
+    description: Displays Client Access settings that are configured on mailboxes.
+    name: ews-cas-mailbox-list
+  - arguments:
+    - description: The identity of the mailbox you want to view.
+      name: identity
+      required: true
+    outputs:
+    - contextPath: EWS.MailboxPermission.Identity
+      description: The specified identity of the mailbox.
+      type: String
+    - contextPath: EWS.MailboxPermission.Permission.AccessRights
+      description: Access rights of the mailbox.
+      type: String
+    - contextPath: EWS.MailboxPermission.Permission.Deny.IsPresent
+      description: Whether permission is denied.
+      type: Boolean
+    - contextPath: EWS.MailboxPermission.Permission.Identity
+      description: The permission identity.
+      type: String
+    - contextPath: EWS.MailboxPermission.Permission.InheritanceType
+      description: Permission inheritance type.
+      type: String
+    - contextPath: EWS.MailboxPermission.Permission.IsInherited
+      description: Whether permission is inherited.
+      type: Boolean
+    - contextPath: EWS.MailboxPermission.Permission.User
+      description: The permission of the user.
+      type: String
+    description: Retrieves permissions on a mailbox.
+    name: ews-mailbox-permission-list
+  - arguments:
+    - description: The identity of the mailbox you want to view.
+      name: identity
+    - description: The maximum number of results to retrieve. Default is 10.
+      name: limit
+      defaultValue: '10'
+    outputs:
+    - contextPath: EWS.RecipientPermission.AccessControlType
+      description: Access control type of the recipient permission.
+      type: String
+    - contextPath: EWS.RecipientPermission.AccessRights
+      description: Access rights of the recipient permission.
+      type: Number
+    - contextPath: EWS.RecipientPermission.Identity
+      description: Identity of the recipient permission.
+      type: String
+    - contextPath: EWS.RecipientPermission.InheritanceType
+      description: Inheritance type of the recipient permission.
+      type: String
+    - contextPath: EWS.RecipientPermission.IsInherited
+      description: Whether the recipient permission is inherited.
+      type: Boolean
+    - contextPath: EWS.RecipientPermission.Trustee
+      description: Trustee of the recipient permission.
+      type: String
+    description: Displays information about SendAs permissions that are configured for users.
+    name: ews-recipient-permission-list
+  - arguments:
+    - description: The identity of the mailbox you want to view.
+      name: identity
+    - description: The maximum number of results to retrieve. Default is 10.
+      name: limit
+      defaultValue: '10'
+    outputs:
+    - contextPath: EWS.Recipient.Alias
+      description: Recipient alias.
+      type: String
+    - contextPath: EWS.Recipient.DisplayName
+      description: Recipient display name.
+      type: String
+    - contextPath: EWS.Recipient.DistinguishedName
+      description: Recipient distinguished name.
+      type: String
+    - contextPath: EWS.Recipient.EmailAddresses
+      description: Recipient email addresses.
+      type: String
+    - contextPath: EWS.Recipient.ExchangeVersion
+      description: Recipient exchange version.
+      type: String
+    - contextPath: EWS.Recipient.ExternalDirectoryObjectId
+      description: Recipient external directory object ID.
+      type: String
+    - contextPath: EWS.Recipient.Identity
+      description: Recipient identity.
+      type: String
+    - contextPath: EWS.Recipient.Name
+      description: Recipient name.
+      type: String
+    - contextPath: EWS.Recipient.OrganizationId
+      description: Recipient organization ID.
+      type: String
+    - contextPath: EWS.Recipient.PrimarySmtpAddress
+      description: Recipient primary SMTP address.
+      type: String
+    - contextPath: EWS.Recipient.RecipientType
+      description: Recipient type.
+      type: String
+    - contextPath: EWS.Recipient.RecipientTypeDetails
+      description: Recipient type details.
+      type: String
+    description: Displays existing recipient objects in your organization. This command returns all mail-enabled objects (for example, mailboxes, mail users, mail contacts, and distribution groups).
+    name: ews-recipient-list
+  - name: ews-new-tenant-allow-block-list-items
+    arguments:
+    - name: entries
+      required: true
+      description: A comma-separated list of entries to add to the list (e.g. "Item1,Item2").
+      isArray: true
+    - name: list_type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - sender
+      - filehash
+      - url
+      description: List type to add items to.
+    - name: list_subtype
+      auto: PREDEFINED
+      predefined:
+      - Tenant
+      - AdvancedDelivery
+      description: List subtype to add items to.
+      defaultValue: Tenant
+    - name: action
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - Block
+      - Allow
+      description: Action to set for new entries
+    - name: notes
+      description: Notes to include on new list entries
+    - name: expiration_date
+      description: Enter a specific date and time for the new entries to expire using ISO format "YYYY-MM-DDTHH:MM:SSZ" for UTC time.  Alternately, a PowerShell **GetDate** statement can be used.
+    - name: no_expiration
+      auto: PREDEFINED
+      predefined:
+      - 'false'
+      - 'true'
+      description: Specify whether to create list entries with no expiration date.  Cannot be used with "expiration_date".  If left false and no expiration date is set, default of 30 days will be used.
+      defaultValue: 'false'
+    outputs:
+    - contextPath: EWS.NewTenantBlocks.Action
+      description: List type ('Block' or 'Allow')
+      type: string
+    - contextPath: EWS.NewTenantBlocks.EntryValueHash
+      description: Entry Value Hash
+      type: string
+    - contextPath: EWS.NewTenantBlocks.Error
+      description: Error (if any) returned by remote command
+    - contextPath: EWS.NewTenantBlocks.ExpirationDate
+      description: DateTime the entry will expire and be removed
+      type: string
+    - contextPath: EWS.NewTenantBlocks.Identity
+      description: Unique identifier for the entry
+      type: string
+    - contextPath: EWS.NewTenantBlocks.LastModifiedDateTime
+      description: DateTime of last modification
+      type: string
+    - contextPath: EWS.NewTenantBlocks.ListSubType
+      description: List sub type (Tenant or AdvancedDelivery)
+      type: string
+    - contextPath: EWS.NewTenantBlocks.ModifiedBy
+      description: User / App Registration which last modified this entry
+      type: string
+    - contextPath: EWS.NewTenantBlocks.Notes
+      description: Custom notes added to the entry.
+      type: string
+    - contextPath: EWS.NewTenantBlocks.ObjectState
+      description: State of the object (e.g. New/Modified/Deleted)
+      type: string
+    - contextPath: EWS.NewTenantBlocks.PSComputerName
+      description: Name of Remote Powershell endpoint
+      type: string
+    - contextPath: EWS.NewTenantBlocks.PSShowComputerName
+      description: Flag whether or not remote computer name is shown in PS prompt
+      type: boolean
+    - contextPath: EWS.NewTenantBlocks.RunspaceId
+      description: RunspaceID of the entry
+      type: string
+    - contextPath: EWS.NewTenantBlocks.SubmissionID
+      description: SubmissionID of the entry
+      type: string
+    - contextPath: EWS.NewTenantBlocks.SysManaged
+      description: SysManaged property of the entry
+      type: boolean
+    - contextPath: EWS.NewTenantBlocks.Value
+      description: The value of the new entry created
+      type: string
+    description: Add new items to the Tenant Allow/Block Lists.  Uses PowerShell New-TenantAllowBlockListItems cmdlet.
+    execution: true
+  - name: ews-get-tenant-allow-block-list-items
+    arguments:
+    - name: list_type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - sender
+      - filehash
+      - url
+      description: List type to retrieve items from.
+    - name: list_subtype
+      auto: PREDEFINED
+      predefined:
+      - Tenant
+      - AdvancedDelivery
+      description: List subtype to retrieve items from.
+      defaultValue: Tenant
+    - name: action
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - Block
+      - Allow
+      description: Action to filter entries by.
+    - name: expiration_date
+      description: Enter a specific date and time to filter entries by using ISO format "YYYY-MM-DDTHH:MM:SSZ" for UTC time.  Alternately, a PowerShell **GetDate** statement can be used.
+    - name: no_expiration
+      auto: PREDEFINED
+      predefined:
+      - 'false'
+      - 'true'
+      description: Filter list items that are set to never expire.
+      defaultValue: 'false'
+    - name: entry
+      description: Specific entry value to retrieve.
+    outputs:
+    - contextPath: EWS.CurrentTenantBlocks.Action
+      description: List type ('Block' or 'Allow')
+      type: string
+    - contextPath: EWS.CurrentTenantBlocks.EntryValueHash
+      description: Entry Value Hash
+      type: string
+    - contextPath: EWS.CurrentTenantBlocks.Error
+      description: Error (if any) returned by remote command
+      type: boolean
+    - contextPath: EWS.CurrentTenantBlocks.ExpirationDate
+      description: DateTime the entry will expire and be removed
+      type: string
+    - contextPath: EWS.CurrentTenantBlocks.Identity
+      description: Unique identifier for the entry
+      type: string
+    - contextPath: EWS.CurrentTenantBlocks.LastModifiedDateTime
+      description: DateTime of last modification
+      type: string
+    - contextPath: EWS.CurrentTenantBlocks.ListSubType
+      description: List sub type (Tenant or AdvancedDelivery)
+      type: string
+    - contextPath: EWS.CurrentTenantBlocks.ModifiedBy
+      description: User / App Registration which last modified this entry
+      type: string
+    - contextPath: EWS.CurrentTenantBlocks.Notes
+      description: Custom notes added to the entry.
+      type: string
+    - contextPath: EWS.CurrentTenantBlocks.ObjectState
+      description: State of the object (e.g. New/Modified/Deleted)
+      type: string
+    - contextPath: EWS.CurrentTenantBlocks.PSComputerName
+      description: Name of Remote Powershell endpoint
+    - contextPath: EWS.CurrentTenantBlocks.PSShowComputerName
+      description: Flag whether or not remote computer name is shown in PS prompt
+      type: boolean
+    - contextPath: EWS.CurrentTenantBlocks.RunspaceId
+      description: RunspaceID of the entry
+      type: string
+    - contextPath: EWS.CurrentTenantBlocks.SubmissionID
+      description: SubmissionID of the entry
+      type: string
+    - contextPath: EWS.CurrentTenantBlocks.SysManaged
+      description: SysManaged property of the entry
+      type: boolean
+    - contextPath: EWS.CurrentTenantBlocks.Value
+      description: The value of the new entry created
+      type: string
+    description: Retrieve current Tenant Allow/Block List items.  Uses Get-TenantAllowBlockListItems cmdlet.
+  - name: ews-get-tenant-allow-block-list-count
+    arguments:
+    - name: list_type
+      auto: PREDEFINED
+      predefined:
+      - sender
+      - filehash
+      - url
+      description: List type to retrieve items from.
+    - name: list_subtype
+      auto: PREDEFINED
+      predefined:
+      - Tenant
+      - AdvancedDelivery
+      description: List subtype to retrieve items from.
+      defaultValue: Tenant
+    outputs:
+    - contextPath: EWS.CurrentListCount.Count
+      description: Number of entries presently in the specified list
+      type: number
+    - contextPath: EWS.CurrentListCount.ListSubType
+      description: List sub type (Tenant or AdvancedDelivery)
+      type: string
+    - contextPath: EWS.CurrentListCount.ListType
+      description: List type
+      type: string
+    description: Retrieve current count of defined Tenant Allow/Block List items.  Uses Get-TenantAllowBlockListItems cmdlet.
+  - arguments:
+    - description: ID of the mailbox for which to get junk rules.
+      name: mailbox
+      required: true
+    description: Gets junk rules for the specified mailbox.
+    name: ews-junk-rules-get
+    outputs:
+    - contextPath: EWS.Rule.Junk.BlockedSendersAndDomains
+      description: List of blocked senders and domains.
+      type: String
+    - contextPath: EWS.Rule.Junk.ContactsTrusted
+      description: If true, contacts are trusted by default.
+      type: Boolean
+    - contextPath: EWS.Rule.Junk.Email
+      description: Junk rule mailbox.
+      type: String
+    - contextPath: EWS.Rule.Junk.Enabled
+      description: If true, junk rule is enabled.
+      type: Boolean
+    - contextPath: EWS.Rule.Junk.Identity
+      description: Junk rule identity.
+      type: String
+    - contextPath: EWS.Rule.Junk.MailboxOwnerId
+      description: ID of the mailbox owner.
+      type: String
+    - contextPath: EWS.Rule.Junk.TrustedListsOnly
+      description: If true, only a list defined in the trusted lists are trusted.
+      type: Boolean
+    - contextPath: EWS.Rule.Junk.TrustedRecipientsAndDomains
+      description: List of trusted recipients and domains.
+      type: String
+    - contextPath: EWS.Rule.Junk.TrustedSendersAndDomains
+      description: List of trusted senders and domains.
+      type: String
+  - arguments:
+    - description: ID of the mailbox for which to set junk rules.
+      name: mailbox
+      required: true
+    - description: Comma-separated list of blocked senders and domains to add to the mailbox.
+      isArray: true
+      name: add_blocked_senders_and_domains
+    - description: Comma-separated list of blocked senders and domains to remove from the mailbox.
+      isArray: true
+      name: remove_blocked_senders_and_domains
+    - description: Comma-separated list of trusted senders and domains to add to the mailbox.
+      isArray: true
+      name: add_trusted_senders_and_domains
+    - description: Comma-separated list of trusted senders and domains to remove from the mailbox.
+      isArray: true
+      name: remove_trusted_senders_and_domains
+    - auto: PREDEFINED
+      description: If true, trust only lists defined in the trusted lists. Can be "true" or "false".
+      name: trusted_lists_only
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      description: If true, contacts are trusted by default. Can be "true" or "false".
+      name: contacts_trusted
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      description: If true, the junk rule is enabled. Can be "true" or "false".
+      name: enabled
+      predefined:
+      - 'true'
+      - 'false'
+    description: Sets junk rules for the specified mailbox.
+    name: ews-junk-rules-set
+  - arguments:
+    - description: Comma-separated list of blocked senders and domains to add to the mailbox.
+      isArray: true
+      name: add_blocked_senders_and_domains
+    - description: Comma-separated list of blocked senders and domains to remove from the mailbox.
+      isArray: true
+      name: remove_blocked_senders_and_domains
+    - description: Comma-separated list of trusted senders and domains to add to the mailbox.
+      isArray: true
+      name: add_trusted_senders_and_domains
+    - description: Comma-separated list of trusted senders and domains to remove from the mailbox.
+      isArray: true
+      name: remove_trusted_senders_and_domains
+    - auto: PREDEFINED
+      description: If true, trust only lists defined in the trusted lists. Can be "true" or "false".
+      name: trusted_lists_only
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      description: If true, contacts are trusted by default. Can be "true" or "false".
+      name: contacts_trusted
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      description: If true, the junk rule is enabled. Can be "true" or "false".
+      name: enabled
+      predefined:
+      - 'true'
+      - 'false'
+    description: Sets junk rules in all managed accounts.
+    name: ews-global-junk-rules-set
+  - arguments:
+    - description: A comma-separated list of sender email addresses by which to filter the results.
+      isArray: true
+      name: sender_address
+    - description: A comma-separated list of recipient email addresses by which to filter the results.
+      isArray: true
+      name: recipient_address
+    - description: The source IP address by which to filter the results. For incoming messages, the value of from_ip is the public IP address of the SMTP email server that sent the message. For outgoing messages from Exchange Online, the value is blank.
+      isArray: true
+      name: from_ip
+    - description: The destination IP address by which to filter the results. For outgoing messages, the value of to_ip is the public IP address in the resolved MX record for the destination domain. For incoming messages to Exchange Online, the value is blank.
+      isArray: true
+      name: to_ip
+    - description: The Message-ID header field of the message by which to filter the results. This value is also known as the Client ID. The format of the Message-ID depends on the messaging server that sent the message. The value should be unique for each message. However, not all messaging servers create values for the Message-ID in the same way. Be sure to include the full Message ID string (which may include angle brackets) and enclose the value in quotation marks (for example,"d9683b4c-127b-413a-ae2e-fa7dfb32c69d@DM3NAM06BG401.Eop-nam06.prod.protection.outlook.com").        '
+      name: message_id
+    - description: The message trace ID to be used with the recipient address to uniquely identify a message trace and obtain more details. A message trace ID is generated for every message that''s processed by the system.
+      name: message_trace_id
+    - defaultValue: '1'
+      description: The page number of the results you want to view. Can be an integer between 1 and 1000.
+      name: page
+    - defaultValue: '100'
+      description: The maximum number of entries per page. Can be an integer between 1 and 5000.
+      name: page_size
+    - description: "The start date of the date range. Use the short date format that''s defined in the Regional Options settings on the computer where you''re running the command. For example, if the computer is configured to use the short date format mm/dd/yyyy, enter 09/01/2018 to specify September 1, 2018.\nYou can enter the date only, or you can enter the date and time of day.\nIf you enter the date and time of day, enclose the value in quotation marks (\"), for example, \"09/01/2018 5:00 PM\".\nValid input for this parameter is from 10 days ago until now. Default is 48 hours ago."
+      name: start_date
+    - description: "The end date of the date range. Use the short date format that''s defined in the Regional Options settings on the computer where you''re running the command. For example, if the computer is configured to use the short date format mm/dd/yyyy, enter 09/01/2018 to specify September 1, 2018.\nYou can enter the date only, or you can enter the date and time of day.\nIf you enter the date and time of day, enclose the value in quotation marks (\"), for example, \"09/01/2018 5:00 PM\".\nValid input for this parameter is from the start_date - now. Default is now."
+      name: end_date
+    - auto: PREDEFINED
+      description: "The status of the message. Can be one of the following:\n  * GettingStatus: The message is waiting for status update.\n  * Failed: Message delivery was attempted and it failed or the message was filtered as spam or malware, or by transport rules.\n  * Pending: Message delivery is underway or was deferred and is being retried.\n  * Delivered: The message was delivered to its destination.\n  * Expanded: There was no message delivery because the message was addressed to a distribution group and the membership of the distribution was expanded.\n  * Quarantined: The message was quarantined.\n  * FilteredAsSpam: The message was marked as spam.\n"
+      name: status
+      predefined:
+      - GettingStatus
+      - Failed
+      - Pending
+      - Delivered
+      - Expanded
+      - Quarantined
+      - FilteredAsSpam
+    description: 'Searches message data for the last 10 days. If you run this command without any arguments, only data from the last 48 hours is returned.
+
+      If you enter a start date that is older than 10 days, you will receive an error and the command will return no results.
+
+      This command returns a maximum of 1,000,000 results, and will timeout on very large queries. If your query returns too many results, consider splitting it up using shorter start_date and end_date intervals.'
+    name: ews-message-trace-get
+    outputs:
+    - contextPath: EWS.MessageTrace.FromIP
+      description: The public IP address of the SMTP email server that sent the message.
+      type: String
+    - contextPath: EWS.MessageTrace.ToIP
+      description: The public IP address in the resolved MX record for the destination domain. For incoming messages to Exchange Online, the value is blank.
+      type: String
+    - contextPath: EWS.MessageTrace.Index
+      description: Message index in pagination. (Index starts from 0.)
+      type: Number
+    - contextPath: EWS.MessageTrace.MessageId
+      description: Message-ID header field of the message.
+      type: String
+    - contextPath: EWS.MessageTrace.MessageTraceId
+      description: Message trace ID of the message.
+      type: String
+    - contextPath: EWS.MessageTrace.Organization
+      description: Message trace organization source.
+      type: String
+    - contextPath: EWS.MessageTrace.Received
+      description: Message receive time.
+      type: Date
+    - contextPath: EWS.MessageTrace.RecipientAddress
+      description: Message recipient address.
+      type: String
+    - contextPath: EWS.MessageTrace.SenderAddress
+      description: Message sender address.
+      type: String
+    - contextPath: EWS.MessageTrace.Size
+      description: Message size in bytes.
+      type: Number
+    - contextPath: EWS.MessageTrace.StartDate
+      description: Message trace start date.
+      type: Date
+    - contextPath: EWS.MessageTrace.EndDate
+      description: Message trace end date.
+      type: Date
+    - contextPath: EWS.MessageTrace.Status
+      description: Message status.
+      type: String
+    - contextPath: EWS.MessageTrace.Subject
+      description: Message subject.
+      type: String
+  - arguments:
+    - description: The domain controller identified by its fully qualified domain name (FQDN). For example, dc01.contoso.com. This argument is available only in on-premises Exchange.
+      name: domain_controller
+    - description: The federation trust ID. If not specified, the command returns all federation trusts configured for the Exchange organization.
+      name: identity
+    description: Displays the federation trust configured for the Exchange organization.
+    name: ews-federation-trust-get
+    outputs:
+    - contextPath: EWS.FederationTrust.AdminDisplayName
+      description: Administrator display name of the federation trust.
+      type: String
+    - contextPath: EWS.FederationTrust.ApplicationIdentifier
+      description: Application identifier of the federation trust.
+      type: String
+    - contextPath: EWS.FederationTrust.ApplicationUri
+      description: Application URI of the federation trust.
+      type: String
+    - contextPath: EWS.FederationTrust.DistinguishedName
+      description: Distinguished name of the federation trust.
+      type: String
+    - contextPath: EWS.FederationTrust.ExchangeObjectId
+      description: Exchange object ID of the federation trust.
+      type: String
+    - contextPath: EWS.FederationTrust.ExchangeVersion
+      description: Exchange version of the federation trust.
+      type: String
+    - contextPath: EWS.FederationTrust.Guid
+      description: GUID of the federation trust.
+      type: String
+    - contextPath: EWS.FederationTrust.Id
+      description: ID of the federation trust.
+      type: String
+    - contextPath: EWS.FederationTrust.Identity
+      description: Identity of the federation trust.
+      type: String
+    - contextPath: EWS.FederationTrust.IsValid
+      description: Whether the federation trust is valid.
+      type: Boolean
+    - contextPath: EWS.FederationTrust.MetadataEpr
+      description: Metadata EPR of the federation trust.
+      type: String
+    - contextPath: EWS.FederationTrust.MetadataPollInterval
+      description: Metadata poll interval of the federation trust.
+      type: Date
+    - contextPath: EWS.FederationTrust.MetadataPutEpr
+      description: Metadata put EPR of the federation trust.
+      type: Unknown
+    - contextPath: EWS.FederationTrust.Name
+      description: Name of the federation trust.
+      type: String
+    - contextPath: EWS.FederationTrust.NamespaceProvisioner
+      description: Namespace provisioner of the federation trust.
+      type: String
+    - contextPath: EWS.FederationTrust.ObjectCategory
+      description: Object category of the federation trust.
+      type: String
+    - contextPath: EWS.FederationTrust.ObjectClass
+      description: Object class of the federation trust.
+      type: String
+    - contextPath: EWS.FederationTrust.ObjectState
+      description: Object state of the federation trust.
+      type: String
+    - contextPath: EWS.FederationTrust.OrgCertificate.Archived
+      description: Whether the organization certificate of the federation trust is archived.
+      type: Boolean
+    - contextPath: EWS.FederationTrust.OrgCertificate.Extensions.Critical
+      description: Whether the extensions of the organization certificate are critical.
+      type: Boolean
+    - contextPath: EWS.FederationTrust.OrgCertificate.Extensions.Oid.FriendlyName
+      description: Friendly name of the OID of the organization certificate extensions.
+      type: String
+    - contextPath: EWS.FederationTrust.OrgCertificate.Extensions.Oid.Value
+      description: Value of the OID of the organization certificate extensions.
+      type: String
+    - contextPath: EWS.FederationTrust.OrgCertificate.Extensions.RawData
+      description: Raw data of the organization certificate extensions.
+      type: Number
+    - contextPath: EWS.FederationTrust.OrgCertificate.Extensions.SubjectKeyIdentifier
+      description: Subject key identifier of the organization certificate extensions.
+      type: String
+    - contextPath: EWS.FederationTrust.OrgCertificate.Extensions.KeyUsages
+      description: Key usages of the organization certificate extensions.
+      type: Number
+    - contextPath: EWS.FederationTrust.OrgCertificate.Extensions.EnhancedKeyUsages.FriendlyName
+      description: Friendly name of the enhanced key usages of the organization certificate extensions.
+      type: String
+    - contextPath: EWS.FederationTrust.OrgCertificate.Extensions.EnhancedKeyUsages.Value
+      description: Value of the enhanced key usages of the organization certificate extensions.
+      type: String
+    - contextPath: EWS.FederationTrust.OrgCertificate.Extensions.CertificateAuthority
+      description: Whether the organization certificate extensions have a certificate authority.
+      type: Boolean
+    - contextPath: EWS.FederationTrust.OrgCertificate.Extensions.HasPathLengthConstraint
+      description: Whether the organization certificate extensions have a path length constraint.
+      type: Boolean
+    - contextPath: EWS.FederationTrust.OrgCertificate.Extensions.PathLengthConstraint
+      description: Path length constraint of the organization certificate extensions.
+      type: Number
+    - contextPath: EWS.FederationTrust.OrgCertificate.FriendlyName
+      description: Friendly name of the organization certificate.
+      type: String
+    - contextPath: EWS.FederationTrust.OrgCertificate.Handle.value
+      description: The handle value of the organization certificate.
+      type: Number
+    - contextPath: EWS.FederationTrust.OrgCertificate.HasPrivateKey
+      description: Whether the organization certificate has a private key.
+      type: Boolean
+    - contextPath: EWS.FederationTrust.OrgCertificate.Issuer
+      description: Issuer of the organization certificate.
+      type: String
+    - contextPath: EWS.FederationTrust.OrgCertificate.IssuerName.Name
+      description: Name of the issuer of the organization certificate.
+      type: String
+    - contextPath: EWS.FederationTrust.OrgCertificate.IssuerName.Oid.FriendlyName
+      description: Friendly Name of the OID of the issuer name of the organization certificate.
+      type: Unknown
+    - contextPath: EWS.FederationTrust.OrgCertificate.IssuerName.Oid.Value
+      description: Value of the OID of the issuer name of the organization certificate.
+      type: Unknown
+    - contextPath: EWS.FederationTrust.OrgCertificate.IssuerName.RawData
+      description: Raw data of the issuer name of the organization certificate.
+      type: Number
+    - contextPath: EWS.FederationTrust.OrgCertificate.NotAfter
+      description: The date until when the organization certificate is valid.
+      type: Date
+    - contextPath: EWS.FederationTrust.OrgCertificate.NotBefore
+      description: The date the organization certificate became valid.
+      type: Date
+    - contextPath: EWS.FederationTrust.OrgCertificate.PrivateKey
+      description: Private key of the organization certificate.
+      type: Unknown
+    - contextPath: EWS.FederationTrust.OrgCertificate.PublicKey.EncodedKeyValue.Oid.FriendlyName
+      description: Friendly name of the OID of the encoded key value of the public key.
+      type: String
+    - contextPath: EWS.FederationTrust.OrgCertificate.PublicKey.EncodedKeyValue.Oid.Value
+      description: Value of the OID of the encoded key value of the public key.
+      type: String
+    - contextPath: EWS.FederationTrust.OrgCertificate.PublicKey.EncodedKeyValue.RawData
+      description: Raw data of the encoded key value of the public key.
+      type: Number
+    - contextPath: EWS.FederationTrust.OrgCertificate.PublicKey.EncodedParameters.Oid.FriendlyName
+      description: Friendly name of the OID of the encoded parameters of the public key.
+      type: String
+    - contextPath: EWS.FederationTrust.OrgCertificate.PublicKey.EncodedParameters.Oid.Value
+      description: Value of the OID of the encoded parameters of the public key.
+      type: String
+    - contextPath: EWS.FederationTrust.OrgCertificate.PublicKey.EncodedParameters.RawData
+      description: Raw data of the encoded parameters of the public key.
+      type: Number
+    - contextPath: EWS.FederationTrust.OrgCertificate.PublicKey.Key.KeyExchangeAlgorithm
+      description: Key exchange algorithm of the public key.
+      type: String
+    - contextPath: EWS.FederationTrust.OrgCertificate.PublicKey.Key.LegalKeySizes.MaxSize
+      description: Maximum size of the public key.
+      type: Number
+    - contextPath: EWS.FederationTrust.OrgCertificate.PublicKey.Key.LegalKeySizes.MinSize
+      description: Minimum size of the public key.
+      type: Number
+    - contextPath: EWS.FederationTrust.OrgCertificate.PublicKey.Key.LegalKeySizes.SkipSize
+      description: SkipSize of the public key.
+      type: Number
+    - contextPath: EWS.FederationTrust.OrgCertificate.PublicKey.Key.SignatureAlgorithm
+      description: Signature algorithm of the public key.
+      type: String
+    - contextPath: EWS.FederationTrust.OrgCertificate.PublicKey.Oid.FriendlyName
+      description: Friendly name of the OID of the public key.
+      type: String
+    - contextPath: EWS.FederationTrust.OrgCertificate.PublicKey.Oid.Value
+      description: Value of the OID of the public key.
+      type: String
+    - contextPath: EWS.FederationTrust.OrgCertificate.RawData
+      description: Raw data of the organization certificate.
+      type: Number
+    - contextPath: EWS.FederationTrust.OrgCertificate.SerialNumber
+      description: Serial number of the organization certificate.
+      type: String
+    - contextPath: EWS.FederationTrust.OrgCertificate.SignatureAlgorithm.FriendlyName
+      description: Friendly name of the signature algorithm.
+      type: String
+    - contextPath: EWS.FederationTrust.OrgCertificate.SignatureAlgorithm.Value
+      description: Value of the signature algorithm.
+      type: String
+    - contextPath: EWS.FederationTrust.OrgCertificate.Subject
+      description: Subject of the organization certificate.
+      type: String
+    - contextPath: EWS.FederationTrust.OrgCertificate.SubjectName.Name
+      description: Name of the subject of the organization certificate.
+      type: String
+    - contextPath: EWS.FederationTrust.OrgCertificate.SubjectName.Oid.FriendlyName
+      description: Friendly name of the OID of the subject name.
+      type: Unknown
+    - contextPath: EWS.FederationTrust.OrgCertificate.SubjectName.Oid.Value
+      description: Value of the OID of the subject name.
+      type: Unknown
+    - contextPath: EWS.FederationTrust.OrgCertificate.SubjectName.RawData
+      description: Raw Data of the subject name.
+      type: Number
+    - contextPath: EWS.FederationTrust.OrgCertificate.Thumbprint
+      description: Thumbprint of the organization certificate.
+      type: String
+    - contextPath: EWS.FederationTrust.OrgCertificate.Version
+      description: Version of the organization certificate.
+      type: Number
+    - contextPath: EWS.FederationTrust.OrgNextCertificate
+      description: Next organization certificate.
+      type: Unknown
+    - contextPath: EWS.FederationTrust.OrgNextPrivCertificate
+      description: Next organization private certificate.
+      type: String
+    - contextPath: EWS.FederationTrust.OrgPrevCertificate.Archived
+      description: Whether to archive the previous organization certificate.
+      type: Boolean
+    - contextPath: EWS.FederationTrust.OrgPrevCertificate.Extensions.Critical
+      description: Whether the extensions of the previous organization certificate are critical.
+      type: Boolean
+    - contextPath: EWS.FederationTrust.OrgPrevCertificate.Extensions.Oid.FriendlyName
+      description: Friendly name of the OID of the previous organization certificate extensions.
+      type: String
+    - contextPath: EWS.FederationTrust.OrgPrevCertificate.Extensions.Oid.Value
+      description: Value of the OID of the previous organization certificate extensions.
+      type: String
+    - contextPath: EWS.FederationTrust.OrgPrevCertificate.Extensions.RawData
+      description: Raw data of the previous organization certificate extensions.
+      type: Number
+    - contextPath: EWS.FederationTrust.OrgPrevCertificate.Extensions.SubjectKeyIdentifier
+      description: Subject key identifier of the previous organization certificate extensions.
+      type: String
+    - contextPath: EWS.FederationTrust.OrgPrevCertificate.Extensions.KeyUsages
+      description: Key usages of the previous organization certificate extensions.
+      type: Number
+    - contextPath: EWS.FederationTrust.OrgPrevCertificate.Extensions.EnhancedKeyUsages.FriendlyName
+      description: Friendly name of the enhanced key usages of the previous organization certificate extensions.
+      type: String
+    - contextPath: EWS.FederationTrust.OrgPrevCertificate.Extensions.EnhancedKeyUsages.Value
+      description: Value of the enhanced key usages of the previous organization certificate extensions.
+      type: String
+    - contextPath: EWS.FederationTrust.OrgPrevCertificate.FriendlyName
+      description: Friendly name of the previous organization certificate.
+      type: String
+    - contextPath: EWS.FederationTrust.OrgPrevCertificate.Handle.value
+      description: Value of the handle of the previous organization certificate.
+      type: Number
+    - contextPath: EWS.FederationTrust.OrgPrevCertificate.HasPrivateKey
+      description: Whether the previous organization certificate has a private key.
+      type: Boolean
+    - contextPath: EWS.FederationTrust.OrgPrevCertificate.Issuer
+      description: Issuer of the previous organization certificate.
+      type: String
+    - contextPath: EWS.FederationTrust.OrgPrevCertificate.IssuerName.Name
+      description: Name of the issuer of the previous organization certificate.
+      type: String
+    - contextPath: EWS.FederationTrust.OrgPrevCertificate.IssuerName.Oid.FriendlyName
+      description: Friendly name of the OID of the issuer of the previous organization certificate.
+      type: Unknown
+    - contextPath: EWS.FederationTrust.OrgPrevCertificate.IssuerName.Oid.Value
+      description: Value of the OID of the issuer of the previous organization certificate.
+      type: Unknown
+    - contextPath: EWS.FederationTrust.OrgPrevCertificate.IssuerName.RawData
+      description: Raw data of the issuer of the previous organization certificate.
+      type: Number
+    - contextPath: EWS.FederationTrust.OrgPrevCertificate.NotAfter
+      description: The date until when the previous organization certificate is valid.
+      type: Date
+    - contextPath: EWS.FederationTrust.OrgPrevCertificate.NotBefore
+      description: The date the previous organization certificate became valid.
+      type: Date
+    - contextPath: EWS.FederationTrust.OrgPrevCertificate.PrivateKey
+      description: Private Key of the previous organization certificate.
+      type: Unknown
+    - contextPath: EWS.FederationTrust.OrgPrevCertificate.PublicKey.EncodedKeyValue.Oid.FriendlyName
+      description: Friendly Name of the OID of the encoded key value of the public key of the previous organization certificate.
+      type: String
+    - contextPath: EWS.FederationTrust.OrgPrevCertificate.PublicKey.EncodedKeyValue.Oid.Value
+      description: Value of the OID of the encoded key value of the public key of the previous organization certificate.
+      type: String
+    - contextPath: EWS.FederationTrust.OrgPrevCertificate.PublicKey.EncodedKeyValue.RawData
+      description: Raw Data of the encoded key value of the public key of the previous organization certificate.
+      type: Number
+    - contextPath: EWS.FederationTrust.OrgPrevCertificate.PublicKey.EncodedParameters.Oid.FriendlyName
+      description: Friendly name of the OID of the encoded parameters of the public key of the previous organization certificate.
+      type: String
+    - contextPath: EWS.FederationTrust.OrgPrevCertificate.PublicKey.EncodedParameters.Oid.Value
+      description: Value of the OID of the encoded parameters of the public key of the previous organization certificate.
+      type: String
+    - contextPath: EWS.FederationTrust.OrgPrevCertificate.PublicKey.EncodedParameters.RawData
+      description: Raw Data of the encoded parameters of the public key of the previous organization certificate.
+      type: Number
+    - contextPath: EWS.FederationTrust.OrgPrevCertificate.PublicKey.Key.KeyExchangeAlgorithm
+      description: Key exchange algorithm of the public key of the previous organization certificate.
+      type: String
+    - contextPath: EWS.FederationTrust.OrgPrevCertificate.PublicKey.Key.LegalKeySizes.MaxSize
+      description: Maximum size of the public key of the previous organization certificate.
+      type: Number
+    - contextPath: EWS.FederationTrust.OrgPrevCertificate.PublicKey.Key.LegalKeySizes.MinSize
+      description: Minimum size of the public key of the previous organization certificate.
+      type: Number
+    - contextPath: EWS.FederationTrust.OrgPrevCertificate.PublicKey.Key.LegalKeySizes.SkipSize
+      description: SkiPSize of the public key of the previous organization certificate.
+      type: Number
+    - contextPath: EWS.FederationTrust.OrgPrevCertificate.PublicKey.Key.SignatureAlgorithm
+      description: Signature algorithm of the public key of the previous organization certificate.
+      type: String
+    - contextPath: EWS.FederationTrust.OrgPrevCertificate.PublicKey.Oid.FriendlyName
+      description: Friendly name of the OID of the public key of the previous organization certificate.
+      type: String
+    - contextPath: EWS.FederationTrust.OrgPrevCertificate.PublicKey.Oid.Value
+      description: Value of the OID of the public key of the previous organization certificate.
+      type: String
+    - contextPath: EWS.FederationTrust.OrgPrevCertificate.RawData
+      description: Raw Data of the previous organization certificate.
+      type: Number
+    - contextPath: EWS.FederationTrust.OrgPrevCertificate.SerialNumber
+      description: Serial number of the previous organization certificate.
+      type: String
+    - contextPath: EWS.FederationTrust.OrgPrevCertificate.SignatureAlgorithm.FriendlyName
+      description: Friendly name of the signature algorithm of the previous organization certificate.
+      type: String
+    - contextPath: EWS.FederationTrust.OrgPrevCertificate.SignatureAlgorithm.Value
+      description: Value of the signature algorithm of the previous organization certificate.
+      type: String
+    - contextPath: EWS.FederationTrust.OrgPrevCertificate.Subject
+      description: Subject of the previous organization certificate.
+      type: String
+    - contextPath: EWS.FederationTrust.OrgPrevCertificate.SubjectName.Name
+      description: Name of the subject of the previous organization certificate.
+      type: String
+    - contextPath: EWS.FederationTrust.OrgPrevCertificate.SubjectName.Oid.FriendlyName
+      description: Friendly name of the OID of the subject of the previous organization certificate.
+      type: Unknown
+    - contextPath: EWS.FederationTrust.OrgPrevCertificate.SubjectName.Oid.Value
+      description: Value of the OID of the subject name of the previous organization certificate.
+      type: Unknown
+    - contextPath: EWS.FederationTrust.OrgPrevCertificate.SubjectName.RawData
+      description: Raw Data of the subject name of the previous organization certificate.
+      type: Number
+    - contextPath: EWS.FederationTrust.OrgPrevCertificate.Thumbprint
+      description: Thumbprint of the previous organization certificate.
+      type: String
+    - contextPath: EWS.FederationTrust.OrgPrevCertificate.Version
+      description: Version of the previous organization certificate.
+      type: Number
+    - contextPath: EWS.FederationTrust.OrgPrevPrivCertificate
+      description: Organization previous private certificate.
+      type: String
+    - contextPath: EWS.FederationTrust.OrgPrivCertificate
+      description: Organization private certificate.
+      type: String
+    - contextPath: EWS.FederationTrust.OrganizationId
+      description: Organization ID.
+      type: String
+    - contextPath: EWS.FederationTrust.OriginatingServer
+      description: Originating server.
+      type: String
+    - contextPath: EWS.FederationTrust.PSComputerName
+      description: PowerShell computer name.
+      type: String
+    - contextPath: EWS.FederationTrust.PSShowComputerName
+      description: Whether to show the PowerShell computer name.
+      type: Boolean
+    - contextPath: EWS.FederationTrust.PolicyReferenceUri
+      description: Policy Reference URI.
+      type: String
+    - contextPath: EWS.FederationTrust.RunspaceId
+      description: Runspace ID.
+      type: String
+    - contextPath: EWS.FederationTrust.TimesOfUnmatchPartner
+      description: Times Of unmatch partner.
+      type: Number
+    - contextPath: EWS.FederationTrust.TokenIssuerCertReference
+      description: Token issuer certificate reference.
+      type: String
+    - contextPath: EWS.FederationTrust.TokenIssuerCertificate.Archived
+      description: Whether the token issuer certificate is archived.
+      type: Boolean
+    - contextPath: EWS.FederationTrust.TokenIssuerCertificate.Extensions.Critical
+      description: Whether the extensions of the token issuer certificate are critical.
+      type: Boolean
+    - contextPath: EWS.FederationTrust.TokenIssuerCertificate.Extensions.Oid.FriendlyName
+      description: Friendly name of the OID of the extensions of the token issuer certificate.
+      type: String
+    - contextPath: EWS.FederationTrust.TokenIssuerCertificate.Extensions.Oid.Value
+      description: Value of the OID of the extensions of the token issuer certificate.
+      type: String
+    - contextPath: EWS.FederationTrust.TokenIssuerCertificate.Extensions.RawData
+      description: Raw Data of the extensions of the token issuer certificate.
+      type: Number
+    - contextPath: EWS.FederationTrust.TokenIssuerCertificate.Extensions.SubjectKeyIdentifier
+      description: Subject key identifier of the extensions of the token issuer certificate.
+      type: String
+    - contextPath: EWS.FederationTrust.TokenIssuerCertificate.Extensions.KeyUsages
+      description: Key usages of the extensions of the token issuer certificate.
+      type: Number
+    - contextPath: EWS.FederationTrust.TokenIssuerCertificate.FriendlyName
+      description: Friendly name of the token issuer certificate.
+      type: String
+    - contextPath: EWS.FederationTrust.TokenIssuerCertificate.Handle.value
+      description: Value of the handle of the token issuer certificate.
+      type: Number
+    - contextPath: EWS.FederationTrust.TokenIssuerCertificate.HasPrivateKey
+      description: Whether the token issuer certificate has a private key.
+      type: Boolean
+    - contextPath: EWS.FederationTrust.TokenIssuerCertificate.Issuer
+      description: Issuer of the token issuer certificate.
+      type: String
+    - contextPath: EWS.FederationTrust.TokenIssuerCertificate.IssuerName.Name
+      description: Name of the issuer of the token issuer certificate.
+      type: String
+    - contextPath: EWS.FederationTrust.TokenIssuerCertificate.IssuerName.Oid.FriendlyName
+      description: Friendly name of the OID of the token issuer certificate.
+      type: Unknown
+    - contextPath: EWS.FederationTrust.TokenIssuerCertificate.IssuerName.Oid.Value
+      description: Value of the OID of the issuer of the token issuer certificate.
+      type: Unknown
+    - contextPath: EWS.FederationTrust.TokenIssuerCertificate.IssuerName.RawData
+      description: Raw data of the issuer of the token issuer certificate.
+      type: Number
+    - contextPath: EWS.FederationTrust.TokenIssuerCertificate.NotAfter
+      description: The date until when the token issuer certificate is valid.
+      type: Date
+    - contextPath: EWS.FederationTrust.TokenIssuerCertificate.NotBefore
+      description: The date the token issuer certificate became valid.
+      type: Date
+    - contextPath: EWS.FederationTrust.TokenIssuerCertificate.PrivateKey
+      description: Private key of the token issuer certificate.
+      type: Unknown
+    - contextPath: EWS.FederationTrust.TokenIssuerCertificate.PublicKey.EncodedKeyValue.Oid.FriendlyName
+      description: Friendly name of the OID of the encoded key value of the public key of the token issuer certificate.
+      type: String
+    - contextPath: EWS.FederationTrust.TokenIssuerCertificate.PublicKey.EncodedKeyValue.Oid.Value
+      description: Value of the OID of the encoded key value of the public key of the token issuer certificate.
+      type: String
+    - contextPath: EWS.FederationTrust.TokenIssuerCertificate.PublicKey.EncodedKeyValue.RawData
+      description: Raw data of the encoded key value of the public key of the token issuer certificate.
+      type: Number
+    - contextPath: EWS.FederationTrust.TokenIssuerCertificate.PublicKey.EncodedParameters.Oid.FriendlyName
+      description: Friendly name of the OID of the encoded parameters of the public key of the token issuer certificate.
+      type: String
+    - contextPath: EWS.FederationTrust.TokenIssuerCertificate.PublicKey.EncodedParameters.Oid.Value
+      description: Value of the OID of the encoded parameters of the public key of the token issuer certificate.
+      type: String
+    - contextPath: EWS.FederationTrust.TokenIssuerCertificate.PublicKey.EncodedParameters.RawData
+      description: Raw Data of the encoded parameters of the public key of the token issuer certificate.
+      type: Number
+    - contextPath: EWS.FederationTrust.TokenIssuerCertificate.PublicKey.Key.KeyExchangeAlgorithm
+      description: Key exchange algorithm of the public key of the token issuer certificate.
+      type: String
+    - contextPath: EWS.FederationTrust.TokenIssuerCertificate.PublicKey.Key.LegalKeySizes.MaxSize
+      description: Maximum size of the public key of the token issuer certificate.
+      type: Number
+    - contextPath: EWS.FederationTrust.TokenIssuerCertificate.PublicKey.Key.LegalKeySizes.MinSize
+      description: Minimum size of the public key of the token issuer certificate.
+      type: Number
+    - contextPath: EWS.FederationTrust.TokenIssuerCertificate.PublicKey.Key.LegalKeySizes.SkipSize
+      description: SkiPSize of the public key of the token issuer certificate.
+      type: Number
+    - contextPath: EWS.FederationTrust.TokenIssuerCertificate.PublicKey.Key.SignatureAlgorithm
+      description: Signature algorithm of the public key of the token issuer certificate.
+      type: String
+    - contextPath: EWS.FederationTrust.TokenIssuerCertificate.PublicKey.Oid.FriendlyName
+      description: Friendly name of the OID of the public key of the token issuer certificate.
+      type: String
+    - contextPath: EWS.FederationTrust.TokenIssuerCertificate.PublicKey.Oid.Value
+      description: Value of the OID of the public key of the token issuer certificate.
+      type: String
+    - contextPath: EWS.FederationTrust.TokenIssuerCertificate.RawData
+      description: Raw Data of the token issuer certificate.
+      type: Number
+    - contextPath: EWS.FederationTrust.TokenIssuerCertificate.SerialNumber
+      description: Serial number of the token issuer certificate.
+      type: String
+    - contextPath: EWS.FederationTrust.TokenIssuerCertificate.SignatureAlgorithm.FriendlyName
+      description: Friendly name of the signature algorithm of the token issuer certificate.
+      type: String
+    - contextPath: EWS.FederationTrust.TokenIssuerCertificate.SignatureAlgorithm.Value
+      description: Value of the signature algorithm of the token issuer certificate.
+      type: String
+    - contextPath: EWS.FederationTrust.TokenIssuerCertificate.Subject
+      description: Subject of the token issuer certificate.
+      type: String
+    - contextPath: EWS.FederationTrust.TokenIssuerCertificate.SubjectName.Name
+      description: Name of the subject of the token issuer certificate.
+      type: String
+    - contextPath: EWS.FederationTrust.TokenIssuerCertificate.SubjectName.Oid.FriendlyName
+      description: Friendly name of the OID of the subject of the token issuer certificate.
+      type: Unknown
+    - contextPath: EWS.FederationTrust.TokenIssuerCertificate.SubjectName.Oid.Value
+      description: Value of the OID of the subject of the token issuer certificate.
+      type: Unknown
+    - contextPath: EWS.FederationTrust.TokenIssuerCertificate.SubjectName.RawData
+      description: Raw data of the subject of the token issuer certificate.
+      type: Number
+    - contextPath: EWS.FederationTrust.TokenIssuerCertificate.Thumbprint
+      description: Thumbprint of the token issuer certificate.
+      type: String
+    - contextPath: EWS.FederationTrust.TokenIssuerCertificate.Version
+      description: Version of the token issuer certificate.
+      type: Number
+    - contextPath: EWS.FederationTrust.TokenIssuerEpr
+      description: Token issuer EPR.
+      type: String
+    - contextPath: EWS.FederationTrust.TokenIssuerMetadataEpr
+      description: Token issuer metadata EPR.
+      type: String
+    - contextPath: EWS.FederationTrust.TokenIssuerPrevCertReference
+      description: Token issuer previous certificate reference.
+      type: String
+    - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.Archived
+      description: Whether the token issuer previous certificate was archived.
+      type: Boolean
+    - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.Extensions.Critical
+      description: Whether the extensions of the token issuer previous certificate was critical.
+      type: Boolean
+    - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.Extensions.Oid.FriendlyName
+      description: Friendly name of the OID of the extensions of the token issuer previous certificate.
+      type: String
+    - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.Extensions.Oid.Value
+      description: Value of the OID of the extensions of the token issuer previous certificate.
+      type: String
+    - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.Extensions.RawData
+      description: Raw data of the extensions of the token issuer previous certificate.
+      type: Number
+    - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.Extensions.SubjectKeyIdentifier
+      description: Subject key identifier of the extensions of the token issuer previous certificate.
+      type: String
+    - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.Extensions.KeyUsages
+      description: Key usages of the extensions of the token issuer previous certificate.
+      type: Number
+    - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.FriendlyName
+      description: Friendly name of the token issuer previous certificate.
+      type: String
+    - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.Handle.value
+      description: The handle value of the token issuer previous certificate.
+      type: Number
+    - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.HasPrivateKey
+      description: Whether the token issuer previous certificate has a private key.
+      type: Boolean
+    - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.Issuer
+      description: Issuer of the token issuer previous certificate.
+      type: String
+    - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.IssuerName.Name
+      description: Name of the issuer of the token issuer previous certificate.
+      type: String
+    - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.IssuerName.Oid.FriendlyName
+      description: Friendly name of the OID of the issuer name of the token issuer previous certificate.
+      type: Unknown
+    - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.IssuerName.Oid.Value
+      description: Value of the OID of the issuer name of the token issuer previous certificate.
+      type: Unknown
+    - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.IssuerName.RawData
+      description: Raw Data of the issuer name of the token issuer previous certificate.
+      type: Number
+    - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.NotAfter
+      description: The date until when the token issuer previous certificate is valid.
+      type: Date
+    - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.NotBefore
+      description: The date the token issuer previous certificate became valid.
+      type: Date
+    - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.PrivateKey
+      description: Private Key of the token issuer previous certificate.
+      type: Unknown
+    - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.PublicKey.EncodedKeyValue.Oid.FriendlyName
+      description: Friendly name of the OID of the encoded key value of the public key of the token issuer previous certificate.
+      type: String
+    - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.PublicKey.EncodedKeyValue.Oid.Value
+      description: Value of the OID of the encoded key value of the public key of the token issuer previous certificate.
+      type: String
+    - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.PublicKey.EncodedKeyValue.RawData
+      description: Raw data of the encoded key value of the public key of the token issuer previous certificate.
+      type: Number
+    - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.PublicKey.EncodedParameters.Oid.FriendlyName
+      description: Friendly name of the OID of the encoded parameters of the public key of the token issuer previous certificate.
+      type: String
+    - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.PublicKey.EncodedParameters.Oid.Value
+      description: Value of the OID of the encoded parameters of the public key of the token issuer previous certificate.
+      type: String
+    - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.PublicKey.EncodedParameters.RawData
+      description: Raw data of the encoded parameters of the public key of the token issuer previous certificate.
+      type: Number
+    - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.PublicKey.Key.KeyExchangeAlgorithm
+      description: Key exchange algorithm of the public key of the token issuer previous certificate.
+      type: String
+    - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.PublicKey.Key.LegalKeySizes.MaxSize
+      description: Maximum size of the public key of the token issuer previous certificate.
+      type: Number
+    - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.PublicKey.Key.LegalKeySizes.MinSize
+      description: Minimum size of the public key of the token issuer previous certificate.
+      type: Number
+    - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.PublicKey.Key.LegalKeySizes.SkipSize
+      description: SkiPSize of the public key of the token issuer previous certificate.
+      type: Number
+    - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.PublicKey.Key.SignatureAlgorithm
+      description: Signature algorithm of the public key of the token issuer previous certificate.
+      type: String
+    - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.PublicKey.Oid.FriendlyName
+      description: Friendly Name of the OID of the public key of the token issuer previous certificate.
+      type: String
+    - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.PublicKey.Oid.Value
+      description: Value of the OID of teh public key of the token issuer previous certificate.
+      type: String
+    - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.RawData
+      description: Raw Data of the token issuer previous certificate.
+      type: Number
+    - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.SerialNumber
+      description: Serial number of the token issuer previous certificate.
+      type: String
+    - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.SignatureAlgorithm.FriendlyName
+      description: Friendly name of the signature algorithm of the token issuer previous certificate.
+      type: String
+    - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.SignatureAlgorithm.Value
+      description: Value of the signature algorithm of the token issuer previous certificate.
+      type: String
+    - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.Subject
+      description: Subject of the token issuer previous certificate.
+      type: String
+    - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.SubjectName.Name
+      description: Name of the subject of the token issuer previous certificate.
+      type: String
+    - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.SubjectName.Oid.FriendlyName
+      description: Friendly Name of the OID of the subject of the token issuer previous certificate.
+      type: Unknown
+    - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.SubjectName.Oid.Value
+      description: Value of the OID of the subject name of the token issuer previous certificate.
+      type: Unknown
+    - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.SubjectName.RawData
+      description: Raw data of the subject name of the token issuer previous certificate.
+      type: Number
+    - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.Thumbprint
+      description: Thumbprint of the token issuer previous certificate.
+      type: String
+    - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.Version
+      description: Version of the token issuer previous certificate.
+      type: Number
+    - contextPath: EWS.FederationTrust.TokenIssuerType
+      description: Token issuer type of the federation trust.
+      type: String
+    - contextPath: EWS.FederationTrust.TokenIssuerUri
+      description: Token Issuer UIR of the federation trust.
+      type: String
+    - contextPath: EWS.FederationTrust.WebRequestorRedirectEpr
+      description: Web requestor redirect EPR of the federation trust.
+      type: String
+    - contextPath: EWS.FederationTrust.WhenChanged
+      description: The date the federation trust was changed.
+      type: Date
+    - contextPath: EWS.FederationTrust.WhenChangedUTC
+      description: The date in UTC format of when the federation trust was changed.
+      type: Date
+    - contextPath: EWS.FederationTrust.WhenCreated
+      description: The date the federation trust was created.
+      type: Date
+    - contextPath: EWS.FederationTrust.WhenCreatedUTC
+      description: The date in UTC format of when the federation trust was created.
+      type: Date
+  - arguments:
+    - description: 'The fully qualified domain name (FQDN) of the domain controller. For example, dc01.contoso.com. This argument is available only in on-premises Exchange.'
+      name: domain_controller
+    - description: The federation trust ID. If not specified, all federation trusts configured for the Exchange organization are returned.
+      name: identity
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: 'The IncludeExtendedDomainInfo switch specifies that the command query Microsoft Federation Gateway for the status of each accepted domain that''s federated. The status is returned with each domain in the Domains property. Possible values: "true" and "false".'
+      name: include_extended_domain_info
+      predefined:
+      - 'true'
+      - 'false'
+    description: Retrieves the Exchange organization's federated organization identifier and related details, such as federated domains, organization contact, and status.
+    name: ews-federation-configuration-get
+    outputs:
+    - contextPath: EWS.FederationConfiguration.AccountNamespace
+      description: Account namespace of the federation configuration.
+      type: String
+    - contextPath: EWS.FederationConfiguration.DefaultDomain
+      description: Default domain of the federation configuration.
+      type: Unknown
+    - contextPath: EWS.FederationConfiguration.DelegationTrustLink
+      description: Delegation trust link of the federation configuration.
+      type: String
+    - contextPath: EWS.FederationConfiguration.DistinguishedName
+      description: Distinguished name of the federation configuration.
+      type: String
+    - contextPath: EWS.FederationConfiguration.Domains
+      description: Domains of the federation configuration.
+      type: String
+    - contextPath: EWS.FederationConfiguration.Enabled
+      description: Whether the federation configuration is enabled.
+      type: Boolean
+    - contextPath: EWS.FederationConfiguration.ExchangeObjectId
+      description: Exchange object ID of the federation configuration.
+      type: String
+    - contextPath: EWS.FederationConfiguration.ExchangeVersion
+      description: Exchange version of the federation configuration.
+      type: String
+    - contextPath: EWS.FederationConfiguration.Guid
+      description: GUID of the federation configuration.
+      type: String
+    - contextPath: EWS.FederationConfiguration.Id
+      description: ID of the federation configuration.
+      type: String
+    - contextPath: EWS.FederationConfiguration.Identity
+      description: Identity of the federation configuration.
+      type: String
+    - contextPath: EWS.FederationConfiguration.IsValid
+      description: Whether the federation configration is valid.
+      type: Boolean
+    - contextPath: EWS.FederationConfiguration.Name
+      description: Name of the federation configuration.
+      type: String
+    - contextPath: EWS.FederationConfiguration.ObjectCategory
+      description: Object category of the federation configuration.
+      type: String
+    - contextPath: EWS.FederationConfiguration.ObjectClass
+      description: Object class of the federation configuration.
+      type: String
+    - contextPath: EWS.FederationConfiguration.ObjectState
+      description: Object state of the federation configuration.
+      type: String
+    - contextPath: EWS.FederationConfiguration.OrganizationContact
+      description: Organization contact of the federation configuration.
+      type: String
+    - contextPath: EWS.FederationConfiguration.OrganizationId
+      description: Organization ID of the federation configuration.
+      type: String
+    - contextPath: EWS.FederationConfiguration.OriginatingServer
+      description: Originating server of the federation configuration.
+      type: String
+    - contextPath: EWS.FederationConfiguration.PSComputerName
+      description: PowerShell computer name of the federation configuration.
+      type: String
+    - contextPath: EWS.FederationConfiguration.PSShowComputerName
+      description: Whether to show the PowerShell computer name of the federation configuration.
+      type: Boolean
+    - contextPath: EWS.FederationConfiguration.RunspaceId
+      description: Runspace ID of the federation configuration.
+      type: String
+    - contextPath: EWS.FederationConfiguration.WhenChanged
+      description: The date the federation configuration was changed.
+      type: Date
+    - contextPath: EWS.FederationConfiguration.WhenChangedUTC
+      description: The date in UTC format of when the federation configuration was changed.
+      type: Date
+    - contextPath: EWS.FederationConfiguration.WhenCreated
+      description: The date the federation configuration was created.
+      type: Date
+    - contextPath: EWS.FederationConfiguration.WhenCreatedUTC
+      description: The date in UTC format of when the federation configuration was created.
+      type: Date
+  - arguments:
+    - description: |-
+        The fully qualified domain name (FQDN) of the domain controller. For example, dc01.contoso.com.
+        This argument is available only in on-premises Exchange.
+      name: domain_controller
+    - description: The remote domain that you want to view. You can use the GUID, ID, or any other identifier.
+      name: identity
+    description: Gets the configuration information for the remote domains configured in your organization. This command is available only in the Exchange Online PowerShell V2 module.
+    name: ews-remote-domain-get
+    outputs:
+    - contextPath: EWS.RemoteDomain.AdminDisplayName
+      description: Admin display name of the remote domain.
+      type: String
+    - contextPath: EWS.RemoteDomain.AllowedOOFType
+      description: Allowed OOF type of the remote domain.
+      type: String
+    - contextPath: EWS.RemoteDomain.AutoForwardEnabled
+      description: Whether auto forward is enabled for the remote domain.
+      type: Boolean
+    - contextPath: EWS.RemoteDomain.AutoReplyEnabled
+      description: Whether auto reply is enabled for the remote domain..
+      type: Boolean
+    - contextPath: EWS.RemoteDomain.ByteEncoderTypeFor7BitCharsets
+      description: Byte encoder type For 7-bit charsets of the remote domain.
+      type: String
+    - contextPath: EWS.RemoteDomain.CharacterSet
+      description: Character set of the remote domain.
+      type: String
+    - contextPath: EWS.RemoteDomain.ContentType
+      description: Content type of the remote domain.
+      type: String
+    - contextPath: EWS.RemoteDomain.DeliveryReportEnabled
+      description: Whether delivery report is enabled for the remote domain.
+      type: Boolean
+    - contextPath: EWS.RemoteDomain.DisplaySenderName
+      description: Whether to display the sender name for the remote domain.
+      type: Boolean
+    - contextPath: EWS.RemoteDomain.DistinguishedName
+      description: Distinguished name of the remote domain.
+      type: String
+    - contextPath: EWS.RemoteDomain.DomainName
+      description: Domain name of the remote domain.
+      type: String
+    - contextPath: EWS.RemoteDomain.ExchangeObjectId
+      description: Exchange object ID of the remote domain.
+      type: String
+    - contextPath: EWS.RemoteDomain.ExchangeVersion
+      description: Exchange version of the remote domain.
+      type: String
+    - contextPath: EWS.RemoteDomain.Guid
+      description: GUID of the remote domain.
+      type: String
+    - contextPath: EWS.RemoteDomain.Id
+      description: ID of the remote domain.
+      type: String
+    - contextPath: EWS.RemoteDomain.Identity
+      description: Identity of the remote domain.
+      type: String
+    - contextPath: EWS.RemoteDomain.IsInternal
+      description: Whether the remote domain is internal.
+      type: Boolean
+    - contextPath: EWS.RemoteDomain.IsValid
+      description: Whether the remote domain is valid.
+      type: Boolean
+    - contextPath: EWS.RemoteDomain.LineWrapSize
+      description: Line wrap size for the remote domain.
+      type: String
+    - contextPath: EWS.RemoteDomain.MeetingForwardNotificationEnabled
+      description: Whether meeting forward notification is enabled for the remote domain.
+      type: Boolean
+    - contextPath: EWS.RemoteDomain.MessageCountThreshold
+      description: Message count threshold  of the remote domain.
+      type: Number
+    - contextPath: EWS.RemoteDomain.NDRDiagnosticInfoEnabled
+      description: Whether NDR diagnostic information is enabled for the remote domain.
+      type: Boolean
+    - contextPath: EWS.RemoteDomain.NDREnabled
+      description: Whether NDR is enabled for the remote domain.
+      type: Boolean
+    - contextPath: EWS.RemoteDomain.Name
+      description: Name of the remote domain.
+      type: String
+    - contextPath: EWS.RemoteDomain.NonMimeCharacterSet
+      description: Non-mime character set of the remote domain.
+      type: String
+    - contextPath: EWS.RemoteDomain.ObjectCategory
+      description: Object category of the remote domain.
+      type: String
+    - contextPath: EWS.RemoteDomain.ObjectClass
+      description: Object class of the remote domain.
+      type: String
+    - contextPath: EWS.RemoteDomain.ObjectState
+      description: Object state of the remote domain.
+      type: String
+    - contextPath: EWS.RemoteDomain.OrganizationId
+      description: Organization ID of the remote domain.
+      type: String
+    - contextPath: EWS.RemoteDomain.OriginatingServer
+      description: Originating server of the remote domain.
+      type: String
+    - contextPath: EWS.RemoteDomain.PSComputerName
+      description: PowerShell computer name of the remote domain.
+      type: String
+    - contextPath: EWS.RemoteDomain.PSShowComputerName
+      description: Whether to show the PowerShell computer name for the remote domain.
+      type: Boolean
+    - contextPath: EWS.RemoteDomain.PreferredInternetCodePageForShiftJis
+      description: Preferred internet code page for shift JIS for the remote domain.
+      type: String
+    - contextPath: EWS.RemoteDomain.RequiredCharsetCoverage
+      description: Required charset coverage for the remote domain.
+      type: Unknown
+    - contextPath: EWS.RemoteDomain.RunspaceId
+      description: Runspace ID for the remote domain.
+      type: String
+    - contextPath: EWS.RemoteDomain.TNEFEnabled
+      description: Whether TNEF is enabled for the remote domain.
+      type: Unknown
+    - contextPath: EWS.RemoteDomain.TargetDeliveryDomain
+      description: Whether the remote domain is used for the target email address of mail users that represent the users in the other forest.
+      type: Boolean
+    - contextPath: EWS.RemoteDomain.TrustedMailInboundEnabled
+      description: Whether inbound trusted mail is enabled.
+      type: Boolean
+    - contextPath: EWS.RemoteDomain.TrustedMailOutboundEnabled
+      description: Whether outbound trusted mail is enabled.
+      type: Boolean
+    - contextPath: EWS.RemoteDomain.UseSimpleDisplayName
+      description: Whether to use the simple display name.
+      type: Boolean
+    - contextPath: EWS.RemoteDomain.WhenChanged
+      description: The date the remote domain was changed.
+      type: Date
+    - contextPath: EWS.RemoteDomain.WhenChangedUTC
+      description: The date in UTC format of when the remote domain was changed.
+      type: Date
+    - contextPath: EWS.RemoteDomain.WhenCreated
+      description: The date the remote domain was created.
+      type: Date
+    - contextPath: EWS.RemoteDomain.WhenCreatedUTC
+      description: The date in UTC format of when the remote domain was created.
+      type: Date
+  - arguments:
+    - description: The mailbox you want to view.
+      name: identity
+    - description: The object's location in Active Directory by which to filter the results.
+      name: organizational_unit
+    - defaultValue: 10
+      description: Maximum number of users to get. A value of 0 means to get all users.
+      name: limit
+    description: Displays the existing user objects in your organization.
+    name: ews-user-list
+    outputs:
+    - contextPath: EWS.User.AccountDisabled
+      description: Whether the user account is disabled.
+      type: Boolean
+    - contextPath: EWS.User.AllowUMCallsFromNonUsers
+      description: Whether to allow Unified Messaging calls from non-users.
+      type: Boolean
+    - contextPath: EWS.User.ArchiveRelease
+      description: The archive release of the user object.
+      type: String
+    - contextPath: EWS.User.AssistantName
+      description: The assistant name of the user object.
+      type: String
+    - contextPath: EWS.User.AuthenticationPolicy
+      description: The authentication policy of the user object.
+      type: Unknown
+    - contextPath: EWS.User.CanHaveCloudCache
+      description: Whether the user object can have cloud cache.
+      type: Boolean
+    - contextPath: EWS.User.City
+      description: The city of the user object.
+      type: String
+    - contextPath: EWS.User.CloudCacheAccountType
+      description: Cloud cache account type of the user object.
+      type: String
+    - contextPath: EWS.User.CloudCacheProvider
+      description: Cloud cache provider of the user object.
+      type: Number
+    - contextPath: EWS.User.CloudCacheRemoteEmailAddress
+      description: Cloud cache remote email address of the user object.
+      type: String
+    - contextPath: EWS.User.CloudCacheScope
+      description: Cloud cache scope of the user object.
+      type: Number
+    - contextPath: EWS.User.CloudCacheUserName
+      description: Cloud cache user name of the user object.
+      type: String
+    - contextPath: EWS.User.Company
+      description: Company of the user object.
+      type: String
+    - contextPath: EWS.User.ConsumerNetID
+      description: Consumer net ID of the user object.
+      type: Unknown
+    - contextPath: EWS.User.CountryOrRegion
+      description: Country or region of the .
+      type: String
+    - contextPath: EWS.User.DefaultMailboxWorkloadsMask
+      description: Default mailbox workloads mask of the user object.
+      type: Unknown
+    - contextPath: EWS.User.Department
+      description: Department of the user object.
+      type: String
+    - contextPath: EWS.User.DesiredMailboxWorkloads
+      description: Desired mailbox workloads of the user object.
+      type: Unknown
+    - contextPath: EWS.User.DesiredMailboxWorkloadsGracePeriod
+      description: Desired mailbox workloads grace period of the user object.
+      type: Unknown
+    - contextPath: EWS.User.DesiredMailboxWorkloadsModified
+      description: Modified desired mailbox workloads of the user object.
+      type: Unknown
+    - contextPath: EWS.User.DisplayName
+      description: Display name of the user object.
+      type: String
+    - contextPath: EWS.User.DistinguishedName
+      description: Distinguished name of the user object.
+      type: String
+    - contextPath: EWS.User.ExchangeObjectId
+      description: Exchange object ID of the user object.
+      type: String
+    - contextPath: EWS.User.ExchangeVersion
+      description: Exchange version of the user object.
+      type: String
+    - contextPath: EWS.User.ExternalDirectoryObjectId
+      description: External Directory Object ID of the user object.
+      type: String
+    - contextPath: EWS.User.Fax
+      description: Fax of the user object.
+      type: String
+    - contextPath: EWS.User.FirstName
+      description: First name of the user object.
+      type: String
+    - contextPath: EWS.User.GeoCoordinates
+      description: Geo coordinates of the user object.
+      type: Unknown
+    - contextPath: EWS.User.Guid
+      description: GUID of the user object.
+      type: String
+    - contextPath: EWS.User.HomePhone
+      description: Home phone of the user object.
+      type: String
+    - contextPath: EWS.User.Id
+      description: ID of the user object.
+      type: String
+    - contextPath: EWS.User.Identity
+      description: Identity of the user object.
+      type: String
+    - contextPath: EWS.User.Initials
+      description: Initials of the user object.
+      type: String
+    - contextPath: EWS.User.IsCloudCache
+      description: Whether there is a cloud cache for the user object.
+      type: Boolean
+    - contextPath: EWS.User.IsCloudCacheBlocked
+      description: Whether the cloud cache is blocked.
+      type: Boolean
+    - contextPath: EWS.User.IsCloudCacheProvisioningComplete
+      description: Whether cloud cache provisioning is complete.
+      type: Boolean
+    - contextPath: EWS.User.IsDirSynced
+      description: Whether the directory is synched.
+      type: Boolean
+    - contextPath: EWS.User.IsInactiveMailbox
+      description: Whether the mailbox is inactive.
+      type: Boolean
+    - contextPath: EWS.User.IsLinked
+      description: Whether the user object is linked.
+      type: Boolean
+    - contextPath: EWS.User.IsSecurityPrincipal
+      description: Whether there is a security principal.
+      type: Boolean
+    - contextPath: EWS.User.IsSoftDeletedByDisable
+      description: Whether soft delete is disabled and hard (permanent) delete occurs.
+      type: Boolean
+    - contextPath: EWS.User.IsSoftDeletedByRemove
+      description: When the Exchange Online mailbox is deleted (soft delete), this property is set to True.
+      type: Boolean
+    - contextPath: EWS.User.IsValid
+      description: Whether the user object is valid.
+      type: Boolean
+    - contextPath: EWS.User.LastName
+      description: Last name of the user object.
+      type: String
+    - contextPath: EWS.User.LegacyExchangeDN
+      description: Legacy exchange distinguished name of the user object.
+      type: String
+    - contextPath: EWS.User.LegalAgeGroup
+      description: Legal age group of the user object.
+      type: Unknown
+    - contextPath: EWS.User.LinkedMasterAccount
+      description: Linked master account of the user object.
+      type: String
+    - contextPath: EWS.User.MailboxLocations
+      description: Mailbox locations of the user object.
+      type: String
+    - contextPath: EWS.User.MailboxProvisioningConstraint
+      description: Mailbox provisioning constraint of the user object.
+      type: Unknown
+    - contextPath: EWS.User.MailboxRegion
+      description: Mailbox region of the user object.
+      type: Unknown
+    - contextPath: EWS.User.MailboxRegionLastUpdateTime
+      description: Last time the mailbox region  of the user object was updated.
+      type: Unknown
+    - contextPath: EWS.User.MailboxRegionSuffix
+      description: Mailbox region suffix of the user object.
+      type: String
+    - contextPath: EWS.User.MailboxRelease
+      description: Mailbox release of the user object.
+      type: String
+    - contextPath: EWS.User.MailboxWorkloads
+      description: Mailbox workloads of the user object.
+      type: String
+    - contextPath: EWS.User.Manager
+      description: Manager of the user object.
+      type: Unknown
+    - contextPath: EWS.User.MicrosoftOnlineServicesID
+      description: Microsoft Online Services ID of the user object.
+      type: String
+    - contextPath: EWS.User.MobilePhone
+      description: Mobile phone of the user object.
+      type: String
+    - contextPath: EWS.User.Name
+      description: Name of the user object.
+      type: String
+    - contextPath: EWS.User.NetID
+      description: Network ID of the user object.
+      type: String
+    - contextPath: EWS.User.Notes
+      description: Notes for the user object.
+      type: String
+    - contextPath: EWS.User.ObjectCategory
+      description: Object category of the user object.
+      type: String
+    - contextPath: EWS.User.ObjectClass
+      description: Object class of the user object.
+      type: String
+    - contextPath: EWS.User.ObjectState
+      description: Object state of the user object.
+      type: String
+    - contextPath: EWS.User.Office
+      description: Office of the user object.
+      type: String
+    - contextPath: EWS.User.OrganizationId
+      description: Organization ID of the user object.
+      type: String
+    - contextPath: EWS.User.OrganizationalUnit
+      description: Organizational unit of the user object.
+      type: String
+    - contextPath: EWS.User.OriginatingServer
+      description: Originating server of the user object.
+      type: String
+    - contextPath: EWS.User.PSComputerName
+      description: PowerShell computer name of the user object.
+      type: String
+    - contextPath: EWS.User.PSShowComputerName
+      description: Whether to show the PowerShell computer name of the user object.
+      type: Boolean
+    - contextPath: EWS.User.Pager
+      description: Pager of the user object.
+      type: String
+    - contextPath: EWS.User.Phone
+      description: Phone of the user object.
+      type: String
+    - contextPath: EWS.User.PhoneticDisplayName
+      description: Phonetic display name of the user object.
+      type: String
+    - contextPath: EWS.User.PostalCode
+      description: Postal Code of the user object.
+      type: String
+    - contextPath: EWS.User.PreviousRecipientTypeDetails
+      description: Details of the previous recipient type of the user object.
+      type: String
+    - contextPath: EWS.User.RecipientType
+      description: Recipient type of the user object.
+      type: String
+    - contextPath: EWS.User.RecipientTypeDetails
+      description: Details of the recipient type of the user object.
+      type: String
+    - contextPath: EWS.User.RemotePowerShellEnabled
+      description: Whether remote PowerShell is enabled for the user object.
+      type: Boolean
+    - contextPath: EWS.User.ResetPasswordOnNextLogon
+      description: Whether to reset the password on next logon.
+      type: Boolean
+    - contextPath: EWS.User.RunspaceId
+      description: Runspace ID of the user object.
+      type: String
+    - contextPath: EWS.User.SKUAssigned
+      description: Whether SKU is assigned.
+      type: Boolean
+    - contextPath: EWS.User.SamAccountName
+      description: sAMAccountName of the user object.
+      type: String
+    - contextPath: EWS.User.SeniorityIndex
+      description: Seniority index of the user object.
+      type: Unknown
+    - contextPath: EWS.User.Sid
+      description: SID of the user object.
+      type: String
+    - contextPath: EWS.User.SimpleDisplayName
+      description: Simple display name of the user object.
+      type: String
+    - contextPath: EWS.User.StateOrProvince
+      description: State or province of the user object.
+      type: String
+    - contextPath: EWS.User.StreetAddress
+      description: Street address of the user object.
+      type: String
+    - contextPath: EWS.User.StsRefreshTokensValidFrom
+      description: The validation start date for the Security Token Service (STS) refresh tokens of the user object.
+      type: Date
+    - contextPath: EWS.User.TelephoneAssistant
+      description: Telephone assistant of the user object.
+      type: String
+    - contextPath: EWS.User.Title
+      description: Title of the user object.
+      type: String
+    - contextPath: EWS.User.UMDialPlan
+      description: Unified Messaging (UM) dial plan of the user object.
+      type: Unknown
+    - contextPath: EWS.User.UMDtmfMap
+      description: Unified Messaging (UM) dual tone multi-frequency (DTMF) map of the user object.
+      type: String
+    - contextPath: EWS.User.UpgradeDetails
+      description: Upgrade details of the user object.
+      type: Unknown
+    - contextPath: EWS.User.UpgradeMessage
+      description: Upgrade message of the user object.
+      type: Unknown
+    - contextPath: EWS.User.UpgradeRequest
+      description: Upgrade request of the user object.
+      type: String
+    - contextPath: EWS.User.UpgradeStage
+      description: Upgrade stage of the user object.
+      type: Unknown
+    - contextPath: EWS.User.UpgradeStageTimeStamp
+      description: Upgrade stage time stamp of the user object.
+      type: Unknown
+    - contextPath: EWS.User.UpgradeStatus
+      description: Upgrade status of the user object.
+      type: String
+    - contextPath: EWS.User.UserAccountControl
+      description: User account control of the user object.
+      type: String
+    - contextPath: EWS.User.UserPrincipalName
+      description: User principal name of the user object.
+      type: String
+    - contextPath: EWS.User.WebPage
+      description: Web page of the user object.
+      type: String
+    - contextPath: EWS.User.WhenChanged
+      description: The date the user object was changed.
+      type: Date
+    - contextPath: EWS.User.WhenChangedUTC
+      description: The date in UTC format of when the user object was changed.
+      type: Date
+    - contextPath: EWS.User.WhenCreated
+      description: The date the user object was created.
+      type: Date
+    - contextPath: EWS.User.WhenCreatedUTC
+      description: The date in UTC format of when the user object was created.
+      type: Date
+    - contextPath: EWS.User.WhenSoftDeleted
+      description: When the user object was soft deleted.
+      type: Unknown
+    - contextPath: EWS.User.WindowsEmailAddress
+      description: Windows email address of the user object.
+      type: String
+    - contextPath: EWS.User.WindowsLiveID
+      description: Windows live ID of the user object.
+      type: String
+    - contextPath: EWS.User.DirectReports
+      description: Direct reports of the user object.
+      type: String
+  - arguments:
+    - description: The mailbox you want to view.
+      name: identity
+    - description: The domain controller that's used by this cmdlet to read data from or write data to Active Directory. You identify the domain controller by its fully qualified domain name (FQDN). This argument is available only in on-premises Exchange.
+      name: domain_controller
+    - defaultValue: 10
+      description: Maximum number of users to get. A value of 0 means to get all users.
+      name: limit
+    description: Retrieves information about the AuditBypassEnabled property value for user accounts (on-premises Exchange and the cloud) and computer accounts (on-premises Exchange only).
+    name: ews-mailbox-audit-bypass-association-list
+    outputs:
+    - contextPath: EWS.MailboxAuditBypassAssociation.AuditBypassEnabled
+      description: Whether the mailbox audit bypass association is enabled.
+      type: Boolean
+    - contextPath: EWS.MailboxAuditBypassAssociation.DistinguishedName
+      description: Distinguished name of the mailbox audit bypass association.
+      type: String
+    - contextPath: EWS.MailboxAuditBypassAssociation.ExchangeObjectId
+      description: Exchange object ID of the mailbox audit bypass association.
+      type: String
+    - contextPath: EWS.MailboxAuditBypassAssociation.ExchangeVersion
+      description: The version of the exchanged server.
+      type: String
+    - contextPath: EWS.MailboxAuditBypassAssociation.Guid
+      description: The GUID of the mailbox audit bypass association.
+      type: String
+    - contextPath: EWS.MailboxAuditBypassAssociation.Id
+      description: ID of the mailbox audit bypass association.
+      type: String
+    - contextPath: EWS.MailboxAuditBypassAssociation.Identity
+      description: The unique identity of the mailbox audit bypass association.
+      type: String
+    - contextPath: EWS.MailboxAuditBypassAssociation.IsValid
+      description: Whether the mailbox audit bypass association property is enabled.
+      type: Boolean
+    - contextPath: EWS.MailboxAuditBypassAssociation.Name
+      description: Name of the mailbox audit bypass association.
+      type: String
+    - contextPath: EWS.MailboxAuditBypassAssociation.ObjectCategory
+      description: Object category of the mailbox audit bypass association.
+      type: String
+    - contextPath: EWS.MailboxAuditBypassAssociation.ObjectClass
+      description: Object class of the mailbox audit bypass association.
+      type: String
+    - contextPath: EWS.MailboxAuditBypassAssociation.ObjectId
+      description: Object ID of the mailbox audit bypass association.
+      type: String
+    - contextPath: EWS.MailboxAuditBypassAssociation.ObjectState
+      description: Object state of the mailbox audit bypass association.
+      type: String
+    - contextPath: EWS.MailboxAuditBypassAssociation.OrganizationId
+      description: Organization ID of the mailbox audit bypass association.
+      type: String
+    - contextPath: EWS.MailboxAuditBypassAssociation.OriginatingServer
+      description: Originating server of the mailbox audit bypass association.
+      type: String
+    - contextPath: EWS.MailboxAuditBypassAssociation.PSComputerName
+      description: PowerShell computer name of the mailbox audit bypass association.
+      type: String
+    - contextPath: EWS.MailboxAuditBypassAssociation.PSShowComputerName
+      description: Whether to show the computer name of the mailbox audit bypass association.
+      type: Boolean
+    - contextPath: EWS.MailboxAuditBypassAssociation.RunspaceId
+      description: Runspace ID of the mailbox audit bypass association.
+      type: String
+    - contextPath: EWS.MailboxAuditBypassAssociation.WhenChanged
+      description: The date the mailbox audit bypass association was changed.
+    - contextPath: EWS.MailboxAuditBypassAssociation.WhenChangedUTC
+      description: The date in UTC of when the mailbox audit bypass association was changed.
+      type: Date
+    - contextPath: EWS.MailboxAuditBypassAssociation.WhenCreated
+      description: The date the mailbox audit bypass association was created.
+      type: Date
+    - contextPath: EWS.MailboxAuditBypassAssociation.WhenCreatedUTC
+      description: The date in UTC format of when the mailbox audit bypass association was created.
+      type: Date
+  - name: ews-remove-tenant-allow-block-list-items
+    arguments:
+    - name: entries
+      description: Entries to remove from the list.  Either use this OR 'ids' to specify items to remove.  Separate multiple entries with a comma (e.g. "Item1,Item2").
+      isArray: true
+    - name: ids
+      description: Entry IDs to remove from the list.  Either use this OR 'entries' to specify items to remove.  Separate multiple entries with a comma (e.g. "Item1,Item2").
+    - name: list_type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - sender
+      - filehash
+      - url
+      description: List type to remove items from.
+    - name: list_subtype
+      auto: PREDEFINED
+      predefined:
+      - Tenant
+      - AdvancedDelivery
+      description: List subtype to remove items from.
+      defaultValue: Tenant
+    outputs:
+    - contextPath: EWS.RemovedTenantBlocks.Action
+      description: Action
+      type: string
+    - contextPath: EWS.RemovedTenantBlocks.EntryValueHash
+      description: Null for deleted items.
+      type: string
+    - contextPath: EWS.RemovedTenantBlocks.Error
+      description: Null for deleted items.
+      type: string
+    - contextPath: EWS.RemovedTenantBlocks.ExpirationDate
+      description: Null for deleted items.
+      type: string
+    - contextPath: EWS.RemovedTenantBlocks.Identity
+      description: Blank for deleted items.
+      type: string
+    - contextPath: EWS.RemovedTenantBlocks.LastModifiedDateTime
+      description: Null for deleted items.
+      type: string
+    - contextPath: EWS.RemovedTenantBlocks.ListSubType
+      description: Null for deleted items.
+      type: string
+    - contextPath: EWS.RemovedTenantBlocks.ModifiedBy
+      description: Null for deleted items.
+      type: string
+    - contextPath: EWS.RemovedTenantBlocks.Notes
+      description: Null for deleted items.
+      type: string
+    - contextPath: EWS.RemovedTenantBlocks.ObjectState
+      description: State of the object (Deleted)
+      type: string
+    - contextPath: EWS.RemovedTenantBlocks.PSComputerName
+      description: Name of Remote Powershell endpoint
+      type: string
+    - contextPath: EWS.RemovedTenantBlocks.PSShowComputerName
+      description: Flag whether or not remote computer name is shown in PS prompt
+      type: boolean
+    - contextPath: EWS.RemovedTenantBlocks.RunspaceId
+      description: RunspaceID of the entry
+      type: string
+    - contextPath: EWS.RemovedTenantBlocks.SubmissionID
+      description: SubmissionID of the entry
+      type: string
+    - contextPath: EWS.RemovedTenantBlocks.SysManaged
+      description: SysManaged property of the entry
+      type: boolean
+    - contextPath: EWS.RemovedTenantBlocks.Value
+      description: The value of the entry that was removed
+      type: string
+    description: Remove items from the Tenant Allow/Block Lists.   You can delete items by their value or by unique ID.  Uses PowerShell cmdlet Remove-TenantAllowBlockListItems cmdlet.
+  script: ''
+  type: powershell
+  dockerimage: demisto/pwsh-exchangev3:1.0.0.49863
+fromversion: 5.5.0
+tests:
+- playbook-O365-EWS-Extension-Powershell-Online-V3-Test

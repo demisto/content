@@ -37,8 +37,9 @@ class Client:
         self.project = params.get('project')
         self.location = params.get('location')
         self.key_ring = params.get('key_ring')
-        self.service_account = params.get('service_account')
-
+        self.service_account = params.get('credentials_service_account', {}).get('password') or params.get('service_account')
+        if not self.service_account:
+            raise DemistoException("User's Service Account JSON must be provided.")
         handle_proxy()
         # Creates an API client for the KMS API.
         try:

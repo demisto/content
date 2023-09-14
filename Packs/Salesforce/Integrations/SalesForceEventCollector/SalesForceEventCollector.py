@@ -1,6 +1,6 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import urllib3
-from CommonServerPython import *
-import demistomock as demisto
 from collections.abc import Generator
 import tempfile
 import requests

@@ -98,7 +98,7 @@ Gets a list of endpoints, according to the passed filters. If there are no filte
 | limit | Maximum number of endpoints to return per page. The default and maximum is 30. Default is 30. | Optional | 
 | sort_by | Specifies whether to sort endpoints by the first time or last time they were seen. Can be "first_seen" or "last_seen". Possible values are: first_seen, last_seen. | Optional | 
 | sort_order | The order by which to sort results. Can be "asc" (ascending) or "desc" ( descending). Default set to asc. Possible values are: asc, desc. Default is asc. | Optional | 
-| status | The status of the endpoint to filter. Possible values are: connected, disconnected, lost, uninstalled. | Optional | 
+| status | A comma-separated list of endpoints statuses to filter. Possible values are: connected, disconnected, lost, uninstalled. | Optional |
 | username | The usernames to query for, accepts a single user, or comma-separated list of usernames. | Optional |
 
 #### Context Output
@@ -2330,3 +2330,352 @@ There is no context output for this command.
 
 >The endpoint alias was changed successfully.
 Note: If there is no error in the process, then this is the output even when the specific endpoint does not exist.
+
+### core-list-users
+
+***
+Retrieve a list of the current users in the environment.
+Required license: Cortex XDR Pro per Endpoint, Cortex XDR Pro, or Cortex XDR Pro per TB.
+
+#### Base Command
+
+`core-list-users`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Core.User.user_email | string | Email address of the user | 
+| Core.User.user_first_name | string | First name of the user | 
+| Core.User.user_last_name | string | Last name of the user. | 
+| Core.User.role_name | string | Role name associated with the user. | 
+| Core.User.last_logged_in | Number | Timestamp of when the user last logged in. | 
+| Core.User.user_type | string | Type of user. | 
+| Core.User.groups | array | Name of user groups associated with the user, if applicable. | 
+| Core.User.scope | array | Name of scope associated with the user, if applicable. | 
+
+#### Command example
+```!core-list-users```
+#### Context Example
+```json
+{
+    "dummy": {
+        "User": [
+            {
+                "groups": [],
+                "last_logged_in": 1648158415051,
+                "role_name": "dummy",
+                "scope": [],
+                "user_email": "dummy@dummy.com",
+                "user_first_name": "dummy",
+                "user_last_name": "dummy",
+                "user_type": "dummy"
+            },
+             {
+                "groups": [],
+                "last_logged_in": null,
+                "role_name": "dummy",
+                "scope": [],
+                "user_email": "dummy@dummy.com",
+                "user_first_name": "dummy",
+                "user_last_name": "dummy",
+                "user_type": "dummy"
+            }            
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Users
+>|First Name|Groups|Last Name|Role|Type|User email|
+>|---|---|---|---|---|---|
+>| dummy |  | dummy | dummy | dummy | dummy |
+>| dummy |  | dummy | dummy | dummy | dummy |
+
+
+
+### core-list-risky-users
+
+***
+Retrieve the risk score of a specific user or list of users with the highest risk score in the environment along with the reason affecting each score.
+Required license: Cortex XDR Pro per Endpoint, Cortex XDR Pro, or Cortex XDR Pro per TB.
+
+#### Base Command
+
+`core-list-risky-users`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user_id | Unique ID of a specific user.<br/>User ID could be either of the `foo/dummy` format, or just `dummy`.<br/>. | Optional | 
+| limit | Limit the number of users that will appear in the list. (Use limit when no specific host is requested.). Default is 50. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Core.RiskyUser.type | String | Form of identification element. | 
+| Core.RiskyUser.id | String | Identification value of the type field. | 
+| Core.RiskyUser.score | Number | The score assigned to the user. | 
+| Core.RiskyUser.reasons.date created | String | Date when the incident was created. | 
+| Core.RiskyUser.reasons.description | String | Description of the incident. | 
+| Core.RiskyUser.reasons.severity | String | The severity of the incident | 
+| Core.RiskyUser.reasons.status | String | The incident status | 
+| Core.RiskyUser.reasons.points | Number | The score. | 
+
+#### Command example
+```!core-list-risky-users user_id=dummy```
+#### Context Example
+```json
+{
+    "Core": {
+        "RiskyUser": {
+            "id": "dummy",
+            "reasons": [],
+            "score": 0,
+            "type": "user"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Risky Users
+>|User ID|Score|Description|
+>|---|---|---|
+>| dummy | 0 |  |
+
+
+### core-list-risky-hosts
+
+***
+Retrieve the risk score of a specific host or list of hosts with the highest risk score in the environment along with the reason affecting each score.
+Required license: Cortex XDR Pro per Endpoint, Cortex XDR Pro, or Cortex XDR Pro per TB.
+
+#### Base Command
+
+`core-list-risky-hosts`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| host_id | Unique ID of a specific host.<br/>. | Optional | 
+| limit | Limit the number of hosts that will appear in the list. By default, the limit is 50 hosts.(Use limit when no specific host is requested.). Default is 50. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Core.RiskyHost.type | String | Form of identification element. | 
+| Core.RiskyHost.id | String | Identification value of the type field. | 
+| Core.RiskyHost.score | Number | The score assigned to the host. | 
+| Core.RiskyHost.reasons.date created | String | Date when the incident was created. | 
+| Core.RiskyHost.reasons.description | String | Description of the incident. | 
+| Core.RiskyHost.reasons.severity | String | The severity of the incident | 
+| Core.RiskyHost.reasons.status | String | The incident status | 
+| Core.RiskyHost.reasons.points | Number | The score. | 
+
+#### Command example
+```!core-list-risky-hosts host_id=dummy```
+#### Context Example
+```json
+{
+    "Core": {
+        "RiskyHost": {
+            "id": "dummy",
+            "reasons": [],
+            "score": 0,
+            "type": "dummy"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Risky Hosts
+>|Host ID|Score|Description|
+>|---|---|---|
+>| dummy | 0 |  |
+
+
+### core-list-user-groups
+
+***
+Retrieve a list of the current user emails associated with one or more user groups in the environment.
+Required license: Cortex XDR Pro per Endpoint, Cortex XDR Pro, or Cortex XDR Pro per TB.
+
+#### Base Command
+
+`core-list-user-groups`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| group_names | A comma-separated list of one or more user group names for which you want the associated users. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Core.UserGroup.group_name | String | Name of the user group. | 
+| Core.UserGroup.description | String | Description of the user group, if available. | 
+| Core.UserGroup.pretty_name | String | Name of the user group as it appears in the management console. | 
+| Core.UserGroup.insert_time | Number | Timestamp of when the user group was created. | 
+| Core.UserGroup.update_time | Number | Timestamp of when the user group was last updated. | 
+| Core.UserGroup.user_email | array | List of email addresses belonging to the users associated with the user group. | 
+| Core.UserGroup.source | String | Type of user group. | 
+
+#### Command example
+```!core-list-user-groups group_names=test```
+#### Context Example
+```json
+{
+    "Core": {
+        "UserGroup": {
+            "description": "test",
+            "group_name": "test",
+            "insert_time": 1684746187678,
+            "pretty_name": null,
+            "source": "Custom",
+            "update_time": 1684746209062,
+            "user_email": [
+                null
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Groups
+>|Group Name|Group Description|User email|
+>|---|---|---|
+>| test | test for demo |  |
+
+
+### core-list-roles
+
+***
+Retrieve information about one or more roles created in the environment.
+Required license: Cortex XDR Pro per Endpoint, Cortex XDR Pro, or Cortex XDR Pro per TB.
+
+#### Base Command
+
+`core-list-roles`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| role_names | A comma-separated list of one or more role names in your environment for which you want detailed information. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Core.Role.pretty_name | String | Name of the role as it appears in the management console. | 
+| Core.Role.permissions | array | List of permissions associated with this role. | 
+| Core.Role.insert_time | Number | Timestamp of when the role was created. | 
+| Core.Role.update_time | Number | Timestamp of when the role was last updated. | 
+| Core.Role.created_by | String | Email of the user who created the role. | 
+| Core.Role.description | String | Description of the role, if available. | 
+| Core.Role.groups | array | Group names associated with the role. | 
+| Core.Role.users | array | Email address of users associated with the role. | 
+
+#### Command example
+```!core-list-roles role_names=dummy```
+#### Context Example
+```json
+{
+    "Core": {
+        "Role": [
+            [
+                {
+                    "created_by": "dummy dummy",
+                    "description": "The user(s) have full access.",
+                    "groups": [],
+                    "insert_time": null,
+                    "permissions": [
+                        "dummy"
+                    ],
+                    "pretty_name": "dummy",
+                    "update_time": null,
+                    "users": []
+                }
+            ]
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Roles
+>|Role Name|Description|Permissions|Users|Groups|
+>|---|---|---|---|---|
+>| dummy | The user(s) have full access. | ADMIN |  |  |
+
+
+### core-set-user-role
+
+***
+Add one or more users to a role.
+Required license: Cortex XDR Pro per Endpoint, Cortex XDR Pro, or Cortex XDR Pro per TB.
+
+#### Base Command
+
+`core-set-user-role`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user_emails | A comma-separated list of one or more user emails of users you want to add to a role. | Required | 
+| role_name | Name of the role you want to add a user to. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!core-set-user-role role_name=dummy user_emails=dummy```
+#### Human Readable Output
+
+>Role was updated successfully for 1 user.
+
+### core-remove-user-role
+
+***
+Remove one or more users from a role.
+Required license: Cortex XDR Pro per Endpoint, Cortex XDR Pro, or Cortex XDR Pro per TB.
+
+#### Base Command
+
+`core-remove-user-role`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user_emails | A comma-separate list of one or more user emails of users you want to remove from a role. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!core-remove-user-role user_emails=dummy```
+#### Human Readable Output
+
+>Role was removed successfully for 1 user.

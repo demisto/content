@@ -16,7 +16,6 @@ args:
   description: The URL(s) to process
   isArray: true
 scripttarget: 0
-runonce: false
 runas: DBotWeakRole
 tests:
 - UnEscapeURL-Test

@@ -1,5 +1,5 @@
-name: LinuxEventsCollection Parsing Rule
-id: LinuxEventsCollection_Parsing_Rule
+name: Linux Events Collection Parsing Rule
+id: Linux_Events_Collection_ParsingRule
 fromversion: 6.10.0
 tags: []
 rules: ''

@@ -6,12 +6,10 @@ script: ''
 type: python
 tags:
 - dynamic-indicator-section
-comment: Notifies if the IP address associated with the ChronicleAsset is potentially
-  blocked or not.
+comment: Notifies if the IP address associated with the ChronicleAsset is potentially blocked or not.
 enabled: true
 scripttarget: 0
 subtype: python3
-runonce: false
 dockerimage: demisto/python3:3.10.9.40422
 runas: DBotWeakRole
 fromversion: 5.0.0

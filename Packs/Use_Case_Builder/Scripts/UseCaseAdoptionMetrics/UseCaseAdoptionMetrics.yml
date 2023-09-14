@@ -1,0 +1,19 @@
+commonfields:
+  id: UseCaseAdoptionMetrics
+  version: -1
+comment: ''
+dockerimage: demisto/python3:3.10.12.68300
+enabled: true
+name: UseCaseAdoptionMetrics
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- widget
+- dynamic-section
+type: python
+fromversion: 6.10.0
+tests:
+- Run all tests

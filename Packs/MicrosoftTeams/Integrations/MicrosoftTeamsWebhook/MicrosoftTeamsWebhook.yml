@@ -14,16 +14,16 @@ configuration:
   section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
   section: Connect
   advanced: true
+  required: false
 description: Integration for sending notifications to a Microsoft Teams channel via Incoming Webhook.
 display: Microsoft Teams via Webhook
 name: Microsoft Teams via Webhook
@@ -42,7 +42,7 @@ script:
       name: url_title
     description: Send a message to Microsoft Teams via Incoming Webhook
     name: ms-teams-message
-  dockerimage: demisto/python3:3.10.10.48392
+  dockerimage: demisto/python3:3.10.12.63474
   runonce: false
   script: ''
   subtype: python3

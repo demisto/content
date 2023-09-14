@@ -1,0 +1,20 @@
+{
+    "microsoft_defender_for_cloud_raw": {
+        "id": {
+            "type": "string",
+            "is_array": false
+        },
+        "name": {
+            "type": "string",
+            "is_array": false
+        },
+        "properties": {
+            "type": "string",
+            "is_array": false
+        },
+        "type": {
+            "type": "string",
+            "is_array": false
+        }
+    }
+}

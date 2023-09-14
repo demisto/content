@@ -1041,7 +1041,7 @@ devOps
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| cve_id | Comma-separated list of CVEs, for example, cve_id=cve-2016-223,cve-2020-3546. | Required | 
+| cve | Comma-separated list of CVEs, for example, cve=cve-2016-223,cve-2020-3546. | Required | 
 
 
 #### Context Output
@@ -1059,7 +1059,7 @@ devOps
 
 
 #### Command Example
-```!cve cve_id=CVE-2021-4333```
+```!cve cve=CVE-2021-4333```
 
 #### Context Example
 ```json
@@ -1436,7 +1436,7 @@ vulnerabilityManager
 | --- | --- | --- |
 | clusters | Comma-separated list of cluster names to filter the results by. | Optional | 
 | compact | Whether only minimal image data is to be returned (i.e., skip vulnerabilities, compliance, and extended image metadata). Possible values are: true, false. Default is true. | Optional | 
-| fields | Comma-separated list of fields to retrieve. | Optional | 
+| fields | Comma-separated list of fields to retrieve. Possible values are labels, repo, registry, clusters, hosts, tag. | Optional | 
 | hostname | Comma-separated list of hostnames to filter the results by. Can be retrieved from !prisma-cloud-compute-profile-host-list. | Optional | 
 | id | Comma-separated list of image IDs to filter the results by. Run !prisma-cloud-compute-images-scan-list without any arguments to get image IDs. | Optional | 
 | name | Comma-separated list of image names to filter the results by. | Optional | 
@@ -2014,7 +2014,7 @@ vulnerabilityManager
 | clusters | A comma-separated list of cluster names to filter the results by. | Optional | 
 | compact | Whether only minimal image data is to be returned (i.e., skip vulnerabilities, compliance, and extended image metadata). Possible values are: true, false. Default is true. | Optional | 
 | distro | Comma-separated list of operating system distros to filter the results by. | Optional | 
-| fields | Comma-separated list of fields to return. | Optional | 
+| fields | Comma-separated list of fields to return. Possible values are labels, repo, registry, clusters, hosts, tag. | Optional | 
 | hostname | Comma-separated list of hostnames to filter the results by. Can be retrieved from !prisma-cloud-compute-profile-host-list. | Optional | 
 | provider | Comma-separated list of cloud providers to filter the results by. | Optional | 
 | limit_record | The maximum number of scan host records to return. Default is 10. | Optional | 

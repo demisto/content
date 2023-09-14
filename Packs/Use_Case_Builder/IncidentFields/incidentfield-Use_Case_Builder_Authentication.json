@@ -1,0 +1,31 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Use Case Builder"
+    ],
+    "caseInsensitive": true,
+    "cliName": "usecasebuilderauthentication",
+    "closeForm": false,
+    "content": true,
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_usecasebuilderauthentication",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Use Case Builder Authentication",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "template": "# Authentication\n## Top Use Cases:\n\n- Use credentials from authentication vault in order to configure instances in Cortex XSOAR (Save credentials in: Settings -\u003e Integrations -\u003e Credentials) The integration should include the isFetchCredentials Parameter, and other integrations that will use credentials from the vault, should have the ‘Switch to credentials’ option.\n- Lock/Delete Account – Give option to lock account (credentials), and unlock/undelete.\n- Reset Account - Perform a reset password command for an account.\n- List credential names – Do not post the actual credentials. (For example – Credential name: McAfee ePO, do not show actual username and password.)\n- Lock Vault – In case of an emergency (if the vault has been compromised), allow the option to lock + unlock the whole vault.\n- Step-Up authentication - Enforce Multi Factor Authentication for an account.\n\n## Authentication Integration Example: [CyberArk AIM](https://xsoar.pan.dev/docs/reference/integrations/cyber-ark-aim)",
+    "threshold": 72,
+    "type": "markdown",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.8.0"
+}

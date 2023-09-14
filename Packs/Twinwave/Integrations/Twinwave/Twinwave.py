@@ -4,9 +4,10 @@ from CommonServerPython import *  # noqa: F401
 ''' IMPORTS '''
 
 import requests
+import urllib3
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'

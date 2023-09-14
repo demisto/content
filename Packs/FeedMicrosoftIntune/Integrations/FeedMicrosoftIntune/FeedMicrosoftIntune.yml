@@ -5,8 +5,7 @@ fromversion: 5.5.0
 name: Microsoft Intune Feed
 display: Microsoft Intune Feed
 category: Data Enrichment & Threat Intelligence
-description: Use the Microsoft Intune Feed integration to get indicators from the
-  feed.
+description: Use the Microsoft Intune Feed integration to get indicators from the feed.
 configuration:
 - display: Fetch indicators
   name: feed
@@ -17,14 +16,13 @@ configuration:
   name: feedReputation
   defaultvalue: Good
   type: 18
-  required: false
   options:
   - None
   - Good
   - Suspicious
   - Bad
-  additionalinfo: Indicators from this integration instance will be marked with this
-    reputation
+  additionalinfo: Indicators from this integration instance will be marked with this reputation
+  required: false
 - display: Source Reliability
   name: feedReliability
   defaultvalue: F - Reliability cannot be judged
@@ -46,18 +44,18 @@ configuration:
   - AMBER
   - GREEN
   - WHITE
-  required: false
   type: 15
+  required: false
 - display: ""
   name: feedExpirationPolicy
   defaultvalue: suddenDeath
   type: 17
-  required: false
   options:
   - never
   - interval
   - indicatorType
   - suddenDeath
+  required: false
 - display: ""
   name: feedExpirationInterval
   defaultvalue: "20160"
@@ -76,16 +74,14 @@ configuration:
 - additionalinfo: Supports CSV values.
   display: Tags
   name: feedTags
-  required: false
   type: 0
+  required: false
 - display: Bypass exclusion list
   name: feedBypassExclusionList
   defaultvalue: "true"
   type: 8
+  additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
   required: false
-  additionalinfo: When selected, the exclusion list is ignored for indicators from
-    this feed. This means that if an indicator from this feed is on the exclusion
-    list, the indicator might still be added to the system.
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -106,5 +102,4 @@ script:
     description: Gets indicators from the feed.
   dockerimage: demisto/btfl-soup:1.0.1.45563
   feed: true
-  runonce: false
   subtype: python3

@@ -1,6 +1,8 @@
 id: TIM - Indicators Exclusion By Related Incidents
 version: -1
 fromversion: 6.0.0
+marketplaces:
+- xsoar
 name: TIM - Indicators Exclusion By Related Incidents
 description: This playbooks allows you to exclude indicators according to the number of
   incidents the indicator is related to. The indicator query is "investigationsCount:>=X"

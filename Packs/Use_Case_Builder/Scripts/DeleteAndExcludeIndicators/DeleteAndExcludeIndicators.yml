@@ -1,0 +1,22 @@
+args:
+- description: Enter a command separated list of indicators to delete and exclude
+  name: indicatorValues
+- description: Reason for exclusion
+  name: reason
+commonfields:
+  id: DeleteAndExcludeIndicators
+  version: -1
+dockerimage: demisto/python3:3.10.12.63474
+enabled: true
+comment: ''
+name: DeleteAndExcludeIndicators
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

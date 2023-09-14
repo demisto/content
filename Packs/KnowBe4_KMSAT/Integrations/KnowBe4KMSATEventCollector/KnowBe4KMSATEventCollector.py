@@ -1,8 +1,8 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 from datetime import date
 
 import urllib3
-import demistomock as demisto
-from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 
 from typing import Dict

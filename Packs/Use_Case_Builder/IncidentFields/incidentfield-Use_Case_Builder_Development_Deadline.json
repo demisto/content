@@ -1,0 +1,31 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Use Case Builder"
+    ],
+    "caseInsensitive": true,
+    "cliName": "usecasebuilderdevelopmentdeadline",
+    "closeForm": false,
+    "content": true,
+    "editForm": false,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_usecasebuilderdevelopmentdeadline",
+    "isReadOnly": true,
+    "locked": false,
+    "name": "Use Case Builder Development Deadline",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "required": false,
+    "script": "StopUseCaseDevelopmentTimer",
+    "sla": 129600,
+    "system": false,
+    "threshold": 1440,
+    "type": "timer",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.10.0"
+}

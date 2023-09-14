@@ -5,8 +5,8 @@ commonfields:
 configuration:
 - display: Server IP / Hostname (e.g. 1.2.3.4)
   name: hostname
-  required: false
   type: 0
+  required: false
 - defaultvalue: '445'
   display: Port
   name: port
@@ -14,12 +14,12 @@ configuration:
   type: 0
 - display: Server NetBIOS (AD) Name
   name: nbname
-  required: false
   type: 0
+  required: false
 - display: Domain
   name: domain
-  required: false
   type: 0
+  required: false
 - display: Username
   name: credentials
   required: true
@@ -27,8 +27,8 @@ configuration:
 - defaultvalue: 'false'
   display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 description: Deprecated. Use the Server Message Block (SMB) v2 integration instead.
 display: Server Message Block (SMB) (Deprecated)
 name: Server Message Block (SMB)
@@ -37,20 +37,16 @@ script:
   commands:
   - arguments:
     - name: hostname
-      default: false
       description: 'Server IP address / hostname, for example: 1.2.3.4.'
     - name: nbname
-      default: false
       description: Server NetBIOS (AD) name.
     - name: domain
-      default: false
       description: The host domain
     - name: file_path
       required: true
       default: true
       description: 'The path to the file, starting from the share, for example: Share/Folder/File.'
     - name: download_and_attach
-      default: false
       auto: PREDEFINED
       predefined:
       - "yes"
@@ -87,34 +83,25 @@ script:
       type: string
     deprecated: true
     description: Downloads a file from the SMB server.
-    execution: false
     name: smb-download
   - arguments:
     - name: hostname
-      default: false
       description: 'Server IP address / hostname, for example: 1.2.3.4.'
     - name: nbname
-      default: false
       description: Server NetBIOS (AD) name.
     - name: domain
-      default: false
       description: The host domain
     - name: file_path
-      default: false
       required: true
       description: 'The path to the file, starting from the share, for example: Share/Folder/File.'
     - name: entryID
-      default: false
       description: EntryID of the file to send to the share.
     - name: content
-      default: false
       description: File content to send to the share. Ignored if EntryID argument is specified.
     deprecated: true
     description: Uploads a file to the SMB server.
-    execution: false
     name: smb-upload
   dockerimage: demisto/smb:1.0.0.7685
-  isfetch: false
   runonce: false
   script: '-'
   type: python

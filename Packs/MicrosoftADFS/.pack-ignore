@@ -1,0 +1,9 @@
+[file:MicrosoftADFSParsingRules.yml]
+ignore=PR101
+
+[file:MicrosoftADFS_1_3.yml]
+ignore=MR108
+
+[file:MicrosoftADFS.yml]
+ignore=MR108
+

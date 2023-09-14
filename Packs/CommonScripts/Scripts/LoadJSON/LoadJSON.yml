@@ -18,8 +18,7 @@ outputs:
 - contextPath: JsonObject
   description: The JSON object loaded from input
 scripttarget: 0
-runonce: false
 tests:
 - JSONtoCSV-Test
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.9.8.24399
+dockerimage: demisto/python3:3.10.12.63474

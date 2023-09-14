@@ -16,7 +16,9 @@ urllib3.disable_warnings()
 
 USERNAME = demisto.params().get('credentials', {}).get('identifier')
 PASSWORD = demisto.params().get('credentials', {}).get('password')
-API_KEY = demisto.params().get('key')
+API_KEY = demisto.params().get('credentials_key', {}).get('password') or demisto.params().get('key')
+if not API_KEY or not(USERNAME and PASSWORD):
+    raise DemistoException('The API Key or username and password must be provided')
 SYSTEM_NAME = demisto.params().get('system_name')
 # Remove trailing slash to prevent wrong URL path to service
 SERVER = demisto.params()['url'][:-1] \

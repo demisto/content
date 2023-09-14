@@ -1,0 +1,19 @@
+{
+    "HumanReadable": "### List Properties\n|Title|ID|Description|Type|\n|---|---|---|---|\n| blocklist | com.scur.type.regex.386 | blocklist | regex |\n### blocklist\n|Position|Name|Description|\n|---|---|---|\n| 0 | http*://evil.corp/* | ticket #1: This is an evil domain |\n",
+    "EntryContext": {
+        "SWG.List(val.ID && val.ID == obj.ID)": {
+            "Description": "blocklist",
+            "ID": "com.scur.type.regex.386",
+            "Title": "blocklist",
+            "Type": "regex",
+            "ListEntries": [
+                {
+                    "Description": "ticket #1: This is an evil domain",
+                    "ListID": "com.scur.type.regex.386",
+                    "Name": "http*://evil.corp/*",
+                    "Position": "0"
+                }
+            ]
+        }
+    }
+}

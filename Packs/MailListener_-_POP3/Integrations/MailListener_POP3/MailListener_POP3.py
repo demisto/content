@@ -13,7 +13,7 @@ from html.parser import HTMLParser
 ''' GLOBALS/PARAMS '''
 SERVER = demisto.params().get('server', '')
 EMAIL = demisto.params().get('email', '')
-PASSWORD = demisto.params().get('password', '')
+
 PORT = int(demisto.params().get('port', '995'))
 SSL = demisto.params().get('ssl')
 FETCH_TIME = demisto.params().get('fetch_time', '7 days')
@@ -33,10 +33,13 @@ def connect_pop3_server():
             pop3_server_conn = poplib.POP3_SSL(SERVER, PORT)  # type: ignore
         else:
             pop3_server_conn = poplib.POP3(SERVER, PORT)  # type: ignore
+        password = demisto.params().get('credentials_password', {}).get('password') or demisto.params().get('password')
+        if not password:
+            raise DemistoException('Password must be provided')
 
         pop3_server_conn.getwelcome()  # type: ignore
         pop3_server_conn.user(EMAIL)  # type: ignore
-        pop3_server_conn.pass_(PASSWORD)  # type: ignore
+        pop3_server_conn.pass_(password)  # type: ignore
 
 
 def close_pop3_server_connection():

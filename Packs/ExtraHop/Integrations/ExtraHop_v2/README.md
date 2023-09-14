@@ -21,7 +21,7 @@ ExtraHop Reveal(x) for Cortex XSOAR is a network detection and response solution
 | Use system proxy settings | Specifies whether to use XSOAR system proxy settings to connect to the API. | False |
 | First fetch time | Specifies the beginning timestamp from which to start fetching detection events. | False |
 | Incidents Fetch Interval | Specifies how often the instance fetches detection events. Because each API call fetches a maximum of 200 detection events, we recommend specifying one minute intervals to fetch all detection events. | False |
-| Advanced Filter | Applies a filter to the list of detections or metrics based on a JSON-specific query. | False |
+| Advanced Filter | Applies a filter to the list of detections based on a JSON-specific query.<br/><br/>Example for detections:<br/>\{<br/>  "categories": \["sec.attack"\],<br/>  "risk_score_min": 51<br/>\}<br/><br/>If the categories and category are not specified, then categories will be set to \["sec.attack"\]. The category field is deprecated by the API, so please use the categories field instead.<br/>For a complete reference to the Extrahop detections filter fields, please refer to the ExtraHop REST API documentation at<br/>https://docs.extrahop.com/current/rest-api-guide/ | False |
 | Do not use by default | Select to disable running commands through the Cortex XSOAR CLI on this instance of the integration. | False |
 | Log Level | Specifies the level of logging to enable for this instance of the integration. | False |
 | Run on | Specifies whether to run the instance of the integration on a single engine. | False |
@@ -996,7 +996,7 @@ Get detections from ExtraHop Reveal(x).
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| filter | Detection-specific filters.<br/>For eg:<br/>filter={<br/>        "category": "sec",<br/>        "risk_score_min": 51<br/>    }<br/><br/>Refer to the ExtraHop REST API Guide at https://docs.extrahop.com/current/rest-api-guide/. | Optional | 
+| filter | Detection-specific filters.<br/>For eg:<br/>\{<br/>  "categories": ["sec.attack"],<br/>  "risk_score_min": 51<br/>\}<br/><br/>If the categories and category are not specified, then categories will be set to ["sec.attack"]. The category field is deprecated by the API, so please use the categories field instead.<br/>Refer to the ExtraHop REST API guide at https://docs.extrahop.com/current/rest-api-guide/. | Optional | 
 | from | Returns detections that occurred after the specified date, expressed in milliseconds since the epoch. Detections that started before the specified date are returned if the detection was ongoing at that time.<br/><br/>For eg:<br/>from=1673508360001. | Optional | 
 | limit | Returns no more than the specified number of detections.<br/><br/>For eg:<br/>limit=10. Default is 200. | Optional | 
 | offset | The number of detections to skip for pagination.<br/><br/>For eg:<br/>offset=100. | Optional | 

@@ -1,0 +1,36 @@
+{
+    "dataType": "incidents",
+    "dateRange": {
+        "fromDate": "0001-01-01T00:00:00Z",
+        "fromDateLicense": "0001-01-01T00:00:00Z",
+        "period": {
+            "by": "",
+            "byFrom": "days",
+            "byTo": "",
+            "field": "",
+            "fromValue": 7,
+            "toValue": null
+        },
+        "toDate": "0001-01-01T00:00:00Z"
+    },
+    "id": "f9c8e06a-ec71-4cce-86c2-b985b8782016",
+    "isPredefined": true,
+    "name": "Use Cases in Production",
+    "params": {
+        "colors": {
+            "isEnabled": true,
+            "items": {
+                "#4de406": {
+                    "value": 0
+                }
+            },
+            "type": "above"
+        },
+        "valuesFormat": "abbreviated"
+    },
+    "query": "usecasedevelopmentstage:Production",
+    "version": -1,
+    "widgetType": "number",
+    "fromVersion": "6.8.0",
+    "description": ""
+}

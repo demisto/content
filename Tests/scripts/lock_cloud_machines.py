@@ -1,3 +1,5 @@
+import time
+from typing import Any
 from Tests.scripts.utils import logging_wrapper as logging
 from Tests.scripts.utils.log_util import install_logging
 from time import sleep
@@ -22,7 +24,7 @@ def options_handler():
     parser.add_argument('--service_account', help='Path to gcloud service account.')
     parser.add_argument('--gcs_locks_path', help='Path to lock repo.')
     parser.add_argument('--ci_job_id', help='the job id.')
-    parser.add_argument('--test_machines_path', help='the name of the file with all the test machines.')
+    parser.add_argument('--test_machines', help='comma separated string contains all available machines.')
     parser.add_argument('--gitlab_status_token', help='gitlab token to get the job status.')
     parser.add_argument('--response_machine', help='file to update the chosen machine.')
     parser.add_argument('--lock_machine_name', help='a machine name to lock the specific machine')
@@ -84,22 +86,40 @@ def get_machines_locks_details(storage_client: storage.Client, bucket_name: str,
     return files
 
 
-def check_job_status(token: str, job_id: str):
+def check_job_status(token: str, job_id: str, num_of_retries: int = 5, interval: float = 30.0):
     """
     get the status of a job in gitlab.
+
     Args:
         token(str): the gitlab token.
         job_id(str): the job id to check.
+        num_of_retries (int): num of retries to establish a connection to gitlab in case of a connection error.
+        interval (float): the interval to wait before trying to establish a connection to gitlab each attempt.
+
     Returns: the status of the job.
 
     """
     user_endpoint = JOB_STATUS_URL.format(CONTENT_GITLAB_PROJECT_ID, job_id)
     headers = {'PRIVATE-TOKEN': token}
-    response = requests.get(user_endpoint, headers=headers)
-    return response.json().get('status')
+
+    for attempt_num in range(1, num_of_retries + 1):
+        try:
+            logging.debug(f'Try to get the status of job ID {job_id} in attempt number {attempt_num}')
+            response = requests.get(user_endpoint, headers=headers)
+            response_as_json = response.json()
+            logging.debug(f'{user_endpoint=} raw response={response_as_json} for {job_id=}')
+            return response_as_json.get('status')
+        except requests.ConnectionError as error:
+            logging.error(f'Got connection error: {error} in attempt number {attempt_num}')
+            if attempt_num == num_of_retries:
+                raise error
+            else:
+                logging.debug(f'sleeping for {interval} seconds to try to re-establish gitlab connection')
+                time.sleep(interval)
+    return None
 
 
-def remove_file(storage_bucket: any, file_path: str):
+def remove_file(storage_bucket: Any, file_path: str):
     """
     deletes a file from the bucket
     Args:
@@ -114,7 +134,7 @@ def remove_file(storage_bucket: any, file_path: str):
         pass
 
 
-def lock_machine(storage_bucket: any, lock_repository_name: str, machine_name: str, job_id: str):
+def lock_machine(storage_bucket: Any, lock_repository_name: str, machine_name: str, job_id: str):
     """
     create a lock machine file
     Args:
@@ -127,7 +147,7 @@ def lock_machine(storage_bucket: any, lock_repository_name: str, machine_name: s
     blob.upload_from_string('')
 
 
-def adding_build_to_the_queue(storage_bucket: any, lock_repository_name: str, job_id: str):
+def adding_build_to_the_queue(storage_bucket: Any, lock_repository_name: str, job_id: str):
     """
     create a lock machine file
     Args:
@@ -165,7 +185,7 @@ def get_my_place_in_the_queue(storage_client: storage.Client, gcs_locks_path: st
     return my_place_in_the_queue, previous_build_in_queue
 
 
-def try_to_lock_machine(storage_bucket: any, machine: str, machines_locks: list, gitlab_status_token: str,
+def try_to_lock_machine(storage_bucket: Any, machine: str, machines_locks: list, gitlab_status_token: str,
                         gcs_locks_path: str, job_id: str) -> str:
     """
     try to lock machine for the job
@@ -189,6 +209,8 @@ def try_to_lock_machine(storage_bucket: any, machine: str, machines_locks: list,
         logging.debug(f'the status of job id: {job_id_of_the_existing_lock} is: {job_id_of_the_existing_lock_status}')
         if job_id_of_the_existing_lock_status != 'running':
             # The job holding the machine is not running anymore, it is safe to remove its lock from the machine.
+            logging.info(f'Found job [{job_id_of_the_existing_lock}] status: '
+                         f'{job_id_of_the_existing_lock_status} that\'s locking machine: {machine}. Deleting the lock.')
             remove_file(storage_bucket,
                         file_path=f'{gcs_locks_path}/{MACHINES_LOCKS_REPO}/{machine}-lock-{job_id_of_the_existing_lock}')
         else:
@@ -254,14 +276,14 @@ def get_and_lock_all_needed_machines(storage_client, storage_bucket, list_machin
     return lock_machine_list
 
 
-def create_list_of_machines_to_run(storage_bucket, lock_machine_name, gcs_locks_path, test_machines_path,
+def create_list_of_machines_to_run(storage_bucket, lock_machine_name, gcs_locks_path, test_machines,
                                    number_machines_to_lock):
     """
     get the list of the available machines (or one specific given machine for debugging).
     Args:
         storage_bucket(google.cloud.storage.bucket.Bucket): google storage bucket where lock machine is stored.
         lock_machine_name(str): the name of the file with the list of the test machines.
-        test_machines_path(str): all the exiting machines.
+        test_machines(str): all the exiting machines.
         gcs_locks_path(str): the lock repository name.
         number_machines_to_lock(int): the number of the requested machines.
 
@@ -272,8 +294,7 @@ def create_list_of_machines_to_run(storage_bucket, lock_machine_name, gcs_locks_
         list_machines = [lock_machine_name]
     else:
         logging.info('getting all machine names')  # We are looking for a free machine in all the available machines.
-        test_machines_list = storage_bucket.blob(f'{gcs_locks_path}/{test_machines_path}')
-        list_machines = test_machines_list.download_as_string().decode("utf-8").split()
+        list_machines = test_machines.split(',')
         random.shuffle(list_machines)
 
     if number_machines_to_lock > len(list_machines):
@@ -331,7 +352,7 @@ def main():
     logging.info('Starting to search for available machine')
 
     list_machines = create_list_of_machines_to_run(storage_bucket, options.lock_machine_name, options.gcs_locks_path,
-                                                   options.test_machines_path, options.number_machines_to_lock)
+                                                   options.test_machines, options.number_machines_to_lock)
 
     lock_machine_list = get_and_lock_all_needed_machines(storage_client, storage_bucket, list_machines,
                                                          options.gcs_locks_path, options.number_machines_to_lock,

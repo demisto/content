@@ -1,8 +1,9 @@
+deprecated: true
 id: block_endpoint_-_carbon_black_response
 version: -1
 name: Block Endpoint - Carbon Black Response
 fromversion: "5.0.0"
-description: Carbon Black Response - isolate an endpoint, given a hostname.
+description: Deprecated. Use the `Block Endpoint - Carbon Black Response V2.1` playbook instead. Carbon Black Response - isolate an endpoint, given a hostname.
 starttaskid: "0"
 tasks:
   "0":

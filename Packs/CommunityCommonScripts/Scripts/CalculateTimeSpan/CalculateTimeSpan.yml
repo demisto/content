@@ -1,10 +1,7 @@
 args:
-- description: Specifies the start of a time span. Enter a string that represents
-    the date and time, such as "3/15/09". If no value supplied the current date time
-    will be used
+- description: Specifies the start of a time span. Enter a string that represents the date and time, such as "3/15/09". If no value supplied the current date time will be used
   name: start_time
-- description: Specifies the end of a time span. If no value supplied the current
-    date and time will be used.
+- description: Specifies the end of a time span. If no value supplied the current date and time will be used.
   name: end_time
 comment: |-
   Calculates the time span between two dates using Powershell's `New-TimeSpan` command.
@@ -40,24 +37,18 @@ outputs:
 - contextPath: TimeSpan.Milliseconds
   description: The number of whole milliseconds between the start and end time
 - contextPath: TimeSpan.Ticks
-  description: The number of whole ticks between the start and end time. 1 tick is
-    equals to 100 nanoseconds or ten-millionth of a second
+  description: The number of whole ticks between the start and end time. 1 tick is equals to 100 nanoseconds or ten-millionth of a second
 - contextPath: TimeSpan.TotalDays
   description: The number of whole and fractional days between the start and end time
 - contextPath: TimeSpan.TotalHours
-  description: The number of whole and fractional hours between the start and end
-    time
+  description: The number of whole and fractional hours between the start and end time
 - contextPath: TimeSpan.TotalMinutes
-  description: The number of whole and fractional minutes between the start and end
-    time
+  description: The number of whole and fractional minutes between the start and end time
 - contextPath: TimeSpan.TotalSeconds
-  description: The number of whole and fractional seconds between the start and end
-    time
+  description: The number of whole and fractional seconds between the start and end time
 - contextPath: TimeSpan.TotalMilliseconds
-  description: The number of whole and fractional milliseconds between the start and
-    end time
+  description: The number of whole and fractional milliseconds between the start and end time
 runas: DBotWeakRole
-runonce: false
 script: ''
 scripttarget: 0
 tags:

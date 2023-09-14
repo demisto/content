@@ -2,13 +2,15 @@ from dateparser import parse
 
 import demistomock as demisto
 from CommonServerPython import *
+MAX_ENTRIES = 30
 
 
 def get_open_to_do_tasks_of_current_user() -> List[Dict]:
     body = {
         "dataType": "todos",
-        "query": "assignee:\"{me}\"",
-        "widgetType": "table"
+        "query": "assignee:\"{me}\" and status:\"open\"",
+        "widgetType": "table",
+        "size": MAX_ENTRIES,
     }
     todo_tasks_query_res = demisto.internalHttpRequest(
         'POST',
@@ -47,10 +49,13 @@ def get_open_to_do_tasks_of_current_user() -> List[Dict]:
     return table
 
 
-def main():
+def main():  # pragma: no cover
     try:
         results = get_open_to_do_tasks_of_current_user()
-        table_name = f'My ToDo Tasks ({len(results)})'
+        if len(results) >= MAX_ENTRIES:
+            table_name = f'My ToDo Tasks (First {MAX_ENTRIES} Tasks)'
+        else:
+            table_name = f'My ToDo Tasks ({len(results)})'
         readable_output = tableToMarkdown(table_name, results, headers=list(results[0].keys()) if results else None)
         cmd_results = {
             'Type': entryTypes['note'],

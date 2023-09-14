@@ -1,30 +1,40 @@
-Shows how to use automation scripts to interact with Tanium.
+Deprecated. No available replacement. This playbook shows how to use automation scripts to interact with Tanium.
 
 ## Dependencies
+
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
+
 This playbook does not use any sub-playbooks.
 
 ### Integrations
+
+* Tanium_v2
 * Tanium
 
 ### Scripts
+
 This playbook does not use any scripts.
 
 ### Commands
-* tn-get-saved-question
-* tn-ask-question
+
 * tn-deploy-package
+* tn-ask-question
+* tn-get-saved-question-metadata
 
 ## Playbook Inputs
+
 ---
 There are no inputs for this playbook.
 
 ## Playbook Outputs
+
 ---
 There are no outputs for this playbook.
 
 ## Playbook Image
+
 ---
-![Tanium_Demo](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Tanium_Demo.png)
+
+![Tanium Demo Playbook](../doc_files/Tanium_Demo_Playbook.png)

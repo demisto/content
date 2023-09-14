@@ -1,0 +1,18 @@
+[MODEL:dataset="forcepoint_forcepoint_dlp_raw"]
+alter fsize = to_float(arrayindex(regextract(fname,"\s\-\s(\d+\.\d+)\s\w+"),0)),
+    fsize_unit = arrayindex(regextract(fname,"\s\-\s\d+\.\d+\s(\w+)"),0)
+| alter fname = if(fname contains "N/A",null,arrayindex(regextract(fname ,"(.*)\s\-\s\d+"),0))
+| alter xdm.event.original_event_type = to_string(eventid),
+    xdm.event.operation_sub_type = act,
+    xdm.observer.name = analyzedBy,
+    xdm.event.description = cat,
+    xdm.source.user.username = suser,
+    xdm.target.resource.name = if(duser contains "N/A",null,duser ),
+    xdm.event.type = msg,
+    xdm.target.file.path = fname,
+    xdm.target.file.size = to_integer(if(fsize_unit = "KB",  multiply(fsize,1024),fsize_unit = "MB",  multiply(multiply(fsize,1024),1024),fsize_unit = "GB",  multiply(multiply(multiply(fsize,1024),1024),1024) ,fsize)),
+    xdm.source.ipv4 = if(sourceIp contains "N/A",null,sourceIp ),
+    xdm.network.application_protocol_category = sourceServiceName,
+    xdm.alert.severity = severityType,
+    xdm.source.host.hostname = sourceHost,
+    xdm.observer.version = productVersion;

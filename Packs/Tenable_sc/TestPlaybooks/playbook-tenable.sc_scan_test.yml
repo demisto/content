@@ -1,6 +1,8 @@
 id: tenable-sc-scan-test
 version: -1
 name: Test tenable scan
+deprecated: true
+comment: Deprecated. Use tenable-sc-launch-scan-report command instead.
 starttaskid: "0"
 tasks:
   "0":

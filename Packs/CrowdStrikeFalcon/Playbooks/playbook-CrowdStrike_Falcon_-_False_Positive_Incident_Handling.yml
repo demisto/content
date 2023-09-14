@@ -39,6 +39,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "1":
     id: "1"
     taskid: 981777f0-747b-412b-8720-841e96ae0e1b
@@ -69,18 +70,19 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "2":
     id: "2"
-    taskid: cda81273-eb94-42a2-81fa-d2fabf228c96
+    taskid: b0caa705-4c6e-4aff-80e6-ee45435a449d
     type: condition
     task:
-      id: cda81273-eb94-42a2-81fa-d2fabf228c96
+      id: b0caa705-4c6e-4aff-80e6-ee45435a449d
       version: -1
       name: Approve unisolation
       type: condition
       iscommand: false
       brand: ""
-      description: ''
+      description: 'Approve unisolation.'
     nexttasks:
       "No":
       - "6"
@@ -119,6 +121,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "4":
     id: "4"
     taskid: aed8c545-a43d-4064-88c7-be8c2e5c4415
@@ -146,6 +149,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "6":
     id: "6"
     taskid: d454a7d0-22e4-484a-8ea0-89565a7e79cb
@@ -176,6 +180,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "7":
     id: "7"
     taskid: 56933e67-76cb-4fc5-882e-b7f60fd69a8a
@@ -206,12 +211,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "8":
     id: "8"
-    taskid: 68a4b59d-5bae-4e83-810d-688fafe088a1
+    taskid: b85e29b0-aac6-4983-8d5d-8b9e46199f49
     type: regular
     task:
-      id: 68a4b59d-5bae-4e83-810d-688fafe088a1
+      id: b85e29b0-aac6-4983-8d5d-8b9e46199f49
       version: -1
       name: Allow IOC globally
       description: Uploads an indicator for CrowdStrike to monitor.
@@ -232,7 +238,9 @@ tasks:
       platforms:
         simple: mac,windows,linux
       value:
-        simple: ${Provide the indicator to be added to the allow list.Answers.0}
+        complex:
+          root: Provide the indicator to be added to the allow list.Answers
+          accessor: "0"
     separatecontext: false
     view: |-
       {
@@ -248,6 +256,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "9":
     id: "9"
     taskid: 97d3043a-800a-4205-81bd-ae13f2358967
@@ -284,6 +293,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "10":
     id: "10"
     taskid: e23baad2-a8b7-4153-8d3c-9956d07add98
@@ -292,9 +302,7 @@ tasks:
       id: e23baad2-a8b7-4153-8d3c-9956d07add98
       version: -1
       name: Resolve CS detection
-      description: Resolves and updates a detection using the provided arguments.
-        At least one optional argument must be passed, otherwise no change will take
-        place.
+      description: Resolves and updates a detection using the provided arguments. At least one optional argument must be passed, otherwise no change will take place.
       script: '|||cs-falcon-resolve-detection'
       type: regular
       iscommand: true
@@ -324,18 +332,19 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "11":
     id: "11"
-    taskid: 4a82ae12-8349-4711-81a9-5d40c18b7eef
+    taskid: b3ef09f8-b0b2-40af-89d2-4238dc78801a
     type: collection
     task:
-      id: 4a82ae12-8349-4711-81a9-5d40c18b7eef
+      id: b3ef09f8-b0b2-40af-89d2-4238dc78801a
       version: -1
       name: Which indicator should be added to the allow list?
       type: collection
       iscommand: false
       brand: ""
-      description: ''
+      description: 'Choose the marked IOC to be added to approve list.'
     nexttasks:
       '#none#':
       - "24"
@@ -393,18 +402,19 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "12":
     id: "12"
-    taskid: 431b3898-3210-44d5-8f52-d2fa2b3c4a16
+    taskid: 5f4f88e4-8852-4e74-8c8c-aecd084bff3e
     type: condition
     task:
-      id: 431b3898-3210-44d5-8f52-d2fa2b3c4a16
+      id: 5f4f88e4-8852-4e74-8c8c-aecd084bff3e
       version: -1
       name: Was this an incident or alert?
       type: condition
       iscommand: false
       brand: ""
-      description: ''
+      description: 'Determine which resolution procedure should be followed based on the CrowdStrike Falcon category of the incident.'
     nexttasks:
       detection:
       - "10"
@@ -446,18 +456,19 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "13":
     id: "13"
-    taskid: 7348e217-d9b3-4754-82a0-000a43cb1e71
+    taskid: eeedac89-58d8-46ee-8c32-5b86873af04b
     type: condition
     task:
-      id: 7348e217-d9b3-4754-82a0-000a43cb1e71
+      id: eeedac89-58d8-46ee-8c32-5b86873af04b
       version: -1
       name: Is auto unisolation allowed?
       type: condition
       iscommand: false
       brand: ""
-      description: ''
+      description: 'Verifies whether auto-unisolation is permitted.'
     nexttasks:
       '#default#':
       - "2"
@@ -490,25 +501,27 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "14":
     id: "14"
-    taskid: f9b2354d-0093-45f0-86fe-6b4aa88324d5
+    taskid: a0b5b989-ff2e-4ed4-8305-ee5f48408393
     type: playbook
     task:
-      id: f9b2354d-0093-45f0-86fe-6b4aa88324d5
+      id: a0b5b989-ff2e-4ed4-8305-ee5f48408393
       version: -1
       name: Crowdstrike Falcon - Unisolate Endpoint
       playbookName: Crowdstrike Falcon - Unisolate Endpoint
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
+      description: 'This playbook unisolates devices according to the device ID that is provided in the playbook input.'
     nexttasks:
       '#none#':
       - "6"
     scriptarguments:
       Endpoint_id:
-        simple: ${inputs.HostId}
+        complex:
+          root: inputs.HostId
     separatecontext: true
     loop:
       iscommand: false
@@ -529,12 +542,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "15":
     id: "15"
-    taskid: 9c8acd9e-d51e-43e7-845f-106be3433964
+    taskid: 47871c7f-9c20-4e4a-834b-75570b5aed0d
     type: regular
     task:
-      id: 9c8acd9e-d51e-43e7-845f-106be3433964
+      id: 47871c7f-9c20-4e4a-834b-75570b5aed0d
       version: -1
       name: Tag Indicators
       description: commands.local.cmd.set.indicators
@@ -547,9 +561,12 @@ tasks:
       - "6"
     scriptarguments:
       indicatorsValues:
-        simple: ${Provide what which indicator should be added to the allow list.Answers.0}
+        complex:
+          root: Provide the indicator to be added to the allow list.Answers
+          accessor: "0"
       tags:
-        simple: ${inputs.AllowIOCTagName}
+        complex:
+          root: inputs.AllowIOCTagName
     separatecontext: false
     view: |-
       {
@@ -565,6 +582,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "18":
     id: "18"
     taskid: 73b1f577-8662-4f6f-8217-ab28e2d3a3c4
@@ -595,6 +613,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "19":
     id: "19"
     taskid: d6240314-998f-44f4-8943-0ba6d7bc91e2
@@ -625,18 +644,19 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "20":
     id: "20"
-    taskid: 7a5c21e4-bd71-4997-8163-5030b4a82ee7
+    taskid: 67ddbfc6-473e-4072-8038-0d7ef2899f18
     type: condition
     task:
-      id: 7a5c21e4-bd71-4997-8163-5030b4a82ee7
+      id: 67ddbfc6-473e-4072-8038-0d7ef2899f18
       version: -1
       name: Is IOC allowed to be added globally?
       type: condition
       iscommand: false
       brand: ""
-      description: ''
+      description: 'Examines whether the addition of an IOC is permitted at the global level.'
     nexttasks:
       '#default#':
       - "6"
@@ -687,12 +707,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "21":
     id: "21"
-    taskid: 6c82dafb-9638-40cd-8817-acb12012c7ca
+    taskid: 0c4c2f9b-42bd-4179-813f-4f25011ecb52
     type: regular
     task:
-      id: 6c82dafb-9638-40cd-8817-acb12012c7ca
+      id: 0c4c2f9b-42bd-4179-813f-4f25011ecb52
       version: -1
       name: Allow IOC for group
       description: Uploads an indicator for CrowdStrike to monitor.
@@ -707,13 +728,16 @@ tasks:
       action:
         simple: allow
       host_groups:
-        simple: ${inputs.AllowHostGroupName}
+        complex:
+          root: inputs.AllowHostGroupName
       ioc_type:
         simple: sha256
       platforms:
         simple: mac,windows,linux
       value:
-        simple: ${Provide the indicator to be added to the allow list.Answers.0}
+        complex:
+          root: Provide the indicator to be added to the allow list.Answers
+          accessor: "0"
     separatecontext: false
     view: |-
       {
@@ -729,18 +753,19 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "24":
     id: "24"
-    taskid: d55c12a0-f49c-43db-8b04-275b6c6133a9
+    taskid: 08e14465-98cb-4dc0-8ded-2c648e8bc5a9
     type: condition
     task:
-      id: d55c12a0-f49c-43db-8b04-275b6c6133a9
+      id: 08e14465-98cb-4dc0-8ded-2c648e8bc5a9
       version: -1
       name: Were values provided?
       type: condition
       iscommand: false
       brand: ""
-      description: ''
+      description: 'Verifies that indicators were selected for inclusion in the allowed list.'
     nexttasks:
       '#default#':
       - "6"
@@ -772,6 +797,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
 view: |-
   {
     "linkLabelsPosition": {},
@@ -827,4 +853,4 @@ inputs:
   playbookInputQuery:
 outputs: []
 tests:
- -  No tests
+- No tests

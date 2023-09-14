@@ -1,0 +1,19 @@
+{
+    "results": {
+        "can_view": 0,
+        "q_ref": 0,
+        "can_clone": 1,
+        "q_type": 1,
+        "name": "test",
+        "host-status": "enable",
+        "host-status_val": "1",
+        "host": "test",
+        "action": "deny_no_log",
+        "action_val": "4",
+        "severity": "Info",
+        "severity_val": "4",
+        "trigger": "test",
+        "trigger_val": "1138",
+        "sz_match-condition": 0
+    }
+}

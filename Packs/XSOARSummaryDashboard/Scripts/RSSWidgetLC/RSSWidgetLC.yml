@@ -13,7 +13,6 @@ dockerimage: demisto/py3-tools:1.0.0.45198
 enabled: true
 name: RSSWidget_LC
 runas: DBotWeakRole
-runonce: false
 script: ''
 scripttarget: 0
 subtype: python3

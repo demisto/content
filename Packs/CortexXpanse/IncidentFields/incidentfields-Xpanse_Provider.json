@@ -1,0 +1,32 @@
+{
+    "id": "incident_xpanseprovider",
+    "version": -1,
+    "modified": "2023-05-26T16:37:27.409432942Z",
+    "name": "Xpanse Provider",
+    "ownerOnly": false,
+    "description": "Xpanse Provider",
+    "cliName": "xpanseprovider",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Xpanse Alert"
+    ],
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.8.0"
+}

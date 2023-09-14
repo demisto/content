@@ -1,16 +1,14 @@
-import io
-
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+import io
 
 
 def main():
-    testName = ''
+    args = demisto.args()
+    testName = args.get("testName", "")
+    listName = args.get("listName", "")
+    addAfter = args.get("addAfter", "")
     try:
-        args = demisto.args()
-        testName = args.get("testName", "")
-        listName = args.get("listName", "")
-        addAfter = args.get("addAfter", "")
         if listName != "":
             listlines = demisto.executeCommand("getList", {'listName': listName})[0]['Contents']
             buf = io.StringIO(listlines)

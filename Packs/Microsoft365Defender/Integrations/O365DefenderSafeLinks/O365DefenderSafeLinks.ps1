@@ -103,7 +103,7 @@ class ExchangeOnlinePowershellV2Client {
             "Organization" = $this.organization
             "Certificate"  = $this.certificate
         }
-        Connect-ExchangeOnline @cmd_params -ShowBanner:$false -WarningAction:SilentlyContinue | Out-Null
+        Connect-ExchangeOnline @cmd_params -CommandName Get-SafeLinksPolicy,New-SafeLinksPolicy,Set-SafeLinksPolicy,Remove-SafeLinksPolicy,Get-SafeLinksRule,New-SafeLinksRule,Set-SafeLinksRule,Get-SafeLinksDetailReport,Get-SafeLinksAggregateReport,Get-AtpPolicyForO365,Set-AtpPolicyForO365 -ShowBanner:$false -WarningAction:SilentlyContinue | Out-Null
     }
     DisconnectSession() {
         Disconnect-ExchangeOnline -Confirm:$false -WarningAction:SilentlyContinue -InformationAction:Ignore | Out-Null

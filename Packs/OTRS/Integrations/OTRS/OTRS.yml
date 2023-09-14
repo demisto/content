@@ -13,26 +13,26 @@ configuration:
   type: 9
 - display: Trust any certificate (not secure)
   name: unsecure
-  required: false
   type: 8
+  required: false
 - defaultvalue: 'false'
   display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 - display: Fetch incidents
   name: isFetch
-  required: false
   type: 8
+  required: false
 - display: Incident type
   name: incidentType
-  required: false
   type: 13
+  required: false
 - defaultvalue: Any
   display: Queues to fetch tickets from  ("Any" fetches from all queues. CSV supported, e.g., Misc,Raw)
   name: fetch_queue
-  required: false
   type: 0
+  required: false
 - display: Fetch tickets in priority
   name: fetch_priority
   options:
@@ -41,27 +41,25 @@ configuration:
   - 3Normal
   - 4High
   - 5VeryHigh
-  required: false
   type: 16
+  required: false
 - defaultvalue: 3 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year)
   name: fetch_time
-  required: false
   type: 0
+  required: false
 - defaultvalue: 1
   display: Days to look back when fetching
   additionalinfo: When fetching incident from specific queue, search also back for incident created before the last run time but moved to the queue after the last fetch.
   name: look_back
-  required: false
   type: 0
+  required: false
 - additionalinfo: If true, use sessions compatibility for OTRS versions lower than V8.
   display: Use legacy sessions
-  hidden: false
   name: use_legacy_sessions
-  required: false
   type: 8
-description: Service management suite that comprises ticketing, workflow automation,
-  and notification.
+  required: false
+description: Service management suite that comprises ticketing, workflow automation, and notification.
 display: OTRS
 name: OTRS
 script:
@@ -69,19 +67,10 @@ script:
   - arguments:
     - default: true
       description: Ticket ID of the ticket to get details of. If not supplied, the ticket_number argument is required.
-      isArray: false
       name: ticket_id
-      required: false
-      secret: false
-    - default: false
-      description: Ticket Number of the ticket to get details of. If not supplied, the ticket_id argument is required.
-      isArray: false
+    - description: Ticket Number of the ticket to get details of. If not supplied, the ticket_id argument is required.
       name: ticket_number
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieves details for an OTRS ticket by ticket ID or ticket number. The arguments are both optional, but at least one is required for this integration to run.
-    execution: false
     name: otrs-get-ticket
     outputs:
     - contextPath: OTRS.Ticket.ID
@@ -179,9 +168,7 @@ script:
       type: string
   - arguments:
     - auto: PREDEFINED
-      default: false
       description: Ticket States to filter by in CSV format (e.g., New,Open)
-      isArray: false
       name: state
       predefined:
       - New
@@ -189,36 +176,16 @@ script:
       - ClosedUnsuccessful
       - Open
       - PendingReminder
-      required: false
-      secret: false
-    - default: false
-      description: Filter for a ticket created before this date. Given in format "<number> <time unit>", e.g. 1 day, 30 minutes, 2 weeks, 6 months, 1 year
-      isArray: false
+    - description: Filter for a ticket created before this date. Given in format "<number> <time unit>", e.g. 1 day, 30 minutes, 2 weeks, 6 months, 1 year
       name: created_before
-      required: false
-      secret: false
-    - default: false
-      description: Filter for a ticket created after this date. Given in format "<number> <time unit>", e.g. 1 day, 30 minutes, 2 weeks, 6 months, 1 year
-      isArray: false
+    - description: Filter for a ticket created after this date. Given in format "<number> <time unit>", e.g. 1 day, 30 minutes, 2 weeks, 6 months, 1 year
       name: created_after
-      required: false
-      secret: false
-    - default: false
-      description: Ticket Title to filter by
-      isArray: false
+    - description: Ticket Title to filter by
       name: title
-      required: false
-      secret: false
-    - default: false
-      description: Ticket Queues to filter by in CSV format (e.g., Raw,Misc)
-      isArray: false
+    - description: Ticket Queues to filter by in CSV format (e.g., Raw,Misc)
       name: queue
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Ticket Priority to filter by in CSV format (e.g., 4High,5VeryHigh)
-      isArray: false
       name: priority
       predefined:
       - 1VeryLow
@@ -226,17 +193,9 @@ script:
       - 3Normal
       - 4High
       - 5VeryHigh
-      required: false
-      secret: false
-    - default: false
-      description: Ticket type to filter by
-      isArray: false
+    - description: Ticket type to filter by
       name: type
-      required: false
-      secret: false
-    deprecated: false
     description: Search for an OTRS ticket using search filters
-    execution: false
     name: otrs-search-ticket
     outputs:
     - contextPath: OTRS.Ticket.ID
@@ -270,22 +229,14 @@ script:
       description: Ticket type
       type: string
   - arguments:
-    - default: false
-      description: Title to assign to the new ticket
-      isArray: false
+    - description: Title to assign to the new ticket
       name: title
       required: true
-      secret: false
-    - default: false
-      description: Queue to place the new ticket in
-      isArray: false
+    - description: Queue to place the new ticket in
       name: queue
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: State to assign to the new ticket
-      isArray: false
       name: state
       predefined:
       - New
@@ -294,11 +245,8 @@ script:
       - Open
       - PendingReminder
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Priority to assign to the new ticket
-      isArray: false
       name: priority
       predefined:
       - 1VeryLow
@@ -307,46 +255,22 @@ script:
       - 4High
       - 5VeryHigh
       required: true
-      secret: false
-    - default: false
-      description: Customer user related to the new ticket
-      isArray: false
+    - description: Customer user related to the new ticket
       name: customer_user
       required: true
-      secret: false
-    - default: false
-      description: Article Subject to apply to the new ticket
-      isArray: false
+    - description: Article Subject to apply to the new ticket
       name: article_subject
       required: true
-      secret: false
-    - default: false
-      description: Text to add to the Article Body of the new ticket
-      isArray: false
+    - description: Text to add to the Article Body of the new ticket
       name: article_body
       required: true
-      secret: false
-    - default: false
-      description: Ticket Type to assign to the new ticket
-      isArray: false
+    - description: Ticket Type to assign to the new ticket
       name: type
-      required: false
-      secret: false
-    - default: false
-      description: 'Dynamic fields to apply to the new ticket, in the format: field1=value1,field2=value2. For example: ProcessManagementProcessID=1,ProcessManagementActivityStatus=2'
-      isArray: false
+    - description: 'Dynamic fields to apply to the new ticket, in the format: field1=value1,field2=value2. For example: ProcessManagementProcessID=1,ProcessManagementActivityStatus=2'
       name: dynamic_fields
-      required: false
-      secret: false
-    - default: false
-      description: 'File entry ID of the file to add as an attachment to the new ticket in CSV format, e.g., 123@20,124@21 '
-      isArray: false
+    - description: 'File entry ID of the file to add as an attachment to the new ticket in CSV format, e.g., 123@20,124@21 '
       name: attachment
-      required: false
-      secret: false
-    deprecated: false
     description: Create a new ticket in OTRS
-    execution: false
     name: otrs-create-ticket
     outputs:
     - contextPath: OTRS.Ticket.Article.Subject
@@ -386,22 +310,13 @@ script:
       description: Ticket dynamic fields
       type: string
   - arguments:
-    - default: false
-      description: Ticket ID of the ticket to update
-      isArray: false
+    - description: Ticket ID of the ticket to update
       name: ticket_id
       required: true
-      secret: false
-    - default: false
-      description: Ticket Title of the ticket to update
-      isArray: false
+    - description: Ticket Title of the ticket to update
       name: title
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Ticket State of the ticket to update
-      isArray: false
       name: state
       predefined:
       - New
@@ -409,12 +324,8 @@ script:
       - ClosedUnsuccessful
       - Open
       - PendingReminder
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Priority of the ticket to update
-      isArray: false
       name: priority
       predefined:
       - 1VeryLow
@@ -422,47 +333,19 @@ script:
       - 3Normal
       - 4High
       - 5VeryHigh
-      required: false
-      secret: false
-    - default: false
-      description: Article Subject of the ticket to update
-      isArray: false
+    - description: Article Subject of the ticket to update
       name: article_subject
-      required: false
-      secret: false
-    - default: false
-      description: Article Body of the ticket to update
-      isArray: false
+    - description: Article Body of the ticket to update
       name: article_body
-      required: false
-      secret: false
-    - default: false
-      description: Queue that the ticket to update is in
-      isArray: false
+    - description: Queue that the ticket to update is in
       name: queue
-      required: false
-      secret: false
-    - default: false
-      description: Ticket Type of the ticket to update
-      isArray: false
+    - description: Ticket Type of the ticket to update
       name: type
-      required: false
-      secret: false
-    - default: false
-      description: 'Dynamic fields to apply to the updated ticket, in the format: field1=value1,field2=value2. For example: ProcessManagementProcessID=1,ProcessManagementActivityStatus=2'
-      isArray: false
+    - description: 'Dynamic fields to apply to the updated ticket, in the format: field1=value1,field2=value2. For example: ProcessManagementProcessID=1,ProcessManagementActivityStatus=2'
       name: dynamic_fields
-      required: false
-      secret: false
-    - default: false
-      description: 'File entry ID of the file to add as an attachment to the updated ticket in CSV format, e.g., 123@20,124@21 '
-      isArray: false
+    - description: 'File entry ID of the file to add as an attachment to the updated ticket in CSV format, e.g., 123@20,124@21 '
       name: attachment
-      required: false
-      secret: false
-    deprecated: false
     description: Update an OTRS ticket
-    execution: false
     name: otrs-update-ticket
     outputs:
     - contextPath: OTRS.Ticket.Article.Subject
@@ -493,27 +376,16 @@ script:
       description: Ticket type
       type: string
   - arguments:
-    - default: false
-      description: Ticket ID of the ticket to close
-      isArray: false
+    - description: Ticket ID of the ticket to close
       name: ticket_id
       required: true
-      secret: false
-    - default: false
-      description: Article Subject of the ticket to close
-      isArray: false
+    - description: Article Subject of the ticket to close
       name: article_subject
       required: true
-      secret: false
-    - default: false
-      description: Article Body of the ticket to close
-      isArray: false
+    - description: Article Body of the ticket to close
       name: article_body
       required: true
-      secret: false
-    deprecated: false
     description: Close an OTRS ticket
-    execution: false
     name: otrs-close-ticket
     outputs:
     - contextPath: OTRS.Ticket.ID
@@ -529,10 +401,7 @@ script:
       description: Ticket article body
       type: string
   dockerimage: demisto/pyotrs:1.0.0.44880
-  feed: false
   isfetch: true
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3

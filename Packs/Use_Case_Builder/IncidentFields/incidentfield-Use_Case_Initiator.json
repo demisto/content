@@ -1,0 +1,36 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Use Case Builder"
+    ],
+    "caseInsensitive": true,
+    "cliName": "usecaseinitiator",
+    "closeForm": true,
+    "content": true,
+    "description": "How is the incident created in XSOAR?",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_usecaseinitiator",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Use Case Initiator",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "required": false,
+    "selectValues": [
+        "Incident created from a integration",
+        "Manually Created Incident",
+        "API Generated Incident"
+    ],
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "singleSelect",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.8.0"
+}

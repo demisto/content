@@ -1,3 +1,5 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 # ----------------------------------------- Imports ---------------------------
 import copy
 import math
@@ -5,8 +7,6 @@ from typing import Tuple, Callable
 
 from requests import Response
 
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
 from requests.auth import HTTPDigestAuth
 import urllib3
 

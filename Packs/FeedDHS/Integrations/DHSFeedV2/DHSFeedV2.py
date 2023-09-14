@@ -1,8 +1,8 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 from pytz import utc
 from taxii2client.common import _ensure_datetime_to_string
 
-import demistomock as demisto
-from CommonServerPython import *
 from TAXII2ApiModule import *  # noqa: E402
 
 ''' CONSTANTS '''
@@ -102,7 +102,7 @@ def command_test_module(client: Taxii2FeedClient, initial_interval: str):
 
 
 def fetch_indicators_command(client: Taxii2FeedClient, limit: int, last_run_ctx: dict,
-                             initial_interval: str = DEFAULT_FETCH_INTERVAL) -> Tuple[list, dict]:
+                             initial_interval: str = DEFAULT_FETCH_INTERVAL) -> tuple[list, dict]:
     """
     Fetch indicators from TAXII 2 server
     :param client: Taxii2FeedClient
@@ -161,7 +161,7 @@ def get_collections_command(client: Taxii2FeedClient) -> CommandResults:
     """
     Get the available collections in the DHS server
     """
-    collections = list()
+    collections = []
     for collection in client.collections:  # type: ignore[attr-defined]
         collections.append({'Name': collection.title, 'ID': collection.id})
     return CommandResults(
@@ -184,7 +184,7 @@ def main():  # pragma: no cover
     proxies = handle_proxy()
 
     collection_to_fetch = params.get('collection_to_fetch')
-    skip_complex_mode = COMPLEX_OBSERVATION_MODE_SKIP == params.get('observation_operator_mode')
+    skip_complex_mode = params.get('observation_operator_mode') == COMPLEX_OBSERVATION_MODE_SKIP
     feed_tags = argToList(params.get('feedTags'))
     tlp_color = params.get('tlp_color', '')
     objects_to_fetch = params.get('objects_to_fetch', [])

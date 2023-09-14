@@ -1,19 +1,12 @@
 args:
-- default: false
-  defaultValue: 'False'
-  description: Trending is defined by RiskSense as vulnerabilities that are being
-    actively abused by attackers in the wild based on activity in hacker forums, Twitter
-    feeds as well as analysis of 3rd party threat intelligence sources.
-  isArray: false
+- defaultValue: 'False'
+  description: Trending is defined by RiskSense as vulnerabilities that are being actively abused by attackers in the wild based on activity in hacker forums, Twitter feeds as well as analysis of 3rd party threat intelligence sources.
   name: trending
   required: true
-  secret: false
-comment: This script is a helper script of Ransomware Exposure - RiskSense playbook
-  and retrieve information of cves and trending cves from host finding details.
+comment: This script is a helper script of Ransomware Exposure - RiskSense playbook and retrieve information of cves and trending cves from host finding details.
 commonfields:
   id: RiskSenseGetRansomewareCVEScript
   version: -1
-enabled: false
 name: RiskSenseGetRansomewareCVEScript
 outputs:
 - contextPath: RiskSense.RansomwareCves.Cve
@@ -29,8 +22,7 @@ outputs:
   description: The total number of threats associated with the CVE.
   type: Number
 - contextPath: RiskSense.RansomwareCves.Trending
-  description: This signifies whether the vulnerability (which is associated with
-    the hostFinding) has been reported by our internal functions as being trending.
+  description: This signifies whether the vulnerability (which is associated with the hostFinding) has been reported by our internal functions as being trending.
   type: boolean
 - contextPath: RiskSense.RansomwareCves.VulnLastTrendingOn
   description: Date when last trending vulnerability was found.
@@ -81,8 +73,7 @@ outputs:
   description: The total number of threats associated with the CVE.
   type: Number
 - contextPath: RiskSense.RansomwareTrendingCves.Trending
-  description: This signifies whether the vulnerability (which is associated with
-    the hostFinding) has been reported by our internal functions as being trending.
+  description: This signifies whether the vulnerability (which is associated with the hostFinding) has been reported by our internal functions as being trending.
   type: boolean
 - contextPath: RiskSense.RansomwareTrendingCves.VulnLastTrendingOn
   description: Date when last trending vulnerability was found.
@@ -134,7 +125,6 @@ outputs:
   type: Number
 script: '-'
 subtype: python3
-system: false
 tags:
 - RiskSense
 timeout: '0'

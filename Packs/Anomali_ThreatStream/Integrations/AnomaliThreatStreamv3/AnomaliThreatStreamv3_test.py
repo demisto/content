@@ -411,7 +411,8 @@ class TestImportCommands:
                             return_value={'success': True, 'import_session_id': 'test_session_id', 'job_id': 'id'})
 
         # run
-        result = import_ioc_with_approval(mock_client(), import_type, 'test_value')
+        result = import_ioc_with_approval(mock_client(), import_type, 'test_value', tags="tag1,tag2",
+                                          expiration_ts="2023-12-25T00:00:00")
 
         # validate
 
@@ -422,8 +423,10 @@ class TestImportCommands:
             assert files['file'][0] == 'test_file.txt'
         else:
             assert data[import_type] == 'test_value'
+            assert data['expiration_ts'] == '2023-12-25T00:00:00'
+            assert data['tags'] == '[{"name": "tag1"}, {"name": "tag2"}]'
 
-        assert all(key in data for key in ['classification', 'confidence', 'threat_type', 'severity'])
+        assert all(key in data for key in ['classification', 'confidence', 'threat_type', 'severity', 'default_state'])
 
         assert result.outputs == {'ImportID': 'test_session_id', 'JobID': 'id'}
 
@@ -460,6 +463,35 @@ class TestImportCommands:
                 },
                 ('classification', 'confidence', 'severity', 'allow_unresolved', 'tags'),
                 {'severity': 'high', 'confidence': 70}
+            ),
+            (
+                MOCK_OBJECTS_2,
+                'test_file',
+                {
+                    'file_id': 'test_file_id',
+                    'classification': 'Private',
+                    'confidence': "70",
+                    'severity': 'high',
+                    'allow_unresolved': True,
+                    'tags': "tag1,tag2",
+                    "tags_tlp": "Red"
+                },
+                ('classification', 'confidence', 'severity', 'allow_unresolved', 'tags'),
+                {'severity': 'high', 'confidence': 70, 'tags': [{'name': 'tag1', 'tlp': 'red'}, {'name': 'tag2', 'tlp': 'red'}]}
+            ),
+            (
+                MOCK_OBJECTS_2,
+                'test_file',
+                {
+                    'file_id': 'test_file_id',
+                    'classification': 'Private',
+                    'confidence': "70",
+                    'severity': 'high',
+                    'allow_unresolved': True,
+                    'tags': "tag1,tag2",
+                },
+                ('classification', 'confidence', 'severity', 'allow_unresolved', 'tags'),
+                {'severity': 'high', 'confidence': 70, 'tags': [{'name': 'tag1'}, {'name': 'tag2'}]}
             )
         ]
     )
@@ -494,6 +526,8 @@ class TestImportCommands:
             confidence=args.get('confidence'),
             severity=args.get('severity'),
             allow_unresolved=args.get('allow_unresolved'),
+            tags=args.get('tags'),
+            tags_tlp=args.get('tags_tlp'),
         )
 
         # validate
@@ -745,7 +779,7 @@ class TestGetCommands:
         get_model_description(mock_client(), model, '1')
 
         # validate
-        mocked_result.call_args[0][1] == 'test_description'.encode(encoding='UTF-8')
+        mocked_result.call_args[0][1] == b'test_description'
 
 
 class TestUpdateCommands:

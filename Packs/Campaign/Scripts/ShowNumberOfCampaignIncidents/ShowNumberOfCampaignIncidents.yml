@@ -1,0 +1,17 @@
+commonfields:
+  id: ShowNumberOfCampaignIncidents
+  version: -1
+name: ShowNumberOfCampaignIncidents
+script: ''
+type: python
+tags:
+- dynamic-section
+comment: Displays the number of phishing incidents that make up the phishing campaign.
+enabled: true
+scripttarget: 0
+subtype: python3
+fromversion: 6.0.0
+dockerimage: demisto/python3:3.10.12.63474
+runas: DBotWeakRole
+tests:
+- No tests (auto formatted)

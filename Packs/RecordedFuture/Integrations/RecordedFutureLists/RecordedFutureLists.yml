@@ -1,0 +1,217 @@
+commonfields:
+  id: RecordedFutureLists
+  version: -1
+name: RecordedFutureLists
+display: 'Recorded Future - Lists'
+category: Data Enrichment & Threat Intelligence
+image:
+description: 'Search and manage watchlists in Recorded Future'
+configuration:
+- display: API URL
+  name: server_url
+  additionalinfo: "Default URL: https://api.recordedfuture.com/gw/xsoar/"
+  defaultvalue: https://api.recordedfuture.com/gw/xsoar/
+  type: 0
+  required: true
+- displaypassword: API Token
+  name: token
+  defaultvalue: ""
+  type: 9
+  hiddenusername: true
+  required: true
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+script:
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.10.13.72123
+  commands:
+  - name: recordedfuture-lists-search
+    description: Search for lists in Recorded Future
+    arguments:
+    - name: list_names
+      description: Freetext name to search for
+    - name: contains
+      description: Filter lists based on entity types, will only include lists with the entity types specified. Default value "" includes all types
+      auto: PREDEFINED
+      predefined:
+      - entity
+      - source
+      - text
+      - custom
+      - ip
+      - domain
+      - tech_stack
+      - industry
+      - brand
+      - partner
+      - industry_peer
+      - location
+      - supplier
+      - vulnerability
+      - company
+      - hash
+      - operation
+      - attacker
+      - target
+      - method
+    - name: limit
+      description: Limits the amount of returned results
+    - name: include
+      required: false
+      description: Include all search results. Default is to exclude all lists owned by the system user.
+      auto: PREDEFINED
+      predefined:
+      - all
+    outputs:
+    - contextPath: RecordedFuture.List.id
+      description: Unique id of the list in Recorded Future
+      type: String
+    - contextPath: RecordedFuture.List.name
+      description: Name of the list in Recorded Future
+      type: String
+    - contextPath: RecordedFuture.List.type
+      description: Recorded future entity type
+      type: String
+    - contextPath: RecordedFuture.List.created
+      description: Timestamp of creation
+      type: String
+    - contextPath: RecordedFuture.List.updated
+      description: Timestamp of last update to the list
+      type: String
+    - contextPath: RecordedFuture.List.owner_id
+      description: Unique id of the owner in Recorded Future
+      type: String
+    - contextPath: RecordedFuture.List.owner_name
+      description: Readable name of list in Recorded Future
+      type: String
+  - name: recordedfuture-lists-add-entities
+    description: Add entities to a list, separate entities by commas. "NOTE:" if entity type is specified, only one entity type can be added with each action.
+    arguments:
+    - name: list_id
+      required: true
+      description: Id of the list that should be added, can be found by running !recordedfuture-lists-search with the corresponding filters or in the Recorded Future portal
+    - name: entity_ids
+      description: 'A comma-separated list of specific IDs from Recorded Future. For URLs containing commas, replace the comma with %2C. For more information, go to https://xsoar.pan.dev/docs/reference/integrations/recorded-future-lists#recordedfuture-lists-add-entities.'
+      required: false
+    - name: freetext_names
+      description: 'Freetext names will be matched to Recorded Future ids separated by comma, this alernative will add the best match in the Recorded Future data. For urls containing commas: escape with %2C'
+    - name: entity_type
+      required: false
+      description: Type of the entities that should be added. Use together with freetext_names to improve entity resolution.
+      auto: PREDEFINED
+      predefined:
+      - ip
+      - domain
+      - malware
+      - url
+      - hash
+      - cve
+      - company
+      - person
+      - product
+      - industry
+      - country
+      - attack-vector
+      - operation
+      - mitre-identifier
+      - malware-category
+    outputs:
+    - contextPath: RecordedFuture.List.Entities.name
+      description: Name of the entity in the list.
+      type: String
+    - contextPath: RecordedFuture.List.Entities.type
+      description: The Recorded Future entity type resolved during the action.
+      type: String
+    - contextPath: RecordedFuture.List.Entities.id
+      description: Unique ID of the entity in Recorded Future.
+      type: String
+    - contextPath: RecordedFuture.List.Entities.input_value
+      description: The value inputted to the command.
+      type: String
+    - contextPath: RecordedFuture.List.Entities.action_result
+      description: Entity specific result for the action.
+      type: String
+  - name: recordedfuture-lists-remove-entities
+    description: Remove entities from a list. Separate entities with a comma. "NOTE:" If entity type is specified, only one entity type can be added with each action.
+    arguments:
+    - name: list_id
+      required: true
+      description: ID of the list that should be removed. Can be found by running !recordedfuture-lists-search with the corresponding filters or in the Recorded Future portal.
+    - name: entity_ids
+      description: 'A comma-separated list of specific IDs from Recorded Future. For URLs containing commas, replace the comma with %2C. For more information, go to https://xsoar.pan.dev/docs/reference/integrations/recorded-future-lists#recordedfuture-lists-add-entities.'
+      required: false
+    - name: freetext_names
+      description: 'A comma-separated list of freetext names to be matched to Recorded Future IDs. Will remove the best match in the Recorded Future data. For URLs containing commas, escape with %2C.'
+      required: false
+    - name: entity_type
+      required: false
+      description: Type of the entities that should be removed. Use together with freetext_names to improve entity resolution.
+      auto: PREDEFINED
+      predefined:
+      - ip
+      - domain
+      - malware
+      - url
+      - hash
+      - cve
+      - company
+      - person
+      - product
+      - industry
+      - country
+      - attack-vector
+      - operation
+      - mitre-identifier
+      - malware-category
+    outputs:
+    - contextPath: RecordedFuture.List.Entities.name
+      description: Name of the entity in the list
+      type: String
+    - contextPath: RecordedFuture.List.Entities.type
+      description: The Recorded Future entity type resolved during the action
+      type: String
+    - contextPath: RecordedFuture.List.Entities.id
+      description: Unique id of the entity in Recorded Future
+      type: String
+    - contextPath: RecordedFuture.List.Entities.input_value
+      description: The value inputted to the command
+      type: String
+    - contextPath: RecordedFuture.List.Entities.action_result
+      description: Entity specific result for the action
+      type: String
+  - name: recordedfuture-lists-entities
+    description: Get the entities that are currently in the given lists.
+    arguments:
+    - name: list_ids
+      required: true
+      description: A comma-separated list of Recorded Future list IDs.
+    outputs:
+    - contextPath: RecordedFuture.List.id
+      description: Unique ID of the list in Recorded Future.
+      type: String
+    - contextPath: RecordedFuture.List.name
+      description: Name of the list in Recorded Future.
+      type: String
+    - contextPath: RecordedFuture.List.type
+      description: Recorded Future entity type.
+      type: String
+    - contextPath: RecordedFuture.List.Entities.name
+      description: Name of the entity in the list.
+      type: String
+    - contextPath: RecordedFuture.List.Entities.type
+      description: The Recorded Future entity type resolved during the action.
+      type: String
+    - contextPath: RecordedFuture.List.Entities.id
+      description: Unique ID of the entity in Recorded Future.
+      type: String
+fromversion: 6.5.0
+tests:
+- No tests (auto formatted)

@@ -8,6 +8,10 @@
       "type": "string",
       "is_array": false
     },
+    "cloud_account_type": {
+      "type": "string",
+      "is_array": false
+    },
     "account_name": {
       "type": "string",
       "is_array": false

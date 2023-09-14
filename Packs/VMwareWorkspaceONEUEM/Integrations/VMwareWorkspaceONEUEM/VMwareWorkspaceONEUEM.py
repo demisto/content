@@ -3,7 +3,7 @@ from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-impor
 from CommonServerUserPython import *  # noqa
 
 import requests
-from typing import Dict, Tuple, List, Any, Optional
+from typing import Any
 
 # Disable insecure warnings
 # requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
@@ -149,7 +149,7 @@ def remove_empty_elements_for_context(src):
     def empty(x):
         return x is None or x == '' or x == {} or x == []
 
-    if not isinstance(src, (dict, list)):
+    if not isinstance(src, dict | list):
         return src
     elif isinstance(src, list):
         return [v for v in (remove_empty_elements_for_context(v) for v in src) if not empty(v)]
@@ -182,7 +182,7 @@ def camel_to_pascal(src: dict) -> dict:
     :param src: the dictionary whose keys require change in case
     :return: a dictionary with the keys changed from camel case to pascal case
     """
-    if not isinstance(src, (dict, list)):
+    if not isinstance(src, dict | list):
         return src
     return_src = {}
 
@@ -199,14 +199,14 @@ def camel_to_pascal(src: dict) -> dict:
         return return_src
 
     for key, value in src.items():
-        if isinstance(value, (dict, list)):
+        if isinstance(value, dict | list):
             return_src[capitalize_first_letter(key)] = camel_to_pascal(value)  # type: ignore
         else:
             return_src[capitalize_first_letter(key)] = value
     return return_src
 
 
-def prepare_context_hr_os_updates_list_command(result: dict, uuid: str) -> Tuple[Union[dict, List[dict]], str]:
+def prepare_context_hr_os_updates_list_command(result: dict, uuid: str) -> tuple[Union[dict, list[dict]], str]:
     """
     To prepare context and human readable output for vmwuem_device_os_updates_list_command.
 
@@ -261,7 +261,7 @@ def strip_args(args: dict):
             args[key] = value.strip()
 
 
-def is_present_in_list(value_to_check: Any, list_to_check_in: List[Any], message: str) -> Optional[bool]:
+def is_present_in_list(value_to_check: Any, list_to_check_in: list[Any], message: str) -> bool | None:
     """
     Checks for presence of value in list, raises ValueError, if the value is not present
 
@@ -280,7 +280,7 @@ def is_present_in_list(value_to_check: Any, list_to_check_in: List[Any], message
     return True
 
 
-def prepare_context_and_hr_for_devices_search(response: dict) -> Tuple[Union[dict, List[dict]], str]:
+def prepare_context_and_hr_for_devices_search(response: dict) -> tuple[Union[dict, list[dict]], str]:
     """
     Prepare entry context and human readable for devices search command
 
@@ -298,16 +298,10 @@ def prepare_context_and_hr_for_devices_search(response: dict) -> Tuple[Union[dic
             last_seen = dateparser.parse(last_seen).strftime(READABLE_DATE_FORMAT)  # type: ignore
 
         compromised = device.get('CompromisedStatus', '')
-        if isinstance(compromised, str):
-            compromised = "Unknown"
-        else:
-            compromised = "Compromised" if compromised else "Not Compromised"
+        compromised = 'Unknown' if isinstance(compromised, str) else 'Compromised' if compromised else 'Not Compromised'
 
         ownership = device.get('Ownership', '')
-        if ownership in REVERSED_ARG_TO_PARAM_OWNERSHIP.keys():
-            ownership = REVERSED_ARG_TO_PARAM_OWNERSHIP[ownership]
-        else:
-            ownership = ''
+        ownership = REVERSED_ARG_TO_PARAM_OWNERSHIP[ownership] if ownership in REVERSED_ARG_TO_PARAM_OWNERSHIP else ''
 
         hr_devices_list.append({
             CONSTANT_STRING['DEVICE_FRIENDLY']: device.get(CONSTANT_STRING['DEVICE_FRIENDLY'].replace(' ', ''), ''),
@@ -382,7 +376,7 @@ def validate_and_parameterize_devices_search_arguments(args: dict) -> dict:
     return params
 
 
-def prepare_context_and_hr_for_devices_get(response: dict) -> Tuple[dict, str]:
+def prepare_context_and_hr_for_devices_get(response: dict) -> tuple[dict, str]:
     """
     Prepare entry context and human readable for device get command
 
@@ -395,10 +389,7 @@ def prepare_context_and_hr_for_devices_get(response: dict) -> Tuple[dict, str]:
     enrollment_info = response.get('enrollmentInfo', {})
 
     compliance = enrollment_info.get('compliant', '')
-    if isinstance(compliance, str):
-        compliance = "Unknown"
-    else:
-        compliance = "Compliant" if compliance else "Non-Compliant"
+    compliance = 'Unknown' if isinstance(compliance, str) else 'Compliant' if compliance else 'Non-Compliant'
 
     last_seen = enrollment_info.get('lastSeenTimestamp', '')
     if last_seen:
@@ -475,7 +466,7 @@ def vmwuem_devices_search_command(client: Client, args: dict) -> CommandResults:
                           readable_output=readable_output, raw_response=json_response)
 
 
-def vmwuem_device_get_command(client: Client, args: Dict) -> CommandResults:
+def vmwuem_device_get_command(client: Client, args: dict) -> CommandResults:
     """
     Retrieves a device using get device endpoint according to given uuid.
 
@@ -551,7 +542,9 @@ def main() -> None:
     username = dict_param.get('credentials')['identifier'].strip()
     password = dict_param.get('credentials')['password']
 
-    api_key = dict_param['aw_tenant_code']
+    api_key = (
+        dict_param.get('aw_tenant_code_creds', {}).get('password')
+        or dict_param.get('aw_tenant_code'))
 
     # get the service API url
     base_url = urljoin(dict_param['url'], '/API/mdm/')
@@ -562,8 +555,8 @@ def main() -> None:
     demisto.debug(f'{LOGGING_INTEGRATION_NAME} Command being called is {command}')
     try:
 
-        headers: Dict = {"aw-tenant-code": "{}".format(api_key),
-                         "Accept": "application/json;version={}".format(API_VERSION)}
+        headers: dict = {"aw-tenant-code": f"{api_key}",
+                         "Accept": f"application/json;version={API_VERSION}"}
 
         client = Client(
             base_url=base_url,

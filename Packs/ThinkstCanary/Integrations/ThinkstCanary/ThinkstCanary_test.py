@@ -6,7 +6,8 @@ MOCK_PARAMS = {
     'secret-key': 'fake_access_key',
     'server': 'http://123-fake-api.com/',
     'unsecure': True,
-    'proxy': True
+    'proxy': True,
+    'authentication_token': {'password': 1}
 }
 
 
@@ -24,7 +25,6 @@ def test_fetch_incidents(mocker, requests_mock):
                       json={'incidents': [{'description': {'created': 1593579498}}]})
     from ThinkstCanary import fetch_incidents_command
     fetch_incidents_command()
-
     assert demisto.setLastRun.call_args[0][0]['time'] == '2020-07-01-04:58:19'
 
 

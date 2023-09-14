@@ -82,19 +82,17 @@ class Client(BaseClient):
                                   params=params,
                                   resp_type='response')
 
-    def query_log(self, log_id: str, params: dict) -> Response:
+    def query_log(self, log_id: str, params: dict) -> dict:
         return self._http_request(method='GET',
                                   url_suffix=f'log_search/query/logs/{log_id}',
                                   headers=self._headers,
-                                  params=params,
-                                  resp_type='response')
+                                  params=params)
 
-    def query_log_set(self, log_set_id: str, params: dict) -> Response:
+    def query_log_set(self, log_set_id: str, params: dict) -> dict:
         return self._http_request(method='GET',
                                   url_suffix=f'log_search/query/logsets/{log_set_id}',
                                   headers=self._headers,
-                                  params=params,
-                                  resp_type='response')
+                                  params=params)
 
     def query_log_callback(self, url: str) -> dict:
         return self._http_request(method='GET',
@@ -569,24 +567,7 @@ def insight_idr_query_log_command(client: Client, log_id: str, query: str, time_
 
     results = client.query_log(log_id, params)
 
-    data_for_readable_output = []
-    new_data = []
-
-    # 202 if there is a callback, and 200 if that's the full response
-    if results.status_code == 202:
-        for link in results.json().get('links', []):
-            url = link.get('href')
-            data = client.query_log_callback(url)
-            new_data.append(data)
-            events = data.get('events', [])
-            for event in events:
-                data_for_readable_output.append(event)
-    else:
-        events = results.json().get('events', [])
-        for event in events:
-            data_for_readable_output.append(event)
-
-    raw_response = new_data if new_data else results.json()
+    data_for_readable_output, raw_response = handle_query_log_results(client, results)
 
     readable_output = tableToMarkdown('Query Results', data_for_readable_output,
                                       headers=EVENTS_FIELDS, removeNull=True)
@@ -636,24 +617,7 @@ def insight_idr_query_log_set_command(client: Client, log_set_id: str, query: st
 
     results = client.query_log_set(log_set_id, params)
 
-    data_for_readable_output = []
-    new_data = []
-
-    # 202 if there is a callback, and 200 if that's the full response
-    if results.status_code == 202:
-        for link in results.json().get('links', []):
-            url = link.get('href')
-            data = client.query_log_callback(url)
-            new_data.append(data)
-            events = data.get('events', [])
-            for event in events:
-                data_for_readable_output.append(event)
-    else:
-        events = results.json().get('events', [])
-        for event in events:
-            data_for_readable_output.append(event)
-
-    raw_response = new_data if new_data else results.json()
+    data_for_readable_output, raw_response = handle_query_log_results(client, results)
 
     readable_output = tableToMarkdown('Query Results', data_for_readable_output,
                                       headers=EVENTS_FIELDS, removeNull=True)
@@ -665,6 +629,41 @@ def insight_idr_query_log_set_command(client: Client, log_set_id: str, query: st
         readable_output=readable_output
     )
     return command_results
+
+
+def handle_query_log_results(client: Client, result: dict) -> Tuple[list, list]:
+    """This function get the first result of the query, then handles if the query is still in progress, and handle pagination.
+
+    Args:
+        client (Client): Rapid7 Client
+        result (dict): The first result of the query
+
+    Returns:
+        Tuple[list, list]:
+            data_for_readable_output: The data for the readable output which contains all the events
+            raw_responcse: Raw response from all events returned by the requests
+    """
+    data_for_readable_output = []
+    raw_responcse = []
+
+    results_list = [result]
+    while results_list:
+        results = results_list.pop(0)
+
+        if events := results.get('events', []):
+            data_for_readable_output.extend(events)
+            raw_responcse.append(results)
+
+        if links := results.get('links', []):
+            for link in links:
+                url = link.get('href')
+                new_results = client.query_log_callback(url)
+                results_list.append(new_results)
+
+                progress = results.get('progress')
+                demisto.debug(f'Events length: {len(events)}, progress: {progress}')
+
+    return data_for_readable_output, raw_responcse
 
 
 def test_module(client: Client) -> str:
@@ -754,7 +753,7 @@ def main():
 
     params = demisto.params()
     region = params.get('region', {})
-    api_key = params.get('apiKey', {})
+    api_key = params.get('apikey_creds', {}).get('password') or params.get('apiKey', {})
     max_fetch = params.get('max_fetch', '50')
 
     base_url = f'https://{region}.api.insight.rapid7.com/'

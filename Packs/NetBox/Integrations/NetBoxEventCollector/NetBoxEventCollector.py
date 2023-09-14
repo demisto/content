@@ -242,29 +242,30 @@ def main() -> None:  # pragma: no cover
             result = test_module_command(client)
             return_results(result)
 
-        elif command in ("netbox-get-events", "fetch-events"):
-            if command == "netbox-get-events":
-                should_push_events = argToBoolean(args.get("should_push_events"))
-                events, results = get_events_command(
-                    client, limit=arg_to_number(args.get("limit", DEFAULT_LIMIT))  # type: ignore
-                )
-                return_results(results)
-
-            else:  # command == 'fetch-events':
-                should_push_events = True
-                last_run = demisto.getLastRun()
-                next_run, events = fetch_events_command(
-                    client=client,
-                    max_fetch=arg_to_number(params.get("max_fetch", DEFAULT_LIMIT)),  # type: ignore
-                    last_run=last_run,
-                    first_fetch_time=first_fetch_time_strftime,
-                )
-                # saves next_run for the time fetch-events is invoked
-                demisto.setLastRun(next_run)
+        elif command == "netbox-get-events":
+            should_push_events = argToBoolean(args.get("should_push_events"))
+            events, results = get_events_command(
+                client, limit=arg_to_number(args.get("limit", DEFAULT_LIMIT))  # type: ignore
+            )
+            return_results(results)
 
             if should_push_events:
                 events = add_time_key_to_events(events)
                 send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
+
+        elif command == 'fetch-events':
+            last_run = demisto.getLastRun()
+            next_run, events = fetch_events_command(
+                client=client,
+                max_fetch=arg_to_number(params.get("max_fetch", DEFAULT_LIMIT)),  # type: ignore
+                last_run=last_run,
+                first_fetch_time=first_fetch_time_strftime,
+            )
+
+            events = add_time_key_to_events(events)
+            send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
+            # saves next_run for the time fetch-events is invoked
+            demisto.setLastRun(next_run)
 
     # Log exceptions and return errors
     except Exception as e:

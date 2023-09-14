@@ -1,9 +1,9 @@
 Scale IT automation, manage complex deployments, and speed productivity.
-This integration was integrated and tested with version v3.8.0 of AnsibleTower and with API version v2.
-## Configure AnsibleTower on Cortex XSOAR
+This integration was integrated and tested with version v3.8.0 of Ansible Automation Platform and with API version v2.
+## Configure Ansible Automation Platform on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for AnsibleTower.
+2. Search for Ansible Automation Platform.
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Description** | **Required** |

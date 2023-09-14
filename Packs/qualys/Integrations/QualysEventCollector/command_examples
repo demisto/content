@@ -1,0 +1,2 @@
+!qualys-get-host-detections limit=2
+!qualys-get-activity-logs limit=2

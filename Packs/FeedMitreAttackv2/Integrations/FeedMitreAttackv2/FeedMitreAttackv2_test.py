@@ -270,3 +270,29 @@ def test_attack_pattern_reputation_command(mocker):
 
     assert command_results[0].indicator.value == 'Abuse Elevation Control Mechanism'
     assert command_results[1].indicator.value == 'Active Scanning: Wordlist Scanning'
+
+
+@pytest.mark.parametrize('description, expected_result', [
+    ("Waterbear is modular malware attributed to BlackTech ...(Citation: Trend Micro Waterbear December 2019)",
+     "Waterbear is modular malware attributed to BlackTech ..."),
+    ("Adversaries may employ various means to detect and avoid debuggers.(Citation: ProcessHacker Github)\
+        (assuming a present debugger would “swallow” or handle the potential error).\
+(Citation: hasherezade debug)(Citation: AlKhaser Debug)(Citation: vxunderground debug)\
+            <code>OutputDebugStringW()</code>.(Citation: wardle evilquest partii)(Citation: Checkpoint Dridex Jan 2021)",
+     "Adversaries may employ various means to detect and avoid debuggers.\
+            (assuming a present debugger would “swallow” or handle the potential error).\
+                <code>OutputDebugStringW()</code>.")
+])
+def test_remove_citations(description, expected_result):
+    """
+    Given:
+        A description with Citation.
+    When:
+        Calling remove_citation method.
+    Then:
+        Output description will not contain Citation parts.
+    """
+    from FeedMitreAttackv2 import remove_citations
+    actual_result = remove_citations(description)
+    "Citation" not in actual_result
+    actual_result == expected_result

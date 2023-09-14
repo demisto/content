@@ -1,0 +1,37 @@
+{
+    "dataType": "incidents",
+    "dateRange": {
+        "fromDate": "0001-01-01T00:00:00Z",
+        "fromDateLicense": "0001-01-01T00:00:00Z",
+        "period": {
+            "by": "",
+            "byFrom": "days",
+            "byTo": "",
+            "field": "",
+            "fromValue": 7,
+            "toValue": null
+        },
+        "toDate": "0001-01-01T00:00:00Z"
+    },
+    "id": "4ddb6197-0d97-443d-8a23-b8ab7b8ad0b2",
+    "isPredefined": true,
+    "name": "Use Cases in Testing",
+    "params": {
+        "colors": {
+            "isEnabled": true,
+            "items": {
+                "#897E0C": {},
+                "#FF8411": {
+                    "value": 0
+                }
+            },
+            "type": "above"
+        },
+        "valuesFormat": "abbreviated"
+    },
+    "query": "usecasedevelopmentstage:Testing",
+    "version": -1,
+    "widgetType": "number",
+    "fromVersion": "6.8.0",
+    "description": ""
+}

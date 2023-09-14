@@ -44,7 +44,7 @@ class TestConf(DictFileBased):
         self.test_id_to_test = {test.playbook_id: test
                                 for test in self.tests}
 
-        tests_to_integration_set: dict[str, set[str, ...]] = defaultdict(set)
+        tests_to_integration_set: dict[str, set[str]] = defaultdict(set)
         for test in self.tests:
             tests_to_integration_set[test.playbook_id].update(test.integrations)
         self.tests_to_integrations: dict[str, tuple[str, ...]] = {

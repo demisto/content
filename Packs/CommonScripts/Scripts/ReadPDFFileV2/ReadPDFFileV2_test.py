@@ -8,7 +8,7 @@ CWD = os.getcwd() if os.getcwd().endswith('test_data') else f'{os.getcwd()}/test
 
 
 def open_html_file(file):
-    with open(file, "r", encoding='utf-8') as f:
+    with open(file, encoding='utf-8') as f:
         return f.read()
 
 
@@ -195,7 +195,7 @@ def test_get_pdf_htmls_content_without_encrypted(tmp_path):
         assert 'Incorrect password' in str(e)
     # to_html_output_folder = f'{tmp_path}/PDF_html'
     html_text = get_pdf_htmls_content(f'{CWD}/hyperlinks.pdf', tmp_path)
-    assert 'http://www.antennahouse.com/purchase.htm' in html_text
+    assert 'http://www.example.com/' in html_text
     assert len(get_images_paths_in_path(tmp_path)) != 0, 'Failed to get images from html'
 
 
@@ -207,7 +207,7 @@ def test_get_urls_from_binary_file():
 
 def test_build_readpdf_entry_object_empty_extract(mocker):
     from ReadPDFFileV2 import build_readpdf_entry_object, DEFAULT_NUM_IMAGES
-    mocker.patch.object(demisto, 'executeCommand', return_value=[{u'Contents': ''}])
+    mocker.patch.object(demisto, 'executeCommand', return_value=[{'Contents': ''}])
     res = build_readpdf_entry_object('test', {}, '', [], [], [], DEFAULT_NUM_IMAGES)
     assert res[0]['HumanReadable'] == '### Metadata\n\n### URLs\n\n### Text\n'
 
@@ -354,7 +354,7 @@ def test_get_urls_and_emails_from_pdf_file_with_encrypt(tmp_path):
     if os.path.exists(dec_file_path):
         os.remove(dec_file_path)
 
-    assert set(url_data['Data'] for url_data in urls) == expected_urls
+    assert {url_data['Data'] for url_data in urls} == expected_urls
     assert set(emails) == expected_emails
 
 
@@ -385,7 +385,7 @@ def test_get_urls_and_emails_from_pdf_file_without_encrypt(tmp_path):
     urls, emails = extract_urls_and_emails_from_pdf_file(file_path, tmp_path)
 
     assert set(emails) == expected_emails
-    assert set(url_data['Data'] for url_data in urls) == expected_urls
+    assert {url_data['Data'] for url_data in urls} == expected_urls
 
 
 def test_handle_error_read_only(mocker):

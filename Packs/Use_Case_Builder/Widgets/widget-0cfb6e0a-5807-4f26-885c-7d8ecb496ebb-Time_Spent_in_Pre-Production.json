@@ -1,0 +1,24 @@
+{
+    "dataType": "incidents",
+    "dateRange": {
+        "fromDate": "0001-01-01T00:00:00Z",
+        "fromDateLicense": "0001-01-01T00:00:00Z",
+        "period": {
+            "by": "",
+            "byFrom": "days",
+            "byTo": "",
+            "field": "",
+            "fromValue": 7,
+            "toValue": null
+        },
+        "toDate": "0001-01-01T00:00:00Z"
+    },
+    "id": "0cfb6e0a-5807-4f26-885c-7d8ecb496ebb",
+    "isPredefined": true,
+    "name": "Time Spent in Pre-Production",
+    "query": "usecasepreproductiontimer.totalDuration",
+    "version": -1,
+    "widgetType": "duration",
+    "fromVersion": "6.8.0",
+    "description": ""
+}

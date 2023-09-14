@@ -1,6 +1,6 @@
 import demistomock as demisto
 from CommonServerPython import *
-import requests
+import urllib3
 import json
 import dateparser
 import traceback
@@ -11,7 +11,7 @@ from typing import Any, Dict, Tuple, List, Optional, cast
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 ''' CLIENT CLASS '''
 

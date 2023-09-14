@@ -1,0 +1,115 @@
+category: Analytics & SIEM
+sectionOrder:
+- Connect
+- Collect
+commonfields:
+  id: Workday Event Collector
+  version: -1
+configuration:
+- name: base_url
+  display: Server URL (e.g. https://WORKDAY-HOST/ccx/api/v1/TENANT-NAME)
+  required: true
+  defaultvalue:
+  type: 0
+  additionalinfo: 'REST API Endpoint of Workday server. Can be obtained from View API Clients report in Workday application.'
+  section: Connect
+- name: token_url
+  display: Token endpoint (e.g. https://WORKDAY-HOST/ccx/oauth2/TENANT-NAME/token)
+  required: true
+  defaultvalue:
+  type: 0
+  additionalinfo: 'Token endpoint of the Workday server. Can be obtained from View API Clients report in Workday application.'
+  section: Connect
+- name: credentials
+  display: Client ID
+  required: true
+  defaultvalue:
+  type: 9
+  additionalinfo: 'Copy the Client ID and Secret from the Register API Client for Integrations stage at Workday.'
+  displaypassword: Client Secret
+  section: Connect
+  hiddenusername: false
+- name: token
+  required: true
+  defaultvalue:
+  type: 9
+  additionalinfo: 'Non-expiry Workday API refresh token.'
+  displaypassword: Refresh Token
+  hiddenusername: true
+  section: Connect
+- name: insecure
+  display: Trust any certificate (not secure)
+  type: 8
+  additionalinfo:
+  section: Connect
+  advanced: true
+  required: false
+- name: proxy
+  display: Use system proxy settings
+  type: 8
+  additionalinfo:
+  section: Connect
+  advanced: true
+  required: false
+- defaultvalue: 7 days
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  name: first_fetch
+  type: 0
+  section: Collect
+  required: false
+- additionalinfo: The maximum number of audit logs to retrieve for each event type. Large amount of events can cause preformance issues.
+  defaultvalue: '1000'
+  display: Max events per fetch
+  name: max_fetch
+  type: 0
+  section: Collect
+  required: false
+- defaultvalue: 1
+  display: Events Fetch Interval
+  name: eventFetchInterval
+  type: 19
+  section: Collect
+  advanced: true
+  required: false
+description: Use Workday Event Collector integration to get activity loggings from Workday.
+display: Workday Event Collector
+name: Workday Event Collector
+script:
+  commands:
+  - name: workday-get-activity-logging
+    description: Returns activity loggings extracted from Workday.
+    arguments:
+    - name: limit
+      description: The maximum number of loggings to return.
+      defaultValue: 1000
+      predefined:
+      - ""
+    - name: offset
+      description: The zero-based index of the first object in a response collection.
+      defaultValue: 0
+      predefined:
+      - ""
+    - name: from_date
+      description: 'The date and time of the earliest log entry. The default timezone is UTC/GMT. The time format is "{yyyy}-{mm}-{dd}T{hh}:{mm}:{ss}Z". Example: "2021-05-18T13:45:14Z" indicates May 18, 2021, 1:45PM UTC.'
+      required: true
+      defaultValue: ""
+      predefined:
+      - ""
+    - name: to_date
+      description: 'The time format is "{yyyy}-{mm}-{dd}T{hh}:{mm}:{ss}Z". Example: "2021-05-18T13:45:14Z" indicates May 18, 2021, 1:45PM UTC.'
+      required: true
+      defaultValue: ""
+      predefined:
+      - ""
+    outputs: []
+  runonce: false
+  script: "-"
+  type: python
+  subtype: python3
+  isfetchevents: true
+  dockerimage: demisto/python3:3.10.13.72123
+fromversion: 8.2.0
+tests:
+- No tests (auto formatted)
+marketplaces:
+- marketplacev2

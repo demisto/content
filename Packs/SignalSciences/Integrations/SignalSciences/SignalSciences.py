@@ -11,7 +11,7 @@ USE_SSL = not demisto.params().get('insecure', False)
 handle_proxy()
 
 EMAIL = demisto.params()['Email']
-TOKEN = demisto.params()['Token']
+TOKEN = secret_key = demisto.params().get('cred_token', {}).get('password') or demisto.params()['Token']
 CORPNAME = demisto.params()['corpName']
 FETCH_INTERVAL = demisto.params()['fetch_interval']
 SITES_TO_FETCH = demisto.params().get('sites_to_fetch', None)
@@ -161,7 +161,8 @@ def return_error_message(results_json):
 
 def http_request(method, url, params_dict=None, data=None, use_format_instead_of_raw=False):
     LOG(f'running {method} request with url={url}\nparams={json.dumps(params_dict)}')
-
+    if not TOKEN:
+        raise DemistoException('Token must be provided.')
     headers = {
         'Content-Type': 'application/json',
         'x-api-user': EMAIL,

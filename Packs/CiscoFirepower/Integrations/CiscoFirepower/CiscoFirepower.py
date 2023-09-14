@@ -1,3 +1,5 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 """
 Cisco Firepower Management Center API Integration for Cortex XSOAR (aka Demisto).
 """
@@ -5,8 +7,6 @@ import copy
 from http import HTTPStatus
 from typing import Callable, Dict, List, MutableMapping, MutableSequence, Tuple, Union
 
-import demistomock as demisto
-from CommonServerPython import *  # pylint: disable=redefined-builtin, wildcard-import, unused-wildcard-import
 from CommonServerUserPython import *  # pylint: disable=wildcard-import
 
 

@@ -8,7 +8,7 @@ from requests.exceptions import MissingSchema, InvalidSchema
 import urllib3
 import contextlib
 import traceback
-import xml.etree.ElementTree as ElementTree
+from xml.etree import ElementTree
 import dateparser
 from os import path
 
@@ -870,7 +870,7 @@ def process_single_service_request_definition(res) -> dict:
 
     # For checking each name in field, to ensure the standard keys are not replaced in the context,
     # e.g. there is a field called 'id' in the fields objects
-    standard_key_set = set(key.strip().lower() for key in srd_context)
+    standard_key_set = {key.strip().lower() for key in srd_context}
 
     # Creating a dictionary of Name: Value pairs for fields where name and value fields exist
     fields = {field['Name']: field['Value'] for field in res.get('Fields', []) if
@@ -2799,8 +2799,8 @@ def main():
         params = demisto.params()
         init_globals(params)
         # Username and password from credentials
-        username = params.get('username')
-        password = params.get('password')
+        username = params.get('username_creds', {}).get('identifier') or params.get('username')
+        password = params.get('username_creds', {}).get('password') or params.get('password')
 
         # Get the service API base url
         base_url = params['url']

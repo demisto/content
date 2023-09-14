@@ -4,9 +4,10 @@ from CommonServerPython import *  # noqa: F401
 ''' IMPORTS '''
 
 import json
-import requests
+import urllib3
 import time
 import traceback
+
 
 from enum import Enum
 from typing import Any, Dict
@@ -14,7 +15,7 @@ from datetime import datetime, timedelta, timezone
 import dateutil.parser
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 """Helper function"""
 
@@ -141,8 +142,9 @@ class Client(BaseClient):
         if kwargs.get('method', None) == 'GET' and len(kwargs.get('params', {})) > 0:
             params = kwargs.pop('params')
             suffix = kwargs.pop('url_suffix')
-            suffix += '?{}'.format('&'.join(['{}={}'.format(k, v)
-                                             for (k, v) in params.items()]))
+
+            suffix += '?{}'.format('&'.join([f'{k}={v}'
+                                   for (k, v) in params.items()]))
             kwargs['url_suffix'] = suffix
 
         return super()._http_request(*args, **kwargs)
@@ -168,6 +170,7 @@ class Client(BaseClient):
                 method='GET',
                 url_suffix=f'/api/data/endpoint/Agent/{agent_id}/',
             )
+        return None
 
     def api_call(self, api_method='GET', api_endpoint='/api/version', params={}, json_data={}):
 
@@ -592,6 +595,7 @@ def test_module(client, args):
 def fetch_incidents(client, args):
     last_run = demisto.getLastRun()
 
+
     if not last_run:
         last_run = [{}, {}]
 
@@ -603,6 +607,7 @@ def fetch_incidents(client, args):
 
     max_results = args.get('max_results', None)
     fetch_types = args.get('fetch_types', [])
+
 
     if 'first_fetch' in args and args['first_fetch']:
         days = int(args['first_fetch'])
@@ -1955,6 +1960,7 @@ def hunt_search_hash(client, args):
         for i in filehash:
             args['hash'] = i
             hunt_search_hash(client, args)
+        return None
     else:
         data = client.data_hash_search(filehash=filehash)
         prefetchs = []
@@ -2022,6 +2028,7 @@ def hunt_search_running_process_hash(client, args):
         for i in filehash:
             args['hash'] = i
             hunt_search_running_process_hash(client, args)
+        return None
     else:
         data = client.invest_running_process(filehash=filehash)
         prefetchs = []
@@ -2065,6 +2072,7 @@ def hunt_search_runned_process_hash(client, args):
         for i in filehash:
             args['hash'] = i
             hunt_search_runned_process_hash(client, args)
+        return None
     else:
         data = client.invest_runned_process(filehash=filehash)
         prefetchs = []
@@ -2100,7 +2108,7 @@ def hunt_search_runned_process_hash(client, args):
         )
 
 
-def isolate_endpoint(client, args) -> Dict[str, Any]:
+def isolate_endpoint(client, args) -> dict[str, Any]:
     agentid = args.get('agent_id', None)
     data = client.isolate_endpoint(agentid)
 
@@ -2121,7 +2129,7 @@ def isolate_endpoint(client, args) -> Dict[str, Any]:
     )
 
 
-def deisolate_endpoint(client, args) -> Dict[str, Any]:
+def deisolate_endpoint(client, args) -> dict[str, Any]:
     agentid = args.get('agent_id', None)
     data = client.deisolate_endpoint(agentid)
 
@@ -2260,7 +2268,7 @@ class Telemetry:
         output = self._construct_output(data['results'], client)
 
         # Determines headers for readable output
-        headers = [label for label in output[0].keys()] if len(
+        headers = list(output[0].keys()) if len(
             output) > 0 else []
         readable_output = tableToMarkdown(
             self.title, output, headers=headers, removeNull=True)
@@ -2517,10 +2525,7 @@ class TelemetryBinary(Telemetry):
         for x in results:
             for i in range(0, len(x['names'])):
                 name = x['names'][i]
-                if len(x['paths']) > i:
-                    path = x['paths'][i]
-                else:
-                    path = None
+                path = x['paths'][i] if len(x['paths']) > i else None
 
                 link = None
                 if x['downloaded'] == 0:
@@ -3242,7 +3247,7 @@ def main():
     verify = not demisto.params().get('insecure', False)
     proxy = demisto.params().get('proxy', False)
     base_url = demisto.params().get('url').rstrip('/')
-    api_key = demisto.params().get('apikey')
+    api_key = demisto.params().get('credentials', {}).get('password', '') or demisto.params().get("apikey", '')
 
     try:
         headers = {
@@ -3260,7 +3265,7 @@ def main():
         target_function = get_function_from_command_name(command)
 
         if target_function is None:
-            raise Exception('unknown command : {}'.format(command))
+            raise Exception(f'unknown command : {command}')
 
         args = demisto.args()
         if command == 'fetch-incidents':

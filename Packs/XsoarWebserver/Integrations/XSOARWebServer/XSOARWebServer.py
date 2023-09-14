@@ -1,8 +1,8 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import uuid
 from string import Template
 from bottle import request, route, run
-import demistomock as demisto
-from CommonServerPython import *
 
 
 @route('/hello')

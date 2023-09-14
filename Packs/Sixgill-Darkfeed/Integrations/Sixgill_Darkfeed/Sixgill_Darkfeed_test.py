@@ -188,13 +188,14 @@ expected_ioc_output = [{'value': '9cd46027d63c36e53f4347d43554336c2ea050d38be3ff
                                                   'Actor Name: some_actor\nSource: market_magbo\nSixgill '
                                                   'Feed ID: darkfeed_002\nSixgill Feed Name: compromised_sites\n'
                                                   'Sixgill Post ID: 6e407c41fe6591d591cd8bbf0d105f7c15ed8991\n'
+                                                  'Sixgill Confidence: 90\n'
                                                   'Language: en\n'
                                                   'Indicator ID: indicator--7fc19d6d-2d58-45d6-a410-85554b12aea9\n'
                                                   'External references (e.g. MITRE ATT&CK): None\n',
                                    'sixgillactor': 'some_actor', 'sixgillfeedname': 'compromised_sites',
                                    'sixgillsource': 'market_magbo', 'sixgilllanguage': 'en',
                                    'sixgillposttitle': 'Credit Card Debt Help,       somewebsite.com',
-                                   'sixgillfeedid': 'darkfeed_002',
+                                   'sixgillfeedid': 'darkfeed_002', "sixgillconfidence": 90,
                                    'sixgillpostreference': 'https://portal.cybersixgill.com/#/search?q='
                                                            '_id:6e407c41fe6591d591cd8bbf0d105f7c15ed8991',
                                    'sixgillindicatorid': 'indicator--7fc19d6d-2d58-45d6-a410-85554b12aea9',
@@ -238,6 +239,7 @@ expected_ioc_output = [{'value': '9cd46027d63c36e53f4347d43554336c2ea050d38be3ff
                                                                 'Sixgill Feed Name: compromised_sites\n'
                                                                 'Sixgill Post ID: '
                                                                 '59f08fbf692f84f15353a5e946d2a1cebab92418\n'
+                                                                'Sixgill Confidence: 90\n'
                                                                 'Language: ru\n'
                                                                 'Indicator ID: '
                                                                 'indicator--67b2378f-cbdd-4263-b1c4-668014d376f2\n'
@@ -245,6 +247,7 @@ expected_ioc_output = [{'value': '9cd46027d63c36e53f4347d43554336c2ea050d38be3ff
                                                  'sixgillactor': 'some_actor', 'sixgillfeedname': 'compromised_sites',
                                                  'sixgillsource': 'market_magbo', 'sixgilllanguage': 'ru',
                                                  'sixgillposttitle': 'somewebsite.com', 'sixgillfeedid': 'darkfeed_004',
+                                                 'sixgillconfidence': 90,
                                                  'sixgillpostreference': 'https://portal.cybersixgill.com/#/search?q='
                                                                          '_id:59f08fbf692f84f15353a5e946d2a1cebab92418',
                                                  'sixgillindicatorid':
@@ -297,6 +300,7 @@ expected_ioc_output = [{'value': '9cd46027d63c36e53f4347d43554336c2ea050d38be3ff
                                                                               'compromised_sites\n'
                                                                               'Sixgill Post ID: '
                                                                               'f46cdfc3332d9a04aa63078d82c1e453fd76ba50'
+                                                                              '\nSixgill Confidence: 90'
                                                                               '\nLanguage: en\n'
                                                                               'Indicator ID: indicator--'
                                                                               '6e8b5f57-3ee2-4c4a-9283-8547754dfa09\n'
@@ -307,6 +311,7 @@ expected_ioc_output = [{'value': '9cd46027d63c36e53f4347d43554336c2ea050d38be3ff
                                                                'sixgillsource': 'market_magbo', 'sixgilllanguage': 'en',
                                                                'sixgillposttitle': 'somewebsite.com',
                                                                'sixgillfeedid': 'darkfeed_010',
+                                                               'sixgillconfidence': 90,
                                                                'sixgillpostreference':
                                                                    'https://portal.cybersixgill.com/#/search?q='
                                                                    '_id:f46cdfc3332d9a04aa63078d82c1e453fd76ba50',
@@ -357,12 +362,14 @@ expected_ioc_output = [{'value': '9cd46027d63c36e53f4347d43554336c2ea050d38be3ff
                                                   'Source: market_magbo\nSixgill Feed ID: darkfeed_005\n'
                                                   'Sixgill Feed Name: compromised_sites\n'
                                                   'Sixgill Post ID: c3f266e67f163e1a6181c0789e225baba89212a2\n'
+                                                  'Sixgill Confidence: 60\n'
                                                   'Language: en\nIndicator ID: '
                                                   'indicator--85d3d87b-76ed-4cab-b709-a43dfbdc5d8d\n'
                                                   'External references (e.g. MITRE ATT&CK): None\n',
                                    'sixgillactor': 'some_actor', 'sixgillfeedname': 'compromised_sites',
                                    'sixgillsource': 'market_magbo', 'sixgilllanguage': 'en',
                                    'sixgillposttitle': 'somewebsite.com', 'sixgillfeedid': 'darkfeed_005',
+                                   'sixgillconfidence': 60,
                                    'sixgillpostreference': 'https://portal.cybersixgill.com/#/search?q='
                                                            '_id:c3f266e67f163e1a6181c0789e225baba89212a2',
                                    'sixgillindicatorid': 'indicator--85d3d87b-76ed-4cab-b709-a43dfbdc5d8d',
@@ -398,12 +405,14 @@ expected_ioc_output = [{'value': '9cd46027d63c36e53f4347d43554336c2ea050d38be3ff
                                                   'Source: market_magbo\nSixgill Feed ID: darkfeed_002\n'
                                                   'Sixgill Feed Name: compromised_sites\n'
                                                   'Sixgill Post ID: c3f266e67f163e1a6181c0789e225baba89212a2\n'
+                                                  'Sixgill Confidence: 80\n'
                                                   'Language: en\nIndicator ID: '
                                                   'indicator--85d3d87b-76ed-4cab-b709-a43dfbdc5d8d\n'
                                                   'External references (e.g. MITRE ATT&CK): None\n',
                                    'sixgillactor': 'some_actor', 'sixgillfeedname': 'compromised_sites',
                                    'sixgillsource': 'market_magbo', 'sixgilllanguage': 'en',
                                    'sixgillposttitle': 'somewebsite.com', 'sixgillfeedid': 'darkfeed_002',
+                                   'sixgillconfidence': 80,
                                    'sixgillpostreference': 'https://portal.cybersixgill.com/#/search?q='
                                                            '_id:c3f266e67f163e1a6181c0789e225baba89212a2',
                                    'sixgillindicatorid': 'indicator--85d3d87b-76ed-4cab-b709-a43dfbdc5d8d',
@@ -455,6 +464,7 @@ expected_ioc_output = [{'value': '9cd46027d63c36e53f4347d43554336c2ea050d38be3ff
                                                   "Threat Actor Name: LunarEclipsed\nSource: forum_nulled\n"
                                                   "Sixgill Feed ID: darkfeed_009\nSixgill Feed Name: proxy_ips\n"
                                                   "Sixgill Post ID: 00f74eea142e746415457d0dd4a4fc747add3a1b\n"
+                                                  'Sixgill Confidence: 70\n'
                                                   "Language: en\nIndicator ID: "
                                                   "indicator--2ed98497-cef4-468c-9cee-4f05292b5142\n"
                                                   "External references (e.g. MITRE ATT&CK): "
@@ -470,7 +480,7 @@ expected_ioc_output = [{'value': '9cd46027d63c36e53f4347d43554336c2ea050d38be3ff
                                    'sixgillactor': 'LunarEclipsed', 'sixgillfeedname': 'proxy_ips',
                                    'sixgillsource': 'forum_nulled', 'sixgilllanguage': 'en',
                                    'sixgillposttitle': '✅ 9.7K HTTP/S PROXY LIST (FRESH) ✅',
-                                   'sixgillfeedid': 'darkfeed_009',
+                                   'sixgillfeedid': 'darkfeed_009', 'sixgillconfidence': 70,
                                    'sixgillpostreference': 'https://portal.cybersixgill.com/#/search?q='
                                                            '_id:00f74eea142e746415457d0dd4a4fc747add3a1b',
                                    'sixgillindicatorid': 'indicator--2ed98497-cef4-468c-9cee-4f05292b5142',
@@ -552,6 +562,14 @@ def test_test_module_command(mocker):
 
     from Sixgill_Darkfeed import test_module_command
     test_module_command()
+
+
+def test_filter_confidence(mocker):
+    from Sixgill_Darkfeed import filter_confidence
+    assert True is filter_confidence('all', {"sixgill_confidence": 80})
+    assert True is filter_confidence(60, {"sixgill_confidence": 80})
+    assert True is filter_confidence(80, {"sixgill_confidence": 80})
+    assert False is filter_confidence(80, {"sixgill_confidence": 60})
 
 
 def test_fetch_indicators_command(mocker):

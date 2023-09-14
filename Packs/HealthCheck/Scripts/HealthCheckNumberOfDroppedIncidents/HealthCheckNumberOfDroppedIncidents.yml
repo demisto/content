@@ -12,14 +12,13 @@ comment: Number of dropped incidents
 commonfields:
   id: HealthCheckNumberOfDroppedIncidents
   version: -1
-dockerimage: demisto/python3:3.10.4.29342
+dockerimage: demisto/python3:3.10.11.58677
 enabled: true
 name: HealthCheckNumberOfDroppedIncidents
 outputs:
 - contextPath: NumberOfDroppedIncidents
   description: Number of dropped incidents
 runas: DBotWeakRole
-runonce: false
 script: ''
 scripttarget: 0
 subtype: python3

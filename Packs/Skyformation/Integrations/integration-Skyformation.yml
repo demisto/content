@@ -209,6 +209,5 @@ script:
       description: The email of the user that will be un-suspended in that account
     description: The command will un-suspend user in the configured application by user email. For example if Sales Cloud configured in Skyformation, then this command can un-suspend user in Sales Cloud.
     execution: true
-  runonce: false
   dockerimage: demisto/python:2.7.18.20958
 fromversion: 5.0.0

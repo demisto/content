@@ -1,10 +1,10 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import itertools
 import time
 from datetime import datetime, timedelta
 from typing import Dict, List, Tuple, Optional, Callable
 
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
 from urllib3 import disable_warnings
 
 disable_warnings()

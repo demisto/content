@@ -1,12 +1,11 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import json
 import urllib3
 from copy import deepcopy
 from enum import Enum, EnumMeta
 from time import strptime, struct_time
 from typing import overload
-
-import demistomock as demisto
-from CommonServerPython import *
 
 
 VENDOR_NAME = "Rapid7 Nexpose"  # Vendor name to use for indicators.
@@ -28,6 +27,7 @@ class ScanStatus(Enum):
 
 class FlexibleEnum(EnumMeta):
     """A custom EnumMeta to allow flexible conversion from strings to Enum."""
+
     def __getitem__(self, item: Any):
         try:
             return super().__getitem__(item)
@@ -5357,11 +5357,22 @@ def main():  # pragma: no cover
         command = demisto.command()
         handle_proxy()
 
+        # A workaround for fixing compatibility issues when upgrading existing instances that are < 1.2.0.
+        # ('token' field was converted from type 0 to type 9)
+        token = None
+
+        if params.get("token"):
+            if isinstance(params["token"], str):
+                token = params["token"]
+
+            elif params["token"].get("identifier"):
+                token = params["token"]["identifier"]
+
         client = Client(
             url=params["server"],
             username=params["credentials"].get("identifier"),
             password=params["credentials"].get("password"),
-            token=params.get("token", {}).get("identifier"),
+            token=token,
             verify=not params.get("unsecure")
         )
 

@@ -1,4 +1,3 @@
-enabled: false
 name: ExpanseAggregateAttributionDevice
 comment: Aggregate entries from multiple sources into AttributionDevice
 commonfields:
@@ -9,7 +8,6 @@ args:
   description: Input list.
   isArray: true
 - name: current
-  required: false
   description: Current aggregation state.
   isArray: true
 - name: serial_fields
@@ -52,12 +50,11 @@ outputs:
   description: Number of sessions seen on this device
   type: number
 script: '-'
-system: false
 tags: []
 timeout: '0'
 type: python
 subtype: python3
-dockerimage: demisto/python3:3.10.4.30607
+dockerimage: demisto/python3:3.10.12.63474
 fromversion: 6.0.0
 tests:
 - No tests (auto formatted)

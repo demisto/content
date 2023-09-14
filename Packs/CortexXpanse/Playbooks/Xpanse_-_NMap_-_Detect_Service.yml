@@ -1,0 +1,382 @@
+id: Xpanse - NMap - Detect Service
+version: -1
+contentitemexportablefields:
+  contentitemfields: {}
+name: Xpanse - NMap - Detect Service
+description: Playbook that uses NMap to do a validation scan.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 06574df5-dedf-45fe-8dac-ee83db5625c1
+    type: start
+    task:
+      id: 06574df5-dedf-45fe-8dac-ee83db5625c1
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 95954e95-d689-4021-8953-1795c8f7aa60
+    type: title
+    task:
+      id: 95954e95-d689-4021-8953-1795c8f7aa60
+      version: -1
+      name: Complete
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 5e78366d-61bc-47fd-8142-e06ce4329e84
+    type: condition
+    task:
+      id: 5e78366d-61bc-47fd-8142-e06ce4329e84
+      version: -1
+      name: Is RemoteIP and RemotePort defined?
+      description: Determines if RemoteIp and RemotePort inputs are defined for error checking.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: inputs.RemoteIP
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: inputs.RemotePort
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -20
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 9133fc17-e865-4ddf-8506-ef80c6f02c5e
+    type: playbook
+    task:
+      id: 9133fc17-e865-4ddf-8506-ef80c6f02c5e
+      version: -1
+      name: NMAP - Single Port Scan
+      description: Sub-playbook that conducts a single port Nmap scan and returns the results to the parent playbook.
+      playbookName: NMAP - Single Port Scan
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      NMAPOptions:
+        simple: -Pn --unprivileged
+      RemoteIP:
+        complex:
+          root: inputs.RemoteIP
+      RemotePort:
+        complex:
+          root: inputs.RemotePort
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 959dfb81-aa8e-4723-86b8-d98aca555b26
+    type: title
+    task:
+      id: 959dfb81-aa8e-4723-86b8-d98aca555b26
+      version: -1
+      name: continue
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "11"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -30,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: fea55f84-4992-4c0c-8835-e0508fc603f3
+    type: title
+    task:
+      id: fea55f84-4992-4c0c-8835-e0508fc603f3
+      version: -1
+      name: Set Field
+      description: commands.local.cmd.set.incident
+      type: title
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "29"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: d03b7e17-6b42-44f2-8d1b-1b905b810798
+    type: regular
+    task:
+      id: d03b7e17-6b42-44f2-8d1b-1b905b810798
+      version: -1
+      name: Set service validation grid field
+      description: |-
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  For example:
+        `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
+      scriptName: GridFieldSetup
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      gridfield:
+        simple: xpanseservicevalidation
+      keys:
+        simple: scannum,scandone,scanresult,timestamp,scanstate
+      val1:
+        complex:
+          root: inputs.ScanNumber
+      val2:
+        complex:
+          root: ScanDone
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: "null"
+      val3:
+        complex:
+          root: ScanResult
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: "null"
+      val4:
+        complex:
+          root: NMAP.Scan
+          accessor: Started
+          transformers:
+          - operator: TimeStampToDate
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: "null"
+      val5:
+        complex:
+          root: NMAP.Scan.Hosts.Services
+          accessor: State
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: "null"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 980
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: c2707e61-23a4-42db-8fdb-b91914d9240c
+    type: regular
+    task:
+      id: c2707e61-23a4-42db-8fdb-b91914d9240c
+      version: -1
+      name: Set Xpanse service validation
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      xpanseservicevalidation:
+        simple: '{}'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1405,
+        "width": 860,
+        "x": -30,
+        "y": -160
+      }
+    }
+  }
+inputs:
+- key: RemoteIP
+  value:
+    complex:
+      root: alert
+      accessor: remoteip
+  required: false
+  description: Remote IP address in the alert.
+  playbookInputQuery:
+- key: RemotePort
+  value:
+    complex:
+      root: alert
+      accessor: remoteport
+  required: false
+  description: Remote port number in the alert.
+  playbookInputQuery:
+- key: ScanNumber
+  value: {}
+  required: true
+  description: Scan number in case there are multiple IDs in the parent playbook.
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.8.0

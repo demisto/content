@@ -15,12 +15,12 @@ configuration:
 - defaultvalue: "false"
   display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 - display: Trust any certificate (not secure)
   name: unsecure
-  required: false
   type: 8
+  required: false
 description: Updates alerts in CyberX Central Management
 display: CyberX - Central Manager
 name: CyberX - Central Manager
@@ -40,7 +40,6 @@ script:
     description: Updating the alert
     name: cyberx-update-alert
   dockerimage: demisto/python3-deb:3.9.1.15758
-  runonce: false
   script: ''
   subtype: python3
   type: python

@@ -69,7 +69,7 @@ def test_fetch_events_command(requests_mock, mocker):
     requests_mock.get(
         'https://test.com/security-events/v1/security-events?serverTimestampStart=2023-03-15T14:39:13Z&limit=100',
         json=mock_response)
-    events = fetch_events_command(client, first_fetch='1 day', limit=100)
+    events, _ = fetch_events_command(client, first_fetch='1 day', limit=100)
     for ev in mock_response.get('items'):
         ev['_time'] = ev.get('clientTimestamp')
     expected = [mock_response.get('items')[0]]

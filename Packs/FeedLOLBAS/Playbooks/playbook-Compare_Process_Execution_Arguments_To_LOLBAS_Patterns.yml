@@ -1,0 +1,391 @@
+id: Compare Process Execution Arguments To LOLBAS Patterns
+version: -1
+name: Compare Process Execution Arguments To LOLBAS Patterns
+description: This playbook takes a process name and determines its presence in the LOLBAS repository. It then proceeds to compare the incident command line against known patterns of malicious commands listed in TIM by using LOLBAS feed integration. The playbook outputs results when the similarity between the analyzed command line and the malicious patterns is greater than or equal to the preconfigured StringSimilarity threshold. The playbook offers the flexibility to adjust this threshold through the use of the dedicated playbook input, 'StringSimilarityThreshold'.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 9ba68277-08b1-4fbb-85cb-665ddd45e48b
+    type: start
+    task:
+      id: 9ba68277-08b1-4fbb-85cb-665ddd45e48b
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": -140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: c61b97f4-f754-44fa-882b-796c38ed1b78
+    type: condition
+    task:
+      id: c61b97f4-f754-44fa-882b-796c38ed1b78
+      version: -1
+      name: Does the process name exist in TIM?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: foundIndicators.commands
+                accessor: command
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 790,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: f0c62078-cd49-4a32-83f2-7e1db923d75f
+    type: condition
+    task:
+      id: f0c62078-cd49-4a32-83f2-7e1db923d75f
+      version: -1
+      name: Are the process names and command-lines provided as inputs?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.ProcessName
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.Commandline
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 0
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 42c3975a-5d20-4292-8318-8798842917a0
+    type: title
+    task:
+      id: 42c3975a-5d20-4292-8318-8798842917a0
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 1010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: fa54f32d-9f9d-48dc-8308-561d639a9444
+    type: condition
+    task:
+      id: fa54f32d-9f9d-48dc-8308-561d639a9444
+      version: -1
+      name: Is there a similarity between the incident command-lines and a malicious LOLBAS pattern?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: StringSimilarity
+                accessor: SimilarityScore
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 970,
+          "y": 670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 57dd1ae7-97e2-4f2d-8429-579e3f9363c8
+    type: regular
+    task:
+      id: 57dd1ae7-97e2-4f2d-8429-579e3f9363c8
+      version: -1
+      name: Set malicious argument
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      key:
+        simple: SuspiciousLolbinArguments
+      value:
+        complex:
+          root: StringSimilarity
+          accessor: StringA
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1220,
+          "y": 840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 79be8f6e-0220-4a03-8450-3d727940e032
+    type: regular
+    task:
+      id: 79be8f6e-0220-4a03-8450-3d727940e032
+      version: -1
+      name: Search if process image is part of LOLBAS feed
+      description: |-
+        Searches Cortex XSOAR Indicators.
+
+        Search for XSOAR Indicators and returns the id, indicator_type, value, and score/verdict.
+
+        You can add additional fields from the indicators using the add_field_to_context argument.
+      scriptName: SearchIndicator
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      add_fields_to_context:
+        simple: commands,paths
+      query:
+        complex:
+          root: inputs.ProcessName
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: AlertsToInvestigate.action_process_image_name
+                iscontext: true
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'value:'
+              suffix: {}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 790,
+          "y": 180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: ffd0db6f-a6fa-4c86-814c-3fb87c3d9da8
+    type: regular
+    task:
+      id: ffd0db6f-a6fa-4c86-814c-3fb87c3d9da8
+      version: -1
+      name: Compare incident commandline arguments with LOLBAS malicious patterns?
+      description: This automation calculates the similarity ratio between text and a list of strings and outputs a decimal value between 0.0 and 1.0 (1.0 if the sequences are identical, and 0.0 if they don't have anything in common).
+      scriptName: StringSimilarity
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      similarity_threshold:
+        complex:
+          root: inputs.StringSimilarityThreashold
+      similiarity_threshold:
+        complex:
+          root: inputs.StringSimilarityThreashold
+      string_A:
+        complex:
+          root: inputs.Commandline
+          transformers:
+          - operator: uniq
+      string_B:
+        complex:
+          root: foundIndicators.commands
+          accessor: command
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 970,
+          "y": 510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "2_4_#default#": 0.32,
+      "3_4_#default#": 0.14,
+      "9_4_#default#": 0.23
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1215,
+        "width": 1140,
+        "x": 460,
+        "y": -140
+      }
+    }
+  }
+inputs:
+- key: ProcessName
+  value: {}
+  required: false
+  description: The process names.
+  playbookInputQuery:
+- key: Commandline
+  value: {}
+  required: false
+  description: The command lines.
+  playbookInputQuery:
+- key: StringSimilarityThreashold
+  value:
+    simple: "0.5"
+  required: false
+  description: StringSimilarity automation threshold. The automation will output only the results with a similarity score equal to or greater than the given threshold.
+  playbookInputQuery:
+outputs:
+- contextPath: SuspiciousLolbinArguments
+  description: Command-line arguments that are similar to the compared LOLBAS repository malicious command pattern.
+  type: unknown
+tests:
+- No tests (auto formatted)
+fromversion: 6.9.0

@@ -1,3 +1,5 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 #!/usr/bin/env python2
 # coding=utf-8
 # PEP0263  https://www.python.org/dev/peps/pep-0263/
@@ -26,8 +28,6 @@ from struct import unpack
 import chardet  # type: ignore
 from olefile import OleFileIO, isOleFile
 
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
 
 reload(sys)
 sys.setdefaultencoding('utf8')  # pylint: disable=no-member

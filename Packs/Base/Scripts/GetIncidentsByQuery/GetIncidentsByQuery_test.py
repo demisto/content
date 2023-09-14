@@ -1,5 +1,6 @@
 from GetIncidentsByQuery import build_incidents_query, get_incidents, parse_relative_time, main, \
-    preprocess_incidents_fields_list, get_demisto_datetme_format, get_fields_to_populate_arg, PYTHON_MAGIC
+    preprocess_incidents_fields_list, get_demisto_datetme_format, get_fields_to_populate_arg, PYTHON_MAGIC, \
+    get_comma_sep_list
 
 from CommonServerPython import *
 
@@ -182,3 +183,9 @@ def test_get_fields_to_populate_arg():
     assert get_fields_to_populate_arg(["field1", "grid_field.test1"]) == "field1,grid_field"
     assert get_fields_to_populate_arg(["field1", "field2"]) == "field1,field2"
     assert get_fields_to_populate_arg([]) == ""
+
+
+def test_get_comma_sep_list():
+    split_argument_list = get_comma_sep_list("t1,t2,t3")
+    split_argument_list = [x for x in split_argument_list if len(x) > 0]
+    assert split_argument_list == ["t1", "t2", "t3"]

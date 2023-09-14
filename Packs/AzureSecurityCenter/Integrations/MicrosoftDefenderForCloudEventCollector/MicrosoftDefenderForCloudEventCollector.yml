@@ -1,0 +1,115 @@
+category: Analytics & SIEM
+commonfields:
+  id: Microsoft Defender for Cloud Event Collector
+  version: -1
+configuration:
+- defaultvalue: https://management.azure.com/
+  display: Microsoft Azure Management URL
+  name: server_url
+  type: 0
+  section: Connect
+  required: false
+- displaypassword: Client ID
+  name: client_id
+  required: true
+  hiddenusername: true
+  type: 9
+  section: Connect
+  additionalinfo: Microsoft Defender for Cloud client ID
+- displaypassword: Tenant ID
+  name: tenant_id
+  required: true
+  hiddenusername: true
+  type: 9
+  section: Connect
+  additionalinfo: Microsoft Defender for Cloud Tenant ID
+- displaypassword: Client Secret
+  name: enc_key
+  required: true
+  hiddenusername: true
+  type: 9
+  section: Connect
+  additionalinfo: Microsoft Defender for Cloud Client Secret
+- displaypassword: Certificate Thumbprint
+  name: certificate_thumbprint
+  hiddenusername: true
+  type: 9
+  section: Connect
+  additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
+  required: false
+- additionalinfo: Used for certificate authentication. The private key of the registered certificate.
+  display: Private Key
+  name: private_key
+  type: 14
+  section: Connect
+  required: false
+- displaypassword: Subscription ID to use
+  name: sub_id
+  required: true
+  hiddenusername: true
+  type: 9
+  section: Connect
+- display: First fetch time interval
+  name: first_fetch
+  type: 0
+  defaultvalue: 3 days
+  section: Collect
+  additionalinfo: First time to start fetching alerts from.
+  required: false
+- display: Trust any certificate (not secure)
+  name: unsecure
+  type: 8
+  section: Collect
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  section: Collect
+  required: false
+description: XSIAM collector for Microsoft Defender for Cloud alerts.
+display: Microsoft Defender for Cloud Event Collector
+name: Microsoft Defender for Cloud Event Collector
+script:
+  commands:
+  - arguments:
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Set this argument to True to create events, otherwise the command will only display them.
+      name: should_push_events
+      predefined:
+      - 'true'
+      - 'false'
+      required: true
+    - description: Maximum number of results to return.
+      name: limit
+    description: Lists alerts for the subscription according to the specified filters.
+    name: ms-defender-for-cloud-get-events
+    outputs:
+    - contextPath: MicrosoftDefenderForCloud.Alert.AlertDisplayName
+      description: The display name of the alert.
+      type: string
+    - contextPath: MicrosoftDefenderForCloud.Alert.CompromisedEntity
+      description: The entity on which the incident occurred.
+      type: string
+    - contextPath: MicrosoftDefenderForCloud.Alert.DetectedTimeUtc
+      description: The time the vendor detected the incident.
+      type: date
+    - contextPath: MicrosoftDefenderForCloud.Alert.ReportedSeverity
+      description: The estimated severity of this alert.
+      type: string
+    - contextPath: MicrosoftDefenderForCloud.Alert.ID
+      description: The alert ID.
+      type: string
+  - description: Run this command if for some reason you need to rerun the authentication process.
+    name: ms-defender-for-cloud-auth-reset
+    arguments: []
+  dockerimage: demisto/crypto:1.0.0.72229
+  isfetchevents: true
+  script: '-'
+  subtype: python3
+  type: python
+marketplaces:
+- marketplacev2
+fromversion: 6.8.0
+tests:
+- No tests (auto formatted)

@@ -188,7 +188,7 @@ def translate_text(client, args):
         result['detected_language_code']
     )
 
-    id_ = hashlib.md5(f'{target}-{source}-{text}'.encode('utf-8')).hexdigest()  # nosec
+    id_ = hashlib.md5(f'{target}-{source}-{text}'.encode()).hexdigest()  # nosec
 
     outputs = {
         'GoogleCloudTranslate.TranslateText(val.ID && val.ID==obj.ID)': {
@@ -212,13 +212,14 @@ def main():
     """
         PARSE AND VALIDATE INTEGRATION PARAMS
     """
-    service_account_json = demisto.params().get('service_account_json')
+    service_account_json = demisto.params().get('project_creds', {}).get('password')\
+        or demisto.params().get('service_account_json')
     try:
         service_account = json.loads(service_account_json)
     except Exception:
         return_error('Invalid JSON provided')
 
-    project = demisto.params().get('project', None)
+    project = demisto.params().get('project_creds', {}).get('identifier') or demisto.params().get('project', None)
 
     verify_certificate = not demisto.params().get('insecure', False)
 

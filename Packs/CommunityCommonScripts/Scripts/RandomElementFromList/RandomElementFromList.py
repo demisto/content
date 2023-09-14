@@ -1,7 +1,7 @@
-import random
-
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+import random
+
 
 input_list = argToList(demisto.args().get('value'), ',')
 count = int(demisto.args().get('count', 1))

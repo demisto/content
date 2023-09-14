@@ -13,20 +13,18 @@ configuration:
   type: 9
 - display: Trust any certificate (not secure)
   name: unsecure
-  required: false
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 description: HCL BigFix Patch provides an automated, simplified patching process that is administered from a single console.
 display: BigFix
 name: BigFix
 script:
   commands:
-  - deprecated: false
-    description: Retrieves all the sites
-    execution: false
+  - description: Retrieves all the sites
     name: bigfix-get-sites
     outputs:
     - contextPath: Bigfix.Site
@@ -54,17 +52,11 @@ script:
       description: Global Read Permission available or not.
       type: string
   - arguments:
-    - default: false
-      description: Name of the site. If the site is external or operator then site must be provided
-      isArray: false
+    - description: Name of the site. If the site is external or operator then site must be provided
       name: site_name
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: master
       description: 'Type of the site. One of the following options: external,operator,master,custom'
-      isArray: false
       name: site_type
       predefined:
       - external
@@ -72,10 +64,7 @@ script:
       - master
       - custom
       required: true
-      secret: false
-    deprecated: false
     description: Retrieve single site by name and type
-    execution: false
     name: bigfix-get-site
     outputs:
     - contextPath: Bigfix.Site
@@ -104,10 +93,8 @@ script:
       type: string
   - arguments:
     - auto: PREDEFINED
-      default: false
       defaultValue: master
       description: 'Type of the site. One of the following options: external,operator,master,custom'
-      isArray: false
       name: site_type
       predefined:
       - external
@@ -115,16 +102,9 @@ script:
       - master
       - custom
       required: true
-      secret: false
-    - default: false
-      description: Name of the site. If the site is external or operator then site must be provided
-      isArray: false
+    - description: Name of the site. If the site is external or operator then site must be provided
       name: site_name
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieve all the patches (fixlets) of site
-    execution: false
     name: bigfix-get-patches
     outputs:
     - contextPath: Bigfix.Patch.ID
@@ -171,19 +151,13 @@ script:
       type: string
   - arguments:
     - auto: PREDEFINED
-      default: false
       defaultValue: 'true'
       description: Whether to get endpoint full details of each endpoint or just basic details, such as ID and last reported time. We recommend setting this to false if there are many endpoints to retrieve.
-      isArray: false
       name: get_endpoint_details
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieve all the endpoints (computers)
-    execution: false
     name: bigfix-get-endpoints
     outputs:
     - contextPath: Bigfix.Endpoint
@@ -277,15 +251,10 @@ script:
       description: User name.
       type: string
   - arguments:
-    - default: false
-      description: Computer ID
-      isArray: false
+    - description: Computer ID
       name: computer_id
       required: true
-      secret: false
-    deprecated: false
     description: Retrieve endpoint (computer) details
-    execution: false
     name: bigfix-get-endpoint
     outputs:
     - contextPath: Bigfix.Endpoint
@@ -379,33 +348,20 @@ script:
       description: User name.
       type: string
   - arguments:
-    - default: false
-      description: Name of the site. If the site is external or operator then site must be provided
-      isArray: false
+    - description: Name of the site. If the site is external or operator then site must be provided
       name: site_name
       required: true
-      secret: false
-    - default: false
-      description: Provide ids of computers to deploy the patch. Pass 'all' to deploy to all the computers
+    - description: Provide ids of computers to deploy the patch. Pass 'all' to deploy to all the computers
       isArray: true
       name: computer_ids
       required: true
-      secret: false
-    - default: false
-      description: The Fixlet ID. To use the action script from the original Fixlet or Task Message.
-      isArray: false
+    - description: The Fixlet ID. To use the action script from the original Fixlet or Task Message.
       name: fixlet_id
       required: true
-      secret: false
-    - default: false
-      description: The action ID. The specified action will run on target computers.
-      isArray: false
+    - description: The action ID. The specified action will run on target computers.
       name: action_id
       required: true
-      secret: false
-    deprecated: false
     description: Create an action on BigFix that will run the given action from the given fixlet on target computers.  The computerID parameter takes a comma-separated list of BigFix computer IDs. If no computers are given, the action will be run on the default computers configured on BigFix. If the action should run on all computers set the computerID parameter to all.
-    execution: false
     name: bigfix-deploy-patch
     outputs:
     - contextPath: Bigfix.Action.ID
@@ -427,16 +383,11 @@ script:
       description: Link to action in bigfix
       type: string
   - arguments:
-    - default: false
-      description: Fixlet id
-      isArray: false
+    - description: Fixlet id
       name: id
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'Type of the site. One of the following options: external,operator,master,custom'
-      isArray: false
       name: site_type
       predefined:
       - external
@@ -444,16 +395,9 @@ script:
       - master
       - custom
       required: true
-      secret: false
-    - default: false
-      description: Name of the site. If the site is external or operator then site must be provided
-      isArray: false
+    - description: Name of the site. If the site is external or operator then site must be provided
       name: site_name
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieve patch (fixlet) by id
-    execution: false
     name: bigfix-get-patch
     outputs:
     - contextPath: Bigfix.Patch.ID
@@ -496,26 +440,16 @@ script:
       description: Action Script of the Patch requested.
       type: string
   - arguments:
-    - default: false
-      description: Action ID
-      isArray: false
+    - description: Action ID
       name: action_id
       required: true
-      secret: false
-    deprecated: false
     description: 'Stops and deletes the specified action. Note: You cannot delete actions that are members of a Multiple Action Group. This note applies to HCL BigFix V9.2 and later.'
-    execution: false
     name: bigfix-action-delete
   - arguments:
-    - default: false
-      description: Action ID
-      isArray: false
+    - description: Action ID
       name: action_id
       required: true
-      secret: false
-    deprecated: false
     description: Gets the status of an action against it's targets.
-    execution: false
     name: bigfix-action-status
     outputs:
     - contextPath: Bigfix.Action.ID
@@ -525,38 +459,24 @@ script:
       description: Action Status (e.g Open, Stopped)
       type: string
   - arguments:
-    - default: false
-      description: Action ID
-      isArray: false
+    - description: Action ID
       name: action_id
       required: true
-      secret: false
-    deprecated: false
     description: Stops the specified action.
-    execution: false
     name: bigfix-action-stop
   - arguments:
-    - default: false
-      description: 'Relevance query (example:  names of bes computers)'
-      isArray: false
+    - description: 'Relevance query (example:  names of bes computers)'
       name: relevance
       required: true
-      secret: false
-    deprecated: false
     description: Evaluate a relevance expression and get the result. This runs request is processed through the server to WebReports.
-    execution: false
     name: bigfix-query
     outputs:
     - contextPath: Bigfix.QueryResults
       description: The results of the query
       type: unknown
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3
   type: python
-  dockerimage: demisto/python3:3.10.11.54132
+  dockerimage: demisto/python3:3.10.12.63474
 fromversion: 5.0.0

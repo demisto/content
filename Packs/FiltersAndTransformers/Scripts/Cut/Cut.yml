@@ -30,9 +30,8 @@ args:
   description: 'Comma separated field numbers (e.g.: 1,5,7)'
   isArray: true
 scripttarget: 0
-runonce: false
 runas: DBotWeakRole
 tests:
 - CutTransformerTest
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.10.9.42476
+dockerimage: demisto/python3:3.10.12.63474

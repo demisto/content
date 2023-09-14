@@ -19,9 +19,7 @@ args:
   description: Array to export
   isArray: true
 - name: headers
-  description: Array to hold the file headers in order.  Also excepts a comma separated
-    list.
+  description: Array to hold the file headers in order.  Also excepts a comma separated list.
   isArray: true
 scripttarget: 0
-runonce: false
 fromversion: 5.0.0

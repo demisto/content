@@ -344,7 +344,6 @@ script:
       description: Compromised domains.
       related: ""
     description: Checks if a domain has been compromised.
-  runonce: false
 deprecated: true
 tests:
 - No tests

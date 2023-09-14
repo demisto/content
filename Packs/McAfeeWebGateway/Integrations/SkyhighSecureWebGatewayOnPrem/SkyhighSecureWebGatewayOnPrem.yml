@@ -1,0 +1,236 @@
+category: Network Security
+commonfields:
+  id: Skyhigh Secure Web Gateway (On Prem)
+  version: -1
+configuration:
+- defaultvalue: https://192.168.100.55:4712
+  display: Server URL (e.g., https://192.168.100.55:4712)
+  name: url
+  required: true
+  type: 0
+- display: Username
+  name: credentials
+  required: true
+  type: 9
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+description: Manages the block and allow lists within Skyhigh Secure Web Gateway.
+display: 'Skyhigh Secure Web Gateway (On Prem)'
+name: Skyhigh Secure Web Gateway (On Prem)
+script:
+  commands:
+  - arguments:
+    - description: Filter to be applied on list name.
+      name: name
+      default: true
+    - auto: PREDEFINED
+      predefined:
+      - category
+      - ip
+      - iprange
+      - mediatype
+      - number
+      - regex
+      - string
+      description: Filter to be applied on list type.
+      name: type
+    description: Get all available lists.
+    name: swg-get-available-lists
+    outputs:
+    - contextPath: SWG.List.ID
+      description: List ID.
+      type: Unknown
+    - contextPath: SWG.List.Title
+      description: List title.
+      type: Unknown
+    - contextPath: SWG.List.Type
+      description: List type.
+      type: Unknown
+  - arguments:
+    - description: List ID.
+      name: list_id
+      required: true
+      default: true
+    description: Retrieve a specific list.
+    name: swg-get-list
+    outputs:
+    - contextPath: SWG.List.ListEntries.ListID
+      description: List ID of the entry's list.
+      type: Unknown
+    - contextPath: SWG.List.ListEntries.Name
+      description: Entry name.
+      type: Unknown
+    - contextPath: SWG.List.ListEntries.Description
+      description: Entry description.
+      type: Unknown
+    - contextPath: SWG.List.ListEntries.Position
+      description: Entry position in the list.
+      type: Unknown
+    - contextPath: SWG.List.ID
+      description: List ID.
+      type: Unknown
+    - contextPath: SWG.List.Title
+      description: List title.
+      type: Unknown
+    - contextPath: SWG.List.Type
+      description: List type.
+      type: Unknown
+    - contextPath: SWG.List.Description
+      description: List description.
+      type: Unknown
+  - arguments:
+    - description: List ID.
+      name: list_id
+      required: true
+      default: true
+    - description: Entry position in the table.
+      name: entry_pos
+      required: true
+    description: Retrieve a specific entry from a list.
+    name: swg-get-list-entry
+    outputs:
+    - contextPath: SWG.List.ID
+      description: List ID.
+      type: Unknown
+    - contextPath: SWG.List.ListEntries.ListID
+      description: List ID of the entry's list.
+      type: Unknown
+    - contextPath: SWG.List.ListEntries.Name
+      description: Entry name.
+      type: Unknown
+    - contextPath: SWG.List.ListEntries.Position
+      description: Entry position in the list.
+      type: Unknown
+    - contextPath: SWG.List.ListEntries.Description
+      description: Entry description.
+      type: Unknown
+  - arguments:
+    - description: List ID.
+      name: list_id
+      required: true
+      default: true
+    - description: Entry position in the table.
+      name: entry_pos
+      required: true
+    - description: Entry description.
+      name: description
+    - description: Entry name.
+      name: name
+      required: true
+    description: Insert a new entry to a list.
+    name: swg-insert-entry
+    outputs:
+    - contextPath: SWG.List.ID
+      description: List ID.
+      type: Unknown
+    - contextPath: SWG.List.ListEntries.ListID
+      description: List ID of the entry's list.
+      type: Unknown
+    - contextPath: SWG.List.ListEntries.Name
+      description: Entry name.
+      type: Unknown
+    - contextPath: SWG.List.ListEntries.Position
+      description: Entry position in the list.
+      type: Unknown
+    - contextPath: SWG.List.ListEntries.Description
+      description: Entry description.
+      type: Unknown
+  - arguments:
+    - description: List ID.
+      name: list_id
+      required: true
+      default: true
+    - description: Entry position in the table.
+      name: entry_pos
+      required: true
+    description: Delete entry to from a list.
+    name: swg-delete-entry
+  - arguments:
+    - description: List ID.
+      name: list_id
+      required: true
+      default: true
+    - description: XML configuration to write to the list.
+      name: config
+      required: true
+    description: Overwrites the complete XML configuration of a list.
+    name: swg-modify-list
+    outputs:
+    - contextPath: SWG.List.ID
+      description: List ID.
+      type: Unknown
+    - contextPath: SWG.List.Title
+      description: List title.
+      type: Unknown
+    - contextPath: SWG.List.Type
+      description: List type.
+      type: Unknown
+    - contextPath: SWG.List.Description
+      description: List description.
+      type: Unknown
+    - contextPath: SWG.List.ListEntries.ListID
+      description: List ID of the entry's list.
+      type: Unknown
+    - contextPath: SWG.List.ListEntries.Name
+      description: Entry name.
+      type: Unknown
+    - contextPath: SWG.List.ListEntries.Description
+      description: Entry description.
+      type: Unknown
+    - contextPath: SWG.List.ListEntries.Position
+      description: Entry position in the list.
+      type: Unknown
+  - arguments:
+    - description: Name for the list to be created.
+      name: name
+      default: true
+      required: true
+    - auto: PREDEFINED
+      predefined:
+      - category
+      - ip
+      - iprange
+      - mediatype
+      - number
+      - regex
+      - string
+      defaultValue: string
+      description: Type for the list to be created.
+      name: type
+      required: true
+    description: Create a new list.
+    name: swg-create-list
+    outputs:
+    - contextPath: SWG.List.ID
+      description: List ID.
+      type: Unknown
+    - contextPath: SWG.List.Title
+      description: List title.
+      type: Unknown
+    - contextPath: SWG.List.Type
+      description: List type.
+      type: Unknown
+    - contextPath: SWG.List.Description
+      description: List description.
+      type: Unknown
+  - arguments:
+    - description: List ID.
+      name: list_id
+      default: true
+      required: true
+    description: Delete a list.
+    name: swg-delete-list
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.10.12.68714
+fromversion: 6.8.0
+tests:
+- No tests (auto formatted)

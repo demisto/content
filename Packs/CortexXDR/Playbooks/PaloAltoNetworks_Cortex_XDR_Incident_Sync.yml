@@ -1,8 +1,9 @@
+deprecated: true
 id: Cortex XDR Incident Sync
 version: -1
 name: Cortex XDR Incident Sync
 fromversion: 5.0.0
-description: Compares incidents in Palo Alto Networks Cortex XDR and Cortex XSOAR, and
+description: Deprecated. No available replacement. Compares incidents in Palo Alto Networks Cortex XDR and Cortex XSOAR, and
   updates the incidents appropriately. When an incident is updated in Cortex XSOAR, the XDRSyncScript
   will update the incident in XDR. When an incident is updated in XDR, the XDRSyncScript
   will update the incident fields in Cortex XSOAR and rerun the current playbook.

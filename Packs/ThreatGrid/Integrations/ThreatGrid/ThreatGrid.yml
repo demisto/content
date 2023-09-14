@@ -1085,7 +1085,6 @@ script:
     description: Advanced search that allows searching URLS, Submissions, Samples etc...
 
     deprecated: true
-  runonce: false
   dockerimage: demisto/python3:3.10.9.42476
 tests:
 - No tests (deprecated)

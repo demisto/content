@@ -1,7 +1,7 @@
-from collections import Counter
-
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+from collections import Counter
+
 
 EMAIL_TO_FIELD = 'emailto'
 EMAIL_CC_FIELD = 'emailcc'
