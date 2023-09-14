@@ -154,6 +154,7 @@ if [ -z "$_create_dependencies_zip" ]; then
 fi
 
 source Utils/gitlab_triggers/trigger_build_url.sh
+echo "BUILD_TRIGGER_URL is set to: ${BUILD_TRIGGER_URL}"
 
 curl --request POST \
   --form token="${_ci_token}" \
