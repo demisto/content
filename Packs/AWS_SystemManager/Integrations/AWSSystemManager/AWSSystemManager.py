@@ -9,6 +9,7 @@ from CommonServerPython import *
 # They are not used at runtime, and not exist in the docker image.
 if TYPE_CHECKING:
     from mypy_boto3_ssm.client import SSMClient
+    from mypy_boto3_ssm.literals import ResourceTypeForTaggingType
     from mypy_boto3_ssm.type_defs import (
         DescribeAutomationExecutionsRequestRequestTypeDef,
         DocumentDescriptionTypeDef,
@@ -19,9 +20,23 @@ if TYPE_CHECKING:
         ListDocumentsRequestRequestTypeDef,
     )
 """ CONSTANTS """
-
+RESOURCE_TYPE_MAP: dict[str, 'ResourceTypeForTaggingType'] = {
+    "Maintenance Window": "MaintenanceWindow",
+    "Managed Instance": "ManagedInstance",
+    "Ops Metadata": "OpsMetadata",
+    "Patch Baseline": "PatchBaseline",
+    "Ops Item": "OpsItem",
+    "Association": "Association",
+    "Automation": "Automation",
+    "Document": "Document",
+    "Parameter": "Parameter",
+}
 SERVICE_NAME = "ssm"  # Amazon Simple Systems Manager (SSM).
 DEFAULT_TIMEOUT = 600  # Default timeout for polling commands.
+MAXIMUM_COMMAND_TIMEOUT = (
+    2592000  # Maximum timeout for running commands in ssm (30 days).
+)
+MINIMUM_COMMAND_TIMEOUT = 30  # Minimum timeout for running commands in ssm.
 DEFAULT_INTERVAL_IN_SECONDS = 30  # Interval for polling commands.
 TERMINAL_AUTOMATION_STATUSES = {
     "Success": "The automation completed successfully.",
@@ -30,21 +45,18 @@ TERMINAL_AUTOMATION_STATUSES = {
     "Failed": "The automation didn't complete successfully. This is a terminal state.",
 }
 TERMINAL_COMMAND_STATUSES = {
-    "Success": "The command was received by SSM Agent on all specified or targeted managed nodes and returned\
-        an exit code of zero.\
-        All command invocations have reached a terminal state, and the value of max-errors wasn't reached.\
-        This status doesn't mean the command was successfully processed on all specified or targeted managed nodes.",
+    "Success": "The command completed successfully.",
     "Failed": "The command wasn't successful on the managed node.",
     "Delivery Timed Out": "The command wasn't delivered to the managed node before the total timeout expired.",
-    "Incomplete": "The command was attempted on all managed nodes and one or more of the invocations \
-        doesn't have a value of Success. However, not enough invocations failed for the status to be Failed.",
+    "Incomplete": "The command was attempted on all managed nodes and one or more of the invocations "
+    "doesn't have a value of Success. However, not enough invocations failed for the status to be Failed.",
     "Cancelled": "The command was canceled before it was completed.",
     "Canceled": "The command was canceled before it was completed.",  # AWS typo, British English (canceled)
-    "Rate Exceeded": "The number of managed nodes targeted by the command exceeded the account quota for pending invocations. \
-        The system has canceled the command before executing it on any node.",
-    "Access Denied": "The user or role initiating the command doesn't have access to the targeted resource group. AccessDenied \
-        doesn't count against the parent command's max-errors limit, \
-        but does contribute to whether the parent command status is Success or Failed.",
+    "Rate Exceeded": "The number of managed nodes targeted by the command exceeded the account quota for pending invocations. "
+    "The system has canceled the command before executing it on any node.",
+    "Access Denied": "The user or role initiating the command doesn't have access to the targeted resource group. AccessDenied "
+    "doesn't count against the parent command's max-errors limit, "
+    "but does contribute to whether the parent command status is Success or Failed.",
     "No Instances In Tag": "The tag key-pair value or resource group targeted by the command doesn't match any managed nodes. ",
 }
 
@@ -187,7 +199,9 @@ def format_document_version(document_version: str) -> str:
         >>> print(Formatted version)
         $LATEST
     """
-    return {"latest": "$LATEST", "default": "$DEFAULT"}.get(document_version, document_version)
+    return {"latest": "$LATEST", "default": "$DEFAULT"}.get(
+        document_version, document_version
+    )
 
 
 def validate_args(args: dict[str, Any]) -> NoReturn | None:
@@ -322,13 +336,16 @@ def next_token_command_result(next_token: str, outputs_prefix: str) -> CommandRe
     )
 
 
-def get_automation_execution_status(execution_id: str, ssm_client: "SSMClient") -> str:
+def get_automation_execution(
+    execution_id: str, ssm_client: "SSMClient", only_status: bool = True
+) -> str:
     """Retrieves the status of an AWS Systems Manager Automation execution.
 
     Args:
     ----
         execution_id (str): The unique identifier of the Automation execution.
         ssm_client (SSMClient): An instance of the AWS Systems Manager (SSM) client.
+        only_status (bool): Whether to return only the status or the full response. Defaults to True.
 
     Returns:
     -------
@@ -353,7 +370,11 @@ def get_automation_execution_status(execution_id: str, ssm_client: "SSMClient") 
            - 'CompletedWithFailure',
 
     """
-    return ssm_client.get_automation_execution(AutomationExecutionId=execution_id)["AutomationExecution"]["AutomationExecutionStatus"]
+    response = ssm_client.get_automation_execution(AutomationExecutionId=execution_id)
+    if only_status:
+        return response["AutomationExecution"]["AutomationExecutionStatus"]
+    else:
+        return response["AutomationExecution"]
 
 
 def get_command_status(command_id: str, ssm_client: "SSMClient") -> str:
@@ -425,7 +446,7 @@ def add_tags_to_resource_command(
         CommandResults: readable output only,
     """
     kwargs = {
-        "ResourceType": args["resource_type"],
+        "ResourceType": RESOURCE_TYPE_MAP[args["resource_type"]],
         "ResourceId": args["resource_id"],
         "Tags": [{"Key": args["tag_key"], "Value": args["tag_value"]}],
     }
@@ -441,7 +462,7 @@ def remove_tags_from_resource_command(
     ssm_client: "SSMClient",
 ) -> CommandResults:
     ssm_client.remove_tags_from_resource(
-        ResourceType=args["resource_type"],
+        ResourceType=RESOURCE_TYPE_MAP[args["resource_type"]],
         ResourceId=args["resource_id"],
         TagKeys=[args["tag_key"]],
     )
@@ -450,25 +471,21 @@ def remove_tags_from_resource_command(
     )
 
 
-def list_tags_for_resource_command(
-    args: dict[str, Any],
-    ssm_client: "SSMClient"
-):
-    # Get tags from resource
+def list_tags_for_resource_command(args: dict[str, Any], ssm_client: "SSMClient"):
+    resource_id = args["resource_id"]
     response = ssm_client.list_tags_for_resource(
-        ResourceType=args["resource_type"],
-        ResourceId=args["resource_id"]
+        ResourceType=RESOURCE_TYPE_MAP[args["resource_type"]], ResourceId=resource_id
     )
 
     tags = response["TagList"]
 
-    human_readable = tableToMarkdown(f"Tags for {args['resource_id']}", tags)
-    
+    human_readable = tableToMarkdown(f"Tags for {resource_id}", tags)
+
     command_results = CommandResults(
         outputs_key_field="Key",
         outputs_prefix="AWS.SSM.Tag",
         outputs=tags,
-        readable_output=human_readable
+        readable_output=human_readable,
     )
 
     return command_results
@@ -503,6 +520,7 @@ def list_inventory_command(
         -------
             list of dict containing relevant information.
         """
+
         def _parse_inventory(data: dict[str, Any]) -> dict[str, Any]:
             return {
                 "Instance Id": data.get("InstanceId"),
@@ -513,6 +531,7 @@ def list_inventory_command(
                 "IP address": data.get("IpAddress"),
                 "Resource Type": data.get("ResourceType"),
             }
+
         parsed_entities = []
         for entity in entities:
             entity_content = entity.get("Content", {})
@@ -525,11 +544,13 @@ def list_inventory_command(
         "MaxResults": arg_to_number(args.get("limit", 50)) or 50,
         "Filters": [
             {"Key": "AWS:InstanceInformation.InstanceStatus", "Values": ["active"]}
-        ]
+        ],
     }
     kwargs = update_if_value(args, kwargs, {"next_token": "NextToken"})
     if argToBoolean(args.get("include_inactive_instance")):
-        kwargs["Filters"][0]["Values"].extend(["stopped", "terminated", 'ConnectionLost'])
+        kwargs["Filters"][0]["Values"].extend(
+            ["stopped", "terminated", "ConnectionLost"]
+        )
 
     response = ssm_client.get_inventory(**kwargs)
     command_results = []
@@ -542,7 +563,7 @@ def list_inventory_command(
     entities = response.get("Entities", [])
     # Extract the Data field from the object and add it to the main dictionary, Data contain a dict.
     for item in entities:
-        item["Data"].update(item["Data"].pop("AWS:InstanceInformation", None))
+        item["Data"].update(item["Data"].pop("AWS:InstanceInformation", {}))
         item.update(item.pop("Data"))
 
     command_results.append(
@@ -583,10 +604,29 @@ def list_inventory_entry_command(
     ------
         DemistoException: If an invalid instance ID is provided.
     """
-    type_name = args["type_name"]
+    map_type_name = {
+        "Instance Information": "InstanceInformation",
+        "File": "File",
+        "Process": "Process",
+        "Windows Update": "WindowsUpdate",
+        "Network": "Network",
+        "Patch Summary": "PatchSummary",
+        "Patch Compliance": "PatchCompliance",
+        "Compliance Item": "ComplianceItem",
+        "Instance Detailed Information": "InstanceDetailedInformation",
+        "Service": "Service",
+        "Windows Registry": "WindowsRegistry",
+        "Windows Role": "WindowsRole",
+        "Tag": "Tag",
+        "Resource Group": "ResourceGroup",
+        "Billing Info": "BillingInfo",
+        "Application": "Application",
+        "AWS Components": "AWSComponents",
+    }
+    type_name = map_type_name[args["type_name"]]
     kwargs = {
         "InstanceId": args["instance_id"],
-        "TypeName": f'AWS:{type_name}',
+        "TypeName": f"AWS:{type_name}",
         "MaxResults": arg_to_number(args.get("limit", 50)) or 50,
     }
 
@@ -602,7 +642,7 @@ def list_inventory_entry_command(
         command_results.append(
             next_token_command_result(next_token, "InventoryEntryNextToken"),
         )
-   
+
     command_results.append(
         CommandResults(
             outputs_prefix="AWS.SSM.InventoryEntry",
@@ -836,7 +876,6 @@ def list_documents_command(
     args: dict[str, Any],
     ssm_client: "SSMClient",
 ) -> list[CommandResults]:
-
     """Lists the documents in AWS SSM using the provided SSM client and arguments.
 
     Args:
@@ -868,8 +907,6 @@ def list_documents_command(
     kwargs: "ListDocumentsRequestRequestTypeDef" = {
         "MaxResults": arg_to_number(args.get("limit", 50)) or 50,
     }
-    if (document_type := args.get("document_type")) and document_type != "all":
-        kwargs["DocumentFilterList"] = [{"key": "DocumentType", "value": document_type}]
 
     kwargs = update_if_value(args, kwargs, {"next_token": "NextToken"})
 
@@ -1131,18 +1168,28 @@ def run_automation_execution_command(
             continue_to_poll=True,
             args_for_next_run=args,
         )
-    status = get_automation_execution_status(execution_id, ssm_client)
+    automation_execution = get_automation_execution(
+        execution_id, ssm_client, only_status=False
+    )
+    status = automation_execution["AutomationExecutionStatus"]
     if status in TERMINAL_AUTOMATION_STATUSES:
+        if FailureMessage := automation_execution.get("FailureMessage"):
+            readable_output = (
+                f"Execution {execution_id} failed with message: {FailureMessage}"
+            )
+        else:
+            readable_output = f"{status}, {TERMINAL_AUTOMATION_STATUSES[status]}"
         return PollResult(  # if execution not in progress, return the status and end the polling loop
-            response=CommandResults(
-                readable_output=TERMINAL_AUTOMATION_STATUSES[status],
-            ),
+            response=CommandResults(readable_output=readable_output),
             continue_to_poll=False,
         )
+
     return PollResult(
         partial_result=CommandResults(
-            readable_output=f"Execution {execution_id} is in progress",
-        ),
+            readable_output=f"Execution {execution_id} is in progress."
+        )
+        if argToBoolean(args["print_polling_message"])
+        else None,
         response=None,
         continue_to_poll=True,
         args_for_next_run=args,
@@ -1182,11 +1229,11 @@ def cancel_automation_execution_command(
     include_polling = argToBoolean(args.get("include_polling", False))
 
     if not argToBoolean(args["first_run"]):
-        status = get_automation_execution_status(automation_execution_id, ssm_client)
+        status = get_automation_execution(automation_execution_id, ssm_client)
         if status in TERMINAL_AUTOMATION_STATUSES:  # STOP POLLING
             return PollResult(
                 response=CommandResults(
-                    readable_output=TERMINAL_AUTOMATION_STATUSES[status],
+                    readable_output=f"{status}, {TERMINAL_AUTOMATION_STATUSES[status]}",
                 ),
                 continue_to_poll=False,
             )
@@ -1259,7 +1306,9 @@ def list_commands_command(
     kwargs: "ListCommandsRequestRequestTypeDef" = {
         "MaxResults": arg_to_number(args.get("limit", 50)) or 50,
     }
-    kwargs = update_if_value(args, kwargs, {"next_token": "NextToken", "command_id": "CommandId"})
+    kwargs = update_if_value(
+        args, kwargs, {"next_token": "NextToken", "command_id": "CommandId"}
+    )
 
     response = ssm_client.list_commands(**kwargs)
     response = convert_datetime_to_iso(response)
@@ -1310,24 +1359,45 @@ def run_command_command(args: dict[str, Any], ssm_client: "SSMClient") -> PollRe
         if status in TERMINAL_COMMAND_STATUSES:
             return PollResult(
                 response=CommandResults(
-                    readable_output=TERMINAL_COMMAND_STATUSES[status],
+                    readable_output=f"{status}, {TERMINAL_COMMAND_STATUSES[status]}",
                 ),
                 continue_to_poll=False,
             )
-        else:
-            return PollResult(
-                partial_result=CommandResults(
-                    readable_output=f"Command {command_id} is {status}",
-                ),
-                continue_to_poll=True,
-                args_for_next_run=args,
-                response=None,
+        #  if command not in TERMINAL_COMMAND_STATUSES, continue polling
+        if argToBoolean(args["print_polling_message"]):
+            readable_output = CommandResults(
+                readable_output=f"Command {command_id} is {status}"
             )
-
+        else:
+            readable_output = None
+        return PollResult(
+            partial_result=readable_output,
+            continue_to_poll=True,
+            args_for_next_run=args,
+            response=None,
+        )
+    tag_key_map = {
+        "Instance Ids": "InstanceIds",
+        "Tag Key": "tag-key",
+        "Resource Group": "resource-groups",
+    }
     kwargs = {
         "DocumentName": args["document_name"],
-        "InstanceIds": argToList(args["instance_ids"]),
+        "Targets": [
+            {
+                "Key": tag_key_map[args["target_key"]],
+                "Values": argToList(args["target_values"]),
+            }
+        ],
     }
+
+    if command_timeout := arg_to_number(args.get("command_timeout")):
+        if MAXIMUM_COMMAND_TIMEOUT < command_timeout < MINIMUM_COMMAND_TIMEOUT:
+            raise DemistoException(
+                f"Command timeout must be between {MINIMUM_COMMAND_TIMEOUT} and {MAXIMUM_COMMAND_TIMEOUT} seconds."
+            )
+        kwargs["TimeoutSeconds"] = command_timeout
+
     if document_version := args.get("document_version"):
         kwargs["DocumentVersion"] = format_document_version(document_version)
     input_to_output_keys = {
@@ -1377,7 +1447,7 @@ def cancel_command_command(args: dict[str, Any], ssm_client: "SSMClient") -> Pol
         if status in TERMINAL_COMMAND_STATUSES:  # STOP POLLING
             return PollResult(
                 response=CommandResults(
-                    readable_output=TERMINAL_COMMAND_STATUSES[status],
+                    readable_output=f"{status}, {TERMINAL_COMMAND_STATUSES[status]}",
                 ),
                 continue_to_poll=False,
             )

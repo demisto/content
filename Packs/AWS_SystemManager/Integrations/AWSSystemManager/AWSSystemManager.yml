@@ -96,21 +96,21 @@ script:
     - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       name: roleSessionDuration
     - auto: PREDEFINED
-      description: |-
-        Specifies the type of resource for tagging.
-        Note: The ManagedInstance type for this API operation is for on-premises managed nodes.
-      name: resource_type
       required: true
       predefined:
       - Association
       - Automation
       - Document
-      - MaintenanceWindow
-      - ManagedInstance
-      - OpsItem
-      - OpsMetadata
-      - PatchBaseline
+      - Maintenance Window
+      - Managed Instance
+      - Ops Item
+      - Ops Metadata
+      - Patch Baseline
       - Parameter
+      description: |-
+        Specifies the type of resource for tagging.
+        Note: The ManagedInstance type for this API operation is for on-premises managed nodes.
+      name: resource_type
     - description: |-
          'The resource ID to be tagged.
           Note: The format of the id depends on the selected resource type (e.g.. MaintenanceWindow: mw-012345abcde, PatchBaseline: pb-012345abcde).'
@@ -167,11 +167,11 @@ script:
       - Association
       - Automation
       - Document
-      - MaintenanceWindow
-      - ManagedInstance
-      - OpsItem
-      - OpsMetadata
-      - PatchBaseline
+      - Maintenance Window
+      - Managed Instance
+      - Ops Item
+      - Ops Metadata
+      - Patch Baseline
       - Parameter
     - description: |-
        'The ID of the resource to remove tags.
@@ -218,11 +218,11 @@ script:
       - Association
       - Automation
       - Document
-      - MaintenanceWindow
-      - ManagedInstance
-      - OpsItem
-      - OpsMetadata
-      - PatchBaseline
+      - Maintenance Window
+      - Managed Instance
+      - Ops Item
+      - Ops Metadata
+      - Patch Baseline
       - Parameter
     - description: |-
              'The ID of the resource to list tags.
@@ -270,12 +270,12 @@ script:
     - description: The token for the next set of items to return. (Received this token from a previous call).
       name: next_token
     - auto: PREDEFINED
-      description: Determines whether to include inactive instances in the query results.
+      description: Determines whether to include inactive instances in the query results. (if is true the command use a filter to get also the instance with the status Stopped, Terminated, ConnectionLost)
       name: include_inactive_instance
       predefined:
-      - true
-      - false
-      defaultValue: false
+      - 'true'
+      - 'false'
+      defaultValue: 'false'
     description: Query inventory information. This includes the managed node status, such as Stopped or Terminated.
     name: aws-ssm-inventory-list
     outputs:
@@ -356,23 +356,23 @@ script:
       required: true
     - auto: PREDEFINED
       predefined:
-      - InstanceInformation
+      - Instance Information
       - File
       - Process
-      - WindowsUpdate
+      - Windows Update
       - Network
-      - PatchSummary
-      - PatchCompliance
-      - ComplianceItem
-      - InstanceDetailedInformation
+      - Patch Summary
+      - Patch Compliance
+      - Compliance Item
+      - Instance Detailed Information
       - Service
-      - WindowsRegistry
-      - WindowsRole
+      - Windows Registry
+      - Windows Role
       - Tag
-      - ResourceGroup
-      - BillingInfo
+      - Resource Group
+      - Billing Info
       - Application
-      - AWSComponents
+      - AWS Components
       description: The type of inventory item to get information for.
       name: type_name
       required: true
@@ -1305,20 +1305,6 @@ script:
       name: limit
     - description: The token for the next set of items to return. (Received this token from a previous call.)
       name: next_token
-    - auto: PREDEFINED
-      description: The type of the document. If not specified, the default is 'all'.
-      name: document_type
-      predefined:
-      - all
-      - ApplicationConfiguration
-      - ApplicationConfigurationSchema
-      - Automation
-      - ChangeCalendar
-      - Command
-      - Package
-      - Policy
-      - Session
-      defaultValue: all
     description: Returns all Systems Manager (SSM) documents in the current Amazon Web Services account and Amazon Web Services Region.
     name: aws-ssm-document-list
     outputs:
@@ -1589,12 +1575,20 @@ script:
       defaultValue: 30
     - description: 'A key-value map of execution parameters, which match the declared parameters in the Automation runbook. For example: InstanceId:i-dummy,Role:Admin,User.'
       name: parameters
+      type: keyValue
     - description: The ID of the execution. This is for the polling to work, not for the user.
       hidden: true
       name: execution_id
     - description: The timeout in seconds until polling ends.
       name: timeout
       defaultValue: '600'
+    - auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      description: print the polling message to the war room every time it polls for status.
+      name: print_polling_message
+      defaultValue: 'false'
     description: Initiates execution of an Automation runbook.
     polling: true
     name: aws-ssm-automation-execution-run
@@ -1655,6 +1649,13 @@ script:
     - description: The timeout in seconds until polling ends.
       name: timeout
       defaultValue: '600'
+    - auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      description: print the polling message to the war room every time it polls for status.
+      name: print_polling_message
+      defaultValue: 'false'
     polling: true
     description: Stop an Automation execution.
     name: aws-ssm-automation-execution-cancel
@@ -2146,10 +2147,24 @@ script:
     - description: The name of the Amazon Web Services Systems Manager document (SSM document) to run. Can get from the aws-ssm-document-list command. This can be a public document or a custom document. To run a shared document belonging to another account, specify the document Amazon Resource Name (ARN).
       name: document_name
       required: true
-    - description: The IDs of the managed nodes where the command should run. Can get from the aws-ssm-inventory-get command. (Can specify up to 50 IDs.).
-      name: instance_ids
+    - auto: PREDEFINED
+      predefined:
+        - Instance Ids
+        - Tag Key
+        - Resource Group
+      description: |-
+          User-defined criteria for sending commands that target managed nodes that meet the criteria.
+          For example:
+           - target_key=InstanceIds target_values=<instance-id-1>,<instance-id-2>.
+           - target_key=tag:<my-tag-key> target_values=<my-tag-value-1>,<my-tag-value-2>.
+           - target_key=resource-groups:Name target_values=<resource-group-name>.
+      name: target_key
       required: true
-      isArray: true
+    - description: |-
+          User-defined criteria that maps to `target_key` argument.
+          Note: Depending on the type of target, the maximum number of values for a key might be lower than the global maximum of 50.           
+      name: target_values
+      required: true
     - description: The SSM document version to use in the request. Can specify $DEFAULT, $LATEST, or a specific version number.
       name: document_version
     - description: The maximum number of managed nodes that are allowed to run the command at the same time. can specify a number such as 10 or a percentage such as 10%. 
@@ -2173,8 +2188,17 @@ script:
       name: command_id
       hidden: true
     - description: The timeout in seconds until polling ends.
-      name: timeout
+      name: polling_timeout
       defaultValue: '600'
+    - description: "If this time is reached and the command hasn’t already started running, it won’t run. Valid Range: Minimum value of 30 seconds. Maximum value of 2592000 seconds (30 days)."
+      name: command_timeout
+    - auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      description: print the polling message to the war room every time it polls for status.
+      name: print_polling_message
+      defaultValue: 'false'
     polling: true
     description: Runs commands on one or more managed nodes.
     name: aws-ssm-command-run
@@ -2325,6 +2349,13 @@ script:
     - description: The timeout in seconds until polling ends.
       name: timeout
       defaultValue: '600'
+    - auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      description: print the polling message to the war room every time it polls for status.
+      name: print_polling_message
+      defaultValue: 'false'
     polling: true
     description: Attempts to cancel the command specified by the Command ID. There is no guarantee that the command will be terminated and the underlying process stopped.
     name: aws-ssm-command-cancel

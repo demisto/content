@@ -13,7 +13,7 @@ from AWSSystemManager import (
     format_parameters_arguments,
     get_association_command,
     get_automation_execution_command,
-    get_automation_execution_status,
+    get_automation_execution,
     get_command_status,
     get_document_command,
     list_inventory_command,
@@ -29,6 +29,7 @@ from AWSSystemManager import (
     run_command_command,
     update_if_value,
     validate_args,
+    list_tags_for_resource_command
 )
 from pytest_mock import MockerFixture
 
@@ -86,6 +87,9 @@ class MockClient:
 
     def cancel_command(self, **kwargs) -> dict:
         pass
+    
+    def list_tags_for_resource(self, **kwargs) -> dict:
+        pass
 
 
 def util_load_json(path: str) -> dict:
@@ -98,10 +102,20 @@ def util_load_json(path: str) -> dict:
 @pytest.mark.parametrize(
     ("args", "kwargs", "input_to_output_keys", "expected_results"),
     [
-        pytest.param({"a": 1}, {}, {"a": "A"}, {"A": 1}, id="add args to empty  kwargs"),
-        pytest.param({}, {"b": 2}, {}, {"b": 2}, id="keep kwargs the same, when no args"),
-        pytest.param({"a": 1}, {"b": 2}, {"a": "A"}, {"A": 1, "b": 2}, id="add args to kwargs that already have values"),
-        pytest.param({},{},{},{}, id="empty args and kwargs"),
+        pytest.param(
+            {"a": 1}, {}, {"a": "A"}, {"A": 1}, id="add args to empty  kwargs"
+        ),
+        pytest.param(
+            {}, {"b": 2}, {}, {"b": 2}, id="keep kwargs the same, when no args"
+        ),
+        pytest.param(
+            {"a": 1},
+            {"b": 2},
+            {"a": "A"},
+            {"A": 1, "b": 2},
+            id="add args to kwargs that already have values",
+        ),
+        pytest.param({}, {}, {}, {}, id="empty args and kwargs"),
     ],
 )
 def test_update_if_value(
@@ -287,11 +301,11 @@ def test_convert_datetime_to_iso(
     assert convert_datetime_to_iso(data) == expected_response
 
 
-def test_get_automation_execution_status(mocker: MockerFixture) -> None:
+def test_get_automation_execution(mocker: MockerFixture) -> None:
     """Given:
         a mocker with a patched `get_automation_execution` method that returns an automation execution status of "Success",
     When:
-        the `get_automation_execution_status` function is called with a test execution_id and a MockClient,
+        the `get_automation_execution` function is called with a test execution_id and a MockClient,
     Then:
         it should return the expected automation execution status, which is "Success".
     """
@@ -300,7 +314,7 @@ def test_get_automation_execution_status(mocker: MockerFixture) -> None:
         "get_automation_execution",
         return_value={"AutomationExecution": {"AutomationExecutionStatus": "Success"}},
     )
-    assert get_automation_execution_status("test_id", MockClient()) == "Success"
+    assert get_automation_execution("test_id", MockClient()) == "Success"
 
 
 def test_get_command_status(mocker: MockerFixture) -> None:
@@ -341,7 +355,7 @@ def test_add_tags_to_resource_command(mocker: MockerFixture) -> None:
     """
     args = {
         "resource_type": "test_type",
-        "resource_id": "test_id",
+        "resource_id": "Association",
         "tag_key": "test_key",
         "tag_value": "test_value",
     }
@@ -351,7 +365,54 @@ def test_add_tags_to_resource_command(mocker: MockerFixture) -> None:
         return_value={"ResponseMetadata": {"HTTPStatusCode": 200}},
     )
     response = add_tags_to_resource_command(args, MockClient())
-    assert response.readable_output == "Tags successfully added to resource test_id."
+    assert response.readable_output == "Tags successfully added to resource Association."
+
+
+def test_list_tags_success(mocker: MockerFixture):
+    """
+    Given:
+        - list_tags_for_resource_command function
+        - Valid args including resource type and ID
+        - Mock SSM client returns list of tags
+    
+    When:
+        - Calling list_tags_for_resource_command
+    
+    Then:
+        - Ensure client called with expected args
+        - CommandResults should contain outputs matching tags
+        - Human readable output is formatted as expected
+    """
+    mocker.patch.object(
+        MockClient,
+        "list_tags_for_resource",
+        return_value={
+        'TagList': [
+            {'Key': 'Env', 'Value': 'Production'},
+            {'Key': 'Role', 'Value': 'WebServer'}
+        ]
+    },
+    )
+    
+    args = {
+        'resource_type': 'Managed Instance',
+        'resource_id': 'i-1234abcd',
+        "tag_key": "test",
+        "tag_value": "test",
+    }
+    
+    result = list_tags_for_resource_command(args, MockClient())
+    
+    MockClient.list_tags_for_resource.assert_called_with(
+        ResourceType='ManagedInstance', ResourceId='i-1234abcd'
+    )
+    
+    assert result.outputs == [
+        {'Key': 'Env', 'Value': 'Production'},
+        {'Key': 'Role', 'Value': 'WebServer'}
+    ]
+    
+    assert 'Tags for i-1234abcd' in result.readable_output
 
 
 def test_remove_tags_from_resource_command(mocker: MockerFixture) -> None:
@@ -371,8 +432,8 @@ def test_remove_tags_from_resource_command(mocker: MockerFixture) -> None:
           "Tag test_key removed from resource test_id successfully."
     """
     args = {
-        "resource_type": "test_type",
-        "resource_id": "test_id",
+        "resource_type": "Association",
+        "resource_id": "resource_id",
         "tag_key": "test_key",
     }
     mocker.patch.object(
@@ -413,14 +474,13 @@ def test_list_inventory_command(mocker: MockerFixture) -> None:
     """
     mock_response: dict = util_load_json("test_data/get_inventory_response.json")
     mocker.patch.object(MockClient, "get_inventory", return_value=mock_response)
-    res = list_inventory_command({}, MockClient())
+    res = list_inventory_command({"include_inactive_instance": False}, MockClient())
 
     assert res[0].outputs == mock_response["Entities"]
     assert res[0].readable_output == (
         "### AWS SSM Inventory\n"
         "|Agent version|Computer Name|IP address|Id|Instance Id|Platform Name|Platform Type|Resource Type|\n"
         "|---|---|---|---|---|---|---|---|\n"
-        "|  |  |  | i-test_1 |  |  |  |  |\n"
         "| agent_version | computer_name | ip_address | i-test_2 | i-test_2 | Ubuntu | Linux | resource_type |\n"
         "|  |  |  | i-test_3 | i-test_3 |  |  |  |\n"
         "| agent_version | computer_name | ip_address | i-test_4 | i-test_4 | Ubuntu | Linux | resource_type |\n"
@@ -450,7 +510,9 @@ def test_list_inventory_command_with_next_token_response(mocker: MockerFixture) 
     mock_response: dict = util_load_json("test_data/get_inventory_response.json")
     mock_response["NextToken"] = "test_token"
     mocker.patch.object(MockClient, "get_inventory", return_value=mock_response)
-    response: list[CommandResults] = list_inventory_command({}, MockClient())
+    response: list[CommandResults] = list_inventory_command(
+        {"include_inactive_instance": False}, MockClient()
+    )
 
     to_context = response[0].to_context()
     assert to_context["EntryContext"] == {
@@ -491,23 +553,26 @@ def test_list_inventory_entry_command(mocker: MockerFixture) -> None:
 
     args = {
         "instance_id": "i-0a00aaa000000000a",
-        "type_name": "test_type_name",
+        "type_name": "File",
     }
     response = list_inventory_entry_command(args, MockClient())
 
     mock_list_inventory_entry_request.assert_called_with(
         InstanceId=args["instance_id"],
-        TypeName=args["type_name"],
+        TypeName="AWS:File",
         MaxResults=50,
     )
 
     assert response[0].outputs == mock_response
     assert response[0].readable_output == (
         "### AWS SSM Inventory Entry\n"
-        "|Agent version|Computer Name|IP address|Instance Id|Platform Name|Platform Type|Resource Type|\n"
-        "|---|---|---|---|---|---|---|\n"
-        "| agent_version | computer_name | ip_address | instance_id | Ubuntu | Linux | resource_type |\n"
-        "| agent_version | computer_name | ip_address | instance_id | Ubuntu | Linux | resource_type |\n"
+        "|AgentType|AgentVersion|ComputerName|InstanceId|InstanceStatus|IpAddress|PlatformName|PlatformType|PlatformVersion|"
+        "ResourceType|\n"
+        "|---|---|---|---|---|---|---|---|---|---|\n"
+        "| agent_type | agent_version | computer_name | instance_id | Stopped | ip_address | Ubuntu | Linux | 20.04 |"
+        " resource_type |\n"
+        "| agent_type | agent_version | computer_name | instance_id | Stopped | ip_address | Ubuntu | Linux | 20.04 |"
+        " resource_type |\n"
     )
 
 
@@ -760,22 +825,26 @@ def test_list_commands_command(mocker: MockerFixture) -> None:
 @pytest.mark.parametrize(
     ("status", "expected_message"),
     [
-        ("Success", "The automation completed successfully."),
-        (
+        pytest.param(
+            "Success",
+            "Success, The automation completed successfully.",
+            id="success",
+        ),
+        pytest.param(
             "Failed",
-            "The automation didn't complete successfully. This is a terminal state.",
+            "Failed, The automation didn't complete successfully. This is a terminal state.",
+            id="failed",
         ),
-        ("Cancelled", "The automation was stopped by a requester before it completed."),
-        (
+        pytest.param(
+            "Cancelled",
+            "Cancelled, The automation was stopped by a requester before it completed.",
+            id="cancelled",
+        ),
+        pytest.param(
             "TimedOut",
-            "A step or approval wasn't completed before the specified timeout period.",
+            "TimedOut, A step or approval wasn't completed before the specified timeout period.",
+            id="timed_out",
         ),
-    ],
-    ids=[
-        "status is Success",
-        "status is Failed",
-        "status is Cancelled",
-        "status is TimedOut",
     ],
 )
 def test_run_automation_execution_command(
@@ -823,22 +892,26 @@ def test_run_automation_execution_command(
 @pytest.mark.parametrize(
     ("status", "expected_message"),
     [
-        ("Success", "The automation completed successfully."),
-        (
+        pytest.param(
+            "Success",
+            "Success, The automation completed successfully.",
+            id="status is Success",
+        ),
+        pytest.param(
             "Failed",
-            "The automation didn't complete successfully. This is a terminal state.",
+            "Failed, The automation didn't complete successfully. This is a terminal state.",
+            id="status is Failed",
         ),
-        ("Cancelled", "The automation was stopped by a requester before it completed."),
-        (
+        pytest.param(
+            "Cancelled",
+            "Cancelled, The automation was stopped by a requester before it completed.",
+            id="status is Cancelled",
+        ),
+        pytest.param(
             "TimedOut",
-            "A step or approval wasn't completed before the specified timeout period.",
+            "TimedOut, A step or approval wasn't completed before the specified timeout period.",
+            id="status is TimedOut",
         ),
-    ],
-    ids=[
-        "status is Success",
-        "status is Failed",
-        "status is Cancelled",
-        "status is TimedOut",
     ],
 )
 def test_cancel_automation_execution_command(
@@ -871,7 +944,7 @@ def test_cancel_automation_execution_command(
     )
     response: CommandResults = cancel_automation_execution_command(args, MockClient())
 
-    assert response.readable_output == "Cancellation command was sent successful."
+    assert response.readable_output == "Cancellation command was sent successfully."
 
     args_to_next_run = response.scheduled_command._args
     assert args_to_next_run == {
@@ -890,14 +963,22 @@ def test_cancel_automation_execution_command(
 @pytest.mark.parametrize(
     ("status", "expected_message"),
     [
-        ("Failed", "The command wasn't successful on the managed node."),
-        ("Cancelled", "The command was canceled before it was completed."),
-        (
+        pytest.param(
+            "Failed",
+            "Failed, The command wasn't successful on the managed node.",
+            id="status is Failed",
+        ),
+        pytest.param(
+            "Cancelled",
+            "Cancelled, The command was canceled before it was completed.",
+            id="status is Cancelled",
+        ),
+        pytest.param(
             "Delivery Timed Out",
-            "The command wasn't delivered to the managed node before the total timeout expired.",
+            "Delivery Timed Out, The command wasn't delivered to the managed node before the total timeout expired.",
+            id="status is Delivery Timed Out",
         ),
     ],
-    ids=["status is Failed", "status is Cancelled", "status is TimedOut"],
 )
 def test_run_command_command(
     mocker: MockerFixture,
@@ -906,7 +987,8 @@ def test_run_command_command(
 ) -> None:
     args = {
         "document_name": "AWS",
-        "instance_ids": "i-1234567890abcdef0,i-1234567890abcdef1",
+        "target_key": "Instance Ids",
+        "target_values": "i-1234567890abcdef0,i-1234567890abcdef1",
         "polling": True,
     }
     mock_response: dict = util_load_json("test_data/run_command_response.json")
@@ -930,7 +1012,8 @@ def test_run_command_command(
     args_to_next_run = result.scheduled_command._args
     assert args_to_next_run == {
         "document_name": "AWS",
-        "instance_ids": "i-1234567890abcdef0,i-1234567890abcdef1",
+        "target_key": "Instance Ids",
+        "target_values": "i-1234567890abcdef0,i-1234567890abcdef1",
         "polling": True,
         "command_id": "command_id_test",
         "hide_polling_output": True,
@@ -943,14 +1026,22 @@ def test_run_command_command(
 @pytest.mark.parametrize(
     ("status", "expected_message"),
     [
-        ("Failed", "The command wasn't successful on the managed node."),
-        ("Cancelled", "The command was canceled before it was completed."),
-        (
+        pytest.param(
+            "Failed",
+            "Failed, The command wasn't successful on the managed node.",
+            id="status is Failed",
+        ),
+        pytest.param(
+            "Cancelled",
+            "Cancelled, The command was canceled before it was completed.",
+            id="status is Cancelled",
+        ),
+        pytest.param(
             "Delivery Timed Out",
-            "The command wasn't delivered to the managed node before the total timeout expired.",
+            "Delivery Timed Out, The command wasn't delivered to the managed node before the total timeout expired.",
+            id="status is Delivery Timed Out",
         ),
     ],
-    ids=["status is Failed", "status is Cancelled", "status is TimedOut"],
 )
 def test_cancel_command_command(
     mocker: MockerFixture,
