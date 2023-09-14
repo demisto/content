@@ -372,8 +372,7 @@ script:
       hidden: true
       defaultValue: '0'
       required: true
-    description: "Submit a new scan action. Scan actions values are: PAUSE, RESUME, STOP, AUTHENTICATE, and CANCEL.
-     Relevant when the scan status is Running. In case the action is Stop/ Cancel, the status of the scan should be Queued/ Pending/ Running/ Provisioning."
+    description: "Submit a new scan action. Scan actions values are: PAUSE, RESUME, STOP, AUTHENTICATE, and CANCEL. Relevant when the scan status is Running. In case the action is Stop/ Cancel, the status of the scan should be Queued/ Pending/ Running/ Provisioning."
     execution: false
     polling: true
     name: app-sec-scan-action-submit
