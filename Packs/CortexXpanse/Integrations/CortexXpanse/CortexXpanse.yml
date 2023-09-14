@@ -399,7 +399,7 @@ script:
       - resolved_contested_asset
       - resolved_remediated_automatically
       - resolved
-    - description: Comma-separated list of strings of the business units
+    - description: Comma-separated list of strings of the business units.
       name: business_units_list
     - description: A date in the format 2019-12-31T23:59:00. Only incidents that were created on or before the specified date/time will be retrieved.
       name: lte_creation_time
@@ -686,6 +686,8 @@ script:
   script: ''
   subtype: python3
   type: python
+defaultmapperin: Xpanse - Incoming Mapper
+defaultclassifier: Xpanse - Classifier
 fromversion: 6.5.0
 tests:
 - CortexXpanse_Test

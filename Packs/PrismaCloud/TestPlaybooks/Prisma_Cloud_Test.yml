@@ -193,7 +193,7 @@ tasks:
       - "6"
     scriptarguments:
       filters:
-        simple: alert.status=open,policy.remediable=true,cloud.type=gcp,policy.type=config
+        simple: alert.status=open,policy.remediable=true
       limit:
         simple: "1"
     separatecontext: false
@@ -201,7 +201,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
+          "x": 1120,
           "y": 375
         }
       }
@@ -226,7 +226,6 @@ tasks:
     nexttasks:
       "yes":
       - "7"
-      - "16"
       - "26"
     separatecontext: false
     conditions:
@@ -251,7 +250,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
+          "x": 1120,
           "y": 545
         }
       }
@@ -286,7 +285,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 910,
           "y": 720
         }
       }
@@ -328,7 +327,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 910,
           "y": 895
         }
       }
@@ -367,7 +366,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 910,
           "y": 1075
         }
       }
@@ -402,7 +401,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 910,
           "y": 1245
         }
       }
@@ -451,7 +450,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 910,
           "y": 1420
         }
       }
@@ -486,7 +485,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 910,
           "y": 1595
         }
       }
@@ -521,7 +520,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 910,
           "y": 1770
         }
       }
@@ -570,83 +569,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 910,
           "y": 1945
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "16":
-    id: "16"
-    taskid: e7c6a9bb-1352-4d50-802e-68222a227c81
-    type: regular
-    task:
-      id: e7c6a9bb-1352-4d50-802e-68222a227c81
-      version: -1
-      name: prisma-cloud-remediation-command-list
-      description: Gets remediation command list details for the given alerts or policy. Either policy ID or alert IDs must be provided. When no absolute time nor relative time arguments are provided, default time range is all times.
-      script: '|||prisma-cloud-remediation-command-list'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "19"
-    scriptarguments:
-      limit:
-        simple: "5"
-      policy_id:
-        simple: ${PrismaCloud.Alert.policy.policyId}
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 910,
-          "y": 720
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "19":
-    id: "19"
-    taskid: 95cbbef1-80c3-477d-8d28-2c22ecfbbd6b
-    type: condition
-    task:
-      id: 95cbbef1-80c3-477d-8d28-2c22ecfbbd6b
-      version: -1
-      name: Verify Outputs
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "4"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: PrismaCloud.AlertRemediation.[0].alertId
-            iscontext: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 910,
-          "y": 895
         }
       }
     note: false
@@ -883,12 +807,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: PrismaCloud.Network.Connection.[0].from
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: PrismaCloud.Network.Connection.[0].to
+              simple: PrismaCloud.Network.Connection
             iscontext: true
     continueonerrortype: ""
     view: |-
@@ -1229,7 +1148,7 @@ tasks:
       limit:
         simple: "5"
       repository:
-        simple: prashmp/iac-samples
+        simple: kyle9021/testing-iac
       source_types:
         simple: Github
     separatecontext: false
@@ -1407,7 +1326,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 910,
           "y": 2120
         }
       }
@@ -1442,7 +1361,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 910,
           "y": 2295
         }
       }
@@ -1491,7 +1410,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 910,
           "y": 2470
         }
       }
@@ -1508,8 +1427,8 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 2660,
-        "width": 3010,
-        "x": 480,
+        "width": 2580,
+        "x": 910,
         "y": 50
       }
     }
