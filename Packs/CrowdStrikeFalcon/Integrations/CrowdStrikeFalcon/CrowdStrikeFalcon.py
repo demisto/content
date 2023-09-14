@@ -670,7 +670,9 @@ def create_json_iocs_list(
         expiration: str | None = None,
         applied_globally: bool | None = None,
         host_groups: list[str] | None = None,
-        tags: list[str] | None = None) -> list[dict]:
+        tags: list[str] | None = None,
+        file_name: str | None = None,
+) -> list[dict]:
     """
     Get a list of iocs values and create a list of Json objects with the iocs data.
     This function is used for uploading multiple indicator with same arguments with different values.
@@ -701,6 +703,7 @@ def create_json_iocs_list(
             applied_globally=applied_globally,
             host_groups=host_groups,
             tags=tags,
+            metadata=assign_params(filename=file_name)
         ))
 
     return iocs_list
@@ -1567,6 +1570,7 @@ def update_custom_ioc(
         source: str | None = None,
         description: str | None = None,
         expiration: str | None = None,
+        file_name: str | None = None,
 ) -> dict:
     """
     Update an IOC
@@ -1579,9 +1583,9 @@ def update_custom_ioc(
             source=source,
             description=description,
             expiration=expiration,
+            metadata=assign_params(filename=file_name)
         )]
     }
-
     return http_request('PATCH', '/iocs/entities/indicators/v1', json=payload)
 
 
@@ -2852,6 +2856,7 @@ def upload_custom_ioc_command(
         applied_globally: bool | None = None,
         host_groups: list[str] | None = None,
         tags: list[str] | None = None,
+        file_name: str | None = None,
 ) -> list[dict]:
     """
     :param ioc_type: The type of the indicator.
@@ -2900,6 +2905,7 @@ def update_custom_ioc_command(
         source: str | None = None,
         description: str | None = None,
         expiration: str | None = None,
+        file_name: str | None = None,
 ) -> dict:
     """
     :param ioc_id: The ID of the indicator to update.
@@ -2909,6 +2915,7 @@ def update_custom_ioc_command(
     :param source: The source where this indicator originated.
     :param description: A meaningful description of the indicator.
     :param expiration: The date on which the indicator will become inactive.
+    :param file_name: The file name associated with the indicator.
     """
 
     raw_res = update_custom_ioc(
@@ -2919,6 +2926,7 @@ def update_custom_ioc_command(
         source,
         description,
         expiration,
+        file_name,
     )
     handle_response_errors(raw_res)
     iocs = raw_res.get('resources', [])

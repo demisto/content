@@ -1078,6 +1078,7 @@ script:
       name: source
     - description: A meaningful description of the indicator. Limited to 200 characters.
       name: description
+    
     deprecated: true
     description: Deprecated. Use the cs-falcon-upload-custom-ioc command instead.
     name: cs-falcon-upload-ioc
@@ -1408,6 +1409,8 @@ script:
     - description: List of tags to apply to the indicator.
       isArray: true
       name: tags
+    - description: File name to include when updating a custom IOC.
+      name: file_name
     description: Uploads an indicator for CrowdStrike to monitor.
     name: cs-falcon-upload-custom-ioc
     outputs:
@@ -1488,6 +1491,8 @@ script:
       name: source
     - description: A meaningful description of the indicator. Limited to 200 characters.
       name: description
+    - description: File name to include when updating a custom IOC.
+      name: file_name
     description: Updates an indicator for CrowdStrike to monitor.
     name: cs-falcon-update-custom-ioc
     outputs:
