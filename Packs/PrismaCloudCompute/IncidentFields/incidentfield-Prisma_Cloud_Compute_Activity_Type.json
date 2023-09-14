@@ -31,7 +31,7 @@
     "systemAssociatedTypes": [
         "Prisma Cloud Compute Audit",
         "Prisma Cloud Compute Audit v2"
-    ],,
+    ],
     "threshold": 72,
     "type": "shortText",
     "unmapped": false,
