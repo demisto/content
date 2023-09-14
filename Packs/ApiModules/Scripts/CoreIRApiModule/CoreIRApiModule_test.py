@@ -3237,6 +3237,42 @@ def test_list_risky_users_or_hosts_command(
 
 
 @pytest.mark.parametrize(
+    "command, id_arg",
+    [
+        (
+            "user",
+            "user_id"
+        ),
+        (
+            "host",
+            "host_id"
+        ),
+    ],
+)
+def test_list_risky_users_or_hosts_command_specific_id_score_zero(mocker, command, id_arg):
+    """
+    Given:
+    - user / host with score = 0
+
+    When:
+    - executing the list_risky_users_or_host_command
+
+    Then:
+    - make sure a message is returned saying that the host/user is not risky
+    """
+    client = CoreClient("test", {})
+
+    mocker.patch.object(
+        CoreClient, "risk_score_user_or_host", return_value={"reply": {"score": 0}}
+    )
+
+    result = list_risky_users_or_host_command(client=client, command=command, args={id_arg: "test"})
+    assert not result.outputs
+    assert result.readable_output == f"The {id_arg} test is not risky"
+
+
+
+@pytest.mark.parametrize(
     "command ,id_",
     [
         ('user', "user_id"),
