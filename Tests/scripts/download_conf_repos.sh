@@ -102,6 +102,8 @@ echo ${DEMISTO_LIC_PATH} > demisto_lic_path
 DEMISTO_PACK_SIGNATURE_UTIL_PATH="./signDirectory"
 echo ${DEMISTO_PACK_SIGNATURE_UTIL_PATH} > demisto_pack_sig_util_path
 
+CI_SERVER_HOST =${CI_SERVER_HOST:-code.pan.run}
+
 clone_repository_with_fallback_branch "${CI_SERVER_HOST}" "gitlab-ci-token" "${CI_JOB_TOKEN}" "xsoar/content-test-conf" "${CI_COMMIT_BRANCH}" 3 10 "master"
 
 cp ./content-test-conf/secrets_build_scripts/google_secret_manager_handler.py ./Tests/scripts
