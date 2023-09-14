@@ -1,5 +1,6 @@
 {
     "action": "link",
+    "packID": "",
     "enabled": true,
     "existingEventsFilters": [
         [
@@ -123,7 +124,7 @@
             }
         ]
     ],
-    "scriptName": "",
+    "scriptName": 0,
     "searchClosed": true,
     "system": false,
     "toServerVersion": "",
