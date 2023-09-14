@@ -533,7 +533,6 @@ xsoar_ng_server_ga:
       variables:
         CLOUD_MACHINES_TYPE: "nightly"
         GCS_LOCKS_PATH: "content-locks/locks-xsoar-ng-nightly"
-      timeout: 20 hours
   variables:
     CLOUD_MACHINES_TYPE: "build"
     INSTANCE_ROLE: "XSIAM"
@@ -552,6 +551,7 @@ xsoar_ng_server_ga:
   needs:
     - job: xsoar-prepare-testing-bucket
       optional: true
+  timeout: 20 hours
 
 
 test-upload-flow:
