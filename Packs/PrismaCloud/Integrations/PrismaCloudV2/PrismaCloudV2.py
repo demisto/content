@@ -360,9 +360,8 @@ def change_timestamp_to_datestring_in_dict(readable_response: dict) -> None:
     """
     for field in TIME_FIELDS:
         if epoch_value := readable_response.get(field):
-            if epoch_value == -1:  # we are not converting it to date because it means no time is provided
-                continue
-            readable_response[field] = timestamp_to_datestring(epoch_value, DATE_FORMAT)
+            # a value of -1 means that it never happened, so we leave the field empty
+            readable_response[field] = timestamp_to_datestring(epoch_value, DATE_FORMAT) if epoch_value != -1 else None
 
 
 def convert_date_to_unix(date_str: str) -> int:
@@ -1437,15 +1436,16 @@ def alert_remediate_command(client: Client, args: Dict[str, Any]) -> CommandResu
         error_value = status.get('subject', '')
         failure_reason = str(status.get('i18nKey', '')).replace('_', ' ')
 
-        if de.res.status_code == 406:
-            raise DemistoException(f'Remediation failed for alert {alert_id}.\n'
-                                   f'Failure reason: {failure_reason}.\nError value: {error_value}', exception=de) from de
-
         readable_response = {'alertId': alert_id, 'successful': False, 'failureReason': failure_reason, 'errorValue': error_value}
-        readable_output = tableToMarkdown(f'Remediation For Alert {alert_id}:',
+        readable_output = tableToMarkdown(f'Remediation Failed For Alert {alert_id}:',
                                           readable_response,
                                           removeNull=True,
                                           headerTransform=pascalToSpace)
+        if de.res.status_code == 406:
+            return_error(message=f'Remediation Failed For Alert {alert_id}.\n'
+                                 f'Failure reason: {failure_reason}.\nError value: {error_value}',
+                         error=de,
+                         outputs={'PrismaCloud.AlertRemediation(val.alertId === obj.alertId)': readable_response})
 
     command_results = CommandResults(
         outputs_prefix='PrismaCloud.AlertRemediation',

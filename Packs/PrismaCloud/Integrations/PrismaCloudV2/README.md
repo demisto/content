@@ -1865,7 +1865,7 @@ Get resource details.
 
 ### prisma-cloud-resource-list
 ***
-Get resource lists.
+Returns all the resource lists. Maps to the Resource Lists under Settings > Resource Lists in the Console UI.
 
 
 #### Base Command
@@ -1965,7 +1965,7 @@ Get resource lists.
 
 ### prisma-cloud-user-roles-list
 ***
-Get user roles lists.
+Retrieves user roles. Maps to Settings > Access Control > Roles in the Console UI.
 
 
 #### Base Command
@@ -2121,7 +2121,7 @@ Get user roles lists.
 
 ### prisma-cloud-users-list
 ***
-Get users lists.
+Lists all users and service accounts for your tenant. Maps to Settings > Access Control > Users in the Console UI.
 
 
 #### Base Command

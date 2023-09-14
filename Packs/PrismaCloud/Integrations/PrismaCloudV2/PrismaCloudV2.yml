@@ -971,7 +971,7 @@ script:
       predefined:
       - 'true'
       - 'false'
-    description: Get resource lists.
+    description: Returns all the resource lists. Maps to the Resource Lists under Settings > Resource Lists in the Console UI.
     name: prisma-cloud-resource-list
     outputs:
     - contextPath: PrismaCloud.ResourceList.id
@@ -1012,7 +1012,7 @@ script:
       predefined:
       - 'true'
       - 'false'
-    description: Get user roles lists.
+    description: Retrieves user roles. Maps to Settings > Access Control > Roles in the Console UI.
     name: prisma-cloud-user-roles-list
     outputs:
     - contextPath: PrismaCloud.UserRoles.id
@@ -1073,7 +1073,7 @@ script:
       predefined:
       - 'true'
       - 'false'
-    description: Get users lists.
+    description: Lists all users and service accounts for your tenant. Maps to Settings > Access Control > Users in the Console UI.
     name: prisma-cloud-users-list
     outputs:
     - contextPath: PrismaCloud.Users.email
