@@ -338,7 +338,7 @@ def next_token_command_result(next_token: str, outputs_prefix: str) -> CommandRe
 
 def get_automation_execution(
     execution_id: str, ssm_client: "SSMClient", only_status: bool = True
-) -> str:
+) -> str | dict:
     """Retrieves the status of an AWS Systems Manager Automation execution.
 
     Args:
@@ -1096,6 +1096,17 @@ def list_automation_executions_command(
     return command_results
 
 
+def validate_target_arguments(args: dict[str, Any]) -> None:
+    if args.get("target_parameter_name") and not args.get("target_key"):
+        raise DemistoException("You must provide a target_key when specifying a target_parameter_name.")
+    if args.get("target_key") and not args.get("target_parameter_name"):
+        raise DemistoException("You must provide a target_parameter_name when specifying a target_key.")
+    if args.get("target_values") and not args.get("target_parameter_name"):
+        raise DemistoException("You must provide a target_parameter_name when specifying a target_values.")
+    if args.get("target_key") and not args.get("target_values"):
+        raise DemistoException("You must provide a target_values when specifying a target_key.")
+
+
 @polling_function(
     name="aws-ssm-automation-execution-run",
     interval=arg_to_number(
@@ -1133,6 +1144,7 @@ def run_automation_execution_command(
     execution_id = args.get("execution_id")
 
     if not execution_id:  # if this is the first time the function is called
+        #  ---start handling kwargs---
         tag_key = args.get("tag_key")
         tag_value = args.get("tag_value")
         kwargs = {
@@ -1144,22 +1156,30 @@ def run_automation_execution_command(
                 else {}
             ),
         }
-        if document_version := args.get("document_version"):
-            kwargs["DocumentVersion"] = format_document_version(document_version)
         input_to_output_keys = {
             "client_token": "ClientToken",
             "max_concurrency": "MaxConcurrency",
             "max_error": "MaxErrors",
+            "target_parameter_name": "TargetParameterName"
         }
         kwargs = update_if_value(args, kwargs, input_to_output_keys)
+        validate_target_arguments(args)
+        if document_version := args.get("document_version"):
+            kwargs["DocumentVersion"] = format_document_version(document_version)
         if parameters := args.get("parameters"):
             kwargs["Parameters"] = format_parameters_arguments(parameters)
-        execution_id = ssm_client.start_automation_execution(**kwargs)[
-            "AutomationExecutionId"
-        ]
-        args[
-            "execution_id"
-        ] = execution_id  # needed for the polling and is `hidden: true` in the yml file.
+        if target_key := args.get("target_key"):
+            map_target_key = {
+                "Parameter Values" : "ParameterValues",
+                "Tag Key" : "Tag Key",
+                "Resource Group": "ResourceGroup"
+            }
+            kwargs["Targets"] = [{"Key": map_target_key[target_key], "Values": [args["target_values"]]}]
+        #  ---end handling kwargs---
+
+        execution_id = ssm_client.start_automation_execution(**kwargs)["AutomationExecutionId"]
+        # needed for the polling and is `hidden: true` in the yml file.
+        args["execution_id"] = execution_id
         return PollResult(
             partial_result=CommandResults(
                 readable_output=f"Execution {args['execution_id']} is in progress",

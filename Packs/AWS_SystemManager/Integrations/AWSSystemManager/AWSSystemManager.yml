@@ -1573,7 +1573,7 @@ script:
     - description: The interval in seconds between each poll.
       name: interval_in_seconds
       defaultValue: 30
-    - description: 'A key-value map of execution parameters, which match the declared parameters in the Automation runbook. For example: InstanceId:i-dummy,Role:Admin,User.'
+    - description: 'A key-value map of execution parameters, which match the declared parameters in the Automation runbook. For example: Role:Admin,User. Note: to run on instance(s) use the target_parameter_name argument instead of specifying instances here, e.g. target_parameter_name=InstanceIds.'
       name: parameters
       type: keyValue
     - description: The ID of the execution. This is for the polling to work, not for the user.
@@ -1589,6 +1589,22 @@ script:
       description: print the polling message to the war room every time it polls for status.
       name: print_polling_message
       defaultValue: 'false'
+    - description: The name of the parameter used as the target resource for the rate-controlled execution. Required if you specify target_key and target_values arguments. For example, instanceIds, LambdaRoleArn.
+      name: target_parameter_name
+    - auto: PREDEFINED
+      predefined:
+      - Parameter Values
+      - Tag Key
+      - Resource Group
+      description: User-defined criteria for sending commands that target managed nodes that meet the criteria. Required if you specify target_parameter_name argument.
+      name: target_key
+    - description: |-
+         User-defined criteria that maps to target_key.
+         For example:
+          - target_key=ResourceGroup target_values=MyResourceGroup.
+          - target_key=TagKey target_values=<my-tag-key-1>,<my-tag-key-2>
+          Note: Depending on the type of target, the maximum number of values for a key might be lower than the global maximum of 50.
+      name: target_values
     description: Initiates execution of an Automation runbook.
     polling: true
     name: aws-ssm-automation-execution-run
@@ -2161,8 +2177,8 @@ script:
       name: target_key
       required: true
     - description: |-
-          User-defined criteria that maps to `target_key` argument.
-          Note: Depending on the type of target, the maximum number of values for a key might be lower than the global maximum of 50.           
+          The value of target_values is determined by what is provided in the "target_key" argument.
+          Note: the maximum number of values for a key might be lower than the global maximum of 50.           
       name: target_values
       required: true
     - description: The SSM document version to use in the request. Can specify $DEFAULT, $LATEST, or a specific version number.
