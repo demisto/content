@@ -1280,7 +1280,7 @@ def get_remote_data_command(client: Client, args: dict, params: dict):
     if fetch_alert:
         demisto.debug(f'Pulling alerts from incident {inc_id} !')
         inc_alert_count = int(response['alertCount'])
-        if inc_alert_count < max_fetch_alerts:
+        if inc_alert_count <= max_fetch_alerts:
             alerts = fetch_alerts_related_incident(client, inc_id, inc_alert_count)
             demisto.debug(f'{len(alerts)} alerts pulled !')
             response['alerts'] = alerts
