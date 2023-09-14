@@ -26,7 +26,7 @@ configuration:
   required: false
 - display: Client certificate (.cer)
   name: client_cert
-  type: 12
+  type: 14
   required: false
 - display: Client certificate key (.key)
   name: client_cert_key
