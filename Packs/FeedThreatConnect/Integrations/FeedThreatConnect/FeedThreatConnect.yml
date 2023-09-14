@@ -193,9 +193,10 @@ name: ThreatConnect Feed
 script:
   commands:
   - arguments:
-    - description: |
+    - description: |-
         Comma-separated list of owners to fetch indicators from. (If
         not specified will retrieve only indicators owned by the account. If you supply this argument, it overwrites the "Owners" parameter.)
+        .
       name: owners
     - defaultValue: '50'
       description: The maximum number of indicators to retrieve.
@@ -236,7 +237,7 @@ script:
     name: tc-get-indicators
   - description: Gets available indicators owners.
     name: tc-get-owners
-  dockerimage: demisto/python3:3.10.12.68714
+  dockerimage: demisto/python3:3.10.13.73190
   feed: true
   runonce: false
   script: '-'
