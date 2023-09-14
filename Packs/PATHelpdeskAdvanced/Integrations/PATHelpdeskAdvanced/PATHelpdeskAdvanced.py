@@ -2,8 +2,7 @@ import contextlib
 from json import JSONDecodeError
 from pathlib import Path
 from pprint import pformat
-from typing import Literal, NamedTuple
-from collections.abc import Callable
+from typing import Callable, Literal, NamedTuple
 from collections.abc import Sequence
 from requests import Response
 
@@ -12,11 +11,12 @@ from CommonServerPython import *  # noqa: F401
 from CommonServerUserPython import *  # noqa
 
 VENDOR = "HelpdeskAdvanced"
-
+OPERATORS = ("eq", "gt", "lt", "ge", "le", "sw", "nw")
 FILTER_CONDITION_REGEX = re.compile(
-    r"\A\"(?P<key>.*?)\" (?P<op>eq|gt|lt|ge|lt|sw|ne) (?P<value>(?:\".*?\"|null))\Z"
+    rf"\A\"(?P<key>.*?)\" (?P<op>{'|'.join(OPERATORS)}) (?P<value>(?:\".*?\"|null))\Z"
 )
 DATE_VALUE_REGEX = re.compile(r"/Date\((\d+)\)/")
+HTML_H_TAG_REGEX = re.compile(r"<h\d>(.*?)<\/h\d>", flags=re.S)
 
 
 class Field:
@@ -193,12 +193,12 @@ class Client(BaseClient):
                 raise RequestNotSuccessfulError(response, attempted_action)
             return response_body
 
-        except JSONDecodeError as e:
+        except JSONDecodeError:
             if error_parts := parse_html_h_tags(response.text):
                 raise DemistoException(
                     ". ".join(error_parts), res=response
                 )  # TODO decide
-            raise ValueError(f"could not parse json from {response.text}") from e
+            raise ValueError(f"could not parse json from {response.text}")
 
     def __init__(
         self,
@@ -215,9 +215,9 @@ class Client(BaseClient):
         self.request_token: str | None = None
         self.token_expiry_utc: datetime | None = None
 
-        self._login()  # sets request_token and token_expiry_utc
+        self._reuse_or_create_token()
 
-    def _login(self) -> None:
+    def _reuse_or_create_token(self) -> None:
         # should only be called from __init__
         def generate_new_token() -> dict:
             return self.http_request(
@@ -732,7 +732,16 @@ def list_users_command(client: Client, args: dict) -> CommandResults:
     )
 
 
-HTML_H_TAG_REGEX = re.compile(r"<h\d>(.*?)<\/h\d>", flags=re.S)
+def list_groups_command(client: Client, args: dict) -> CommandResults:
+    response = client.list_groups(**args)
+    response = convert_response_dates(response)
+
+    return CommandResults(
+        outputs=response["data"],
+        outputs_prefix=f"{VENDOR}.Group",
+        outputs_key_field=ID.hda_name,
+        raw_response=response,  # TODO HR fields
+    )
 
 
 def parse_html_h_tags(html_text: str) -> list[str]:
@@ -742,15 +751,16 @@ def parse_html_h_tags(html_text: str) -> list[str]:
 commands: dict[str, Callable] = {
     "hda-create-ticket": create_ticket_command,
     "hda-list-tickets": list_tickets_command,
-    "hda-add-ticket-comment": add_ticket_comment_command,
-    "hda-change-ticket-status": change_ticket_status_command,
-    "hda-add-ticket-attachment": add_ticket_attachment_command,
     "hda-list-ticket-attachments": list_ticket_attachments_command,
+    "hda-add-ticket-attachment": add_ticket_attachment_command,
+    "hda-add-ticket-comment": add_ticket_comment_command,
     "hda-list-ticket-statuses": list_ticket_statuses_command,
+    "hda-change-ticket-status": change_ticket_status_command,
     "hda-list-ticket-priorities": list_ticket_priorities_command,
     "hda-list-ticket-sources": list_ticket_sources_command,
     "hda-get-ticket-history": get_ticket_history_command,
     "hda-list-users": list_users_command,
+    "hda-list-groups": list_groups_command,
 }
 
 
