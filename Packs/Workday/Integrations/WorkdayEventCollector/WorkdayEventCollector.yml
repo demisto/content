@@ -7,7 +7,7 @@ commonfields:
   version: -1
 configuration:
 - name: base_url
-  display: Server URL (e.g. https://WORKDAY-HOST/ccx/api/v1/TENANT-NAME)
+  display: Server URL (e.g. https://WORKDAY-HOST/ccx/api/privacy/v1/TENANT-NAME)
   required: true
   defaultvalue:
   type: 0
