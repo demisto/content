@@ -2672,9 +2672,9 @@ def fetch_incidents():
                 # GREATER than the last configured scan time, to prevent duplicates.
                 filter = f"{filter} >'{last_scan_time}'"
         fetch_limit = current_fetch_info_detections.get('limit') or INCIDENTS_PER_FETCH
-        if fetch_limit > 500:
-            # TODO Will need to handle another way, since this can cause breaking changes
-            raise DemistoException('IOM cannot fetch more than 500 incidents at a time')
+        # if fetch_limit > 500:
+        #     # TODO Will need to handle another way, since this can cause breaking changes
+        #     raise DemistoException('IOM cannot fetch more than 500 incidents at a time')
         # Default filter for first fetch
         fetch_query = demisto.params().get('iom_fetch_query')
         validate_iom_fetch_query(iom_fetch_query=fetch_query)
@@ -2782,7 +2782,7 @@ def fetch_incidents():
     return incidents + detections + idp_detections + iom_config_incidents + ioa_event_incidents
 
 
-# Get local timezone, and then parse it to UTC timezone, in the format 2023-08-27T11:46:46-03:00.
+# def ioa_events_to_incidents
 
 def validate_iom_fetch_query(iom_fetch_query: str) -> None:
     demisto.debug(f'Validating IOM {iom_fetch_query=}')
@@ -2956,7 +2956,7 @@ def iom_ids_pagination(filter: str, api_limit: int, iom_next_token: str | None,
     while continue_pagination:
         demisto.debug(f'Doing IOM pagination with the arguments: {filter=}, {api_limit=}, {iom_new_next_token=},'
                       f'{fetch_limit=}')
-        iom_resource_ids, iom_new_next_token = get_iom_ids_for_fetch(filter=filter, iom_next_token=iom_next_token,
+        iom_resource_ids, iom_new_next_token = get_iom_ids_for_fetch(filter=filter, iom_next_token=iom_new_next_token,
                                                                      limit=min(api_limit, fetch_limit - total_incidents_count))
         fetched_iom_events.extend(iom_resource_ids)
         total_incidents_count += len(iom_resource_ids)
@@ -2987,7 +2987,7 @@ def get_iom_ids_for_fetch(filter: str, iom_next_token: str | None = None,
         next_token=iom_next_token
     )
     demisto.debug(f'IOM {query_params=}')
-    raw_response = http_request('GET', '/detects/queries/iom/v2', params=query_params)
+    raw_response = http_request(method='GET', url_suffix='/detects/queries/iom/v2', params=query_params)
     resource_ids = raw_response.get('resources', [])
     pagination_obj = demisto.get(raw_response, 'meta.pagination', {})
     demisto.debug(f'{pagination_obj=}')
