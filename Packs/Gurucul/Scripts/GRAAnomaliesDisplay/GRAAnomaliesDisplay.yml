@@ -3,7 +3,6 @@ commonfields:
   version: -1
 name: GRAAnomaliesDisplay
 script: '-'
-system: false
 type: python
 tags:
 - dynamic-section
@@ -12,8 +11,7 @@ enabled: true
 scripttarget: 0
 subtype: python3
 timeout: 900ns
-runonce: false
-dockerimage: demisto/python3:3.10.10.47713
+dockerimage: demisto/python3:3.10.12.63474
 runas: DBotWeakRole
 fromversion: 6.0.0
 tests:

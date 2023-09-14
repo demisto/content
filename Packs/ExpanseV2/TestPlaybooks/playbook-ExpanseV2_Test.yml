@@ -1688,11 +1688,6 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: Domain.DomainStatus
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
               simple: Domain.NameServers
             iscontext: true
       - - operator: isNotEmpty
@@ -2530,11 +2525,6 @@ tasks:
           left:
             value:
               simple: Domain.ExpirationDate
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Domain.DomainStatus
             iscontext: true
       - - operator: isNotEmpty
           left:

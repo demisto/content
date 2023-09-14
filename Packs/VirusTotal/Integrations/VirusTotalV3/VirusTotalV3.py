@@ -1,15 +1,16 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 """
 An integration module for the Virus Total v3 API.
 API Documentation:
     https://developers.virustotal.com/v3.0/reference
 """
 from collections import defaultdict
-from typing import Callable, cast
+from typing import cast
+from collections.abc import Callable
 
 from dateparser import parse
-
-import demistomock as demisto
-from CommonServerPython import *
+import ipaddress
 
 INTEGRATION_NAME = "VirusTotal"
 COMMAND_PREFIX = "vt"
@@ -23,8 +24,18 @@ INDICATOR_TYPE = {
     'url': FeedIndicatorType.URL
 }
 
+severity_levels = {'SEVERITY_UNKNOWN': 'UNKNOWN',
+                   'SEVERITY_LOW': 'LOW',
+                   'SEVERITY_MEDIUM': 'MEDIUM',
+                   'SEVERITY_HIGH': 'HIGH'}
 
-""" RELATIONSHIP TYPE"""
+verdicts = {'VERDICT_UNKNOWN': 'UNKNOWN',
+            'VERDICT_UNDETECTED': 'UNDETECTED',
+            'VERDICT_SUSPICIOUS': 'SUSPICIOUS',
+            'VERDICT_MALICIOUS': 'MALICIOUS'}
+
+
+"""RELATIONSHIP TYPE"""
 RELATIONSHIP_TYPE = {
     'file': {
         'carbonblack_children': EntityRelationship.Relationships.CREATES,
@@ -96,6 +107,7 @@ class Client(BaseClient):
     def __init__(self, params: dict):
         self.is_premium = argToBoolean(params['is_premium_api'])
         self.reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(params['feedReliability'])
+
         super().__init__(
             'https://www.virustotal.com/api/v3/',
             verify=not argToBoolean(params.get('insecure')),
@@ -126,6 +138,17 @@ class Client(BaseClient):
         return self._http_request(
             'GET',
             f'files/{file}?relationships={relationships}', ok_codes=(404, 429, 200)
+        )
+
+    # It is not a Reputation call
+    def private_file(self, file: str) -> dict:
+        """
+        See Also:
+            https://developers.virustotal.com/reference/private-files-info
+        """
+        return self._http_request(
+            'GET',
+            f'private/files/{file}', ok_codes=(404, 429, 200)
         )
 
     def url(self, url: str, relationships: str = ''):
@@ -278,11 +301,14 @@ class Client(BaseClient):
     def file_scan(self, file_path: str, /, upload_url: Optional[str]) -> dict:
         """
         See Also:
-            https://developers.virustotal.com/v3.0/reference#files-scan
+            https://developers.virustotal.com/reference/files-scan
         """
         response: requests.Response
         with open(file_path, 'rb') as file:
-            if upload_url:
+            if upload_url or os.stat(file_path).st_size / (1024 * 1024) >= 32:
+                if not upload_url:
+                    raw_response = self.get_upload_url()
+                    upload_url = raw_response['data']
                 response = self._http_request(
                     'POST',
                     full_url=upload_url,
@@ -302,6 +328,35 @@ class Client(BaseClient):
         )
         return response.json()
 
+    def private_file_scan(self, file_path: str) -> dict:
+        """
+        See Also:
+            https://developers.virustotal.com/reference/post_files
+        """
+        response: requests.Response
+        with open(file_path, 'rb') as file:
+            if os.stat(file_path).st_size / (1024 * 1024) >= 32:
+                raw_response = self.get_private_upload_url()
+                upload_url = raw_response['data']
+                response = self._http_request(
+                    'POST',
+                    full_url=upload_url,
+                    files={'file': file},
+                    resp_type='response'
+                )
+            else:
+                response = self._http_request(
+                    'POST',
+                    url_suffix='/private/files',
+                    files={'file': file},
+                    resp_type='response'
+                )
+        demisto.debug(
+            f'scan_file response:\n'
+            f'{str(response.status_code)=}, {str(response.headers)=}, {str(response.content)}'
+        )
+        return response.json()
+
     def get_upload_url(self) -> dict:
         """
         See Also:
@@ -310,6 +365,16 @@ class Client(BaseClient):
         return self._http_request(
             'GET',
             'files/upload_url'
+        )
+
+    def get_private_upload_url(self) -> dict:
+        """
+        See Also:
+            https://developers.virustotal.com/reference/private-files-upload-url
+        """
+        return self._http_request(
+            'GET',
+            'private/files/upload_url'
         )
 
     def url_scan(self, url: str) -> dict:
@@ -368,6 +433,26 @@ class Client(BaseClient):
             f'/analyses/{analysis_id}'
         )
 
+    def get_private_analysis(self, analysis_id: str) -> dict:
+        """
+        See Also:
+            https://developers.virustotal.com/reference/private-analysis
+        """
+        return self._http_request(
+            'GET',
+            f'private/analyses/{analysis_id}'
+        )
+
+    def get_private_file_from_analysis(self, analysis_id: str) -> dict:
+        """
+        See Also:
+            https://developers.virustotal.com/reference/item-1
+        """
+        return self._http_request(
+            'GET',
+            f'private/analyses/{analysis_id}/item?attributes=threat_severity,threat_verdict'
+        )
+
     def get_file_sigma_analysis(self, file_hash: str) -> dict:
         """
         See Also:
@@ -390,7 +475,6 @@ class Client(BaseClient):
             https://developers.virustotal.com/v3.0/reference#domains-relationships
             https://developers.virustotal.com/v3.0/reference#ip-relationships
         """
-
         return self._http_request(
             'GET',
             urljoin(urljoin(indicator_type, indicator), relationship)
@@ -608,7 +692,7 @@ class ScoreCalculator:
             arg_name='Relationship Files Threshold',
             required=True
         )
-        self.logs = list()
+        self.logs = []
 
     def get_logs(self) -> str:
         """Returns the log string
@@ -936,9 +1020,9 @@ class ScoreCalculator:
         files = relationship_files_response.get('data', [])[:lookback]  # lookback on recent 20 results. By design
         total_malicious = 0
         for file in files:
-            if file_hash := file.get('sha256', file.get('sha1', file.get('md5', file.get('ssdeep')))):
-                if self.file_score(file_hash, files) == Common.DBotScore.BAD:
-                    total_malicious += 1
+            if (file_hash := file.get('sha256', file.get('sha1', file.get('md5', file.get('ssdeep'))))) and (
+                    self.file_score(file_hash, files) == Common.DBotScore.BAD):
+                total_malicious += 1
 
         if total_malicious >= self.url_threshold:
             self.logs.append(
@@ -1444,6 +1528,37 @@ def build_unknown_file_output(client: Client, file_hash: str) -> CommandResults:
     return CommandResults(indicator=Common.File(dbot), readable_output=desc)
 
 
+def build_private_file_output(file_hash: str, raw_response: dict) -> CommandResults:
+    data = raw_response.get('data', {})
+    attributes = data.get('attributes', {})
+    threat_severity = attributes.get('threat_severity', {})
+    threat_severity_level = threat_severity.get('threat_severity_level', '')
+    threat_severity_data = threat_severity.get('threat_severity_data', {})
+    popular_threat_category = threat_severity_data.get('popular_threat_category', '')
+    threat_verdict = attributes.get('threat_verdict', '')
+    return CommandResults(
+        outputs_prefix=f'{INTEGRATION_ENTRY_CONTEXT}.File',
+        outputs_key_field='id',
+        readable_output=tableToMarkdown(
+            f'Results of file hash {file_hash}',
+            {
+                **attributes,
+                'Threat Severity Level': severity_levels.get(threat_severity_level, threat_severity_level),
+                'Popular Threat Category': popular_threat_category,
+                'Threat Verdict': verdicts.get(threat_verdict, threat_verdict)
+            },
+            headers=[
+                'sha1', 'sha256', 'md5', 'meaningful_name', 'type_extension',
+                'Threat Severity Level', 'Popular Threat Category', 'Threat Verdict'
+            ],
+            removeNull=True,
+            headerTransform=string_to_table_header
+        ),
+        outputs=data,
+        raw_response=raw_response,
+    )
+
+
 def get_whois(whois_string: str) -> defaultdict:
     """Gets a WHOIS string and returns a parsed dict of the WHOIS String.
 
@@ -1560,17 +1675,31 @@ def merge_two_dicts(dict_a, dict_b):
 # region Reputation commands
 
 
-def ip_command(client: Client, score_calculator: ScoreCalculator, args: dict, relationships: str) -> List[CommandResults]:
+def ip_command(client: Client,
+               score_calculator: ScoreCalculator,
+               args: dict,
+               relationships: str,
+               disable_private_ip_lookup: bool
+               ) -> List[CommandResults]:
     """
     1 API Call for regular
     1-4 API Calls for premium subscriptions
     """
     ips = argToList(args['ip'])
-    results: List[CommandResults] = list()
+    results: List[CommandResults] = []
     execution_metrics = ExecutionMetrics()
+    override_private_lookup = argToBoolean(args.get("override_private_lookup", "False"))
+
     for ip in ips:
         raise_if_ip_not_valid(ip)
         try:
+            if disable_private_ip_lookup and ipaddress.ip_address(ip).is_private and not override_private_lookup:
+                readable_output = (f'Reputation lookups have been disabled for private IP addresses.'
+                                   f'Enrichment skipped for {ip}')
+                result = CommandResults(readable_output=readable_output)
+                results.append(result)
+                execution_metrics.success += 1
+                continue
             raw_response = client.ip(ip, relationships)
             if raw_response.get('error', {}).get('code') == "QuotaExceededError":
                 execution_metrics.quota_error += 1
@@ -1584,7 +1713,7 @@ def ip_command(client: Client, score_calculator: ScoreCalculator, args: dict, re
             continue
         execution_metrics.success += 1
         results.append(
-            build_ip_output(client, score_calculator, ip, raw_response, argToBoolean(args.get('extended_data'))))
+            build_ip_output(client, score_calculator, ip, raw_response, argToBoolean(args.get('extended_data', False))))
     if len(results) == 0:
         result = CommandResults(readable_output='No IPs were found.').to_context()
         results.append(result)
@@ -1600,8 +1729,8 @@ def file_command(client: Client, score_calculator: ScoreCalculator, args: dict, 
     1 API Call
     """
     files = argToList(args['file'])
-    extended_data = argToBoolean(args.get('extended_data'))
-    results: List[CommandResults] = list()
+    extended_data = argToBoolean(args.get('extended_data', False))
+    results: List[CommandResults] = []
     execution_metrics = ExecutionMetrics()
 
     for file in files:
@@ -1633,14 +1762,51 @@ def file_command(client: Client, score_calculator: ScoreCalculator, args: dict, 
     return results
 
 
+def private_file_command(client: Client, args: dict) -> List[CommandResults]:
+    """
+    1 API Call
+    """
+    files = argToList(args['file'])
+    results: List[CommandResults] = []
+    execution_metrics = ExecutionMetrics()
+
+    for file in files:
+        raise_if_hash_not_valid(file)
+        try:
+            raw_response = client.private_file(file)
+            if raw_response.get('error', {}).get('code') == "QuotaExceededError":
+                execution_metrics.quota_error += 1
+                result = CommandResults(readable_output=f'Quota exceeded for file: {file}')
+                results.append(result)
+                continue
+            if raw_response.get('error', {}).get('code') == 'NotFoundError':
+                results.append(CommandResults(readable_output=f'File "{file}" was not found in VirusTotal'))
+                continue
+            results.append(build_private_file_output(file, raw_response))
+            execution_metrics.success += 1
+        except Exception as exc:
+            # If anything happens, just keep going
+            demisto.debug(f'Could not process file: "{file}"\n {str(exc)}')
+            execution_metrics.general_error += 1
+            continue
+    if len(results) == 0:
+        result = CommandResults(readable_output='No files were found.')
+        results.append(result)
+    if execution_metrics.is_supported():
+        _metric_results = execution_metrics.metrics
+        metric_results = cast(CommandResults, _metric_results)
+        results.append(metric_results)
+    return results
+
+
 def url_command(client: Client, score_calculator: ScoreCalculator, args: dict, relationships: str) -> List[CommandResults]:
     """
     1 API Call for regular
     1-4 API Calls for premium subscriptions
     """
     urls = argToList(args['url'])
-    extended_data = argToBoolean(args.get('extended_data'))
-    results: List[CommandResults] = list()
+    extended_data = argToBoolean(args.get('extended_data', False))
+    results: List[CommandResults] = []
     execution_metrics = ExecutionMetrics()
     for url in urls:
         try:
@@ -1674,7 +1840,7 @@ def domain_command(client: Client, score_calculator: ScoreCalculator, args: dict
     """
     execution_metrics = ExecutionMetrics()
     domains = argToList(args['domain'])
-    results: List[CommandResults] = list()
+    results: List[CommandResults] = []
     for domain in domains:
         try:
             raw_response = client.domain(domain, relationships)
@@ -1690,7 +1856,7 @@ def domain_command(client: Client, score_calculator: ScoreCalculator, args: dict
             continue
         execution_metrics.success += 1
         result = build_domain_output(client, score_calculator, domain, raw_response,
-                                     argToBoolean(args.get('extended_data')))
+                                     argToBoolean(args.get('extended_data', False)))
         results.append(result)
     if len(results) == 0:
         result = CommandResults(readable_output='No domains were found.')
@@ -1749,7 +1915,7 @@ def encode_to_base64(md5: str, id_: Union[str, int]) -> str:
     Returns:
         base64 encoded of md5:id_
     """
-    return base64.b64encode(f'{md5}:{id_}'.encode('utf-8')).decode('utf-8')
+    return base64.b64encode(f'{md5}:{id_}'.encode()).decode('utf-8')
 
 
 def get_working_id(id_: str, entry_id: str) -> str:
@@ -1776,16 +1942,33 @@ def file_scan(client: Client, args: dict) -> List[CommandResults]:
     """
     1 API Call
     """
+    return upload_file(client, args)
+
+
+def private_file_scan(client: Client, args: dict) -> List[CommandResults]:
+    """
+    1 API Call
+    """
+    return upload_file(client, args, True)
+
+
+def upload_file(client: Client, args: dict, private: bool = False) -> List[CommandResults]:
+    """
+    1 API Call
+    """
     entry_ids = argToList(args['entryID'])
     upload_url = args.get('uploadURL')
     if len(entry_ids) > 1 and upload_url:
         raise DemistoException('You can supply only one entry ID with an upload URL.')
-    results = list()
+    results = []
     for entry_id in entry_ids:
         try:
             file_obj = demisto.getFilePath(entry_id)
             file_path = file_obj['path']
-            raw_response = client.file_scan(file_path, upload_url=upload_url)
+            if private:
+                raw_response = client.private_file_scan(file_path)
+            else:
+                raw_response = client.file_scan(file_path, upload_url)
             data = raw_response.get('data', {})
             # add current file as identifiers
             data.update(
@@ -1804,6 +1987,7 @@ def file_scan(client: Client, args: dict) -> List[CommandResults]:
                     f'The file has been submitted "{file_obj["name"]}"',
                     data,
                     headers=['id', 'EntryID', 'MD5', 'SHA1', 'SHA256'],
+                    removeNull=True
                 ),
                 outputs=context,
                 raw_response=raw_response
@@ -2134,7 +2318,7 @@ def search_command(client: Client, args: dict) -> CommandResults:
     limit = arg_to_number_must_int(args.get('limit'), 'limit', required=True)
     raw_response = client.search(query, limit)
     data = raw_response.get('data', [])
-    if not argToBoolean(args.get('extended_data')):
+    if not argToBoolean(args.get('extended_data', False)):
         data = decrease_data_size(data)
     return CommandResults(
         f'{INTEGRATION_ENTRY_CONTEXT}.SearchResults',
@@ -2179,6 +2363,49 @@ def get_analysis_command(client: Client, args: dict) -> CommandResults:
     )
 
 
+def private_get_analysis_command(client: Client, args: dict) -> CommandResults:
+    """
+    1-2 API Call
+    """
+    analysis_id = args['id']
+    raw_response = client.get_private_analysis(analysis_id)
+    data = raw_response.get('data', {})
+    attributes = data.get('attributes', {})
+    stats = {'threat_severity_level': '',
+             'popular_threat_category': '',
+             'threat_verdict': ''}
+    if attributes.get('status', '') == 'completed':
+        file_response = client.get_private_file_from_analysis(analysis_id)
+        file_attributes = file_response.get('data', {}).get('attributes', {})
+        threat_severity = file_attributes.get('threat_severity', {})
+        severity_level = threat_severity.get('threat_severity_level', '')
+        stats['threat_severity_level'] = severity_levels.get(severity_level, severity_level)
+        threat_severity_data = threat_severity.get('threat_severity_data', {})
+        stats['popular_threat_category'] = threat_severity_data.get('popular_threat_category', '')
+        verdict = file_attributes.get('threat_verdict', '')
+        stats['threat_verdict'] = verdicts.get(verdict, verdict)
+    attributes.update(stats)
+    return CommandResults(
+        f'{INTEGRATION_ENTRY_CONTEXT}.Analysis',
+        'id',
+        readable_output=tableToMarkdown(
+            'Analysis results:',
+            {
+                **attributes,
+                'id': analysis_id
+            },
+            headers=['id', 'threat_severity_level', 'popular_threat_category', 'threat_verdict', 'status'],
+            removeNull=True,
+            headerTransform=string_to_table_header
+        ),
+        outputs={
+            **raw_response,
+            'id': analysis_id
+        },
+        raw_response=raw_response
+    )
+
+
 def check_module(client: Client) -> str:
     """
     1 API Call
@@ -2197,7 +2424,7 @@ def delete_comment(client: Client, args: dict) -> CommandResults:
 def file_sigma_analysis_command(client: Client, args: dict) -> CommandResults:
     """Get last sigma analysis for a given file"""
     file_hash = args['file']
-    only_stats = argToBoolean(args['only_stats'])
+    only_stats = argToBoolean(args.get('only_stats', False))
     raw_response = client.file(file_hash)
     data = raw_response['data']
 
@@ -2251,13 +2478,15 @@ def main(params: dict, args: dict, command: str):
     domain_relationships = (','.join(argToList(params.get('domain_relationships')))).replace('* ', '').replace(" ", "_")
     file_relationships = (','.join(argToList(params.get('file_relationships')))).replace('* ', '').replace(" ", "_")
 
+    disable_private_ip_lookup = argToBoolean(params.get("disable_private_ip_lookup", "False"))
+
     demisto.debug(f'Command called {command}')
     if command == 'test-module':
         results = check_module(client)
     elif command == 'file':
         results = file_command(client, score_calculator, args, file_relationships)
     elif command == 'ip':
-        results = ip_command(client, score_calculator, args, ip_relationships)
+        results = ip_command(client, score_calculator, args, ip_relationships, disable_private_ip_lookup)
     elif command == 'url':
         results = url_command(client, score_calculator, args, url_relationships)
     elif command == 'domain':
@@ -2288,6 +2517,12 @@ def main(params: dict, args: dict, command: str):
         results = get_analysis_command(client, args)
     elif command == f'{COMMAND_PREFIX}-file-sigma-analysis':
         results = file_sigma_analysis_command(client, args)
+    elif command == f'{COMMAND_PREFIX}-privatescanning-file':
+        results = private_file_command(client, args)
+    elif command == f'{COMMAND_PREFIX}-privatescanning-file-scan':
+        results = private_file_scan(client, args)
+    elif command == f'{COMMAND_PREFIX}-privatescanning-analysis-get':
+        results = private_get_analysis_command(client, args)
     else:
         raise NotImplementedError(f'Command {command} not implemented')
     return_results(results)

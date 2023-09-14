@@ -16,7 +16,13 @@ configuration:
   name: api_key
   defaultvalue: ""
   type: 4
-  required: true
+  hidden: true
+  required: false
+- displaypassword: API Key
+  name: credentials_api_key
+  hiddenusername: true
+  type: 9
+  required: false
 - display: Trust any certificate (not secure)
   name: unsecure
   type: 8
@@ -38,7 +44,6 @@ configuration:
   name: message_status
   defaultvalue: delivered (retroactive)
   type: 16
-  required: false
   options:
   - accepted
   - deleted
@@ -52,6 +57,7 @@ configuration:
   - quarantined
   - rejected
   - temporary failure
+  required: false
 script:
   script: '-'
   type: python
@@ -295,9 +301,8 @@ script:
       description: The alert unique ID
     description: Detailed information from any particular alert. Alerts more than 90 days old are not available.
   isfetch: true
-  runonce: false
   subtype: python3
-  dockerimage: demisto/python3:3.10.10.48392
+  dockerimage: demisto/python3:3.10.12.63474
 tests:
 - No Test
 

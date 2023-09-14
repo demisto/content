@@ -7,14 +7,14 @@
             "description": "",
             "extensions": {
                 "extension-definition--1ffe4bee-95e7-4e36-9a17-f56dbab3c777": {
-                    "calculatedTime": "2021-12-19T16:11:15.523598+02:00",
+                    "calculatedTime": "2021-12-19T16:11:15.523761+02:00",
                     "comments": [
                         {
                             "category": "Sighting",
                             "content": "Created",
-                            "created": "2021-12-19T16:11:15.41092+02:00",
+                            "created": "2021-12-19T16:11:15.375887+02:00",
                             "entryId": "",
-                            "id": "644e8ef8-de0a-45bd-8f48-41a88200982a",
+                            "id": "c44a5b3b-e508-4ac6-8881-c5dd7d118946",
                             "modified": "0001-01-01T00:00:00Z",
                             "sortValues": null,
                             "source": "@DBot",
@@ -29,31 +29,31 @@
                         "expirationPolicy": "never",
                         "instance": "",
                         "moduleId": "",
-                        "setTime": "2021-12-19T16:11:15.410878+02:00",
+                        "setTime": "2021-12-19T16:11:15.375855+02:00",
                         "source": "indicatorType",
                         "user": ""
                     },
                     "expirationStatus": "active",
                     "extension_type": "property_extension",
-                    "firstSeen": "2021-12-19T16:11:15.523598+02:00",
+                    "firstSeen": "2021-12-19T16:11:15.523762+02:00",
                     "firstSeenEntryID": "8072@e99f97d1-7225-4c75-896c-3c960febbe8c",
-                    "id": "5212677",
+                    "id": "5212669",
                     "indicator_type": "Attack Pattern",
                     "investigationIDs": [
                         "e99f97d1-7225-4c75-896c-3c960febbe8c"
                     ],
-                    "lastReputationRun": "2021-12-19T16:11:15.410938+02:00",
-                    "lastSeen": "2021-12-19T16:11:15.523598+02:00",
+                    "lastReputationRun": "2021-12-19T16:11:15.375909+02:00",
+                    "lastSeen": "2021-12-19T16:11:15.523761+02:00",
                     "lastSeenEntryID": "8072@e99f97d1-7225-4c75-896c-3c960febbe8c",
-                    "modified": "2021-12-19T16:11:15.53072+02:00",
+                    "modified": "2021-12-19T16:11:15.530455+02:00",
                     "score": 0,
                     "sortValues": [
-                        " \u0001\u0016a\u000b+\u0013<3-0",
-                        "5212677"
+                        " \u0001\u0016a\u000b+\u0013<=&h",
+                        "5212669"
                     ],
                     "source": "DBot",
-                    "timestamp": "2021-12-19T16:11:15.530719+02:00",
-                    "value": "T1195",
+                    "timestamp": "2021-12-19T16:11:15.530454+02:00",
+                    "value": "T1071.004",
                     "version": 1
                 }
             },
@@ -68,14 +68,14 @@
             "description": "",
             "extensions": {
                 "extension-definition--1ffe4bee-95e7-4e36-9a17-f56dbab3c777": {
-                    "calculatedTime": "2021-12-19T16:11:15.523598+02:00",
+                    "calculatedTime": "2021-12-19T16:11:15.523545+02:00",
                     "comments": [
                         {
                             "category": "Sighting",
                             "content": "Created",
-                            "created": "2021-12-19T16:11:15.41092+02:00",
+                            "created": "2021-12-19T16:11:15.382832+02:00",
                             "entryId": "",
-                            "id": "644e8ef8-de0a-45bd-8f48-41a88200982a",
+                            "id": "fcb648ae-cc62-4a62-8850-c41ef862d2d8",
                             "modified": "0001-01-01T00:00:00Z",
                             "sortValues": null,
                             "source": "@DBot",
@@ -90,31 +90,31 @@
                         "expirationPolicy": "never",
                         "instance": "",
                         "moduleId": "",
-                        "setTime": "2021-12-19T16:11:15.410878+02:00",
+                        "setTime": "2021-12-19T16:11:15.382816+02:00",
                         "source": "indicatorType",
                         "user": ""
                     },
                     "expirationStatus": "active",
                     "extension_type": "property_extension",
-                    "firstSeen": "2021-12-19T16:11:15.523598+02:00",
+                    "firstSeen": "2021-12-19T16:11:15.523545+02:00",
                     "firstSeenEntryID": "8072@e99f97d1-7225-4c75-896c-3c960febbe8c",
-                    "id": "5212677",
+                    "id": "5212676",
                     "indicator_type": "Attack Pattern",
                     "investigationIDs": [
                         "e99f97d1-7225-4c75-896c-3c960febbe8c"
                     ],
-                    "lastReputationRun": "2021-12-19T16:11:15.410938+02:00",
-                    "lastSeen": "2021-12-19T16:11:15.523598+02:00",
+                    "lastReputationRun": "2021-12-19T16:11:15.382836+02:00",
+                    "lastSeen": "2021-12-19T16:11:15.523545+02:00",
                     "lastSeenEntryID": "8072@e99f97d1-7225-4c75-896c-3c960febbe8c",
-                    "modified": "2021-12-19T16:11:15.53072+02:00",
+                    "modified": "2021-12-19T16:11:15.530696+02:00",
                     "score": 0,
                     "sortValues": [
-                        " \u0001\u0016a\u000b+\u0013<3-0",
-                        "5212677"
+                        " \u0001\u0016a\u000b+\u0013<0\u000f(",
+                        "5212676"
                     ],
                     "source": "DBot",
-                    "timestamp": "2021-12-19T16:11:15.530719+02:00",
-                    "value": "T1195",
+                    "timestamp": "2021-12-19T16:11:15.530695+02:00",
+                    "value": "T1105",
                     "version": 1
                 }
             },

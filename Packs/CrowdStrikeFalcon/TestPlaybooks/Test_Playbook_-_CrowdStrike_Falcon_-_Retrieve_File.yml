@@ -1,0 +1,1536 @@
+id: Test Playbook - CrowdStrike Falcon - Retrieve File
+version: -1
+name: Test Playbook - CrowdStrike Falcon - Retrieve File
+description: |-
+  This playbook tests the 'CrowdStrike Falcon - Retrieve File' playbook which is part of the 'Malware Investigation and Response' pack.
+
+  The following tests are conducted in the playbook:
+  1- Ensure all context data was extracted properly.
+  2- Review and validate the playbook's output.
+  3 - Ensure that the retrieved files were unzipped using the 'UnzipFile' command.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 21896868-8531-4ae5-8666-cea52014a9ec
+    type: start
+    task:
+      id: 21896868-8531-4ae5-8666-cea52014a9ec
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "32"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -140,
+          "y": -1695
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: 4dbfaa04-78aa-482f-800b-e0ed5b5dd204
+    type: regular
+    task:
+      id: 4dbfaa04-78aa-482f-800b-e0ed5b5dd204
+      version: -1
+      name: Delete Context
+      description: The task deletes all of the context data. Having a clean beginning to a test playbook ensures that a test can be sterile and that unrelated issues can be eliminated.
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "246"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -140,
+          "y": -1565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "84":
+    id: "84"
+    taskid: 4de8eaba-01aa-4a61-85df-65de61567633
+    type: title
+    task:
+      id: 4de8eaba-01aa-4a61-85df-65de61567633
+      version: -1
+      name: Start Testing
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "251"
+      - "255"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -140,
+          "y": -900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "202":
+    id: "202"
+    taskid: 8d5a4742-998c-49db-87f4-7298cbd18f64
+    type: title
+    task:
+      id: 8d5a4742-998c-49db-87f4-7298cbd18f64
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -140,
+          "y": -305
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "245":
+    id: "245"
+    taskid: 3b5e306c-d189-425e-8a69-4df9d0777bef
+    type: playbook
+    task:
+      id: 3b5e306c-d189-425e-8a69-4df9d0777bef
+      version: -1
+      name: CrowdStrike Falcon - Retrieve File
+      description: |-
+        This playbook is part of the 'Malware Investigation And Response' pack. For more information, refer to https://xsoar.pan.dev/docs/reference/packs/malware-investigation-and-response.
+        This playbook retrieves and unzips files from CrowdStrike Falcon and returns a list of the files that were and were not retrieved.
+      playbookName: CrowdStrike Falcon - Retrieve File
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "84"
+    scriptarguments:
+      FileNames:
+        complex:
+          root: CrowdStrike.Detections.behaviors
+          accessor: filename
+      HostId:
+        complex:
+          root: CrowdStrike.Detections.behaviors
+          accessor: device_id
+          transformers:
+          - operator: LastArrayElement
+      PathsToGet:
+        complex:
+          root: CrowdStrike.Detections.behaviors
+          accessor: filepath
+          transformers:
+          - operator: LastArrayElement
+      ZipPassword:
+        simple: infected
+    separatecontext: false
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": -140,
+          "y": -1060
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "246":
+    id: "246"
+    taskid: 93a58ba9-0adb-43f8-87c0-8da9de7205a9
+    type: regular
+    task:
+      id: 93a58ba9-0adb-43f8-87c0-8da9de7205a9
+      version: -1
+      name: Get CrowdStrike Falcon Available Detections
+      description: Obtains a list of CrowdStrike Falcon detections before performing the tests.
+      script: CrowdstrikeFalcon|||cs-falcon-list-detection-summaries
+      type: regular
+      iscommand: true
+      brand: CrowdstrikeFalcon
+    nexttasks:
+      '#none#':
+      - "248"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -140,
+          "y": -1400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "248":
+    id: "248"
+    taskid: 21eec967-1d4b-4795-8268-7d2dbbef5611
+    type: condition
+    task:
+      id: 21eec967-1d4b-4795-8268-7d2dbbef5611
+      version: -1
+      name: Check CrowdStrike Falcon Available Detections
+      description: Checks if there are available detections for testing processes.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "202"
+      "yes":
+      - "245"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: CrowdStrike.Detections
+                accessor: detection_id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -140,
+          "y": -1240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "249":
+    id: "249"
+    taskid: 8bf51b88-aa51-4606-8e94-b66938c02819
+    type: regular
+    task:
+      id: 8bf51b88-aa51-4606-8e94-b66938c02819
+      version: -1
+      name: Verify Playbook Output Error - Extracted Files
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: "The 'ExtractedFiles' playbook output of the was not properly extracted. This may indicate that one or more of the following changes have been made to the 'CrowdStrike Falcon - Retrieve File' playbook:\n1- The 'ExtractedFiles' context path was removed from the playbook outputs.\n2- The context path of the 'ExtractedFiles' playbook output was changed. \n3- The 'entryID' argument input configuration was changed for the 'UnzipFile' automation used within the 'Unzip file' playbook task."
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 520,
+          "y": -400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "250":
+    id: "250"
+    taskid: 92eeb8be-1a3e-4445-895c-eb800f70f6c0
+    type: condition
+    task:
+      id: 92eeb8be-1a3e-4445-895c-eb800f70f6c0
+      version: -1
+      name: Verify Extracted Files
+      description: |
+        Verify that the 'ExtractedFiles' playbook output contains the file name selected for extraction.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      ' Verified':
+      - "254"
+      '#default#':
+      - "249"
+    separatecontext: false
+    conditions:
+    - label: ' Verified'
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              complex:
+                root: ExtractedFiles
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: File
+                accessor: Name
+                transformers:
+                - operator: LastArrayElement
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 520,
+          "y": -620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "251":
+    id: "251"
+    taskid: 60316f98-2091-4e65-87e4-cfe08b92ebce
+    type: title
+    task:
+      id: 60316f98-2091-4e65-87e4-cfe08b92ebce
+      version: -1
+      name: Check Playbook Outputs
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "250"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 520,
+          "y": -760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "254":
+    id: "254"
+    taskid: 322cbd93-4a7b-4460-85e7-b7e8a90591e6
+    type: title
+    task:
+      id: 322cbd93-4a7b-4460-85e7-b7e8a90591e6
+      version: -1
+      name: Done Verifying Playbook Outputs
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "202"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 140,
+          "y": -450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "255":
+    id: "255"
+    taskid: aaa17405-11a3-4b8f-8ae4-feb2c518cd24
+    type: title
+    task:
+      id: aaa17405-11a3-4b8f-8ae4-feb2c518cd24
+      version: -1
+      name: Check Context Data
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "257"
+      - "259"
+      - "261"
+      - "263"
+      - "265"
+      - "267"
+      - "269"
+      - "271"
+      - "273"
+      - "275"
+      - "277"
+      - "279"
+      - "281"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -800,
+          "y": -760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "256":
+    id: "256"
+    taskid: dbe092be-a5ba-4f94-868e-c2393e7cf234
+    type: regular
+    task:
+      id: dbe092be-a5ba-4f94-868e-c2393e7cf234
+      version: -1
+      name: Verify Context Error - File Name
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'FileName'  context key was not extracted properly. This may indicate that one or more of the following changes have been made to the 'CrowdStrike Falcon - Retrieve File' playbook:
+          1- The 'cs-falcon-rtr-retrieve-file' automation outputs have been modified and no longer contain the 'CrowdStrike.File.FileName' context key.
+          2- The 'host_ids' argument input configuration was changed for the 'cs-falcon-rtr-retrieve-file' automation used within the 'Retrieve file' playbook task.
+          3- The 'file_path' argument input configuration was changed for the 'cs-falcon-rtr-retrieve-file' automation used within the 'Retrieve file' playbook task.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -800,
+          "y": -400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "257":
+    id: "257"
+    taskid: d1603e94-747e-4a92-8244-0d2728af6a18
+    type: condition
+    task:
+      id: d1603e94-747e-4a92-8244-0d2728af6a18
+      version: -1
+      name: Verify File Name
+      description: |
+        Verify that the 'FileName' context key has been extracted.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      ' Verified':
+      - "282"
+      '#default#':
+      - "256"
+    separatecontext: false
+    conditions:
+    - label: ' Verified'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: CrowdStrike.File
+                accessor: FileName
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -800,
+          "y": -620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "258":
+    id: "258"
+    taskid: 52a2fb0f-2fdd-4d7a-8baf-59f3d5103e68
+    type: regular
+    task:
+      id: 52a2fb0f-2fdd-4d7a-8baf-59f3d5103e68
+      version: -1
+      name: Verify Context Error - Host ID
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'HostID' context key was not extracted properly. This may indicate that one or more of the following changes have been made to the 'CrowdStrike Falcon - Retrieve File' playbook:
+          1- The 'cs-falcon-rtr-retrieve-file' automation outputs have been modified and no longer contain the 'CrowdStrike.File.HostID' context key.
+          2- The 'host_ids' argument input configuration was changed for the 'cs-falcon-rtr-retrieve-file' automation used within the 'Retrieve file' playbook task.
+          3- The 'file_path' argument input configuration was changed for the 'cs-falcon-rtr-retrieve-file' automation used within the 'Retrieve file' playbook task.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1200,
+          "y": -400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "259":
+    id: "259"
+    taskid: 7e2794d3-54a4-44e6-819c-91bdf50fbf41
+    type: condition
+    task:
+      id: 7e2794d3-54a4-44e6-819c-91bdf50fbf41
+      version: -1
+      name: Verify Host ID
+      description: |
+        Verify that the 'HostID' context key has been extracted.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      ' Verified':
+      - "282"
+      '#default#':
+      - "258"
+    separatecontext: false
+    conditions:
+    - label: ' Verified'
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: CrowdStrike.File
+                accessor: HostID
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: CrowdStrike.Detections.behaviors
+                accessor: device_id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1200,
+          "y": -620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "260":
+    id: "260"
+    taskid: 91a84126-712b-4f8f-8c25-58927cfabe18
+    type: regular
+    task:
+      id: 91a84126-712b-4f8f-8c25-58927cfabe18
+      version: -1
+      name: Verify Context Error - File Size
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'File.Size' context key was not extracted properly. This may indicate that one or more of the following changes have been made to the 'CrowdStrike Falcon - Retrieve File' playbook:
+          1- The 'cs-falcon-rtr-retrieve-file' automation outputs have been modified and no longer contain the 'File.Size'' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1600,
+          "y": -400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "261":
+    id: "261"
+    taskid: 99ccfffd-7d56-40c9-872c-a03bce02213f
+    type: condition
+    task:
+      id: 99ccfffd-7d56-40c9-872c-a03bce02213f
+      version: -1
+      name: Verify File Size
+      description: |
+        Verify that the 'File.Size' context key has been extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      ' Verified':
+      - "282"
+      '#default#':
+      - "260"
+    separatecontext: false
+    conditions:
+    - label: ' Verified'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: File
+                accessor: Size
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1600,
+          "y": -620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "262":
+    id: "262"
+    taskid: bcfcc29b-071b-49f9-893a-f24bdf09cc68
+    type: regular
+    task:
+      id: bcfcc29b-071b-49f9-893a-f24bdf09cc68
+      version: -1
+      name: Verify Context Error - File SHA1
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'File.SHA1' context key was not extracted properly. This may indicate that one or more of the following changes have been made to the 'CrowdStrike Falcon - Retrieve File' playbook:
+          1- The 'cs-falcon-rtr-retrieve-file' automation outputs have been modified and no longer contain the 'File.SHA1'' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1990,
+          "y": -400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "263":
+    id: "263"
+    taskid: 6df3f2e6-84d2-49d1-8cdb-231b0d9b3719
+    type: condition
+    task:
+      id: 6df3f2e6-84d2-49d1-8cdb-231b0d9b3719
+      version: -1
+      name: Verify File SHA1
+      description: |
+        Verify that the 'File.SHA1' context key has been extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      ' Verified':
+      - "282"
+      '#default#':
+      - "262"
+    separatecontext: false
+    conditions:
+    - label: ' Verified'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: File
+                accessor: SHA1
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1990,
+          "y": -620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "264":
+    id: "264"
+    taskid: a33987b9-6c2e-4ae9-8a45-672501ce8062
+    type: regular
+    task:
+      id: a33987b9-6c2e-4ae9-8a45-672501ce8062
+      version: -1
+      name: Verify Context Error - File SHA256
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'File.SHA256' context key was not extracted properly. This may indicate that one or more of the following changes have been made to the 'CrowdStrike Falcon - Retrieve File' playbook:
+          1- The 'cs-falcon-rtr-retrieve-file' automation outputs have been modified and no longer contain the 'File.SHA256'' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2380,
+          "y": -400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "265":
+    id: "265"
+    taskid: 3465537b-666f-4997-8dff-711dbdf4800b
+    type: condition
+    task:
+      id: 3465537b-666f-4997-8dff-711dbdf4800b
+      version: -1
+      name: Verify File SHA256
+      description: |
+        Verify that the 'File.SHA256' context key has been extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      ' Verified':
+      - "282"
+      '#default#':
+      - "264"
+    separatecontext: false
+    conditions:
+    - label: ' Verified'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: File
+                accessor: SHA256
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2380,
+          "y": -620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "266":
+    id: "266"
+    taskid: 5b1a9e5c-2610-4f00-856a-babe62e511f2
+    type: regular
+    task:
+      id: 5b1a9e5c-2610-4f00-856a-babe62e511f2
+      version: -1
+      name: Verify Context Error - File SHA512
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'File.SHA512' context key was not extracted properly. This may indicate that one or more of the following changes have been made to the 'CrowdStrike Falcon - Retrieve File' playbook:
+          1- The 'cs-falcon-rtr-retrieve-file' automation outputs have been modified and no longer contain the 'File.SHA512'' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2770,
+          "y": -400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "267":
+    id: "267"
+    taskid: 3371de65-8bd7-4d87-8f21-c707efd5d4e2
+    type: condition
+    task:
+      id: 3371de65-8bd7-4d87-8f21-c707efd5d4e2
+      version: -1
+      name: Verify File SHA512
+      description: |
+        Verify that the 'File.SHA512' context key has been extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      ' Verified':
+      - "282"
+      '#default#':
+      - "266"
+    separatecontext: false
+    conditions:
+    - label: ' Verified'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: File
+                accessor: SHA512
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2770,
+          "y": -620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "268":
+    id: "268"
+    taskid: d514cad4-de05-4125-8c33-97f749eb396a
+    type: regular
+    task:
+      id: d514cad4-de05-4125-8c33-97f749eb396a
+      version: -1
+      name: Verify Context Error - File Name
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'File.Name' context key was not extracted properly. This may indicate that one or more of the following changes have been made to the 'CrowdStrike Falcon - Retrieve File' playbook:
+          1- The 'cs-falcon-rtr-retrieve-file' automation outputs have been modified and no longer contain the 'File.Name'' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -3160,
+          "y": -400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "269":
+    id: "269"
+    taskid: 0f9018db-341d-4d4d-8aa9-5ded9ee9dd6d
+    type: condition
+    task:
+      id: 0f9018db-341d-4d4d-8aa9-5ded9ee9dd6d
+      version: -1
+      name: Verify File Name
+      description: |
+        Verify that the 'File.Name' context key has been extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      ' Verified':
+      - "282"
+      '#default#':
+      - "268"
+    separatecontext: false
+    conditions:
+    - label: ' Verified'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: File
+                accessor: Name
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -3160,
+          "y": -620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "270":
+    id: "270"
+    taskid: 1bc46276-4417-4fcd-8be8-d47ac8e2bbd4
+    type: regular
+    task:
+      id: 1bc46276-4417-4fcd-8be8-d47ac8e2bbd4
+      version: -1
+      name: Verify Context Error - File SSDeep
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'File.SSDeep' context key was not extracted properly. This may indicate that one or more of the following changes have been made to the 'CrowdStrike Falcon - Retrieve File' playbook:
+          1- The 'cs-falcon-rtr-retrieve-file' automation outputs have been modified and no longer contain the 'File.SSDeep'' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -3550,
+          "y": -400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "271":
+    id: "271"
+    taskid: b6da615a-3a2e-42a6-8d98-8c4f1305a461
+    type: condition
+    task:
+      id: b6da615a-3a2e-42a6-8d98-8c4f1305a461
+      version: -1
+      name: Verify File SSDeep
+      description: |
+        Verify that the 'File.SSDeep' context key has been extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      ' Verified':
+      - "282"
+      '#default#':
+      - "270"
+    separatecontext: false
+    conditions:
+    - label: ' Verified'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: File
+                accessor: SSDeep
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -3550,
+          "y": -620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "272":
+    id: "272"
+    taskid: d04ec9db-2591-4085-8401-3095cd576127
+    type: regular
+    task:
+      id: d04ec9db-2591-4085-8401-3095cd576127
+      version: -1
+      name: Verify Context Error - File Entry ID
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'File.EntryID' context key was not extracted properly. This may indicate that one or more of the following changes have been made to the 'CrowdStrike Falcon - Retrieve File' playbook:
+          1- The 'cs-falcon-rtr-retrieve-file' automation outputs have been modified and no longer contain the 'File.EntryID'' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -3950,
+          "y": -400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "273":
+    id: "273"
+    taskid: d3ff53d0-15b1-43e6-831e-00aaaf697b6b
+    type: condition
+    task:
+      id: d3ff53d0-15b1-43e6-831e-00aaaf697b6b
+      version: -1
+      name: Verify File Entry ID
+      description: |
+        Verify that the 'File.EntryID' context key has been extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      ' Verified':
+      - "282"
+      '#default#':
+      - "272"
+    separatecontext: false
+    conditions:
+    - label: ' Verified'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: File
+                accessor: EntryID
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -3950,
+          "y": -620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "274":
+    id: "274"
+    taskid: 3093eb5f-bee7-4184-865c-ad1f2d478f81
+    type: regular
+    task:
+      id: 3093eb5f-bee7-4184-865c-ad1f2d478f81
+      version: -1
+      name: Verify Context Error - File Info
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'File.Info' context key was not extracted properly. This may indicate that one or more of the following changes have been made to the 'CrowdStrike Falcon - Retrieve File' playbook:
+          1- The 'cs-falcon-rtr-retrieve-file' automation outputs have been modified and no longer contain the 'File.Info'' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -4340,
+          "y": -400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "275":
+    id: "275"
+    taskid: d5739f56-2cc0-4e72-8b67-da4e5772eae6
+    type: condition
+    task:
+      id: d5739f56-2cc0-4e72-8b67-da4e5772eae6
+      version: -1
+      name: Verify File Info
+      description: |
+        Verify that the 'File.Info' context key has been extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      ' Verified':
+      - "282"
+      '#default#':
+      - "274"
+    separatecontext: false
+    conditions:
+    - label: ' Verified'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: File
+                accessor: Info
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -4340,
+          "y": -620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "276":
+    id: "276"
+    taskid: 9bbcb7fc-f20c-41a2-84a4-cdb08afd690d
+    type: regular
+    task:
+      id: 9bbcb7fc-f20c-41a2-84a4-cdb08afd690d
+      version: -1
+      name: Verify Context Error - File Type
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'File.Type' context key was not extracted properly. This may indicate that one or more of the following changes have been made to the 'CrowdStrike Falcon - Retrieve File' playbook:
+          1- The 'cs-falcon-rtr-retrieve-file' automation outputs have been modified and no longer contain the 'File.Type'' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -4730,
+          "y": -400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "277":
+    id: "277"
+    taskid: 54a29003-4b44-45ab-8639-1a7d505dd76b
+    type: condition
+    task:
+      id: 54a29003-4b44-45ab-8639-1a7d505dd76b
+      version: -1
+      name: Verify File Type
+      description: |
+        Verify that the 'File.Type' context key has been extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      ' Verified':
+      - "282"
+      '#default#':
+      - "276"
+    separatecontext: false
+    conditions:
+    - label: ' Verified'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: File
+                accessor: Type
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -4730,
+          "y": -620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "278":
+    id: "278"
+    taskid: 2d823950-4651-4adb-85b4-51d882db23fc
+    type: regular
+    task:
+      id: 2d823950-4651-4adb-85b4-51d882db23fc
+      version: -1
+      name: Verify Context Error - File MD5
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'File.MD5' context key was not extracted properly. This may indicate that one or more of the following changes have been made to the 'CrowdStrike Falcon - Retrieve File' playbook:
+          1- The 'cs-falcon-rtr-retrieve-file' automation outputs have been modified and no longer contain the 'File.MD5'' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -5120,
+          "y": -400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "279":
+    id: "279"
+    taskid: 93b2d04c-b517-4dce-8415-5f9280f4ac84
+    type: condition
+    task:
+      id: 93b2d04c-b517-4dce-8415-5f9280f4ac84
+      version: -1
+      name: Verify File MD5
+      description: |
+        Verify that the 'File.MD5' context key has been extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      ' Verified':
+      - "282"
+      '#default#':
+      - "278"
+    separatecontext: false
+    conditions:
+    - label: ' Verified'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: File
+                accessor: MD5
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -5120,
+          "y": -620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "280":
+    id: "280"
+    taskid: ee96de98-6d31-404e-892e-0a089c58bdf3
+    type: regular
+    task:
+      id: ee96de98-6d31-404e-892e-0a089c58bdf3
+      version: -1
+      name: Verify Context Error - File Extension
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'File.Extension' context key was not extracted properly. This may indicate that one or more of the following changes have been made to the 'CrowdStrike Falcon - Retrieve File' playbook:
+          1- The 'cs-falcon-rtr-retrieve-file' automation outputs have been modified and no longer contain the 'File.Extension'' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -5510,
+          "y": -400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "281":
+    id: "281"
+    taskid: d5b0cd1b-0171-451f-8bc6-0a38c2116234
+    type: condition
+    task:
+      id: d5b0cd1b-0171-451f-8bc6-0a38c2116234
+      version: -1
+      name: Verify File Extension
+      description: |
+        Verify that the 'File.Extension' context key has been extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      ' Verified':
+      - "282"
+      '#default#':
+      - "280"
+    separatecontext: false
+    conditions:
+    - label: ' Verified'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: File
+                accessor: Extension
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -5510,
+          "y": -620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "282":
+    id: "282"
+    taskid: 4707a932-3da6-4cc6-8313-133296f8f158
+    type: title
+    task:
+      id: 4707a932-3da6-4cc6-8313-133296f8f158
+      version: -1
+      name: Done Verifying Context Data
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "202"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -410,
+          "y": -450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "248_202_#default#": 0.36,
+      "248_245_yes": 0.54,
+      "250_254_ Verified": 0.51
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1455,
+        "width": 6410,
+        "x": -5510,
+        "y": -1695
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.5.0

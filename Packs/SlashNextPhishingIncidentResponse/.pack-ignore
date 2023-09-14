@@ -2,7 +2,7 @@
 ignore=RM104,RM108
 
 [file:SlashNextPhishingIncidentResponse.yml]
-ignore=IN144,IN145
+ignore=IN144
 
 [file:SlashNextPhishingIncidentResponse_image.png]
 ignore=IM111

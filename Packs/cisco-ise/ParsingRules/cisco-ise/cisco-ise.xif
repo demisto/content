@@ -1,6 +1,9 @@
 [INGEST:vendor="cisco", product="ise", target_dataset="cisco_ise_raw", no_hit=keep]
-alter tmp_time2 = arrayindex(regextract(_raw_log,"<\d+>(\w+\s*\d+\s\d+:\d+:\d+)\s"),0),
-        tmp_time1 = arrayindex(regextract(_raw_log,"(\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}\.\d{3})\s"),0),
+// Support only date time of format: MMM dd hh:mm:ss or format: yyyy-MM-dd hh:mm:ss.nnn [+|-]nn:nn or format: yyyy-MM-dd hh:mm:ss.nnn [+|-]nnnn. For example: "Jan 01 10:00:00" or "2022-01-01 10:00:00.123 +03:00" or "2022-01-01 10:00:00.123 +0300".
+filter _raw_log ~= "<\d+>\w+\s*\d+\s\d+:\d+:\d+\s" or _raw_log ~= "\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}\.\d{3}\s[+|-]\d+:?\d+\s"
+| alter
+        tmp_time2 = arrayindex(regextract(_raw_log,"<\d+>(\w+\s*\d+\s\d+:\d+:\d+)\s"),0),
+        tmp_time1 = arrayindex(regextract(_raw_log,"(\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}\.\d{3}\s[+|-]\d+:?\d+)\s"),0),
         tmp_Year = format_timestamp("%Y",_insert_time)
 // Parsing time format 2
 | alter tmp_time2_1 = concat(tmp_Year, " ", tmp_time2)
@@ -10,10 +13,6 @@ alter tmp_time2 = arrayindex(regextract(_raw_log,"<\d+>(\w+\s*\d+\s\d+:\d+:\d+)\
 | alter tmp_time2_2 = if(tmp_Year2 != null, concat(tmp_Year2, " ", tmp_time2), null)
 | alter tmp_time2_2 = if(tmp_time2_2 != null, parse_timestamp("%Y %b %e %H:%M:%S", tmp_time2_2), null)
 // Parsing time format 1
-| alter tmp_splitStr = split(tmp_time1 , ".")
-| alter tmp_time1 = to_string(to_epoch(parse_timestamp("%Y-%m-%d %H:%M:%S", arrayindex(tmp_splitStr ,0)), "seconds")),
-        tmp_epoch_ms = to_string(arrayindex(regextract(arrayindex(tmp_splitStr, 1),"^(\d{3})"),0))
-| alter tmp_time1 = concat(tmp_time1 , tmp_epoch_ms)
-| alter tmp_time1 = to_timestamp(to_integer(tmp_time1), "millis")
+| alter tmp_time1 = parse_timestamp("%Y-%m-%d %H:%M:%E3S %Ez", tmp_time1)
 | alter _time = coalesce(tmp_time1, tmp_time2_2, tmp_time2_1)
-| fields -tmp_time1, tmp_time2, tmp_splitStr, tmp_epoch_ms, tmp_Year, tmp_Year2, tmp_time2_1, tmp_time2_2, tmp_timeDiff;
+| fields -tmp_time1, tmp_time2, tmp_Year, tmp_Year2, tmp_time2_1, tmp_time2_2, tmp_timeDiff;

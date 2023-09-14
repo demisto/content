@@ -455,5 +455,6 @@
                 "query_uses_library": false
             }
         }
-    ]
+    ],
+    "fromVersion": "6.10.0"
 }

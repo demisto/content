@@ -7,10 +7,9 @@ comment: |-
 commonfields:
   id: CollectCampaignRecipients
   version: -1
-dockerimage: demisto/python3:3.10.10.48392
+dockerimage: demisto/python3:3.10.12.63474
 enabled: true
 name: CollectCampaignRecipients
-runonce: false
 script: ''
 scripttarget: 0
 subtype: python3

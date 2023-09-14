@@ -1,13 +1,17 @@
-import demistomock as demisto
-from CommonServerPython import *
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+from functools import partial
+
 from CommonServerUserPython import *
+
 ''' IMPORTS '''
 
-from typing import Dict, List, Set, Any, Callable, Optional
+from typing import Dict, List, Set, Any, Callable, Optional, Union
 from collections import OrderedDict
 import traceback
 import requests
 import urllib3
+import re
 
 from sixgill.sixgill_request_classes.sixgill_auth_request import SixgillAuthRequest
 from sixgill.sixgill_feed_client import SixgillFeedClient
@@ -33,6 +37,7 @@ DESCRIPTION_FIELD_ORDER = OrderedDict([('Description', 'description'),
                                        ('Sixgill Feed ID', 'sixgill_feedid'),
                                        ('Sixgill Feed Name', 'sixgill_feedname'),
                                        ('Sixgill Post ID', 'sixgill_postid'),
+                                       ('Sixgill Confidence', 'sixgill_confidence'),
                                        ('Language', 'lang'),
                                        ('Indicator ID', 'id'),
                                        ('External references (e.g. MITRE ATT&CK)', 'external_reference')])
@@ -117,6 +122,7 @@ def to_demisto_indicator(value, indicators_name, stix2obj, tags: list = [], tlp_
             "sixgilllanguage": stix2obj.get("lang"),
             "sixgillposttitle": stix2obj.get("sixgill_posttitle"),
             "sixgillfeedid": stix2obj.get("sixgill_feedid"),
+            "sixgillconfidence": stix2obj.get("sixgill_confidence"),
             "sixgillpostreference": post_id_to_full_url(stix2obj.get("sixgill_postid", "")),
             "sixgillindicatorid": stix2obj.get("id"),
             "sixgilldescription": stix2obj.get("description"),
@@ -160,6 +166,16 @@ def get_limit(str_limit, default_limit):
         return int(str_limit)
     except Exception:
         return default_limit
+
+
+def filter_confidence(confidence: Union[int, str], indicator_obj: Dict) -> bool:
+    """
+        Predicate function to filter records based on confidence score.
+    """
+    if isinstance(confidence, str) and confidence == 'all':
+        return True
+    sixgill_confidence = arg_to_number(indicator_obj.get("sixgill_confidence"), "sixgill_confidence", required=False)
+    return sixgill_confidence >= int(confidence) if sixgill_confidence else False
 
 
 def stix2_to_demisto_indicator(stix2obj: Dict[str, Any], log, tags: list = [], tlp_color: Optional[str] = None):
@@ -226,8 +242,35 @@ demisto_mapping: Dict[str, Dict[str, Any]] = {
     'darkfeed_026': {'name': FeedIndicatorType.URL, 'pipeline': [url_to_rfc3986, clean_url]},
     'darkfeed_027': {'name': FeedIndicatorType.IP, 'pipeline': []},
     'darkfeed_028': {'name': FeedIndicatorType.IP, 'pipeline': []},
+    'darkfeed_029': {'name': FeedIndicatorType.IP, 'pipeline': []},
+    'darkfeed_030': {'name': FeedIndicatorType.File, 'pipeline': []},
+    'darkfeed_031': {'name': FeedIndicatorType.Domain, 'pipeline': [strip_http, clean_url]},
+    'darkfeed_032': {'name': FeedIndicatorType.URL, 'pipeline': [url_to_rfc3986, clean_url]},
+    'darkfeed_033': {'name': FeedIndicatorType.File, 'pipeline': []},
+    'darkfeed_034': {'name': FeedIndicatorType.IP, 'pipeline': []},
+    'darkfeed_035': {'name': FeedIndicatorType.URL, 'pipeline': [url_to_rfc3986, clean_url]},
+    'darkfeed_036': {'name': FeedIndicatorType.URL, 'pipeline': [url_to_rfc3986, clean_url]},
+    'darkfeed_037': {'name': FeedIndicatorType.File, 'pipeline': []},
+    'darkfeed_038': {'name': FeedIndicatorType.IP, 'pipeline': []},
+    'darkfeed_039': {'name': FeedIndicatorType.IP, 'pipeline': []},
+    'darkfeed_040': {'name': FeedIndicatorType.URL, 'pipeline': [url_to_rfc3986, clean_url]},
+    'darkfeed_041': {'name': FeedIndicatorType.URL, 'pipeline': [url_to_rfc3986, clean_url]},
+    'darkfeed_042': {'name': FeedIndicatorType.IP, 'pipeline': []},
+    'darkfeed_043': {'name': FeedIndicatorType.URL, 'pipeline': [url_to_rfc3986, clean_url]},
+    'darkfeed_044': {'name': FeedIndicatorType.IP, 'pipeline': []},
+    'darkfeed_045': {'name': FeedIndicatorType.File, 'pipeline': []},
+    'darkfeed_046': {'name': FeedIndicatorType.IP, 'pipeline': []},
+    'darkfeed_047': {'name': FeedIndicatorType.Domain, 'pipeline': [strip_http, clean_url]},
+    'darkfeed_048': {'name': FeedIndicatorType.URL, 'pipeline': [url_to_rfc3986, clean_url]},
+    'darkfeed_049': {'name': FeedIndicatorType.IP, 'pipeline': []},
+    'darkfeed_050': {'name': FeedIndicatorType.IP, 'pipeline': []},
+    'darkfeed_051': {'name': FeedIndicatorType.IP, 'pipeline': []},
+    'darkfeed_052': {'name': FeedIndicatorType.URL, 'pipeline': [url_to_rfc3986, clean_url]},
+    'darkfeed_053': {'name': FeedIndicatorType.File, 'pipeline': []},
+    'darkfeed_054': {'name': FeedIndicatorType.URL, 'pipeline': [url_to_rfc3986, clean_url]},
+    'darkfeed_055': {'name': FeedIndicatorType.IP, 'pipeline': []},
+    'darkfeed_056': {'name': FeedIndicatorType.IP, 'pipeline': []}
 }
-
 
 ''' COMMANDS + REQUESTS FUNCTIONS '''
 
@@ -237,7 +280,8 @@ def test_module_command(*args):
     Performs basic Auth request
     """
     response = SESSION.send(request=SixgillAuthRequest(demisto.params()['client_id'],
-                                                       demisto.params()['client_secret'], CHANNEL_CODE).prepare(), verify=VERIFY)
+                                                       demisto.params()['client_secret'], CHANNEL_CODE).prepare(),
+                            verify=VERIFY)
     if not response.ok:
         raise Exception("Auth request failed - please verify client_id, and client_secret.")
     return 'ok', None, 'ok'
@@ -253,12 +297,13 @@ def get_indicators_command(client: SixgillFeedClient, args):
 
 
 def fetch_indicators_command(client: SixgillFeedClient, limit: int = 0, get_indicators_mode: bool = False,
-                             tags: list = [], tlp_color: Optional[str] = None):
+                             tags: list = [], tlp_color: Optional[str] = None, confidence: Optional[int] = None):
     bundle = client.get_bundle()
     indicators_to_create: List = []
     indicator_values_set: Set = set()
+    confidence = confidence or 'all'
 
-    for stix_indicator in bundle.get("objects"):
+    for stix_indicator in filter(partial(filter_confidence, confidence), bundle.get("objects")):
         if is_indicator(stix_indicator):
             demisto_indicators = stix2_to_demisto_indicator(stix_indicator, demisto, tags, tlp_color)
 
@@ -298,9 +343,14 @@ def main():
         'test-module': test_module_command,
         'sixgill-get-indicators': get_indicators_command
     }
+    confidence = demisto.params().get("confidence")
+    if confidence is None or confidence in ['', 'all']:
+        confidence = 'all'
+    else:
+        confidence = arg_to_number(confidence, "confidence", required=False)
     try:
         if demisto.command() == 'fetch-indicators':
-            indicators = fetch_indicators_command(client, tags=tags, tlp_color=tlp_color)
+            indicators = fetch_indicators_command(client, tags=tags, tlp_color=tlp_color, confidence=confidence)
             for b in batch(indicators, batch_size=2000):
                 demisto.createIndicators(b)
         else:

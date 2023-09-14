@@ -12,14 +12,13 @@ configuration:
   name: feedReputation
   defaultvalue: feedInstanceReputationNotSet
   type: 18
-  required: false
   options:
   - None
   - Good
   - Suspicious
   - Bad
-  additionalinfo: Indicators from this integration instance will be marked with this
-    reputation
+  additionalinfo: Indicators from this integration instance will be marked with this reputation
+  required: false
 - defaultvalue: A - Completely reliable
   display: Source Reliability
   name: feedReliability
@@ -33,8 +32,7 @@ configuration:
   required: true
   type: 15
   additionalinfo: Reliability of the source providing the intelligence data
-- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators
-    fetched from the feed
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
   display: Traffic Light Protocol Color
   name: tlp_color
   options:
@@ -42,45 +40,44 @@ configuration:
   - AMBER
   - GREEN
   - WHITE
-  required: false
   type: 15
+  required: false
 - display: ""
   name: feedExpirationPolicy
   defaultvalue: suddenDeath
   type: 17
-  required: false
   options:
   - never
   - interval
   - indicatorType
   - suddenDeath
+  required: false
 - name: feedExpirationInterval
   defaultvalue: "20160"
-  required: false
   type: 1
   display: ""
+  required: false
 - defaultvalue: '60'
   display: Feed Fetch Interval
   name: feedFetchInterval
-  required: false
   type: 19
+  required: false
 - display: Bypass exclusion list
   name: feedBypassExclusionList
   type: 8
-  required: false
   additionalinfo: |-
     When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 - additionalinfo: Type of the indicator in the feed.
   display: Indicator Type
-  hidden: false
   name: indicator_type
   options:
   - domain
@@ -91,13 +88,17 @@ configuration:
   required: true
   type: 15
 - display: API token
-  hidden: false
   name: api_token
-  required: true
   type: 4
+  hidden: true
+  required: false
+- displaypassword: API Token
+  name: credentials_api_token
+  hiddenusername: true
+  type: 9
+  required: false
 - defaultvalue: connectApi
   display: Services
-  hidden: false
   name: services
   options:
   - connectApi
@@ -112,28 +113,25 @@ configuration:
     This parameter will only be used for the 'connectApi' service.
     Using the 'large' risk rule is not recommended.
   display: Risk Rule
-  hidden: false
   name: risk_rule
-  required: false
   type: 0
+  required: false
 - additionalinfo: |-
     Load a custom risklist from a specified Recorded Future file path.
     If no file path is specified, the default risklist file is used. This parameter
     will only be used for the 'fusion' service.
   display: Fusion File Path
-  hidden: false
   name: fusion_file_path
-  required: false
   type: 0
+  required: false
 - additionalinfo: Supports CSV values.
   display: Tags
   name: feedTags
-  required: false
   type: 0
+  required: false
 - additionalinfo: Time in seconds before HTTP requests timeout.
   defaultvalue: '20'
   display: Request Timeout
-  hidden: false
   name: polling_timeout
   required: true
   type: 0
@@ -141,19 +139,15 @@ configuration:
     The minimum score from the feed in order to to determine whether the indicator is malicious. Default is "65". For more information about Recorded Future scoring go to integration details.
   defaultvalue: '65'
   display: Malicious Threshold
-  hidden: false
   name: threshold
-  required: false
   type: 0
-- additionalinfo: If selected, will be used to filter out the ingested indicators,
-    and only indicators with equivalent and higher risk score will be ingested into
-    XSOAR.
+  required: false
+- additionalinfo: If selected, will be used to filter out the ingested indicators, and only indicators with equivalent and higher risk score will be ingested into XSOAR.
   defaultvalue: '0'
   display: IOC Risk Score Threshold
-  hidden: false
   name: risk_score_threshold
-  required: false
   type: 0
+  required: false
 description: Ingests indicators from Recorded Future feeds into Demisto.
 display: Recorded Future RiskList Feed
 name: Recorded Future Feed
@@ -163,15 +157,10 @@ script:
     - default: true
       defaultValue: '10'
       description: The maximum number of results to return. The default value is 10.
-      isArray: false
       name: limit
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
-      description: The indicator type. Can be "ip", "domain", "hash", "vulnerability"
-        or "url".
-      isArray: false
+      description: The indicator type. Can be "ip", "domain", "hash", "vulnerability" or "url".
       name: indicator_type
       predefined:
       - ip
@@ -179,17 +168,11 @@ script:
       - hash
       - url
       - vulnerability
-      required: false
-      secret: false
-    deprecated: false
     description: Gets indicators from the feed.
-    execution: false
     name: rf-feed-get-indicators
   - arguments:
     - auto: PREDEFINED
-      default: false
       description: The indicator type
-      isArray: false
       name: indicator_type
       predefined:
       - ip
@@ -198,12 +181,9 @@ script:
       - url
       - vulnerability
       required: true
-      secret: false
-    deprecated: false
     description: |-
       Get a list of the risk rules available for an indicator,
       To limit the 'connectApi' service indicators list.
-    execution: false
     name: rf-feed-get-risk-rules
     outputs:
     - contextPath: RecordedFutureFeed.RiskRule.Name
@@ -215,11 +195,8 @@ script:
     - contextPath: RecordedFutureFeed.RiskRule.Criticality
       description: The risk rule criticality.
       type: String
-  dockerimage: demisto/python3:3.10.4.31492
+  dockerimage: demisto/python3:3.10.12.63474
   feed: true
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3

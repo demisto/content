@@ -8,19 +8,16 @@ args:
 - description: An array to merge from
   isArray: true
   name: merge_with
-- description: A comma separated list of pairs [key of merge_with]:[key of value.arrah_path].
-    e.g. ip:dst_ip, hostname:dst_host
+- description: A comma separated list of pairs [key of merge_with]:[key of value.arrah_path]. e.g. ip:dst_ip, hostname:dst_host
   name: mapping
   required: true
 - description: The key to the value where each of the destination value is to be set
   name: out_key
-- description: The relative path to the destination array where the marged array is
-    set
+- description: The relative path to the destination array where the marged array is set
   name: out_path
 - auto: PREDEFINED
   defaultValue: "true"
-  description: true if it allows to simply append source entries which doesn't match,
-    otherwise false
+  description: true if it allows to simply append source entries which doesn't match, otherwise false
   name: appendable
   predefined:
   - "true"
@@ -31,8 +28,7 @@ args:
   - merge
   - source
   - destination
-  description: How to merge the values if the key conflicts. 'source'
-    means data of 'merge_with', 'destination' means data of 'array_path'.
+  description: How to merge the values if the key conflicts. 'source' means data of 'merge_with', 'destination' means data of 'array_path'.
   defaultValue: merge
 - name: overwrite_by_source
   description: The comma separeted list of keys to overwrite by source value when the key conflicts.
@@ -50,7 +46,6 @@ contentitemexportablefields:
 enabled: true
 name: MergeDictArray
 runas: DBotWeakRole
-runonce: false
 script: ''
 scripttarget: 0
 tags:

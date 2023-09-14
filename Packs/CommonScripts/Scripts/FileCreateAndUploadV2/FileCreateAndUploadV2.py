@@ -1,7 +1,6 @@
-import base64
-
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+import base64
 
 
 def main():

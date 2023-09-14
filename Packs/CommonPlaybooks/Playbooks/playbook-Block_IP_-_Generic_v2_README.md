@@ -1,3 +1,4 @@
+Deprecated. Use the `Block IP - Generic v3` playbook instead. 
 This playbook blocks malicious IPs using all integrations that are enabled.
 
 Supported integrations for this playbook:
@@ -8,50 +9,49 @@ Supported integrations for this playbook:
 * FortiGate
 
 ## Dependencies
+
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* PAN-OS - Block IP - Custom Block Rule
+
 * PAN-OS - Block IP - Static Address Group
-* Add Indicator to Miner - Palo Alto MineMeld
-* PAN-OS - Block IP and URL - External Dynamic List
 * PAN-OS DAG Configuration
+* PAN-OS - Block IP - Custom Block Rule
+* PAN-OS - Block IP and URL - External Dynamic List
+* Add Indicator to Miner - Palo Alto MineMeld
 
 ### Integrations
+
 * Zscaler
 
 ### Scripts
+
 This playbook does not use any scripts.
 
 ### Commands
+
 * checkpoint-block-ip
-* zscaler-blacklist-ip
 * fortigate-ban-ip
+* zscaler-blacklist-ip
 
 ## Playbook Inputs
+
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | IPBlacklistMiner | The name of the IP block list Miner in  Minemeld. |  | Optional |
 | IP | Array of malicious IPs to block. |  | Optional |
-| CustomBlockRule | This input determines whether Palo Alto Networks Panorama or Firewall Custom Block Rules are used.
-Specify True to use Custom Block Rules. | True | Optional |
+| CustomBlockRule | This input determines whether Palo Alto Networks Panorama or Firewall Custom Block Rules are used.<br/>Specify True to use Custom Block Rules. | True | Optional |
 | LogForwarding | Panorama log forwarding object name. |  | Optional |
-| AutoCommit | This input determines whether to commit the configuration automatically.
-Yes \- Commit automatically.
-No \- Commit manually. | No | Optional |
-| StaticAddressGroup | This input determines whether Palo Alto Networks Panorama or Firewall Static Address Groups are used.
-Specify the Static Address Group name for IP handling. |  | Optional |
-| IPListName | This input determines whether Palo Alto Networks Panorama or Firewall External Dynamic Lists are used for blocking IPs.
-Specify the EDL name for IP handling. |  | Optional |
-| EDLServerIP | This input determines whether Palo Alto Networks Panorama or Firewall External Dynamic Lists are used:
-\* The IP address of the web server on which the files are stored.
-\* The web server IP address is configured in the integration instance. |  | Optional |
-| DAG | This input determines whether Palo Alto Networks Panorama or Firewall Dynamic Address Groups are used.
-Specify the Dynamic Address Group tag name for IP handling. |  | Optional |
+| AutoCommit | This input determines whether to commit the configuration automatically.<br/>Yes - Commit automatically.<br/>No - Commit manually. | No | Optional |
+| StaticAddressGroup | This input determines whether Palo Alto Networks Panorama or Firewall Static Address Groups are used.<br/>Specify the Static Address Group name for IP handling. |  | Optional |
+| IPListName | This input determines whether Palo Alto Networks Panorama or Firewall External Dynamic Lists are used for blocking IPs.<br/>Specify the EDL name for IP handling. |  | Optional |
+| EDLServerIP | This input determines whether Palo Alto Networks Panorama or Firewall External Dynamic Lists are used:<br/>\* The IP address of the web server on which the files are stored.<br/>\* The web server IP address is configured in the integration instance. |  | Optional |
+| DAG | This input determines whether Palo Alto Networks Panorama or Firewall Dynamic Address Groups are used.<br/>Specify the Dynamic Address Group tag name for IP handling. |  | Optional |
 
 ## Playbook Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |
@@ -84,3 +84,9 @@ Specify the Dynamic Address Group tag name for IP handling. |  | Optional |
 | CheckpointFWRule.Hits.Level | Level of rule hits. | unknown |
 | CheckpointFWRule.Hits.Percentage | Percentage of rule hits. | unknown |
 | CheckpointFWRule.Hits.Value | Value of rule hits. | unknown |
+
+## Playbook Image
+
+---
+
+![Block IP - Generic v2](../doc_files/Block_IP_-_Generic_v2.png)

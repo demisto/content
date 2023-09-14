@@ -1,0 +1,17 @@
+{
+    "results": [
+        {
+            "id": 1,
+            "can_view": 1,
+            "q_ref": 1,
+            "can_clone": 1,
+            "q_type": 1,
+            "name": "test",
+            "trigger-policy": "",
+            "trigger-policy_val": "0",
+            "relationship": "and",
+            "relationship_val": "1",
+            "sz_health-list": 1
+        }
+    ]
+}

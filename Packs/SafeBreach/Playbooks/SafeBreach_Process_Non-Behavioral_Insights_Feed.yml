@@ -2,8 +2,7 @@ id: SafeBreach - Process Non-Behavioral Insights Feed
 version: -1
 name: SafeBreach - Process Non-Behavioral Insights Feed
 description: |-
-  This playbook automatically remediates all non-behavioral indicators generated from SafeBreach Insights. To validate the remediation, it reruns the related insights and classifies the indicators as Remediated or Not Remediated.
-  A special feed based triggered job is required to initiate this playbook for every new SafeBreach generated indicator.
+  Deprecated. No available replacement.
 starttaskid: "0"
 tasks:
   "0":
@@ -66,8 +65,7 @@ tasks:
       id: d31f4007-b0a9-4e82-8588-81716ea68957
       version: -1
       name: Extract list of insight ids from indicators
-      description: Sets "InsightIds" with all the insights related to the processes
-        indicators.
+      description: Sets "InsightIds" with all the insights related to the processes indicators.
       scriptName: Set
       type: regular
       iscommand: false
@@ -278,12 +276,7 @@ tasks:
       id: b60ddac3-66ce-495c-8f23-dcbc1b07d932
       version: -1
       name: SafeBreach - Compare and Validate Insight Indicators
-      description: This playbook compares SafeBreach Insight indicators before and
-        after the processing. It receives an insight and it's indicators before validation,
-        fetches updated indicators after rerunning the insight, and then compares
-        the results to validate mitigation. Indicators are classified as Remediated
-        or Not Remediated based on their validated status and the appropriate field
-        (SafeBreach Remediation Status) is updated.
+      description: This playbook compares SafeBreach Insight indicators before and after the processing. It receives an insight and it's indicators before validation, fetches updated indicators after rerunning the insight, and then compares the results to validate mitigation. Indicators are classified as Remediated or Not Remediated based on their validated status and the appropriate field (SafeBreach Remediation Status) is updated.
       playbookName: SafeBreach - Compare and Validate Insight Indicators
       type: playbook
       iscommand: false
@@ -326,10 +319,7 @@ tasks:
       id: 65b815fe-6c0c-4411-81bd-5da4a3d2d831
       version: -1
       name: SafeBreach - Rerun Insights
-      description: This is a sub-playbook reruns a list of SafeBreach insights based
-        on Insight Id and waits until they complete. Used in main SafeBreach playbooks,
-        such as "SafeBreach - Handle Insight Incident" and "SafeBreach - Process Non-Behavioral
-        Insights Feed".
+      description: This is a sub-playbook reruns a list of SafeBreach insights based on Insight Id and waits until they complete. Used in main SafeBreach playbooks, such as "SafeBreach - Handle Insight Incident" and "SafeBreach - Process Non-Behavioral Insights Feed".
       playbookName: SafeBreach - Rerun Insights
       type: playbook
       iscommand: false
@@ -521,11 +511,7 @@ tasks:
       id: 805fe301-1f29-412e-8ec9-a25c1e2ef316
       version: -1
       name: SafeBreach - Create Incidents per Insight and Associate Indicators
-      description: This is a sub-playbook that creates incidents per SafeBreach insight,
-        enriched with all the related indicators and additional SafeBreach insight
-        contextual information. Used in main SafeBreach playbooks, such as "SafeBreach
-        - Process Behavioral Insights Feed" and "SafeBreach - Process Non-Behavioral
-        Insights Feed".
+      description: This is a sub-playbook that creates incidents per SafeBreach insight, enriched with all the related indicators and additional SafeBreach insight contextual information. Used in main SafeBreach playbooks, such as "SafeBreach - Process Behavioral Insights Feed" and "SafeBreach - Process Non-Behavioral Insights Feed".
       playbookName: SafeBreach - Create Incidents per Insight and Associate Indicators
       type: playbook
       iscommand: false
@@ -618,4 +604,5 @@ outputs: []
 quiet: true
 fromversion: 5.5.0
 tests:
-- No tests (auto formatted)
+- No tests (deprecated)
+deprecated: true

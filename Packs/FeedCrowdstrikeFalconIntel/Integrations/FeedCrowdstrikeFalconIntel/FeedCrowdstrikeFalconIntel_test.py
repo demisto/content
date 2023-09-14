@@ -61,3 +61,33 @@ def test_actor_type(mocker, server_ge_620, expected_actor_type):
 
     # validate
     assert all(indicator['type'] == expected_actor_type for indicator in res)
+
+
+def test_fetch_indicators_with_limit(mocker, requests_mock):
+    """
+    Given:
+        - Limit param are 2
+
+    When:
+        - fetch_indicators
+
+    Then:
+        -
+        Validate there is offset in the last_run for the next run
+    """
+    import re
+    import demistomock as demisto
+    from FeedCrowdstrikeFalconIntel import main
+    mocker.patch.object(Client, '_get_access_token', return_value='test_token')
+    mocker.patch.object(demisto, 'command', return_value='fetch-indicators')
+    mocker.patch.object(demisto, 'params', return_value={'limit': '2', 'credentials_client': {
+                        'identifier': 'test_identifier', 'password': 'test_password'}})
+    mocker.patch.object(demisto, 'setLastRun')
+    requests_mock.get(re.compile('.*api.crowdstrike.com.*'),
+                      json=indicators['list_data_cs'])
+
+    main()
+
+    last_run_call_args = demisto.setLastRun.call_args[0][0]
+    assert 'last_modified_time' in last_run_call_args
+    assert last_run_call_args['offset'] == 2

@@ -1,0 +1,24 @@
+{
+    "dataType": "incidents",
+    "dateRange": {
+        "fromDate": "0001-01-01T00:00:00Z",
+        "fromDateLicense": "0001-01-01T00:00:00Z",
+        "period": {
+            "by": "",
+            "byFrom": "days",
+            "byTo": "",
+            "field": "",
+            "fromValue": 7,
+            "toValue": null
+        },
+        "toDate": "0001-01-01T00:00:00Z"
+    },
+    "id": "73e20f61-9424-4d77-8dfb-03ea6cb976d3",
+    "isPredefined": true,
+    "name": "Use Case Time Spent in Testing",
+    "query": "usecasetestingtimer.runStatus:running",
+    "version": -1,
+    "widgetType": "duration",
+    "fromVersion": "6.8.0",
+    "description": ""
+}

@@ -1,2 +1,2 @@
 [file:CheckPhish.yml]
-ignore=IN135,IN145
+ignore=IN135

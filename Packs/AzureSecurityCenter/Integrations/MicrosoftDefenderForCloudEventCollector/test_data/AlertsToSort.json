@@ -1,0 +1,175 @@
+[
+  {
+    "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/Sample-RG/providers/Microsoft.Security/locations/centralus/alerts/2517396773228188817_67a23793-595b-4efb-ae23-679568966575",
+    "name": "2517396773228188817_67a23793-595b-4efb-ae23-679568966575",
+    "type": "Microsoft.Security/Locations/alerts",
+    "properties": {
+      "status": "Active",
+      "timeGeneratedUtc": "2022-09-08T07:51:23.9852762Z",
+      "processingEndTimeUtc": "2022-09-08T07:51:23.1811182Z",
+      "version": "2022-01-01.0",
+      "vendorName": "Microsoft",
+      "productName": "Microsoft Defender for Cloud",
+      "alertType": "SIMULATED_KV_OperationVolumeAnomaly",
+      "startTimeUtc": "2022-09-08T07:51:17.1811182Z",
+      "endTimeUtc": "2022-09-08T07:51:17.1811182Z",
+      "severity": "Medium",
+      "isIncident": false,
+      "systemAlertId": "2517396773228188817_67a23793-595b-4efb-ae23-679568966575",
+      "intent": "Unknown",
+      "resourceIdentifiers": [
+        {
+          "$id": "centralus_5",
+          "azureResourceId": "/SUBSCRIPTIONS/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/RESOURCEGROUPS/Sample-RG/providers/microsoft.keyvault/vaults/Sample-KV",
+          "type": "AzureResource",
+          "azureResourceTenantId": "ebac1a16-81bf-449b-8d43-5732c3c1d999"
+        }
+      ],
+      "compromisedEntity": "Sample-KV",
+      "alertDisplayName": "[SAMPLE ALERT] User accessed high volume of Key Vaults",
+      "description": "THIS IS A SAMPLE ALERT: While may be benign it could also indicate that a larger volume of Key Vault operations has been performed compared to past historical data. Key Vaults typical exhibit the same behavior over time. This may be a legitimate change in activity but may also indicate that your Key Vault infrastructure has been compromised warranting further investigation.",
+      "remediationSteps": [
+        "Please review your activity logs to determine if the access attempts that triggered this alert were legitimate. If you are concerned that these access attempts may not have been legitimate, please contact your security administrator and disable access policies to the user or application and rotate the secrets, keys, and passwords stored in this key vault."
+      ],
+      "extendedProperties": {
+        "resourceType": "Key Vault",
+        "end Time UTC": "09/08/2022 07:51:17",
+        "all vault operations in last 24 hours": "[SecretSet:1, SecretGet:5, Authentication:2, VaultGet:3]",
+        "suspicious Operations": "[SecretGet:2, VaultGet:2]",
+        "attacker IP Address": "0.0.0.0",
+        "attacker Object ID": "00000000-0000-0000-0000-000000000000",
+        "application ID": "00000000-0000-0000-0000-000000000000",
+        "result Signature": "OK",
+        "start Time UTC": "09/08/2022 07:51:17",
+        "client Information": "Microsoft.Azure.Management.Resources.ResourceManagementClient/2.0.0.0, ",
+        "alert Reasons": "[The application(appid) does not usually come from this IP, The application(appid) performed more operations than usual, The user(objid) does not usually come from this IP, The user(objid) performed more operations than usual, This vault is not usually accessed from this IP] Note: related application(appid), user(objid), IP and operations are included in appid, objid, callerIpAddress and suspiciousOperations entries, respectively",
+        "target": "https://sample.vault.azure.net/secrets/sample"
+      },
+      "entities": [
+        {
+          "$id": "centralus_6",
+          "resourceId": "/SUBSCRIPTIONS/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/RESOURCEGROUPS/Sample-RG/providers/microsoft.keyvault/vaults/Sample-KV",
+          "type": "azure-resource"
+        },
+        {
+          "$id": "centralus_7",
+          "aadUserId": "00000000-0000-0000-0000-000000000000",
+          "isValid": false,
+          "type": "account"
+        },
+        {
+          "$id": "centralus_8",
+          "address": "0.0.0.0",
+          "location": {
+            "countryCode": "US",
+            "countryName": "United States",
+            "state": "Virginia",
+            "city": "Washington"
+          },
+          "type": "ip"
+        }
+      ],
+      "alertUri": "https://portal.azure.com/#blade/Microsoft_Azure_Security_AzureDefenderForData/AlertBlade/alertId/2517396773228188817_67a23793-595b-4efb-ae23-679568966575/subscriptionId/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroup/Sample-RG/referencedFrom/alertDeepLink/location/centralus"
+    }
+  },
+  {
+    "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/Sample-RG/providers/Microsoft.Security/locations/centralus/alerts/2517396773208188817_4492529b-fc4e-4a77-816e-0512ad8761f0",
+    "name": "2517396773208188817_4492529b-fc4e-4a77-816e-0512ad8761f0",
+    "type": "Microsoft.Security/Locations/alerts",
+    "properties": {
+      "status": "Active",
+      "timeGeneratedUtc": "2022-09-08T07:51:23.7323577Z",
+      "processingEndTimeUtc": "2022-09-08T07:51:23.1811182Z",
+      "version": "2022-01-01.0",
+      "vendorName": "Microsoft",
+      "productName": "Microsoft Defender for Cloud",
+      "alertType": "SIMULATED_MaliciousContent-AzureWebApps",
+      "startTimeUtc": "2022-09-08T07:51:19.1811182Z",
+      "endTimeUtc": "2022-09-08T07:51:19.1811182Z",
+      "severity": "High",
+      "isIncident": false,
+      "systemAlertId": "2517396773208188817_4492529b-fc4e-4a77-816e-0512ad8761f0",
+      "intent": "Collection",
+      "resourceIdentifiers": [
+        {
+          "$id": "centralus_3",
+          "azureResourceId": "/SUBSCRIPTIONS/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/RESOURCEGROUPS/Sample-RG/providers/Microsoft.Web/sites/Sample-App",
+          "type": "AzureResource",
+          "azureResourceTenantId": "ebac1a16-81bf-449b-8d43-5732c3c1d999"
+        }
+      ],
+      "compromisedEntity": "Sample-App",
+      "alertDisplayName": "[SAMPLE ALERT] Phishing content hosted on Azure Webapps",
+      "description": "THIS IS A SAMPLE ALERT: URL used for phishing attack found on the Azure AppServices website. This URL was part of a phishing attack sent to O365 customers. The content typically lure visitors into entering their corporate credentials or financial information into a legitimate looking website.",
+      "remediationSteps": [
+        "1. Use Azure Web Sites Process Explorer and try to identify unknown running processes (see https://blogs.msdn.microsoft.com/waws/2014/11/14/viewing-process-information-for-microsoft-azure-web-sites/)",
+        "2. Escalate the alert to the information security team."
+      ],
+      "extendedProperties": {
+        "url": "https://sample.azurewebsites.net",
+        "resourceType": "App Service",
+        "killChainIntent": "Collection"
+      },
+      "entities": [
+        {
+          "$id": "centralus_4",
+          "url": "https://sample.azurewebsites.net",
+          "type": "url"
+        }
+      ],
+      "alertUri": "https://portal.azure.com/#blade/Microsoft_Azure_Security_AzureDefenderForData/AlertBlade/alertId/2517396773208188817_4492529b-fc4e-4a77-816e-0512ad8761f0/subscriptionId/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroup/Sample-RG/referencedFrom/alertDeepLink/location/centralus"
+    }
+  },
+  {
+    "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/Sample-RG/providers/Microsoft.Security/locations/centralus/alerts/2517396773188188817_5c67ef0a-f746-44f5-8922-dfd4e92ac6cb",
+    "name": "2517396773188188817_5c67ef0a-f746-44f5-8922-dfd4e92ac6cb",
+    "type": "Microsoft.Security/Locations/alerts",
+    "properties": {
+      "status": "Active",
+      "timeGeneratedUtc": "2022-09-08T07:51:23.53895Z",
+      "processingEndTimeUtc": "2022-09-08T07:51:23.1811182Z",
+      "version": "2022-01-01.0",
+      "vendorName": "Microsoft",
+      "productName": "Microsoft Defender for Cloud",
+      "alertType": "SIMULATED_APPS_WpThemeInjection",
+      "startTimeUtc": "2022-09-08T07:51:21.1811182Z",
+      "endTimeUtc": "2022-09-08T07:51:21.1811182Z",
+      "severity": "High",
+      "isIncident": false,
+      "systemAlertId": "2517396773188188817_5c67ef0a-f746-44f5-8922-dfd4e92ac6cb",
+      "intent": "Unknown",
+      "resourceIdentifiers": [
+        {
+          "$id": "centralus_1",
+          "azureResourceId": "/SUBSCRIPTIONS/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/RESOURCEGROUPS/Sample-RG/providers/Microsoft.Web/sites/Sample-App",
+          "type": "AzureResource",
+          "azureResourceTenantId": "ebac1a16-81bf-449b-8d43-5732c3c1d999"
+        }
+      ],
+      "compromisedEntity": "Sample-App",
+      "alertDisplayName": "[SAMPLE ALERT] Suspicious WordPress theme invocation detected",
+      "description": "THIS IS A SAMPLE ALERT: The Azure App Service activity log indicates a possible code injection activity on your App Service resource.\r\nThe suspicious activity detected resembles that of a manipulation of WordPress theme to support server side execution of code, followed by a direct web request to invoke the manipulated theme file.\r\nThis type of activity was seen in the past as part of an attack campaign over WordPress.",
+      "remediationSteps": [
+        "1. If WordPress is installed, make sure that the application is up to date and automatic updates are enabled.",
+        "2. If only specific IP addresses should be allowed to access the web app, set IP restrictions (https://docs.microsoft.com/azure/app-service/app-service-ip-restrictions) for it."
+      ],
+      "extendedProperties": {
+        "sample Source IP Addresses": "0.0.0.0",
+        "sample User Agents": "Mozilla/5.0+(Windows+NT+10.0;+Win64;+x64;+rv:48.0)+Gecko/20100101+Firefox/48.0, Mozilla/5.0+(Windows+NT+10.0;+Win64;+x64)+AppleWebKit/537.36+(KHTML,+like+Gecko)+Chrome/63.0.3239.132+Safari/537.36",
+        "last Event Time": "12/11/2019 12:34:27 AM",
+        "sample Referer": "-",
+        "sample URIs": "/login.php",
+        "resourceType": "App Service"
+      },
+      "entities": [
+        {
+          "$id": "centralus_2",
+          "hostName": "Sample-App",
+          "azureID": "/SUBSCRIPTIONS/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/RESOURCEGROUPS/Sample-RG/providers/Microsoft.Web/sites/Sample-App",
+          "type": "host"
+        }
+      ],
+      "alertUri": "https://portal.azure.com/#blade/Microsoft_Azure_Security_AzureDefenderForData/AlertBlade/alertId/2517396773188188817_5c67ef0a-f746-44f5-8922-dfd4e92ac6cb/subscriptionId/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroup/Sample-RG/referencedFrom/alertDeepLink/location/centralus"
+    }
+  }
+]

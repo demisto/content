@@ -13,7 +13,7 @@ if CREDENTIALS:
     USERNAME = CREDENTIALS.get('identifier')
     PASSWORD = CREDENTIALS.get('password')
 VERIFY_SSL = not demisto.params().get('unsecure', False)
-TOKEN = demisto.params().get('token')
+TOKEN = demisto.params().get("credentials_token", {}).get('password') or demisto.params().get('token')
 NAMESPACE = demisto.params().get('namespace')
 USE_APPROLE_AUTH_METHOD = argToBoolean(demisto.params().get('use_approle', 'false') or 'false')
 BASE_URL = demisto.params().get('server', '')

@@ -1,0 +1,74 @@
+[
+    {
+        "id": 1,
+        "_id": "test",
+        "name": "test",
+        "poolCount": 0,
+        "dissingleServerOrServerBalance": "Single Server",
+        "distype": "Reverse Proxy",
+        "type": 1,
+        "comments": "",
+        "singleServerOrServerBalance": 1,
+        "can_delete": true
+    },
+    {
+        "id": 2,
+        "_id": "test2",
+        "name": "test2",
+        "poolCount": 1,
+        "dissingleServerOrServerBalance": "Single Server",
+        "distype": "Reverse Proxy",
+        "type": 1,
+        "comments": "",
+        "singleServerOrServerBalance": 1,
+        "can_delete": true
+    },
+    {
+        "id": 3,
+        "_id": "offline",
+        "name": "offline",
+        "poolCount": 1,
+        "distype": "Offline Protection",
+        "type": 2,
+        "comments": "",
+        "can_delete": true
+    },
+    {
+        "id": 4,
+        "_id": "true",
+        "name": "true",
+        "poolCount": 1,
+        "distype": "True Transparent Proxy",
+        "type": 3,
+        "comments": "",
+        "can_delete": true
+    },
+    {
+        "id": 5,
+        "_id": "transparent",
+        "name": "transparent",
+        "poolCount": 1,
+        "distype": "Transparent Inspection",
+        "type": 4,
+        "comments": "",
+        "can_delete": true
+    },
+    {
+        "id": 6,
+        "_id": "wccp",
+        "name": "wccp",
+        "poolCount": 1,
+        "dissingleServerOrServerBalance": "Server Balance",
+        "distype": "Reverse Proxy",
+        "type": 1,
+        "comments": "",
+        "disLoadBalancingAlgorithm": "Round Robin",
+        "loadBalancingAlgorithm": 1,
+        "serverHealthCheck": "",
+        "disserverHealthCheck": "",
+        "persistence": "",
+        "dispersistence": "",
+        "singleServerOrServerBalance": 2,
+        "can_delete": true
+    }
+]

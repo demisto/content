@@ -1,7 +1,8 @@
 id: Block URL - Generic v2
 version: -1
 contentitemexportablefields:
-  contentitemfields: {}
+  contentitemfields:
+    propagationLabels: []
 name: Block URL - Generic v2
 description: |-
   This playbook blocks malicious URLs using all integrations that are enabled.
@@ -94,6 +95,7 @@ tasks:
       - "28"
       - "32"
       - "38"
+      - "42"
     separatecontext: false
     view: |-
       {
@@ -263,10 +265,10 @@ tasks:
       description: |-
         This playbook blocks URLs using Palo Alto Networks Panorama or Firewall through Custom URL Categories.
         The playbook checks whether the input URL category already exists, and if the URLs are a part of this category. Otherwise, it will create the category, block the URLs, and commit the configuration.
-      playbookName: PAN-OS - Block URL - Custom URL Category
       type: playbook
       iscommand: false
       brand: ""
+      playbookId: PAN-OS - Block URL - Custom URL Category
     nexttasks:
       '#none#':
       - "2"
@@ -1118,12 +1120,12 @@ tasks:
     continueonerrortype: ""
   "40":
     id: "40"
-    taskid: 32024a50-7f4b-47cd-8917-904f2b016e93
+    taskid: 35fcf7d9-19c6-48fe-831d-0b78cbf96323
     type: condition
     task:
-      id: 32024a50-7f4b-47cd-8917-904f2b016e93
+      id: 35fcf7d9-19c6-48fe-831d-0b78cbf96323
       version: -1
-      name: Is Netcraft Integration Is Enabled?
+      name: Is Netcraft Integration Enabled?
       description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
       scriptName: IsIntegrationAvailable
       type: condition
@@ -1194,6 +1196,134 @@ tasks:
     isoversize: false
     isautoswitchedtoquietmode: false
     continueonerrortype: ""
+  "42":
+    continueonerrortype: ""
+    id: "42"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "43"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: f840dbdd-478b-445f-8f0b-a5527a54467b
+      iscommand: false
+      name: Prisma SASE
+      type: title
+      version: -1
+      description: ''
+    taskid: f840dbdd-478b-445f-8f0b-a5527a54467b
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": -1610,
+          "y": 570
+        }
+      }
+  "43":
+    continueonerrortype: ""
+    id: "43"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "44"
+    note: false
+    quietmode: 0
+    results:
+    - brandInstances
+    scriptarguments:
+      brandname:
+        simple: Palo Alto Networks - Prisma SASE
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      id: e5de9af1-33df-4064-82d9-b5b87f472d7f
+      iscommand: false
+      name: Is Prisma SASE Enabled?
+      scriptName: IsIntegrationAvailable
+      type: condition
+      version: -1
+    taskid: e5de9af1-33df-4064-82d9-b5b87f472d7f
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": -1610,
+          "y": 700
+        }
+      }
+  "44":
+    continueonerrortype: ""
+    id: "44"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      AutoCommit:
+        complex:
+          root: inputs.AutoCommit
+      CategoryName:
+        complex:
+          root: inputs.CustomURLCategory
+      Folder:
+        complex:
+          root: inputs.Folder
+          transformers:
+          - operator: uniq
+      URL:
+        complex:
+          accessor: URL
+          root: Blocklist
+          transformers:
+          - operator: uniq
+    separatecontext: true
+    skipunavailable: true
+    task:
+      brand: ""
+      description: |-
+        The playbook will handle the operation of blocking a URL within the organization.
+        If a category is provided, the URL will be added to the list.
+        If not, a new URL category will be created, and a new security rule that blocks that category.
+      id: 7fa52bc1-010b-4de9-87e4-dbc537abd12b
+      iscommand: false
+      name: Prisma SASE - Block URL
+      playbookId: Prisma SASE - Block URL
+      type: playbook
+      version: -1
+    taskid: 7fa52bc1-010b-4de9-87e4-dbc537abd12b
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": -1610,
+          "y": 915
+        }
+      }
 view: |-
   {
     "linkLabelsPosition": {
@@ -1207,8 +1337,8 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 1625,
-        "width": 3650,
-        "x": -1190,
+        "width": 4070,
+        "x": -1610,
         "y": -470
       }
     }
@@ -1273,7 +1403,17 @@ inputs:
   required: false
   description: Insert a tag name with which indicators will get tagged. This tag can be used later in the External Dynamic Lists integration by using the tag for filtering IPs in the indicator query.
   playbookInputQuery:
+- key: Folder
+  value:
+    simple: Shared
+  required: false
+  description: |-
+    For prisma SASE usage - Specify the scope for a newly created security rule to be applied.
+    Remember, this input will only be used when there is no input to the CategoryName.
+    Default: Shared
+  playbookInputQuery: null
 outputs: []
 tests:
-- No tests (auto formatted)
+- Send Investigation Summary Reports - Test
 fromversion: 6.5.0
+system: true

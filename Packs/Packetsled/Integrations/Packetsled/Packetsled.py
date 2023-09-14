@@ -1,10 +1,10 @@
-import struct
-from urllib.parse import quote
-
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+import struct
+from urllib.parse import quote
+import urllib3
 
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 VERIFY = False
 
@@ -107,7 +107,7 @@ def make_context(dargs, apiserver, auth_token):
         }
     else:
         response = requests.get(urljoin(apiserver, '/admin/probes'),
-                                params={'filterscount': 1, 'filtercondition0': 'NOT_EQUAL',
+                                params={'filterscount': 1, 'filtercondition0': 'NOT_EQUAL',  # type: ignore[arg-type]
                                         'filterdatafield0': 'deleted', 'filtervalue0': 1},
                                 headers={'cache-control': 'no-cache', 'x-api-access-token': auth_token}, verify=VERIFY)
         result = validate_response(response)
@@ -211,8 +211,8 @@ def main():
 
     elif demisto.command() == 'packetsled-sensors':
         response = requests.get(urljoin(apiserver, '/admin/probes'),
-                                params={'filterscount': 1, 'filtercondition0': 'NOT_EQUAL', 'filterdatafield0': 'deleted',
-                                        'filtervalue0': 1},
+                                params={'filterscount': 1, 'filtercondition0': 'NOT_EQUAL',
+                                        'filterdatafield0': 'deleted', 'filtervalue0': 1},  # type: ignore[arg-type]
                                 headers={'cache-control': 'no-cache', 'x-api-access-token': auth_token}, verify=VERIFY)
 
         result = response.json()

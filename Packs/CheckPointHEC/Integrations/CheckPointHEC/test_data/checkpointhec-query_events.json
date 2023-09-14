@@ -1,0 +1,28 @@
+{
+    "responseEnvelope": {
+        "requestId": "30bcf106-ea27-4eaa-9b2b-6994ca1044cd",
+        "responseCode": 200,
+        "responseText": "",
+        "additionalText": "",
+        "recordsNumber": 60,
+        "scrollId": "30b609a37e744ac7988ba7c8a1b4d736"
+    },
+    "responseData": [
+        {
+            "eventId": "99c2f9b654514dc5b3f950044bf1b056",
+            "customerId": "prod-3-con-lab44",
+            "saas": "office365_emails",
+            "entityId": "00000000000000000000000000000000",
+            "state": "remediated",
+            "type": "malicious_url",
+            "confidenceIndicator": "malicious_url",
+            "eventCreated": "2023-06-30T15:14:58.463039+00:00",
+            "severity": "4",
+            "description": "A user clicked a malicious URL in an email from Automation@avtestqa.com - 'AUT-clicktime-qa-1-blacklist_300623_18_11_20_314397' (user2@avananlab44.onmicrosoft.com's mailbox)",
+            "data": "A user #{\"entity_id\": \"00000000000000000000000000000000\", \"entity_type\": \"clicktime_protection_scan\", \"label\": \"clicked a malicious URL\"} in an email from #{\"entity_id\": \"fc90ec7c-f056-4e6b-9629-c3609bf8bf11\", \"entity_type\": \"office365_emails_user\", \"disable_link\": true, \"label\": \"Automation@avtestqa.com\"} - '#{\"entity_id\": \"00000000000000000000000000000000\", \"entity_type\": \"office365_emails_email\", \"label\": \"AUT-clicktime-qa-1-blacklist_300623_18_11_20_314397\"}' (#{\"entity_id\": \"04df0456-6328-4cfe-a285-e41e3d035e9e\", \"entity_type\": \"office365_emails_user\", \"label\": \"user2@avananlab44.onmicrosoft.com\"}'s mailbox)",
+            "additionalData": null,
+            "availableEventActions": null,
+            "actions": []
+        }
+    ]
+}

@@ -5,46 +5,38 @@ commonfields:
 configuration:
 - display: API Token
   name: token
-  required: true
   type: 4
+  hidden: true
+  required: false
+- displaypassword: API Token
+  name: credentials_api_token
+  hiddenusername: true
+  type: 9
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 description: Telegram integration
 display: Telegram (Beta)
 name: Telegram_Beta
 script:
   commands:
   - arguments:
-    - default: false
-      description: The recipient ID
-      isArray: false
+    - description: The recipient ID
       name: userID
       required: true
-      secret: false
-    - default: false
-      description: The recipient username
-      isArray: false
+    - description: The recipient username
       name: username
       required: true
-      secret: false
-    - default: false
-      description: The message to send
-      isArray: false
+    - description: The message to send
       name: message
       required: true
-      secret: false
-    deprecated: false
     description: Sends a message
-    execution: false
     name: telegram-send-message
-  - deprecated: false
-    description: List users
-    execution: false
+  - description: List users
     name: telegram-list-users
-  dockerimage: demisto/python3:3.10.10.48392
-  isfetch: false
+  dockerimage: demisto/python3:3.10.12.63474
   runonce: false
   script: '-'
   type: python

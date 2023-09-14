@@ -35,9 +35,10 @@ configuration:
   required: true
   type: 0
   section: Connect
-description: Use the EWS Extension Online Powershell v2 integration to get information about mailboxes and users in your organization.  This integration can also retrieve and modify Tenant Allow/Block Lists.
-display: EWS Extension Online Powershell v2
+description: Deprecated. Use ***EWS Extension Online Powershell v3*** instead.
+display: EWS Extension Online Powershell v2 (Deprecated)
 name: EWS Extension Online Powershell v2
+deprecated: true
 script:
   commands:
   - arguments:
@@ -566,7 +567,6 @@ script:
       description: The value of the entry that was removed
       type: string
     description: Remove items from the Tenant Allow/Block Lists.   You can delete items by their value or by unique ID.  Uses PowerShell cmdlet Remove-TenantAllowBlockListItems cmdlet.
-  runonce: false
   script: ''
   type: powershell
   dockerimage: demisto/pwsh-exchangev3:1.0.0.49863

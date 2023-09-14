@@ -1,0 +1,51 @@
+{
+    "test_case_1": {
+        "args": {
+            "asset_id": "1", 
+            "name": "asset_1_name",
+            "description": "asset_1_description"
+        },
+        "mock_response": {"error_code":0, "error_msg":"", "response": {
+            "assetDataFields":[], "canManage":"true", "canUse":"true", "context":"", "createdTime":"1673270083", "creator": {
+                "firstname":"test", "id":"1", "lastname":"", "username":"test", "uuid":"test_uuid"
+                },
+                "description": "asset_1_description", "id":"1", "ioFirstSyncTime":"-1", "ioLastSyncFailure":"-1", "ioLastSyncSuccess":"-1", "ioSyncErrorDetails":null, "ioSyncStatus":"Not Synced", "ipCount":-1, 
+                "modifiedTime":"1684660372", "name":"asset_1_name", "owner": {
+                    "firstname": "test", "id": "1", "lastname": "", "username": "test", "uuid":"test_uuid"
+                    }, 
+                "ownerGroup": {
+                    "description": "Full Access group", "id": "0", "name":"Full Access"
+                    },
+                "repositories": [
+                    {
+                        "ipCount": "-1", "repository": {
+                            "description": "", "id":"1", "name":"Local", "type":"Local", "uuid":"test_uuid"
+                        }
+                    }
+                ],
+                "status":"0", "tags":"", "targetGroup": {
+                    "description":"", "id":-1, "name": ""
+                    },
+                "template": {
+                    "description": "This asset uses passive plugins for OS detection and hop detection to identify hosts on the network.", "id": "451", "name": "Systems Discovered Passively"
+                },
+                "type": "dynamic", "typeFields": {
+                    "rules": {
+                        "children": [
+                            {
+                                "filterName": "pluginid", "operator": "eq", "pluginIDConstraint": "-1", "type": "clause", "value":"12"
+                            },
+                            {
+                                "filterName": "pluginid", "operator": "eq", "pluginIDConstraint": "-1", "type": "clause", "value": "1"
+                            }
+                        ],
+                        "operator": "any", "type": "group"
+                    }
+                }, "uuid": "test_uuid"
+            },
+            "timestamp": 1684660372,
+            "type": "regular", "warnings":[]
+        },
+        "expected_hr": "asset 1 was updated successfully."
+    }
+}

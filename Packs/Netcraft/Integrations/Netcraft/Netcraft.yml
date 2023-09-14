@@ -215,7 +215,6 @@ script:
       description: The ID of the takedown to escalate.
     description: Escalates a takedown.
     deprecated: true
-  runonce: false
   subtype: python3
 fromversion: 5.0.0
 deprecated: true

@@ -16,7 +16,8 @@ from googleapiclient import discovery
 """ GLOBALS/PARAMS """
 
 # Params for assembling object of the Service Account Credentials File Contents
-SERVICE_ACCOUNT_FILE = demisto.params().get('service')
+SERVICE_ACCOUNT_FILE = demisto.params().get('credentials_service_account_json',
+                                            {}).get('password') or demisto.params().get('service')
 SERVICE_ACT_PROJECT_ID = None
 
 # Params for constructing googleapiclient service object
@@ -4415,46 +4416,47 @@ def aggregated_list_instances_ip(args: Dict[str, Any]) -> CommandResults:
             project = raw.split('/')[-1]
         else:
             raise ValueError("Unable to find project of the asset")
-    else:
-        raise ValueError("Unable to find asset with IP address.  If you are using an organization service account, \
-                          please make sure the default_search_scope integration parameter is set.")
 
-    output = []
-    data_res = []
+        output = []
+        data_res = []
 
-    request_comp = get_compute().instances().aggregatedList(
-        project=project,
-    )
-    while request_comp:
-        response_comp = request_comp.execute()
-        if 'items' in response_comp.keys():
-            for _, instances_scoped_list in response_comp['items'].items():
-                if 'warning' not in instances_scoped_list.keys():
-                    for inst in instances_scoped_list.get('instances', []):
-                        for interface in inst.get('networkInterfaces', []):
-                            for config in interface.get('accessConfigs', []):
-                                # only add if 'natIP' (public IP) matches.
-                                if config.get('natIP') == ip:
-                                    output.append(inst)
-                                    data_res_item = {
-                                        'id': inst.get('id'),
-                                        'name': inst.get('name'),
-                                        'machineType': inst.get('machineType'),
-                                        'zone': inst.get('zone'),
-                                    }
-                                    data_res.append(data_res_item)
-
-        request_comp = get_compute().instances().aggregatedList_next(
-            previous_request=request_comp, previous_response=response_comp
+        request_comp = get_compute().instances().aggregatedList(
+            project=project,
         )
+        while request_comp:
+            response_comp = request_comp.execute()
+            if 'items' in response_comp.keys():
+                for _, instances_scoped_list in response_comp['items'].items():
+                    if 'warning' not in instances_scoped_list.keys():
+                        for inst in instances_scoped_list.get('instances', []):
+                            for interface in inst.get('networkInterfaces', []):
+                                for config in interface.get('accessConfigs', []):
+                                    # only add if 'natIP' (public IP) matches.
+                                    if config.get('natIP') == ip:
+                                        output.append(inst)
+                                        data_res_item = {
+                                            'id': inst.get('id'),
+                                            'name': inst.get('name'),
+                                            'machineType': inst.get('machineType'),
+                                            'zone': inst.get('zone'),
+                                        }
+                                        data_res.append(data_res_item)
 
-    return CommandResults(
-        readable_output=tableToMarkdown('Google Cloud Compute Instances', data_res, removeNull=True),
-        raw_response=response_comp,
-        outputs_prefix='GoogleCloudCompute.Instances',
-        outputs_key_field='id',
-        outputs=output
-    )
+            request_comp = get_compute().instances().aggregatedList_next(
+                previous_request=request_comp, previous_response=response_comp
+            )
+
+        return CommandResults(
+            readable_output=tableToMarkdown('Google Cloud Compute Instances', data_res, removeNull=True),
+            raw_response=response_comp,
+            outputs_prefix='GoogleCloudCompute.Instances',
+            outputs_key_field='id',
+            outputs=output
+        )
+    else:
+        return CommandResults(
+            readable_output='Unable to find asset with IP address.  If you are using an organization service account,'
+            'please make sure the default_search_scope integration parameter is set.')
 
 
 def add_networks_tag(args: Dict[str, Any]) -> CommandResults:
@@ -4516,6 +4518,8 @@ EXECUTION CODE
 
 
 def main():
+    if not SERVICE_ACCOUNT_FILE:
+        raise DemistoException('Service Account Private Key file contents must be provided.')
     try:
         build_and_authenticate(GSERVICE)
         command = demisto.command()

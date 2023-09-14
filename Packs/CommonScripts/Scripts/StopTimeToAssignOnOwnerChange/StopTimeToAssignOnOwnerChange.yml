@@ -17,10 +17,9 @@ args:
 - name: new
   description: The new value of the changed field
 scripttarget: 0
-runonce: false
 runas: DBotWeakRole
 marketplaces:
 - xsoar
 tests:
 - SLA Scripts - Test
-dockerimage: demisto/python3:3.10.8.37753
+dockerimage: demisto/python3:3.10.12.63474

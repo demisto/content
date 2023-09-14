@@ -4,9 +4,10 @@ applications in Google Cloud Platform (GCP), powered by the open source Kubernet
 Command, argument, and output desctiptions were taken from the Google documentation.
 
 ## Use Cases
+
 * Mange existing GKE clusters.
 
-- Mange existing GKE node-pools.
+* Mange existing GKE node-pools.
 
 ## Playbooks
 
@@ -89,6 +90,7 @@ You can execute these commands from the Cortex XSOAR CLI, as part of an automati
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### gcloud-clusters-list
+
 ***
 Lists all clusters owned by a project in either the specified zone or all zones.
 
@@ -96,6 +98,7 @@ Lists all clusters owned by a project in either the specified zone or all zones.
 #### Base Command
 
 `gcloud-clusters-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -167,9 +170,11 @@ Lists all clusters owned by a project in either the specified zone or all zones.
 
 
 #### Command Example
+
 ```!gcloud-clusters-list project=gcp-integrations zone=us-central1-c```
 
 #### Context Example
+
 ```
 {
     "GKE": {
@@ -293,11 +298,13 @@ Lists all clusters owned by a project in either the specified zone or all zones.
 #### Human Readable Output
 
 >### Clusters (Project=gcp-integrations, Zone=us-central1-c)
+
 >|Location|Master IP|Master version|Name|Status|
 >|---|---|---|---|---|
 >| us-central1-c | xxxx | xxxx | xxxx | RECONCILING |
 
 ### gcloud-clusters-describe
+
 ***
 Gets the details of a specific cluster.
 
@@ -378,6 +385,7 @@ Gets the details of a specific cluster.
 
 
 #### Command Example
+
 ```!gcloud-clusters-describe project=gcp-integrations zone=us-central1-c cluster=xsoar-integration```
 
 #### Context Example
@@ -505,12 +513,14 @@ Gets the details of a specific cluster.
 #### Human Readable Output
 
 >### Clusters (Project=gcp-integrations, Zone=us-central1-c, Cluster=xsoar-integration)
+
 >|Location|Master IP|Master version|Name|Status|
 >|---|---|---|---|---|
 >| us-central1-c | xxxx | xxxx | xxxx | RECONCILING |
 
 
 ### gcloud-clusters-set-muster-auth
+
 ***
 Enable basic (username/password) auth for the cluster. Enable will create user admin with generated password.
 
@@ -518,6 +528,7 @@ Enable basic (username/password) auth for the cluster. Enable will create user a
 #### Base Command
 
 `gcloud-clusters-set-muster-auth`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -542,6 +553,7 @@ Enable basic (username/password) auth for the cluster. Enable will create user a
 
 
 #### Command Example
+
 ``` !gcloud-clusters-set-muster-auth project=gcp-integrations zone=us-central1-c cluster=xsoar-integration basic_auth=enable```
 
 #### Context Example
@@ -573,6 +585,7 @@ Enable basic (username/password) auth for the cluster. Enable will create user a
 
 
 ### gcloud-clusters-set-addons
+
 ***
 Sets the addons for a specific cluster.
 
@@ -580,6 +593,7 @@ Sets the addons for a specific cluster.
 #### Base Command
 
 `gcloud-clusters-set-addons`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -606,6 +620,7 @@ Sets the addons for a specific cluster.
 
 
 #### Command Example
+
 ```!gcloud-clusters-set-addons project=gcp-integrations zone=us-central1-c cluster=xsoar-integration http_load_balancing=enable kubernetes_dashboard=disable network_policy=enable```
 
 #### Context Example
@@ -635,6 +650,7 @@ Sets the addons for a specific cluster.
 >| operation-xxxx | xxxx | DONE   | xxxx      |
 
 ### gcloud-clusters-set-legacy-auth
+
 ***
 Configuration for the legacy Attribute Based Access Control authorization mode.
 
@@ -642,6 +658,7 @@ Configuration for the legacy Attribute Based Access Control authorization mode.
 #### Base Command
 
 `gcloud-clusters-set-legacy-auth`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -666,6 +683,7 @@ Configuration for the legacy Attribute Based Access Control authorization mode.
 
 
 #### Command Example
+
 ``` !gcloud-clusters-set-legacy-auth project=gcp-integrations zone=us-central1-c cluster=xsoar-integration enable=true```
 
 #### Context Example
@@ -697,6 +715,7 @@ Configuration for the legacy Attribute Based Access Control authorization mode.
 
 
 ### gcloud-clusters-set-master-authorized-network
+
 ***
 Configuration options for the master authorized networks feature.
 Enabled master authorized networks will disallow all external traffic to access Kubernetes master through HTTPS except traffic from the given CIDR blocks, Google Compute Engine Public IPs and Google Prod IPs.
@@ -705,6 +724,7 @@ Enabled master authorized networks will disallow all external traffic to access 
 #### Base Command
 
 `gcloud-clusters-set-master-authorized-network`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -759,6 +779,7 @@ Enabled master authorized networks will disallow all external traffic to access 
 >| operation-xxxx | xxxx | DONE   | xxxx      |
 
 ### gcloud-clusters-set-k8s-stackdriver
+
 ***
 Enable or Disable k8s stackdriver. Important - To use this functinality the user should enable manually logging to "monitoring.googleapis.com/kubernetes" manulally via the GCP console.
 
@@ -766,6 +787,7 @@ Enable or Disable k8s stackdriver. Important - To use this functinality the user
 #### Base Command
 
 `gcloud-clusters-set-k8s-stackdriver`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -819,6 +841,7 @@ Enable or Disable k8s stackdriver. Important - To use this functinality the user
 >| operation-xxxx | xxxx | DONE   | xxxx      |
 
 ### gcloud-clusters-set-binary-auth
+
 ***
 Enable or Disable binary auth.
 
@@ -826,6 +849,7 @@ Enable or Disable binary auth.
 #### Base Command
 
 `gcloud-clusters-set-binary-auth`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -850,6 +874,7 @@ Enable or Disable binary auth.
 
 
 #### Command Example
+
 ```!gcloud-clusters-set-binary-auth project=gcp-integrations zone=us-central1-c cluster=xsoar-integration enable=true```
 
 #### Context Example
@@ -879,6 +904,7 @@ Enable or Disable binary auth.
 >| operation-xxxx | xxxx | DONE   | xxxx      |
 
 ### gcloud-clusters-set-intra-node-visibility
+
 ***
 Enable or Disable for intra node visibility in cluster.
 
@@ -886,6 +912,7 @@ Enable or Disable for intra node visibility in cluster.
 #### Base Command
 
 `gcloud-clusters-set-intra-node-visibility`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -939,6 +966,7 @@ Enable or Disable for intra node visibility in cluster.
 >| operation-xxxx | xxxx | DONE   | xxxx      |
 
 ### gcloud-node-pool-list
+
 ***
 Lists the node pools for a cluster.
 
@@ -946,6 +974,7 @@ Lists the node pools for a cluster.
 #### Base Command
 
 `gcloud-node-pool-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -982,9 +1011,11 @@ Lists the node pools for a cluster.
 
 
 #### Command Example
+
 ```!gcloud-node-pool-list project=gcp-integrations zone=us-central1-c cluster=xsoar-integration```
 
 #### Context Example
+
 ```
 {
     "GKE": {
@@ -1038,12 +1069,14 @@ Lists the node pools for a cluster.
 #### Human Readable Output
 
 >### Node-pools (Project=gcp-integrations, Zone=us-central1-c, Cluster=xsoar-integration)
+
 >|Disk size|Machine Type|Name|Node version|
 >|---|---|---|---|
 >| 100 | n1-standard-1 | default-pool | 1.16.9-gke.2 |
 
 
 ### gcloud-node-pool-describe
+
 ***
 Retrieves the requested node pool.
 
@@ -1051,6 +1084,7 @@ Retrieves the requested node pool.
 #### Base Command
 
 `gcloud-node-pool-describe`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1088,6 +1122,7 @@ Retrieves the requested node pool.
 
 
 #### Command Example
+
 ```!gcloud-node-pool-describe project=gcp-integrations zone=us-central1-c cluster=xsoar-integration node_pool=default-pool```
 
 #### Context Example
@@ -1145,12 +1180,14 @@ Retrieves the requested node pool.
 #### Human Readable Output
 
 >### Node-pools (Project=gcp-integrations, Zone=us-central1-c, Cluster=xsoar-integration, Node pool=default-pool)
+
 >|Disk size|Machine Type|Name|Node version|
 >|---|---|---|---|
 >| 100 | xxxx | xxxx | xxxx |
 
 
 ### gcloud-node-pool-set-management
+
 ***
 Sets the NodeManagement options for a node pool.
 
@@ -1158,6 +1195,7 @@ Sets the NodeManagement options for a node pool.
 #### Base Command
 
 `gcloud-node-pool-set-management`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1213,6 +1251,7 @@ Sets the NodeManagement options for a node pool.
 >| operation-xxxx | xxxx | DONE   | xxxx      |
 
 ### gcloud-operations-list
+
 ***
 List operations in project-zone.
 
@@ -1220,6 +1259,7 @@ List operations in project-zone.
 #### Base Command
 
 `gcloud-operations-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1242,9 +1282,11 @@ List operations in project-zone.
 
 
 #### Command Example
+
 ```!gcloud-operations-list project=gcp-integrations zone=us-central1-c```
 
 #### Context Example
+
 ```
 {
     "GKE": {
@@ -1275,6 +1317,7 @@ List operations in project-zone.
 #### Human Readable Output
 
 >### Project gcp-integrations - Zone us-central1-c - Operations
+
 >|Name|Zone|Status|StartTime|
 >|---|---|---|---|
 >| operation-xxxx | xxxx | DONE | xxxx |
@@ -1282,6 +1325,7 @@ List operations in project-zone.
 
 
 ### gcloud-operations-describe
+
 ***
 Retrieve operation information by name.
 
@@ -1289,6 +1333,7 @@ Retrieve operation information by name.
 #### Base Command
 
 `gcloud-operations-describe`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1312,9 +1357,11 @@ Retrieve operation information by name.
 
 
 #### Command Example
+
 ```!gcloud-operations-describe project=gcp-integrations zone=us-central1-c operation=operation-1591773015046-cc1b6943```
 
 #### Context Example
+
 ```
 {
     "GKE": {
@@ -1334,12 +1381,14 @@ Retrieve operation information by name.
 #### Human Readable Output
 
 >### Project gcp-integrations - Zone us-central1-c - Operation operation-xxxx
+
 >|Name|Zone|Status|StartTime|
 >|---|---|---|---|
 >| operation-xxxx | xxxx | DONE | xxxx |
 
 
 ### gcloud-operations-cancel
+
 ***
 Cancel operation by operation name.
 
@@ -1363,6 +1412,7 @@ Cancel operation by operation name.
 There is no context output for this command.
 
 #### Command Example
+
 ``` !gcloud-operations-cancel project=gcp-integrations zone=xxxx operation=operation-xxxx```
 
 #### Human Readable Output

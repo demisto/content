@@ -1,7 +1,9 @@
 ## SafeBreach Simulations & Insights
+
 This integration leverages SafeBreach simulation results and insights to remediate malicious indicators that expose your environment to real risks.
 
   To configure the integration on SafeBreach:
+
   1. Open the **Navigation bar** → … → **CLI Console**.
   2. Type **config accounts** to get the account id.
   3. Use the id as the **accountId** parameter when configuring the SafeBreach integration in Cortex XSOAR.

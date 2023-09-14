@@ -10,6 +10,10 @@ var sendRequest = function(args) {
 
     var queryArgs = {};
     var argKeys = Object.keys(args);
+    var key =  params.credentials_api_key ? params.credentials_api_key.password : params.key;
+    if (!key) {
+      return('API key must be provided.');
+    }
     for (var i = 0; i < argKeys.length; i++) {
         queryArgs[argKeys[i].replace('-','_')] = args[argKeys[i]];
     }
@@ -21,7 +25,7 @@ var sendRequest = function(args) {
             Headers: {
                 'Content-Type': ['application/x-www-form-urlencoded']
             },
-            Body: 'key=' + params.key
+            Body: 'key=' + key
         },
         params.insecure,
         params.proxy

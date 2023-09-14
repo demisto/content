@@ -1,0 +1,6 @@
+fromversion: 8.2.0
+id: barracudaWAF
+name: Barracuda WAF
+rules: ''
+schema: ''
+tags: ''

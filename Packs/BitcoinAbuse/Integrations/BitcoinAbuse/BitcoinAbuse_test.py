@@ -7,7 +7,7 @@ import io
 import pytest
 
 from BitcoinAbuse import BitcoinAbuseClient, bitcoin_abuse_report_address_command, bitcoin_abuse_get_indicators_command, \
-    update_indicator_occurrences, READER_CONFIG
+    update_indicator_occurrences, READER_CONFIG, bitcoin_abuse_fetch_indicators_command
 from CommonServerPython import DemistoException, Dict, json
 
 SERVER_URL = 'https://www.bitcoinabuse.com/api/'
@@ -170,10 +170,34 @@ def test_update_indicator_occurrences():
     """
     first_ind = {'value': '12345abcde'}
     second_ind = {'value': '67890fghij'}
-    address_to_count_dict = dict()
+    address_to_count_dict = {}
     update_indicator_occurrences(first_ind, address_to_count_dict)
     update_indicator_occurrences(first_ind, address_to_count_dict)
     update_indicator_occurrences(second_ind, address_to_count_dict)
     assert (address_to_count_dict.get('12345abcde')) == 2
     assert (address_to_count_dict.get('67890fghij', 0)) == 1
     assert (address_to_count_dict.get('12bxcas', 0)) == 0
+
+
+def test_bitcoin_abuse_fetch_indicators_command(mocker):
+    """
+    Given:
+    - A BitcoinAbuseClient object.
+
+    When:
+    - Running the bitcoin_abuse_fetch_indicators_command function.
+
+    Then:
+    - Ensure that indicators are fetched successfully and created in Demisto.
+    - Ensure that integration context is updated after successful fetch.
+    - Tests that indicators are fetched successfully and created in Demisto..
+    """
+    import demistomock as demisto
+    mocker.patch.object(demisto, 'getIntegrationContext', return_value={'have_fetched_first_time': False})
+    mock_create_indicator = mocker.patch.object(demisto, 'createIndicators')
+    mocker.patch.object(client, 'get_indicators', return_value=([{'value': 'address1'}, {'value': 'address2'}], False))
+    bitcoin_abuse_fetch_indicators_command(client)
+    assert demisto.createIndicators.call_count == 1
+    assert mock_create_indicator.call_count == 1
+    assert demisto.createIndicators.call_args[0][0] == [{'value': 'address1'}, {'value': 'address2'}]
+    assert not(demisto.createIndicators.call_args[1]['noUpdate'])

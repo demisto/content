@@ -194,7 +194,7 @@ tasks:
       extended_data:
         simple: "false"
       ids:
-        simple: 20879a8064904ecfbb62c118a6a19411_a71f2c6e06a94e8495615803c66d8730
+        simple: 20879a8064904ecfbb62c118a6a19411_b8dfafbdb6bd4220aa5b11dbbd53cfaf
     separatecontext: false
     view: |-
       {
@@ -389,7 +389,7 @@ tasks:
       - "9"
     scriptarguments:
       ids:
-        simple: 20879a8064904ecfbb62c118a6a19411_8cb7c75003264edfaf5a60c33d2846fc
+        simple: 20879a8064904ecfbb62c118a6a19411_b8dfafbdb6bd4220aa5b11dbbd53cfaf
     separatecontext: false
     view: |-
       {
@@ -449,11 +449,6 @@ tasks:
           left:
             value:
               simple: csfalconx.resource.environment_description
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: csfalconx.resource.submit_url
             iscontext: true
       - - operator: isNotEmpty
           left:
@@ -531,7 +526,7 @@ tasks:
       - "11"
     scriptarguments:
       ids:
-        simple: 20879a8064904ecfbb62c118a6a19411_a71f2c6e06a94e8495615803c66d8730
+        simple: 20879a8064904ecfbb62c118a6a19411_b8dfafbdb6bd4220aa5b11dbbd53cfaf
     separatecontext: false
     view: |-
       {
@@ -1103,7 +1098,7 @@ tasks:
       - "32"
     scriptarguments:
       id:
-        simple: e968cf9ec879d33bd8050e4f7482787b1a5ae3411ed9856cadc4a4781948c19d
+        simple: 970fdfe19dfc52d209108f61af53808bea87d911d4e2dbfdeedc55fa2a3f7113
     separatecontext: false
     view: |-
       {

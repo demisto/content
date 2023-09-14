@@ -2,10 +2,14 @@ var URI_PREFIX = '/services/data/v39.0/';
 var SESSION_DATA = '';
 
 function getNewToken() {
+    var client_id = params.credentials_client_secret !== null ? params.credentials_client_secret.identifier : params.clientID;
+    var client_secret = params.credentials_client_secret !== null ? params.credentials_client_secret.password : params.clientSecret;
+    if  (client_id === null || client_secret === null)
+        return('Consumer Key and Consumer Secret must be provided.')
     var request = {
         grant_type: 'password',
-        client_id: params.clientID,
-        client_secret: params.clientSecret,
+        client_id: client_id,
+        client_secret: client_secret,
         username: params.credentials.identifier,
         password: params.credentials.password
         };

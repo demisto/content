@@ -5,8 +5,7 @@ name: FailedInstances
 script: ''
 type: javascript
 tags: []
-comment: Executes a test for all integration instances available and returns detailed
-  information about succeeded and failed integration instances.
+comment: Executes a test for all integration instances available and returns detailed information about succeeded and failed integration instances.
 enabled: true
 outputs:
 - contextPath: FailedInstances.instance
@@ -50,7 +49,6 @@ outputs:
   type: string
 scripttarget: 0
 timeout: 10.8µs
-runonce: false
 runas: DBotWeakRole
 fromversion: 5.0.0
 tests:

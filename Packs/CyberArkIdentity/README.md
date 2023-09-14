@@ -19,6 +19,9 @@ This integration was integrated and tested with version 22.4 of CyberArk Identit
 | Use system proxy settings           | Runs the integration instance using the proxy server (HTTP or HTTPS) that you defined in the server configuration.  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
+* Pay attention: Timestamp parsing is currently supported for the **WhenOccurred** field with Epoch string in it.
+
 ## Commands
 You can execute these commands from the Cortex XSIAM Alerts War Room as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.

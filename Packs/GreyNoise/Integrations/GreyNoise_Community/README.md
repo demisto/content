@@ -22,10 +22,14 @@ Supported Cortex XSOAR versions: 5.5.0 and later.
     | proxy | Use system proxy settings | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
 ## Commands
+
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### greynoise-community-lookup
+
 ***
 Queries IPs in the GreyNoise Community API.
 
@@ -33,6 +37,7 @@ Queries IPs in the GreyNoise Community API.
 #### Base Command
 
 `ip`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -63,10 +68,15 @@ Queries IPs in the GreyNoise Community API.
 
 
 #### Command Example
+
 ``` !greynoise-community-lookup ips=1.2.3.4 ```
+
 #### Human Readable Output
+
 ### IP: 71.6.135.131 found with Reputation: Good
+
 ### GreyNoise Community IP Response
+
 |IP|Noise|RIOT|Classification|Name|Link|Last Seen
 |---|---|---|---|---|---|---|
-| 71.6.135.131 | true | false | benign | Shodan.io | https://viz.greynoise.io/ip/71.6.135.131 | 2021-02-03 |
+| 71.6.135.131 | true | false | benign | Shodan.io | <https://viz.greynoise.io/ip/71.6.135.131> | 2021-02-03 |

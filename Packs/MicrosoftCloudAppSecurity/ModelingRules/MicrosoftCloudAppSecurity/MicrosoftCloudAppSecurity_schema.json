@@ -1,0 +1,72 @@
+{
+  "microsoft_defender_cloud_apps_raw": {
+      "idValue": {
+          "type": "int",
+          "is_array": false
+      },
+      "event_type_name": {
+          "type": "string",
+          "is_array": false
+      },
+      "device": {
+          "type": "string",
+          "is_array": false
+      },
+      "location": {
+          "type": "string",
+          "is_array": false
+      },
+      "mainInfo": {
+          "type": "string",
+          "is_array": false
+      },
+      "user": {
+          "type": "string",
+          "is_array": false
+      },
+      "rawDataJson": {
+          "type": "string",
+          "is_array": false
+      },
+      "appName": {
+          "type": "string",
+          "is_array": false
+      },
+      "description": {
+          "type": "string",
+          "is_array": false
+      },
+      "severity": {
+          "type": "string",
+          "is_array": false
+      },
+      "eventTypeValue": {
+          "type": "string",
+          "is_array": false
+      },
+      "entities": {
+          "type": "string",
+          "is_array": false
+      },
+      "severityValue": {
+          "type": "int",
+          "is_array": false
+      },
+      "title": {
+          "type": "string",
+          "is_array": false
+      },
+      "resolutionStatusValue": {
+          "type": "int",
+          "is_array": false
+      },
+      "stories": {
+          "type": "string",
+          "is_array": false
+      },
+      "evidence": {
+          "type": "string",
+          "is_array": false
+      }
+  }
+}

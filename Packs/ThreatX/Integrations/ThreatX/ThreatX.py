@@ -7,9 +7,10 @@ import struct
 import time
 from operator import itemgetter
 import requests
+import urllib3
 
 # disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 ''' GLOBAL VARS '''
 CUSTOMER_NAME = ''
@@ -575,8 +576,8 @@ def main():
     url = params.get('url', '').strip('/')
     BASE_URL = url + '/tx_api/v1'
 
-    CUSTOMER_NAME = params.get('customer_name', None)
-    API_KEY = params.get('api_key', None)
+    CUSTOMER_NAME = params.get('credentials', {}).get('identifier') or params.get('customer_name')
+    API_KEY = params.get('credentials', {}).get('password') or params.get('api_key')
     DBOT_THRESHOLD = int(params.get('dbot_threshold', 70))
     USE_SSL = not params.get('insecure')
 

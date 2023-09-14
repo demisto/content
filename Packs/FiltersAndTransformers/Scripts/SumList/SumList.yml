@@ -4,7 +4,6 @@ args:
   isArray: true
   name: value
   required: true
-  secret: false
 comment: "Sums a List\ne.g. [\"25\", \"10\", \"25\"] =>  \"60\"\n\nThis is an example for number transformer.\n "
 commonfields:
   id: SumList
@@ -12,7 +11,6 @@ commonfields:
 enabled: true
 name: SumList
 script: '-'
-system: false
 tags:
 - transformer
 - number
@@ -20,9 +18,8 @@ tags:
 timeout: '0'
 type: python
 runas: DBotWeakRole
-runonce: false
 subtype: python3
-dockerimage: demisto/python3:3.9.7.24076
+dockerimage: demisto/python3:3.10.12.63474
 tests:
 - sumList - Test
 fromversion: 5.0.0

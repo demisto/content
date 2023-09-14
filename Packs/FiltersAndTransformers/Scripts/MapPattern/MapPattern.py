@@ -1,10 +1,10 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import fnmatch
 import json
 import re
 from typing import Any, Dict, Generator, List, Optional, Tuple, Union, Callable
 
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
 
 DEFAULT_ALGORITHM = 'literal'
 DEFAULT_PRIORITY = 'first_match'

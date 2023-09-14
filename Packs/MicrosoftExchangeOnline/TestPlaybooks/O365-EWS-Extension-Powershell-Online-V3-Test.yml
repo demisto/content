@@ -1,0 +1,407 @@
+id: playbook-O365-EWS-Extension-Powershell-Online-V3-Test
+version: -1
+name: playbook-O365-EWS-Extension-Powershell-Online-V3-Test
+description: Test playbook
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: b85e16be-c9f5-4ace-8a59-6356a041890d
+    type: start
+    task:
+      id: b85e16be-c9f5-4ace-8a59-6356a041890d
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+  "1":
+    id: "1"
+    taskid: 3d1cdc29-3f96-4d05-8bef-8d40ff9a89e4
+    type: regular
+    task:
+      id: 3d1cdc29-3f96-4d05-8bef-8d40ff9a89e4
+      version: -1
+      name: ews-mailbox-list
+      description: Use the ews-mailbox-list command to view mailbox objects and attributes,
+        populate property pages, or supply mailbox information to other tasks.
+      script: EWS Extension Online Powershell v3|||ews-mailbox-list
+      type: regular
+      iscommand: true
+      brand: EWS Extension Online Powershell v3
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      identity: {}
+      limit:
+        simple: "1"
+      organizational_unit: {}
+      primary_smtp_address: {}
+      user_principal_name: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+  "2":
+    id: "2"
+    taskid: 9d68eff6-03dc-4fa2-8a3e-ac8b7b8956fe
+    type: regular
+    task:
+      id: 9d68eff6-03dc-4fa2-8a3e-ac8b7b8956fe
+      version: -1
+      name: ews-cas-mailbox-list
+      description: Use the ews-cas-mailbox-list command to view Client Access settings
+        that are configured on mailboxes.
+      script: EWS Extension Online Powershell v3|||ews-cas-mailbox-list
+      type: regular
+      iscommand: true
+      brand: EWS Extension Online Powershell v3
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      identity: {}
+      limit: {}
+      organizational_unit: {}
+      primary_smtp_address: {}
+      user_principal_name: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+  "3":
+    id: "3"
+    taskid: 7f8a4e90-74ca-4a94-87e2-53b96d6f0bbe
+    type: regular
+    task:
+      id: 7f8a4e90-74ca-4a94-87e2-53b96d6f0bbe
+      version: -1
+      name: ews-mailbox-permission-list
+      description: Retrieve permissions on a mailbox.
+      script: EWS Extension Online Powershell v3|||ews-mailbox-permission-list
+      type: regular
+      iscommand: true
+      brand: EWS Extension Online Powershell v3
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      identity:
+        complex:
+          root: EWS.Mailbox
+          accessor: Identity
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+  "4":
+    id: "4"
+    taskid: 143328ae-b0fe-40b0-82e2-c4497b999c25
+    type: regular
+    task:
+      id: 143328ae-b0fe-40b0-82e2-c4497b999c25
+      version: -1
+      name: ews-recipient-list
+      description: View existing recipient objects in your organization. This command
+        returns all mail-enabled objects (for example, mailboxes, mail users, mail
+        contacts, and distribution groups).
+      script: EWS Extension Online Powershell v3|||ews-recipient-list
+      type: regular
+      iscommand: true
+      brand: EWS Extension Online Powershell v3
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      identity: {}
+      limit: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+  "6":
+    id: "6"
+    taskid: ba2ae7a5-ee9a-467d-848d-ce94219875ac
+    type: condition
+    task:
+      id: ba2ae7a5-ee9a-467d-848d-ce94219875ac
+      version: -1
+      name: Validate Output
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: EWS.Mailbox
+                accessor: Id
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+  "7":
+    id: "7"
+    taskid: a54e189e-7198-4cbd-80f5-415f54939d6e
+    type: condition
+    task:
+      id: a54e189e-7198-4cbd-80f5-415f54939d6e
+      version: -1
+      name: Validate Output
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: EWS.CASMailbox
+                accessor: Guid
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+  "8":
+    id: "8"
+    taskid: 4abd5a73-f01d-4e4d-82ea-a345e8a237d9
+    type: condition
+    task:
+      id: 4abd5a73-f01d-4e4d-82ea-a345e8a237d9
+      version: -1
+      name: Validate Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: EWS.MailboxPermission
+                accessor: Identity
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+  "9":
+    id: "9"
+    taskid: f4c91ae9-dc7b-4928-88fd-0397165df40d
+    type: condition
+    task:
+      id: f4c91ae9-dc7b-4928-88fd-0397165df40d
+      version: -1
+      name: Validate Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: EWS.Recipient
+                accessor: Identity
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+  "11":
+    id: "11"
+    taskid: d05eaa6e-866a-4a3b-81b5-55428a3702d3
+    type: regular
+    task:
+      id: d05eaa6e-866a-4a3b-81b5-55428a3702d3
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+  "12":
+    id: "12"
+    taskid: fd7a5b77-56ea-4400-8ace-66d5503de58c
+    type: title
+    task:
+      id: fd7a5b77-56ea-4400-8ace-66d5503de58c
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1785,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.5.0

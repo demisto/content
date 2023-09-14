@@ -14,7 +14,6 @@ args:
   isArray: true
 scripttarget: 0
 subtype: python3
-runonce: false
 dockerimage: demisto/pycountry:1.0.0.36195
 runas: DBotWeakRole
 fromversion: 6.2.0

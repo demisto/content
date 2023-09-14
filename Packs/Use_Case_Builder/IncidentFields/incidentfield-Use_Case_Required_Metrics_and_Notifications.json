@@ -1,0 +1,39 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Use Case Builder"
+    ],
+    "caseInsensitive": true,
+    "cliName": "usecaserequiredmetricsandnotifications",
+    "closeForm": true,
+    "content": true,
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_usecaserequiredmetricsandnotifications",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Use Case Required Metrics and Notifications",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "placeholder": "Select the required metrics and notifications necessary for your use case",
+    "required": false,
+    "selectValues": [
+        "Email Notifications",
+        "Chat App Notifications",
+        "Ticketing",
+        "SLA Timers",
+        "Timeline",
+        "Analyst Notes"
+    ],
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "multiSelect",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.8.0"
+}

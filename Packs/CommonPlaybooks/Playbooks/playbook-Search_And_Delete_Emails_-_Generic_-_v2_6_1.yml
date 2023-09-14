@@ -144,8 +144,7 @@ tasks:
     scriptarguments:
       allow_not_found_exchange_locations:
         complex:
-          root: |
-            inputs.O365AllowNotFoundExchangeLocations
+          root: inputs.O365AllowNotFoundExchangeLocations
       delete_type:
         complex:
           root: inputs.O365DeleteType

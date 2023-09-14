@@ -6,8 +6,7 @@ script: ''
 type: python
 tags:
 - enhancement
-comment: Enhancement script to enrich PassiveTotal host pair of parents for Domain
-  and IP type of indicators.
+comment: Enhancement script to enrich PassiveTotal host pair of parents for Domain and IP type of indicators.
 enabled: true
 args:
 - name: indicator_value
@@ -19,7 +18,6 @@ subtype: python3
 dependson:
   must:
   - '|||pt-get-host-pairs'
-runonce: false
 dockerimage: demisto/python3:3.9.7.24076
 runas: DBotWeakRole
 fromversion: 5.0.0

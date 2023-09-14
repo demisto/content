@@ -2,14 +2,14 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 """ IMPORTS """
-from typing import Any, Dict, List
+from typing import Any
 import urllib3
 
 # Disable insecure warnings
 urllib3.disable_warnings()
 
 """GLOBALS/PARAMS """
-INTEGRATION_NAME = "OPSWAT Filescan Integration"
+INTEGRATION_NAME = "OPSWAT Filescan Sandbox Integration"
 INTEGRATION_CONTEXT_NAME = "OPSWAT.Filescan"
 
 
@@ -21,7 +21,7 @@ class Client(BaseClient):
         if self.api_key:
             self._headers = {"X-Api-Key": self.api_key}
 
-    def test_module(self) -> Dict:
+    def test_module(self) -> dict:
         """
         Return information about the user. (Need API key)
         """
@@ -32,7 +32,7 @@ class Client(BaseClient):
         )
         return request_result
 
-    def post_sample(self, args: Dict[str, Any]) -> Dict[str, Any]:
+    def post_sample(self, args: dict[str, Any]) -> dict[str, Any]:
         data = {}
 
         if description := args.get("description"):
@@ -70,7 +70,7 @@ class Client(BaseClient):
         else:
             raise DemistoException("No file or URL was provided.")
 
-    def get_scan_result(self, flow_id: str) -> Dict[str, Any]:
+    def get_scan_result(self, flow_id: str) -> dict[str, Any]:
 
         filters = [
             "filter=general",
@@ -94,7 +94,7 @@ class Client(BaseClient):
 
         return response
 
-    def get_search_query(self, query_string: str, page: int, page_size: int) -> Dict[str, Any]:
+    def get_search_query(self, query_string: str, page: int, page_size: int) -> dict[str, Any]:
         return self._http_request(
             method="GET",
             ok_codes=([200]),
@@ -106,7 +106,7 @@ class Client(BaseClient):
 """ HELPER FUNCTIONS """
 
 
-def build_one_reputation_result(report: Dict[str, Any]):
+def build_one_reputation_result(report: dict[str, Any]):
     score = Common.DBotScore.NONE
 
     final_verdict = report.get("finalVerdict", {})
@@ -124,7 +124,7 @@ def build_one_reputation_result(report: Dict[str, Any]):
     dbot_score = Common.DBotScore(
         indicator=report_hash,
         indicator_type=DBotScoreType.FILE,
-        integration_name="OPSWAT Filescan",
+        integration_name="OPSWAT Filescan Sandbox",
         score=score,
     )
 
@@ -155,8 +155,8 @@ def build_one_reputation_result(report: Dict[str, Any]):
     return results
 
 
-def build_serach_query_result(analyses: List[Dict]) -> CommandResults:
-    def build_analysis_hr(analysis: Dict[str, Any]) -> Dict[str, Any]:
+def build_serach_query_result(analyses: list[dict]) -> CommandResults:
+    def build_analysis_hr(analysis: dict[str, Any]) -> dict[str, Any]:
         file_result = analysis.get("file", {})
         hr_analysis = {
             "Id": analysis.get("id"),
@@ -171,7 +171,7 @@ def build_serach_query_result(analyses: List[Dict]) -> CommandResults:
         }
         return hr_analysis
 
-    def build_indicator_object(analysis: Dict[str, Any]):
+    def build_indicator_object(analysis: dict[str, Any]):
         score = Common.DBotScore.NONE
 
         verdict = analysis.get("verdict", "UNKNOWN")
@@ -186,7 +186,7 @@ def build_serach_query_result(analyses: List[Dict]) -> CommandResults:
         dbot_score = Common.DBotScore(
             indicator=analysis_file.get("sha256"),
             indicator_type=DBotScoreType.FILE,
-            integration_name="OPSWAT Filescan",
+            integration_name="OPSWAT Filescan Sandbox",
             score=score,
         )
 
@@ -229,7 +229,7 @@ def build_serach_query_result(analyses: List[Dict]) -> CommandResults:
     return command_result
 
 
-def sample_submission(client: Client, args: Dict[str, Any]) -> PollResult:
+def sample_submission(client: Client, args: dict[str, Any]) -> PollResult:
     res = client.post_sample(args)
     partial_res = CommandResults(
         readable_output=f'Waiting for submission "{res.get("flow_id")}" to finish...'
@@ -246,7 +246,7 @@ def sample_submission(client: Client, args: Dict[str, Any]) -> PollResult:
     )
 
 
-def build_reputation_result(api_reponse: Dict[str, Any]):
+def build_reputation_result(api_reponse: dict[str, Any]):
     reports = api_reponse.get("reports", [])
     command_res_ls = []
     for report in reports:
@@ -254,13 +254,10 @@ def build_reputation_result(api_reponse: Dict[str, Any]):
     return command_res_ls
 
 
-def is_valid_pass(api_response: Dict[str, Any]):
+def is_valid_pass(api_response: dict[str, Any]):
     if "rejected_files" not in api_response:
         return True
-    for reject in api_response["rejected_files"]:
-        if reject.get("rejected_reason") == "INVALID_PASSWORD":
-            return False
-    return True
+    return all(reject.get("rejected_reason") != "INVALID_PASSWORD" for reject in api_response["rejected_files"])
 
 
 @polling_function(
@@ -270,7 +267,7 @@ def is_valid_pass(api_response: Dict[str, Any]):
     poll_message="Polling result",
     requires_polling_arg=False,
 )
-def polling_submit_command(args: Dict[str, Any], client: Client):
+def polling_submit_command(args: dict[str, Any], client: Client):
 
     if flow_id := args.get("flow_id"):
         api_response = client.get_scan_result(flow_id)
@@ -314,11 +311,11 @@ def test_module_command(client: Client, *_) -> str:
     raise DemistoException(f"\nTest module failed, {results}")
 
 
-def scan_command(client: Client, args: Dict[str, Any]):
+def scan_command(client: Client, args: dict[str, Any]):
     return polling_submit_command(args=args, client=client)
 
 
-def search_query_command(client: Client, args: Dict[str, Any]):
+def search_query_command(client: Client, args: dict[str, Any]):
     def validate_args():
         if page_size and page_size not in [5, 10, 20]:
             raise DemistoException("Page size value must be 5, 10 or 20")

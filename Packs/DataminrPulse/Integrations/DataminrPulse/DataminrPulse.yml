@@ -1,0 +1,723 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: Dataminr Pulse
+  version: -1
+configuration:
+- additionalinfo: The Client ID required to authenticate to the service.
+  display: Client ID
+  name: client_id
+  required: true
+  type: 4
+- additionalinfo: The Client Secret required to authenticate to the service.
+  display: Client Secret
+  name: client_secret
+  required: true
+  type: 4
+- additionalinfo: A comma-separated string of watchlist names, from which to fetch the alerts. If not provided, then it will fetch alerts from all available watchlists on the platform.
+  display: Watchlist Names
+  name: watchlist_names
+  type: 0
+  required: false
+- additionalinfo: Terms to search within Dataminr Alerts.
+  display: Query
+  name: query
+  type: 0
+  required: false
+- additionalinfo: Filters the incoming alerts with the provided alert type. Default All.
+  defaultvalue: All
+  display: Alert Type
+  name: alert_type
+  options:
+  - All
+  - Alert
+  - Urgent
+  - Flash
+  type: 15
+  required: false
+- additionalinfo: The maximum number of alerts to fetch each time. If the value is greater than 200, it will be considered as 200. The maximum is 200.
+  defaultvalue: '40'
+  display: Max Fetch
+  name: max_fetch
+  type: 0
+  required: false
+- additionalinfo: Indicates whether to allow connections without verifying the SSL certificate's validity.
+  display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+- additionalinfo: Indicates whether to use XSOAR's system proxy settings to connect to the API.
+  display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+- display: Incident type
+  name: incidentType
+  type: 13
+  required: false
+- display: Fetch incidents
+  name: isFetch
+  type: 8
+  required: false
+- additionalinfo: The incident fetch interval.
+  defaultvalue: '5'
+  display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  type: 19
+  required: false
+- additionalinfo: This parameter is not supported as Dataminr Pulse API doesn't have time based filtering for fetching of alerts.
+  defaultvalue: 0 seconds
+  display: First Fetch Time (not supported)
+  hidden: true
+  name: first_fetch
+  type: 0
+  required: false
+description: Dataminr Pulse's AI-powered, real-time intelligence integrates into Cortex XSOAR workflows for faster detection and response.
+display: Dataminr Pulse
+name: Dataminr Pulse
+script:
+  commands:
+  - description: Retrieves the Watchlists configured on the Dataminr platform.
+    name: dataminrpulse-watchlists-get
+    outputs:
+    - contextPath: DataminrPulse.WatchLists.id
+      description: Unique identifier for an individual list. This ID is needed to retrieve alerts for a given list.
+      type: Number
+    - contextPath: DataminrPulse.WatchLists.type
+      description: Type of list. Can be one of the Topic, Company, or Custom.
+      type: String
+    - contextPath: DataminrPulse.WatchLists.name
+      description: Name of list as specified in Dataminr platform.
+      type: String
+    - contextPath: DataminrPulse.WatchLists.description
+      description: Description of the list as specified in Dataminr platform.
+      type: String
+    - contextPath: DataminrPulse.WatchLists.properties.watchlistColor
+      description: Watchlist color chosen within the Dataminr platform.
+      type: String
+    - contextPath: DataminrPulse.WatchLists.companies.id
+      description: ID of the company.
+      type: String
+    - contextPath: DataminrPulse.WatchLists.companies.name
+      description: Name of the company.
+      type: String
+  - arguments:
+    - description: Comma delimited set of watchlist IDs. Required if watchlist names are not configured in integration configuration and the query is not given.
+      isArray: true
+      name: watchlist_ids
+    - description: Terms to search within Dataminr Alerts. Required if watchlist names are not configured in integration configuration and the watchlist_ids are not given.
+      name: query
+    - description: It points to a cursor that you want any alerts after. Note that only one of "from" or "to" can be included per request.
+      name: from
+    - description: It points to a cursor that you want any alerts before. Note that only one of "from" and "to" can be included per request.
+      name: to
+    - defaultValue: '40'
+      description: Maximum number of alerts to return. 3333 is maximum value.
+      name: num
+    - auto: PREDEFINED
+      defaultValue: 'yes'
+      description: A Boolean indicating that If user does not provide watchlist IDs then it should use configured watchlist names with query parameter.
+      name: use_configured_watchlist_names
+      predefined:
+      - 'yes'
+      - 'no'
+    description: 'Retrieves the alerts as per the provided watchlist_ids or query or configured watchlist_names parameter in integration. Note: The "from" and "to" arguments should not be included on the first execution, there will not be any "from" or "to" cursor to reference. Only subsequent calls should contain those parameters.'
+    name: dataminrpulse-alerts-get
+    outputs:
+    - contextPath: DataminrPulse.Alerts.alertId
+      description: Unique ID of the alert.
+      type: String
+    - contextPath: DataminrPulse.Alerts.watchlistsMatchedByType.id
+      description: Unique ID of the watchlist.
+      type: String
+    - contextPath: DataminrPulse.Alerts.watchlistsMatchedByType.type
+      description: Type of the watchlist.
+      type: String
+    - contextPath: DataminrPulse.Alerts.watchlistsMatchedByType.name
+      description: Name of the watchlist.
+      type: String
+    - contextPath: DataminrPulse.Alerts.watchlistsMatchedByType.externalTopicIds
+      description: String containing the ID of external topic for watchlist type.
+      type: String
+    - contextPath: DataminrPulse.Alerts.watchlistsMatchedByType.userProperties.omnilist
+      description: String containing the boolean value of omnilist.
+      type: String
+    - contextPath: DataminrPulse.Alerts.watchlistsMatchedByType.userProperties.uiListType
+      description: Type of the watchlist on the Dataminr platform.
+      type: String
+    - contextPath: DataminrPulse.Alerts.watchlistsMatchedByType.userProperties.watchlistColor
+      description: Color of the watchlist defined on the Dataminr platform.
+      type: String
+    - contextPath: DataminrPulse.Alerts.availableRelatedAlerts
+      description: Whether the alert has related alerts or not.
+      type: String
+    - contextPath: DataminrPulse.Alerts.eventTime
+      description: Timestamp of the event.
+      type: Number
+    - contextPath: DataminrPulse.Alerts.eventVolume
+      description: Volume of the event.
+      type: Number
+    - contextPath: DataminrPulse.Alerts.eventLocation.coordinates
+      description: Latitude and Longitude of the event.
+      type: Unknown
+    - contextPath: DataminrPulse.Alerts.eventLocation.name
+      description: The name of the place where the event occurred.
+      type: String
+    - contextPath: DataminrPulse.Alerts.eventLocation.places
+      description: Place IDs of the event location.
+      type: Unknown
+    - contextPath: DataminrPulse.Alerts.eventLocation.radius
+      description: Radius of the event location.
+      type: Number
+    - contextPath: DataminrPulse.Alerts.source.displayName
+      description: The display name of the source.
+      type: String
+    - contextPath: DataminrPulse.Alerts.source.entityName
+      description: The entity name of the source.
+      type: String
+    - contextPath: DataminrPulse.Alerts.source.verified
+      description: True if the source is verified, false otherwise.
+      type: Boolean
+    - contextPath: DataminrPulse.Alerts.source.channels
+      description: The Dataminr channel to which the source belongs.
+      type: Unknown
+    - contextPath: DataminrPulse.Alerts.post.timestamp
+      description: The timestamp of the post.
+      type: Number
+    - contextPath: DataminrPulse.Alerts.post.languages.position
+      description: The position of the post.
+      type: Number
+    - contextPath: DataminrPulse.Alerts.post.languages.lang
+      description: The language of the post.
+      type: String
+    - contextPath: DataminrPulse.Alerts.post.media.type
+      description: The type of the media.
+      type: String
+    - contextPath: DataminrPulse.Alerts.post.media.url
+      description: The URL of the media.
+      type: String
+    - contextPath: DataminrPulse.Alerts.post.media.description
+      description: The description of the media.
+      type: String
+    - contextPath: DataminrPulse.Alerts.post.media.display_url
+      description: The display URL of the media.
+      type: String
+    - contextPath: DataminrPulse.Alerts.post.media.media_url
+      description: The URL of the media.
+      type: String
+    - contextPath: DataminrPulse.Alerts.post.media.source
+      description: The source of the media.
+      type: String
+    - contextPath: DataminrPulse.Alerts.post.link
+      description: The link to the post.
+      type: String
+    - contextPath: DataminrPulse.Alerts.caption
+      description: The text of the alert.
+      type: String
+    - contextPath: DataminrPulse.Alerts.categories.name
+      description: The name of the category to which the alert belongs.
+      type: String
+    - contextPath: DataminrPulse.Alerts.categories.topicType
+      description: The type of the Dataminr entity. Its value will be "category".
+      type: String
+    - contextPath: DataminrPulse.Alerts.categories.id
+      description: The unique identifier of the category.
+      type: String
+    - contextPath: DataminrPulse.Alerts.categories.idStr
+      description: The string value of the ID for the category.
+      type: String
+    - contextPath: DataminrPulse.Alerts.categories.requested
+      description: String containing the boolean value for a category.
+      type: String
+    - contextPath: DataminrPulse.Alerts.categories.path
+      description: The path of the Dataminr category.
+      type: String
+    - contextPath: DataminrPulse.Alerts.categories.retired
+      description: Boolean value of retired for a particular category.
+      type: Boolean
+    - contextPath: DataminrPulse.Alerts.headerColor
+      description: The hex value of the alert's header color.
+      type: String
+    - contextPath: DataminrPulse.Alerts.headerLabel
+      description: The label of the alert's header.
+      type: String
+    - contextPath: DataminrPulse.Alerts.alertType.id
+      description: The unique identifier of the alert type.
+      type: String
+    - contextPath: DataminrPulse.Alerts.alertType.name
+      description: The name of the alert type.
+      type: String
+    - contextPath: DataminrPulse.Alerts.alertType.color
+      description: The color of alert type.
+      type: String
+    - contextPath: DataminrPulse.Alerts.publisherCategory.id
+      description: The unique identifier of the publisher category.
+      type: String
+    - contextPath: DataminrPulse.Alerts.publisherCategory.name
+      description: The name of the publisher category.
+      type: String
+    - contextPath: DataminrPulse.Alerts.publisherCategory.color
+      description: The color of the publisher category.
+      type: String
+    - contextPath: DataminrPulse.Alerts.publisherCategory.shortName
+      description: The short name for publisher category.
+      type: String
+    - contextPath: DataminrPulse.Alerts.eventMapSmallURL
+      description: Value containing the URL of the small event map image.
+      type: String
+    - contextPath: DataminrPulse.Alerts.eventMapLargeURL
+      description: Value containing the URL of the large event map image.
+      type: String
+    - contextPath: DataminrPulse.Alerts.expandAlertURL
+      description: URL of the alert details page.
+      type: String
+    - contextPath: DataminrPulse.Alerts.expandMapURL
+      description: URL of the expanded map.
+      type: String
+    - contextPath: DataminrPulse.Alerts.relatedTerms.text
+      description: Text of the related terms.
+      type: String
+    - contextPath: DataminrPulse.Alerts.relatedTerms.url
+      description: URL of the related terms.
+      type: String
+    - contextPath: DataminrPulse.Alerts.relatedTermsQueryURL
+      description: URL of the related terms query.
+      type: String
+    - contextPath: DataminrPulse.Alerts.parentAlertId
+      description: Alert ID of the parent.
+      type: String
+    - contextPath: DataminrPulse.Alerts.metadata.cyber.URLs
+      description: Identifier for a specific part of a website referenced in posts that could be related to a target or attacker's infrastructure.
+      type: Unknown
+    - contextPath: DataminrPulse.Alerts.metadata.cyber.threats
+      description: Name of cyber threat.
+      type: Unknown
+    - contextPath: DataminrPulse.Alerts.metadata.cyber.addresses.ip
+      description: IP address of attacker/victim. Note that IP can have more than one open port and ports are associated with specific products via IANA (iana.org).
+      type: String
+    - contextPath: DataminrPulse.Alerts.metadata.cyber.addresses.port
+      description: Port of attacker/victim.
+      type: Number
+    - contextPath: DataminrPulse.Alerts.metadata.cyber.addresses.version
+      description: Version of IP address.
+      type: String
+    - contextPath: DataminrPulse.Alerts.metadata.cyber.asns
+      description: Name of the autonomous systems number of the company hosting the impacted service(s).
+      type: Unknown
+    - contextPath: DataminrPulse.Alerts.metadata.cyber.orgs
+      description: Name of the ASN (company hosting the impacted service).
+      type: Unknown
+    - contextPath: DataminrPulse.Alerts.metadata.cyber.products
+      description: The server software used on an IP address.
+      type: Unknown
+    - contextPath: DataminrPulse.Alerts.metadata.cyber.hashes
+      description: A unique identifier or fingerprint for a file, often a malicious executable.
+      type: Unknown
+    - contextPath: DataminrPulse.Alerts.metadata.cyber.malwares
+      description: Malicious software posing a threat.
+      type: Unknown
+    - contextPath: DataminrPulse.Alerts.metadata.cyber.asOrgs.asn
+      description: Autonomous system number.
+      type: String
+    - contextPath: DataminrPulse.Alerts.metadata.cyber.asOrgs.asOrg
+      description: Autonomous system organization.
+      type: String
+    - contextPath: DataminrPulse.Alerts.metadata.cyber.hashValues.value
+      description: Hash value.
+      type: String
+    - contextPath: DataminrPulse.Alerts.metadata.cyber.hashValues.type
+      description: Hash value type.
+      type: String
+    - contextPath: DataminrPulse.Alerts.metadata.cyber.vulnerabilities.id
+      description: CVE ID.
+      type: String
+    - contextPath: DataminrPulse.Alerts.metadata.cyber.vulnerabilities.cvss
+      description: CVSS value.
+      type: String
+    - contextPath: DataminrPulse.Alerts.metadata.cyber.vulnerabilities.exploitPocLinks
+      description: Exploited PoC links.
+      type: Unknown
+    - contextPath: DataminrPulse.Alerts.metadata.cyber.vulnerabilities.products.productName
+      description: Product name.
+      type: String
+    - contextPath: DataminrPulse.Alerts.metadata.cyber.vulnerabilities.products.productVersion
+      description: Product version.
+      type: String
+    - contextPath: DataminrPulse.Alerts.metadata.cyber.vulnerabilities.products.productVendor
+      description: Product vendor.
+      type: String
+    - contextPath: DataminrPulse.Alerts.companies.name
+      description: The name of the company.
+      type: String
+    - contextPath: DataminrPulse.Alerts.companies.topicType
+      description: The type of the Dataminr entity. Its value will be "company".
+      type: String
+    - contextPath: DataminrPulse.Alerts.companies.id
+      description: The unique identifier of the company.
+      type: String
+    - contextPath: DataminrPulse.Alerts.companies.idStr
+      description: The string value of the ID for the company.
+      type: String
+    - contextPath: DataminrPulse.Alerts.companies.ticker
+      description: The ticker symbol of the company.
+      type: String
+    - contextPath: DataminrPulse.Alerts.companies.retired
+      description: Boolean value of retired for a particular company.
+      type: Boolean
+    - contextPath: DataminrPulse.Alerts.companies.dm_bucket.id
+      description: The ID of the Dataminr bucket to which the company belongs.
+      type: String
+    - contextPath: DataminrPulse.Alerts.companies.dm_bucket.name
+      description: The name of the Dataminr bucket to which the company belongs.
+      type: String
+    - contextPath: DataminrPulse.Alerts.companies.dm_sector.id
+      description: The ID of the Dataminr sector to which the company belongs.
+      type: String
+    - contextPath: DataminrPulse.Alerts.companies.dm_sector.name
+      description: The name of the Dataminr sector to which the company belongs.
+      type: String
+    - contextPath: DataminrPulse.Alerts.sectors.name
+      description: The name of the sector to which the alert belongs.
+      type: String
+    - contextPath: DataminrPulse.Alerts.sectors.topicType
+      description: The type of the Dataminr entity. Its value will be "dm_sector".
+      type: String
+    - contextPath: DataminrPulse.Alerts.sectors.id
+      description: The unique identifier of the sector.
+      type: String
+    - contextPath: DataminrPulse.Alerts.sectors.idStr
+      description: The string value of the ID for the sector.
+      type: String
+    - contextPath: DataminrPulse.Alerts.sectors.retired
+      description: Boolean value of retired for sectors.
+      type: Boolean
+    - contextPath: DataminrPulse.Alerts.subCaption.bullets.source
+      description: Source from which information about Dataminr events is obtained.
+      type: String
+    - contextPath: DataminrPulse.Alerts.subCaption.bullets.media
+      description: Media from information about Dataminr event derived exclusively from the attributed source.
+      type: String
+    - contextPath: DataminrPulse.Alerts.subCaption.bullets.content
+      description: Content from information about Dataminr event derived exclusively from the attributed source.
+      type: String
+    - contextPath: DataminrPulse.Alerts.userRecentImages
+      description: User's recent images.
+      type: Unknown
+    - contextPath: DataminrPulse.Alerts.userTopHashtags
+      description: User's top hashtags.
+      type: Unknown
+    - contextPath: DataminrPulse.Cursor.from
+      description: '"from" points to a cursor that you want any alerts after.'
+      type: String
+    - contextPath: DataminrPulse.Cursor.to
+      description: '"to" points to a cursor that you want any alerts before.'
+      type: String
+  - arguments:
+    - description: Unique identifier of the alert whose related alerts to retrieve.
+      name: alert_id
+      required: true
+    - auto: PREDEFINED
+      defaultValue: 'False'
+      description: |-
+        When searching for a linked cluster, this flag
+        determines whether the alert from which alert_id is used to make request to the server is returned to the result set.
+      name: include_root
+      predefined:
+      - 'False'
+      - 'True'
+    description: Retrieves the alerts related to the provided Alert ID.
+    name: dataminrpulse-related-alerts-get
+    outputs:
+    - contextPath: DataminrPulse.Alerts.alertId
+      description: Unique ID of the alert.
+      type: String
+    - contextPath: DataminrPulse.Alerts.watchlistsMatchedByType.id
+      description: Unique ID of the watchlist.
+      type: String
+    - contextPath: DataminrPulse.Alerts.watchlistsMatchedByType.type
+      description: Type of the watchlist.
+      type: String
+    - contextPath: DataminrPulse.Alerts.watchlistsMatchedByType.name
+      description: Name of the watchlist.
+      type: String
+    - contextPath: DataminrPulse.Alerts.watchlistsMatchedByType.externalTopicIds
+      description: String containing the ID of external topic for watchlist type.
+      type: String
+    - contextPath: DataminrPulse.Alerts.watchlistsMatchedByType.userProperties.omnilist
+      description: String containing the boolean value of omnilist.
+      type: String
+    - contextPath: DataminrPulse.Alerts.watchlistsMatchedByType.userProperties.uiListType
+      description: Type of the watchlist on the Dataminr platform.
+      type: String
+    - contextPath: DataminrPulse.Alerts.watchlistsMatchedByType.userProperties.watchlistColor
+      description: Color of the watchlist defined on the Dataminr platform.
+      type: String
+    - contextPath: DataminrPulse.Alerts.availableRelatedAlerts
+      description: Whether the alert has related alerts or not.
+      type: String
+    - contextPath: DataminrPulse.Alerts.eventTime
+      description: Timestamp of the event.
+      type: Number
+    - contextPath: DataminrPulse.Alerts.eventVolume
+      description: Volume of the event.
+      type: Number
+    - contextPath: DataminrPulse.Alerts.eventLocation.coordinates
+      description: Latitude and Longitude of the event.
+      type: Unknown
+    - contextPath: DataminrPulse.Alerts.eventLocation.name
+      description: The name of the place where the event occurred.
+      type: String
+    - contextPath: DataminrPulse.Alerts.eventLocation.places
+      description: Place IDs of the event location.
+      type: Unknown
+    - contextPath: DataminrPulse.Alerts.eventLocation.radius
+      description: Radius of the event location.
+      type: Number
+    - contextPath: DataminrPulse.Alerts.source.displayName
+      description: The display name of the source.
+      type: String
+    - contextPath: DataminrPulse.Alerts.source.entityName
+      description: The entity name of the source.
+      type: String
+    - contextPath: DataminrPulse.Alerts.source.verified
+      description: True if the source is verified, false otherwise.
+      type: Boolean
+    - contextPath: DataminrPulse.Alerts.source.channels
+      description: The Dataminr channel to which the source belongs.
+      type: Unknown
+    - contextPath: DataminrPulse.Alerts.post.timestamp
+      description: The timestamp of the post.
+      type: Number
+    - contextPath: DataminrPulse.Alerts.post.languages.position
+      description: The position of the post.
+      type: Number
+    - contextPath: DataminrPulse.Alerts.post.languages.lang
+      description: The language of the post.
+      type: String
+    - contextPath: DataminrPulse.Alerts.post.media.type
+      description: The type of the media.
+      type: String
+    - contextPath: DataminrPulse.Alerts.post.media.url
+      description: The URL of the media.
+      type: String
+    - contextPath: DataminrPulse.Alerts.post.media.description
+      description: The description of the media.
+      type: String
+    - contextPath: DataminrPulse.Alerts.post.media.display_url
+      description: The display URL of the media.
+      type: String
+    - contextPath: DataminrPulse.Alerts.post.media.media_url
+      description: The URL of the media.
+      type: String
+    - contextPath: DataminrPulse.Alerts.post.media.source
+      description: The source of the media.
+      type: String
+    - contextPath: DataminrPulse.Alerts.post.link
+      description: The link to the post.
+      type: String
+    - contextPath: DataminrPulse.Alerts.caption
+      description: The text of the alert.
+      type: String
+    - contextPath: DataminrPulse.Alerts.categories.name
+      description: The name of the category to which the alert belongs.
+      type: String
+    - contextPath: DataminrPulse.Alerts.categories.topicType
+      description: The type of the Dataminr entity. Its value will be "category".
+      type: String
+    - contextPath: DataminrPulse.Alerts.categories.id
+      description: The unique identifier of the category.
+      type: String
+    - contextPath: DataminrPulse.Alerts.categories.idStr
+      description: The string value of the ID for the category.
+      type: String
+    - contextPath: DataminrPulse.Alerts.categories.requested
+      description: String containing the boolean value for a category.
+      type: String
+    - contextPath: DataminrPulse.Alerts.categories.path
+      description: The path of the Dataminr category.
+      type: String
+    - contextPath: DataminrPulse.Alerts.categories.retired
+      description: Boolean value of retired for a particular category.
+      type: Boolean
+    - contextPath: DataminrPulse.Alerts.headerColor
+      description: The hex value of the alert's header color.
+      type: String
+    - contextPath: DataminrPulse.Alerts.headerLabel
+      description: The label of the alert's header.
+      type: String
+    - contextPath: DataminrPulse.Alerts.alertType.id
+      description: The unique identifier of the alert type.
+      type: String
+    - contextPath: DataminrPulse.Alerts.alertType.name
+      description: The name of the alert type.
+      type: String
+    - contextPath: DataminrPulse.Alerts.alertType.color
+      description: The color of alert type.
+      type: String
+    - contextPath: DataminrPulse.Alerts.publisherCategory.id
+      description: The unique identifier of the publisher category.
+      type: String
+    - contextPath: DataminrPulse.Alerts.publisherCategory.name
+      description: The name of the publisher category.
+      type: String
+    - contextPath: DataminrPulse.Alerts.publisherCategory.color
+      description: The color of the publisher category.
+      type: String
+    - contextPath: DataminrPulse.Alerts.publisherCategory.shortName
+      description: The short name for publisher category.
+      type: String
+    - contextPath: DataminrPulse.Alerts.eventMapSmallURL
+      description: Value containing the URL of the small event map image.
+      type: String
+    - contextPath: DataminrPulse.Alerts.eventMapLargeURL
+      description: Value containing the URL of the large event map image.
+      type: String
+    - contextPath: DataminrPulse.Alerts.expandAlertURL
+      description: URL of the alert details page.
+      type: String
+    - contextPath: DataminrPulse.Alerts.expandMapURL
+      description: URL of the expanded map.
+      type: String
+    - contextPath: DataminrPulse.Alerts.relatedTerms.text
+      description: Text of the related terms.
+      type: String
+    - contextPath: DataminrPulse.Alerts.relatedTerms.url
+      description: URL of the related terms.
+      type: String
+    - contextPath: DataminrPulse.Alerts.relatedTermsQueryURL
+      description: URL of the related terms query.
+      type: String
+    - contextPath: DataminrPulse.Alerts.parentAlertId
+      description: Alert ID of the parent.
+      type: String
+    - contextPath: DataminrPulse.Alerts.metadata.cyber.URLs
+      description: Identifier for a specific part of a website referenced in posts that could be related to a target or attacker's infrastructure.
+      type: Unknown
+    - contextPath: DataminrPulse.Alerts.metadata.cyber.threats
+      description: Name of cyber threat.
+      type: Unknown
+    - contextPath: DataminrPulse.Alerts.metadata.cyber.addresses.ip
+      description: IP address of attacker/victim. Note that IP can have more than one open port and ports are associated with specific products via IANA (iana.org).
+      type: String
+    - contextPath: DataminrPulse.Alerts.metadata.cyber.addresses.port
+      description: Port of attacker/victim.
+      type: Number
+    - contextPath: DataminrPulse.Alerts.metadata.cyber.addresses.version
+      description: Version of IP address.
+      type: String
+    - contextPath: DataminrPulse.Alerts.metadata.cyber.asns
+      description: Name of the autonomous systems number of the company hosting the impacted service(s).
+      type: Unknown
+    - contextPath: DataminrPulse.Alerts.metadata.cyber.orgs
+      description: Name of the ASN (company hosting the impacted service).
+      type: Unknown
+    - contextPath: DataminrPulse.Alerts.metadata.cyber.products
+      description: The server software used on an IP address.
+      type: Unknown
+    - contextPath: DataminrPulse.Alerts.metadata.cyber.hashes
+      description: A unique identifier or fingerprint for a file, often a malicious executable.
+      type: Unknown
+    - contextPath: DataminrPulse.Alerts.metadata.cyber.malwares
+      description: Malicious software posing a threat.
+      type: Unknown
+    - contextPath: DataminrPulse.Alerts.metadata.cyber.asOrgs.asn
+      description: Autonomous system number.
+      type: String
+    - contextPath: DataminrPulse.Alerts.metadata.cyber.asOrgs.asOrg
+      description: Autonomous system organization.
+      type: String
+    - contextPath: DataminrPulse.Alerts.metadata.cyber.hashValues.value
+      description: Hash value.
+      type: String
+    - contextPath: DataminrPulse.Alerts.metadata.cyber.hashValues.type
+      description: Hash value type.
+      type: String
+    - contextPath: DataminrPulse.Alerts.metadata.cyber.vulnerabilities.id
+      description: CVE ID.
+      type: String
+    - contextPath: DataminrPulse.Alerts.metadata.cyber.vulnerabilities.cvss
+      description: CVSS value.
+      type: String
+    - contextPath: DataminrPulse.Alerts.metadata.cyber.vulnerabilities.exploitPocLinks
+      description: Exploited PoC links.
+      type: Unknown
+    - contextPath: DataminrPulse.Alerts.metadata.cyber.vulnerabilities.products.productName
+      description: Product name.
+      type: String
+    - contextPath: DataminrPulse.Alerts.metadata.cyber.vulnerabilities.products.productVersion
+      description: Product version.
+      type: String
+    - contextPath: DataminrPulse.Alerts.metadata.cyber.vulnerabilities.products.productVendor
+      description: Product vendor.
+      type: String
+    - contextPath: DataminrPulse.Alerts.companies.name
+      description: The name of the company.
+      type: String
+    - contextPath: DataminrPulse.Alerts.companies.topicType
+      description: The type of the Dataminr entity. Its value will be "company".
+      type: String
+    - contextPath: DataminrPulse.Alerts.companies.id
+      description: The unique identifier of the company.
+      type: String
+    - contextPath: DataminrPulse.Alerts.companies.idStr
+      description: The string value of the ID for the company.
+      type: String
+    - contextPath: DataminrPulse.Alerts.companies.ticker
+      description: The ticker symbol of the company.
+      type: String
+    - contextPath: DataminrPulse.Alerts.companies.retired
+      description: Boolean value of retired for a particular company.
+      type: Boolean
+    - contextPath: DataminrPulse.Alerts.companies.dm_bucket.id
+      description: The ID of the Dataminr bucket to which the company belongs.
+      type: String
+    - contextPath: DataminrPulse.Alerts.companies.dm_bucket.name
+      description: The name of the Dataminr bucket to which the company belongs.
+      type: String
+    - contextPath: DataminrPulse.Alerts.companies.dm_sector.id
+      description: The ID of the Dataminr sector to which the company belongs.
+      type: String
+    - contextPath: DataminrPulse.Alerts.companies.dm_sector.name
+      description: The name of the Dataminr sector to which the company belongs.
+      type: String
+    - contextPath: DataminrPulse.Alerts.sectors.name
+      description: The name of the sector to which the alert belongs.
+      type: String
+    - contextPath: DataminrPulse.Alerts.sectors.topicType
+      description: The type of the Dataminr entity. Its value will be "dm_sector".
+      type: String
+    - contextPath: DataminrPulse.Alerts.sectors.id
+      description: The unique identifier of the sector.
+      type: String
+    - contextPath: DataminrPulse.Alerts.sectors.idStr
+      description: The string value of the ID for the sector.
+      type: String
+    - contextPath: DataminrPulse.Alerts.sectors.retired
+      description: Boolean value of retired for sectors.
+      type: Boolean
+    - contextPath: DataminrPulse.Alerts.subCaption.bullets.source
+      description: Source from which information about Dataminr events is obtained.
+      type: String
+    - contextPath: DataminrPulse.Alerts.subCaption.bullets.media
+      description: Media from information about Dataminr event derived exclusively from the attributed source.
+      type: String
+    - contextPath: DataminrPulse.Alerts.subCaption.bullets.content
+      description: Content from information about Dataminr event derived exclusively from the attributed source.
+      type: String
+    - contextPath: DataminrPulse.Alerts.userRecentImages
+      description: User's recent images.
+      type: Unknown
+    - contextPath: DataminrPulse.Alerts.userTopHashtags
+      description: User's top hashtags.
+      type: Unknown
+  dockerimage: demisto/python3:3.10.13.72123
+  isfetch: true
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- No tests (auto formatted)
+marketplaces:
+- xsoar
+- marketplacev2
+fromversion: 6.5.0

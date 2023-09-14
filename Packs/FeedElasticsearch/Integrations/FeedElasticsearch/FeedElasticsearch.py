@@ -3,9 +3,6 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 '''IMPORTS'''
-from elasticsearch import Elasticsearch, RequestsHttpConnection
-from elasticsearch_dsl import Search
-from elasticsearch_dsl.query import QueryString
 import requests
 import warnings
 import urllib3
@@ -33,6 +30,16 @@ FEED_TYPE_GENERIC = 'Generic Feed'
 FEED_TYPE_CORTEX = 'Cortex XSOAR Feed'
 FEED_TYPE_CORTEX_MT = 'Cortex XSOAR MT Shared Feed'
 
+ELASTIC_SEARCH_CLIENT = demisto.params().get('client_type')
+if ELASTIC_SEARCH_CLIENT == 'OpenSearch':
+    from opensearchpy import OpenSearch as Elasticsearch, RequestsHttpConnection
+    from opensearch_dsl import Search
+    from opensearch_dsl.query import QueryString
+else:
+    from elasticsearch import Elasticsearch, RequestsHttpConnection
+    from elasticsearch_dsl import Search
+    from elasticsearch_dsl.query import QueryString
+
 
 class ElasticsearchClient:
     def __init__(self, insecure=None, server=None, username=None, password=None, api_key=None, api_id=None,
@@ -58,8 +65,12 @@ class ElasticsearchClient:
 
     def _elasticsearch_builder(self):
         """Builds an Elasticsearch obj with the necessary credentials, proxy settings and secure connection."""
-        es = Elasticsearch(hosts=[self._server], connection_class=RequestsHttpConnection, http_auth=self._http_auth,
-                           verify_certs=self._insecure, proxies=self._proxy, api_key=self._api_key)
+        if self._api_key:
+            es = Elasticsearch(hosts=[self._server], connection_class=RequestsHttpConnection,
+                               verify_certs=self._insecure, proxies=self._proxy, api_key=self._api_key)
+        else:
+            es = Elasticsearch(hosts=[self._server], connection_class=RequestsHttpConnection, http_auth=self._http_auth,
+                               verify_certs=self._insecure, proxies=self._proxy)
         # this should be passed as api_key via Elasticsearch init, but this code ensures it'll be set correctly
         if self._api_key and hasattr(es, 'transport'):
             es.transport.get_connection().session.headers['authorization'] = self._get_api_key_header_val(self._api_key)

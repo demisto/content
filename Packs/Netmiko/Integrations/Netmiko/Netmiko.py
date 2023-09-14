@@ -4,22 +4,23 @@ from CommonServerPython import *  # noqa: F401
 ''' IMPORTS '''
 
 
+import io
+import paramiko
 import sys
 from datetime import datetime
-
-import paramiko
 from netmiko import Netmiko
 
 
 ''' HELPER FUNCTIONS '''
 
 
-def return_file(keys):
-    return_file.readlines = lambda: keys.split("\n")  # type: ignore
-    return return_file
+# Return only specific keys from dictionary
+def include_keys(dictionary, keys):
+    key_set = set(keys) & set(dictionary.keys())
+    return {key: dictionary[key] for key in key_set}
 
 
-class Client:
+class Client:  # pragma: no cover
     def __init__(self, platform, hostname, username, password, port, keys):
         self.platform = platform
         self.hostname = hostname
@@ -33,13 +34,13 @@ class Client:
         if self.keys:
             try:
                 self.net_connect = Netmiko(device_type=self.platform, host=self.hostname, port=self.port,
-                                           pkey=self.keys, use_keys=True, username=self.username, passphrase=self.password)
+                                           pkey=self.keys, username=self.username)
             except Exception as err:
                 return_error(err)
         else:
             try:
                 self.net_connect = Netmiko(device_type=self.platform, host=self.hostname, port=self.port,
-                                           use_keys=True, username=self.username, password=self.password)
+                                           use_keys=False, username=self.username, password=self.password)
             except Exception as err:
                 return_error(err)
 
@@ -73,7 +74,7 @@ class Client:
         return output
 
 
-def test_command(client):
+def test_command(client):  # pragma: no cover
     client.connect()
     client.disconnect()
     demisto.results('ok')
@@ -84,7 +85,7 @@ def cmds_command(client, args):
 
     # Parse the commands
     cmds = args.get('cmds')
-    if type(cmds) != list:
+    if type(cmds) != list:  # pragma: no cover
         try:
             cmds = cmds.split('\n')
         except Exception as err:
@@ -126,14 +127,26 @@ def cmds_command(client, args):
             demisto.error(f"Error with raw print output - {err}")
 
     else:
-        md = tableToMarkdown(f'Command(s) against {client.hostname} ({client.platform}):', output.get('Commands', []))
+        hdrs = ["Hostname", "DateTimeUTC", "Command", "Output"]
+        data = []
+
+        # Single command
+        if len(cmds) == 1:
+            data.append(output["Commands"][0])
+
+        # Multiple commands
+        else:
+            for item in output["Commands"]:
+                data.append(include_keys(item, hdrs))
+
+        md = tableToMarkdown(f'Command(s) against {client.hostname} ({client.platform}):', data, headers=hdrs)
     outputs_key_field = None
     outputs_prefix = None
     outputs = None
     if not disable_context:
         outputs_prefix = "Netmiko"
         outputs_key_field = 'DateTimeUTC'
-        outputs = output.get('Commands')
+        outputs = output
 
     command_results = CommandResults(
         outputs_prefix=outputs_prefix,
@@ -141,10 +154,11 @@ def cmds_command(client, args):
         outputs=outputs,
         readable_output=md
     )
-    return_results(command_results)
+
+    return command_results
 
 
-def main():
+def main():  # pragma: no cover
 
     params = demisto.params()
     args = demisto.args()
@@ -164,19 +178,20 @@ def main():
     if ssh_key:
         if password:
             try:
-                keys = paramiko.RSAKey.from_private_key(return_file(ssh_key), password=password)
+                keys = paramiko.RSAKey.from_private_key(io.StringIO(ssh_key), password=password)
             except Exception as err:
                 return_error(f"There was an error - {err} - Did you provide the correct password?")
         else:
-            keys = paramiko.RSAKey.from_private_key(return_file(ssh_key))
+            keys = paramiko.RSAKey.from_private_key(io.StringIO(ssh_key))
 
     client = Client(platform, hostname, username, password, port, keys)
 
     if command == 'test-module':
         test_command(client)
     elif command == 'netmiko-cmds':
-        cmds_command(client, args)
+        results = cmds_command(client, args)
+        return_results(results)
 
 
-if __name__ in ['__main__', 'builtin', 'builtins']:
+if __name__ in ['__main__', 'builtin', 'builtins']:  # pragma: no cover
     main()

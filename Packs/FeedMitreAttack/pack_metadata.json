@@ -10,7 +10,11 @@
     "categories": [
         "Data Enrichment & Threat Intelligence"
     ],
-    "tags": ["Threat Intelligence Management"],
+    "tags": [
+        "Threat Intelligence Management",
+        "Free Feed",
+        "Plug & Fetch"
+    ],
     "created": "2020-04-23T17:32:00Z",
     "useCases": [],
     "keywords": [

@@ -1,0 +1,382 @@
+id: Retrieve File from Endpoint - Generic V3 Test
+version: -1
+name: Retrieve File from Endpoint - Generic V3 Test
+description: This Test Playbook tests the Retrieve File from endpoint V3 playbook with multiple inputs
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 221f67e0-08b4-4b91-85e3-d9190aa9270e
+    type: start
+    task:
+      id: 221f67e0-08b4-4b91-85e3-d9190aa9270e
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 750,
+          "y": -250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: a80d8c44-cd63-4f4b-8d04-c0f1d95fd8b8
+    type: title
+    task:
+      id: a80d8c44-cd63-4f4b-8d04-c0f1d95fd8b8
+      version: -1
+      name: Test Empty Inputs
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 750,
+          "y": -80
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 045bcf10-46e0-4877-8d60-781f0429f9de
+    type: regular
+    task:
+      id: 045bcf10-46e0-4877-8d60-781f0429f9de
+      version: -1
+      name: Delete Context
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 750,
+          "y": 60
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: c5740b1b-bfe7-4118-85d7-277c0e0b6f9a
+    type: playbook
+    task:
+      id: c5740b1b-bfe7-4118-85d7-277c0e0b6f9a
+      version: -1
+      name: Retrieve File from Endpoint - Generic V3
+      playbookName: Retrieve File from Endpoint - Generic V3
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 750,
+          "y": 240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 60e13c13-8887-4922-886a-6615732a5b20
+    type: title
+    task:
+      id: 60e13c13-8887-4922-886a-6615732a5b20
+      version: -1
+      name: Test Empty Inputs
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 750,
+          "y": 420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: ab133e91-813d-4e57-826d-99bc9bb78e93
+    type: regular
+    task:
+      id: ab133e91-813d-4e57-826d-99bc9bb78e93
+      version: -1
+      name: Delete Context
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 750,
+          "y": 560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 97825721-3306-45d7-8a68-b647783580d9
+    type: playbook
+    task:
+      id: 97825721-3306-45d7-8a68-b647783580d9
+      version: -1
+      name: Retrieve File from Endpoint - Generic V3
+      description: |-
+        'This playbook retrieves a file sample from an endpoint using the following playbooks:'
+        - Get File Sample From Path - Generic v2.
+        - Get File Sample By Hash - Generic v3.
+      playbookName: Retrieve File from Endpoint - Generic V3
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      Agent_ID:
+        simple: "4"
+      Host:
+        complex:
+          root: Get Endpoint
+          accessor: Hostname
+          transformers:
+          - operator: uniq
+      MD5:
+        simple: 523613A7B9DFA398CBD5EBD2DD0F4F38
+      Path:
+        simple: C:\\Windows\\system32\\drivers\\etc\\HOSTS
+      SHA256:
+        simple: 3e59379f585ebf0becb6b4e06d0fbbf806de28a4bb256e837b4555f1b4245571
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 750,
+          "y": 770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 7d2aaba7-fcdb-4f47-8e05-72fc7e1eb312
+    type: title
+    task:
+      id: 7d2aaba7-fcdb-4f47-8e05-72fc7e1eb312
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 750,
+          "y": 1190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: d790f956-606e-4106-8070-054cba1c9849
+    type: condition
+    task:
+      id: d790f956-606e-4106-8070-054cba1c9849
+      version: -1
+      name: Check If File Was Retrieved
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "9"
+      "Yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.EntryID
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 750,
+          "y": 930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 6f75061d-af5b-4201-8921-11deabdb987c
+    type: regular
+    task:
+      id: 6f75061d-af5b-4201-8921-11deabdb987c
+      version: -1
+      name: Test Failure
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: No File to Retrieve
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 260,
+          "y": 1175
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1520,
+        "width": 870,
+        "x": 260,
+        "y": -250
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.0.0

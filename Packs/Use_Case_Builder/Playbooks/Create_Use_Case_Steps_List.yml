@@ -1,0 +1,159 @@
+id: Create Use Case Steps List
+version: -1
+contentitemexportablefields:
+  contentitemfields: {}
+name: Create Use Case Steps List
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 9dc3460a-cf6e-4241-873e-997f8d2c9ab5
+    type: start
+    task:
+      id: 9dc3460a-cf6e-4241-873e-997f8d2c9ab5
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 760,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 4f682230-b259-42f3-8963-36284d127bf7
+    type: regular
+    task:
+      id: 4f682230-b259-42f3-8963-36284d127bf7
+      version: -1
+      name: Setting the list as an json
+      description: send HTTP POST request
+      script: '|||core-api-post'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      body:
+        simple: |-
+          {
+              "id": "UseCaseSteps",
+              "version": -1,
+              "name": "UseCaseSteps",
+              "type": "json"
+          }
+      uri:
+        simple: /lists/save
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 760,
+          "y": 170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 17c47d9c-a022-4538-82ef-f52ff650cd26
+    type: regular
+    task:
+      id: 17c47d9c-a022-4538-82ef-f52ff650cd26
+      version: -1
+      name: Creating the actual list
+      scriptName: CreateUseCaseStepsList
+      type: regular
+      iscommand: false
+      description: ""
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 760,
+          "y": 310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: bd5734fc-d2a1-49c9-8889-f7aba40f129e
+    type: title
+    task:
+      id: bd5734fc-d2a1-49c9-8889-f7aba40f129e
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 760,
+          "y": 480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 495,
+        "width": 380,
+        "x": 760,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+quiet: true
+fromversion: 6.10.0
+tests:
+- Run all tests
+description: 'This Playbook Creates the lists used in the Use Case Builder'

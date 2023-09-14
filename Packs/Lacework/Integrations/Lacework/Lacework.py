@@ -1,12 +1,12 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import ast
 import hashlib
 import json
 
 from datetime import datetime, timedelta, timezone
 
-import demistomock as demisto
 
-from CommonServerPython import *
 from laceworksdk import LaceworkClient
 from laceworksdk.exceptions import ApiError
 

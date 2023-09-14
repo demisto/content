@@ -133,7 +133,7 @@ def build_visibility_config_object(metric_name: str,
 
 def get_tags_dict_from_args(tag_keys: list, tag_values: list) -> list:
     """
-    Creates a list of dictionaries containing the tag key, and it's corresponding value
+    Creates a list of dictionaries containing the tag key, and its corresponding value
     Args:
         tag_keys: tag keys list
         tag_values: tag values list

@@ -1,8 +1,8 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import hashlib
 from typing import Dict, List
 from urllib3 import disable_warnings
-import demistomock as demisto
-from CommonServerPython import *
 from CommonServerUserPython import *
 
 

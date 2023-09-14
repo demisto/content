@@ -1,15 +1,11 @@
 args:
-- default: false
-  description: The input to encode using Base64 format.
-  isArray: false
+- description: The input to encode using Base64 format.
   name: input
   required: true
-  secret: false
 comment: Encodes an input to Base64 format.
 commonfields:
   id: Base64EncodeV2
   version: -1
-enabled: false
 name: Base64EncodeV2
 outputs:
 - contextPath: Base64.encoded
@@ -17,8 +13,7 @@ outputs:
   type: string
 script: '-'
 subtype: python3
-dockerimage: demisto/python3:3.10.9.45313
-system: false
+dockerimage: demisto/python3:3.10.12.63474
 tags:
 - Utility
 - incident-action-button

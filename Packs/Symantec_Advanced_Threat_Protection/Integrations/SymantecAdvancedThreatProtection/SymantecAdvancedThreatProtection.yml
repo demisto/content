@@ -28,11 +28,11 @@ configuration:
   name: fetch_incidents_type
   defaultvalue: incidents
   type: 15
-  required: false
   options:
   - incidents
   - events
   - incidentevents
+  required: false
 - display: Maximum number of events per fetch.
   name: max_fetch
   defaultvalue: "50"
@@ -559,7 +559,6 @@ script:
     description: Query incidents from ATP
     deprecated: true
   isfetch: true
-  runonce: false
   isFetchSamples: true
 fromversion: 5.0.0
 deprecated: true

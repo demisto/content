@@ -1,6 +1,6 @@
-import copy
 import demistomock as demisto  # noqa: F401
-from CommonServerPython import *
+from CommonServerPython import *  # noqa: F401
+import copy
 from CommonServerUserPython import *
 from typing import Any, Dict, Callable, Tuple
 

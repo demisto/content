@@ -1,0 +1,381 @@
+{
+    "iocs": [
+        {
+            "id": "indicator--e3eccca4-f0f6-4d89-90ae-85427b7894f3",
+            "type": "indicator",
+            "name": "0.0.0.0",
+            "description": "Sample Testing",
+            "created": "2023-07-11T06:21:42.110Z",
+            "modified": "2023-07-11T06:21:42.110Z",
+            "indicator_types": [
+                "attribution"
+            ],
+            "pattern": "[ipv4-addr:value = '0.0.0.0']",
+            "pattern_type": "stix",
+            "valid_from": "2023-07-11T06:21:42.110Z",
+            "kill_chain_phases  ": [
+                "Command & Control"
+            ],
+            "spec_version": "2.1",
+            "labels": [
+                {
+                    "geographies": "United States",
+                    "tags": [
+                        "group 83",
+                        "macdownloader",
+                        "parastoo",
+                        "Charming Kitten"
+                    ]
+                }
+            ],
+            "first_seen": "2022-06-06T00:00:00.000Z",
+            "last_seen": "2022-12-16T00:00:00.000Z"
+        }
+    ],
+    "threat_actors": [
+        {
+            "type": "threat-actor",
+            "spec_version": "2.1",
+            "id": "threat-actor--e69fedf8-2777-487f-8bff-b8f578e199ac",
+            "created": "2023-07-17T11:27:42.558Z",
+            "modified": "2023-07-17T11:27:42.558Z",
+            "description": "China based threat actor.",
+            "aliases": [
+                "Gibberish Panda"
+            ],
+            "labels": [
+                {
+                    "origin-of-country": "China",
+                    "target-technologies": [
+                        "Office Suites Software",
+                        "Web Application",
+                        "Operating System"
+                    ],
+                    "target-industries": [
+                        "Software",
+                        "IT Services"
+                    ],
+                    "target-countries": []
+                }
+            ],
+            "name": "Gibberish Panda",
+            "threat_actor_types": [
+                "crime-syndicate"
+            ],
+            "primary_motivation": "personal-gain"
+        },
+        {
+            "type": "threat-actor",
+            "spec_version": "2.1",
+            "id": "threat-actor--d91267c4-a109-4d2a-bab6-0d234082c16e",
+            "created": "2023-07-17T11:27:42.558Z",
+            "modified": "2023-07-17T11:27:42.558Z",
+            "description": "Chinese threat actor that uses PlugX",
+            "labels": [
+                {
+                    "origin-of-country": "China",
+                    "target-technologies": [
+                        "Office Suites Software",
+                        "Web Application",
+                        "Operating System"
+                    ],
+                    "target-industries": [
+                        "Software",
+                        "IT Services"
+                    ],
+                    "target-countries": []
+                }
+            ],
+            "name": "Pale Panda",
+            "threat_actor_types": [
+                "crime-syndicate"
+            ],
+            "primary_motivation": "personal-gain"
+        }
+    ],
+    "intrusion_set": [
+        {
+            "name": "Gamaredon Group",
+            "description": "[Gamaredon Group](https://attack.mitre.org/groups/G0047) is a suspected Russian cyber espionage threat group that has targeted military, NGO, judiciary, law enforcement, and non-profit organizations in Ukraine since at least 2013. The name [Gamaredon Group](https://attack.mitre.org/groups/G0047) comes from a misspelling of the word \"Armageddon\", which was detected in the adversary's early campaigns.(Citation: Palo Alto Gamaredon Feb 2017)(Citation: TrendMicro Gamaredon April 2020)(Citation: ESET Gamaredon June 2020)(Citation: Symantec Shuckworm January 2022)(Citation: Microsoft Actinium February 2022)\n\nIn November 2021, the Ukrainian government publicly attributed [Gamaredon Group](https://attack.mitre.org/groups/G0047) to Russia's Federal Security Service (FSB) Center 18.(Citation: Bleepingcomputer Gamardeon FSB November 2021)(Citation: Microsoft Actinium February 2022)",
+            "external_references": [
+                {
+                    "url": "https://attack.mitre.org/groups/G0047",
+                    "source_name": "mitre-attack",
+                    "external_id": "G0047"
+                },
+                {
+                    "source_name": "ACTINIUM"
+                },
+                {
+                    "source_name": "DEV-0157"
+                },
+                {
+                    "source_name": "Gamaredon Group"
+                },
+                {
+                    "source_name": "IRON TILDEN"
+                },
+                {
+                    "source_name": "Armageddon"
+                },
+                {
+                    "source_name": "Shuckworm"
+                },
+                {
+                    "source_name": "Primitive Bear"
+                },
+                {
+                    "url": "https://www.welivesecurity.com/2020/06/11/gamaredon-group-grows-its-game/",
+                    "source_name": "ESET Gamaredon June 2020"
+                },
+                {
+                    "url": "https://blog.trendmicro.com/trendlabs-security-intelligence/gamaredon-apt-group-use-covid-19-lure-in-campaigns/",
+                    "source_name": "TrendMicro Gamaredon April 2020"
+                },
+                {
+                    "url": "https://researchcenter.paloaltonetworks.com/2017/02/unit-42-title-gamaredon-group-toolset-evolution/",
+                    "source_name": "Palo Alto Gamaredon Feb 2017"
+                },
+                {
+                    "url": "https://www.microsoft.com/security/blog/2022/02/04/actinium-targets-ukrainian-organizations/",
+                    "source_name": "Microsoft Actinium February 2022"
+                },
+                {
+                    "url": "https://www.secureworks.com/research/threat-profiles/iron-tilden",
+                    "source_name": "Secureworks IRON TILDEN Profile"
+                },
+                {
+                    "url": "https://symantec-enterprise-blogs.security.com/blogs/threat-intelligence/shuckworm-gamaredon-espionage-ukraine",
+                    "source_name": "Symantec Shuckworm January 2022"
+                },
+                {
+                    "url": "https://www.bleepingcomputer.com/news/security/ukraine-links-members-of-gamaredon-hacker-group-to-russian-fsb/",
+                    "source_name": "Bleepingcomputer Gamardeon FSB November 2021"
+                },
+                {
+                    "url": "https://unit42.paloaltonetworks.com/gamaredon-primitive-bear-ukraine-update-2021/",
+                    "source_name": "Unit 42 Gamaredon February 2022"
+                }
+            ],
+            "created_by_ref": "identity--c78cb6e5-0c4b-4611-8297-d1b8b55e40b5",
+            "id": "intrusion-set--2e290bfe-93b5-48ce-97d6-edcd6d32b7cf",
+            "created": "2017-05-31T21:32:09.849Z",
+            "modified": "2022-04-15T13:46:34.474Z",
+            "type": "intrusion-set",
+            "objectMarkingRefs": [
+                "marking-definition--fa42a846-8d90-4e51-bc29-71d5b4802168"
+            ],
+            "xMitreDomains": [
+                "enterprise-attack"
+            ],
+            "aliases": [
+                "Gamaredon Group",
+                "IRON TILDEN",
+                "Primitive Bear",
+                "ACTINIUM",
+                "Armageddon",
+                "Shuckworm",
+                "DEV-0157"
+            ],
+            "isDeprecated": false
+        }
+    ],
+    "ta_relationships": [
+        {
+            "type": "threat-actor",
+            "spec_version": "2.1",
+            "id": "threat-actor--8f2045b0-ddd4-41f6-acc3-c4cd86838085",
+            "created": "2023-07-17T14:20:31.646Z",
+            "modified": "2023-07-17T14:20:31.646Z",
+            "description": "We believe this shift indicates",
+            "aliases": [
+                "Primitive Bear",
+                "Shuckworm",
+                "Trident Ursa"
+            ],
+            "labels": [
+                {
+                    "origin-of-country": "Russia",
+                    "target-technologies": [
+                        "Office Suites Software",
+                        "Web Application",
+                        "Operating System"
+                    ],
+                    "target-industries": [
+                        "Aerospace & Defense",
+                        "cryptocurrency",
+                        "Software and Services",
+                        "Education"
+                    ],
+                    "target-countries": [
+                        "South Korea",
+                        "Cambodia",
+                        "Ukraine",
+                        "United Kingdom"
+                    ]
+                }
+            ],
+            "name": "Gamaredon",
+            "threat_actor_types": [
+                "crime-syndicate"
+            ],
+            "primary_motivation": "personal-gain"
+        },
+        {
+            "source_ref": "intrusion-set--2e290bfe-93b5-48ce-97d6-edcd6d32b7cf",
+            "target_ref": "threat-actor--8f2045b0-ddd4-41f6-acc3-c4cd86838085",
+            "relationship_type": "attributed-to",
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--1219bdcf-41c2-469b-85e1-acda461fe44e",
+            "created": "2023-07-17T14:20:31.760Z",
+            "modified": "2023-07-17T14:20:31.760Z"
+        },
+        {
+            "id": "intrusion-set--2e290bfe-93b5-48ce-97d6-edcd6d32b7cf",
+            "name": "Gamaredon Group",
+            "description": "Gamaredon Group",
+            "external_references": [
+                {
+                    "url": "https://attack.mitre.org/groups/G0047",
+                    "source_name": "mitre-attack",
+                    "external_id": "G0047"
+                },
+                {
+                    "source_name": "ACTINIUM"
+                },
+                {
+                    "source_name": "DEV-0157"
+                }
+            ],
+            "created_by_ref": "identity--c78cb6e5-0c4b-4611-8297-d1b8b55e40b5",
+            "created": "2017-05-31T21:32:09.849Z",
+            "modified": "2022-04-15T13:46:34.474Z",
+            "type": "intrusion-set",
+            "objectMarkingRefs": [
+                "marking-definition--fa42a846-8d90-4e51-bc29-71d5b4802168"
+            ],
+            "xMitreDomains": [
+                "enterprise-attack"
+            ],
+            "aliases": [
+                "Gamaredon Group",
+                "IRON TILDEN",
+                "Primitive Bear"
+            ],
+            "isDeprecated": false
+        },
+        {
+            "id": "vulnerability--1d1f168b-bf1e-42df-9ab2-d3314ec9d434",
+            "type": "vulnerability",
+            "name": "CVE-2021-40444",
+            "description": "Microsoft MSHTML Remote Code Execution",
+            "created": "2021-09-15T12:15:00.000Z",
+            "modified": "2022-10-14T11:49:00.000Z",
+            "spec_version": "2.1",
+            "labels": [
+                {
+                    "cvss_version": "3.1",
+                    "cvss_score": "7.8",
+                    "cvss_vector": "CVSS:3.1/AV:L/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:H",
+                    "cvss_metrics_data": {
+                        "attack_complexity": "LOW",
+                        "integrity_impact": "HIGH",
+                        "impact_score": 5.9,
+                        "access_vector": "NETWORK",
+                        "attack_vector": "LOCAL",
+                        "privileges_required": "NONE",
+                        "products": [
+                            "windows server"
+                        ],
+                        "availability_impact": "HIGH",
+                        "technologies": [
+                            "microsoft"
+                        ],
+                        "user_interaction": "REQUIRED",
+                        "scope": "UNCHANGED",
+                        "confidentiality_impact": "HIGH",
+                        "vendors": [
+                            "microsoft"
+                        ],
+                        "access_complexity": "MEDIUM",
+                        "exploitability_score": 1.8,
+                        "authentication": "NONE"
+                    }
+                }
+            ],
+            "external_references": [
+                {
+                    "source_name": "cve",
+                    "external_id": "CVE-2021-40444"
+                }
+            ]
+        },
+        {
+            "source_ref": "threat-actor--8f2045b0-ddd4-41f6-acc3-c4cd86838085",
+            "target_ref": "vulnerability--1d1f168b-bf1e-42df-9ab2-d3314ec9d434",
+            "relationship_type": "targets",
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--e4a424c8-f9f5-43b7-83f4-50073c746738",
+            "created": "2023-07-17T14:20:31.840Z",
+            "modified": "2023-07-17T14:20:31.840Z"
+        },
+        {
+            "description": "malware can insert malicious macros into documents",
+            "external_references": [
+                {
+                    "url": "https://www.welivesecurity.com/2020/06/11/gamaredon-group-grows-its-game/",
+                    "source_name": "ESET Gamaredon June 2020"
+                }
+            ],
+            "created_by_ref": "identity--c78cb6e5-0c4b-4611-8297-d1b8b55e40b5",
+            "id": "relationship--69513daf-2acd-4b04-a7be-9f31174a2ae9",
+            "created": "2020-06-16T17:53:18.768Z",
+            "modified": "2020-06-22T18:27:32.047Z",
+            "type": "relationship",
+            "sourceRef": "intrusion-set--2e290bfe-93b5-48ce-97d6-edcd6d32b7cf",
+            "relationshipType": "uses",
+            "targetRef": "attack-pattern--2f6b4ed7-fef1-44ba-bcb8-1b4beb610b64",
+            "objectMarkingRefs": [
+                "marking-definition--fa42a846-8d90-4e51-bc29-71d5b4802168"
+            ]
+        },
+        {
+            "name": "Component Object Model",
+            "description": "Adversaries may use the Windows Component Object",
+            "kill_chain_phases": [
+                {
+                    "kill_chain_name": "mitre-attack",
+                    "phase_name": "execution"
+                }
+            ],
+            "external_references": [
+                {
+                    "url": "https://attack.mitre.org/techniques/T1559/001",
+                    "source_name": "mitre-attack",
+                    "external_id": "T1559.001"
+                }
+            ],
+            "created_by_ref": "identity--c78cb6e5-0c4b-4611-8297-d1b8b55e40b5",
+            "id": "attack-pattern--2f6b4ed7-fef1-44ba-bcb8-1b4beb610b64",
+            "created": "2020-02-12T14:09:53.107Z",
+            "modified": "2021-07-26T22:51:20.448Z",
+            "type": "attack-pattern",
+            "objectMarkingRefs": [
+                "marking-definition--fa42a846-8d90-4e51-bc29-71d5b4802168"
+            ],
+            "xMitrePlatforms": [
+                "Windows"
+            ],
+            "xMitreDataSources": [
+                "Script: Script Execution",
+                "Module: Module Load",
+                "Process: Process Creation"
+            ],
+            "xMitreDomains": [
+                "enterprise-attack"
+            ]
+        }
+    ]
+}

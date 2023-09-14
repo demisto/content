@@ -1,0 +1,56 @@
+{
+    "name": "Dataminr Pulse",
+    "description": "Dataminr Pulse's AI-powered, real-time intelligence integrates into Cortex XSOAR workflows for faster detection and response.",
+    "support": "partner",
+    "currentVersion": "1.0.5",
+    "author": "Dataminr",
+    "url": "https://www.dataminr.com/dataminr-support#support",
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "tags": [
+        "Alerts",
+        "Attack",
+        "Breach",
+        "Network",
+        "Security",
+        "Dark Web",
+        "Malware",
+        "Threat Intelligence"
+    ],
+    "useCases": [
+        "Network Security",
+        "Threat Intelligence Management",
+        "Breach Notification",
+        "Malware",
+        "Phishing",
+        "Ransomware",
+        "Vulnerability Management"
+    ],
+    "keywords": [
+        "Dataminr",
+        "Pulse",
+        "Alerting",
+        "Alerts",
+        "AI",
+        "MTTD",
+        "MTTR",
+        "Real-Time",
+        "Vulnerability Detection",
+        "Risk Detection",
+        "Detection",
+        "Intelligence",
+        "Enrichment",
+        "Convergence",
+        "Cyber-Physical Convergence",
+        "Threat Intel",
+        "Malware",
+        "IOC",
+        "Network Security"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": []
+}

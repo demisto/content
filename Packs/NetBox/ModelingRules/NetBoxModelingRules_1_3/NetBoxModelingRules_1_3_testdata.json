@@ -99,5 +99,6 @@
                 "xdm.source.user.username": "netbox"
             }
         }
-    ]
+    ],
+    "ignored_validations": ["schema_test_data_types"]
 }

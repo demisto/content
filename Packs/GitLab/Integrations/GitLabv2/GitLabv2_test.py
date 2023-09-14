@@ -1,12 +1,10 @@
-import io
 import json
-from typing import Dict, List
 import pytest
 from freezegun import freeze_time
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -769,7 +767,7 @@ def test_gitlab_pipelines_schedules_list_command(mocker):
                     headers={'PRIVATE-TOKEN': 'api_key'})
     response_client = util_load_json('test_data/commands_test_data.json').get('pipeline_schedule')
     args = {"project_id": 1}
-    expected_outputs: List[Dict] = response_client['expected_outputs']
+    expected_outputs: list[dict] = response_client['expected_outputs']
     expected_prefix: str = response_client['expected_prefix']
     expected_key_field: str = response_client['expected_key_field']
     mocker.patch.object(Client, '_http_request', return_value=response_client['mock_response'])
@@ -796,7 +794,7 @@ def test_gitlab_pipelines_list_command(mocker):
                     headers={'PRIVATE-TOKEN': 'api_key'})
     response_client = util_load_json('test_data/commands_test_data.json').get('pipeline')
     args = {"project_id": "3"}
-    expected_outputs: List[Dict] = response_client['expected_outputs']
+    expected_outputs: list[dict] = response_client['expected_outputs']
     expected_prefix: str = response_client['expected_prefix']
     expected_key_field: str = response_client['expected_key_field']
     mocker.patch.object(Client, '_http_request', return_value=response_client['mock_response'])
@@ -826,7 +824,7 @@ def test_gitlab_jobs_list_command(mocker):
         "project_id": "4",
         "pipeline_id": "12"
     }
-    expected_outputs: List[Dict] = response_client['expected_outputs']
+    expected_outputs: list[dict] = response_client['expected_outputs']
     expected_prefix: str = response_client['expected_prefix']
     expected_key_field: str = response_client['expected_key_field']
     mocker.patch.object(Client, '_http_request', return_value=response_client['mock_response'])
@@ -856,7 +854,7 @@ def test_gitlab_artifact_get_command(mocker):
         "project_id": "45",
         "job_id": "32",
         "artifact_path_suffix": "artifacts/failed_tests.txt"}
-    expected_outputs: List[Dict] = response_client['expected_outputs']
+    expected_outputs: list[dict] = response_client['expected_outputs']
     expected_prefix: str = response_client['expected_prefix']
     expected_key_field: str = response_client['expected_key_field']
     mocker.patch.object(Client, '_http_request', return_value=response_client['mock_response'])
@@ -986,3 +984,46 @@ def test_return_date_arg_as_iso(arg, isValidDate, expected_response):
             return_date_arg_as_iso(arg)
 
         assert str(e.value) == expected_response
+
+
+@pytest.mark.parametrize('trigger_token, args, expected_result', [
+    ('', {}, util_load_json('test_data/commands_test_data.json').get('trigger_pipeline1')),
+    (1111, {'project_id': 2222, 'ref_branch': 'test'},
+     util_load_json('test_data/commands_test_data.json').get('trigger_pipeline2'))
+])
+def test_trigger_pipeline(mocker, trigger_token, args, expected_result):
+    """
+    Given:
+        - client and demisto args
+            - case 1 - client without trigger token.
+            - case 2 - client with trigger token and args with a different project ID than the instance.
+    When:
+        - gitlab_trigger_pipeline_command
+    Then:
+        - The response is as expected
+            - case 1 - Throws an error about the trigger token that is missing
+            - case 2 - The response is correct with the same branch and project_id as in the args.
+    """
+    from GitLabv2 import Client, gitlab_trigger_pipeline_command
+    client = Client(project_id=1234,
+                    base_url="base_url",
+                    verify=False,
+                    proxy=False,
+                    headers={'PRIVATE-TOKEN': 'api_key'},
+                    trigger_token=trigger_token)
+    expected_outputs: list[dict] = expected_result['expected_outputs']
+    expected_prefix: str = expected_result['expected_prefix']
+    expected_key_field: str = expected_result['expected_key_field']
+    mocker.patch.object(Client, '_http_request', return_value=expected_result['mock_response'])
+    mock_error = mocker.patch('GitLabv2.return_error')
+
+    command_result = gitlab_trigger_pipeline_command(client, args)
+
+    if not trigger_token:
+        assert mock_error.call_args[0][0] == 'A trigger token is required in the integration instance configuration'
+    else:
+        assert command_result.outputs_prefix == expected_prefix
+        assert command_result.outputs_key_field == expected_key_field
+        assert command_result.outputs == expected_outputs
+        assert command_result.outputs.get('ref') == args.get('ref_branch')
+        assert command_result.outputs.get('project_id') == args.get('project_id')

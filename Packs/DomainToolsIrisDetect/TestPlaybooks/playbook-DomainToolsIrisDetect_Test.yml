@@ -1,0 +1,2012 @@
+id: DomainToolsIrisDetect_Test
+name: DomainToolsIrisDetect_Test
+version: -1
+fromversion: 6.8.0
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: '63030526-c1a1-4df0-8bb9-8209c2c00fb5'
+    type: start
+    task:
+      id: '63030526-c1a1-4df0-8bb9-8209c2c00fb5'
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    separatecontext: false
+    view: '{"position":{"x":50,"y":50}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '1':
+    id: 1
+    taskid: '5f0274e3-7b3d-42b5-ac5f-736ebc4b5ef2'
+    type: regular
+    task:
+      id: '5f0274e3-7b3d-42b5-ac5f-736ebc4b5ef2'
+      version: -1
+      name: DeleteContext
+      description: ''
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '2'
+    scriptarguments:
+      all:
+        simple: yes
+    separatecontext: false
+    view: '{"position":{"x":50,"y":200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '2':
+    id: 2
+    taskid: '50305f13-f3f1-405f-9b2c-c3efc92a91cf'
+    type: regular
+    task:
+      id: '50305f13-f3f1-405f-9b2c-c3efc92a91cf'
+      version: -1
+      name: domaintools-iris-detect-escalate-domains
+      description: ''
+      script: DomainToolsIrisDetect|||domaintools-iris-detect-escalate-domains
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '3'
+    scriptarguments:
+      watchlist_domain_ids:
+        simple: 'XEmKVx1rlW'
+    separatecontext: false
+    view: '{"position":{"x":50,"y":400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '3':
+    id: 3
+    taskid: 'bd0ac60e-6f75-48b7-a33c-f06985a9cb98'
+    type: regular
+    task:
+      id: 'bd0ac60e-6f75-48b7-a33c-f06985a9cb98'
+      version: -1
+      name: domaintools-iris-detect-blocklist-domains
+      description: ''
+      script: DomainToolsIrisDetect|||domaintools-iris-detect-blocklist-domains
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '4'
+    scriptarguments:
+      watchlist_domain_ids:
+        simple: 'Ya5AY94G7a'
+    separatecontext: false
+    view: '{"position":{"x":50,"y":600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '4':
+    id: 4
+    taskid: '5323d256-4ae8-44d0-a4e0-1c54c025dc9c'
+    type: regular
+    task:
+      id: '5323d256-4ae8-44d0-a4e0-1c54c025dc9c'
+      version: -1
+      name: domaintools-iris-detect-watch-domains
+      description: ''
+      script: DomainToolsIrisDetect|||domaintools-iris-detect-watch-domains
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '5'
+    scriptarguments:
+      watchlist_domain_ids:
+        simple: 'XEmKbNOw8W'
+    separatecontext: false
+    view: '{"position":{"x":50,"y":800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '5':
+    id: 5
+    taskid: '69b72035-4975-4894-a5e6-c008838a673a'
+    type: regular
+    task:
+      id: '69b72035-4975-4894-a5e6-c008838a673a'
+      version: -1
+      name: domaintools-iris-detect-ignore-domains
+      description: ''
+      script: DomainToolsIrisDetect|||domaintools-iris-detect-ignore-domains
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '6'
+    scriptarguments:
+      watchlist_domain_ids:
+        simple: 'XEmKbNOw8W'
+    separatecontext: false
+    view: '{"position":{"x":50,"y":1000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '6':
+    id: 6
+    taskid: 'ce6db729-5d7c-42cc-abe8-755f5b77c3d0'
+    type: regular
+    task:
+      id: 'ce6db729-5d7c-42cc-abe8-755f5b77c3d0'
+      version: -1
+      name: domaintools-iris-detect-get-monitors-list
+      description: ''
+      script: DomainToolsIrisDetect|||domaintools-iris-detect-get-monitors-list
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '7'
+    scriptarguments:
+      datetime_counts_since:
+        simple: '2022-01-01'
+    separatecontext: false
+    view: '{"position":{"x":50,"y":1200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '7':
+    id: '7'
+    taskid: 'aff7f8f2-c09e-4c15-a6d3-87f94ddfb493'
+    type: condition
+    task:
+      id: 'aff7f8f2-c09e-4c15-a6d3-87f94ddfb493'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '8'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Monitor.term
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Monitor.term
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Monitor.match_substring_variations
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Monitor.nameserver_exclusions
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Monitor.nameserver_exclusions
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Monitor.text_exclusions
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Monitor.text_exclusions
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Monitor.id
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Monitor.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Monitor.created_date
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Monitor.created_date
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Monitor.updated_date
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Monitor.updated_date
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Monitor.state
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Monitor.state
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Monitor.status
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Monitor.status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Monitor.created_by
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Monitor.created_by
+            iscontext: true
+
+    view: '{"position":{"x":50,"y":1400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '8':
+    id: 8
+    taskid: 'a2cbd012-a98e-4592-8c64-6ac2de5230c8'
+    type: regular
+    task:
+      id: 'a2cbd012-a98e-4592-8c64-6ac2de5230c8'
+      version: -1
+      name: domaintools-iris-detect-get-new-domains
+      description: ''
+      script: DomainToolsIrisDetect|||domaintools-iris-detect-get-new-domains
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '9'
+    scriptarguments:
+      discovered_since:
+        simple: '2023-04-12'
+    separatecontext: false
+    view: '{"position":{"x":50,"y":1600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '9':
+    id: '9'
+    taskid: '2f65a58f-6fae-4bf0-ae2f-02afbe68967b'
+    type: condition
+    task:
+      id: '2f65a58f-6fae-4bf0-ae2f-02afbe68967b'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '10'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.New.state
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.New.state
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.New.domain
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.New.domain
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.New.status
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.New.status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.New.discovered_date
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.New.discovered_date
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.New.changed_date
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.New.changed_date
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.New.risk_score
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.New.risk_score
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.New.risk_score_status
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.New.risk_score_status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.New.risk_score_components.proximity
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.New.risk_score_components.proximity
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.New.risk_score_components.threat_profile.phishing
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.New.risk_score_components.threat_profile.phishing
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.New.risk_score_components.threat_profile.malware
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.New.risk_score_components.threat_profile.malware
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.New.risk_score_components.threat_profile.spam
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.New.risk_score_components.threat_profile.spam
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.New.risk_score_components.threat_profile.evidence
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.New.risk_score_components.threat_profile.evidence
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: DomainToolsIrisDetect.New.mx_exists
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.New.tld
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.New.tld
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.New.id
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.New.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.New.escalations.escalation_type
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.New.escalations.escalation_type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.New.escalations.id
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.New.escalations.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.New.escalations.created
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.New.escalations.created
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.New.escalations.created_by
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.New.escalations.created_by
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.New.monitor_ids
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.New.monitor_ids
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.New.assigned_by
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.New.assigned_by
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.New.assigned_date
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.New.assigned_date
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.New.registrant_contact_email
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.New.registrant_contact_email
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.New.name_server
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.New.name_server
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.New.registrar
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.New.registrar
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.New.create_date
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.New.create_date
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.New.ip.country_code
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.New.ip.country_code
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.New.ip.ip
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.New.ip.ip
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.New.ip.isp
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.New.ip.isp
+            iscontext: true
+    view: '{"position":{"x":50,"y":1800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '10':
+    id: 10
+    taskid: '6c5f1a3e-aa4e-43df-9fa8-499b3012bda2'
+    type: regular
+    task:
+      id: '6c5f1a3e-aa4e-43df-9fa8-499b3012bda2'
+      version: -1
+      name: domaintools-iris-detect-get-watched-domains
+      description: ''
+      script: DomainToolsIrisDetect|||domaintools-iris-detect-get-watched-domains
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '11'
+    scriptarguments:
+      preview:
+        simple: 'True'
+    separatecontext: false
+    view: '{"position":{"x":50,"y":2000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '11':
+    id: '11'
+    taskid: '9b58e817-dc6d-4275-8ce7-a6a1d763f97a'
+    type: condition
+    task:
+      id: '9b58e817-dc6d-4275-8ce7-a6a1d763f97a'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '12'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Watched.state
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Watched.state
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Watched.domain
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Watched.domain
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Watched.status
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Watched.status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Watched.discovered_date
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Watched.discovered_date
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Watched.changed_date
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Watched.changed_date
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Watched.risk_score
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Watched.risk_score
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Watched.risk_score_status
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Watched.risk_score_status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Watched.risk_score_components.proximity
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Watched.risk_score_components.proximity
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Watched.risk_score_components.threat_profile.phishing
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Watched.risk_score_components.threat_profile.phishing
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Watched.risk_score_components.threat_profile.malware
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Watched.risk_score_components.threat_profile.malware
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Watched.risk_score_components.threat_profile.spam
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Watched.risk_score_components.threat_profile.spam
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Watched.risk_score_components.threat_profile.evidence
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Watched.risk_score_components.threat_profile.evidence
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Watched.mx_exists
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Watched.tld
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Watched.tld
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Watched.id
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Watched.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Watched.escalations.escalation_type
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Watched.escalations.escalation_type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Watched.escalations.id
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Watched.escalations.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Watched.escalations.created
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Watched.escalations.created
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Watched.escalations.created_by
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Watched.escalations.created_by
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Watched.monitor_ids
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Watched.monitor_ids
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Watched.assigned_by
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Watched.assigned_by
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Watched.assigned_date
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Watched.assigned_date
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Watched.registrant_contact_email
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Watched.registrant_contact_email
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Watched.name_server
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Watched.name_server
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Watched.registrar
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Watched.registrar
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Watched.create_date
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Watched.create_date
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Watched.ip.country_code
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Watched.ip.country_code
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Watched.ip.ip
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Watched.ip.ip
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Watched.ip.isp
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Watched.ip.isp
+            iscontext: true
+    view: '{"position":{"x":50,"y":2200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '12':
+    id: 12
+    taskid: '4fb46fe6-d53b-4617-a436-c0ef30d40a15'
+    type: regular
+    task:
+      id: '4fb46fe6-d53b-4617-a436-c0ef30d40a15'
+      version: -1
+      name: domaintools-iris-detect-get-ignored-domains
+      description: ''
+      script: DomainToolsIrisDetect|||domaintools-iris-detect-get-ignored-domains
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '13'
+    scriptarguments:
+      preview:
+        simple: 'True'
+    separatecontext: false
+    view: '{"position":{"x":50,"y":2400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '13':
+    id: '13'
+    taskid: 'e1a07104-4a6b-40e2-aba2-bf3fc6df219c'
+    type: condition
+    task:
+      id: 'e1a07104-4a6b-40e2-aba2-bf3fc6df219c'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '14'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Ignored.state
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Ignored.state
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Ignored.domain
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Ignored.domain
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Ignored.status
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Ignored.status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Ignored.discovered_date
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Ignored.discovered_date
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Ignored.changed_date
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Ignored.changed_date
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Ignored.risk_score
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Ignored.risk_score
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Ignored.risk_score_status
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Ignored.risk_score_status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Ignored.risk_score_components.proximity
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Ignored.risk_score_components.proximity
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Ignored.risk_score_components.threat_profile.phishing
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Ignored.risk_score_components.threat_profile.phishing
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Ignored.risk_score_components.threat_profile.malware
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Ignored.risk_score_components.threat_profile.malware
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Ignored.risk_score_components.threat_profile.spam
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Ignored.risk_score_components.threat_profile.spam
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Ignored.risk_score_components.threat_profile.evidence
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Ignored.risk_score_components.threat_profile.evidence
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Ignored.mx_exists
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Ignored.tld
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Ignored.tld
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Ignored.id
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Ignored.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Ignored.escalations.escalation_type
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Ignored.escalations.escalation_type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Ignored.escalations.id
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Ignored.escalations.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Ignored.escalations.created
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Ignored.escalations.created
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Ignored.escalations.created_by
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Ignored.escalations.created_by
+            iscontext: true
+
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Ignored.monitor_ids
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Ignored.monitor_ids
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Ignored.assigned_by
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Ignored.assigned_by
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Ignored.assigned_date
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Ignored.assigned_date
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Ignored.registrant_contact_email
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Ignored.registrant_contact_email
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Ignored.name_server
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Ignored.name_server
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Ignored.registrar
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Ignored.registrar
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Ignored.create_date
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Ignored.create_date
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Ignored.ip.country_code
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Ignored.ip.country_code
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Ignored.ip.ip
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Ignored.ip.ip
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Ignored.ip.isp
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Ignored.ip.isp
+            iscontext: true
+    view: '{"position":{"x":50,"y":2600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '14':
+    id: 14
+    taskid: '98b745f3-9581-4cc8-b6ca-bbd52983c483'
+    type: regular
+    task:
+      id: '98b745f3-9581-4cc8-b6ca-bbd52983c483'
+      version: -1
+      name: domaintools-iris-detect-get-escalated-domains
+      description: ''
+      script: DomainToolsIrisDetect|||domaintools-iris-detect-get-escalated-domains
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '15'
+    scriptarguments:
+      preview:
+        simple: 'True'
+    separatecontext: false
+    view: '{"position":{"x":50,"y":2800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '15':
+    id: '15'
+    taskid: '10813279-d1b5-420c-ae8f-b215d525d97f'
+    type: condition
+    task:
+      id: '10813279-d1b5-420c-ae8f-b215d525d97f'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '16'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Escalated.state
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Escalated.state
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Escalated.domain
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Escalated.domain
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Escalated.status
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Escalated.status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Escalated.discovered_date
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Escalated.discovered_date
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Escalated.changed_date
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Escalated.changed_date
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Escalated.risk_score
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Escalated.risk_score
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Escalated.risk_score_status
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Escalated.risk_score_status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Escalated.risk_score_components.proximity
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Escalated.risk_score_components.proximity
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Escalated.risk_score_components.threat_profile.phishing
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Escalated.risk_score_components.threat_profile.phishing
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Escalated.risk_score_components.threat_profile.malware
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Escalated.risk_score_components.threat_profile.malware
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Escalated.risk_score_components.threat_profile.spam
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Escalated.risk_score_components.threat_profile.spam
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Escalated.risk_score_components.threat_profile.evidence
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Escalated.risk_score_components.threat_profile.evidence
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Escalated.mx_exists
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Escalated.tld
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Escalated.tld
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Escalated.id
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Escalated.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Escalated.escalations.escalation_type
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Escalated.escalations.escalation_type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Escalated.escalations.id
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Escalated.escalations.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Escalated.escalations.created
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Escalated.escalations.created
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Escalated.escalations.created_by
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Escalated.escalations.created_by
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Escalated.monitor_ids
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Escalated.monitor_ids
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Escalated.assigned_by
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Escalated.assigned_by
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Escalated.assigned_date
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Escalated.assigned_date
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Escalated.registrant_contact_email
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Escalated.registrant_contact_email
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Escalated.name_server
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Escalated.name_server
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Escalated.registrar
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Escalated.registrar
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Escalated.create_date
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Escalated.create_date
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Escalated.ip.country_code
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Escalated.ip.country_code
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Escalated.ip.ip
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Escalated.ip.ip
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Escalated.ip.isp
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Escalated.ip.isp
+            iscontext: true
+    view: '{"position":{"x":50,"y":3000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '16':
+    id: 16
+    taskid: '5a8ff8a2-b2d3-4470-ac76-7a8b8c045c86'
+    type: regular
+    task:
+      id: '5a8ff8a2-b2d3-4470-ac76-7a8b8c045c86'
+      version: -1
+      name: domaintools-iris-detect-get-blocklist-domains
+      description: ''
+      script: DomainToolsIrisDetect|||domaintools-iris-detect-get-blocklist-domains
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '17'
+    scriptarguments:
+      preview:
+        simple: 'True'
+    separatecontext: false
+    view: '{"position":{"x":50,"y":3200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '17':
+    id: '17'
+    taskid: 'a0e7fbfe-d8b2-4691-a762-7e8a1da33508'
+    type: condition
+    task:
+      id: 'a0e7fbfe-d8b2-4691-a762-7e8a1da33508'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '18'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Blocked.state
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Blocked.state
+            iscontext: true
+
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Blocked.domain
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Blocked.domain
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Blocked.status
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Blocked.status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Blocked.discovered_date
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Blocked.discovered_date
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Blocked.changed_date
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Blocked.changed_date
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Blocked.risk_score
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Blocked.risk_score
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Blocked.risk_score_status
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Blocked.risk_score_status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Blocked.risk_score_components.proximity
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Blocked.risk_score_components.proximity
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Blocked.risk_score_components.threat_profile.phishing
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Blocked.risk_score_components.threat_profile.phishing
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Blocked.risk_score_components.threat_profile.malware
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Blocked.risk_score_components.threat_profile.malware
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Blocked.risk_score_components.threat_profile.spam
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Blocked.risk_score_components.threat_profile.spam
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Blocked.risk_score_components.threat_profile.evidence
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Blocked.risk_score_components.threat_profile.evidence
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Blocked.mx_exists
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Blocked.tld
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Blocked.tld
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Blocked.id
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Blocked.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Blocked.escalations.escalation_type
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Blocked.escalations.escalation_type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Blocked.escalations.id
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Blocked.escalations.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Blocked.escalations.created
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Blocked.escalations.created
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Blocked.escalations.created_by
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Blocked.escalations.created_by
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Blocked.monitor_ids
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Blocked.monitor_ids
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Blocked.assigned_by
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Blocked.assigned_by
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Blocked.assigned_date
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Blocked.assigned_date
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Blocked.registrant_contact_email
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Blocked.registrant_contact_email
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Blocked.name_server
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Blocked.name_server
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Blocked.registrar
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Blocked.registrar
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Blocked.create_date
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Blocked.create_date
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Blocked.ip.country_code
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Blocked.ip.country_code
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Blocked.ip.ip
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Blocked.ip.ip
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Blocked.ip.isp
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: DomainToolsIrisDetect.Blocked.ip.isp
+            iscontext: true
+    view: '{"position":{"x":50,"y":3400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '18':
+    id: 18
+    taskid: 'bb74f3eb-8feb-49a3-920a-b7d0c3754d5a'
+    type: regular
+    task:
+      id: 'bb74f3eb-8feb-49a3-920a-b7d0c3754d5a'
+      version: -1
+      name: domaintools-iris-detect-reset-fetch-indicators
+      description: ''
+      script: DomainToolsIrisDetect|||domaintools-iris-detect-reset-fetch-indicators
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '19'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":3600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '19':
+    id: '19'
+    taskid: '2ea5505c-7e37-482a-8920-2dab7672b4e5'
+    type: title
+    task:
+      id: '2ea5505c-7e37-482a-8920-2dab7672b4e5'
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: '{"position":{"x":50,"y":3800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+view: '{"linkLabelsPosition":{},"paper":{"dimensions":{"height":200,"width":380,"x":50,"y":50}}}'
+inputs: []
+outputs: []
+description: DomainToolsIrisDetect Test Playbook

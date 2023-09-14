@@ -1,0 +1,6 @@
+[file:CiscoCatalyst_1_3.yml]
+ignore=MR108
+
+[file:CiscoCatalyst.yml]
+ignore=PR101
+

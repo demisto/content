@@ -700,7 +700,9 @@ def main():
         PARSE AND VALIDATE INTEGRATION PARAMS
     """
     params = demisto.params()
-    api_key = params.get('api_key')
+    api_key = params.get('credentials_api_key', {}).get('password') or params.get('api_key')
+    if not api_key:
+        return_error('API key must be provided.')
     base_url = urljoin(params.get('url'), '/api/v1/')
     verify = not params.get('insecure', False)
 

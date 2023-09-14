@@ -1,11 +1,11 @@
-import demistomock as demisto
-from CommonServerPython import *
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+from pathlib import Path
 
 from multiprocessing import Process
 import resource
 import re
 import time
-from os.path import exists
 import subprocess
 
 import requests
@@ -59,9 +59,9 @@ def check_memory(target_mem: str, check_type: str) -> str:
     else:
         cgroup_file_v1 = "/sys/fs/cgroup/memory/memory.limit_in_bytes"
         cgroup_file_v2 = "/sys/fs/cgroup/memory.max"
-        if exists(cgroup_file_v1):
+        if Path(cgroup_file_v1).exists():
             cgroup_file = cgroup_file_v1
-        elif exists(cgroup_file_v2):
+        elif Path(cgroup_file_v2).exists():
             cgroup_file = cgroup_file_v2
         else:
             return ('Failed checking cgroup file, memory_check set to cgroup but neither v1 or v2'
@@ -201,6 +201,10 @@ def check_network(network_check: str) -> str:
 
 
 def main():
+    if os.getenv("container") == "podman":
+        return_error("This script only works in Docker containers. Podman is not supported")
+        return
+
     mem = demisto.args().get('memory', "1g")
     mem_check = demisto.args().get('memory_check', "cgroup")
     network_check = demisto.args().get('network_check', "all")

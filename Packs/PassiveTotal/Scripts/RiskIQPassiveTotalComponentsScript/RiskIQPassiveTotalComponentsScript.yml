@@ -1,12 +1,9 @@
 args:
 - default: true
   description: Domain or IP indicator value that need to enrich
-  isArray: false
   name: indicator_value
   required: true
-  secret: false
-comment: Enhancement script to enrich PassiveTotal components for Domain and IP type
-  of indicators.
+comment: Enhancement script to enrich PassiveTotal components for Domain and IP type of indicators.
 commonfields:
   id: RiskIQPassiveTotalComponentsScript
   version: -1
@@ -14,14 +11,12 @@ enabled: true
 name: RiskIQPassiveTotalComponentsScript
 script: '-'
 subtype: python3
-system: false
 tags:
 - enhancement
 timeout: '0'
 type: python
 dockerimage: demisto/python3:3.9.7.24076
 runas: DBotWeakRole
-runonce: false
 dependson:
   must:
   - '|||pt-get-components'

@@ -1,0 +1,830 @@
+id: Zendesk - Ticket Management
+version: -1
+name: Zendesk - Ticket Management
+description: '`Zendesk - Ticket Management` allows you to open a new ticket or comment on an existing ticket.'
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: adef5ad9-870c-46e5-8425-54b29e21cd17
+    type: start
+    task:
+      id: adef5ad9-870c-46e5-8425-54b29e21cd17
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "11"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 760,
+          "y": 220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: a139f576-4872-473f-84e5-fad5ff68cc99
+    type: condition
+    task:
+      id: a139f576-4872-473f-84e5-fad5ff68cc99
+      version: -1
+      name: Is Zendesk v2 integration enabled?
+      description: Checks if the Zendesk v2 integration is enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "18"
+      "yes":
+      - "25"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                    ignorecase: true
+                accessor: brand
+            iscontext: true
+          right:
+            value:
+              simple: Zendesk v2
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 760,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 7d46973d-e0ae-4c86-8462-2b2c8768a520
+    type: condition
+    task:
+      id: 7d46973d-e0ae-4c86-8462-2b2c8768a520
+      version: -1
+      name: Was a comment provided in the input
+      description: Checks if the comment was provided in the input.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "14"
+      "yes":
+      - "24"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.CommentToAdd
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 180,
+          "y": 1000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: d207053a-3403-4e10-813a-0e583929353c
+    type: collection
+    task:
+      id: d207053a-3403-4e10-813a-0e583929353c
+      version: -1
+      name: Add comment to the ticket
+      description: Data collection task to add a comment to the ticket.
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -30,
+          "y": 1170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Add comment to the ticket
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: longText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Add comment to the ticket
+      description: ""
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 0886a610-05ae-4bce-8755-49785d7657d6
+    type: regular
+    task:
+      id: 0886a610-05ae-4bce-8755-49785d7657d6
+      version: -1
+      name: Create ticket for the incident
+      description: |-
+        Create a new Zendesk ticket.
+        Required permissions: Agents.
+      script: '|||zendesk-ticket-create'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      assignee_email:
+        complex:
+          root: inputs.ZendeskAssigne
+      description:
+        complex:
+          root: Please provide the following details to open a ticket.Answers
+          accessor: "1"
+      priority:
+        complex:
+          root: Please provide the following details to open a ticket.Answers
+          accessor: "4"
+      requester:
+        complex:
+          root: Please provide the following details to open a ticket.Answers
+          accessor: "3"
+      status:
+        complex:
+          root: Please provide the following details to open a ticket.Answers
+          accessor: "5"
+      subject:
+        complex:
+          root: Please provide the following details to open a ticket.Answers
+          accessor: "0"
+      tags:
+        complex:
+          root: inputs.ZendeskTags
+      type:
+        complex:
+          root: Please provide the following details to open a ticket.Answers
+          accessor: "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1460,
+          "y": 1145
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 51961643-8d62-49f7-8f4e-ec4e5cd91d2c
+    type: title
+    task:
+      id: 51961643-8d62-49f7-8f4e-ec4e5cd91d2c
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 760,
+          "y": 1520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 6b5fb2c3-f5f5-4534-88d7-ca33fb5b5827
+    type: regular
+    task:
+      id: 6b5fb2c3-f5f5-4534-88d7-ca33fb5b5827
+      version: -1
+      name: Update the ticket for the incident
+      description: |-
+        Updates a Zendesk ticket.
+        Required permissions: Agents.
+      script: '|||zendesk-ticket-update'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      comment:
+        complex:
+          root: Add comment to the ticket.Answers
+          accessor: "0"
+      ticket_id:
+        complex:
+          root: inputs.ZendeskTicketID
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -30,
+          "y": 1335
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 2d9482fc-b16e-4f66-8ee6-aec802b1d1db
+    type: condition
+    task:
+      id: 2d9482fc-b16e-4f66-8ee6-aec802b1d1db
+      version: -1
+      name: Whether to append a new comment to the ticket for each alert?
+      description: Checks if a new comment should be appended to the ticket for each alert.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "18"
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.addCommentPerEndpoint
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 370,
+          "y": 790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 07c30f07-9347-43e2-848e-bde0480b2ce9
+    type: condition
+    task:
+      id: 07c30f07-9347-43e2-848e-bde0480b2ce9
+      version: -1
+      name: Are the required details for opening a ticket been provided?
+      description: Checks if the required details for opening a ticket were provided.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "22"
+      "yes":
+      - "23"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.ZendeskPriority
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.ZendeskStatus
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.ZendeskSubject
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.ZendeskType
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1230,
+          "y": 790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 0d1cefae-0935-4e63-801d-7d36aed1cf0f
+    type: collection
+    task:
+      id: 0d1cefae-0935-4e63-801d-7d36aed1cf0f
+      version: -1
+      name: Provide details for opening a ticket.
+      description: Data collection task to provide details for opening a ticket.
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1460,
+          "y": 970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Enter ticket Subject
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: The value of the subject field for this ticket.
+        readonly: false
+      - id: "1"
+        label: ""
+        labelarg:
+          simple: Enter ticket description
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: longText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: Description of the ticket.
+        readonly: false
+      - id: "2"
+        label: ""
+        labelarg:
+          simple: Enter ticket Type
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: The type of this ticket. Allowed values are "problem", "incident", "question", or "task".
+        readonly: false
+      - id: "3"
+        label: ""
+        labelarg:
+          simple: Enter ticket Requester
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: The user who requested this ticket.
+        readonly: false
+      - id: "4"
+        label: ""
+        labelarg:
+          simple: Enter ticket Priority
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: The urgency with which the ticket should be addressed. Allowed values are "urgent", "high", "normal", or "low".
+        readonly: false
+      - id: "5"
+        label: ""
+        labelarg:
+          simple: Enter ticket Status
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: The state of the ticket. Allowed values are "new", "open", "pending", "hold", "solved", or "closed".
+        readonly: false
+      title: Please provide the following details to open a ticket.
+      description: ""
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: db848d7d-a255-4ebf-8940-6abcadb50619
+    type: regular
+    task:
+      id: db848d7d-a255-4ebf-8940-6abcadb50619
+      version: -1
+      name: Create ticket for the incident
+      description: |-
+        Create a new Zendesk ticket.
+        Required permissions: Agents.
+      script: '|||zendesk-ticket-create'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      assignee_email:
+        complex:
+          root: inputs.ZendeskAssigne
+      description:
+        complex:
+          root: inputs.description
+      priority:
+        complex:
+          root: inputs.ZendeskPriority
+      requester:
+        complex:
+          root: inputs.ZendeskRequester
+      status:
+        complex:
+          root: inputs.ZendeskStatus
+      subject:
+        complex:
+          root: inputs.ZendeskSubject
+      tags:
+        complex:
+          root: inputs.ZendeskTags
+      type:
+        complex:
+          root: inputs.ZendeskType
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1000,
+          "y": 970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: b4b9bd48-b85e-4d06-8d37-b131ef3024b5
+    type: regular
+    task:
+      id: b4b9bd48-b85e-4d06-8d37-b131ef3024b5
+      version: -1
+      name: Update the ticket for the incident
+      description: |-
+        Updates a Zendesk ticket.
+        Required permissions: Agents.
+      script: '|||zendesk-ticket-update'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      comment:
+        complex:
+          root: inputs.CommentToAdd
+      ticket_id:
+        complex:
+          root: inputs.ZendeskTicketID
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 390,
+          "y": 1170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 05375988-f8c0-4c9b-8bcc-88245802470a
+    type: condition
+    task:
+      id: 05375988-f8c0-4c9b-8bcc-88245802470a
+      version: -1
+      name: Whether to open a ticket for this incident?
+      description: Checks whether to open a new ticket or add a comment to an existing ticket.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "20"
+      "yes":
+      - "21"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.Action
+            iscontext: true
+          right:
+            value:
+              simple: NewTicket
+          ignorecase: true
+      - - operator: isEmpty
+          left:
+            value:
+              complex:
+                root: inputs.ZendeskTicketID
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 760,
+          "y": 600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "11_18_#default#": 0.1,
+      "20_18_#default#": 0.15
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1365,
+        "width": 1870,
+        "x": -30,
+        "y": 220
+      }
+    }
+  }
+inputs:
+- key: ZendeskTicketID
+  value: {}
+  required: false
+  description: The ticket ID.
+  playbookInputQuery:
+- key: ZendeskAssigne
+  value: {}
+  required: false
+  description: The agent currently assigned to the ticket.
+  playbookInputQuery:
+- key: ZendeskCollaborators
+  value: {}
+  required: false
+  description: The users currently CC'ed on the ticket.
+  playbookInputQuery:
+- key: description
+  value: {}
+  required: true
+  description: The ticket description.
+  playbookInputQuery:
+- key: ZendeskPriority
+  value:
+    simple: high
+  required: false
+  description: The urgency with which the ticket should be addressed. Allowed values are "urgent", "high", "normal", or "low".
+  playbookInputQuery:
+- key: ZendeskRequester
+  value: {}
+  required: true
+  description: The user who requested this ticket.
+  playbookInputQuery:
+- key: ZendeskStatus
+  value: {}
+  required: false
+  description: The state of the ticket. Allowed values are "new", "open", "pending", "hold", "solved", or "closed".
+  playbookInputQuery:
+- key: ZendeskSubject
+  value: {}
+  required: true
+  description: The value of the subject field for this ticket.
+  playbookInputQuery:
+- key: ZendeskTags
+  value: {}
+  required: false
+  description: The array of tags applied to this ticket.
+  playbookInputQuery:
+- key: ZendeskType
+  value: {}
+  required: true
+  description: The type of this ticket. Allowed values are "problem", "incident", "question", or "task".
+  playbookInputQuery:
+- key: CommentToAdd
+  value: {}
+  required: false
+  description: Comment for the ticket.
+  playbookInputQuery:
+- key: addCommentPerEndpoint
+  value:
+    simple: "True"
+  required: false
+  description: 'Whether to add a new comment to the ticket for each endpoint in the incident. Possible values: True/False.'
+  playbookInputQuery:
+- key: Action
+  value: {}
+  required: false
+  description: 'Whether to open a new ticket or to add a new comment. Possible values: NewTicket/AddComment.'
+  playbookInputQuery:
+outputs:
+- contextPath: Zendesk.Ticket.id
+  description: The ticket ID.
+tests:
+- No tests (auto formatted)
+marketplaces:
+  - xsoar
+  - marketplacev2
+fromversion: 6.8.0

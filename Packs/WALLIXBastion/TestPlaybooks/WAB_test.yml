@@ -1,0 +1,191 @@
+id: 00e35aeb-5332-4e3e-8cbe-f5596a829ea1
+version: 9
+vcShouldKeepItemLegacyProdMachine: false
+name: WAB_test
+description: Basic playbook to test simple GET commands on the WALLIX Bastion
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 4dc559e2-b47a-42a4-8f00-e5aa6951a9f6
+    type: start
+    task:
+      id: 4dc559e2-b47a-42a4-8f00-e5aa6951a9f6
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+      - "4"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 31d0a24d-32a1-4426-881d-9e4614cc7648
+    type: regular
+    task:
+      id: 31d0a24d-32a1-4426-881d-9e4614cc7648
+      version: -1
+      name: wab-get-sessions
+      description: Get the sessions
+      script: WALLIX Bastion|||wab-get-sessions
+      type: regular
+      iscommand: true
+      brand: WALLIX Bastion
+    scriptarguments:
+      limit:
+        simple: "10"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 38f62f60-cb4f-495c-896f-6086cb8d7899
+    type: regular
+    task:
+      id: 38f62f60-cb4f-495c-896f-6086cb8d7899
+      version: -1
+      name: wab-get-object-to-onboard
+      description: Get object to onboard, by type (either devices with their linked
+        accounts or global accounts alone)
+      script: WALLIX Bastion|||wab-get-object-to-onboard
+      type: regular
+      iscommand: true
+      brand: WALLIX Bastion
+    scriptarguments:
+      limit:
+        simple: "10"
+      object_status:
+        simple: to_onboard
+      object_type:
+        simple: devices
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: ca7f2bde-b141-4e2b-8b1c-f4f3c4cb7c4d
+    type: regular
+    task:
+      id: ca7f2bde-b141-4e2b-8b1c-f4f3c4cb7c4d
+      version: -1
+      name: wab-get-scans
+      description: Get the scans
+      script: WALLIX Bastion|||wab-get-scans
+      type: regular
+      iscommand: true
+      brand: WALLIX Bastion
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      limit:
+        simple: "10"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 97442c03-b9b1-4007-8c6a-8b1006c434bf
+    type: regular
+    task:
+      id: 97442c03-b9b1-4007-8c6a-8b1006c434bf
+      version: -1
+      name: wab-get-approvals-for-all-approvers
+      description: Get the approvals for a given approver
+      script: WALLIX Bastion|||wab-get-approvals-for-all-approvers
+      type: regular
+      iscommand: true
+      brand: WALLIX Bastion
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      limit:
+        simple: "10"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 415,
+        "width": 810,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.5.0

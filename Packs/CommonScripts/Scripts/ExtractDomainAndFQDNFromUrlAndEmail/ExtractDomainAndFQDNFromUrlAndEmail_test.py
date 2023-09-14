@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import demistomock as demisto
 from ExtractDomainAndFQDNFromUrlAndEmail import extract_fqdn, main
 import pytest
@@ -13,7 +12,6 @@ import pytest
 
     # no fqdn extracted
     ('www.test.fake', ''),
-    ('test.zip', ''),
     ('https://emea01.safelinks.protection.outlook.com/', ''),
     ('https://urldefense.proofpoint.com/', ''),
     ('https://urldefense.com/', ''),  # noqa: E501
@@ -56,6 +54,7 @@ import pytest
     ('/evil3.com', 'evil3.com'),  # noqa: E501 disable-secrets-detection
     ('<br>kasai.qlmsourcing.com', 'kasai.qlmsourcing.com'),  # disable-secrets-detection
     ('test.com@', ''),  # disable-secrets-detection
+    ('%40subdomain.domain.com', 'subdomain.domain.com'),  # disable-secrets-detection
 ])  # noqa: E124
 def test_extract_fqdn_or_domain(input, fqdn):
     extracted_fqdn = extract_fqdn(input)

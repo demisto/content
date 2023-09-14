@@ -1,0 +1,65 @@
+{
+	"start": "2023-02-19",
+	"end": "9999-12-31",
+	"audits": [
+		{
+			"user": null,
+			"role": null,
+			"source_ip": "127.127.127.127",
+			"headend_addr": "127.127.127.127",
+			"dvchost": "hostname.dev",
+			"version": "7.3",
+			"result": "failure",
+			"message": "invalid authentication token '1c9a********' used for API request",
+			"vectra_timestamp": "1676764803"
+		},
+		{
+			"user": null,
+			"role": null,
+			"source_ip": "127.127.127.127",
+			"headend_addr": "127.127.127.127",
+			"dvchost": "hostname.dev",
+			"version": "7.3",
+			"result": "failure",
+			"message": "invalid authentication token '1c9a********' used for API request",
+			"vectra_timestamp": "1676764813"
+		},
+		{
+			"user": null,
+			"role": null,
+			"source_ip": "127.127.127.127",
+			"headend_addr": "127.127.127.127",
+			"dvchost": "hostname.dev",
+			"version": "7.3",
+			"result": "failure",
+			"message": "invalid authentication token '1c9a********' used for API request",
+			"vectra_timestamp": "1676764815"
+		},
+		{
+			"user": null,
+			"role": null,
+			"source_ip": "127.127.127.127",
+			"headend_addr": "127.127.127.127",
+			"dvchost": "hostname.dev",
+			"version": "7.3",
+			"result": "failure",
+			"message": "invalid authentication token '1c9a********' used for API request",
+			"vectra_timestamp": "1676764863"
+		},
+		{
+			"user": null,
+			"role": null,
+			"source_ip": "127.127.127.127",
+			"headend_addr": "127.127.127.127",
+			"dvchost": "hostname.dev",
+			"version": "7.3",
+			"result": "failure",
+			"message": "invalid authentication token '1c9a********' used for API request",
+			"vectra_timestamp": "1676764878"
+		}
+	],
+	"_meta": {
+		"level": "success",
+		"message": "Success."
+	}
+}

@@ -1,0 +1,24 @@
+{
+  "watchlists": {
+    "CUSTOM": [
+      {
+        "id": 33362,
+        "type": "CUSTOM",
+        "name": "Custom-Keyword-Security",
+        "description": "",
+        "properties": {
+          "watchlistColor": "purple"
+        }
+      },
+      {
+        "id": 33397,
+        "type": "CUSTOM",
+        "name": "custom_list",
+        "description": "",
+        "properties": {
+          "watchlistColor": "purple"
+        }
+      }
+    ]
+  }
+}

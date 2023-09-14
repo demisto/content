@@ -1,0 +1,25 @@
+{
+    "Type": 1,
+    "Contents": [
+        {
+            "ID": 1964949, 
+            "Name": "Russia-Region", 
+            "Type": "DSTN_OTHER"
+        }
+    ],
+    "ContentsFormat": "json",
+    "HumanReadable": "### IPv4 Destination groups (1)\n|ID|Name|Type|\n|---|---|---|\n| 1964949 | Russia-Region | DSTN_OTHER |\n",
+    "EntryContext": {
+        "Zscaler.IPDestinationGroup(val.ID && val.ID == obj.ID)": [
+          {
+            "ID": 1964949, 
+            "Name": "Russia-Region", 
+            "Type": "DSTN_OTHER"
+          }      
+        ]
+      },
+    "IgnoreAutoExtract": false,
+    "IndicatorTimeline": [],
+    "Note": false,
+    "Relationships": []
+  }

@@ -1,0 +1,55 @@
+{
+  "data": [
+    {
+      "archive_date": null,
+      "archived": null,
+      "assignee_id": null,
+      "assignment_date": null,
+      "bucket_id": 262,
+      "company_id": 2,
+      "created_at": "2023-01-05T12:27:44.193Z",
+      "created_by": null,
+      "deleted_at": null,
+      "description": null,
+      "entity_id": 4768,
+      "entity_type": 0,
+      "id": "00000000-0000-0000-0000-000000000000",
+      "metadata": {
+        "created_at": "0001-01-01T00:00:00Z",
+        "entity": {
+          "entity_id": 4768,
+          "entity_type": 0,
+          "keyword": {
+            "bucket_id": 262,
+            "company_id": 2,
+            "created_at": "2022-07-08T05:42:59Z",
+            "display_name": "Keyword",
+            "id": 4768,
+            "k_query": {
+              "query": {
+                "per_page": "",
+                "search_Keyword": "",
+                "search_by_extension": "",
+                "search_by_file_name": "",
+                "search_by_language": "",
+                "short_by": ""
+              }
+            },
+            "tag_name": "keyword",
+            "updated_at": "2022-04-10T15:33:43Z"
+          }
+        }
+      },
+      "service": "service_name",
+      "severity": "MEDIUM",
+      "status": "UNREVIEWED",
+      "total_alerts": 4,
+      "updated_at": "2023-01-05T12:33:56.999Z",
+      "updated_by": null,
+      "user_severity": null
+    }
+  ],
+
+  "meta": {},
+  "success": true
+}

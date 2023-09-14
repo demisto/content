@@ -1,0 +1,166 @@
+category: Analytics & SIEM
+commonfields:
+  id: Traceable
+  version: -1
+configuration:
+- display: Traceable Platform API Endpoint URL
+  name: url
+  defaultvalue: https://api.traceable.ai
+  type: 0
+  required: true
+- display: ""
+  displaypassword: API Token
+  name: credentials
+  type: 9
+  required: true
+  hiddenusername: true
+- display: Trust any certificate (not secure)
+  name: insecure
+  defaultvalue: "false"
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: "false"
+  type: 8
+  required: false
+- display: Fetch incidents
+  name: isFetch
+  type: 8
+  required: false
+  defaultvalue: 'true'
+- display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  name: first_fetch
+  defaultvalue: 1 days
+  type: 0
+  required: false
+- name: max_fetch
+  display: Max number of records to fetch per API call to Traceable API Endpoint.
+  required: false
+  type: 0
+  defaultvalue: '100'
+- name: span_fetch_threadpool
+  display: Number of span queries to run in parallel
+  required: false
+  type: 0
+  defaultvalue: '10'
+- display: "Comma Separated Environment List To Process"
+  name: environment
+  type: 12
+  required: false
+- display: "Security Score Category"
+  name: securityScoreCategory
+  defaultvalue: CRITICAL,HIGH,MEDIUM
+  type: 16
+  required: false
+  options:
+  - CRITICAL
+  - HIGH
+  - MEDIUM
+  - LOW
+- display: "Threat Category"
+  name: threatCategory
+  defaultvalue: Malicious Activities,API Abuse,Malicious Sources
+  type: 16
+  required: false
+  options:
+  - Malicious Activities
+  - API Abuse
+  - Malicious Sources
+- display: "IP Reputation Level"
+  name: ipReputationLevel
+  defaultvalue: CRITICAL,HIGH,MEDIUM
+  type: 16
+  required: false
+  options:
+  - CRITICAL
+  - HIGH
+  - MEDIUM
+  - LOW
+  - UNKNOWN
+- display: "IP Abuse Velocity"
+  name: ipAbuseVelocity
+  defaultvalue: CRITICAL,HIGH,MEDIUM
+  type: 16
+  required: false
+  options:
+  - CRITICAL
+  - HIGH
+  - MEDIUM
+  - LOW
+  - UNKNOWN
+- display: "IP Location Type"
+  name: ipCategories
+  type: 16
+  required: false
+  options:
+  - Anonymous VPN
+  - Hosting Provider
+  - Public Proxy
+  - TOR Exit Node
+  - BOT
+  - Unknown
+- display: Traceable Platform Endpoint URL
+  defaultvalue: https://app.traceable.ai
+  name: app_url
+  required: false
+  type: 0
+- display: Incident type
+  defaultvalue: Exploit
+  name: incidentType
+  required: false
+  type: 13
+- display: Ignore Status Codes
+  name: ignoreStatusCodes
+  defaultvalue: 400-499
+  type: 0
+  required: false
+- display: Incident optional field list
+  name: optionalDomainEventFieldList
+  defaultvalue: actorDevice,actorEntityId,actorId,actorScoreCategory,actorSession,anomalousAttribute,apiName,apiUri,category,ipAbuseVelocity,ipReputationLevel,securityEventType,securityScore,serviceId,serviceName,actorScore,threatCategory,type
+  options:
+  - actorDevice
+  - actorEntityId
+  - actorId
+  - actorScoreCategory
+  - actorSession
+  - anomalousAttribute
+  - apiName
+  - apiUri
+  - category
+  - ipAbuseVelocity
+  - ipReputationLevel
+  - securityEventType
+  - securityScore
+  - serviceId
+  - serviceName
+  - actorScore
+  - threatCategory
+  - type
+  type: 16
+  required: false
+- display: Additional API Attributes
+  name: optionalAPIAttributes
+  defaultvalue: isExternal,isAuthenticated,riskScore,riskScoreCategory,isLearnt
+  options:
+  - isExternal
+  - isAuthenticated
+  - riskScore
+  - riskScoreCategory
+  - isLearnt
+  type: 16
+  required: false
+description: "Traceable Platform Integration enables publishing Traceable Detected Security Events to be published to Cortex Xsoar for further action."
+display: "Traceable"
+name: Traceable
+script:
+  isfetch: true
+  isFetchSamples: true
+  runonce: false
+  script: "-"
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.10.13.72123
+fromversion: 5.5.0
+tests:
+- No tests (auto formatted)

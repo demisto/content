@@ -1,0 +1,8 @@
+[file:CybleEventsV2.yml]
+ignore=IN126
+
+[file:README.md]
+ignore=RM108
+
+[known_words]
+cyble

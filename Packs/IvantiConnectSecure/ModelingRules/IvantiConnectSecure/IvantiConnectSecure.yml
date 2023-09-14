@@ -1,0 +1,6 @@
+fromversion: 8.2.0  # Will be updated with XSIAM version updates
+id: Ivanti_Connect_Secure_Modeling_Rules
+name: Ivanti Connect Secure Modeling Rules
+rules: ''
+schema: ''
+tags: 'Ivanti Pulse Connect Secure VPN'

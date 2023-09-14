@@ -5,58 +5,58 @@ commonfields:
 configuration:
 - display: Server URL (e.g., 'https://api.zoom.us/v2/')
   name: url
-  required: false
   type: 0
   defaultvalue: "https://api.zoom.us/v2/"
+  required: false
 - display: Account ID (OAuth)
   name: account_id
-  required: false
   type: 0
+  required: false
 - display: Client ID (OAuth)
   name: credentials
-  required: false
   type: 9
   displaypassword: Client Secret (OAuth)
+  required: false
 - name: creds_api_key
   displaypassword: API Key (JWT-Deprecated)
-  required: false
   type: 9
   additionalinfo: This authentication method is deprecated.
   hiddenusername: true
+  required: false
 - name: creds_api_secret
   displaypassword: API Secret (JWT-Deprecated)
-  required: false
   type: 9
   additionalinfo: This authentication method is deprecated.
   hiddenusername: true
+  required: false
 - display: API Key (JWT-Deprecated)
   name: api_key
-  required: false
   type: 4
   additionalinfo: This authentication method is deprecated.
   hidden: true
+  required: false
 - display: API Secret (JWT-Deprecated)
   name: api_secret
-  required: false
   type: 4
   additionalinfo: This authentication method is deprecated.
   hidden: true
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 - display: Allow disabling users
   name: disable-user-enabled
-  required: false
   type: 8
+  required: false
 - display: Allow enabling users
   name: enable-user-enabled
-  required: false
   type: 8
+  required: false
 - defaultvalue: User Profile - SCIM (Incoming)
   display: Incoming Mapper
   name: mapper_in
@@ -73,15 +73,11 @@ name: Zoom_IAM
 script:
   commands:
   - arguments:
-    - default: false
-      description: >
+    - description: >
         A User Profile indicator.
         For example: `{"email": "john.doe@example.com"}`
-      isArray: false
       name: user-profile
       required: true
-      secret: false
-    deprecated: false
     description: Disable an active user.
     execution: true
     name: iam-disable-user
@@ -117,16 +113,12 @@ script:
       description: The employee's username in the app.
       type: String
   - arguments:
-    - default: false
-      description: >
+    - description: >
         A User Profile indicator.
 
         For example: `{"email": "john.doe@example.com"}`
-      isArray: false
       name: user-profile
       required: true
-      secret: false
-    deprecated: false
     description: Enable a deactivated user.
     execution: true
     name: iam-enable-user
@@ -161,32 +153,20 @@ script:
     - contextPath: IAM.Vendor.username
       description: The employee's username in the app.
       type: String
-  - deprecated: false
-    description: Retrieves a single user resource.
-    execution: false
+  - description: Retrieves a single user resource.
     name: iam-get-user
     arguments:
-    - default: false
-      description: >
+    - description: >
         A User Profile indicator.          
 
         For example: `{"email": "john.doe@example.com"}`
-      isArray: false
       name: user-profile
       required: true
-      secret: false
-  - deprecated: false
-    description: Retrieves a User Profile schema, which holds all of the user fields within the application. Used for outgoing-mapping through the Get Schema option.
-    execution: false
+  - description: Retrieves a User Profile schema, which holds all of the user fields within the application. Used for outgoing-mapping through the Get Schema option.
     name: get-mapping-fields
-  dockerimage: demisto/pyjwt3:1.0.0.43045
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
+  dockerimage: demisto/pyjwt3:1.0.0.55864
   ismappable: true
   isremotesyncout: true
-  runonce: false
   script: '-'
   subtype: python3
   type: python

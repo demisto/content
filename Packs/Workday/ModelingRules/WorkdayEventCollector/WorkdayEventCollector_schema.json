@@ -1,0 +1,174 @@
+{
+    "workday_activity_raw": {
+      "systemAccount": {
+        "type": "string",
+        "is_array": false
+      },
+      "activityAction": {
+        "type": "string",
+        "is_array": false
+      },
+      "userAgent": {
+        "type": "string",
+        "is_array": false
+      },
+      "taskId": {
+        "type": "string",
+        "is_array": false
+      },
+      "deviceType": {
+        "type": "string",
+        "is_array": false
+      },
+      "ipAddress": {
+        "type": "string",
+        "is_array": false
+      },
+      "sessionId": {
+        "type": "string",
+        "is_array": false
+      },
+      "taskDisplayName": {
+        "type": "string",
+        "is_array": false
+      },
+      "target": {
+        "type": "string",
+        "is_array": false
+      }
+    },
+
+    "workday_signon_raw": {
+      "access_restriction_reference": {
+          "type": "string",
+          " is_array": false
+      },
+      "account_disabled_or_expired": {
+          "type": "int",
+          " is_array": false
+      },
+      "api_client_id": {
+          "type": "string",
+          " is_array": false
+      },
+      "authentication_channel": {
+          "type": "string",
+          " is_array": false
+      },
+      "authentication_failure_message": {
+          "type": "string",
+          " is_array": false
+      },
+      "authentication_type": {
+          "type": "string",
+          " is_array": false
+      },
+      "browser_type": {
+          "type": "string",
+          " is_array": false
+      },
+      "device_is_trusted": {
+          "type": "int",
+          " is_array": false
+      },
+      "device_type_reference": {
+          "type": "string",
+          " is_array": false
+      },
+      "failed_signon": {
+          "type": "int",
+          " is_array": false
+      },
+      "forgotten_password_reset_request": {
+          "type": "int",
+          " is_array": false
+      },
+      "has_grace_period_for_mfa": {
+          "type": "int",
+          " is_array": false
+      },
+      "invalid_for_authentication_channel": {
+          "type": "int",
+          " is_array": false
+      },
+      "invalid_for_authentication_policy": {
+          "type": "int",
+          " is_array": false
+      },
+      "invalid_credentials": {
+          "type": "int",
+          " is_array": false
+      },
+      "location": {
+          "type": "string",
+          " is_array": false
+      },
+      "mfa_enrollment": {
+          "type": "int",
+          " is_array": false
+      },
+      "mfa_authentication_exempt": {
+          "type": "int",
+          " is_array": false
+      },
+
+      "multi_factor_authentication_type_reference": {
+          "type": "string",
+          " is_array": false
+      },
+      "operating_system": {
+          "type": "string",
+          " is_array": false
+      },
+      "password_changed": {
+          "type": "int",
+          " is_array": false
+      },
+      "required_password_change": {
+          "type": "int",
+          " is_array": false
+      },
+      "requires_mfa": {
+          "type": "int",
+          " is_array": false
+      },
+      "saml_identity_provider_reference": {
+          "type": "string",
+          " is_array": false
+      },
+      "short_session_id": {
+          "type": "string",
+          " is_array": false
+      },
+      "signon_datetime": {
+          "type": "datetime",
+          " is_array": false
+      },
+      "signoff_datetime": {
+          "type": "datetime",
+          " is_array": false
+      },
+      "signon_ip_address": {
+          "type": "string",
+          " is_array": false
+      },
+      "successful": {
+          "type": "int",
+          " is_array": false
+      },
+      "tenant_access_read_only": {
+          "type": "int",
+          " is_array": false
+      },
+      "tls_version": {
+          "type": "string",
+          " is_array": false
+      },
+      "user_name": {
+          "type": "string",
+          " is_array": false
+      }
+  }
+
+    
+  }

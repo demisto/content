@@ -1,0 +1,64 @@
+{
+    "dataType": "incidents",
+    "dateRange": {
+        "fromDate": "0001-01-01T00:00:00Z",
+        "fromDateLicense": "0001-01-01T00:00:00Z",
+        "period": {
+            "by": "",
+            "byFrom": "days",
+            "byTo": "",
+            "field": "",
+            "fromValue": 7,
+            "toValue": null
+        },
+        "toDate": "0001-01-01T00:00:00Z"
+    },
+    "id": "f25359c7-b251-4ec2-8a0d-7f5317f5e2db",
+    "isPredefined": true,
+    "name": "Use Cases in Development",
+    "params": {
+        "enablePagination": true,
+        "tableColumns": [
+            {
+                "displayed": true,
+                "isDefault": true,
+                "key": "id",
+                "width": 110
+            },
+            {
+                "displayed": true,
+                "isDefault": true,
+                "key": "name",
+                "width": 300
+            },
+            {
+                "displayed": true,
+                "key": "Use Case Purpose",
+                "width": 200
+            },
+            {
+                "displayed": true,
+                "key": "Use Case Development Stage",
+                "width": 200
+            },
+            {
+                "displayed": true,
+                "isDefault": true,
+                "key": "owner",
+                "width": 160
+            }
+        ]
+    },
+    "query": "type:\"Use Case Builder\" and name:*",
+    "sort": [
+        {
+            "asc": false,
+            "field": "id",
+            "fieldType": ""
+        }
+    ],
+    "version": -1,
+    "widgetType": "table",
+    "fromVersion": "6.8.0",
+    "description": ""
+}

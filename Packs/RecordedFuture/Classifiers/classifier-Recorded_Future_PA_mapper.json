@@ -3,6 +3,26 @@
     "feed": false,
     "id": "Recorded Future Playbook Alert Mapper",
     "mapping": {
+        "Recorded Future Code Repo Leakage": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"Alert Category": {
+					"simple": "panel_status.case_rule_label"
+				},
+				"Alert ID": {
+					"simple": "playbook_alert_id"
+				},
+				"Alert Name": {
+					"simple": "title"
+				},
+				"Description": {
+					"simple": "panel_evidence_summary.evidence.content"
+				},
+				"Source Priority": {
+					"simple": "priority"
+				}
+			}
+		},
         "Recorded Future Vulnerability": {
             "dontMapEventToLabels": false,
             "internalMapping": {

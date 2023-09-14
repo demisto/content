@@ -1,0 +1,23 @@
+{
+    "name": "Traceable",
+    "description": "Traceable AI API Security Platform Integration",
+    "support": "partner",
+    "currentVersion": "1.0.3",
+    "author": "Traceable Inc",
+    "url": "mailto:support@traceable.ai",
+    "email": "",
+    "categories": [
+        "Analytics & SIEM"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "devEmail": [
+        "mayuresh@traceable.ai"
+    ],
+    "githubUser": []
+}

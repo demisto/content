@@ -1,0 +1,571 @@
+{
+    "OriginalValue": "test",
+    "Status": "Done",
+    "Data": {
+        "Value": "Data_Value",
+        "Type": "Urls",
+        "Sources": [
+            {
+                "Name": "OpenPhish",
+                "ConfidenceLevel": 2
+            },
+            {
+                "Name": "Cyware",
+                "ConfidenceLevel": 2
+            }
+        ],
+        "SystemTags": [
+            "Delivery",
+            "Initial Access",
+            "T1566 - Phishing",
+            "phishing"
+        ],
+        "Tags": [],
+        "Status": "Active",
+        "IsKnownIoc": true,
+        "RelatedMalwares": [],
+        "RelatedThreatActors": [],
+        "RelatedCampaigns": [],
+        "FirstSeen": "Data_FirstSeen",
+        "LastSeen": "Data_LastSeen",
+        "UpdateDate": "Data_UpdateDate",
+        "Whitelisted": false,
+        "Severity": {
+            "Value": "Low",
+            "Score": 19.195402298850574,
+            "Origin": "system"
+        },
+        "AntivirusScanDate": "Data_AntivirusScanDate",
+        "AntivirusDetectionRatio": "9%",
+        "AntivirusDetectedEngines": "8/87",
+        "AntivirusDetections": [
+            {
+                "Name": "Bkav",
+                "Version": "",
+                "Detected": false,
+                "Result": "unrated site"
+            },
+            {
+                "Name": "CMC Threat Intelligence",
+                "Version": "",
+                "Detected": false,
+                "Result": "clean site"
+            },
+            {
+                "Name": "Snort IP sample list",
+                "Version": "",
+                "Detected": false,
+                "Result": "clean site"
+            },
+            {
+                "Name": "VX Vault",
+                "Version": "",
+                "Detected": false,
+                "Result": "clean site"
+            },
+            {
+                "Name": "ViriBack",
+                "Version": "",
+                "Detected": false,
+                "Result": "clean site"
+            },
+            {
+                "Name": "PhishLabs",
+                "Version": "",
+                "Detected": true,
+                "Result": "phishing site"
+            },
+            {
+                "Name": "K7AntiVirus",
+                "Version": "",
+                "Detected": false,
+                "Result": "clean site"
+            },
+            {
+                "Name": "CINS Army",
+                "Version": "",
+                "Detected": false,
+                "Result": "clean site"
+            },
+            {
+                "Name": "Quttera",
+                "Version": "",
+                "Detected": false,
+                "Result": "clean site"
+            },
+            {
+                "Name": "ArcSight Galaxy",
+                "Version": "",
+                "Detected": false,
+                "Result": "unrated site"
+            },
+            {
+                "Name": "PrecisionSec",
+                "Version": "",
+                "Detected": false,
+                "Result": "unrated site"
+            },
+            {
+                "Name": "OpenPhish",
+                "Version": "",
+                "Detected": false,
+                "Result": "clean site"
+            },
+            {
+                "Name": "0xSI_f33d",
+                "Version": "",
+                "Detected": false,
+                "Result": "unrated site"
+            },
+            {
+                "Name": "Feodo Tracker",
+                "Version": "",
+                "Detected": false,
+                "Result": "clean site"
+            },
+            {
+                "Name": "Scantitan",
+                "Version": "",
+                "Detected": false,
+                "Result": "clean site"
+            },
+            {
+                "Name": "AlienVault",
+                "Version": "",
+                "Detected": false,
+                "Result": "clean site"
+            },
+            {
+                "Name": "Sophos",
+                "Version": "",
+                "Detected": false,
+                "Result": "clean site"
+            },
+            {
+                "Name": "Phishtank",
+                "Version": "",
+                "Detected": false,
+                "Result": "clean site"
+            },
+            {
+                "Name": "Cyan",
+                "Version": "",
+                "Detected": false,
+                "Result": "unrated site"
+            },
+            {
+                "Name": "Spam404",
+                "Version": "",
+                "Detected": false,
+                "Result": "clean site"
+            },
+            {
+                "Name": "SecureBrain",
+                "Version": "",
+                "Detected": false,
+                "Result": "clean site"
+            },
+            {
+                "Name": "CRDF",
+                "Version": "",
+                "Detected": false,
+                "Result": "clean site"
+            },
+            {
+                "Name": "Rising",
+                "Version": "",
+                "Detected": false,
+                "Result": "clean site"
+            },
+            {
+                "Name": "Fortinet",
+                "Version": "",
+                "Detected": true,
+                "Result": "phishing site"
+            },
+            {
+                "Name": "alphaMountain.ai",
+                "Version": "",
+                "Detected": false,
+                "Result": "clean site"
+            },
+            {
+                "Name": "Lionic",
+                "Version": "",
+                "Detected": false,
+                "Result": "clean site"
+            },
+            {
+                "Name": "Cyble",
+                "Version": "",
+                "Detected": false,
+                "Result": "clean site"
+            },
+            {
+                "Name": "Seclookup",
+                "Version": "",
+                "Detected": false,
+                "Result": "clean site"
+            },
+            {
+                "Name": "Xcitium Verdict Cloud",
+                "Version": "",
+                "Detected": false,
+                "Result": "unrated site"
+            },
+            {
+                "Name": "Artists Against 419",
+                "Version": "",
+                "Detected": false,
+                "Result": "clean site"
+            },
+            {
+                "Name": "Google Safebrowsing",
+                "Version": "",
+                "Detected": false,
+                "Result": "clean site"
+            },
+            {
+                "Name": "SafeToOpen",
+                "Version": "",
+                "Detected": false,
+                "Result": "unrated site"
+            },
+            {
+                "Name": "ADMINUSLabs",
+                "Version": "",
+                "Detected": false,
+                "Result": "clean site"
+            },
+            {
+                "Name": "ESTsecurity",
+                "Version": "",
+                "Detected": false,
+                "Result": "clean site"
+            },
+            {
+                "Name": "Juniper Networks",
+                "Version": "",
+                "Detected": false,
+                "Result": "clean site"
+            },
+            {
+                "Name": "Heimdal Security",
+                "Version": "",
+                "Detected": false,
+                "Result": "clean site"
+            },
+            {
+                "Name": "AutoShun",
+                "Version": "",
+                "Detected": false,
+                "Result": "unrated site"
+            },
+            {
+                "Name": "Trustwave",
+                "Version": "",
+                "Detected": false,
+                "Result": "clean site"
+            },
+            {
+                "Name": "AICC (MONITORAPP)",
+                "Version": "",
+                "Detected": false,
+                "Result": "clean site"
+            },
+            {
+                "Name": "CyRadar",
+                "Version": "",
+                "Detected": false,
+                "Result": "clean site"
+            },
+            {
+                "Name": "Dr.Web",
+                "Version": "",
+                "Detected": false,
+                "Result": "clean site"
+            },
+            {
+                "Name": "Emsisoft",
+                "Version": "",
+                "Detected": true,
+                "Result": "phishing site"
+            },
+            {
+                "Name": "Abusix",
+                "Version": "",
+                "Detected": false,
+                "Result": "clean site"
+            },
+            {
+                "Name": "Webroot",
+                "Version": "",
+                "Detected": false,
+                "Result": "clean site"
+            },
+            {
+                "Name": "Avira",
+                "Version": "",
+                "Detected": false,
+                "Result": "clean site"
+            },
+            {
+                "Name": "securolytics",
+                "Version": "",
+                "Detected": false,
+                "Result": "clean site"
+            },
+            {
+                "Name": "Antiy-AVL",
+                "Version": "",
+                "Detected": false,
+                "Result": "clean site"
+            },
+            {
+                "Name": "BlockList",
+                "Version": "",
+                "Detected": false,
+                "Result": "clean site"
+            },
+            {
+                "Name": "Acronis",
+                "Version": "",
+                "Detected": false,
+                "Result": "clean site"
+            },
+            {
+                "Name": "Quick Heal",
+                "Version": "",
+                "Detected": false,
+                "Result": "clean site"
+            },
+            {
+                "Name": "URLQuery",
+                "Version": "",
+                "Detected": false,
+                "Result": "unrated site"
+            },
+            {
+                "Name": "Viettel Threat Intelligence",
+                "Version": "",
+                "Detected": false,
+                "Result": "clean site"
+            },
+            {
+                "Name": "DNS8",
+                "Version": "",
+                "Detected": false,
+                "Result": "clean site"
+            },
+            {
+                "Name": "benkow.cc",
+                "Version": "",
+                "Detected": false,
+                "Result": "clean site"
+            },
+            {
+                "Name": "EmergingThreats",
+                "Version": "",
+                "Detected": false,
+                "Result": "clean site"
+            },
+            {
+                "Name": "Chong Lua Dao",
+                "Version": "",
+                "Detected": false,
+                "Result": "clean site"
+            },
+            {
+                "Name": "Yandex Safebrowsing",
+                "Version": "",
+                "Detected": false,
+                "Result": "clean site"
+            },
+            {
+                "Name": "Lumu",
+                "Version": "",
+                "Detected": false,
+                "Result": "unrated site"
+            },
+            {
+                "Name": "Kaspersky",
+                "Version": "",
+                "Detected": true,
+                "Result": "phishing site"
+            },
+            {
+                "Name": "Segasec",
+                "Version": "",
+                "Detected": true,
+                "Result": "phishing site"
+            },
+            {
+                "Name": "Sucuri SiteCheck",
+                "Version": "",
+                "Detected": false,
+                "Result": "clean site"
+            },
+            {
+                "Name": "desenmascara.me",
+                "Version": "",
+                "Detected": false,
+                "Result": "clean site"
+            },
+            {
+                "Name": "Cluster25",
+                "Version": "",
+                "Detected": false,
+                "Result": "unrated site"
+            },
+            {
+                "Name": "URLhaus",
+                "Version": "",
+                "Detected": false,
+                "Result": "clean site"
+            },
+            {
+                "Name": "PREBYTES",
+                "Version": "",
+                "Detected": false,
+                "Result": "clean site"
+            },
+            {
+                "Name": "StopForumSpam",
+                "Version": "",
+                "Detected": false,
+                "Result": "clean site"
+            },
+            {
+                "Name": "Blueliv",
+                "Version": "",
+                "Detected": false,
+                "Result": "clean site"
+            },
+            {
+                "Name": "Netcraft",
+                "Version": "",
+                "Detected": true,
+                "Result": "malicious site"
+            },
+            {
+                "Name": "ZeroCERT",
+                "Version": "",
+                "Detected": false,
+                "Result": "clean site"
+            },
+            {
+                "Name": "Phishing Database",
+                "Version": "",
+                "Detected": false,
+                "Result": "clean site"
+            },
+            {
+                "Name": "MalwarePatrol",
+                "Version": "",
+                "Detected": false,
+                "Result": "clean site"
+            },
+            {
+                "Name": "Sangfor",
+                "Version": "",
+                "Detected": false,
+                "Result": "clean site"
+            },
+            {
+                "Name": "IPsum",
+                "Version": "",
+                "Detected": false,
+                "Result": "clean site"
+            },
+            {
+                "Name": "Malwared",
+                "Version": "",
+                "Detected": false,
+                "Result": "clean site"
+            },
+            {
+                "Name": "BitDefender",
+                "Version": "",
+                "Detected": true,
+                "Result": "phishing site"
+            },
+            {
+                "Name": "GreenSnow",
+                "Version": "",
+                "Detected": false,
+                "Result": "clean site"
+            },
+            {
+                "Name": "G-Data",
+                "Version": "",
+                "Detected": true,
+                "Result": "phishing site"
+            },
+            {
+                "Name": "VIPRE",
+                "Version": "",
+                "Detected": false,
+                "Result": "unrated site"
+            },
+            {
+                "Name": "SCUMWARE.org",
+                "Version": "",
+                "Detected": false,
+                "Result": "clean site"
+            },
+            {
+                "Name": "PhishFort",
+                "Version": "",
+                "Detected": false,
+                "Result": "unrated site"
+            },
+            {
+                "Name": "malwares.com URL checker",
+                "Version": "",
+                "Detected": false,
+                "Result": "clean site"
+            },
+            {
+                "Name": "Forcepoint ThreatSeeker",
+                "Version": "",
+                "Detected": false,
+                "Result": "unrated site"
+            },
+            {
+                "Name": "Certego",
+                "Version": "",
+                "Detected": false,
+                "Result": "clean site"
+            },
+            {
+                "Name": "ESET",
+                "Version": "",
+                "Detected": false,
+                "Result": "clean site"
+            },
+            {
+                "Name": "Threatsourcing",
+                "Version": "",
+                "Detected": false,
+                "Result": "clean site"
+            },
+            {
+                "Name": "ThreatHive",
+                "Version": "",
+                "Detected": false,
+                "Result": "clean site"
+            },
+            {
+                "Name": "Bfore.Ai PreCrime",
+                "Version": "",
+                "Detected": false,
+                "Result": "clean site"
+            }
+        ],
+        "RelatedHashes": {
+            "downloaded": [],
+            "communicating": [],
+            "referencing": []
+        }
+    }
+}

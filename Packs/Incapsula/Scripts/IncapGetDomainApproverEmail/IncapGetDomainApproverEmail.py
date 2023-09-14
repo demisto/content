@@ -1,6 +1,6 @@
+import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-import demistomock as demisto  # noqa: F401
 
 resp = demisto.executeCommand("incap-get-domain-approver-email", demisto.args())
 

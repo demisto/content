@@ -1,8 +1,7 @@
-import subprocess
-import uuid
-
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+import subprocess
+import uuid
 
 
 def etl_to_pcap(etl_file_path, output_file_path):

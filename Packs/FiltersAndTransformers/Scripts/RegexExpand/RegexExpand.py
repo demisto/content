@@ -1,8 +1,7 @@
-import re
-from typing import List
-
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+import re
+from typing import List
 
 
 def concat_values(item1: Any, item2: Any) -> List[Any]:

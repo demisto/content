@@ -1,0 +1,17 @@
+commonfields:
+  id: SetRSANetWitnessAlertsMD
+  version: -1
+name: SetRSANetWitnessAlertsMD
+script: ''
+type: python
+tags:
+- dynamic-section
+comment: This automation takes several alert fields from the RSA NetWitness alerts context and displays them as markdown in the layout.
+enabled: true
+scripttarget: 0
+subtype: python3
+dockerimage: demisto/python3:3.10.12.66339
+runas: DBotWeakRole
+fromversion: 6.9.0
+tests:
+- No tests (auto formatted)

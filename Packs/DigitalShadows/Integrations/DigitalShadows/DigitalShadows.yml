@@ -41,14 +41,14 @@ configuration:
   name: fetchLimit
   defaultvalue: "50"
   type: 0
-  required: false
   additionalinfo: Limit on the number of incidents retrieved in a single fetch.  Must be an integer between 1 and 200 inclusive.
+  required: false
 - display: Initial Fetch (Minutes)
   name: initialFetch
   defaultvalue: "1"
   type: 0
-  required: false
   additionalinfo: The time period in minutes for which to fetch historic incidents. This is used the first time incidents are fetched and if the last run details are reset. Must be an integer greater than or equal to 1.
+  required: false
 script:
   script: ''
   type: javascript

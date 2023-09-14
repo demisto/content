@@ -1,0 +1,727 @@
+{
+  "fromVersion": "8.3.0",
+  "templates_data": [
+    {
+      "report_name": "NIST 800-171 Compliance Report",
+      "report_description": "Monitor NIST 800-171 controls and produce evidence for audits.",
+      "layout": [
+        {
+          "id": "Row 1",
+          "data": [
+            {
+              "key": "header",
+              "data": {
+                "name": "NIST 800-171 Compliance Report",
+                "type": "",
+                "width": 100,
+                "height": 140,
+                "tenantId": "1004205575214",
+                "description": "Monitor NIST 800-171 controls and produce evidence for audits."
+              }
+            }
+          ]
+        },
+        {
+          "id": "row-3832",
+          "data": [
+            {
+              "key": "xql_1683770002106",
+              "data": {
+                "type": "Custom XQL",
+                "width": 100,
+                "height": 400,
+                "phrase": "datamodel\n| filter xdm.event.type contains \"Access\"\n| filter xdm.source.user_agent contains \"Mac\" or xdm.source.host.os_family contains \"MAC\"\n| fields _time, xdm.event.type, xdm.source.user_agent, xdm.target.sent_bytes, xdm.observer.product\n| comp count () as user_agent_counter by xdm.source.user_agent\n| view graph type = column subtype = stacked layout = horizontal xaxis = xdm.source.user_agent yaxis = user_agent_counter ",
+                "time_frame": {
+                  "relativeTime": 2592000000
+                },
+                "viewOptions": {
+                  "type": "column",
+                  "commands": [
+                    {
+                      "command": {
+                        "op": "=",
+                        "name": "subtype",
+                        "value": "stacked"
+                      }
+                    },
+                    {
+                      "command": {
+                        "op": "=",
+                        "name": "layout",
+                        "value": "horizontal"
+                      }
+                    },
+                    {
+                      "command": {
+                        "op": "=",
+                        "name": "xaxis",
+                        "value": "xdm.source.user_agent"
+                      }
+                    },
+                    {
+                      "command": {
+                        "op": "=",
+                        "name": "yaxis",
+                        "value": "user_agent_counter"
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "row-7640",
+          "data": [
+            {
+              "key": "xql_1682638590890",
+              "data": {
+                "type": "Custom XQL",
+                "width": 100,
+                "height": 400,
+                "params": [],
+                "phrase": "datamodel \n| filter xdm.event.operation contains \"REGISTRY\"/*Filter for registry events*/\n| filter xdm.event.operation contains \"*\"\n| fields _time, xdm.event.type, xdm.event.operation, xdm.event.operation_sub_type, xdm.source.host.hostname, xdm.source.user.username, xdm.source.agent.identifier, xdm.source.process.name, xdm.source.process.executable.path, xdm.event.outcome, xdm.observer.product",
+                "time_frame": {
+                  "relativeTime": 2592000000
+                },
+                "viewOptions": {
+                  "type": "table",
+                  "commands": []
+                },
+                "gridRawStorageInfo": {
+                  "sort": null,
+                  "coldefs": {},
+                  "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+                  "columnWidth": null
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "row-6366",
+          "data": [
+            {
+              "key": "xql_1682639118884",
+              "data": {
+                "type": "Custom XQL",
+                "width": 100,
+                "height": 400,
+                "params": [],
+                "phrase": "datamodel \n| filter xdm.observer.content_version contains \"*\"\n| dedup xdm.source.host.hostname \n| fields xdm.source.host.hostname, xdm.source.agent.identifier, xdm.observer.content_version \n\n\n",
+                "time_frame": {
+                  "relativeTime": 2592000000
+                },
+                "viewOptions": {
+                  "type": "table",
+                  "commands": []
+                },
+                "gridRawStorageInfo": {
+                  "sort": null,
+                  "coldefs": {},
+                  "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+                  "columnWidth": null
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "row-1896",
+          "data": [
+            {
+              "key": "xql_1682630579252",
+              "data": {
+                "type": "Custom XQL",
+                "width": 100,
+                "height": 400,
+                "params": [],
+                "phrase": "datamodel | filter xdm.auth.kerberos_tgt.msg_type = \"TGS_REQ\"\n| filter xdm.auth.kerberos_tgt.cname_type = \"PRINCIPAL\" and xdm.auth.kerberos_tgt.cname_values contains \"*\"\n| fields xdm.alert.original_alert_id, xdm.auth.kerberos_tgt.cname_type, xdm.auth.kerberos_tgt.cname_values, xdm.auth.kerberos_tgt.encryption_type, xdm.auth.kerberos_tgt.error_code, xdm.auth.kerberos_tgt.kdc_options, xdm.auth.kerberos_tgt.msg_type, xdm.auth.kerberos_tgt.padata_prefix, xdm.auth.kerberos_tgt.spn_type, xdm.auth.kerberos_tgt.spn_values, xdm.auth.kerberos_tgt.ticket_expiration, xdm.auth.kerberos_tgt.ticket_prefix \n\n\n\n",
+                "time_frame": {
+                  "relativeTime": 2592000000
+                },
+                "viewOptions": {
+                  "type": "table",
+                  "commands": []
+                },
+                "gridRawStorageInfo": {
+                  "sort": null,
+                  "coldefs": {},
+                  "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+                  "columnWidth": null
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "row-6310",
+          "data": [
+            {
+              "key": "xql_1682646659703",
+              "data": {
+                "type": "Custom XQL",
+                "width": 100,
+                "height": 400,
+                "params": [],
+                "phrase": "datamodel\n| filter xdm.network.rule contains \"*\"\n| fields xdm.network.rule, xdm.network.application_protocol, xdm.network.application_protocol_category, xdm.network.http.method, xdm.network.http.response_code, xdm.network.http.url_category, xdm.network.ip_protocol, xdm.network.protocol_layers, xdm.network.session_id\n",
+                "time_frame": {
+                  "relativeTime": 2592000000
+                },
+                "viewOptions": {
+                  "type": "table",
+                  "commands": []
+                },
+                "gridRawStorageInfo": {
+                  "sort": null,
+                  "coldefs": {},
+                  "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+                  "columnWidth": null
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "row-3297",
+          "data": [
+            {
+              "key": "xql_1683770148128",
+              "data": {
+                "type": "Custom XQL",
+                "width": 100,
+                "height": 400,
+                "phrase": "datamodel | filter xdm.observer.product = \"XDR agent\"\n| filter xdm.source.agent.version contains \"*\"\n| dedup xdm.observer.name\n| fields xdm.observer.product , xdm.observer.name, xdm.observer.content_version, xdm.observer.type, xdm.observer.unique_identifier, xdm.observer.vendor, xdm.observer.version, _time ",
+                "time_frame": {
+                  "relativeTime": 2592000000
+                },
+                "viewOptions": {
+                  "type": "table",
+                  "commands": []
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "row-8011",
+          "data": [
+            {
+              "key": "xql_1683770168188",
+              "data": {
+                "type": "Custom XQL",
+                "width": 100,
+                "height": 400,
+                "phrase": "datamodel \n| filter xdm.source.user.employee_id = \"*\"\n| fields xdm.source.user.first_name, xdm.source.user.last_name, xdm.source.user.middle_name, xdm.source.user.employee_id, xdm.source.user.badge_id",
+                "time_frame": {
+                  "relativeTime": 2592000000
+                },
+                "viewOptions": {
+                  "type": "table",
+                  "commands": []
+                },
+                "gridRawStorageInfo": {
+                  "sort": null,
+                  "coldefs": {},
+                  "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+                  "columnWidth": null
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "row-7638",
+          "data": [
+            {
+              "key": "xql_1683770180948",
+              "data": {
+                "type": "Custom XQL",
+                "width": 100,
+                "height": 400,
+                "phrase": "datamodel\n| filter xdm.source.user.badge_id = \"*\"\n| fields xdm.source.user.first_name, xdm.source.user.last_name, xdm.source.user.middle_name, xdm.source.user.employee_id, xdm.source.user.badge_id",
+                "time_frame": {
+                  "relativeTime": 2592000000
+                },
+                "viewOptions": {
+                  "type": "table",
+                  "commands": []
+                },
+                "gridRawStorageInfo": {
+                  "sort": null,
+                  "coldefs": {},
+                  "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+                  "columnWidth": null
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "row-8329",
+          "data": [
+            {
+              "key": "xql_1683770194061",
+              "data": {
+                "type": "Custom XQL",
+                "width": 100,
+                "height": 400,
+                "phrase": "datamodel \n| filter xdm.source.agent.version contains \"*\" \n| filter xdm.source.host.os contains \"*\"\n| fields xdm.source.host.hostname, xdm.source.host.ipv4_addresses, xdm.source.host.mac_addresses, xdm.source.host.os, xdm.source.host.os_family \n",
+                "time_frame": {
+                  "relativeTime": 2592000000
+                },
+                "viewOptions": {
+                  "type": "table",
+                  "commands": []
+                },
+                "gridRawStorageInfo": {
+                  "sort": null,
+                  "coldefs": {},
+                  "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+                  "columnWidth": null
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "row-1674",
+          "data": [
+            {
+              "key": "xql_1683770207147",
+              "data": {
+                "type": "Custom XQL",
+                "width": 100,
+                "height": 400,
+                "phrase": "datamodel \n| filter xdm.observer.content_version contains \"*\" \n| filter xdm.source.agent.version contains \"*\"\n| fields xdm.source.host.hostname, xdm.source.agent.version, xdm.source.host.ipv4_addresses, xdm.source.host.mac_addresses, xdm.source.host.os, xdm.source.agent.content_version, xdm.source.agent.identifier",
+                "time_frame": {
+                  "relativeTime": 2592000000
+                },
+                "viewOptions": {
+                  "type": "table",
+                  "commands": []
+                },
+                "gridRawStorageInfo": {
+                  "sort": null,
+                  "coldefs": {},
+                  "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+                  "columnWidth": null
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "row-2562",
+          "data": [
+            {
+              "key": "xql_1682642552162",
+              "data": {
+                "type": "Custom XQL",
+                "width": 100,
+                "height": 400,
+                "params": [],
+                "phrase": "datamodel \n| filter xdm.auth.kerberos_tgt.encryption_type contains \"AES\" \n| filter xdm.target.host.hostname contains \"*\"\n| fields xdm.auth.kerberos_tgt.encryption_type , xdm.source.host.hostname, xdm.source.ipv4, xdm.source.user.username, xdm.source.port, xdm.target.host.hostname, xdm.target.ipv4, xdm.target.user.username ",
+                "time_frame": {
+                  "relativeTime": 2592000000
+                },
+                "viewOptions": {
+                  "type": "table",
+                  "commands": []
+                },
+                "gridRawStorageInfo": {
+                  "sort": null,
+                  "coldefs": {},
+                  "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+                  "columnWidth": null
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "row-4442",
+          "data": [
+            {
+              "key": "xql_1683770249124",
+              "data": {
+                "type": "Custom XQL",
+                "width": 100,
+                "height": 400,
+                "phrase": "datamodel \n| filter xdm.observer.product contains \"XDR\" \n| filter xdm.observer.type contains \"*\"\n| fields xdm.observer.content_version, xdm.observer.name, xdm.observer.product, xdm.observer.type, xdm.observer.unique_identifier, xdm.observer.vendor, xdm.observer.version ",
+                "time_frame": {
+                  "relativeTime": 2592000000
+                },
+                "viewOptions": {
+                  "type": "table",
+                  "commands": []
+                },
+                "gridRawStorageInfo": {
+                  "sort": null,
+                  "coldefs": {},
+                  "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+                  "columnWidth": null
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "default_template_id": 1,
+      "time_frame": {
+        "relativeTime": 2592000000
+      },
+      "global_id": "10b4407acb3845f1b0afaa9ebe85c7c9",
+      "time_offset": -18000
+    }
+  ],
+  "widgets_data": [
+    {
+      "widget_key": "xql_1682630579252",
+      "title": "NIST 800-171 Section 3.5: Identification and Authentication",
+      "creation_time": 1687925852777,
+      "description": "Implement policies and procedures to monitor the identity of users, devices, and processes. Use this widget to query event information to return host data.",
+      "data": {
+        "params": [],
+        "phrase": "datamodel \n| fields xdm.alert.original_alert_id, xdm.auth.kerberos_tgt.cname_type, xdm.auth.kerberos_tgt.cname_values, xdm.auth.kerberos_tgt.encryption_type, xdm.auth.kerberos_tgt.error_code, xdm.auth.kerberos_tgt.kdc_options, xdm.auth.kerberos_tgt.msg_type, xdm.auth.kerberos_tgt.padata_prefix, xdm.auth.kerberos_tgt.spn_type, xdm.auth.kerberos_tgt.spn_values, xdm.auth.kerberos_tgt.ticket_expiration, xdm.auth.kerberos_tgt.ticket_prefix \n| filter xdm.auth.kerberos_tgt.msg_type = \"TGS_REQ\"\n| filter xdm.auth.kerberos_tgt.cname_type = \"PRINCIPAL\" and xdm.auth.kerberos_tgt.cname_values contains \"*\"",
+        "time_frame": {
+          "relativeTime": 2592000000
+        },
+        "viewOptions": {
+          "type": "table",
+          "commands": []
+        },
+        "gridRawStorageInfo": {
+          "sort": null,
+          "coldefs": {},
+          "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+          "columnWidth": null
+        }
+      },
+      "support_time_range": true,
+      "additional_info": {
+        "query_tables": [],
+        "query_uses_library": false
+      }
+    },
+    {
+      "widget_key": "xql_1682638590890",
+      "title": "NIST 800-171 Section 3.3: Audit and Accountability",
+      "creation_time": 1687925853025,
+      "description": "Implement policies and procedures to monitor, record, and review system activities. Use this widget to query registry events.",
+      "data": {
+        "params": [],
+        "phrase": "datamodel \n| fields xdm.source.host.hostname, xdm.event.type, xdm.event.operation, xdm.event.operation_sub_type, xdm.source.user.username, xdm.source.agent.identifier, xdm.source.process.name, xdm.source.process.executable.path, xdm.event.outcome, xdm.observer.product\n| filter xdm.event.operation contains \"REGISTRY\"/*Filter for registry events*/\n| filter xdm.event.operation contains \"*\"",
+        "time_frame": {
+          "relativeTime": 2592000000
+        },
+        "viewOptions": {
+          "type": "table",
+          "commands": []
+        },
+        "gridRawStorageInfo": {
+          "sort": null,
+          "coldefs": {},
+          "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+          "columnWidth": null
+        }
+      },
+      "support_time_range": true,
+      "additional_info": {
+        "query_tables": [],
+        "query_uses_library": false
+      }
+    },
+    {
+      "widget_key": "xql_1682639118884",
+      "title": "NIST 800-171 Section 3.4: Configuration Management",
+      "creation_time": 1687925853226,
+      "description": "Implement policies and procedures to monitor and maintain secure configurations. Use this widget to query the content version and other host data.",
+      "data": {
+        "params": [],
+        "phrase": "datamodel \n| fields xdm.source.host.hostname, xdm.source.agent.identifier, xdm.observer.content_version \n| filter xdm.observer.content_version contains \"*\"\n| dedup xdm.source.host.hostname ",
+        "time_frame": {
+          "relativeTime": 2592000000
+        },
+        "viewOptions": {
+          "type": "table",
+          "commands": []
+        },
+        "gridRawStorageInfo": {
+          "sort": null,
+          "coldefs": {},
+          "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+          "columnWidth": null
+        }
+      },
+      "support_time_range": true,
+      "additional_info": {
+        "query_tables": [],
+        "query_uses_library": false
+      }
+    },
+    {
+      "widget_key": "xql_1682642552162",
+      "title": "NIST 800-171 Section 3.13: Systems and Communications Protection",
+      "creation_time": 1687925853439,
+      "description": "Implement policies and procedures to protect and monitor communications channels. Use this widget to query authentication data.",
+      "data": {
+        "params": [],
+        "phrase": "datamodel \n| fields xdm.auth.kerberos_tgt.encryption_type , xdm.source.host.hostname, xdm.source.ipv4, xdm.source.user.username, xdm.source.port, xdm.target.host.hostname, xdm.target.ipv4, xdm.target.user.username \n| filter xdm.auth.kerberos_tgt.encryption_type contains \"AES\" \n| filter xdm.target.host.hostname contains \"*\"",
+        "time_frame": {
+          "relativeTime": 2592000000
+        },
+        "viewOptions": {
+          "type": "table",
+          "commands": []
+        },
+        "gridRawStorageInfo": {
+          "sort": null,
+          "coldefs": {},
+          "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+          "columnWidth": null
+        }
+      },
+      "support_time_range": true,
+      "additional_info": {
+        "query_tables": [],
+        "query_uses_library": false
+      }
+    },
+    {
+      "widget_key": "xql_1682646659703",
+      "title": "NIST 800-171 Section 3.6: Incident Response",
+      "creation_time": 1687925853664,
+      "description": "Implement policies and procedures to detect, respond to, and recover from security incidents. Use this widget to query triggered network rules.",
+      "data": {
+        "params": [],
+        "phrase": "datamodel\n| fields xdm.network.rule, xdm.network.application_protocol, xdm.network.application_protocol_category, xdm.network.http.method, xdm.network.http.response_code, xdm.network.http.url_category, xdm.network.ip_protocol, xdm.network.protocol_layers, xdm.network.session_id\n| filter xdm.network.rule contains \"*\"",
+        "time_frame": {
+          "relativeTime": 2592000000
+        },
+        "viewOptions": {
+          "type": "table",
+          "commands": []
+        },
+        "gridRawStorageInfo": {
+          "sort": null,
+          "coldefs": {},
+          "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+          "columnWidth": null
+        }
+      },
+      "support_time_range": true,
+      "additional_info": {
+        "query_tables": [],
+        "query_uses_library": false
+      }
+    },
+    {
+      "widget_key": "xql_1683770002106",
+      "title": "NIST 800-171 Section 3.1: Access Control",
+      "creation_time": 1687925853911,
+      "description": "Implement policies and procedures to monitor access to systems. Use this widget to query user agent strings in HTTP headers.",
+      "data": {
+        "phrase": "datamodel\n| fields xdm.event.type, xdm.source.user_agent, xdm.source.host.os_family\n| filter xdm.event.type contains \"Access\"\n| filter xdm.source.user_agent contains \"Mac\" or xdm.source.host.os_family contains \"MAC\"\n| comp count () as user_agent_counter by xdm.source.user_agent\n| view graph type = column subtype = stacked layout = horizontal xaxis = xdm.source.user_agent yaxis = user_agent_counter ",
+        "time_frame": {
+          "relativeTime": 2592000000
+        },
+        "viewOptions": {
+          "type": "column",
+          "commands": [
+            {
+              "command": {
+                "op": "=",
+                "name": "subtype",
+                "value": "stacked"
+              }
+            },
+            {
+              "command": {
+                "op": "=",
+                "name": "layout",
+                "value": "horizontal"
+              }
+            },
+            {
+              "command": {
+                "op": "=",
+                "name": "xaxis",
+                "value": "xdm.source.user_agent"
+              }
+            },
+            {
+              "command": {
+                "op": "=",
+                "name": "yaxis",
+                "value": "user_agent_counter"
+              }
+            }
+          ]
+        }
+      },
+      "support_time_range": true,
+      "additional_info": {
+        "query_tables": [],
+        "query_uses_library": false
+      }
+    },
+    {
+      "widget_key": "xql_1683770148128",
+      "title": "NIST 800-171 Section 3.7: Maintenance",
+      "creation_time": 1687925854154,
+      "description": "Implement policies and procedures to establish processes and controls for ongoing maintenance. Use this widget to monitor observer product information.",
+      "data": {
+        "phrase": "datamodel \n| fields  xdm.observer.name, xdm.source.agent.version, xdm.observer.product, xdm.observer.content_version, xdm.observer.type, xdm.observer.unique_identifier, xdm.observer.vendor, xdm.observer.version, _time \n| filter xdm.observer.product = \"XDR agent\"\n| filter xdm.source.agent.version contains \"*\"\n| dedup xdm.observer.name",
+        "time_frame": {
+          "relativeTime": 2592000000
+        },
+        "viewOptions": {
+          "type": "table",
+          "commands": []
+        }
+      },
+      "support_time_range": true,
+      "additional_info": {
+        "query_tables": [],
+        "query_uses_library": false
+      }
+    },
+    {
+      "widget_key": "xql_1683770168188",
+      "title": "NIST 800-171 Section 3.9: Personnel Security",
+      "creation_time": 1687925854382,
+      "description": "Implement policies and procedures to limit access to sensitive data. Use this widget to query physical access logs.",
+      "data": {
+        "phrase": "datamodel \n| fields xdm.source.user.first_name, xdm.source.user.last_name, xdm.source.user.middle_name, xdm.source.user.employee_id, xdm.source.user.badge_id\n| filter xdm.source.user.employee_id = \"*\"",
+        "time_frame": {
+          "relativeTime": 2592000000
+        },
+        "viewOptions": {
+          "type": "table",
+          "commands": []
+        },
+        "gridRawStorageInfo": {
+          "sort": null,
+          "coldefs": {},
+          "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+          "columnWidth": null
+        }
+      },
+      "support_time_range": true,
+      "additional_info": {
+        "query_tables": [],
+        "query_uses_library": false
+      }
+    },
+    {
+      "widget_key": "xql_1683770180948",
+      "title": "NIST 800-171 Section 3.10: Physical Protection",
+      "creation_time": 1687925854622,
+      "description": "Implement policies and procedures to protect physical assets and facilities. Use this widget to query physical access logs.",
+      "data": {
+        "phrase": "datamodel\n| fields xdm.source.user.first_name, xdm.source.user.last_name, xdm.source.user.middle_name, xdm.source.user.employee_id, xdm.source.user.badge_id\n| filter xdm.source.user.badge_id = \"*\"",
+        "time_frame": {
+          "relativeTime": 2592000000
+        },
+        "viewOptions": {
+          "type": "table",
+          "commands": []
+        },
+        "gridRawStorageInfo": {
+          "sort": null,
+          "coldefs": {},
+          "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+          "columnWidth": null
+        }
+      },
+      "support_time_range": true,
+      "additional_info": {
+        "query_tables": [],
+        "query_uses_library": false
+      }
+    },
+    {
+      "widget_key": "xql_1683770194061",
+      "title": "NIST 800-171 Section 3.11: Risk Assessment",
+      "creation_time": 1687925854952,
+      "description": "Implement policies and procedures to identify, assess, and mitigate risks to data. Use this widget to query the observer content version.",
+      "data": {
+        "phrase": "datamodel \n| fields xdm.source.host.hostname, xdm.source.agent.version, xdm.source.host.ipv4_addresses, xdm.source.host.mac_addresses, xdm.source.host.os, xdm.source.host.os_family \n| filter xdm.source.agent.version contains \"*\" \n| filter xdm.source.host.os contains \"*\"",
+        "time_frame": {
+          "relativeTime": 2592000000
+        },
+        "viewOptions": {
+          "type": "table",
+          "commands": []
+        },
+        "gridRawStorageInfo": {
+          "sort": null,
+          "coldefs": {},
+          "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+          "columnWidth": null
+        }
+      },
+      "support_time_range": true,
+      "additional_info": {
+        "query_tables": [],
+        "query_uses_library": false
+      }
+    },
+    {
+      "widget_key": "xql_1683770207147",
+      "title": "NIST 800-171 Section 3.12: Security Assessment",
+      "creation_time": 1687925855494,
+      "description": "Implement policies and procedures to control security policies. Use this widget to query observer content version and host data.",
+      "data": {
+        "phrase": "datamodel \n| filter xdm.observer.content_version contains \"*\" \n| filter xdm.source.agent.version contains \"*\"\n| fields xdm.source.host.hostname, xdm.source.agent.version, xdm.source.host.ipv4_addresses, xdm.source.host.mac_addresses, xdm.source.host.os, xdm.source.agent.content_version, xdm.source.agent.identifier",
+        "time_frame": {
+          "relativeTime": 2592000000
+        },
+        "viewOptions": {
+          "type": "table",
+          "commands": []
+        },
+        "gridRawStorageInfo": {
+          "sort": null,
+          "coldefs": {},
+          "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+          "columnWidth": null
+        }
+      },
+      "support_time_range": true,
+      "additional_info": {
+        "query_tables": [],
+        "query_uses_library": false
+      }
+    },
+    {
+      "widget_key": "xql_1683770249124",
+      "title": "NIST 800-171 Section 3.14: System and Information Integrity",
+      "creation_time": 1687925855744,
+      "description": "Implement policies and procedures to monitor systems and services. Use this widget to query to observer data.",
+      "data": {
+        "phrase": "datamodel\n| fields xdm.observer.content_version, xdm.observer.name, xdm.observer.product, xdm.observer.type, xdm.observer.unique_identifier, xdm.observer.vendor, xdm.observer.version \n| filter xdm.observer.product contains \"XDR\" \n| filter xdm.observer.type contains \"*\"",
+        "time_frame": {
+          "relativeTime": 2592000000
+        },
+        "viewOptions": {
+          "type": "table",
+          "commands": []
+        },
+        "gridRawStorageInfo": {
+          "sort": null,
+          "coldefs": {},
+          "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+          "columnWidth": null
+        }
+      },
+      "support_time_range": true,
+      "additional_info": {
+        "query_tables": [],
+        "query_uses_library": false
+      }
+    }
+  ]
+}

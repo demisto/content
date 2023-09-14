@@ -1,3 +1,5 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 """Implementation file for Cofense Vision Integration."""
 
 import traceback
@@ -6,8 +8,6 @@ from typing import Any, Dict, Optional, Callable
 import urllib3
 from requests import Response
 
-import demistomock as demisto
-from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 
 # Disable insecure warnings

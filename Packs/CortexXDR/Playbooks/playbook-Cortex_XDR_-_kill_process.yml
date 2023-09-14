@@ -1,6 +1,7 @@
+deprecated: true
 id: Cortex XDR - kill process
 version: -1
-description: Initiates a new endpoint script execution kill process and retrieves
+description: Deprecated. Use the `xdr-kill-process-script-execute` command instead. Initiates a new endpoint script execution kill process and retrieves
   the results.
 inputs:
 - description: 'A comma-separated list of endpoint IDs. '

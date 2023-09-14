@@ -281,8 +281,7 @@ script:
       type: string
     description: Get SecureApp application connections
   dockerimage: demisto/netutils:1.0.0.24101
-  runonce: false
   subtype: python3
 fromversion: 5.0.0
 tests:
-  - no tests
+- no tests

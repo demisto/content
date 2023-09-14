@@ -1,0 +1,18 @@
+[
+    {
+        "self": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/3/user?accountId=1234",
+        "accountId": "1234",
+        "accountType": "atlassian",
+        "emailAddress": "",
+        "avatarUrls": {
+            "48x48": "https://secure.gravatar.com/avatar/2f8725b46b46fadeb37f4f2d3857f648?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FYB-0.png",
+            "24x24": "https://secure.gravatar.com/avatar/2f8725b46b46fadeb37f4f2d3857f648?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FYB-0.png",
+            "16x16": "https://secure.gravatar.com/avatar/2f8725b46b46fadeb37f4f2d3857f648?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FYB-0.png",
+            "32x32": "https://secure.gravatar.com/avatar/2f8725b46b46fadeb37f4f2d3857f648?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FYB-0.png"
+        },
+        "displayName": "Fred F. User",
+        "active": true,
+        "timeZone": "Asia/Jerusalem",
+        "locale": "en_US"
+    }
+]

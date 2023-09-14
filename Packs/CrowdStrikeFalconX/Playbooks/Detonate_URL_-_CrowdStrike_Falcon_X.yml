@@ -408,5 +408,6 @@ outputs:
       description: ID of the IOC pack to download (MAEC).
       type: String
 fromversion: 5.0.0
+quiet: true
 tests:
  -  No tests

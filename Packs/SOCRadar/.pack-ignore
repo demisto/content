@@ -1,9 +1,3 @@
-[file:SOCRadarIncidents.yml]
-ignore=IN145
-
-[file:SOCRadarThreatFusion.yml]
-ignore=IN145
-
 [file:SOCRadarIncidents_image.png]
 ignore=IM111
 
@@ -12,3 +6,4 @@ ignore=IM111
 
 [file:README.md]
 ignore=RM108
+

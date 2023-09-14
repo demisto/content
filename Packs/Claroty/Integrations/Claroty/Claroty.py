@@ -324,9 +324,9 @@ def query_alerts_command(client: Client, args: dict) -> Tuple:
     if alert_time:
         filters.append(Filter("timestamp", alert_time, "gte"))
 
-    alert_severity = args.get("severity", None)
+    alert_severity = args.get("minimal_severity", None)
     if alert_severity:
-        Filter("severity", get_severity_filter(alert_severity), "gte")
+        filters.append(Filter("severity", get_severity_filter(alert_severity), "gte"))
 
     if strtobool(args.get("exclude_resolved_alerts", "False")):
         filters = _add_exclude_resolved_alerts_filters(filters)
@@ -532,11 +532,11 @@ def transform_filters_labels_to_values(table_filters, filter_name: str, filter_v
 
 
 def get_severity_filter(severity: str) -> str:
-    severity_filter = ""
-    for severity_key in CTD_TO_DEMISTO_SEVERITY:
-        if CTD_TO_DEMISTO_SEVERITY.get(severity_key, 0) >= CTD_TO_DEMISTO_SEVERITY.get(severity, 0):
-            severity_filter += f"{severity_key},;$"
-    return severity_filter
+    severity_values = []
+    for severity_key, severity_value in CTD_TO_DEMISTO_SEVERITY.items():
+        if severity_value >= CTD_TO_DEMISTO_SEVERITY.get(severity, 0):
+            severity_values.append(str(severity_value))
+    return ",;$".join(severity_values)
 
 
 def get_list_incidents(client: Client, latest_created_time: str, page_number: int):

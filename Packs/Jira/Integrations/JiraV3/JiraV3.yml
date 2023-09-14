@@ -1,0 +1,1414 @@
+commonfields:
+  id: Jira V3
+  version: -1
+name: Jira V3
+display: Atlassian Jira v3
+category: Case Management
+description: Use the Jira integration to manage issues, create Cortex XSOAR incidents from Jira projects, and mirror issues to existing issue incidents in Cortex XSOAR. The integration now supports both OnPrem, and Cloud instances.
+configuration:
+- name: server_url
+  display: Server URL
+  defaultvalue: https://api.atlassian.com/ex/jira
+  type: 0
+  required: true
+  additionalinfo: The base URL. For a cloud instance, use the default URL as configured. For an OnPrem instance, use your respective domain.
+- display: User name
+  name: basic_credentials
+  displaypassword: API key
+  required: false
+  type: 9
+- name: cloud_id
+  display: Cloud ID
+  type: 0
+  additionalinfo: This field is used to configure the Jira Cloud.
+  required: false
+- name: callback_url
+  display: Callback URL
+  type: 0
+  required: false
+- display: Client ID
+  type: 9
+  name: credentials
+  displaypassword: Client Secret
+  required: false
+- defaultvalue: status!=done
+  display: Query (in JQL) for fetching incidents
+  additionalinfo: The field that was selected in the "Issue Field to fetch by" can't be used. in the query.
+  name: fetch_query
+  type: 0
+  required: false
+- defaultvalue: id
+  display: Issue Field to fetch by
+  name: issue_field_to_fetch_from
+  options:
+  - id
+  - created date
+  - updated date
+  type: 15
+  additionalinfo: "This is how the field (e.g, created date) is applied to the query: created >= {created date in last run} ORDER BY created ASC"
+  required: false
+- display: Issue index to start fetching incidents from
+  additionalinfo: This parameter is dismissed if "id" is not chosen in "Issue Field to Fetch by". This will only fetch Jira issues that are part of the same project as the issue that is configured in this parameter. If this value is 0, then the fetch mechanism will automatically start the fetch from the smallest ID with respect to the fetch query.
+  name: id_offset
+  defaultvalue: 0
+  type: 0
+  required: false
+- defaultvalue: 3 days
+  display: Time range for initial data fetch
+  additionalinfo: "The time range to consider for the initial data fetch in format: <number> <unit>. This parameter is only relevant when selecting to fetch by created time, or updated time. Default is 3 days. For example: 2 minutes, 2 hours, 2 days, 2 months, 2 years"
+  name: first_fetch
+  type: 0
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  defaultvalue: 'false'
+  required: false
+- defaultvalue: 'false'
+  display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+- display: Fetch incidents
+  name: isFetch
+  type: 8
+  defaultvalue: 'false'
+  required: false
+- display: Incident type
+  name: incidentType
+  type: 13
+  required: false
+- defaultvalue: 'false'
+  additionalinfo: When selected, marking the Jira issue as resolved will be mirrored in Cortex XSOAR, and will close the corresponding incident. Please make sure the `Resolved` field in your Jira instance is configured in order for this to work properly, if not, it will rely on if the status of the issue is changed to `Done`.
+  display: Close Mirrored XSOAR Incident
+  name: close_incident
+  type: 8
+  required: false
+- defaultvalue: None
+  display: Mirroring Direction
+  name: mirror_direction
+  options:
+  - None
+  - Incoming
+  - Outgoing
+  - Incoming And Outgoing
+  type: 15
+  required: false
+- additionalinfo: Add this tag to an entry to mirror it as an attachment to Jira.
+  defaultvalue: attachment tag
+  display: Attachment Entry Tag to Jira
+  name: attachment_tag_to_jira
+  type: 0
+  required: false
+- additionalinfo: Add this tag to an entry to mirror it as an attachment from Jira.
+  defaultvalue: attachment tag from Jira
+  display: Attachment Entry Tag from Jira
+  name: attachment_tag_from_jira
+  type: 0
+  required: false
+- additionalinfo: Add this tag to an entry to mirror it as a comment in Jira.
+  defaultvalue: comment tag
+  display: Comment Entry Tag to Jira
+  name: comment_tag_to_jira
+  type: 0
+  required: false
+- additionalinfo: Add this tag to an entry to mirror it as a comment from Jira.
+  defaultvalue: comment tag from Jira
+  display: Comment Entry Tag from Jira
+  name: comment_tag_from_jira
+  type: 0
+  required: false
+- additionalinfo: Fetch comments for a Jira ticket.
+  display: Fetch comments
+  name: fetch_comments
+  defaultvalue: 'false'
+  type: 8
+  required: false
+- additionalinfo: Fetch attachments for a Jira ticket.
+  display: Fetch attachments
+  name: fetch_attachments
+  defaultvalue: 'false'
+  type: 8
+  required: false
+- defaultvalue: '50'
+  display: Max incidents per fetch
+  name: max_fetch
+  additionalinfo: "The maximum allowed value is dictated by the Jira property 'jira.search.views.default.max'. If you specify a value that is higher than this number, your search results will be truncated. Default value is 50"
+  type: 0
+  required: false
+script:
+  commands:
+  - arguments:
+    - description: A CSV list of the attachments' ID, which can be retrieved using the `jira-get-issue` command.
+      isArray: true
+      name: attachment_id
+      required: true
+    description: Download attachments for a specific issue (Will download a file to War Room).
+    name: jira-issue-get-attachment
+    outputs:
+    - contextPath: InfoFile.Name
+      description: The file name.
+      type: String
+    - contextPath: InfoFile.EntryID
+      description: The EntryID of the file in the War Room.
+      type: String
+    - contextPath: InfoFile.Size
+      description: The size of the file (in bytes).
+      type: Number
+    - contextPath: InfoFile.Type
+      description: The file type, as determined by libmagic (same as displayed in file entries).
+      type: String
+    - contextPath: InfoFile.Extension
+      description: The file extension.
+      type: String
+    - contextPath: InfoFile.Info
+      description: Basic information of the file.
+      type: String
+  - arguments:
+    - description: Deprecated. Please use issue_id or issue_key.
+      name: issueIdOrKey
+      hidden: true
+    - description: The issue ID (Issue ID or key is required).
+      name: issue_id
+    - description: The issue key (Issue ID or key is required).
+      name: issue_key
+    description: Deletes an issue in Jira. Issue's sub-tasks will also be deleted if there are any.
+    name: jira-delete-issue
+  - arguments:
+    - description: The issue ID (Issue ID or key is required).
+      name: issue_id
+    - description: The issue key (Issue ID or key is required).
+      name: issue_key
+    - description: Deprecated. Please use issue_id or issue_key.
+      name: issueId
+      hidden: true
+    - description: Deprecated. Please use fields.
+      name: field
+      hidden: true
+    - description: The fields to retrieve from the issue. For example field="customfield_164,labels".
+      isArray: true
+      name: fields
+    description: |-
+      Gets specific fields from a Jira issue and adds it to context dynamically.
+    name: jira-get-specific-field
+    outputs:
+    - contextPath: Ticket.Id
+      description: The ticket ID.
+      type: String
+    - contextPath: Ticket.Key
+      description: The ticket key.
+      type: String
+    - contextPath: Ticket.Assignee
+      description: The user assigned to the ticket.
+      type: String
+    - contextPath: Ticket.Creator
+      description: The user who created the ticket.
+      type: String
+    - contextPath: Ticket.Summary
+      description: The ticket summary.
+      type: String
+    - contextPath: Ticket.Status
+      description: The ticket status.
+      type: String
+  - arguments:
+    - description: Deprecated. Please use global_id.
+      name: globalId
+      hidden: true
+    - description: If the global ID is provided and a remote issue link exists with that global ID, the remote issue link is updated.
+      name: global_id
+    - description: 'The object relationship to the issue, for example: causes.'
+      name: relationship
+    - description: The URL link.
+      name: url
+      required: true
+    - description: The link title.
+      name: title
+      required: true
+    - description: The link summary.
+      name: summary
+    - description: Deprecated. Please use issue_id or issue_key.
+      name: issueId
+      hidden: true
+    - description: The issue ID (Issue ID or key is required).
+      name: issue_id
+    - description: The issue key (Issue ID or key is required).
+      name: issue_key
+    - description: The application type of the linked remote application. For example "com.atlassian.confluence".
+      name: application_type
+    - description: Deprecated. Please use application_type.
+      name: applicationType
+      hidden: true
+    - description: The application name of the linked remote application. For example "My Confluence Instance".
+      name: application_name
+    - description: Deprecated. Please use application_name.
+      name: applicationName
+      hidden: true
+    description: Creates (or updates) an issue link.
+    name: jira-issue-add-link
+  - arguments:
+    - description: The user attribute value. For Jira Cloud, this value can be the display name, or email address, and for Jira OnPrem, this value can be the display name, email address, or username.
+      name: attribute
+      required: true
+    - defaultValue: '50'
+      description: The maximum number of users to fetch when searching for a matching user (default is 50). The maximum allowed value is dictated by the Jira property 'jira.search.views.default.max'. If you specify a value greater than this number, your search results are truncated.
+      name: max_results
+    description: Gets the account ID for a given user attribute.
+    name: jira-get-id-by-attribute
+    outputs:
+    - contextPath: Jira.User.Attribute
+      description: The user's attribute.
+      type: String
+    - contextPath: Jira.User.AccountId
+      description: The user's account ID.
+      type: String
+  - arguments:
+    - default: true
+      description: The JQL query string.
+      name: query
+      required: true
+    - description: The index (integer) of the first issue to return (0-based).
+      name: start_at
+    - description: Deprecated. Please use start_at.
+      name: startAt
+      hidden: true
+    - description: The maximum number of users to fetch when searching for a matching user (default is 50). The maximum allowed value is dictated by the Jira property 'jira.search.views.default.max'. If you specify a value greater than this number, your search results are truncated.
+      name: max_results
+    - description: Deprecated. Please use max_results.
+      name: maxResults
+      hidden: true
+    - description: Displays the headers in human readable format.
+      name: headers
+    - description: "A CSV list of fields to return (Using the name or ID of the fields) to context data. Supplying `all` will return all the issue fields (which will include nested values), except for the comments, which can be retrieved using the !jira-get-comments command."
+      isArray: true
+      name: fields
+    - description: Deprecated. Please use fields.
+      name: extraFields
+      hidden: true
+    description: Queries Jira issues.
+    name: jira-issue-query
+    outputs:
+    - contextPath: Ticket.Id
+      description: The ticket ID.
+      type: String
+    - contextPath: Ticket.Key
+      description: The ticket key.
+      type: String
+    - contextPath: Ticket.Assignee
+      description: The user assigned to the ticket.
+      type: String
+    - contextPath: Ticket.Creator
+      description: The user who created the ticket.
+      type: String
+    - contextPath: Ticket.Summary
+      description: The ticket summary.
+      type: String
+    - contextPath: Ticket.Description
+      description: The ticket's description.
+      type: String
+    - contextPath: Ticket.Labels
+      description: The ticket's labels.
+      type: Array
+    - contextPath: Ticket.Components
+      description: The ticket's components.
+      type: Array
+    - contextPath: Ticket.Status
+      description: The ticket status.
+      type: String
+    - contextPath: Ticket.Priority
+      description: The ticket priority.
+      type: String
+    - contextPath: Ticket.ProjectName
+      description: The ticket project name.
+      type: String
+    - contextPath: Ticket.DueDate
+      description: The due date.
+      type: Date
+    - contextPath: Ticket.Created
+      description: The time the ticket was created.
+      type: Date
+    - contextPath: Ticket.LastSeen
+      description: The last time the ticket was viewed.
+      type: Date
+    - contextPath: Ticket.LastUpdate
+      description: The last time the ticket was updated.
+      type: Date
+  - arguments:
+    - description: The query that will be used to retrieve the first issue ID in it.
+      name: query
+    description: Returns the ID offset, which is the ID of the first issue that was created in the current Jira instance, or the ID of the first issue with respect to the given query argument if given. You can use its result as the initial ID when fetching incidents by the issue id field.
+    name: jira-get-id-offset
+    outputs:
+    - contextPath: Ticket.idOffSet
+      description: The ID offset.
+      type: String
+  - arguments:
+    - description: Deprecated. Please use issue_id or issue_key.
+      name: issueId
+      hidden: true
+    - description: The issue ID (Issue ID or key is required).
+      name: issue_id
+    - description: The issue key (Issue ID or key is required).
+      name: issue_key
+    - description: The comment body.
+      name: comment
+      required: true
+    - description: 'The roles that can view the comment, for example: Administrators.'
+      name: visibility
+    description: Adds a new comment to an existing Jira issue.
+    name: jira-issue-add-comment
+  - arguments:
+    - description: Deprecated. Please use issue_id or issue_key.
+      name: issueId
+      hidden: true
+    - description: The issue ID (Issue ID or key is required).
+      name: issue_id
+    - description: The issue key (Issue ID or key is required).
+      name: issue_key
+    - description: The entry ID to upload.
+      name: upload
+      required: true
+    - description: The attachment name to be displayed in Jira (overrides the original file name).
+      name: attachment_name
+    - description: Deprecated. Please use attachment_name.
+      name: attachmentName
+      hidden: true
+    description: Uploads a file attachment to an issue.
+    name: jira-issue-upload-file
+  - arguments:
+    - description: Deprecated. Please use issue_id or issue_key.
+      name: issueId
+      hidden: true
+    - description: The issue ID (Issue ID or key is required).
+      name: issue_id
+    - description: The issue key (Issue ID or key is required).
+      name: issue_key
+    description: Lists all possible transitions for a given ticket in its current status.
+    name: jira-list-transitions
+    outputs:
+    - contextPath: Ticket.Id
+      description: The ticket ID.
+      type: String
+    - contextPath: Ticket.Key
+      description: The ticket key.
+      type: String
+    - contextPath: Ticket.Transitions
+      description: An object that holds data about all possible transitions.
+      type: Object
+    - contextPath: Ticket.Transitions.transitions
+      description: An array of all possible transitions.
+      type: Array
+    - contextPath: Ticket.Transitions.ticketId
+      description: The ticket ID.
+      type: String
+  - arguments:
+    - description: The parent issue key (if you're editing a sub-task). This argument is only relevant for Jira Cloud.
+      name: parent_issue_key
+    - description: The parent issue ID (if you're editing a sub-task). This argument is only relevant for Jira Cloud.
+      name: parent_issue_id
+    - auto: PREDEFINED
+      description: "Whether to append or rewrite the values. Only issue fields of type string or array support appending. If the field is of type string, then the new appended value will be: 'old value, new value', where they will be separated by a comma."
+      name: action
+      defaultValue: 'rewrite'
+      predefined:
+      - 'append'
+      - 'rewrite'
+    - description: Deprecated. Please use issue_id or issue_key.
+      name: issueId
+      hidden: true
+    - description: The issue ID (Issue ID or key is required).
+      name: issue_id
+    - description: The issue key (Issue ID or key is required).
+      name: issue_key
+    - description: 'The issue object (in JSON format). Using this argument will override the other arguments. For example {"fields":{"customfield_10037":"field_value"}}.'
+      name: issue_json
+    - description: Deprecated. Please use issue_json.
+      name: issueJson
+      hidden: true
+    - description: The issue summary.
+      name: summary
+    - description: The issue description.
+      name: description
+    - description: A CSV list of labels.
+      isArray: true
+      name: labels
+    - description: 'The issue priority, for example: High, Medium.'
+      name: priority
+    - description: The due date for the issue (in the format yyyy-mm-dd).
+      name: due_date
+    - description: Deprecated. Please use due_date.
+      name: dueDate
+      hidden: true
+    - description: The name of the assignee. Relevant for Jira Server only. If you are using Jira Cloud, provide the assignee_id argument instead. Use the jira-get-id-by-attribute command to get the user's name.
+      name: assignee
+    - description: The account ID of the assignee. Relevant for Jira Cloud only. Use the jira-get-id-by-attribute command to get the user's account ID.
+      name: assignee_id
+    - description: The issue status (Either choose the issue status or transition, but not both).
+      name: status
+    - description: The issue transition (Either choose the issue status or transition, but not both).
+      name: transition
+    - description: A text field for describing the environment in which the issue occurred. For example environment="IE9 on Windows 7".
+      name: environment
+    - description: The security level name of the issue. For example security="Anyone".
+      name: security
+    - description: A CSV list of components. For example components="component1,component2". When using a Jira OnPrem instance, or using the action append, the entered components must already exist.
+      isArray: true
+      name: components
+    description: Modifies an issue in Jira.
+    name: jira-edit-issue
+    outputs:
+    - contextPath: Ticket.Id
+      description: The ticket ID.
+      type: String
+    - contextPath: Ticket.Key
+      description: The ticket key.
+      type: String
+    - contextPath: Ticket.Assignee
+      description: The user assigned to the ticket.
+      type: String
+    - contextPath: Ticket.Creator
+      description: The user who created the ticket.
+      type: String
+    - contextPath: Ticket.Summary
+      description: The ticket summary.
+      type: String
+    - contextPath: Ticket.Description
+      description: The ticket's project description.
+      type: String
+    - contextPath: Ticket.Labels
+      description: The ticket's project labels.
+      type: Array
+    - contextPath: Ticket.Status
+      description: The ticket status.
+      type: String
+    - contextPath: Ticket.Priority
+      description: The ticket priority.
+      type: String
+    - contextPath: Ticket.ProjectName
+      description: The ticket project name.
+      type: String
+    - contextPath: Ticket.DueDate
+      description: The due date.
+      type: Date
+    - contextPath: Ticket.Created
+      description: The time the ticket was created.
+      type: Date
+    - contextPath: Ticket.LastSeen
+      description: The last time the ticket was viewed.
+      type: Date
+    - contextPath: Ticket.LastUpdate
+      description: The last time the ticket was updated.
+      type: Date
+  - arguments:
+    - description: 'The issue object (in JSON format). Using this argument will override the other arguments. For example {"fields":{"customfield_10037":"field_value"}}.'
+      name: issue_json
+    - description: Deprecated. Please use issue_json.
+      name: issueJson
+      hidden: true
+    - description: The summary of the issue.
+      name: summary
+      required: true
+    - description: The project key with which to associate the issue (Project Key or name is required).
+      name: project_key
+    - description: Deprecated. Please use project_key.
+      name: projectKey
+      hidden: true
+    - description: 'Selects an issue type by name, for example: "Problem". (Issue type name or id is required)'
+      name: issue_type_name
+    - description: Deprecated. Please use issue_type_name.
+      name: issueTypeName
+      hidden: true
+    - description: Selects an issue type by its numeric ID (Issue type name or id is required).
+      name: issue_type_id
+    - description: Deprecated. Please use issue_type_id.
+      name: issueTypeId
+      hidden: true
+    - description: The project name with which to associate the issue (Project Key or name is required).
+      name: project_name
+    - description: Deprecated. Please use project_name.
+      name: projectName
+      hidden: true
+    - description: A description of the issue.
+      name: description
+    - description: A CSV list of labels.
+      isArray: true
+      name: labels
+    - description: 'The priority of the issue, for example: High, Medium.'
+      name: priority
+    - description: The due date for the issue (in the format yyyy-mm-dd).
+      name: due_date
+    - description: Deprecated. Please use due_date.
+      name: dueDate
+      hidden: true
+    - description: The name of the assignee. Relevant for Jira Server only. If you are using Jira Cloud, provide the assignee_id argument instead. Use the jira-get-id-by-attribute command to get the user's name.
+      name: assignee
+    - description: The account ID of the assignee. Relevant for Jira Cloud only. Use the jira-get-id-by-attribute command to get the user's account ID.
+      name: assignee_id
+    - description: The account ID of the reporter. Relevant for Jira Cloud only. Use the jira-get-id-by-attribute command to get the user's account ID.
+      name: reporter_id
+    - description: The name of the of the reporter. Relevant for Jira Server only. Please use reporter_id for Jira Cloud. Use the jira-get-id-by-attribute command to get the user's name.
+      name: reporter
+    - description: The parent issue key (if you're creating a sub-task).
+      name: parent_issue_key
+    - description: Deprecated. Please use parent_issue_key.
+      name: parentIssueKey
+      hidden: true
+    - description: The parent issue ID (if you're creating a sub-task).
+      name: parent_issue_id
+    - description: Deprecated. Please use parent_issue_id.
+      name: parentIssueId
+      hidden: true
+    - description: A text field for describing the environment in which the issue occurred. For example environment="IE9 on Windows 7".
+      name: environment
+    - description: The security level of the issue. For example security="Anyone".
+      name: security
+    - description: The component names of the issue. For example components="component1,component2". When using a Jira OnPrem instance, the entered components must already exist.
+      isArray: true
+      name: components
+    description: Creates a new issue in Jira.
+    name: jira-create-issue
+    outputs:
+    - contextPath: Ticket.Id
+      description: The ticket ID.
+      type: String
+    - contextPath: Ticket.Key
+      description: The ticket key.
+      type: String
+  - arguments:
+    - description: "A CSV list of fields to return (Using the name or ID of the fields) to context data. Supplying `all` will return all the issue fields (which will include nested values), except for the comments, which can be retrieved using the !jira-get-comments command."
+      isArray: true
+      name: fields
+    - description: Deprecated. Please use issue_id or issue_key.
+      name: issueId
+      hidden: true
+    - description: The issue ID (Issue ID or key is required).
+      name: issue_id
+    - description: The issue key (Issue ID or key is required).
+      name: issue_key
+    - description: Displays the headers in human readable format.
+      name: headers
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: If "true", retrieves the issue attachments and downloads the file to the War Room.
+      name: get_attachments
+      predefined:
+      - 'true'
+      - 'false'
+    - description: Deprecated. Please use get_attachments.
+      name: getAttachments
+      predefined:
+      - 'true'
+      - 'false'
+      hidden: true
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: If "true", expands the issue links (the linked issues and subtasks).
+      name: expand_links
+      predefined:
+      - 'true'
+      - 'false'
+    - description: Deprecated. Please use expand_links.
+      name: expandLinks
+      predefined:
+      - 'true'
+      - 'false'
+      hidden: true
+    description: Fetches an issue from Jira.
+    name: jira-get-issue
+    outputs:
+    - contextPath: Ticket.Id
+      description: The ticket ID.
+      type: String
+    - contextPath: Ticket.Key
+      description: The ticket key.
+      type: String
+    - contextPath: Ticket.Assignee
+      description: The user assigned to the ticket, in the form `Username(User email address)`.
+      type: String
+    - contextPath: Ticket.Creator
+      description: The user who created the ticket.
+      type: String
+    - contextPath: Ticket.Summary
+      description: The ticket summary.
+      type: String
+    - contextPath: Ticket.Status
+      description: The ticket status.
+      type: String
+    - contextPath: Ticket.Labels
+      description: The ticket's labels.
+      type: Array
+    - contextPath: Ticket.Components
+      description: The ticket's components.
+      type: Array
+    - contextPath: Ticket.Priority
+      description: The ticket priority.
+      type: String
+    - contextPath: Ticket.ProjectName
+      description: The ticket project name.
+      type: String
+    - contextPath: Ticket.DueDate
+      description: The due date.
+      type: Date
+    - contextPath: Ticket.Created
+      description: The time the ticket was created.
+      type: Date
+    - contextPath: Ticket.LastSeen
+      description: The last time the ticket was viewed.
+      type: Date
+    - contextPath: Ticket.LastUpdate
+      description: The last time the ticket was updated.
+      type: Date
+    - contextPath: Ticket.Attachments.created
+      description: The created time of the attachment.
+      type: Date
+    - contextPath: Ticket.Attachments.filename
+      description: The file name of the attachment.
+      type: String
+    - contextPath: Ticket.Attachments.id
+      description: The id of the attachment.
+      type: String
+    - contextPath: Ticket.Attachments.size
+      description: The size (in bytes) of the attachment.
+      type: Number
+    - contextPath: InfoFile.Name
+      description: The file name.
+      type: String
+    - contextPath: InfoFile.EntryID
+      description: The ID for locating the file in the War Room.
+      type: String
+    - contextPath: InfoFile.Size
+      description: The size of the file (in bytes).
+      type: Number
+    - contextPath: InfoFile.Type
+      description: The file type, as determined by libmagic (same as displayed in file entries).
+      type: String
+    - contextPath: InfoFile.Extension
+      description: The file extension.
+      type: String
+    - contextPath: InfoFile.Info
+      description: Basic information about the file.
+      type: String
+  - arguments:
+    - description: The maximum number of results to return. Default is 50 and maximum is 5000.
+      name: limit
+      defaultValue: '50'
+    - description: Deprecated. Please use issue_id or issue_key.
+      name: issueId
+      hidden: true
+    - description: The issue ID (Issue ID or key is required).
+      name: issue_id
+    - description: The issue key (Issue ID or key is required).
+      name: issue_key
+    description: Returns the comments added to a ticket.
+    name: jira-get-comments
+    outputs:
+    - contextPath: Ticket.Id
+      description: The ID of the ticket.
+      type: String
+    - contextPath: Ticket.Key
+      description: The ticket key.
+      type: String
+    - contextPath: Ticket.Comment.Id
+      description: The ID of the comment.
+      type: String
+    - contextPath: Ticket.Comment.Comment
+      description: The text of the comment.
+      type: String
+    - contextPath: Ticket.Comment.Created
+      description: The comment creation date.
+      type: Date
+    - contextPath: Ticket.Comment.Updated
+      description: The comment updated date.
+      type: Date
+    - contextPath: Ticket.Comment.User
+      description: The user that created the comment.
+      type: String
+    - contextPath: Ticket.Comment.UpdateUser
+      description: The user that updated the comment.
+      type: String
+  - arguments:
+    - description: The authorization code retrieved from the callback URL according to the documentation.
+      name: code
+      required: true
+    description: "Use this command to complete the authorization process. After copying the authorization code found in the query parameter `code` of the callback URL, paste the value in the command as an argument to finish the process."
+    name: jira-oauth-complete
+  - description: "Use this command to start the authorization process. In order to authorize the instance, first run the command, and complete the process in the URL that is returned. You will then be redirected to the callback URL where you will copy the authorization code found in the query parameter `code`, and paste that value in the command `!jira-ouath-complete` as an argument to finish the process."
+    name: jira-oauth-start
+  - description: Use this command to test the connectivity of the Jira instance.
+    name: jira-oauth-test
+  - arguments:
+    - description: The comment ID.
+      name: comment_id
+      required: true
+    - description: The issue ID (Issue ID or key is required).
+      name: issue_id
+    - description: The issue key (Issue ID or key is required).
+      name: issue_key
+    description: Delete a comment from an issue.
+    name: jira-issue-delete-comment
+  - arguments:
+    - description: The issue ID (Issue ID or key is required).
+      name: issue_id
+    - description: The issue key (Issue ID or key is required).
+      name: issue_key
+    - description: The comment ID.
+      name: comment_id
+      required: true
+    - description: The content of the comment to modify.
+      name: comment
+      required: true
+    - description: 'The roles that can view the comment, for example: Administrators.'
+      name: visibility
+    description: Edit a comment that is part of an issue.
+    name: jira-issue-edit-comment
+    outputs:
+    - contextPath: Ticket.Id
+      description: The ID of the ticket.
+      type: String
+    - contextPath: Ticket.Comment.Id
+      description: The ID of the comment.
+      type: String
+    - contextPath: Ticket.Comment.Comment
+      description: The text of the comment.
+      type: String
+    - contextPath: Ticket.Comment.Created
+      description: The issue creation date.
+      type: String
+    - contextPath: Ticket.Comment.User
+      description: The user that created the comment.
+      type: String
+  - arguments:
+    - description: The maximum number of results to return. This argument will be ignored if page or page_size arguments were given. Default value is 50.
+      name: limit
+    - description: The page number. Default value is 0.
+      name: page
+    - description: The number of requested results per page. Default value is 50.
+      name: page_size
+    description: This command returns the issue fields, both system and custom fields.
+    name: jira-issue-list-fields
+    outputs:
+    - contextPath: Jira.IssueField.id
+      description: The ID of the field.
+      type: String
+    - contextPath: Jira.IssueField.key
+      description: The key of the field.
+      type: String
+    - contextPath: Jira.IssueField.name
+      description: The name of the field.
+      type: String
+    - contextPath: Jira.IssueField.custom
+      description: Whether the field is a custom field.
+      type: String
+    - contextPath: Jira.IssueField.orderable
+      description: Whether the content of the field can be used to order lists.
+      type: String
+    - contextPath: Jira.IssueField.navigable
+      description: Whether the field can be used as a column on the issue navigator.
+      type: String
+    - contextPath: Jira.IssueField.searchable
+      description: Whether the content of the field can be searched.
+      type: String
+    - contextPath: Jira.IssueField.clauseNames
+      description: The names that can be used to reference the field in an advanced search.
+      type: Array
+    - contextPath: Jira.IssueField.scope
+      description: The scope of the field.
+      type: Object
+    - contextPath: Jira.IssueField.scope.type
+      description: 'The type of scope. Valid values: PROJECT, TEMPLATE'
+      type: String
+    - contextPath: Jira.IssueField.scope.project
+      description: The project the item has scope in.
+      type: Object
+    - contextPath: Jira.IssueField.scope.project.self
+      description: The URL of the project details.
+      type: String
+    - contextPath: Jira.IssueField.scope.project.id
+      description: The ID of the project.
+      type: String
+    - contextPath: Jira.IssueField.scope.project.key
+      description: The key of the project.
+      type: String
+    - contextPath: Jira.IssueField.scope.project.name
+      description: The name of the project.
+      type: String
+    - contextPath: Jira.IssueField.scope.project.projectTypeKey
+      description: 'The project type of the project. Valid values: software, service_desk, business'
+      type: String
+    - contextPath: Jira.IssueField.scope.project.simplified
+      description: Whether or not the project is simplified.
+      type: Boolean
+    - contextPath: Jira.IssueField.scope.project.avatarUrls
+      description: The URLs of the project's avatars.
+      type: Object
+    - contextPath: Jira.IssueField.scope.project.projectCategory
+      description: The category the project belongs to.
+      type: Object
+    - contextPath: Jira.IssueField.scope.project.projectCategory.self
+      description: The URL of the project category.
+      type: String
+    - contextPath: Jira.IssueField.scope.project.projectCategory.id
+      description: The ID of the project category.
+      type: String
+    - contextPath: Jira.IssueField.scope.project.projectCategory.description
+      description: The name of the project category.
+      type: String
+    - contextPath: Jira.IssueField.scope.project.projectCategory.name
+      description: The description of the project category.
+      type: String
+    - contextPath: Jira.IssueField.scope.type
+      description: 'The type of scope. Valid values: PROJECT, TEMPLATE'
+      type: String
+    - contextPath: Jira.IssueField.schema
+      description: The data schema for the field.
+      type: Object
+    - contextPath: Jira.IssueField.schema.type
+      description: The data type of the field.
+      type: String
+    - contextPath: Jira.IssueField.schema.items
+      description: When the data type is an array, the name of the field items within the array.
+      type: String
+    - contextPath: Jira.IssueField.schema.system
+      description: If the field is a system field, the name of the field.
+      type: String
+    - contextPath: Jira.IssueField.schema.custom
+      description: If the field is a custom field, the URI of the field.
+      type: String
+    - contextPath: Jira.IssueField.schema.customId
+      description: If the field is a custom field, the custom ID of the field.
+      type: Number
+    - contextPath: Jira.IssueField.schema.configuration
+      description: If the field is a custom field, the configuration of the field.
+      type: Object
+  - arguments:
+    - description: The issues to move to backlog.
+      name: issues
+      required: true
+    - description: The board ID. Can only be used with a Jira Cloud instance. Run the command `jira-board-list` to retrieve the boards' IDs.
+      name: board_id
+    - description: To rank the issues before the stated issue (supports issue key and ID). This argument can be used when supplying the board ID.
+      name: rank_before_issue
+    - description: To rank the issues after the stated issue (supports issue key and ID). This argument can be used when supplying the board ID.
+      name: rank_after_issue
+    description: Moves issues to backlog. If the issues supplied are NOT part of a board that supports sprints, then the board_id argument is required. At most 50 issues may be moved at once.
+    name: jira-issue-to-backlog
+  - arguments:
+    - description: The issues to move to board.
+      name: issues
+      required: true
+    - description: The board ID.
+      name: board_id
+      required: true
+    - description: To rank the issues before the stated issue (supports issue key and ID).
+      name: rank_before_issue
+    - description: To rank the issues after the stated issue (supports issue key and ID).
+      name: rank_after_issue
+    description: Moves issues from backlog to board, the command does not work with boards with sprints. At most 50 issues may be moved at once. This command is only supported for Jira Cloud instances.
+    name: jira-issue-to-board
+  - arguments:
+    - description: The name of the board.
+      name: board_name
+    - description: The board ID.
+      name: board_id
+    - description: The project key or ID.
+      name: project_key_id
+    - auto: PREDEFINED
+      description: "The type of the board. Allowed values are: scrum, kanban, simple"
+      name: type
+      predefined:
+      - 'scrum'
+      - 'kanban'
+      - 'simple'
+    - description: The maximum number of results to return. This argument will be ignored if page or page_size arguments were given. Default value is 50.
+      name: limit
+    - description: The page number. Default value is 0.
+      name: page
+    - description: The number of requested results per page. Default value is 50.
+      name: page_size
+    description: Get board data. If board_id is given, then only the board that corresponds to the board_id is returned, otherwise, the the command will return boards that match the project_key_id, type, or board_name arguments.
+    name: jira-board-list
+    outputs:
+    - contextPath: Jira.Board.id
+      description: The ID of the board.
+      type: Number
+    - contextPath: Jira.Board.self
+      description: The URL of the board.
+      type: String
+    - contextPath: Jira.Board.name
+      description: The name of the board.
+      type: String
+    - contextPath: Jira.Board.type
+      description: The type the board.
+      type: String
+    - contextPath: Jira.Board.admins
+      description: The administrators of the board.
+      type: Object
+    - contextPath: Jira.Board.admins.users
+      description: The users who own the board.
+      type: Object
+    - contextPath: Jira.Board.admins.users.self
+      description: The URL of the user.
+      type: String
+    - contextPath: Jira.Board.admins.users.displayName
+      description: The display name of the user. Depending on the user’s privacy setting, this may return an alternative value.
+      type: String
+    - contextPath: Jira.Board.admins.users.active
+      description: Whether the user is active.
+      type: String
+    - contextPath: Jira.Board.admins.users.accountId
+      description: The account ID of the user, which uniquely identifies the user across all Atlassian products.
+      type: String
+    - contextPath: Jira.Board.admins.users.avatarUrls
+      description: The avatars of the user.
+      type: Object
+    - contextPath: Jira.Board.admins.groups
+      description: The groups who own the board.
+      type: Object
+    - contextPath: Jira.Board.admins.groups.name
+      description: The name of the group.
+      type: String
+    - contextPath: Jira.Board.admins.groups.self
+      description: The URL of the group.
+      type: String
+    - contextPath: Jira.Board.location
+      description: The container that the board is located in.
+      type: Object
+    - contextPath: Jira.Board.location.projectId
+      description: The project ID.
+      type: Number
+    - contextPath: Jira.Board.location.userId
+      description: The user ID.
+      type: Number
+    - contextPath: Jira.Board.location.userAccountId
+      description: The user account ID.
+      type: String
+    - contextPath: Jira.Board.location.displayName
+      description: The display name of the project.
+      type: String
+    - contextPath: Jira.Board.location.projectName
+      description: The project name.
+      type: String
+    - contextPath: Jira.Board.location.projectKey
+      description: The project key.
+      type: String
+    - contextPath: Jira.Board.location.projectTypeKey
+      description: The type of the project.
+      type: String
+    - contextPath: Jira.Board.location.avatarURI
+      description: The avatar of the project.
+      type: String
+    - contextPath: Jira.Board.location.name
+      description: The name of the project.
+      type: String
+    - contextPath: Jira.Board.canEdit
+      description: Whether the board can be edited.
+      type: String
+    - contextPath: Jira.Board.isPrivate
+      description: Whether the board is private.
+      type: String
+    - contextPath: Jira.Board.favourite
+      description: Whether the board is selected as a favorite.
+      type: String
+  - arguments:
+    - description: The board ID.
+      name: board_id
+      required: true
+    - description: A JQL query to filter the issues.
+      name: jql_query
+    - description: The maximum number of results to return. This argument will be ignored if page or page_size arguments were given. Default value is 50.
+      name: limit
+    - description: The page number. Default value is 0.
+      name: page
+    - description: The number of requested results per page. Default value is 50.
+      name: page_size
+    description: Get issues from the backlog of a specific board. For Jira OnPrem, the board must be of type scrum.
+    name: jira-board-backlog-list
+    outputs:
+    - contextPath: Jira.BoardBacklog.boardId
+      description: The ID of the board.
+      type: Number
+    - contextPath: Jira.BoardBacklog.Ticket.Id
+      description: The ticket ID.
+      type: Number
+    - contextPath: Jira.BoardBacklog.Ticket.Key
+      description: The ticket key.
+      type: String
+    - contextPath: Jira.BoardBacklog.Ticket.Assignee
+      description: The user assigned to the ticket.
+      type: String
+    - contextPath: Jira.BoardBacklog.Ticket.Creator
+      description: The user who created the ticket.
+      type: String
+    - contextPath: Jira.BoardBacklog.Ticket.Summary
+      description: The ticket summary.
+      type: String
+    - contextPath: Jira.BoardBacklog.Ticket.Status
+      description: The ticket status.
+      type: String
+    - contextPath: Jira.BoardBacklog.Ticket.Priority
+      description: The ticket priority.
+      type: String
+    - contextPath: Jira.BoardBacklog.Ticket.ProjectName
+      description: The ticket project name.
+      type: String
+    - contextPath: Jira.BoardBacklog.Ticket.DueDate
+      description: The due date.
+      type: Date
+    - contextPath: Jira.BoardBacklog.Ticket.Created
+      description: The time the ticket was created.
+      type: Date
+    - contextPath: Jira.BoardBacklog.Ticket.LastSeen
+      description: The last time the ticket was viewed.
+      type: Date
+    - contextPath: Jira.BoardBacklog.Ticket.LastUpdate
+      description: The last time the ticket was updated.
+      type: Date
+  - arguments:
+    - description: The board ID.
+      name: board_id
+      required: true
+    - description: A JQL query to filter the issues.
+      name: jql_query
+    - description: The maximum number of results to return. This argument will be ignored if page or page_size arguments were given. Default value is 50.
+      name: limit
+    - description: The page number. Default value is 0.
+      name: page
+    - description: The number of requested results per page. Default value is 50.
+      name: page_size
+    description: Get all issues from a specific board.
+    name: jira-board-issue-list
+    outputs:
+    - contextPath: Jira.BoardIssue.boardId
+      description: The ID of the board.
+      type: Number
+    - contextPath: Jira.BoardIssue.Ticket.Id
+      description: The ticket ID.
+      type: Number
+    - contextPath: Jira.BoardIssue.Ticket.Key
+      description: The ticket key.
+      type: String
+    - contextPath: Jira.BoardIssue.Ticket.Assignee
+      description: The user assigned to the ticket.
+      type: String
+    - contextPath: Jira.BoardIssue.Ticket.Creator
+      description: The user who created the ticket.
+      type: String
+    - contextPath: Jira.BoardIssue.Ticket.Summary
+      description: The ticket summary.
+      type: String
+    - contextPath: Jira.BoardIssue.Ticket.Status
+      description: The ticket status.
+      type: String
+    - contextPath: Jira.BoardIssue.Ticket.Priority
+      description: The ticket priority.
+      type: String
+    - contextPath: Jira.BoardIssue.Ticket.ProjectName
+      description: The ticket project name.
+      type: String
+    - contextPath: Jira.BoardIssue.Ticket.DueDate
+      description: The due date.
+      type: Date
+    - contextPath: Jira.BoardIssue.Ticket.Created
+      description: The time the ticket was created.
+      type: Date
+    - contextPath: Jira.BoardIssue.Ticket.LastSeen
+      description: The last time the ticket was viewed.
+      type: Date
+    - contextPath: Jira.BoardIssue.Ticket.LastUpdate
+      description: The last time the ticket was updated.
+      type: Date
+  - arguments:
+    - description: The board ID.
+      name: board_id
+      required: true
+    - description: The maximum number of results to return. This argument will be ignored if page or page_size arguments were given. Default value is 50.
+      name: limit
+    - description: The page number. Default value is 0.
+      name: page
+    - description: The number of requested results per page. Default value is 50.
+      name: page_size
+    description: Get all sprints of a specific board.
+    name: jira-board-sprint-list
+    outputs:
+    - contextPath: Jira.BoardSprint.boardId
+      description: The ID of the board.
+      type: String
+    - contextPath: Jira.BoardSprint.Sprints
+      description: The sprints in the board.
+      type: Object
+    - contextPath: Jira.BoardSprint.Sprints.id
+      description: The ID of the sprint.
+      type: Number
+    - contextPath: Jira.BoardSprint.Sprints.self
+      description: The URL of the sprint.
+      type: String
+    - contextPath: Jira.BoardSprint.Sprints.state
+      description: The state of the sprint.
+      type: String
+    - contextPath: Jira.BoardSprint.Sprints.name
+      description: The name of the sprint.
+      type: String
+    - contextPath: Jira.BoardSprint.Sprints.startDate
+      description: The starting date of the sprint.
+      type: String
+    - contextPath: Jira.BoardSprint.Sprints.endDate
+      description: The ending date of the sprint.
+      type: String
+    - contextPath: Jira.BoardSprint.Sprints.completeDate
+      description: The date the sprint was completed.
+      type: String
+    - contextPath: Jira.BoardSprint.Sprints.originBoardId
+      description: The ID of the origin board.
+      type: Number
+    - contextPath: Jira.BoardSprint.Sprints.goal
+      description: The goal of the sprint.
+      type: String
+  - arguments:
+    - description: The board ID.
+      name: board_id
+      required: true
+    - auto: PREDEFINED
+      description: Filters results to epics that are either done or not done. This uses the `Epic Status` field, and not the `Status` field of the issue.
+      name: done
+      defaultValue: 'false'
+      predefined:
+      - 'false'
+      - 'true'
+    - description: The maximum number of results to return. This argument will be ignored if page or page_size arguments were given. Default value is 50.
+      name: limit
+    - description: The page number. Default value is 0.
+      name: page
+    - description: The number of requested results per page. Default value is 50.
+      name: page_size
+    description: Get all epics from a specific board
+    name: jira-board-epic-list
+    outputs:
+    - contextPath: Jira.BoardEpic.boardId
+      description: The ID of the board.
+      type: Number
+    - contextPath: Jira.BoardEpic.Epics
+      description: Holds the data of the epic issues.
+      type: Object
+    - contextPath: Jira.BoardEpic.Epics.id
+      description: The ID of the epic.
+      type: Number
+    - contextPath: Jira.BoardEpic.Epics.key
+      description: The key of the epic.
+      type: String
+    - contextPath: Jira.BoardEpic.Epics.self
+      description: The URL of the epic.
+      type: String
+    - contextPath: Jira.BoardEpic.Epics.name
+      description: The name of the epic.
+      type: String
+    - contextPath: Jira.BoardEpic.Epics.summary
+      description: The summary of the epic.
+      type: String
+    - contextPath: Jira.BoardEpic.Epics.done
+      description: Whether the epic has been completed or not.
+      type: Boolean
+    - contextPath: Jira.BoardEpic.Epics.color
+      description: Data about the color of the epic.
+      type: Object
+    - contextPath: Jira.BoardEpic.Epics.color.key
+      description: The key of the color associated with the epic.
+      type: String
+  - arguments:
+    - description: The board ID.
+      name: board_id
+    - description: The sprint ID.
+      name: sprint_id
+      required: true
+    - description: A JQL query to filter the issues.
+      name: jql_query
+    - description: The maximum number of results to return. This argument will be ignored if page or page_size arguments were given. Default value is 50.
+      name: limit
+    - description: The page number. Default value is 0.
+      name: page
+    - description: The number of requested results per page. Default value is 50.
+      name: page_size
+    description: Get all issues in a sprint.
+    name: jira-sprint-issue-list
+    outputs:
+    - contextPath: Jira.SprintIssues.boardId
+      description: The ID of the board that the sprint belongs to.
+      type: String
+    - contextPath: Jira.SprintIssues.sprintId
+      description: The ID of the sprint.
+      type: String
+    - contextPath: Jira.SprintIssues.Ticket.Id
+      description: The ticket ID.
+      type: Number
+    - contextPath: Jira.SprintIssues.Ticket.Key
+      description: The ticket key.
+      type: String
+    - contextPath: Jira.SprintIssues.Ticket.Assignee
+      description: The user assigned to the ticket.
+      type: String
+    - contextPath: Jira.SprintIssues.Ticket.Creator
+      description: The user who created the ticket.
+      type: String
+    - contextPath: Jira.SprintIssues.Ticket.Summary
+      description: The ticket summary.
+      type: String
+    - contextPath: Jira.SprintIssues.Ticket.Status
+      description: The ticket status.
+      type: String
+    - contextPath: Jira.SprintIssues.Ticket.Priority
+      description: The ticket priority.
+      type: String
+    - contextPath: Jira.SprintIssues.Ticket.ProjectName
+      description: The ticket project name.
+      type: String
+    - contextPath: Jira.SprintIssues.Ticket.DueDate
+      description: The due date.
+      type: Date
+    - contextPath: Jira.SprintIssues.Ticket.Created
+      description: The time the ticket was created.
+      type: Date
+    - contextPath: Jira.SprintIssues.Ticket.LastSeen
+      description: The last time the ticket was viewed.
+      type: Date
+    - contextPath: Jira.SprintIssues.Ticket.LastUpdate
+      description: The last time the ticket was updated.
+      type: Date
+  - arguments:
+    - description: The issues to move to the sprint.
+      name: issues
+      required: true
+    - description: The sprint ID.
+      name: sprint_id
+      required: true
+    - description: To rank the issues before the stated issue (supports issue key and ID).
+      name: rank_before_issue
+    - description: To rank the issues after the stated issue (supports issue key and ID).
+      name: rank_after_issue
+    description: Moves issues to a sprint, for a given sprint ID. Issues can only be moved to open or active sprints. At most 50 issues may be moved at once.
+    name: jira-sprint-issue-move
+  - arguments:
+    - description: The key of the epic. (The epic ID or key is required).
+      name: epic_key
+    - description: The ID of the epic. (The epic ID or key is required).
+      name: epic_id
+    - description: A JQL query to filter the issues.
+      name: jql_query
+    - description: The maximum number of results to return. This argument will be ignored if page or page_size arguments were given. Default value is 50.
+      name: limit
+    - description: The page number. Default value is 0.
+      name: page
+    - description: The number of requested results per page. Default value is 50.
+      name: page_size
+    description: Get all issues that belong to an epic (Child Issues).
+    name: jira-epic-issue-list
+    outputs:
+    - contextPath: Jira.EpicIssues.boardId
+      description: The ID of the board that holds the issues.
+      type: String
+    - contextPath: Jira.EpicIssues.epicId
+      description: The ID of the epic that holds the issues.
+      type: String
+    - contextPath: Jira.EpicIssues.key
+      description: The key of the epic.
+      type: String
+    - contextPath: Jira.EpicIssues.Ticket.Id
+      description: The ticket ID.
+      type: Number
+    - contextPath: Jira.EpicIssues.Ticket.Key
+      description: The ticket key.
+      type: String
+    - contextPath: Jira.EpicIssues.Ticket.Assignee
+      description: The user assigned to the ticket.
+      type: String
+    - contextPath: Jira.EpicIssues.Ticket.Creator
+      description: The user who created the ticket.
+      type: String
+    - contextPath: Jira.EpicIssues.Ticket.Summary
+      description: The ticket summary.
+      type: String
+    - contextPath: Jira.EpicIssues.Ticket.Status
+      description: The ticket status.
+      type: String
+    - contextPath: Jira.EpicIssues.Ticket.Priority
+      description: The ticket priority.
+      type: String
+    - contextPath: Jira.EpicIssues.Ticket.ProjectName
+      description: The ticket project name.
+      type: String
+    - contextPath: Jira.EpicIssues.Ticket.DueDate
+      description: The due date.
+      type: Date
+    - contextPath: Jira.EpicIssues.Ticket.Created
+      description: The time the ticket was created.
+      type: Date
+    - contextPath: Jira.EpicIssues.Ticket.LastSeen
+      description: The last time the ticket was viewed.
+      type: Date
+    - contextPath: Jira.EpicIssues.Ticket.LastUpdate
+      description: The last time the ticket was updated.
+      type: Date
+  - description: Returns a list of all issue link types.
+    name: jira-issue-link-type-get
+    outputs:
+    - contextPath: Jira.IssueLinkType
+      description: The issue link type bean.
+      type: Object
+    - contextPath: Jira.IssueLinkType.id
+      description: The ID of the issue link type.
+      type: String
+    - contextPath: Jira.IssueLinkType.inward
+      description: The description of the issue link type inward link.
+      type: String
+    - contextPath: Jira.IssueLinkType.name
+      description: The name of the issue link type.
+      type: String
+    - contextPath: Jira.IssueLinkType.outward
+      description: The description of the issue link type outward link.
+      type: String
+    - contextPath: Jira.IssueLinkType.self
+      description: The URL of the issue link type.
+      type: String
+  - arguments:
+    - description: The key of the outward issue.
+      name: outward_issue
+      required: true
+    - description: The key of the inward issue.
+      name: inward_issue
+      required: true
+    - description: The name of the link to apply. Use `jira-issue-link-type-get` to see available links.
+      name: link_type
+      required: true
+    - description: A comment to add to the inward issue.
+      name: comment
+    description: Use this command to create a link between two issues.
+    name: jira-issue-to-issue-link
+  - arguments:
+    - description: The remote incident ID.
+      name: id
+      required: true
+    - defaultValue: '0'
+      description: The UTC timestamp in seconds of the last update. The incident is only updated if it was modified after the last update time.
+      name: lastUpdate
+    description: Get remote data from a remote incident. This method does not update the current incident, and should be used for debugging purposes only.
+    name: get-remote-data
+  - description: Returns the list of fields to map in outgoing mirroring. This command is only used for debugging purposes.
+    name: get-mapping-fields
+  - arguments:
+    - description: Date string representing the local time. The incident is only returned if it was modified after the last update time.
+      name: lastUpdate
+    description: Get the list of incidents that were modified since the last update time. This method is used for debugging purposes. The get-modified-remote-data command is used as part of the Mirroring feature that was introduced in Cortex XSOAR version 6.1.
+    name: get-modified-remote-data
+  - description: Updates the remote incident with local incident changes. This method is only used for debugging purposes and will not update the current incident.
+    name: update-remote-system
+  dockerimage: demisto/btfl-soup:1.0.1.72793
+  isfetch: true
+  ismappable: true
+  isremotesyncin: true
+  isremotesyncout: true
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- JiraV3 Test
+defaultmapperin: classifier-mapper-incoming-JiraV3
+defaultmapperout: JiraV3 Outgoing Mapper
+fromversion: 6.8.0

@@ -1,9 +1,9 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 """
 Check Point Threat Emulation (SandBlast) API Integration for Cortex XSOAR (aka Demisto).
 """
 from typing import Dict, Any, List
-import demistomock as demisto
-from CommonServerPython import *
 from CommonServerUserPython import *
 
 

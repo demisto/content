@@ -1,0 +1,298 @@
+{
+    "trend_micro_deep_security_manager_raw": {
+        "cefDeviceEventClassId": {
+            "type": "string",
+            "is_array": false
+        },
+        "cefDeviceProduct": {
+            "type": "string",
+            "is_array": false
+        },
+        "cefDeviceVendor": {
+            "type": "string",
+            "is_array": false
+        },
+        "cefDeviceVersion": {
+            "type": "string",
+            "is_array": false
+        },
+        "cefName": {
+            "type": "string",
+            "is_array": false
+        },
+        "cefSeverity": {
+            "type": "string",
+            "is_array": false
+        },
+        "cefVersion": {
+            "type": "string",
+            "is_array": false
+        },
+        "msg": {
+            "type": "string",
+            "is_array": false
+        },
+        "src": {
+            "type": "string",
+            "is_array": false
+        },
+        "suser": {
+            "type": "string",
+            "is_array": false
+        },
+        "target": {
+            "type": "string",
+            "is_array": false
+        },
+        "targetID": {
+            "type": "string",
+            "is_array": false
+        },
+        "targetType": {
+            "type": "string",
+            "is_array": false
+        },
+        "TrendMicroDsTags": {
+            "type": "string",
+            "is_array": false
+        },
+        "TrendMicroDsTenant": {
+            "type": "string",
+            "is_array": false
+        },
+        "TrendMicroDsTenantId": {
+            "type": "string",
+            "is_array": false
+        }
+    },
+    "trend_micro_deep_security_agent_raw": {
+        "act": {
+            "type": "string",
+            "is_array": false
+        },
+        "cefDeviceEventClassId": {
+            "type": "string",
+            "is_array": false
+        },
+        "cefDeviceProduct": {
+            "type": "string",
+            "is_array": false
+        },
+        "cefDeviceVendor": {
+            "type": "string",
+            "is_array": false
+        },
+        "cefDeviceVersion": {
+            "type": "string",
+            "is_array": false
+        },
+        "cefName": {
+            "type": "string",
+            "is_array": false
+        },
+        "cefSeverity": {
+            "type": "string",
+            "is_array": false
+        },
+        "cefVersion": {
+            "type": "string",
+            "is_array": false
+        },
+        "cn1": {
+            "type": "int",
+            "is_array": false
+        },
+        "cn2": {
+            "type": "int",
+            "is_array": false
+        },
+        "cn3": {
+            "type": "int",
+            "is_array": false
+        },
+        "cnt": {
+            "type": "int",
+            "is_array": false
+        },
+        "cs1": {
+            "type": "string",
+            "is_array": false
+        },
+        "cs2": {
+            "type": "string",
+            "is_array": false
+        },
+        "cs3": {
+            "type": "string",
+            "is_array": false
+        },
+        "cs4": {
+            "type": "string",
+            "is_array": false
+        },
+        "cs5": {
+            "type": "string",
+            "is_array": false
+        },
+        "cs6": {
+            "type": "string",
+            "is_array": false
+        },
+        "dmac": {
+            "type": "string",
+            "is_array": false
+        },
+        "dpt": {
+            "type": "int",
+            "is_array": false
+        },
+        "dst": {
+            "type": "string",
+            "is_array": false
+        },
+        "duser": {
+            "type": "string",
+            "is_array": false
+        },
+        "dvc": {
+            "type": "string",
+            "is_array": false
+        },
+        "dvchost": {
+            "type": "string",
+            "is_array": false
+        },
+        "fileHash": {
+            "type": "string",
+            "is_array": false
+        },
+        "filePath": {
+            "type": "string",
+            "is_array": false
+        },
+        "fname": {
+            "type": "string",
+            "is_array": false
+        },
+        "fsize": {
+            "type": "string",
+            "is_array": false
+        },
+        "in": {
+            "type": "string",
+            "is_array": false
+        },
+        "msg": {
+            "type": "string",
+            "is_array": false
+        },
+        "oldfilePath": {
+            "type": "string",
+            "is_array": false
+        },
+        "out": {
+            "type": "string",
+            "is_array": false
+        },
+        "proto": {
+            "type": "string",
+            "is_array": false
+        },
+        "request": {
+            "type": "string",
+            "is_array": false
+        },
+        "result": {
+            "type": "string",
+            "is_array": false
+        },
+        "shost": {
+            "type": "string",
+            "is_array": false
+        },
+        "smac": {
+            "type": "string",
+            "is_array": false
+        },
+        "sproc": {
+            "type": "string",
+            "is_array": false
+        },
+        "spt": {
+            "type": "int",
+            "is_array": false
+        },
+        "src": {
+            "type": "string",
+            "is_array": false
+        },
+        "suid": {
+            "type": "string",
+            "is_array": false
+        },
+        "suser": {
+            "type": "string",
+            "is_array": false
+        },
+        "TrendMicroDsBehaviorRuleID": {
+            "type": "string",
+            "is_array": false
+        },
+        "TrendMicroDsBehaviorType": {
+            "type": "string",
+            "is_array": false
+        },
+        "TrendMicroDsCommandLine": {
+            "type": "string",
+            "is_array": false
+        },
+        "TrendMicroDsCve": {
+            "type": "string",
+            "is_array": false
+        },
+        "TrendMicroDsFileMD5": {
+            "type": "string",
+            "is_array": false
+        },
+        "TrendMicroDsFileSHA256": {
+            "type": "string",
+            "is_array": false
+        },
+        "TrendMicroDsMitre": {
+            "type": "string",
+            "is_array": false
+        },
+        "TrendMicroDsProcess": {
+            "type": "string",
+            "is_array": false
+        },
+        "TrendMicroDsMalwareTarget": {
+            "type": "string",
+            "is_array": false
+        },
+        "TrendMicroDsMalwareTargetType": {
+            "type": "string",
+            "is_array": false
+        },
+        "TrendMicroDsRelevantDetectionNames": {
+            "type": "string",
+            "is_array": false
+        },
+        "TrendMicroDsTags": {
+            "type": "string",
+            "is_array": false
+        },
+        "TrendMicroDsTenant": {
+            "type": "string",
+            "is_array": false
+        },
+        "TrendMicroDsTenantId": {
+            "type": "string",
+            "is_array": false
+        },
+        "xff": {
+            "type": "string",
+            "is_array": false
+        }
+    }
+}

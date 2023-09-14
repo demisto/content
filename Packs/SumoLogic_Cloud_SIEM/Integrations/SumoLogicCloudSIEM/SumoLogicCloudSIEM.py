@@ -1,12 +1,12 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 """Integration for Sumo Logic Cloud SIEM
 
 """
 from datetime import datetime
 from typing import List, Any, Dict, Tuple, cast
-from CommonServerPython import *  # noqa: F401
 
 import traceback
-import demistomock as demisto  # noqa: F401
 
 ''' CONSTANTS '''
 

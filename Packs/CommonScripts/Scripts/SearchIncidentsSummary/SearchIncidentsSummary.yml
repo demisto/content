@@ -63,7 +63,7 @@ commonfields:
 contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ""
-dockerimage: demisto/python3:3.10.9.45313
+dockerimage: demisto/python3:3.10.12.63474
 enabled: true
 name: SearchIncidentsSummary
 outputs:
@@ -95,7 +95,6 @@ outputs:
   description: The value provided in the searchresultslabel argument.
   type: String
 runas: DBotWeakRole
-runonce: false
 script: ''
 scripttarget: 0
 subtype: python3

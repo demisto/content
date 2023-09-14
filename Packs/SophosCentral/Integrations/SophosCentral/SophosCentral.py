@@ -1,8 +1,8 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 """Main integration script."""
 import dateparser
 from typing import Dict, Tuple
-import demistomock as demisto
-from CommonServerPython import *
 from CommonServerUserPython import *
 
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"

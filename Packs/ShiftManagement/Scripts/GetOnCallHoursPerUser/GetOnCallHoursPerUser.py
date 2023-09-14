@@ -1,9 +1,9 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import operator
 from functools import reduce
 from typing import Dict, List
 
-import demistomock as demisto
-from CommonServerPython import *
 from CommonServerUserPython import *
 
 

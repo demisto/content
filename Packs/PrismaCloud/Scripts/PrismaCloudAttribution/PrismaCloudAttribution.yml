@@ -10,7 +10,7 @@ comment: Recursively extracts specified fields from provided list of assets for 
 commonfields:
   id: PrismaCloudAttribution
   version: -1
-dockerimage: demisto/python3:3.10.10.48392
+dockerimage: demisto/python3:3.10.12.63474
 enabled: true
 name: PrismaCloudAttribution
 outputs:
@@ -37,7 +37,6 @@ outputs:
 - contextPath: PrismaCloud.Attribution.service
   description: Cloud Service
 runas: DBotWeakRole
-runonce: false
 script: ''
 scripttarget: 0
 subtype: python3

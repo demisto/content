@@ -283,7 +283,6 @@ FILES = [
     }
 ]
 
-
 EMAIL_THREADS = [{"Contents": {"context": {
     "id": "3",
     "EmailThreads": [
@@ -434,6 +433,7 @@ def test_create_thread_context(email_code, scenario, mocker):
         - validate that function calls demisto.executeCommand() with all arguments and data needed to properly create
           the required context entry
     """
+
     # demisto.executeCommand will be called twice in the tested function - prepare separate responses for each
     def side_effect_function(command, args):
         if command == "getContext":
@@ -503,7 +503,55 @@ def test_get_email_related_incident_id_email_in_context(mocker):
     """
     import PreprocessEmail
     from PreprocessEmail import get_email_related_incident_id
-    mocker.patch.object(PreprocessEmail, 'get_incident_by_query', return_value=[{'emailsubject': '', 'id': '3'}])
+    mocker.patch.object(PreprocessEmail, 'get_incident_by_query', return_value=[{'emailsubject': None, 'id': '3'}])
     mocker.patch.object(demisto, 'executeCommand', return_value=EMAIL_THREADS)
     id = get_email_related_incident_id('69433507', 'Test Email 2')
     assert id == '3'
+
+
+def test_main_untagged_email(mocker):
+    """
+    Given
+    - A new incident of type Email Communication
+    When
+    - An email on a non-existing email was received
+    - The configuration is to disable un-tagged email creation.
+    Then
+    - Validate that no relevant incident was created
+    """
+
+    from PreprocessEmail import main
+    mocker.patch.object(demisto, 'incident', return_value={'CustomFields': {}})
+    mocker.patch.object(demisto, 'args', return_value={"CreateIncidentUntaggedEmail": False})
+    mocker.patch.object(demisto, 'debug')
+    mocker.patch.object(demisto, 'results')
+    main()
+    # assert create_thread_context_mocker.called == create_context_called
+    assert isinstance(demisto.results.call_args[0][0], bool)
+    assert demisto.results.call_args[0][0] is False
+
+
+@pytest.mark.parametrize(
+    "labels, email_to, result",
+    [
+        ([{'type': 'Email/ID', 'value': 'foo@test.com'}, {'type': 'Instance', 'value': 'ews'},
+          {'type': 'Brand', 'value': 'EWSO365'}], 'test@test.com',
+         {'arguments': {'item-id': 'foo@test.com', 'using': 'ews'}, 'command': 'ews-get-attachment', 'incidents': None}
+         ),
+        ([{'type': 'Email/ID', 'value': 'foo@test.com'}, {'type': 'Instance', 'value': 'gmail'},
+          {'type': 'Brand', 'value': 'Gmail'}], 'test@gmail.com',
+         {'arguments': {'message-id': 'foo@test.com', 'user-id': 'me', 'using': 'gmail'},
+          'command': 'gmail-get-attachments', 'incidents': None}
+         ),
+        ([{'type': 'Email/ID', 'value': 'foo@outlook.com'}, {'type': 'Instance', 'value': 'MicrosoftGraphMail'},
+          {'type': 'Brand', 'value': 'MicrosoftGraphMail'}], 'test@outlook.com',
+         {'arguments': {'message_id': 'foo@outlook.com', 'user_id': 'test@outlook.com', 'using': 'MicrosoftGraphMail'},
+          'command': 'msgraph-mail-get-attachment', 'incidents': None}
+         ),
+    ]
+)
+def test_get_attachments_using_instance(labels, email_to, result, mocker):
+    from PreprocessEmail import get_attachments_using_instance
+    mocker.patch.object(demisto, 'executeCommand')
+    get_attachments_using_instance(None, labels, email_to)
+    assert demisto.executeCommand.call_args[0][1] == result
