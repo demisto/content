@@ -13554,12 +13554,12 @@ def get_query_by_job_id_request(log_type: str, query: str, max_fetch: int) -> st
     return response.get('response', {}).get('result', {}).get('job')
 
 
-def get_query_entries_by_id_request(job_id: str, job_polling_max_num_attempts: int) -> Dict[str, Any]:
+def get_query_entries_by_id_request(job_id: str, fetch_job_polling_max_num_attempts: int) -> Dict[str, Any]:
     """get the entries of a particular Job ID.
 
     Args:
         job_id (int): ID of a query job
-        job_polling_max_num_attempts (int): The maximal number of attempts to try and pull results.
+        fetch_job_polling_max_num_attempts (int): The maximal number of attempts to try and pull results.
 
     Returns:
         Dict[str,Any]: a dictionary of the raw entries linked to the Job ID
@@ -13567,7 +13567,7 @@ def get_query_entries_by_id_request(job_id: str, job_polling_max_num_attempts: i
     params = assign_params(key=API_KEY, type='log', action='get', job_id=job_id)
 
     # if the job has not finished, wait for 1 second and try again (until success or max retries)
-    for try_num in range(1, job_polling_max_num_attempts + 1):
+    for try_num in range(1, fetch_job_polling_max_num_attempts + 1):
         response = http_request(URL, 'GET', params=params)
         status = response.get('response', {}).get('result', {}).get('job', {}).get('status', '')
         demisto.debug(f'Job ID {job_id}, response status: {status}')
@@ -13583,14 +13583,14 @@ def get_query_entries_by_id_request(job_id: str, job_polling_max_num_attempts: i
     return {}
 
 
-def get_query_entries(log_type: str, query: str, max_fetch: int, job_polling_max_num_attempts: int) -> List[Dict[Any, Any]]:
+def get_query_entries(log_type: str, query: str, max_fetch: int, fetch_job_polling_max_num_attempts: int) -> List[Dict[Any, Any]]:
     """get query entries according to a specific query.
 
     Args:
         log_type (str): query log type
         query (str): query for the fetch
         max_fetch (int): maximum number of entries to fetch
-        job_polling_max_num_attempts (int): The maximal number of attempts to try and pull results.
+        fetch_job_polling_max_num_attempts (int): The maximal number of attempts to try and pull results from a job.
 
     Returns:
         List[Dict[Any,Any]]): a list of raw entries for the specified query
@@ -13601,7 +13601,7 @@ def get_query_entries(log_type: str, query: str, max_fetch: int, job_polling_max
     demisto.debug(f'{job_id=}')
 
     # second http request: send request with job id, valid response will contain a dictionary of entries.
-    query_entries = get_query_entries_by_id_request(job_id, job_polling_max_num_attempts)
+    query_entries = get_query_entries_by_id_request(job_id, fetch_job_polling_max_num_attempts)
 
     # extract all entries from response
     if result := query_entries.get('response', {}).get('result', {}).get('log', {}).get('logs', {}).get('entry'):
@@ -13722,14 +13722,14 @@ def update_max_fetch_dict(configured_max_fetch: int, max_fetch_dict: Dict[str, i
 
 def fetch_incidents_request(queries_dict: Optional[Dict[str, str]], max_fetch_dict: Dict,
                             fetch_start_datetime_dict: Dict[str, datetime],
-                            job_polling_max_num_attempts: int) -> Dict[str, List[Dict[str, Any]]]:
+                            fetch_job_polling_max_num_attempts: int) -> Dict[str, List[Dict[str, Any]]]:
     """get raw entires of incidents according to provided queries, log types and max_fetch parameters.
 
     Args:
         queries_dict (Optional[Dict[str, str]]): chosen log type queries dictionaries
         max_fetch_dict (Dict): max incidents per fetch parameter per log type dictionary
         fetch_start_datetime_dict (Dict[str,datetime]): updated last fetch time per log type dictionary
-        job_polling_max_num_attempts (int): The maximal number of attempts to try and pull results for each log type
+        fetch_job_polling_max_num_attempts (int): The maximal number of attempts to try and pull results for each log type
 
     Returns:
         Dict[str, List[Dict[str,Any]]]: a dictionary of all fetched raw incidents entries
@@ -13741,7 +13741,7 @@ def fetch_incidents_request(queries_dict: Optional[Dict[str, str]], max_fetch_di
             fetch_start_time = fetch_start_datetime_dict.get(log_type)
             if fetch_start_time:
                 query = add_time_filter_to_query_parameter(query, fetch_start_time)
-            entries[log_type] = get_query_entries(log_type, query, max_fetch, job_polling_max_num_attempts)
+            entries[log_type] = get_query_entries(log_type, query, max_fetch, fetch_job_polling_max_num_attempts)
     return entries
 
 
@@ -13895,7 +13895,7 @@ def get_parsed_incident_entries(incident_entries_dict: Dict[str, List[Dict[str, 
 
 def fetch_incidents(last_run: dict, first_fetch: str, queries_dict: Optional[Dict[str, str]],
                     max_fetch_dict: Dict,
-                    job_polling_max_num_attempts: int) -> Tuple[Dict[str, str], Dict[str, str], List[Dict[str, list]]]:
+                    fetch_job_polling_max_num_attempts: int) -> Tuple[Dict[str, str], Dict[str, str], List[Dict[str, list]]]:
     """run one cycle of fetch incidents.
 
     Args:
@@ -13903,7 +13903,7 @@ def fetch_incidents(last_run: dict, first_fetch: str, queries_dict: Optional[Dic
         first_fetch (str): first time to fetch from (First fetch timestamp parameter)
         queries_dict (Optional[Dict[str, str]]): queries per log type dictionary
         max_fetch_dict (Dict): max incidents per fetch parameter per log type dictionary
-        job_polling_max_num_attempts (int): The maximal number of attempts to try and pull results for each log type
+        fetch_job_polling_max_num_attempts (int): The maximal number of attempts to try and pull results for each log type
 
     Returns:
         (Dict[str, str], Dict[str,str], List[Dict[str, list]]): last fetch per log type dictionary, last unique id per log type dictionary, parsed incidents tuple
@@ -13917,7 +13917,7 @@ def fetch_incidents(last_run: dict, first_fetch: str, queries_dict: Optional[Dic
     demisto.debug(f'updated last fetch per log type: {fetch_start_datetime_dict=}.')
 
     incident_entries_dict = fetch_incidents_request(queries_dict, max_fetch_dict, fetch_start_datetime_dict,
-                                                    job_polling_max_num_attempts)
+                                                    fetch_job_polling_max_num_attempts)
     demisto.debug('raw incident entries fetching has completed.')
 
     # remove duplicated incidents from incident_entries_dict
@@ -13974,12 +13974,12 @@ def main():  # pragma: no cover
             first_fetch = params.get('first_fetch') or FETCH_DEFAULT_TIME
             configured_max_fetch = arg_to_number(params.get('max_fetch')) or MAX_INCIDENTS_TO_FETCH
             queries_dict = log_types_queries_to_dict(params)
-            job_polling_max_num_attempts = arg_to_number(params.get('job_polling_max_num_attempts')) or GET_LOG_JOB_ID_MAX_RETRIES
+            fetch_job_polling_max_num_attempts = arg_to_number(params.get('fetch_job_polling_max_num_attempts')) or GET_LOG_JOB_ID_MAX_RETRIES
             max_fetch_dict = last_run.get('max_fetch_dict') or create_max_fetch_dict(
                 queries_dict=queries_dict, configured_max_fetch=configured_max_fetch)
 
             last_fetch_dict, last_id_dict, incident_entries_list = fetch_incidents(
-                last_run, first_fetch, queries_dict, max_fetch_dict, job_polling_max_num_attempts)
+                last_run, first_fetch, queries_dict, max_fetch_dict, fetch_job_polling_max_num_attempts)
             next_max_fetch_dict = update_max_fetch_dict(configured_max_fetch=configured_max_fetch,
                                                         max_fetch_dict=max_fetch_dict,
                                                         last_fetch_dict=last_fetch_dict)
