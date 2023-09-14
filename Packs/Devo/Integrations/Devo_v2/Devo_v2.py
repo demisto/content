@@ -288,7 +288,7 @@ def demisto_ISO(s_epoch):
 
 # We will assume timestamp_from and timestamp_to will be the same format or to will be None
 def get_time_range(timestamp_from, timestamp_to):
-    if isinstance(timestamp_from, int) or isinstance(timestamp_from, float):
+    if isinstance(timestamp_from, float | int):
         t_from = timestamp_from
         t_to = time.time() if timestamp_to is None else timestamp_to
     elif isinstance(timestamp_from, str):
@@ -307,7 +307,9 @@ def get_time_range(timestamp_from, timestamp_to):
     elif isinstance(timestamp_from, datetime):
         t_from = timestamp_from.timestamp()
         t_to = time.time() if timestamp_to is None else timestamp_to.timestamp()
-
+    current_time: float = time.time()
+    if t_from > current_time or t_to > current_time:
+        raise ValueError("Date should not be greater than current time")
     return (t_from, t_to)
 
 
@@ -897,12 +899,6 @@ def main():
         elif demisto.command() == "fetch-incidents":
             fetch_incidents()
         elif demisto.command() == "devo-run-query":
-            from_date = int(demisto.args().get("from"))
-            to_date = int(demisto.args().get("to"))
-            current_time = int(time.time())
-
-            if from_date > current_time or to_date > current_time:
-                raise ValueError("Date should not be greature then current time")
             OFFSET = 0
             items_per_page = int(demisto.args().get("items_per_page", ITEMS_PER_PAGE))
 
@@ -916,12 +912,6 @@ def main():
                 total = total + COUNT_SINGLE_TABLE
                 demisto.results(run_query_command(OFFSET, items_per_page))
         elif demisto.command() == "devo-get-alerts":
-            from_date = int(demisto.args().get("from"))
-            to_date = int(demisto.args().get("to"))
-            current_time = int(time.time())
-
-            if from_date > current_time or to_date > current_time:
-                raise ValueError("Date should not be greature then current time")
             OFFSET = 0
             items_per_page = int(demisto.args().get("items_per_page", ITEMS_PER_PAGE))
             if items_per_page <= 0:
