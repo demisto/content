@@ -3305,3 +3305,31 @@ Returns the available backups.
 >| monthly-22.12.585-1679972425.tar.gz | monthly | 22.12.585 | 2023-03-28T03:00:25Z |
 >| weekly-22.12.585-1681184909.tar.gz | weekly | 22.12.585 | 2023-04-11T03:48:29Z |
 
+### prisma-cloud-compute-unstuck-fetch-stream
+
+***
+Use this command to unstuck the fetch stream in case it's getting duplicated incidents.
+
+#### Base Command
+
+`prisma-cloud-compute-unstuck-fetch-stream`
+
+#### Input
+
+- No input.
+
+#### Context Output
+
+- No context output for this command.
+
+#### Command example
+```!prisma-cloud-compute-unstuck-fetch-stream```
+
+
+#### Human Readable Output
+
+```The fetch stream was released successfully.```
+
+## General Note:
+- Do not use the reset last run button as it will cause incidents duplications to the instance. 
+- In case you pressed reset last run button and you get duplicated incidents, run **prisma-cloud-compute-unstuck-fetch-stream** command.

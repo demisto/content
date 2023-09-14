@@ -1960,6 +1960,8 @@ script:
     - contextPath: PrismaCloudCompute.Backups.Time
       description: The time of the backup.
       type: Date
+  - description: Use this command to unstuck the fetch stream in case it's getting duplicated incidents.
+    name: prisma-cloud-compute-unstuck-fetch-stream
 tests:
 - PaloAltoNetworks_PrismaCloudCompute-Test
 fromversion: 5.0.0
