@@ -56,11 +56,6 @@ HFL_THREAT_INCOMING_ARGS = [
     'impacted_users.full_name',
     'note.content'
 ]
-#HFL_THREAT_INCOMING_ARGS = [
-#    'status',
-#    'note.content'
-#]
-
 
 SECURITY_EVENT_STATUS = {'new', 'probable_false_positive', 'false_positive', 'investigating', 'closed'}
 
@@ -81,7 +76,8 @@ STATUS_XSOAR_TO_HFL = {
 
 HFL_THREAT_OUTGOING_ARGS = {'status': f'Updated threat status, one of {"/".join(STATUS_HFL_TO_XSOAR.keys())}'}
 
-HFL_SECURITY_EVENT_OUTGOING_ARGS = {'status': f'Updated security event status, one of {"/".join(STATUS_HFL_TO_XSOAR.keys())}'}
+HFL_SECURITY_EVENT_OUTGOING_ARGS = {
+    'status': f'Updated security event status, one of {"/".join(STATUS_HFL_TO_XSOAR.keys())}'}
 
 MIRROR_DIRECTION_DICT = {
     'None': None,
@@ -90,9 +86,11 @@ MIRROR_DIRECTION_DICT = {
     'Incoming And Outgoing': 'Both'
 }
 
+
 class IncidentType(Enum):
     SEC_EVENT = 'sec'
     THREAT = 'thr'
+
 
 def _construct_request_parameters(args: dict, keys: list, params={}):
     """A helper function to add the keys arguments to the dict parameters"""
@@ -144,7 +142,7 @@ class Client(BaseClient):
             params = kwargs.pop('params')
             suffix = kwargs.pop('url_suffix')
             suffix += '?{}'.format('&'.join(['{}={}'.format(k, v)
-                                   for (k, v) in params.items()]))
+                                             for (k, v) in params.items()]))
             kwargs['url_suffix'] = suffix
 
         return super()._http_request(*args, **kwargs)
@@ -193,7 +191,6 @@ class Client(BaseClient):
             params=data
         )
 
-
     def user_search(self, threat_id=None, fields=None):
 
         fields_str = None
@@ -206,7 +203,6 @@ class Client(BaseClient):
             url_suffix='/api/data/host_properties/local_users/windows/',
             params=data
         )
-
 
     def data_hash_search(self, filehash=None):
         data = {}
@@ -350,7 +346,9 @@ class Client(BaseClient):
     def search_whitelist(self, keyword, provided_by_hlab):
         return self._http_request(
             method='GET',
-            url_suffix=f'/api/data/threat_intelligence/WhitelistRule/?offset=0&limit=100&search={keyword}&ordering=-last_update&provided_by_hlab={provided_by_hlab}',
+            url_suffix=f'/api/data/threat_intelligence/WhitelistRule/?'
+                       f'offset=0&limit=100&search={keyword}&'
+                       f'ordering=-last_update&provided_by_hlab={provided_by_hlab}',
         )
 
     def add_whitelist(self, comment, sigma_rule_id, target, field, case_insensitive, operator, value):
@@ -371,7 +369,7 @@ class Client(BaseClient):
 
         return self._http_request(
             method='POST',
-            url_suffix=f'/api/data/threat_intelligence/WhitelistRule/',
+            url_suffix='/api/data/threat_intelligence/WhitelistRule/',
             json_data=data
         )
 
@@ -397,7 +395,6 @@ class Client(BaseClient):
             method='GET',
             url_suffix=f'/api/data/threat_intelligence/WhitelistRule/{id}/'
         )
-
 
     def delete_whitelist(self, id):
 
@@ -477,7 +474,6 @@ class Client(BaseClient):
                 'content': content
             }
         )
-
 
     def list_policies(self, policy_name=None):
         data = {}
@@ -564,7 +560,6 @@ class Client(BaseClient):
 
 
 def assign_policy_to_agent(client, args):
-
     context = {}
     policy_name = args.get('policy', None)
 
@@ -592,6 +587,7 @@ def test_module(client, args):
         return 'ok'
     else:
         return 'nok'
+
 
 def fetch_incidents(client, args):
     last_run = demisto.getLastRun()
@@ -623,7 +619,6 @@ def fetch_incidents(client, args):
     else:
         status = None
 
-
     incidents = []
 
     if 'Threats' in fetch_types:
@@ -647,10 +642,10 @@ def fetch_incidents(client, args):
                                         / 1000000).replace(tzinfo=timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')
 
         threats = get_threats(client,
-                                         min_created_timestamp=cursor,
-                                         threat_status=status,
-                                         min_severity=args.get('min_severity', SEVERITIES[0])
-                                         )
+                              min_created_timestamp=cursor,
+                              threat_status=status,
+                              min_severity=args.get('min_severity', SEVERITIES[0])
+                              )
 
         for threat in threats:
 
@@ -686,7 +681,7 @@ def fetch_incidents(client, args):
                 break
 
         current_fetch_info_threats = {'last_fetch': latest_created_time_us,
-                        'already_fetched': already_fetched_current}
+                                      'already_fetched': already_fetched_current}
 
     if 'Security Events' in fetch_types:
 
@@ -749,8 +744,7 @@ def fetch_incidents(client, args):
                 break
 
         current_fetch_info_sec_events = {'last_fetch': latest_created_time_us,
-                        'already_fetched': already_fetched_current}
-
+                                         'already_fetched': already_fetched_current}
 
     last_run = [current_fetch_info_sec_events, current_fetch_info_threats]
     demisto.setLastRun(last_run)
@@ -777,6 +771,7 @@ def get_endpoint_info(client, args):
         agent
     )
     return agent
+
 
 def api_call(client, args):
     api_method = args.get('api_method', 'GET')
@@ -815,14 +810,14 @@ def endpoint_search(client, args):
 
 
 def get_frequent_users(client, args):
-
     authentications = {}
     output = []
 
     limit = int(args.get('limit'))
     del args['limit']
 
-    for class_name in ['TelemetryWindowsAuthentication', 'TelemetryLinuxAuthentication', 'TelemetryMacosAuthentication']:
+    for class_name in ['TelemetryWindowsAuthentication', 'TelemetryLinuxAuthentication',
+                       'TelemetryMacosAuthentication']:
 
         if class_name == 'TelemetryWindowsAuthentication':
             args['logon_type'] = 2
@@ -839,12 +834,12 @@ def get_frequent_users(client, args):
                     authentications[username] = 0
                 authentications[username] += 1
 
-            sorted_authentications = dict(sorted(authentications.items(), key=lambda item: item[1], reverse = True))
+            sorted_authentications = dict(sorted(authentications.items(), key=lambda item: item[1], reverse=True))
 
             for username in sorted_authentications:
                 output.append({
-                   'Username': username,
-                   'Authentication attempts': sorted_authentications[username]
+                    'Username': username,
+                    'Authentication attempts': sorted_authentications[username]
                 })
                 if limit and len(output) >= limit:
                     break
@@ -857,6 +852,7 @@ def get_frequent_users(client, args):
                 outputs_prefix='Harfanglab.Authentications.Users',
                 outputs=output
             )
+
 
 def job_create(client, args, parameters=None, can_use_previous_job=True):
     action = args.get('action', None)
@@ -882,7 +878,6 @@ def job_create(client, args, parameters=None, can_use_previous_job=True):
 
 
 def get_job_status(client, job_id):
-
     info = client.job_info(job_id)
 
     status = "running"
@@ -921,7 +916,7 @@ def job_info(client, args):
         context.append(get_job_status(client, job_id))
 
     readable_output = tableToMarkdown('Jobs Info', context, headers=[
-                                      'ID', 'Status', 'Creation date'], removeNull=True)
+        'ID', 'Status', 'Creation date'], removeNull=True)
 
     return CommandResults(
         readable_output=readable_output,
@@ -1024,7 +1019,7 @@ def result_prefetchlist(client, args):
         })
 
     readable_output = tableToMarkdown('Prefetch List', prefetchs, headers=[
-                                      'executable name', 'last executed'], removeNull=True)
+        'executable name', 'last executed'], removeNull=True)
 
     return CommandResults(
         readable_output=readable_output,
@@ -1064,7 +1059,7 @@ def result_runkeylist(client, args):
         })
 
     readable_output = tableToMarkdown('RunKey List', output, headers=[
-                                      'name', 'fullpath', 'signed', 'md5'], removeNull=True)
+        'name', 'fullpath', 'signed', 'md5'], removeNull=True)
 
     return CommandResults(
         readable_output=readable_output,
@@ -1099,7 +1094,7 @@ def result_scheduledtasklist(client, args):
         })
 
     readable_output = tableToMarkdown('Scheduled Task List', output, headers=[
-                                      'name', 'fullpath', 'signed', 'md5'], removeNull=True)
+        'name', 'fullpath', 'signed', 'md5'], removeNull=True)
 
     return CommandResults(
         readable_output=readable_output,
@@ -1133,7 +1128,7 @@ def result_linux_persistence_list(client, args):
         })
 
     readable_output = tableToMarkdown('Linux persistence list', output, headers=[
-                                      'type', 'filename', 'fullpath'], removeNull=True)
+        'type', 'filename', 'fullpath'], removeNull=True)
 
     return CommandResults(
         readable_output=readable_output,
@@ -1167,7 +1162,7 @@ def result_driverlist(client, args):
         })
 
     readable_output = tableToMarkdown('Driver List', output, headers=[
-                                      'fullpath', 'signed', 'md5'], removeNull=True)
+        'fullpath', 'signed', 'md5'], removeNull=True)
 
     return CommandResults(
         readable_output=readable_output,
@@ -1208,7 +1203,7 @@ def result_servicelist(client, args):
         })
 
     readable_output = tableToMarkdown('Service List', output, headers=[
-                                      'name', 'image_path', 'fullpath', 'signed', 'md5'], removeNull=True)
+        'name', 'image_path', 'fullpath', 'signed', 'md5'], removeNull=True)
 
     return CommandResults(
         readable_output=readable_output,
@@ -1237,18 +1232,18 @@ def result_startuplist(client, args):
     for x in data['results']:
         output.append({
             'startup_name': x['filename'],
-            'startup_fullpath': x.get('fullpathfilename',x.get('fullpathname')),
+            'startup_fullpath': x.get('fullpathfilename', x.get('fullpathname')),
             'fullpath': x.get('binaryinfo', {}).get('fullpath', ''),
             'signed': x.get('binaryinfo', {}).get('binaryinfo', {}).get('signed', False),
             'md5': x.get('binaryinfo', {}).get('binaryinfo', {}).get('md5'),
         })
 
     readable_output = tableToMarkdown('Startup List', output, headers=[
-                                      'startup_name',
-                                      'startup_fullpath',
-                                      'fullpath',
-                                      'signed',
-                                      'md5'], removeNull=True)
+        'startup_name',
+        'startup_fullpath',
+        'fullpath',
+        'signed',
+        'md5'], removeNull=True)
 
     return CommandResults(
         readable_output=readable_output,
@@ -1284,11 +1279,11 @@ def result_wmilist(client, args):
         })
 
     readable_output = tableToMarkdown('WMI List', output, headers=[
-                                      'filter to consumer type',
-                                      'event filter name',
-                                      'event consumer name',
-                                      'event filter',
-                                      'consumer data'], removeNull=True)
+        'filter to consumer type',
+        'event filter name',
+        'event consumer name',
+        'event filter',
+        'consumer data'], removeNull=True)
 
     return CommandResults(
         readable_output=readable_output,
@@ -1333,16 +1328,16 @@ def result_processlist(client, args):
         })
 
     readable_output = tableToMarkdown('Process List', output, headers=[
-                                      'name',
-                                      'session',
-                                      'username',
-                                      'integrity',
-                                      'pid',
-                                      'ppid',
-                                      'cmdline',
-                                      'fullpath',
-                                      'signed',
-                                      'md5'], removeNull=True)
+        'name',
+        'session',
+        'username',
+        'integrity',
+        'pid',
+        'ppid',
+        'cmdline',
+        'fullpath',
+        'signed',
+        'md5'], removeNull=True)
 
     return CommandResults(
         readable_output=readable_output,
@@ -1394,10 +1389,21 @@ def result_networkconnectionlist(client, args):
                     'md5': md5,
                 })
 
-    readable_output = tableToMarkdown('Network Connection List', output, headers=[
-        'state', 'protocol', 'version', 'src_addr', 'src_port', 'dst_addr', 'dst_port', 'fullpath', 'signed', 'md5'],
-        removeNull=True
-    )
+    readable_output = tableToMarkdown('Network Connection List',
+                                      output,
+                                      headers=[
+                                          'state',
+                                          'protocol',
+                                          'version',
+                                          'src_addr',
+                                          'src_port',
+                                          'dst_addr',
+                                          'dst_port',
+                                          'fullpath',
+                                          'signed',
+                                          'md5'],
+                                      removeNull=True
+                                      )
 
     return CommandResults(
         readable_output=readable_output,
@@ -1435,9 +1441,19 @@ def result_networksharelist(client, args):
             'Hostname': x.get('agent', {}).get('hostname', '')
         })
 
-    readable_output = tableToMarkdown('Network Share List', output, headers=[
-        'Name', 'Caption', 'Description', 'Path', 'Status', 'Share type val', 'Share type', 'Hostname'], removeNull=True
-    )
+    readable_output = tableToMarkdown('Network Share List',
+                                      output,
+                                      headers=[
+                                          'Name',
+                                          'Caption',
+                                          'Description',
+                                          'Path',
+                                          'Status',
+                                          'Share type val',
+                                          'Share type',
+                                          'Hostname'],
+                                      removeNull=True
+                                      )
 
     return CommandResults(
         readable_output=readable_output,
@@ -1473,9 +1489,18 @@ def result_sessionlist(client, args):
             'Hostname': x.get('agent', {}).get('hostname', '')
         })
 
-    readable_output = tableToMarkdown('Session List', output, headers=[
-        'Logon Id', 'Authentication package', 'Logon type', 'Logon type str', 'Session start time', 'Hostname'], removeNull=True
-    )
+    readable_output = tableToMarkdown('Session List',
+                                      output,
+                                      headers=[
+                                          'Logon Id',
+                                          'Authentication package',
+                                          'Logon type',
+                                          'Logon type str',
+                                          'Session start time',
+                                          'Hostname'
+                                      ],
+                                      removeNull=True
+                                      )
 
     return CommandResults(
         readable_output=readable_output,
@@ -1585,9 +1610,20 @@ def result_ioc(client, args):
             'registry_value': x.get('found_registry_value'),
         })
 
-    readable_output = tableToMarkdown('IOC Found List', output, headers=[
-        'type', 'search_value', 'fullpath', 'signed', 'md5', 'registry_path', 'registry_key', 'registry_value'], removeNull=True
-    )
+    readable_output = tableToMarkdown('IOC Found List',
+                                      output,
+                                      headers=[
+                                          'type',
+                                          'search_value',
+                                          'fullpath',
+                                          'signed',
+                                          'md5',
+                                          'registry_path',
+                                          'registry_key',
+                                          'registry_value'
+                                      ],
+                                      removeNull=True
+                                      )
 
     return CommandResults(
         readable_output=readable_output,
@@ -1646,7 +1682,7 @@ def global_result_artifact(client, args, artifact_type):
         })
 
     readable_output = tableToMarkdown(f'{artifact_type} download list', output, headers=[
-                                      'hostname', 'msg', 'size', 'download link'], removeNull=True)
+        'hostname', 'msg', 'size', 'download link'], removeNull=True)
 
     return CommandResults(
         readable_output=readable_output,
@@ -1756,7 +1792,7 @@ def result_artifact_downloadfile(client, args):
         })
 
     readable_output = tableToMarkdown('file download list', output, headers=[
-                                      'hostname', 'msg', 'size', 'download link'], removeNull=True)
+        'hostname', 'msg', 'size', 'download link'], removeNull=True)
 
     return CommandResults(
         readable_output=readable_output,
@@ -1813,12 +1849,12 @@ def get_process_graph(client, args):
 
     data = client.get_process_graph(process_uuid)
 
-
     return CommandResults(
         outputs_prefix='Harfanglab.ProcessGraph',
         outputs_key_field='current_process_id',
         outputs=data
     )
+
 
 def search_whitelist(client, args):
     keyword = args.get('keyword', None)
@@ -1855,20 +1891,18 @@ def add_whitelist(client, args):
     value = args.get('value', None)
 
     message = None
-    outputs = None
     data = None
 
     if target not in ['all', 'sigma', 'yara', 'hlai', 'vt', 'ransom', 'orion', 'glimps', 'cape', 'driver']:
-        message = 'Invalid target. Target must be "all", "sigma", "yara", "hlai", "vt", "ransom", "orion", "glimps", "cape" or "driver"'
+        message = 'Invalid target. ' \
+                  'Target must be "all", "sigma", ' \
+                  '"yara", "hlai", "vt", "ransom", ' \
+                  '"orion", "glimps", "cape" or "driver"'
     elif operator not in ['eq', 'regex', 'contains']:
         message = 'Invalid operator. Operator must be "eq", "regex", or "contains"'
     else:
         data = client.add_whitelist(comment, sigma_rule_id, target, field, case_insensitive, operator, value)
         message = 'Successfully added whitelist'
-
-        outputs = {
-            'Harfanglab.Whitelists(val.id == obj.id)': data
-        }
 
     return CommandResults(
         readable_output=message,
@@ -1885,7 +1919,6 @@ def add_criterion_to_whitelist(client, args):
     value = args.get('value', None)
 
     message = None
-    outputs = None
     data = None
 
     if operator not in ['eq', 'regex', 'contains']:
@@ -1894,10 +1927,6 @@ def add_criterion_to_whitelist(client, args):
 
         data = client.add_criterion_to_whitelist(id, field, case_insensitive, operator, value)
         message = 'Successfully added criterion to whitelist'
-
-        outputs = {
-            'Harfanglab.Whitelists(val.id == obj.id)': data
-        }
 
     return CommandResults(
         readable_output=message,
@@ -1934,8 +1963,7 @@ def hunt_search_hash(client, args):
 
         if len(data['data']) == 0:
             currently_running = str(curr_running) + " (0 are running)"
-            previously_executed = str(prev_runned) + \
-                " (0 were previously executed)"
+            previously_executed = str(prev_runned) + " (0 were previously executed)"
             prefetchs.append({
                 'process associated to hash currently running': currently_running,
                 'process associated to hash was previously executed': previously_executed
@@ -1997,45 +2025,36 @@ def hunt_search_running_process_hash(client, args):
     else:
         data = client.invest_running_process(filehash=filehash)
         prefetchs = []
-        contextData = []
         for x in data['results']:
             prefetchs.append({
                 "Hostname": x['agent']['hostname'],
                 "Domain": x['agent'].get('domainname', ''),
                 "Username": x['username'],
-                "OS": x['agent']['osproducttype'] + " " + x['agent']['osversion'],
+                "OS": x['agent']['osproducttype'],
+                "OS Version": x['agent']['osversion'],
                 "Binary Path": x['binaryinfo']['fullpath'],
+                "Hash": filehash,
                 "Create timestamp": x['create_time'],
                 "Is maybe hollow": x['maybe_hollow']
             })
-#            contextData.append({
-#                'hash': filehash,
-#                "hostname": x['agent']['hostname'],
-#                "domain": x['agent'].get('domainname', ''),
-#                "username": x['username'],
-#                "os": x['agent']['osproducttype'],
-#                "os_version": x['agent']['osversion'],
-#                "path": x['binaryinfo']['fullpath'],
-#                "create_time": x['create_time'],
-#                "maybe_hollow": x['maybe_hollow'],
-#                "binary_info": x['binaryinfo']['binaryinfo']
-#            })
 
         readable_output = tableToMarkdown('War room overview', prefetchs, headers=[
-                                          "Hostname",
-                                          "Domain",
-                                          "Username",
-                                          "OS",
-                                          "Binary Path",
-                                          "Create timestamp",
-                                          "Is maybe hollow"], removeNull=True)
+            "Hostname",
+            "Domain",
+            "Username",
+            "OS",
+            "OS Version",
+            "Binary Path",
+            "Hash",
+            "Create timestamp",
+            "Is maybe hollow"], removeNull=True)
 
         return CommandResults(
-                outputs_prefix='Harfanglab.HuntRunningProcessSearch',
-                outputs_key_field='hash',
-                outputs=prefetchs,
-                readable_output=readable_output
-            )
+            outputs_prefix='Harfanglab.HuntRunningProcessSearch',
+            outputs_key_field='hash',
+            outputs=prefetchs,
+            readable_output=readable_output
+        )
 
 
 def hunt_search_runned_process_hash(client, args):
@@ -2049,38 +2068,36 @@ def hunt_search_runned_process_hash(client, args):
     else:
         data = client.invest_runned_process(filehash=filehash)
         prefetchs = []
-        contextData = []
         for x in data['results']:
             prefetchs.append({
                 "Hostname": x['agent']['hostname'],
                 "Domain": x['agent'].get('domainname', ''),
                 "Username": x['username'],
-                "OS": x['agent']['osproducttype'] + " " + x['agent']['osversion'],
+                "OS": x['agent']['osproducttype'],
+                "OS Version": x['agent']['osversion'],
                 "Binary Path": x['image_name'],
+                "Hash": filehash,
                 "Create timestamp": x.get('pe_timestamp', '')
             })
-#            contextData.append({
-#                'hash': filehash,
-#                "hostname": x['agent']['hostname'],
-#                "domain": x['agent'].get('domainname', ''),
-#                "username": x['username'],
-#                "os": x['agent']['osproducttype'],
-#                "os_version": x['agent']['osversion'],
-#                "path": x['image_name'],
-#                "create_time": x.get('pe_timestamp', ''),
-#                "binary_info": x.get('pe_info', '')
-#            })
 
-        readable_output = tableToMarkdown('War room overview', prefetchs, headers=[
-                                          "Hostname", "Domain", "Username", "OS", "Binary Path", "Create timestamp"],
+        readable_output = tableToMarkdown('War room overview',
+                                          prefetchs,
+                                          headers=[
+                                              "Hostname",
+                                              "Domain",
+                                              "Username",
+                                              "OS",
+                                              "Binary Path",
+                                              "Create timestamp"
+                                          ],
                                           removeNull=True)
 
         return CommandResults(
-                outputs_prefix='Harfanglab.HuntRunnedProcessSearch',
-                outputs_key_field='hash',
-                outputs=prefetchs,
-                readable_output=readable_output
-            )
+            outputs_prefix='Harfanglab.HuntRunnedProcessSearch',
+            outputs_key_field='hash',
+            outputs=prefetchs,
+            readable_output=readable_output
+        )
 
 
 def isolate_endpoint(client, args) -> Dict[str, Any]:
@@ -2088,7 +2105,6 @@ def isolate_endpoint(client, args) -> Dict[str, Any]:
     data = client.isolate_endpoint(agentid)
 
     context = {'Status': False, 'Message': ''}  # type: Dict[str,Any]
-    entryType = entryTypes['note']
 
     if agentid in data['requested']:
         context['Status'] = True
@@ -2160,7 +2176,8 @@ def add_ioc_to_source(client, args):
     else:
         client.add_ioc_to_source(
             ioc_value, ioc_type, ioc_comment, ioc_status, source_id)
-        context['Message'] = f'IOC {ioc_value} of type {ioc_type} added to source {source_name} with {ioc_status} status'
+        context[
+            'Message'] = f'IOC {ioc_value} of type {ioc_type} added to source {source_name} with {ioc_status} status'
 
     return CommandResults(
         outputs=context,
@@ -2287,6 +2304,7 @@ class TelemetryProcesses(Telemetry):
         self._add_hash_parameters(binary_hash)
         return super().telemetry(client, args)
 
+
 class TelemetryDNSResolution(Telemetry):
 
     def __init__(self):
@@ -2314,6 +2332,7 @@ class TelemetryDNSResolution(Telemetry):
 
     def telemetry(self, client, args):
         return super().telemetry(client, args)
+
 
 class TelemetryWindowsAuthentication(Telemetry):
 
@@ -2347,6 +2366,7 @@ class TelemetryWindowsAuthentication(Telemetry):
         self.title = 'Windows Authentications'
         self.telemetry_type = 'windows_authentications'
 
+
 class TelemetryLinuxAuthentication(Telemetry):
 
     def __init__(self):
@@ -2378,6 +2398,7 @@ class TelemetryLinuxAuthentication(Telemetry):
         self.title = 'Linux Authentications'
         self.telemetry_type = 'linux_authentications'
 
+
 class TelemetryMacosAuthentication(Telemetry):
 
     def __init__(self):
@@ -2408,6 +2429,7 @@ class TelemetryMacosAuthentication(Telemetry):
 
         self.title = 'Macos Authentications'
         self.telemetry_type = 'macos_authentications'
+
 
 class TelemetryNetwork(Telemetry):
 
@@ -2524,7 +2546,6 @@ class TelemetryBinary(Telemetry):
         return super().telemetry(client, args)
 
 
-
 def get_function_from_command_name(command):
     commands = {
         'harfanglab-get-endpoint-info': get_endpoint_info,
@@ -2639,8 +2660,9 @@ def get_function_from_command_name(command):
     return commands.get(command)
 
 
-def get_security_events(client, security_event_ids=None, min_created_timestamp=None, min_updated_timestamp=None, alert_status = None, alert_type = None, min_severity = SEVERITIES[0], max_results = None, fields = None, limit = MAX_NUMBER_OF_ALERTS_PER_CALL, ordering = 'alert_time', threat_id = None):
-
+def get_security_events(client, security_event_ids=None, min_created_timestamp=None, min_updated_timestamp=None,
+                        alert_status=None, alert_type=None, min_severity=SEVERITIES[0], max_results=None, fields=None,
+                        limit=MAX_NUMBER_OF_ALERTS_PER_CALL, ordering='alert_time', threat_id=None):
     security_events = []
 
     agents = {}
@@ -2654,24 +2676,24 @@ def get_security_events(client, security_event_ids=None, min_created_timestamp=N
 
             alert = results['alert']
 
-            #Retrieve additional endpoint information
+            # Retrieve additional endpoint information
             groups = []
             agent = None
-            agentid = alert.get('agent', {}).get('agentid',None)
+            agentid = alert.get('agent', {}).get('agentid', None)
             if agentid:
                 if agentid in agents:
                     agent = agents[agentid]
                 else:
                     try:
                         agent = client.get_endpoint_info(agentid)
-                    except Exception as e:
+                    except Exception:
                         agent = None
                     agents[agentid] = agent
 
                 if agent:
-                    for g in agent.get('groups',[]):
+                    for g in agent.get('groups', []):
                         groups.append(g['name'])
-                    alert['agent']['policy_name'] = agent.get('policy',{}).get('name')
+                    alert['agent']['policy_name'] = agent.get('policy', {}).get('name')
                     alert['agent']['groups'] = groups
 
             security_events.append(alert)
@@ -2728,24 +2750,24 @@ def get_security_events(client, security_event_ids=None, min_created_timestamp=N
             alert_id = alert.get('id', None)
             alert['incident_link'] = f'{client._base_url}/security-event/{alert_id}/summary'
 
-            #Retrieve additional endpoint information
+            # Retrieve additional endpoint information
             groups = []
             agent = None
-            agentid = alert.get('agent', {}).get('agentid',None)
+            agentid = alert.get('agent', {}).get('agentid', None)
             if agentid:
                 if agentid in agents:
                     agent = agents[agentid]
                 else:
                     try:
                         agent = client.get_endpoint_info(agentid)
-                    except Exception as e:
+                    except Exception:
                         agent = None
                     agents[agentid] = agent
 
                 if agent:
-                    for g in agent.get('groups',[]):
+                    for g in agent.get('groups', []):
                         groups.append(g['name'])
-                    alert['agent']['policy_name'] = agent.get('policy',{}).get('name')
+                    alert['agent']['policy_name'] = agent.get('policy', {}).get('name')
                     alert['agent']['groups'] = groups
 
             security_events.append(alert)
@@ -2761,6 +2783,7 @@ def get_security_events(client, security_event_ids=None, min_created_timestamp=N
 
     return security_events
 
+
 def enrich_threat(client, threat):
     if not client or not threat or 'id' not in threat:
         return
@@ -2770,15 +2793,16 @@ def enrich_threat(client, threat):
     if not threat_id:
         return
 
-    #Get agents
-    results = client.endpoint_search(threat_id=threat_id, fields=['id', 'hostname', 'domainname', 'osproducttype', 'ostype'])
+    # Get agents
+    results = client.endpoint_search(threat_id=threat_id,
+                                     fields=['id', 'hostname', 'domainname', 'osproducttype', 'ostype'])
     threat['agents'] = results['results']
 
-    #Get users
+    # Get users
     results = client.user_search(threat_id=threat_id)
     threat['impacted_users'] = results['results']
 
-    #Get rules
+    # Get rules
     args = assign_params(threat_id=threat_id, fields='rule_level,rule_name,security_event_count')
     results = client._http_request(
         method='GET',
@@ -2788,8 +2812,9 @@ def enrich_threat(client, threat):
     threat['rules'] = results['results']
 
 
-def get_threats(client, threat_ids=None, min_created_timestamp=None, min_updated_timestamp=None, threat_status = None, min_severity = SEVERITIES[0], max_results = None, fields = None, limit = MAX_NUMBER_OF_ALERTS_PER_CALL, ordering ='last_seen'):
-
+def get_threats(client, threat_ids=None, min_created_timestamp=None, min_updated_timestamp=None, threat_status=None,
+                min_severity=SEVERITIES[0], max_results=None, fields=None, limit=MAX_NUMBER_OF_ALERTS_PER_CALL,
+                ordering='last_seen'):
     threats = []
 
     if not threat_ids:
@@ -2834,7 +2859,6 @@ def get_threats(client, threat_ids=None, min_created_timestamp=None, min_updated
             if results['count'] == 0 or not results['next'] or (max_results and len(threat_ids) >= max_results):
                 break
 
-
     for threat_id in threat_ids:
         threat = client._http_request(
             method='GET',
@@ -2848,6 +2872,7 @@ def get_threats(client, threat_ids=None, min_created_timestamp=None, min_updated
         threats.append(threat)
 
     return threats
+
 
 def get_modified_remote_data(client, args):
     """
@@ -2869,25 +2894,24 @@ def get_modified_remote_data(client, args):
 
     modified_ids_to_mirror = list()
 
-    #Fetch the latest security events and retrieve those whose last update fields is more recent than the last update timestamp
+    # Fetch the latest security events and retrieve those whose last update fields is more recent than the last update timestamp
     sec_events = get_security_events(client,
                                      min_updated_timestamp=last_update_timestamp,
                                      alert_type=args.get('alert_type'),
                                      min_severity=args.get('min_severity', SEVERITIES[0]),
-                                     fields=['id','last_update'],
+                                     fields=['id', 'last_update'],
                                      limit=10000,
                                      ordering='-alert_time')
 
     for sec_event in sec_events:
         modified_ids_to_mirror.append(f'{IncidentType.SEC_EVENT.value}:{sec_event["id"]}')
 
-
     threats = get_threats(client,
-                                     min_updated_timestamp=last_update_timestamp,
-                                     min_severity=args.get('min_severity', SEVERITIES[0]),
-                                     fields=['id'],
-                                     limit=10000,
-                                     ordering='-last_seen')
+                          min_updated_timestamp=last_update_timestamp,
+                          min_severity=args.get('min_severity', SEVERITIES[0]),
+                          fields=['id'],
+                          limit=10000,
+                          ordering='-last_seen')
 
     for threat in threats:
         modified_ids_to_mirror.append(f'{IncidentType.THREAT.value}:{threat["id"]}')
@@ -2895,11 +2919,13 @@ def get_modified_remote_data(client, args):
     demisto.debug(f'All ids to mirror in are: {modified_ids_to_mirror}')
     return GetModifiedRemoteDataResponse(modified_ids_to_mirror)
 
+
 def find_incident_type(remote_incident_id: str):
     if remote_incident_id[0:3] == IncidentType.SEC_EVENT.value:
         return IncidentType.SEC_EVENT
     if remote_incident_id[0:3] == IncidentType.THREAT.value:
         return IncidentType.THREAT
+
 
 def set_updated_object(updated_object: Dict[str, Any], mirrored_data: Dict[str, Any], mirroring_fields: List[str]):
     """
@@ -2932,7 +2958,9 @@ def set_updated_object(updated_object: Dict[str, Any], mirrored_data: Dict[str, 
             elif isinstance(nested_mirrored_data, dict):
                 if nested_mirrored_data.get(field_name_parts[1]):
                     updated_object[field_name_parts[0]] = {}
-                    updated_object[field_name_parts[0]][field_name_parts[1]] = nested_mirrored_data.get(field_name_parts[1])
+                    updated_object[field_name_parts[0]][field_name_parts[1]] = nested_mirrored_data.get(
+                        field_name_parts[1])
+
 
 def get_remote_secevent_data(client, remote_incident_id: str):
     """
@@ -2950,6 +2978,7 @@ def get_remote_secevent_data(client, remote_incident_id: str):
     updated_object: Dict[str, Any] = {'incident_type': 'Hurukai alert'}
     set_updated_object(updated_object, mirrored_data, HFL_SECURITY_EVENT_INCOMING_ARGS)
     return mirrored_data, updated_object
+
 
 def get_remote_threat_data(client, remote_incident_id: str):
     """
@@ -2980,6 +3009,7 @@ def close_in_xsoar(entries: List, remote_incident_id: str, incident_type_name: s
         'ContentsFormat': EntryFormat.JSON
     })
 
+
 def reopen_in_xsoar(entries: List, remote_incident_id: str, incident_type_name: str):
     demisto.debug(f'{incident_type_name} is reopened: {remote_incident_id}')
     entries.append({
@@ -2990,6 +3020,7 @@ def reopen_in_xsoar(entries: List, remote_incident_id: str, incident_type_name: 
         'ContentsFormat': EntryFormat.JSON
     })
 
+
 def set_xsoar_security_events_entries(updated_object: Dict[str, Any], entries: List, remote_incident_id: str):
     if demisto.params().get('close_incident'):
         if updated_object.get('status') == 'Closed':
@@ -2997,12 +3028,14 @@ def set_xsoar_security_events_entries(updated_object: Dict[str, Any], entries: L
         elif updated_object.get('status') in (set(STATUS_XSOAR_TO_HFL.keys()) - {'Closed'}):
             reopen_in_xsoar(entries, remote_incident_id, 'Hurukai alert')
 
+
 def set_xsoar_threats_entries(updated_object: Dict[str, Any], entries: List, remote_incident_id: str):
     if demisto.params().get('close_incident'):
         if updated_object.get('status') == 'Closed':
             close_in_xsoar(entries, remote_incident_id, 'Hurukai threat')
         elif updated_object.get('status') in (set(STATUS_XSOAR_TO_HFL.keys()) - {'Closed'}):
             reopen_in_xsoar(entries, remote_incident_id, 'Hurukai threat')
+
 
 def get_remote_data(client, args):
     """
@@ -3015,7 +3048,6 @@ def get_remote_data(client, args):
     Returns:
         GetRemoteDataResponse object, which contain the security event or threat data to update.
     """
-    demisto.debug(f'In get_remote_data')
     remote_args = GetRemoteDataArgs(args)
     remote_incident_id = remote_args.remote_incident_id
 
@@ -3059,6 +3091,7 @@ def get_remote_data(client, args):
 
         return GetRemoteDataResponse(mirrored_object=mirrored_data, entries=[])
 
+
 def close_in_hfl(delta: Dict[str, Any]) -> bool:
     """
     Closing in the remote system should happen only when both:
@@ -3071,6 +3104,7 @@ def close_in_hfl(delta: Dict[str, Any]) -> bool:
     closing_fields = {'closeReason', 'closingUserId', 'closeNotes'}
     return demisto.params().get('close_in_hfl') and any(field in delta for field in closing_fields)
 
+
 def update_security_event_request(client, ids: List[str], status: str) -> Dict:
     if status not in SECURITY_EVENT_STATUS:
         raise DemistoException(f'HarfangLab EDR Error: '
@@ -3079,6 +3113,7 @@ def update_security_event_request(client, ids: List[str], status: str) -> Dict:
     for eventid in ids:
         client.change_security_event_status(eventid, status)
     return 'OK'
+
 
 def update_threat_request(client, ids: List[str], status: str) -> Dict:
     if status not in SECURITY_EVENT_STATUS:
@@ -3089,9 +3124,8 @@ def update_threat_request(client, ids: List[str], status: str) -> Dict:
         client.change_threat_status(threatid, status)
     return 'OK'
 
+
 def update_remote_security_event(client, delta, inc_status: IncidentStatus, detection_id: str) -> str:
-    demisto.debug(
-        f'Delta {delta}')
 
     if inc_status == IncidentStatus.DONE and close_in_hfl(delta):
         demisto.debug(f'Closing security event with remote ID {detection_id} in remote system.')
@@ -3099,14 +3133,17 @@ def update_remote_security_event(client, delta, inc_status: IncidentStatus, dete
 
     # status field in HarfangLab EDR is mapped to State field in XSOAR
     elif inc_status == IncidentStatus.PENDING:
-        demisto.debug(f'Security Event with remote ID {detection_id} status will change to "{delta.get("status")}" in remote system.')
+        demisto.debug(
+            f'Security Event with remote ID {detection_id} status will change to "{delta.get("status")}" in remote system.')
         return str(update_security_event_request(client, [detection_id[4:]], 'new'))
 
     elif inc_status == IncidentStatus.ACTIVE:
-        demisto.debug(f'Security Event with remote ID {detection_id} status will change to "{delta.get("status")}" in remote system.')
+        demisto.debug(
+            f'Security Event with remote ID {detection_id} status will change to "{delta.get("status")}" in remote system.')
         return str(update_security_event_request(client, [detection_id[4:]], 'investigating'))
 
     return ''
+
 
 def update_remote_threat(client, delta, inc_status: IncidentStatus, detection_id: str) -> str:
     demisto.debug(
@@ -3121,11 +3158,13 @@ def update_remote_threat(client, delta, inc_status: IncidentStatus, detection_id
 
     # status field in HarfangLab EDR is mapped to State field in XSOAR
     elif inc_status == IncidentStatus.PENDING:
-        demisto.debug(f'Threat with remote ID {detection_id} status will change to "{delta.get("status")}" in remote system.')
+        demisto.debug(
+            f'Threat with remote ID {detection_id} status will change to "{delta.get("status")}" in remote system.')
         return str(update_threat_request(client, [detection_id[4:]], 'new'))
 
     elif inc_status == IncidentStatus.ACTIVE:
-        demisto.debug(f'Threat with remote ID {detection_id} status will change to "{delta.get("status")}" in remote system.')
+        demisto.debug(
+            f'Threat with remote ID {detection_id} status will change to "{delta.get("status")}" in remote system.')
         return str(update_threat_request(client, [detection_id[4:]], 'investigating'))
 
     return ''
@@ -3169,13 +3208,14 @@ def update_remote_system(client, args):
 
         else:
             pass
-            #demisto.debug(f"Skipping updating remote security event or threat {remote_incident_id} as it didn't change.")
+            # demisto.debug(f"Skipping updating remote security event or threat {remote_incident_id} as it didn't change.")
 
     except Exception as e:
         demisto.error(f'Error in HarfangLab EDR outgoing mirror for security event or threat {remote_incident_id}. '
                       f'Error message: {str(e)}')
 
     return remote_incident_id
+
 
 def get_mapping_fields(client, args) -> GetMappingFieldsResponse:
     """
@@ -3196,6 +3236,7 @@ def get_mapping_fields(client, args) -> GetMappingFieldsResponse:
     mapping_response.add_scheme_type(threat_type_scheme)
 
     return mapping_response
+
 
 def main():
     verify = not demisto.params().get('insecure', False)
