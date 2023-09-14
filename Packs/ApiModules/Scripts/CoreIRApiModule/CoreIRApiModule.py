@@ -3864,7 +3864,8 @@ def list_risky_users_or_host_command(client: CoreClient, command: str, args: dic
             - limit [str]: Specifying the maximum number of risky users to return.
 
     Returns:
-        A CommandResults object, in case the user was not found, an appropriate message will be returend.
+        A CommandResults object, in case the user was not found, an appropriate message will be returned.
+        when specifying a specific user/host that its risk is 0, will return only readable output
 
     Raises:
         ValueError: If the API connection fails.
@@ -3909,6 +3910,8 @@ def list_risky_users_or_host_command(client: CoreClient, command: str, args: dic
             else:
                 raise
 
+        if arg_to_number(outputs.get("score")) == 0:
+            return CommandResults(readable_output=f"The {id_key} {id_} is not risky")
         table_for_markdown = [parse_risky_users_or_hosts(outputs, *table_headers)]  # type: ignore[arg-type]
 
     else:
