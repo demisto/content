@@ -1,0 +1,10 @@
+[
+    {
+        "type": "url",
+        "value": "http://208.67.105.179:80/robinzx.exe",
+        "root_sha1": "fb5608fa03de204a12fe1e9e5275e4a682107471",
+        "risk_level": "high",
+        "expired_date_time": "2021-06-07T03:08:40Z",
+        "analysis_completion_date_time": "2023-09-13T22:28:45Z"
+    }
+]

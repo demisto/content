@@ -43,21 +43,12 @@ ENDPOINT_IDENTIFIERS = "endpoint_identifiers"
 PROCESS_IDENTIFIERS = "process_identifiers"
 COLLECT_FILES = "collect_files"
 BLOCK = "block"
+URL = "url"
 URLS = "urls"
 INTERVAL_IN_SECONDS = "interval_in_seconds"
-BLOCK_OBJECTS = "block_objects"
-ADD_BLOCKLIST = "Add To Blocklist."
-REMOVE_BLOCKLIST = "Remove from Blocklist."
-COLLECT_FILE = "Collect Forensic File."
-ISOLATE_ENDPOINT = "Isolate Endpoint."
-RESTORE_ENDPOINT = "Restore Endpoint."
-TERMINATE_PROCESS = "Terminate Process."
-ADD_EXCEPTION_LIST = "Add To Exception List."
-DELETE_EXCEPTION_LIST = "Delete from Exception List."
 MEDIUM = "medium"
 NAME = "name"
 PATH = "path"
-URL = "url"
 POST = "post"
 GET = "get"
 PATCH = "patch"
@@ -69,33 +60,20 @@ POLL_TIME_SEC = "poll_time_sec"
 POLLING = "polling"
 ARGUMENTS = "arguments"
 ACCOUNT_NAME = "account_name"
-AUTHORIZATION = "Authorization"
-BEARER = "Bearer "
-CONTENT_TYPE_JSON = "application/json"
+INTEGRATION_RELIABILITY = "integrationReliability"
 EMPTY_STRING = ""
 EMPTY_BYTE = b""
-ASCII = "ascii"
 API_TOKEN = "apikey"
 AGENT_GUID = "agent_guid"
-VALUE_TYPE = "value_type"
-TARGET_VALUE = "target_value"
 DESCRIPTION = "description"
 MESSAGE_ID = "message_id"
 MAILBOX = "mailbox"
 APP_NAME = "Trend Micro Vision One V3"
-FIELD = "field"
 ENDPOINT = "endpoint"
 QUERY_OP = "query_op"
 ENTRY_ID = "entry_id"
-DATA = "data"
-TYPE = "type"
-VALUE = "value"
 FILE_SHA1 = "file_sha1"
-CRITERIA = "criteria"
 SUCCEEDED = "succeeded"
-EXCEPTION_LIST = "exceptionList"
-SUSPICIOUS_LIST = "suspiciousObjectList"
-LAST_MODIFIED = "lastModified"
 SCAN_ACTION = "scan_action"
 RISK_LEVEL = "risk_level"
 EXPIRY_DAYS = "expiry_days"
@@ -109,17 +87,6 @@ QUEUED = "queued"
 RUNNING = "running"
 WAITFORAPPROVAL = "waitForApproval"
 OS_TYPE = "os"
-FAILED_CONNECTIVITY = "Connectivity failed!"
-PASSED_CONNECTIVITY = "Connectivity Passed!"
-ADD_SUSPICIOUS = "Add to Suspicious List."
-DELETE_SUSPICIOUS = "Delete from Suspicious List."
-QUARANTINE_EMAIL = "Quarantine Email Message."
-DELETE_EMAIL = "Delete Email Message."
-RESTORE_EMAIL = "Restore Email Message."
-ENABLE_ACCOUNT = "Enable User Account."
-DISABLE_ACCOUNT = "Disable User Account."
-SIGN_OUT_ACCOUNT = "Sign Out Account."
-FORCE_PASSWORD_RESET = "Force Password Reset."
 FILEPATH = "filepath"
 FILE_PATH = "file_path"
 FILE_NAME = "filename"
@@ -130,18 +97,29 @@ CONTENT = "content"
 STATUS = "status"
 SUBMISSION_ID = "submission_id"
 UNIQUE_ID = "unique_id"
-
 # Error Messages
 COMMAND_CALLED = "Command being called is {command}"
-# General Messages:
-
-# Workbench Statuses
-NEW = "New"
-CLOSED = "Closed"
-IN_PROGRESS = "In Progress"
-TRUE_POSITIVE = "False Positive"
-FALSE_POSITIVE = "False Positive"
-BENIGN_TRUE_POSITIVE = "True Positive"
+# Action Descriptions
+BLOCK_OBJECTS = "block_objects"
+ADD_BLOCKLIST = "Add To Blocklist."
+DELETE_EMAIL = "Delete Email Message."
+ISOLATE_ENDPOINT = "Isolate Endpoint."
+RESTORE_ENDPOINT = "Restore Endpoint."
+SIGN_OUT_ACCOUNT = "Sign Out Account."
+COLLECT_FILE = "Collect Forensic File."
+ENABLE_ACCOUNT = "Enable User Account."
+RESTORE_EMAIL = "Restore Email Message."
+TERMINATE_PROCESS = "Terminate Process."
+DISABLE_ACCOUNT = "Disable User Account."
+ADD_SUSPICIOUS = "Add to Suspicious List."
+REMOVE_BLOCKLIST = "Remove from Blocklist."
+FAILED_CONNECTIVITY = "Connectivity failed!"
+PASSED_CONNECTIVITY = "Connectivity Passed!"
+ADD_EXCEPTION_LIST = "Add To Exception List."
+QUARANTINE_EMAIL = "Quarantine Email Message."
+FORCE_PASSWORD_RESET = "Force Password Reset."
+DELETE_SUSPICIOUS = "Delete from Suspicious List."
+DELETE_EXCEPTION_LIST = "Delete from Exception List."
 # Table Heading
 TABLE_ENABLE_USER_ACCOUNT = "Enable user account "
 TABLE_DISABLE_USER_ACCOUNT = "Disable user account "
@@ -226,38 +204,38 @@ FETCH_INCIDENTS = "fetch-incidents"
 TEST_MODULE = "test-module"
 
 table_name = {
-    ENABLE_USER_ACCOUNT_COMMAND: TABLE_ENABLE_USER_ACCOUNT,
-    DISABLE_USER_ACCOUNT_COMMAND: TABLE_DISABLE_USER_ACCOUNT,
+    ADD_NOTE_COMMAND: TABLE_ADD_NOTE,
+    COLLECT_FILE_COMMAND: TABLE_COLLECT_FILE,
+    UPDATE_STATUS_COMMAND: TABLE_UPDATE_STATUS,
     FORCE_SIGN_OUT_COMMAND: TABLE_FORCE_SIGN_OUT,
-    FORCE_PASSWORD_RESET_COMMAND: TABLE_FORCE_PASSWORD_RESET,
     ADD_BLOCKLIST_COMMAND: TABLE_ADD_TO_BLOCKLIST,
-    REMOVE_BLOCKLIST_COMMAND: TABLE_REMOVE_FROM_BLOCKLIST,
-    QUARANTINE_EMAIL_COMMAND: TABLE_QUARANTINE_EMAIL_MESSAGE,
-    DELETE_EMAIL_COMMAND: TABLE_DELETE_EMAIL_MESSAGE,
-    RESTORE_EMAIL_COMMAND: TABLE_RESTORE_EMAIL_MESSAGE,
+    GET_ENDPOINT_INFO_COMMAND: TABLE_ENDPOINT_INFO,
     ISOLATE_ENDPOINT_COMMAND: TABLE_ISOLATE_ENDPOINT,
     RESTORE_ENDPOINT_COMMAND: TABLE_RESTORE_ENDPOINT,
+    DELETE_EMAIL_COMMAND: TABLE_DELETE_EMAIL_MESSAGE,
+    CHECK_TASK_STATUS_COMMAND: TABLE_CHECK_TASK_STATUS,
+    GET_ALERT_DETAILS_COMMAND: TABLE_GET_ALERT_DETAILS,
+    RESTORE_EMAIL_COMMAND: TABLE_RESTORE_EMAIL_MESSAGE,
     TERMINATE_PROCESS_COMMAND: TABLE_TERMINATE_PROCESS,
     ADD_EXCEPTION_LIST_COMMAND: TABLE_ADD_EXCEPTION_LIST,
-    DELETE_EXCEPTION_LIST_COMMAND: TABLE_DELETE_EXCEPTION_LIST,
+    REMOVE_BLOCKLIST_COMMAND: TABLE_REMOVE_FROM_BLOCKLIST,
+    FILE_TO_SANDBOX_COMMAND: TABLE_SUBMIT_FILE_TO_SANDBOX,
+    URLS_TO_SANDBOX_COMMAND: TABLE_SUBMIT_URLS_TO_SANDBOX,
+    ENABLE_USER_ACCOUNT_COMMAND: TABLE_ENABLE_USER_ACCOUNT,
     ADD_SUSPICIOUS_LIST_COMMAND: TABLE_ADD_SUSPICIOUS_LIST,
+    DISABLE_USER_ACCOUNT_COMMAND: TABLE_DISABLE_USER_ACCOUNT,
+    FORCE_PASSWORD_RESET_COMMAND: TABLE_FORCE_PASSWORD_RESET,
+    QUARANTINE_EMAIL_COMMAND: TABLE_QUARANTINE_EMAIL_MESSAGE,
+    DELETE_EXCEPTION_LIST_COMMAND: TABLE_DELETE_EXCEPTION_LIST,
     DELETE_SUSPICIOUS_LIST_COMMAND: TABLE_DELETE_SUSPICIOUS_LIST,
     GET_FILE_ANALYSIS_STATUS_COMMAND: TABLE_GET_FILE_ANALYSIS_STATUS,
     GET_FILE_ANALYSIS_RESULT_COMMAND: TABLE_GET_FILE_ANALYSIS_RESULT,
-    COLLECT_FILE_COMMAND: TABLE_COLLECT_FILE,
-    DOWNLOAD_COLLECTED_FILE_COMMAND: TABLE_COLLECTED_FORENSIC_FILE_DOWNLOAD_INFORMATION,
     DOWNLOAD_ANALYSIS_REPORT_COMMAND: TABLE_DOWNLOAD_ANALYSIS_REPORT,
+    FILE_ENTRY_TO_SANDBOX_COMMAND: TABLE_SUBMIT_FILE_ENTRY_TO_SANDBOX,
+    SANDBOX_SUBMISSION_POLLING_COMMAND: TABLE_SANDBOX_SUBMISSION_POLLING,
     DOWNLOAD_INVESTIGATION_PACKAGE_COMMAND: TABLE_DOWNLOAD_INVESTIGATION_PACKAGE,
     DOWNLOAD_SUSPICIOUS_OBJECT_LIST_COMMAND: TABLE_DOWNLOAD_SUSPICIOUS_OBJECT_LIST,
-    FILE_TO_SANDBOX_COMMAND: TABLE_SUBMIT_FILE_TO_SANDBOX,
-    FILE_ENTRY_TO_SANDBOX_COMMAND: TABLE_SUBMIT_FILE_ENTRY_TO_SANDBOX,
-    URLS_TO_SANDBOX_COMMAND: TABLE_SUBMIT_URLS_TO_SANDBOX,
-    SANDBOX_SUBMISSION_POLLING_COMMAND: TABLE_SANDBOX_SUBMISSION_POLLING,
-    CHECK_TASK_STATUS_COMMAND: TABLE_CHECK_TASK_STATUS,
-    GET_ENDPOINT_INFO_COMMAND: TABLE_ENDPOINT_INFO,
-    UPDATE_STATUS_COMMAND: TABLE_UPDATE_STATUS,
-    ADD_NOTE_COMMAND: TABLE_ADD_NOTE,
-    GET_ALERT_DETAILS_COMMAND: TABLE_GET_ALERT_DETAILS,
+    DOWNLOAD_COLLECTED_FILE_COMMAND: TABLE_COLLECTED_FORENSIC_FILE_DOWNLOAD_INFORMATION,
 }
 # disable insecure warnings
 urllib3.disable_warnings()
@@ -319,20 +297,24 @@ class Client(BaseClient):
         if _is_pytmv1_error(resp.result_code):
             return_error(message=f"{unwrap(resp.error).message}", error=str(resp.error))
         # Assign values on a successful call
-        message = {
-            "taskId": unwrap(resp.response).id,
-            "taskStatus": unwrap(resp.response).status,
-            "createdDateTime": unwrap(resp.response).created_date_time,
-            "action": unwrap(resp.response).action,
-            "description": unwrap(resp.response).description,
-            "account": unwrap(resp.response).account,
-        }
+        message = unwrap(resp.response).dict()
+        # message = {
+        #     "taskId": unwrap(resp.response).id,
+        #     "taskStatus": unwrap(resp.response).status,
+        #     "createdDateTime": unwrap(resp.response).created_date_time,
+        #     "action": unwrap(resp.response).action,
+        #     "description": unwrap(resp.response).description,
+        #     "account": unwrap(resp.response).account,
+        # }
         return CommandResults(
             readable_output=tableToMarkdown(
-                table_name[CHECK_TASK_STATUS_COMMAND], message, removeNull=True
+                table_name[CHECK_TASK_STATUS_COMMAND],
+                message,
+                headerTransform=string_to_table_header,
+                removeNull=True,
             ),
             outputs_prefix="VisionOne.Task_Status",
-            outputs_key_field="taskId",
+            outputs_key_field="id",
             outputs=message,
         )
 
@@ -382,10 +364,10 @@ class Client(BaseClient):
             )
             message = {
                 "status_code": 200,
-                "taskStatus": task_status,
+                "status": task_status,
                 "report_id": unwrap(resp.response).id,
                 "type": unwrap(resp.response).type,
-                "digest": unwrap(resp.response).digest,
+                "digest": unwrap(resp.response).digest.dict(),
                 "arguments": unwrap(resp.response).arguments,
                 "analysis_completion_time": unwrap(
                     resp.response
@@ -402,14 +384,17 @@ class Client(BaseClient):
             }
         else:
             message = {
-                "taskStatus": task_status,
+                "status": task_status,
                 "report_id": task_id,
                 "code": unwrap(resp.response).status,
                 "message": unwrap(resp.response).action,
             }
         return CommandResults(
             readable_output=tableToMarkdown(
-                table_name[SANDBOX_SUBMISSION_POLLING_COMMAND], message, removeNull=True
+                table_name[SANDBOX_SUBMISSION_POLLING_COMMAND],
+                message,
+                headerTransform=string_to_table_header,
+                removeNull=True,
             ),
             outputs_prefix="VisionOne.Sandbox_Submission_Polling",
             outputs_key_field="report_id",
@@ -575,7 +560,7 @@ def run_polling_command(
         "succeeded",
         "waitForApproval",
     ]
-    if command_results.outputs.get("taskStatus") not in statuses:
+    if command_results.get(STATUS) not in statuses:
         # schedule next poll
         polling_args = {
             task_id: task_id,
@@ -658,11 +643,14 @@ def enable_or_disable_user_account(
     :rtype: ``dict`
     """
     # Required Params
-    account_identifiers: List[Dict[str, str]] = json.loads(
-        args.get(ACCOUNT_IDENTIFIERS, [{}])
-    )
+    # account_identifiers: List[Dict[str, str]] = json.loads(
+    #     args.get("account_identifiers", [{}])
+    # )
+    account_identifiers: List[Dict[str, str]] = []
+    for account in args["account_identifiers"]:
+        account_identifiers.append(account)
     account_tasks: List[AccountTask] = []
-    message: Dict[str, Any] = {}
+    message: List[Dict[str, Any]] = []
     # Initialize pytmv1 client
     v1_client = _get_client(APP_NAME, client.api_key, client.base_url)
 
@@ -681,9 +669,7 @@ def enable_or_disable_user_account(
         if _is_pytmv1_error(resp.result_code):
             return_error(message=f"{unwrap(resp.errors)}", error=str(resp.errors))
         # Add results to message to be sent to the War Room
-        message = {
-            "multi_response": [item.dict() for item in unwrap(resp.response).items]
-        }
+        message = [item.dict() for item in unwrap(resp.response).items]
 
     if command == DISABLE_USER_ACCOUNT_COMMAND:
         # Create account task list
@@ -700,14 +686,17 @@ def enable_or_disable_user_account(
         if _is_pytmv1_error(resp.result_code):
             return_error(message=f"{unwrap(resp.errors)}", error=str(resp.errors))
         # Add results to message to be sent to the War Room
-        message = {
-            "multi_response": [item.dict() for item in unwrap(resp.response).items]
-        }
+        message = [item.dict() for item in unwrap(resp.response).items]
 
     return CommandResults(
-        readable_output=tableToMarkdown(table_name[command], message, removeNull=True),
+        readable_output=tableToMarkdown(
+            table_name[command],
+            message,
+            headerTransform=string_to_table_header,
+            removeNull=True,
+        ),
         outputs_prefix="VisionOne.User_Account",
-        outputs_key_field="multi_response",
+        outputs_key_field="task_id",
         outputs=message,
     )
 
@@ -727,11 +716,14 @@ def force_sign_out(client: Client, args: Dict[str, Any]) -> Union[str, CommandRe
     :rtype: ``dict`
     """
     # Required Params
-    account_identifiers: List[Dict[str, str]] = json.loads(
-        args.get(ACCOUNT_IDENTIFIERS, [{}])
-    )
+    # account_identifiers: List[Dict[str, str]] = json.loads(
+    #     args.get(ACCOUNT_IDENTIFIERS, [{}])
+    # )
+    account_identifiers: List[Dict[str, str]] = []
+    for account in args["account_identifiers"]:
+        account_identifiers.append(account)
     account_tasks: List[AccountTask] = []
-    message: Dict[str, Any] = {}
+    message: List[Dict[str, Any]] = []
     # Initialize pytmv1 client
     v1_client = _get_client(APP_NAME, client.api_key, client.base_url)
     # Create account task list
@@ -748,14 +740,17 @@ def force_sign_out(client: Client, args: Dict[str, Any]) -> Union[str, CommandRe
     if _is_pytmv1_error(resp.result_code):
         return_error(message=f"{unwrap(resp.errors)}", error=str(resp.errors))
     # Add results to message to be sent to the War Room
-    message = {"multi_response": [item.dict() for item in unwrap(resp.response).items]}
+    message = [item.dict() for item in unwrap(resp.response).items]
 
     return CommandResults(
         readable_output=tableToMarkdown(
-            table_name[FORCE_SIGN_OUT_COMMAND], message, removeNull=True
+            table_name[FORCE_SIGN_OUT_COMMAND],
+            message,
+            headerTransform=string_to_table_header,
+            removeNull=True,
         ),
         outputs_prefix="VisionOne.Force_Sign_Out",
-        outputs_key_field="multi_response",
+        outputs_key_field="task_id",
         outputs=message,
     )
 
@@ -778,11 +773,14 @@ def force_password_reset(
     :rtype: ``dict`
     """
     # Required Params
-    account_identifiers: List[Dict[str, str]] = json.loads(
-        args.get(ACCOUNT_IDENTIFIERS, [{}])
-    )
+    # account_identifiers: List[Dict[str, str]] = json.loads(
+    #     args.get(ACCOUNT_IDENTIFIERS, [{}])
+    # )
+    account_identifiers: List[Dict[str, str]] = []
+    for account in args["account_identifiers"]:
+        account_identifiers.append(account)
     account_tasks: List[AccountTask] = []
-    message: Dict[str, Any] = {}
+    message: List[Dict[str, Any]] = []
     # Initialize pytmv1 client
     v1_client = _get_client(APP_NAME, client.api_key, client.base_url)
     # Create account task list
@@ -799,14 +797,17 @@ def force_password_reset(
     if _is_pytmv1_error(resp.result_code):
         return_error(message=f"{unwrap(resp.errors)}", error=str(resp.errors))
     # Add results to message to be sent to the War Room
-    message = {"multi_response": [item.dict() for item in unwrap(resp.response).items]}
+    message = [item.dict() for item in unwrap(resp.response).items]
 
     return CommandResults(
         readable_output=tableToMarkdown(
-            table_name[FORCE_PASSWORD_RESET_COMMAND], message, removeNull=True
+            table_name[FORCE_PASSWORD_RESET_COMMAND],
+            message,
+            headerTransform=string_to_table_header,
+            removeNull=True,
         ),
         outputs_prefix="VisionOne.Force_Password_Reset",
-        outputs_key_field="multi_response",
+        outputs_key_field="task_id",
         outputs=message,
     )
 
@@ -833,7 +834,6 @@ def get_endpoint_info(
     endpoint_list = [value.strip() for value in listify_endpoints]
     query_op = args.get(QUERY_OP, EMPTY_STRING)
     new_endpoint_data: List[Any] = []
-    endpoint_data: Dict[str, Any] = {}
     message: List[Dict[str, Any]] = []
     # Choose QueryOp Enum based on user choice
     if query_op.lower() == "or":
@@ -865,10 +865,13 @@ def get_endpoint_info(
 
     return CommandResults(
         readable_output=tableToMarkdown(
-            table_name[GET_ENDPOINT_INFO_COMMAND], endpoint_data, removeNull=True
+            table_name[GET_ENDPOINT_INFO_COMMAND],
+            message,
+            headerTransform=string_to_table_header,
+            removeNull=True,
         ),
         outputs_prefix="VisionOne.Endpoint_Info",
-        outputs_key_field="multi_response",
+        outputs_key_field="endpoint_name",
         outputs=message,
     )
 
@@ -895,9 +898,11 @@ def add_or_remove_from_block_list(
     :rtype: ``dict`
     """
     # Required Params
-    block_objects: List[Dict[str, str]] = json.loads(args.get(BLOCK_OBJECTS, [{}]))
+    block_objects: List[Dict[str, str]] = []
+    for block in args[BLOCK_OBJECTS]:
+        block_objects.append(block)
     block_tasks: List[ObjectTask] = []
-    message: Dict[str, Any] = {}
+    message: List[Dict[str, Any]] = []
     # Initialize pytmv1 client
     v1_client = _get_client(APP_NAME, client.api_key, client.base_url)
     if command == ADD_BLOCKLIST_COMMAND:
@@ -916,9 +921,7 @@ def add_or_remove_from_block_list(
         if _is_pytmv1_error(resp.result_code):
             return_error(message=f"{unwrap(resp.errors)}", error=str(resp.errors))
         # Add results to message to be sent to the War Room
-        message = {
-            "multi_response": [item.dict() for item in unwrap(resp.response).items]
-        }
+        message = [item.dict() for item in unwrap(resp.response).items]
 
     if command == REMOVE_BLOCKLIST_COMMAND:
         # Create unblock task list
@@ -936,14 +939,17 @@ def add_or_remove_from_block_list(
         if _is_pytmv1_error(resp.result_code):
             return_error(message=f"{unwrap(resp.errors)}", error=str(resp.errors))
         # Add results to message to be sent to the War Room
-        message = {
-            "multi_response": [item.dict() for item in unwrap(resp.response).items]
-        }
+        message = [item.dict() for item in unwrap(resp.response).items]
 
     return CommandResults(
-        readable_output=tableToMarkdown(table_name[command], message, removeNull=True),
+        readable_output=tableToMarkdown(
+            table_name[command],
+            message,
+            headerTransform=string_to_table_header,
+            removeNull=True,
+        ),
         outputs_prefix="VisionOne.BlockList",
-        outputs_key_field="multi_response",
+        outputs_key_field="task_id",
         outputs=message,
     )
 
@@ -1012,10 +1018,10 @@ def quarantine_or_delete_email_message(
     :rtype: ``dict`
     """
     # Required Params
-    email_identifiers: List[Dict[str, str]] = json.loads(
-        args.get(EMAIL_IDENTIFIERS, [{}])
-    )
-    message: Dict[str, Any] = {}
+    email_identifiers: List[Dict[str, str]] = []
+    for email in args[EMAIL_IDENTIFIERS]:
+        email_identifiers.append(email)
+    message: List[Dict[str, Any]] = []
     email_tasks: List[EmailMessageIdTask | EmailMessageUIdTask] = []
     # Initialize pytmv1 client
     v1_client = _get_client(APP_NAME, client.api_key, client.base_url)
@@ -1045,9 +1051,7 @@ def quarantine_or_delete_email_message(
             return_error(message=f"{unwrap(resp.errors)}", error=str(resp.errors))
 
         # Add results to message to be sent to the War Room
-        message = {
-            "multi_response": [item.dict() for item in unwrap(resp.response).items]
-        }
+        message = [item.dict() for item in unwrap(resp.response).items]
 
     if command == DELETE_EMAIL_COMMAND:
         # Create email task list
@@ -1073,20 +1077,23 @@ def quarantine_or_delete_email_message(
         if _is_pytmv1_error(resp.result_code):
             return_error(message=f"{unwrap(resp.errors)}", error=str(resp.errors))
         # Add results to message to be sent to the War Room
-        message = {
-            "multi_response": [item.dict() for item in unwrap(resp.response).items]
-        }
+        message = [item.dict() for item in unwrap(resp.response).items]
 
     return CommandResults(
-        readable_output=tableToMarkdown(table_name[command], message, removeNull=True),
+        readable_output=tableToMarkdown(
+            table_name[command],
+            message,
+            headerTransform=string_to_table_header,
+            removeNull=True,
+        ),
         outputs_prefix="VisionOne.Email",
-        outputs_key_field="multi_response",
+        outputs_key_field="task_id",
         outputs=message,
     )
 
 
 def restore_email_message(
-    client: Client, command: str, args: Dict[str, Any]
+    client: Client, args: Dict[str, Any]
 ) -> Union[str, CommandResults]:
     """
     Restores a quarantined email message and
@@ -1107,10 +1114,10 @@ def restore_email_message(
     :rtype: ``dict`
     """
     # Required Params
-    email_identifiers: List[Dict[str, str]] = json.loads(
-        args.get(EMAIL_IDENTIFIERS, [{}])
-    )
-    message: Dict[str, Any] = {}
+    email_identifiers: List[Dict[str, str]] = []
+    for email in args[EMAIL_IDENTIFIERS]:
+        email_identifiers.append(email)
+    message: List[Dict[str, Any]] = []
     email_tasks: List[EmailMessageIdTask | EmailMessageUIdTask] = []
     # Initialize pytmv1 client
     v1_client = _get_client(APP_NAME, client.api_key, client.base_url)
@@ -1138,14 +1145,17 @@ def restore_email_message(
         if _is_pytmv1_error(resp.result_code):
             return_error(message=f"{unwrap(resp.errors)}", error=str(resp.errors))
         # Add results to message to be sent to the War Room
-        message = {
-            "multi_response": [item.dict() for item in unwrap(resp.response).items]
-        }
+        message = [item.dict() for item in unwrap(resp.response).items]
 
     return CommandResults(
-        readable_output=tableToMarkdown(table_name[command], message, removeNull=True),
+        readable_output=tableToMarkdown(
+            table_name[RESTORE_EMAIL_COMMAND],
+            message,
+            headerTransform=string_to_table_header,
+            removeNull=True,
+        ),
         outputs_prefix="VisionOne.Email",
-        outputs_key_field="multi_response",
+        outputs_key_field="task_id",
         outputs=message,
     )
 
@@ -1172,10 +1182,10 @@ def isolate_or_restore_connection(
     :rtype: ``dict`
     """
     # Required Params
-    endpoint_identifiers: List[Dict[str, str]] = json.loads(
-        args.get(ENDPOINT_IDENTIFIERS, [{}])
-    )
-    message: Dict[str, Any] = {}
+    endpoint_identifiers: List[Dict[str, str]] = []
+    for endpoint in args[ENDPOINT_IDENTIFIERS]:
+        endpoint_identifiers.append(endpoint)
+    message: List[Dict[str, Any]] = []
     endpt_tasks: List[EndpointTask] = []
     # Initialize pytmv1 client
     v1_client = _get_client(APP_NAME, client.api_key, client.base_url)
@@ -1203,9 +1213,7 @@ def isolate_or_restore_connection(
         if _is_pytmv1_error(resp.result_code):
             return_error(message=f"{unwrap(resp.errors)}", error=str(resp.errors))
         # Add results to message to be sent to the War Room
-        message = {
-            "multi_response": [item.dict() for item in unwrap(resp.response).items]
-        }
+        message = [item.dict() for item in unwrap(resp.response).items]
 
     if command == RESTORE_ENDPOINT_COMMAND:
         # Create endpoint task list
@@ -1230,14 +1238,17 @@ def isolate_or_restore_connection(
         if _is_pytmv1_error(resp.result_code):
             return_error(message=f"{unwrap(resp.errors)}", error=str(resp.errors))
         # Add results to message to be sent to the War Room
-        message = {
-            "multi_response": [item.dict() for item in unwrap(resp.response).items]
-        }
+        message = [item.dict() for item in unwrap(resp.response).items]
 
     return CommandResults(
-        readable_output=tableToMarkdown(table_name[command], message, removeNull=True),
+        readable_output=tableToMarkdown(
+            table_name[command],
+            message,
+            headerTransform=string_to_table_header,
+            removeNull=True,
+        ),
         outputs_prefix="VisionOne.Endpoint_Connection",
-        outputs_key_field="multi_response",
+        outputs_key_field="task_id",
         outputs=message,
     )
 
@@ -1259,17 +1270,17 @@ def terminate_process(
     :rtype: ``dict`
     """
     # Required Params
-    process_identifiers: List[Dict[str, str]] = json.loads(
-        args.get(PROCESS_IDENTIFIERS, [{}])
-    )
+    process_identifiers: List[Dict[str, str]] = []
+    for process in args[PROCESS_IDENTIFIERS]:
+        process_identifiers.append(process)
     process_tasks: List[ProcessTask] = []
-    message: Dict[str, Any] = {}
+    message: List[Dict[str, Any]] = []
     # Initialize pytmv1 client
     v1_client = _get_client(APP_NAME, client.api_key, client.base_url)
 
     # Create process task list
     for process in process_identifiers:
-        if process.get("endpoint"):
+        if process.get(ENDPOINT):
             process_tasks.append(
                 ProcessTask(
                     endpoint_name=process[ENDPOINT],
@@ -1293,14 +1304,17 @@ def terminate_process(
     if _is_pytmv1_error(resp.result_code):
         return_error(message=f"{unwrap(resp.errors)}", error=str(resp.errors))
     # Add results to message to be sent to the War Room
-    message = {"multi_response": [item.dict() for item in unwrap(resp.response).items]}
+    message = [item.dict() for item in unwrap(resp.response).items]
 
     return CommandResults(
         readable_output=tableToMarkdown(
-            TABLE_TERMINATE_PROCESS, message, removeNull=True
+            TABLE_TERMINATE_PROCESS,
+            message,
+            headerTransform=string_to_table_header,
+            removeNull=True,
         ),
         outputs_prefix="VisionOne.Terminate_Process",
-        outputs_key_field="multi_response",
+        outputs_key_field="task_id",
         outputs=message,
     )
 
@@ -1327,8 +1341,9 @@ def add_or_delete_from_exception_list(
     :rtype: ``dict`
     """
     # Required Params
-    block_objects: List[Dict[str, str]] = json.loads(args.get(BLOCK_OBJECTS, [{}]))
-
+    block_objects: List[Dict[str, str]] = []
+    for block in args[BLOCK_OBJECTS]:
+        block_objects.append(block)
     excp_tasks: List[ObjectTask] = []
     message: Dict[str, Any] = {}
     # Initialize pytmv1 client
@@ -1378,7 +1393,12 @@ def add_or_delete_from_exception_list(
     # Add count of total exception items to message
     message["total_items"] = exception_list_count
     return CommandResults(
-        readable_output=tableToMarkdown(table_name[command], message, removeNull=True),
+        readable_output=tableToMarkdown(
+            table_name[command],
+            message,
+            headerTransform=string_to_table_header,
+            removeNull=True,
+        ),
         outputs_prefix="VisionOne.Exception_List",
         outputs_key_field="multi_response",
         outputs=message,
@@ -1402,7 +1422,10 @@ def add_to_suspicious_list(
     :rtype: ``dict`
     """
     # Required Params
-    block_objects: List[Dict[str, Any]] = json.loads(args.get(BLOCK_OBJECTS, [{}]))
+    # block_objects: List[Dict[str, Any]] = json.loads(args.get(BLOCK_OBJECTS, [{}]))
+    block_objects: List[Dict[str, Any]] = []
+    for block in args[BLOCK_OBJECTS]:
+        block_objects.append(block)
 
     suspicious_tasks: List[SuspiciousObjectTask] = []
     message: Dict[str, Any] = {}
@@ -1435,7 +1458,10 @@ def add_to_suspicious_list(
     }
     return CommandResults(
         readable_output=tableToMarkdown(
-            table_name[ADD_SUSPICIOUS_LIST_COMMAND], message, removeNull=True
+            table_name[ADD_SUSPICIOUS_LIST_COMMAND],
+            message,
+            headerTransform=string_to_table_header,
+            removeNull=True,
         ),
         outputs_prefix="VisionOne.Suspicious_List",
         outputs_key_field="multi_response",
@@ -1460,7 +1486,10 @@ def delete_from_suspicious_list(
     :rtype: ``dict`
     """
     # Required Params
-    block_objects: List[Dict[str, str]] = json.loads(args.get(BLOCK_OBJECTS, [{}]))
+    # block_objects: List[Dict[str, str]] = json.loads(args.get(BLOCK_OBJECTS, [{}]))
+    block_objects: List[Dict[str, str]] = []
+    for block in args[BLOCK_OBJECTS]:
+        block_objects.append(block)
 
     suspicious_tasks: List[ObjectTask] = []
     message: Dict[str, Any] = {}
@@ -1490,7 +1519,10 @@ def delete_from_suspicious_list(
     }
     return CommandResults(
         readable_output=tableToMarkdown(
-            table_name[DELETE_SUSPICIOUS_LIST_COMMAND], message, removeNull=True
+            table_name[DELETE_SUSPICIOUS_LIST_COMMAND],
+            message,
+            headerTransform=string_to_table_header,
+            removeNull=True,
         ),
         outputs_prefix="VisionOne.Suspicious_List",
         outputs_key_field="multi_response",
@@ -1526,21 +1558,25 @@ def get_file_analysis_status(
     if _is_pytmv1_error(resp.result_code):
         return_error(message=f"{unwrap(resp.error).message}", error=str(resp.error))
     # Add results to message to be sent to the War Room
-    message = {
-        "id": unwrap(resp.response).id,
-        "status": unwrap(resp.response).status,
-        "action": unwrap(resp.response).action,
-        "digest": unwrap(resp.response).digest,
-        "isCached": unwrap(resp.response).is_cached,
-        "arguments": unwrap(resp.response).arguments,
-        "createdDateTime": unwrap(resp.response).created_date_time,
-        "resourceLocation": unwrap(resp.response).resource_location,
-        "lastActionDateTime": unwrap(resp.response).last_action_date_time,
-    }
+    # message = {
+    #     "id": unwrap(resp.response).id,
+    #     "status": unwrap(resp.response).status,
+    #     "action": unwrap(resp.response).action,
+    #     "digest": unwrap(resp.response).digest,
+    #     "isCached": unwrap(resp.response).is_cached,
+    #     "arguments": unwrap(resp.response).arguments,
+    #     "createdDateTime": unwrap(resp.response).created_date_time,
+    #     "resourceLocation": unwrap(resp.response).resource_location,
+    #     "lastActionDateTime": unwrap(resp.response).last_action_date_time,
+    # }
+    message = unwrap(resp.response).dict()
 
     return CommandResults(
         readable_output=tableToMarkdown(
-            table_name[GET_FILE_ANALYSIS_STATUS_COMMAND], message, removeNull=True
+            table_name[GET_FILE_ANALYSIS_STATUS_COMMAND],
+            message,
+            headerTransform=string_to_table_header,
+            removeNull=True,
         ),
         outputs_prefix="VisionOne.File_Analysis_Status",
         outputs_key_field="id",
@@ -1578,7 +1614,7 @@ def get_file_analysis_result(
     if _is_pytmv1_error(resp.result_code):
         return_error(message=f"{unwrap(resp.error).message}", error=str(resp.error))
     # Extract values on successful call
-    reliability = demisto.params().get("integrationReliability")
+    reliability = demisto.params().get(INTEGRATION_RELIABILITY)
     risk = unwrap(resp.response).risk_level
     risk_score = incident_severity_to_dbot_score(risk)
     digest = unwrap(resp.response).digest
@@ -1597,19 +1633,18 @@ def get_file_analysis_result(
     file_entry = Common.File(sha256=sha256, md5=md5, sha1=sha1, dbot_score=dbot_score)
     # Add results to message to be sent to the War Room
     message = {
-        "status_code": resp.result_code,
-        "message": "success",
-        "report_id": unwrap(resp.response).id,
+        "status": resp.result_code,
+        "id": unwrap(resp.response).id,
         "type": unwrap(resp.response).type,
-        "digest": unwrap(resp.response).digest,
+        "digest": unwrap(resp.response).digest.dict(),  # type: ignore
         "arguments": unwrap(resp.response).arguments,
-        "analysisCompletionDateTime": unwrap(
+        "risk_level": unwrap(resp.response).risk_level,
+        "threat_types": unwrap(resp.response).threat_types,
+        "true_file_type": unwrap(resp.response).true_file_type,
+        "detection_names": unwrap(resp.response).detection_names,
+        "analysis_completion_date_time": unwrap(
             resp.response
         ).analysis_completion_date_time,
-        "riskLevel": unwrap(resp.response).risk_level,
-        "detectionNames": unwrap(resp.response).detection_names,
-        "threatTypes": unwrap(resp.response).threat_types,
-        "trueFileType": unwrap(resp.response).true_file_type,
         "DBotScore": {
             "Score": dbot_score.score,
             "Vendor": dbot_score.integration_name,
@@ -1621,7 +1656,7 @@ def get_file_analysis_result(
             table_name[GET_FILE_ANALYSIS_RESULT_COMMAND], message, removeNull=True
         ),
         outputs_prefix="VisionOne.File_Analysis_Result",
-        outputs_key_field="report_id",
+        outputs_key_field="id",
         outputs=message,
         indicator=file_entry,
     )
@@ -1638,11 +1673,12 @@ def collect_file(client: Client, args: Dict[str, Any]) -> Union[str, CommandResu
     :rtype: ``dict`
     """
     # Required Params
-    collect_files: List[Dict[str, str]] = json.loads(args.get(COLLECT_FILES, [{}]))
-
+    collect_files: List[Dict[str, str]] = []
+    for file in args["collect_files"]:
+        collect_files.append(file)
     # Create file task list
     file_tasks: List[FileTask] = []
-    message: Dict[str, Any] = {}
+    message: List[Dict[str, Any]] = []
     # Initialize pytmv1 client
     v1_client = _get_client(APP_NAME, client.api_key, client.base_url)
     # Create file task list
@@ -1655,7 +1691,7 @@ def collect_file(client: Client, args: Dict[str, Any]) -> Union[str, CommandResu
                     description=file.get(DESCRIPTION, COLLECT_FILE),
                 )
             )
-        else:
+        elif file.get(AGENT_GUID, EMPTY_STRING):
             file_tasks.append(
                 FileTask(
                     agent_guid=file[AGENT_GUID],
@@ -1669,12 +1705,17 @@ def collect_file(client: Client, args: Dict[str, Any]) -> Union[str, CommandResu
     if _is_pytmv1_error(resp.result_code):
         return_error(message=f"{unwrap(resp.errors)}", error=str(resp.errors))
 
-    message = {"multi_response": [item.dict() for item in unwrap(resp.response).items]}
+    message = [item.dict() for item in unwrap(resp.response).items]
 
     return CommandResults(
-        readable_output=tableToMarkdown(TABLE_COLLECT_FILE, message, removeNull=True),
+        readable_output=tableToMarkdown(
+            TABLE_COLLECT_FILE,
+            message,
+            headerTransform=string_to_table_header,
+            removeNull=True,
+        ),
         outputs_prefix="VisionOne.Collect_Forensic_File",
-        outputs_key_field="multi_response",
+        outputs_key_field="task_id",
         outputs=message,
     )
 
@@ -1710,30 +1751,16 @@ def download_information_collected_file(
     if _is_pytmv1_error(resp.result_code):
         return_error(message=f"{unwrap(resp.error).message}", error=str(resp.error))
     # Add results to message to be sent to the War Room
-    message = {
-        "taskId": unwrap(resp.response).id,
-        "status": unwrap(resp.response).status,
-        "createdDateTime": unwrap(resp.response).created_date_time,
-        "lastActionDateTime": unwrap(resp.response).last_action_date_time,
-        "action": unwrap(resp.response).action,
-        "description": unwrap(resp.response).description,
-        "account": unwrap(resp.response).account,
-        "agentGuid": unwrap(resp.response).agent_guid,
-        "endpointName": unwrap(resp.response).endpoint_name,
-        "filePath": unwrap(resp.response).file_path,
-        "fileSha1": unwrap(resp.response).file_sha1,
-        "fileSha256": unwrap(resp.response).file_sha256,
-        "fileSize": unwrap(resp.response).file_size,
-        "resourceLocation": unwrap(resp.response).resource_location,
-        "password": unwrap(resp.response).password,
-        "expiredDateTime": unwrap(resp.response).expired_date_time,
-    }
+    message = unwrap(resp.response).dict()
     return CommandResults(
         readable_output=tableToMarkdown(
-            table_name[DOWNLOAD_COLLECTED_FILE_COMMAND], message, removeNull=True
+            table_name[DOWNLOAD_COLLECTED_FILE_COMMAND],
+            message,
+            headerTransform=string_to_table_header,
+            removeNull=True,
         ),
         outputs_prefix=("VisionOne.Download_Information_For_Collected_Forensic_File"),
-        outputs_key_field="resourceLocation",
+        outputs_key_field="resource_location",
         outputs=message,
     )
 
@@ -1788,7 +1815,10 @@ def download_analysis_report(
         output_file,
         CommandResults(
             readable_output=tableToMarkdown(
-                table_name[DOWNLOAD_ANALYSIS_REPORT_COMMAND], message, removeNull=True
+                table_name[DOWNLOAD_ANALYSIS_REPORT_COMMAND],
+                message,
+                headerTransform=string_to_table_header,
+                removeNull=True,
             ),
             outputs_prefix="VisionOne.Download_Analysis_Report",
             outputs_key_field="submission_id",
@@ -1834,11 +1864,10 @@ def download_investigation_package(
     # Extract content value on successful call
     data = unwrap(resp.response).content
 
-    resp_msg = "Please click download to download .zip file."
     # fileResult takes response data and creates a file with
     # the specified extension that can be downloaded in the war room
     output_file = fileResult(f"{file_name}", data, file_type=EntryType.ENTRY_INFO_FILE)
-    resp_msg = "Please select download to start download"
+    resp_msg = "Please click download to download .zip file."
     message = {
         "submission_id": submit_id,
         "result_code": resp.result_code,
@@ -1851,6 +1880,7 @@ def download_investigation_package(
             readable_output=tableToMarkdown(
                 table_name[DOWNLOAD_INVESTIGATION_PACKAGE_COMMAND],
                 message,
+                headerTransform=string_to_table_header,
                 removeNull=True,
             ),
             outputs_prefix="VisionOne.Download_Investigation_Package",
@@ -1942,7 +1972,7 @@ def submit_file_to_sandbox(
         "code": 202,
         "message": resp.result_code,
         "task_id": unwrap(resp.response).id,
-        "digest": unwrap(resp.response).digest,
+        "digest": unwrap(resp.response).digest.dict(),
         "arguments": unwrap(resp.response).arguments,
     }
     return CommandResults(
@@ -1953,7 +1983,7 @@ def submit_file_to_sandbox(
             removeNull=True,
         ),
         outputs_prefix="VisionOne.Submit_File_to_Sandbox",
-        outputs_key_field="message",
+        outputs_key_field="task_id",
         outputs=message,
     )
 
@@ -2003,16 +2033,19 @@ def submit_file_entry_to_sandbox(
         "entry_id": entry,
         "file_path": file_path,
         "task_id": unwrap(resp.response).id,
-        "digest": unwrap(resp.response).digest,
+        "digest": unwrap(resp.response).digest.dict(),
         "arguments": unwrap(resp.response).arguments,
     }
 
     return CommandResults(
         readable_output=tableToMarkdown(
-            table_name[FILE_ENTRY_TO_SANDBOX_COMMAND], message, removeNull=True
+            table_name[FILE_ENTRY_TO_SANDBOX_COMMAND],
+            message,
+            headerTransform=string_to_table_header,
+            removeNull=True,
         ),
         outputs_prefix="VisionOne.Submit_File_Entry_to_Sandbox",
-        outputs_key_field="entryId",
+        outputs_key_field="entry_id",
         outputs=message,
     )
 
@@ -2030,9 +2063,10 @@ def submit_urls_to_sandbox(
     :rtype: ``dict`
     """
     # Required Params
-    urls: List[str] = json.loads(args.get(URLS, []))
-
-    message: Dict[str, Any] = {}
+    urls: List[str] = []
+    # extract urls and add to urls list
+    for url in args[URLS]:
+        urls.append(url)
     submit_urls_resp: List[Dict[str, Any]] = []
     # Initialize pytmv1 client
     v1_client = _get_client(APP_NAME, client.api_key, client.base_url)
@@ -2045,16 +2079,16 @@ def submit_urls_to_sandbox(
     for item in unwrap(resp.response).items:
         submit_urls_resp.append(item.dict())
 
-    # Add results to message to be sent to the War Room
-    message = {"multi_response": submit_urls_resp}
-
     return CommandResults(
         readable_output=tableToMarkdown(
-            table_name[URLS_TO_SANDBOX_COMMAND], message, removeNull=True
+            table_name[URLS_TO_SANDBOX_COMMAND],
+            submit_urls_resp,
+            headerTransform=string_to_table_header,
+            removeNull=True,
         ),
         outputs_prefix="VisionOne.Submit_Urls_to_Sandbox",
-        outputs_key_field="multi_response",
-        outputs=message,
+        outputs_key_field="id",
+        outputs=submit_urls_resp,
     )
 
 
@@ -2083,13 +2117,16 @@ def get_alert_details(
         return_error(message=f"{unwrap(resp.error).message}", error=str(resp.error))
     # Extract values from response
     etag = unwrap(resp.response).etag
-    alert = unwrap(resp.response).alert.json()
+    alert = unwrap(resp.response).alert.dict()
     # Add results to message to be sent to the War Room
     message = {"etag": etag, "alert": alert}
 
     return CommandResults(
         readable_output=tableToMarkdown(
-            table_name[GET_ALERT_DETAILS_COMMAND], message, removeNull=True
+            table_name[GET_ALERT_DETAILS_COMMAND],
+            message,
+            headerTransform=string_to_table_header,
+            removeNull=True,
         ),
         outputs_prefix="VisionOne.Alert_Details",
         outputs_key_field="etag",
@@ -2127,7 +2164,10 @@ def add_note(client: Client, args: Dict[str, Any]) -> Union[str, CommandResults]
     }
     return CommandResults(
         readable_output=tableToMarkdown(
-            table_name[ADD_NOTE_COMMAND], message, removeNull=True
+            table_name[ADD_NOTE_COMMAND],
+            message,
+            headerTransform=string_to_table_header,
+            removeNull=True,
         ),
         outputs_prefix="VisionOne.Add_Note",
         outputs_key_field="note_id",
@@ -2175,7 +2215,10 @@ def update_status(client: Client, args: Dict[str, Any]) -> Union[str, CommandRes
     }
     return CommandResults(
         readable_output=tableToMarkdown(
-            table_name[UPDATE_STATUS_COMMAND], message, removeNull=True
+            table_name[UPDATE_STATUS_COMMAND],
+            message,
+            headerTransform=string_to_table_header,
+            removeNull=True,
         ),
         outputs_prefix="VisionOne.Update_Status",
         outputs_key_field="Workbench_Id",
@@ -2222,7 +2265,7 @@ def main():  # pragma: no cover
             return_results(quarantine_or_delete_email_message(client, command, args))
 
         elif command == RESTORE_EMAIL_COMMAND:
-            return_results(restore_email_message(client, command, args))
+            return_results(restore_email_message(client, args))
 
         elif command in (ISOLATE_ENDPOINT_COMMAND, RESTORE_ENDPOINT_COMMAND):
             return_results(isolate_or_restore_connection(client, command, args))

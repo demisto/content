@@ -676,10 +676,10 @@ script:
       type: string
     - contextPath: VisionOne.Sandbox_Submission_Polling.detection_name_list
       description: Detection name of this sample, if applicable.
-      type: unknown
+      type: string
     - contextPath: VisionOne.Sandbox_Submission_Polling.threat_type_list
       description: Threat type of this sample.
-      type: unknown
+      type: string
     - contextPath: VisionOne.Sandbox_Submission_Polling.file_type
       description: File type of this sample.
       type: string
@@ -713,13 +713,13 @@ script:
       name: task_id
       required: true
     outputs:
-    - contextPath: VisionOne.Task_Status.taskId
+    - contextPath: VisionOne.Task_Status.task_id
       description: Task ID of the task queried.
       type: string
-    - contextPath: VisionOne.Task_Status.taskStatus
+    - contextPath: VisionOne.Task_Status.status
       description: Status of the task.
       type: string
-    - contextPath: VisionOne.Task_Status.createdDateTime
+    - contextPath: VisionOne.Task_Status.created_date_time
       description: Date and time when the action was run.
       type: string
     - contextPath: VisionOne.Task_Status.action
