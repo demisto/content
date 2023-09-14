@@ -412,12 +412,12 @@ def test_update_remote_system_command_with_updated_incident(mocker):
 
     mocker.patch.object(RSANetWitnessv115, "UpdateRemoteSystemArgs", return_value=UpdateRemoteSystemArgsResponse())
     mocker.patch.object(client, "get_incident_request", return_value={"id": "INC-1", "status": "New"})
-    mocker_update = mocker.patch.object(client, "update_incident_request", return_value={"id": "INC-1", "status": "ClosedFalsePositive"})
+    mocker_update = mocker.patch.object(client, "update_incident_request", return_value={
+                                        "id": "INC-1", "status": "ClosedFalsePositive"})
     result = update_remote_system_command(client, {}, {})
     mocker_update.assert_called_with("INC-1", "ClosedFalsePositive", None)
-    
+
     assert result == paging_data
-    
 
 
 def test_update_remote_system_command_with_nonupdated_incident(mocker):
@@ -433,7 +433,6 @@ def test_update_remote_system_command_with_nonupdated_incident(mocker):
         Then:
             Check if RSA status was not updated.
     """
-    paging_data = "INC-1"
 
     class UpdateRemoteSystemArgsResponse:
         def __init__(self) -> dict:
@@ -445,7 +444,7 @@ def test_update_remote_system_command_with_nonupdated_incident(mocker):
     mocker.patch.object(client, "get_incident_request", return_value={"id": "INC-1", "status": "New"})
     mocker_update_remote_system = mocker.patch.object(client, "update_incident_request")
 
-    assert not(mocker_update_remote_system.called())
+    assert not (mocker_update_remote_system.called())
 
 
 def test_get_remote_data_command(mocker):
@@ -630,7 +629,8 @@ def test_clean_old_inc_context_with_non_expired_incident(mocker):
     from datetime import datetime, timedelta
     max_time_mirror_inc = 24
 
-    mocker.patch.object(demisto, "getIntegrationContext", return_value={"IncidentsDataCount": {"INC-1": {"Created": datetime.now() - timedelta(days=max_time_mirror_inc - 1)}}})
+    mocker.patch.object(demisto, "getIntegrationContext", return_value={"IncidentsDataCount": {
+                        "INC-1": {"Created": datetime.now() - timedelta(days=max_time_mirror_inc - 1)}}})
 
     assert clean_old_inc_context(max_time_mirror_inc) is None
 
@@ -649,7 +649,8 @@ def test_clean_old_inc_context_with_expired_incident(mocker):
     from datetime import datetime, timedelta
     max_time_mirror_inc = 24
 
-    mocker.patch.object(demisto, "getIntegrationContext", return_value={"IncidentsDataCount": {"INC-1": {"Created": return_value=datetime.now() - timedelta(days=max_time_mirror_inc + 1)}}})
+    mocker.patch.object(demisto, "getIntegrationContext", return_value={"IncidentsDataCount": {
+                        "INC-1": {"Created": datetime.now() - timedelta(days=max_time_mirror_inc + 1)}}})
 
     assert clean_old_inc_context(max_time_mirror_inc) is None
 
