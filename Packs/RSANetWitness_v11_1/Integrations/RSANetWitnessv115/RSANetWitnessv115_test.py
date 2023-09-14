@@ -445,7 +445,7 @@ def test_update_remote_system_command_with_nonupdated_incident(mocker):
     mocker.patch.object(client, "get_incident_request", return_value={"id": "INC-1", "status": "New"})
     mocker_update_remote_system = mocker.patch.object(client, "update_incident_request")
 
-    assert not(mocker_update_remote_system.called())
+    assert not(mocker_update_remote_system.called)
 
 
 def test_get_remote_data_command(mocker):
@@ -461,7 +461,7 @@ def test_get_remote_data_command(mocker):
         Then:
             Update context of incident if incident has been updated from RSA.
     """
-    paging_data = {'alertCount': 2, 'alerts': {'alerts': [{'INC-2'}]}, 'id': 1, 'status': 1}
+    expected_result = {"id": 1, "status": "New", "alertCount": 2, 'alerts':  [{'id': '1'}, {'id': '2'}]}
 
     class GetRemoteDataArgsResponse:
         def __init__(self) -> dict:
@@ -469,12 +469,12 @@ def test_get_remote_data_command(mocker):
             self.remote_incident_id = 1
 
     mocker.patch.object(RSANetWitnessv115, "GetRemoteDataArgs", return_value=GetRemoteDataArgsResponse())
-    params = {'close_incident': True, 'import_alerts': True, 'max_alerts': '2'}
-    mocker.patch.object(client, "get_incident_request", return_value={"id": 1, "status": 1, "alertCount": 1})
-    mocker.patch.object(RSANetWitnessv115, "fetch_alerts_related_incident", return_value={"alerts": [{"INC-2"}]})
+    params = {'close_incident': True, 'import_alerts': True, 'max_alerts': '3'}
+    mocker.patch.object(client, "get_incident_request", return_value={"id": 1, "status": "New", "alertCount": 2})
+    mocker.patch.object(RSANetWitnessv115, "fetch_alerts_related_incident", return_value=[{'id': '1'}, {'id': '2'}])
 
     res = get_remote_data_command(client, {}, params)
-    assert res.mirrored_object == paging_data
+    assert res.mirrored_object == expected_result
 
 
 def test_get_remote_data_command_with_closed_xsoar_incident(mocker):
@@ -490,7 +490,15 @@ def test_get_remote_data_command_with_closed_xsoar_incident(mocker):
         Then:
             Update context of incident if incident has been updated from RSA.
     """
-    paging_data = {'alertCount': 2, 'alerts': {'alerts': [{'INC-2'}]}, 'id': 1, 'status': 'Closed'}
+    expected_result = {'alertCount': 1, 'alerts': {'alerts': [{'id': 1}]}, 'id': 1, 'status': 'Closed'}
+    expected_entries = [{
+        'Type': 1,
+        'Contents': {
+            'dbotIncidentClose': True,
+            'closeReason': 'Incident was closed on RSA Netwitness.'
+        },
+        'ContentsFormat': 'json'
+    }]
 
     class GetRemoteDataArgsResponse:
         def __init__(self) -> dict:
@@ -498,44 +506,13 @@ def test_get_remote_data_command_with_closed_xsoar_incident(mocker):
             self.remote_incident_id = 1
 
     mocker.patch.object(RSANetWitnessv115, "GetRemoteDataArgs", return_value=GetRemoteDataArgsResponse())
-    params = {'close_incident': True, 'import_alerts': True, 'max_alerts': '2'}
+    params = {'close_incident': True, 'import_alerts': True, 'max_alerts': '3'}
     mocker.patch.object(client, "get_incident_request", return_value={"id": 1, "status": "Closed", "alertCount": 1})
-    mocker.patch.object(RSANetWitnessv115, "fetch_alerts_related_incident", return_value={"alerts": [{"INC-2"}]})
+    mocker.patch.object(RSANetWitnessv115, "fetch_alerts_related_incident", return_value={"alerts": [{'id': 1}]})
 
     res = get_remote_data_command(client, {}, params)
-    assert res.mirrored_object == paging_data
-    assert res.entries == entries
-
-
-def test_get_remote_data_command_with_new_xsoar_incident_entries(mocker):
-    """
-        Given:
-        - client with fetch parameters
-        - args with incident attributes
-        - params
-
-        When:
-            running get_remote_data_command.
-
-        Then:
-            Update context of incident if incident has been updated from RSA.
-    """
-    paging_data = {'alertCount': 3, 'alerts': [1, 2, 3], 'id': 'INC-1', 'status': 'New'}
-
-    class GetRemoteDataArgsResponse:
-        def __init__(self) -> dict:
-            self.last_update = 1234567890
-            self.remote_incident_id = 0
-
-    mocker.patch.object(RSANetWitnessv115, "GetRemoteDataArgs", return_value=GetRemoteDataArgsResponse())
-    mocker.patch.object(RSANetWitnessv115, "argToBoolean", return_value=True)
-    mocker.patch.object(RSANetWitnessv115, "arg_to_number", return_value=5)
-    mocker.patch.object(client, "get_incident_request", return_value={"id": "INC-1", "status": "New", "alertCount": 3})
-    mocker.patch.object(RSANetWitnessv115, "fetch_alerts_related_incident", return_value=[1, 2, 3])
-
-    res = get_remote_data_command(client, {}, {'close_incident': 0, 'import_alerts': True, 'max_alerts': 5})
-    assert res.mirrored_object == paging_data
-    assert res.entries == entries
+    assert res.mirrored_object == expected_result
+    assert res.entries == expected_entries
 
 
 def test_get_modified_remote_data_command_from_timestamp(mocker):
@@ -629,8 +606,11 @@ def test_clean_old_inc_context_with_non_expired_incident(mocker):
     """
     from datetime import datetime, timedelta
     max_time_mirror_inc = 24
+    DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%MZ'
+    created_date = datetime.now() - timedelta(days= max_time_mirror_inc - 1)
 
-    mocker.patch.object(demisto, "getIntegrationContext", return_value={"IncidentsDataCount": {"INC-1": {"Created": datetime.now() - timedelta(days=max_time_mirror_inc - 1)}}})
+    mocker.patch.object(demisto, "getIntegrationContext",
+                        return_value={"IncidentsDataCount": {"INC-1": {"Created": created_date.strftime(DATE_FORMAT)}}})
 
     assert clean_old_inc_context(max_time_mirror_inc) is None
 
@@ -648,9 +628,11 @@ def test_clean_old_inc_context_with_expired_incident(mocker):
     """
     from datetime import datetime, timedelta
     max_time_mirror_inc = 24
+    DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%MZ'
+    created_date = datetime.now() - timedelta(days=max_time_mirror_inc + 1)
 
-    mocker.patch.object(demisto, "getIntegrationContext", return_value={"IncidentsDataCount": {"INC-1": {"Created": return_value=datetime.now() - timedelta(days=max_time_mirror_inc + 1)}}})
-
+    mocker.patch.object(demisto, "getIntegrationContext",
+                        return_value={"IncidentsDataCount": {"INC-1": {"Created": created_date.strftime(DATE_FORMAT)}}})
     assert clean_old_inc_context(max_time_mirror_inc) is None
 
 
