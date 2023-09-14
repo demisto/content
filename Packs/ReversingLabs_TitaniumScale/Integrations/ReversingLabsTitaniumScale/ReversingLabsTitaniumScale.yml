@@ -38,6 +38,24 @@ configuration:
   name: num_of_retries
   type: 0
   required: false
+- display: HTTP proxy address with the protocol and port number
+  name: http_proxy
+  type: 0
+  required: false
+- display: HTTP proxy username
+  name: http_credentials
+  displaypassword: HTTP proxy password
+  required: false
+  type: 9
+- display: HTTPS proxy address with the protocol and port number
+  name: https_proxy
+  type: 0
+  required: false
+- display: HTTPS proxy username
+  name: https_credentials
+  displaypassword: HTTPS proxy password
+  required: false
+  type: 9
 description: ReversingLabs advanced file decomposition appliance.
 detaileddescription: TitaniumScale provides real-time and deep inspection of files.
 display: ReversingLabs TitaniumScale
@@ -46,7 +64,7 @@ script:
   commands:
   - arguments:
     - default: true
-      description: The file entry to upload
+      description: The file entry to upload.
       name: entryId
       required: true
     description: Upload sample to TitaniumScale and retrieve analysis report.
@@ -89,22 +107,22 @@ script:
       description: The vendor used to calculate the score.
       type: String
     - contextPath: ReversingLabs.tc_report
-      description: Full report
+      description: Full report.
       type: String
   - arguments:
     - default: true
-      description: The file entry to upload
+      description: The file entry to upload.
       name: entryId
       required: true
     description: Upload sample to TitaniumScale for analysis.
     name: reversinglabs-titaniumscale-upload-sample
     outputs:
     - contextPath: ReversingLabs.task_Url
-      description: url to get report from
+      description: url to get report from.
       type: Unknown
   - arguments:
     - default: true
-      description: The file entry to upload
+      description: The file entry to upload.
       name: taskUrl
       required: true
     description: Retrieve report of a previously uploaded file from TitaniumScale.
@@ -147,9 +165,9 @@ script:
       description: The vendor used to calculate the score.
       type: String
     - contextPath: ReversingLabs.tc_report
-      description: Full report
+      description: Full report.
       type: String
-  dockerimage: demisto/reversinglabs-sdk-py3:2.0.0.40822
+  dockerimage: demisto/reversinglabs-sdk-py3:2.0.0.72317
   runonce: false
   script: '-'
   subtype: python3

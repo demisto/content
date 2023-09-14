@@ -1346,13 +1346,13 @@ def add_utc_offset(dt_str: str):
 
 def main() -> None:
     command: str = demisto.command()
-    params: Dict[str, Any] = demisto.params()
-    args: Dict[str, Any] = demisto.args()
+    params: dict[str, Any] = demisto.params()
+    args: dict[str, Any] = demisto.args()
     demisto.debug(f"Command being called is {command}")
     try:
         configuration = Configuration()
-        configuration.api_key["apiKeyAuth"] = params.get("api_key")
-        configuration.api_key["appKeyAuth"] = params.get("app_key")
+        configuration.api_key["apiKeyAuth"] = params.get('api_key_creds', {}).get('password') or params.get("api_key")
+        configuration.api_key["appKeyAuth"] = params.get('app_key_creds', {}).get('password') or params.get("app_key")
         configuration.server_variables["site"] = params.get("site")
 
         commands = {
