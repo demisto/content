@@ -21,20 +21,37 @@
     "testInterval": 20,
     "tests": [
         {
-            "integrations": [
-                "ServiceNow v2",
-                "Cortex XDR - IR",
-                "jira-v2",
-                "Core REST API"
-            ],
-            "instance_names": [
-                "snow_basic_auth",
-                "Cortex XDR - IR",
-                "jira_v2",
-                "Core REST API"
-            ],
-            "playbookID": "Test Playbook - Cortex XDR - True Positive Incident Handling",
-            "fromversion": "6.5.0"
+            "playbookID": "T1036 - Masquerading - Test",
+            "integrations": "VirusTotal (API v3)",
+            "instance_names": "virus_total_v3",
+            "timeout": 800
+        },
+	    {
+            "playbookID": "T1059 - Command and Scripting Interpreter - Test",
+            "integrations": "LOLBAS Feed",
+            "timeout": 600
+        },
+        {
+            "playbookID": "Eradication plan - Test",
+            "timeout": 600
+        },
+		{
+            "playbookID": "Containment Plan - Test",
+            "timeout": 800,
+            "integrations": "Active Directory Query v2",
+            "instance_names": "active_directory_80k"
+        },
+		{
+            "playbookID": "Enrichment for Verdict - Test",
+            "timeout": 500,
+			"integrations": [
+				"Active Directory Query v2",
+				"VirusTotal (API v3)"
+			],
+			"instance_names": [
+				"active_directory_80k",
+				"virus_total_v3"
+			]
         },
         {
             "integrations": "Microsoft Defender Advanced Threat Protection",
@@ -1170,7 +1187,7 @@
         {
             "integrations": "Generic SQL",
             "playbookID": "generic-sql-mssql-encrypted-connection",
-            "instance_names": "Microsoft SQL instance using encrypted connection",
+            "instance_names": "Microsoft SQL instance",
             "fromversion": "5.0.0",
             "has_api": false
         },
@@ -1829,9 +1846,9 @@
             "playbookID": "OpenPhish Test Playbook"
         },
         {
-            "integrations": "jira-v2",
-            "playbookID": "Jira-v2-Test",
-            "timeout": 500,
+            "integrations": "Jira V3",
+            "playbookID": "JiraV3 Test",
+            "instance_names": "jira_basic_auth",
             "is_mockable": false
         },
         {
@@ -3973,9 +3990,9 @@
                 "ServiceNow v2",
                 "Core REST API"
             ],
-            "playbookID": "Fetch Incidents Test",
+            "playbookID": "ServiceNow Fetch Incidents Test",
             "instance_names": "snow_basic_auth",
-            "fromversion": "6.0.0",
+            "fromversion": "6.8.0",
             "is_mockable": false,
             "timeout": 2400
         },
@@ -5416,7 +5433,8 @@
         {
             "playbookID": "PAN-OS - Add Anti-Spyware Security Profile To Rule - Test",
             "integrations": "Panorama",
-            "instance_names": "palo_alto_firewall_9.1"
+            "instance_names": "palo_alto_firewall_9.1",
+            "fromversion": "6.9.0"
         },
         {
             "integrations": "Secneurx Analysis",
@@ -5538,7 +5556,8 @@
         }
     ],
     "skipped_tests": {
-        "MSG-ediscovery-tpb" : "CIAC-8021",
+        "generic-sql-mssql-encrypted-connection": "Instance issues",
+        "generic-sql-oracle": "Instance issues",
         "RSANetWitnessv115-Test": "mocking error CIAC-7576",
         "CiscoWSAv2": "No instance - developed by Qmasters",
         "DatadogCloudSIEM": "No instance - developed by Login soft",
@@ -5654,7 +5673,6 @@
         "SplunkPy_KV_commands_default_handler": "Issue 41419",
         "LogRhythm REST test": "Issue 40654",
         "Process Email - Generic - Test - Actual Incident": "Issue 45227",
-        "Jira-v2-Test": "Issue 33313",
         "Tanium Threat Response Test": "Issue CRTX-58729",
         "Tanium Threat Response - Create Connection v2 - Test": "Issue CRTX-58729",
         "AzureADTest": "Issue 40131",
