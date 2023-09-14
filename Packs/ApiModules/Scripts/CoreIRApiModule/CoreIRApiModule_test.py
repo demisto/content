@@ -3271,7 +3271,6 @@ def test_list_risky_users_or_hosts_command_specific_id_score_zero(mocker, comman
     assert result.readable_output == f"The {id_arg} test is not risky"
 
 
-
 @pytest.mark.parametrize(
     "command ,id_",
     [
