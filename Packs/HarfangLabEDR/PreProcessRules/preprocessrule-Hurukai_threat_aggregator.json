@@ -1,135 +1,132 @@
 {
-	"action": "link",
-	"cacheVersn": 0,
-	"definitionId": "",
-	"enabled": true,
-	"existingEventsFilters": [
-		[
-			{
-				"left": {
-					"isContext": true,
-					"value": {
-						"simple": "threatid"
-					}
-				},
-				"operator": "isEqualString",
-				"right": {
-					"isContext": true,
-					"value": {
-						"simple": "incident.threatid"
-					}
-				},
-				"type": "shortText"
-			}
-		]
-	],
-	"fromServerVersion": "",
-	"id": "Hurukai threat aggregator",
-	"index": 0,
-	"itemVersion": "",
-	"linkTo": "oldest",
-	"locked": false,
-	"name": "Hurukai threat aggregator",
-	"newEventFilters": [
-		[
-			{
-				"left": {
-					"isContext": true,
-					"value": {
-						"simple": "type"
-					}
-				},
-				"operator": "isEqualString",
-				"right": {
-					"isContext": false,
-					"value": {
-						"simple": "Hurukai alert"
-					}
-				},
-				"type": "singleSelect"
-			}
-		],
-		[
-			{
-				"left": {
-					"isContext": true,
-					"value": {
-						"simple": "threatid"
-					}
-				},
-				"operator": "isNotEmpty",
-				"right": {
-					"isContext": false,
-					"value": {}
-				},
-				"type": "shortText"
-			}
-		]
-	],
-	"period": {
-		"by": "days",
-		"fromValue": 30
-	},
-	"readyExistingEventsFilters": [
-		[
-			{
-				"left": {
-					"isContext": true,
-					"value": {
-						"simple": "threatid"
-					}
-				},
-				"operator": "isEqualString",
-				"right": {
-					"isContext": true,
-					"value": {
-						"simple": "${incident.threatid}"
-					}
-				},
-				"type": "shortText"
-			}
-		]
-	],
-	"readyNewEventFilters": [
-		[
-			{
-				"left": {
-					"isContext": true,
-					"value": {
-						"simple": "type"
-					}
-				},
-				"operator": "isEqualString",
-				"right": {
-					"isContext": false,
-					"value": {
-						"simple": "Hurukai alert"
-					}
-				},
-				"type": "singleSelect"
-			}
-		],
-		[
-			{
-				"left": {
-					"isContext": true,
-					"value": {
-						"simple": "threatid"
-					}
-				},
-				"operator": "isNotEmpty",
-				"right": {
-					"isContext": false,
-					"value": {}
-				},
-				"type": "shortText"
-			}
-		]
-	],
-	"scriptID": "",
-	"scriptName": "",
-	"searchClosed": true,
-	"system": false,
-	"toServerVersion": "",
-	"version": -1
+    "action": "link",
+    "enabled": true,
+    "existingEventsFilters": [
+        [
+            {
+                "left": {
+                    "isContext": true,
+                    "value": {
+                        "simple": "threatid"
+                    }
+                },
+                "operator": "isEqualString",
+                "right": {
+                    "isContext": true,
+                    "value": {
+                        "simple": "incident.threatid"
+                    }
+                },
+                "type": "shortText"
+            }
+        ]
+    ],
+    "id": "Hurukai threat aggregator",
+    "index": 0,
+    "itemVersion": "",
+    "linkTo": "oldest",
+    "locked": false,
+    "name": "Hurukai threat aggregator",
+    "newEventFilters": [
+        [
+            {
+                "left": {
+                    "isContext": true,
+                    "value": {
+                        "simple": "type"
+                    }
+                },
+                "operator": "isEqualString",
+                "right": {
+                    "isContext": false,
+                    "value": {
+                        "simple": "Hurukai alert"
+                    }
+                },
+                "type": "singleSelect"
+            }
+        ],
+        [
+            {
+                "left": {
+                    "isContext": true,
+                    "value": {
+                        "simple": "threatid"
+                    }
+                },
+                "operator": "isNotEmpty",
+                "right": {
+                    "isContext": false,
+                    "value": {}
+                },
+                "type": "shortText"
+            }
+        ]
+    ],
+    "period": {
+        "by": "days",
+        "fromValue": 30
+    },
+    "readyExistingEventsFilters": [
+        [
+            {
+                "left": {
+                    "isContext": true,
+                    "value": {
+                        "simple": "threatid"
+                    }
+                },
+                "operator": "isEqualString",
+                "right": {
+                    "isContext": true,
+                    "value": {
+                        "simple": "${incident.threatid}"
+                    }
+                },
+                "type": "shortText"
+            }
+        ]
+    ],
+    "readyNewEventFilters": [
+        [
+            {
+                "left": {
+                    "isContext": true,
+                    "value": {
+                        "simple": "type"
+                    }
+                },
+                "operator": "isEqualString",
+                "right": {
+                    "isContext": false,
+                    "value": {
+                        "simple": "Hurukai alert"
+                    }
+                },
+                "type": "singleSelect"
+            }
+        ],
+        [
+            {
+                "left": {
+                    "isContext": true,
+                    "value": {
+                        "simple": "threatid"
+                    }
+                },
+                "operator": "isNotEmpty",
+                "right": {
+                    "isContext": false,
+                    "value": {}
+                },
+                "type": "shortText"
+            }
+        ]
+    ],
+    "scriptName": "",
+    "searchClosed": true,
+    "system": false,
+    "toServerVersion": "",
+    "version": -1,
+    "fromVersion": "6.9.0"
 }
