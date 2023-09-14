@@ -752,8 +752,7 @@ def get_scanner_info():
     """
     full_url = f'{BASE_URL}/scanners'
     response = requests.get(full_url, headers=HEADERS, verify=USE_SSL)
-    if response:
-        response_data = response.json()
+    response_data = response.json()
     response.raise_for_status()
     if scanners := response_data.get('scanners'):
         scanner_data = []
