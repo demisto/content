@@ -153,9 +153,7 @@ if [ -z "$_create_dependencies_zip" ]; then
   _create_dependencies_zip=false
 fi
 
-echo "test before running the file trigger_build_url.sh"
 source Utils/gitlab_triggers/trigger_build_url.sh
-echo "BUILD_TRIGGER_URL is set to: ${BUILD_TRIGGER_URL}"
 
 curl --request POST \
   --form token="${_ci_token}" \
@@ -174,5 +172,3 @@ curl --request POST \
   --form "variables[OVERRIDE_SDK_REF]=${DEMISTO_SDK_NIGHTLY}" \
   --form "variables[SDK_REF]=${_sdk_ref}" \
   "$BUILD_TRIGGER_URL"
-
-echo "BUILD_TRIGGER_URL is set to: ${BUILD_TRIGGER_URL}"
