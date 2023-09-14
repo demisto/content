@@ -686,10 +686,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: a098a332-7e45-4095-836b-e27928639b07
+    taskid: a82a0f8c-bd01-4564-8c6e-111514d9727a
     type: playbook
     task:
-      id: a098a332-7e45-4095-836b-e27928639b07
+      id: a82a0f8c-bd01-4564-8c6e-111514d9727a
       version: -1
       name: NGFW Scan
       description: |-
@@ -747,6 +747,8 @@ tasks:
       HostAutoContainment:
         simple: "false"
       ShouldOpenTicket:
+        simple: "False"
+      UserVerification:
         simple: "False"
       ZendeskSubject:
         simple: XSIAM Incident ID - ${parentIncidentFields.incident_id}
