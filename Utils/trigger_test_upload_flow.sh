@@ -153,6 +153,7 @@ if [ -z "$_create_dependencies_zip" ]; then
   _create_dependencies_zip=false
 fi
 
+echo "test before running the file trigger_build_url.sh"
 source Utils/gitlab_triggers/trigger_build_url.sh
 echo "BUILD_TRIGGER_URL is set to: ${BUILD_TRIGGER_URL}"
 
