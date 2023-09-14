@@ -111,7 +111,7 @@ cp -r ./content-test-conf/demisto.lic ${DEMISTO_LIC_PATH}
 cp -r ./content-test-conf/signDirectory ${DEMISTO_PACK_SIGNATURE_UTIL_PATH}
 
 echo "Cloning Hidden_Packs"
-cp -r ./content-test-conf/content/Hidden_Packs ./Packs
+cp -r ./content-test-conf/content/Hidden_Packs/* ./Packs
 echo "Cloned Hidden_Packs"
 
 if [[ "${NIGHTLY}" == "true" || "${EXTRACT_PRIVATE_TESTDATA}" == "true" ]]; then
