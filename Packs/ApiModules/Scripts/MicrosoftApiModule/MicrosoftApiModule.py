@@ -1552,7 +1552,6 @@ def reset_auth() -> CommandResults:
     After running the command, a new token/auth-code will need to be given by the user to regenerate the access token.
     :return: Message about resetting the authorization process.
     """
-    demisto.log("BINAT TEST")
     demisto.debug(f"Reset integration-context, before resetting {get_integration_context()=}")
     set_integration_context({})
     return CommandResults(readable_output='Authorization was reset successfully. Please regenerate the credentials, '
