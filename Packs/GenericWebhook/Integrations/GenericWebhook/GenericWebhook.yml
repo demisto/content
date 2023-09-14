@@ -13,6 +13,7 @@ configuration:
   hidden: true
   section: Connect
   advanced: true
+  required: false
 - additionalinfo: Runs the web server on this port from within Cortex XSOAR. Requires a unique port for each long-running integration instance. Do not use the same port for multiple instances.
   display: Listen Port
   name: longRunningPort
@@ -23,28 +24,33 @@ configuration:
   name: credentials
   type: 9
   section: Connect
+  required: false
 - display: Certificate (Required for HTTPS)
   additionalinfo: Required for HTTPS, if not using server rerouting
   name: certificate
   type: 12
   section: Connect
   advanced: true
+  required: false
 - display: Private Key (Required for HTTPS)
   additionalinfo: Required for HTTPS, if not using server rerouting
   name: key
   type: 14
   section: Connect
   advanced: true
+  required: false
 - display: Incident type
   name: incidentType
   type: 13
   section: Connect
+  required: false
 - additionalinfo: Because this is a push-based integration, it cannot fetch sample events in the mapping wizard. After you finish mapping, it is recommended to turn off the sample events storage to reduce performance overhead.
   display: Store sample events for mapping
   name: store_samples
   type: 8
   section: Connect
   advanced: true
+  required: false
 description: The Generic Webhook integration is used to create incidents on event triggers. The trigger can be any query posted to the integration.
 display: Generic Webhook
 name: Generic Webhook

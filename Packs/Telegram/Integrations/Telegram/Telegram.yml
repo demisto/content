@@ -7,13 +7,16 @@ configuration:
   name: token
   type: 4
   hidden: true
+  required: false
 - displaypassword: API Token
   name: credentials_api_token
   hiddenusername: true
   type: 9
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 description: Telegram integration
 display: Telegram (Beta)
 name: Telegram_Beta

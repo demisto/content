@@ -41,10 +41,12 @@ configuration:
   name: useproxy
   defaultvalue: "true"
   type: 8
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   defaultvalue: "false"
   type: 8
+  required: false
 - display: Api version
   name: apiVersion
   defaultvalue: v2.8

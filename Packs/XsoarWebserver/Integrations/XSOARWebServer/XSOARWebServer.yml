@@ -6,9 +6,11 @@ configuration:
 - display: Incident type
   name: incidentType
   type: 13
+  required: false
 - display: Long running instance
   name: longRunning
   type: 8
+  required: false
 - additionalinfo: The port on which the integration instance will listen
   display: Server Listening Port
   name: longRunningPort

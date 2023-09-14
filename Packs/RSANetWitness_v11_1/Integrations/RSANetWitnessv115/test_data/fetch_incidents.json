@@ -1,0 +1,162 @@
+{
+    "fetch_incidents_with_alerts": [
+        [
+            {
+                "name": "RSA NetWitness 11.5 INC-00 - test ",
+                "occurred": "2023-06-19T12:03:01.466Z",
+                "rawJSON": "{\"id\": \"INC-00\", \"title\": \"test \", \"summary\": null, \"priority\": \"Low\", \"riskScore\": 50, \"status\": \"New\", \"alertCount\": 1, \"averageAlertRiskScore\": 50, \"sealed\": false, \"totalRemediationTaskCount\": 0, \"openRemediationTaskCount\": 0, \"created\": \"2023-06-19T12:03:01.466Z\", \"lastUpdated\": \"2023-06-19T12:03:01.466Z\", \"lastUpdatedBy\": null, \"assignee\": null, \"sources\": [\"NetWitness Investigate\"], \"ruleId\": null, \"firstAlertTime\": null, \"categories\": null, \"journalEntries\": null, \"createdBy\": \"dummy\", \"deletedAlertCount\": 0, \"eventCount\": 1, \"alertMeta\": {\"SourceIp\": [\"\"], \"DestinationIp\": [\"\"]}, \"incident_url\": \"http://test.com/respond/incident/INC-00\", \"alerts\": [{\"id\": \"1111\", \"title\": \"test \", \"detail\": null, \"created\": \"2023-06-19T12:03:01.454Z\", \"source\": \"NetWitness Investigate\", \"riskScore\": 50, \"type\": \"Log\", \"events\": [{\"source\": {\"device\": {\"ipAddress\": null, \"port\": null, \"macAddress\": null, \"dnsHostname\": null, \"dnsDomain\": null}, \"user\": {\"username\": null, \"emailAddress\": null, \"adUsername\": null, \"adDomain\": null}}, \"destination\": {\"device\": {\"ipAddress\": null, \"port\": null, \"macAddress\": null, \"dnsHostname\": null, \"dnsDomain\": null}, \"user\": {\"username\": null, \"emailAddress\": null, \"adUsername\": null, \"adDomain\": null}}, \"domain\": null, \"eventSource\": null, \"eventSourceId\": \"1\"}]}]}"
+            }
+        ],
+        [
+            {
+                "id": "INC-00",
+                "title": "test",
+                "summary": null,
+                "priority": "Low",
+                "riskScore": 50,
+                "status": "New",
+                "alertCount": 1,
+                "averageAlertRiskScore": 50,
+                "sealed": false,
+                "totalRemediationTaskCount": 0,
+                "openRemediationTaskCount": 0,
+                "created": "2023-06-19T12:03:01.466Z",
+                "lastUpdated": "2023-06-19T12:03:01.466Z",
+                "lastUpdatedBy": null,
+                "assignee": null,
+                "sources": [
+                    "NetWitness Investigate"
+                ],
+                "ruleId": null,
+                "firstAlertTime": null,
+                "categories": null,
+                "journalEntries": null,
+                "createdBy": "dummy",
+                "deletedAlertCount": 0,
+                "eventCount": 1,
+                "alertMeta": {
+                    "SourceIp": [
+                        ""
+                    ],
+                    "DestinationIp": [
+                        ""
+                    ]
+                }
+            }
+        ]
+    ],
+    "fetch_incidents_without_alerts": [
+        [
+            {
+                "name": "RSA NetWitness 11.5 INC-00 - test ",
+                "occurred": "2023-06-19T12:03:01.466Z",
+                "rawJSON": "{\"id\": \"INC-00\", \"title\": \"test \", \"summary\": null, \"priority\": \"Low\", \"riskScore\": 50, \"status\": \"New\", \"alertCount\": 1, \"averageAlertRiskScore\": 50, \"sealed\": false, \"totalRemediationTaskCount\": 0, \"openRemediationTaskCount\": 0, \"created\": \"2023-06-19T12:03:01.466Z\", \"lastUpdated\": \"2023-06-19T12:03:01.466Z\", \"lastUpdatedBy\": null, \"assignee\": null, \"sources\": [\"NetWitness Investigate\"], \"ruleId\": null, \"firstAlertTime\": null, \"categories\": null, \"journalEntries\": null, \"createdBy\": \"dummy\", \"deletedAlertCount\": 0, \"eventCount\": 1, \"alertMeta\": {\"SourceIp\": [\"\"], \"DestinationIp\": [\"\"]}, \"incident_url\": \"http://test.com/respond/incident/INC-00\"}"
+            }
+        ]
+    ],
+    "list_incidents_request": [
+        {
+            "items": [
+                {
+                    "id": "INC-00",
+                    "title": "test ",
+                    "summary": null,
+                    "priority": "Low",
+                    "riskScore": 50,
+                    "status": "New",
+                    "alertCount": 1,
+                    "averageAlertRiskScore": 50,
+                    "sealed": false,
+                    "totalRemediationTaskCount": 0,
+                    "openRemediationTaskCount": 0,
+                    "created": "2023-06-19T12:03:01.466Z",
+                    "lastUpdated": "2023-06-19T12:03:01.466Z",
+                    "lastUpdatedBy": null,
+                    "assignee": null,
+                    "sources": [
+                        "NetWitness Investigate"
+                    ],
+                    "ruleId": null,
+                    "firstAlertTime": null,
+                    "categories": null,
+                    "journalEntries": null,
+                    "createdBy": "dummy",
+                    "deletedAlertCount": 0,
+                    "eventCount": 1,
+                    "alertMeta": {
+                        "SourceIp": [
+                            ""
+                        ],
+                        "DestinationIp": [
+                            ""
+                        ]
+                    }
+                }
+            ],
+            "pageNumber": 0,
+            "pageSize": 100,
+            "totalPages": 1,
+            "totalItems": 1,
+            "hasNext": false,
+            "hasPrevious": false
+        }
+    ],
+    "incident_list_alerts_request": [
+        {
+            "items": [
+                {
+                    "id": "1111",
+                    "title": "test ",
+                    "detail": null,
+                    "created": "2023-06-19T12:03:01.454Z",
+                    "source": "NetWitness Investigate",
+                    "riskScore": 50,
+                    "type": "Log",
+                    "events": [
+                        {
+                            "source": {
+                                "device": {
+                                    "ipAddress": null,
+                                    "port": null,
+                                    "macAddress": null,
+                                    "dnsHostname": null,
+                                    "dnsDomain": null
+                                },
+                                "user": {
+                                    "username": null,
+                                    "emailAddress": null,
+                                    "adUsername": null,
+                                    "adDomain": null
+                                }
+                            },
+                            "destination": {
+                                "device": {
+                                    "ipAddress": null,
+                                    "port": null,
+                                    "macAddress": null,
+                                    "dnsHostname": null,
+                                    "dnsDomain": null
+                                },
+                                "user": {
+                                    "username": null,
+                                    "emailAddress": null,
+                                    "adUsername": null,
+                                    "adDomain": null
+                                }
+                            },
+                            "domain": null,
+                            "eventSource": null,
+                            "eventSourceId": "1"
+                        }
+                    ]
+                }
+            ],
+            "pageNumber": 0,
+            "pageSize": 100,
+            "totalPages": 1,
+            "totalItems": 1,
+            "hasNext": false,
+            "hasPrevious": false
+        }
+    ]
+}

@@ -74,17 +74,21 @@ The main active response playbook is the `Cortex ASM - ASM Alert` playbook. This
   - [Cortex ASM - Azure Enrichment](#cortex-asm---azure-enrichment)
   - [Cortex ASM - Decision](#cortex-asm---decision)
   - [Cortex ASM - Detect Service](#cortex-asm---detect-service)
+  - [Cortex ASM - Email Notification](#cortex-asm---email-notification)
   - [Cortex ASM - Enrichment](#cortex-asm---enrichment)
   - [Cortex ASM - GCP Enrichment](#cortex-asm---gcp-enrichment)
+  - [Cortex ASM - Jira Notification](#cortex-asm---jira-notification)
   - [Cortex ASM - Prisma Cloud Enrichment](#cortex-asm---prisma-cloud-enrichment)
   - [Cortex ASM - Qualys Enrichment](#cortex-asm---qualys-enrichment)
   - [Cortex ASM - Rapid7 Enrichment](#cortex-asm---rapid7-enrichment)
   - [Cortex ASM - Remediation Confirmation Scan](#cortex-asm---remediation-confirmation-scan)
   - [Cortex ASM - Remediation Guidance](#cortex-asm---remediation-guidance)
+  - [Cortex ASM - Remediation Objectives](#cortex-asm---remediation-objectives)
   - [Cortex ASM - Remediation Path Rules](#cortex-asm---remediation-path-rules)
   - [Cortex ASM - Remediation](#cortex-asm---remediation)
   - [Cortex ASM - Service Ownership](#cortex-asm---service-ownership)
   - [Cortex ASM - ServiceNow CMDB Enrichment](#cortex-asm---servicenow-cmdb-enrichment)
+  - [Cortex ASM - ServiceNow Notification](#cortex-asm---servicenow-notification)
   - [Cortex ASM - Splunk Enrichment](#cortex-asm---splunk-enrichment)
   - [Cortex ASM - Tenable.io Enrichment](#cortex-asm---tenableio-enrichment)
 - Automation Scripts
@@ -125,6 +129,12 @@ A playbook that utilizes the Remediation Confirmation Scan service to check for 
 
 ![Cortex ASM - Detect Service](https://raw.githubusercontent.com/demisto/content/master/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_Detect_Service.png)
 
+#### Cortex ASM - Email Notification
+
+A playbook that is used to send email notifications to service owners to notify them of their internet exposures.
+
+![Cortex ASM - Email Notification](https://raw.githubusercontent.com/demisto/content/94341532ed2e30cb0c5fb3235ef10b4411c8337c/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_Email_Notification.png)
+
 #### Cortex ASM - Enrichment
 
 A playbook that is used as a container folder for all enrichments of ASM alerts.
@@ -137,11 +147,17 @@ A playbook that given the IP address enriches GCP information relevant to ASM al
 
 ![Cortex ASM - GCP Enrichment](https://raw.githubusercontent.com/demisto/content/master/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_GCP_Enrichment.png)
 
+#### Cortex ASM - Jira Notification
+
+A playbook that is used to create Jira tickets directed toward service owners to notify them of their internet exposures.
+
+![Cortex ASM - Jira Notification](https://raw.githubusercontent.com/demisto/content/94341532ed2e30cb0c5fb3235ef10b4411c8337c/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_Jira_Notification.png)
+
 #### Cortex ASM - Prisma Cloud Enrichment
 
 Playbook that given the IP address enriches Prisma Cloud information relevant to ASM alerts.
 
-![Cortex ASM - Prisma Cloud Enrichment](https://raw.githubusercontent.com/demisto/content/fb81c4212b33f1020dce1abc4f0198d4a0256936/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_Prisma_Cloud_Enrichment.png)
+![Cortex ASM - Prisma Cloud Enrichment](https://raw.githubusercontent.com/demisto/content/master/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_Prisma_Cloud_Enrichment.png)
 
 #### Cortex ASM - Qualys Enrichment
 
@@ -159,12 +175,19 @@ A playbook that given the IP address enriches Rapid7 information relevant to ASM
 
 A playbook that creates an ASM Remediation Confirmation Scan using an existing service ID, if the scan does not already exist;. It then polls for results of a scan.
 
-![Cortex ASM - Remediation Confirmation Scan](https://raw.githubusercontent.com/demisto/content/ec3ba284d4f60e27928a2dc4db19d8758a36fe98/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_Remediation_Confirmation_Scan.png)
+![Cortex ASM - Remediation Confirmation Scan](https://raw.githubusercontent.com/demisto/content/master/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_Remediation_Confirmation_Scan.png)
+
 #### Cortex ASM - Remediation Guidance
 
 A playbook that pulls remediation guidance off of a list based on ASM RuleID to be used in service owner notifications (email or ticketing system).
 
 ![Cortex ASM - Remediation Guidance](https://raw.githubusercontent.com/demisto/content/master/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_Remediation_Guidance.png)
+
+#### Cortex ASM - Remediation Objectives
+
+A playbook that populates the remediation objectives field that is used to display the remediation actions to the end user.
+
+![Cortex ASM - Remediation Objectives](https://raw.githubusercontent.com/demisto/content/5f71853b59431ca60b1b783867b89f819accfefd/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_Remediation_Objectives.png)
 
 #### Cortex ASM - Remediation Path Rules
 
@@ -189,6 +212,12 @@ Playbook that identifies and recommends the most likely owners of a given servic
 A playbook that given the IP address enriches ServiceNow CMDB information relevant to ASM alerts.
 
 ![Cortex ASM - ServiceNow CMDB Enrichment](https://raw.githubusercontent.com/demisto/content/master/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_ServiceNow_CMDB_Enrichment.png)
+
+#### Cortex ASM - ServiceNow Notification
+
+A playbook that is used to create ServiceNow tickets directed toward service owners to notify them of their internet exposures.
+
+![Cortex ASM - ServiceNow Notification](https://raw.githubusercontent.com/demisto/content/94341532ed2e30cb0c5fb3235ef10b4411c8337c/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_ServiceNow_Notification.png)
 
 #### Cortex ASM - Splunk Enrichment
 

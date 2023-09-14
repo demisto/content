@@ -1,0 +1,72 @@
+{
+    "userAliases": [
+        {
+            "metadata": {
+                "productEntityId": "test_product_entity_id",
+                "collectedTimestamp": "2022-09-15T07:47:01.666265Z",
+                "vendorName": "test_vendor_name",
+                "productName": "test_product_name",
+                "entityType": "USER",
+                "interval": {
+                    "startTime": "2010-04-26T00:00:00Z",
+                    "endTime": "2022-12-08T06:47:56.197021Z"
+                }
+            },
+            "entity": {
+                "user": {
+                    "userid": "admin",
+                    "productObjectId": "test_product_entity_id"
+                }
+            },
+            "relations": [
+                {
+                    "entity": {
+                        "asset": {
+                            "hostname": "Test_data123",
+                            "hardware": [
+                                {}
+                            ],
+                            "systemLastUpdateTime": "2022-09-14T06:14:06Z"
+                        }
+                    },
+                    "entityType": "ASSET",
+                    "relationship": "OWNS"
+                }
+            ]
+        },
+        {
+            "metadata": {
+                "productEntityId": "test_product_entity_id_1",
+                "collectedTimestamp": "2022-12-08T06:47:56.197021Z",
+                "vendorName": "vendor_name",
+                "productName": "Configuration Management Database (CMDB)",
+                "entityType": "USER",
+                "interval": {
+                    "startTime": "2022-12-08T06:47:56.197021Z",
+                    "endTime": "2023-06-12T00:00:00Z"
+                }
+            },
+            "entity": {
+                "user": {
+                    "userid": "admin",
+                    "productObjectId": "test_product_entity_id_1"
+                }
+            },
+            "relations": [
+                {
+                    "entity": {
+                        "asset": {
+                            "hostname": "IP Adress",
+                            "hardware": [
+                                {}
+                            ],
+                            "systemLastUpdateTime": "2022-12-08T06:35:16Z"
+                        }
+                    },
+                    "entityType": "ASSET",
+                    "relationship": "OWNS"
+                }
+            ]
+        }
+    ]
+}

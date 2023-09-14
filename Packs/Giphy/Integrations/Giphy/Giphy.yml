@@ -17,11 +17,13 @@ configuration:
   defaultvalue: ""
   type: 4
   hidden: true
+  required: false
 - displaypassword: API Key
   hiddenusername: true
   name: apikey_creds
   type: 9
 
+  required: false
 script:
   script: ''
   type: javascript

@@ -23,19 +23,24 @@ configuration:
 - display: Fetch incidents
   name: isFetch
   type: 8
+  required: false
 - display: Incident type
   name: incidentType
   type: 13
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 - defaultvalue: 1 day
   display: First fetch since (<number> <time unit>, e.g., 12 hours, 7 days)
   name: fetch_time
   type: 0
+  required: false
 description: Fetches data from the Uptycs database.
 display: Uptycs
 name: Uptycs
@@ -1078,15 +1083,9 @@ script:
       description: name of query
       type: string
   - arguments:
-    - default: false
-      description: Retrieve carves from a specific path
-      isArray: false
+    - description: Retrieve carves from a specific path
       name: path
-      required: false
-      secret: false
-    deprecated: false
     description: Get the list of carves file from a specific path.
-    execution: false
     name: uptycs-get-carves
     outputs:
     - contextPath: Uptycs.Carves.id
@@ -1123,42 +1122,27 @@ script:
       description: Time at which the carve was deleted.
       type: date
   - arguments:
-    - default: false
-      description: uuid of a specific carved file. Get the id from the list of carves with the command uptycs-get-carves.
-      isArray: false
+    - description: uuid of a specific carved file. Get the id from the list of carves with the command uptycs-get-carves.
       name: carve_id
       required: true
-      secret: false
-    deprecated: false
     description: Get the url of a carved file using uuid.
-    execution: false
     name: uptycs-get-carves-link
     outputs:
     - contextPath: Uptycs.CarvesLink.url
       description: Url of the carved file
       type: string
   - arguments:
-    - default: false
-      description: uuid of a specific carved file to download. Get the id from the list of carves with the command uptycs-get-carves.
-      isArray: false
+    - description: uuid of a specific carved file to download. Get the id from the list of carves with the command uptycs-get-carves.
       name: carve_id
       required: true
-      secret: false
-    deprecated: false
     description: Download a carved file using uuid.
-    execution: false
     name: uptycs-get-carves-download-file
   - name: uptycs-get-asset-with-id
-    deprecated: false
     description: Get an Uptycs asset details.
-    execution: false
     arguments:
     - name: asset_id
       required: true
       description: Uptycs asset id. Get the id from the list of assets with the command uptycs-get-assets.
-      isArray: false
-      secret: false
-      default: false
     outputs:
     - contextPath: Uptycs.Asset.hostName
       description: Hostname in Uptycs DB
@@ -1234,15 +1218,10 @@ script:
       type: boolean
   - name: uptycs-get-tag
     description: Return Uptycs asset tag details.
-    deprecated: false
-    execution: false
     arguments:
     - name: tag_id
       required: true
       description: Uptycs tag id. Get the id from the list of tags with the command uptycs-get-tags.
-      isArray: false
-      secret: false
-      default: false
     outputs:
     - contextPath: Uptycs.tag.tag
       description: Tag name in Uptycs DB
@@ -1306,21 +1285,11 @@ script:
       type: string
   - name: uptycs-get-tags
     description: Return a list of Uptycs asset tags with details.
-    deprecated: false
-    execution: false
     arguments:
     - name: key
       description: Uptycs tag key
-      required: false
-      isArray: false
-      secret: false
-      default: false
     - name: value
       description: Uptycs tag value
-      required: false
-      isArray: false
-      secret: false
-      default: false
     outputs:
     - contextPath: Uptycs.tags.id
       description: Tag id in Uptycs DB
@@ -1387,19 +1356,12 @@ script:
       type: string
   - name: uptycs-delete-tag
     description: Delete an Uptycs asset tag.
-    deprecated: false
-    execution: false
     arguments:
     - name: tag_id
       required: true
       description: Delete the tag matching this id. Get the id from the list of tags with the command uptycs-get-tags.
-      isArray: false
-      secret: false
-      default: false
   - name: uptycs-get-lookuptables
     description: get list of uptycs look up tables
-    deprecated: false
-    execution: false
     arguments: []
     outputs:
     - contextPath: Uptycs.lookuptables.id
@@ -1446,15 +1408,10 @@ script:
       type: string
   - name: uptycs-get-lookuptable
     description: Get an Uptycs lookup table details.
-    deprecated: false
-    execution: false
     arguments:
     - name: table_id
       required: true
       description: Id of table in Uptycs DB. Get the id from the list of tables with the command uptycs-get-lookuptables.
-      isArray: false
-      secret: false
-      default: false
     outputs:
     - contextPath: Uptycs.lookuptable.seedId
       description: Uptycs seed id
@@ -1497,33 +1454,18 @@ script:
       type: string
   - name: uptycs-create-lookuptable
     description: Create a new Uptycs lookup table.
-    deprecated: false
-    execution: false
     arguments:
     - name: name
       required: true
       description: Name of a lookup table.
-      isArray: false
-      secret: false
-      default: false
     - name: id_field
       required: true
       description: Id field for the table. An identifier (ID) from the JSON/CSV file you want to upload. Select an ID based on the context of lookup data. For example, a domain lookup ID can be domain, or a port lookup ID can be port. This ID must be the same as defined in the JSON file to be uploaded, otherwise Uptycs does not capture the JSON data. This field is case sensitive and cannot be edited after a lookup table is saved.
-      isArray: false
-      secret: false
-      default: false
     - name: description
-      required: false
       description: Description of a lookup table
-      isArray: false
-      secret: false
-      default: false
     - name: filename
       required: true
       description: The name of the file being uploaded. This file should be uploaded to Cortex XSOAR in the Playground War Room using the paperclip icon next to the CLI.
-      isArray: false
-      secret: false
-      default: false
     outputs:
     - contextPath: Uptycs.lookuptable.id
       description: Id of lookup table in Uptycs DB
@@ -1533,87 +1475,49 @@ script:
       type: string
   - name: uptycs-edit-lookuptable
     description: Edit an Uptycs lookup table.
-    deprecated: false
-    execution: false
     arguments:
     - name: table_id
       required: true
       description: Look up table id. Get the id from the list of tables with the command uptycs-get-lookuptables.
-      isArray: false
-      secret: false
-      default: false
     - name: name
-      required: false
       description: Name of a lookup table.
-      isArray: false
-      secret: false
-      default: false
     - name: description
-      required: false
       description: A lookup table description.
-      isArray: false
-      secret: false
-      default: false
     - name: active
       auto: PREDEFINED
       defaultValue: true
-      required: false
       description: Enable or disable the table with a boolean flag of true or false.
-      isArray: false
-      secret: false
-      default: false
       predefined:
-        - 'true'
-        - 'false'
+      - 'true'
+      - 'false'
     outputs:
     - contextPath: Uptycs.lookuptable
       description: response
       type: string
   - name: uptycs-delete-lookuptable
     description: Delete an Uptycs lookup table.
-    deprecated: false
-    execution: false
     arguments:
     - name: table_id
       required: true
       description: Table id in Uptycs DB. Get the id from the list of tables with the command uptycs-get-lookuptables.
-      isArray: false
-      secret: false
-      default: false
   - name: uptycs-delete-assets-tag
     description: Disassociate an asset with a tag.
-    deprecated: false
-    execution: false
     arguments:
     - name: asset_id
       required: true
       description: Disassociate the asset matching this asset id with the given tag_id. Get the id from the list of asset with the command uptycs-get-assets.
-      isArray: false
-      secret: false
-      default: false
     - name: tag_id
       required: true
       description: Disassociate the tag matching this id with the given asset_id. Get the id from the list of tags with the command uptycs-get-tags.
-      isArray: false
-      secret: false
-      default: false
   - name: uptycs-post-lookuptable-data
     description: Update csv data for a look up table.
-    deprecated: false
-    execution: false
     arguments:
     - name: table_id
       required: true
       description: Look up table id. Get the id from the list of tables with the command uptycs-get-lookuptables.
-      isArray: false
-      secret: false
-      default: false
     - name: filename
       required: true
       description: The name of the file being uploaded. This file should be uploaded to Cortex XSOAR in the Playground War Room using the paperclip icon next to the CLI.
-      isArray: false
-      secret: false
-      default: false
   dockerimage: demisto/uptycs:1.0.0.63766
   isfetch: true
   runonce: true

@@ -6,9 +6,11 @@ configuration:
 - display: Server URL (e.g. https://demisto.blueliv.com/api/v2)
   name: url
   type: 0
+  required: false
 - display: Username
   name: credentials
   type: 9
+  required: false
 - additionalinfo: It can be found in the GUI URL. See Integration tips for more details.
   defaultvalue: '1'
   display: Organization ID
@@ -37,19 +39,24 @@ configuration:
 - display: Trust any certificate (not secure)
   name: unsecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 - display: Fetch incidents
   name: isFetch
   type: 8
+  required: false
 - display: Incident type
   name: incidentType
   type: 13
+  required: false
 - defaultvalue: '50'
   display: Fetch Limit (Max.- 200, Recommended less than 50)
   name: fetch_limit
   type: 0
+  required: false
 - defaultvalue: POSITIVE,NEGATIVE,INFORMATIVE,IMPORTANT
   display: Fetch resource status (POSITIVE, NEGATIVE...)
   name: fetch_status
@@ -62,10 +69,12 @@ configuration:
   - NEGATIVE
   - INFORMATIVE
   type: 16
+  required: false
 - additionalinfo: Format yyyy-mm-dd or yyyy-mm-ddThh:mm:ss
   display: First fetch time
   name: first_fetch_time
   type: 0
+  required: false
 description: |-
   Blueliv ThreatCompass systematically looks for information about companies,products, people, brands, logos, assets, technology and other information, depending on your needs. Blueliv ThreatCompass allows you to monitor and track all this information to keep your data, your
   organization and its employees safe

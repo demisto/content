@@ -16,32 +16,55 @@ configuration:
   name: organization
   additionalinfo: Used by any command that requires an organization argument. Should be passed as a parameter in the configuration or as a command argument.
   type: 0
+  required: false
 - display: Username
   name: credentials
   type: 9
+  required: false
 - display: Use Basic Authentication
   additionalinfo: Check this checkbox to use the basic authentication method. Auth Token authentication will be used by default. To use basic authentication method, enter values for the Username and Password parameters.
   name: use_basic_auth
   type: 8
+  required: false
 - display: Client ID
   additionalinfo: The Client ID parameter is used for Auth authentication. Used together with the Client Secret parameter.
   name: client_id
   type: 0
+  hidden: true
+  required: false
 - display: Client Secret
   additionalinfo: The Client Secret parameter is used for Auth authentication. Used together with the Client ID parameter.
   name: client_secret
   type: 4
+  hidden: true
+  required: false
+- display: Client ID
+  name: credentials_client
+  required: false
+  type: 9
+  displaypassword: Client Secret
+  section: Connect
 - display: Auth Token
   additionalinfo: The Auth Token parameter is used for Auth authentication.\nBy default, an Auth Token passed as a parameter takes priority over an Auth Token saved in the integration context.\nIf a Refresh Token is available, a new Auth Token is generated when an existing Auth Token expires, and it is then updated in the integration context.
   name: access_token
   type: 4
+  hidden: true
+  required: false
+- displaypassword: Auth Token
+  additionalinfo: The Auth Token parameter is used for Auth authentication.\nBy default, an Auth Token passed as a parameter takes priority over an Auth Token saved in the integration context.\nIf a Refresh Token is available, a new Auth Token is generated when an existing Auth Token expires, and it is then updated in the integration context.
+  name:  credentials_access_token
+  required: false
+  hiddenusername: true
+  type: 9
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
 
+  required: false
 script:
   script: ''
   commands:
@@ -1753,7 +1776,7 @@ script:
   runonce: false
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.12.67728
 fromversion: 6.5.0
 tests:
 - No tests (auto formatted)

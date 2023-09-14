@@ -15,17 +15,21 @@ configuration:
   name: client_secret
   type: 4
   hidden: true
+  required: false
 - display: API3 Client ID
   name: credentials_api3_client
   type: 9
   displaypassword: API3 Client Secret
   section: Connect
+  required: false
 - display: Trust any certificate (not secure)
   name: unsecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 description: Use the Looker integration to query an explore, save queries as looks, run looks, and fetch look results as incidents.
 display: Looker
 name: Looker

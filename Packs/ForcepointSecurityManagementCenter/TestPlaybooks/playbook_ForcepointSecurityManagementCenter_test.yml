@@ -1,0 +1,1009 @@
+id: ForcepointSecurityManagementCenter_test
+version: -1
+name: ForcepointSecurityManagementCenter_test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: f311b1c7-487b-46a0-8140-4171b1904bc8
+    type: start
+    task:
+      id: f311b1c7-487b-46a0-8140-4171b1904bc8
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 10,
+          "y": -100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: ea9d91e9-a771-41c1-836e-bb5bae7372ec
+    type: regular
+    task:
+      id: ea9d91e9-a771-41c1-836e-bb5bae7372ec
+      version: -1
+      name: forcepoint-smc-domain-create
+      description: Creates a new Domain.
+      script: Forcepoint Security Management Center|||forcepoint-smc-domain-create
+      type: regular
+      iscommand: true
+      brand: Forcepoint Security Management Center
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      name:
+        simple: playbook_test_domain
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 10,
+          "y": 180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 65a9c963-1d55-44ae-84f1-9d1af7c2ba9f
+    type: regular
+    task:
+      id: 65a9c963-1d55-44ae-84f1-9d1af7c2ba9f
+      version: -1
+      name: forcepoint-smc-domain-list
+      description: Lists the Domains in the system.
+      script: Forcepoint Security Management Center|||forcepoint-smc-domain-list
+      type: regular
+      iscommand: true
+      brand: Forcepoint Security Management Center
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      name:
+        simple: playbook_test_domain
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 10,
+          "y": 350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: c640251a-d59e-435a-8609-91edd77f4e4c
+    type: regular
+    task:
+      id: c640251a-d59e-435a-8609-91edd77f4e4c
+      version: -1
+      name: forcepoint-smc-domain-delete
+      description: Deletes a domain.
+      script: Forcepoint Security Management Center|||forcepoint-smc-domain-delete
+      type: regular
+      iscommand: true
+      brand: Forcepoint Security Management Center
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      name:
+        simple: playbook_test_domain
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 10,
+          "y": 520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 9c931b6c-de56-441f-8f30-8ac6e97ac6f4
+    type: title
+    task:
+      id: 9c931b6c-de56-441f-8f30-8ac6e97ac6f4
+      version: -1
+      name: Domain
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 10,
+          "y": 40
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 7ee4c52e-fffb-4483-84b8-347abeaeb2da
+    type: regular
+    task:
+      id: 7ee4c52e-fffb-4483-84b8-347abeaeb2da
+      version: -1
+      name: forcepoint-smc-host-create
+      description: Creates a new Host.
+      script: Forcepoint Security Management Center|||forcepoint-smc-host-create
+      type: regular
+      iscommand: true
+      brand: Forcepoint Security Management Center
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      address:
+        simple: 1.2.4.5
+      name:
+        simple: playbook_test_host
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 10,
+          "y": 820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: db9ee8e2-e297-472e-88c4-6533f19b00ed
+    type: regular
+    task:
+      id: db9ee8e2-e297-472e-88c4-6533f19b00ed
+      version: -1
+      name: forcepoint-smc-host-list
+      description: Lists the Hosts in the system.
+      script: Forcepoint Security Management Center|||forcepoint-smc-host-list
+      type: regular
+      iscommand: true
+      brand: Forcepoint Security Management Center
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      name:
+        simple: ${ForcepointSMC.Host.Name}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 10,
+          "y": 990
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 037abf5b-45b2-43c0-8472-ee87a08d110c
+    type: regular
+    task:
+      id: 037abf5b-45b2-43c0-8472-ee87a08d110c
+      version: -1
+      name: forcepoint-smc-host-update
+      description: Updates a host.
+      script: Forcepoint Security Management Center|||forcepoint-smc-host-update
+      type: regular
+      iscommand: true
+      brand: Forcepoint Security Management Center
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      address:
+        simple: 1.1.1.1
+      comment:
+        simple: test
+      name:
+        simple: ${ForcepointSMC.Host.Name}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 10,
+          "y": 1160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 4107151b-064c-43d9-84e4-f3f71247739c
+    type: regular
+    task:
+      id: 4107151b-064c-43d9-84e4-f3f71247739c
+      version: -1
+      name: forcepoint-smc-host-delete
+      description: Deletes a host.
+      script: Forcepoint Security Management Center|||forcepoint-smc-host-delete
+      type: regular
+      iscommand: true
+      brand: Forcepoint Security Management Center
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      name:
+        simple: ${ForcepointSMC.Host.Name}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 10,
+          "y": 1500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: a24d353d-0ba2-48ca-8b63-69f23db90450
+    type: title
+    task:
+      id: a24d353d-0ba2-48ca-8b63-69f23db90450
+      version: -1
+      name: Host
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 10,
+          "y": 700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 32d67435-a011-4c25-8b6b-3083a20bdcc5
+    type: title
+    task:
+      id: 32d67435-a011-4c25-8b6b-3083a20bdcc5
+      version: -1
+      name: IP List
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "14"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 10,
+          "y": 1680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: b20fb35d-c2fb-4633-8116-720794ae3788
+    type: regular
+    task:
+      id: b20fb35d-c2fb-4633-8116-720794ae3788
+      version: -1
+      name: forcepoint-smc-ip-list-create
+      description: Creates an IP List.
+      script: Forcepoint Security Management Center|||forcepoint-smc-ip-list-create
+      type: regular
+      iscommand: true
+      brand: Forcepoint Security Management Center
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      addresses:
+        simple: 1.1.1.1
+      name:
+        simple: playbook_test_iplist
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 10,
+          "y": 1820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 4a936472-e556-4116-82e1-31b8ba98fc07
+    type: regular
+    task:
+      id: 4a936472-e556-4116-82e1-31b8ba98fc07
+      version: -1
+      name: forcepoint-smc-ip-list-list
+      description: Lists the IP Lists in the system.
+      script: Forcepoint Security Management Center|||forcepoint-smc-ip-list-list
+      type: regular
+      iscommand: true
+      brand: Forcepoint Security Management Center
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      name:
+        simple: ${ForcepointSMC.IPList.Name}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 10,
+          "y": 2160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: bb361042-631b-4542-8961-271a684672c6
+    type: regular
+    task:
+      id: bb361042-631b-4542-8961-271a684672c6
+      version: -1
+      name: forcepoint-smc-ip-list-update
+      description: Updates an IP List.
+      script: Forcepoint Security Management Center|||forcepoint-smc-ip-list-update
+      type: regular
+      iscommand: true
+      brand: Forcepoint Security Management Center
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      addresses:
+        simple: 1.2.4.5
+      comment:
+        simple: test
+      is_overwrite:
+        simple: "True"
+      name:
+        simple: ${ForcepointSMC.IPList.Name}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 10,
+          "y": 1990
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: bf2de475-7e7e-4bf5-88ad-e318375c55c1
+    type: regular
+    task:
+      id: bf2de475-7e7e-4bf5-88ad-e318375c55c1
+      version: -1
+      name: forcepoint-smc-ip-list-delete
+      description: Deletes an IP List.
+      script: Forcepoint Security Management Center|||forcepoint-smc-ip-list-delete
+      type: regular
+      iscommand: true
+      brand: Forcepoint Security Management Center
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      name:
+        simple: ${ForcepointSMC.IPList.Name}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 10,
+          "y": 2500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 614b65e0-e26b-4933-887c-1053009d1f62
+    type: condition
+    task:
+      id: 614b65e0-e26b-4933-887c-1053009d1f62
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: ForcepointSMC.IPList.Addresses
+            iscontext: true
+          right:
+            value:
+              simple: 1.2.4.5
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: ForcepointSMC.IPList.Addresses
+            iscontext: true
+          right:
+            value:
+              simple: 1.1.1.1
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 10,
+          "y": 2330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 7979af03-2a86-4556-86c8-d9f5d0177c2a
+    type: condition
+    task:
+      id: 7979af03-2a86-4556-86c8-d9f5d0177c2a
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ForcepointSMC.Host.Comment
+            iscontext: true
+          right:
+            value:
+              simple: test
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 10,
+          "y": 1330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: e72d0e38-f8f7-46cb-89a3-1a00349ac30a
+    type: regular
+    task:
+      id: e72d0e38-f8f7-46cb-89a3-1a00349ac30a
+      version: -1
+      name: forcepoint-smc-policy-template-list
+      description: Lists the policy templates in the system.
+      script: Forcepoint Security Management Center|||forcepoint-smc-policy-template-list
+      type: regular
+      iscommand: true
+      brand: Forcepoint Security Management Center
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      limit:
+        simple: "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 10,
+          "y": 3005
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 1000a47f-7bad-42db-889e-3e9cd9e30722
+    type: regular
+    task:
+      id: 1000a47f-7bad-42db-889e-3e9cd9e30722
+      version: -1
+      name: forcepoint-smc-firewall-policy-create
+      description: Creates a firewall policy.
+      script: Forcepoint Security Management Center|||forcepoint-smc-firewall-policy-create
+      type: regular
+      iscommand: true
+      brand: Forcepoint Security Management Center
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      name:
+        simple: playbook_test_policy
+      template:
+        simple: ${ForcepointSMC.PolicyTemplate.Name}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 10,
+          "y": 3180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: cd691755-80ca-4c79-8edf-c66bc726cc68
+    type: regular
+    task:
+      id: cd691755-80ca-4c79-8edf-c66bc726cc68
+      version: -1
+      name: forcepoint-smc-firewall-policy-list
+      description: Lists the firewall policies in the system.
+      script: Forcepoint Security Management Center|||forcepoint-smc-firewall-policy-list
+      type: regular
+      iscommand: true
+      brand: Forcepoint Security Management Center
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      limit:
+        simple: "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 10,
+          "y": 3340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 0519695b-bc40-45f0-86cc-8c26c859599a
+    type: regular
+    task:
+      id: 0519695b-bc40-45f0-86cc-8c26c859599a
+      version: -1
+      name: forcepoint-smc-rule-create
+      description: Creates a rule.
+      script: Forcepoint Security Management Center|||forcepoint-smc-rule-create
+      type: regular
+      iscommand: true
+      brand: Forcepoint Security Management Center
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      action:
+        simple: allow
+      ip_version:
+        simple: V4
+      policy_name:
+        simple: ${ForcepointSMC.Policy.Name}
+      rule_name:
+        simple: playbook_test_rule
+      source_ip_list:
+        simple: ${ForcepointSMC.IPList.Name}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 10,
+          "y": 3690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 12b957b7-35df-4e84-84f4-05a720536db3
+    type: regular
+    task:
+      id: 12b957b7-35df-4e84-84f4-05a720536db3
+      version: -1
+      name: forcepoint-smc-ip-list-list
+      description: Lists the IP Lists in the system.
+      script: Forcepoint Security Management Center|||forcepoint-smc-ip-list-list
+      type: regular
+      iscommand: true
+      brand: Forcepoint Security Management Center
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      limit:
+        simple: "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 10,
+          "y": 3520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: cd455431-9672-4ba1-8bc6-1170b04ef6ca
+    type: regular
+    task:
+      id: cd455431-9672-4ba1-8bc6-1170b04ef6ca
+      version: -1
+      name: forcepoint-smc-rule-update
+      description: Updates a rule.
+      script: Forcepoint Security Management Center|||forcepoint-smc-rule-update
+      type: regular
+      iscommand: true
+      brand: Forcepoint Security Management Center
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      action:
+        simple: allow
+      comment:
+        simple: test
+      ip_version:
+        simple: V4
+      policy_name:
+        simple: ${ForcepointSMC.Policy.Name}
+      rule_id:
+        simple: ${ForcepointSMC.Rule.ID}
+      rule_name:
+        simple: ${ForcepointSMC.Rule.Name}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 10,
+          "y": 3860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: b319723c-805d-4399-8398-750411649b1e
+    type: regular
+    task:
+      id: b319723c-805d-4399-8398-750411649b1e
+      version: -1
+      name: forcepoint-smc-rule-delete
+      description: Deletes a rule.
+      script: Forcepoint Security Management Center|||forcepoint-smc-rule-delete
+      type: regular
+      iscommand: true
+      brand: Forcepoint Security Management Center
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      ip_version:
+        simple: V4
+      name:
+        simple: ${ForcepointSMC.Rule.Name}
+      policy_name:
+        simple: ${ForcepointSMC.Policy.Name}
+      rule_id:
+        simple: ${ForcepointSMC.Rule.ID}
+      rule_name:
+        simple: ${ForcepointSMC.Rule.Name}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 10,
+          "y": 4030
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: d4f9b360-dade-4e51-85ab-5d4f4e3d475b
+    type: title
+    task:
+      id: d4f9b360-dade-4e51-85ab-5d4f4e3d475b
+      version: -1
+      name: Policy and Rule
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "31"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 10,
+          "y": 2690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: 849a9620-3254-475f-8c46-6931a008d305
+    type: regular
+    task:
+      id: 849a9620-3254-475f-8c46-6931a008d305
+      version: -1
+      name: forcepoint-smc-firewall-policy-delete
+      description: Deletes a firewall policy.
+      script: Forcepoint Security Management Center|||forcepoint-smc-firewall-policy-delete
+      type: regular
+      iscommand: true
+      brand: Forcepoint Security Management Center
+    scriptarguments:
+      name:
+        simple: ${ForcepointSMC.Policy.Name}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 10,
+          "y": 4200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: 47acf2dc-1bf3-411c-8851-5b2fcdc36c78
+    type: regular
+    task:
+      id: 47acf2dc-1bf3-411c-8851-5b2fcdc36c78
+      version: -1
+      name: DeleteContext
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 10,
+          "y": 2830
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 4395,
+        "width": 380,
+        "x": 10,
+        "y": -100
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.8.0
+description: ''

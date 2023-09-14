@@ -41,21 +41,25 @@ configuration:
   type: 0
   defaultvalue: 1000
   section: Collect
+  required: false
 - display: First fetch time interval
   name: from
   type: 0
   defaultvalue: 3 days
   section: Collect
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Trust any certificate (not secure)
   name: verify
   type: 8
   section: Connect
   advanced: true
+  required: false
 script:
   script: ""
   type: python

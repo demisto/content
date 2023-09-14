@@ -1,0 +1,490 @@
+commonfields:
+  id: Cisco Umbrella Cloud Security v2
+  version: -1
+name: Cisco Umbrella Cloud Security v2
+display: Cisco Umbrella Cloud Security v2
+category: Network Security
+description: Cisco Umbrella is a cloud security platform providing the first line of defense against internet threats. It uses DNS-layer security to block malicious requests before a connection is established, offering protection against malware, ransomware, phishing, and more. It offers real-time reporting, integrates with other Cisco solutions for layered security, and uses machine learning to uncover and predict threats.
+configuration:
+- name: credentials
+  display: API Key
+  displaypassword: API Secret
+  type: 9
+  required: true
+- name: proxy
+  display: Use system proxy settings
+  defaultvalue: 'false'
+  type: 8
+  required: false
+- name: insecure
+  display: Trust any certificate (not secure)
+  defaultvalue: 'false'
+  type: 8
+  required: false
+script:
+  commands:
+  - name: umbrella-destinations-list
+    description: Get destinations within a destination list. A destination is a URL, IP or fully qualified domain name.
+    arguments:
+    - name: destination_list_id
+      description: The ID of the destination list. Destination lists can be fetched with the `umbrella-destination-lists-list` command.
+      required: true
+      isArray: false
+    - name: destination_ids
+      description: Comma-separated list of destination IDs to be retrieved from a list of destinations.
+      required: false
+      isArray: true
+    - name: destinations
+      description: Comma-separated list of destinations to retrieve, a destination may be a domain, URL, or IP address.
+      required: false
+      isArray: true
+    - name: page
+      description: Page number of paginated results. Minimum 1; Default 1.
+      required: false
+      isArray: false
+    - name: page_size
+      description: The number of items per page. Minimum 1; Maximum 100; Default 50.
+      required: false
+      isArray: false
+    - name: limit
+      description: The number of items per page. Minimum 1.
+      required: false
+      isArray: false
+      defaultValue: '50'
+    outputs:
+    - type: String
+      contextPath: Umbrella.Destinations.id
+      description: The unique ID of the destination.
+    - type: String
+      contextPath: Umbrella.Destinations.destination
+      description: A destination may be a domain, URL, or IP address.
+    - type: String
+      contextPath: Umbrella.Destinations.type
+      description: The type of destination within the destination list.
+    - type: String
+      contextPath: Umbrella.Destinations.comment
+      description: A comment about the destination.
+    - type: Date
+      contextPath: Umbrella.Destinations.createdAt
+      description: The date and time when the destination list was created.
+  - name: umbrella-destination-add
+    description: 'Add a destination to a destination list. A destination is a URL, IPv4, CIDR or fully qualified domain name. Accepted types for destination list with the access "allow" are: DOMAIN, IPv4 and CIDR. Accepted types for destination list with the access "block" are: URL and DOMAIN.'
+    arguments:
+    - name: destination_list_id
+      description: The ID of the destination list. Destination lists can be fetched with the `umbrella-destination-lists-list` command.
+      required: true
+      isArray: false
+    - name: destinations
+      description: Comma-separated list of destinations. A destination may be a URL, IPv4, CIDR or fully qualified domain name.
+      required: true
+      isArray: false
+    - name: comment
+      description: A comment about all the inserted destinations.
+      required: false
+      isArray: false
+      defaultValue: Added from XSOAR
+    outputs:
+    - type: Number
+      contextPath: Umbrella.DestinationLists.id
+      description: The unique ID of the destination list.
+    - type: Number
+      contextPath: Umbrella.DestinationLists.organizationId
+      description: The organization ID.
+    - type: String
+      contextPath: Umbrella.DestinationLists.access
+      description: 'The type of access for the destination list. Valid values are: allow or block.'
+    - type: Boolean
+      contextPath: Umbrella.DestinationLists.isGlobal
+      description: Specifies whether the destination list is a global destination list. There is only one default destination list of type 'allow' or 'block' for an organization.
+    - type: String
+      contextPath: Umbrella.DestinationLists.name
+      description: The name of the destination list.
+    - type: Number
+      contextPath: Umbrella.DestinationLists.thirdpartyCategoryId
+      description: The third-party category ID of the destination list.
+    - type: Number
+      contextPath: Umbrella.DestinationLists.createdAt
+      description: The date and time when the destination list was created.
+    - type: Number
+      contextPath: Umbrella.DestinationLists.modifiedAt
+      description: The date and time when the destination list was modified.
+    - type: Boolean
+      contextPath: Umbrella.DestinationLists.isMspDefault
+      description: Specifies whether MSP is the default.
+    - type: Boolean
+      contextPath: Umbrella.DestinationLists.markedForDeletion
+      description: Specifies whether the destination list is marked for deletion.
+    - type: Number
+      contextPath: Umbrella.DestinationLists.bundleTypeId
+      description: The number that represents the type of the Umbrella policy associated with the destination list. Umbrella returns '1' for the DNS policy or '2' for the Web policy.
+    - type: Number
+      contextPath: Umbrella.DestinationLists.meta.destinationCount
+      description: The total number of destinations in a destination list.
+  - name: umbrella-destination-delete
+    description: Remove a destination from a destination list. A destination is a URL, IP or fully qualified domain name.
+    arguments:
+    - name: destination_list_id
+      description: The ID of the destination list. Destination lists can be fetched with the `umbrella-destination-lists-list` command.
+      required: true
+      isArray: false
+    - name: destination_ids
+      description: Comma-separated list of destination IDs. Destinations can be fetched with the `umbrella-destination-list` command.
+      required: true
+      isArray: true
+    outputs:
+    - type: Number
+      contextPath: Umbrella.DestinationLists.id
+      description: The unique ID of the destination list.
+    - type: Number
+      contextPath: Umbrella.DestinationLists.organizationId
+      description: The organization ID.
+    - type: String
+      contextPath: Umbrella.DestinationLists.access
+      description: 'The type of access for the destination list. Valid values are: allow or block.'
+    - type: Boolean
+      contextPath: Umbrella.DestinationLists.isGlobal
+      description: Specifies whether the destination list is a global destination list. There is only one default destination list of type 'allow' or 'block' for an organization.
+    - type: String
+      contextPath: Umbrella.DestinationLists.name
+      description: The name of the destination list.
+    - type: Number
+      contextPath: Umbrella.DestinationLists.thirdpartyCategoryId
+      description: The third-party category ID of the destination list.
+    - type: Number
+      contextPath: Umbrella.DestinationLists.createdAt
+      description: The date and time when the destination list was created.
+    - type: Number
+      contextPath: Umbrella.DestinationLists.modifiedAt
+      description: The date and time when the destination list was modified.
+    - type: Boolean
+      contextPath: Umbrella.DestinationLists.isMspDefault
+      description: Specifies whether MSP is the default.
+    - type: Boolean
+      contextPath: Umbrella.DestinationLists.markedForDeletion
+      description: Specifies whether the destination list is marked for deletion.
+    - type: Number
+      contextPath: Umbrella.DestinationLists.bundleTypeId
+      description: The number that represents the type of the Umbrella policy associated with the destination list. Umbrella returns '1' for the DNS policy or '2' for the Web policy.
+    - type: Number
+      contextPath: Umbrella.DestinationLists.meta.destinationCount
+      description: The total number of destinations in a destination list.
+  - name: umbrella-destination-lists-list
+    description: Get destination lists. A list of destinations (for example, domain name or URL) to which you can block or allow access.
+    arguments:
+    - name: destination_list_id
+      description: The ID of the destination list to retrieve.
+      required: false
+      isArray: false
+    - name: page
+      description: Page number of paginated results. Minimum 1; Default 1.
+      required: false
+      isArray: false
+    - name: page_size
+      description: The number of items per page. Minimum 1; Maximum 100; Default 50.
+      required: false
+      isArray: false
+    - name: limit
+      description: The maximum number of records to retrieve. Minimum 1.
+      required: false
+      isArray: false
+      defaultValue: '50'
+    outputs:
+    - type: Number
+      contextPath: Umbrella.DestinationLists.id
+      description: The unique ID of the destination list.
+    - type: Number
+      contextPath: Umbrella.DestinationLists.organizationId
+      description: The organization ID.
+    - type: String
+      contextPath: Umbrella.DestinationLists.access
+      description: 'The type of access for the destination list. Valid values are: allow or block.'
+    - type: Boolean
+      contextPath: Umbrella.DestinationLists.isGlobal
+      description: Specifies whether the destination list is a global destination list. There is only one default destination list of type 'allow' or 'block' for an organization.
+    - type: String
+      contextPath: Umbrella.DestinationLists.name
+      description: The name of the destination list.
+    - type: Number
+      contextPath: Umbrella.DestinationLists.thirdpartyCategoryId
+      description: The third-party category ID of the destination list.
+    - type: Number
+      contextPath: Umbrella.DestinationLists.createdAt
+      description: The date and time when the destination list was created.
+    - type: Number
+      contextPath: Umbrella.DestinationLists.modifiedAt
+      description: The date and time when the destination list was modified.
+    - type: Boolean
+      contextPath: Umbrella.DestinationLists.isMspDefault
+      description: Specifies whether MSP is the default.
+    - type: Boolean
+      contextPath: Umbrella.DestinationLists.markedForDeletion
+      description: Specifies whether the destination list is marked for deletion.
+    - type: Number
+      contextPath: Umbrella.DestinationLists.bundleTypeId
+      description: The number that represents the type of the Umbrella policy associated with the destination list. Umbrella returns '1' for the DNS policy or '2' for the Web policy.
+    - type: Number
+      contextPath: Umbrella.DestinationLists.meta.destinationCount
+      description: The total number of destinations in a destination list.
+    - type: Number
+      contextPath: Umbrella.DestinationLists.meta.domainCount
+      description: The total number of domains in a destination list. Domains are part of the total number of destinations in a destination list.
+    - type: Number
+      contextPath: Umbrella.DestinationLists.meta.ipv4Count
+      description: The total number of IP addresses in a destination list. IP addresses are part of the total number of destinations in a destination list.
+    - type: Number
+      contextPath: Umbrella.DestinationLists.meta.urlCount
+      description: The total number of URLs in a destination list. URLs are part of the total number of destinations in a destination list.
+    - type: Number
+      contextPath: Umbrella.DestinationLists.meta.applicationCount
+      description: The total number or applications in a destination list. Applications are part of the total number of destinations in a destination list.
+  - name: umbrella-destination-list-create
+    description: 'Create a destination list. A list of destinations (for example, domain name or URL) to which you can block or allow access. Accepted types for destination list with the access "allow" are: DOMAIN, IPv4 and CIDR. Accepted types for destination list with the access "block" are: URL and DOMAIN.'
+    arguments:
+    - name: bundle_type
+      description: The type of the Umbrella policy associated with the destination list. If the field is not specified, the default value is 'DNS'.
+      required: false
+      isArray: false
+      auto: PREDEFINED
+      predefined:
+      - 'DNS'
+      - 'WEB'
+    - name: access
+      description: 'The type of access for the destination list. Valid values are "allow" or "block". Accepted types for destination list with the access "allow" are: DOMAIN, IPv4 and CIDR. Accepted types for destination list with the access "block" are: URL and DOMAIN.'
+      required: true
+      isArray: false
+      auto: PREDEFINED
+      predefined:
+      - 'allow'
+      - 'block'
+    - name: is_global
+      description: Specifies whether the destination list is a global destination list. There is only one default destination list of type 'allow' or 'block' for an organization.
+      required: true
+      isArray: false
+      auto: PREDEFINED
+      predefined:
+      - 'True'
+      - 'False'
+    - name: name
+      description: The name of the destination list.
+      required: true
+      isArray: false
+    - name: destinations
+      description: Comma-separated list of destinations. A destination may be a URL, IPv4, CIDR or fully qualified domain name.
+      required: false
+      isArray: true
+    - name: destinations_comment
+      description: A comment about all the inserted destinations.
+      required: false
+      isArray: false
+      defaultValue: Added from XSOAR
+    outputs:
+    - type: Number
+      contextPath: Umbrella.DestinationLists.id
+      description: The unique ID of the destination list.
+    - type: Number
+      contextPath: Umbrella.DestinationLists.organizationId
+      description: The organization ID.
+    - type: String
+      contextPath: Umbrella.DestinationLists.access
+      description: 'The type of access for the destination list. Valid values are: allow or block.'
+    - type: Boolean
+      contextPath: Umbrella.DestinationLists.isGlobal
+      description: Specifies whether the destination list is a global destination list. There is only one default destination list of type 'allow' or 'block' for an organization.
+    - type: String
+      contextPath: Umbrella.DestinationLists.name
+      description: The name of the destination list.
+    - type: Number
+      contextPath: Umbrella.DestinationLists.thirdpartyCategoryId
+      description: The third-party category ID of the destination list.
+    - type: Number
+      contextPath: Umbrella.DestinationLists.createdAt
+      description: The date and time when the destination list was created.
+    - type: Number
+      contextPath: Umbrella.DestinationLists.modifiedAt
+      description: The date and time when the destination list was modified.
+    - type: Boolean
+      contextPath: Umbrella.DestinationLists.isMspDefault
+      description: Specifies whether MSP is the default.
+    - type: Boolean
+      contextPath: Umbrella.DestinationLists.markedForDeletion
+      description: Specifies whether the destination list is marked for deletion.
+    - type: Number
+      contextPath: Umbrella.DestinationLists.bundleTypeId
+      description: The number that represents the type of the Umbrella policy associated with the destination list. Umbrella returns '1' for the DNS policy or '2' for the Web policy.
+    - type: Number
+      contextPath: Umbrella.DestinationLists.meta.destinationCount
+      description: The total number of destinations in a destination list.
+  - name: umbrella-destination-list-update
+    description: Edit a destination list. A list of destinations (for example, domain name or URL) to which you can block or allow access.
+    arguments:
+    - name: destination_list_id
+      description: The ID of the destination list. Destination lists can be fetched with the `umbrella-destination-lists-list` command.
+      required: true
+      isArray: false
+    - name: name
+      description: The name of the destination list.
+      required: true
+      isArray: false
+    outputs:
+    - type: Number
+      contextPath: Umbrella.DestinationLists.id
+      description: The unique ID of the destination list.
+    - type: Number
+      contextPath: Umbrella.DestinationLists.organizationId
+      description: The organization ID.
+    - type: String
+      contextPath: Umbrella.DestinationLists.access
+      description: 'The type of access for the destination list. Valid values are: allow or block.'
+    - type: Boolean
+      contextPath: Umbrella.DestinationLists.isGlobal
+      description: Specifies whether the destination list is a global destination list. There is only one default destination list of type 'allow' or 'block' for an organization.
+    - type: String
+      contextPath: Umbrella.DestinationLists.name
+      description: The name of the destination list.
+    - type: Number
+      contextPath: Umbrella.DestinationLists.thirdpartyCategoryId
+      description: The third-party category ID of the destination list.
+    - type: Number
+      contextPath: Umbrella.DestinationLists.createdAt
+      description: The date and time when the destination list was created.
+    - type: Number
+      contextPath: Umbrella.DestinationLists.modifiedAt
+      description: The date and time when the destination list was modified.
+    - type: Boolean
+      contextPath: Umbrella.DestinationLists.isMspDefault
+      description: Specifies whether MSP is the default.
+    - type: Boolean
+      contextPath: Umbrella.DestinationLists.markedForDeletion
+      description: Specifies whether the destination list is marked for deletion.
+    - type: Number
+      contextPath: Umbrella.DestinationLists.bundleTypeId
+      description: The number that represents the type of the Umbrella policy associated with the destination list. Umbrella returns '1' for the DNS policy or '2' for the Web policy.
+    - type: Number
+      contextPath: Umbrella.DestinationLists.meta.destinationCount
+      description: The total number of destinations in a destination list.
+  - name: umbrella-destination-list-delete
+    description: Delete a destination list. A list of destinations (for example, domain name or URL) to which you can block or allow access.
+    arguments:
+    - name: destination_list_id
+      description: The ID of the destination list. Destination lists can be fetched with the `umbrella-destination-lists-list` command.
+      required: true
+      isArray: false
+  - arguments:
+    - description: Organization ID.
+      name: orgId
+    deprecated: true
+    description: Deprecated. Use the `umbrella-destination-lists-list` instead.
+    name: umbrella-get-destination-lists
+    outputs:
+    - contextPath: Umbrella.DestinationLists
+      description: List of destination lists in an organization.
+      type: Unknown
+  - arguments:
+    - description: Optional organization ID. If not provided, will use the one provided in the integration configuration.
+      name: orgId
+    - description: Destination list ID.
+      name: destId
+      required: true
+    - description: 'List of domains to add to the destination list. (Format: domain1.com,domain2.com).'
+      isArray: true
+      name: domains
+      required: true
+    - defaultValue: Added from XSOAR
+      description: Note on what the domain is or why it is being added.
+      name: comment
+    deprecated: true
+    description: Deprecated. Use the `umbrella-destination-add` instead.
+    name: umbrella-add-domain
+  - arguments:
+    - description: Optional organization ID. By default, uses the one set in the instance configuration.
+      name: orgId
+    - description: Destination list ID to get domains from. Use the umbrella-get-destination-lists command to get the list ID.
+      name: destId
+      required: true
+    deprecated: true
+    description: Deprecated. Use the `umbrella-destinations-list` instead.
+    name: umbrella-get-destination-domains
+    outputs:
+    - contextPath: Umbrella.Destinations.id
+      description: ID of the domain within the destination list.
+    - contextPath: Umbrella.Destinations.destination
+      description: Domain within the destination list.
+    - contextPath: Umbrella.Destinations.type
+      description: Type of destination within the destination list.
+    - contextPath: Umbrella.Destinations.createdAt
+      description: The date and time when the domain within the destination list was created.
+    - contextPath: Umbrella.Destinations.comment
+      description: Comment associated with the domain within the destination list.
+  - arguments:
+    - description: Optional organization ID. If not provided, will use the one provided in the integration configuration.
+      name: orgId
+    - description: Destination list ID.
+      name: destId
+      required: true
+    - description: 'Comma-separated list of entry IDs to remove from the destination list. (Format: 1234,1235).'
+      isArray: true
+      name: domainIds
+      required: true
+    deprecated: true
+    description: Deprecated. Use the `umbrella-destination-delete` instead.
+    name: umbrella-remove-domain
+  - arguments:
+    - description: Optional organization ID. By default, uses the one set in the instance configuration.
+      name: orgId
+    - description: Destination list ID to get domains from. Use the umbrella-get-destination-lists command to get the list ID.
+      name: destId
+      required: true
+    - description: Domain to get from a destination list.
+      name: domain
+      required: true
+    deprecated: true
+    description: Deprecated. Use the `umbrella-destinations-list` instead.
+    name: umbrella-get-destination-domain
+    outputs:
+    - contextPath: Umbrella.Destinations.id
+      description: ID of the domain within the destination list.
+    - contextPath: Umbrella.Destinations.destination
+      description: Domain within the destination list.
+    - contextPath: Umbrella.Destinations.type
+      description: Type of destination within the destination list.
+    - contextPath: Umbrella.Destinations.createdAt
+      description: The date and time when domain within the destination list was created.
+    - contextPath: Umbrella.Destinations.comment
+      description: Comment associated with the domain within the destination list.
+  - arguments:
+    - description: Optional organization ID. By default, uses the one set in the instance configuration.
+      name: orgId
+    - description: Destination list ID to get domains from. Use the umbrella-get-destination-lists command to get the list ID.
+      name: destId
+      required: true
+    - description: Comma-separated list of domains to search for in a destination list.
+      isArray: true
+      name: domains
+      required: true
+    deprecated: true
+    description: Deprecated. Use the `umbrella-destinations-list` instead.
+    name: umbrella-search-destination-domains
+    outputs:
+    - contextPath: Umbrella.Destinations.id
+      description: ID of domain within the destination list.
+      type: number
+    - contextPath: Umbrella.Destinations.destination
+      description: Domain within the destination list.
+      type: string
+    - contextPath: Umbrella.Destinations.type
+      description: Type of destination within the destination list.
+      type: string
+    - contextPath: Umbrella.Destinations.createdAt
+      description: Date and time when the domain within the destination list was created.
+      type: date
+    - contextPath: Umbrella.Destinations.comment
+      description: Comment associated with the domain within the destination list.
+      type: string
+  script: ''
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.10.13.72123
+  isfetch: false
+fromversion: 6.9.0
+tests:
+- No tests (auto formatted)

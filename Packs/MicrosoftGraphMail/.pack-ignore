@@ -1,9 +1,6 @@
 [file:MicrosoftGraphMail.yml]
 ignore=IN126,DS107,IN124
 
-[file:playbook-MicrosoftGraphMail-Test.yml]
-ignore=auto-test
-
 [file:README.md]
 ignore=RM106
 
@@ -14,7 +11,7 @@ ignore=IN126,DS107,IN124
 ignore=BA101
 
 [file:classifier-MicrosoftGraphListener.json]
-ignore=BA101,BA114
+ignore=BA101
 
 [known_words]
 msgraph

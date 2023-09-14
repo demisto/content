@@ -7,14 +7,17 @@ configuration:
   display: CheckPhish API URL
   name: url
   type: 0
+  required: false
 - display: API Token
   name: token
   type: 4
   hidden: true
+  required: false
 - displaypassword: API Token
   name: credentials_api_token
   hiddenusername: true
   type: 9
+  required: false
 - display: 'Good Dispositions (CheckPhish labels for non-phishing URLs. Default is "clean")'
   name: good_disp
   options:
@@ -29,6 +32,7 @@ configuration:
   - streaming
   - suspicious
   type: 16
+  required: false
 - display: 'Suspicious dispositions (CheckPhish labels for suspicious phishing URLs). Default is "drug_spam", "gambling", "hacked_website", "streaming", "suspicious"'
   name: susp_disp
   options:
@@ -43,6 +47,7 @@ configuration:
   - streaming
   - suspicious
   type: 16
+  required: false
 - display: 'Bad dispositions (CheckPhish labels for phishing URLs). Defaults are "cryptojacking", "phish", "likely_phish", "scam".'
   name: bad_disp
   options:
@@ -57,6 +62,7 @@ configuration:
   - streaming
   - suspicious
   type: 16
+  required: false
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: B - Usually reliable
   display: Source Reliability
@@ -74,9 +80,11 @@ configuration:
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 description: Check any URL to detect supsicious behavior.
 display: CheckPhish
 name: CheckPhish

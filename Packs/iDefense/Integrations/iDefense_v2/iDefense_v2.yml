@@ -30,9 +30,11 @@ configuration:
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: use_proxy
   type: 8
+  required: false
 description: Deprecated. Use Accenture CTI v2 instead.
 display: Accenture CTI (Deprecated)
 name: iDefense_v2

@@ -16,9 +16,11 @@ configuration:
 - display: Fetch incidents
   name: isFetch
   type: 8
+  required: false
 - display: Incident type
   name: incidentType
   type: 13
+  required: false
 - display: Alert severities to fetch when fetching incidents
   name: alert_severity
   options:
@@ -27,26 +29,32 @@ configuration:
   - Moderate
   - Low
   type: 16
+  required: false
 - defaultvalue: 24 hours
   display: First fetch time range (<number> <time unit>, e.g., 1 hour, 30 minutes)
   name: fetch_time
   type: 0
+  required: false
 - defaultvalue: '5'
   display: Alerts to fetch per run; note that increasing this value may result in slow performance if too many results are returned at once
   name: fetch_limit
   type: 0
+  required: false
 - defaultvalue: 'false'
   display: Include the list of files in returned incidents.
   name: include_files
   type: 8
+  required: false
 - name: incidentFetchInterval
   display: Incidents Fetch Interval
   defaultvalue: '3'
   type: 19
+  required: false
 - name: v2_events
   display: Use v2 file events
   defaultvalue: 'false'
   type: 8
+  required: false
 description: Use the Code42 integration to identify potential data exfiltration from insider threats while speeding investigation and response by providing fast access to file events and metadata across physical and cloud environments.
 display: Code42
 name: Code42
@@ -789,7 +797,7 @@ script:
       - all
       - incident
       - searches
-  dockerimage: demisto/py42:1.0.0.63737
+  dockerimage: demisto/py42:1.0.0.66909
   isfetch: true
   runonce: false
   script: '-'

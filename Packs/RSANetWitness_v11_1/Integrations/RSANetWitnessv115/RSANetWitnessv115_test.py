@@ -10,7 +10,8 @@ from RSANetWitnessv115 import Client, list_incidents_command, update_incident_co
     host_alerts_list_command, file_alerts_list_command, file_download_command, mft_download_request_command, \
     system_dump_download_request_command, process_dump_download_request_command, endpoint_isolate_from_network_command, \
     endpoint_update_exclusions_command, endpoint_isolation_remove_command, endpoint_command, create_time, create_filter, \
-    create_exclusions_list, remove_duplicates_in_items, remove_duplicates_for_fetch, fetch_incidents, paging_command
+    create_exclusions_list, remove_duplicates_in_items, remove_duplicates_for_fetch, fetch_incidents, paging_command, \
+    fetch_alerts_related_incident
 
 
 def util_load_json(path):
@@ -249,7 +250,7 @@ def test_get_incidents(mocker):
 
         """
 
-    fetch_responses = util_load_json('test_data/fetch_results.json')
+    fetch_responses = util_load_json('test_data/get_incidents_results.json')
     mocked_http_response = fetch_responses['get_inc_response']
     mocker.patch.object(client, 'list_incidents_request', return_value=mocked_http_response)
 
@@ -257,7 +258,36 @@ def test_get_incidents(mocker):
     assert items == fetch_responses['get_inc_results']
 
 
-def test_fetch_incidents(mocker):
+@pytest.mark.parametrize(
+    'alerts_limit',
+    [
+        1,
+        2
+    ]
+)
+def test_fetch_alerts_related_incident(mocker, alerts_limit: int):
+    """
+    Given:
+            alerts_limit(int): limit of alerts per incident
+    When:
+            Calling the fetch_alerts_related_incident command with alerts_limit.
+    Then:
+            Assert that the amount of response from the fetch_alerts_related_incident is as the limit given.
+    """
+    fetch_responses = util_load_json('test_data/fetch_alerts.json')
+    mocker.patch.object(client, 'incident_list_alerts_request', return_value=fetch_responses)
+    res = fetch_alerts_related_incident(client, 'test_id', alerts_limit)
+    assert len(res) == alerts_limit
+
+
+@pytest.mark.parametrize(
+    'import_alerts, test_data_key',
+    [
+        (True, "fetch_incidents_with_alerts"),
+        (False, "fetch_incidents_without_alerts"),
+    ]
+)
+def test_fetch_incidents(mocker, import_alerts: bool, test_data_key: str):
     """
             Given:
             client with fetch parameters
@@ -269,12 +299,14 @@ def test_fetch_incidents(mocker):
              Assert that the incidents received are as expected
 
         """
-    fetch_responses = util_load_json('test_data/fetch_results.json')
-    mocked_http_response = fetch_responses['get_inc_response']
-    mocker.patch.object(client, 'list_incidents_request', return_value=mocked_http_response)
+    fetch_responses = util_load_json('test_data/fetch_incidents.json')
+    mocked_http__incidents_response = fetch_responses['list_incidents_request'][0]
+    mocked_http__alerts_response = fetch_responses['incident_list_alerts_request'][0]
+    mocker.patch.object(client, 'list_incidents_request', return_value=mocked_http__incidents_response)
+    mocker.patch.object(client, 'incident_list_alerts_request', return_value=mocked_http__alerts_response)
 
-    incidents = fetch_incidents(client)
-    assert incidents == fetch_responses['fetch_results']
+    incidents = fetch_incidents(client, params={"import_alerts": import_alerts})
+    assert incidents == fetch_responses[test_data_key][0]
 
 
 def test_generate_token(mocker):

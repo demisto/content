@@ -11,10 +11,12 @@ configuration:
   name: access_token
   type: 4
   hidden: true
+  required: false
 - name: access_token_creds
   type: 9
   displaypassword: Access Token
   hiddenusername: true
+  required: false
 - display: Directory ID
   name: directory_id
   required: true
@@ -22,30 +24,37 @@ configuration:
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 - defaultvalue: 'true'
   display: Allow creating users
   name: create_user_enabled
   type: 8
   additionalinfo: If set to false, iam-create-user command will be skipped, and user will not be created.
+  required: false
 - defaultvalue: 'true'
   display: Allow updating users
   name: update_user_enabled
   type: 8
+  required: false
 - defaultvalue: 'true'
   display: Allow enabling users
   name: enable_user_enabled
   type: 8
+  required: false
 - defaultvalue: 'true'
   display: Allow disabling users
   name: disable_user_enabled
   type: 8
+  required: false
 - defaultvalue: 'true'
   display: Automatically create user if not found in update command
   name: create_if_not_exists
   type: 8
+  required: false
 - defaultvalue: User Profile - SCIM (Incoming)
   display: Incoming Mapper
   name: mapper_in

@@ -24,12 +24,15 @@ configuration:
   additionalinfo: Default value is 60 seconds.
   name: timeout
   type: 0
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 description: Query.AI is a decentralized data access and analysis technology that simplifies security investigations across disparate platforms without data duplication.
 display: Query.AI
 name: Query.AI

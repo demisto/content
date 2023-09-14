@@ -20,10 +20,12 @@ configuration:
   name: proxy
   defaultvalue: "false"
   type: 8
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   defaultvalue: "false"
   type: 8
+  required: false
 script:
   script: ''
   type: python
@@ -152,7 +154,7 @@ script:
       description: Capture ID of the capture in CS Enterprise.
       type: string
     description: Uploads a capture file into CS Enterprise
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.12.68714
   runonce: false
   subtype: python3
 tests:

@@ -1,0 +1,389 @@
+id: Containment Plan - Clear User Sessions
+version: -1
+name: Containment Plan - Clear User Sessions
+description: |-
+  ## Containment Plan - Clear User Sessions
+
+  This playbook is a sub-playbook within the containment plan playbook.
+  The playbook clears the users' sessions using Okta integration. (currently, the playbook supports only Okta)
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: f2a578bb-7b26-4477-8391-2e40e77fb9d5
+    type: start
+    task:
+      id: f2a578bb-7b26-4477-8391-2e40e77fb9d5
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "17"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 770,
+          "y": -150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 965b6bb7-8584-4ee9-86be-705ca7951fba
+    type: regular
+    task:
+      id: 965b6bb7-8584-4ee9-86be-705ca7951fba
+      version: -1
+      name: Auto clear user sessions
+      description: |-
+        Removes all active identity provider sessions. This forces the user to authenticate on the next operation. Optionally revokes OpenID Connect and OAuth refresh and access tokens issued to the user.
+        For more information and examples:
+        https://developer.okta.com/docs/reference/api/users/#user-sessions
+      script: '|||okta-clear-user-sessions'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      userId:
+        complex:
+          root: Account
+          accessor: ID
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 770,
+          "y": 745
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 581b7da6-4c88-41a6-8175-a2116add396c
+    type: title
+    task:
+      id: 581b7da6-4c88-41a6-8175-a2116add396c
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 770,
+          "y": 1150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: ea29c7c0-e180-4c2e-8593-3948400c532e
+    type: regular
+    task:
+      id: ea29c7c0-e180-4c2e-8593-3948400c532e
+      version: -1
+      name: Get Okta user ID
+      description: Fetches information for a single user. You must enter one or more parameters for the command to run.
+      script: '|||okta-get-user'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      username:
+        complex:
+          root: UsersSessionToClear
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 770,
+          "y": 575
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: bda090c7-6749-46e5-8453-31f56d8b778c
+    type: regular
+    task:
+      id: bda090c7-6749-46e5-8453-31f56d8b778c
+      version: -1
+      name: Set the username to the Incident context
+      description: commands.local.cmd.set.parent.incident.context
+      script: Builtin|||setParentIncidentContext
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      key:
+        simple: UsersSessionCleared
+      value:
+        complex:
+          root: Account
+          accessor: Username
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 770,
+          "y": 920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: cceb9ed8-97d2-4b2a-8688-c02b46be05a6
+    type: regular
+    task:
+      id: cceb9ed8-97d2-4b2a-8688-c02b46be05a6
+      version: -1
+      name: Set users to clear the session
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      key:
+        simple: UsersSessionToClear
+      value:
+        complex:
+          root: inputs.Username
+          filters:
+          - - operator: notContainsGeneral
+              left:
+                value:
+                  simple: inputs.Username
+                iscontext: true
+              right:
+                value:
+                  simple: administrator
+              ignorecase: true
+          - - operator: notContainsGeneral
+              left:
+                value:
+                  simple: inputs.Username
+                iscontext: true
+              right:
+                value:
+                  simple: system
+              ignorecase: true
+          transformers:
+          - operator: uniq
+          - operator: RegexExtractAll
+            args:
+              error_if_no_match: {}
+              ignore_case: {}
+              multi_line: {}
+              period_matches_newline: {}
+              regex:
+                value:
+                  simple: '[^\\]+$'
+              unpack_matches: {}
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: inputs.IAMUserDomain
+                iscontext: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 770,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 4025c083-2630-4171-889e-5f05b1fc51eb
+    type: condition
+    task:
+      id: 4025c083-2630-4171-889e-5f05b1fc51eb
+      version: -1
+      name: Is Okta enabled?
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "11"
+    scriptarguments:
+      brandname:
+        simple: Okta v2
+    results:
+    - brandInstances
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 770,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: f1d3409f-55f4-4804-8a48-354971cae04e
+    type: condition
+    task:
+      id: f1d3409f-55f4-4804-8a48-354971cae04e
+      version: -1
+      name: Should clear the user sessions?
+      description: Whether to clear the user sessions based on the input values.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.ClearUserSessions
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.Username
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 770,
+          "y": 0
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "15_2_#default#": 0.15,
+      "17_15_yes": 0.48,
+      "17_2_#default#": 0.11
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1365,
+        "width": 380,
+        "x": 770,
+        "y": -150
+      }
+    }
+  }
+inputs:
+- key: ClearUserSessions
+  value:
+    simple: "True"
+  required: false
+  description: Set to 'True' to clear the user active Okta sessions.
+  playbookInputQuery:
+- key: Username
+  value: {}
+  required: false
+  description: The username to disable.
+  playbookInputQuery:
+- key: IAMUserDomain
+  value: {}
+  required: false
+  description: The Okta IAM users domain. The domain will be appended to the username. E.g., username@IAMUserDomain.
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.6.0
+marketplaces:
+- marketplacev2

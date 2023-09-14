@@ -1,6 +1,5 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-# pack version: 3.1.27
 import tempfile
 
 
@@ -9,7 +8,8 @@ import re
 from base64 import b64decode
 from flask import Flask, Response, request
 from netaddr import IPSet, IPNetwork
-from typing import Any, Dict, cast, Iterable, Callable, IO
+from typing import Any, cast, IO
+from collections.abc import Iterable, Callable
 from math import ceil
 import tldextract
 import urllib3
@@ -372,6 +372,12 @@ def get_indicators_to_format(indicator_searcher: IndicatorsSearcher,
 
     except Exception as e:
         demisto.error(f'Error parsing the following indicator: {ioc.get("value")}\n{e}')
+        # 429 error can only be raised when the Elasticsearch instance encountered an error
+        if '[429] Failed with error' in str(e):
+            version = demisto.demistoVersion()
+            # NG + XSIAM can recover from a shutdown
+            if version.get('platform') == 'x2' or is_demisto_version_ge('8'):
+                raise SystemExit('Encountered issue in Elastic Search query. Restarting container and trying again.')
 
     demisto.debug(f"Completed IOC search & format, found {ioc_counter} IOCs.")
     if request_args.out_format == FORMAT_JSON:
@@ -382,7 +388,7 @@ def get_indicators_to_format(indicator_searcher: IndicatorsSearcher,
 
 
 @debug_function
-def create_json_out_format(list_fields: List, indicator: Dict, request_args: RequestArguments, not_first_call=True) -> str:
+def create_json_out_format(list_fields: List, indicator: dict, request_args: RequestArguments, not_first_call=True) -> str:
     """format the indicator to json format.
 
     Args:
@@ -497,8 +503,8 @@ def create_proxysg_out_format(indicator: dict, files_by_category: dict, request_
 
 
 @debug_function
-def add_indicator_to_category(indicator: str, category: str, files_by_category: Dict):
-    if category in files_by_category.keys():
+def add_indicator_to_category(indicator: str, category: str, files_by_category: dict):
+    if category in files_by_category:
         files_by_category[category].write(indicator + '\n')
 
     else:
@@ -828,7 +834,7 @@ def get_edl_on_demand() -> tuple[str, int]:
         demisto.debug("edl: Reading EDL data from cache")
 
         try:
-            with open(EDL_ON_DEMAND_CACHE_PATH, 'r') as file:
+            with open(EDL_ON_DEMAND_CACHE_PATH) as file:
                 edl_data = file.read()
 
         except Exception as e:
@@ -883,7 +889,7 @@ def route_edl() -> Response:
     cache_refresh_rate: str = params.get('cache_refresh_rate')
 
     if username and password:
-        headers: dict = cast(Dict[Any, Any], request.headers)
+        headers: dict = cast(dict[Any, Any], request.headers)
         if not validate_basic_authentication(headers, username, password):
             err_msg: str = 'Basic authentication failed. Make sure you are using the right credentials.'
             demisto.debug(err_msg)
@@ -924,7 +930,7 @@ def route_edl() -> Response:
 
     headers = [
         ('X-EDL-Created', created.isoformat()),
-        ('X-EDL-Query-Time-Secs', "{:.3f}".format(query_time)),
+        ('X-EDL-Query-Time-Secs', f"{query_time:.3f}"),
         ('X-EDL-Size', str(edl_size)),
         ('X-EDL-Origin-Size', original_indicators_count),
         ('ETag', etag),
@@ -1002,9 +1008,8 @@ def get_request_args(request_args: dict, params: dict) -> RequestArguments:
     elif out_format == FORMAT_ARG_MWG:
         out_format = FORMAT_MWG
 
-    if out_format == FORMAT_MWG:
-        if mwg_type not in MWG_TYPE_OPTIONS:
-            raise DemistoException(EDL_MWG_TYPE_ERR_MSG)
+    if out_format == FORMAT_MWG and mwg_type not in MWG_TYPE_OPTIONS:
+        raise DemistoException(EDL_MWG_TYPE_ERR_MSG)
 
     if params.get('use_legacy_query'):
         # workaround for "msgpack: invalid code" error
@@ -1040,7 +1045,7 @@ def get_request_args(request_args: dict, params: dict) -> RequestArguments:
 ''' COMMAND FUNCTIONS '''
 
 
-def test_module(_: Dict, params: Dict):
+def test_module(_: dict, params: dict):
     """
     Validates:
         1. Valid port.
@@ -1061,8 +1066,7 @@ def test_module(_: Dict, params: Dict):
         if len(range_split) != 2:
             raise ValueError(EDL_MISSING_REFRESH_ERR_MSG)
         try_parse_integer(range_split[0], 'Invalid time value for the Refresh Rate. Must be a valid integer.')
-        if not range_split[1] in ['minute', 'minutes', 'hour', 'hours', 'day', 'days', 'month', 'months', 'year',
-                                  'years']:
+        if range_split[1] not in ['minute', 'minutes', 'hour', 'hours', 'day', 'days', 'month', 'months', 'year', 'years']:
             raise ValueError(
                 'Invalid time unit for the Refresh Rate. Must be minutes, hours, days, months, or years.')
         parse_date_range(cache_refresh_rate, to_timestamp=True)
@@ -1071,7 +1075,7 @@ def test_module(_: Dict, params: Dict):
 
 
 @debug_function
-def update_edl_command(args: Dict, params: Dict):
+def update_edl_command(args: dict, params: dict):
     """
     Updates the context to update the EDL values on demand the next time it runs
     """
@@ -1124,7 +1128,17 @@ def update_edl_command(args: Dict, params: Dict):
     ctx = request_args.to_context_json()
     ctx[EDL_ON_DEMAND_KEY] = True
     set_integration_context(ctx)
-    hr = 'EDL will be updated the next time you access it'
+    hr = 'EDL will be updated the next time you access it.'
+
+    if not query:
+        warning = "\n**Warning**: Updating EDL, while not specifying a query, may load unwanted indicators."
+
+        if (param_query := params.get("query")):
+            warning += f" Hint: use {param_query} to update indicators using the configured integration instance parameter."
+
+        hr += warning
+        demisto.info(warning)
+
     return hr, {}, {}
 
 
@@ -1185,9 +1199,8 @@ def check_platform_and_version(params: dict) -> bool:
         (bool): True if the platform is xsoar or xsoar hosted and no port specified, false otherwise
     """
     platform = demisto.demistoVersion().get("platform", 'xsoar')
-    if platform in ['xsoar', 'xsoar_hosted']:
-        if not is_demisto_version_ge('8.0.0') and not params.get('longRunningPort'):
-            return True
+    if platform in ['xsoar', 'xsoar_hosted'] and not is_demisto_version_ge('8.0.0') and not params.get('longRunningPort'):
+        return True
     return False
 
 

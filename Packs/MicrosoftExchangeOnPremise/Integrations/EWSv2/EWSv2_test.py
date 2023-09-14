@@ -360,11 +360,34 @@ def test_send_mail(mocker):
     from EWSv2 import send_email
     mocker.patch.object(EWSv2, 'Account', return_value=MockAccount(primary_smtp_address="test@gmail.com"))
     send_email_mocker = mocker.patch.object(EWSv2, 'send_email_to_mailbox')
-    results = send_email(to="test@gmail.com", subject="test", replyTo="test1@gmail.com")
+    results = send_email({'to': "test@gmail.com", 'subject': "test", 'replyTo': "test1@gmail.com"})
     assert send_email_mocker.call_args.kwargs.get('to') == ['test@gmail.com']
-    assert send_email_mocker.call_args.kwargs.get('reply_to') == 'test1@gmail.com'
+    assert send_email_mocker.call_args.kwargs.get('reply_to') == ['test1@gmail.com']
     assert results[0].get('Contents') == {
         'from': 'test@gmail.com', 'to': ['test@gmail.com'], 'subject': 'test', 'attachments': []
+    }
+
+
+def test_send_mail_with_from_arg(mocker):
+    """
+    Given -
+        to, subject and replyTo arguments to send an email.
+
+    When -
+        trying to send an email
+
+    Then -
+        verify the context output is returned correctly and that the 'to' and 'replyTo' arguments were sent
+        as a list of strings.
+    """
+    from EWSv2 import send_email
+    mocker.patch.object(EWSv2, 'Account', return_value=MockAccount(primary_smtp_address="test@gmail.com"))
+    send_email_mocker = mocker.patch.object(EWSv2, 'send_email_to_mailbox')
+    results = send_email({'to': "test@gmail.com", 'subject': "test", 'replyTo': "test1@gmail.com", "from": "somemail@what.ever"})
+    assert send_email_mocker.call_args.kwargs.get('to') == ['test@gmail.com']
+    assert send_email_mocker.call_args.kwargs.get('reply_to') == ['test1@gmail.com']
+    assert results[0].get('Contents') == {
+        'from': 'somemail@what.ever', 'to': ['test@gmail.com'], 'subject': 'test', 'attachments': []
     }
 
 
@@ -382,7 +405,7 @@ def test_send_mail_with_trailing_comma(mocker):
     from EWSv2 import send_email
     mocker.patch.object(EWSv2, 'Account', return_value=MockAccount(primary_smtp_address="test@gmail.com"))
     send_email_mocker = mocker.patch.object(EWSv2, 'send_email_to_mailbox')
-    results = send_email(to="test@gmail.com,", subject="test")
+    results = send_email({'to': "test@gmail.com,", 'subject': "test"})
     assert send_email_mocker.call_args.kwargs.get('to') == ['test@gmail.com']
     assert results[0].get('Contents') == {
         'from': 'test@gmail.com', 'to': ['test@gmail.com'], 'subject': 'test', 'attachments': []
@@ -462,6 +485,66 @@ def test_categories_parse_item_as_dict():
 
     return_value = parse_item_as_dict(message, False)
     assert return_value.get("categories") == ['Purple category', 'Orange category']
+
+
+def test_list_parse_item_as_dict():
+    """
+    Given -
+        a Message where effective rights is a list.
+
+    When -
+        running the parse_item_as_dict function.
+
+    Then -
+        verify that the object is parsed correctly.
+    """
+    from EWSv2 import parse_item_as_dict
+    from exchangelib.properties import EffectiveRights
+
+    message = Message(subject='message4',
+                      message_id='message4',
+                      text_body='Hello World',
+                      body='message4',
+                      datetime_received=EWSDateTime(2021, 7, 14, 13, 10, 00, tzinfo=EWSTimeZone('UTC')),
+                      datetime_sent=EWSDateTime(2021, 7, 14, 13, 9, 00, tzinfo=EWSTimeZone('UTC')),
+                      datetime_created=EWSDateTime(2021, 7, 14, 13, 11, 00, tzinfo=EWSTimeZone('UTC')),
+                      effective_rights=[EffectiveRights(), EffectiveRights()]
+                      )
+
+    return_value = parse_item_as_dict(message, False)
+    effetive_right_res = return_value.get("effective_rights")
+    assert type(effetive_right_res) is list
+    assert len(effetive_right_res) == 2
+
+
+def test_parse_item_as_dict_with_empty_field():
+    """
+    Given -
+        a Message where effective rights is None and other fields are false\empty strings.
+
+    When -
+        running the parse_item_as_dict function.
+
+    Then -
+        effective rights field was removed from response other empty\negative fields aren't.
+    """
+    from EWSv2 import parse_item_as_dict
+
+    message = Message(subject='message4',
+                      message_id='message4',
+                      text_body='Hello World',
+                      body='',
+                      datetime_received=EWSDateTime(2021, 7, 14, 13, 10, 00, tzinfo=EWSTimeZone('UTC')),
+                      datetime_sent=EWSDateTime(2021, 7, 14, 13, 9, 00, tzinfo=EWSTimeZone('UTC')),
+                      datetime_created=EWSDateTime(2021, 7, 14, 13, 11, 00, tzinfo=EWSTimeZone('UTC')),
+                      effective_rights=None,
+                      is_read=False
+                      )
+
+    return_value = parse_item_as_dict(message, False)
+    assert 'effective_rights' not in return_value
+    assert return_value['body'] == ''
+    assert return_value['is_read'] is False
 
 
 def test_get_entry_for_object_empty():

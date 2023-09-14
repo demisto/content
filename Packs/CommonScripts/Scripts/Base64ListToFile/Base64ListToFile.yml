@@ -40,6 +40,6 @@ outputs:
   description: EntryID of the file (only in case of report type=json)
 scripttarget: 0
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.10.6.33415
+dockerimage: demisto/python3:3.10.12.63474
 tests:
 - Base64 File in List Test

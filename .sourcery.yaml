@@ -136,14 +136,14 @@ rule_settings:
     - while-guard-to-condition
     - while-to-for
 
-disable: []
+  disable: []
 
-rule_types:
-  - refactoring
-  - suggestion
-  - comment
+  rule_types:
+    - refactoring
+    - suggestion
+    - comment
 
-python_version: "3.7"
+  python_version: "3.7"
 
 rules: []
 

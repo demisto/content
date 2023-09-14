@@ -11,6 +11,7 @@ configuration:
   name: public_api_key
   defaultvalue: ''
   type: 8
+  required: false
 - display: 'Private API Key'
   name: api_key
   defaultvalue: ''
@@ -19,17 +20,21 @@ configuration:
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: 'Max. Polling Time (in seconds):'
   name: maxpolls
   defaultvalue: '300'
   type: 0
+  required: false
 - display: 'Verbose (show log in case of error) '
   name: verbose
   defaultvalue: ''
   type: 8
+  required: false
 script:
   script: ''
   type: python

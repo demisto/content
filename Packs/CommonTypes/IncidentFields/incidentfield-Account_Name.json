@@ -12,7 +12,8 @@
 		"AWS EC2 Instance Misconfiguration",
 		"Microsoft CAS Alert",
 		"CrowdStrike Falcon Detection",
-		"Prisma Cloud - VM Alert Prioritization"
+		"Prisma Cloud - VM Alert Prioritization",
+		"CrowdStrike Falcon IDP Detection"
 	],
 	"breachScript": "",
 	"caseInsensitive": true,

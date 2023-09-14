@@ -23,10 +23,12 @@ configuration:
   name: insecure
   defaultvalue: 'false'
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   defaultvalue: 'false'
   type: 8
+  required: false
 script:
   script: '-'
   type: python

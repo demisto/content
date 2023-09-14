@@ -7,6 +7,7 @@ configuration:
   display: Incident type
   name: incidentType
   type: 13
+  required: false
 - display: Server URL (e.g., https://192.168.0.1)
   name: url
   required: true
@@ -15,19 +16,23 @@ configuration:
   displaypassword: API Key
   hiddenusername: true
   type: 9
+  required: false
 - display: Fetch incidents
   name: isFetch
   type: 8
+  required: false
 - additionalinfo: First fetch query (<number> <time unit>, e.g., 12 hours, 7 days or ISO format 2020-01-01T10:00:00). Maximal number of past events to fetch is 10,000.
   defaultvalue: 3 days
   display: First fetch time
   name: first_fetch
   type: 0
+  required: false
 - additionalinfo: Maximum number of alerts per fetch. Default is 50, maximum is 100.
   defaultvalue: '50'
   display: Fetch Limit
   name: max_fetch
   type: 0
+  required: false
 - additionalinfo: Alert class to filter by. Only one class can be configured at a time. If none is chosen, all classes will be fetched.
   display: Alert Class
   name: alert_class
@@ -42,6 +47,7 @@ configuration:
   - tms
   - traffic
   type: 16
+  required: false
 - additionalinfo: Alert type to filter by. Only one type can be configured at a time. If none is chosen, all types will be fetched.
   display: Alert Type
   name: alert_type
@@ -82,6 +88,7 @@ configuration:
   - tms_fault
   - traffic_auto_mitigation
   type: 16
+  required: false
 - additionalinfo: Minimal alert importance to filter by. If none or Low is chosen, all importances will be fetched.
   display: Minimal importance to fetch
   name: importance
@@ -90,6 +97,7 @@ configuration:
   - Medium
   - High
   type: 15
+  required: false
 - additionalinfo: Alert status to filter by. If none is chosen, all statuses will be fetched.
   display: Event Status
   name: ongoing
@@ -97,12 +105,15 @@ configuration:
   - Ongoing
   - Not Ongoing
   type: 15
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 description: DDoS protection and network visibility.
 display: Netscout Arbor Sightline (Peakflow)
 name: NetscoutArborSightline

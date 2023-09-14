@@ -12,26 +12,33 @@ configuration:
 - display: Fetch incidents
   name: isFetch
   type: 8
+  required: false
 - display: Incident type
   name: incidentType
   type: 13
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 - display: Include Behavior data in incidents
   name: behavior
   type: 8
+  required: false
 - defaultvalue: '10'
   display: How many events to pull from Expander per run
   name: page_limit
   type: 0
+  required: false
 - defaultvalue: '7'
   display: How many days to pull past events on first run
   name: first_run
   type: 0
+  required: false
 - display: Minimum severity of Expanse Exposure to create an incident for
   name: minimum_severity
   type: 15
@@ -40,6 +47,7 @@ configuration:
   - ROUTINE
   - WARNING
   - CRITICAL
+  required: false
 description: Deprecated. Use the Expanse v2 integration instead. The Expanse App for Demisto leverages the Expander API to retrieve network exposures and risky flows to create incidents in Demisto.  This application also allows for IP, Domain, Certificate, Behavior, and Exposure enrichment, retrieving assets and exposures information drawn from Expanse’s unparalleled view of the Internet.
 display: Expanse (Deprecated)
 name: Expanse

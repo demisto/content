@@ -2,7 +2,7 @@ comment: Data output script for populating the dashboard number graph widget wit
 commonfields:
   id: IncidentsCheck-Widget-UnassignedFailingIncidents
   version: -1
-dockerimage: demisto/python3:3.9.7.24076
+dockerimage: demisto/python3:3.10.12.63474
 enabled: true
 name: IncidentsCheck-Widget-UnassignedFailingIncidents
 runas: DBotWeakRole

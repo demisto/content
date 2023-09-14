@@ -15,6 +15,7 @@ configuration:
   name: port
   defaultvalue: ""
   type: 0
+  required: false
 - display: AppID as configured in AIM
   name: appid
   defaultvalue: ""
@@ -24,14 +25,17 @@ configuration:
   name: username
   defaultvalue: ""
   type: 0
+  required: false
 - display: API Password
   name: password
   defaultvalue: ""
   type: 4
+  required: false
 - display: "Fetches credentials"
   name: isFetchCredentials
   defaultvalue: "true"
   type: 8
+  required: false
 - display: Folder to search in safe
   name: folder
   defaultvalue: ""
@@ -46,14 +50,17 @@ configuration:
   name: credentialNames
   defaultvalue: ""
   type: 12
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   defaultvalue: ""
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   defaultvalue: ""
   type: 8
+  required: false
 script:
   script: ''
   type: javascript

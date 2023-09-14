@@ -28,4 +28,4 @@ type: python
 fromversion: 5.0.0
 tests:
 - SetIfEmpty - non-ascii chars - Test
-dockerimage: demisto/python3:3.10.11.61265
+dockerimage: demisto/python3:3.10.12.63474

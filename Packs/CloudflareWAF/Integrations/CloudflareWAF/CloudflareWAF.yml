@@ -7,6 +7,7 @@ configuration:
   name: server
   defaultvalue: https://api.cloudflare.com/client/v4/
   type: 0
+  required: false
 - name: credentials
   display: The API user Token.
   displaypassword: User Token
@@ -22,16 +23,19 @@ configuration:
   display: Default Zone ID
   type: 0
   additionalinfo: The domain identifier. Zone ID can be override when executing commands.The domain identifier. Zone ID can be override when executing commands.
+  required: false
 - name: proxy
   display: Use system proxy settings
   defaultvalue: 'false'
   type: 8
   additionalinfo:
+  required: false
 - name: insecure
   display: Trust any certificate (not secure)
   defaultvalue: 'false'
   type: 8
   additionalinfo: ''
+  required: false
 description: Cloudflare WAF integration allows customers to manage firewall rules, filters, and IP-lists. It also allows to retrieve zones list for each account.
 display: Cloudflare WAF
 name: CloudflareWAF
@@ -67,13 +71,11 @@ script:
       - rateLimit
       - waf
     - description: >-
-        The priority of the rule to allow control of processing order. A
-        lower number indicates high priority. If not provided, any rules
-        with a priority will be sequenced before those without.
+        The priority of the rule to allow control of processing order. A lower number indicates high priority. If not provided, any rules with a priority will be sequenced before those without.
 
         min value: 0.
 
-        max value: 2147483647
+        max value: 2147483647.
       name: priority
     - auto: PREDEFINED
       description: Whether this firewall rule is currently paused.
@@ -140,13 +142,11 @@ script:
       - rateLimit
       - waf
     - description: >-
-        The priority of the rule to allow control of processing order. A
-        lower number indicates high priority. If not provided, any rules
-        with a priority will be sequenced before those without.
+        The priority of the rule to allow control of processing order. A lower number indicates high priority. If not provided, any rules with a priority will be sequenced before those without.
 
         min value: 0.
 
-        max value: 2147483647
+        max value: 2147483647.
       name: priority
     - auto: PREDEFINED
       description: Whether this firewall rule is currently paused.
@@ -588,7 +588,7 @@ script:
     - description: The ID of the pipeline run to retrieve when polling argument is true. Intended for use by the Polling process and does not need to be provided by the user.
       name: operation_id
       deprecated: true
-    description: Replace the IP-list items with a new items
+    description: Replace the IP-list items with a new items.
     name: cloudflare-waf-ip-list-item-update
     outputs: []
     polling: true
@@ -645,7 +645,7 @@ script:
     - contextPath: CloudflareWAF.IpListItem.list_id
       description: The list ID.
       type: String
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.13.73190
   runonce: false
   script: '-'
   subtype: python3

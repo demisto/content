@@ -17,6 +17,7 @@ configuration:
   display: The administrative partition
   name: partition
   type: 0
+  required: false
 - additionalinfo: The Username to use for connection
   display: Username
   name: credentials
@@ -25,9 +26,11 @@ configuration:
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 description: Manages F5 LTM
 display: F5 LTM
 name: F5LTM

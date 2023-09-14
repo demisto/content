@@ -19,24 +19,30 @@ configuration:
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 - additionalinfo: 'Optionally set display timezone for timestamps. Default is UTC. Ex: "US/Eastern"'
   display: Timezone (optional)
   name: timezone
   type: 0
+  required: false
 - additionalinfo: Tag that denotes indicator is malicious (i.e. "threat.mal" or "mal.foo.bar"). Depends on custom tag heirarchy. Use highest heirarchical tag that is considered malicious.
   display: Malicious Tag
   name: bad_tag
   type: 0
+  required: false
 - additionalinfo: Tag that denotes indicator is benign (i.e. "omit.benign" or "legit.beign"). Depends on custom tag heirarchy. Use highest heirarchical tag that is considered benign.
   display: Benign Tag
   name: good_tag
   type: 0
+  required: false
 - display: Use Synapse Optic
   name: use_optic
   type: 8
+  required: false
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: B - Usually reliable
   display: Source Reliability
@@ -50,6 +56,7 @@ configuration:
   - E - Unreliable
   - F - Reliability cannot be judged
   type: 15
+  required: false
 - defaultvalue: indicatorType
   name: feedExpirationPolicy
   display: ''
@@ -59,10 +66,12 @@ configuration:
   - indicatorType
   - suddenDeath
   type: 17
+  required: false
 - defaultvalue: '20160'
   name: feedExpirationInterval
   display: ''
   type: 1
+  required: false
 description: Synapse intelligence analysis platform.
 display: Synapse
 name: Synapse

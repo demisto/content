@@ -17,6 +17,7 @@ configuration:
   name: feed
   type: 8
   defaultvalue: 'true'
+  required: false
 - additionalinfo: Indicators from this integration instance will be marked with this reputation
   display: Indicator Reputation
   name: feedReputation
@@ -26,10 +27,12 @@ configuration:
   - Suspicious
   - Bad
   type: 18
+  required: false
 - additionalinfo: Supports CSV values.
   display: Tags
   name: feedTags
   type: 0
+  required: false
 - name: feedReliability
   display: Source Reliability
   type: 15
@@ -46,6 +49,7 @@ configuration:
   display: Feed Fetch Interval
   name: feedFetchInterval
   type: 19
+  required: false
 - name: feedExpirationPolicy
   display: ''
   type: 17
@@ -54,6 +58,7 @@ configuration:
   - interval
   - indicatorType
   - suddenDeath
+  required: false
 - additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
   display: Traffic Light Protocol Color
   name: tlp_color
@@ -63,24 +68,30 @@ configuration:
   - GREEN
   - WHITE
   type: 15
+  required: false
 - name: first_fetch
   additionalinfo: First fetch query e.g., 12 hours, 7 days. SecurityScorecard provides a maximum of 7 days back. To ensure no alerts are missed, it's recommended to use a value less than 2 days.
   display: First fetch
   defaultvalue: 2 days
   type: 0
+  required: false
 - name: feedExpirationInterval
   display: ''
   type: 1
+  required: false
 - name: feedBypassExclusionList
   display: Bypass exclusion list
   type: 8
   additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 description: SecneurX provides real-time threat intelligence that protects companies against the latest cyber threats, including APTs, phishing, malware, ransomware, data exfiltration, and brand infringement. Security teams rely on our dependable and rich data to expand their threat landscape visibility, resulting in improved detection rates and response times.
 display: SecneurX Threat Feeds
 name: Secneurx Threat Feeds
@@ -97,7 +108,7 @@ script:
   script: '-'
   subtype: python3
   type: python
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.12.67728
 fromversion: 6.2.0
 tests:
 - No tests (auto formatted)

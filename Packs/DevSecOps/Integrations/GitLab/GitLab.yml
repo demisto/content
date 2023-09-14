@@ -15,12 +15,15 @@ configuration:
 - display: Trigger Token
   name: trigger_token
   type: 4
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 description: Deprecated. Use GitLab v2 in GitLab Pack instead.
 display: GitLab (Deprecated)
 name: GitLab

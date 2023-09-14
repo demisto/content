@@ -9,9 +9,11 @@ configuration:
 - display: Fetch incidents
   name: isFetch
   type: 8
+  required: false
 - display: Incident type
   name: incidentType
   type: 13
+  required: false
 - display: API URL
   name: api_url
   defaultvalue: https://api.mnemonic.no
@@ -39,15 +41,18 @@ configuration:
   defaultvalue: 3 days
   type: 0
   additionalinfo: "How far back should the first run fetch open cases in Argus."
+  required: false
 - display: Maximum number of incidents per fetch
   name: max_fetch
   defaultvalue: "0"
   type: 0
   additionalinfo: "Maximum number of cases to be fetched from Argus. 0 means up to system limit (100 000)"
+  required: false
 - display: Fetch incidents exclude tag
   name: exclude_tag
   type: 0
   additionalinfo: 'Excludes fetching incidents with the optional tag. May be used to exclude fetching Argus Cases created by XSOAR. Tags in Argus are of key: value pairs. You may exclude with either (1) tag key, or (2) key: value pairs by a comma-separated string.'
+  required: false
 - display: Incident Mirroring Direction
   name: mirror_direction
   defaultvalue: Incoming And Outgoing
@@ -60,6 +65,7 @@ configuration:
   additionalinfo: "Which direction should the integration mirror incidents."
   hidden:
   - marketplacev2
+  required: false
 - display: Mirroring tag
   name: mirror_tag
   type: 0
@@ -67,6 +73,7 @@ configuration:
   additionalinfo: "Names of tags used to mark incident entries to be mirrored. Comma separated."
   hidden:
   - marketplacev2
+  required: false
 - display: Close Argus Case
   name: close_argus_case
   defaultvalue: "true"
@@ -74,6 +81,7 @@ configuration:
   additionalinfo: 'If true, when an incident is closed in XSOAR: close the mirrored Argus Case'
   hidden:
   - marketplacev2
+  required: false
 - display: Close XSOAR Incident
   name: close_incident
   defaultvalue: "true"
@@ -81,14 +89,17 @@ configuration:
   additionalinfo: 'If true, when mirrored Argus Case is closed: also close the XSOAR Incident'
   hidden:
   - marketplacev2
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   additionalinfo: "Skip HTTPS certification verification."
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
   additionalinfo: "Use system proxy settings."
+  required: false
 script:
   script: ''
   type: python

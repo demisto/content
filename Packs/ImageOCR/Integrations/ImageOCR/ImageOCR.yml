@@ -11,6 +11,7 @@ configuration:
   type: 0
   section: Connect
   advanced: true
+  required: false
 description: Extracts text from images.
 display: Image OCR
 name: Image OCR

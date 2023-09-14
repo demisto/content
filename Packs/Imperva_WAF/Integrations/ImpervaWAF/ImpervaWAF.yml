@@ -14,9 +14,11 @@ configuration:
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 description: Use the Imperva WAF integration to manage IP groups and web security policies in Imperva WAF.
 display: Imperva WAF
 name: Imperva WAF

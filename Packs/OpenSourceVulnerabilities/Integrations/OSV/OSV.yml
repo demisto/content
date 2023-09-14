@@ -11,9 +11,11 @@ configuration:
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 description: 'OSV (Open Source Vulnerability) is a vulnerability database for open source projects. For each vulnerability, it perform bisects to figure out the exact commit that introduces the bug, as well the exact commit that fixes it. This is cross referenced against upstream repositories to figure out the affected tags and commit ranges '
 display: OSV
 name: OSV

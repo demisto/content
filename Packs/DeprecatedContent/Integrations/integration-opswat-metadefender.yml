@@ -17,12 +17,15 @@ configuration:
   name: api
   defaultvalue: ""
   type: 4
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 - display: 'The low threshold '
   name: lowPercnt
   defaultvalue: "34"
@@ -37,6 +40,7 @@ configuration:
   name: cloud
   defaultvalue: "false"
   type: 8
+  required: false
 script:
   script: >
     var sendRequest = function(url,param, fileId) {

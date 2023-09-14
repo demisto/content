@@ -20,32 +20,40 @@ configuration:
   name: Insecure
   defaultvalue: ""
   type: 8
+  required: false
 - display: Use system proxy settings
   name: useproxy
   defaultvalue: ""
   type: 8
+  required: false
 - display: Fetch incidents
   name: isFetch
   type: 8
+  required: false
 - display: Default page size for alarm queries
   name: pageSize
   defaultvalue: "2000"
   type: 0
+  required: false
 - display: Timezone offset in minutes of the LogRhythm server machine
   name: timeZone
   defaultvalue: ""
   type: 0
+  required: false
 - display: Incident type
   name: incidentType
   type: 13
+  required: false
 - display: Use Windows Authentication
   name: use_ntlm
   defaultvalue: "false"
   type: 8
+  required: false
 - display: Domain of the Windows authentication server (used for Windows authentication)
   name: domain
   defaultvalue: ""
   type: 0
+  required: false
 script:
   script: ''
   type: javascript

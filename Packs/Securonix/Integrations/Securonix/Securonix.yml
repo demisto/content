@@ -6,6 +6,7 @@ configuration:
 - display: Host (Overrides the default hostname, https://{tenant}.net/Snypr)
   name: host
   type: 0
+  required: false
 - display: Tenant
   name: tenant
   required: true
@@ -26,13 +27,16 @@ configuration:
   - Incident
   - Threat
   type: 15
+  required: false
 - additionalinfo: Name of the tenant to fetch threats from. This parameter is optional for Non MSSP users.
   display: Tenant Name
   name: tenant_name
   type: 0
+  required: false
 - display: Fetch incidents
   name: isFetch
   type: 8
+  required: false
 - additionalinfo: |-
     Selecting "all" will fetch incidents updated in the given time range.
     Selecting "opened" will fetch incidents opened in the given time range.
@@ -45,6 +49,7 @@ configuration:
   - opened
   - closed
   type: 15
+  required: false
 - display: Set default incident severity
   name: default_severity
   options:
@@ -52,9 +57,11 @@ configuration:
   - Medium
   - High
   type: 15
+  required: false
 - display: Incident type
   name: incidentType
   type: 13
+  required: false
 - additionalinfo: |-
     The date or relative timestamp from where to start fetching incidents.
 
@@ -63,11 +70,13 @@ configuration:
   display: First fetch time range
   name: fetch_time
   type: 0
+  required: false
 - defaultvalue: '200'
   additionalinfo: If the value is greater than 200, it will be considered as 200. The maximum is 200.
   display: The maximum number of incidents to fetch each time.
   name: max_fetch
   type: 0
+  required: false
 - additionalinfo: The mirroring direction in which to mirror the incidents. You can mirror "Incoming" (from Securonix to XSOAR), "Outgoing" (from XSOAR to Securonix), or in both directions.
   defaultvalue: None
   display: Incident Mirroring Direction
@@ -78,6 +87,7 @@ configuration:
   - Outgoing
   - Incoming And Outgoing
   type: 15
+  required: false
 - additionalinfo: |-
     If enabled, the integration will close the respective Securonix
     incident after fetching it in XSOAR. Following fields will be required for 
@@ -90,31 +100,38 @@ configuration:
   display: Close respective Securonix incident after fetching
   name: close_incident
   type: 8
+  required: false
 - additionalinfo: If the Securonix incident is in any one of the state mentioned here, then the incident will be Closed on XSOAR. Supports comma-separated values.
   display: Securonix workflow state(s) that can be considered as Close state in XSOAR for Incoming mirroring
   name: close_states_of_securonix
   type: 0
+  required: false
 - additionalinfo: Provide an action name to map with XSOAR's active state. E.g. IN PROGRESS
   display: Securonix action name to map with XSOAR's active state for Outgoing mirroring
   name: active_state_action_mapping
   type: 0
+  required: false
 - additionalinfo: Provide a workflow status to map with XSOAR's active state. E.g. In Progress
   display: Securonix status to map with XSOAR's active state for Outgoing mirroring
   name: active_state_status_mapping
   type: 0
+  required: false
 - additionalinfo: Provide an action name to map with XSOAR's Closed state. E.g. CLOSED
   display: Securonix action name to map with XSOAR's closed state for Outgoing mirroring
   name: closed_state_action_mapping
   type: 0
+  required: false
 - additionalinfo: Provide a workflow status to map with XSOAR's closed state. E.g. Completed
   display: Securonix status to map with XSOAR's closed state for Outgoing mirroring
   name: closed_state_status_mapping
   type: 0
+  required: false
 - additionalinfo: Choose the tag to add to an entry to mirror it as a comment in Securonix.
   defaultvalue: comment
   display: Comment Entry Tag
   name: comment_tag
   type: 0
+  required: false
 - additionalinfo: Numbers of retries to be performed. (Recommended is 3)
   defaultvalue: '3'
   display: Securonix Retry Count
@@ -127,11 +144,13 @@ configuration:
   - '4'
   - '5'
   type: 15
+  required: false
 - additionalinfo: The delay between two retries. Range in 30 to 300 Seconds (5 minutes). Anything less than 30 seconds is considered 30 seconds, and anything more than 300 seconds is considered 300 seconds. (Recommended is 30 seconds)
   defaultvalue: '30'
   display: Securonix Retry Delay
   name: securonix_retry_delay
   type: 0
+  required: false
 - additionalinfo: Delay type of retry mechanism. (Recommended is Exponential)
   defaultvalue: Exponential
   display: Securonix Retry Delay Type
@@ -140,12 +159,15 @@ configuration:
   - Exponential
   - Fixed
   type: 15
+  required: false
 - display: Trust any certificate (not secure)
   name: unsecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 description: Use the Securonix integration to manage incidents, threats, lookup tables, whitelists and watchlists.
 display: Securonix
 name: Securonix
@@ -378,7 +400,7 @@ script:
     - description: End date/time for which to retrieve activity data (in the format MM/dd/yyyy HH:mm:ss).
       name: to
       required: true
-    - description: Free-text query. For example, query="resourcegroupname=WindowsSnare and policyname=Possible Privilege Escalation - Self Escalation"."
+    - description: Free-text query, For example, query="resourcegroupname=WindowsSnare and policyname=Possible Privilege Escalation - Self Escalation".
       name: query
     - description: Paginate next set of results.
       name: query_id
@@ -576,7 +598,7 @@ script:
       description: Query Id for the pagination.
       type: String
   - arguments:
-    - description: ' Start time range for which to return incidents (<number> <time unit>, e.g., 1 hour, 30 minutes)'
+    - description: ' Start time range for which to return incidents (<number> <time unit>, e.g., 1 hour, 30 minutes).'
       name: from
       required: true
     - description: End date/time for which to retrieve incidents (in the format MM/dd/yyyy HH:mm:ss) Default is current time.
@@ -963,7 +985,7 @@ script:
   - arguments:
     - description: |-
         Start time range for which to return threats (Supported formats: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ
-        For example: 01 Jan 2023, 01 Feb 2023 04:45:33, 2023-01-26T14:05:44Z)
+        For example: 01 Jan 2023, 01 Feb 2023 04:45:33, 2023-01-26T14:05:44Z).
       name: date_from
       required: true
     - description: |-
@@ -1135,9 +1157,9 @@ script:
       required: true
     - description: The type of attachment to retrieve. Supported options are csv, pdf, and txt. Comma-separated values are supported.
       name: attachment_type
-    - description: 'Start time for which to retrieve attachments.(Supported formats: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, yyyy-MM-ddTHH:mm:ss.SSSZ. For example: 01 Jan 2023, 01 Feb 2023 04:45:33, 2023-01-26T14:05:44Z, 2023-01-26T14:05:44.000Z)'
+    - description: 'Start time for which to retrieve attachments.(Supported formats: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, yyyy-MM-ddTHH:mm:ss.SSSZ. For example: 01 Jan 2023, 01 Feb 2023 04:45:33, 2023-01-26T14:05:44Z, 2023-01-26T14:05:44.000Z).'
       name: from
-    - description: 'End time for which to retrieve attachments.(Supported formats: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, yyyy-MM-ddTHH:mm:ss.SSSZ. For example: 01 Jan 2023, 01 Feb 2023 04:45:33, 2023-01-26T14:05:44Z, 2023-01-26T14:05:44.000Z)'
+    - description: 'End time for which to retrieve attachments.(Supported formats: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, yyyy-MM-ddTHH:mm:ss.SSSZ. For example: 01 Jan 2023, 01 Feb 2023 04:45:33, 2023-01-26T14:05:44Z, 2023-01-26T14:05:44.000Z).'
       name: to
     description: Retrieves the attachments available on the Securonix platform.
     name: securonix-incident-attachment-get
@@ -1271,7 +1293,7 @@ script:
       name: whitelist_name
       required: true
     - auto: PREDEFINED
-      description: The type of the whitelist to which data is being added. (Supported Values are Global and Attribute.)
+      description: The type of the whitelist to which data is being added. (Supported Values are Global and Attribute.).
       name: whitelist_type
       predefined:
       - Global
@@ -1293,7 +1315,7 @@ script:
 
         This parameter is required if whitelist_type is Global.
       name: entity_id
-    - description: The date when the entity will be removed from the whitelist.(In MM/DD/YYYY format)
+    - description: The date when the entity will be removed from the whitelist.(In MM/DD/YYYY format).
       name: expiry_date
     - description: "The resource name to which the account belongs. \n\nThis parameter is required if whitelist_type is Global and entity_type is Activityaccount."
       name: resource_name
@@ -1319,7 +1341,7 @@ script:
       - Policy
       - ThreatModel
       - Functionality
-    - description: "Name of the violations. (Supported values are Policy names, ThreatModel names, Functionality names)\n\nThis parameter is required if whitelist_type is set to Attribute, and is the same as the whitelist name parameter. "
+    - description: "Name of the violations. (Supported values are Policy names, ThreatModel names, Functionality names)\n\nThis parameter is required if whitelist_type is set to Attribute, and is the same as the whitelist name parameter."
       name: violation_name
     description: Add entity or attribute to the specified whitelist entry.
     name: securonix-whitelist-entry-add
@@ -1358,7 +1380,7 @@ script:
         - employeeId for type User
         - accountname for type ActivityAccount
         - resourcename for type Resources
-        - ipadress for type IpAddress
+        - ipadress for type IpAddress.
       name: entity_id
     - description: |-
         Name of the attribute being removed.
@@ -1368,7 +1390,7 @@ script:
         Example:
         - accountname
         - transactionstring
-        - sourcetype
+        - sourcetype.
       name: attribute_name
     - description: |-
         The value of the attribute being removed.
@@ -1411,7 +1433,7 @@ script:
     - description: |-
         JSON formatted string containing the field names and values in the below format. To specify an expiration date for an entry, add "expiryDate" key (in the format of "MM/DD/YYYY") in the respective JSON object.
 
-        E.g. [{"field1": "Value1", "field2": "Value2"}, {"field1": "Value3", "field2": "Value4"}]
+        E.g. [{"field1": "Value1", "field2": "Value2"}, {"field1": "Value3", "field2": "Value4"}].
       name: json_data
     - description: War room entry of the file. To specify an expiration date for an entry, add "expiryDate" key (in the format of "MM/DD/YYYY") in the respective JSON object.
       name: file_entry_id
@@ -1506,7 +1528,7 @@ script:
       required: true
     description: Deletes the entries from the lookup table.
     name: securonix-lookup-table-entries-delete
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.13.72123
   isfetch: true
   runonce: false
   script: '-'

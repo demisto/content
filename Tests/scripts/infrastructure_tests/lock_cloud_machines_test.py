@@ -1,7 +1,43 @@
+import json
+
 import pytest
+import requests
+from requests import ConnectionError, Response
 
 from Tests.scripts.lock_cloud_machines import get_my_place_in_the_queue, try_to_lock_machine,\
-    get_machines_locks_details, wait_for_build_to_be_first_in_queue, get_and_lock_all_needed_machines
+    get_machines_locks_details, wait_for_build_to_be_first_in_queue, get_and_lock_all_needed_machines, check_job_status
+
+
+@pytest.mark.parametrize(
+    "responses, expected_times_called, expected_status",
+    [
+        ([{'status': 'running'}], 1, 'running'),
+        ([ConnectionError, {'status': 'running'}], 2, 'running'),
+        ([ConnectionError, ConnectionError, {'status': 'running'}], 3, 'running'),
+        ([ConnectionError, ConnectionError, ConnectionError, {'status': 'running'}], 4, 'running'),
+        ([ConnectionError, ConnectionError, ConnectionError, {'status': 'failed'}], 4, 'failed'),
+        ([ConnectionError, ConnectionError, {'status': 'done'}], 3, 'done')
+    ],
+)
+def test_check_job_status_with_connection_errors(mocker, responses, expected_times_called, expected_status):
+    """
+    given:  connection error exceptions and eventually real status.
+    when:   trying to retrieve gitlab job status
+    then:   make sure retry mechanism will be triggered on ConnectionErrors
+    """
+    side_effect_responses = []
+    for response in responses:
+        if not isinstance(response, dict):
+            side_effect_responses.append(response)
+        else:
+            r = Response()
+            r._content = json.dumps(response).encode()
+            side_effect_responses.append(r)
+
+    requests_mocker = mocker.patch.object(requests, 'get', side_effect=side_effect_responses)
+
+    assert check_job_status('token', job_id='1', interval=0.001) == expected_status
+    assert requests_mocker.call_count == expected_times_called
 
 
 def test_try_to_lock_machine(mocker):
@@ -46,7 +82,6 @@ class MockResponse:
 
 
 def test_get_my_place_in_the_queue(mocker):
-
     """
     given:  The job id .
     when:   checking the place in teh queue.
@@ -65,7 +100,6 @@ def test_get_my_place_in_the_queue(mocker):
 
 
 def test_get_my_place_in_the_queue_exception(mocker):
-
     """
     given:  The job id.
     when:   checking the place in teh queue and its not existing in the queue.

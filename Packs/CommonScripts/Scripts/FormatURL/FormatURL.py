@@ -2,14 +2,14 @@ import ipaddress
 import tldextract
 import urllib.parse
 from CommonServerPython import *
-from typing import Match
+from re import Match
 
 
 class URLError(Exception):
     pass
 
 
-class URLType(object):
+class URLType:
     """
     A class to represent an url and its parts
     """
@@ -30,7 +30,7 @@ class URLType(object):
             f'Path = {self.path}\nQuery = {self.query}\nFragment = {self.fragment}')
 
 
-class URLCheck(object):
+class URLCheck:
     """
     This class will build and validate a URL based on "URL Living Standard" (https://url.spec.whatwg.org)
     """
@@ -268,7 +268,7 @@ class URLCheck(object):
             elif self.modified_url[index] == "]":
 
                 if not self.inside_brackets:
-                    if self.check_domain(host) and all([char in self.brackets for char in self.modified_url[index:]]):
+                    if self.check_domain(host) and all(char in self.brackets for char in self.modified_url[index:]):
                         # Domain is valid with trailing "]" and brackets, the formatter will remove the extra chars
                         self.done = True
                         return
@@ -290,8 +290,7 @@ class URLCheck(object):
                         self.inside_brackets = False
                         break
 
-                    else:
-                        raise URLError(f"Only IPv6 is allowed within square brackets, not {host}")
+                    raise URLError(f"Only IPv6 is allowed within square brackets, not {host}")
 
             else:
                 self.output += self.modified_url[index]
@@ -485,11 +484,7 @@ class URLCheck(object):
         elif char in url_code_points:
             return True
 
-        elif unicode_code_points["start"] <= char <= unicode_code_points["end"]:
-            return True
-
-        else:
-            return False
+        return unicode_code_points['start'] <= char <= unicode_code_points['end']
 
     def check_domain(self, host: str) -> bool:
         """
@@ -597,14 +592,15 @@ class URLCheck(object):
             self.modified_url = self.modified_url[beginning:end + 1]
 
 
-class URLFormatter(object):
+class URLFormatter:
 
     # URL Security Wrappers
-    ATP_regex = re.compile('https://.*?\.safelinks\.protection\.outlook\.com/\?url=(.*?)&', re.I)
+    ATP_regex = re.compile('.*?\.safelinks\.protection\.outlook\.com/\?url=(.*?)&', re.I)
     fireeye_regex = re.compile('.*?fireeye[.]com.*?&u=(.*)', re.I)
     proofpoint_regex = re.compile('(?i)(?:proofpoint.com/v[1-2]/(?:url\?u=)?(.+?)(?:&amp|&d|$)|'
                                   'https?(?::|%3A)//urldefense[.]\w{2,3}/v3/__(.+?)(?:__;|$))')
-    trendmicro_regex = re.compile('https://.*?trendmicro\.com(?::443)?/wis/clicktime/.*?/?url==3d(.*?)&', re.I)
+    trendmicro_regex = re.compile('.*?trendmicro\.com(?::443)?/wis/clicktime/.*?/?url==3d(.*?)&',  # disable-secrets-detection
+                                  re.I)
 
     # Scheme slash fixer
     scheme_fix = re.compile("https?(:[/|\\\]*)")
@@ -675,8 +671,7 @@ class URLFormatter(object):
             else:
                 wrapper = False
 
-        else:
-            return url
+        return url
 
     @staticmethod
     def extract_url_proofpoint(url: str) -> str:
@@ -692,7 +687,7 @@ class URLFormatter(object):
 
         if url[0]:
             # Proofpoint v1 and v2
-            return urllib.parse.unquote((url[0].replace("-", "%").replace("_", "/")))
+            return urllib.parse.unquote(url[0].replace("-", "%").replace("_", "/"))
 
         else:
             # Proofpoint v3
@@ -714,7 +709,7 @@ class URLFormatter(object):
         url = url.replace("[.]", ".")
         url = url.replace("[:]", ":")
         lower_url = url.lower()
-        if lower_url.startswith("hxxp") or lower_url.startswith('meow'):
+        if lower_url.startswith(('hxxp', 'meow')):
             url = re.sub(schemas, "http", url, count=1)
 
         def fix_scheme(match: Match) -> str:

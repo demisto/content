@@ -13,14 +13,17 @@ configuration:
   name: credentials
   type: 9
   displaypassword: API Key
+  required: false
 - display: Username
   name: username
   type: 0
   hidden: true
+  required: false
 - display: API Key
   name: apikey
   type: 4
   hidden: true
+  required: false
 - defaultvalue: high
   display: Threshold of the indicator.
   name: default_threshold
@@ -49,9 +52,11 @@ configuration:
   name: insecure
   type: 8
   defaultvalue: 'false'
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 defaultclassifier: 'null'
 description: Deprecated. Use Anomali ThreatStream v3 integration instead.
 display: Anomali ThreatStream v2 (Deprecated)

@@ -22,6 +22,7 @@ configuration:
   defaultvalue: 50
   type: 0
   additionalinfo: Default is 50. Maximum is 100.
+  required: false
 - name: first_fetch
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days).
   defaultvalue: 7 days
@@ -29,6 +30,7 @@ configuration:
   additionalinfo: |-
     Timestamp in ISO format or <number> <time unit>,
     e.g., 2022-01-01T00:00:00.000Z, 12 hours, 7 days, 3 months, now.
+  required: false
 - name: filter_by
   display: Filter by
   type: 15
@@ -37,6 +39,7 @@ configuration:
   - from_address
   - to_address
   - subject
+  required: false
 - name: filter_operator
   display: Filter operator
   type: 15
@@ -47,10 +50,12 @@ configuration:
   - begins_with
   - ends_with
   - does_not_contain
+  required: false
 - name: filter_value
   display: Filter value
   type: 0
   additionalinfo: The value to search for.
+  required: false
 - name: recipient_filter_operator
   display: Recipient filter operator
   type: 15
@@ -61,29 +66,35 @@ configuration:
   - begins_with
   - ends_with
   - does_not_contain
+  required: false
 - name: recipient_filter_value
   display: Recipient filter value
   type: 0
   additionalinfo: Recipient filter value to fetch by message field.
+  required: false
 - name: proxy
   display: Use system proxy settings
   defaultvalue: 'false'
   type: 8
+  required: false
 - name: insecure
   display: Trust any certificate (not secure)
   defaultvalue: 'false'
   type: 8
+  required: false
 - display: Incident type
   name: incidentType
   type: 13
+  required: false
 - display: Fetch incidents
   name: isFetch
   type: 8
+  required: false
 script:
   script: ''
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.13.73190
   isfetch: true
   commands:
   - name: cisco-sma-spam-quarantine-message-search
@@ -469,12 +480,12 @@ script:
     - name: file_sha_256
       description: |-
         SHA256 must be 64 characters long and can contain only "0-9" and "a-f" symbols.
-        E.g., e0d123e5f316bef78bfdf5a008837577e0d123e5f316bef78bfdf5a008837577
+        E.g., e0d123e5f316bef78bfdf5a008837577e0d123e5f316bef78bfdf5a008837577.
     - name: custom_query
       description: |-
         Custom query for cisco SMA's advanced filters.
         Syntax: <key>=<value>;<key>=<value>;<key>=<value>
-        E.g.,  graymail=True;message_delivered=True
+        E.g.,  graymail=True;message_delivered=True.
     outputs:
     - type: String
       contextPath: CiscoSMA.Message.hostName
@@ -484,7 +495,7 @@ script:
       description: Friendly formatted sender email address.
     - type: String
       contextPath: CiscoSMA.Message.isCompleteData
-      description: Is complete data pulled?
+      description: Is complete data pulled?.
     - type: String
       contextPath: CiscoSMA.Message.messageStatus
       description: Message delivery status.
@@ -577,7 +588,7 @@ script:
       description: Message direction, incoming or outgoing.
     - type: Boolean
       contextPath: CiscoSMA.Message.isCompleteData
-      description: Is complete data pulled?
+      description: Is complete data pulled?.
     - type: String
       contextPath: CiscoSMA.Message.messageStatus
       description: Message delivery status.
@@ -939,7 +950,7 @@ script:
     - name: device_name
       description: The device name.
     - name: order_by
-      description: Specify the attribute by which to order the data in the response. For example, orderBy=total_clean_recipients
+      description: Specify the attribute by which to order the data in the response. For example, orderBy=total_clean_recipients.
     - name: order_dir
       description: The report order direction. Specify sort direction.
       auto: PREDEFINED

@@ -56,6 +56,8 @@
 ***
 Results of the URL submission
 
+Notice: Submitting indicators using this command might make the indicator data publicly available. See the vendor’s documentation for more details.
+
 #### Base Command
 
 `fe-submit-url-result`

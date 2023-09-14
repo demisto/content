@@ -21,6 +21,7 @@ configuration:
   hidden: true
   name: longRunning
   type: 8
+  required: false
 - display: Tenant Id
   name: tenant_id
   required: true
