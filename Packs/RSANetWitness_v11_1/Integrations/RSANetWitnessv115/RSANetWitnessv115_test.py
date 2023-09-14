@@ -428,7 +428,7 @@ def test_update_remote_system_command_with_nonupdated_incident(mocker):
             Calling the update_remote_system_command.
 
         Then:
-            Check if RSA status has been updated.
+            Check if RSA status was not updated.
     """
     paging_data = "INC-1"
 
