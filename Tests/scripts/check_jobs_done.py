@@ -53,8 +53,6 @@ UPLOAD_JOBS = [
 PUSH_JOBS = [
     'run-unittests-and-lint: [native:dev,from-yml]',
     'run-unittests-and-lint: [native:ga,native:maintenance,native:candidate]',
-    'run-validations',
-    'test-upload-flow',
     'trigger-private-build',
     'validate-content-conf',
     'mpv2-prepare-testing-bucket',
