@@ -1,5 +1,4 @@
-from PATHelpdeskAdvanced import convert_response_dates
-from PATHelpdeskAdvanced import paginate, DemistoException, Field
+from PATHelpdeskAdvanced import convert_response_dates, paginate, Field
 import pytest
 from datetime import datetime
 
@@ -50,6 +49,7 @@ def test_field(demisto_name, expected_demisto_name, expected_hda_name):
     assert field.demisto_name == expected_demisto_name
     assert field.hda_name == expected_hda_name
 
+
 def test_converts_date_fields():
     """
     Given a response dict with date fields
@@ -59,19 +59,17 @@ def test_converts_date_fields():
     EPOCH_2023_INT = 1693573200000
     EPOCH_2022_INT = 1641042000000
 
-    DATE_2023 = datetime.fromtimestamp(EPOCH_2023_INT/1000)
-    DATE_2022 = datetime.fromtimestamp(EPOCH_2022_INT/1000)
-    
+    DATE_2023 = datetime.fromtimestamp(EPOCH_2023_INT / 1000)
+    DATE_2022 = datetime.fromtimestamp(EPOCH_2022_INT / 1000)
+
     raw = {
         "Date1": f"/Date({EPOCH_2023_INT})/",
         "Date2": [f"/Date({EPOCH_2023_INT})/", f"/Date({EPOCH_2022_INT})/", "🕒"],
-        "doesnt_mention_d__ate": f"/Date({EPOCH_2023_INT})/",
-        "other": "should not be modified",
+        "other": [EPOCH_2023_INT, DATE_2023]
     }
 
     result = convert_response_dates(raw)
-    
+
     assert result["Date1"] == DATE_2023
     assert result["Date2"] == [DATE_2023, DATE_2022, "🕒"]
-    assert result["doesnt_mention_d__ate"] == raw["doesnt_mention_d__ate"]
     assert result["other"] == raw["other"]

@@ -23,12 +23,12 @@ configuration:
   type: 8
   required: false
 description: Improve the effectiveness of your service provision and resources, and the quality of your IT department.
-display: 'PATHelpdeskAdvanced'
+display: "PATHelpdeskAdvanced"
 name: PATHelpdeskAdvanced
 script:
   commands:
   - name: hda-create-ticket
-    description: Create a new ticket in PAT Helpdesk Advanced.
+    description: Create a new ticket.
     arguments:
     - name: object_type_id
       description: The object type ID for the ticket.
@@ -91,22 +91,99 @@ script:
       description: The assigned user ID for the ticket.
       type: string
   - name: hda-list-tickets
-    description: List tickets in PAT Helpdesk Advanced.
+    description: List tickets.
+    arguments:
+    - name: ticket_id
+      description: The ID of the ticket to retrieve.
+    - name: filter
+      description: Filters to apply to the ticket list.
+    - name: page
+      description: The page number to retrieve.
+    - name: page_size
+      description: The number of tickets per page.
+    - name: limit
+      description: The maximum number of tickets to return.
+      defaultValue: "50"
+  - name: hda-add-ticket-attachment
+    description: Add an attachment to a ticket.
     arguments:
     - name: ticket_id
       description: The ticket ID to retrieve details for.
-    - name: filter
-      description: Comma-separated list of strings to filter tickets by. Each should be of the form "key" operator "value" or "key" operator null. Valid operators are eq,gt,lt,ge,lt,sw,ne. See PAT Helpdesk Advanced documentation for valid filter keys.
-    - name: page
-      description: Page number of the tickets list pagination.
-    - name: page_size
-      description: Number of tickets to return per page.
-    - name: limit
-      defaultValue: 50
-      description: Maximum number of tickets to return.
+      required: true
+    - name: entry_id
+      description: The file entry ID to attach.
+      required: true
     outputs: []
+  - name: hda-list-ticket-attachments
+    description: List attachments for a ticket.
+    arguments:
+    - name: ticket_id
+      description: The ticket ID to retrieve details for.
+      required: true
+    - name: limit
+      description: The maximum number of tickets to return.
+      required: false
+      defaultValue: "50"
+    outputs: []
+  - name: hda-add-ticket-comment
+    description: Add a comment to a ticket.
+    arguments:
+    - name: ticket_id
+      description: The ticket ID to retrieve details for.
+      required: true
+    - name: comment
+      description: The comment text.
+      required: true
+    - name: site_visible
+      description: Whether the ticket is visible to the customer site.
+      auto: PREDEFINED
+      defaultValue: "False"
+      predefined:
+      - "True"
+      - "False"
+      required: true
+  - name: hda-list-ticket-statuses
+    description: List ticket statuses.
+    arguments:
+    - name: limit
+      description: The maximum number of statuses to return.
+      required: false
+      defaultValue: "50"
+    outputs:
+    - contextPath: PATHelpdeskAdvanced.TicketStatus.ID
+      description: The status ID.
+      type: Number
+    - contextPath: PATHelpdeskAdvanced.TicketStatus.Name
+      description: The status name.
+      type: String
+
+  - name: hda-change-ticket-status
+    description: Change the status of a ticket.
+    arguments:
+    - name: ticket_id
+      description: The ID of the ticket to change status for.
+      required: true
+    - name: status_id
+      description: The ID of the status to change the ticket to.
+      required: true
+    - name: note
+      description: An optional note to add with the status change.
+      required: false
+    outputs: []
+
+  - name: hda-list-ticket-priorities
+    description: List ticket priorities.
+    arguments: []
+    outputs:
+    - contextPath: PATHelpdeskAdvanced.TicketPriority.ID
+      description: The priority ID.
+      type: Number
+    - contextPath: PATHelpdeskAdvanced.TicketPriority.Name
+      description: The priority name.
+      type: String
+
   runonce: false
-  script: '-'
+  script: "-"
   type: python
   subtype: python3
   dockerimage: demisto/python3:3.10.13.73190

@@ -1,10 +1,10 @@
 import contextlib
 from json import JSONDecodeError
 from pathlib import Path
+from pprint import pformat
 from typing import Literal, NamedTuple
 from collections.abc import Callable
 from collections.abc import Sequence
-
 from requests import Response
 
 import demistomock as demisto
@@ -14,7 +14,7 @@ from CommonServerUserPython import *  # noqa
 VENDOR = "HelpdeskAdvanced"
 
 FILTER_CONDITION_REGEX = re.compile(
-    r"\A(?P<key>\".*?\") (?P<op>eq|gt|lt|ge|lt|sw|ne) (?P<value>(?:\".*?\"|null))\Z"
+    r"\A\"(?P<key>.*?)\" (?P<op>eq|gt|lt|ge|lt|sw|ne) (?P<value>(?:\".*?\"|null))\Z"
 )
 DATE_VALUE_REGEX = re.compile(r"/Date\((\d+)\)/")
 
@@ -80,6 +80,7 @@ LAST_EXPIRATION_DATE = Field("last_expiration_date")
 NEXT_EXPIRATION_DATE = Field("next_expiration_date")
 ASSIGNED_USER_OR_GROUP_ID = Field("next_user_or_group_id")
 PARENT_OBJECT = Field("parent_object")
+PARENT_OBJECT_ID = Field("parent_object_id")
 TICKET_ID = Field("ticket_id")
 TICKET_STATUS = Field("ticket_status")
 TEXT = Field("text")
@@ -113,7 +114,7 @@ def _parse_filter_condition(string: str) -> dict:
     return {
         "property": match["key"],
         "op": match["op"],
-        "value": None if ((value := match["value"]) == "null") else value,
+        "value": None if ((value := match["value"]) == "null") else value.strip('"'),
     }
 
 
@@ -152,34 +153,23 @@ def map_id_to_description(response: dict) -> dict[str, str]:
 
 
 def convert_response_dates(response: dict) -> dict:
-    """
-    Converts date fields in the given response dict to datetime objects.
-
-    Args:
-        response (dict): The response dict containing date fields to convert.
-
-    Returns:
-        dict: The response dict with date fields converted to datetime.
-
-    Iterates through the keys in the response dict. For any key containing "Date", 
-    converts the corresponding value to datetime using DATE_VALUE_REGEX to parse 
-    the date string.
-
-    Non-date fields are unchanged.
-    """
-    def fix(value: str) -> str | datetime:
-        if value and (match := DATE_VALUE_REGEX.match(value)):
-            return datetime.fromtimestamp(int(match[1][:-3]))
+    def fix_value(value: str) -> str | datetime:
+        if (
+            isinstance(value, str)
+            and value
+            and (match := DATE_VALUE_REGEX.match(value))
+        ):
+            return str(datetime.fromtimestamp(int(match[1][:-3])))
         return value
 
-    for key, value in response.items():
-        if "Date" in key:
-            if isinstance(value, str):
-                response[key] = fix(value)
-            elif isinstance(value,list):
-                response[key] = [fix(v) for v in value]
+    def fix_recursively(value):  # no typing as the cases are complex and confuse mypy
+        if isinstance(value, dict):
+            return {k: fix_recursively(v) for k, v in value.items()}
+        elif isinstance(value, list):
+            return [fix_recursively(v) for v in value]
+        return fix_value(value)
 
-    return response
+    return fix_recursively(response)
 
 
 class Client(BaseClient):
@@ -190,18 +180,21 @@ class Client(BaseClient):
         attempted_action: str,
         **kwargs,
     ) -> dict:
+        print(
+            f"Making {method} request to {self._base_url}{url_suffix}\n{pformat(kwargs)}"
+        )
         response = self._http_request(
             method, url_suffix, resp_type="response", **kwargs
         )
         try:
             response_body = json.loads(response.text)
+            print(f"Response: {pformat(response_body)}")
             if response_body["success"] is not True:  # request failed
                 raise RequestNotSuccessfulError(response, attempted_action)
             return response_body
 
         except JSONDecodeError as e:
-            # TODO parse error response
-            raise RequestNotSuccessfulError(response, attempted_action) from e
+            raise ValueError(f"could not parse json from {response.text}") from e
 
     def __init__(
         self,
@@ -220,7 +213,7 @@ class Client(BaseClient):
 
         self._login()  # sets request_token and token_expiry_utc
 
-    def _login(self):
+    def _login(self) -> None:
         # should only be called from __init__
         def generate_new_token() -> dict:
             return self.http_request(
@@ -235,13 +228,14 @@ class Client(BaseClient):
             return self.http_request(
                 method="POST",
                 url_suffix="Authentication/RefreshToken",
-                data={"token": refresh_token},
+                params={"token": refresh_token},
                 attempted_action="generating request token using refresh token",
                 headers={"Content-Type": "multipart/form-data"},
             )
 
         # Check integration context
         integration_context = demisto.getIntegrationContext()
+        print(f"integration_context = {pformat(integration_context)}")
         refresh_token = integration_context.get("refresh_token")
         raw_token_expiry_utc: str | None = integration_context.get("token_expiry_utc")
 
@@ -252,19 +246,17 @@ class Client(BaseClient):
             and token_expiry_utc > (datetime.utcnow() + timedelta(seconds=5))
         ):
             try:
-                demisto.debug(
-                    "refresh token is valid, using it to generate a request token"
-                )
+                print("refresh token is valid, using it to generate a request token")
                 response = generate_request_token(refresh_token)
 
             except RequestNotSuccessfulError:
-                demisto.debug(
+                print(
                     "failed using refresh token, getting a new one using username and password"
                 )
                 response = generate_new_token()
 
         else:
-            demisto.debug(
+            print(
                 "refresh token expired or missing, logging in with username and password"
             )
             response = generate_new_token()
@@ -274,6 +266,7 @@ class Client(BaseClient):
         self.token_expiry_utc = datetime.utcnow() + timedelta(
             seconds=response["expiresIn"]
         )
+
         self._headers = {"Authorization": f"Bearer {self.request_token}"}
         demisto.setIntegrationContext(
             integration_context
@@ -386,7 +379,7 @@ class Client(BaseClient):
             url_suffix="Ticket/UploadNewAttachment",
             method="POST",
             attempted_action="uploading a new attachment",
-            data={
+            params={
                 "entity": "Ticket",
                 "entityID": kwargs["ticket_id"],
             }
@@ -407,7 +400,7 @@ class Client(BaseClient):
             "filter": parse_filter_conditions(
                 (
                     f'"{PARENT_OBJECT.hda_name}" eq "Ticket"',
-                    f'"{PARENT_TICKET_ID.hda_name}" eq "{ticket_id}"',
+                    f'"{PARENT_OBJECT_ID.hda_name}" eq "{ticket_id}"',
                 )
             ),
         }
@@ -601,7 +594,7 @@ def paginate(**kwargs) -> PaginateArgs:
 def create_ticket_command(client: Client, **kwargs) -> CommandResults:
     response = client.create_ticket(**kwargs)
     response = convert_response_dates(response)
-    
+
     response_for_human_readable = response.copy()
     if not response_for_human_readable.get(SOLUTION.hda_name):
         # do not show empty or missing `Solution` value
@@ -641,7 +634,7 @@ def add_ticket_attachment_command(client: Client, args: dict) -> CommandResults:
 def list_ticket_attachments_command(client: Client, args: dict) -> CommandResults:
     response = client.list_ticket_attachments(**args)
     response = convert_response_dates(response)
-    
+
     attachment_ids_str = ",".join(
         attachment[ID.hda_name] for attachment in response["data"]
     )
@@ -657,7 +650,7 @@ def list_ticket_attachments_command(client: Client, args: dict) -> CommandResult
 def list_ticket_statuses_command(client: Client, args: dict) -> CommandResults:
     response = client.list_ticket_statuses(**args)
     response = convert_response_dates(response)
-    
+
     return CommandResults(
         outputs=response["data"],
         outputs_prefix=f"{VENDOR}.{TICKET_STATUS.hda_name}",
@@ -683,10 +676,11 @@ def change_ticket_status_command(client: Client, args: dict) -> CommandResults:
 def list_ticket_priorities_command(client: Client, _: dict) -> CommandResults:
     response = client.list_ticket_priorities()
     response = convert_response_dates(response)
-    
+
     return CommandResults(
         outputs=response["data"],
         outputs_prefix=f"{VENDOR}.{_PRIORITY.hda_name}",
+        readable_output=tableToMarkdown("HDA Ticket Priorities", response["data"]),
         raw_response=response,
     )
 
@@ -696,7 +690,7 @@ def list_ticket_sources_command(client: Client, args: dict) -> CommandResults:
 
     response = client.list_ticket_sources(limit)
     response = convert_response_dates(response)
-    
+
     outputs = map_id_to_description(response["data"])
     return CommandResults(
         outputs=outputs,
@@ -728,7 +722,7 @@ def get_ticket_history_command(client: Client, args: dict) -> CommandResults:
 def list_users_command(client: Client, args: dict) -> CommandResults:
     response = client.list_users(**args)
     response = convert_response_dates(response)
-    
+
     return CommandResults(
         outputs=response["data"],
         outputs_prefix=f"{VENDOR}.User",
