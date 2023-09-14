@@ -526,7 +526,7 @@ def test_get_modified_remote_data_command_from_timestamp(mocker):
         Then:
             check the updated incidents list.
     """
-    paging_data = []
+    expected_result = ["INC-1"]
 
     class GetModifiedRemoteDataArgsResponse:
         def __init__(self) -> dict:
@@ -534,12 +534,12 @@ def test_get_modified_remote_data_command_from_timestamp(mocker):
 
     mocker.patch.object(RSANetWitnessv115, "GetModifiedRemoteDataArgs", return_value=GetModifiedRemoteDataArgsResponse())
     mocker.patch.object(client, "get_incident_request", return_value={"id": "INC-1", "status": "New", "alertCount": 3})
-    mocker.patch.object(RSANetWitnessv115, "paging_command", return_value=({}, []))
+    mocker.patch.object(RSANetWitnessv115, "paging_command", return_value=({}, [{"id": "INC-1", "lastUpdated": 1694188116}]))
     mocker.patch.object(RSANetWitnessv115, "clean_old_inc_context", return_value=False)
     mocker.patch.object(RSANetWitnessv115, "get_integration_context", return_value={})
 
     res = get_modified_remote_data_command(client, {}, {"max_fetch": 2, "max_alerts": 2, "max_mirror_time": 0})
-    assert res.modified_incident_ids == paging_data
+    assert res.modified_incident_ids == expected_result
 
 
 def test_get_modified_remote_data_command_from_alerts(mocker):
