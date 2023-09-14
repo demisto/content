@@ -174,3 +174,5 @@ curl --request POST \
   --form "variables[OVERRIDE_SDK_REF]=${DEMISTO_SDK_NIGHTLY}" \
   --form "variables[SDK_REF]=${_sdk_ref}" \
   "$BUILD_TRIGGER_URL"
+
+echo "BUILD_TRIGGER_URL is set to: ${BUILD_TRIGGER_URL}"
