@@ -61,7 +61,7 @@ name: DatadogCloudSIEM
 script:
   commands:
   - arguments:
-    - description: "A description of the event.\nLimited to 4000 characters.\nThe description supports markdown. To use markdown in the event text, start the text block with %%% \\n and end the text block with \\n %%% "
+    - description: "A description of the event.\nLimited to 4000 characters.\nThe description supports markdown. To use markdown in the event text, start the text block with %%% \\n and end the text block with \\n %%% ."
       name: text
       required: true
     - description: The title of an event.
@@ -78,14 +78,14 @@ script:
         The priority of the event.
 
         Restricted value : low
-        Permitted value : normal (Bug will be fixed in the near future.)
+        Permitted value : normal (Bug will be fixed in the near future.).
       name: priority
       predefined:
       - normal
       - low
     - description: ID of the parent event.
       name: related_event_id
-    - description: "A comma-separated list of tags to apply to the event. \nEx: \"environment:production, region:East” "
+    - description: "A comma-separated list of tags to apply to the event. \nEx: \"environment:production, region:East” ."
       name: tags
     - description: "An arbitrary string to use for aggregation. \nIf you specify a key, all events using that key are grouped together in the Event Stream. \nLimited to 100 characters."
       name: aggregation_key
@@ -144,9 +144,9 @@ script:
   - arguments:
     - description: The ID of the event.
       name: event_id
-    - description: "Start Date \nFormat : yyyy-MM-dd’T’HH:mm:ssZ  or “-1days” or “12 hours ago” or “-12 hours” or “15 min ago” or “-15 min”. "
+    - description: "Start Date \nFormat : yyyy-MM-dd’T’HH:mm:ssZ  or “-1days” or “12 hours ago” or “-12 hours” or “15 min ago” or “-15 min”. ."
       name: start_date
-    - description: "End Date \nDefault: now \nFormat : yyyy-MM-dd’T’HH:mm:ssZ or \"-1 days\" or “12 hours ago” or “-12 hours” or “15 min ago” or “-15 min”. "
+    - description: "End Date \nDefault: now \nFormat : yyyy-MM-dd’T’HH:mm:ssZ or \"-1 days\" or “12 hours ago” or “-12 hours” or “15 min ago” or “-15 min”. ."
       name: end_date
     - auto: PREDEFINED
       description: The priority of the event.
@@ -188,7 +188,7 @@ script:
       description: The timestamp of when the event happened.
       type: Number
     - contextPath: Datadog.Event.device_name
-      description: 'A device name. '
+      description: 'A device name. .'
       type: String
     - contextPath: Datadog.Event.id
       description: Integer ID of the event.
@@ -241,7 +241,7 @@ script:
     - description: The host name.
       name: host_name
       required: true
-    - description: "A list of tags to apply to the host. \nComma-seperated values. Ex: \"environment:production, region:East” "
+    - description: "A list of tags to apply to the host. \nComma-seperated values. Ex: \"environment:production, region:East” ."
       name: tags
       required: true
     description: This endpoint allows you to add new tags to a host, optionally specifying where these tags come from.
@@ -263,7 +263,7 @@ script:
       name: source
     - description: The page number. Default is 1.
       name: page
-    - description: "The number of requested results per page. \nDefault is 50. "
+    - description: "The number of requested results per page. \nDefault is 50. ."
       name: page_size
     - description: The maximum number of records to return from the collection. Default value is 50. If the page_size argument is set by the user, then the limit argument will be ignored.
       name: limit
@@ -280,7 +280,7 @@ script:
     - description: The host name.
       name: host_name
       required: true
-    - description: "A comma-separated list of tags to apply to the host  \nPrevious tags will be replaced by new tags. Ex: \"environment:production, region:East” "
+    - description: "A comma-separated list of tags to apply to the host  \nPrevious tags will be replaced by new tags. Ex: \"environment:production, region:East” ."
       name: tags
     description: This endpoint allows you to replace all tags in an integration source with those supplied in the request.
     name: datadog-host-tag-update
@@ -298,17 +298,17 @@ script:
     description: This endpoint allows you to remove all user-assigned tags for a single host.
     name: datadog-host-tag-delete
   - arguments:
-    - description: "List of actively reporting metrics from a given time until now.\nFormat :  yyyy-MM-dd’T’HH:mm:ssZ Or '-1days' "
+    - description: "List of actively reporting metrics from a given time until now.\nFormat :  yyyy-MM-dd’T’HH:mm:ssZ Or '-1days' ."
       name: from
       required: true
     - description: |-
         Hostname for filtering the list of metrics.
 
-        Please do not complete this field (Bug will be fixed in the near future.)
+        Please do not complete this field (Bug will be fixed in the near future.).
       name: host_name
     - description: |-
         Filter metrics that have been submitted with the given tags.
-        Ex: “region:east,env:prod”
+        Ex: “region:east,env:prod”.
       name: tag_filter
     - description: The page number. Default is 1.
       name: page
@@ -423,7 +423,7 @@ script:
     - auto: PREDEFINED
       description: |-
         The severity of the incident.
-        Default value=unknown
+        Default value=unknown.
       name: severity
       predefined:
       - SEV-1
@@ -625,7 +625,7 @@ script:
     - auto: PREDEFINED
       description: |-
         The severity of the incident.
-        Default value=unknown
+        Default value=unknown.
       name: severity
       predefined:
       - SEV-1
@@ -825,7 +825,7 @@ script:
       - other
       - unknown
     - auto: PREDEFINED
-      description: Specifies the order of returned incidents
+      description: Specifies the order of returned incidents.
       name: sort
       predefined:
       - asc
@@ -839,7 +839,7 @@ script:
     - auto: PREDEFINED
       description: |-
         Specifies which types of related objects should be included in the response.
-        Allowed enum values: users, attachments
+        Allowed enum values: users, attachments.
       name: include
       predefined:
       - users
@@ -1068,7 +1068,7 @@ script:
     - contextPath: Datadog.TimeSeriesPoint.to_date
       description: End of requested time window in milliseconds since Unix epoch.
       type: Date
-  dockerimage: demisto/datadog-api-client:1.0.0.72092
+  dockerimage: demisto/datadog-api-client:1.0.0.73456
   isfetch: true
   runonce: false
   script: '-'
