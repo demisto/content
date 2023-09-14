@@ -53,7 +53,6 @@ server {
     proxy_cache_key $scheme$proxy_host$request_uri$extra_cache_key;
     $proxy_set_range_header
     $extra_headers
-    
     # Static test file
     location = /nginx-test {
         alias /var/lib/nginx/html/index.html;
@@ -97,7 +96,6 @@ def create_nginx_server_conf(file_path: str, port: int, params: Dict):
     ssl, extra_headers, sslcerts, proxy_set_range_header = '', '', '', ''
     serverport = port + 1
     extra_cache_keys = []
-    demisto.info(f"{params=}")
     if (certificate and not private_key) or (private_key and not certificate):
         raise DemistoException('If using HTTPS connection, both certificate and private key should be provided.')
     if certificate and private_key:
