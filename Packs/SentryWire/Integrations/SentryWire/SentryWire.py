@@ -154,32 +154,34 @@ def parse_search_status(response):
 
 
 def bytes_to_readable(response):
-    results = response["SearchResult"]
-    sizestr = response["SearchResult"].split(" ")[-1].split("=")[-1]
-    size, unit = re.match(r"(\d+)(\D+)", sizestr).groups()
-    if unit == "KB":
-        response["PcapSize"] = int(size) * 1024
-    elif unit == "MB":
-        response["PcapSize"] = int(size) * (1024 ** 2)
-    elif unit == "GB":
-        response["PcapSize"] = int(size) * (1024 ** 3)
-    else:
-        response["PcapSize"] = ">=1TB"
-    readable_output = f"Search completed: {results}"
-    response["SearchStatus"] = "Completed"
-    return response, readable_output
-
+    try:
+        results = response["SearchResult"]
+        sizestr = response["SearchResult"].split(" ")[-1].split("=")[-1]
+        size, unit = re.match(r"(\d+)(\D+)", sizestr).groups()  # type: ignore[union-attr]
+        if unit == "KB":
+            response["PcapSize"] = int(size) * 1024
+        elif unit == "MB":
+            response["PcapSize"] = int(size) * (1024 ** 2)
+        elif unit == "GB":
+            response["PcapSize"] = int(size) * (1024 ** 3)
+        else:
+            response["PcapSize"] = ">=1TB"
+        readable_output = f"Search completed: {results}"
+        response["SearchStatus"] = "Completed"
+        return response, readable_output
+    except Exception:
+        raise DemistoException(f'Could not parse PCAP size from the following response: {response}')
 
 def parse_create_search(response):
     try:
         # Search ID handling
-        search_id = re.search("searchname=([^&]+)", response[0].get("checkstatus")).group(1)
+        search_id = re.search("searchname=([^&]+)", response[0].get("checkstatus")).group(1)  # type: ignore[union-attr]
 
         # Node Name Handling
-        outputs = {"NodeName": []}
+        outputs = {"NodeName": []}  # type: ignore[var-annotated]
         node_str = ""
         for i in range(len(response)):
-            node_name = re.search("nodename=([^&]+)", response[i].get("checkstatus")).group(1)
+            node_name = re.search("nodename=([^&]+)", response[i].get("checkstatus")).group(1)  # type: ignore[union-attr]
             outputs["NodeName"].append(node_name)
             node_str += f"{node_name},"
         node_str = node_str[:-1]
@@ -329,7 +331,7 @@ def test_module(client: Client) -> str:
     return 'ok'
 
 
-def main() -> None: # pragma: no cover
+def main() -> None:  # pragma: no cover
     """
         PARSE AND VALIDATE INTEGRATION PARAMS
     """
