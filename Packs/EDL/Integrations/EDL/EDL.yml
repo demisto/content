@@ -168,6 +168,7 @@ configuration:
   name: hsts_header
   type: 8
   required: false
+  defaultvalue: 'false'
 - additionalinfo: For use with McAfee Web Gateway format - set the indicator list type.
   defaultvalue: string
   display: "McAfee Gateway: Indicator List Type"
@@ -420,7 +421,7 @@ script:
       - 'False'
       - 'True'
     description: Updates values stored in the List (only available On-Demand).
-  dockerimage: demisto/flask-nginx:1.0.0.73707
+  dockerimage: demisto/flask-nginx:1.0.0.74096
   longRunning: true
   longRunningPort: true
   script: '-'
