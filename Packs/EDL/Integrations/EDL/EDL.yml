@@ -163,7 +163,7 @@ configuration:
   section: Collect
   advanced: true
   required: false
-- additionalinfo: When set to true and certificate & private key are provided will add the HSTS header to all requests.
+- additionalinfo: When set to true and the certificate and private key are provided, the HSTS header is added to all requests.
   display: "Add HSTS header"
   name: hsts_header
   type: 8
