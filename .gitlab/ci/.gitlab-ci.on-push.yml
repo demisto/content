@@ -549,6 +549,7 @@ xsiam_server_ga:
     SERVER_TYPE: "XSIAM"
     MARKETPLACE_NAME: "marketplacev2"
     UNREMOVABLE_PACKS: "Base"
+    CLOUD_SERVER_TYPE: "XSIAM"
   needs:
     - job: mpv2-prepare-testing-bucket
       optional: true
@@ -564,7 +565,7 @@ xsoar_ng_server_ga:
       variables:
         CLOUD_MACHINES_TYPE: "nightly"
         GCS_LOCKS_PATH: "content-locks/locks-xsoar-ng-nightly"
-        timeout: 20 hours
+      timeout: 20 hours
   variables:
     CLOUD_MACHINES_TYPE: "build"
     INSTANCE_ROLE: "XSIAM"
