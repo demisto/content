@@ -12,9 +12,24 @@ if [[ ! -f "$GCS_MARKET_KEY" ]]; then
     exit 1
 fi
 
+echo "Trying to authenticate with GCS..."
 gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" > auth.out 2>&1
 echo "Auth loaded successfully."
 
 echo "starting configure_and_install_packs ..."
 
-python3 ./Tests/Marketplace/configure_and_install_packs.py -s "$SECRET_CONF_PATH" --ami_env "$1" --branch "$CI_COMMIT_BRANCH" --build_number "$CI_PIPELINE_ID" --service_account $GCS_MARKET_KEY -e "$EXTRACT_FOLDER" --cloud_machine "$CLOUD_CHOSEN_MACHINE_ID" --cloud_servers_path $XSIAM_SERVERS_PATH --pack_ids_to_install "$ARTIFACTS_FOLDER/content_packs_to_install.txt" --cloud_servers_api_keys $XSIAM_API_KEYS
+if [ -n "${CLOUD_CHOSEN_MACHINE_IDS}" ]; then
+  IFS=', ' read -r -A CLOUD_CHOSEN_MACHINE_ID_ARRAY <<< "${CLOUD_CHOSEN_MACHINE_IDS}"
+  exit_code=0
+  for CLOUD_CHOSEN_MACHINE_ID in "${CLOUD_CHOSEN_MACHINE_ID_ARRAY[@]}"; do
+    python3 ./Tests/Marketplace/configure_and_install_packs.py -s "$SECRET_CONF_PATH" --ami_env "$1" --branch "$CI_COMMIT_BRANCH" --build_number "$CI_PIPELINE_ID" --service_account $GCS_MARKET_KEY -e "$EXTRACT_FOLDER" --cloud_machine "${CLOUD_CHOSEN_MACHINE_ID}" --cloud_servers_path ${XSIAM_SERVERS_PATH} --pack_ids_to_install "$ARTIFACTS_FOLDER/content_packs_to_install.txt" --cloud_servers_api_keys $XSIAM_API_KEYS
+    if [ $? -ne 0 ]; then
+      exit_code=1
+    fi
+  done
+  echo "Finished configure_and_install_packs script with exit code ${exit_code}"
+  exit ${exit_code}
+else
+  echo "No machines were chosen, exiting with exit code 1"
+  exit 1
+fi
