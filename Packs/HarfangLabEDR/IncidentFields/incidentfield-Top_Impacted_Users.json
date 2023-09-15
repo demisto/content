@@ -1,10 +1,10 @@
 {
-    "id": "incident_topimpactedusers",
+    "id": "harfanglab_edr_incident_topimpactedusers",
     "version": -1,
     "modified": "2023-06-24T07:36:28.41702901Z",
-    "name": "Top Impacted Users",
+    "name": "HarfangLab EDR Top Impacted Users",
     "ownerOnly": false,
-    "cliName": "topimpactedusers",
+    "cliName": "harfanglabedrtopimpactedusers",
     "type": "multiSelect",
     "closeForm": false,
     "editForm": true,
