@@ -64,10 +64,10 @@
             }
         ]
     ],
-    "period": {
+    "period": [{
         "by": "days",
         "fromValue": 30
-    },
+    }],
     "readyExistingEventsFilters": [
         [
             {
