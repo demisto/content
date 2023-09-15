@@ -611,8 +611,9 @@ def test_clean_old_inc_context_with_non_expired_incident(mocker):
                         return_value={"IncidentsDataCount": {"INC-1": {"Created": created_date.strftime(DATE_FORMAT)}}})
     mocker_setint = mocker.patch.object(demisto, "setIntegrationContext")
     clean_old_inc_context(max_time_mirror_inc)
-    mocker_setint.assert_called_with({"IncidentsDataCount": {"INC-1": {"Created": created_date.strftime(DATE_FORMAT)}},
-                                                             "refresh_token": "SECRET REPLACED", "token": "SECRET REPLACED"})
+    mocker_setint.assert_called_with({"IncidentsDataCount":
+        {"INC-1": {"Created": created_date.strftime(DATE_FORMAT)}},
+        "refresh_token": "SECRET REPLACED", "token": "SECRET REPLACED"})
 
 
 def test_clean_old_inc_context_with_expired_incident(mocker):
