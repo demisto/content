@@ -360,15 +360,19 @@ def install_packs(client: demisto_client,
         return True, []
 
     success = True
+    body = {
+        'packs': packs_to_install,
+        'ignoreWarnings': True
+    }
 
     def success_handler(response_data):
         packs_data = [{'ID': pack.get('id'), 'CurrentVersion': pack.get('currentVersion')} for pack in response_data]
-        logging.success('Packs ware successfully uninstalled from the server')
+        logging.success(f'Packs ware successfully installed on server {host}')
 
         return success, packs_data
 
     def api_exception_handler(ex, attempt_left):
-        nonlocal packs_to_install, success
+        nonlocal packs_to_install, success, body
         if ALREADY_IN_PROGRESS in ex.body:
             wait_succeeded = wait_until_not_updating(client)
             if not wait_succeeded:
@@ -384,6 +388,10 @@ def install_packs(client: demisto_client,
             success = False
             logging.error(f"Unable to install malformed packs: {malformed_ids}, retrying without them.")
             packs_to_install = [pack for pack in packs_to_install if pack['id'] not in malformed_ids]
+            body = {
+                'packs': packs_to_install,
+                'ignoreWarnings': True
+            }
 
         error_ids = get_error_ids(ex.body)
         if WLM_TASK_FAILED_ERROR_CODE in error_ids:
@@ -415,8 +423,7 @@ def install_packs(client: demisto_client,
                                         exception_message=exception_massage,
                                         prior_message=prior_message,
                                         path='/contentpacks/marketplace/install',
-                                        body={'packs': packs_to_install,
-                                              'ignoreWarnings': True},
+                                        body=body,
                                         response_type='object',
                                         method='POST',
                                         attempts_count=attempts_count,
