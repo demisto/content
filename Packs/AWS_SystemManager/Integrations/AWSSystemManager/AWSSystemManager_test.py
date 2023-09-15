@@ -13,7 +13,6 @@ from AWSSystemManager import (
     format_parameters_arguments,
     get_association_command,
     get_automation_execution_command,
-    get_automation_execution,
     get_command_status,
     get_document_command,
     list_inventory_command,
@@ -29,7 +28,7 @@ from AWSSystemManager import (
     run_command_command,
     update_if_value,
     validate_args,
-    list_tags_for_resource_command
+    list_tags_for_resource_command,
 )
 from pytest_mock import MockerFixture
 
@@ -87,7 +86,7 @@ class MockClient:
 
     def cancel_command(self, **kwargs) -> dict:
         pass
-    
+
     def list_tags_for_resource(self, **kwargs) -> dict:
         pass
 
@@ -130,33 +129,30 @@ def test_update_if_value(
 @pytest.mark.parametrize(
     ("value", "excepted_value"),
     [
-        ("key1:value1", {"key1": ["value1"]}),
-        ("key1:value1,", {"key1": ["value1"]}),
-        ("key1:value1,value2", {"key1": ["value1", "value2"]}),
-        ("key1:value1,value2,", {"key1": ["value1", "value2"]}),
-        (
-            "key1:value1,value2,key2:value1",
-            {"key1": ["value1", "value2"], "key2": ["value1"]},
+        pytest.param(
+            {"key1": "value1"},
+            {"key1": ["value1"]},
+            id="case playbook with one value"
         ),
-        (
-            "key1:value1,value2,key2:value1,",
-            {"key1": ["value1", "value2"], "key2": ["value1"]},
+        pytest.param(
+            {"key1": "value1,value2"},
+            {"key1": ["value1", "value2"]},
+            id="case playbook with two values",
         ),
-        (
-            "key1:value1,key2:value1,value2,value3,key3:value1",
-            {
-                "key1": ["value1"],
-                "key2": ["value1", "value2", "value3"],
-                "key3": ["value1"],
-            },
+        pytest.param(
+            {"key1": "value1,value2", "key2": "value1, value2"},
+            {"key1": ["value1", "value2"], "key2": ["value1", "value2"]},
+            id="case playbook with two keys",
         ),
-        (
-            "key1:value1,key2:value1,value2,value3,key3:value1,",
-            {
-                "key1": ["value1"],
-                "key2": ["value1", "value2", "value3"],
-                "key3": ["value1"],
-            },
+        pytest.param(
+            '"key1": ["value1"]',
+            {"key1": ["value1"]},
+            id="case war-room with one value"
+        ),
+        pytest.param(
+            '{"key1": ["value1", "value2"]}',
+            {"key1": ["value1", "value2"]},
+            id="case war-room with one value and with brackets",
         ),
     ],
 )
@@ -165,11 +161,16 @@ def test_format_parameters_arguments(
     excepted_value: dict[str, Any],
 ) -> None:
     """Given
-        a dictionary of parameters,
+        value (str): The input string to format.
+        excepted_value (dict): The expected formatted output.
     When
         `format_parameters_arguments` is called with the parameters,
     Then
-        it should return the expected formatted response.
+       The test cases cover:
+        - Single key:value pair
+        - Multiple values for a key 
+        - Multiple keys
+        - Input from playbook vs warroom
     """
     assert format_parameters_arguments(value) == excepted_value
 
@@ -301,22 +302,6 @@ def test_convert_datetime_to_iso(
     assert convert_datetime_to_iso(data) == expected_response
 
 
-def test_get_automation_execution(mocker: MockerFixture) -> None:
-    """Given:
-        a mocker with a patched `get_automation_execution` method that returns an automation execution status of "Success",
-    When:
-        the `get_automation_execution` function is called with a test execution_id and a MockClient,
-    Then:
-        it should return the expected automation execution status, which is "Success".
-    """
-    mocker.patch.object(
-        MockClient,
-        "get_automation_execution",
-        return_value={"AutomationExecution": {"AutomationExecutionStatus": "Success"}},
-    )
-    assert get_automation_execution("test_id", MockClient()) == "Success"
-
-
 def test_get_command_status(mocker: MockerFixture) -> None:
     """Given:
         a mocker with a patched `get_command_invocation` method that returns a command status of "Success",
@@ -374,10 +359,10 @@ def test_list_tags_success(mocker: MockerFixture):
         - list_tags_for_resource_command function
         - Valid args including resource type and ID
         - Mock SSM client returns list of tags
-    
+
     When:
         - Calling list_tags_for_resource_command
-    
+
     Then:
         - Ensure client called with expected args
         - CommandResults should contain outputs matching tags
@@ -387,32 +372,33 @@ def test_list_tags_success(mocker: MockerFixture):
         MockClient,
         "list_tags_for_resource",
         return_value={
-        'TagList': [
-            {'Key': 'Env', 'Value': 'Production'},
-            {'Key': 'Role', 'Value': 'WebServer'}
-        ]
-    },
+            "ResourceId": "i-1234abcd",
+            "TagList": [
+                {"Key": "Env", "Value": "Production"},
+                {"Key": "Role", "Value": "WebServer"},
+            ]
+        },
     )
-    
+
     args = {
-        'resource_type': 'Managed Instance',
-        'resource_id': 'i-1234abcd',
+        "resource_type": "Managed Instance",
+        "resource_id": "i-1234abcd",
         "tag_key": "test",
         "tag_value": "test",
     }
-    
+
     result = list_tags_for_resource_command(args, MockClient())
-    
+
     MockClient.list_tags_for_resource.assert_called_with(
-        ResourceType='ManagedInstance', ResourceId='i-1234abcd'
+        ResourceType="ManagedInstance", ResourceId="i-1234abcd"
     )
-    
+
     assert result.outputs == [
-        {'Key': 'Env', 'Value': 'Production'},
-        {'Key': 'Role', 'Value': 'WebServer'}
+        {"Key": "Env", "Value": "Production"},
+        {"Key": "Role", "Value": "WebServer"},
     ]
-    
-    assert 'Tags for i-1234abcd' in result.readable_output
+
+    assert "Tags for i-1234abcd" in result.readable_output
 
 
 def test_remove_tags_from_resource_command(mocker: MockerFixture) -> None:

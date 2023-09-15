@@ -14,13 +14,12 @@ if TYPE_CHECKING:
         DescribeAutomationExecutionsRequestRequestTypeDef,
         DocumentDescriptionTypeDef,
         GetInventoryRequestRequestTypeDef,
-        InventoryResultEntityTypeDef,
         ListAssociationsRequestRequestTypeDef,
         ListCommandsRequestRequestTypeDef,
         ListDocumentsRequestRequestTypeDef,
     )
 """ CONSTANTS """
-RESOURCE_TYPE_MAP: dict[str, 'ResourceTypeForTaggingType'] = {
+RESOURCE_TYPE_MAP: dict[str, "ResourceTypeForTaggingType"] = {
     "Maintenance Window": "MaintenanceWindow",
     "Managed Instance": "ManagedInstance",
     "Ops Metadata": "OpsMetadata",
@@ -103,17 +102,17 @@ def update_if_value(
     the `output_dictionary` under the specified output key.
 
     Args:
-    ____
+    -----
         input_dictionary (dict): The input dictionary containing data to be copied.
         output_dictionary (dict): The output dictionary where data will be copied.
         input_to_output_keys (dict): A dictionary mapping input keys to output keys.
 
     Returns:
-    _______
+    -------
         dict: The updated `output_dictionary` containing copied values based on the mapping.
 
     Example:
-    _______
+    -------
         >>> input_dict = {'next_token': 'test', 'instance_id': test_id}
         >>> output_dict = {}
         >>> key_mapping = {'next_token': 'NextToken', 'instance_id': 'InstanceId'}
@@ -127,12 +126,16 @@ def update_if_value(
 
 
 def format_parameters_arguments(parameters: str) -> dict[str, Any]:
-    """Formats the 'parameters' string into a dictionary.
-
+    """Formats the 'parameters' into a valid format for the AWS SDK(boto3)
+        the valid format `{"key": ["value"]}`
     Args:
     ----
         parameters (str): A string containing key-value pairs separated by colons and
             values separated by commas.
+            the valid format:
+            1. type dict: {"key": "value1, value2"}
+            2. type str: `"key":["value1","value2"]`
+            3. type str: `{"key":["value1","value2"]}`
 
     Returns:
     -------
@@ -143,39 +146,52 @@ def format_parameters_arguments(parameters: str) -> dict[str, Any]:
     -------
         Use this function to format a parameters string:
 
-        >>> parameters = "key1:value1,value2,key2:value3"
+        >>> parameters = `'"key":["value1","value2"], "key2": ["value3"]'`
         >>> formatted_parameters = format_parameters_arguments(parameters)
         >>> print(formatted_parameters)
         {'key1': ['value1', 'value2'], 'key2': ['value3']}
 
     Note:
     ----
-        - The input string should follow the format 'key:value1,value2,...'.
-        - The function will return an empty dictionary if no valid key-value pairs
-          are found in the input string.
-
+        - The input from the war-room  should follow the format `"key":["value1","value2"]` or `{"key":["value1","value2"]}`.
+        - The input from the playbook  should follow the format {"key": "value1, value2"}.
+        - the type of the parameter, from playbook is dict and from the war room is str.
     """
-    items = parameters.split(",")
-    formatted_parameters = {}
-    current_key = None
+    parameters_dict = {}
+    if isinstance(parameters, str):
+        if not parameters.startswith("{") and not parameters.endswith("}"):
+            parameters = "{" + parameters + "}"
+        try:
+            parameters_dict = json.loads(parameters)
+        except json.decoder.JSONDecodeError as e:
+            raise DemistoException(
+                "Make sure the parameters are in one of the allowed formats."
+            ) from e
+    elif isinstance(parameters, dict):  # in case the command running from playbook
+        for key, value in parameters.items():
+            parameters_dict[key] = argToList(value)
+    return parameters_dict
+    # items = parameters.split(",")
+    # formatted_parameters = {}
+    # current_key = None
 
-    for item in items:
-        parts = item.split(":")
+    # for item in items:
+    #     parts = item.split(":")
 
-        if len(parts) == 2:
-            key, value = parts
+    #     if len(parts) == 2:
+    #         key, value = parts
 
-            if key != current_key:
-                current_key = key
-                formatted_parameters[key] = [value]
-            else:
-                formatted_parameters[key].append(value)
-        elif current_key is not None:
-            for part in parts:
-                if part.strip():
-                    formatted_parameters[current_key].append(part)
+    #         if key != current_key:
+    #             current_key = key
+    #             formatted_parameters[key] = [value]
+    #         else:
+    #             formatted_parameters[key].append(value)
+    #     elif current_key is not None:
+    #         for part in parts:
+    #             if part.strip():
+    #                 formatted_parameters[current_key].append(part)
 
-    return formatted_parameters
+    # return formatted_parameters
 
 
 def format_document_version(document_version: str) -> str:
@@ -336,47 +352,6 @@ def next_token_command_result(next_token: str, outputs_prefix: str) -> CommandRe
     )
 
 
-def get_automation_execution(
-    execution_id: str, ssm_client: "SSMClient", only_status: bool = True
-) -> str | dict:
-    """Retrieves the status of an AWS Systems Manager Automation execution.
-
-    Args:
-    ----
-        execution_id (str): The unique identifier of the Automation execution.
-        ssm_client (SSMClient): An instance of the AWS Systems Manager (SSM) client.
-        only_status (bool): Whether to return only the status or the full response. Defaults to True.
-
-    Returns:
-    -------
-        str: The status of the Automation execution, which can be one of the following values:
-           - 'Pending'
-           - 'InProgress'
-           - 'Waiting'
-           - 'Success'
-           - 'TimedOut'
-           - 'Cancelling'
-           - 'Cancelled'
-           - 'Failed'
-           - 'PendingApproval'
-           - 'Approved'
-           - 'Rejected'
-           - 'Scheduled'
-           - 'RunbookInProgress'
-           - 'PendingChangeCalendarOverride'
-           - 'ChangeCalendarOverrideApproved'
-           - 'ChangeCalendarOverrideRejected'
-           - 'CompletedWithSuccess'
-           - 'CompletedWithFailure',
-
-    """
-    response = ssm_client.get_automation_execution(AutomationExecutionId=execution_id)
-    if only_status:
-        return response["AutomationExecution"]["AutomationExecutionStatus"]
-    else:
-        return response["AutomationExecution"]
-
-
 def get_command_status(command_id: str, ssm_client: "SSMClient") -> str:
     """Gets the status of an AWS Systems Manager (SSM) command.
 
@@ -476,13 +451,13 @@ def list_tags_for_resource_command(args: dict[str, Any], ssm_client: "SSMClient"
     response = ssm_client.list_tags_for_resource(
         ResourceType=RESOURCE_TYPE_MAP[args["resource_type"]], ResourceId=resource_id
     )
+    tag_list = response["TagList"]
+    tags = {"ResourceId": resource_id, "TagList": tag_list}
 
-    tags = response["TagList"]
-
-    human_readable = tableToMarkdown(f"Tags for {resource_id}", tags)
+    human_readable = tableToMarkdown(f"Tags for {resource_id}", tag_list)
 
     command_results = CommandResults(
-        outputs_key_field="Key",
+        outputs_key_field="ResourceId",
         outputs_prefix="AWS.SSM.Tag",
         outputs=tags,
         readable_output=human_readable,
@@ -508,7 +483,7 @@ def list_inventory_command(
     """
 
     def _parse_inventory_entities(
-        entities: list["InventoryResultEntityTypeDef"],
+        entities: list[dict],
     ) -> list[dict]:
         """Parses a list of entities and returns a list of dictionaries containing relevant information.
 
@@ -534,7 +509,7 @@ def list_inventory_command(
 
         parsed_entities = []
         for entity in entities:
-            entity_content = entity.get("Content", {})
+            entity_content: list = entity.get("Content", [])
             parsed_entity = {"Id": entity.get("Id")}
             for content in entity_content:
                 parsed_entities.append(parsed_entity | _parse_inventory(content))
@@ -560,11 +535,12 @@ def list_inventory_command(
             next_token_command_result(response_next_token, "InventoryNextToken"),
         )
 
-    entities = response.get("Entities", [])
+    entities = list(response.get("Entities", []))
     # Extract the Data field from the object and add it to the main dictionary, Data contain a dict.
+
     for item in entities:
-        item["Data"].update(item["Data"].pop("AWS:InstanceInformation", {}))
-        item.update(item.pop("Data"))
+        item["Data"].update(item["Data"].pop("AWS:InstanceInformation", {}))  # type: ignore
+        item.update(item.pop("Data"))  # type: ignore
 
     command_results.append(
         CommandResults(
@@ -573,7 +549,7 @@ def list_inventory_command(
             outputs_key_field="Id",
             readable_output=tableToMarkdown(
                 name="AWS SSM Inventory",
-                t=_parse_inventory_entities(entities),
+                t=_parse_inventory_entities(entities),  # type: ignore
             ),
         ),
     )
@@ -633,12 +609,12 @@ def list_inventory_entry_command(
     kwargs = update_if_value(args, kwargs, {"next_token": "NextToken"})
 
     response = ssm_client.list_inventory_entries(**kwargs)
-    response.pop("ResponseMetadata")
+    # response.pop("ResponseMetadata")  # type: ignore
     entries = response.get("Entries", [])
 
     command_results = []
     if next_token := response.get("NextToken"):
-        response.pop("NextToken")
+        # response.pop("NextToken") # type: ignore
         command_results.append(
             next_token_command_result(next_token, "InventoryEntryNextToken"),
         )
@@ -1098,13 +1074,21 @@ def list_automation_executions_command(
 
 def validate_target_arguments(args: dict[str, Any]) -> None:
     if args.get("target_parameter_name") and not args.get("target_key"):
-        raise DemistoException("You must provide a target_key when specifying a target_parameter_name.")
+        raise DemistoException(
+            "You must provide a target_key when specifying a target_parameter_name."
+        )
     if args.get("target_key") and not args.get("target_parameter_name"):
-        raise DemistoException("You must provide a target_parameter_name when specifying a target_key.")
+        raise DemistoException(
+            "You must provide a target_parameter_name when specifying a target_key."
+        )
     if args.get("target_values") and not args.get("target_parameter_name"):
-        raise DemistoException("You must provide a target_parameter_name when specifying a target_values.")
+        raise DemistoException(
+            "You must provide a target_parameter_name when specifying a target_values."
+        )
     if args.get("target_key") and not args.get("target_values"):
-        raise DemistoException("You must provide a target_values when specifying a target_key.")
+        raise DemistoException(
+            "You must provide a target_values when specifying a target_key."
+        )
 
 
 @polling_function(
@@ -1160,7 +1144,7 @@ def run_automation_execution_command(
             "client_token": "ClientToken",
             "max_concurrency": "MaxConcurrency",
             "max_error": "MaxErrors",
-            "target_parameter_name": "TargetParameterName"
+            "target_parameter_name": "TargetParameterName",
         }
         kwargs = update_if_value(args, kwargs, input_to_output_keys)
         validate_target_arguments(args)
@@ -1170,27 +1154,36 @@ def run_automation_execution_command(
             kwargs["Parameters"] = format_parameters_arguments(parameters)
         if target_key := args.get("target_key"):
             map_target_key = {
-                "Parameter Values" : "ParameterValues",
-                "Tag Key" : "Tag Key",
-                "Resource Group": "ResourceGroup"
+                "Parameter Values": "ParameterValues",
+                "Tag Key": "Tag Key",
+                "Resource Group": "ResourceGroup",
             }
-            kwargs["Targets"] = [{"Key": map_target_key[target_key], "Values": [args["target_values"]]}]
+            kwargs["Targets"] = [
+                {
+                    "Key": map_target_key[target_key],
+                    "Values": argToList(args["target_values"]),
+                }
+            ]
         #  ---end handling kwargs---
 
-        execution_id = ssm_client.start_automation_execution(**kwargs)["AutomationExecutionId"]
+        response = ssm_client.start_automation_execution(**kwargs)
+        response.pop("ResponseMetadata")  # type: ignore
+        execution_id = response["AutomationExecutionId"]
         # needed for the polling and is `hidden: true` in the yml file.
         args["execution_id"] = execution_id
         return PollResult(
             partial_result=CommandResults(
                 readable_output=f"Execution {args['execution_id']} is in progress",
+                outputs=response,
+                outputs_prefix="AWS.SSM.AutomationExecution"
             ),
             response=None,
             continue_to_poll=True,
             args_for_next_run=args,
         )
-    automation_execution = get_automation_execution(
-        execution_id, ssm_client, only_status=False
-    )
+    automation_execution = ssm_client.get_automation_execution(
+        AutomationExecutionId=execution_id
+    )["AutomationExecution"]
     status = automation_execution["AutomationExecutionStatus"]
     if status in TERMINAL_AUTOMATION_STATUSES:
         if FailureMessage := automation_execution.get("FailureMessage"):
@@ -1249,7 +1242,9 @@ def cancel_automation_execution_command(
     include_polling = argToBoolean(args.get("include_polling", False))
 
     if not argToBoolean(args["first_run"]):
-        status = get_automation_execution(automation_execution_id, ssm_client)
+        status = ssm_client.get_automation_execution(
+            AutomationExecutionId=automation_execution_id
+        )["AutomationExecution"]["AutomationExecutionStatus"]
         if status in TERMINAL_AUTOMATION_STATUSES:  # STOP POLLING
             return PollResult(
                 response=CommandResults(
@@ -1370,7 +1365,7 @@ def list_commands_command(
     interval=arg_to_number(
         demisto.args().get("interval_in_seconds", DEFAULT_INTERVAL_IN_SECONDS),
     ),
-    timeout=arg_to_number(demisto.args().get("timeout", DEFAULT_TIMEOUT)),
+    timeout=arg_to_number(demisto.args().get("polling_timeout", DEFAULT_TIMEOUT)),
     requires_polling_arg=False,  # means it will always be default to poll, poll=true,
 )
 def run_command_command(args: dict[str, Any], ssm_client: "SSMClient") -> PollResult:

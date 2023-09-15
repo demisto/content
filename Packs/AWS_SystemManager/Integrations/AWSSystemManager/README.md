@@ -929,6 +929,14 @@ Initiates execution of an Automation runbook.
 | execution_id | The ID of the execution. This is for the polling to work, not for the user. | Optional | 
 | timeout | The timeout in seconds until polling ends. Default is 600. | Optional | 
 
+
+##### How to use parameters argument:
+###### in playbook:
+![parameters argument](image-1.png)
+
+###### in the war room:
+![Alt text](image-2.png)
+![Alt text](image-3.png)
 #### Context Output
 
 | **Path** | **Type** | **Description** |
