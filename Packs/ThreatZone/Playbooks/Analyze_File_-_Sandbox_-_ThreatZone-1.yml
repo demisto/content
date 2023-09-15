@@ -1,0 +1,379 @@
+id: 855a078d-7bfa-40a2-83c4-7b5eb0ab75dd
+version: 1
+contentitemexportablefields:
+  contentitemfields:
+    packID: ""
+    packName: ThreatZone
+    itemVersion: 1.0.0
+    fromServerVersion: 5.0.0
+    toServerVersion: ""
+    definitionid: ""
+    prevname: ""
+name: Analyze File - Sandbox - ThreatZone
+description: |-
+  analyzes one  file using the ThreatZone sandbox integration.
+  Returns relevant reports to the War Room and file reputations to the context data.
+  All file types are supported.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: d8a91f9c-40f6-48f2-8dd2-1c7e59b6abdb
+    type: start
+    task:
+      id: d8a91f9c-40f6-48f2-8dd2-1c7e59b6abdb
+      version: -1
+      name: ""
+      description: analyzes a file using ThreatZone
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 88b79b84-3021-4afb-8c10-f53ac646a2dd
+    type: regular
+    task:
+      id: 88b79b84-3021-4afb-8c10-f53ac646a2dd
+      version: -1
+      name: ThreatZone Submit File for Analysis
+      description: Submits a sample to ThreatZone for sandbox analysis.
+      script: '|||tz-sandbox-upload-sample'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      entry_id:
+        simple: ${File.EntryID}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 585
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 16422fae-b077-44f1-8bd8-166cd66f6000
+    type: playbook
+    task:
+      id: 16422fae-b077-44f1-8bd8-166cd66f6000
+      version: -1
+      name: GenericPolling
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      Ids:
+        complex:
+          root: ThreatZone.Result
+          accessor: UUID
+      Interval:
+        complex:
+          root: inputs.Interval
+      PollingCommandArgName:
+        simple: uuid
+      PollingCommandName:
+        simple: tz-get-result
+      Timeout:
+        complex:
+          root: inputs.Timeout
+      dt:
+        simple: ThreatZone.Result(STATUS.val==5)
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 93fac7de-168e-4b60-8172-1d0d8cc46702
+    type: title
+    task:
+      id: 93fac7de-168e-4b60-8172-1d0d8cc46702
+      version: -1
+      name: Done
+      description: analyzes a file using ThreatZone
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 2c8d3f21-0487-4954-8ed5-c9cec40b0d49
+    type: condition
+    task:
+      id: 2c8d3f21-0487-4954-8ed5-c9cec40b0d49
+      version: -1
+      name: Is there a File to analyze?
+      description: Look for files to analyze
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "1"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: inputs.File
+                accessor: EntryID
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 55c497ca-ed24-443a-899e-596ec5e329d9
+    type: condition
+    task:
+      id: 55c497ca-ed24-443a-899e-596ec5e329d9
+      version: -1
+      name: Is ThreatZone enabled?
+      description: Check if integration instance is enabled
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: ThreatZone
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 185
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 04ceb321-3ce0-46c0-8fe7-ffc53f03922a
+    type: regular
+    task:
+      id: 04ceb321-3ce0-46c0-8fe7-ffc53f03922a
+      version: -1
+      name: ThreatZone Get Report
+      description: Retrive the analysis result from ThreatZone Sandbox.
+      script: '|||tz-get-result'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      uuid:
+        simple: ${ThreatZone.Result.UUID}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1085,
+        "width": 605,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: File
+  value:
+    complex:
+      root: File
+  required: false
+  description: File object of the file to analyze. The File is taken from the context.
+  playbookInputQuery: null
+- key: Interval
+  value:
+    simple: "1"
+  required: false
+  description: Duration for executing the pooling (in minutes)
+  playbookInputQuery: null
+- key: Timeout
+  value:
+    simple: "15"
+  required: false
+  description: The duration after which to stop pooling and to resume the playbook
+    (in minutes)
+  playbookInputQuery: null
+outputs:
+  - contextPath: ThreatZone.Result.STATUS
+    description: The status of the submission scanning process.
+    type: String
+  - contextPath: ThreatZone.Result.LEVEL
+    description: Threat Level of the scanned file. (malicious, suspicious or informative).
+    type: String
+  - contextPath: ThreatZone.Result.URL
+    description: The result page url of the submission.
+    type: String
+  - contextPath: ThreatZone.Result.INFO
+    description: Contains the file name, scan process status and public status.
+    type: String
+  - contextPath: ThreatZone.Result.REPORT
+    description: The analysis report of the submission.
+    type: String
+  - contextPath: ThreatZone.Result.MD5
+    description: The md5 hash of the submission.
+    type: String
+  - contextPath: ThreatZone.Result.SHA1
+    description: The sha1 hash of the submission.
+    type: String
+  - contextPath: ThreatZone.Result.SHA256
+    description: The sha256 hash of the submission.
+    type: String
+  - contextPath: ThreatZone.Result.UUID
+    description: The UUID of the submission.
+    type: String
+  - contextPath: ThreatZone.Result.SANITIZED
+    description: The url of the sanitized file.
+    type: String
+sourceplaybookid: analyze File - Sandbox - ThreatZone

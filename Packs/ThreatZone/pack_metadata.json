@@ -1,0 +1,22 @@
+{
+    "name": "MalwationThreatZone",
+    "description": "Malwation ThreatZone malware analysis sandboxing",
+    "support": "partner",
+    "currentVersion": "1.0.0",
+    "author": "Malwation",
+    "url": "",
+    "email": "",
+    "categories": [
+        "Forensics & Malware Analysis"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "vvelitkn-malwation"
+    ]
+}
