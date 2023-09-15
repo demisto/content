@@ -53,11 +53,11 @@ script:
       name: page_size
     - description: 1-indexed page number to get a particular page of threats. Has no effect if filter is not specified.
       name: page_number
-    - description: Returns test data if set to `True`
+    - description: Returns test data if set to `True`.
       name: mock-data
     - description: Filters threats based on the source of detection.
       name: source
-    - description: Subtenant of the user (if applicable)
+    - description: Subtenant of the user (if applicable).
       name: subtenant
     description: Get a list of threats.
     name: abnormal-security-list-threats
@@ -73,7 +73,7 @@ script:
       type: Number
 
   - arguments:
-    - description: A UUID representing a threat campaign. Full list of threat IDs can be obtained by first running the command to list a threat
+    - description: A UUID representing a threat campaign. Full list of threat IDs can be obtained by first running the command to list a threat.
       name: threat_id
       required: true
     - description: Returns test data if set to `True`.
@@ -358,7 +358,7 @@ script:
       name: page_size
     - description: 1-indexed page number to get a particular page of threats. Has no effect if filter is not specified.
       name: page_number
-    - description: Returns test data if set to `True`
+    - description: Returns test data if set to `True`.
       name: mock-data
     - description: Subtenant of the user (if applicable).
       name: subtenant
@@ -698,7 +698,7 @@ script:
       type: String
 
   - arguments:
-    - description: Returns test data if set to `True`
+    - description: Returns test data if set to `True`.
       name: mock-data
     description: Get the latest threat intel feed.
     name: abnormal-security-get-latest-threat-intel-feed
