@@ -1,15 +1,15 @@
 ### Authentication
 To configure an instance of the integration in Cortex XSOAR, you need to supply the Service Account Private Key file content.
-
+ 
 In order to use the integration, in the first stage, you need to create a project.
-Information about how to create project can be found [here](https://cloud.google.com/resource-manager/docs/creating-managing-projects)
-
+ Information about how to create project can be found [here](https://cloud.google.com/resource-manager/docs/creating-managing-projects)
+ 
 ### Enable Google Workspace APIs
 
 In order to use the integration capabilities, you need to enable Google Workspace APIs.
 1. Open the [Google Cloud Console](https://console.cloud.google.com/).
-2. At the top-left, click the navigation menu > **APIs & Services** > **Library**.
-3. In the search field, enter the name of the API you want to enable and press **Enter**.
+ 2. At the top-left, click the navigation menu > **APIs & Services** > **Library**.
+ 3. In the search field, enter the name of the API you want to enable and press **Enter**.
    Please enable the following APIs:
    1. Identity and Access Management (IAM) API
    2. Cloud Resource Manager API
@@ -20,7 +20,7 @@ In order to use the integration capabilities, you need to enable Google Workspac
 ### Create a Service Account
 
 1. Open the [Service accounts page](https://console.developers.google.com/iam-admin/serviceaccounts).
-2. If prompted, select a project, or create a new one.
+ 2. If prompted, select a project, or create a new one.
 3. Click **Create Service Account**.
 4. Under Service account details, type a name, ID, and description for the service account, then click **Create and Continue**.
 5. Optional: Under *Grant this service account access to project*, select the IAM roles to grant to the service account.
@@ -37,7 +37,7 @@ You can grant the permissions by predefined roles or by creating a custom role.
 #### Create a Custom Role
 
 1. Open the [Google Cloud Console](https://console.cloud.google.com/).
-2. Click the navigation menu and select **IAM & Admin** then **Roles**.
+ 2. Click the navigation menu and select **IAM & Admin** then **Roles**.
 3. Click **Create Role** on the top toolbar.
 4. Add a title, description, and ID and ensure the role is marked for General Availability.
 5. Add the required permissions by clicking **ADD PERMISSIONS**.
@@ -46,20 +46,20 @@ You can grant the permissions by predefined roles or by creating a custom role.
 #### Grant Role Access to Service Account
 
 1. Open the [Google Cloud Console](https://console.cloud.google.com/).
-2. Select **IAM & Admin** > **IAM**.
+ 2. Select **IAM & Admin** > **IAM**.
 3. Click the down arrow in the top menu bar for the project.
 4. From the *Select from* drop-down list, select an organization that contains the GCP project(s) that you want the integration to monitor.
 5. Click the **ALL** tab and select the required organization.
 6. Click **Add**. Note that you must have permission to add members to the organization or project for the **ADD** button to be active.
 7. Add a member and roles to a project or organization. In the *New members* field, paste the email address of the created service account.
-8. From the *Select a role* drop-down list, select the required roles.
+ 8. From the *Select a role* drop-down list, select the required roles.
 9. Click **Save**.
 
 ### Command Required Permissions
 
 |Command Name|Permissions|
 |---|---|
-| gcp-iam-projects-get | resourcemanager.projects.get |
+ | gcp-iam-projects-get | resourcemanager.projects.get |
 | gcp-iam-project-iam-policy-get | resourcemanager.projects.getIamPolicy |
 | gcp-iam-project-iam-permission-test | There are no permissions required for making this API call. |
 | gcp-iam-project-iam-member-add | resourcemanager.projects.getIamPolicy <br> resourcemanager.projects.setIamPolicy |
@@ -126,12 +126,12 @@ You can grant the permissions by predefined roles or by creating a custom role.
 
 
 ### Create a Service Account Key
-
+ 
 1. Open the [Service accounts page](https://console.developers.google.com/iam-admin/serviceaccounts).
-2. If prompted, select a project, or create a new one.
+ 2. If prompted, select a project, or create a new one.
 3. Click the email address for the service account you created.
 4. Click **Create key**, then click **Create**.
-5. Click the **Keys** tab.
+ 5. Click the **Keys** tab.
 6. In the *Add key* drop-down list, select **Create new key**.
 7. Click **Create**.
 
@@ -141,5 +141,7 @@ Please provide the downloaded file content in the integration `Service Account P
 
 More information about creating the required resources can be found here:
 * [Create a Project](https://cloud.google.com/resource-manager/docs/creating-managing-projects)
-* [Enable Google Workspace APIs ](https://developers.google.com/workspace/guides/enable-apis)
-* [Create a Service Account & Service Account Key](https://developers.google.com/identity/protocols/oauth2/service-account#creatinganaccount)
+ * [Enable Google Workspace APIs ](https://developers.google.com/workspace/guides/enable-apis)
+ * [Create a Service Account & Service Account Key](https://developers.google.com/identity/protocols/oauth2/service-account#creatinganaccount)
+ 
+---
