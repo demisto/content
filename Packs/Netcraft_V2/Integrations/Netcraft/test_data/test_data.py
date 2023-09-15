@@ -818,16 +818,28 @@ class email_report_submit:
         "uuid": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
     }
     http_func_args = {
-        "args": ["POST", "submission", "report/mail"],
+        "args": ["POST"],
         "kwargs": {
             "json_data": {
                 "email": "reporter_email",
                 "message": "message",
                 "password": "password",
-            }
+            },
+            'files': None,
+         'full_url': 'https://report.netcraft.com/api/v3/report/mail',
+          'ok_codes': None,
+          'params': None,
+          'resp_type': 'json'
         },
     }
-    outputs = submission_list_with_uuid.outputs
+    get_submission_call_args = (
+        {
+            "polling": "true",
+            "timeout": "600",
+            "interval_in_seconds": "30",
+        },
+        "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    )
 
 
 class mail_screenshot_get:
@@ -871,7 +883,6 @@ class submission_mail_get:
             "ok_codes": None,
         },
     }
-
     outputs = CommandResults(
         outputs={
             "classification_log": [
@@ -910,19 +921,32 @@ class file_report_submit_with_file_name_and_content:
         "uuid": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
     }
     http_func_args = {
-        "args": ["POST", "submission", "report/files"],
+        "args": ["POST"],
         "kwargs": {
             "json_data": {
                 "email": "reporter_email",
                 "files": [{"content": "file_content", "filename": "file_name"}],
                 "reason": "reason",
-            }
+            },
+            "files": None,
+            "full_url": "https://report.netcraft.com/api/v3/report/files",
+            "ok_codes": None,
+            "params": None,
+            "resp_type": "json",
         },
     }
-    outputs = submission_list_with_uuid.outputs
+    get_submission_call_args = (
+        {
+            "polling": "true",
+            "timeout": "600",
+            "interval_in_seconds": "30",
+        },
+        "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    )
+    getFilePath_call_args = "[]"
 
 
-class file_report_submit_with_entry_id:
+class file_report_submit_with_entry_id(file_report_submit_with_file_name_and_content):
     args = {
         "entry_id": "entry_id,entry_id2",
         "reason": "reason",
@@ -931,21 +955,25 @@ class file_report_submit_with_entry_id:
         "timeout": "600",
         "interval_in_seconds": "30",
     }
-    api_response = file_report_submit_with_file_name_and_content.api_response
     http_func_args = {
-        "args": ["POST", "submission", "report/files"],
+        "args": ["POST"],
         "kwargs": {
             "json_data": {
                 "email": "reporter_email",
                 "files": [
-                    {"content": "some base 64 string", "filename": "some_name"},
-                    {"content": "same base 64 string", "filename": "another_name"},
+                    {"content": "bW9jayBmaWxlIGNvbnRlbnRz", "filename": "file name"},
+                    {"content": "bW9jayBmaWxlIGNvbnRlbnRz", "filename": "file name"},
                 ],
                 "reason": "reason",
-            }
+            },
+            "files": None,
+            "full_url": "https://report.netcraft.com/api/v3/report/files",
+            "ok_codes": None,
+            "params": None,
+            "resp_type": "json",
         },
     }
-    outputs = submission_list_with_uuid.outputs
+    getFilePath_call_args = "[call('entry_id'), call('entry_id2')]"
 
 
 class attack_report:
@@ -1224,7 +1252,7 @@ class url_report_submit:
         "polling": "true",
         "reason": "reason",
         "reporter_email": "reporter_email",
-        "timeout": "timeout",
+        "timeout": "600",
         "urls": "urls,urls2",
     }
     api_response = {
@@ -1232,16 +1260,28 @@ class url_report_submit:
         "uuid": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
     }
     http_func_args = {
-        "args": ["POST", "submission", "report/urls"],
+        "args": ["POST"],
         "kwargs": {
             "json_data": {
                 "email": "reporter_email",
                 "reason": "reason",
                 "urls": [{"url": "urls"}, {"url": "urls2"}],
-            }
+            },
+            'files': None,
+         'full_url': 'https://report.netcraft.com/api/v3/report/urls',
+          'ok_codes': None,
+          'params': None,
+          'resp_type': 'json'
         },
     }
-    outputs = submission_list_with_uuid.outputs
+    get_submission_call_args = (
+        {
+            "polling": "true",
+            "timeout": "600",
+            "interval_in_seconds": "30",
+        },
+        "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    )
 
 
 class attack_type_list:

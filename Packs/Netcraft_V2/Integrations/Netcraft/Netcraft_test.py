@@ -395,7 +395,6 @@ def test_submission_list_command_with_uuid(mocker):
     )
 
 
-# I'M HERE -----------------------------------------
 @pytest.mark.parametrize(
     'data',
     [
@@ -414,21 +413,17 @@ def test_file_report_submit_command(mocker, data):
     Then:
         - Report files to Netcraft for analysis.
     '''
-    from Netcraft import file_report_submit_command
+    import Netcraft
 
     mocker.patch.object(ScheduledCommand, 'raise_error_if_not_supported')
     getFilePath = mocker.patch.object(demisto, 'getFilePath', return_value={'name': 'file name', 'path': 'test_data/mock_file.txt'})
     request = mocker.patch.object(Client, '_http_request', return_value=data.api_response)
+    get_submission = mocker.patch.object(Netcraft, 'get_submission')
 
-    result = file_report_submit_command(data.args, MOCK_CLIENT)
+    Netcraft.file_report_submit_command(data.args, MOCK_CLIENT)
 
-    assert data.outputs.outputs == result.outputs
-    assert data.outputs.outputs_key_field == result.outputs_key_field
-    assert data.outputs.outputs_prefix == result.outputs_prefix
-    assert data.outputs.raw_response == result.raw_response
-    assert data.outputs.readable_output == result.readable_output
-
-    assert getFilePath.call_args_list == [data.args.get('entry_id')] * 2
+    get_submission.assert_called_with(*data.get_submission_call_args, MOCK_CLIENT)
+    assert str(getFilePath.call_args_list) == data.getFilePath_call_args
     request.assert_called_with(
         *data.http_func_args['args'],
         **data.http_func_args['kwargs']
@@ -474,18 +469,15 @@ def test_email_report_submit_command(mocker):
     Then:
         - Report email messages to Netcraft for analysis.
     '''
-    from Netcraft import email_report_submit_command
+    import Netcraft
 
     mocker.patch.object(ScheduledCommand, 'raise_error_if_not_supported')
     request = mocker.patch.object(Client, '_http_request', return_value=email_report_submit.api_response)
+    get_submission = mocker.patch.object(Netcraft, 'get_submission')
 
-    result = email_report_submit_command(email_report_submit.args, MOCK_CLIENT)
+    Netcraft.email_report_submit_command(email_report_submit.args, MOCK_CLIENT)
 
-    assert email_report_submit.outputs.outputs == result.outputs
-    assert email_report_submit.outputs.outputs_key_field == result.outputs_key_field
-    assert email_report_submit.outputs.outputs_prefix == result.outputs_prefix
-    assert email_report_submit.outputs.raw_response == result.raw_response
-    assert email_report_submit.outputs.readable_output == result.readable_output
+    get_submission.assert_called_with(*email_report_submit.get_submission_call_args, MOCK_CLIENT)
 
     request.assert_called_with(
         *email_report_submit.http_func_args['args'],
@@ -533,18 +525,15 @@ def test_url_report_submit_command(mocker):
     Then:
         - Report URLs to Netcraft for analysis.
     '''
-    from Netcraft import url_report_submit_command
+    import Netcraft
 
     mocker.patch.object(ScheduledCommand, 'raise_error_if_not_supported')
     request = mocker.patch.object(Client, '_http_request', return_value=url_report_submit.api_response)
+    get_submission = mocker.patch.object(Netcraft, 'get_submission')
 
-    result = url_report_submit_command(url_report_submit.args, MOCK_CLIENT)
+    Netcraft.url_report_submit_command(url_report_submit.args, MOCK_CLIENT)
 
-    assert url_report_submit.outputs.outputs == result.outputs
-    assert url_report_submit.outputs.outputs_key_field == result.outputs_key_field
-    assert url_report_submit.outputs.outputs_prefix == result.outputs_prefix
-    assert url_report_submit.outputs.raw_response == result.raw_response
-    assert url_report_submit.outputs.readable_output == result.readable_output
+    get_submission.assert_called_with(*url_report_submit.get_submission_call_args, MOCK_CLIENT)
 
     request.assert_called_with(
         *url_report_submit.http_func_args['args'],
