@@ -254,10 +254,9 @@ def test_time_range():
     assert get_time_range(time_from_string, time_to_string)[1] - time_to_string_ts < abs(tolerance)
     # Test Python datetime object input
     dt_from = datetime.fromtimestamp(time_from)
-    datetime.fromtimestamp(time_to)
     assert abs(get_time_range(dt_from, None)[0] - time_from) < tolerance
     # Additional test for Python datetime object input
-    dt_additional = datetime(2022, 1, 1, 12, 0, 0)  # Create a custom datetime object
+    dt_additional = datetime.now()
     assert get_time_range(dt_additional, None)[0] == dt_additional.timestamp()
     # Negative test for future timestamp
     try:
