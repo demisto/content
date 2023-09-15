@@ -3775,7 +3775,7 @@ script:
       defaultValue: "false"
     - name: file_name
       description: Optional file name when running this command with is_file=true.
-      defaultValue: pan-os-result-file
+      defaultValue: PanOSResultFile
     - name: polling
       auto: PREDEFINED
       predefined:

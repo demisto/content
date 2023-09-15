@@ -171,7 +171,7 @@ PAN_DB_URL_FILTERING_CATEGORIES = {
     'questionable',
     'real-estate',
     'recreation-and-hobbies',
-    'reference-and-research    ',
+    'reference-and-research',
     'religion',
     'search-engines',
     'sex-education',
@@ -285,7 +285,7 @@ class PanosResponse():
 
 
 def http_request(uri: str, method: str, headers: dict = {},
-                 body: dict = {}, params: dict = {}, files: dict | None = None, is_pcap: bool = False,
+                 body: dict = {}, params: dict = {}, files: dict | None = None,
                  is_xml: bool = False, is_file: bool = False) -> Any:
     """
     Makes an API call with the given arguments
@@ -305,7 +305,7 @@ def http_request(uri: str, method: str, headers: dict = {},
             'Request Failed. with status: ' + str(result.status_code) + '. Reason is: ' + str(result.reason))
 
     # if pcap download or file download
-    if is_pcap or is_file:
+    if is_file:
         return result
     if is_xml:
         return result.text
@@ -888,7 +888,7 @@ def template_test(template: str):
     interval=60,
     timeout=1200
 )
-def pan_os_command_polling(args: dict, result):
+def pan_os_command_polling(args: dict, result: dict):
     """
     Polls job status until it is done
     """
@@ -901,14 +901,10 @@ def pan_os_command_polling(args: dict, result):
         'JobID': job_id,
         'Status': status
     }
-    continue_to_poll = True
-    res = {
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': result,
-        'ReadableContentsFormat': formats['text'],
-        'HumanReadable': f'Job status: {status}',
-    }
+    res = CommandResults(
+        outputs=result,
+        readable_output=f'Job status: {status}'
+    )
     return PollResult(
         response=res,
         continue_to_poll=status != 'FIN',  # continue polling if job isn't done
@@ -926,15 +922,15 @@ def panorama_command(args: dict):
     is_xml = False
     is_file = False
     polling = False
-    for arg in args.keys():
+    param_args = list(args.keys())
+    param_args.remove("file_name")
+    for arg in param_args:
         if arg == "is_xml":
             is_xml = argToBoolean(args[arg])
         elif arg == "is_file":
             is_file = argToBoolean(args[arg])
         elif arg == "polling":
             polling = argToBoolean(args[arg])
-        elif arg == "file_name":
-            pass
         else:
             params[arg] = args[arg]
     params['key'] = API_KEY
@@ -949,15 +945,12 @@ def panorama_command(args: dict):
     if polling:
         return_results(pan_os_command_polling(args, result))
     elif is_file:
-        return_results(fileResult(args.get("file_name"), result.content))
+        return_results(fileResult(args.get("file_name", "PanOSResultFile"), result.content))
     else:
-        return_results({
-            'Type': entryTypes['note'],
-            'ContentsFormat': formats['json'],
-            'Contents': result,
-            'ReadableContentsFormat': formats['text'],
-            'HumanReadable': 'Command was executed successfully.',
-        })
+        return_results(CommandResults(
+            outputs=result,
+            readable_output='Command was executed successfully.'
+        ))
 
 
 @logger
@@ -4190,7 +4183,7 @@ def panorama_list_pcaps_command(args: dict):
     elif serial_number:
         params['target'] = serial_number
 
-    result = http_request(URL, 'GET', params=params, is_pcap=True)
+    result = http_request(URL, 'GET', params=params, is_file=True)
     json_result = json.loads(xml2json(result.text))['response']
     if json_result['@status'] != 'success':
         raise Exception('Request to get list of Pcaps Failed.\nStatus code: ' + str(
@@ -4298,7 +4291,7 @@ def panorama_get_pcap_command(args: dict):
     if not file_name:
         file_name = datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S')
 
-    result = http_request(URL, 'GET', params=params, is_pcap=True)
+    result = http_request(URL, 'GET', params=params, is_file=True)
 
     # due to pcap file size limitation in the product. For more details, please see the documentation.
     if result.headers['Content-Type'] != 'application/octet-stream':
@@ -5343,7 +5336,7 @@ def build_logs_query(address_src: Optional[str], address_dst: Optional[str], ip_
 
 @logger
 def panorama_query_logs(log_type: str, number_of_logs: str, query: str, address_src: str, address_dst: str, ip_: str,
-                        zone_src: str, zone_dst: str, time_generated: str, time_generated_after: str,  action: str,
+                        zone_src: str, zone_dst: str, time_generated: str, time_generated_after: str, action: str,
                         port_dst: str, rule: str, url: str, filedigest: str):
     params = {
         'type': 'log',
