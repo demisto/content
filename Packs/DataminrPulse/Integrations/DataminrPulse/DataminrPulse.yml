@@ -709,7 +709,7 @@ script:
     - contextPath: DataminrPulse.Alerts.userTopHashtags
       description: User's top hashtags.
       type: Unknown
-  dockerimage: demisto/python3:3.10.13.72123
+  dockerimage: demisto/python3:3.10.13.73190
   isfetch: true
   runonce: false
   script: '-'
@@ -720,4 +720,5 @@ tests:
 marketplaces:
 - xsoar
 - marketplacev2
+defaultmapperin: Dataminr Pulse - Incoming Mapper
 fromversion: 6.5.0
