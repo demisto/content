@@ -62,7 +62,7 @@ class Client(BaseClient):
         remove_nulls_from_dictionary(params or {})
         remove_nulls_from_dictionary(data or {})
         return self._http_request(
-            method, full_url=urljoin(self._base_url['takedown_url'], url_suffix),
+            method, full_url=urljoin(self._base_url['takedown'], url_suffix),
             params=params, data=data, files=files, resp_type=resp_type,
             ok_codes=ok_codes, **kwargs)
 
@@ -95,7 +95,7 @@ class Client(BaseClient):
         remove_nulls_from_dictionary(params or {})
         remove_nulls_from_dictionary(json_data or {})
         return self._http_request(
-            method, full_url=urljoin(self._base_url['submission_url'], url_suffix),
+            method, full_url=urljoin(self._base_url['submission'], url_suffix),
             params=params, json_data=json_data, files=files, resp_type=resp_type,
             ok_codes=ok_codes, **kwargs)
 
