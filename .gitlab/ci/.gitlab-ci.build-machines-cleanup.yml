@@ -19,7 +19,7 @@ build-machines-cleanup:
     - EXIT_CODE=0
     - !reference [.lock-machine]
     - !reference [.uninstall-packs-and-reset-bucket-cloud]
-    - !reference [.cloud_machine_information]
+    - !reference [.cloud-machine-information]
     - !reference [.unlock-machine]
     - job-done
     - exit "${EXIT_CODE}"

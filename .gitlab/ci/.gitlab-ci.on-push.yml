@@ -434,7 +434,7 @@ slack-notify-nightly-build:
     - ./Tests/scripts/test_modeling_rules.sh || EXIT_CODE=$?
     - section_end "Test Modeling Rules"
 
-    - !reference [.cloud_machine_information]
+    - !reference [.cloud-machine-information]
     - !reference [.unlock-machine]
     - job-done
     - exit $EXIT_CODE
