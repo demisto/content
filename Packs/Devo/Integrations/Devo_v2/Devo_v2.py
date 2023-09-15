@@ -38,6 +38,8 @@ HEALTHCHECK_WRITER_TABLE = "test.keep.free"
 RANGE_PATTERN = re.compile("^[0-9]+ [a-zA-Z]+")
 TIMESTAMP_PATTERN = re.compile("^[0-9]+")
 TIMESTAMP_PATTERN_MILLI = re.compile("^[0-9]+.[0-9]+")
+PYTHON_DATETIME_OBJECT_PATTERN = re.compile("\d{4}-[01]\d-[0-3]\d [0-2]\d:[0-5]\d:[0-5]\d(?:\.\d+)?Z?")
+PYTHON_DATETIME_OBJECT_FORMAT = '%Y-%m-%d %H:%M:%S.%f'
 COUNT_SINGLE_TABLE = 0
 COUNT_MULTI_TABLE = 0
 COUNT_ALERTS = 0
@@ -301,6 +303,9 @@ def get_time_range(timestamp_from, timestamp_to):
         ):
             t_from = float(timestamp_from)
             t_to = time.time() if timestamp_to is None else float(timestamp_to)
+        elif re.fullmatch(PYTHON_DATETIME_OBJECT_PATTERN, timestamp_from):
+            t_from = date_to_timestamp(timestamp_from, PYTHON_DATETIME_OBJECT_FORMAT) / 1000
+            t_to = time.time() if timestamp_to is None else date_to_timestamp(timestamp_to) / 1000
         else:
             t_from = date_to_timestamp(timestamp_from) / 1000
             t_to = time.time() if timestamp_to is None else date_to_timestamp(timestamp_to) / 1000
