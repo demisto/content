@@ -374,7 +374,7 @@ def install_packs(client: demisto_client,
             {
                 'ID': response_data_pack.get('id'),
                 'CurrentVersion': response_data_packs.get('currentVersion')
-             } for response_data_pack in response_data_packs]
+            } for response_data_pack in response_data_packs]
         logging.success(f'Packs were successfully installed on server {host}')
 
         return success, packs_data
