@@ -12,7 +12,7 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-      - name: Run NoTouchy
+      - name: Run NoTouchyPlease
         uses: amshamah419/NoTouchy@v1.0.2
         with:
           regex-pattern: '^Tests\/.*$'
