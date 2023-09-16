@@ -5,6 +5,7 @@ import os
 import sys
 from datetime import datetime
 from time import sleep
+from typing import Any
 
 import demisto_client
 from demisto_client.demisto_api.rest import ApiException
@@ -149,13 +150,14 @@ def uninstall_pack(client: demisto_client,
                                                            pack_id=pack_id)
         return still_installed
 
-    def api_exception_handler(ex, _):
+    def api_exception_handler(ex, _) -> Any:
         if ALREADY_IN_PROGRESS in ex.body:
             wait_succeeded = wait_until_not_updating(client)
             if not wait_succeeded:
                 raise Exception(
                     "Failed to wait for the server to exit installation/updating status"
                 ) from ex
+        return None
 
     failure_massage = f'Failed to uninstall pack: {pack_id}'
 

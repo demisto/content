@@ -87,7 +87,7 @@ def generic_request_with_retries(client: demisto_client,
 
             except ApiException as ex:
                 if api_exception_handler:
-                    api_exception_handler(ex, attempts_left)
+                    body = api_exception_handler(ex, attempts_left)
                 if not attempts_left:  # exhausted all attempts, understand what happened and exit.
                     raise Exception(f"Got status {ex.status} from server, message: {ex.body}, headers: {ex.headers}") from ex
                 logging.debug(f"Process failed, got error {ex}")

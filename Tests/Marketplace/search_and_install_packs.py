@@ -11,9 +11,11 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from functools import lru_cache
 from pathlib import Path
 from threading import Lock
+from typing import Any
 
 import demisto_client
 from demisto_sdk.commands.common import tools
+from demisto_sdk.commands.common.logger import logger
 from demisto_sdk.commands.content_graph.common import PACK_METADATA_FILENAME
 from google.cloud.storage import Bucket  # noqa
 from packaging.version import Version
@@ -341,7 +343,7 @@ def install_packs(client: demisto_client,
                   packs_to_install: list,
                   attempts_count: int = 5,
                   sleep_interval: int = 60,
-                  ):
+                  ) -> tuple[bool, list]:
     """ Make a packs installation request.
        If a pack fails to install due to malformed pack, this function catches the corrupted pack and call another
        request to install packs again, this time without the corrupted pack.
@@ -354,6 +356,8 @@ def install_packs(client: demisto_client,
         packs_to_install (list): A list of the packs to install.
         attempts_count (int): The number of attempts to install the packs.
         sleep_interval (int): The sleep interval, in seconds, between install attempts.
+    Returns:
+        bool: True if the operation succeeded and False otherwise and a list of packs that were installed.
     """
     if not packs_to_install:
         logging.info("There are no packs to install on servers. Consolidating installation as success")
@@ -365,13 +369,17 @@ def install_packs(client: demisto_client,
         'ignoreWarnings': True
     }
 
-    def success_handler(response_data):
-        packs_data = [{'ID': pack.get('id'), 'CurrentVersion': pack.get('currentVersion')} for pack in response_data]
-        logging.success(f'Packs ware successfully installed on server {host}')
+    def success_handler(response_data_packs):
+        packs_data = [
+            {
+                'ID': response_data_pack.get('id'),
+                'CurrentVersion': response_data_packs.get('currentVersion')
+             } for response_data_pack in response_data_packs]
+        logging.success(f'Packs were successfully installed on server {host}')
 
         return success, packs_data
 
-    def api_exception_handler(ex, attempt_left):
+    def api_exception_handler(ex, attempt_left) -> Any:
         nonlocal packs_to_install, success, body
         if ALREADY_IN_PROGRESS in ex.body:
             wait_succeeded = wait_until_not_updating(client)
@@ -392,6 +400,7 @@ def install_packs(client: demisto_client,
                 'packs': packs_to_install,
                 'ignoreWarnings': True
             }
+            return body
 
         error_ids = get_error_ids(ex.body)
         if WLM_TASK_FAILED_ERROR_CODE in error_ids:
@@ -414,10 +423,22 @@ def install_packs(client: demisto_client,
 
             if 'Item not found' in ex.body:
                 raise Exception(f'Item not found error, headers:{ex.headers}.') from ex
+        return body
+
+    def should_try_handler():
+        nonlocal packs_to_install
+        logging.info(f"Retrying to install packs on server {host}:")
+        for pack in packs_to_install:
+            logger.info(f"\tID:{pack['id']} Version:{pack['version']}")
+        return True
 
     retries_message = f"Retrying to install packs on server {host}"
     exception_massage = f"Failed to install packs on server {host}"
     prior_message = f"Installing packs on server {host}."
+    logging.info(f"Installing packs on server {host}:")
+    for pack in packs_to_install:
+        logger.info(f"\tID:{pack['id']} Version:{pack['version']}")
+
     return generic_request_with_retries(client=client,
                                         retries_message=retries_message,
                                         exception_message=exception_massage,
@@ -429,7 +450,8 @@ def install_packs(client: demisto_client,
                                         attempts_count=attempts_count,
                                         sleep_interval=sleep_interval,
                                         success_handler=success_handler,
-                                        api_exception_handler=api_exception_handler)
+                                        api_exception_handler=api_exception_handler,
+                                        should_try_handler=should_try_handler)
 
 
 def search_pack_and_its_dependencies(client: demisto_client,
@@ -778,6 +800,7 @@ def search_and_install_packs_and_their_dependencies(pack_ids: list,
         batch_packs_install_request_body = [installation_request_body]
 
     for packs_to_install_body in batch_packs_install_request_body:
-        install_packs(client, host, packs_to_install_body)
+        pack_success, _ = install_packs(client, host, packs_to_install_body)
+        success &= pack_success
 
     return packs_to_install, success
