@@ -88,10 +88,10 @@ run-unittests-and-lint:
 
   after_script:
       - >
-        if [ '$CI_JOB_STATUS' -ne 'success' ] && [[ '$CI_COMMIT_BRANCH' -ne 'master' ]]; then
-          echo 'This will only run on failure not on master'
+        if [ '$CI_JOB_STATUS' = 'failed' ]; then
+          echo 'ooppsss I failed'
         else
-          echo $CI_JOB_STATUS
+          echo 'i sucseded'
         fi
 # runs in gitlab for the on-push flow (except for contributors)
 run-validations:
