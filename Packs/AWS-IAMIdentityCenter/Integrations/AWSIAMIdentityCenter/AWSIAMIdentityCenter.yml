@@ -3,21 +3,20 @@ commonfields:
   version: -1
 category: IT Services
 sectionOrder:
-- Connect
 - Collect
+- Connect
 configuration:
 - display: Role Arn
   name: roleArn
-  required: false
+  required: true
   section: Connect
-  type: 0
+  type: 4
 - display: Role Session Name
   name: roleSessionName
-  required: false
+  required: true
   section: Connect
   type: 0
-- advanced: true
-  display: AWS Default Region
+- display: AWS Default Region
   name: defaultRegion
   options:
   - us-east-1
@@ -38,64 +37,52 @@ configuration:
   - eu-west-3
   - us-gov-east-1
   - us-gov-west-1
-  required: false
+  required: true
   section: Collect
   type: 15
-- advanced: true
-  display: Role Session Duration
+- display: Role Session Duration
+  section: Connect
   name: sessionDuration
-  required: false
-  section: Connect
   type: 0
-- display: Access Key
-  displaypassword: Secret Key
-  name: credentials
   required: false
-  section: Connect
-  type: 9
-- display: Access Key
-  hidden: true
-  name: access_key
-  required: true
-  section: Connect
-  type: 4
-- display: Secret Key
-  hidden: true
-  name: secret_key
-  required: true
-  section: Connect
-  type: 4
 - additionalinfo: The time in seconds till a timeout exception is reached. You can specify just the read timeout (for example 60) or also the connect timeout followed after a comma (for example 60,10). If a connect timeout is not specified, a default of 10 second will be used.
   defaultvalue: 60,10
   display: Timeout
   name: timeout
   type: 0
   section: Connect
-  advanced: true
   required: false
-- additionalinfo: "The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time."
-  defaultvalue: '5'
+- additionalinfo: 'The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time.'
+  defaultvalue: "5"
   display: Retries
   name: retries
   type: 0
   section: Connect
-  advanced: true
   required: false
-- advanced: true
-  display: Trust any certificate (not secure)
+- display: Trust any certificate (not secure)
   name: insecure
   required: false
   section: Connect
-  type: 8  
-- advanced: true
-  display: Use system proxy settings
+  type: 8
+- display: Use system proxy settings
   name: proxy
   required: false
   section: Connect
   type: 8
-- display: Identity Store Id
+- display: Identity Store ID
   name: IdentityStoreId
   required: true
+  section: Collect
+  type: 4
+- display: Secret Key
+  name: secret_key
+  required: true
+  section: Collect
+  type: 4
+- display: Access Key
+  name: access_key
+  required: true
+  section: Collect
   type: 4
 description: Amazon Web Services IAM Identity Center.
 display: AWS - IAM Identity Center
