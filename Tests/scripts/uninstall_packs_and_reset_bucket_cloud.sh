@@ -14,7 +14,7 @@ else
   fi
 
   exit_code=0
-  IFS=', ' read -r -A  CLOUD_CHOSEN_MACHINE_ID_ARRAY <<< "${CLOUD_CHOSEN_MACHINE_IDS}"
+  IFS=', ' read -r -a CLOUD_CHOSEN_MACHINE_ID_ARRAY <<< "${CLOUD_CHOSEN_MACHINE_IDS}"
   for CLOUD_CHOSEN_MACHINE_ID in "${CLOUD_CHOSEN_MACHINE_ID_ARRAY[@]}"; do
     echo "Copying prod bucket to ${CLOUD_CHOSEN_MACHINE_ID} bucket."
     gsutil -m cp -r "gs://$GCS_SOURCE_BUCKET/content" "gs://$GCS_MACHINES_BUCKET/${CLOUD_CHOSEN_MACHINE_ID}/" > "$ARTIFACTS_FOLDER/Copy_prod_bucket_to_cloud_machine_cleanup.log" 2>&1
