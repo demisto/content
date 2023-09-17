@@ -260,6 +260,7 @@ def paginate_with_token(
     api_limit: int = 1000,
     api_token_key: str = 'marker',
     api_page_size_key: str = 'page_size',
+    stop_on_token: Any = None,
 ) -> tuple[list, Any]:
     '''
     Paginates an API endpoint that accepts "page token" and "page size" parameters
@@ -278,6 +279,7 @@ def paginate_with_token(
         api_token_key (str, optional): The key used by the API as a page token.
                                        This will be used both for the API call and response. Defaults to 'marker'.
         api_page_size_key (str, optional): The key used by the API as a page size. Defaults to 'page_size'.
+        stop_on_token (Any): The token returned by the API that indicates the end of the existing data. Defaults to = None
 
     Returns:
         tuple[list, Any]: The combined pages and the next page token.
@@ -303,6 +305,8 @@ def paginate_with_token(
             response = client_func(api_params | pagination_args)
             next_token = response.get(api_token_key)
             pages += get_page(response)
+            if next_token == stop_on_token:
+                break
         return pages, response.get(api_token_key)
 
 
@@ -352,7 +356,10 @@ def paginate_with_page_num_and_size(
         pages = []
         for page in range(1, -(-limit // api_limit) + 1):  # ceiling(limit / api_limit)
             pagination_args = {api_page_num_key: page, api_page_size_key: api_limit}
-            pages += get_page(pagination_args)
+            new_page = get_page(pagination_args)
+            pages += new_page
+            if len(new_page) < api_limit:  # end of the data has been reached
+                break
         del pages[limit:]  # remove the surplus
         return pages
 
