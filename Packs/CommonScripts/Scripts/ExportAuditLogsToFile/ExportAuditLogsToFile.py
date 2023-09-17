@@ -23,9 +23,21 @@ def main():   # pragma: no cover
         'size': 100
     }
 
+    demisto_version: str = get_demisto_version().get("version")
+    if not demisto_version:
+        raise ValueError(f'Could not get the version of XSOAR.')
+    if demisto_version.startswith("6"):  # xsoar 6
+        uri = "/settings/audits"
+    else:  # xsoar 8
+        uri = "/public_api/v1/audits/management_logs"
+    demisto.log(f'{demisto_version=}')
     # get the logs
-    res = demisto.executeCommand("demisto-api-post", {"uri": "/settings/audits", "body": body})[0]["Contents"][
-        "response"]
+
+    args = {"uri": uri, "body": {"request_data": {}}}
+    demisto.log(f'{args=}')
+    res = demisto.executeCommand("demisto-api-post", args)
+
+    demisto.log(f'{res=}')
 
     # set the initial counts
     total = res.get('total', 0)
