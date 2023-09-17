@@ -92,6 +92,7 @@ run-unittests-and-lint:
           echo 'ooppsss I failed'
         else
           echo 'i sucseded'
+          echo $CI_COMMIT_BRANCH
         fi
 # runs in gitlab for the on-push flow (except for contributors)
 run-validations:
