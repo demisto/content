@@ -2287,22 +2287,22 @@ def get_modified_remote_data_command(args: dict[str, Any]):
     assert last_update_utc is not None, f"could not parse{remote_args.last_update}"
     last_update_timestamp = last_update_utc.strftime('%Y-%m-%dT%H:%M:%SZ')
     demisto.debug(f'Remote arguments last_update in UTC is {last_update_timestamp}')
+    fetch_types = demisto.params().get('fetch_incidents_or_detections', "")
 
-    modified_ids_to_mirror = []
+    raw_ids = []
 
-    raw_incidents = get_incidents_ids(last_updated_timestamp=last_update_timestamp, has_limit=False).get('resources', [])
-    for incident_id in raw_incidents:
-        modified_ids_to_mirror.append(str(incident_id))
+    if 'Incidents' in fetch_types or "Endpoint Incident" in fetch_types:
+        raw_ids += get_incidents_ids(last_updated_timestamp=last_update_timestamp, has_limit=False).get('resources', [])
 
-    raw_detections = get_fetch_detections(last_updated_timestamp=last_update_timestamp, has_limit=False).get('resources', [])
-    for detection_id in raw_detections:
-        modified_ids_to_mirror.append(str(detection_id))
-    last_update_timestamp_idp_detections = last_update_utc.strftime(IDP_DATE_FORMAT)
-    raw_idp_detections = get_idp_detections_ids(filter_arg=f"updated_timestamp:>'{last_update_timestamp_idp_detections}'"
-                                                "+product:'idp'").get('resources', [])
-    for raw_idp_detection in raw_idp_detections:
-        modified_ids_to_mirror.append(str(raw_idp_detection))
+    if 'Detections' in fetch_types or "Endpoint Detection" in fetch_types:
+        raw_ids += get_fetch_detections(last_updated_timestamp=last_update_timestamp, has_limit=False).get('resources', [])
 
+    if "IDP Detection" in fetch_types:
+        raw_ids += get_idp_detections_ids(
+            filter_arg=f"updated_timestamp:>'{last_update_utc.strftime(IDP_DATE_FORMAT)}'+product:'idp'"
+        ).get('resources', [])
+
+    modified_ids_to_mirror = list(map(str, raw_ids))
     demisto.debug(f'All ids to mirror in are: {modified_ids_to_mirror}')
     return GetModifiedRemoteDataResponse(modified_ids_to_mirror)
 
