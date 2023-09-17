@@ -1,5 +1,5 @@
 AWS Systems Manager is the operations hub for your AWS applications and resources and a secure end-to-end management solution for hybrid cloud environments that enables safe and secure operations at scale.
-This integration was integrated and tested with version Boto3 1.28.30 of AWS-SDK.
+This integration was integrated and tested with Boto3 version 1.28.30 (AWS SDK).
 
 For detailed instructions about setting up authentication, see: [AWS Integrations - Authentication](https://xsoar.pan.dev/docs/reference/articles/aws-integrations---authentication).
 
@@ -36,8 +36,7 @@ Adds or overwrites one tag for the specified resource.
 Tags are metadata that you can assign to the automations, documents, managed nodes, maintenance windows, Parameter Store parameters, and patch baselines.
 Tags enable you to categorize the resources in different ways, for example, by purpose, owner, or environment.
 Each tag consists of a key and an optional value, both of which you define.
-For example, you could define a set of tags for the account’s managed nodes that helps you track each node’s owner and stack level.
-For example, Key=Owner,Value=SysAdmin.
+For example, you could define a set of tags for the account’s managed nodes that helps you track each node’s owner and stack level, Key=Owner Value=SysAdmin.
 
 #### Base Command
 
@@ -51,8 +50,8 @@ For example, Key=Owner,Value=SysAdmin.
 | roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
 | roleSessionName | An identifier for the assumed role session. | Optional | 
 | roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
-| resource_type | Specifies the type of resource for tagging.<br/>Note: The ManagedInstance type for this API operation is for on-premises managed nodes. Possible values are: Association, Automation, Document, MaintenanceWindow, ManagedInstance, OpsItem, OpsMetadata, PatchBaseline, Parameter. | Required | 
-| resource_id | The resource ID to be tagged.(e.g., MaintenanceWindow: mw-012345abcde, PatchBaseline: pb-012345abcde). | Required | 
+| resource_type | Specifies the type of resource for tagging.<br/>Note: The ManagedInstance type for this API operation is for on-premises managed nodes. Possible values are: Association, Automation, Document, Maintenance Window, Managed Instance, Ops Item, Ops Metadata, Patch Baseline, Parameter. | Required | 
+| resource_id | The resource ID to be tagged.<br/> Note: The format of the id depends on the selected resource type (e.g.. MaintenanceWindow: mw-012345abcde, PatchBaseline: pb-012345abcde). | Required | 
 | tag_key | The name of the tag. Note: Don’t enter personally identifiable information in this field. | Required | 
 | tag_value | The value of the tag. Note: Don’t enter personally identifiable information in this field. | Required | 
 
@@ -62,11 +61,11 @@ There is no context output for this command.
 
 #### Command example
 
-```!aws-ssm-tag-add resource_id=test resource_type=Document tag_key=test_key tag_value=test_value```
+```!aws-ssm-tag-add resource_id=demo resource_type=Document tag_key=test_key tag_value=test_value```
 
 #### Human Readable Output
 
->Tags successfully added to resource test.
+>Tags successfully added to resource demo.
 
 ### aws-ssm-tag-remove
 
@@ -85,8 +84,8 @@ Removes tag keys from the specified resource.
 | roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
 | roleSessionName | An identifier for the assumed role session. | Optional | 
 | roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
-| resource_type | Specifies the type of resource for tagging.<br/>Note: The ManagedInstance type for this API operation is for on-premises managed nodes. Possible values are: Association, Automation, Document, MaintenanceWindow, ManagedInstance, OpsItem, OpsMetadata, PatchBaseline, Parameter. | Required | 
-| resource_id | The ID of the resource to remove tags.(e.g.. MaintenanceWindow: mw-012345abcde, PatchBaseline: pb-012345abcde). | Required | 
+| resource_type | Specifies the type of resource for tagging.<br/>Note: The ManagedInstance type for this API operation is for on-premises managed nodes. Possible values are: Association, Automation, Document, Maintenance Window, Managed Instance, Ops Item, Ops Metadata, Patch Baseline, Parameter. | Required | 
+| resource_id | 'The ID of the resource to remove tags.<br/> Note: The format of the id depends on the selected resource type (e.g.. MaintenanceWindow: mw-012345abcde, PatchBaseline: pb-012345abcde).'. | Required | 
 | tag_key | The name of the tag to remove. | Required | 
 
 #### Context Output
@@ -95,20 +94,82 @@ There is no context output for this command.
 
 #### Command example
 
-```!aws-ssm-tag-remove resource_id=test resource_type=Document tag_key=test_key```
+```!aws-ssm-tag-remove resource_id=demo resource_type=Document tag_key=test_key```
 
 #### Human Readable Output
 
->Tag test_key removed from resource test successfully.
+>Tag test_key removed from resource demo successfully.
 
-### aws-ssm-inventory-get
+### aws-ssm-tag-list
+
+***
+Returns a list of the tags assigned to the specified resource.
+
+#### Base Command
+
+`aws-ssm-tag-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| region | The AWS Region. If not specified, the default region will be used. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, ca-central-1, eu-west-1, eu-central-1, eu-west-2, ap-northeast-1, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-south-1, sa-east-1, eu-north-1, eu-west-3. | Optional | 
+| roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
+| roleSessionName | An identifier for the assumed role session. | Optional | 
+| roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
+| resource_type | Returns a list of tags for a specific resource type. Possible values are: Association, Automation, Document, Maintenance Window, Managed Instance, Ops Item, Ops Metadata, Patch Baseline, Parameter. | Required | 
+| resource_id | 'The ID of the resource to list tags.<br/> Note: The format of the id depends on the selected resource type (e.g.. MaintenanceWindow: mw-012345abcde, PatchBaseline: pb-012345abcde).'. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.SSM.Tag.ResourceId | String | The ID of the resource to list tags. |
+| AWS.SSM.Tag.Key | String | The name of the tag. | 
+| AWS.SSM.Tag.Value | String | The value of the tag. | 
+
+#### Command example
+
+```!aws-ssm-tag-list resource_id=demo resource_type=Document```
+
+#### Context Example
+
+```json
+{
+    "AWS": {
+        "SSM": {
+            "Tag": {
+                "ResourceId": "demo",
+                "TagList": [
+                    {
+                        "Key": "DemoKey",
+                        "Value": "DemoValue"
+                    }
+                ]
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Tags for demo
+
+>|Key|Value|
+>|---|---|
+>| DemoKey  | DemoValue |
+
+
+
+### aws-ssm-inventory-list
 
 ***
 Query inventory information. This includes the managed node status, such as Stopped or Terminated.
 
 #### Base Command
 
-`aws-ssm-inventory-get`
+`aws-ssm-inventory-list`
 
 #### Input
 
@@ -120,6 +181,7 @@ Query inventory information. This includes the managed node status, such as Stop
 | roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
 | limit | The maximum number of items to return for this call,. The default and max is 50. The call also returns a token that you can specify in a subsequent call to get the next set of results. | Optional | 
 | next_token | The token for the next set of items to return. (Received this token from a previous call). | Optional | 
+| include_inactive_instance | Determines whether to include inactive instances in the query results. (if is true the command use a filter to get also the instance with the status Stopped, Terminated, ConnectionLost). Possible values are: true, false. Default is false. | Optional | 
 
 #### Context Output
 
@@ -127,23 +189,23 @@ Query inventory information. This includes the managed node status, such as Stop
 | --- | --- | --- |
 | AWS.SSM.InventoryNextToken.NextToken | String | The token for the next set of items to return. | 
 | AWS.SSM.Inventory.Id | String | ID of the inventory result entity. For example, for managed node inventory the result will be the managed node ID. For EC2 instance inventory, the result will be the instance ID. | 
-| AWS.SSM.Inventory.AWS:InstanceInformation.TypeName | String | The name of the inventory result item type. | 
-| AWS.SSM.Inventory.AWS:InstanceInformation.SchemaVersion | String | The schema version for the inventory result item. | 
-| AWS.SSM.Inventory.AWS:InstanceInformation.CaptureTime | String | The time inventory item data was captured. | 
-| AWS.SSM.Inventory.AWS:InstanceInformation.ContentHash | String | MD5 hash of the inventory item type contents. The content hash is used to determine whether to update inventory information. The PutInventory API doesn’t update the inventory item type contents if the MD5 hash hasn’t changed since last update. | 
-| AWS.SSM.Inventory.AWS:InstanceInformation.Content.AgentType | String | The type of SSM agent running on the instance. | 
-| AWS.SSM.Inventory.AWS:InstanceInformation.Content.AgentVersion | String | The version of the SSM agent running on the instance. | 
-| AWS.SSM.Inventory.AWS:InstanceInformation.Content.ComputerName | String | The fully qualified host name of the managed node. | 
-| AWS.SSM.Inventory.AWS:InstanceInformation.Content.IpAddress | String | The IP address of the managed node. | 
-| AWS.SSM.Inventory.AWS:InstanceInformation.Content.PlatformName | String | The name of the operating system platform running on the managed node. | 
-| AWS.SSM.Inventory.AWS:InstanceInformation.Content.PlatformType | String | The operating system platform type. | 
-| AWS.SSM.Inventory.AWS:InstanceInformation.Content.PlatformVersion | String | The version of the OS platform running on the managed node. | 
-| AWS.SSM.Inventory.AWS:InstanceInformation.Content.ResourceType | String | The type of instance. Instances are either EC2 instances or managed instances. | 
-| AWS.SSM.Inventory.AWS:InstanceInformation.Content.InstanceId | String | The managed node ID. | 
+| AWS.SSM.Inventory.TypeName | String | The name of the inventory result item type. | 
+| AWS.SSM.Inventory.SchemaVersion | String | The schema version for the inventory result item. | 
+| AWS.SSM.Inventory.CaptureTime | String | The time inventory item data was captured. | 
+| AWS.SSM.Inventory.ContentHash | String | MD5 hash of the inventory item type contents. The content hash is used to determine whether to update inventory information. The PutInventory API doesn’t update the inventory item type contents if the MD5 hash hasn’t changed since last update. | 
+| AWS.SSM.Inventory.Content.AgentType | String | The type of SSM agent running on the instance. | 
+| AWS.SSM.Inventory.Content.AgentVersion | String | The version of the SSM agent running on the instance. | 
+| AWS.SSM.Inventory.Content.ComputerName | String | The fully qualified host name of the managed node. | 
+| AWS.SSM.Inventory.Content.IpAddress | String | The IP address of the managed node. | 
+| AWS.SSM.Inventory.Content.PlatformName | String | The name of the operating system platform running on the managed node. | 
+| AWS.SSM.Inventory.Content.PlatformType | String | The operating system platform type. | 
+| AWS.SSM.Inventory.Content.PlatformVersion | String | The version of the OS platform running on the managed node. | 
+| AWS.SSM.Inventory.Content.ResourceType | String | The type of instance. Instances are either EC2 instances or managed instances. | 
+| AWS.SSM.Inventory.Content.InstanceId | String | The managed node ID. | 
 
 #### Command example
 
-```!aws-ssm-inventory-get limit=2```
+```!aws-ssm-inventory-list limit=2```
 
 #### Context Example
 
@@ -151,36 +213,25 @@ Query inventory information. This includes the managed node status, such as Stop
 {
     "AWS": {
         "SSM": {
-            "Inventory": [
-            {
-                "Id": "i-test_1",
-
-            },
-            {
-                "Id": "i-test_2",
-                "AWS:InstanceInformation": {
-                    "TypeName": "AWS:InstanceInformation",
-                    "SchemaVersion": "1.0",
-                    "CaptureTime": "2023-07-25T16:02:02Z",
-                    "Content": [
-                        {
-                            "AgentType": "amazon-ssm-agent",
-                            "AgentVersion": "agent_version",
-                            "ComputerName": "computer_name",
-                            "InstanceId": "i-test_2",
-                            "InstanceStatus": "Stopped",
-                            "IpAddress": "ip_address",
-                            "PlatformName": "Ubuntu",
-                            "PlatformType": "Linux",
-                            "PlatformVersion": "20.04",
-                            "ResourceType": "resource_type"
-                        }
-                    ]
-                }
-            },
-            ],
-            "InventoryNextToken":{
-                "NextToken": "test"
+            "Inventory": {
+                "CaptureTime": "2023-09-13T06:13:11Z",
+                "Content": [
+                    {
+                        "AgentType": "agent",
+                        "AgentVersion": "AgentVersion",
+                        "ComputerName": "ComputerName",
+                        "InstanceId": "instance id",
+                        "InstanceStatus": "Active",
+                        "IpAddress": "ip address",
+                        "PlatformName": "Linux",
+                        "PlatformType": "Linux",
+                        "PlatformVersion": "2",
+                        "ResourceType": "EC2"
+                    }
+                ],
+                "Id": "instance id",
+                "SchemaVersion": "1.0",
+                "TypeName": "AWS:InstanceInformation"
             }
         }
     }
@@ -193,8 +244,7 @@ Query inventory information. This includes the managed node status, such as Stop
 
 >|Agent version|Computer Name|IP address|Id|Instance Id|Platform Name|Platform Type|Resource Type|
 >|---|---|---|---|---|---|---|---|
->|  |  |  | i-test |  |  |  |  |
->| 3.test | ip-test | 180.test | i-test | i-test | Amazon Linux | Linux | resource_type |
+>| Agent version | Computer Name | ip address | instance id | instance id | Amazon Linux | Linux | EC2 |
 
 
 ### aws-ssm-inventory-entry-list
@@ -215,7 +265,7 @@ A list of inventory items returned by the request.
 | roleSessionName | An identifier for the assumed role session. | Optional | 
 | roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
 | instance_id | The managed node ID to get inventory information for. Note: to get the instance ID, run the aws-ssm-inventory-get command. | Required | 
-| type_name | The type of inventory item to get information for. | Required | 
+| type_name | The type of inventory item to get information for. Possible values are: Instance Information, File, Process, Windows Update, Network, Patch Summary, Patch Compliance, Compliance Item, Instance Detailed Information, Service, Windows Registry, Windows Role, Tag, Resource Group, Billing Info, Application, AWS Components. | Required | 
 | limit | The maximum number of items to return for this call. The default and max is 50. The call also returns a token that you can specify in a subsequent call to get the next set of results. | Optional | 
 | next_token | The token for the next set of items to return. (Received this token from a previous call). | Optional | 
 
@@ -236,10 +286,168 @@ A list of inventory items returned by the request.
 | AWS.SSM.InventoryEntry.Entries.PlatformType | String | The operating system platform type. | 
 | AWS.SSM.InventoryEntry.Entries.PlatformVersion | String | The version of the OS platform running on the managed node. | 
 | AWS.SSM.InventoryEntry.Entries.ResourceType | String | The type of instance. Instances are either EC2 instances or managed instances. | 
+| AWS.SSM.InventoryEntry.Name | String | The name of the application. | 
+| AWS.SSM.InventoryEntry.ApplicationType | String | The type of application. | 
+| AWS.SSM.InventoryEntry.Publisher | String | The publisher of the application. | 
+| AWS.SSM.InventoryEntry.Version | String | The version of the application. | 
+| AWS.SSM.InventoryEntry.Release | String | The release version of the application. | 
+| AWS.SSM.InventoryEntry.Epoch | String | The epoch value of the application version. | 
+| AWS.SSM.InventoryEntry.InstalledTime | String | The time when the application was installed. | 
+| AWS.SSM.InventoryEntry.Architecture | String | The architecture of the installed application. | 
+| AWS.SSM.InventoryEntry.URL | String | The URL of the application. | 
+| AWS.SSM.InventoryEntry.Summary | String | The summary information of the application. | 
+| AWS.SSM.InventoryEntry.PackageId | String | The package ID of the application. | 
+| AWS.SSM.InventoryEntry.Name | String | The name of the file. | 
+| AWS.SSM.InventoryEntry.Size | String | The size of the file in bytes. | 
+| AWS.SSM.InventoryEntry.Description | String | The description of the file. | 
+| AWS.SSM.InventoryEntry.FileVersion | String | The version of the file. | 
+| AWS.SSM.InventoryEntry.InstalledDate | String | The date when the file was installed. | 
+| AWS.SSM.InventoryEntry.ModificationTime | String | The date and time the file was last modified. | 
+| AWS.SSM.InventoryEntry.LastAccessTime | String | The date and time the file was last accessed. | 
+| AWS.SSM.InventoryEntry.ProductName | String | The name of the product the file belongs to. | 
+| AWS.SSM.InventoryEntry.InstalledDir | String | The directory where the file is installed. | 
+| AWS.SSM.InventoryEntry.ProductLanguage | String | The language of the product the file belongs to. | 
+| AWS.SSM.InventoryEntry.CompanyName | String | The name of the company that created the file. | 
+| AWS.SSM.InventoryEntry.ProductVersion | String | The version of the product the file belongs to. | 
+| AWS.SSM.InventoryEntry.StartTime | String | The date and time the process started. | 
+| AWS.SSM.InventoryEntry.CommandLine | String | The full command line used to start the process. | 
+| AWS.SSM.InventoryEntry.User | String | The user account that ran the process. | 
+| AWS.SSM.InventoryEntry.FileName | String | The name of the executable file for the process. | 
+| AWS.SSM.InventoryEntry.FileVersion | String | The version number of the executable file. | 
+| AWS.SSM.InventoryEntry.FileDescription | String | A description of the executable file. | 
+| AWS.SSM.InventoryEntry.FileSize | String | The size in bytes of the executable file. | 
+| AWS.SSM.InventoryEntry.CompanyName | String | The name of the company that released the process. | 
+| AWS.SSM.InventoryEntry.ProductName | String | The name of the product the process belongs to. | 
+| AWS.SSM.InventoryEntry.ProductVersion | String | The version of the product the process belongs to. | 
+| AWS.SSM.InventoryEntry.InstalledDate | String | The date the process was installed. | 
+| AWS.SSM.InventoryEntry.InstalledDir | String | The directory where the process is installed. | 
+| AWS.SSM.InventoryEntry.UsageId | String | The usage ID for the process. | 
+| AWS.SSM.InventoryEntry.Name | String | The name of the AWS component. | 
+| AWS.SSM.InventoryEntry.ApplicationType | String | The application type of the AWS component. | 
+| AWS.SSM.InventoryEntry.Publisher | String | The publisher of the AWS component. | 
+| AWS.SSM.InventoryEntry.Version | String | The version of the AWS component. | 
+| AWS.SSM.InventoryEntry.InstalledTime | String | The time the AWS component was installed. | 
+| AWS.SSM.InventoryEntry.Architecture | String | The architecture of the AWS component. | 
+| AWS.SSM.InventoryEntry.URL | String | The URL for the AWS component. | 
+| AWS.SSM.InventoryEntry.HotFixId | String | The ID of the Windows hotfix. | 
+| AWS.SSM.InventoryEntry.Description | String | The description of the Windows hotfix. | 
+| AWS.SSM.InventoryEntry.InstalledTime | String | The time the Windows hotfix was installed. | 
+| AWS.SSM.InventoryEntry.InstalledBy | String | Who installed the Windows hotfix. | 
+| AWS.SSM.InventoryEntry.Name | String | The name of the network interface. | 
+| AWS.SSM.InventoryEntry.SubnetMask | String | The subnet mask of the network interface. | 
+| AWS.SSM.InventoryEntry.Gateway | String | The gateway for the network interface. | 
+| AWS.SSM.InventoryEntry.DHCPServer | String | The DHCP server for the network interface. | 
+| AWS.SSM.InventoryEntry.DNSServer | String | The DNS server for the network interface. | 
+| AWS.SSM.InventoryEntry.MacAddress | String | The MAC address of the network interface. | 
+| AWS.SSM.InventoryEntry.IPV4 | String | The IPv4 address of the network interface. | 
+| AWS.SSM.InventoryEntry.IPV6 | String | The IPv6 address of the network interface. | 
+| AWS.SSM.InventoryEntry.PatchGroup | String | The patch group for the patch summary. | 
+| AWS.SSM.InventoryEntry.BaselineId | String | The baseline ID for the patch summary. | 
+| AWS.SSM.InventoryEntry.SnapshotId | String | The snapshot ID for the patch summary. | 
+| AWS.SSM.InventoryEntry.OwnerInformation | String | The owner information for the patch summary. | 
+| AWS.SSM.InventoryEntry.InstalledCount | String | The number of patches installed for the patch summary. | 
+| AWS.SSM.InventoryEntry.InstalledPendingRebootCount | String | The number of patches installed pending reboot for the patch summary. | 
+| AWS.SSM.InventoryEntry.InstalledOtherCount | String | The number of other patches installed for the patch summary. | 
+| AWS.SSM.InventoryEntry.InstalledRejectedCount | String | The number of patches installed but rejected for the patch summary. | 
+| AWS.SSM.InventoryEntry.NotApplicableCount | String | The number of not applicable patches for the patch summary. | 
+| AWS.SSM.InventoryEntry.UnreportedNotApplicableCount | String | The number of unreported not applicable patches for the patch summary. | 
+| AWS.SSM.InventoryEntry.MissingCount | String | The number of missing patches for the patch summary. | 
+| AWS.SSM.InventoryEntry.FailedCount | String | The number of patches that failed for the patch summary. | 
+| AWS.SSM.InventoryEntry.OperationType | String | The type of operation for the patch summary. | 
+| AWS.SSM.InventoryEntry.OperationStartTime | String | The start time of the operation for the patch summary. | 
+| AWS.SSM.InventoryEntry.OperationEndTime | String | The end time of the operation for the patch summary. | 
+| AWS.SSM.InventoryEntry.InstallOverrideList | String | The override list for patch installation for the patch summary. | 
+| AWS.SSM.InventoryEntry.RebootOption | String | The reboot option for the patch summary. | 
+| AWS.SSM.InventoryEntry.LastNoRebootInstallOperationTime | String | The time of the last no-reboot patch installation operation for the patch summary. | 
+| AWS.SSM.InventoryEntry.ExecutionId | String | The execution ID for the patch summary. | 
+| AWS.SSM.InventoryEntry.NonCompliantSeverity | String | The severity level for non-compliant patches in the patch summary. | 
+| AWS.SSM.InventoryEntry.SecurityNonCompliantCount | String | The number of security patches that are non-compliant in the patch summary. | 
+| AWS.SSM.InventoryEntry.CriticalNonCompliantCount | String | The number of critical patches that are non-compliant in the patch summary. | 
+| AWS.SSM.InventoryEntry.OtherNonCompliantCount | String | The number of other patches that are non-compliant in the patch summary. | 
+| AWS.SSM.InventoryEntry.Title | String | The title of the patch compliance item. | 
+| AWS.SSM.InventoryEntry.KBId | String | The KB ID for the patch compliance item. | 
+| AWS.SSM.InventoryEntry.Classification | String | The classification for the patch compliance item. | 
+| AWS.SSM.InventoryEntry.Severity | String | The severity level for the patch compliance item. | 
+| AWS.SSM.InventoryEntry.State | String | The state of the patch compliance item. | 
+| AWS.SSM.InventoryEntry.InstalledTime | String | The time the patch was installed for the patch compliance item. | 
+| AWS.SSM.InventoryEntry.ComplianceType | String | The compliance type for the compliance item. | 
+| AWS.SSM.InventoryEntry.ExecutionId | String | The execution ID for the compliance item. | 
+| AWS.SSM.InventoryEntry.ExecutionType | String | The execution type for the compliance item. | 
+| AWS.SSM.InventoryEntry.ExecutionTime | String | The execution time for the compliance item. | 
+| AWS.SSM.InventoryEntry.Id | String | The ID for the compliance item. | 
+| AWS.SSM.InventoryEntry.Title | String | The title of the compliance item. | 
+| AWS.SSM.InventoryEntry.Status | String | The status of the compliance item. | 
+| AWS.SSM.InventoryEntry.Severity | String | The severity of the compliance item. | 
+| AWS.SSM.InventoryEntry.DocumentName | String | The name of the document for the compliance item. | 
+| AWS.SSM.InventoryEntry.DocumentVersion | String | The version of the document for the compliance item. | 
+| AWS.SSM.InventoryEntry.Classification | String | The classification of the compliance item. | 
+| AWS.SSM.InventoryEntry.PatchBaselineId | String | The ID of the patch baseline for the compliance item. | 
+| AWS.SSM.InventoryEntry.PatchSeverity | String | The severity of the patch for the compliance item. | 
+| AWS.SSM.InventoryEntry.PatchState | String | The patch state for the compliance item. | 
+| AWS.SSM.InventoryEntry.PatchGroup | String | The patch group for the compliance item. | 
+| AWS.SSM.InventoryEntry.InstalledTime | String | The time the patch was installed for the compliance item. | 
+| AWS.SSM.InventoryEntry.InstallOverrideList | String | The override list for installing the patch for the compliance item. | 
+| AWS.SSM.InventoryEntry.DetailedText | String | Detailed text about the compliance item. | 
+| AWS.SSM.InventoryEntry.DetailedLink | String | A detailed link related to the compliance item. | 
+| AWS.SSM.InventoryEntry.CVEIds | String | CVE IDs associated with the compliance item. | 
+| AWS.SSM.InventoryEntry.ComplianceType | String | The type of compliance summary. | 
+| AWS.SSM.InventoryEntry.PatchGroup | String | The patch group for the compliance summary. | 
+| AWS.SSM.InventoryEntry.PatchBaselineId | String | The ID of the patch baseline for the compliance summary. | 
+| AWS.SSM.InventoryEntry.Status | String | The compliance status for the compliance summary. | 
+| AWS.SSM.InventoryEntry.OverallSeverity | String | The overall severity level for the compliance summary. | 
+| AWS.SSM.InventoryEntry.ExecutionId | String | The execution ID for the compliance scan in the compliance summary. | 
+| AWS.SSM.InventoryEntry.ExecutionType | String | The execution type for the compliance scan in the compliance summary. | 
+| AWS.SSM.InventoryEntry.ExecutionTime | String | The time the compliance scan was executed for the compliance summary. | 
+| AWS.SSM.InventoryEntry.CompliantCriticalCount | String | The number of compliant critical severity findings in the compliance summary. | 
+| AWS.SSM.InventoryEntry.CompliantHighCount | String | The number of compliant findings with high severity in the compliance summary. | 
+| AWS.SSM.InventoryEntry.CompliantMediumCount | String | The number of compliant findings with medium severity in the compliance summary. | 
+| AWS.SSM.InventoryEntry.CompliantLowCount | String | The number of compliant findings with low severity in the compliance summary. | 
+| AWS.SSM.InventoryEntry.CompliantInformationalCount | String | The number of compliant findings with informational severity in the compliance summary. | 
+| AWS.SSM.InventoryEntry.CompliantUnspecifiedCount | String | The number of compliant findings with unspecified severity in the compliance summary. | 
+| AWS.SSM.InventoryEntry.NonCompliantCriticalCount | String | The number of non-compliant findings with critical severity in the compliance summary. | 
+| AWS.SSM.InventoryEntry.NonCompliantHighCount | String | The number of non-compliant findings with high severity in the compliance summary. | 
+| AWS.SSM.InventoryEntry.NonCompliantMediumCount | String | The number of non-compliant findings with medium severity in the compliance summary. | 
+| AWS.SSM.InventoryEntry.NonCompliantLowCount | String | The number of non-compliant findings with low severity in the compliance summary. | 
+| AWS.SSM.InventoryEntry.NonCompliantInformationalCount | String | The number of non-compliant findings with informational severity in the compliance summary. | 
+| AWS.SSM.InventoryEntry.NonCompliantUnspecifiedCount | String | The number of non-compliant findings with unspecified severity in the compliance summary. | 
+| AWS.SSM.InventoryEntry.CPUModel | String | The model name of the CPU. | 
+| AWS.SSM.InventoryEntry.CPUCores | String | The number of CPU cores. | 
+| AWS.SSM.InventoryEntry.CPUs | String | The number of CPUs. | 
+| AWS.SSM.InventoryEntry.CPUSpeedMHz | String | The clock speed of the CPU in MHz. | 
+| AWS.SSM.InventoryEntry.CPUSockets | String | The number of CPU sockets. | 
+| AWS.SSM.InventoryEntry.CPUHyperThreadEnabled | String | Whether hyperthreading is enabled on the CPU. | 
+| AWS.SSM.InventoryEntry.OSServicePack | String | The service pack version of the operating system. | 
+| AWS.SSM.InventoryEntry.Name | String | The name of the service. | 
+| AWS.SSM.InventoryEntry.DisplayName | String | The display name of the service. | 
+| AWS.SSM.InventoryEntry.ServiceType | String | The type of the service. | 
+| AWS.SSM.InventoryEntry.Status | String | The status of the service. | 
+| AWS.SSM.InventoryEntry.DependentServices | String | List of services that this service depends on. | 
+| AWS.SSM.InventoryEntry.ServicesDependedOn | String | List of services that depend on this service. | 
+| AWS.SSM.InventoryEntry.StartType | String | The startup type of the service. | 
+| AWS.SSM.InventoryEntry.KeyPath | String | The path of the registry key. | 
+| AWS.SSM.InventoryEntry.ValueName | String | The name of the registry value. | 
+| AWS.SSM.InventoryEntry.ValueType | String | The type of the registry value. | 
+| AWS.SSM.InventoryEntry.Value | String | The data contained in the registry value. | 
+| AWS.SSM.InventoryEntry.Name | String | The name of the Windows role. | 
+| AWS.SSM.InventoryEntry.DisplayName | String | The display name of the Windows role. | 
+| AWS.SSM.InventoryEntry.Path | String | The path of the Windows role. | 
+| AWS.SSM.InventoryEntry.FeatureType | String | The feature type of the Windows role. | 
+| AWS.SSM.InventoryEntry.DependsOn | String | List of Windows roles that this role depends on. | 
+| AWS.SSM.InventoryEntry.Description | String | Description of the Windows role. | 
+| AWS.SSM.InventoryEntry.Installed | String | Whether the Windows role is installed. | 
+| AWS.SSM.InventoryEntry.InstalledState | String | Install state of the Windows role. | 
+| AWS.SSM.InventoryEntry.SubFeatures | String | List of subfeatures for the Windows role. | 
+| AWS.SSM.InventoryEntry.ServerComponentDescriptor | String | Server component descriptor for the Windows role. | 
+| AWS.SSM.InventoryEntry.Parent | String | Parent Windows role. | 
+| AWS.SSM.InventoryEntry.Tag.Key | String | The name of the tag. | 
+| AWS.SSM.InventoryEntry.Tag.Value | String | The value of the tag. | 
+| AWS.SSM.InventoryEntry.Name | String | The name of the resource group. | 
+| AWS.SSM.InventoryEntry.Arn | String | The Amazon Resource Name \(ARN\) of the resource group. | 
+| AWS.SSM.InventoryEntry.BillingProductId | String | The ID of the billing product. | 
 
 #### Command example
 
-```!aws-ssm-inventory-entry-list instance_id=test type_name=AWS:InstanceInformation```
+```!aws-ssm-inventory-entry-list instance_id=instance id	type_name="Instance Information"```
 
 #### Context Example
 
@@ -248,22 +456,22 @@ A list of inventory items returned by the request.
     "AWS": {
         "SSM": {
             "InventoryEntry": {
-                "CaptureTime": "2023-07-25T16:01:59Z",
+                "CaptureTime": "2023-09-13T06:13:11Z",
                 "Entries": [
-                     {
-                        "AgentType": "agent_type",
-                        "AgentVersion": "agent_version",
-                        "ComputerName": "computer_name",
-                        "InstanceId": "instance_id",
-                        "InstanceStatus": "Stopped",
-                        "IpAddress": "ip_address",
-                        "PlatformName": "Ubuntu",
+                    {
+                        "AgentType": "agent",
+                        "AgentVersion": "AgentVersion",
+                        "ComputerName": "Computer Name",
+                        "InstanceId": "instance id",
+                        "InstanceStatus": "Active",
+                        "IpAddress": "ip address",
+                        "PlatformName": "Amazon Linux",
                         "PlatformType": "Linux",
-                        "PlatformVersion": "20.04",
-                        "ResourceType": "resource_type"
-                    },
+                        "PlatformVersion": "2",
+                        "ResourceType": "EC2Instance"
+                    }
                 ],
-                "InstanceId": "test",
+                "InstanceId": "instance id",
                 "SchemaVersion": "1.0",
                 "TypeName": "AWS:InstanceInformation"
             }
@@ -276,9 +484,10 @@ A list of inventory items returned by the request.
 
 >### AWS SSM Inventory Entry
 
->|Agent version|Computer Name|IP address|Instance Id|Platform Name|Platform Type|Resource Type|
->|---|---|---|---|---|---|---|
->| agent_version | computer_name | ip_address | instance_id | Ubuntu | Linux | resource_type |
+>|AgentType|AgentVersion|ComputerName|InstanceId|InstanceStatus|IpAddress|PlatformName|PlatformType|PlatformVersion|ResourceType|
+>|---|---|---|---|---|---|---|---|---|---|
+>| agent | AgentVersion | Computer Name | instance id | Active | ip address | Amazon Linux | Linux | 2 | EC2Instance |
+
 
 ### aws-ssm-association-list
 
@@ -322,7 +531,7 @@ Returns all State Manager associations in the current Amazon Web Services accoun
 
 #### Command example
 
-```!aws-ssm-association-list```
+```!aws-ssm-association-list limit=1```
 
 #### Context Example
 
@@ -330,75 +539,32 @@ Returns all State Manager associations in the current Amazon Web Services accoun
 {
     "AWS": {
         "SSM": {
-            "Association": [
-                {
-                    "AssociationId": "AssociationId",
-                    "AssociationName": "test",
-                    "AssociationVersion": "1",
-                    "LastExecutionDate": "2023-07-25T15:51:28.607000+00:00",
-                    "Name": "AWS",
-                    "Overview": {
-                        "DetailedStatus": "Associated",
-                        "Status": "Pending"
+            "Association": {
+                "AssociationId": "id",
+                "AssociationName": "Inventory-Association-test",
+                "AssociationVersion": "1",
+                "LastExecutionDate": "2023-09-14T09:53:37.838000+00:00",
+                "Name": "AWS",
+                "Overview": {
+                    "AssociationStatusAggregatedCount": {
+                        "Failed": 1
                     },
-                    "ScheduleExpression": "rate(30 minutes)",
-                    "Targets": [
-                        {
-                            "Key": "InstanceIds",
-                            "Values": [
-                                "instanceId_test1",
-                                "instanceId_test2"
-                            ]
-                        }
-                    ]
+                    "DetailedStatus": "Failed",
+                    "Status": "Failed"
                 },
-                {
-                    "AssociationId": "AssociationId",
-                    "AssociationName": "AWS-",
-                    "AssociationVersion": "1",
-                    "LastExecutionDate": "2023-08-13T11:49:38+00:00",
-                    "Name": "AWS",
-                    "Overview": {
-                        "AssociationStatusAggregatedCount": {
-                            "Failed": 1
-                        },
-                        "DetailedStatus": "Failed",
-                        "Status": "Failed"
-                    },
-                    "ScheduleExpression": "rate(30 days)",
-                    "Targets": [
-                        {
-                            "Key": "ParameterValues",
-                            "Values": [
-                                "instanceId_test1"
-                            ]
-                        }
-                    ]
-                },
-                {
-                    "AssociationId": "AssociationId",
-                    "AssociationName": "Inventory-Association",
-                    "AssociationVersion": "1",
-                    "LastExecutionDate": "2023-08-31T12:05:17.631000+00:00",
-                    "Name": "**AWS**",
-                    "Overview": {
-                        "AssociationStatusAggregatedCount": {
-                            "Failed": 1
-                        },
-                        "DetailedStatus": "Failed",
-                        "Status": "Failed"
-                    },
-                    "ScheduleExpression": "rate(30 minutes)",
-                    "Targets": [
-                        {
-                            "Key": "InstanceIds",
-                            "Values": [
-                                "*"
-                            ]
-                        }
-                    ]
-                }
-            ]
+                "ScheduleExpression": "rate(30 minutes)",
+                "Targets": [
+                    {
+                        "Key": "InstanceIds",
+                        "Values": [
+                            "instance id"
+                        ]
+                    }
+                ]
+            },
+            "InventoryNextToken": {
+                "NextToken": "AAM"
+            }
         }
     }
 }
@@ -410,12 +576,7 @@ Returns all State Manager associations in the current Amazon Web Services accoun
 
 >|Association id|Association version|Document name|Last execution date|Resource status count|Status|
 >|---|---|---|---|---|---|
->| AssociationId_test | 1 | AWS | 2023-07-25 18:51:28.607000+03:00 |  | Pending |
->| AssociationId_test | 1 | AWSQuickSetup | 2023-08-13 14:49:38+03:00 | Failed: 1 | Failed |
->| AssociationId_test | 1 | AWS | 2023-07-25 18:54:37.936000+03:00 |  | Pending |
-
-       
-       
+>| id | 1 | AWS | 2023-09-14T09:53:37.838000+00:00 | Failed: 1 | Failed |
 
 
 ### aws-ssm-association-get
@@ -488,11 +649,11 @@ Describes the association for the specified target or managed node. If the assoc
 | AWS.SSM.Association.AlarmConfiguration.IgnorePollAlarmFailure | Boolean | When this value is true, the automation or command continues to run in cases where we can’t retrieve alarm status information from CloudWatch. In cases where we successfully retrieve an alarm status of OK or INSUFFICIENT_DATA, the automation or command continues to run, regardless of this value. Default is false. | 
 | AWS.SSM.Association.AlarmConfiguration.Alarms.Name | String | The name of the CloudWatch alarm. | 
 | AWS.SSM.Association.TriggeredAlarms.Name | String | The CloudWatch alarm that was invoked during the association. | 
-| AWS.SSM.Association.TriggeredAlarms.State | String | The state of the CloudWatch alarm. |
+| AWS.SSM.Association.TriggeredAlarms.State | String | The state of the CloudWatch alarm. | 
 
 #### Command example
 
-```!aws-ssm-association-get association_id=association_id```
+```!aws-ssm-association-get association_id=id```
 
 #### Context Example
 
@@ -501,43 +662,40 @@ Describes the association for the specified target or managed node. If the assoc
     "AWS": {
         "SSM": {
             "Association": {
-                    "ApplyOnlyAtCronInterval": false,
-                    "AssociationId": "association_id",
-                    "AssociationName": "AWS-QuickSetup",
-                    "AssociationVersion": "1",
-                    "AutomationTargetParameterName": "InstanceId",
-                    "Date": "2023-02-14T11:48:24.511000+00:00",
-                    "DocumentVersion": "$DEFAULT",
-                    "LastExecutionDate": "2023-08-13T11:49:38+00:00",
-                    "LastSuccessfulExecutionDate": "2023-02-14T11:48:48+00:00",
-                    "LastUpdateAssociationDate": "2023-02-14T11:48:24.511000+00:00",
-                    "Name": "AWSQuickSetup",
-                    "Overview": {
-                        "AssociationStatusAggregatedCount": {
-                            "Failed": 1
-                        },
-                        "DetailedStatus": "Failed",
-                        "Status": "Failed"
-                    },
-                    "Parameters": {
-                        "AutomationAssumeRole": [
-                            "automation_assume_role"
-                        ],
-                        "IsPolicyAttachAllowed": [
-                            "false"
-                        ]
-                    },
-                    "ScheduleExpression": "rate(30 days)",
-                    "Targets": [
-                        {
-                            "Key": "ParameterValues",
-                            "Values": [
-                                "instance_id"
-                            ]
-                        }
+                "ApplyOnlyAtCronInterval": false,
+                "AssociationId": "id",
+                "AssociationName": "name",
+                "AssociationVersion": "1",
+                "Date": "2023-07-18T10:50:27.691000+00:00",
+                "DocumentVersion": "$DEFAULT",
+                "LastExecutionDate": "2023-07-25T15:51:28.607000+00:00",
+                "LastSuccessfulExecutionDate": "2023-07-25T15:51:28.607000+00:00",
+                "LastUpdateAssociationDate": "2023-07-18T10:50:27.691000+00:00",
+                "Name": "AWS",
+                "Overview": {
+                    "DetailedStatus": "Associated",
+                    "Status": "Pending"
+                },
+                "Parameters": {
+                    "applications": [
+                        "Enabled"
+                    ],
+                    "awsComponents": [
+                        "Enabled"
                     ]
-                }
+                },
+                "ScheduleExpression": "rate(30 minutes)",
+                "Targets": [
+                    {
+                        "Key": "InstanceIds",
+                        "Values": [
+                            "id",
+                            "id_2"
+                        ]
+                    }
+                ]
             }
+        }
     }
 }
 ```
@@ -548,7 +706,8 @@ Describes the association for the specified target or managed node. If the assoc
 
 >|Association id|Association name|Association version|Create date|Document name|Document version|Last execution date|Resource status count|Schedule expression|Status|
 >|---|---|---|---|---|---|---|---|---|---|
->| association_id | AWS-QuickSetup | 1 | 2023-02-14T11:48:24.511000+00:00 | AWSQuickSetup | $DEFAULT | 2023-08-13T11:49:38+00:00 | Failed: 1 | rate(30 days) | Failed |
+>| id | name | 1 | 2023-07-18T10:50:27.691000+00:00 | AWS | $DEFAULT | 2023-07-25T15:51:28.607000+00:00 |  | rate(30 minutes) | Pending |
+
 
 ### aws-ssm-association-version-list
 
@@ -604,11 +763,11 @@ Retrieves all versions of an association for a specific association ID.
 | AWS.SSM.AssociationVersion.TargetLocations.TargetLocationAlarmConfiguration.IgnorePollAlarmFailure | Boolean | When this value is true, the automation or command continues to run in cases where we can’t retrieve alarm status information from CloudWatch. In cases where we successfully retrieve an alarm status of OK or INSUFFICIENT_DATA, the automation or command continues to run, regardless of this value. Default is false. | 
 | AWS.SSM.AssociationVersion.TargetLocations.TargetLocationAlarmConfiguration.Alarms.Name | String | The name of the CloudWatch alarm. | 
 | AWS.SSM.AssociationVersion.ScheduleOffset | Number | Number of days to wait after the scheduled day to run an association. | 
-| AWS.SSM.AssociationVersion.TargetMaps | Dictionary | A key-value mapping of document parameters to target resources. Both Targets and TargetMaps can’t be specified together. |
+| AWS.SSM.AssociationVersion.TargetMaps | Dictionary | A key-value mapping of document parameters to target resources. Both Targets and TargetMaps can’t be specified together. | 
 
 #### Command example
 
-```!aws-ssm-association-version-list association_id=association_id```
+```!aws-ssm-association-version-list association_id=id```
 
 #### Context Example
 
@@ -617,31 +776,32 @@ Retrieves all versions of an association for a specific association ID.
     "AWS": {
         "SSM": {
             "AssociationVersion": {
-                        "ApplyOnlyAtCronInterval": false,
-                        "AssociationId": "association_id",
-                        "AssociationName": "AWS-QuickSetup",
-                        "AssociationVersion": "1",
-                        "CalendarNames": [],
-                        "CreatedDate": "2023-02-14T11:48:24.511000+00:00",
-                        "Name": "AWSQuickSetup",
-                        "Parameters": {
-                            "AutomationAssumeRole": [
-                                "arn/AWS-QuickSetup"
-                            ],
-                            "IsPolicyAttachAllowed": [
-                                "false"
-                            ]
-                        },
-                        "ScheduleExpression": "rate(30 days)",
-                        "Targets": [
-                            {
-                                "Key": "ParameterValues",
-                                "Values": [
-                                    "instance_id"
-                                ]
-                            }
+                "ApplyOnlyAtCronInterval": false,
+                "AssociationId": "id",
+                "AssociationName": "name",
+                "AssociationVersion": "1",
+                "CalendarNames": [],
+                "CreatedDate": "2023-07-18T10:50:27.691000+00:00",
+                "Name": "AWS",
+                "Parameters": {
+                    "applications": [
+                        "Enabled"
+                    ],
+                    "awsComponents": [
+                        "Enabled"
+                    ]
+                },
+                "ScheduleExpression": "rate(30 minutes)",
+                "Targets": [
+                    {
+                        "Key": "InstanceIds",
+                        "Values": [
+                            "id",
+                            "id_2"
                         ]
                     }
+                ]
+            }
         }
     }
 }
@@ -653,7 +813,8 @@ Retrieves all versions of an association for a specific association ID.
 
 >|Association id|Create date|Document version|MaxConcurrency|MaxErrors|Name|Output location|Parameters|Schedule expression|Targets|Version|
 >|---|---|---|---|---|---|---|---|---|---|---|
->| association_id | 2023-02-14T11:48:24.511000+00:00 |  |  |  | AWSQuickSetup |  | **AutomationAssumeRole**:<br/>	***values***: arn/AWS-QuickSetup<br/>**IsPolicyAttachAllowed**:<br/>	***values***: false | rate(30 days) | **-**	***Key***: ParameterValues<br/>	**Values**:<br/>		***values***: instance_id | 1 |
+>| id | 2023-07-18T10:50:27.691000+00:00 |  |  |  | AWS |  | **applications**:<br/>	***values***: Enabled<br/>**awsComponents**:<br/>	***values***: Enabled<br/>**billingInfo**:<br/>	***values***: Enabled<br/>| rate(30 minutes) | **-**	***Key***: InstanceIds<br/>	**Values**:<br/>		***values***: id, id_2 | 1 |
+
 
 ### aws-ssm-document-list
 
@@ -724,8 +885,13 @@ Returns all Systems Manager (SSM) documents in the current Amazon Web Services a
                         "MacOS"
                     ],
                     "SchemaVersion": "0.3",
-                    "Tags": [],
-                    "TargetType": "/AWS"
+                    "Tags": [
+                        {
+                            "Key": "test_key",
+                            "Value": "test_value"
+                        }
+                    ],
+                    "TargetType": "Instance"
                 },
                 {
                     "CreatedDate": "2018-02-15T03:03:23.277000+00:00",
@@ -740,12 +906,17 @@ Returns all Systems Manager (SSM) documents in the current Amazon Web Services a
                         "MacOS"
                     ],
                     "SchemaVersion": "0.3",
-                    "Tags": [],
-                    "TargetType": "/AWS"
+                    "Tags": [
+                        {
+                            "Key": "test_key",
+                            "Value": "test_value"
+                        }
+                    ],
+                    "TargetType": "Instance"
                 }
             ],
             "DocumentNextToken": {
-                "NextToken": "AAA"
+                "NextToken": "AA"
             }
         }
     }
@@ -825,8 +996,7 @@ Describes the specified Amazon Web Services Systems Manager document (SSM docume
 | AWS.SSM.Document.PendingReviewVersion | String | The version of the document that is currently under review. | 
 | AWS.SSM.Document.ReviewStatus | String | The current status of the review. | 
 | AWS.SSM.Document.Category | String | The classification of a document to help you identify and categorize its use. | 
-| AWS.SSM.Document.CategoryEnum | String | The value that identifies a document’s category. |
-
+| AWS.SSM.Document.CategoryEnum | String | The value that identifies a document’s category. | 
 
 #### Command example
 
@@ -847,31 +1017,31 @@ Describes the specified Amazon Web Services Systems Manager document (SSM docume
                 ],
                 "CreatedDate": "2022-10-10T22:06:56.878000+00:00",
                 "DefaultVersion": "1",
-                "Description": "Change the test",
+                "Description": "Change the ...",
                 "DocumentFormat": "JSON",
                 "DocumentType": "Automation",
                 "DocumentVersion": "1",
-                "Hash": "",
-                "HashType": "",
+                "Hash": "Hash",
+                "HashType": "Sha256",
                 "LatestVersion": "1",
                 "Name": "AWS",
                 "Owner": "Amazon",
                 "Parameters": [
                     {
-                        "Description": "(Required) ID of test",
-                        "Name": "test",
+                        "Description": "(Required) ID of ...",
+                        "Name": "InstanceId",
                         "Type": "String"
                     },
                     {
                         "DefaultValue": "",
-                        "Description": "(Optional) The ARN of the test.",
-                        "Name": "test",
+                        "Description": "(Optional) The ARN of the ...",
+                        "Name": "LambdaRoleArn",
                         "Type": "String"
                     },
                     {
                         "DefaultValue": "",
-                        "Description": "(Optional) The ARN of the test.",
-                        "Name": "test",
+                        "Description": "(Optional) The ARN of the ...",
+                        "Name": "AutomationAssumeRole",
                         "Type": "String"
                     }
                 ],
@@ -882,8 +1052,13 @@ Describes the specified Amazon Web Services Systems Manager document (SSM docume
                 ],
                 "SchemaVersion": "0.3",
                 "Status": "Active",
-                "Tags": [],
-                "TargetType": "/AWS"
+                "Tags": [
+                    {
+                        "Key": "test_key",
+                        "Value": "test_value"
+                    }
+                ],
+                "TargetType": "Instance"
             }
         }
     }
@@ -896,7 +1071,7 @@ Describes the specified Amazon Web Services Systems Manager document (SSM docume
 
 >|Created date|Description|Display Name|Document version|Name|Owner|Platform types|Status|
 >|---|---|---|---|---|---|---|---|
->| 2022-10-10T22:06:56.878000+00:00 | Change the test |  |  | AWS | Amazon | Windows,<br/>Linux,<br/>MacOS | Active |
+>| 2022-10-10T22:06:56.878000+00:00 | Change the ... |  |  | AWS | Amazon | Windows,<br/>Linux,<br/>MacOS | Active |
 
 
 ### aws-ssm-automation-execution-run
@@ -920,23 +1095,31 @@ Initiates execution of an Automation runbook.
 | client_token | User-provided idempotency token. The token must be unique, is case insensitive, enforces the UUID format, and can’t be reused. | Optional | 
 | document_version | The version of the Automation runbook to use for this execution. Can be a specific version or the default version. Valid Values: 'default' 'latest' or a specific version number. | Optional | 
 | max_concurrency | The maximum number of targets allowed to run this task in parallel. You can specify a number, such as 10, or a percentage, such as 10%. The default value is 10. | Optional | 
-| max_errors | The number of errors that are allowed before the system stops running the automation on additional targets. You can specify either an absolute number of errors, for example 10, or a percentage of the target set, for example 10%.| Optional | 
+| max_errors | The number of errors that are allowed before the system stops running the automation on additional targets. You can specify either an absolute number of errors, for example 10, or a percentage of the target set, for example 10%. | Optional | 
 | mode | The execution mode of the automation. The default mode is Auto. Possible values are: Auto, Interactive. | Optional | 
 | tag_key | The name of the tag. | Optional | 
 | tag_value | The value of the tag. | Optional | 
 | interval_in_seconds | The interval in seconds between each poll. Default is 30. | Optional | 
-| parameters | A key-value map of execution parameters, which match the declared parameters in the Automation runbook. For example: InstanceId:i-dummy,Role:Admin,User. | Optional | 
+| parameters | 'A key-value map of execution parameters, which match the declared parameters in the Automation runbook. Note: to run on instance(s) use the target_parameter_name argument instead of specifying instances here, e.g. target_parameter_name=InstanceIds.'<br/>Example for execute the command in the war-room:<br/>- `"Role":["Admin", "User"]"`.<br/>Example for execute the command in the playbook (see screenshot below):<br/>in the first input box:<br/>Role (without a  quote)<br/>in the second input box:<br/>Admin, User (without a quote, and with a comma between values). | Optional | 
 | execution_id | The ID of the execution. This is for the polling to work, not for the user. | Optional | 
 | timeout | The timeout in seconds until polling ends. Default is 600. | Optional | 
+| print_polling_message | print the polling message to the war room every time it polls for status. Possible values are: true, false. Default is false. | Optional |  
+| target_parameter_name | The name of the parameter used as the target resource for the rate-controlled execution. Required if you specify target_key and target_values arguments. For example, instanceIds, LambdaRoleArn. | Optional | 
+| target_key | User-defined criteria for sending commands that target managed nodes that meet the criteria. Required if you specify target_parameter_name argument. Possible values are: Parameter Values, Tag Key, Resource Group. | Optional | 
+| target_values | User-defined criteria that maps to target_key.<br/>For example:<br/> - target_key=ResourceGroup target_values=MyResourceGroup.<br/> - target_key=TagKey target_values=&lt;my-tag-key-1&gt;,&lt;my-tag-key-2&gt;<br/> Note: Depending on the type of target, the maximum number of values for a key might be lower than the global maximum of 50. | Optional | 
 
 
 ##### How to use parameters argument:
+
 ###### in playbook:
-![parameters argument](image-1.png)
+
+![parameters argument](parameters_playbook.png)
 
 ###### in the war room:
-![Alt text](image-2.png)
-![Alt text](image-3.png)
+
+![Alt text](parameters_war_room_1.png)
+![Alt text](parameters_war_room_2.png)
+
 #### Context Output
 
 | **Path** | **Type** | **Description** |
@@ -945,11 +1128,25 @@ Initiates execution of an Automation runbook.
 
 #### Command example
 
-```!aws-ssm-automation-execution-run document_name=AWS parameters=RoleName:ssm,InstanceId:i-```
+```!aws-ssm-automation-execution-run document_name=AWS target_parameter_name=InstanceId target_key="Parameter Values" target_values=instance id   parameters=`{"RoleName":"role_name"}````
+
+#### Context Example
+
+```json
+{
+    "AWS": {
+        "SSM": {
+            "AutomationExecution": {
+                "AutomationExecutionId": "bbbbbb"
+            }
+        }
+    }
+}
+```
 
 #### Human Readable Output
 
->Execution <execution_id>  is in progress
+>Execution bbbbbb is in progress
 
 ### aws-ssm-automation-execution-cancel
 
@@ -974,10 +1171,20 @@ Stop an Automation execution.
 | include_polling | When set to true, will keep polling results until the command returns that the status of the automation execution is updated to Cancelled. Possible values are: true, false. Default is false. | Optional | 
 | first_run | This argument is used to determine whether the current execution of the command is the initial run. After the command is executed, the argument is updated to 'false.' During polling, the code checks the status only for the first execution. Default is True. | Optional | 
 | timeout | The timeout in seconds until polling ends. Default is 600. | Optional | 
+| print_polling_message | print the polling message to the war room every time it polls for status. Possible values are: true, false. Default is false. | Optional |  
 
 #### Context Output
 
 There is no context output for this command.
+
+#### Command example
+
+```!aws-ssm-automation-execution-cancel  automation_execution_id=0d66c10f```
+
+#### Human Readable Output
+
+>Cancellation command was sent successfully.
+
 ### aws-ssm-automation-execution-list
 
 ***
@@ -1111,16 +1318,57 @@ If the argument execution_id is provided, the command returns detailed informati
         "SSM": {
             "AutomationExecution": [
                 {
-                    "AutomationExecutionId": "",
+                    "AutomationExecutionId": "aaaaaa",
                     "AutomationExecutionStatus": "Failed",
                     "AutomationType": "Local",
                     "DocumentName": "AWS",
                     "DocumentVersion": "1",
                     "ExecutedBy": "arn",
-                    "ExecutionEndTime": "2023-09-06T16:34:03.693000+00:00",
-                    "ExecutionStartTime": "2023-09-06T16:34:01.681000+00:00",
-                    "FailureMessage": "Step fails when it",
+                    "ExecutionEndTime": "2023-09-17T21:41:10.509000+00:00",
+                    "ExecutionStartTime": "2023-09-17T21:41:08.659000+00:00",
+                    "FailureMessage": "Step fails when it ...",
                     "LogFile": "",
+                    "Mode": "Auto",
+                    "Outputs": {
+                        "AttachIAMProfileToInstance.AssociationId": [
+                            "No output available yet because the step is not successfully executed"
+                        ],
+                        "AttachIAMProfileToInstanceWithRetry.AssociationId": [
+                            "No output available yet because the step is not successfully executed"
+                        ],
+                        "GetInstanceProfile.InstanceProfileArn": [
+                            "No output available yet because the step is not successfully executed"
+                        ],
+                        "GetInstanceProfile.InstanceProfileName": [
+                            "No output available yet because the step is not successfully executed"
+                        ],
+                        "ListInstanceProfilesForRole.InstanceProfileArn": [
+                            "No output available yet because the step is not successfully executed"
+                        ],
+                        "ListInstanceProfilesForRole.InstanceProfileName": [
+                            "No output available yet because the step is not successfully executed"
+                        ]
+                    },
+                    "ParentAutomationExecutionId": "bbbbbb",
+                    "ResolvedTargets": {
+                        "ParameterValues": [],
+                        "Truncated": false
+                    },
+                    "Target": "instance id",
+                    "Targets": []
+                },
+                {
+                    "AutomationExecutionId": "bbbbbb",
+                    "AutomationExecutionStatus": "Failed",
+                    "AutomationType": "Local",
+                    "DocumentName": "AWS",
+                    "DocumentVersion": "1",
+                    "ExecutedBy": "arn",
+                    "ExecutionEndTime": "2023-09-17T21:41:10.985000+00:00",
+                    "ExecutionStartTime": "2023-09-17T21:41:08.340000+00:00",
+                    "LogFile": "",
+                    "MaxConcurrency": "10",
+                    "MaxErrors": "100%",
                     "Mode": "Auto",
                     "Outputs": {
                         "AttachIAMProfileToInstance.AssociationId": [
@@ -1146,25 +1394,15 @@ If the argument execution_id is provided, the command returns detailed informati
                         "ParameterValues": [],
                         "Truncated": false
                     },
-                    "Targets": []
-                },
-                {
-                    "AutomationExecutionId": "",
-                    "AutomationExecutionStatus": "Success",
-                    "AutomationType": "Local",
-                    "DocumentName": "AWS",
-                    "DocumentVersion": "1",
-                    "ExecutedBy": "arn",
-                    "ExecutionEndTime": "2023-09-06T16:00:51.637000+00:00",
-                    "ExecutionStartTime": "2023-09-06T16:00:50.084000+00:00",
-                    "LogFile": "",
-                    "Mode": "Auto",
-                    "Outputs": {},
-                    "ResolvedTargets": {
-                        "ParameterValues": [],
-                        "Truncated": false
-                    },
-                    "Targets": []
+                    "TargetParameterName": "InstanceId",
+                    "Targets": [
+                        {
+                            "Key": "ParameterValues",
+                            "Values": [
+                                "instance id"
+                            ]
+                        }
+                    ]
                 }
             ],
             "AutomationExecutionNextToken": {
@@ -1181,8 +1419,8 @@ If the argument execution_id is provided, the command returns detailed informati
 
 >|Automation Execution Id|Document Name|Document Version|Start Time|End Time|Automation Execution Status|Mode|Executed By|
 >|---|---|---|---|---|---|---|---|
->| Automation | AWS | 1 | 2023-09-06T16:34:01.681000+00:00 | 2023-09-06T16:34:03.693000+00:00 | Failed | Auto | arn|
->| Automation | AWS | 1 | 2023-09-06T16:00:50.084000+00:00 | 2023-09-06T16:00:51.637000+00:00 | Success | Auto | arn |
+>| aaaaaa | AWS | 1 | 2023-09-17T21:41:08.659000+00:00 | 2023-09-17T21:41:10.509000+00:00 | Failed | Auto | arn |
+>| bbbbbb | AWS | 1 | 2023-09-17T21:41:08.340000+00:00 | 2023-09-17T21:41:10.985000+00:00 | Failed | Auto | arn |
 
 
 ### aws-ssm-command-list
@@ -1242,11 +1480,11 @@ Lists the commands requested by users of the Amazon Web Services account.
 | AWS.SSM.Command.AlarmConfiguration.IgnorePollAlarmFailure | Boolean | When this value is true, the automation or command continues to run in cases where we can’t retrieve alarm status information from CloudWatch. In cases where we successfully retrieve an alarm status of OK or INSUFFICIENT_DATA, the automation or command continues to run, regardless of this value. Default is false. | 
 | AWS.SSM.Command.AlarmConfiguration.Alarms.Name | String | The name of the CloudWatch alarm specified in the configuration. | 
 | AWS.SSM.Command.TriggeredAlarms.Name | String | The name of the CloudWatch alarm. | 
-| AWS.SSM.Command.TriggeredAlarms.State | String | The name of the CloudWatch alarm. |
+| AWS.SSM.Command.TriggeredAlarms.State | String | The name of the CloudWatch alarm. | 
 
 #### Command example
 
-```!aws-ssm-command-list next_token=AA```
+```!aws-ssm-command-list limit=2```
 
 #### Context Example
 
@@ -1254,88 +1492,54 @@ Lists the commands requested by users of the Amazon Web Services account.
 {
     "AWS": {
         "SSM": {
-            "Command": [
-                {
-                    "AlarmConfiguration": {
-                        "Alarms": [],
-                        "IgnorePollAlarmFailure": false
-                    },
-                    "CloudWatchOutputConfig": {
-                        "CloudWatchLogGroupName": "",
-                        "CloudWatchOutputEnabled": false
-                    },
-                    "CommandId": "",
-                    "Comment": "",
-                    "CompletedCount": 1,
-                    "DeliveryTimedOutCount": 0,
-                    "DocumentName": "AWS",
-                    "DocumentVersion": "$DEFAULT",
-                    "ErrorCount": 0,
-                    "ExpiresAfter": "2023-09-06T18:38:59.984000+00:00",
-                    "InstanceIds": [
-                        "i-"
-                    ],
-                    "MaxConcurrency": "50",
-                    "MaxErrors": "0",
-                    "NotificationConfig": {
-                        "NotificationArn": "",
-                        "NotificationEvents": [],
-                        "NotificationType": ""
-                    },
-                    "OutputS3BucketName": "",
-                    "OutputS3KeyPrefix": "",
-                    "OutputS3Region": "",
-                    "Parameters": {},
-                    "RequestedDateTime": "2023-09-06T16:38:59.984000+00:00",
-                    "ServiceRole": "",
-                    "Status": "Cancelled",
-                    "StatusDetails": "Cancelled",
-                    "TargetCount": 1,
-                    "Targets": [],
-                    "TimeoutSeconds": 3600,
-                    "TriggeredAlarms": []
+            "Command": {
+                "AlarmConfiguration": {
+                    "Alarms": [],
+                    "IgnorePollAlarmFailure": false
                 },
-                {
-                    "AlarmConfiguration": {
-                        "Alarms": [],
-                        "IgnorePollAlarmFailure": false
-                    },
-                    "CloudWatchOutputConfig": {
-                        "CloudWatchLogGroupName": "",
-                        "CloudWatchOutputEnabled": false
-                    },
-                    "CommandId": "",
-                    "Comment": "",
-                    "CompletedCount": 1,
-                    "DeliveryTimedOutCount": 0,
-                    "DocumentName": "AWS",
-                    "DocumentVersion": "$DEFAULT",
-                    "ErrorCount": 0,
-                    "ExpiresAfter": "2023-09-04T14:49:33.354000+00:00",
-                    "InstanceIds": [
-                        "i-"
-                    ],
-                    "MaxConcurrency": "50",
-                    "MaxErrors": "0",
-                    "NotificationConfig": {
-                        "NotificationArn": "",
-                        "NotificationEvents": [],
-                        "NotificationType": ""
-                    },
-                    "OutputS3BucketName": "",
-                    "OutputS3KeyPrefix": "",
-                    "OutputS3Region": "",
-                    "Parameters": {},
-                    "RequestedDateTime": "2023-09-04T12:49:33.354000+00:00",
-                    "ServiceRole": "",
-                    "Status": "Cancelled",
-                    "StatusDetails": "Cancelled",
-                    "TargetCount": 1,
-                    "Targets": [],
-                    "TimeoutSeconds": 3600,
-                    "TriggeredAlarms": []
-                }
-            ]
+                "CloudWatchOutputConfig": {
+                    "CloudWatchLogGroupName": "",
+                    "CloudWatchOutputEnabled": false
+                },
+                "CommandId": "bbbbbb",
+                "Comment": "",
+                "CompletedCount": 0,
+                "DeliveryTimedOutCount": 0,
+                "DocumentName": "AWS",
+                "DocumentVersion": "$DEFAULT",
+                "ErrorCount": 0,
+                "ExpiresAfter": "2023-09-17T23:41:31.607000+00:00",
+                "InstanceIds": [],
+                "MaxConcurrency": "50",
+                "MaxErrors": "0",
+                "NotificationConfig": {
+                    "NotificationArn": "",
+                    "NotificationEvents": [],
+                    "NotificationType": ""
+                },
+                "OutputS3BucketName": "",
+                "OutputS3KeyPrefix": "",
+                "OutputS3Region": "eu",
+                "Parameters": {},
+                "RequestedDateTime": "2023-09-17T21:41:31.607000+00:00",
+                "ServiceRole": "",
+                "Status": "InProgress",
+                "StatusDetails": "InProgress",
+                "TargetCount": 1,
+                "Targets": [
+                    {
+                        "Key": "InstanceIds",
+                        "Values": [
+                            "instance id"
+                        ]
+                    }
+                ],
+                "TimeoutSeconds": 3600,
+                "TriggeredAlarms": []
+            },
+            "CommandNextToken": {
+                "NextToken": "AA"
+            }
         }
     }
 }
@@ -1347,9 +1551,7 @@ Lists the commands requested by users of the Amazon Web Services account.
 
 >|Command Id|Status|Requested date|Document name|Comment|Target Count|Error Count|Delivery Timed Out Count|Completed Count|
 >|---|---|---|---|---|---|---|---|---|
->| Command | Cancelled | 2023-09-06T16:38:59.984000+00:00 | AWS |  | 1 | 0 | 0 | 1 |
->| Command | Cancelled | 2023-09-04T12:49:33.354000+00:00 | AWS |  | 1 | 0 | 0 | 1 |
-
+>| bbbbbb | InProgress | 2023-09-17T21:41:31.607000+00:00 | AWS |  | 1 | 0 | 0 | 0 |
 
 
 ### aws-ssm-command-run
@@ -1370,17 +1572,32 @@ Runs commands on one or more managed nodes.
 | roleSessionName | An identifier for the assumed role session. | Optional | 
 | roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
 | document_name | The name of the Amazon Web Services Systems Manager document (SSM document) to run. Can get from the aws-ssm-document-list command. This can be a public document or a custom document. To run a shared document belonging to another account, specify the document Amazon Resource Name (ARN). | Required | 
-| instance_ids | The IDs of the managed nodes where the command should run. Can get from the aws-ssm-inventory-get command. (Can specify up to 50 IDs.). | Required | 
+| target_key | User-defined criteria for sending commands that target managed nodes that meet the criteria.<br/>For example:<br/> - target_key=InstanceIds target_values=&lt;instance-id-1&gt;,&lt;instance-id-2&gt;.<br/> - target_key=tag:&lt;my-tag-key&gt; target_values=&lt;my-tag-value-1&gt;,&lt;my-tag-value-2&gt;.<br/> - target_key=resource-groups:Name target_values=&lt;resource-group-name&gt;. Possible values are: Instance Ids, Tag Key, Resource Group. | Required | 
+| target_values | The value of target_values is determined by what is provided in the "target_key" argument.<br/>Note: the maximum number of values for a key might be lower than the global maximum of 50.           . | Required | 
 | document_version | The SSM document version to use in the request. Can specify $DEFAULT, $LATEST, or a specific version number. | Optional | 
 | max_concurrency | The maximum number of managed nodes that are allowed to run the command at the same time. can specify a number such as 10 or a percentage such as 10%. Default is 50. | Optional | 
 | max_errors | The maximum number of errors allowed without the command failing. When the command fails one more time beyond the value of MaxErrors, the systems stops sending the command to additional targets. Can specify a number like 10 or a percentage like 10%. | Optional | 
-| parameters | The required and optional parameters specified in the document being run. | Optional | 
+| parameters | The required and optional parameters specified in the document being run.| Optional | 
 | comment | User-specified information about the command, such as a brief description of what the command should do. | Optional | 
 | output_s3_bucket_name | The name of the S3 bucket where command execution responses should be stored. | Optional | 
 | output_s3_key_prefix | The directory structure within the S3 bucket where the responses should be stored. | Optional | 
 | interval_in_seconds | The interval in seconds between each poll. Default is 30. | Optional | 
 | command_id | A unique identifier for this command. This is for the polling to work, not for the user. | Optional | 
-| timeout | The timeout in seconds until polling ends. Default is 600. | Optional | 
+| polling_timeout | The timeout in seconds until polling ends. Default is 600. | Optional | 
+| command_timeout | If this time is reached and the command hasn’t already started running, it won’t run. Valid Range: Minimum value of 30 seconds. Maximum value of 2592000 seconds (30 days). | Optional | 
+| print_polling_message | print the polling message to the war room every time it polls for status. Possible values are: true, false. Default is false. | Optional |  
+
+
+##### How to use parameters argument:
+
+###### in playbook:
+
+![parameters argument](parameters_playbook.png)
+
+###### in the war room:
+
+![Alt text](parameters_war_room_1.png)
+![Alt text](parameters_war_room_2.png)
 
 #### Context Output
 
@@ -1421,7 +1638,7 @@ Runs commands on one or more managed nodes.
 
 #### Command example
 
-```!aws-ssm-command-run document_name=AWS instance_ids=i-```
+```!aws-ssm-command-run document_name=AWS target_key="Instance Ids" target_values=instance id print_polling_message=false```
 
 #### Context Example
 
@@ -1438,17 +1655,15 @@ Runs commands on one or more managed nodes.
                     "CloudWatchLogGroupName": "",
                     "CloudWatchOutputEnabled": false
                 },
-                "CommandId": "",
+                "CommandId": "bbbbbb",
                 "Comment": "",
                 "CompletedCount": 0,
                 "DeliveryTimedOutCount": 0,
                 "DocumentName": "AWS",
                 "DocumentVersion": "$DEFAULT",
                 "ErrorCount": 0,
-                "ExpiresAfter": "2023-09-06T18:45:08.458000+00:00",
-                "InstanceIds": [
-                    "i-"
-                ],
+                "ExpiresAfter": "2023-09-17T23:41:31.607000+00:00",
+                "InstanceIds": [],
                 "MaxConcurrency": "50",
                 "MaxErrors": "0",
                 "NotificationConfig": {
@@ -1458,14 +1673,21 @@ Runs commands on one or more managed nodes.
                 },
                 "OutputS3BucketName": "",
                 "OutputS3KeyPrefix": "",
-                "OutputS3Region": "",
+                "OutputS3Region": "eu",
                 "Parameters": {},
-                "RequestedDateTime": "2023-09-06T16:45:08.458000+00:00",
+                "RequestedDateTime": "2023-09-17T21:41:31.607000+00:00",
                 "ServiceRole": "",
                 "Status": "Pending",
                 "StatusDetails": "Pending",
-                "TargetCount": 1,
-                "Targets": [],
+                "TargetCount": 0,
+                "Targets": [
+                    {
+                        "Key": "InstanceIds",
+                        "Values": [
+                            "instance id"
+                        ]
+                    }
+                ],
                 "TimeoutSeconds": 3600,
                 "TriggeredAlarms": []
             }
@@ -1476,7 +1698,7 @@ Runs commands on one or more managed nodes.
 
 #### Human Readable Output
 
->Command <command_id> was sent successful.
+>Command bbbbbb was sent successful.
 
 ### aws-ssm-command-cancel
 
@@ -1501,6 +1723,7 @@ Attempts to cancel the command specified by the Command ID. There is no guarante
 | interval_in_seconds | The interval in seconds between each poll. Default is 30. | Optional | 
 | first_run | This argument is used to determine whether the current execution of the command is the initial run. After the command is executed, the argument is updated to 'false.' During polling, the code checks the status only for the first execution. Default is True. | Optional | 
 | timeout | The timeout in seconds until polling ends. Default is 600. | Optional | 
+| print_polling_message | print the polling message to the war room every time it polls for status. Possible values are: true, false. Default is false. | Optional |  
 
 #### Context Output
 

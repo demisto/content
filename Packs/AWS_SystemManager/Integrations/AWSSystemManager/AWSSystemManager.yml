@@ -112,8 +112,8 @@ script:
         Note: The ManagedInstance type for this API operation is for on-premises managed nodes.
       name: resource_type
     - description: |-
-         'The resource ID to be tagged.
-          Note: The format of the id depends on the selected resource type (e.g.. MaintenanceWindow: mw-012345abcde, PatchBaseline: pb-012345abcde).'
+        'The resource ID to be tagged.
+         Note: The format of the id depends on the selected resource type (e.g.. MaintenanceWindow: mw-012345abcde, PatchBaseline: pb-012345abcde).'
       name: resource_id
       required: true
     - description: 'The name of the tag. Note: Don’t enter personally identifiable information in this field.'
@@ -127,8 +127,8 @@ script:
       Tags are metadata that you can assign to the automations, documents, managed nodes, maintenance windows, Parameter Store parameters, and patch baselines.
       Tags enable you to categorize the resources in different ways, for example, by purpose, owner, or environment.
       Each tag consists of a key and an optional value, both of which you define.
-      For example, you could define a set of tags for the account’s managed nodes that helps you track each node’s owner and stack level.
-      For example, Key=Owner,Value=SysAdmin.
+      For example, you could define a set of tags for the account’s managed nodes that helps you track each node’s owner and stack level, 
+      Key=Owner Value=SysAdmin.
     name: aws-ssm-tag-add
   - arguments:
     - auto: PREDEFINED
@@ -174,8 +174,8 @@ script:
       - Patch Baseline
       - Parameter
     - description: |-
-       'The ID of the resource to remove tags.
-        Note: The format of the id depends on the selected resource type (e.g.. MaintenanceWindow: mw-012345abcde, PatchBaseline: pb-012345abcde).'
+        'The ID of the resource to remove tags.
+         Note: The format of the id depends on the selected resource type (e.g.. MaintenanceWindow: mw-012345abcde, PatchBaseline: pb-012345abcde).'
       name: resource_id
       required: true
     - description: The name of the tag to remove.
@@ -225,13 +225,16 @@ script:
       - Patch Baseline
       - Parameter
     - description: |-
-             'The ID of the resource to list tags.
-              Note: The format of the id depends on the selected resource type (e.g.. MaintenanceWindow: mw-012345abcde, PatchBaseline: pb-012345abcde).'
+        'The ID of the resource to list tags.
+         Note: The format of the id depends on the selected resource type (e.g.. MaintenanceWindow: mw-012345abcde, PatchBaseline: pb-012345abcde).'
       name: resource_id
       required: true
     description: Returns a list of the tags assigned to the specified resource.
     name: aws-ssm-tag-list
     outputs:
+    - contextPath: AWS.SSM.Tag.ResourceId
+      description: The ID of the resource to list tags.
+      type: String
     - contextPath: AWS.SSM.Tag.Key
       description: The name of the tag.
       type: String
@@ -270,7 +273,7 @@ script:
     - description: The token for the next set of items to return. (Received this token from a previous call).
       name: next_token
     - auto: PREDEFINED
-      description: Determines whether to include inactive instances in the query results. (if is true the command use a filter to get also the instance with the status Stopped, Terminated, ConnectionLost)
+      description: Determines whether to include inactive instances in the query results. (if is true the command use a filter to get also the instance with the status Stopped, Terminated, ConnectionLost).
       name: include_inactive_instance
       predefined:
       - 'true'
@@ -427,7 +430,7 @@ script:
       type: String
     - contextPath: AWS.SSM.InventoryEntry.ApplicationType
       description: The type of application.
-      type: String  
+      type: String
     - contextPath: AWS.SSM.InventoryEntry.Publisher
       description: The publisher of the application.
       type: String
@@ -436,14 +439,14 @@ script:
       type: String
     - contextPath: AWS.SSM.InventoryEntry.Release
       description: The release version of the application.
-      type: String  
+      type: String
     - contextPath: AWS.SSM.InventoryEntry.Epoch
       description: The epoch value of the application version.
       type: String
     - contextPath: AWS.SSM.InventoryEntry.InstalledTime
       description: The time when the application was installed.
       type: String
-    - contextPath: AWS.SSM.InventoryEntry.Architecture 
+    - contextPath: AWS.SSM.InventoryEntry.Architecture
       description: The architecture of the installed application.
       type: String
     - contextPath: AWS.SSM.InventoryEntry.URL
@@ -451,7 +454,7 @@ script:
       type: String
     - contextPath: AWS.SSM.InventoryEntry.Summary
       description: The summary information of the application.
-      type: String  
+      type: String
     - contextPath: AWS.SSM.InventoryEntry.PackageId
       description: The package ID of the application.
       type: String
@@ -473,12 +476,12 @@ script:
     - contextPath: AWS.SSM.InventoryEntry.ModificationTime
       description: The date and time the file was last modified.
       type: String
-    - contextPath: AWS.SSM.InventoryEntry.LastAccessTime  
+    - contextPath: AWS.SSM.InventoryEntry.LastAccessTime
       description: The date and time the file was last accessed.
       type: String
     - contextPath: AWS.SSM.InventoryEntry.ProductName
       description: The name of the product the file belongs to.
-      type: String  
+      type: String
     - contextPath: AWS.SSM.InventoryEntry.InstalledDir
       description: The directory where the file is installed.
       type: String
@@ -496,14 +499,14 @@ script:
       type: String
     - contextPath: AWS.SSM.InventoryEntry.CommandLine
       description: The full command line used to start the process.
-      type: String  
+      type: String
     - contextPath: AWS.SSM.InventoryEntry.User
       description: The user account that ran the process.
       type: String
     - contextPath: AWS.SSM.InventoryEntry.FileName
       description: The name of the executable file for the process.
       type: String
-    - contextPath: AWS.SSM.InventoryEntry.FileVersion  
+    - contextPath: AWS.SSM.InventoryEntry.FileVersion
       description: The version number of the executable file.
       type: String
     - contextPath: AWS.SSM.InventoryEntry.FileDescription
@@ -515,7 +518,7 @@ script:
     - contextPath: AWS.SSM.InventoryEntry.CompanyName
       description: The name of the company that released the process.
       type: String
-    - contextPath: AWS.SSM.InventoryEntry.ProductName  
+    - contextPath: AWS.SSM.InventoryEntry.ProductName
       description: The name of the product the process belongs to.
       type: String
     - contextPath: AWS.SSM.InventoryEntry.ProductVersion
@@ -526,7 +529,7 @@ script:
       type: String
     - contextPath: AWS.SSM.InventoryEntry.InstalledDir
       description: The directory where the process is installed.
-      type: String  
+      type: String
     - contextPath: AWS.SSM.InventoryEntry.UsageId
       description: The usage ID for the process.
       type: String
@@ -550,14 +553,14 @@ script:
       type: String
     - contextPath: AWS.SSM.InventoryEntry.URL
       description: The URL for the AWS component.
-      type: String  
+      type: String
     - contextPath: AWS.SSM.InventoryEntry.HotFixId
       description: The ID of the Windows hotfix.
       type: String
     - contextPath: AWS.SSM.InventoryEntry.Description
       description: The description of the Windows hotfix.
       type: String
-    - contextPath: AWS.SSM.InventoryEntry.InstalledTime 
+    - contextPath: AWS.SSM.InventoryEntry.InstalledTime
       description: The time the Windows hotfix was installed.
       type: String
     - contextPath: AWS.SSM.InventoryEntry.InstalledBy
@@ -565,7 +568,7 @@ script:
       type: String
     - contextPath: AWS.SSM.InventoryEntry.Name
       description: The name of the network interface.
-      type: String  
+      type: String
     - contextPath: AWS.SSM.InventoryEntry.SubnetMask
       description: The subnet mask of the network interface.
       type: String
@@ -575,12 +578,12 @@ script:
     - contextPath: AWS.SSM.InventoryEntry.DHCPServer
       description: The DHCP server for the network interface.
       type: String
-    - contextPath: AWS.SSM.InventoryEntry.DNSServer  
+    - contextPath: AWS.SSM.InventoryEntry.DNSServer
       description: The DNS server for the network interface.
       type: String
     - contextPath: AWS.SSM.InventoryEntry.MacAddress
       description: The MAC address of the network interface.
-      type: String  
+      type: String
     - contextPath: AWS.SSM.InventoryEntry.IPV4
       description: The IPv4 address of the network interface.
       type: String
@@ -601,7 +604,7 @@ script:
       type: String
     - contextPath: AWS.SSM.InventoryEntry.InstalledCount
       description: The number of patches installed for the patch summary.
-      type: String  
+      type: String
     - contextPath: AWS.SSM.InventoryEntry.InstalledPendingRebootCount
       description: The number of patches installed pending reboot for the patch summary.
       type: String
@@ -616,7 +619,7 @@ script:
       type: String
     - contextPath: AWS.SSM.InventoryEntry.UnreportedNotApplicableCount
       description: The number of unreported not applicable patches for the patch summary.
-      type: String  
+      type: String
     - contextPath: AWS.SSM.InventoryEntry.MissingCount
       description: The number of missing patches for the patch summary.
       type: String
@@ -625,7 +628,7 @@ script:
       type: String
     - contextPath: AWS.SSM.InventoryEntry.OperationType
       description: The type of operation for the patch summary.
-      type: String  
+      type: String
     - contextPath: AWS.SSM.InventoryEntry.OperationStartTime
       description: The start time of the operation for the patch summary.
       type: String
@@ -640,7 +643,7 @@ script:
       type: String
     - contextPath: AWS.SSM.InventoryEntry.LastNoRebootInstallOperationTime
       description: The time of the last no-reboot patch installation operation for the patch summary.
-      type: String  
+      type: String
     - contextPath: AWS.SSM.InventoryEntry.ExecutionId
       description: The execution ID for the patch summary.
       type: String
@@ -650,12 +653,12 @@ script:
     - contextPath: AWS.SSM.InventoryEntry.SecurityNonCompliantCount
       description: The number of security patches that are non-compliant in the patch summary.
       type: String
-    - contextPath: AWS.SSM.InventoryEntry.CriticalNonCompliantCount  
+    - contextPath: AWS.SSM.InventoryEntry.CriticalNonCompliantCount
       description: The number of critical patches that are non-compliant in the patch summary.
       type: String
     - contextPath: AWS.SSM.InventoryEntry.OtherNonCompliantCount
       description: The number of other patches that are non-compliant in the patch summary.
-      type: String  
+      type: String
     - contextPath: AWS.SSM.InventoryEntry.Title
       description: The title of the patch compliance item.
       type: String
@@ -673,7 +676,7 @@ script:
       type: String
     - contextPath: AWS.SSM.InventoryEntry.InstalledTime
       description: The time the patch was installed for the patch compliance item.
-      type: String  
+      type: String
     - contextPath: AWS.SSM.InventoryEntry.ComplianceType
       description: The compliance type for the compliance item.
       type: String
@@ -694,7 +697,7 @@ script:
       type: String
     - contextPath: AWS.SSM.InventoryEntry.Status
       description: The status of the compliance item.
-      type: String  
+      type: String
     - contextPath: AWS.SSM.InventoryEntry.Severity
       description: The severity of the compliance item.
       type: String
@@ -709,7 +712,7 @@ script:
       type: String
     - contextPath: AWS.SSM.InventoryEntry.PatchBaselineId
       description: The ID of the patch baseline for the compliance item.
-      type: String  
+      type: String
     - contextPath: AWS.SSM.InventoryEntry.PatchSeverity
       description: The severity of the patch for the compliance item.
       type: String
@@ -718,7 +721,7 @@ script:
       type: String
     - contextPath: AWS.SSM.InventoryEntry.PatchGroup
       description: The patch group for the compliance item.
-      type: String  
+      type: String
     - contextPath: AWS.SSM.InventoryEntry.InstalledTime
       description: The time the patch was installed for the compliance item.
       type: String
@@ -740,9 +743,9 @@ script:
     - contextPath: AWS.SSM.InventoryEntry.PatchGroup
       description: The patch group for the compliance summary.
       type: String
-    - contextPath: AWS.SSM.InventoryEntry.PatchBaselineId 
+    - contextPath: AWS.SSM.InventoryEntry.PatchBaselineId
       description: The ID of the patch baseline for the compliance summary.
-      type: String  
+      type: String
     - contextPath: AWS.SSM.InventoryEntry.Status
       description: The compliance status for the compliance summary.
       type: String
@@ -754,7 +757,7 @@ script:
       type: String
     - contextPath: AWS.SSM.InventoryEntry.ExecutionType
       description: The execution type for the compliance scan in the compliance summary.
-      type: String  
+      type: String
     - contextPath: AWS.SSM.InventoryEntry.ExecutionTime
       description: The time the compliance scan was executed for the compliance summary.
       type: String
@@ -766,7 +769,7 @@ script:
       type: String
     - contextPath: AWS.SSM.InventoryEntry.CompliantMediumCount
       description: The number of compliant findings with medium severity in the compliance summary.
-      type: String  
+      type: String
     - contextPath: AWS.SSM.InventoryEntry.CompliantLowCount
       description: The number of compliant findings with low severity in the compliance summary.
       type: String
@@ -787,7 +790,7 @@ script:
       type: String
     - contextPath: AWS.SSM.InventoryEntry.NonCompliantLowCount
       description: The number of non-compliant findings with low severity in the compliance summary.
-      type: String  
+      type: String
     - contextPath: AWS.SSM.InventoryEntry.NonCompliantInformationalCount
       description: The number of non-compliant findings with informational severity in the compliance summary.
       type: String
@@ -799,7 +802,7 @@ script:
       type: String
     - contextPath: AWS.SSM.InventoryEntry.CPUCores
       description: The number of CPU cores.
-      type: String  
+      type: String
     - contextPath: AWS.SSM.InventoryEntry.CPUs
       description: The number of CPUs.
       type: String
@@ -817,7 +820,7 @@ script:
       type: String
     - contextPath: AWS.SSM.InventoryEntry.Name
       description: The name of the service.
-      type: String  
+      type: String
     - contextPath: AWS.SSM.InventoryEntry.DisplayName
       description: The display name of the service.
       type: String
@@ -832,19 +835,19 @@ script:
       type: String
     - contextPath: AWS.SSM.InventoryEntry.ServicesDependedOn
       description: List of services that depend on this service.
-      type: String  
+      type: String
     - contextPath: AWS.SSM.InventoryEntry.StartType
       description: The startup type of the service.
       type: String
     - contextPath: AWS.SSM.InventoryEntry.KeyPath
       description: The path of the registry key.
       type: String
-    - contextPath: AWS.SSM.InventoryEntry.ValueName 
+    - contextPath: AWS.SSM.InventoryEntry.ValueName
       description: The name of the registry value.
       type: String
     - contextPath: AWS.SSM.InventoryEntry.ValueType
       description: The type of the registry value.
-      type: String 
+      type: String
     - contextPath: AWS.SSM.InventoryEntry.Value
       description: The data contained in the registry value.
       type: String
@@ -859,7 +862,7 @@ script:
       type: String
     - contextPath: AWS.SSM.InventoryEntry.FeatureType
       description: The feature type of the Windows role.
-      type: String  
+      type: String
     - contextPath: AWS.SSM.InventoryEntry.DependsOn
       description: List of Windows roles that this role depends on.
       type: String
@@ -877,7 +880,7 @@ script:
       type: String
     - contextPath: AWS.SSM.InventoryEntry.ServerComponentDescriptor
       description: Server component descriptor for the Windows role.
-      type: String  
+      type: String
     - contextPath: AWS.SSM.InventoryEntry.Parent
       description: Parent Windows role.
       type: String
@@ -887,12 +890,12 @@ script:
     - contextPath: AWS.SSM.InventoryEntry.Tag.Value
       description: The value of the tag.
       type: String
-    - contextPath: AWS.SSM.InventoryEntry.Name  
+    - contextPath: AWS.SSM.InventoryEntry.Name
       description: The name of the resource group.
       type: String
     - contextPath: AWS.SSM.InventoryEntry.Arn
       description: The Amazon Resource Name (ARN) of the resource group.
-      type: String  
+      type: String
     - contextPath: AWS.SSM.InventoryEntry.BillingProductId
       description: The ID of the billing product.
       type: String
@@ -1179,7 +1182,7 @@ script:
       required: true
     - description: The maximum number of items to return for this call. The default and max is 50. The call also returns a token that you can specify in a subsequent call to get the next set of results.
       name: limit
-    - description: The token for the next set of items to return. (Received this token from a previous call.)
+    - description: The token for the next set of items to return. (Received this token from a previous call.).
       name: next_token
     description: Retrieves all versions of an association for a specific association ID.
     name: aws-ssm-association-version-list
@@ -1303,7 +1306,7 @@ script:
       name: roleSessionDuration
     - description: The maximum number of items to return for this call. The default and max is 50. The call also returns a token that you can specify in a subsequent call to get the next set of results.
       name: limit
-    - description: The token for the next set of items to return. (Received this token from a previous call.)
+    - description: The token for the next set of items to return. (Received this token from a previous call.).
       name: next_token
     description: Returns all Systems Manager (SSM) documents in the current Amazon Web Services account and Amazon Web Services Region.
     name: aws-ssm-document-list
@@ -1574,14 +1577,14 @@ script:
       name: interval_in_seconds
       defaultValue: 30
     - description: |-
-       'A key-value map of execution parameters, which match the declared parameters in the Automation runbook. Note: to run on instance(s) use the target_parameter_name argument instead of specifying instances here, e.g. target_parameter_name=InstanceIds.'
-       Example for execute the command in the war-room:
-       - `"Role":["Admin", "User"]"`.
-       Example for execute the command in the playbook (see screenshot in the README.md file):
-       in the first input box:
-       Role (without a  quote)
-       in the second input box:
-       Admin, User (without a quote, and with a comma between values)
+        'A key-value map of execution parameters, which match the declared parameters in the Automation runbook. Note: to run on instance(s) use the target_parameter_name argument instead of specifying instances here, e.g. target_parameter_name=InstanceIds.'
+        Example for execute the command in the war-room:
+        - `"Role":["Admin", "User"]"`.
+        Example for execute the command in the playbook (see screenshot in the README.md file):
+        in the first input box:
+        Role (without a  quote)
+        in the second input box:
+        Admin, User (without a quote, and with a comma between values).
       name: parameters
       type: keyValue
     - description: The ID of the execution. This is for the polling to work, not for the user.
@@ -1597,6 +1600,10 @@ script:
       description: print the polling message to the war room every time it polls for status.
       name: print_polling_message
       defaultValue: 'false'
+    - description: Hide the polling message and only print the final status at the end. This argument is for the dev, not for the user.
+      name: hide_polling_output
+      hidden: true
+      defaultValue: 'true'
     - description: The name of the parameter used as the target resource for the rate-controlled execution. Required if you specify target_key and target_values arguments. For example, instanceIds, LambdaRoleArn.
       name: target_parameter_name
     - auto: PREDEFINED
@@ -1607,11 +1614,11 @@ script:
       description: User-defined criteria for sending commands that target managed nodes that meet the criteria. Required if you specify target_parameter_name argument.
       name: target_key
     - description: |-
-         User-defined criteria that maps to target_key.
-         For example:
-          - target_key=ResourceGroup target_values=MyResourceGroup.
-          - target_key=TagKey target_values=<my-tag-key-1>,<my-tag-key-2>
-          Note: Depending on the type of target, the maximum number of values for a key might be lower than the global maximum of 50.
+        User-defined criteria that maps to target_key.
+        For example:
+         - target_key=ResourceGroup target_values=MyResourceGroup.
+         - target_key=TagKey target_values=<my-tag-key-1>,<my-tag-key-2>
+         Note: Depending on the type of target, the maximum number of values for a key might be lower than the global maximum of 50.
       name: target_values
     description: Initiates execution of an Automation runbook.
     polling: true
@@ -1680,6 +1687,10 @@ script:
       description: print the polling message to the war room every time it polls for status.
       name: print_polling_message
       defaultValue: 'false'
+    - description: Hide the polling message and only print the final status at the end. This argument is for the dev, not for the user.
+      name: hide_polling_output
+      hidden: true
+      defaultValue: 'true'
     polling: true
     description: Stop an Automation execution.
     name: aws-ssm-automation-execution-cancel
@@ -1715,7 +1726,7 @@ script:
     - description: The maximum number of items to return for this command. The command also returns a token that can specify in a subsequent command to get the next set of results.
       name: limit
       defaultValue: 50
-    - description: The token for the next set of items to return. (Received this token from a previous call.)
+    - description: The token for the next set of items to return. (Received this token from a previous call.).
       name: next_token
     description: If the argument execution_id is provided, the command returns detailed information about a particular Automation execution. if not provided, the command provides details about all active and terminated Automation executions.
     name: aws-ssm-automation-execution-list
@@ -2037,7 +2048,7 @@ script:
     - description: The maximum number of items to return for this call.
       name: limit
       defaultValue: 50
-    - description: The token for the next set of items to return. (Received this token from a previous call.)
+    - description: The token for the next set of items to return. (Received this token from a previous call.).
       name: next_token
     description: Lists the commands requested by users of the Amazon Web Services account.
     name: aws-ssm-command-list
@@ -2173,28 +2184,28 @@ script:
       required: true
     - auto: PREDEFINED
       predefined:
-        - Instance Ids
-        - Tag Key
-        - Resource Group
+      - Instance Ids
+      - Tag Key
+      - Resource Group
       description: |-
-          User-defined criteria for sending commands that target managed nodes that meet the criteria.
-          For example:
-           - target_key=InstanceIds target_values=<instance-id-1>,<instance-id-2>.
-           - target_key=tag:<my-tag-key> target_values=<my-tag-value-1>,<my-tag-value-2>.
-           - target_key=resource-groups:Name target_values=<resource-group-name>.
+        User-defined criteria for sending commands that target managed nodes that meet the criteria.
+        For example:
+         - target_key=InstanceIds target_values=<instance-id-1>,<instance-id-2>.
+         - target_key=tag:<my-tag-key> target_values=<my-tag-value-1>,<my-tag-value-2>.
+         - target_key=resource-groups:Name target_values=<resource-group-name>.
       name: target_key
       required: true
     - description: |-
-          The value of target_values is determined by what is provided in the "target_key" argument.
-          Note: the maximum number of values for a key might be lower than the global maximum of 50.           
+        The value of target_values is determined by what is provided in the "target_key" argument.
+        Note: the maximum number of values for a key might be lower than the global maximum of 50.           
       name: target_values
       required: true
     - description: The SSM document version to use in the request. Can specify $DEFAULT, $LATEST, or a specific version number.
       name: document_version
-    - description: The maximum number of managed nodes that are allowed to run the command at the same time. can specify a number such as 10 or a percentage such as 10%. 
+    - description: The maximum number of managed nodes that are allowed to run the command at the same time. can specify a number such as 10 or a percentage such as 10%.
       name: max_concurrency
       defaultValue: 50
-    - description: The maximum number of errors allowed without the command failing. When the command fails one more time beyond the value of MaxErrors, the systems stops sending the command to additional targets. Can specify a number like 10 or a percentage like 10%. 
+    - description: The maximum number of errors allowed without the command failing. When the command fails one more time beyond the value of MaxErrors, the systems stops sending the command to additional targets. Can specify a number like 10 or a percentage like 10%.
       name: max_errors
       defaultValue: 0
     - description: The required and optional parameters specified in the document being run.
@@ -2224,6 +2235,10 @@ script:
       description: print the polling message to the war room every time it polls for status.
       name: print_polling_message
       defaultValue: 'false'
+    - description: Hide the polling message and only print the final status at the end. This argument is for the dev, not for the user.
+      name: hide_polling_output
+      hidden: true
+      defaultValue: 'true'
     polling: true
     description: Runs commands on one or more managed nodes.
     name: aws-ssm-command-run
@@ -2381,6 +2396,10 @@ script:
       description: print the polling message to the war room every time it polls for status.
       name: print_polling_message
       defaultValue: 'false'
+    - description: Hide the polling message and only print the final status at the end. This argument is for the dev, not for the user.
+      name: hide_polling_output
+      hidden: true
+      defaultValue: 'true'
     polling: true
     description: Attempts to cancel the command specified by the Command ID. There is no guarantee that the command will be terminated and the underlying process stopped.
     name: aws-ssm-command-cancel
@@ -2389,7 +2408,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/boto3py3:1.0.0.73097
+  dockerimage: demisto/boto3py3:1.0.0.74162
 fromversion: 6.9.0
 marketplaces:
 - xsoar

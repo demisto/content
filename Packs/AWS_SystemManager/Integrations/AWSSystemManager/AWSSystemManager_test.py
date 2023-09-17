@@ -393,10 +393,10 @@ def test_list_tags_success(mocker: MockerFixture):
         ResourceType="ManagedInstance", ResourceId="i-1234abcd"
     )
 
-    assert result.outputs == [
+    assert result.outputs == {"ResourceId": "i-1234abcd", "TagList": [
         {"Key": "Env", "Value": "Production"},
         {"Key": "Role", "Value": "WebServer"},
-    ]
+    ]}
 
     assert "Tags for i-1234abcd" in result.readable_output
 
@@ -856,7 +856,7 @@ def test_run_automation_execution_command(
     mocker.patch.object(
         MockClient,
         "start_automation_execution",
-        return_value={"AutomationExecutionId": "test_id"},
+        return_value={"AutomationExecutionId": "test_id", "ResponseMetadata": "test"},
     )
 
     result: CommandResults = run_automation_execution_command(args, MockClient())

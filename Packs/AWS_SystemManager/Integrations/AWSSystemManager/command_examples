@@ -1,15 +1,16 @@
-!aws-ssm-tag-add resource_id=test resource_type=Document tag_key=test_key tag_value=test_value
-!aws-ssm-tag-remove resource_id=test resource_type=Document tag_key=test_key
-!aws-ssm-inventory-get limit=2
-!aws-ssm-inventory-entry-list instance_id=i-	type_name=AWS:InstanceInformation
-!aws-ssm-association-list
-!aws-ssm-association-get association_id=test
-!aws-ssm-association-version-list association_id=test
+!aws-ssm-tag-add resource_id=demo resource_type=Document tag_key=test_key tag_value=test_value
+!aws-ssm-tag-remove resource_id=demo resource_type=Document tag_key=test_key
+!aws-ssm-tag-list resource_id=demo resource_type=Document
+!aws-ssm-inventory-list limit=2
+!aws-ssm-inventory-entry-list instance_id=id	type_name="Instance Information"
+!aws-ssm-association-list limit=1
+!aws-ssm-association-get association_id=id
+!aws-ssm-association-version-list association_id=id
 !aws-ssm-document-list limit=2
 !aws-ssm-document-get document_name=AWS
+!aws-ssm-automation-execution-run document_name=AWS target_parameter_name=InstanceId target_key="Parameter Values" target_values=id   parameters=`{"RoleName":"dummy"}`
+!aws-ssm-automation-execution-cancel  automation_execution_id=id
 !aws-ssm-automation-execution-list limit=2
-!aws-ssm-automation-execution-run document_name=AWS parameters=RoleName:ssm,InstanceId:i-
-!aws-ssm-automation-execution-cancel execution_id=test
-!aws-ssm-command-list next_token=test
-!aws-ssm-command-run document_name=AWS instance_ids=i-
-!aws-ssm-command-cancel command_id=test
+!aws-ssm-command-run document_name=AWS-RefreshAssociation target_key="Instance Ids" target_values=id print_polling_message=false
+!aws-ssm-command-cancel command_id=id
+!aws-ssm-command-list limit=2

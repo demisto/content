@@ -609,12 +609,12 @@ def list_inventory_entry_command(
     kwargs = update_if_value(args, kwargs, {"next_token": "NextToken"})
 
     response = ssm_client.list_inventory_entries(**kwargs)
-    # response.pop("ResponseMetadata")  # type: ignore
+    response.pop("ResponseMetadata")  # type: ignore
     entries = response.get("Entries", [])
 
     command_results = []
     if next_token := response.get("NextToken"):
-        # response.pop("NextToken") # type: ignore
+        response.pop("NextToken")  # type: ignore
         command_results.append(
             next_token_command_result(next_token, "InventoryEntryNextToken"),
         )
@@ -1196,7 +1196,7 @@ def run_automation_execution_command(
             response=CommandResults(readable_output=readable_output),
             continue_to_poll=False,
         )
-
+    args["hide_polling_output"] = not argToBoolean(args["print_polling_message"])
     return PollResult(
         partial_result=CommandResults(
             readable_output=f"Execution {execution_id} is in progress."
@@ -1245,22 +1245,23 @@ def cancel_automation_execution_command(
         status = ssm_client.get_automation_execution(
             AutomationExecutionId=automation_execution_id
         )["AutomationExecution"]["AutomationExecutionStatus"]
-        if status in TERMINAL_AUTOMATION_STATUSES:  # STOP POLLING
+        if status in TERMINAL_AUTOMATION_STATUSES:
             return PollResult(
                 response=CommandResults(
                     readable_output=f"{status}, {TERMINAL_AUTOMATION_STATUSES[status]}",
                 ),
                 continue_to_poll=False,
             )
-        else:
-            return PollResult(  # CONTINUE POLLING
-                partial_result=CommandResults(
-                    readable_output=f"Execution {automation_execution_id} is {status}",
-                ),
-                continue_to_poll=True,
-                args_for_next_run=args,
-                response=None,
-            )
+        # Continue polling
+        args["hide_polling_output"] = not argToBoolean(args["print_polling_message"])
+        return PollResult(  # CONTINUE POLLING
+            partial_result=CommandResults(
+                readable_output=f"Execution {automation_execution_id} is {status}",
+            ) if argToBoolean(args["print_polling_message"]) else None,
+            continue_to_poll=True,
+            args_for_next_run=args,
+            response=None,
+        )
 
     # Initial command execution
     ssm_client.stop_automation_execution(
@@ -1379,6 +1380,7 @@ def run_command_command(args: dict[str, Any], ssm_client: "SSMClient") -> PollRe
                 continue_to_poll=False,
             )
         #  if command not in TERMINAL_COMMAND_STATUSES, continue polling
+        args["hide_polling_output"] = not argToBoolean(args["print_polling_message"])
         if argToBoolean(args["print_polling_message"]):
             readable_output = CommandResults(
                 readable_output=f"Command {command_id} is {status}"
@@ -1459,22 +1461,23 @@ def cancel_command_command(args: dict[str, Any], ssm_client: "SSMClient") -> Pol
 
     if not argToBoolean(args["first_run"]):
         status = get_command_status(command_id, ssm_client)
-        if status in TERMINAL_COMMAND_STATUSES:  # STOP POLLING
+        if status in TERMINAL_COMMAND_STATUSES:
             return PollResult(
                 response=CommandResults(
                     readable_output=f"{status}, {TERMINAL_COMMAND_STATUSES[status]}",
                 ),
                 continue_to_poll=False,
             )
-        else:
-            return PollResult(  # CONTINUE POLLING
-                partial_result=CommandResults(
-                    readable_output=f"Execution {command_id} is {status}",
-                ),
-                continue_to_poll=True,
-                args_for_next_run=args,
-                response=None,
-            )
+        # else, continue polling
+        args["hide_polling_output"] = not argToBoolean(args["print_polling_message"])
+        return PollResult(  # CONTINUE POLLING
+            partial_result=CommandResults(
+                readable_output=f"Execution {command_id} is {status}",
+            ) if argToBoolean(args["print_polling_message"]) else None,
+            continue_to_poll=True,
+            args_for_next_run=args,
+            response=None,
+        )
 
     # Initial command execution
     kwargs = {"CommandId": command_id}

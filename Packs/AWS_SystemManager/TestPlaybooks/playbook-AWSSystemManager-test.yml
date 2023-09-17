@@ -1,6 +1,5 @@
-id: 11e37342-e933-4cca-8b3d-768c978e3b0d
-version: 42
-vcShouldKeepItemLegacyProdMachine: false
+id: playbook-AWSSystemManager-test
+version: -1
 name: playbook-AWSSystemManager-test
 starttaskid: "0"
 tasks:
@@ -14,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "2"
@@ -44,6 +44,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -108,8 +109,7 @@ tasks:
       id: 2bcf4af4-55ab-498b-89ea-e170f3f95307
       version: -1
       name: aws-ssm-document-list
-      description: Returns all Systems Manager (SSM) documents in the current Amazon
-        Web Services account and Amazon Web Services Region.
+      description: Returns all Systems Manager (SSM) documents in the current Amazon Web Services account and Amazon Web Services Region.
       script: AWS - System Manager|||aws-ssm-document-list
       type: regular
       iscommand: true
@@ -185,8 +185,7 @@ tasks:
       id: 8735a9a9-ad4c-4249-86c6-0be2fb04672a
       version: -1
       name: aws-ssm-document-get
-      description: Describes the specified Amazon Web Services Systems Manager document
-        (SSM document).
+      description: Describes the specified Amazon Web Services Systems Manager document (SSM document).
       script: '|||aws-ssm-document-get'
       type: regular
       iscommand: true
@@ -350,8 +349,7 @@ tasks:
       id: 386eb946-0948-4098-8cec-dfc44960b1fd
       version: -1
       name: aws-ssm-inventory-list
-      description: Query inventory information. This includes the managed node status,
-        such as Stopped or Terminated.
+      description: Query inventory information. This includes the managed node status, such as Stopped or Terminated.
       script: '|||aws-ssm-inventory-list'
       type: regular
       iscommand: true
@@ -386,8 +384,7 @@ tasks:
       id: ee2fe7e5-d062-4161-8b13-7fdf19e6b9af
       version: -1
       name: Verify Output
-      description: Query inventory information. This includes the managed node status,
-        such as Stopped or Terminated.
+      description: Query inventory information. This includes the managed node status, such as Stopped or Terminated.
       type: condition
       iscommand: false
       brand: ""
@@ -509,9 +506,7 @@ tasks:
       id: 2bf26600-921d-4322-8e48-5a78a5a22605
       version: -1
       name: aws-ssm-association-list
-      description: 'Returns all State Manager associations in the current Amazon Web
-        Services account and Amazon Web Services Region. Note: An association is a
-        binding between a document and a set of targets with a schedule.'
+      description: 'Returns all State Manager associations in the current Amazon Web Services account and Amazon Web Services Region. Note: An association is a binding between a document and a set of targets with a schedule.'
       script: '|||aws-ssm-association-list'
       type: regular
       iscommand: true
@@ -587,10 +582,7 @@ tasks:
       id: 0d27bf39-51c0-4e83-8e5f-b67f0c44ada2
       version: -1
       name: 'aws-ssm-association-get '
-      description: Describes the association for the specified target or managed node.
-        If the association was established using the Targets parameter, the association
-        details must be retrieved using the associated ID. This command must provide
-        either an association ID, or instance_id and document_name.
+      description: Describes the association for the specified target or managed node. If the association was established using the Targets parameter, the association details must be retrieved using the associated ID. This command must provide either an association ID, or instance_id and document_name.
       script: '|||aws-ssm-association-get'
       type: regular
       iscommand: true
@@ -667,8 +659,7 @@ tasks:
       id: 839f7857-5e07-4c45-8a5c-892f9a80f95d
       version: -1
       name: aws-ssm-association-version-list
-      description: Retrieves all versions of an association for a specific association
-        ID.
+      description: Retrieves all versions of an association for a specific association ID.
       script: '|||aws-ssm-association-version-list'
       type: regular
       iscommand: true
@@ -744,8 +735,7 @@ tasks:
       id: c6eb48d0-5f39-4a56-895e-fe38bf344844
       version: -1
       name: aws-ssm-command-list
-      description: Lists the commands requested by users of the Amazon Web Services
-        account.
+      description: Lists the commands requested by users of the Amazon Web Services account.
       script: '|||aws-ssm-command-list'
       type: regular
       iscommand: true
@@ -777,8 +767,7 @@ tasks:
       id: 95bb3df0-dd25-4c64-8c27-d21f914a536a
       version: -1
       name: list commands next token
-      description: Lists the commands requested by users of the Amazon Web Services
-        account.
+      description: Lists the commands requested by users of the Amazon Web Services account.
       script: '|||aws-ssm-command-list'
       type: regular
       iscommand: true
@@ -971,9 +960,7 @@ tasks:
       id: 7d363318-bc5d-4cc6-899c-4a485b7dc22b
       version: -1
       name: aws-ssm-command-run
-      description: "Runs commands on one or more managed nodes.\nThe document_id arguments
-        get from the aws-ssm-document-list \nwith the filter where the type of the
-        document-type equal to Command "
+      description: "Runs commands on one or more managed nodes.\nThe document_id arguments get from the aws-ssm-document-list \nwith the filter where the type of the document-type equal to Command "
       script: '|||aws-ssm-command-run'
       type: regular
       iscommand: true
@@ -1027,9 +1014,7 @@ tasks:
       id: 626f1050-2990-4d84-8671-184dfd7baaa6
       version: -1
       name: aws-ssm-command-cancel
-      description: Attempts to cancel the command specified by the Command ID. There
-        is no guarantee that the command will be terminated and the underlying process
-        stopped.
+      description: Attempts to cancel the command specified by the Command ID. There is no guarantee that the command will be terminated and the underlying process stopped.
       script: '|||aws-ssm-command-cancel'
       type: regular
       iscommand: true
@@ -1108,9 +1093,7 @@ tasks:
       id: 3827e02e-16c7-4b1f-85d9-72b9a75c1d66
       version: -1
       name: aws-ssm-automation-list
-      description: If the argument execution_id is provided, the command returns detailed
-        information about a particular Automation execution. if not provided, the
-        command provides details about all active and terminated Automation executions.
+      description: If the argument execution_id is provided, the command returns detailed information about a particular Automation execution. if not provided, the command provides details about all active and terminated Automation executions.
       script: '|||aws-ssm-automation-execution-list'
       type: regular
       iscommand: true
