@@ -11,6 +11,6 @@
 !aws-ssm-automation-execution-run document_name=AWS target_parameter_name=InstanceId target_key="Parameter Values" target_values=id   parameters=`{"RoleName":"dummy"}`
 !aws-ssm-automation-execution-cancel  automation_execution_id=id
 !aws-ssm-automation-execution-list limit=2
-!aws-ssm-command-run document_name=AWS-RefreshAssociation target_key="Instance Ids" target_values=id print_polling_message=false
+!aws-ssm-command-run document_name=AWS target_key="Instance Ids" target_values=id print_polling_message=false
 !aws-ssm-command-cancel command_id=id
 !aws-ssm-command-list limit=2
