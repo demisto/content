@@ -15,6 +15,7 @@ test_instances:
   script:
     - EXIT_CODE=0
     - !reference [.download-demisto-conf]
+    - !reference [.secrets-fetch]
     - !reference [.ssh-config-setup]
     - section_start "Wait Until Server Ready"
     - |

@@ -121,6 +121,7 @@ validate-content-conf:
   stage: prepare-testing-bucket
   script:
     - !reference [.download-demisto-conf]
+    - !reference [.secrets-fetch]
     - !reference [.create-release-notes-and-common-docs]
     - section_start "Create or update content graph" --collapsed
 
@@ -248,6 +249,7 @@ xpanse-prepare-testing-bucket:
       fi
     - section_end "Check if should run Server Master"
     - !reference [.download-demisto-conf]
+    - !reference [.secrets-fetch]
     - export TEMP=$(cat $ARTIFACTS_FOLDER/filter_envs.json | jq ".\"$INSTANCE_ROLE\"")
     # If instance was not created
     - |
@@ -399,6 +401,7 @@ slack-notify-nightly-build:
   script:
     - EXIT_CODE=0
     - !reference [.download-demisto-conf]
+    - !reference [.secrets-fetch]
     - section_start "Are there tests to run?" --collapsed
     - |
       if ! [[ -s $ARTIFACTS_FOLDER/content_packs_to_install.txt || -s $ARTIFACTS_FOLDER/filter_file.txt ]]; then
