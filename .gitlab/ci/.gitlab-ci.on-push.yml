@@ -86,7 +86,15 @@ run-unittests-and-lint:
     - if: '$DEMISTO_SDK_NIGHTLY != "true"'
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
 
-
+  after_script:
+      - >
+        if [ '$CI_JOB_STATUS' == 'success' ] && [[ '$CI_COMMIT_BRANCH' -ne 'master' ]]; then
+          echo 'This will only run on success if not on master'
+        if [ '$CI_JOB_STATUS' -ne 'success' ] && [[ '$CI_COMMIT_BRANCH' -ne 'master' ]]; then
+          echo 'This will only run on failure not on master'
+        else
+          echo 'on master'
+        fi
 # runs in gitlab for the on-push flow (except for contributors)
 run-validations:
   extends:
