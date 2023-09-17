@@ -98,7 +98,6 @@ def get_group_id(group_name):
 
 
 def main():
-
     """
     The table name is required by the API. To acquire the table name, use the servicenow-get-table-name command.
     """
