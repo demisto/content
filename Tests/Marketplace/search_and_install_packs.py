@@ -373,7 +373,7 @@ def install_packs(client: demisto_client,
         packs_data = [
             {
                 'ID': response_data_pack.get('id'),
-                'CurrentVersion': response_data_packs.get('currentVersion')
+                'CurrentVersion': response_data_pack.get('currentVersion')
             } for response_data_pack in response_data_packs]
         logging.success(f'Packs were successfully installed on server {host}')
 
@@ -395,7 +395,9 @@ def install_packs(client: demisto_client,
             # We've more attempts, retrying without tho malformed packs.
             success = False
             logging.error(f"Unable to install malformed packs: {malformed_ids}, retrying without them.")
-            packs_to_install = [pack for pack in packs_to_install if pack['id'] not in malformed_ids]
+            packs_to_install = [
+                pack_to_install for pack_to_install in packs_to_install if pack_to_install['id'] not in malformed_ids
+            ]
             body = {
                 'packs': packs_to_install,
                 'ignoreWarnings': True
