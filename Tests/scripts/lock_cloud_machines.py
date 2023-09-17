@@ -362,7 +362,7 @@ def main():
     remove_file(storage_bucket, file_path=f'{options.gcs_locks_path}/{QUEUE_REPO}/{options.ci_job_id}')
 
     with open(options.response_machine, "w") as f:
-        f.write(f"export CLOUD_CHOSEN_MACHINE_IDS={'.'.join(lock_machine_list)}")
+        f.write(f"export CLOUD_CHOSEN_MACHINE_IDS={','.join(lock_machine_list)}")
 
 
 if __name__ == '__main__':

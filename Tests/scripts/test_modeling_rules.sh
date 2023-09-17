@@ -49,7 +49,7 @@ fi
 
 exit_code=0
 if [ -n "${CLOUD_CHOSEN_MACHINE_IDS}" ]; then
-  IFS=', ' read -r -A CLOUD_CHOSEN_MACHINE_ID_ARRAY <<< "${CLOUD_CHOSEN_MACHINE_IDS}"
+  IFS=', ' read -r -a CLOUD_CHOSEN_MACHINE_ID_ARRAY <<< "${CLOUD_CHOSEN_MACHINE_IDS}"
   exit_code=0
   for CLOUD_CHOSEN_MACHINE_ID in "${CLOUD_CHOSEN_MACHINE_ID_ARRAY[@]}"; do
 
