@@ -91,7 +91,7 @@ run-unittests-and-lint:
         if [ '$CI_JOB_STATUS' -ne 'success' ] && [[ '$CI_COMMIT_BRANCH' -ne 'master' ]]; then
           echo 'This will only run on failure not on master'
         else
-          echo ' either the job passed or it is on master'
+          echo $CI_JOB_STATUS
         fi
 # runs in gitlab for the on-push flow (except for contributors)
 run-validations:
