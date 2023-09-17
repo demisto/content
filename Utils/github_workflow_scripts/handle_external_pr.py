@@ -15,9 +15,10 @@ from utils import (
     Checkout,
     load_json,
     get_content_reviewers,
-    CONTENT_ROLES_PATH
+    CONTENT_ROLES_PATH,
+    get_support_level
 )
-from demisto_sdk.commands.common.tools import get_pack_metadata, get_pack_name
+from demisto_sdk.commands.common.tools import get_pack_name
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 print = timestamped_print
@@ -86,25 +87,6 @@ def determine_reviewer(potential_reviewers: list[str], repo: Repository) -> str:
     return selected_reviewer
 
 
-def get_packs_support_levels(pack_dirs: set[str]) -> set[str]:
-    """
-    Get the pack support levels from the pack metadata.
-
-    Args:
-        pack_dirs (set): paths to the packs that were changed
-    """
-    packs_support_levels = set()
-
-    for pack_dir in pack_dirs:
-        if pack_support_level := get_pack_metadata(pack_dir).get('support'):
-            print(f'Pack support level for pack {pack_dir} is {pack_support_level}')
-            packs_support_levels.add(pack_support_level)
-        else:
-            print(f'Could not find pack support level for pack {pack_dir}')
-
-    return packs_support_levels
-
-
 def get_packs_support_level_label(file_paths: list[str], external_pr_branch: str) -> str:
     """
     Get The contributions' support level label.
@@ -150,13 +132,13 @@ def get_packs_support_level_label(file_paths: list[str], external_pr_branch: str
             # in marketplace contributions the name of the owner should be xsoar-contrib
             fork_owner=fork_owner if fork_owner != 'xsoar-bot' else 'xsoar-contrib'
         ):
-            packs_support_levels = get_packs_support_levels(pack_dirs_to_check_support_levels_labels)
+            packs_support_levels = get_support_level(pack_dirs_to_check_support_levels_labels)
     except Exception as error:
         # in case we were not able to checkout correctly, fallback to the files in the master branch to retrieve support labels
         # in case those files exist.
         print(f'Received error when trying to checkout to {external_pr_branch} \n{error=}')
         print('Trying to retrieve support levels from the master branch')
-        packs_support_levels = get_packs_support_levels(pack_dirs_to_check_support_levels_labels)
+        packs_support_levels = get_support_level(pack_dirs_to_check_support_levels_labels)
 
     print(f'{packs_support_levels=}')
     return get_highest_support_label(packs_support_levels) if packs_support_levels else ''

@@ -80,19 +80,32 @@ configuration:
   additionalinfo: Used for certificate authentication. The private key of the registered certificate.
   hidden: true
   required: false
-- additionalinfo: Relevant only if the integration is running on Azure VM. If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field. If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity. For additional information, see the Help tab.
-  display: Use Azure Managed Identities
-  name: use_managed_identities
-  type: 8
+- display: Application redirect URI (for self-deployed mode)
+  name: redirect_uri
+  type: 0
   section: Connect
   required: false
-- additionalinfo: The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM.
-  displaypassword: Azure Managed Identities Client ID
-  name: managed_identities_client_id
+- additionalinfo: Get the authorization code from steps 3-5 in the self deployed authorization process.
+  displaypassword: Authorization code
+  name: auth_code
   hiddenusername: true
   type: 9
   section: Connect
   required: false
+  display: Authorization code
+- display: Use Azure Managed Identities
+  name: use_managed_identities
+  type: 8
+  section: Connect
+  required: false
+  additionalinfo: Relevant only if the integration is running on Azure VM. If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field. If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity. For additional information, see the Help tab.
+- name: managed_identities_client_id
+  type: 9
+  section: Connect
+  required: false
+  additionalinfo: The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM.
+  displaypassword: Azure Managed Identities Client ID
+  hiddenusername: true
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -103,38 +116,43 @@ configuration:
   name: proxy
   type: 8
   section: Connect
-  advanced: true
   required: false
-- additionalinfo: Select this checkbox if you are using a self-deployed Azure application.
-  display: Use a self-deployed Azure application
+  advanced: true
+- display: Use a self-deployed Azure application
   name: self_deployed
   type: 8
   section: Connect
-  advanced: false
   required: false
+  additionalinfo: Select this checkbox if you are using a self-deployed Azure application.
+  advanced: true
 - display: Fetch incidents
   name: isFetch
   type: 8
   section: Collect
   required: false
+- defaultvalue: '1'
+  display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  type: 19
+  required: false
+  section: Collect
 - display: Incident type
   name: incidentType
   type: 13
   section: Connect
   required: false
-- defaultvalue: 1 day
-  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+- display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   additionalinfo: <number> <time unit>, for example 1 hour, 30 minutes
   name: fetch_time
   type: 0
   section: Collect
   required: false
-- defaultvalue: '10'
-  display: Max incidents per fetch
+- display: Max incidents per fetch
   name: fetch_limit
   type: 0
   section: Collect
   required: false
+  defaultvalue: '10'
 - display: Fetch incidents of the given providers only.
   additionalinfo: Relevant only for Legacy Alerts. Multiple providers can be inserted separated by a comma, for example "{first_provider},{second_provider}". If empty, incidents of all providers will be fetched.
   name: fetch_providers
@@ -762,12 +780,856 @@ script:
     execution: false
     name: ms-graph-security-auth-reset
     arguments: []
-  dockerimage: demisto/crypto:1.0.0.66562
+  - deprecated: false
+    arguments:
+    - description: Which permissions the integration should have.
+      name: permission_type
+      isArray: true
+      defaultValue: all
+      auto: PREDEFINED
+      predefined:
+      - 'ediscovery'
+      - 'alerts'
+      - 'all'
+    description: Tests connectivity to Microsoft Graph Security.
+    execution: false
+    name: msg-auth-test
+  - arguments: []
+    description: Generate the login URL used for authorization code flow.
+    execution: false
+    name: msg-generate-login-url
+  - arguments:
+    - description: The name of the eDiscovery case.
+      isArray: false
+      name: display_name
+      required: true
+    - description: The case description.
+      isArray: false
+      name: description
+      required: false
+    - description: The external case number for customer reference.
+      isArray: false
+      name: external_id
+      required: false
+    description: Create a new eDiscovery case. This command only creates an eDiscovery (Premium) case using the new case format. To learn more about the new case format in eDiscovery, see https://learn.microsoft.com/en-us/microsoft-365/compliance/advanced-ediscovery-new-case-format.
+    execution: false
+    name: msg-create-ediscovery-case
+    outputs:
+    - contextPath: MsGraph.eDiscoveryCase.CaseId
+      description: The ID of the eDiscovery case.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.CaseStatus
+      description: 'The case status. Possible values are: unknown, active, pendingDelete, closing, closed, and closedWithError.'
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.CreatedDateTime
+      description: 'The date and time when the entity was created. The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z'
+      type: Date
+    - contextPath: MsGraph.eDiscoveryCase.Description
+      description: The case description.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.DisplayName
+      description: The case name.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.ExternalId
+      description: The external case number for customer reference.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.LastModifiedDateTime
+      description: 'The latest date and time when the case was modified. The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z'
+      type: Date
+  - arguments:
+    - description: The ID of the eDiscovery case.
+      isArray: false
+      name: case_id
+      required: true
+    description: |-
+      Close an eDiscovery case. When the legal case or investigation supported by a eDiscovery (Standard) case is completed, you can close the case. Here's what happens when you close a case:
+      If the case contains any eDiscovery holds, they'll be turned off. After the hold is turned off, a 30-day grace period (called a delay hold) is applied to content locations that were on hold. This helps prevent content from being immediately deleted and provides admins the opportunity to search for and restore content before it may be permanently deleted after the delay hold period expires. For more information, see Removing content locations from an eDiscovery hold.
+      Closing a case only turns off the holds that are associated with that case. If other holds are placed on a content location (such as a Litigation Hold, a retention policy, or a hold from a different eDiscovery (Standard) case) those holds will still be maintained.
+      The case is still listed on the eDiscovery (Standard) page in the Microsoft Purview compliance portal. The details, holds, searches, and members of a closed case are retained.
+      You can edit a case after it's closed. For example, you can add or remove members, create searches, and export search results. The primary difference between active and closed cases is that eDiscovery holds are turned off when a case is closed.
+    execution: false
+    name: msg-close-ediscovery-case
+  - arguments:
+    - description: The ID of the eDiscovery case.
+      isArray: false
+      name: case_id
+      required: true
+    description: Reopen an eDiscovery case. When you reopen an eDiscovery (Premium) case, any holds that were in place when the case was closed won't be automatically reinstated. After the case is reopened, you'll have to go to the Holds tab and turn on the previous holds. To turn on a hold, select it to display the flyout page, and then set the Status toggle to On.
+    execution: false
+    name: msg-reopen-ediscovery-case
+  - arguments:
+    - description: The ID of the eDiscovery case.
+      isArray: false
+      name: case_id
+      required: true
+    description: Delete an eDiscovery case. Before you can delete a case, you must first delete all holds listed on the holds page of the case. That includes deleting holds with a status of Off. Default hold policies can only be deleted when the hold is turned off. You must close an active case to turn off any default hold policies in the case. Once the holds are turned off for default hold policies, they can be deleted.
+    execution: false
+    name: msg-delete-ediscovery-case
+  - arguments:
+    - description: The ID of the eDiscovery case.
+      isArray: false
+      name: case_id
+      required: true
+    - description: The name of the eDiscovery case.
+      isArray: false
+      name: display_name
+      required: true
+    - description: The case description.
+      isArray: false
+      name: description
+      required: false
+    - description: The external case number for customer reference.
+      isArray: false
+      name: external_id
+      required: false
+    description: Update an eDiscovery case.
+    execution: false
+    name: msg-update-ediscovery-case
+  - arguments:
+    - description: The ID of the eDiscovery case. If provided, only this ID will be returned.
+      isArray: false
+      name: case_id
+      required: false
+    - description: The maximum number of results to return. 
+      isArray: false
+      name: limit
+      required: false
+      defaultValue: 50
+    - auto: PREDEFINED
+      description: Show all results if true.
+      isArray: false
+      name: all_results
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+    description: Lists edicovery cases.
+    execution: false
+    name: msg-list-ediscovery-cases
+    outputs:
+    - contextPath: MsGraph.eDiscoveryCase.CaseId
+      description: The ID of the eDiscovery case.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.CaseStatus
+      description: 'The case status. Possible values are: unknown, active, pendingDelete, closing, closed, and closedWithError.'
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.CreatedDateTime
+      description: 'The date and time when the entity was created. The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z'
+      type: Date
+    - contextPath: MsGraph.eDiscoveryCase.Description
+      description: The case description.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.DisplayName
+      description: The case name.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.ExternalId
+      description: The external case number for customer reference.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.LastModifiedDateTime
+      description: 'The latest date and time when the case was modified. The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z'
+      type: Date
+    - contextPath: MsGraph.eDiscoveryCase.ClosedBy.User.DisplayName
+      description: The user who closed the case.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.LastModifiedBy.User.DisplayName
+      description: The user who last modified the case.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCase.ClosedDateTime
+      description: 'The date and time when the case was closed. The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z'
+      type: Date
+  - arguments:
+    - description: The ID of the eDiscovery case.
+      isArray: false
+      name: case_id
+      required: true
+    - description: Custodian's primary SMTP address.
+      isArray: false
+      name: email
+      required: true
+    description: Create a new ediscoveryCustodian object. After the custodian object is created, you will need to create the custodian's userSource to reference their mailbox and OneDrive for Business site.
+    execution: false
+    name: msg-create-ediscovery-custodian
+    outputs:
+    - contextPath: MsGraph.eDiscoveryCustodian.CreatedDateTime
+      description: Date and time when the custodian was added to the case.
+      type: Date
+    - contextPath: MsGraph.eDiscoveryCustodian.CustodianId
+      description: The ID for the custodian in the specified case. Read-only.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCustodian.CustodianStatus
+      description: 'Status of the custodian. Possible values are: active, released.'
+      type: String
+    - contextPath: MsGraph.eDiscoveryCustodian.DisplayName
+      description: Display name of the custodian.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCustodian.Email
+      description: Email address of the custodian.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCustodian.HoldStatus
+      description: 'The hold status of the custodian.The possible values are: notApplied, applied, applying, removing, partial.'
+      type: String
+    - contextPath: MsGraph.eDiscoveryCustodian.LastModifiedDateTime
+      description: Date and time the custodian object was last modified.
+      type: Date
+  - arguments:
+    - description: The ID of the eDiscovery case.
+      isArray: false
+      name: case_id
+      required: true
+    - description: The ID of the custodian on the given eDiscovery case. If provided, only this ID will be returned.
+      isArray: false
+      name: custodian_id
+      required: false
+    - description: Number of total results to return. 
+      isArray: false
+      name: limit
+      required: false
+      defaultValue: 50
+    - auto: PREDEFINED
+      description: Show all results if true.
+      isArray: false
+      name: all_results
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+    description: List custodians on a given eDiscovery case.
+    execution: false
+    name: msg-list-ediscovery-custodians
+    outputs:
+    - contextPath: MsGraph.eDiscoveryCustodian.CreatedDateTime
+      description: Date and time when the custodian was added to the case.
+      type: Date
+    - contextPath: MsGraph.eDiscoveryCustodian.CustodianId
+      description: The ID for the custodian in the specified case. Read-only.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCustodian.CustodianStatus
+      description: 'Status of the custodian. Possible values are: active, released.'
+      type: String
+    - contextPath: MsGraph.eDiscoveryCustodian.DisplayName
+      description: Display name of the custodian.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCustodian.Email
+      description: Email address of the custodian.
+      type: String
+    - contextPath: MsGraph.eDiscoveryCustodian.HoldStatus
+      description: 'The hold status of the custodian. The possible values are: notApplied, applied, applying, removing, partial.'
+      type: String
+    - contextPath: MsGraph.eDiscoveryCustodian.LastModifiedDateTime
+      description: Date and time the custodian object was last modified.
+      type: Date
+    - contextPath: MsGraph.eDiscoveryCustodian.ReleasedDateTime
+      description: Date and time the custodian was released from the case.
+      type: Date
+  - arguments:
+    - description: The ID of the eDiscovery case.
+      isArray: false
+      name: case_id
+      required: true
+    - description: The ID of the custodian on the given eDiscovery case.
+      isArray: false
+      name: custodian_id
+      required: true
+    description: Release a custodian from a case. For details, see https://learn.microsoft.com/en-us/microsoft-365/compliance/manage-new-custodians#release-a-custodian-from-a-case.
+    execution: false
+    name: msg-release-ediscovery-custodian
+  - arguments:
+    - description: The ID of the eDiscovery case.
+      isArray: false
+      name: case_id
+      required: true
+    - description: The ID of the custodian on the given eDiscovery case.
+      isArray: false
+      name: custodian_id
+      required: true
+    description: Activate a custodian that has been released from a case to make them part of the case again. For details, see https://learn.microsoft.com/en-us/microsoft-365/compliance/ediscovery-manage-new-custodians?view=o365-worldwide#re-activate-custodian.
+    execution: false
+    name: msg-activate-ediscovery-custodian
+  - arguments:
+    - description: The ID of the eDiscovery case.
+      isArray: false
+      name: case_id
+      required: true
+    - description: The ID of the custodian on the given eDiscovery case.
+      isArray: false
+      name: custodian_id
+      required: true
+    - description: SMTP address of the user.
+      isArray: false
+      name: email
+      required: true
+    - description: Specifies which sources are included in this group.
+      isArray: true
+      name: included_sources
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - mailbox
+      - site
+      - mailbox, site
+    description: Create a new userSource object associated with an eDiscovery custodian. Use the msg-list-ediscovery-custodians command in order to get all available custodians.
+    execution: false
+    name: msg-create-ediscovery-custodian-user-source
+    outputs:
+    - contextPath: MsGraph.CustodianUserSource.CreatedBy.Application.DisplayName
+      description: The name of the application who created the userSource.
+      type: String
+    - contextPath: MsGraph.CustodianUserSource.CreatedBy.Application.ID
+      description: The ID of the application who created the userSource.
+      type: String
+    - contextPath: MsGraph.CustodianUserSource.CreatedBy.User.DisplayName
+      description: The name of the user who created the userSource.
+      type: String
+    - contextPath: MsGraph.CustodianUserSource.CreatedBy.User.ID
+      description: The ID of the user who created the userSource.
+      type: String
+    - contextPath: MsGraph.CustodianUserSource.CreatedBy.User.UserPrincipalName
+      description: Internet-style login name of the user who created the userSource.
+      type: String
+    - contextPath: MsGraph.CustodianUserSource.CreatedDateTime
+      description: The date and time the userSource was created.
+      type: Date
+    - contextPath: MsGraph.CustodianUserSource.DisplayName
+      description: The display name associated with the mailbox and site.
+      type: String
+    - contextPath: MsGraph.CustodianUserSource.Email
+      description: Email address of the user's mailbox.
+      type: String
+    - contextPath: MsGraph.CustodianUserSource.HoldStatus
+      description: 'The hold status of the userSource. The possible values are: notApplied, applied, applying, removing, partial.'
+      type: String
+    - contextPath: MsGraph.CustodianUserSource.IncludedSources
+      description: 'Specifies which sources are included in this group. Possible values are: mailbox, site.'
+      type: String
+    - contextPath: MsGraph.CustodianUserSource.UserSourceId
+      description: The ID of the userSource. This is not the ID of the actual group.
+      type: String
+  - arguments:
+    - description: The ID of the eDiscovery case.
+      isArray: false
+      name: case_id
+      required: true
+    - description: The ID of the custodian on the given eDiscovery case.
+      isArray: false
+      name: custodian_id
+      required: true
+    - description: URL of the site, for example, https://contoso.sharepoint.com/sites/HumanResources.
+      isArray: false
+      name: site
+      required: true
+    description: Create a new siteSource object associated with an eDiscovery custodian. Use the msg-list-ediscovery-custodians command in order to get all available custodians.
+    execution: false
+    name: msg-create-ediscovery-custodian-site-source
+    outputs:
+    - contextPath: MsGraph.CustodianSiteSource.CreatedBy.Application.DisplayName
+      description: The name of the application who created the siteSource.
+      type: String
+    - contextPath: MsGraph.CustodianSiteSource.CreatedBy.Application.ID
+      description: The ID of the application who created the siteSource.
+      type: String
+    - contextPath: MsGraph.CustodianSiteSource.CreatedBy.User.DisplayName
+      description: The name of the user who created the siteSource.
+      type: String
+    - contextPath: MsGraph.CustodianSiteSource.CreatedBy.User.ID
+      description: The ID of the user who created the siteSource.
+      type: String
+    - contextPath: MsGraph.CustodianSiteSource.CreatedBy.User.UserPrincipalName
+      description: Internet-style login name of the user who created the siteSource.
+      type: String
+    - contextPath: MsGraph.CustodianSiteSource.CreatedDateTime
+      description: The date and time the siteSource was created.
+      type: Date
+    - contextPath: MsGraph.CustodianSiteSource.DisplayName
+      description: The display name of the siteSource. This will be the name of the SharePoint site.
+      type: String
+    - contextPath: MsGraph.CustodianSiteSource.HoldStatus
+      description: 'The hold status of the siteSource. The possible values are: notApplied, applied, applying, removing, partial.'
+      type: String
+    - contextPath: MsGraph.CustodianSiteSource.SiteSourceId
+      description: The ID of the siteSource.
+      type: String
+  - arguments:
+    - description: The ID of the eDiscovery case.
+      isArray: false
+      name: case_id
+      required: true
+    - description: The ID of the custodian on the given eDiscovery case.
+      isArray: false
+      name: custodian_id
+      required: true
+    - description: The ID of the userSource. If provided, only this ID will be returned.
+      isArray: false
+      name: user_source_id
+      required: false
+    - description: Number of total results to return. 
+      isArray: false
+      name: limit
+      required: false
+      defaultValue: 50
+    - auto: PREDEFINED
+      description: Show all results if true.
+      isArray: false
+      name: all_results
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+    description: Get a list of the userSource objects associated with an eDiscoveryCustodian. Use the msg-list-ediscovery-custodians command in order to get all available custodians.
+    execution: false
+    name: msg-list-ediscovery-custodian-user-sources
+    outputs:
+    - contextPath: MsGraph.CustodianUserSource.CreatedBy.Application.DisplayName
+      description: The name of the application who created the userSource.
+      type: String
+    - contextPath: MsGraph.CustodianUserSource.CreatedBy.Application.ID
+      description: The ID of the application who created the userSource.
+      type: String
+    - contextPath: MsGraph.CustodianUserSource.CreatedBy.User.DisplayName
+      description: The name of the user who created the userSource.
+      type: String
+    - contextPath: MsGraph.CustodianUserSource.CreatedBy.User.ID
+      description: The ID of the user who created the userSource.
+      type: String
+    - contextPath: MsGraph.CustodianUserSource.CreatedBy.User.UserPrincipalName
+      description: Internet-style login name of the user who created the userSource.
+      type: String
+    - contextPath: MsGraph.CustodianUserSource.CreatedDateTime
+      description: The date and time the userSource was created.
+      type: Date
+    - contextPath: MsGraph.CustodianUserSource.DisplayName
+      description: The display name associated with the mailbox and site.
+      type: String
+    - contextPath: MsGraph.CustodianUserSource.Email
+      description: Email address of the user's mailbox.
+      type: String
+    - contextPath: MsGraph.CustodianUserSource.HoldStatus
+      description: 'The hold status of the userSource. The possible values are: notApplied, applied, applying, removing, partial.'
+      type: String
+    - contextPath: MsGraph.CustodianUserSource.IncludedSources
+      description: 'Specifies which sources are included in this group. Possible values are: mailbox, site.'
+      type: String
+    - contextPath: MsGraph.CustodianUserSource.SiteWebUrl
+      description: The URL of the user's OneDrive for Business site. Read-only.
+      type: String
+    - contextPath: MsGraph.CustodianUserSource.UserSourceId
+      description: The ID of the userSource. This is not the ID of the actual group.
+      type: String
+  - arguments:
+    - description: The ID of the eDiscovery case.
+      isArray: false
+      name: case_id
+      required: true
+    - description: The ID of the custodian on the given eDiscovery case.
+      isArray: false
+      name: custodian_id
+      required: true
+    - description: The ID of the siteSource. If provided, only this ID will be returned.
+      isArray: false
+      name: site_source_id
+      required: false
+    - description: Number of total results to return. 
+      isArray: false
+      name: limit
+      required: false
+      defaultValue: 50
+    - auto: PREDEFINED
+      description: Show all results if true.
+      isArray: false
+      name: all_results
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+    description: Get a list of the siteSource objects associated with an eDiscoveryCustodian. Use the msg-list-ediscovery-custodians command in order to get all available custodians.
+    execution: false
+    name: msg-list-ediscovery-custodian-site-sources
+    outputs:
+    - contextPath: MsGraph.CustodianSiteSource.CreatedBy.Application.DisplayName
+      description: The name of the application who created the siteSource.
+      type: String
+    - contextPath: MsGraph.CustodianSiteSource.CreatedBy.Application.ID
+      description: The ID of the application who created the siteSource.
+      type: String
+    - contextPath: MsGraph.CustodianSiteSource.CreatedBy.User.DisplayName
+      description: The name of the user who created the siteSource.
+      type: String
+    - contextPath: MsGraph.CustodianSiteSource.CreatedBy.User.ID
+      description: The ID of the user who created the siteSource.
+      type: String
+    - contextPath: MsGraph.CustodianSiteSource.CreatedBy.User.UserPrincipalName
+      description: Internet-style login name of the user who created the siteSource.
+      type: String
+    - contextPath: MsGraph.CustodianSiteSource.CreatedDateTime
+      description: The date and time the siteSource was created.
+      type: Date
+    - contextPath: MsGraph.CustodianSiteSource.DisplayName
+      description: The display name of the siteSource. This will be the name of the SharePoint site.
+      type: String
+    - contextPath: MsGraph.CustodianSiteSource.HoldStatus
+      description: 'The hold status of the siteSource. The possible values are: notApplied, applied, applying, removing, partial.'
+      type: String
+    - contextPath: MsGraph.CustodianSiteSource.SiteSourceId
+      description: The ID of the siteSource.
+      type: String
+    - contextPath: MsGraph.CustodianSiteSource.Site.ID
+      description: The unique identifier of the item. Read-only.
+      type: String
+    - contextPath: MsGraph.CustodianSiteSource.Site.WebUrl
+      description: URL that displays the item in the browser. Read-only.
+      type: String
+    - contextPath: MsGraph.CustodianSiteSource.Site.CreatedDate
+      description: The date and time the siteSource was created.
+      type: Date
+  - arguments:
+    - description: The ID of the eDiscovery case.
+      isArray: false
+      name: case_id
+      required: true
+    - description: URL of the site, for example, https://contoso.sharepoint.com/sites/HumanResources.
+      isArray: false
+      name: site
+      required: false
+    - description: Email address of the user's mailbox.
+      isArray: false
+      name: email
+      required: false
+    description: Create a new eDiscoveryNoncustodialDataSource object.
+    execution: false
+    name: msg-create-ediscovery-non-custodial-data-source
+    outputs:
+    - contextPath: MsGraph.NoncustodialDataSource.CreatedDateTime
+      description: Created date and time of the nonCustodialDataSource.
+      type: Date
+    - contextPath: MsGraph.NoncustodialDataSource.DataSourceId
+      description: Unique identifier of the nonCustodialDataSource.
+      type: String
+    - contextPath: MsGraph.NoncustodialDataSource.DataSourceStatus
+      description: 'Latest status of the nonCustodialDataSource. Possible values are: Active, Released.'
+      type: String
+    - contextPath: MsGraph.NoncustodialDataSource.DisplayName
+      description: Display name of the noncustodialDataSource.
+      type: String
+    - contextPath: MsGraph.NoncustodialDataSource.HoldStatus
+      description: 'The hold status of the nonCustodialDataSource.The possible values are: notApplied, applied, applying, removing, partial'
+      type: String
+    - contextPath: MsGraph.NoncustodialDataSource.LastModifiedDateTime
+      description: Last modified date and time of the nonCustodialDataSource.
+      type: Date
+    - contextPath: MsGraph.NoncustodialDataSource.ReleasedDateTime
+      description: Date and time that the nonCustodialDataSource was released from the case.
+      type: Date
+  - arguments:
+    - description: The ID of the eDiscovery case.
+      isArray: false
+      name: case_id
+      required: true
+    - description: The ID of the dataSource. If provided, only this ID will be returned.
+      isArray: false
+      name: data_source_id
+      required: false
+    - description: The maximum number of results to return. 
+      isArray: false
+      name: limit
+      required: false
+      defaultValue: 50
+    - auto: PREDEFINED
+      description: Show all results if true.
+      isArray: false
+      name: all_results
+      predefined:
+      - 'true'
+      - 'false'
+    description: Get a list of the non-custodial data sources and their properties.
+    execution: false
+    name: msg-list-ediscovery-non-custodial-data-sources
+    outputs:
+    - contextPath: MsGraph.NoncustodialDataSource.CreatedDateTime
+      description: Created date and time of the nonCustodialDataSource.
+      type: Date
+    - contextPath: MsGraph.NoncustodialDataSource.DataSourceId
+      description: Unique identifier of the nonCustodialDataSource.
+      type: String
+    - contextPath: MsGraph.NoncustodialDataSource.DataSourceStatus
+      description: 'Latest status of the nonCustodialDataSource. Possible values are: Active, Released.'
+      type: String
+    - contextPath: MsGraph.NoncustodialDataSource.DisplayName
+      description: Display name of the noncustodialDataSource.
+      type: String
+    - contextPath: MsGraph.NoncustodialDataSource.HoldStatus
+      description: 'The hold status of the nonCustodialDataSource.The possible values are: notApplied, applied, applying, removing, partial'
+      type: String
+    - contextPath: MsGraph.NoncustodialDataSource.LastModifiedDateTime
+      description: Last modified date and time of the nonCustodialDataSource.
+      type: Date
+    - contextPath: MsGraph.NoncustodialDataSource.ReleasedDateTime
+      description: Date and time that the nonCustodialDataSource was released from the case.
+      type: Date
+  - arguments:
+    - description: The ID of the eDiscovery case.
+      isArray: false
+      name: case_id
+      required: true
+    - description: A comma-separated list of custodians IDs to apply a hold to.
+      isArray: true
+      name: custodian_id
+      required: true
+    description: |-
+      Start the process of applying hold on eDiscovery custodians.
+      Available return statuses: 
+      notApplied - The custodian is not on hold (all sources in it are not on hold).
+      applied - The custodian is on hold (all sources are on hold).
+      applying - The custodian is in applying the hold state (applyHold operation triggered).
+      removing - The custodian is in removing the hold state(removeHold operation triggered).
+      partial - The custodian is in a mixed state where some sources are on hold and some not on hold or error state.
+    execution: false
+    name: msg-apply-hold-ediscovery-custodian
+  - arguments:
+    - description: The ID of the eDiscovery case.
+      isArray: false
+      name: case_id
+      required: true
+    - description: A comma-separated list of custodians IDs to remove a hold from.
+      isArray: true
+      name: custodian_id
+      required: true
+    description: Start the process of removing a hold from eDiscovery custodians.
+    execution: false
+    name: msg-remove-hold-ediscovery-custodian
+  - arguments:
+    - description: The ID of the eDiscovery case.
+      isArray: false
+      name: case_id
+      required: true
+    - description: The display name of the search.
+      isArray: false
+      name: display_name
+      required: true
+    - description: The description of the search.
+      isArray: false
+      name: description
+      required: false
+    - description: The query string used for the search. The query string format is KQL (Keyword Query Language). For details, see Keyword queries and search conditions for Content Search and eDiscovery. You can refine searches by using fields paired with values, for example, subject:"Quarterly Financials" AND Date>=06/01/2016 AND Date<=07/01/2016.
+      isArray: false
+      name: content_query
+      required: false
+    - description: When specified, the collection will span across a service for an entire workload.
+      isArray: false
+      name: data_source_scopes
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - none
+      - allTenantMailboxes
+      - allTenantSites
+      - allCaseCustodians
+      - allCaseNoncustodialDataSources
+    description: Create a new eDiscoverySearch object.
+    execution: false
+    name: msg-create-ediscovery-search
+    outputs:
+    - contextPath: MsGraph.eDiscoverySearch.ContentQuery
+      description: 'The query string in KQL (Keyword Query Language) query. For details, see https://learn.microsoft.com/en-us/microsoft-365/compliance/keyword-queries-and-search-conditions. You can refine searches by using fields paired with values; for example, subject:"Quarterly Financials" AND Date>=06/01/2016 AND Date<=07/01/2016.'
+      type: String
+    - contextPath: MsGraph.eDiscoverySearch.CreatedBy.Application.DisplayName
+      description: Name of the application who created the eDiscovery search.
+      type: String
+    - contextPath: MsGraph.eDiscoverySearch.CreatedBy.Application.ID
+      description: ID of the application who created the eDiscovery search.
+      type: String
+    - contextPath: MsGraph.eDiscoverySearch.CreatedBy.User.DisplayName
+      description: Name of the user who created the eDiscovery search.
+      type: String
+    - contextPath: MsGraph.eDiscoverySearch.CreatedBy.User.ID
+      description: ID of the user who created the eDiscovery search.
+      type: String
+    - contextPath: MsGraph.eDiscoverySearch.CreatedBy.User.UserPrincipalName
+      description: Internet-style login name of the user who created the eDiscovery search.
+      type: String
+    - contextPath: MsGraph.eDiscoverySearch.CreatedDateTime
+      description: The date and time the eDiscovery search was created.
+      type: Date
+    - contextPath: MsGraph.eDiscoverySearch.DataSourceScopes
+      description: 'When specified, the collection will span across a service for an entire workload. Possible values are: none, allTenantMailboxes, allTenantSites, allCaseCustodians, allCaseNoncustodialDataSources.'
+      type: String
+    - contextPath: MsGraph.eDiscoverySearch.Description
+      description: The description of the eDiscovery search.
+      type: String
+    - contextPath: MsGraph.eDiscoverySearch.DisplayName
+      description: The display name of the eDiscovery search.
+      type: String
+    - contextPath: MsGraph.eDiscoverySearch.LastModifiedDateTime
+      description: 'The last date and time the eDiscovery search was modified.'
+      type: Date
+    - contextPath: MsGraph.eDiscoverySearch.SearchId
+      description: The ID for the eDiscovery search.
+      type: String
+  - arguments:
+    - description: The ID of the eDiscovery case.
+      isArray: false
+      name: case_id
+      required: true
+    - description: The ID of the eDiscovery search.
+      isArray: false
+      name: search_id
+      required: true
+    - description: The display name of the search.
+      isArray: false
+      name: display_name
+      required: true
+    - description: The description of the search.
+      isArray: false
+      name: description
+      required: false
+    - description: The query string used for the search. The format of the query string is KQL (Keyword Query Language). For details, see Keyword queries and search conditions for Content Search and eDiscovery. You can refine searches by using fields paired with values, for example, subject:"Quarterly Financials" AND Date>=06/01/2016 AND Date<=07/01/2016.
+      isArray: false
+      name: content_query
+      required: false
+    - description: When specified, the collection will span across a service for an entire workload.
+      isArray: false
+      name: data_source_scopes
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - none
+      - allTenantMailboxes
+      - allTenantSites
+      - allCaseCustodians
+      - allCaseNoncustodialDataSources
+    description: Update an eDiscoverySearch object.
+    execution: false
+    name: msg-update-ediscovery-search
+  - arguments:
+    - description: The id of the eDiscovery case.
+      isArray: false
+      name: case_id
+      required: true
+    - description: The ID of the eDiscovery search. If provided, only this ID will be returned.
+      isArray: false
+      name: search_id
+      required: false
+    - description: The maximum number of results to return. 
+      isArray: false
+      name: limit
+      required: false
+      defaultValue: 50
+    - auto: PREDEFINED
+      description: Show all results if true.
+      isArray: false
+      name: all_results
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+    description: Get the list of eDiscoverySearch resources from an eDiscovery case.
+    execution: false
+    name: msg-list-ediscovery-searchs
+    outputs:
+    - contextPath: MsGraph.eDiscoverySearch.ContentQuery
+      description: 'The query string in KQL (Keyword Query Language) query. For details, see Keyword queries and search conditions for Content Search and eDiscovery. You can refine searches by using fields paired with values, for example, subject:"Quarterly Financials" AND Date>=06/01/2016 AND Date<=07/01/2016.'
+      type: String
+    - contextPath: MsGraph.eDiscoverySearch.CreatedBy.Application.DisplayName
+      description: Name of the application who created the eDiscovery search.
+      type: String
+    - contextPath: MsGraph.eDiscoverySearch.CreatedBy.Application.ID
+      description: ID of the application who created the eDiscovery search.
+      type: String
+    - contextPath: MsGraph.eDiscoverySearch.CreatedBy.User.DisplayName
+      description: Name of the user who created the eDiscovery search.
+      type: String
+    - contextPath: MsGraph.eDiscoverySearch.CreatedBy.User.ID
+      description: ID of the user who created the eDiscovery search.
+      type: String
+    - contextPath: MsGraph.eDiscoverySearch.CreatedBy.User.UserPrincipalName
+      description: Internet-style login name of the user who created the eDiscovery search.
+      type: String
+    - contextPath: MsGraph.eDiscoverySearch.CreatedDateTime
+      description: The date and time the eDiscovery search was created.
+      type: Date
+    - contextPath: MsGraph.eDiscoverySearch.DataSourceScopes
+      description: 'When specified, the collection will span across a service for an entire workload. Possible values are: none, allTenantMailboxes, allTenantSites, allCaseCustodians, allCaseNoncustodialDataSources.'
+      type: String
+    - contextPath: MsGraph.eDiscoverySearch.Description
+      description: The description of the eDiscovery search.
+      type: String
+    - contextPath: MsGraph.eDiscoverySearch.DisplayName
+      description: The display name of the eDiscovery search.
+      type: String
+    - contextPath: MsGraph.eDiscoverySearch.SearchId
+      description: The ID for the eDiscovery search.
+      type: String
+    - contextPath: MsGraph.eDiscoverySearch.LastModifiedDateTime
+      description: The last date and time the eDiscovery search was modified.
+      type: String
+    - contextPath: MsGraph.eDiscoverySearch.LastModifiedBy.Application.DisplayName
+      description: Name of the application who last modified the eDiscovery search.
+      type: String
+    - contextPath: MsGraph.eDiscoverySearch.LastModifiedBy.Application.ID
+      description: ID of the application who last modified the eDiscovery search.
+      type: String
+    - contextPath: MsGraph.eDiscoverySearch.LastModifiedBy.User.DisplayName
+      description: Name of the user who last modified the eDiscovery search.
+      type: String
+    - contextPath: MsGraph.eDiscoverySearch.LastModifiedBy.User.ID
+      description: ID of the user who last modified the eDiscovery search.
+      type: String
+    - contextPath: MsGraph.eDiscoverySearch.LastModifiedBy.User.UserPrincipalName
+      description: Internet-style login name of the user who last modified the eDiscovery search.
+      type: String
+  - arguments:
+    - description: The ID of the eDiscovery case.
+      isArray: false
+      name: case_id
+      required: true
+    - description: The ID of the eDiscovery search.
+      isArray: false
+      name: search_id
+      required: false
+    description: Delete an eDiscoverySearch object.
+    execution: true
+    name: msg-delete-ediscovery-search
+  - arguments:
+    - description: The ID of the eDiscovery case.
+      isArray: false
+      name: case_id
+      required: true
+    - description: The ID of the eDiscovery search.
+      isArray: false
+      name: search_id
+      required: true
+    - description: The ID of the eDiscovery search.
+      isArray: false
+      name: purge_type
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - permanentlyDelete
+    - description: The ID of the eDiscovery search.
+      isArray: false
+      name: purge_areas
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - teamsMessages
+    description: |-
+      Delete Microsoft Teams messages contained in an eDiscovery search.
+      Note: This request purges Teams data only. It does not purge other types of data such as mailbox items.
+
+      You can collect and purge the following categories of Teams content:
+
+      Teams 1:1 chats - Chat messages, posts, and attachments shared in a Teams conversation between two people. Teams 1:1 chats are also called conversations.
+      Teams group chats - Chat messages, posts, and attachments shared in a Teams conversation between three or more people. Also called 1:N chats or group conversations.
+      Teams channels - Chat messages, posts, replies, and attachments shared in a standard Teams channel.
+      Private channels - Message posts, replies, and attachments shared in a private Teams channel.
+      Shared channels - Message posts, replies, and attachments shared in a shared Teams channel.
+    execution: false
+    name: msg-purge-ediscovery-data
+  dockerimage: demisto/crypto:1.0.0.68914
   isfetch: true
   runonce: false
   script: '-'
   subtype: python3
   type: python
+  feed: false
 tests:
 - Microsoft Graph Security Test dev
 - Microsoft Graph Security Test prod
@@ -775,4 +1637,5 @@ tests:
 - Microsoft Graph Security Test dev v2
 - Microsoft Graph Security Test prod v2
 - Microsoft Graph Security Test self deployed v2
+- MSG-ediscovery-tpb
 fromversion: 5.0.0

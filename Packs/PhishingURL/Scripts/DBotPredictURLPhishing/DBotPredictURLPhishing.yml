@@ -9,6 +9,9 @@ args:
 - defaultValue: '3'
   description: Maximum number of extracted URLs on which to run the model.
   name: maxNumberOfURL
+- defaultValue: '120'
+  description: The timeout of the rasterize module in seconds.
+  name: rasterize_timeout
 - auto: PREDEFINED
   defaultValue: 'False'
   description: Whether to force the model to run if the URL belongs to the whitelist. If True, the model will run in every case. If False, the model will run only if the URL does not belong to the whitelist.
@@ -24,8 +27,8 @@ args:
   - 'False'
   - 'True'
 - auto: PREDEFINED
-  defaultValue: 'False'
   description: Whether to enter debug mode.
+  defaultValue: 'False'
   name: debug
   predefined:
   - 'False'

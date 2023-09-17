@@ -17,6 +17,7 @@ class Client(BaseClient):
     Client will implement the service API, and should not contain any Demisto logic.
     Should only do requests and return data.
     """
+
     def get_logs(self, marker=None, since=None, until=None):
         since = since.strftime(DATE_FORMAT)[:-4] + 'Z' if since else None
         until = until.strftime(DATE_FORMAT)[:-4] + 'Z' if until else None

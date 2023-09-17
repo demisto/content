@@ -499,7 +499,7 @@ script:
       name: supported_fields
     - default: true
       defaultValue: search
-      description: The name of the Splunk application that contains the KV store collection. 
+      description: The name of the Splunk application that contains the KV store collection.
       name: app_name
       required: true
     description: Creates the KV store collection transform.
@@ -652,7 +652,7 @@ script:
     - contextPath: Splunk.UserMapping.SplunkUser
       description: Splunk user mapping.
       type: String
-  dockerimage: demisto/splunksdk-py3:1.0.0.69225
+  dockerimage: demisto/splunksdk-py3:1.0.0.72507
   isfetch: true
   ismappable: true
   isremotesyncin: true

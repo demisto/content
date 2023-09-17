@@ -1,0 +1,43 @@
+{
+    "args": {
+        "scanId": "16",
+        "format": "HTML",
+        "chapters": "compliance_exec,remediations,vuln_by_plugin",
+        "historyId": "19540157",
+        "historyUuid": "f7eaad37-23bd-4aac-a979-baab0e9a465b",
+        "filterSearchType": "or",
+        "filter": "port.protocol eq tcp, plugin_id eq 1234567, spaced\\sname comma\\,quality    value",
+        "assetId": "10"
+    },
+    "response_json": {
+        "file": "123456789"
+    },
+    "expected_file": "123456789",
+    "called_with": {
+        "args": [
+            "POST",
+            "scans/16/export"
+        ],
+        "kwargs": {
+            "params": {
+                "history_id": "19540157",
+                "history_uuid": "f7eaad37-23bd-4aac-a979-baab0e9a465b"
+            },
+            "json_data": {
+                "format": "html",
+                "chapters": "compliance_exec;remediations;vuln_by_plugin",
+                "filter.search_type": "or",
+                "asset_id": "10",
+                "filter.0.filter": "port.protocol",
+                "filter.0.quality": "eq",
+                "filter.0.value": "tcp",
+                "filter.1.filter": "plugin_id",
+                "filter.1.quality": "eq",
+                "filter.1.value": "1234567",
+                "filter.2.filter": "spaced name",
+                "filter.2.quality": "comma,quality",
+                "filter.2.value": "value"
+            }
+        }
+    }
+}

@@ -13,11 +13,11 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Containment Plan - Isolate Device
-* Containment Plan - Quarantine File
-* Containment Plan - Disable Account
 * Containment Plan - Block Indicators
+* Containment Plan - Isolate Device
 * Containment Plan - Clear User Sessions
+* Containment Plan - Disable Account
+* Containment Plan - Quarantine File
 
 ### Integrations
 
