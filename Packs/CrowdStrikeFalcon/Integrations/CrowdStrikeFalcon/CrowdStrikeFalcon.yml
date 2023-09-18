@@ -1409,7 +1409,7 @@ script:
     - description: List of tags to apply to the indicator.
       isArray: true
       name: tags
-    - description: File name to include when updating a custom IOC.
+    - description: Name of the file for file indicators. Applies to hashes only. A common filename, or a filename in your environment. Filenames can be helpful for identifying hashes or filtering IOCs.
       name: file_name
     description: Uploads an indicator for CrowdStrike to monitor.
     name: cs-falcon-upload-custom-ioc
@@ -1491,7 +1491,7 @@ script:
       name: source
     - description: A meaningful description of the indicator. Limited to 200 characters.
       name: description
-    - description: File name to include when updating a custom IOC.
+    - description: Name of the file for file indicators. Applies to hashes only. A common filename, or a filename in your environment. Filenames can be helpful for identifying hashes or filtering IOCs.
       name: file_name
     description: Updates an indicator for CrowdStrike to monitor.
     name: cs-falcon-update-custom-ioc

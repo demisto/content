@@ -687,7 +687,7 @@ def create_json_iocs_list(
     :param applied_globally: Whether the indicator is applied globally.
     :param host_groups: List of host group IDs that the indicator applies to.
     :param tags: List of tags to apply to the indicator.
-
+    :param file_name: Name of the file for file indicators.
     """
     iocs_list = []
     for ioc_value in iocs_value:
@@ -703,7 +703,7 @@ def create_json_iocs_list(
             applied_globally=applied_globally,
             host_groups=host_groups,
             tags=tags,
-            metadata=assign_params(filename=file_name)
+            metadata=assign_params(filename=file_name) if ioc_type in {"sha256", "md5"} else None
         ))
 
     return iocs_list
@@ -2881,7 +2881,7 @@ def upload_custom_ioc_command(
     platforms_list = argToList(platforms)
 
     iocs_json_batch = create_json_iocs_list(ioc_type, values, action, platforms_list, severity, source, description,
-                                            expiration, applied_globally, host_groups, tags)
+                                            expiration, applied_globally, host_groups, tags, file_name)
     raw_res = upload_batch_custom_ioc(ioc_batch=iocs_json_batch)
     handle_response_errors(raw_res)
     iocs = raw_res.get('resources', [])
