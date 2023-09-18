@@ -6,7 +6,7 @@ import requests
 takedown_list_readable = """### Netcraft Takedowns
 |ID|Brand|Attack Type|Status|Attack URL|Date Reported|Last Updated|Date Authorised|Date Escalated|First Contact|First Inactive (Monitoring)|First Resolved|
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| 30480489 | Example Brand | phishing_url | Monitoring | https://l0gin.examp1eb4nk.com/app/ | 2023-09-10 14:13:55.120309 | 2023-09-11 12:19:01 UTC | 2023-09-10 14:13:55.120309 | 2023-09-10 14:13:55.120309 | 2023-09-11 11:29:01 UTC | N/A | 2023-09-11 12:09:01 UTC |
+| 30480489 | Example Brand | phishing_url | Monitoring | https://l0gin.example.com/app/ | 2023-09-10 14:13:55.120309 | 2023-09-11 12:19:01 UTC | 2023-09-10 14:13:55.120309 | 2023-09-10 14:13:55.120309 | 2023-09-11 11:29:01 UTC | N/A | 2023-09-11 12:09:01 UTC |
 """
 
 
@@ -42,8 +42,8 @@ takedown_update_readable = """### Takedown successfully updated.
 submission_list_readable = """### Netcraft Submissions
 |Submission UUID|Submission Date|Submitter Email|State|Source|
 |---|---|---|---|---|
-| bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb | 2001-09-09 01:46:40+00:00 | example@netcraft.com | string | scam@netcraft.com |
-| aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa | 2008-01-10 21:20:00+00:00 | example2@netcraft.com | string2 | scam2@netcraft.com |
+| bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb | 2001-09-09 01:46:40+00:00 | example@example.com | string | scam@example.com |
+| aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa | 2008-01-10 21:20:00+00:00 | example2@example.com | string2 | scam2@example.com |
 """
 
 
@@ -229,7 +229,7 @@ class takedown_list:
     api_response = [
         {
             "attack_type": "phishing_url",
-            "attack_url": "https://l0gin.examp1eb4nk.com/app/",
+            "attack_url": "https://l0gin.example.com/app/",
             "authgiven": True,
             "authorisation_source": "netcraft",
             "certificate": [],
@@ -300,7 +300,7 @@ class takedown_list:
             "region": "example_region",
             "registrar": "Example Registrar",
             "report_source": "Takedown Interface",
-            "reported_url": "https://l0gin.examp1eb4nk.com/app/",
+            "reported_url": "https://l0gin.example.com/app/",
             "reporter": "user@examplebank.com",
             "restart_date": "",
             "rev_owner": "examplehost.com",
@@ -321,7 +321,7 @@ class takedown_list:
         outputs=[
             {
                 "attack_type": "phishing_url",
-                "attack_url": "https://l0gin.examp1eb4nk.com/app/",
+                "attack_url": "https://l0gin.example.com/app/",
                 "authgiven": True,
                 "authorisation_source": "netcraft",
                 "certificate": [],
@@ -392,7 +392,7 @@ class takedown_list:
                 "region": "example_region",
                 "registrar": "Example Registrar",
                 "report_source": "Takedown Interface",
-                "reported_url": "https://l0gin.examp1eb4nk.com/app/",
+                "reported_url": "https://l0gin.example.com/app/",
                 "reporter": "user@examplebank.com",
                 "restart_date": "",
                 "rev_owner": "examplehost.com",
@@ -623,17 +623,17 @@ class submission_list:
         "submissions": [
             {
                 "date": 1000000000,
-                "source_name": "scam@netcraft.com",
+                "source_name": "scam@example.com",
                 "state": "string",
-                "submitter_email": "example@netcraft.com",
+                "submitter_email": "example@example.com",
                 "submitter_uuid": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
                 "uuid": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
             },
             {
                 "date": 1200000000,
-                "source_name": "scam2@netcraft.com",
+                "source_name": "scam2@example.com",
                 "state": "string2",
-                "submitter_email": "example2@netcraft.com",
+                "submitter_email": "example2@example.com",
                 "submitter_uuid": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
                 "uuid": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
             },
@@ -664,17 +664,17 @@ class submission_list:
             "Netcraft.Submission(val.uuid && val.uuid == obj.uuid)": [
                 {
                     "date": 1000000000,
-                    "source_name": "scam@netcraft.com",
+                    "source_name": "scam@example.com",
                     "state": "string",
-                    "submitter_email": "example@netcraft.com",
+                    "submitter_email": "example@example.com",
                     "submitter_uuid": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
                     "uuid": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
                 },
                 {
                     "date": 1200000000,
-                    "source_name": "scam2@netcraft.com",
+                    "source_name": "scam2@example.com",
                     "state": "string2",
-                    "submitter_email": "example2@netcraft.com",
+                    "submitter_email": "example2@example.com",
                     "submitter_uuid": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
                     "uuid": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
                 },
@@ -719,11 +719,11 @@ class submission_list_with_uuid:
         "last_update": 1000000000,
         "mail": "https://report.netcraft.com/api/v3/submission/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/mail",
         "mail_state": "malicious",
-        "original_source": {"name": "scam@netcraft.com", "type": "email"},
+        "original_source": {"name": "scam@example.com", "type": "email"},
         "pending": 0,
         "reason": "null",
         "source": {
-            "name": "scam@netcraft.com",
+            "name": "scam@example.com",
             "type": "email",
             "uuid": "9aebe138a5809803b768aa85a268a2e6",
         },
@@ -732,7 +732,7 @@ class submission_list_with_uuid:
             "files": {"malicious": 1, "no threats": 2},
             "urls": {"malicious": 1, "no threats": 2},
         },
-        "submitter": {"email": "test@netcraft.com"},
+        "submitter": {"email": "test@example.com"},
         "tags": [{"description": "This is a phishing tag.", "name": "phishing"}],
         "urls": "https://report.netcraft.com/api/v3/submission/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/urls",
         "warnings": [
@@ -774,7 +774,7 @@ class submission_list_with_uuid:
             "last_update": 1000000000,
             "mail": "https://report.netcraft.com/api/v3/submission/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/mail",
             "mail_state": "malicious",
-            "original_source": {"name": "scam@netcraft.com", "type": "email"},
+            "original_source": {"name": "scam@example.com", "type": "email"},
             "pending": False,
             "reason": "null",
             "source": {
@@ -794,8 +794,8 @@ class submission_list_with_uuid:
                     "warning": "This submission was made to v1 of the API which is now deprecated. Please upgrade to v3.",
                 }
             ],
-            "source_name": "scam@netcraft.com",
-            "submitter_email": "test@netcraft.com",
+            "source_name": "scam@example.com",
+            "submitter_email": "test@example.com",
             "uuid": "submission_uuid",
         },
         outputs_key_field="uuid",

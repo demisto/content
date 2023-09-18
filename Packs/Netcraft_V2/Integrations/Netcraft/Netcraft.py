@@ -561,17 +561,23 @@ def takedown_update_command(args: dict, client: Client) -> CommandResults:
         } | {
             'add_tags': ','.join(argToList(args.get('add_tags'))),
             'remove_tags': ','.join(argToList(args.get('remove_tags'))),
+            'takedown_id': args.get('takedown_id')
         }
 
     response = client.takedown_update(
         args_to_params(args)
     )
+    if not response.get('takedown_id'):
+        raise DemistoException(
+            f'Error in Netcraft API call:\n{yaml.dump(response)}'
+        )
     return CommandResults(
         readable_output=tableToMarkdown(
             'Takedown successfully updated.',
             {'Takedown ID': response['takedown_id']},
             ['Takedown ID']
-        )
+        ),
+        raw_response=response
     )
 
 
