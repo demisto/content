@@ -15,12 +15,13 @@ from AWSSystemManager import (
     get_automation_execution_command,
     get_command_status,
     get_document_command,
-    list_inventory_command,
     list_associations_command,
     list_automation_executions_command,
     list_commands_command,
     list_documents_command,
+    list_inventory_command,
     list_inventory_entry_command,
+    list_tags_for_resource_command,
     list_versions_association_command,
     next_token_command_result,
     remove_tags_from_resource_command,
@@ -28,7 +29,6 @@ from AWSSystemManager import (
     run_command_command,
     update_if_value,
     validate_args,
-    list_tags_for_resource_command,
 )
 from pytest_mock import MockerFixture
 
@@ -102,10 +102,18 @@ def util_load_json(path: str) -> dict:
     ("args", "kwargs", "input_to_output_keys", "expected_results"),
     [
         pytest.param(
-            {"a": 1}, {}, {"a": "A"}, {"A": 1}, id="add args to empty  kwargs"
+            {"a": 1},
+            {},
+            {"a": "A"},
+            {"A": 1},
+            id="add args to empty  kwargs",
         ),
         pytest.param(
-            {}, {"b": 2}, {}, {"b": 2}, id="keep kwargs the same, when no args"
+            {},
+            {"b": 2},
+            {},
+            {"b": 2},
+            id="keep kwargs the same, when no args",
         ),
         pytest.param(
             {"a": 1},
@@ -123,6 +131,18 @@ def test_update_if_value(
     input_to_output_keys: dict[str, str],
     expected_results: dict[str, str],
 ):
+    """Given:
+        - args - Input arguments
+        - kwargs - Input keyword arguments
+        - input_to_output_keys - Mapping of input to output keys
+        - expected_results - Expected output after calling the function.
+
+    When:
+        - Calling update_if_value(args, kwargs, input_to_output_keys)
+
+    Then:
+        - The output should match expected_results
+    """
     assert update_if_value(args, kwargs, input_to_output_keys) == expected_results
 
 
@@ -132,7 +152,7 @@ def test_update_if_value(
         pytest.param(
             {"key1": "value1"},
             {"key1": ["value1"]},
-            id="case playbook with one value"
+            id="case playbook with one value",
         ),
         pytest.param(
             {"key1": "value1,value2"},
@@ -147,7 +167,7 @@ def test_update_if_value(
         pytest.param(
             '"key1": ["value1"]',
             {"key1": ["value1"]},
-            id="case war-room with one value"
+            id="case war-room with one value",
         ),
         pytest.param(
             '{"key1": ["value1", "value2"]}',
@@ -168,9 +188,9 @@ def test_format_parameters_arguments(
     Then
        The test cases cover:
         - Single key:value pair
-        - Multiple values for a key 
+        - Multiple values for a key
         - Multiple keys
-        - Input from playbook vs warroom
+        - Input from playbook vs warroom.
     """
     assert format_parameters_arguments(value) == excepted_value
 
@@ -354,11 +374,10 @@ def test_add_tags_to_resource_command(mocker: MockerFixture) -> None:
 
 
 def test_list_tags_success(mocker: MockerFixture):
-    """
-    Given:
+    """Given:
         - list_tags_for_resource_command function
         - Valid args including resource type and ID
-        - Mock SSM client returns list of tags
+        - Mock SSM client returns list of tags.
 
     When:
         - Calling list_tags_for_resource_command
@@ -376,7 +395,7 @@ def test_list_tags_success(mocker: MockerFixture):
             "TagList": [
                 {"Key": "Env", "Value": "Production"},
                 {"Key": "Role", "Value": "WebServer"},
-            ]
+            ],
         },
     )
 
@@ -390,13 +409,17 @@ def test_list_tags_success(mocker: MockerFixture):
     result = list_tags_for_resource_command(args, MockClient())
 
     MockClient.list_tags_for_resource.assert_called_with(
-        ResourceType="ManagedInstance", ResourceId="i-1234abcd"
+        ResourceType="ManagedInstance",
+        ResourceId="i-1234abcd",
     )
 
-    assert result.outputs == {"ResourceId": "i-1234abcd", "TagList": [
-        {"Key": "Env", "Value": "Production"},
-        {"Key": "Role", "Value": "WebServer"},
-    ]}
+    assert result.outputs == {
+        "ResourceId": "i-1234abcd",
+        "TagList": [
+            {"Key": "Env", "Value": "Production"},
+            {"Key": "Role", "Value": "WebServer"},
+        ],
+    }
 
     assert "Tags for i-1234abcd" in result.readable_output
 
@@ -497,7 +520,8 @@ def test_list_inventory_command_with_next_token_response(mocker: MockerFixture) 
     mock_response["NextToken"] = "test_token"
     mocker.patch.object(MockClient, "get_inventory", return_value=mock_response)
     response: list[CommandResults] = list_inventory_command(
-        {"include_inactive_instance": False}, MockClient()
+        {"include_inactive_instance": False},
+        MockClient(),
     )
 
     to_context = response[0].to_context()

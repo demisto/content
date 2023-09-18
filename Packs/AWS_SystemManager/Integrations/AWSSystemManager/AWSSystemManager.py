@@ -1175,7 +1175,7 @@ def run_automation_execution_command(
             partial_result=CommandResults(
                 readable_output=f"Execution {args['execution_id']} is in progress",
                 outputs=response,
-                outputs_prefix="AWS.SSM.AutomationExecution"
+                outputs_prefix="AWS.SSM.AutomationExecution",
             ),
             response=None,
             continue_to_poll=True,
@@ -1257,7 +1257,9 @@ def cancel_automation_execution_command(
         return PollResult(  # CONTINUE POLLING
             partial_result=CommandResults(
                 readable_output=f"Execution {automation_execution_id} is {status}",
-            ) if argToBoolean(args["print_polling_message"]) else None,
+            )
+            if argToBoolean(args["print_polling_message"])
+            else None,
             continue_to_poll=True,
             args_for_next_run=args,
             response=None,
@@ -1473,7 +1475,9 @@ def cancel_command_command(args: dict[str, Any], ssm_client: "SSMClient") -> Pol
         return PollResult(  # CONTINUE POLLING
             partial_result=CommandResults(
                 readable_output=f"Execution {command_id} is {status}",
-            ) if argToBoolean(args["print_polling_message"]) else None,
+            )
+            if argToBoolean(args["print_polling_message"])
+            else None,
             continue_to_poll=True,
             args_for_next_run=args,
             response=None,
