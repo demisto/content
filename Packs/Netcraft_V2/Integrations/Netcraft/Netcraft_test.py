@@ -149,7 +149,8 @@ def test_attack_report_command(mocker):
     '''
     from Netcraft import attack_report_command
 
-    getFilePath = mocker.patch.object(demisto, 'getFilePath', return_value={'name': 'file name', 'path': 'test_data/mock_file.txt'})
+    getFilePath = mocker.patch.object(
+        demisto, 'getFilePath', return_value={'name': 'file name', 'path': 'test_data/mock_file.txt'})
     request = mocker.patch.object(Client, '_http_request', return_value=attack_report.api_response)
 
     result = attack_report_command(attack_report.args, MOCK_CLIENT)
@@ -416,7 +417,8 @@ def test_file_report_submit_command(mocker, data):
     import Netcraft
 
     mocker.patch.object(ScheduledCommand, 'raise_error_if_not_supported')
-    getFilePath = mocker.patch.object(demisto, 'getFilePath', return_value={'name': 'file name', 'path': 'test_data/mock_file.txt'})
+    getFilePath = mocker.patch.object(
+        demisto, 'getFilePath', return_value={'name': 'file name', 'path': 'test_data/mock_file.txt'})
     request = mocker.patch.object(Client, '_http_request', return_value=data.api_response)
     get_submission = mocker.patch.object(Netcraft, 'get_submission')
 
