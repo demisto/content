@@ -316,7 +316,10 @@ class Client(BaseClient):
         return self.http_request(
             "WSC/Set",
             "POST",
-            data={"entity": "Incident", "data": data},
+            data={
+                "entity": "Incident",
+                "data": json.dumps(data),
+            },
             attempted_action="creating ticket",
         )
 
