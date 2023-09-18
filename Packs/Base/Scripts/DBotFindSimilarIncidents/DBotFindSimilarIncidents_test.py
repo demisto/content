@@ -331,3 +331,10 @@ def test_main_incident_nested(mocker):
     df, msg = main()
     assert not df.empty
     assert (df['similarity %s' % nested_field] == [1.0, 1.0, 1.0]).all()
+
+
+def test_get_get_data_from_indicators_automation():
+    from DBotFindSimilarIncidents import get_data_from_indicators_automation
+
+    res = get_data_from_indicators_automation(None, TAG_SCRIPT_INDICATORS)
+    assert res is None
