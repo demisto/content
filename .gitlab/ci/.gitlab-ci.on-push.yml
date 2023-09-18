@@ -89,13 +89,14 @@ run-unittests-and-lint:
   after_script:
       - >
         rules:
-        if [ '$CI_JOB_STATUS' = 'failed' ] && [ $CI_COMMIT_BRANCH =~ 'master' && $CI_COMMIT_REF_NAME != 'master' ]; then
+        if [ '$CI_JOB_STATUS' = 'failed' ]; then
           echo 'ooppsss I failed, send out the message....'
-        else
-          echo $CI_JOB_NAME
-          echo $CI_JOB_ID
-          echo $CI_COMMIT_REF_NAME
-          echo $CI_COMMIT_BRANCH
+        fi
+        if [ '$CI_COMMIT_BRANCH' = 'master' ]; then
+          echo 'not on master, do nothing'
+        fi
+        if [ '$CI_COMMIT_BRANCH' != 'master' ] && [ '$CI_JOB_STATUS' = 'failed' ]; then
+          echo 'send slack message'
         fi
 # runs in gitlab for the on-push flow (except for contributors)
 run-validations:
