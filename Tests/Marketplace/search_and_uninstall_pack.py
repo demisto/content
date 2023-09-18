@@ -150,13 +150,11 @@ def uninstall_pack(client: demisto_client,
                                                            pack_id=pack_id)
         return still_installed
 
-    def api_exception_handler(ex, _) -> Any:
-        if ALREADY_IN_PROGRESS in ex.body:
-            wait_succeeded = wait_until_not_updating(client)
-            if not wait_succeeded:
-                raise Exception(
-                    "Failed to wait for the server to exit installation/updating status"
-                ) from ex
+    def api_exception_handler(api_ex, _) -> Any:
+        if ALREADY_IN_PROGRESS in api_ex.body and not wait_until_not_updating(client):
+            raise Exception(
+                "Failed to wait for the server to exit installation/updating status"
+            ) from api_ex
         return None
 
     failure_massage = f'Failed to uninstall pack: {pack_id}'
@@ -286,68 +284,46 @@ def wait_for_uninstallation_to_complete(client: demisto_client, unremovable_pack
 def sync_marketplace(client: demisto_client,
                      attempts_count: int = 5,
                      sleep_interval: int = 60,
+                     request_timeout: int = 120,
                      sleep_time_after_sync: int = 120,
                      hard: bool = True,
-                     ):
+                     ) -> bool:
     """
     Send a request to sync marketplace.
 
     Args:
-        hard(bool): Whether to perform a hard sync or not.
-        sleep_time_after_sync(int): The sleep interval, in seconds, after sync.
         client (demisto_client): The client to connect to.
         attempts_count (int): The number of attempts to install the packs.
         sleep_interval (int): The sleep interval, in seconds, between install attempts.
+        request_timeout (int): The request timeout, in seconds.
+        sleep_time_after_sync(int): The sleep interval, in seconds, after sync.
+        hard(bool): Whether to perform a hard sync or not.
     Returns:
         Boolean - If the operation succeeded.
 
     """
-    try:
-        logging.info("Attempting to sync marketplace.")
-        for attempt in range(attempts_count - 1, -1, -1):
-            try:
-                sync_marketplace_url = (
-                    f'/contentpacks/marketplace/sync?hard={str(hard).lower()}'
-                )
-                logging.info(f"Sent request for sync, Attempt: {attempts_count - attempt}/{attempts_count}")
-                response, status_code, headers = demisto_client.generic_request_func(client,
-                                                                                     path=sync_marketplace_url, method='POST')
 
-                if 200 <= status_code < 300 and status_code != 204:
-                    logging.success(f'Sent request for sync successfully, sleeping for {sleep_time_after_sync} seconds.')
-                    sleep(sleep_time_after_sync)
-                    break
+    def api_exception_handler(api_ex, _) -> Any:
+        if ALREADY_IN_PROGRESS in api_ex.body and not wait_until_not_updating(client):
+            raise Exception(
+                "Failed to wait for the server to exit installation/updating status"
+            ) from api_ex
+        return None
 
-                if not attempt:
-                    raise Exception(f"Got bad status code: {status_code}, headers: {headers}")
-
-                logging.warning(f"Got bad status code: {status_code} from the server, headers: {headers}")
-
-            except ApiException as ex:
-                if ALREADY_IN_PROGRESS in ex.body:
-                    wait_succeeded = wait_until_not_updating(client)
-                    if not wait_succeeded:
-                        raise Exception(
-                            "Failed to wait for the server to exit installation/updating status"
-                        ) from ex
-
-                if not attempt:  # exhausted all attempts, understand what happened and exit.
-                    # Unknown exception reason, re-raise.
-                    raise Exception(f"Got {ex.status} from server, message: {ex.body}, headers: {ex.headers}") from ex
-                logging.debug(f"Failed to sync marketplace, got error {ex}")
-            except (HTTPError, HTTPWarning) as http_ex:
-                if not attempt:
-                    raise Exception("Failed to perform http request to the server") from http_ex
-                logging.debug(f"Failed to sync marketplace, got error {http_ex}")
-
-            # There are more attempts available, sleep and retry.
-            logging.debug(f"failed to sync marketplace, sleeping for {sleep_interval} seconds.")
-            sleep(sleep_interval)
-
-        return True
-    except Exception as e:
-        logging.exception(f'The request to sync marketplace has failed. Additional info: {str(e)}')
-    return False
+    success, _ = generic_request_with_retries(client=client,
+                                              retries_message="Retrying to sync marketplace.",
+                                              exception_message="Failed to sync marketplace.",
+                                              prior_message=f"Sent request for sync marketplace, hard: {hard}",
+                                              path=f'/contentpacks/marketplace/sync?hard={str(hard).lower()}',
+                                              method='POST',
+                                              attempts_count=attempts_count,
+                                              sleep_interval=sleep_interval,
+                                              request_timeout=request_timeout,
+                                              api_exception_handler=api_exception_handler)
+    if success:
+        logging.success(f'Sent request for sync successfully, sleeping for {sleep_time_after_sync} seconds.')
+        sleep(sleep_time_after_sync)
+    return success
 
 
 def options_handler():
