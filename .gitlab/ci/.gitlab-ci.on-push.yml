@@ -100,7 +100,6 @@ run-unittests-and-lint:
               echo 'send slack message'
             else
               echo 'do nothing'
-              echo 'do nothing'
             fi
           fi
         fi
