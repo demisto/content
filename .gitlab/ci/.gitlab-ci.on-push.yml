@@ -88,10 +88,8 @@ run-unittests-and-lint:
 
   after_script:
       - >
-        if [ $CI_COMMIT_BRANCH != 'master' ]; then
-          echo 'not on master, do nothing'
-        else
-          echo 'on master, send slack message'
+        if [ $CI_COMMIT_BRANCH != 'master' ] && [$CI_JOB_STATUS = 'failed' ]; then
+          echo 'failed and not on master, do something'
         fi
 
 # runs in gitlab for the on-push flow (except for contributors)
