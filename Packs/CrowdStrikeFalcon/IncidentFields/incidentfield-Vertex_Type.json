@@ -59,5 +59,6 @@
     "breachScript": "",
     "validatedError": "",
     "aliases": null,
-    "aliasTo": ""
+    "aliasTo": "",
+    "fromVersion": "5.0.0"
 }
