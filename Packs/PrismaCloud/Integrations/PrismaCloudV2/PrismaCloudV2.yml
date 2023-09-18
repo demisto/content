@@ -1073,8 +1073,9 @@ script:
       predefined:
       - 'true'
       - 'false'
-    - description: The username to return only users associated with it.
-      name: username
+    - description: Usernames to return only users associated with.
+      name: usernames
+      isArray: true
     description: Lists all users and service accounts for your tenant. Maps to Settings > Access Control > Users in the Console UI.
     name: prisma-cloud-users-list
     outputs:
