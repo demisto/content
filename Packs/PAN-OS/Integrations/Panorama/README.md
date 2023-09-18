@@ -108,6 +108,7 @@ This integration supports a default Classifier (Panorama Classifier) and Mapper 
 | First fetch timestamp  | First fetch time interval | False |
 | Max incidents per fetch | Max incidents per fetch for each selected Log Type Query | False |
 | Log Type | Log Types incidents to fetch | False |****
+| Log type max number of pull attempts  | The maximum number of attempts to try and pull results for each log type. Each attempt takes around 1 second. Increasing this value is useful in case there are many logs to pull from a given log type.Note: When increasing this number, in case fetching more than 4 logs types together, it is recommended to split different log types for different integration instance | False |
 | Traffic Log Type Query | Traffic Query for fetch incidents | False |
 | Threat Log Type Query | Threat Query for fetch incidents | False |
 | URL Log Type Query | URL Query for fetch incidents | False |
