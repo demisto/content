@@ -44,17 +44,17 @@ def test_load_pickled_xpanse_object(tmp_path):
     (
         {'name': 'Alice ', 'email': 'aLiCe@example.com ', 'source': 'source1', 'timestamp': '1'},
         {'name': 'Alice ', 'email': 'alice@example.com', 'source': 'source1', 'timestamp': '1',
-         'Canonicalization': 'alice@example.com'},
+         'canonicalization': 'alice@example.com'},
     ),
     # name with casing, whitespace
     (
         {'name': 'Alice ', 'email': '', 'source': 'source1', 'timestamp': '1'},
-        {'name': 'alice', 'email': '', 'source': 'source1', 'timestamp': '1', 'Canonicalization': 'alice'},
+        {'name': 'alice', 'email': '', 'source': 'source1', 'timestamp': '1', 'canonicalization': 'alice'},
     ),
     # neither
     (
         {'name': '', 'email': '', 'source': 'source1', 'timestamp': '1'},
-        {'name': '', 'email': '', 'source': 'source1', 'timestamp': '1', 'Canonicalization': ''},
+        {'name': '', 'email': '', 'source': 'source1', 'timestamp': '1', 'canonicalization': ''},
     ),
 ])
 def test_canonicalize(owner, expected_out):
@@ -69,9 +69,9 @@ def test_canonicalize(owner, expected_out):
     (
         [
             {'name': 'Alice ', 'email': 'alice@example.com', 'source': 'source1', 'timestamp': '1',
-             'Canonicalization': 'alice@example.com'},
+             'canonicalization': 'alice@example.com'},
             {'name': 'Bob ', 'email': 'alice@example.com', 'source': 'source2', 'timestamp': '2',
-             'Canonicalization': 'alice@example.com'},
+             'canonicalization': 'alice@example.com'},
         ],
         [
             {'name': 'Alice ', 'email': 'alice@example.com', 'source': 'source1 | source2', 'timestamp': '2'},
@@ -81,9 +81,9 @@ def test_canonicalize(owner, expected_out):
     (
         [
             {'name': '', 'email': 'alice@example.com', 'source': 'source1', 'timestamp': '1',
-             'Canonicalization': 'alice@example.com'},
+             'canonicalization': 'alice@example.com'},
             {'name': '', 'email': 'alice@example.com', 'source': 'source1', 'timestamp': '1',
-             'Canonicalization': 'alice@example.com'},
+             'canonicalization': 'alice@example.com'},
         ],
         [
             {'name': '', 'email': 'alice@example.com', 'source': 'source1', 'timestamp': '1'},
@@ -93,11 +93,11 @@ def test_canonicalize(owner, expected_out):
     (
         [
             {'name': 'Alice', 'email': 'alice@example.com', 'source': 'source1', 'timestamp': '1',
-             'Canonicalization': 'alice@example.com'},
+             'canonicalization': 'alice@example.com'},
             {'name': 'Alice', 'email': 'bob@example.com', 'source': 'source2', 'timestamp': '2',
-             'Canonicalization': 'bob@example.com'},
+             'canonicalization': 'bob@example.com'},
             {'name': 'Alice', 'email': 'alice@example.com', 'source': 'source2', 'timestamp': '2',
-             'Canonicalization': 'alice@example.com'},
+             'canonicalization': 'alice@example.com'},
         ],
         [
             {'name': 'Alice', 'email': 'alice@example.com', 'source': 'source1 | source2', 'timestamp': '2'},
@@ -107,8 +107,8 @@ def test_canonicalize(owner, expected_out):
     # no email, different names
     (
         [
-            {'name': 'alice', 'email': '', 'source': 'source1', 'timestamp': '1', 'Canonicalization': 'alice'},
-            {'name': 'bob', 'email': '', 'source': 'source2', 'timestamp': '2', 'Canonicalization': 'bob'},
+            {'name': 'alice', 'email': '', 'source': 'source1', 'timestamp': '1', 'canonicalization': 'alice'},
+            {'name': 'bob', 'email': '', 'source': 'source2', 'timestamp': '2', 'canonicalization': 'bob'},
         ],
         [
             {'name': 'alice', 'email': '', 'source': 'source1', 'timestamp': '1'},
@@ -118,8 +118,8 @@ def test_canonicalize(owner, expected_out):
     # no email, same names
     (
         [
-            {'name': 'alice', 'email': '', 'source': 'source1', 'timestamp': '1', 'Canonicalization': 'alice'},
-            {'name': 'alice', 'email': '', 'source': 'source2', 'timestamp': '2', 'Canonicalization': 'alice'},
+            {'name': 'alice', 'email': '', 'source': 'source1', 'timestamp': '1', 'canonicalization': 'alice'},
+            {'name': 'alice', 'email': '', 'source': 'source2', 'timestamp': '2', 'canonicalization': 'alice'},
         ],
         [
             {'name': 'alice', 'email': '', 'source': 'source1 | source2', 'timestamp': '2'},
@@ -129,13 +129,13 @@ def test_canonicalize(owner, expected_out):
     (
         [
             {'name': 'Alice', 'email': 'alice@example.com', 'source': 'source1', 'timestamp': '1',
-             'Canonicalization': 'alice@example.com'},
+             'canonicalization': 'alice@example.com'},
             {'name': 'alice', 'email': '', 'source': 'source3', 'timestamp': '3',
-             'Canonicalization': 'alice'},
+             'canonicalization': 'alice'},
             {'name': 'Bob', 'email': 'alice@example.com', 'source': 'source2', 'timestamp': '2',
-             'Canonicalization': 'alice@example.com'},
+             'canonicalization': 'alice@example.com'},
             {'name': 'alice', 'email': '', 'source': 'source4', 'timestamp': '4',
-             'Canonicalization': 'alice'},
+             'canonicalization': 'alice'},
         ],
         [
             {'name': 'Alice', 'email': 'alice@example.com', 'source': 'source1 | source2', 'timestamp': '2'},
@@ -236,8 +236,8 @@ def test_score_model_inference_fail(mocker):
         [''],
         [
             {
-                'Name': 'a', 'Email': 'email1@gmail.com', 'Source': 'source1', 'Timestamp': '1',
-                'Ranking Score': 1.0, 'Justification': 'source1'
+                'name': 'a', 'email': 'email1@gmail.com', 'source': 'source1', 'timestamp': '1',
+                'ranking_score': 1.0, 'justification': 'source1'
             },
         ]
     ),
