@@ -118,7 +118,7 @@ script:
       required: true
       description: The username (samAccountName) of the user to modify.
     - name: base-dn
-      description: Root (for example, DC=domain,DC=com)
+      description: Root (for example, DC=domain,DC=com).
     description: Expires the password of an Active Directory user.
   - name: ad-create-user
     arguments:
@@ -238,7 +238,7 @@ script:
     - name: telephone-number
       description: The contact telephone number.
     - name: custom-attributes
-      description: Sets basic or custom attributes of the contact object. For example, custom-attributes="{\"notes\":\"some note about the contact\",\"company\":\"some company\"}."
+      description: Sets basic or custom attributes of the contact object. For example, custom-attributes="{\"notes\":\"some note about the contact\",\"company\":\"some company\"}".
     - name: title
       description: The contact job title.
     description: Creates an Active Directory contact.
