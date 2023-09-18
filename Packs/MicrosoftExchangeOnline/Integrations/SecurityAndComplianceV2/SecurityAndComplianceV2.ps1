@@ -1797,7 +1797,7 @@ function Main {
         $Demisto.Debug("Command being called is $Command")
 
         # Creating Compliance and search client
-        $oauth2_client = [OAuth2DeviceCodeClient]::CreateClientFromIntegrationContext($insecure, $no_proxy)
+        $oauth2_client = [OAuth2DeviceCodeClient]::CreateClientFromIntegrationContext($insecure, $false)
 
         # Executing oauth2 commands
         switch ($command) {
