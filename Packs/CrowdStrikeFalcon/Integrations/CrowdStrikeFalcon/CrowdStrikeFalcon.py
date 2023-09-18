@@ -2699,9 +2699,6 @@ def fetch_incidents():
                 # GREATER than the last configured scan time, to prevent duplicates.
                 filter = f"{filter} >'{last_scan_time}'"
         fetch_limit = current_fetch_info_detections.get('limit') or INCIDENTS_PER_FETCH
-        # if fetch_limit > 500:
-        #     # TODO Will need to handle another way, since this can cause breaking changes
-        #     raise DemistoException('IOM cannot fetch more than 500 incidents at a time')
         # Default filter for first fetch
         fetch_query = demisto.params().get('iom_fetch_query')
         validate_iom_fetch_query(iom_fetch_query=fetch_query)
@@ -2712,7 +2709,7 @@ def fetch_incidents():
         iom_resource_ids, iom_new_next_token = iom_ids_pagination(filter=filter,
                                                                   iom_next_token=iom_next_token,
                                                                   fetch_limit=fetch_limit,
-                                                                  api_limit=10)
+                                                                  api_limit=500)
         demisto.debug(f'Fetched the following IOM resource IDS: {", ".join(iom_resource_ids)}')
         # Since the first API call is only in charge of retrieving the IDs of the iom resources, we need
         # another API call to actually get the entity/detail of each resource.
@@ -2762,9 +2759,6 @@ def fetch_incidents():
         # compare them with the newly fetched ids, and ignore any duplicates
         last_fetch_event_ids: list[str] = current_fetch_info_ioa_events.get('last_event_ids', [])
         fetch_limit = current_fetch_info_detections.get('limit') or INCIDENTS_PER_FETCH
-        # if fetch_limit > 1000:
-        #     # TODO Will need to handle another way, since this can cause breaking changes
-        #     raise DemistoException('IOA cannot fetch more than 1000 incidents at a time')
         if ioa_next_token:
             # If entered here, that means we are currently doing pagination, and we need to use the
             # same fetch query as the previous round
@@ -2776,7 +2770,7 @@ def fetch_incidents():
         ioa_events, ioa_new_next_token = ioa_events_pagination(ioa_fetch_query=fetch_query,
                                                                ioa_next_token=ioa_next_token,
                                                                fetch_limit=fetch_limit,
-                                                               api_limit=10)
+                                                               api_limit=1000)
         ioa_event_ids: list[str] = []
         demisto.debug(f'Fetched the following IOA event IDs: {[event.get("event_id") for event in ioa_events]}')
         for ioa_event in ioa_events:
@@ -2859,6 +2853,19 @@ def create_incident_from_ioa_event(ioa_event: dict[str, Any]) -> dict[str, Any]:
 
 def ioa_events_pagination(ioa_fetch_query: str, api_limit: int, ioa_next_token: str | None,
                           fetch_limit: int = INCIDENTS_PER_FETCH) -> tuple[list[dict[str, Any]], str | None]:
+    """This is in charge of doing the pagination process in a single fetch run, since the fetch limit can be greater than
+    the api limit, in such a case, we do multiple API calls until we reach the fetch limit, or no more results are found by the API.
+
+    Args:
+        ioa_fetch_query (str): The IOA fetch query.
+        api_limit (int): The API limit
+        ioa_next_token (str | None): The IOA next token to start the pagination from.
+        fetch_limit (int, optional): The fetch limit. Defaults to INCIDENTS_PER_FETCH.
+
+    Returns:
+        tuple[list[dict[str, Any]], str | None]: A tuple where the first element is the fetched events, and the second is the next token that
+        will be used in the next fetch run.
+    """
     total_incidents_count = 0
     ioa_new_next_token = ioa_next_token
     fetched_ioa_events: list[dict[str, Any]] = []
@@ -2881,15 +2888,16 @@ def ioa_events_pagination(ioa_fetch_query: str, api_limit: int, ioa_next_token: 
 
 def get_ioa_events_for_fetch(ioa_fetch_query: str, ioa_next_token: str | None,
                              limit: int = INCIDENTS_PER_FETCH) -> tuple[list[dict[str, Any]], str | None]:
-    """_summary_
+    """Do a single API call to receive IOA events.
 
     Args:
-        ioa_fetch_query (str): _description_
-        ioa_next_token (int | None): _description_
+        ioa_fetch_query (str): The IOA fetch query.
+        ioa_next_token (int | None): The next token to be used as part of the pagination process.
         limit (int, optional): The maximum amount to fetch IOA events. Defaults to INCIDENTS_PER_FETCH.
 
     Returns:
-        tuple[list[dict[str, Any]], str | None]: _description_
+        tuple[list[dict[str, Any]], str | None]: A tuple where the first element is the returned events, and the second is the next token that
+        will be used in the next API call.
     """
     # The API does not support a `query` parameter, rather a set of query params
     if ioa_next_token:
@@ -2911,6 +2919,17 @@ def get_ioa_events_for_fetch(ioa_fetch_query: str, ioa_next_token: str | None,
 
 
 def validate_ioa_fetch_query(ioa_fetch_query: str) -> None:
+    """Validate the IOA fetch query.
+
+    Args:
+        ioa_fetch_query (str): The IOA fetch query.
+
+    Raises:
+        DemistoException: If the param cloud_provider is not part of the query.
+        DemistoException: If an unsupported parameter has been entered.
+        DemistoException: If the value of a parameter is an empty string.
+        DemistoException: If a query section has a wrong format
+    """
     demisto.debug(f'Validating IOA {ioa_fetch_query=}')
     if 'cloud_provider' not in ioa_fetch_query:
         raise DemistoException('A cloud provider is required as part of the IOA fetch query. Options are: aws, azure')
@@ -2976,6 +2995,19 @@ def create_incident_from_iom_resource(iom_resource: dict[str, Any]) -> dict[str,
 
 def iom_ids_pagination(filter: str, api_limit: int, iom_next_token: str | None,
                        fetch_limit: int = INCIDENTS_PER_FETCH) -> tuple[list[str], str | None]:
+    """This is in charge of doing the pagination process in a single fetch run, since the fetch limit can be greater than
+    the api limit, in such a case, we do multiple API calls until we reach the fetch limit, or no more results are found by the API.
+
+    Args:
+        filter (str): The IOM filter query parameter.
+        api_limit (int): The API limit
+        iom_next_token (str | None): The IOM next token to start the pagination from.
+        fetch_limit (int, optional): The fetch limit. Defaults to INCIDENTS_PER_FETCH.
+
+    Returns:
+        tuple[list[dict[str, Any]], str | None]: A tuple where the first element is the fetched resources, and the second is the next token that
+        will be used in the next fetch run.
+    """
     total_incidents_count = 0
     iom_new_next_token = iom_next_token
     fetched_iom_events: list[str] = []
@@ -2997,16 +3029,16 @@ def iom_ids_pagination(filter: str, api_limit: int, iom_next_token: str | None,
 
 def get_iom_ids_for_fetch(filter: str, iom_next_token: str | None = None,
                           limit: int = INCIDENTS_PER_FETCH) -> tuple[list[str], str | None]:
-    """Retrieve the IOM IDs when doing fetch incidents.
+    """Do a single API call to receive IOM resource ids.
 
     Args:
         filter (str | None): The filter to use when fetching IOM events.
-        offset (int | None, optional): An offset, used while doing pagination. Defaults to None.
-        limit (int, optional): The maximum amount to fetch IOM configs. Defaults to INCIDENTS_PER_FETCH.
+        iom_next_token (int | None): The next token to be used as part of the pagination process.
+        limit (int, optional): The maximum amount to fetch IOA events. Defaults to INCIDENTS_PER_FETCH.
 
     Returns:
-        tuple[list[str], str | None]: A tuple where the first entry are the resource IDs, and the second is the 
-        offset used in the next fetch if pagination is needed, otherwise None.
+        tuple[list[dict[str, Any]], str | None]: A tuple where the first element is the returned events, and the second is the next token that
+        will be used in the next API call.
     """
     query_params = assign_params(
         filter=filter,
@@ -5925,6 +5957,14 @@ def create_gql_client(url_suffix="identity-protection/combined/graphql/v1"):
 
 
 def cspm_list_policy_details_request(policy_ids: list[str]) -> dict[str, Any]:
+    """Do an API call to retrieve policy details.
+
+    Args:
+        policy_ids (list[str]): The policy ids.
+
+    Returns:
+        dict[str, Any]: The raw response of the API.
+    """
     query_params = '&'.join(f'ids={policy_id}' for policy_id in policy_ids)
     # Status codes of 500 and 400 are sometimes returned when the policy IDs given do not exist, therefore we want
     # to catch this case so we can return a proper message to the user
@@ -5935,6 +5975,17 @@ def cspm_list_policy_details_request(policy_ids: list[str]) -> dict[str, Any]:
 
 
 def cs_falcon_cspm_list_policy_details_command(args: dict[str, Any]) -> CommandResults:
+    """Command to list policy details.
+
+    Args:
+        args (dict[str, Any]): The arguments of the command
+
+    Raises:
+        DemistoException: If a status code of 500 is returned.
+
+    Returns:
+        CommandResults: The command results object.
+    """
     policy_ids = argToList(args.get('policy_ids'))
     raw_response = cspm_list_policy_details_request(policy_ids=policy_ids)
     # The API returns errors in the form of a list, under the key 'errors'
@@ -5970,6 +6021,16 @@ def cs_falcon_cspm_list_policy_details_command(args: dict[str, Any]) -> CommandR
 
 
 def cspm_list_service_policy_settings_request(policy_id: str, cloud_platform: str, service: str) -> dict[str, Any]:
+    """Do an API call to retrieve the policy settings.
+
+    Args:
+        policy_id (str): The policy ID.
+        cloud_platform (str): The cloud platform to filter by.
+        service (str): The service type to filter by.
+
+    Returns:
+        dict[str, Any]: The raw response of the API.
+    """
     query_params: dict[str, Any] = assign_params(service=service)
     if policy_id:
         query_params['policy-id'] = policy_id
@@ -5980,6 +6041,14 @@ def cspm_list_service_policy_settings_request(policy_id: str, cloud_platform: st
 
 
 def cs_falcon_cspm_list_service_policy_settings_command(args: dict[str, Any]) -> CommandResults:
+    """Command to list service policy settings.
+
+    Args:
+        args (dict[str, Any]): The arguments of the command.
+
+    Returns:
+        CommandResults: The command results object.
+    """
     policy_id = args.get('policy_id', '')
     cloud_platform = args.get('cloud_platform', '')
     service = args.get('service', '')
@@ -6004,6 +6073,19 @@ def cs_falcon_cspm_list_service_policy_settings_command(args: dict[str, Any]) ->
 
 def cspm_update_policy_settings_request(account_id: str, enabled: bool, policy_id: int, regions: list[str],
                                         severity: str, tag_excluded: bool | None) -> dict[str, Any]:
+    """Do an API call to update the policy settings.
+
+    Args:
+        account_id (str): The account ID.
+        enabled (bool): Whether to enable the policy or not.
+        policy_id (int): The policy ID.
+        regions (list[str]): The regions of the policy.
+        severity (str): The severity of the policy.
+        tag_excluded (bool | None): Whether to exclude tag or not.
+
+    Returns:
+        dict[str, Any]: The raw response of the API.
+    """
     # https://assets.falcon.crowdstrike.com/support/api/swagger.html#/cspm-registration/UpdateCSPMPolicySettings
     resources_body: dict[str, Any] = {
         'resources': [
@@ -6022,6 +6104,18 @@ def cspm_update_policy_settings_request(account_id: str, enabled: bool, policy_i
 
 
 def cs_falcon_cspm_update_policy_settings_command(args: dict[str, Any]) -> CommandResults:
+    """Command to update policy settings.
+
+    Args:
+        args (dict[str, Any]): The arguments of the command.
+
+    Raises:
+        DemistoException: If the policy ID is not an integer.
+        DemistoException: If a status code 500 is returned.
+
+    Returns:
+        CommandResults: The command results object.
+    """
     account_id = args.get('account_id', '')
     enabled = argToBoolean(args.get('enabled', 'true'))
     policy_id = arg_to_number(args.get('policy_id'))
@@ -6045,6 +6139,16 @@ def cs_falcon_cspm_update_policy_settings_command(args: dict[str, Any]) -> Comma
 
 def resolve_identity_detection_prepare_body_request(ids: list[str],
                                                     action_params_values: dict[str, Any]) -> dict[str, Any]:
+    """Create the body of the request to resolve an identity detection.
+
+    Args:
+        ids (list[str]): The IDs of the detections.
+        action_params_values (dict[str, Any]): A dictionary that holds key-value pairs corresponding
+        to the action_parameters object of the API request.
+
+    Returns:
+        dict[str, Any]: The body of the request.
+    """
     # Values need to be in the form {'name': name_of_key, 'value': value_of_key}, as can be seen here
     # https://assets.falcon.crowdstrike.com/support/api/swagger.html#/Alerts/PatchEntitiesAlertsV2
 
@@ -6064,11 +6168,27 @@ def resolve_identity_detection_prepare_body_request(ids: list[str],
 
 
 def resolve_identity_detection_request(ids: list[str], **kwargs) -> dict[str, Any]:
+    """Do an API call to resolve an identity detection.
+
+    Args:
+        ids (list[str]): The IDs of the detections.
+
+    Returns:
+        dict[str, Any]: The raw response of the API.
+    """
     body_payload = resolve_identity_detection_prepare_body_request(ids=ids, action_params_values=kwargs)
     return http_request(method='PATCH', url_suffix='/alerts/entities/alerts/v2', json=body_payload)
 
 
 def cs_falcon_resolve_identity_detection(args: dict[str, Any]) -> CommandResults:
+    """Command to resolve idenetiy detections.
+
+    Args:
+        args (dict[str, Any]): The arguments of the command.
+
+    Returns:
+        CommandResults: The command results object.
+    """
     ids = argToList(args.get('ids', '')) or []
     update_status = args.get('update_status', '')
     assign_to_name = args.get('assign_to_name', '')
