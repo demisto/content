@@ -26,7 +26,7 @@ build-machines-cleanup:
     - exit "${EXIT_CODE}"
   variables:
     CLOUD_MACHINES_TYPE: "nightly"
-    CLOUD_MACHINES_COUNT: 2
+    CLOUD_MACHINES_COUNT: "all"
     GCS_LOCKS_PATH: "content-locks/locks-xsiam-ga-nightly"
     INSTANCE_ROLE: "XSIAM"
     GCS_QUEUE_FILE: "queue-ga"
