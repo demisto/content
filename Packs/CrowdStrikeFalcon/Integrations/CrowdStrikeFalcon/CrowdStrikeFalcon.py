@@ -1586,6 +1586,7 @@ def update_custom_ioc(
             metadata=assign_params(filename=file_name)
         )]
     }
+
     return http_request('PATCH', '/iocs/entities/indicators/v1', json=payload)
 
 

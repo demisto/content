@@ -1078,7 +1078,6 @@ script:
       name: source
     - description: A meaningful description of the indicator. Limited to 200 characters.
       name: description
-    
     deprecated: true
     description: Deprecated. Use the cs-falcon-upload-custom-ioc command instead.
     name: cs-falcon-upload-ioc
