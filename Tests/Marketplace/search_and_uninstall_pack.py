@@ -3,109 +3,17 @@ import ast
 import math
 import os
 import sys
-from datetime import datetime, timedelta
+from datetime import datetime
 from time import sleep
-from collections.abc import Callable
 from typing import Any
 
 import demisto_client
-from demisto_client.demisto_api.rest import ApiException
-from urllib3.exceptions import HTTPWarning, HTTPError
 
+from Tests.Marketplace.common import generic_request_with_retries, wait_until_not_updating, ALREADY_IN_PROGRESS
 from Tests.Marketplace.configure_and_install_packs import search_and_install_packs_and_their_dependencies
 from Tests.configure_and_test_integration_instances import CloudBuild, get_custom_user_agent
 from Tests.scripts.utils import logging_wrapper as logging
 from Tests.scripts.utils.log_util import install_logging
-
-ALREADY_IN_PROGRESS = "create / update / delete operation is already in progress (10102)"
-
-
-def generic_request_with_retries(client: demisto_client,
-                                 retries_message: str,
-                                 exception_message: str,
-                                 prior_message: str,
-                                 path: str,
-                                 method: str,
-                                 request_timeout: int | None = None,
-                                 accept: str = 'application/json',
-                                 attempts_count: int = 5,
-                                 sleep_interval: int = 60,
-                                 should_try_handler: Callable[[], bool] | None = None,
-                                 success_handler: Callable[[Any], Any] | None = None,
-                                 api_exception_handler: Callable[[ApiException], Any] | None = None,
-                                 http_exception_handler: Callable[[HTTPError | HTTPWarning], Any] | None = None):
-    """
-
-    Args:
-        client: demisto client.
-        retries_message: message to print after failure when we have more attempts.
-        exception_message: message to print when we get and exception that is not API or HTTP exception.
-        prior_message: message to print when a new retry is made.
-        path: endpoint to send request to.
-        method: HTTP method to use.
-        request_timeout: request param.
-        accept: request param.
-        attempts_count: number of total attempts made.
-        sleep_interval: sleep interval between attempts.
-        should_try_handler: a method to determine if we should send the next request.
-        success_handler: a method to run in case of successful request (according to the response status).
-        api_exception_handler: a method to run in case of api exception.
-        http_exception_handler: a method to run in case of http exception
-
-    Returns: True if the request succeeded and status in case of waiting_for_process_to_end
-
-    """
-    try:
-        for attempts_left in range(attempts_count - 1, -1, -1):
-            try:
-                if should_try_handler and not should_try_handler():
-                    # if the method exist and we should not try again.
-                    return True, None
-
-                # should_try_handler return True, we are trying to send request.
-                logging.info(f"{prior_message}, attempt: {attempts_count - attempts_left}/{attempts_count}")
-                response, status_code, headers = demisto_client.generic_request_func(client,
-                                                                                     path=path,
-                                                                                     method=method,
-                                                                                     accept=accept,
-                                                                                     _request_timeout=request_timeout)
-
-                if 200 <= status_code < 300 and status_code != 204:
-                    if success_handler:
-                        # We have a method to run as we were returned a success status code.
-                        return success_handler(response)
-
-                    # No handler, just return True.
-                    return True, None
-
-                else:
-                    err = f"Got {status_code=}, {headers=}, {response=}"
-
-                if not attempts_left:
-                    # No attempts left, raise an exception that the request failed.
-                    raise Exception(err)
-
-                logging.warning(err)
-
-            except ApiException as ex:
-                if api_exception_handler:
-                    api_exception_handler(ex)
-                if not attempts_left:  # exhausted all attempts, understand what happened and exit.
-                    raise Exception(f"Got status {ex.status} from server, message: {ex.body}, headers: {ex.headers}") from ex
-                logging.debug(f"Process failed, got error {ex}")
-            except (HTTPError, HTTPWarning) as http_ex:
-                if http_exception_handler:
-                    http_exception_handler(http_ex)
-                if not attempts_left:  # exhausted all attempts, understand what happened and exit.
-                    raise Exception("Failed to perform http request to the server") from http_ex
-                logging.debug(f"Process failed, got error {http_ex}")
-
-            # There are more attempts available, sleep and retry.
-            logging.debug(f"{retries_message}, sleeping for {sleep_interval} seconds.")
-            sleep(sleep_interval)
-    except Exception as e:
-        logging.exception(f'{exception_message}. Additional info: {str(e)}')
-    return False, None
 
 
 def check_if_pack_still_installed(client: demisto_client,
@@ -209,62 +117,6 @@ def uninstall_all_packs_one_by_one(client: demisto_client, hostname, unremovable
     return uninstalled_count == len(packs_to_uninstall)
 
 
-def get_updating_status(client: demisto_client,
-                        attempts_count: int = 5,
-                        sleep_interval: int = 60,
-                        ) -> tuple[bool, bool | None]:
-
-    def success_handler(response):
-        updating_status = 'true' in str(response).lower()
-        logging.info(f"Got updating status: {updating_status}")
-        return True, updating_status
-
-    return generic_request_with_retries(client=client,
-                                        success_handler=success_handler,
-                                        retries_message="Failed to get installation/update status",
-                                        exception_message="The request to get update status has failed",
-                                        prior_message="Getting installation/update status",
-                                        path='/content/updating',
-                                        method='GET',
-                                        attempts_count=attempts_count,
-                                        sleep_interval=sleep_interval)
-
-
-def wait_until_not_updating(client: demisto_client,
-                            attempts_count: int = 2,
-                            sleep_interval: int = 30,
-                            maximum_time_to_wait: int = 600,
-                            ) -> bool:
-    """
-
-    Args:
-        client (demisto_client): The client to connect to.
-        attempts_count (int): The number of attempts to install the packs.
-        sleep_interval (int): The sleep interval, in seconds, between install attempts.
-        maximum_time_to_wait (int): The maximum time to wait for the server to exit the updating mode, in seconds.
-    Returns:
-        Boolean - If the operation succeeded.
-
-    """
-    end_time = datetime.utcnow() + timedelta(seconds=maximum_time_to_wait)
-    while datetime.utcnow() <= end_time:
-        success, updating_status = get_updating_status(client)
-        if success:
-            if not updating_status:
-                return True
-            logging.debug(f"Server is still installation/updating status, sleeping for {sleep_interval} seconds.")
-            sleep(sleep_interval)
-        else:
-            if attempts_count := attempts_count - 1:
-                logging.debug(f"failed to get installation/updating status, sleeping for {sleep_interval} seconds.")
-                sleep(sleep_interval)
-            else:
-                logging.info("Exiting after exhausting all attempts")
-                return False
-    logging.info(f"Exiting after exhausting the allowed time:{maximum_time_to_wait} seconds")
-    return False
-
-
 def uninstall_pack(client: demisto_client,
                    pack_id: str,
                    attempts_count: int = 5,
@@ -296,13 +148,12 @@ def uninstall_pack(client: demisto_client,
                                                            pack_id=pack_id)
         return still_installed
 
-    def api_exception_handler(ex):
-        if ALREADY_IN_PROGRESS in ex.body:
-            wait_succeeded = wait_until_not_updating(client)
-            if not wait_succeeded:
-                raise Exception(
-                    "Failed to wait for the server to exit installation/updating status"
-                ) from ex
+    def api_exception_handler(api_ex, _) -> Any:
+        if ALREADY_IN_PROGRESS in api_ex.body and not wait_until_not_updating(client):
+            raise Exception(
+                "Failed to wait for the server to exit installation/updating status"
+            ) from api_ex
+        return None
 
     failure_massage = f'Failed to uninstall pack: {pack_id}'
 
@@ -431,69 +282,46 @@ def wait_for_uninstallation_to_complete(client: demisto_client, unremovable_pack
 def sync_marketplace(client: demisto_client,
                      attempts_count: int = 5,
                      sleep_interval: int = 60,
+                     request_timeout: int = 120,
                      sleep_time_after_sync: int = 120,
                      hard: bool = True,
-                     ):
+                     ) -> bool:
     """
     Send a request to sync marketplace.
 
     Args:
-        hard(bool): Whether to perform a hard sync or not.
-        sleep_time_after_sync(int): The sleep interval, in seconds, after sync.
         client (demisto_client): The client to connect to.
         attempts_count (int): The number of attempts to install the packs.
         sleep_interval (int): The sleep interval, in seconds, between install attempts.
+        request_timeout (int): The request timeout, in seconds.
+        sleep_time_after_sync(int): The sleep interval, in seconds, after sync.
+        hard(bool): Whether to perform a hard sync or not.
     Returns:
         Boolean - If the operation succeeded.
 
     """
-    try:
-        logging.info("Attempting to sync marketplace.")
-        for attempt in range(attempts_count - 1, -1, -1):
-            try:
-                sync_marketplace_url = (
-                    f'/contentpacks/marketplace/sync?hard={str(hard).lower()}'
-                )
-                logging.info(f"Sent request for sync, Attempt: {attempts_count - attempt}/{attempts_count}")
-                response, status_code, headers = demisto_client.generic_request_func(client,
-                                                                                     path=sync_marketplace_url, method='POST')
 
-                if 200 <= status_code < 300 and status_code != 204:
-                    logging.success(f'Sent request for sync successfully, sleeping for {sleep_time_after_sync} seconds.')
-                    sleep(sleep_time_after_sync)
-                    break
+    def api_exception_handler(api_ex, _) -> Any:
+        if ALREADY_IN_PROGRESS in api_ex.body and not wait_until_not_updating(client):
+            raise Exception(
+                "Failed to wait for the server to exit installation/updating status"
+            ) from api_ex
+        return None
 
-                if not attempt:
-                    raise Exception(f"Got bad status code: {status_code}, headers: {headers}")
-
-                logging.warning(f"Got bad status code: {status_code} from the server, headers: {headers}")
-
-            except ApiException as ex:
-
-                if ALREADY_IN_PROGRESS in ex.body:
-                    wait_succeeded = wait_until_not_updating(client)
-                    if not wait_succeeded:
-                        raise Exception(
-                            "Failed to wait for the server to exit installation/updating status"
-                        ) from ex
-
-                if not attempt:  # exhausted all attempts, understand what happened and exit.
-                    # Unknown exception reason, re-raise.
-                    raise Exception(f"Got {ex.status} from server, message: {ex.body}, headers: {ex.headers}") from ex
-                logging.debug(f"Failed to sync marketplace, got error {ex}")
-            except (HTTPError, HTTPWarning) as http_ex:
-                if not attempt:
-                    raise Exception("Failed to perform http request to the server") from http_ex
-                logging.debug(f"Failed to sync marketplace, got error {http_ex}")
-
-            # There are more attempts available, sleep and retry.
-            logging.debug(f"failed to sync marketplace, sleeping for {sleep_interval} seconds.")
-            sleep(sleep_interval)
-
-        return True
-    except Exception as e:
-        logging.exception(f'The request to sync marketplace has failed. Additional info: {str(e)}')
-    return False
+    success, _ = generic_request_with_retries(client=client,
+                                              retries_message="Retrying to sync marketplace.",
+                                              exception_message="Failed to sync marketplace.",
+                                              prior_message=f"Sent request for sync marketplace, hard: {hard}",
+                                              path=f'/contentpacks/marketplace/sync?hard={str(hard).lower()}',
+                                              method='POST',
+                                              attempts_count=attempts_count,
+                                              sleep_interval=sleep_interval,
+                                              request_timeout=request_timeout,
+                                              api_exception_handler=api_exception_handler)
+    if success:
+        logging.success(f'Sent request for sync successfully, sleeping for {sleep_time_after_sync} seconds.')
+        sleep(sleep_time_after_sync)
+    return success
 
 
 def options_handler():
