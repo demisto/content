@@ -422,7 +422,7 @@ tasks:
           - - operator: stringHasLength
               left:
                 value:
-                  simple: ExtractedIndicators
+                  simple: ExtractedIndicators.File
                 iscontext: true
               right:
                 value:
