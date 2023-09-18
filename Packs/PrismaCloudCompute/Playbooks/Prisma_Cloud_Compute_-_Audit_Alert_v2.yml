@@ -24,8 +24,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 152.5,
-          "y": -220
+          "x": 162.5,
+          "y": -450
         }
       }
     note: false
@@ -52,7 +52,6 @@ tasks:
     nexttasks:
       '#none#':
       - "2"
-      - "40"
     scriptarguments:
       alert_raw_json:
         complex:
@@ -62,8 +61,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 152.5,
-          "y": 250
+          "x": 162.5,
+          "y": 20
         }
       }
     note: false
@@ -89,7 +88,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "41"
+      - "40"
     scriptarguments:
       name:
         complex:
@@ -99,8 +98,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 360,
-          "y": 420
+          "x": 162.5,
+          "y": 190
         }
       }
     note: false
@@ -244,8 +243,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 152.5,
-          "y": -85
+          "x": 162.5,
+          "y": -315
         }
       }
     note: false
@@ -723,10 +722,10 @@ tasks:
     continueonerrortype: ""
   "37":
     id: "37"
-    taskid: 79b89358-7e2a-46c2-8030-51745b3ea251
+    taskid: 79cba8f6-66d2-4b4a-8eb6-15bb8777ff52
     type: regular
     task:
-      id: 79b89358-7e2a-46c2-8030-51745b3ea251
+      id: 79cba8f6-66d2-4b4a-8eb6-15bb8777ff52
       version: -1
       name: Get container profile
       description: Get information about the containers and their profile events. This command supports asterisks which allows you to get container profiles by filtering its fields according to a specific substring.
@@ -742,8 +741,8 @@ tasks:
     scriptarguments:
       image:
         complex:
-          root: incident
-          accessor: prismacloudcomputeimage
+          root: PrismaCloudCompute.ReportsImagesScan.cloudMetadata
+          accessor: image
     separatecontext: false
     view: |-
       {
@@ -840,10 +839,10 @@ tasks:
     continueonerrortype: ""
   "40":
     id: "40"
-    taskid: 8ee4a197-c75a-4086-8afc-8c1fe553ec67
+    taskid: f399c756-baee-4b88-8731-47a9b1b47926
     type: regular
     task:
-      id: 8ee4a197-c75a-4086-8afc-8c1fe553ec67
+      id: f399c756-baee-4b88-8731-47a9b1b47926
       version: -1
       name: Get Image Audits
       description: Get the audits for the firewall container policies.
@@ -859,20 +858,20 @@ tasks:
         simple: "5"
       ImageName:
         complex:
-          root: PrismaCloudCompute.AuditAlert
+          root: PrismaCloudCompute.ReportsImagesScan.cloudMetadata
           accessor: image
+          transformers:
+          - operator: uniq
       audit_type:
         complex:
           root: PrismaCloudCompute.AuditAlert
           accessor: category
-          transformers:
-          - operator: toLowerCase
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": -40,
-          "y": 420
+          "x": 162.5,
+          "y": 430
         }
       }
     note: false
@@ -961,10 +960,10 @@ tasks:
     continueonerrortype: ""
   "43":
     id: "43"
-    taskid: 026f0016-5169-4008-8c5b-d9d278f4bdfc
+    taskid: f0ab7910-1fd4-4052-8977-53d27f35eb23
     type: regular
     task:
-      id: 026f0016-5169-4008-8c5b-d9d278f4bdfc
+      id: f0ab7910-1fd4-4052-8977-53d27f35eb23
       version: -1
       name: Create Indicator Table
       description: commands.local.cmd.find.indicators
@@ -977,18 +976,16 @@ tasks:
       - "11"
     scriptarguments:
       extend-context:
-        simple: 'Indicators=.={"Value": val.value, "Description": val.CustomFields.description,
-          "CVSS": val.CustomFields.cvss}'
+        simple: 'Indicators=.={"Value": val.value, "Description": val.CustomFields.description, "CVSS": val.CustomFields.cvss}'
       ignore-outputs:
         simple: "true"
       query:
         simple: incident.id:${incident.id} and type:CVE
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 160,
+          "x": 152.5,
           "y": 3105
         }
       }
@@ -999,6 +996,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "44":
     id: "44"
     taskid: cd7da102-4f9f-474b-8711-b84f62bd73bb
@@ -1240,8 +1238,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 152.5,
-          "y": 50
+          "x": 162.5,
+          "y": -180
         }
       }
     note: false
@@ -1256,10 +1254,10 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 4105,
+        "height": 4335,
         "width": 1802.5,
         "x": -860,
-        "y": -220
+        "y": -450
       }
     }
   }
