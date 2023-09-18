@@ -910,7 +910,7 @@ def main() -> None:  # pragma: no cover
             return_results(file_command(client, args))
         elif command == 'url':
             return_results(url_command(client, args))
-        elif command == 'joe-list–lia-countries':
+        elif command == 'joe-list-lia-countries':
             return_results(list_lia_countries_command(client))
         elif command == 'joe-list-lang-locales':
             return_results(list_lang_locales_command(client))
