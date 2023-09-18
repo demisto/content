@@ -88,6 +88,10 @@ run-unittests-and-lint:
 
   after_script:
       - >
+        echo "$CI_COMMIT_BRANCH"
+        echo "$CI_JOB_STATUS"
+        echo $CI_COMMIT_BRANCH
+        echo $CI_JOB_STATUS
         if ('$CI_COMMIT_BRANCH' != 'master' && '$CI_JOB_STATUS' =='failed'); then
           echo "====Send Slack Notify====";
         fi
