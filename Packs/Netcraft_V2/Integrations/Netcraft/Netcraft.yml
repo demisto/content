@@ -30,7 +30,7 @@ configuration:
 - name: region
   type: 0
   required: true
-  displaypassword: Region
+  display: Region
   section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
@@ -76,7 +76,7 @@ configuration:
   required: false
 script:
   commands:
-  - name: 'netcraft-attack-report'
+  - name: netcraft-attack-report
     description: |
       Report a new attack or authorise an existing attack in the Takedown service.
       If a takedown for the attack already exists in the Netcraft system it will be authorised, otherwise, a new takedown will be added and authorised.
@@ -147,7 +147,7 @@ script:
     - description: A comma-separated list of tags to apply to the attack.
       isArray: true
       name: tags
-    - description:
+    - description: |
         The name of the region to create a takedown under.
         If not provided, the region specified in the instance configuration will be used.
       name: region
@@ -155,7 +155,7 @@ script:
     - contextPath: Netcraft.Takedown.id
       description: The ID of the takedown. (this key will only appear if the takedown has been created and verified).
       type: String
-  - name: 'netcraft-takedown-list'
+  - name: netcraft-takedown-list
     arguments:
     - name: id
       description: Filter to the takedown with the specified ID.
@@ -272,7 +272,7 @@ script:
       predefined:
       - 'false'
       - 'true'
-    - description:
+    - description: |
         The name of the region of which to list takedowns.
         If not provided, the region specified in the instance configuration will be used.
       name: region
@@ -536,7 +536,7 @@ script:
     - contextPath: Netcraft.Takedown.whois_data
       description: The WHOIS data for the takedown.
       type: String
-  - name: 'netcraft-takedown-update'
+  - name: netcraft-takedown-update
     arguments:
     - name: takedown_id
       description: The ID of the takedown to update.
@@ -554,8 +554,8 @@ script:
       - 'true'
       - 'false'
     - auto: PREDEFINED
-      description:
       name: suspected_fraud_hostname
+      description: Should be set to true if it is believed that the hostname has been created as part of the fraud. This will ensure that the certificate issuer is contacted to seek revocation of any certificates for the hostname.
       predefined:
       - 'true'
       - 'false'
@@ -572,14 +572,14 @@ script:
       name: region
     description: Update one or more fields related to a takedown.
     outputs: []
-  - name: 'netcraft-takedown-escalate'
+  - name: netcraft-takedown-escalate
     arguments:
     - name: takedown_id
       required: true
       description: The ID of the automated takedown to escalate.
     description: Escalate an automated takedown to a managed takedown.
     outputs: []
-  - name: 'netcraft-takedown-note-create'
+  - name: netcraft-takedown-note-create
     arguments:
     - description: The ID of the takedown to add the note to.
       name: takedown_id
@@ -601,7 +601,7 @@ script:
     - contextPath: Netcraft.TakedownNote.note_id
       description: The ID of the note added to the takedown.
       type: Number
-  - name: 'netcraft-takedown-note-list'
+  - name: netcraft-takedown-note-list
     arguments:
     - description: Filter to notes that have been added to the takedown with the given ID.
       name: takedown_id
@@ -638,7 +638,7 @@ script:
     - contextPath: Netcraft.TakedownNote.note
       description: The contents of the note.
       type: String
-  - name: 'netcraft-attack-type-list'
+  - name: netcraft-attack-type-list
     arguments:
     - auto: PREDEFINED
       description: Filter to attack types where automated takedowns are available.
@@ -658,7 +658,7 @@ script:
       predefined:
       - 'true'
       - 'false'
-    - description:
+    - description: |
         The name of the region to create a takedown under.
         If not provided, the region specified in the instance configuration will be used.
       name: region
@@ -692,7 +692,7 @@ script:
     - contextPath: Netcraft.AttackType.auto_authorise
       description: Indicates whether or not you have chosen to automatically authorise takedowns under this type.
       type: Boolean
-  - name: 'netcraft-submission-list'
+  - name: netcraft-submission-list
     polling: true
     description: Get basic information about a submissions.
     arguments:
@@ -720,15 +720,19 @@ script:
     - name: polling
       hidden: true
       defaultValue: 'false'
+      description: ''
     - defaultValue: '30'
       hidden: true
       name: interval_in_seconds
+      description: ''
     - defaultValue: '600'
       hidden: true
       name: timeout
+      description: ''
     - defaultValue: true
       hidden: true
       name: hide_polling_output
+      description: ''
     outputs:
     - contextPath: Netcraft.Submission.date
       description: The unix timestamp of the submission.
@@ -832,7 +836,7 @@ script:
     - contextPath: Netcraft.SubmissionNextToken
       description: The submission UUID to provide as the "next_token" argument in a subsequent request for pagination. This key appears only if the "submission_uuid" argument is *not* provided.
       type: String
-  - name: 'netcraft-file-report-submit'
+  - name: netcraft-file-report-submit
     polling: true
     description: Report files to Netcraft for analysis.
     arguments:
@@ -959,7 +963,7 @@ script:
     - contextPath: Netcraft.Submission.warnings.warning
       description: The warning.
       type: String
-  - name: 'netcraft-submission-file-list'
+  - name: netcraft-submission-file-list
     description: |
       Get basic information about a submission's files.
       When a submission is archived this command will return an error with the message "this submission has been archived".
@@ -996,7 +1000,7 @@ script:
     - contextPath: Netcraft.SubmissionFile.classification_log.to_state
       description: The state the entity moved into.
       type: String
-  - name: 'netcraft-file-screenshot-get'
+  - name: netcraft-file-screenshot-get
     description: Get a screenshot for a file associated with a submission.
     arguments:
     - description: The unique identifier of the submission from which to retrieve a file screenshot. Submission UUIDs can be obtained by running the command "netcraft-submission-list".
@@ -1023,7 +1027,7 @@ script:
       type: string
     - contextPath: InfoFile.Extension
       description: The file extension of the screenshot.
-  - name: 'netcraft-email-report-submit'
+  - name: netcraft-email-report-submit
     polling: true
     description: |
       Report email messages to Netcraft for analysis.
@@ -1148,7 +1152,7 @@ script:
     - contextPath: Netcraft.Submission.warnings.warning
       description: The warning.
       type: String
-  - name: 'netcraft-submission-mail-get'
+  - name: netcraft-submission-mail-get
     description: |
       Get basic information about a submission's mail.
       When a submission is archived this command will return an error with the message "this submission has been archived".
@@ -1184,7 +1188,7 @@ script:
     - contextPath: Netcraft.SubmissionMail.to
       description: The email addresses of the mail recipients.
       type: String
-  - name: 'netcraft-mail-screenshot-get'
+  - name: netcraft-mail-screenshot-get
     arguments:
     - description: The unique identifier of the submission from which to retrieve a mail screenshot. Submission UUIDs can be obtained by running the command "netcraft-submission-list".
       name: submission_uuid
@@ -1208,7 +1212,7 @@ script:
       type: string
     - contextPath: InfoFile.Extension
       description: The file extension of the screenshot.
-  - name: 'netcraft-url-report-submit'
+  - name: netcraft-url-report-submit
     polling: true
     description: Report URLs to Netcraft for analysis.
     arguments:
@@ -1331,7 +1335,7 @@ script:
     - contextPath: Netcraft.Submission.warnings.warning
       description: The warning.
       type: String
-  - name: 'netcraft-submission-url-list'
+  - name: netcraft-submission-url-list
     description: |
       Get basic information about a submission's URLs.
       When a submission is archived this command will return an error with the message "this submission has been archived".
@@ -1422,7 +1426,7 @@ script:
     - contextPath: Netcraft.SubmissionURL.uuid
       description: The UUID of the URL.
       type: String
-  - name: 'netcraft-url-screenshot-get'
+  - name: netcraft-url-screenshot-get
     description: Download associated screenshots for a specified URL.
     arguments:
     - description: The unique identifier of the submission from which to retrieve a URL screenshot. Submission UUIDs can be obtained by running the command "netcraft-submission-list".
@@ -1462,4 +1466,3 @@ fromversion: 6.9.0
 tests:
 - No tests (deprecated)
 defaultmapperin: Netcraft Incoming Mapper
-defaultmapperout: Netcraft Outgoing Mapper

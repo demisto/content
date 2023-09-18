@@ -601,6 +601,10 @@ def takedown_note_create_command(args: dict, client: Client) -> CommandResults:
     response = client.takedown_note_create(
         args | {'text': args.pop('note_text')}
     )
+    if not response.get('note_id'):
+        raise DemistoException(
+            f'Error in Netcraft API call:\n{yaml.dump(response)}'
+        )
     return CommandResults(
         outputs_prefix='Netcraft.TakedownNote',
         outputs=response,
