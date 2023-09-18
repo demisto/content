@@ -442,9 +442,9 @@ def attack_report_command(args: dict, client: Client) -> CommandResults:
     def response_to_outputs(response: str) -> dict[str, Any]:
         '''Returns the commands context and readable outputs'''
         # the response contains one or two lines inf the form "<code>\n<id (if it exists)>"
-        code, takedown_id, *_ = response.splitlines() + ['', '']
+        code, takedown_id, *rest = response.splitlines() + ['']
         table = {
-            'Report status': RES_CODE_TO_MESSAGE.get(code, 'Unrecognized response from Netcraft.'),
+            'Report status': RES_CODE_TO_MESSAGE.get(code, ' '.join(rest)),
             'Takedown ID': takedown_id,
             'Response code': code,
         }
