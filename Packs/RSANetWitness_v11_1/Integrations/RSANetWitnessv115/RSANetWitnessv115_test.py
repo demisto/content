@@ -443,7 +443,7 @@ def test_update_remote_system_command_with_nonupdated_incident(mocker):
     mocker.patch.object(client, "get_incident_request", return_value={"id": "INC-1", "status": "New"})
     mocker_update_remote_system = mocker.patch.object(client, "update_incident_request")
 
-    assert not(mocker_update_remote_system.called)
+    assert not (mocker_update_remote_system.called)
 
 
 def test_get_remote_data_command(mocker):
