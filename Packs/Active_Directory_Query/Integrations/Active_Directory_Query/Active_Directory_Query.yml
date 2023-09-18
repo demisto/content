@@ -28,7 +28,7 @@ configuration:
   type: 9
   required: true
   section: Connect
-  displaypassword: Password 
+  displaypassword: Password
 - display: NTLM authentication
   name: ntlm
   type: 8
