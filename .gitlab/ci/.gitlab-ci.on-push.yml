@@ -90,10 +90,8 @@ run-unittests-and-lint:
       - >
         if [ '$CI_JOB_STATUS' = 'failed' ]; then
           echo 'ooppsss I failed, send out the message....'
-        fi
         if [ '$CI_COMMIT_BRANCH' = 'master' ]; then
           echo 'not on master, do nothing'
-        fi
         if [ '$CI_COMMIT_BRANCH' != 'master' ] && [ '$CI_JOB_STATUS' = 'failed' ]; then
           echo 'send slack message'
         fi
