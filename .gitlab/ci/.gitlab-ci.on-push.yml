@@ -88,11 +88,7 @@ run-unittests-and-lint:
 
   after_script:
       - >
-        if [ $CI_COMMIT_BRANCH != 'master' ]; then
-          echo 'not on master, do something'
-        fi
-        if [ $CI_JOB_STATUS = 'failed' ]; then
-          echo 'failed, do something'
+        if [ $CI_COMMIT_BRANCH != 'master' -a $CI_JOB_STATUS = 'failed' ]
         fi
 # runs in gitlab for the on-push flow (except for contributors)
 run-validations:
