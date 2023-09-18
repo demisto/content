@@ -11,14 +11,16 @@ Update Grid Table from items or key value pairs.
 ## Inputs
 ---
 
-| **Argument Name** | **Description** |
-| --- | --- |
-| context_path | Context path to list of items with similar properties or key value pairs. |
-| grid_id | Grid ID to modify. This argument can be either: 1) Grid name as it appears in the layout. 2) Grid "Machine name", as can be found in the grid incident field editor under Settings->Advanced->Fields (Incidents). |
-| overwrite | True if to overwrite Grid Data, False otherwise. |
-| columns | Comma-separated list of grid columns to populate (as appear in the original Grid), for example: (col1,col2,..,coln). |
-| keys | Keys to retrieve from items or &quot;\*&quot; for max keys \(limited when item list to columns amount\) \- Key will not be columns correlated. If you want to leave an empty column, please provide a place holder name that should not be in the context data such as "PLACE_HOLDER" |
-| sort_by | Columns names by which to sort the rows. |
+| **Argument Name** | **Description**                                                                                                                                                                                                                                                                                       |
+| --- |-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| context_path | Context path to list of items with similar properties or key value pairs.                                                                                                                                                                                                                             |
+| grid_id | Grid ID to modify. This argument can be either: 1) Grid name as it appears in the layout. 2) Grid "Machine name", as can be found in the grid incident field editor under Settings->Advanced->Fields (Incidents).                                                                                     |
+| overwrite | True if to overwrite Grid Data, False otherwise.                                                                                                                                                                                                                                                      |
+| columns | Comma-separated list of grid columns to populate (as appear in the original Grid), for example: (col1,col2,..,coln).                                                                                                                                                                                  |
+| keys | Keys to retrieve from items or &quot;\*&quot; for max keys \(limited when item list to columns amount\) \- Key will not be columns correlated. If you want to leave an empty column, please provide a place holder name that should not be in the context data such as "PLACE_HOLDER"                 |
+| sort_by | Columns names by which to sort the rows.                                                                                                                                                                                                                                                              |
+| unpack_nested_elements | Set to 'true' to unpack nested elements.                                                                                                                                                                                                                                                              |
+| keys_from_nested | Keys to retrieve from nested dictionaries. Can be used only when the unpack_nested_elements argument is set to false. Keys will not be columns correlated. Default is all keys. **Note**: when the number of values exceeds the number of columns, it truncates the last values that are outside the range for table. |
 
 ## Command Example
 Assume the following:
@@ -77,6 +79,45 @@ keys="name, value"
 
 Grid after update: \
 ![Grid](https://github.com/demisto/content/raw/4510eafaf6cfeb48a42d9032dd0e71200b288ad5/Packs/Legacy/Scripts/SetGridField/doc_files/grid_list_update.png) 
+
+Entry Context:
+```json
+{
+    "PaloAltoNetworksXDR": {
+        "RiskyUser": [
+            {
+                "email": null,
+                "id": "1",
+                "norm_risk_score": 1000,
+                "reasons": [
+                    {
+                        "date created": "2023-08-20",
+                        "description": "test",
+                        "points": 90,
+                        "severity": "test",
+                        "status": "test"
+                    },
+                    {
+                        "date created": "2023-08-20",
+                        "description": "test",
+                        "points": 90,
+                        "severity": "test",
+                        "status": "test"
+                    }
+                ],
+                "risk_level": "HIGH",
+                "score": 244,
+                "type": "user"
+            }
+        ]
+    }
+}
+```
+
+```script
+!SetGridField_CopyForInvestigation columns=`User id,Risk level,Score,Reasons` grid_id=xdrriskyusers context_path=`PaloAltoNetworksXDR.RiskyUser` keys=`id,risk_level,score,reasons` keys_from_nested=description,points,severity
+```
+![nested_dict_grid](https://github.com/demisto/content/raw/a1fbdccd9bf97d8d27f6b5bf1d08802a7bdcf475/Packs/CommonScripts/Scripts/SetGridField/doc_files/nested_dict_grid.png)
 
 ## Troubleshooting
 

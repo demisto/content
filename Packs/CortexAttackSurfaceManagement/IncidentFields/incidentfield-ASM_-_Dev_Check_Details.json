@@ -16,7 +16,7 @@
             "selectValues": null,
             "type": "boolean",
             "width": 150,
-            "_comment": "Mandatory: True means the asset is likey developement, everything else is False"
+            "_comment": "Mandatory: True means the asset is likely development, everything else is False"
         },
         {
             "displayName": "result_readable",

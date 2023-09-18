@@ -112,7 +112,7 @@ def score(owners: list[dict[str, Any]], asm_system_ids: list[str]) -> list[dict[
     """
     def scoring_fallback(owners: list[dict[str, Any]]):
         for owner in owners:
-            owner['Ranking Score'] = SCORE_LOWER_BOUND
+            owner['ranking_score'] = SCORE_LOWER_BOUND
         return owners
 
     try:
@@ -130,7 +130,7 @@ def score(owners: list[dict[str, Any]], asm_system_ids: list[str]) -> list[dict[
 
     normalized = normalize_scores(scores)
     for owner, score in zip(owners, normalized):
-        owner['Ranking Score'] = score
+        owner['ranking_score'] = score
     return owners
 
 
@@ -141,13 +141,13 @@ def rank(owners: list[dict[str, Any]]) -> list[dict[str, Any]]:
 
     See _get_k for hyperparameters that can be used to adjust the target value of k
     """
-    k = _get_k(scores=([owner['Ranking Score'] for owner in owners]))
-    return sorted(owners, key=lambda x: x['Ranking Score'], reverse=True)[:k]
+    k = _get_k(scores=(owner['ranking_score'] for owner in owners))
+    return sorted(owners, key=lambda x: x['ranking_score'], reverse=True)[:k]
 
 
 def justify(owners: list[dict[str, str]]) -> list[dict[str, str]]:
     """
-    For now, `Justification` is the same as `Source`; in the future, will sophisticate
+    For now, `justification` is the same as `source`; in the future, will sophisticate
 
     Strip "Chain: " from both Source and Justification fields as post-processing step.
 
@@ -162,28 +162,28 @@ def justify(owners: list[dict[str, str]]) -> list[dict[str, str]]:
     The model takes the length of the chain into the account, with longer chains carrying less weight
     """
     for owner in owners:
-        normalized_source = owner.get('Source', '').replace('Chain: ', '')
-        owner['Source'] = normalized_source
-        owner['Justification'] = normalized_source
+        normalized_source = owner.get('source', '').replace('Chain: ', '')
+        owner['source'] = normalized_source
+        owner['justification'] = normalized_source
     return owners
 
 
 def _canonicalize(owner: dict[str, Any]) -> dict[str, Any]:
     """
     Canonicalizes an owner dictionary and adds a deduplication key
-    `Canonicalization` whose value is either:
+    `canonicalization` whose value is either:
         1. whitespace-stripped and lower-cased email, if email exists
         2. whitespace-stripped and lower-cased name
         3. empty string if neither exists
     """
     if owner.get('email', ''):
-        owner['Canonicalization'] = owner['email'].strip().lower()
-        owner['email'] = owner['Canonicalization']
+        owner['canonicalization'] = owner['email'].strip().lower()
+        owner['email'] = owner['canonicalization']
     elif owner.get('name', ''):
-        owner['Canonicalization'] = owner['name'].strip().lower()
-        owner['name'] = owner['Canonicalization']
+        owner['canonicalization'] = owner['name'].strip().lower()
+        owner['name'] = owner['canonicalization']
     else:
-        owner['Canonicalization'] = ''
+        owner['canonicalization'] = ''
     return owner
 
 
@@ -214,30 +214,30 @@ def aggregate(owners: list[dict[str, str]]) -> list[dict[str, Any]]:
     If type is neither of the above, all values of that key will be dropped from the aggregated owner.
     """
     deduped = []
-    sorted_owners = sorted(owners, key=lambda owner: owner['Canonicalization'])
-    for key, group in groupby(sorted_owners, key=lambda owner: owner['Canonicalization']):
+    sorted_owners = sorted(owners, key=lambda owner: owner['canonicalization'])
+    for key, group in groupby(sorted_owners, key=lambda owner: owner['canonicalization']):
         duplicates = list(group)
         email = duplicates[0].get('email', '')
-        # the if condition in the list comprehension below defends against owners whose Name value is None (not sortable)
+        # the if condition in the list comprehension below defends against owners whose name value is None (not sortable)
         names = sorted(
             [owner.get('name', '') for owner in duplicates if owner.get('name')],
             key=lambda x: len(x), reverse=True
         )
         name = names[0] if names else ''
-        # aggregate Source by union
+        # aggregate source by union
         source = STRING_DELIMITER.join(sorted(
             {owner.get('source', '') for owner in duplicates if owner.get('source', '')}
         ))
-        # take max Timestamp if there's at least one; else empty string
+        # take max timestamp if there's at least one; else empty string
         timestamps = sorted(
             [owner.get('timestamp', '') for owner in duplicates if owner.get('timestamp', '')], reverse=True
         )
         timestamp = timestamps[0] if timestamps else ''
         owner = {
-            'Name': name,
-            'Email': email,
-            'Source': source,
-            'Timestamp': timestamp,
+            'name': name,
+            'email': email,
+            'source': source,
+            'timestamp': timestamp
         }
 
         # aggregate remaining keys according to type

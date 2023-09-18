@@ -8,3 +8,5 @@ First we upload the file and retrieve its SHA256 hash. Then, we use that ID to u
 If you want to upload a file to the sandbox in a single command, use the cs-fx-upload-file and supply the following argument and value: submit_file=yes.
 
 For more information on CrowdStrike Falcon Intelligence Sandbox, see the [CrowdStrike Falcon Intelligence Sandbox FAQ](https://www.crowdstrike.com/endpoint-security-products/falcon-x-threat-intelligence/crowdstrike-falcon-x-faq/).
+
+Notice: Submitting indicators using the **cs-fx-submit-url** command of this integration might make the indicator data publicly available.  See the vendor’s documentation for more details

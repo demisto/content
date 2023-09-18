@@ -58,6 +58,7 @@ ATOMs
 Mappers
 mapper
 AlienVault
+outputted
 BitcoinAbuse
 BruteForceBlocker
 NetwitnessSearch
@@ -243,4 +244,5 @@ xpanse
 JavaScript
 sdk
 RFC
+datetime
 

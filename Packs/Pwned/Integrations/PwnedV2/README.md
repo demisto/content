@@ -113,6 +113,8 @@ Data breached: **Email addresses,Passwords,Phone numbers,Usernames**
 ### 2. pwned-domain
 ---
 Checks if a domain was compromised.
+
+Notice: Submitting indicators using this command might make the indicator data publicly available. See the vendor’s documentation for more details.
 ##### Base Command
 
 `pwned-domain`
@@ -255,6 +257,8 @@ Data breached: **Email addresses,Passwords,Phone numbers,Usernames**
 ### 4. domain
 ---
 Checks if a domain was compromised.
+
+Notice: Submitting indicators using this command might make the indicator data publicly available. See the vendor’s documentation for more details.
 ##### Base Command
 
 `domain`

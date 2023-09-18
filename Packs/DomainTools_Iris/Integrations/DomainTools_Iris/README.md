@@ -29,6 +29,8 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### 1. domain
 ---
 Get a complete profile of the domain provided.
+
+Notice: Submitting indicators using this command might make the indicator data publicly available. See the vendor’s documentation for more details.
 ##### Base Command
 
 `domain`
@@ -161,6 +163,8 @@ Get a complete profile of the domain provided.
 ### 2. domaintoolsiris-analytics
 ---
 Provides markdown table with DomainTools Analytic data
+
+Notice: Submitting indicators using this command might make the indicator data publicly available. See the vendor’s documentation for more details.
 ##### Base Command
 
 `domaintoolsiris-analytics`

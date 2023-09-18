@@ -1034,6 +1034,7 @@
 <h3 id="h_7889907516201544438899059">7. Search for a domain in the leaked credentials database</h3>
 <hr>
 <p>Performs a query to match the given domain name against our database of leaked credentials.</p>
+<p>Notice: Submitting indicators using this command might make the indicator data publicly available. See the vendor’s documentation for more details.</p>
 <h5>Base Command</h5>
 <p><code>vigilante-query-domains</code></p>
 <h5>Input</h5>

@@ -1,0 +1,80 @@
+{
+    "associatedToAll": true,
+    "caseInsensitive": true,
+    "cliName": "asmenrichmentstatus",
+    "closeForm": false,
+    "columns": [
+        {
+            "displayName": "source",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "source",
+            "orgType": "",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 150,
+            "_comment": "Mandatory: The source of enrichment. Ex: Qualys"
+        },
+        {
+            "displayName": "record_exists",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "record_exists",
+            "orgType": "",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 150,
+            "_comment": "Mandatory: True means the enrichment of some kind has occurred for that source, the opposite is false."
+        },
+        {
+            "displayName": "timestamp",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "timestamp",
+            "orgType": "",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 150,
+            "_comment": "Mandatory: Timestamp for when the enrichment and checking of the status took place."
+        }
+    ],
+    "content": true,
+    "defaultRows": [
+        {
+            "columnheader1": "",
+            "columnheader2": "",
+            "columnheader3": ""
+        },
+        {},
+        {}
+    ],
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_asmenrichmentstatus",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "ASM - Enrichment Status",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "grid",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.9.0"
+}

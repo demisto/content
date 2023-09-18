@@ -1,0 +1,227 @@
+{
+    "count": 10,
+    "next": null,
+    "previous": null,
+    "results": [
+        {
+            "id": 1,
+            "name": "Brand",
+            "description": "Corporate Brand, subsidaries, etc.",
+            "is_default": false,
+            "recommended_policy": {
+                "id": 63983,
+                "name": "Brand Recommended",
+                "links": [
+                    {
+                        "rel": "self",
+                        "href": "https://api.zerofox.com/1.0/policies/63983/"
+                    }
+                ]
+            },
+            "links": [
+                {
+                    "rel": "self",
+                    "href": "https://api.zerofox.com/1.0/entities/types/1/"
+                }
+            ]
+        },
+        {
+            "id": 2,
+            "name": "Domains",
+            "description": "Protect a single domain or a set of domains",
+            "is_default": false,
+            "recommended_policy": {
+                "id": 63984,
+                "name": "Web Domain Recommended",
+                "links": [
+                    {
+                        "rel": "self",
+                        "href": "https://api.zerofox.com/1.0/policies/63984/"
+                    }
+                ]
+            },
+            "links": [
+                {
+                    "rel": "self",
+                    "href": "https://api.zerofox.com/1.0/entities/types/2/"
+                }
+            ]
+        },
+        {
+            "id": 3,
+            "name": "Executive/VIP",
+            "description": "An individual requiring advanced protection",
+            "is_default": false,
+            "recommended_policy": {
+                "id": 63985,
+                "name": "Executive/VIP Recommended",
+                "links": [
+                    {
+                        "rel": "self",
+                        "href": "https://api.zerofox.com/1.0/policies/63985/"
+                    }
+                ]
+            },
+            "links": [
+                {
+                    "rel": "self",
+                    "href": "https://api.zerofox.com/1.0/entities/types/3/"
+                }
+            ]
+        },
+        {
+            "id": 4,
+            "name": "Locations",
+            "description": "Protect a single location or a set of locations",
+            "is_default": false,
+            "recommended_policy": {
+                "id": 63986,
+                "name": "Location Recommended",
+                "links": [
+                    {
+                        "rel": "self",
+                        "href": "https://api.zerofox.com/1.0/policies/63986/"
+                    }
+                ]
+            },
+            "links": [
+                {
+                    "rel": "self",
+                    "href": "https://api.zerofox.com/1.0/entities/types/4/"
+                }
+            ]
+        },
+        {
+            "id": 5,
+            "name": "Other",
+            "description": "Any other type of asset group",
+            "is_default": true,
+            "recommended_policy": {
+                "id": 63982,
+                "name": "Recommended",
+                "links": [
+                    {
+                        "rel": "self",
+                        "href": "https://api.zerofox.com/1.0/policies/63982/"
+                    }
+                ]
+            },
+            "links": [
+                {
+                    "rel": "self",
+                    "href": "https://api.zerofox.com/1.0/entities/types/5/"
+                }
+            ]
+        },
+        {
+            "id": 6,
+            "name": "Product",
+            "description": "A specific good or service",
+            "is_default": false,
+            "recommended_policy": {
+                "id": 63987,
+                "name": "Product Recommended",
+                "links": [
+                    {
+                        "rel": "self",
+                        "href": "https://api.zerofox.com/1.0/policies/63987/"
+                    }
+                ]
+            },
+            "links": [
+                {
+                    "rel": "self",
+                    "href": "https://api.zerofox.com/1.0/entities/types/6/"
+                }
+            ]
+        },
+        {
+            "id": 8,
+            "name": "IPs & Hostnames",
+            "description": "IP address, CIDR block or hostname",
+            "is_default": false,
+            "recommended_policy": {
+                "id": 112258,
+                "name": "IPs & Hostnames Recommended",
+                "links": [
+                    {
+                        "rel": "self",
+                        "href": "https://api.zerofox.com/1.0/policies/112258/"
+                    }
+                ]
+            },
+            "links": [
+                {
+                    "rel": "self",
+                    "href": "https://api.zerofox.com/1.0/entities/types/8/"
+                }
+            ]
+        },
+        {
+            "id": 9,
+            "name": "Mobile App",
+            "description": "Protect personal or corporate mobile apps",
+            "is_default": false,
+            "recommended_policy": {
+                "id": 101987,
+                "name": "Mobile App Recommended",
+                "links": [
+                    {
+                        "rel": "self",
+                        "href": "https://api.zerofox.com/1.0/policies/101987/"
+                    }
+                ]
+            },
+            "links": [
+                {
+                    "rel": "self",
+                    "href": "https://api.zerofox.com/1.0/entities/types/9/"
+                }
+            ]
+        },
+        {
+            "id": 10,
+            "name": "BIN/Credit Card",
+            "description": "Protect bin or credit card numbers",
+            "is_default": false,
+            "recommended_policy": {
+                "id": 106085,
+                "name": "BIN/Credit Card Recommended",
+                "links": [
+                    {
+                        "rel": "self",
+                        "href": "https://api.zerofox.com/1.0/policies/106085/"
+                    }
+                ]
+            },
+            "links": [
+                {
+                    "rel": "self",
+                    "href": "https://api.zerofox.com/1.0/entities/types/10/"
+                }
+            ]
+        },
+        {
+            "id": 11,
+            "name": "Third Party Vendor",
+            "description": "Protect a partner or third party vendor",
+            "is_default": false,
+            "recommended_policy": {
+                "id": 104037,
+                "name": "Third Party Vendor Recommended",
+                "links": [
+                    {
+                        "rel": "self",
+                        "href": "https://api.zerofox.com/1.0/policies/104037/"
+                    }
+                ]
+            },
+            "links": [
+                {
+                    "rel": "self",
+                    "href": "https://api.zerofox.com/1.0/entities/types/11/"
+                }
+            ]
+        }
+    ]
+}

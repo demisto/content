@@ -74,7 +74,7 @@ def test_canonicalize(owner, expected_out):
              'Canonicalization': 'alice@example.com'},
         ],
         [
-            {'Name': 'Alice ', 'Email': 'alice@example.com', 'Source': 'source1 | source2', 'Timestamp': '2'},
+            {'name': 'Alice ', 'email': 'alice@example.com', 'source': 'source1 | source2', 'timestamp': '2'},
         ]
     ),
     # same email, no names
@@ -86,7 +86,7 @@ def test_canonicalize(owner, expected_out):
              'Canonicalization': 'alice@example.com'},
         ],
         [
-            {'Name': '', 'Email': 'alice@example.com', 'Source': 'source1', 'Timestamp': '1'},
+            {'name': '', 'email': 'alice@example.com', 'source': 'source1', 'timestamp': '1'},
         ]
     ),
     # same email, same names
@@ -100,8 +100,8 @@ def test_canonicalize(owner, expected_out):
              'Canonicalization': 'alice@example.com'},
         ],
         [
-            {'Name': 'Alice', 'Email': 'alice@example.com', 'Source': 'source1 | source2', 'Timestamp': '2'},
-            {'Name': 'Alice', 'Email': 'bob@example.com', 'Source': 'source2', 'Timestamp': '2'},
+            {'name': 'Alice', 'email': 'alice@example.com', 'source': 'source1 | source2', 'timestamp': '2'},
+            {'name': 'Alice', 'email': 'bob@example.com', 'source': 'source2', 'timestamp': '2'},
         ]
     ),
     # no email, different names
@@ -111,8 +111,8 @@ def test_canonicalize(owner, expected_out):
             {'name': 'bob', 'email': '', 'source': 'source2', 'timestamp': '2', 'Canonicalization': 'bob'},
         ],
         [
-            {'Name': 'alice', 'Email': '', 'Source': 'source1', 'Timestamp': '1'},
-            {'Name': 'bob', 'Email': '', 'Source': 'source2', 'Timestamp': '2'},
+            {'name': 'alice', 'email': '', 'source': 'source1', 'timestamp': '1'},
+            {'name': 'bob', 'email': '', 'source': 'source2', 'timestamp': '2'},
         ]
     ),
     # no email, same names
@@ -122,7 +122,7 @@ def test_canonicalize(owner, expected_out):
             {'name': 'alice', 'email': '', 'source': 'source2', 'timestamp': '2', 'Canonicalization': 'alice'},
         ],
         [
-            {'Name': 'alice', 'Email': '', 'Source': 'source1 | source2', 'Timestamp': '2'},
+            {'name': 'alice', 'email': '', 'source': 'source1 | source2', 'timestamp': '2'},
         ]
     ),
     # some emails present, others missing
@@ -138,8 +138,8 @@ def test_canonicalize(owner, expected_out):
              'Canonicalization': 'alice'},
         ],
         [
-            {'Name': 'Alice', 'Email': 'alice@example.com', 'Source': 'source1 | source2', 'Timestamp': '2'},
-            {'Name': 'alice', 'Email': '', 'Source': 'source3 | source4', 'Timestamp': '4'},
+            {'name': 'Alice', 'email': 'alice@example.com', 'source': 'source1 | source2', 'timestamp': '2'},
+            {'name': 'alice', 'email': '', 'source': 'source3 | source4', 'timestamp': '4'},
         ]
     ),
     # empty input
@@ -223,8 +223,8 @@ def test_score_model_inference_fail(mocker):
         [''],
         [
             {
-                'Name': 'aa', 'Email': 'email1@gmail.com', 'Source': 'source1', 'Timestamp': '1',
-                'Ranking Score': 1.0, 'Justification': 'source1'
+                'name': 'aa', 'email': 'email1@gmail.com', 'source': 'source1', 'timestamp': '1',
+                'ranking_score': 1.0, 'justification': 'source1'
             },
         ]
     ),
@@ -256,8 +256,8 @@ def test_score_model_inference_fail(mocker):
         [''],
         [
             {
-                'Name': 'aa', 'Email': 'email1@gmail.com', 'Source': 'source1', 'Timestamp': '1',
-                'Ranking Score': 1, 'Justification': 'source1', 'New Field': 'val1 | val2'
+                'name': 'aa', 'email': 'email1@gmail.com', 'source': 'source1', 'timestamp': '1',
+                'ranking_score': 1, 'justification': 'source1', 'New Field': 'val1 | val2'
             },
         ]
     ),
@@ -270,8 +270,8 @@ def test_score_model_inference_fail(mocker):
         [''],
         [
             {
-                'Name': 'aa', 'Email': 'email1@gmail.com', 'Source': 'source1', 'Timestamp': '1',
-                'Ranking Score': 1, 'Justification': 'source1', 'New Field': 2,
+                'name': 'aa', 'email': 'email1@gmail.com', 'source': 'source1', 'timestamp': '1',
+                'ranking_score': 1, 'justification': 'source1', 'New Field': 2,
             },
         ]
     ),
@@ -284,8 +284,8 @@ def test_score_model_inference_fail(mocker):
         [''],
         [
             {
-                'Name': 'aa', 'Email': 'email1@gmail.com', 'Source': 'source1', 'Timestamp': '1',
-                'Ranking Score': 1, 'Justification': 'source1', 'New Field': 1,
+                'name': 'aa', 'email': 'email1@gmail.com', 'source': 'source1', 'timestamp': '1',
+                'ranking_score': 1, 'justification': 'source1', 'New Field': 1,
             },
         ]
     ),
@@ -298,8 +298,8 @@ def test_score_model_inference_fail(mocker):
         [''],
         [
             {
-                'Name': 'aa', 'Email': 'email1@gmail.com', 'Source': 'source1', 'Timestamp': '1',
-                'Ranking Score': 1, 'Justification': 'source1', 'New Field': 'val1',
+                'name': 'aa', 'email': 'email1@gmail.com', 'source': 'source1', 'timestamp': '1',
+                'ranking_score': 1, 'justification': 'source1', 'New Field': 'val1',
             },
         ]
     ),
@@ -312,8 +312,8 @@ def test_score_model_inference_fail(mocker):
         [''],
         [
             {
-                'Name': 'aa', 'Email': 'email1@gmail.com', 'Source': 'source1', 'Timestamp': '1',
-                'Ranking Score': 1, 'Justification': 'source1',
+                'name': 'aa', 'email': 'email1@gmail.com', 'source': 'source1', 'timestamp': '1',
+                'ranking_score': 1, 'justification': 'source1',
             },
         ]
     ),
@@ -337,8 +337,8 @@ def test_score_model_inference_fail(mocker):
         [''],
         [
             {
-                'Name': '', 'Email': 'email1@gmail.com', 'Source': 'source1', 'Timestamp': '1',
-                'Ranking Score': 1, 'Justification': 'source1'
+                'name': '', 'email': 'email1@gmail.com', 'source': 'source1', 'timestamp': '1',
+                'ranking_score': 1, 'justification': 'source1'
             },
         ]
     ),
@@ -350,12 +350,12 @@ def test_score_model_inference_fail(mocker):
         [''],
         [
             {
-                'Name': 'a', 'Email': None, 'Source': 'source1', 'Timestamp': '1',
-                'Ranking Score': 1, 'Justification': 'source1'
+                'name': 'a', 'email': None, 'source': 'source1', 'timestamp': '1',
+                'ranking_score': 1, 'justification': 'source1'
             },
         ]
     ),
-    # bad input -- Source is None
+    # bad input -- source is None
     (
         [
             {'name': 'a', 'email': 'email1@gmail.com', 'source': None, 'timestamp': '1'},
@@ -363,12 +363,12 @@ def test_score_model_inference_fail(mocker):
         [''],
         [
             {
-                'Name': 'a', 'Email': 'email1@gmail.com', 'Source': '', 'Timestamp': '1',
-                'Ranking Score': 1, 'Justification': ''
+                'name': 'a', 'email': 'email1@gmail.com', 'source': '', 'timestamp': '1',
+                'ranking_score': 1, 'justification': ''
             },
         ]
     ),
-    # bad input -- Timestamp is None
+    # bad input -- timestamp is None
     (
         [
             {'name': 'a', 'email': 'email1@gmail.com', 'source': 'source1', 'timestamp': None},
@@ -376,8 +376,8 @@ def test_score_model_inference_fail(mocker):
         [''],
         [
             {
-                'Name': 'a', 'Email': 'email1@gmail.com', 'Source': 'source1',
-                'Timestamp': '', 'Ranking Score': 1, 'Justification': 'source1'
+                'name': 'a', 'email': 'email1@gmail.com', 'source': 'source1',
+                'timestamp': '', 'ranking_score': 1, 'justification': 'source1'
             },
         ]
     ),
@@ -389,8 +389,8 @@ def test_score_model_inference_fail(mocker):
         [''],
         [
             {
-                'Name': '', 'Email': 'email1@gmail.com', 'Source': 'source1', 'Timestamp': '1',
-                'Ranking Score': 1, 'Justification': 'source1'
+                'name': '', 'email': 'email1@gmail.com', 'source': 'source1', 'timestamp': '1',
+                'ranking_score': 1, 'justification': 'source1'
             },
         ]
     ),
@@ -402,12 +402,12 @@ def test_score_model_inference_fail(mocker):
         [''],
         [
             {
-                'Name': 'a', 'Email': '', 'Source': 'source1', 'Timestamp': '1',
-                'Ranking Score': 1, 'Justification': 'source1'
+                'name': 'a', 'email': '', 'source': 'source1', 'timestamp': '1',
+                'ranking_score': 1, 'justification': 'source1'
             },
         ]
     ),
-    # bad input -- missing Source
+    # bad input -- missing source
     (
         [
             {'name': 'a', 'email': 'email1@gmail.com', 'timestamp': '1'},
@@ -415,12 +415,12 @@ def test_score_model_inference_fail(mocker):
         [''],
         [
             {
-                'Name': 'a', 'Email': 'email1@gmail.com', 'Source': '', 'Timestamp': '1',
-                'Ranking Score': 1, 'Justification': ''
+                'name': 'a', 'email': 'email1@gmail.com', 'source': '', 'timestamp': '1',
+                'ranking_score': 1, 'justification': ''
             },
         ]
     ),
-    # bad input -- missing Timestamp
+    # bad input -- missing timestamp
     (
         [
             {'name': 'a', 'email': 'email1@gmail.com', 'source': 'source1'},
@@ -428,12 +428,12 @@ def test_score_model_inference_fail(mocker):
         [''],
         [
             {
-                'Name': 'a', 'Email': 'email1@gmail.com', 'Source': 'source1', 'Timestamp': '',
-                'Ranking Score': 1, 'Justification': 'source1'
+                'name': 'a', 'email': 'email1@gmail.com', 'source': 'source1', 'timestamp': '',
+                'ranking_score': 1, 'justification': 'source1'
             },
         ]
     ),
-    # Timestamp as numerical type
+    # timestamp as numerical type
     (
         [
             {'name': 'aa', 'email': 'email1@gmail.com', 'source': 'source1', 'timestamp': 1},
@@ -442,8 +442,8 @@ def test_score_model_inference_fail(mocker):
         [''],
         [
             {
-                'Name': 'aa', 'Email': 'email1@gmail.com', 'Source': 'source1', 'Timestamp': 2,
-                'Ranking Score': 1.0, 'Justification': 'source1'
+                'name': 'aa', 'email': 'email1@gmail.com', 'source': 'source1', 'timestamp': 2,
+                'ranking_score': 1.0, 'justification': 'source1'
             },
         ]
     ),
