@@ -487,13 +487,9 @@ def test_fetch_incidents(mocker, mock_get_a_list_of_threats_request,
     first_fetch_time = datetime.now().strftime(ISO_8601_FORMAT)
     next_run, incidents = fetch_incidents(
         client=client,
-        last_run={"last_fetch":"2023-09-17T14:43:09Z"},
+        last_run={"last_fetch": "2023-09-17T14:43:09Z"},
         first_fetch_time=first_fetch_time,
         max_incidents_to_fetch=200,
     )
     assert len(incidents) == 4
-
-
-
-
-
+    
