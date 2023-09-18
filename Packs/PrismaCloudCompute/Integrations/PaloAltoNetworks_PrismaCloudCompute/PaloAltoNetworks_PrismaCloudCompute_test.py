@@ -1652,3 +1652,4 @@ def test_get_file_integrity_events_command(requests_mock):
     }
 
     assert get_file_integrity_events_command(client, args).raw_response == d
+

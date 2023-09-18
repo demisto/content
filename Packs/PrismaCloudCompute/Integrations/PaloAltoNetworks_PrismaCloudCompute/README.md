@@ -3305,6 +3305,7 @@ Returns the available backups.
 >| monthly-22.12.585-1679972425.tar.gz | monthly | 22.12.585 | 2023-03-28T03:00:25Z |
 >| weekly-22.12.585-1681184909.tar.gz | weekly | 22.12.585 | 2023-04-11T03:48:29Z |
 
+
 ### prisma-cloud-compute-get-file-integrity-events
 
 ***
@@ -3417,6 +3418,7 @@ Returns the available backups.
 >| 123 |  | All,<br/>123 | Process touch wrote to path (user: root) | write | 2 |  | host123 | /tmp/alert/test1 | touch | Default - alert on suspicious runtime behavior | 2023-08-30T01:16:01.037Z | root | 64ee985138b8ac44a6f3d468 |
 >| 123 |  | All,<br/>123 | Process touch wrote to path (user: root) | write | 2 |  | host123 | /tmp/alert/test1 | touch | Default - alert on suspicious runtime behavior | 2023-08-30T00:16:01.883Z | root | 64ee8a4138b8ac44a6f3d460 |
 >| 123 |  | All,<br/>123 | Process touch wrote to path (user: root) | write | 2 |  | host123 | /tmp/alert/test1 | touch | Default - alert on suspicious runtime behavior | 2023-08-29T23:16:01.673Z | root | 64ee7c3138b8ac44a6f3d458 |
+
 
 ### prisma-cloud-compute-unstuck-fetch-stream
 
@@ -3446,6 +3448,7 @@ Use this command to unstuck the fetch stream in case it's getting duplicated inc
 ## General Note:
 - Do not use the reset last run button as it will cause incidents duplications to the instance. 
 - In case you pressed reset last run button and you get duplicated incidents, run **prisma-cloud-compute-unstuck-fetch-stream** command.
+
 ### prisma-cloud-compute-get-file-integrity-events
 
 ***
@@ -3558,4 +3561,5 @@ Use this command to unstuck the fetch stream in case it's getting duplicated inc
 >| 123 |  | All,<br/>123 | Process touch wrote to path (user: root) | write | 2 |  | host123 | /tmp/alert/test1 | touch | Default - alert on suspicious runtime behavior | 2023-08-30T01:16:01.037Z | root | 64ee985138b8ac44a6f3d468 |
 >| 123 |  | All,<br/>123 | Process touch wrote to path (user: root) | write | 2 |  | host123 | /tmp/alert/test1 | touch | Default - alert on suspicious runtime behavior | 2023-08-30T00:16:01.883Z | root | 64ee8a4138b8ac44a6f3d460 |
 >| 123 |  | All,<br/>123 | Process touch wrote to path (user: root) | write | 2 |  | host123 | /tmp/alert/test1 | touch | Default - alert on suspicious runtime behavior | 2023-08-29T23:16:01.673Z | root | 64ee7c3138b8ac44a6f3d458 |
+
 

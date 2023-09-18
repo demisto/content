@@ -2083,6 +2083,7 @@ def get_file_integrity_events_command(client: PrismaCloudComputeClient, args: di
     )
 
 
+  
 def main():
     """
     PARSE AND VALIDATE INTEGRATION PARAMS
