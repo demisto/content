@@ -88,13 +88,10 @@ run-unittests-and-lint:
 
   after_script:
       - >
-        if [ '$CI_JOB_STATUS' = 'failed' ] && [ $CI_COMMIT_BRANCH != 'master' && $CI_COMMIT_REF_NAME != "master"]; then
+        if [ '$CI_JOB_STATUS' = 'failed' ] && [ $CI_COMMIT_BRANCH != 'master' && $CI_COMMIT_REF_NAME != 'master' ]; then
           echo 'ooppsss I failed, send out the message....'
         else
-          echo "Failed job: $CI_JOB_NAME"
-          echo "Failed job ID: $CI_JOB_ID"
-          echo "$CI_COMMIT_REF_NAME"
-          echo "$CI_COMMIT_BRANCH"
+          echo 'Failed job: $CI_JOB_NAME, Failed job ID: $CI_JOB_ID, $CI_COMMIT_REF_NAME, CI_COMMIT_BRANCH'
         fi
 # runs in gitlab for the on-push flow (except for contributors)
 run-validations:
