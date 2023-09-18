@@ -6,7 +6,7 @@ from CommonServerUserPython import *
 
 import json
 from datetime import datetime, timedelta
-from typing import Dict, Generator, List, Optional, Tuple, Union
+from collections.abc import Generator
 
 import dateparser
 import urllib3
@@ -14,6 +14,7 @@ import random
 from requests.auth import HTTPBasicAuth
 
 # Disable insecure warnings
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 """ CONSTANTS """
 
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
@@ -680,7 +681,7 @@ class Client(BaseClient):
             date_from, date_to, query = None, None, None
             yield portion.get('items')
 
-    def search_feed_by_id(self, collection_name: str, feed_id: str) -> Dict:
+    def search_feed_by_id(self, collection_name: str, feed_id: str) -> dict:
         """
         Searches for feed with `feed_id` in collection with `collection_name`.
 
@@ -730,7 +731,7 @@ class Client(BaseClient):
         #     pass
 
         collections_list = []
-        for key in MAPPING.keys():
+        for key in MAPPING:
             if key in buffer_list:
                 collections_list.append(key)
         return {"collections": collections_list}, buffer_list
@@ -816,7 +817,7 @@ def transform_to_command_results(iocs, ioc_type, fields, fields_names, collectio
         output = parse_to_outputs(iocs, ioc_type, fields)
         if output:
             results = [CommandResults(
-                readable_output=tableToMarkdown("{0} indicator".format(ioc_type), {"value": iocs, **fields}),
+                readable_output=tableToMarkdown(f"{ioc_type} indicator", {"value": iocs, **fields}),
                 indicator=output,
                 ignore_auto_extract=True
             )]
@@ -863,7 +864,7 @@ def parse_to_outputs(value, indicator_type, fields):
     return None
 
 
-def find_iocs_in_feed(feed: Dict, collection_name: str) -> List:
+def find_iocs_in_feed(feed: dict, collection_name: str) -> list:
     """
     Finds IOCs in the feed and transform them to the appropriate format to ingest them into Demisto.
 
@@ -888,7 +889,7 @@ def find_iocs_in_feed(feed: Dict, collection_name: str) -> List:
     return indicators
 
 
-def transform_some_fields_into_markdown(collection_name, feed: Dict) -> Dict:
+def transform_some_fields_into_markdown(collection_name, feed: dict) -> dict:
     """
     Some fields can have complex nesting, so this function transforms them into an appropriate state.
 
@@ -909,7 +910,7 @@ def transform_some_fields_into_markdown(collection_name, feed: Dict) -> Dict:
             author_name = ''.join(find_element_by_key(i, 'revisions.info.authorName'))
             timestamp = ''.join(str(find_element_by_key(i, 'revisions.info.timestamp')))
             # author_email, author_name, date = info.get("authorEmail"), info.get("authorName"), info.get("dateCreated")
-            buffer += "| {0} | {1} | {2} | {3} | {4} |\n".format(url, author_email, author_name, date, timestamp)
+            buffer += f"| {url} | {author_email} | {author_name} | {date} | {timestamp} |\n"
         if buffer:
             buffer = "| URL  |   Author Email  | Author Name  | Date Created| TimeStamp    |\n" \
                      "| ---- | --------------- | ------------ | ----------- | ------------ |\n" + buffer
@@ -927,7 +928,7 @@ def transform_some_fields_into_markdown(collection_name, feed: Dict) -> Dict:
             hash_ = i.get("hash")
             link = "[{0}]({0})".format(i.get("link"))
             source = i.get("source")
-            buffer += "| {0} | {1} | {2} | {3} | {4} | {5} |\n".format(author, detected, published, hash_, link, source)
+            buffer += f"| {author} | {detected} | {published} | {hash_} | {link} | {source} |\n"
         if buffer:
             buffer = "| Author | Date Detected | Date Published | Hash | Link | Source |\n" \
                      "| ------ | ------------- | -------------- | ---- |----- | ------ |\n" + buffer
@@ -942,7 +943,7 @@ def transform_some_fields_into_markdown(collection_name, feed: Dict) -> Dict:
         for type_, sub_dict in matches.items():
             for sub_type, sub_list in sub_dict.items():
                 for value in sub_list:
-                    buffer += "| {0} | {1} | {2} |\n".format(type_, sub_type, value)
+                    buffer += f"| {type_} | {sub_type} | {value} |\n"
         if buffer:
             buffer = "| Type | Sub Type | Value |\n" \
                      "| ---- | -------- | ----- |\n" + buffer
@@ -955,7 +956,7 @@ def transform_some_fields_into_markdown(collection_name, feed: Dict) -> Dict:
         downloaded_from = feed.get("downloadedFrom", [])
         for i in downloaded_from:
             date, url, domain, filename = i.get("date"), i.get("url"), i.get("domain"), i.get("fileName")
-            buffer += "| {0} | {1} | {2} | {3} |\n".format(url, filename, domain, date)
+            buffer += f"| {url} | {filename} | {domain} | {date} |\n"
         if buffer:
             buffer = "| URL | File Name | Domain | Date |\n| --- | --------- | ------ | ---- |\n" + buffer
             feed["downloadedFrom"] = buffer
@@ -966,13 +967,13 @@ def transform_some_fields_into_markdown(collection_name, feed: Dict) -> Dict:
 
 
 def get_human_readable_feed(collection_name, feed):
-    return tableToMarkdown(name="Feed from {0} with ID {1}".format(collection_name, feed.get("id")),
+    return tableToMarkdown(name="Feed from {} with ID {}".format(collection_name, feed.get("id")),
                            t=feed, removeNull=True)
 
 
 def transform_function(result, previous_keys="", is_inside_list=False):
     result_dict = {}
-    additional_tables: List[Any] = []
+    additional_tables: list[Any] = []
 
     if isinstance(result, dict):
         if is_inside_list:
@@ -1000,26 +1001,27 @@ def transform_function(result, previous_keys="", is_inside_list=False):
 
         if additional_tables:
             additional_tables = [CommandResults(
-                readable_output=tableToMarkdown("{0} table".format(previous_keys), additional_tables, removeNull=True),
+                readable_output=tableToMarkdown(f"{previous_keys} table", additional_tables, removeNull=True),
                 ignore_auto_extract=True
             )]
 
         return result_dict, additional_tables
 
-    elif isinstance(result, (str, int, float)) or result is None:
+    elif isinstance(result, str | int | float) or result is None:
         if not is_inside_list:
             result_dict.update({previous_keys: result})
         else:
             result_dict.update({previous_keys: [result]})
 
         return result_dict, additional_tables
+    return None
 
 
 """ Commands """
 
 
-def fetch_incidents_command(client: Client, last_run: Dict, first_fetch_time: str,
-                            incident_collections: List, requests_count: int) -> Tuple[Dict, List]:
+def fetch_incidents_command(client: Client, last_run: dict, first_fetch_time: str,
+                            incident_collections: list, requests_count: int) -> tuple[dict, list]:
     """
     This function will execute each interval (default is 1 minute).
 
@@ -1032,13 +1034,16 @@ def fetch_incidents_command(client: Client, last_run: Dict, first_fetch_time: st
     :return: next_run will be last_run in the next fetch-incidents; incidents and indicators will be created in Demisto.
     """
     incidents = []
-    next_run: Dict[str, Dict[str, Union[int, Any]]] = {"last_fetch": {}}
+    next_run: dict[str, dict[str, int | Any]] = {"last_fetch": {}}
     for collection_name in incident_collections:
         last_fetch = last_run.get("last_fetch", {}).get(collection_name)
 
         portions = client.create_poll_generator(collection_name=collection_name, max_requests=requests_count,
                                                 last_fetch=last_fetch, first_fetch_time=first_fetch_time)
         for portion, last_fetch in portions:
+            last_test = last_fetch
+            for last in last_test:
+                set(last)
             for feed in portion:
                 mapping = MAPPING.get(collection_name, {})
                 if collection_name == "compromised/breached":
@@ -1107,7 +1112,7 @@ def get_info_by_id_command(collection_name: str):
     Decorator around actual commands, that returns command depends on `collection_name`.
     """
 
-    def get_info_by_id_for_collection(client: Client, args: Dict) -> List[CommandResults]:
+    def get_info_by_id_for_collection(client: Client, args: dict) -> list[CommandResults]:
         """
         This function returns additional information to context and War Room.
 
@@ -1138,7 +1143,7 @@ def get_info_by_id_command(collection_name: str):
         if "seqUpdate" in result:
             del result["seqUpdate"]
 
-        indicators: List[CommandResults] = []
+        indicators: list[CommandResults] = []
         if coll_name not in ["apt/threat_actor", "hi/threat_actor"]:
             indicators = find_iocs_in_feed(result, coll_name)
 
@@ -1154,7 +1159,7 @@ def get_info_by_id_command(collection_name: str):
         else:
             main_table_data, additional_tables = transform_function(result)
         results.append(CommandResults(
-            outputs_prefix="GIBTIA.{0}".format(MAPPING.get(coll_name, {}).get("prefix", "").replace(" ", "")),
+            outputs_prefix="GIBTIA.{}".format(MAPPING.get(coll_name, {}).get("prefix", "").replace(" ", "")),
             outputs_key_field="id",
             outputs=result,
             readable_output=get_human_readable_feed(collection_name, main_table_data),
@@ -1168,12 +1173,12 @@ def get_info_by_id_command(collection_name: str):
     return get_info_by_id_for_collection
 
 
-def global_search_command(client: Client, args: Dict):
+def global_search_command(client: Client, args: dict):
     query = str(args.get('query'))
     raw_response = client.search_by_query(query)
     handled_list = []
     for result in raw_response:
-        if result.get('apiPath') in MAPPING.keys():
+        if result.get('apiPath') in MAPPING:
             handled_list.append({'apiPath': result.get('apiPath'), 'count': result.get('count'),
                                  'GIBLink': result.get('link'),
                                  'query': result.get('apiPath') + '?q=' + query})
@@ -1198,7 +1203,7 @@ def global_search_command(client: Client, args: Dict):
     return results
 
 
-def local_search_command(client: Client, args: Dict):
+def local_search_command(client: Client, args: dict):
     query, date_from, date_to = args.get('query'), args.get('date_from', None), args.get('date_to', None)
     collection_name = str(args.get('collection_name'))
 
