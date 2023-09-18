@@ -178,17 +178,16 @@ function Main {
         $demisto.Debug("Command being called is $command")
         switch ($command) {
             "test-module" {
-                $human_readable, $entry_context, $raw_response = TestModuleCommand $audit_log_client
+                TestModuleCommand $audit_log_client
             }
             "$script:COMMAND_PREFIX-search" {
                 $human_readable, $entry_context, $raw_response = SearchAuditLogCommand $audit_log_client $command_arguments
+                ReturnOutputs $human_readable $entry_context $raw_response | Out-Null
             }
             default {
-                throw "Command $command no implemented"
+                throw "Command $command is not implemented"
             }
         }
-        # Return results to server
-        ReturnOutputs $human_readable $entry_context $raw_response | Out-Null
     }
     catch {
         $demisto.debug("Integration: $script:INTEGRATION_NAME
