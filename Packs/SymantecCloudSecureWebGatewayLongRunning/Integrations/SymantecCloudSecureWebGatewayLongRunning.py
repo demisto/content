@@ -109,42 +109,46 @@ def extract_logs_from_response(response: Response) -> list[bytes]:
         list[bytes]: list of events as bytes
     """
     logs: list[bytes] = []
-    try:
-        # extract the ZIP file
-        with ZipFile(BytesIO(response.content)) as outer_zip:
-            # iterate all gzip files
-            for file in outer_zip.infolist():
-                # check if the file is gzip
-                if file.filename.lower().endswith(".gz"):
-                    try:
-                        with outer_zip.open(file) as nested_zip_file, gzip.open(
-                            nested_zip_file, "rb"
-                        ) as f:
-                            logs.extend(f.readlines())
-                    except Exception as e:
-                        demisto.debug(
-                            f"Crashed at the open the internal file {file.filename} file, Error: {e}"
-                        )
-                else:  # the file is not gzip
-                    demisto.debug(f"The {file.filename} file is not of gzip type")
-    except BadZipFile as e:
-        try:
-            # checks whether no events returned
-            if response.content.decode().startswith("X-sync"):
-                demisto.debug("No events returned from the api")
-            else:
-                demisto.debug(
-                    f"The external file type is not of type ZIP, Error: {e},"
-                    "the response.content is {}".format(response.content)
-                )
-        except Exception:
-            demisto.debug(
-                f"The external file type is not of type ZIP, Error: {e},"
-                "the response.content is {}".format(response.content)
-            )
-    except Exception as e:
-        raise ValueError(f"There is no specific error for the crash, Error: {e}")
+    demisto.debug(f"size of the zip file: {len(response.content) / (1024 ** 2):.2f} MB")
     return logs
+    # try:
+    #     # extract the ZIP file
+    #     with ZipFile(BytesIO(response.content)) as outer_zip:
+    #         # iterate all gzip files
+    #         for file in outer_zip.infolist():
+    #             # check if the file is gzip
+    #             if file.filename.lower().endswith(".gz"):
+    #                 try:
+    #                     with outer_zip.open(file) as nested_zip_file, gzip.open(
+    #                         nested_zip_file, "rb"
+    #                     ) as f:
+    #                         logs.extend(f.readlines())
+    #                 except Exception as e:
+    #                     demisto.debug(
+    #                         f"Crashed at the open the internal file {file.filename} file, Error: {e}"
+    #                     )
+    #             else:  # the file is not gzip
+    #                 demisto.debug(
+    #                     f"The {file.filename} file is not of gzip type"
+    #                 )
+    # except BadZipFile as e:
+    #     try:
+    #         # checks whether no events returned
+    #         if response.content.decode().startswith("X-sync"):
+    #             demisto.debug("No events returned from the api")
+    #         else:
+    #             demisto.debug(
+    #                 f"The external file type is not of type ZIP, Error: {e},"
+    #                 "the response.content is {}".format(response.content)
+    #             )
+    #     except Exception:
+    #         demisto.debug(
+    #             f"The external file type is not of type ZIP, Error: {e},"
+    #             "the response.content is {}".format(response.content)
+    #         )
+    # except Exception as e:
+    #     raise ValueError(f"There is no specific error for the crash, Error: {e}")
+    # return logs
 
 
 def is_first_fetch(last_run: dict[str, str | list[str]], args: dict[str, str]) -> bool:
@@ -287,36 +291,37 @@ def get_events_command(
             continue
         logs.extend(extract_logs_from_response(res))
 
-    (
-        events,
-        time_of_last_fetched_event,
-        events_suspected_duplicates,
-    ) = organize_of_events(
-        logs,
-        token_expired,
-        last_run_model.time_of_last_fetched_event or "",
-        last_run_model.events_suspected_duplicates or [],
-    )
+    # (
+    #     events,
+    #     time_of_last_fetched_event,
+    #     events_suspected_duplicates,
+    # ) = organize_of_events(
+    #     logs,
+    #     token_expired,
+    #     last_run_model.time_of_last_fetched_event or "",
+    #     last_run_model.events_suspected_duplicates or [],
+    # )
 
-    if time_of_last_fetched_event:
-        start_date_for_next_fetch = date_to_timestamp(
-            date_str_or_dt=time_of_last_fetched_event, date_format="%Y-%m-%d %H:%M:%S"
-        )
-    else:
-        start_date_for_next_fetch = start_date
+    # if time_of_last_fetched_event:
+    #     start_date_for_next_fetch = date_to_timestamp(
+    #         date_str_or_dt=time_of_last_fetched_event, date_format="%Y-%m-%d %H:%M:%S"
+    #     )
+    # else:
+    #     start_date_for_next_fetch = start_date
 
-    new_last_run_model = LastRun(
-        start_date=str(start_date_for_next_fetch),
-        token=str(params["token"]),
-        time_of_last_fetched_event=time_of_last_fetched_event,
-        events_suspected_duplicates=events_suspected_duplicates,
-    )
+    # new_last_run_model = LastRun(
+    #     start_date=str(start_date_for_next_fetch),
+    #     token=str(params["token"]),
+    #     time_of_last_fetched_event=time_of_last_fetched_event,
+    #     events_suspected_duplicates=events_suspected_duplicates,
+    # )
 
-    demisto.debug(
-        f"End fetch from {start_date} to {end_date} with {len(events)} events,"
-        f"{time_of_last_fetched_event=} and {events_suspected_duplicates=}"
-    )
-    return events, new_last_run_model
+    # demisto.debug(
+    #     f"End fetch from {start_date} to {end_date} with {len(events)} events,"
+    #     f"{time_of_last_fetched_event=} and {events_suspected_duplicates=}"
+    # )
+    # return events, new_last_run_model
+    return [], LastRun(start_date=str(start_date), token=str(params["token"]))
 
 
 def test_module(client: Client):
