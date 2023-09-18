@@ -492,4 +492,3 @@ def test_fetch_incidents(mocker, mock_get_a_list_of_threats_request,
         max_incidents_to_fetch=200,
     )
     assert len(incidents) == 4
-    
