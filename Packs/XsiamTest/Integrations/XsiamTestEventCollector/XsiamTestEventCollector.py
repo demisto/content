@@ -42,17 +42,17 @@ ALL_FIELDS = {
 }
 
 
-def generate_event():
+def generate_event() -> str:
     return " ".join(ALL_FIELDS)
 
 
-def generate_events(limit: int):
+def generate_events(max_fetch: int) -> list[str]:
     new_event = generate_event()
-    return [new_event for _ in range(limit)]
+    return [new_event for _ in range(max_fetch)]
 
 
-def fetch_events_command(limit: str):
-    events = generate_events(int(limit))
+def fetch_events_command(max_fetch: str) -> tuple[list[str], dict]:
+    return generate_events(int(max_fetch)), {}
 
 
 def test_module():
@@ -63,6 +63,7 @@ def main() -> None:  # pragma: no cover
     params = demisto.params()
     args = demisto.args()
 
+    max_fetch = params.get("max_fetch", "5000")
     should_push_events = argToBoolean(args.get("should_push_events", False))
 
     command = demisto.command()
@@ -75,13 +76,15 @@ def main() -> None:  # pragma: no cover
             should_push_events = True
             should_update_last_run = True
             last_run = demisto.getLastRun()
-            events, last_run = fetch_events_command(limit=params["limit"])
+            events, last_run = fetch_events_command(max_fetch=max_fetch)
 
         else:
             raise NotImplementedError(f"Command {command} is not implemented.")
 
         if should_push_events:
-            send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
+            size_of_events = sys.getsizeof(events)
+            demisto.debug(f"{size_of_events=}")
+            send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT, chunk_size=XSIAM_EVENT_CHUNK_SIZE_LIMIT / 2)
             demisto.debug(f"{len(events)} events were pushed to XSIAM")
 
             if should_update_last_run:
@@ -98,3 +101,4 @@ def main() -> None:  # pragma: no cover
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
+    # print(sys.getsizeof(generate_events(1050000)) / (1024 * 1024))
