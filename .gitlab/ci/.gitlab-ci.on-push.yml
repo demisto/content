@@ -88,7 +88,6 @@ run-unittests-and-lint:
 
   after_script:
       - >
-        rules:
         if [ '$CI_JOB_STATUS' = 'failed' ]; then
           echo 'ooppsss I failed, send out the message....'
         fi
