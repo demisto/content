@@ -1800,6 +1800,16 @@ class TestCommandResults:
         assert command_results.tags == ['tag1', 'tag2']
         assert command_results.to_context()['Tags'] == ['tag1', 'tag2']
 
+    @pytest.mark.parametrize('output', [True, False])
+    def test_with_boolean_output(self, output):
+        from CommonServerPython import CommandResults
+        command_results = CommandResults(
+            outputs=output,
+            outputs_prefix="BooleanOutput",
+            readable_output="Boolean Output: {}".format(output),
+        )
+        assert command_results.to_context()['Contents'] == output
+
     def test_dbot_score_is_in_to_context_ip(self):
         """
         Given
@@ -2599,6 +2609,28 @@ class TestCommandResults:
         )
 
         assert results.to_context().get('Note') is True
+
+    def test_empty_readable_outputs(self):
+        """
+        Given:
+        - Outputs as str
+        - outputs_prefix is str
+        - No readable_output
+
+        When:
+        - Returning results
+
+        Then:
+        - Validate generated readable_output
+
+        """
+        from CommonServerPython import CommandResults
+        res = CommandResults(
+            outputs="outputs_test",
+            outputs_prefix="outputs_prefix_test"
+        )
+        context = res.to_context()
+        assert "outputs_test" == context.get('HumanReadable')
 
 
 def test_http_request_ssl_ciphers_insecure():
