@@ -2885,7 +2885,7 @@ def get_ioa_events_for_fetch(ioa_fetch_query: str, ioa_next_token: str | None,
 
 def validate_ioa_fetch_query(ioa_fetch_query: str) -> None:
     demisto.debug(f'Validating IOA {ioa_fetch_query=}')
-    if 'cloud_provider=' not in ioa_fetch_query:
+    if 'cloud_provider' not in ioa_fetch_query:
         raise DemistoException('A cloud provider is required as part of the IOA fetch query. Options are: aws, azure')
     # The following parameters are also supported by the API: 'date_time_since', 'next_token', 'limit', but we don't
     # allow them to be as part of the original fetch query, since they are used by the fetching mechanism, internally
@@ -2904,7 +2904,7 @@ def validate_ioa_fetch_query(ioa_fetch_query: str) -> None:
             if param_and_value[1] == '':
                 raise DemistoException(f'The value of the parameter {param_and_value[0]} cannot be an empty string')
         else:
-            raise DemistoException(f'A query section has a wrong format, {section}. Use the following format: '
+            raise DemistoException(f'A query section has wrong format, {section}. Use the following format: '
                                    '"param=val"')
 
 

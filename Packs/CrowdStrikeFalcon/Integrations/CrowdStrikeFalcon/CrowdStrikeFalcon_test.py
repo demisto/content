@@ -5530,11 +5530,11 @@ class TestCSFalconCSPMListPolicyDetialsCommand:
     def test_get_policy_details(self, mocker: MockerFixture):
         """
         Given:
-            - Policy IDs to retrieve their details
+            - Policy IDs to retrieve their details.
         When
-            - Calling the cs-falcon-cspm-list-policy-details command
+            - Calling the cs-falcon-cspm-list-policy-details command.
         Then
-            - Validate the data of the CommandResults object returned
+            - Validate the data of the CommandResults object returned.
         """
         from CrowdStrikeFalcon import cs_falcon_cspm_list_policy_details_command
         raw_response = load_json('test_data/policy_details/policy_details_raw_response.json')
@@ -5545,6 +5545,14 @@ class TestCSFalconCSPMListPolicyDetialsCommand:
                                expected_outputs_key_field='ID', expected_outputs_prefix='CrowdStrike.CSPMPolicy')
 
     def test_get_policy_details_error_500(self, mocker: MockerFixture):
+        """
+        Given
+            - A wrong a policy id.
+        When
+            - Running the cs-falcon-cspm-list-policy-details command, and receiving a 500 status code.
+        Then
+            - Validate that we output an error with the correct message.
+        """
         from CrowdStrikeFalcon import cs_falcon_cspm_list_policy_details_command
         raw_response = load_json('test_data/policy_details/policy_details_error_500_raw_response.json')
         mocker.patch('CrowdStrikeFalcon.http_request', return_value=raw_response)
@@ -5553,6 +5561,14 @@ class TestCSFalconCSPMListPolicyDetialsCommand:
         assert 'Perhaps the policy IDs are invalid?' in str(e)
 
     def test_get_policy_details_error_400(self, mocker: MockerFixture):
+        """
+        Given
+            - A wrong a policy id.
+        When
+            - Running the cs-falcon-cspm-list-policy-details command, and receiving a 400 status code.
+        Then
+            - Validate that we output a warning with the correct message.
+        """
         from CrowdStrikeFalcon import cs_falcon_cspm_list_policy_details_command
         raw_response = load_json('test_data/policy_details/policy_details_error_400_raw_response.json')
         mocker.patch('CrowdStrikeFalcon.http_request', return_value=raw_response)
@@ -5566,7 +5582,7 @@ class TestCSFalconCSPMListPolicyDetialsCommand:
         assert 'Invalid policy ID 121231 provided' in demisto_results_mocker.call_args_list[0][0][0].get('Contents')
 
 
-class TestCSFalconCSPMListServicePolicyDetialsCommand:
+class TestCSFalconCSPMListServicePolicySettingsCommand:
 
     def test_http_request_arguments(self, mocker: MockerFixture):
         """
@@ -5581,6 +5597,14 @@ class TestCSFalconCSPMListServicePolicyDetialsCommand:
                                                                           'cloud-platform': 'aws'}
 
     def test_get_service_policy_settings(self, mocker: MockerFixture):
+        """
+        Given:
+            - Arguments for the command.
+        When
+            - Calling the cs-falcon-cspm-list-service-policy-settingss command.
+        Then
+            - Validate the data of the CommandResults object returned.
+        """
         from CrowdStrikeFalcon import cs_falcon_cspm_list_service_policy_settings_command
         raw_response = load_json('test_data/service_policy_settings/policy_settings_raw_response.json')
         mocker.patch('CrowdStrikeFalcon.http_request', return_value=raw_response)
@@ -5591,6 +5615,14 @@ class TestCSFalconCSPMListServicePolicyDetialsCommand:
                                expected_outputs_key_field='policy_id', expected_outputs_prefix='CrowdStrike.CSPMPolicySetting')
 
     def test_get_service_policy_settings_manual_pagination(self, mocker: MockerFixture):
+        """
+        Given:
+            - Arguments for the command, with the limit argument.
+        When
+            - Calling the cs-falcon-cspm-list-service-policy-settings command.
+        Then
+            - Validate the code does a manual pagination, since the API does not offer it.
+        """
         # The raw response in the test data has 2 values, we set a limit of 1 to assert the manual pagination
         from CrowdStrikeFalcon import cs_falcon_cspm_list_service_policy_settings_command
         raw_response = load_json('test_data/service_policy_settings/policy_settings_raw_response.json')
@@ -5620,7 +5652,12 @@ class TestCSFalconCSPMUpdatePolicySettingsCommand:
 
     def test_update_policy_settings_error_500(self, mocker: MockerFixture):
         """
-        Test that we catch the 500 error code.
+        Given
+            - A wrong a account id.
+        When
+            - Running the cs-falcon-cspm-update-policy_settings command, and receiving a 500 status code.
+        Then
+            - Validate that we output an error with the correct message.
         """
         from CrowdStrikeFalcon import cs_falcon_cspm_update_policy_settings_command
         raw_response = load_json('test_data/update_policy_settings/update_settings_error_500_raw_response.json')
@@ -5632,7 +5669,12 @@ class TestCSFalconCSPMUpdatePolicySettingsCommand:
 
     def test_update_policy_settings(self, mocker: MockerFixture):
         """
-        Test a succesfull command run.
+        Given:
+            - Arguments for the command.
+        When
+            - Calling the cs-falcon-cspm-update-policy_settings command.
+        Then
+            - Validate the data of the CommandResults object returned.
         """
         from CrowdStrikeFalcon import cs_falcon_cspm_update_policy_settings_command
         raw_response = load_json('test_data/update_policy_settings/update_settings_raw_response.json')
@@ -5659,7 +5701,12 @@ class TestCSFalconResolveIdentityDetectionCommand:
 
     def test_resolve_identity_detection(self, mocker: MockerFixture):
         """
-        Test a succesfull command run.
+        Given:
+            - Arguments for the command.
+        When
+            - Calling the cs-falcon-resolve-identity-detection command.
+        Then
+            - Validate the data of the CommandResults object returned.
         """
         from CrowdStrikeFalcon import cs_falcon_resolve_identity_detection
         mocker.patch('CrowdStrikeFalcon.http_request', return_value=requests.Response())
@@ -5671,12 +5718,36 @@ class TestCSFalconResolveIdentityDetectionCommand:
 class TestIOAFetch:
     # Since this integration fetches multiple incidents, the last run object contains a list of
     # last run objects for each incident type, for IOA, that is the 5th position
-    def test_validate_ioa_fetch_query(self):
-        ...
+    @pytest.mark.parametrize('fetch_query, error_message', [('account_id=1', 'A cloud provider is required as part of the IOA fetch query'),
+                                                            ("cloud_provider!='aws'", 'An unsupported parameter has been entered'),
+                                                            ("cloud_provider='aws'&weird_param=val",
+                                                             'An unsupported parameter has been entered'),
+                                                            ("cloud_provider='aws'&state=", 'cannot be an empty string'),
+                                                            ("cloud_provider='aws'&state:val", 'A query section has wrong format'),
+                                                            ("cloud_provider='aws'&state==val", 'A query section has wrong format')])
+    def test_validate_ioa_fetch_query_error(self, fetch_query, error_message):
+        """
+        Given:
+            - An incorrect IOA fetch query to validate.
+        When
+            - Validating the query supplied by the user.
+        Then
+            - Validate that the correct error message is returned for the incorrect fetch query.
+        """
+        from CrowdStrikeFalcon import validate_ioa_fetch_query
+        with pytest.raises(DemistoException) as e:
+            validate_ioa_fetch_query(ioa_fetch_query=fetch_query)
+        assert error_message in str(e)
 
     def test_fetch_query_with_paginating(self, mocker: MockerFixture):
-        # Test that we do an API call using the last_fetch_query when doing pagination, and that the next token is added to the
-        # query parameters
+        """
+        Given:
+            - The query of the last fetch, and the next token.
+        When
+            - Performing pagination and receiving the next token from the previous run.
+        Then
+            - Validate that the last fetch query is used in the current run, and the next token is added to the API call.
+        """
         from CrowdStrikeFalcon import fetch_incidents
         fetch_query = 'cloud_provider=aws'
         last_fetch_query = f'{fetch_query}&date_time_since=some_time'
@@ -5694,7 +5765,14 @@ class TestIOAFetch:
         assert f'next_token={ioa_next_token}' in http_request_mocker.call_args_list[0][1].get('url_suffix')
 
     def test_fetch_query_without_pagination(self, mocker: MockerFixture):
-        # Test that we append 'date_time_since' to the given fetch query
+        """
+        Given:
+            - The date_time_since date from the previous fetch, and the fetch query.
+        When
+            - Performing fetch without pagination.
+        Then
+            - Validate that the passed date_date_since date is appended to the supplied fetch query.
+        """
         from CrowdStrikeFalcon import fetch_incidents
         last_date_time_since = 'some_date_time'
         fetch_query = 'cloud_provider=aws'
@@ -5712,7 +5790,14 @@ class TestIOAFetch:
     @pytest.mark.parametrize('next_toke_object, expected_next_token', [({'next_token': 'dummy_token'}, 'dummy_token'),
                                                                        ({}, None)])
     def test_return_values_get_ioa_events(self, mocker: MockerFixture, next_toke_object, expected_next_token):
-        # Test that we return the correct data when we do, or do not, get a next token
+        """
+        Given:
+            - The response of the API when a pagination object is returned or not.
+        When
+            - Doing an API call to retrieve the IOA events.
+        Then
+            - Validate that we extract the events and next token from the raw response, if they exist.
+        """
         from CrowdStrikeFalcon import get_ioa_events_for_fetch
         exepcted_events = ['event_1', 'event_2']
         raw_response = {'meta':
@@ -5727,7 +5812,18 @@ class TestIOAFetch:
         assert expected_next_token == next_token
 
     def test_ioa_events_pagination(self, mocker: MockerFixture):
-        # Save two responses, where both of them return a next token with them. Make the api_limit=2,
+        """
+        Given:
+            - 2 responses from the API that includes a pagination object.
+        When
+            - Fetching incidents, and the fetch limit is greater than the API limit of a single call (If the fetch limit is 4,
+            and the API limit is 2, that means in each fetch, we should do 2 API calls, using pagination, to acquire 4 results, or
+            until no more results are found).
+        Then
+            - Validate that we do API calls using the correct pagination arguments, and that we get the next token so it can be used
+            in the next fetch round.
+        """
+        # We saved two responses, where both of them return a next token. We have that the api_limit=2,
         # and the fetch_limit=3, that way, we would need to do a request twice, and on the second request,
         # we would make it while having a limit of 1. We will check the arguments of the method get_ioa_events_for_fetch,
         # and the return values of ioa_events_pagination.
@@ -5756,6 +5852,14 @@ class TestIOAFetch:
         assert next_token == 'next_token_2'
 
     def test_no_ioa_events_added_if_found_in_last_run(self, mocker: MockerFixture):
+        """
+        Given:
+            - The event ids of the last fetch run.
+        When
+            - Converting the fetched events to incidents.
+        Then
+            - Validate that we do not create incidents of events that have been fetched in the previous round.
+        """
         # Make last_event_ids have the values ['1', '2'], and return the values ['2', '3'] when fetching,
         # and once we enter the for loop to go over the fetched events, '2' will not get picked up, since it
         # was already fetched, therfore, we check that in the returned incidents object, only the event with id '3'
@@ -5779,6 +5883,15 @@ class TestIOAFetch:
         assert rawJSON.get('event_id') == '3'
 
     def test_save_fetched_events_when_paginating(self, mocker: MockerFixture):
+        """
+        Given:
+            - The event ids of the last fetch run.
+        When
+            - Saving the fetched event ids.
+        Then
+            - Validate that we add the newly fetched event ids to the previous ones, and not override them, when we are
+            doing pagination.
+        """
         # Make sure that we save all the events that have been fetched throught the whole pagination process,
         # which can span on many fetches. We will have ids in last_event_ids (['1']), and configure that we are
         # doing pagination, and that we fetched event '2', and in the new returned last run, the key last_event_ids
@@ -5798,6 +5911,15 @@ class TestIOAFetch:
         assert set_last_run_mocker.call_args_list[0][0][0][4].get('last_event_ids') == ['2', '1']
 
     def test_save_fetched_events_when_starting_pagination(self, mocker: MockerFixture):
+        """
+        Given:
+            - The event ids of the last fetch run.
+        When
+            - Saving the fetched event ids.
+        Then
+            - Validate that we add the newly fetched event ids to the previous ones, and not override them, when we are
+            going to start pagination in the next fetch run.
+        """
         # Make sure that we save all the events that have been fetched before when starting the pagination process.
         # We will have ids in last_event_ids (['1']), and configure that we are, doing pagination, and that we fetched event '2',
         # and in the new returned last run, the key last_event_ids has a value of ['1', '2']
@@ -5816,6 +5938,18 @@ class TestIOAFetch:
         assert set_last_run_mocker.call_args_list[0][0][0][4].get('last_event_ids') == ['2', '1']
 
     def test_fetch_ioa_events(self, mocker: MockerFixture):
+        """
+        Given:
+            - A last run object.
+        When
+            - Fetching IOA events.
+        Then
+            - Validate that we construct the correct last run object for the next run by:
+                1. The next token is saved.
+                2. The largest date_time_since date between the dates of all fetched events is saved.
+                3. The fetch query that was used in the API call is saved.
+                4. The fetched event ids are saved.
+        """
         # A successful fetch of incidents
         from CrowdStrikeFalcon import fetch_incidents
         last_run_object: list[dict[str, Any]] = [{}, {}, {}, {},
@@ -5842,14 +5976,28 @@ class TestIOMFetch:
     # Since this integration fetches multiple incidents, the last run object contains a list of
     # last run objects for each incident type, for IOM, that is the 4th position
     def test_validate_iom_fetch_query(self):
+        """
+        Given:
+            - An incorrect IOM fetch query to validate.
+        When
+            - Validating the query supplied by the user.
+        Then
+            - Validate that the correct error message is returned for the incorrect fetch query.
+        """
         from CrowdStrikeFalcon import validate_iom_fetch_query
         with pytest.raises(DemistoException) as e:
             validate_iom_fetch_query(iom_fetch_query='scan_time: >some_time')
         assert 'scan_time is not allowed as part of the IOM fetch query' in str(e)
 
     def test_fetch_query_with_paginating(self, mocker: MockerFixture):
-        # Test that we do an API call using the last_fetch_query when doing pagination, and that the next token is added to the
-        # query parameters
+        """
+        Given:
+            - The query of the last fetch, and the next token.
+        When
+            - Performing pagination and receiving the next token from the previous run.
+        Then
+            - Validate that the last fetch query is used in the current run, and the next token is added to the API call.
+        """
         from CrowdStrikeFalcon import fetch_incidents
         fetch_filter = "cloud_provider: 'aws'"
         last_fetch_filter = f'scan_time: some_time+{fetch_filter}'
@@ -5868,7 +6016,14 @@ class TestIOMFetch:
         assert http_request_mocker.call_args_list[0][1].get('params').get('next_token') == iom_next_token
 
     def test_fetch_query_without_pagination_and_not_first_run(self, mocker: MockerFixture):
-        # Test that we append 'scan_time' to the given fetch query, and this is not the first run
+        """
+        Given:
+            - The last_scan_time date from the previous fetch, and the fetch query..
+        When
+            - Performing fetch without pagination, and this is not the first fetch run.
+        Then
+            - Validate that we append the last_scan_time date, while using '>' in the fetch query.
+        """
         from CrowdStrikeFalcon import fetch_incidents
         last_scan_time = 'some_scan_time'
         fetch_filter = "cloud_provider: 'aws'"
@@ -5886,7 +6041,14 @@ class TestIOMFetch:
 
     @freeze_time("2023-01-04T00:00:00Z")
     def test_fetch_query_without_pagination_and_first_run(self, mocker: MockerFixture):
-        # Test that we append 'scan_time' to the given fetch query, and this is the first run (we use >=)
+        """
+        Given:
+            - The fetch query.
+        When
+            - Performing fetch without pagination, and this is the first fetch run.
+        Then
+            - Validate that we append the last_scan_time date, while using '>=' in the fetch query.
+        """
         from CrowdStrikeFalcon import fetch_incidents
         # The date configured in @freeze_time minues 3 days, which is the default FETCH_TIME
         last_scan_time = '2023-01-01T00:00:00.000000Z'
@@ -5903,14 +6065,17 @@ class TestIOMFetch:
         assert f"scan_time: >='{last_scan_time}'+{fetch_filter}" == \
             http_request_mocker.call_args_list[0][1].get('params').get('filter')
 
-    def test_request_get_ioa_events(self):
-        # Test that we construct the fetch query correctly, especially when supplying a next token
-        ...
-
     @pytest.mark.parametrize('next_toke_object, expected_next_token', [({'next_token': 'dummy_token'}, 'dummy_token'),
                                                                        ({}, None)])
     def test_return_values_get_iom_resource_ids(self, mocker: MockerFixture, next_toke_object, expected_next_token):
-        # Test that we return the correct data when we do, or do not, get a next token
+        """
+        Given:
+            - The response of the API when a pagination object is returned or not.
+        When
+            - Doing an API call to retrieve the IOM resources.
+        Then
+            - Validate that we extract the resources and next token from the raw response, if they exist.
+        """
         from CrowdStrikeFalcon import get_iom_ids_for_fetch
         exepcted_resource_ids = ['resource_1', 'resource_2']
         raw_response = {'meta':
@@ -5924,11 +6089,22 @@ class TestIOMFetch:
         assert exepcted_resource_ids == resource_ids
         assert expected_next_token == next_token
 
-    def test_ioa_events_pagination(self, mocker: MockerFixture):
+    def test_iom_events_pagination(self, mocker: MockerFixture):
+        """
+        Given:
+            - 2 responses from the API that includes a pagination object.
+        When
+            - Fetching incidents, and the fetch limit is greater than the API limit of a single call (If the fetch limit is 4,
+            and the API limit is 2, that means in each fetch, we should do 2 API calls, using pagination, to acquire 4 results, or
+            until no more results are found).
+        Then
+            - Validate that we do API calls using the correct pagination arguments, and that we get the next token so it can be used
+            in the next fetch round.
+        """
         # Save two responses, where both of them return a next token with them. Make the api_limit=2,
         # and the fetch_limit=3, that way, we would need to do a request twice, and on the second request,
-        # we would make it while having a limit of 1. We will check the arguments of the method get_ioa_events_for_fetch,
-        # and the return values of ioa_events_pagination.
+        # we would make it while having a limit of 1. We will check the arguments of the method get_iom_ids_for_fetch,
+        # and the return values of iom_ids_pagination.
         from CrowdStrikeFalcon import iom_ids_pagination, get_iom_ids_for_fetch
         page_1_raw_response = load_json('test_data/iom_fetch_incidents/iom_resource_ids_page_1_raw_response.json')
         page_2_raw_response = load_json('test_data/iom_fetch_incidents/iom_resource_ids_page_2_raw_response.json')
@@ -5953,7 +6129,15 @@ class TestIOMFetch:
         # use it in the next fetching round
         assert next_token == 'next_token_2'
 
-    def test_no_ioa_events_added_if_found_in_last_run(self, mocker: MockerFixture):
+    def test_no_iom_resources_added_if_found_in_last_run(self, mocker: MockerFixture):
+        """
+        Given:
+            - The resources ids of the last fetch run.
+        When
+            - Converting the fetched resources to incidents.
+        Then
+            - Validate that we do not create incidents of resources that have been fetched in the previous round.
+        """
         # Make last_resource_ids have the values ['1', '2'], and return the values ['2', '3'] when fetching,
         # and once we enter the for loop to go over the fetched resources, '2' will not get picked up, since it
         # was already fetched, therfore, we check that in the returned incidents object, only the resource with id '3'
@@ -5979,7 +6163,16 @@ class TestIOMFetch:
         assert rawJSON.get('incident_type') == 'iom_configurations'
         assert rawJSON.get('id') == '3'
 
-    def test_save_fetched_events_when_paginating(self, mocker: MockerFixture):
+    def test_save_fetched_resources_when_paginating(self, mocker: MockerFixture):
+        """
+        Given:
+            - The resource ids of the last fetch run.
+        When
+            - Saving the fetched resource ids.
+        Then
+            - Validate that we add the newly fetched resource ids to the previous ones, and not override them, when we are
+            doing pagination.
+        """
         # Make sure that we save all the resources that have been fetched throught the whole pagination process,
         # which can span on many fetches. We will have ids in last_resource_ids (['1']), and configure that we are
         # doing pagination, and that we fetched resource '2', and in the new returned last run, the key last_resource_ids
@@ -6000,7 +6193,16 @@ class TestIOMFetch:
         fetch_incidents()
         assert set_last_run_mocker.call_args_list[0][0][0][3].get('last_resource_ids') == ['2', '1']
 
-    def test_save_fetched_events_when_starting_pagination(self, mocker: MockerFixture):
+    def test_save_fetched_resources_when_starting_pagination(self, mocker: MockerFixture):
+        """
+        Given:
+            - The resource ids of the last fetch run.
+        When
+            - Saving the fetched resource ids.
+        Then
+            - Validate that we add the newly fetched resource ids to the previous ones, and not override them, when we are
+            going to start pagination in the next fetch run.
+        """
         # Make sure that we save all the resources that have been fetched before when starting the pagination process.
         # We will have ids in last_resource_ids (['1']), and configure that we are, doing pagination, and that we fetched
         # resource '2', and in the new returned last run, the key last_resource_ids has a value of ['1', '2']
@@ -6021,6 +6223,18 @@ class TestIOMFetch:
         assert set_last_run_mocker.call_args_list[0][0][0][3].get('last_resource_ids') == ['2', '1']
 
     def test_fetch_iom_events(self, mocker: MockerFixture):
+        """
+        Given:
+            - A last run object.
+        When
+            - Fetching IOM resources.
+        Then
+            - Validate that we construct the correct last run object for the next run by:
+                1. The next token is saved.
+                2. The largest scan_time date between the dates of all fetched resources is saved.
+                3. The fetch query that was used in the API call is saved.
+                4. The fetched resource ids are saved.
+        """
         # A successful fetch of incidents
         from CrowdStrikeFalcon import fetch_incidents
         last_run_object: list[dict[str, Any]] = [{}, {}, {},
