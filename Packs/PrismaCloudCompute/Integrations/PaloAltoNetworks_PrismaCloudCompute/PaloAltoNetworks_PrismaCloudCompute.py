@@ -2047,43 +2047,6 @@ def unstuck_fetch_stream_command():
     )
 
 
-def get_file_integrity_events_command(client: PrismaCloudComputeClient, args: dict):
-    """
-    Get runtime file integrity audit events for the given hostname
-
-    Args:
-        client (PrismaCloudComputeClient): prisma-cloud-compute client.
-        args (dict): prisma-cloud-compute-get-file-integrity-events command arguments
-
-    Returns:
-        HTTP Response object
-    """
-    hostname = args.get('hostname')
-    event_id = args.get('event_id')
-    limit = args.get('limit')
-    from_date = args.get('from_date')
-    to_date = args.get('to_date')
-    search_term = args.get('search_term')
-    sort = args.get('sort')
-
-    response = client.get_file_integrity_events(
-        limit, sort, hostname=hostname, event_id=event_id,
-        from_date=from_date, to_date=to_date, search_term=search_term
-    )
-    if not response:
-        readable_output = "No results for the given search."
-    else:
-        readable_output = None
-    return CommandResults(
-        outputs_prefix='PrismaCloudCompute.FileIntegrity',
-        outputs_key_field='_id',
-        outputs=format_context(response),
-        raw_response=response,
-        readable_output=readable_output
-    )
-
-
-  
 def main():
     """
     PARSE AND VALIDATE INTEGRATION PARAMS
