@@ -1,7 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-import AWSApiModule
+from AWSApiModule import *
 import urllib3.util
 
 # Disable insecure warnings
