@@ -1628,3 +1628,27 @@ def test_get_cve_different_reliability(requests_mock, reliability, client):
     response = get_cves(client=client, args=args, reliability=reliability)[0]
 
     assert response.indicator.dbot_score.reliability == reliability
+
+
+def test_get_file_integrity_events_command(requests_mock):
+    """
+    Given:
+        - An app client object
+        - Relevant arguments
+    When:
+        - Calling 'prisma-cloud-compute-get-file-integrity-events' command
+    Then:
+        - Ensure the file integrity events output equals the raw_response object which is mocked
+    """
+    from PaloAltoNetworks_PrismaCloudCompute import get_file_integrity_events_command, PrismaCloudComputeClient
+    with open("test_data/file_integrity_events.json") as f:
+        d = json.load(f)
+
+    requests_mock.get(url=BASE_URL + '/audits/runtime/file-integrity', json=d)
+    client = PrismaCloudComputeClient(base_url=BASE_URL, verify='False', project='', auth=('test', 'test'))
+    args = {
+        "hostname": "test123",
+        "limit": 3
+    }
+
+    assert get_file_integrity_events_command(client, args).raw_response == d
