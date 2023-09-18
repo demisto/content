@@ -60,6 +60,7 @@ async def handle_post(
         token: APIKey = Depends(token_auth)
 ):
 
+    demisto.debug("handling request")
     header_name = None
     request_headers = dict(request.headers)
 
@@ -110,6 +111,7 @@ async def handle_post(
             sample_events += sample_events_to_store
             integration_context['sample_events'] = list(sample_events)
             set_to_integration_context_with_retries(integration_context)
+            demisto.info(get_message_memory_dump(None, None))
             demisto.info('finished calling set')
 
         except Exception as e:
