@@ -79,17 +79,24 @@ def mock_client(mocker, http_request_result=None, throw_error=False):
     Command Unit Tests
 """
 
+
 @pytest.fixture
 def mock_get_a_list_of_threats_request(mocker):
-    mocker.patch("AbnormalSecurity.Client.get_a_list_of_threats_request").return_value = util_load_json('test_data/test_get_list_of_abnormal_threats.json')
+    mocker.patch("AbnormalSecurity.Client.get_a_list_of_threats_request").return_value \
+        = util_load_json('test_data/test_get_list_of_abnormal_threats.json')
+
 
 @pytest.fixture
 def mock_get_a_list_of_campaigns_submitted_to_abuse_mailbox_request(mocker):
-    mocker.patch("AbnormalSecurity.Client.get_a_list_of_campaigns_submitted_to_abuse_mailbox_request").return_value = util_load_json('test_data/test_get_list_of_abuse_campaigns.json')
+    mocker.patch("AbnormalSecurity.Client.get_a_list_of_campaigns_submitted_to_abuse_mailbox_request").return_value\
+        = util_load_json('test_data/test_get_list_of_abuse_campaigns.json')
+
 
 @pytest.fixture
 def mock_get_a_list_of_abnormal_cases_identified_by_abnormal_security_request(mocker):
-    mocker.patch("AbnormalSecurity.Client.get_a_list_of_abnormal_cases_identified_by_abnormal_security_request").return_value = util_load_json('test_data/test_get_list_of_abnormal_cases.json')
+    mocker.patch("AbnormalSecurity.Client.get_a_list_of_abnormal_cases_identified_by_abnormal_security_request").return_value\
+        = util_load_json('test_data/test_get_list_of_abnormal_cases.json')
+
 
 def test_check_the_status_of_an_action_requested_on_a_case_command(mocker):
     """
@@ -561,7 +568,10 @@ def test_provides_the_analysis_and_timeline_details_of_a_case_command(mocker):
     assert len(results.outputs.get('eventTimeline')) > 0
     assert results.outputs_prefix == 'AbnormalSecurity.CaseAnalysis'
 
-def test_fetch_incidents(mocker, mock_get_a_list_of_threats_request, mock_get_a_list_of_campaigns_submitted_to_abuse_mailbox_request, mock_get_a_list_of_abnormal_cases_identified_by_abnormal_security_request):
+
+def test_fetch_incidents(mocker, mock_get_a_list_of_threats_request,
+                         mock_get_a_list_of_campaigns_submitted_to_abuse_mailbox_request,
+                         mock_get_a_list_of_abnormal_cases_identified_by_abnormal_security_request):
     client = mock_client(mocker, util_load_json('test_data/test_get_case_analysis_and_timeline.json'))
     first_fetch_time = datetime.now().strftime(ISO_8601_FORMAT)
     next_run, incidents = fetch_incidents(
