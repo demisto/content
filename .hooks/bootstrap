@@ -61,7 +61,7 @@ fi
 if [ -n "${CI}" ]; then
     retry_count=3
     sleep_time=10
-    echo "Detected CI environment Running extra requirements"
+    echo "Detected CI environment. Running extra requirements"
     echo "Check if poetry files are valid"
     poetry check --lock --no-interaction
     exit_on_error $? "Failed to check poetry files, exiting with exit code $?"
@@ -93,7 +93,7 @@ echo "Deactivate by running: deactivate"
 echo "======================="
 
 if [ -n "${CI}" ]; then
-    echo "Detected CI environment Running npm ci..."
+    echo "Detected CI environment. Running npm ci..."
     npm ci --cache .npm --prefer-offline --no-fund --no-audit  # Clean install
     exit_on_error $? "Failed to install npm dependencies, exiting with exit code $?"
 elif [ -n "${NO_NPM}" ]; then
