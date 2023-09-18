@@ -150,6 +150,9 @@ MANAGED_IDENTITIES_SYSTEM_ASSIGNED = 'SYSTEM_ASSIGNED'
 TOKEN_EXPIRED_ERROR_CODES = {50173, 700082, 70008, 54005, 7000222,
                              }  # See: https://login.microsoftonline.com/error?code=
 
+# Moderate Retry Mechanism
+MAX_DELAY_REQUEST_COUNTER = 6
+
 
 class CloudEndpointNotSetException(Exception):
     pass
@@ -613,6 +616,11 @@ def get_azure_cloud(params, integration_name):
                                                  'active_directory': params.get('azure_ad_endpoint')
                                                  or 'https://login.microsoftonline.com'
                                              })
+        # in multiple Graph integrations, the url is called 'url' instead of 'server_url' and the default url is different.
+        if 'url' in params:
+            return create_custom_azure_cloud(integration_name, defaults=AZURE_WORLDWIDE_CLOUD,
+                                             endpoints={'microsoft_graph_resource_id': params.get('url')
+                                                        or 'https://graph.microsoft.com'})
 
     # There is no need for backward compatibility support, as the integration didn't support it to begin with.
     return AZURE_CLOUDS.get(AZURE_CLOUD_NAME_MAPPING.get(azure_cloud_arg), AZURE_WORLDWIDE_CLOUD)  # type: ignore[arg-type]
@@ -734,8 +742,6 @@ class MicrosoftClient(BaseClient):
         if self.multi_resource:
             self.resources = resources if resources else []
             self.resource_to_access_token: dict[str, str] = {}
-
-        self.auth_code_reconfigured = False
 
         # for Azure Managed Identities purpose
         self.managed_identities_client_id = managed_identities_client_id
@@ -869,11 +875,7 @@ class MicrosoftClient(BaseClient):
 
         valid_until = integration_context.get(valid_until_keyword)
 
-        self.auth_code_reconfigured = self.is_auth_code_reconfigured(integration_context.get('auth_code', ''))
-        if self.auth_code_reconfigured:
-            demisto.debug("Auth code reconfigured, saving new auth code to integration context")
-            integration_context['auth_code'] = self.auth_code
-        elif access_token and valid_until and self.epoch_seconds() < valid_until:
+        if access_token and valid_until and self.epoch_seconds() < valid_until:
             return access_token
 
         if self.auth_type == OPROXY_AUTH_TYPE:
@@ -982,11 +984,21 @@ class MicrosoftClient(BaseClient):
         """
         content = self.refresh_token or self.tenant_id
         headers = self._add_info_headers()
+        context = get_integration_context()
+        next_request_time = context.get("next_request_time", 0.0)
+        delay_request_counter = min(int(context.get('delay_request_counter', 1)), MAX_DELAY_REQUEST_COUNTER)
+
+        should_delay_request(next_request_time)
         oproxy_response = self._oproxy_authorize_build_request(headers, content, scope, resource)
 
         if not oproxy_response.ok:
+            next_request_time = calculate_next_request_time(delay_request_counter=delay_request_counter)
+            set_retry_mechanism_arguments(next_request_time=next_request_time, delay_request_counter=delay_request_counter,
+                                          context=context)
             self._raise_authentication_error(oproxy_response)
 
+        # In case of success, reset the retry mechanism arguments.
+        set_retry_mechanism_arguments(context=context)
         # Oproxy authentication succeeded
         try:
             gcloud_function_exec_id = oproxy_response.headers.get('Function-Execution-Id')
@@ -1107,7 +1119,7 @@ class MicrosoftClient(BaseClient):
             data['scope'] = scope
 
         refresh_token = refresh_token or self._get_refresh_token_from_auth_code_param()
-        if refresh_token and not self.auth_code_reconfigured:
+        if refresh_token:
             data['grant_type'] = REFRESH_TOKEN
             data['refresh_token'] = refresh_token
         else:
@@ -1393,29 +1405,6 @@ class MicrosoftClient(BaseClient):
 and enter the code **{user_code}** to authenticate.
 2. Run the **{complete_command}** command in the War Room."""
 
-    def is_auth_code_reconfigured(self, auth_code) -> bool:
-        """
-        Checks if the auth_code is reconfigured by comparing to the self.auth_code from the instance params.
-        Args:
-            auth_code: The auth_code form the integration context.
-        Returns:
-            bool: True if the auth_code is reconfigured, otherwise False.
-        """
-        # Case of oproxy
-        if self.auth_type == OPROXY_AUTH_TYPE:
-            return False
-        # Case of the next times or after reconfigured the auth_code
-        if auth_code and self.auth_code:
-            is_reconfigured = auth_code != self.auth_code
-            demisto.debug(f'Auth code is reconfigured: {is_reconfigured}')
-            return is_reconfigured
-        # Case of the first time or after deleting the auth_code
-        elif auth_code or self.auth_code:
-            demisto.debug('Auth code is only in ' + ('integration_context' if auth_code else 'params'))
-            return True
-        else:
-            return False
-
 
 class NotFoundError(Exception):
     """Exception raised for 404 - Not Found errors.
@@ -1426,6 +1415,48 @@ class NotFoundError(Exception):
 
     def __init__(self, message):
         self.message = message
+
+
+def calculate_next_request_time(delay_request_counter: int) -> float:
+    """
+        Calculates the next request time based on the delay_request_counter.
+        This is an implication of the Moderate Retry Mechanism for the Oproxy requests.
+    """
+    # The max delay time should be limited to ~60 sec.
+    next_request_time = get_current_time() + timedelta(seconds=(2 ** delay_request_counter))
+    return next_request_time.timestamp()
+
+
+def set_retry_mechanism_arguments(context: dict, next_request_time: float = 0.0, delay_request_counter: int = 1):
+    """
+        Sets the next_request_time in the integration context.
+        This is an implication of the Moderate Retry Mechanism for the Oproxy requests.
+    """
+    context = context or {}
+    next_counter = delay_request_counter + 1
+
+    context['next_request_time'] = next_request_time
+    context['delay_request_counter'] = next_counter
+    # Should reset the context retry arguments.
+    if next_request_time == 0.0:
+        context['delay_request_counter'] = 1
+    set_integration_context(context)
+
+
+def should_delay_request(next_request_time: float):
+    """
+        Checks if the request should be delayed based on context variables.
+        This is an implication of the Moderate Retry Mechanism for the Oproxy requests.
+    """
+    now = get_current_time().timestamp()
+
+    # If the next_request_time is 0 or negative, it means that the request should not be delayed because no error has occurred.
+    if next_request_time <= 0.0:
+        return
+    # Checking if the next_request_time has passed.
+    if now >= next_request_time:
+        return
+    raise Exception(f"The request will be delayed until {datetime.fromtimestamp(next_request_time)}")
 
 
 def get_azure_managed_identities_client_id(params: dict) -> str | None:
