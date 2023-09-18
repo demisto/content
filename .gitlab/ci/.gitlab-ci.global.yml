@@ -14,11 +14,16 @@
 
 
 .setup-network-certs: &setup-network-certs
-  - source .gitlab/helper_functions.sh
-  - chmod 700 $NETWORK_SETUP
-  - source $NETWORK_SETUP
+  - section_start "Setup network certs" --collapsed
+  - chmod 700 ${CERTIFICATE_SETUP_SCRIPT}
+  - source ${CERTIFICATE_SETUP_SCRIPT}
   - section_end "Setup network certs"
 
+.setup-artifactory: &setup-artifactory
+  - section_start "Setup Artifactory" --collapsed
+  - chmod 700 ${ARTIFACTORY_SETUP_SCRIPT}
+  - source ${ARTIFACTORY_SETUP_SCRIPT}
+  - section_end "Setup Artifactory"
 
 ### Global Script Snippets ###
 
@@ -53,11 +58,13 @@
   - section_end "Create ID Set"
 
 .download-demisto-conf:
-  - section_start "Download content-test-conf" --collapsed
-  - ./Tests/scripts/download_conf_repos.sh  >> $ARTIFACTS_FOLDER/logs/download_demisto_conf.log
+  - section_start "Download content-test-conf and infra" --collapsed
+  - ./Tests/scripts/download_conf_repos.sh 2>&1 | tee --append "${ARTIFACTS_FOLDER}/logs/download_conf_repos.log"
+  - section_end "Download content-test-conf and infra"
+  - section_start "Secrets Fetch" --collapsed
   - SECRET_CONF_PATH=$(cat secret_conf_path)
   - python3 ./Tests/scripts/add_secrets_file_to_build.py -sa "$GSM_SERVICE_ACCOUNT" -sf "$SECRET_CONF_PATH" -u "$DEMISTO_USERNAME" -p "$DEMISTO_PASSWORD" -gpidd "$GSM_PROJECT_ID_DEV" -gpidp "$GSM_PROJECT_ID" >> $ARTIFACTS_FOLDER/logs/handle_secrets.log
-  - section_end "Download content-test-conf"
+  - section_end "Secrets Fetch"
 
 .ssh-config-setup:
   - section_start "SSH config setup" --collapsed
@@ -164,7 +171,9 @@
 
 .default-before-script:
   before_script:
+    - source .gitlab/helper_functions.sh
     - *setup-network-certs
+    - *setup-artifactory
     - *stop_contrib_external_build
     - *clone_and_export_variables
     - *check_build_files_are_up_to_date
@@ -196,7 +205,6 @@
     - .default-cache
     - .default-before-script
 
-
 .trigger-slack-notification:
   stage: .post
   trigger:
@@ -204,6 +212,21 @@
     include:
       - local: .gitlab/ci/.gitlab-ci.slack-notify.yml
 
+.validate_content_test_conf_branch_merged:
+  - section_start "Validate content-test-conf Branch Merged"
+  - |
+    if [[ "${CI_COMMIT_BRANCH}" = "master" ]]; then
+      echo "Skipping, Should not run on master branch."
+    elif [ 'true' = $(./Tests/scripts/check_if_branch_exist.sh -u "gitlab-ci-token" -t "${CI_JOB_TOKEN}" -h "code.pan.run" --repo "xsoar/content-test-conf" -b "${CI_COMMIT_BRANCH}") ]; then
+      RED='\033[0;31m'
+      NC='\033[0m'
+      echo -e "${RED}ERROR: Found a branch with the same name:${CI_COMMIT_BRANCH} in contest-test-conf repository.\n Merge it in order to merge the current branch into content repo.${NC}"
+      job-done
+      exit 1
+    else
+      echo "Couldn't find a branch with the name:${CI_COMMIT_BRANCH} in contest-test-conf repository."
+    fi
+  - section_end "Validate content-test-conf Branch Merged"
 
 .unittests-and-lint-settings:
   tags:
@@ -333,26 +356,6 @@
     - section_start "Check Spelling"
     - python3 ./Tests/scripts/circleci_spell_checker.py $CI_COMMIT_BRANCH
     - section_end "Check Spelling"
-    - section_start "Validate content-test-conf Branch Merged"
-    - |
-      if [[ $CI_COMMIT_BRANCH = "master" ]]; then
-        echo "Skipping, Should not run on master branch."
-      else
-        # replace slashes ('/') in the branch name, if exist, with underscores ('_')
-        UNDERSCORE_CI_BRANCH=${CI_COMMIT_BRANCH//\//_}
-        wget --header "Accept: application/vnd.github.v3.raw" --header "Authorization: token $GITHUB_TOKEN" "https://github.com/demisto/content-test-conf/archive/$UNDERSCORE_CI_BRANCH.zip" --no-check-certificate -q || {
-          if [ "$?" != "0" ]; then
-            echo "No such branch in content-test-conf: $UNDERSCORE_CI_BRANCH"
-          else
-            RED='\033[0;31m'
-            NC='\033[0m'
-            echo -e "${RED}ERROR: Found a branch with the same name in contest-test-conf conf.json - $UNDERSCORE_CI_BRANCH.\n Merge it in order to merge the current branch into content repo.${NC}"
-            job-done
-            exit 1
-          fi
-        }
-      fi
-    - section_end "Validate content-test-conf Branch Merged"
     - section_start "Validate landingPageSections.json"
     - echo "Download index.zip"
     - INDEX_PATH=$(mktemp)
@@ -369,6 +372,7 @@
 
     - python3 Tests/Marketplace/validate_landing_page_sections.py -i $UNZIP_PATH
     - section_end "Validate landingPageSections.json"
+    - !reference [ .validate_content_test_conf_branch_merged ]  # This section should be the last one in the script, do not move it.
     - job-done
 
 .jobs-done-check:

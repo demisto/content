@@ -17,6 +17,20 @@ class ResultMock:
         return []
 
 
+class ConnectionMock:
+    def __enter__(self):
+        return ConnectionMock()
+
+    def __exit__(self, exc, value, tb):
+        pass
+
+    def execute(self, sql_query, bind_vars):
+        return ResultMock()
+
+    def execution_options(self, isolation_level):
+        pass
+
+
 ARGS1 = {
     'query': "select Name from city",
     'limit': 5,
@@ -222,9 +236,8 @@ def test_sql_queries_with_empty_table(mocker):
     - create the context
     - validate the expected_result and the created context
     """
-    mocker.patch.object(Client, '_create_engine_and_connect', return_value=mocker.Mock(spec=sqlalchemy.engine.base.Connection))
+    mocker.patch.object(Client, '_create_engine_and_connect', return_value=ConnectionMock())
     client = Client('sql_dialect', 'server_url', 'username', 'password', 'port', 'database', "", False)
-    mocker.patch.object(client.connection, 'execute', return_value=ResultMock())
     result = sql_query_execute(client, ARGS3)
     assert EMPTY_OUTPUT == result[1]  # entry context is found in the 2nd place in the result of the command
 

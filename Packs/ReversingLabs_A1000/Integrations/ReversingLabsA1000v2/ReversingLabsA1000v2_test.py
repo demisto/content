@@ -1,6 +1,6 @@
 import json
 from ReversingLabsA1000v2 import a1000_report_output, list_extracted_files_output, get_classification_output, \
-    classification_to_score, url_report_output, domain_report_output, ip_report_output
+    classification_to_score, url_report_output, domain_report_output, ip_report_output, format_proxy
 import demistomock as demisto
 import pytest
 
@@ -68,6 +68,18 @@ def test_ip_report_output():
 
 def test_classification_to_score():
     assert classification_to_score("MALICIOUS") == 3
+
+
+def test_format_proxy():
+    formatted_correctly = format_proxy(
+        addr="https://proxy-address.com",
+        username="user1",
+        password="pass1"
+    )
+
+    correct_expected = "https://user1:pass1@proxy-address.com"
+
+    assert formatted_correctly == correct_expected
 
 
 def util_load_json(path):
