@@ -372,12 +372,12 @@ script:
     - contextPath: Netcraft.Takedown.deceptive_domain_score
       description: |
         The deceptive domain score of the domain.
-        e.g. for the URL https://l0gin.examp1eb4nk.com/, this value will contain the deceptive domain score for examp1eb4nk.com.
+        e.g. for the URL https://l0gin.example.com/, this value will contain the deceptive domain score for example.com.
       type: String
     - contextPath: Netcraft.Takedown.domain_risk_rating
       description: |
         A score from 0 to 10 which represents the risk that the domain is hosting a malicious website.
-        e.g. for the url https://l0gin.examp1eb4nk.com/, this value wil contain the risk rating for "examp1eb4nk.com".
+        e.g. for the url https://l0gin.example.com/, this value wil contain the risk rating for "example.com".
         This score is distinct from the "deceptive domain score", and takes a range of factors into account,
         such as the reputation of the hosting provider, age of the domain name, search engine rankings and more.
       type: String
@@ -407,7 +407,7 @@ script:
     - contextPath: Netcraft.Takedown.hostname_ddss_score
       description: |
         The deceptive domain score of the hostname.
-        e.g. for the URL https://l0gin.examp1eb4nk.com/, this value will contain the deceptive domain score for l0gin.examp1eb4nk.com.
+        e.g. for the URL https://l0gin.example.com/, this value will contain the deceptive domain score for l0gin.example.com.
       type: String
     - contextPath: Netcraft.Takedown.evidence_url
       description: A url to the public incident report for this attack.
@@ -494,7 +494,7 @@ script:
     - contextPath: Netcraft.Takedown.site_risk_rating
       description: |
         A score from 0 to 10 which represents the risk that the hostname is hosting a malicious website.
-        e.g. for the URL https://l0gin.examp1eb4nk.com/, this value will contain the risk rating for l0gin.examp1eb4nk.com.
+        e.g. for the URL https://l0gin.example.com/, this value will contain the risk rating for l0gin.example.com.
       type: String
     - contextPath: Netcraft.Takedown.whois_server
       description: The WHOIS data for the takedown.
