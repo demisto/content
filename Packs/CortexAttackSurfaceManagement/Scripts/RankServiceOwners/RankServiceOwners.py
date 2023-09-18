@@ -42,7 +42,7 @@ def load_pickled_xpanse_object(file_name: str, cache_path: str = "/tmp/xpanse-ml
     The default cache is a subdirectory of /tmp directory will cache persistently across interactions.
     Data saved to /var/lib/demisto will be lost betwen interactions (not cached).
     """
-    remote_gcs_bucket = "xpanse-service-ownership-ml-models-dev"
+    remote_gcs_bucket = "xpanse-service-ownership-ml-models"
     remote_gcs_path = ""  # ok for this to be empty string
 
     os.makedirs(cache_path, exist_ok=True)
