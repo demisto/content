@@ -85,7 +85,7 @@ Removes tag keys from the specified resource.
 | roleSessionName | An identifier for the assumed role session. | Optional | 
 | roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
 | resource_type | Specifies the type of resource for tagging.<br/>Note: The ManagedInstance type for this API operation is for on-premises managed nodes. Possible values are: Association, Automation, Document, Maintenance Window, Managed Instance, Ops Item, Ops Metadata, Patch Baseline, Parameter. | Required | 
-| resource_id | 'The ID of the resource to remove tags.<br/> Note: The format of the id depends on the selected resource type (e.g.. MaintenanceWindow: mw-012345abcde, PatchBaseline: pb-012345abcde).'. | Required | 
+| resource_id | 'The ID of the resource to remove tags.<br/> Note: The format of the id depends on the selected resource type (e.g.. MaintenanceWindow: mw-012345abcde, PatchBaseline: pb-012345abcde).' | Required | 
 | tag_key | The name of the tag to remove. | Required | 
 
 #### Context Output
@@ -118,7 +118,7 @@ Returns a list of the tags assigned to the specified resource.
 | roleSessionName | An identifier for the assumed role session. | Optional | 
 | roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
 | resource_type | Returns a list of tags for a specific resource type. Possible values are: Association, Automation, Document, Maintenance Window, Managed Instance, Ops Item, Ops Metadata, Patch Baseline, Parameter. | Required | 
-| resource_id | 'The ID of the resource to list tags.<br/> Note: The format of the id depends on the selected resource type (e.g.. MaintenanceWindow: mw-012345abcde, PatchBaseline: pb-012345abcde).'. | Required | 
+| resource_id | 'The ID of the resource to list tags.<br/> Note: The format of the id depends on the selected resource type (e.g.. MaintenanceWindow: mw-012345abcde, PatchBaseline: pb-012345abcde).' | Required | 
 
 #### Context Output
 
@@ -728,7 +728,7 @@ Retrieves all versions of an association for a specific association ID.
 | roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
 | association_id | The association ID for which to view all versions. | Required | 
 | limit | The maximum number of items to return for this call. The default and max is 50. The call also returns a token that you can specify in a subsequent call to get the next set of results. | Optional | 
-| next_token | The token for the next set of items to return. (Received this token from a previous call.). | Optional | 
+| next_token | The token for the next set of items to return. (Received this token from a previous call). | Optional | 
 
 #### Context Output
 
@@ -834,7 +834,7 @@ Returns all Systems Manager (SSM) documents in the current Amazon Web Services a
 | roleSessionName | An identifier for the assumed role session. | Optional | 
 | roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
 | limit | The maximum number of items to return for this call. The default and max is 50. The call also returns a token that you can specify in a subsequent call to get the next set of results. | Optional | 
-| next_token | The token for the next set of items to return. (Received this token from a previous call.). | Optional | 
+| next_token | The token for the next set of items to return. (Received this token from a previous call). | Optional | 
 
 #### Context Output
 
@@ -1204,7 +1204,7 @@ If the argument execution_id is provided, the command returns detailed informati
 | roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
 | execution_id | The unique identifier for an existing automation execution to examine. The execution ID is returned by aws-ssm-automation-execution-run command when the execution of an Automation runbook is initiated. Note: if execution_id not provide the command return a list of executions. | Optional | 
 | limit | The maximum number of items to return for this command. The command also returns a token that can specify in a subsequent command to get the next set of results. Default is 50. | Optional | 
-| next_token | The token for the next set of items to return. (Received this token from a previous call.). | Optional | 
+| next_token | The token for the next set of items to return. (Received this token from a previous call). | Optional | 
 
 #### Context Output
 
@@ -1442,13 +1442,13 @@ Lists the commands requested by users of the Amazon Web Services account.
 | roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
 | command_id | A unique identifier for this command. If provided, lists only the specified command. | Optional | 
 | limit | The maximum number of items to return for this call. Default is 50. | Optional | 
-| next_token | The token for the next set of items to return. (Received this token from a previous call.). | Optional | 
+| next_token | The token for the next set of items to return. (Received this token from a previous call). | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AWS.SSM.CommandNextToken.NextToken | String | The token for the next set of items to return. \(Received this token from a previous call.\). | 
+| AWS.SSM.CommandNextToken.NextToken | String | The token for the next set of items to return. \(Received this token from a previous call\). | 
 | AWS.SSM.Command.CommandId | String | A unique identifier for this command. | 
 | AWS.SSM.Command.DocumentName | String | The name of the document requested for execution. | 
 | AWS.SSM.Command.DocumentVersion | String | The Systems Manager document \(SSM document\) version. | 
