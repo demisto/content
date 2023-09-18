@@ -2298,18 +2298,22 @@ def get_modified_remote_data_command(args: dict[str, Any]):
     raw_ids = []
 
     if 'Incidents' in fetch_types or "Endpoint Incident" in fetch_types:
+        LOG('fetching incidents')
         raw_ids += get_incidents_ids(last_updated_timestamp=last_update_timestamp, has_limit=False).get('resources', [])
 
     if 'Detections' in fetch_types or "Endpoint Detection" in fetch_types:
+        LOG('fetching endpoint detections')
         raw_ids += get_fetch_detections(last_updated_timestamp=last_update_timestamp, has_limit=False).get('resources', [])
 
     if "IDP Detection" in fetch_types:
+        LOG('fetching IDP detections')
         raw_ids += get_idp_detections_ids(
             filter_arg=f"updated_timestamp:>'{last_update_utc.strftime(IDP_DATE_FORMAT)}'+product:'idp'"
         ).get('resources', [])
 
     modified_ids_to_mirror = list(map(str, raw_ids))
     demisto.debug(f'All ids to mirror in are: {modified_ids_to_mirror}')
+    LOG(f'All ids to mirror in are: {modified_ids_to_mirror}')
     return GetModifiedRemoteDataResponse(modified_ids_to_mirror)
 
 
