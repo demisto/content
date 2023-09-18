@@ -69,8 +69,10 @@ class Client:
             connect_parameters_dict[key] = value
         if dialect == "Microsoft SQL Server":
             connect_parameters_dict['driver'] = 'FreeTDS'
+            connect_parameters_dict.setdefault('autocommit', 'True')
         elif dialect == 'Microsoft SQL Server - MS ODBC Driver':
             connect_parameters_dict['driver'] = 'ODBC Driver 18 for SQL Server'
+            connect_parameters_dict.setdefault('autocommit', 'True')
             if not verify_certificate:
                 connect_parameters_dict['TrustServerCertificate'] = 'yes'
         return connect_parameters_dict
@@ -531,7 +533,6 @@ def main():
         if pool_ttl <= 0:
             pool_ttl = DEFAULT_POOL_TTL
         command = demisto.command()
-        LOG(f'Command being called in SQL is: {command}')
         client = Client(dialect=dialect, host=host, username=user, password=password,
                         port=port, database=database, connect_parameters=connect_parameters,
                         ssl_connect=ssl_connect, use_pool=use_pool, verify_certificate=verify_certificate,

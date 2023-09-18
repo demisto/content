@@ -1,0 +1,1848 @@
+id: playbook-Rapid7AppSec_Test
+version: -1
+fromversion: 6.9.0
+vcShouldKeepItemLegacyProdMachine: false
+name: playbook-Rapid7AppSec_Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: b13712b2-2667-491e-8492-b6e95c0c3000
+    type: start
+    task:
+      id: b13712b2-2667-491e-8492-b6e95c0c3000
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 4c3ad7fb-aeee-40b3-8022-c4d30edbcd11
+    type: regular
+    task:
+      id: 4c3ad7fb-aeee-40b3-8022-c4d30edbcd11
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 0d69537f-e854-46fa-80e7-c5577f6910cc
+    type: regular
+    task:
+      id: 0d69537f-e854-46fa-80e7-c5577f6910cc
+      version: -1
+      name: app-sec-app-list
+      script: app-sec-app-list
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      limit:
+        simple: "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 7bf70b1f-4752-48f1-885d-662f6713283c
+    type: condition
+    task:
+      id: 7bf70b1f-4752-48f1-885d-662f6713283c
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "true":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "true"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Rapid7AppSec.App.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Rapid7AppSec.App.name
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 5ed01d19-0c80-4287-854f-0c9e67b9d9e8
+    type: regular
+    task:
+      id: 5ed01d19-0c80-4287-854f-0c9e67b9d9e8
+      version: -1
+      name: app-sec-module-list
+      script: app-sec-module-list
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      limit:
+        simple: "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 608d5914-fcac-48be-8c0e-83aff545e3e8
+    type: condition
+    task:
+      id: 608d5914-fcac-48be-8c0e-83aff545e3e8
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "true":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "true"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Rapid7AppSec.Module.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Rapid7AppSec.Module.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Rapid7AppSec.Module.description
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: e3ddad7e-2997-4b95-8122-e9b7fe9484be
+    type: regular
+    task:
+      id: e3ddad7e-2997-4b95-8122-e9b7fe9484be
+      version: -1
+      name: app-sec-attack-template-list
+      script: app-sec-attack-template-list
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      limit:
+        simple: "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 16058f24-b7b0-4d3c-8af3-d01d6451e690
+    type: condition
+    task:
+      id: 16058f24-b7b0-4d3c-8af3-d01d6451e690
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "true":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "true"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Rapid7AppSec.AttackTemplate.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Rapid7AppSec.AttackTemplate.name
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Rapid7AppSec.AttackTemplate.system_defined
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Rapid7AppSec.AttackTemplate.browser_encoding_enabled
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Rapid7AppSec.AttackTemplate.attack_prioritization
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Rapid7AppSec.AttackTemplate.advanced_attacks_enabled
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 8eff1a84-7e45-433b-81e7-a88958d23cc9
+    type: regular
+    task:
+      id: 8eff1a84-7e45-433b-81e7-a88958d23cc9
+      version: -1
+      name: app-sec-engine-list
+      script: app-sec-engine-list
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      limit:
+        simple: "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 05255f1a-c7cc-4d46-8915-aa932abdb46f
+    type: condition
+    task:
+      id: 05255f1a-c7cc-4d46-8915-aa932abdb46f
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "true":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "true"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Rapid7AppSec.Engine.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Rapid7AppSec.Engine.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Rapid7AppSec.Engine.auto_upgrade
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Rapid7AppSec.Engine.latest_version
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Rapid7AppSec.Engine.upgradeable
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: a8ff0194-2f0f-4a3a-8823-e29ce068eb61
+    type: regular
+    task:
+      id: a8ff0194-2f0f-4a3a-8823-e29ce068eb61
+      version: -1
+      name: app-sec-engine-group-list
+      script: app-sec-engine-group-list
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      limit:
+        simple: "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 94ce1950-a02d-4066-8c45-b014384da2cf
+    type: condition
+    task:
+      id: 94ce1950-a02d-4066-8c45-b014384da2cf
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "true":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "true"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Rapid7AppSec.EngineGroup.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Rapid7AppSec.EngineGroup.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Rapid7AppSec.EngineGroup.description
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: a89e5a4d-6778-4a2b-8a1b-793f220ab7e8
+    type: regular
+    task:
+      id: a89e5a4d-6778-4a2b-8a1b-793f220ab7e8
+      version: -1
+      name: app-sec-scan-config-list
+      script: app-sec-scan-config-list
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      limit:
+        simple: "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: da9f4bd0-c6ee-46e8-8721-f32243d2922b
+    type: condition
+    task:
+      id: da9f4bd0-c6ee-46e8-8721-f32243d2922b
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "true":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "true"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Rapid7AppSec.ScanConfig.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Rapid7AppSec.ScanConfig.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Rapid7AppSec.ScanConfig.app_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Rapid7AppSec.ScanConfig.attack_template_id
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Rapid7AppSec.ScanConfig.incremental
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Rapid7AppSec.ScanConfig.assignment_type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Rapid7AppSec.ScanConfig.assignment_environment
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 552ed6c1-6de8-4269-84a9-b608581f38f7
+    type: regular
+    task:
+      id: 552ed6c1-6de8-4269-84a9-b608581f38f7
+      version: -1
+      name: app-sec-vulnerability-list
+      script: app-sec-vulnerability-list
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      page:
+        simple: "2"
+      page_size:
+        simple: "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: f09068a0-0c03-4238-8d93-71dbf929ce1b
+    type: condition
+    task:
+      id: f09068a0-0c03-4238-8d93-71dbf929ce1b
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "true":
+      - "16"
+    separatecontext: false
+    conditions:
+    - label: "true"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Rapid7AppSec.Vulnerability.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Rapid7AppSec.Vulnerability.app_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Rapid7AppSec.Vulnerability.root_cause_url
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Rapid7AppSec.Vulnerability.root_cause_method
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Rapid7AppSec.Vulnerability.severity
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Rapid7AppSec.Vulnerability.status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Rapid7AppSec.Vulnerability.first_discovered
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Rapid7AppSec.Vulnerability.last_discovered
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Rapid7AppSec.Vulnerability.newly_discovered
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Rapid7AppSec.Vulnerability.Variances
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Rapid7AppSec.Vulnerability.vector_string
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Rapid7AppSec.Vulnerability.vulnerability_score
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 0bfd797c-952b-4a55-8c3d-5ecf79414ce7
+    type: regular
+    task:
+      id: 0bfd797c-952b-4a55-8c3d-5ecf79414ce7
+      version: -1
+      name: app-sec-vulnerability-update
+      script: app-sec-vulnerability-update
+      type: regular
+      iscommand: true
+      brand: rapid7appsec
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      severity:
+        simple: Informational
+      vulnerability_id:
+        simple: ${Rapid7AppSec.Vulnerability.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: bbe9c02b-b8c3-4ec3-8b0a-e1ff2d591397
+    type: regular
+    task:
+      id: bbe9c02b-b8c3-4ec3-8b0a-e1ff2d591397
+      version: -1
+      name: app-sec-vulnerability-history-list
+      script: app-sec-vulnerability-history-list
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      vulnerability_id:
+        simple: ${Rapid7AppSec.Vulnerability.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 6fd96c02-3bff-49aa-834a-26eaeb79651f
+    type: condition
+    task:
+      id: 6fd96c02-3bff-49aa-834a-26eaeb79651f
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "true":
+      - "19"
+    separatecontext: false
+    conditions:
+    - label: "true"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Rapid7AppSec.VulnerabilityHistory.vulnerability_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Rapid7AppSec.VulnerabilityHistory.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Rapid7AppSec.VulnerabilityHistory.create_time
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Rapid7AppSec.VulnerabilityHistory.source_type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Rapid7AppSec.VulnerabilityHistory.source_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Rapid7AppSec.VulnerabilityHistory.Changes.field
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Rapid7AppSec.VulnerabilityHistory.Changes.previous_value
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Rapid7AppSec.VulnerabilityHistory.Changes.new_value
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: b16d015e-2a70-45fb-8874-ce476731e481
+    type: regular
+    task:
+      id: b16d015e-2a70-45fb-8874-ce476731e481
+      version: -1
+      name: app-sec-vulnerability-comment-create
+      script: app-sec-vulnerability-comment-create
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      comment_content:
+        simple: '"test"'
+      vulnerability_id:
+        simple: ${Rapid7AppSec.Vulnerability.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: de4a4488-fd4b-47cf-8303-bd75e676eaf7
+    type: regular
+    task:
+      id: de4a4488-fd4b-47cf-8303-bd75e676eaf7
+      version: -1
+      name: app-sec-vulnerability-comment-list
+      script: app-sec-vulnerability-comment-list
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      vulnerability_id:
+        simple: ${Rapid7AppSec.Vulnerability.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 5e46f5e7-ba77-4821-8f4a-54fd431fe6bd
+    type: condition
+    task:
+      id: 5e46f5e7-ba77-4821-8f4a-54fd431fe6bd
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "true":
+      - "22"
+    separatecontext: false
+    conditions:
+    - label: "true"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Rapid7AppSec.VulnerabilityComment.vulnerability_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Rapid7AppSec.VulnerabilityComment.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Rapid7AppSec.VulnerabilityComment.author_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Rapid7AppSec.VulnerabilityComment.last_update_author_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Rapid7AppSec.VulnerabilityComment.content
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Rapid7AppSec.VulnerabilityComment.create_time
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Rapid7AppSec.VulnerabilityComment.update_time
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 00b3c99b-bdb8-46e3-8fc9-8f728034d164
+    type: regular
+    task:
+      id: 00b3c99b-bdb8-46e3-8fc9-8f728034d164
+      version: -1
+      name: app-sec-vulnerability-comment-update
+      script: app-sec-vulnerability-comment-update
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      comment_content:
+        simple: test2
+      comment_id:
+        simple: ${Rapid7AppSec.VulnerabilityComment.id}
+      vulnerability_id:
+        simple: ${Rapid7AppSec.Vulnerability.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 431a13a3-6ec6-42dc-8db9-b07459133e78
+    type: regular
+    task:
+      id: 431a13a3-6ec6-42dc-8db9-b07459133e78
+      version: -1
+      name: app-sec-vulnerability-comment-delete
+      script: app-sec-vulnerability-comment-delete
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      comment_id:
+        simple: ${Rapid7AppSec.VulnerabilityComment.id}
+      vulnerability_id:
+        simple: ${Rapid7AppSec.Vulnerability.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 2fc4e674-0877-46bd-8fca-19feacfca6e1
+    type: regular
+    task:
+      id: 2fc4e674-0877-46bd-8fca-19feacfca6e1
+      version: -1
+      name: app-sec-attack-get
+      script: app-sec-attack-get
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      attack_id:
+        simple: ${Rapid7AppSec.Vulnerability.Variances.attack_id}
+      module_id:
+        simple: ${Rapid7AppSec.Vulnerability.Variances.module_id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 05ed4573-3c4c-41c3-835d-4e25dc5c49df
+    type: condition
+    task:
+      id: 05ed4573-3c4c-41c3-835d-4e25dc5c49df
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "true":
+      - "26"
+    separatecontext: false
+    conditions:
+    - label: "true"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Rapid7AppSec.Attack.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Rapid7AppSec.Attack.module_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Rapid7AppSec.Attack.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Rapid7AppSec.Attack.class
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Rapid7AppSec.Attack.description
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: 3a650c30-1fdf-43a5-8c9a-94414cd3372a
+    type: regular
+    task:
+      id: 3a650c30-1fdf-43a5-8c9a-94414cd3372a
+      version: -1
+      name: app-sec-attack-documentation-get
+      script: app-sec-attack-documentation-get
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      attack_id:
+        simple: ${Rapid7AppSec.Vulnerability.Variances.attack_id}
+      module_id:
+        simple: ${Rapid7AppSec.Vulnerability.Variances.module_id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: 2f5a8742-30da-4ef2-8dfe-b3401d52d46d
+    type: condition
+    task:
+      id: 2f5a8742-30da-4ef2-8dfe-b3401d52d46d
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "true":
+      - "28"
+    separatecontext: false
+    conditions:
+    - label: "true"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Rapid7AppSec.AttackDocumentation.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Rapid7AppSec.Attack.module_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Rapid7AppSec.AttackDocumentation.references
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Rapid7AppSec.AttackDocumentation.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Rapid7AppSec.AttackDocumentation.recommendation
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: 95be7ded-e3dd-4cbe-8f7a-346d76d3e804
+    type: regular
+    task:
+      id: 95be7ded-e3dd-4cbe-8f7a-346d76d3e804
+      version: -1
+      name: app-sec-scan-list
+      script: app-sec-scan-list
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      limit:
+        simple: "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: b422fb42-e360-4aee-8c6b-754d268e1d45
+    type: condition
+    task:
+      id: b422fb42-e360-4aee-8c6b-754d268e1d45
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "true":
+      - "30"
+    separatecontext: false
+    conditions:
+    - label: "true"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Rapid7AppSec.Scan.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Rapid7AppSec.Scan.app_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Rapid7AppSec.Scan.scan_config_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Rapid7AppSec.Scan.submitter_type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Rapid7AppSec.Scan.submitter_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Rapid7AppSec.Scan.submit_time
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Rapid7AppSec.Scan.status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Rapid7AppSec.Scan.scan_type
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: 73340ae5-e645-4ea8-8637-72e4f182af4d
+    type: regular
+    task:
+      id: 73340ae5-e645-4ea8-8637-72e4f182af4d
+      version: -1
+      name: app-sec-scan-submit
+      script: app-sec-scan-submit
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      scan_config_id:
+        simple: ${Rapid7AppSec.ScanConfig.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: a112dd7d-7647-416c-8935-ae6b65de9332
+    type: regular
+    task:
+      id: a112dd7d-7647-416c-8935-ae6b65de9332
+      version: -1
+      name: app-sec-scan-delete
+      script: app-sec-scan-delete
+      type: regular
+      iscommand: true
+      brand: rapid7appsec
+    nexttasks:
+      '#none#':
+      - "32"
+    scriptarguments:
+      scan_id:
+        simple: ${Rapid7AppSec.Scan.id}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: 635a393a-0ce4-4a1f-84df-788eef0544ad
+    type: regular
+    task:
+      id: 635a393a-0ce4-4a1f-84df-788eef0544ad
+      version: -1
+      name: app-sec-scan-engine-event-list
+      script: app-sec-scan-engine-event-list
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "33"
+    scriptarguments:
+      scan_id:
+        simple: ${Rapid7AppSec.Scan.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: 01941486-fea4-4dc4-8872-e0cfe5dcb8fc
+    type: condition
+    task:
+      id: 01941486-fea4-4dc4-8872-e0cfe5dcb8fc
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "true":
+      - "34"
+    separatecontext: false
+    conditions:
+    - label: "true"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Rapid7AppSec.EngineEvent.scan_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Rapid7AppSec.EngineEvent.Event.time
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Rapid7AppSec.EngineEvent.Event.event
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: 0cee7c6a-1aeb-4a72-8051-e987e96264c0
+    type: regular
+    task:
+      id: 0cee7c6a-1aeb-4a72-8051-e987e96264c0
+      version: -1
+      name: app-sec-scan-platform-event-list
+      script: app-sec-scan-platform-event-list
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      scan_id:
+        simple: ${Rapid7AppSec.Scan.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: 1d2a6c52-f13b-4952-801f-6d535cf7f082
+    type: condition
+    task:
+      id: 1d2a6c52-f13b-4952-801f-6d535cf7f082
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "true":
+      - "36"
+    separatecontext: false
+    conditions:
+    - label: "true"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Rapid7AppSec.PlatformEvent.scan_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Rapid7AppSec.PlatformEvent.Event.time
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Rapid7AppSec.PlatformEvent.Event.event
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: fb4d8089-1dca-4c61-87d3-7e577a07ac22
+    type: regular
+    task:
+      id: fb4d8089-1dca-4c61-87d3-7e577a07ac22
+      version: -1
+      name: app-sec-scan-execution-details-get
+      script: app-sec-scan-execution-details-get
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "37"
+    scriptarguments:
+      scan_id:
+        simple: ${Rapid7AppSec.Scan.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: ae04d589-902d-46aa-8eef-b5325d46a99a
+    type: condition
+    task:
+      id: ae04d589-902d-46aa-8eef-b5325d46a99a
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "true":
+      - "38"
+    separatecontext: false
+    conditions:
+    - label: "true"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Rapid7AppSec.ExecutionDetail.id
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Rapid7AppSec.ExecutionDetail.logged_in
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Rapid7AppSec.ExecutionDetail.links_in_queue
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Rapid7AppSec.ExecutionDetail.links_crawled
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Rapid7AppSec.ExecutionDetail.attacks_in_queue
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Rapid7AppSec.ExecutionDetail.attacked
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Rapid7AppSec.ExecutionDetail.vulnerable
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Rapid7AppSec.ExecutionDetail.requests
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Rapid7AppSec.ExecutionDetail.failed_requests
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Rapid7AppSec.ExecutionDetail.network_speed
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Rapid7AppSec.ExecutionDetail.drip_delay
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: 1bd3fcd2-b6ac-4aea-8d4b-e6a2a523fdaa
+    type: regular
+    task:
+      id: 1bd3fcd2-b6ac-4aea-8d4b-e6a2a523fdaa
+      version: -1
+      name: app-sec-scan-action-get
+      script: app-sec-scan-action-get
+      type: regular
+      iscommand: true
+      brand: rapid7appsec
+    nexttasks:
+      '#none#':
+      - "40"
+    scriptarguments:
+      scan_id:
+        simple: ${Rapid7AppSec.Scan.id}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "40":
+    id: "40"
+    taskid: b1e08748-3b43-4f6f-81f5-cbad02ffbf11
+    type: regular
+    task:
+      id: b1e08748-3b43-4f6f-81f5-cbad02ffbf11
+      version: -1
+      name: app-sec-scan-action-submit
+      script: app-sec-scan-action-submit
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "41"
+    scriptarguments:
+      action:
+        simple: Stop
+      scan_id:
+        simple: ${Rapid7AppSec.Scan.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "41":
+    id: "41"
+    taskid: b9994a65-7090-4df4-89ad-f0a4dbf4b562
+    type: title
+    task:
+      id: b9994a65-7090-4df4-89ad-f0a4dbf4b562
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 8025,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

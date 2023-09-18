@@ -169,7 +169,7 @@ script:
       name: external_form_url_header
     description: |-
       Sends a message to the specified teams.
-      To mention a user in the message, add a semicolon ";" at the end of the user mention. For example: @Bruce Willis;
+      To mention a user in the message, add a semicolon ";" at the end of the user mention. For example: @Bruce Willis;.
     name: send-notification
   - arguments:
     - auto: PREDEFINED
@@ -228,7 +228,7 @@ script:
     description: Creates a new channel in a Microsoft Teams team.
     name: create-channel
   - arguments:
-    - description: The channel to which to add the add the member to this channel
+    - description: The channel to which to add the add the member to this channel.
       name: channel
       required: true
     - description: The channel's team.
@@ -417,7 +417,7 @@ script:
       description: Represents details about an online meeting. If the chat isn't associated with an online meeting, the property is empty.
       type: String
   - arguments:
-    - description: The chat ID / group chat name (topic) / oneOnOne member (Display name/mail/UPN)
+    - description: The chat ID / group chat name (topic) / oneOnOne member (Display name/mail/UPN).
       name: chat
       required: true
     - description: The content of the chat message.
@@ -523,7 +523,7 @@ script:
     description: Adds a member (user) to a group chat.
     name: microsoft-teams-chat-add-user
   - arguments:
-    - description: The chat ID / group chat name (topic) / oneOnOne member (Display name/mail/UPN)
+    - description: The chat ID / group chat name (topic) / oneOnOne member (Display name/mail/UPN).
       name: chat
       required: true
     description: Retrieves a list of members from a chat.
@@ -554,7 +554,7 @@ script:
       description: The timestamp denoting how far back a conversation's history is shared with the conversation member.
       type: String
   - arguments:
-    - description: The chat ID / group chat name (topic) / oneOnOne member (Display name/mail/UPN)
+    - description: The chat ID / group chat name (topic) / oneOnOne member (Display name/mail/UPN).
       name: chat
       required: true
     - description: The number of results to retrieve.
@@ -648,7 +648,7 @@ script:
       description: Used if an operation returns partial results. If a response contains a NextLink element, its value specifies a starting point to use for subsequent calls.
       type: String
   - arguments:
-    - description: The chat ID / group chat name (topic) / oneOnOne member (Display name/mail/UPN)
+    - description: The chat ID / group chat name (topic) / oneOnOne member (Display name/mail/UPN).
       name: chat
     - description: "Filters results. For example: topic eq 'testing'. For more query examples, see https://learn.microsoft.com/en-us/graph/filter-query-parameter?tabs=http. "
       name: filter
@@ -711,7 +711,7 @@ script:
   - description: Generate the login url used for Authorization code flow.
     name: microsoft-teams-generate-login-url
     arguments: []
-  dockerimage: demisto/teams:1.0.0.69030
+  dockerimage: demisto/teams:1.0.0.73705
   longRunning: true
   longRunningPort: true
   script: ''

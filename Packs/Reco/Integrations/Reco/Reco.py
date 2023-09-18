@@ -565,7 +565,7 @@ class RecoClient(BaseClient):
                                          regex_search: bool) -> list[dict[str, Any]]:
         """Get sensitive assets' information. Returns a list of assets."""
         filter = "regexCaseInsensitive" if regex_search else "stringEquals"
-        field_to_search = "file_name" if asset_name else "file_id"
+        field_to_search = "file_name" if asset_name else "asset_id"
         value_to_search = asset_name if asset_name else asset_id
         params: dict[str, Any] = {
             "getTableRequest": {

@@ -16,6 +16,7 @@
         "Google Cloud Storage",
         "AWS S3",
         "HTTP request",
+        "AzureDevOps",
         "No Custom Packs"
     ],
     "useAsKpi": false,
