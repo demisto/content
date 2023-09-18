@@ -50,13 +50,11 @@ def executeCommand(command, args):
             return [{'Contents': json.dumps(FETCHED_INCIDENT), 'Type': 'note'}]
         else:
             return [{'Contents': json.dumps(CURRENT_INCIDENT), 'Type': 'note'}]
+    return None
 
 
 def check_exist_dataframe_columns(*fields, df):
-    for field in fields:
-        if field not in df.columns.tolist():
-            return False
-    return True
+    return all(field in df.columns.tolist() for field in fields)
 
 
 def test_keep_high_level_field():
