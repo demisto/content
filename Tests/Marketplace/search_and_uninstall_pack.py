@@ -8,8 +8,6 @@ from time import sleep
 from typing import Any
 
 import demisto_client
-from demisto_client.demisto_api.rest import ApiException
-from urllib3.exceptions import HTTPWarning, HTTPError
 
 from Tests.Marketplace.common import generic_request_with_retries, wait_until_not_updating, ALREADY_IN_PROGRESS
 from Tests.Marketplace.configure_and_install_packs import search_and_install_packs_and_their_dependencies
