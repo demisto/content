@@ -1113,12 +1113,12 @@ Initiates execution of an Automation runbook.
 
 ###### in playbook:
 
-![parameters argument](parameters_playbook.png)
+![parameters argument](../../doc_files/parameters_playbook.png)
 
 ###### in the war room:
 
-![Alt text](parameters_war_room_1.png)
-![Alt text](parameters_war_room_2.png)
+![Alt text](../../doc_files/parameters_war_room_1.png)
+![Alt text](../../doc_files/parameters_war_room_2.png)
 
 #### Context Output
 
@@ -1592,12 +1592,12 @@ Runs commands on one or more managed nodes.
 
 ###### in playbook:
 
-![parameters argument](parameters_playbook.png)
+![parameters argument](../../doc_files/parameters_playbook.png)
 
 ###### in the war room:
 
-![Alt text](parameters_war_room_1.png)
-![Alt text](parameters_war_room_2.png)
+![Alt text](../../doc_files/parameters_war_room_1.png)
+![Alt text](../../doc_files/parameters_war_room_2.png)
 
 #### Context Output
 
