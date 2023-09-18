@@ -16,6 +16,10 @@
       "type": "string",
       "is_array": false
     },
+    "request_id": {
+      "type": "int",
+      "is_array": false
+    },
     "dstport": {
       "type": "int",
       "is_array": false
