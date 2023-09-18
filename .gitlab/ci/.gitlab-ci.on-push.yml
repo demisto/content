@@ -88,7 +88,8 @@ run-unittests-and-lint:
 
   after_script:
       - >
-        if [ '$CI_JOB_STATUS' = 'failed' ] && [ $CI_COMMIT_BRANCH != 'master' && $CI_COMMIT_REF_NAME != 'master' ]; then
+        rules:
+        if [ '$CI_JOB_STATUS' = 'failed' ] && [ $CI_COMMIT_BRANCH =~ 'master' && $CI_COMMIT_REF_NAME != 'master' ]; then
           echo 'ooppsss I failed, send out the message....'
         else
           echo $CI_JOB_NAME
