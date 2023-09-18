@@ -1,3 +1,5 @@
+import sys
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import json
@@ -57,6 +59,7 @@ async def handle_post(
         credentials: HTTPBasicCredentials = Depends(basic_auth),
         token: APIKey = Depends(token_auth)
 ):
+
     header_name = None
     request_headers = dict(request.headers)
 
@@ -95,12 +98,20 @@ async def handle_post(
 
     if demisto.params().get('store_samples'):
         try:
+            demisto.info('in store samples')
+
             sample_events_to_store.append(incident)
             integration_context = get_integration_context()
+            demisto.info(f'{sys.getsizeof(integration_context)=}')
+            demisto.info('called integration context')
+            demisto.info(get_message_memory_dump(None, None))
+
             sample_events = deque(json.loads(integration_context.get('sample_events', '[]')), maxlen=20)
             sample_events += sample_events_to_store
             integration_context['sample_events'] = list(sample_events)
             set_to_integration_context_with_retries(integration_context)
+            demisto.info('finished calling set')
+
         except Exception as e:
             demisto.error(f'Failed storing sample events - {e}')
 
