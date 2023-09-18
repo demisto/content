@@ -64,6 +64,3 @@ The IAM User Investigation playbook provides step-by-step instructions for inves
 ## How to Use the Playbooks
 
 Each playbook is provided in a user-friendly format, detailing the necessary actions, procedures, and tools required for effective incident response. To use the playbooks, follow the respective links provided above.
-
-
-![Cloud Incident Response](doc_files/Cloud_Incident_Response.png)
