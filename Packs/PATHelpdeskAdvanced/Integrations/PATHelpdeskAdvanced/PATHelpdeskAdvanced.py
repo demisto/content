@@ -2,9 +2,11 @@ import contextlib
 from json import JSONDecodeError
 from pathlib import Path
 from pprint import pformat
-from typing import Callable, Literal, NamedTuple
+from typing import Literal, NamedTuple
+from collections.abc import Callable, Iterable
 from collections.abc import Sequence
 from requests import Response
+import curlify
 
 import demistomock as demisto
 from CommonServerPython import *  # noqa: F401
@@ -87,6 +89,11 @@ TEXT = Field("text")
 SITE_VISIBLE = Field("site_visible")
 DESCRIPTION = Field("description")
 TICKET_PRIORITY = Field("ticket_priority")
+FILE_NAME = Field("file_name")
+CONTENT_TYPE = Field("content_type")
+LAST_UPDATE = Field("last_update")
+OPERATION_TYPE_ID = Field("operation_type_id")
+
 _PRIORITY = Field("priority")
 _TICKET_SOURCE = Field("ticket_source")
 
@@ -180,14 +187,18 @@ class Client(BaseClient):
         attempted_action: str,
         **kwargs,
     ) -> dict:
-        print(
-            f"Making {method} request to {self._base_url}{url_suffix}\n{pformat(kwargs)}"
-        )
         response = self._http_request(
-            method, url_suffix, resp_type="response", **kwargs
+            method,
+            url_suffix,
+            resp_type="response",
+            **kwargs,
         )
+        for r in response.history:
+            print(curlify.to_curl(r.request, compressed=True))
+        print(curlify.to_curl(response.request, compressed=True))
         try:
             response_body = json.loads(response.text)
+            print()
             print(f"Response: {pformat(response_body)}")
             if response_body["success"] is not True:  # request failed
                 raise RequestNotSuccessfulError(response, attempted_action)
@@ -382,7 +393,7 @@ class Client(BaseClient):
             url_suffix="Ticket/UploadNewAttachment",
             method="POST",
             attempted_action="uploading a new attachment",
-            params={
+            data={
                 "entity": "Ticket",
                 "entityID": kwargs["ticket_id"],
             }
@@ -596,6 +607,35 @@ def paginate(**kwargs) -> PaginateArgs:
     )
 
 
+def pat_table_to_markdown(
+    title: str, output: dict, fields: Iterable[Field] | None
+) -> str:
+    """
+    Converts the given PAT Helpdesk output table to markdown format.
+
+    Args:
+        title (str): The title to use for the markdown table.
+        output (dict): The PAT Helpdesk output data.
+        fields (Iterable[Field], optional): PAD HDA fields to include in the output.
+            If None, all fields will be included.
+
+    Returns:
+        str: The markdown formatted table string.
+    """
+    if fields is None:
+        output_for_human_readable = output
+    else:
+        output_for_human_readable = {
+            k: v for k, v in output.items() if k in {field.hda_name for field in fields}
+        }
+
+    return tableToMarkdown(
+        name=title,
+        t=output_for_human_readable,
+        headerTransform=pascalToSpace,
+    )
+
+
 def create_ticket_command(client: Client, args: dict) -> CommandResults:
     response = client.create_ticket(**args)
     response = convert_response_dates(response)
@@ -609,8 +649,8 @@ def create_ticket_command(client: Client, args: dict) -> CommandResults:
         outputs_prefix=f"{VENDOR}.Ticket",
         outputs_key_field=ID.hda_name,
         outputs=response,  # todo check human readable, titles
-        readable_output=tableToMarkdown(
-            "Ticket Created", t=response_for_human_readable
+        readable_output=pat_table_to_markdown(
+            "Ticket Created", response_for_human_readable, fields=None
         ),
     )
 
@@ -623,6 +663,21 @@ def list_tickets_command(client: Client, args: dict) -> CommandResults:
         outputs=response["data"],
         outputs_prefix=f"{VENDOR}.Ticket",
         outputs_key_field=ID.hda_name,  # TODO choose fields for HR?
+        readable_output=pat_table_to_markdown(
+            title="Tickets",
+            output=response["data"],
+            fields=(
+                TICKET_ID,
+                SUBJECT,
+                SOLUTION,
+                DATE,
+                SERVICE_ID,
+                PROBLEM,
+                CONTACT_ID,
+                OWNER_USER_ID,
+                ACCOUNT_ID,
+            ),
+        ),
         raw_response=response,
     )
 
@@ -644,6 +699,21 @@ def list_ticket_attachments_command(client: Client, args: dict) -> CommandResult
         outputs=response["data"],
         outputs_prefix=f"{VENDOR}.Ticket.Attachment",
         outputs_key_field=ID.hda_name,
+        readable_output=pat_table_to_markdown(
+            title="Attachments",
+            output=response["data"],
+            fields=(
+                OBJECT_DESCTIPTION,
+                OBJECT_ENTITY,
+                ID,  # TODO replace with AttachmentID?
+                FILE_NAME,
+                TICKET_ID,
+                CONTENT_TYPE,
+                FIRST_UPDATE_USER_ID,
+                LAST_UPDATE,
+                DESCRIPTION,
+            ),
+        ),
         raw_response=response,
     )
 
