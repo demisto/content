@@ -21,10 +21,10 @@ fi
 echo "Trying to authenticate with GCS..."
 gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" > auth.out 2>&1
 if [ $? -ne 0 ]; then
-  echo "Failed to authenticate with GCS."
+  echo "Failed to authenticate with GCS, exiting..."
   exit 1
 fi
-echo "Auth loaded successfully."
+echo "Successfully authenticated with GCS."
 
 echo "starting configure_and_install_packs instance role: ${INSTANCE_ROLE}"
 exit_code=0

@@ -20,7 +20,7 @@ TEST_MACHINES_LIST=$(jq --arg flow_type "$1" 'to_entries | map(select(.value.ena
 # Get the number of existing machines
 NUM_OF_TEST_MACHINES=$(echo "$TEST_MACHINES_LIST" | jq 'length')
 export NUM_OF_TEST_MACHINES
-echo "requested flow type is: $1 Number of available machines is: $NUM_OF_TEST_MACHINES Number of machines to lock is: ${CLOUD_MACHINES_COUNT}"
+echo "requested flow type is: $1, Number of available machines is: $NUM_OF_TEST_MACHINES, Number of machines to lock is: ${CLOUD_MACHINES_COUNT}"
 
 # Print all available machines
 TEST_MACHINES_LIST_STRING=$(echo "$TEST_MACHINES_LIST" | jq -r 'keys | join(",")')
