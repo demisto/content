@@ -419,6 +419,15 @@ class PrismaCloudComputeClient(BaseClient):
         headers = self._headers
         return self._http_request('get', 'logs/defender/download', params=params, headers=headers, resp_type="content")
 
+    def get_ci_scan_results(self, params: Optional[dict] = None) -> List[dict]:
+        """
+        Sends a request to get ci scan results information.
+
+        Returns:
+            list[dict]: ci scan results information.
+        """
+        return self._http_request(method="GET", url_suffix="/scans", params=params)
+
 
 def format_context(context):
     """
@@ -1985,6 +1994,65 @@ def unstuck_fetch_stream_command():
     )
 
 
+def get_ci_scan_results_list(client: PrismaCloudComputeClient, args: dict) -> CommandResults:
+    """
+    Retrieve a list of ci scan results and their information.
+    Implement the command prisma-cloud-compute-ci-scan-results-list'.
+
+    Args:
+        client (PrismaCloudComputeClient): prisma-cloud-compute client.
+        args (dict): prisma-cloud-compute-ci-scan-results-list command arguments.
+
+    Returns:
+        CommandResults: command-results object.
+    """
+    limit, offset = parse_limit_and_offset_values(
+        limit=args.get("limit", "20"), offset=args.get("offset", "0")
+    )
+    account_ids, resource_ids, region, name, search = (
+        argToList(args.get("account_ids")), argToList(args.get("resource_ids")),
+        argToList(args.get("region")), argToList(args.get("name")), argToList(args.get("search"))
+    )
+    scan_id, image_id = (args.get("scan_id"), args.get("image_id"))
+    _pass = argToBoolean(args.get("pass", "true"))
+    if to := args.get("to"):
+        to = parse_date_string_format(to, "%Y-%m-%dT%H:%M:%SZ")
+
+    params = assign_params(
+        offset=offset, limit=limit, search=search, accountIDs=account_ids, resourceIDs=resource_ids, region=region, _id=scan_id,
+        jobName=name, imageID=image_id, to=to
+    )
+    params["pass"] = _pass
+    if _from := args.get("from"):
+        params["from"] = parse_date_string_format(_from, "%Y-%m-%dT%H:%M:%SZ")
+
+    if ci_scan_results := client.get_ci_scan_results(params=params):
+        table = tableToMarkdown(
+            name="CI Scan Information",
+            t=[
+                {
+                    "Image": scan.get("entityInfo", {}).get("instances", [{}])[0].get("image"),
+                    "ID": scan.get("entityInfo", {}).get("_id"),
+                    "OS Distribution": scan.get("entityInfo", {}).get("osDistro"),
+                    "OS Release": scan.get("entityInfo", {}).get("osDistroRelease"),
+                    "Scan Status": scan.get("pass"),
+                    "Scan Time": scan.get("time"),
+                } for scan in ci_scan_results
+            ],
+            removeNull=True,
+        )
+    else:
+        table = "No results found."
+
+    return CommandResults(
+        outputs_prefix="PrismaCloudCompute.CIScan",
+        outputs_key_field="ID",
+        outputs=ci_scan_results,
+        readable_output=table,
+        raw_response=ci_scan_results
+    )
+
+
 def main():
     """
     PARSE AND VALIDATE INTEGRATION PARAMS
@@ -2100,6 +2168,8 @@ def main():
             return_results(results=get_logs_defender_download_command(client=client, args=demisto.args()))
         elif requested_command == "prisma-cloud-compute-unstuck-fetch-stream":
             return_results(unstuck_fetch_stream_command())
+        elif requested_command == "prisma-cloud-compute-ci-scan-results-list":
+            return_results(results=get_ci_scan_results_list(client=client, args=demisto.args()))
     # Log exceptions
     except Exception as e:
         return_error(f'Failed to execute {requested_command} command. Error: {str(e)}')

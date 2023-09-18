@@ -1962,6 +1962,231 @@ script:
       type: Date
   - description: Use this command to unstuck the fetch stream in case it's getting duplicated incidents.
     name: prisma-cloud-compute-unstuck-fetch-stream
+  - name: prisma-cloud-compute-ci-scan-results-list
+    description: Retrieves all scan reports for images scanned by the Jenkins plugin or twistcli. Maps to Monitor > Vulnerabilities > Images > CI in the Console UI. The default will retrieve only the passed scans.
+    arguments:
+    - name: account_ids
+      description: Filters the result based on cloud account IDs.
+      isArray: true
+    - name: resource_ids
+      description: Scopes the query by resource ID.
+      isArray: true 
+    - name: region
+      description: Scopes the query by cloud region.
+      isArray: true
+    - name: scan_id
+      description: Scan ID used in the image layers fetch.
+    - name: image_id
+      description: Image ID of scanned image.
+    - name: name
+      description: Jenkins job name.
+      isArray: true
+    - name: search
+      description: Retrieves the result for a search term.
+      isArray: true
+    - name: pass
+      description: Indicates whether to filter on passed scans (true) or not (false).
+      defaultValue: "true"
+      predefined:
+      - "true"
+      - "false"
+    - name: to
+      description: Filters results by end datetime. Based on scan time.
+    - name: from 
+      description: Filters results by start datetime. Based on scan time.
+    - name: limit
+      description: The maximum number of CI scan results to return. Must be between 1-50.
+      defaultValue: "15"
+    - name: offset
+      description: The offset by which to begin listing CI scan results.
+      defaultValue: "0"
+    outputs:
+    - contextPath: PrismaCloudCompute.CIScan._id
+      description: The scan ID.
+      type: String
+    - contextPath: PrismaCloudCompute.CIScan.time
+      description: The scan time.
+      type: String
+    - contextPath: PrismaCloudCompute.CIScan.pass
+      description: Whether the scan passed.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.CIScan.vulnFailureSummary
+      description: Vulnerability scan failure summary.
+      type: String
+    - contextPath: PrismaCloudCompute.CIScan.version
+      description: The scan version.
+      type: String
+    - contextPath: PrismaCloudCompute.CIScan.entityInfo._id
+      description: The scanned entity ID.
+      type: String
+    - contextPath: PrismaCloudCompute.CIScan.entityInfo.type 
+      description: The scanned entity type.
+      type: String
+    - contextPath: PrismaCloudCompute.CIScan.entityInfo.hostname
+      description: The scanned entity hostname.
+      type: String
+    - contextPath: PrismaCloudCompute.CIScan.entityInfo.scanTime
+      description: The entity scan time.
+      type: String
+    - contextPath: PrismaCloudCompute.CIScan.entityInfo.binaries
+      description: Binaries in the scanned entity.
+      type: Unknown
+    - contextPath: PrismaCloudCompute.CIScan.entityInfo.Secrets
+      description: Secrets found in the scanned entity.
+      type: Unknown
+    - contextPath: PrismaCloudCompute.CIScan.entityInfo.startupBinaries
+      description: Startup binaries in the scanned entity.
+      type: Unknown
+    - contextPath: PrismaCloudCompute.CIScan.entityInfo.osDistro
+      description: The OS distribution.
+      type: String
+    - contextPath: PrismaCloudCompute.CIScan.entityInfo.osDistroVersion
+      description: The OS distribution version.
+      type: String
+    - contextPath: PrismaCloudCompute.CIScan.entityInfo.osDistroRelease
+      description: The OS distribution release.
+      type: String
+    - contextPath: PrismaCloudCompute.CIScan.entityInfo.distro
+      description: The distribution.
+      type: String
+    - contextPath: PrismaCloudCompute.CIScan.entityInfo.packages
+      description: Packages in the scanned entity.
+      type: Unknown
+    - contextPath: PrismaCloudCompute.CIScan.entityInfo.files
+      description: Files in the scanned entity.
+      type: Unknown
+    - contextPath: PrismaCloudCompute.CIScan.entityInfo.packageManager
+      description: The package manager.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.CIScan.entityInfo.applications
+      description: Applications in the scanned entity.
+      type: Unknown
+    - contextPath: PrismaCloudCompute.CIScan.entityInfo.isARM64
+      description: Whether the scanned entity is ARM64.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.CIScan.entityInfo.packageCorrelationDone
+      description: Whether package correlation was done.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.CIScan.entityInfo.redHatNonRPMImage
+      description: Whether a RedHat non-RPM image.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.CIScan.entityInfo.foundSecrets
+      description: Whether secrets were found.
+      type: Unknown
+    - contextPath: PrismaCloudCompute.CIScan.entityInfo.secretScanMetrics
+      description: Secret scan metrics.
+      type: Unknown
+    - contextPath: PrismaCloudCompute.CIScan.entityInfo.image
+      description: The scanned image.
+      type: Unknown
+    - contextPath: PrismaCloudCompute.CIScan.entityInfo.history
+      description: The image history.
+      type: Unknown
+    - contextPath: PrismaCloudCompute.CIScan.entityInfo.id
+      description: The entity ID.
+      type: String
+    - contextPath: PrismaCloudCompute.CIScan.entityInfo.complianceIssues
+      description: Compliance issues found.
+      type: Unknown
+    - contextPath: PrismaCloudCompute.CIScan.entityInfo.allCompliance
+      description: All compliance data.
+      type: Unknown
+    - contextPath: PrismaCloudCompute.CIScan.entityInfo.vulnerabilities
+      description: Vulnerabilities found.
+      type: Unknown
+    - contextPath: PrismaCloudCompute.CIScan.entityInfo.repoTag
+      description: Repository tag.
+      type: Unknown
+    - contextPath: PrismaCloudCompute.CIScan.entityInfo.tags
+      description: Image tags.
+      type: Unknown
+    - contextPath: PrismaCloudCompute.CIScan.entityInfo.repoDigests
+      description: Repository digests.
+      type: Unknown
+    - contextPath: PrismaCloudCompute.CIScan.entityInfo.creationTime 
+      description: Image creation time.
+      type: String
+    - contextPath: PrismaCloudCompute.CIScan.entityInfo.pushTime
+      description: Image push time.
+      type: String
+    - contextPath: PrismaCloudCompute.CIScan.entityInfo.vulnerabilitiesCount
+      description: Number of vulnerabilities found.
+      type: Number
+    - contextPath: PrismaCloudCompute.CIScan.entityInfo.complianceIssuesCount  
+      description: Number of compliance issues found.
+      type: Number
+    - contextPath: PrismaCloudCompute.CIScan.entityInfo.vulnerabilityDistribution
+      description: Vulnerability distribution data.
+      type: Unknown
+    - contextPath: PrismaCloudCompute.CIScan.entityInfo.complianceDistribution  
+      description: Compliance distribution data.
+      type: Unknown
+    - contextPath: PrismaCloudCompute.CIScan.entityInfo.vulnerabilityRiskScore
+      description: Vulnerability risk score.
+      type: Number 
+    - contextPath: PrismaCloudCompute.CIScan.entityInfo.complianceRiskScore
+      description: Compliance risk score.
+      type: Number
+    - contextPath: PrismaCloudCompute.CIScan.entityInfo.layers
+      description: Image layers data.
+      type: Unknown
+    - contextPath: PrismaCloudCompute.CIScan.entityInfo.topLayer
+      description: Top image layer data.
+      type: String
+    - contextPath: PrismaCloudCompute.CIScan.entityInfo.riskFactors
+      description: Risk factors data.
+      type: Unknown
+    - contextPath: PrismaCloudCompute.CIScan.entityInfo.labels
+      description: Image labels.
+      type: Unknown
+    - contextPath: PrismaCloudCompute.CIScan.entityInfo.installedProducts
+      description: Installed products data.
+      type: Unknown
+    - contextPath: PrismaCloudCompute.CIScan.entityInfo.scanVersion
+      description: The scan version.
+      type: String
+    - contextPath: PrismaCloudCompute.CIScan.entityInfo.scanBuildDate
+      description: The scan build date.
+      type: String
+    - contextPath: PrismaCloudCompute.CIScan.entityInfo.firstScanTime
+      description: First scan time.
+      type: String
+    - contextPath: PrismaCloudCompute.CIScan.entityInfo.cloudMetadata
+      description: Cloud metadata.
+      type: Unknown
+    - contextPath: PrismaCloudCompute.CIScan.entityInfo.instances
+      description: Instance data.
+      type: Unknown
+    - contextPath: PrismaCloudCompute.CIScan.entityInfo.hosts
+      description: Host data.
+      type: Unknown
+    - contextPath: PrismaCloudCompute.CIScan.entityInfo.err  
+      description: Error data.
+      type: String
+    - contextPath: PrismaCloudCompute.CIScan.entityInfo.collections
+      description: Collection data.
+      type: Unknown
+    - contextPath: PrismaCloudCompute.CIScan.entityInfo.scanID
+      description: The scan ID.
+      type: Number
+    - contextPath: PrismaCloudCompute.CIScan.entityInfo.trustStatus
+      description: Trust status data.
+      type: String
+    - contextPath: PrismaCloudCompute.CIScan.entityInfo.firewallProtection
+      description: Firewall protection data.
+      type: Unknown
+    - contextPath: PrismaCloudCompute.CIScan.entityInfo.appEmbedded
+      description: Whether app is embedded. 
+      type: Boolean
+    - contextPath: PrismaCloudCompute.CIScan.entityInfo.wildFireUsage
+      description: WildFire usage data.
+      type: Unknown
+    - contextPath: PrismaCloudCompute.CIScan.entityInfo.agentless
+      description: Whether agentless scan.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.CIScan.entityInfo.malwareAnalyzedTime
+      description: Malware analyzed time.
+      type: String
 tests:
 - PaloAltoNetworks_PrismaCloudCompute-Test
 fromversion: 5.0.0
