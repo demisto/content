@@ -244,7 +244,7 @@ def main():     # pragma: no cover
     timeout = params.get('timeout')
     retries = params.get('retries') or 5
 
-    vali_params(aws_default_region, aws_role_arn, aws_role_session_name, aws_access_key_id,
+    validate_params(aws_default_region, aws_role_arn, aws_role_session_name, aws_access_key_id,
                     aws_secret_access_key)
 
     aws_client = AWSClient(aws_default_region, aws_role_arn, aws_role_session_name, aws_role_session_duration,
