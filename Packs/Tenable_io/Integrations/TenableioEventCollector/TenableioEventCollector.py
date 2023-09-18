@@ -435,7 +435,7 @@ def fetch_assets_command(client: Client, assets_last_run, max_fetch):   # todo: 
         if status == 'FINISHED':
             assets_last_run.update({'export_uuid': None})   # if the polling is over and we can start a new fetch
         elif status in ['CANCELLED', 'ERROR'] and last_fetch:
-            export_uuid = client.export_assets_request(chunk_size=MAX_CHUNK_SIZE, fetch_from=last_fetch)
+            export_uuid = client.export_assets_request(chunk_size=2, fetch_from=last_fetch)
             assets_last_run.update({'export_uuid': export_uuid})
 
     demisto.info(f'Done fetching {len(assets)} assets, {assets_last_run=}.')
