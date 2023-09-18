@@ -134,6 +134,7 @@ Queries PolySwarm for IP reputation information.
 ***
 Queries PolySwarm for URL reputation information.
 
+Notice: Submitting indicators using this command might make the indicator data publicly available. See the vendor’s documentation for more details.
 
 #### Base Command
 
@@ -178,6 +179,8 @@ Queries PolySwarm for URL reputation information.
 ***
 Queries PolySwarm to retrieve domain reputation information.
 
+Notice: Submitting indicators using this command might make the indicator data publicly available. See the vendor’s documentation for more details.
+
 
 #### Base Command
 
@@ -221,6 +224,8 @@ Queries PolySwarm to retrieve domain reputation information.
 ### url-scan
 ***
 Uploads a URL to PolySwarm and retrieves the analysis results.
+
+Notice: Submitting indicators using this command might make the indicator data publicly available. See the vendor’s documentation for more details.
 
 
 #### Base Command

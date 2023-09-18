@@ -1349,6 +1349,7 @@ Query SEKOIA.IO Intelligence Center for information about this indicator. No inf
 ***
 Query SEKOIA.IO Intelligence Center for information about this indicator. No information is returned if the value is not a known by SEKOIA.IO as an indicator (IoC). STIX IDs can be resolved from SEKOIA.IO Intelligence Center application.
 
+Notice: Submitting indicators using this command might make the indicator data publicly available. See the vendor’s documentation for more details.
 
 #### Base Command
 
@@ -5947,6 +5948,7 @@ Query SEKOIA.IO Intelligence Center for information about this indicator. No inf
 ***
 Query SEKOIA.IO Intelligence Center for information about this indicator. No information is returned if the value is not a known by SEKOIA.IO as an indicator (IoC). STIX IDs can be resolved from SEKOIA.IO Intelligence Center application.
 
+Notice: Submitting indicators using this command might make the indicator data publicly available. See the vendor’s documentation for more details.
 
 #### Base Command
 

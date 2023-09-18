@@ -674,6 +674,7 @@ def update_incident_request(client: AzureSentinelClient, incident_id: str, data:
     Returns:
         Dict[str, Any]: the response of the update incident request
     """
+    fetched_incident_data = get_incident_by_id_command(client, {'incident_id': incident_id}).raw_response
     required_fields = ('severity', 'status', 'title')
     if any(field not in data for field in required_fields):
         raise DemistoException(f'Update incident request is missing one of the required fields for the '
@@ -686,7 +687,8 @@ def update_incident_request(client: AzureSentinelClient, incident_id: str, data:
         'status': 'Active',
         'labels': [{'labelName': label, 'type': 'User'} for label in delta.get('tags', [])],
         'firstActivityTimeUtc': delta.get('firstActivityTimeUtc'),
-        'lastActivityTimeUtc': delta.get('lastActivityTimeUtc')
+        'lastActivityTimeUtc': delta.get('lastActivityTimeUtc'),
+        'owner': demisto.get(fetched_incident_data, 'properties.owner', {})
     }
     if close_ticket:
         properties |= {
@@ -1955,7 +1957,7 @@ def main():
     args = demisto.args()
     command = demisto.command()
 
-    LOG(f'Command being called is {command}')
+    demisto.debug(f'Command being called is {command}')
     try:
         client_secret = params.get('credentials', {}).get('password')
         certificate_thumbprint = params.get('creds_certificate', {}).get('identifier') or \

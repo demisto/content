@@ -145,7 +145,7 @@ tasks:
     task:
       id: 84ce4c7f-8ad9-4ca5-81a8-b585ed855d70
       version: -1
-      name: 'Cortex ASM - Remediation Confirmation Scan'
+      name: Cortex ASM - Remediation Confirmation Scan
       playbookName: Cortex ASM - Remediation Confirmation Scan
       type: playbook
       iscommand: false
