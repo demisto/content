@@ -305,7 +305,7 @@ def get_time_range(timestamp_from, timestamp_to):
             t_to = time.time() if timestamp_to is None else float(timestamp_to)
         elif re.fullmatch(PYTHON_DATETIME_OBJECT_PATTERN, timestamp_from):
             t_from = date_to_timestamp(timestamp_from, PYTHON_DATETIME_OBJECT_FORMAT) / 1000
-            t_to = time.time() if timestamp_to is None else date_to_timestamp(timestamp_to) / 1000
+            t_to = time.time() if timestamp_to is None else date_to_timestamp(timestamp_to, PYTHON_DATETIME_OBJECT_FORMAT) / 1000
         else:
             t_from = date_to_timestamp(timestamp_from) / 1000
             t_to = time.time() if timestamp_to is None else date_to_timestamp(timestamp_to) / 1000
