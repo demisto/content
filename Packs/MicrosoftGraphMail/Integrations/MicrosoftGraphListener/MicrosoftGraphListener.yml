@@ -735,7 +735,82 @@ script:
   - description: Generate the login url used for Authorization code flow.
     name: msgraph-mail-generate-login-url
     arguments: []
-  dockerimage: demisto/crypto:1.0.0.68914
+  - arguments:
+    - description: display name of new folder
+      name: new_folder_name
+      required: true
+    - description: The ID of the parent folder under which to create a new folder.
+      name: parent_folder_id
+    - description: Flag for rate limit retry
+      name: ran_once_flag
+    description: Creates a new folder under the specified folder (parent).
+    name: msgraph-mail-create-folder
+    outputs:
+    - contextPath: MSGraphMail.Folders.ChildFolderCount
+      description: The number of child folders.
+      type: number
+    - contextPath: MSGraphMail.Folders.DisplayName
+      description: The folder display name.
+      type: string
+    - contextPath: MSGraphMail.Folders.ID
+      description: The Folder ID
+      type: string
+    - contextPath: MSGraphMail.Folders.ParentFolderID
+      description: The parent folder ID.
+      type: string
+    - contextPath: MSGraphMail.Folders.TotalItemCount
+      description: The total number of email messages in the folder.
+      type: number
+    - contextPath: MSGraphMail.Folders.UnreadItemCount
+      description: The number of unread email messages in the folder.
+      type: number
+  - arguments:
+    - description: The unique ID of the mail. You cannot use the the 'MessageID' key in the form '<message-id>'.
+      name: message_id
+      required: true
+    - description: The ID of the destination folder
+      name: destination_folder_id
+      required: true
+    - description: flag for rate limit retry
+      name: ran_once_flag
+    description: Moves a message to a different folder.
+    name: msgraph-mail-move-email
+    outputs:
+    - contextPath: MSGraphMail.MovedEmails.DestinationFolderID
+      description: The folder where the email message was moved.
+      type: string
+    - contextPath: MSGraphMail.MovedEmails.ID
+      description: The new ID of the moved email message.
+      type: string
+    - contextPath: MSGraphMail.MovedEmails.UserID
+      description: The user ID.
+  - arguments:
+    - description: The maximum number of mail folder lists to return. Default is 20.
+      name: limit
+    - description: flag for rate limit retry
+      name: ran_once_flag
+    description: Returns the mail folder list directly under the root folder.
+    name: msgraph-mail-list-folders
+    outputs:
+    - contextPath: MSGraphMail.Folders.ChildFolderCount
+      description: Number of child folders
+      type: number
+    - contextPath: MSGraphMail.Folders.DisplayName
+      description: Folder display name
+      type: string
+    - contextPath: MSGraphMail.Folders.ID
+      description: Target folder ID
+      type: string
+    - contextPath: MSGraphMail.Folders.ParentFolderID
+      description: Parent folder ID
+      type: string
+    - contextPath: MSGraphMail.Folders.TotalItemCount
+      description: The total number of email messages in the folder.
+      type: number
+    - contextPath: MSGraphMail.Folders.UnreadItemCount
+      description: The number of unread emails in the folder.
+      type: number
+  dockerimage: demisto/crypto:1.0.0.72229
   isfetch: true
   script: ''
   type: python
