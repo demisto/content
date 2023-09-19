@@ -32,7 +32,7 @@ MOCK_MULTI_LEVEL_DICT = {
             'item3': 'C'
         },
     },
-    'backTolvl1':'text'
+    'backTolvl1': 'text'
 }
 
 EXPECTED_MD_MULTI_DICT = """  * rc: 0
