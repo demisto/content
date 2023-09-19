@@ -43,7 +43,8 @@ To access the File Management UI by instance name, make sure ***Instance execute
 
    In Multi Tenant environments, go to `https://<cortex-xsoar-address>/acc_<account name>/instance/execute/<instance_name>/`
 
-   For Cortex XSOAR 8 and Cortex XSIAM) `https://ext-<cortex-xsiam-address>/xsoar/instance/execute/<instance-name>`
+   (For Cortex XSOAR 8) go to `https://ext-<XSOAR-tenant>.crtx.<region>.paloaltonetworks.com/xsoar/instance/execute/<instance-name>`
+   (For Cortex XSIAM) go to `https://ext-<XSIAM-tenant>.crtx.<region>.paloaltonetworks.com/xsiam/instance/execute/<instance-name>`
    
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
