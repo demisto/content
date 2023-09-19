@@ -96,6 +96,7 @@ configuration:
   section: Connect
   required: false
   advanced: true
+  additionalinfo: Trust any certificate (not secure). Make sure to mark this parameter if you want the SlackBlockBuilder script to send a response back to the incident context.
 - defaultvalue: 'true'
   display: Enable Incident Mirroring
   name: mirroring
@@ -343,7 +344,7 @@ script:
     name: slack-invite-to-channel
   - arguments:
     - default: true
-      description: 'A CSV list of usernames or email addresses to remove from the a channel. For example: "user1, user2..."'
+      description: 'A CSV list of usernames or email addresses to remove from the a channel. For example: "user1, user2...".'
       name: users
       required: true
     - description: The name of the channel from which to remove the users. If the name of the channel is not specified, the mirrored investigation channel is used (if the channel exists).
@@ -432,39 +433,39 @@ script:
     description: Reset user session token in Slack.
     name: slack-user-session-reset
   - arguments:
-    - description: 'Supply this argument to only return channels with this name '
+    - description: 'Supply this argument to only return channels with this name.'
       name: name_filter
     - defaultValue: public_channel
       description: 'You can provide a comma separated list of other channels to include in your results. Possible options are: "public_channel", "private_channel", "mpim", and "im".  Including these options may require changes to your Bot''s OAuth scopes in order to read channels like private, group message, or personal messages.'
       name: channel_types
     - defaultValue: 'true'
-      description: Default is true (exclude archived channels). This setting allows the command to read channels that have been archived
+      description: Default is true (exclude archived channels). This setting allows the command to read channels that have been archived.
       name: exclude_archived
     - defaultValue: 100
       description: Set this argument to specify how many results to return. If you have more results than the limit you set, you will need to use the cursor argument to paginate your results.
       name: limit
-    - description: 'Default is the first page of results. If you have more results than your limit, you need to paginate your results with this argument.  This is found with the next_cursor attribute returned by a previous request''s response_metadata '
+    - description: 'Default is the first page of results. If you have more results than your limit, you need to paginate your results with this argument.  This is found with the next_cursor attribute returned by a previous request''s response_metadata.'
       name: cursor
     description: 'List all of the channels in the organization workspace. This command required scopes depend on the type of channel-like object you''re working with. To use the command, you''ll need at least one of the channels:, groups:, im: or mpim: scopes corresponding to the conversation type you''re working with.'
     name: slack-list-channels
     outputs:
     - contextPath: Slack.Channels.ID
-      description: The ID for the channel
+      description: The ID for the channel.
       type: string
     - contextPath: Slack.Channels.Name
-      description: Name of the channel
+      description: Name of the channel.
       type: string
     - contextPath: Slack.Channels.Created
-      description: Epoch timestamp when the channel was created
+      description: Epoch timestamp when the channel was created.
       type: number
     - contextPath: Slack.Channels.Creator
-      description: ID for the creator of the channel
+      description: ID for the creator of the channel.
       type: string
     - contextPath: Slack.Channels.Purpose
-      description: The purpose, or description, of the channel
+      description: The purpose, or description, of the channel.
       type: string
   - arguments:
-    - description: The channel ID associated with the Slack channel
+    - description: The channel ID associated with the Slack channel.
       name: channel_id
       required: true
     - defaultValue: 100
@@ -472,11 +473,11 @@ script:
       name: limit
     - description: The conversation ID.
       name: conversation_id
-    description: Fetches a conversation's history of messages and events
+    description: Fetches a conversation's history of messages and events.
     name: slack-get-conversation-history
   - arguments:
     - name: channel_id
-      description: ID of the channel
+      description: ID of the channel.
       required: true
     - name: thread_timestamp
       description: The timestamp of the thread, that can be extracted using "slack-get-conversation-history" command.
@@ -486,7 +487,7 @@ script:
       description: Set this argument to specify how many results to return.
     description: Retrieves replies to specific messages, regardless of whether it's from a public or private channel, direct message, or otherwise.
     name: slack-get-conversation-replies
-  dockerimage: demisto/slackv3:1.0.0.72328
+  dockerimage: demisto/slackv3:1.0.0.73990
   longRunning: true
   runonce: false
   script: '-'

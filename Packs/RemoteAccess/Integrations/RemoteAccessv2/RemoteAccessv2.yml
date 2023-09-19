@@ -46,7 +46,7 @@ name: RemoteAccess v2
 script:
   commands:
   - arguments:
-    - description: Command to run on the remote machine.
+    - description: Command to run on the remote machine. To combine commands and run them in a single SSH session, concatenate them using semicolons (;) e.g., 'echo 1;echo 2'.
       name: cmd
       required: true
     - description: Password required to match the Additional Password parameter if it was supplied to run the command.
@@ -149,7 +149,7 @@ script:
     - contextPath: File.Type
       description: The file type, as determined by libmagic (same as displayed in file entries).
       type: String
-  dockerimage: demisto/netmiko:1.0.0.72651
+  dockerimage: demisto/netmiko:1.0.0.74517
   runonce: false
   script: '-'
   subtype: python3
