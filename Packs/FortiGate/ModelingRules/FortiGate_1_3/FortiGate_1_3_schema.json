@@ -172,15 +172,7 @@
         "type": "string",
         "is_array": false
       },
-      "ftntfgtmasterdstmac": {
-        "type": "string",
-        "is_array": false
-      },
       "ftntfgtdstmac": {
-        "type": "string",
-        "is_array": false
-      },
-      "ftntfgtmastersrcmac": {
         "type": "string",
         "is_array": false
       },
