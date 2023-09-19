@@ -46,7 +46,7 @@ if [[ -z "${CLOUD_MACHINES_COUNT}" ]]; then
   exit 1
 fi
 
-if [[ "${CLOUD_MACHINES_COUNT}" == "all" ]; then
+if [[ "${CLOUD_MACHINES_COUNT}" == "all" ]]; then
   echo "Got request to lock all available machines, locking: ${NUM_OF_TEST_MACHINES} machines"
   CLOUD_MACHINES_COUNT="${NUM_OF_TEST_MACHINES}"
 fi
