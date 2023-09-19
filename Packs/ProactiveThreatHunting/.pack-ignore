@@ -22,5 +22,8 @@ ignore=IF113
 [file:incidentfield-Choose_SDO_To_Hunt_for.json]
 ignore=IF113
 
+[file:incidentfield-Cheat_Sheet.json]
+ignore=IF113
+
 [file:playbook-Proactive_Threat_Hunting_-_Block_Indicators.yml]
 ignore=PB121
