@@ -194,8 +194,7 @@ def generate_default_port_by_dialect(dialect: str) -> str | None:
         "Microsoft SQL Server": "1433",
         "ODBC Driver 18 for SQL Server": "1433",
         "Teradata": "1025",
-    }.get("dicalect")
-    return None
+    }.get(dialect)
 
 
 def generate_bind_vars(bind_variables_names: str, bind_variables_values: str) -> Any:
@@ -320,7 +319,7 @@ def sql_query_execute(client: Client, args: dict, *_) -> tuple[str, dict[str, An
         bind_variables_values = args.get('bind_variables_values', "")
         bind_variables = generate_bind_vars(bind_variables_names, bind_variables_values)
 
-        result, headers = client.sql_query_execute_request(sql_query, bind_variables)
+        result, headers = client.sql_query_execute_request(sql_query, bind_variables, limit)
 
         table = pre_process_result_query(client=client, result=result, headers=headers)
         table = table[skip:skip + limit]
