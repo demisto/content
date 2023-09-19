@@ -271,8 +271,14 @@ def main():     # pragma: no cover
             return_results(list_attachments_command(client, args))
         elif command == 'msgraph-mail-get-attachment':
             return_results(get_attachment_command(client, args))
+        elif command == 'msgraph-mail-create-folder':
+            return_results(create_folder_command(client, args))
         elif command == 'msgraph-mail-get-email-as-eml':
             return_results(get_email_as_eml_command(client, args))
+        elif command == 'msgraph-mail-move-email':
+            return_results(move_email_command(client, args))
+        elif command == 'msgraph-mail-list-folders':
+            return_results(list_folders_command(client, args))
         elif command == 'msgraph-mail-send-draft':
             return_results(send_draft_command(client, args))  # pylint: disable=E1123
         elif command == 'msgraph-update-email-status':
