@@ -1,4 +1,4 @@
-SlackBlockBuilder will format a given Slack block into a format readable by the SlackV3 integration. The script will also send the block to the given destination. Make sure to mark **Trust any certificate** and fill the **XSOAR API Key** integration params if you wish to get the response to the incident context.
+SlackBlockBuilder will format a given Slack block into a format readable by the SlackV3 integration. The script will also send the block to the given destination. Make sure to mark **Trust any certificate** and fill the **XSOAR API Key** integration parameters if you want to get a response to the incident context.
 
 The Slack Block Kit Builder can be found [here](https://app.slack.com/block-kit-builder).
 
