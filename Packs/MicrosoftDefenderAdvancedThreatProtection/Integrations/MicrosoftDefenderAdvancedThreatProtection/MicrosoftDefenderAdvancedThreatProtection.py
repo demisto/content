@@ -2576,11 +2576,13 @@ def list_alerts_command(client: MsClient, args: dict):
                'ThreatFamilyName', 'MachineID']
     severity = args.get('severity')
     status = args.get('status')
+    category = args.get('category')
     limit = arg_to_number(args.get('limit', 50))
     creation_time = arg_to_datetime(args.get('creation_time'), required=False)
     fields_to_filter_by = {
         'severity': severity,
-        'status': status
+        'status': status,
+        'category': category,
     }
     filter_req = reformat_filter(fields_to_filter_by)
     alerts_response = client.list_alerts(filter_req, limit, creation_time=creation_time, evidence=True)
