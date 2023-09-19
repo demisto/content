@@ -1956,4 +1956,4 @@ view: |-
   }
 inputs: []
 outputs: []
-fromversion: 6.11
+fromversion: 6.11.0
