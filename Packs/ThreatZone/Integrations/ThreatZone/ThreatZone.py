@@ -65,6 +65,7 @@ class Client(BaseClient):
     def threatzone_get_sanitized(self, uuid):
         http = urllib3.PoolManager()
         url = f'https://app.threat.zone/download/v1/download/cdr/{uuid}'
+        # this method is only for tests, sanitized file downlaod will be implemented in API side.
         headers = {
         'Cookie': "accesstoken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2M2YyZDE3NzI0NGJmN2Q5NzIwOWFjMTQiLCJlbWFpbCI6ImlzbWFpbHB2bzE1MzVAZ21haWwuY29tIiwiaWF0IjoxNjk0Nzg3NDkxLCJleHAiOjE2OTQ3ODkyOTEsImlzcyI6Imh0dHBzOi8vYXBwLnRocmVhdC56b25lIn0.xCSBD-L0ZKwh3WAz5GOUtu3bW_ynsZAS04-3SWca8PM; refreshtoken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2M2YyZDE3NzI0NGJmN2Q5NzIwOWFjMTQiLCJlbWFpbCI6ImlzbWFpbHB2bzE1MzVAZ21haWwuY29tIiwiaWF0IjoxNjk0Nzg3NDkxLCJleHAiOjE2OTQ3OTgyOTEsImlzcyI6Imh0dHBzOi8vYXBwLnRocmVhdC56b25lIn0.xGSRZ8JuD1P3-tAoFNwP7IFVX2vBJE9md4BeNrwR8us"
         }
@@ -153,7 +154,7 @@ def threatzone_get_result(client: Client, args: Dict[str, Any]) -> CommandResult
         4: "Submission VM is ready",
         5: "Submission is finished"
     }
-    
+
     levels = {
         0: "Not Measured",
         1: "Informative",
@@ -277,7 +278,6 @@ def threatzone_sandbox_upload_sample(client: Client, args: Dict[str, Any]) -> Co
         outputs={'ThreatZone.Analysis(val.Job_ID == obj.Job_ID)': {'UUID': uuid, 'URL': url}}
     )
 
-
 def threatzone_static_upload_sample(client: Client, args: Dict[str, Any]) -> CommandResults:
     """Uploads the sample to the ThreatZone static engine to analyse with required or optional selections."""
     file_id = args.get('entry_id')
@@ -293,9 +293,14 @@ def threatzone_static_upload_sample(client: Client, args: Dict[str, Any]) -> Com
     }
 
     result = client.threatzone_add(param=param)
-    readable_output = tableToMarkdown('SAMPLE UPLOADED', result)
     uuid = result['uuid']
     url = f"https://app.threat.zone/submission/{uuid}"
+    readable = {
+        "Message": result["message"],
+        "UUID": result["uuid"],
+        "URL": url
+    }
+    readable_output = tableToMarkdown('SAMPLE UPLOADED', readable)
 
     return CommandResults(
         readable_output=readable_output,
@@ -318,9 +323,14 @@ def threatzone_cdr_upload_sample(client: Client, args: Dict[str, Any]) -> Comman
     }
 
     result = client.threatzone_add(param=param)
-    readable_output = tableToMarkdown('SAMPLE UPLOADED', result)
     uuid = result['uuid']
     url = f"https://app.threat.zone/submission/{uuid}"
+    readable = {
+        "Message": result["message"],
+        "UUID": result["uuid"],
+        "URL": url
+    }
+    readable_output = tableToMarkdown('SAMPLE UPLOADED', readable)
 
     return CommandResults(
         readable_output=readable_output,

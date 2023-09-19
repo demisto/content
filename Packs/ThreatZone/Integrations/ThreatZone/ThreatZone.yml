@@ -116,7 +116,7 @@ script:
       type: String
     description: Submits a sample to ThreatZone for sandbox analysis.
   - name: tz-static-upload-sample
-    arguments:cd
+    arguments:
     - name: entry_id
       description: Entry ID of the file to submit.
       predefined:
