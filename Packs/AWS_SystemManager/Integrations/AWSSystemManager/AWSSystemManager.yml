@@ -1593,17 +1593,9 @@ script:
     - description: The timeout in seconds until polling ends.
       name: timeout
       defaultValue: '600'
-    - auto: PREDEFINED
-      predefined:
-      - 'true'
-      - 'false'
-      description: print the polling message to the war room every time it polls for status.
-      name: print_polling_message
-      defaultValue: 'false'
     - description: Hide the polling message and only print the final status at the end. This argument is for the dev, not for the user.
       name: hide_polling_output
       hidden: true
-      defaultValue: 'true'
     - description: The name of the parameter used as the target resource for the rate-controlled execution. Required if you specify target_key and target_values arguments. For example, instanceIds, LambdaRoleArn.
       name: target_parameter_name
     - auto: PREDEFINED
@@ -1680,17 +1672,9 @@ script:
     - description: The timeout in seconds until polling ends.
       name: timeout
       defaultValue: '600'
-    - auto: PREDEFINED
-      predefined:
-      - 'true'
-      - 'false'
-      description: print the polling message to the war room every time it polls for status.
-      name: print_polling_message
-      defaultValue: 'false'
     - description: Hide the polling message and only print the final status at the end. This argument is for the dev, not for the user.
       name: hide_polling_output
       hidden: true
-      defaultValue: 'true'
     polling: true
     description: Stop an Automation execution.
     name: aws-ssm-automation-execution-cancel
@@ -2228,17 +2212,9 @@ script:
       defaultValue: '600'
     - description: "If this time is reached and the command hasn’t already started running, it won’t run. Valid Range: Minimum value of 30 seconds. Maximum value of 2592000 seconds (30 days)."
       name: command_timeout
-    - auto: PREDEFINED
-      predefined:
-      - 'true'
-      - 'false'
-      description: print the polling message to the war room every time it polls for status.
-      name: print_polling_message
-      defaultValue: 'false'
     - description: Hide the polling message and only print the final status at the end. This argument is for the dev, not for the user.
       name: hide_polling_output
       hidden: true
-      defaultValue: 'true'
     polling: true
     description: Runs commands on one or more managed nodes.
     name: aws-ssm-command-run
@@ -2389,17 +2365,9 @@ script:
     - description: The timeout in seconds until polling ends.
       name: timeout
       defaultValue: '600'
-    - auto: PREDEFINED
-      predefined:
-      - 'true'
-      - 'false'
-      description: print the polling message to the war room every time it polls for status.
-      name: print_polling_message
-      defaultValue: 'false'
     - description: Hide the polling message and only print the final status at the end. This argument is for the dev, not for the user.
       name: hide_polling_output
       hidden: true
-      defaultValue: 'true'
     polling: true
     description: Attempts to cancel the command specified by the Command ID. There is no guarantee that the command will be terminated and the underlying process stopped.
     name: aws-ssm-command-cancel

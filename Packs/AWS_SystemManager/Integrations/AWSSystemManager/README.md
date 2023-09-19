@@ -1103,7 +1103,6 @@ Initiates execution of an Automation runbook.
 | parameters | 'A key-value map of execution parameters, which match the declared parameters in the Automation runbook. Note: to run on instance(s) use the target_parameter_name argument instead of specifying instances here, e.g. target_parameter_name=InstanceIds.'<br/>Example for execute the command in the war-room:<br/>- `"Role":["Admin", "User"]"`.<br/>Example for execute the command in the playbook (see screenshot below):<br/>in the first input box:<br/>Role (without a  quote)<br/>in the second input box:<br/>Admin, User (without a quote, and with a comma between values). | Optional | 
 | execution_id | The ID of the execution. This is for the polling to work, not for the user. | Optional | 
 | timeout | The timeout in seconds until polling ends. Default is 600. | Optional | 
-| print_polling_message | print the polling message to the war room every time it polls for status. Possible values are: true, false. Default is false. | Optional |  
 | target_parameter_name | The name of the parameter used as the target resource for the rate-controlled execution. Required if you specify target_key and target_values arguments. For example, instanceIds, LambdaRoleArn. | Optional | 
 | target_key | User-defined criteria for sending commands that target managed nodes that meet the criteria. Required if you specify target_parameter_name argument. Possible values are: Parameter Values, Tag Key, Resource Group. | Optional | 
 | target_values | User-defined criteria that maps to target_key.<br/>For example:<br/> - target_key=ResourceGroup target_values=MyResourceGroup.<br/> - target_key=TagKey target_values=&lt;my-tag-key-1&gt;,&lt;my-tag-key-2&gt;<br/> Note: Depending on the type of target, the maximum number of values for a key might be lower than the global maximum of 50. | Optional | 
@@ -1171,7 +1170,6 @@ Stop an Automation execution.
 | include_polling | When set to true, will keep polling results until the command returns that the status of the automation execution is updated to Cancelled. Possible values are: true, false. Default is false. | Optional | 
 | first_run | This argument is used to determine whether the current execution of the command is the initial run. After the command is executed, the argument is updated to 'false.' During polling, the code checks the status only for the first execution. Default is True. | Optional | 
 | timeout | The timeout in seconds until polling ends. Default is 600. | Optional | 
-| print_polling_message | print the polling message to the war room every time it polls for status. Possible values are: true, false. Default is false. | Optional |  
 
 #### Context Output
 
@@ -1585,7 +1583,6 @@ Runs commands on one or more managed nodes.
 | command_id | A unique identifier for this command. This is for the polling to work, not for the user. | Optional | 
 | polling_timeout | The timeout in seconds until polling ends. Default is 600. | Optional | 
 | command_timeout | If this time is reached and the command hasn’t already started running, it won’t run. Valid Range: Minimum value of 30 seconds. Maximum value of 2592000 seconds (30 days). | Optional | 
-| print_polling_message | print the polling message to the war room every time it polls for status. Possible values are: true, false. Default is false. | Optional |  
 
 
 ##### How to use parameters argument:
@@ -1638,7 +1635,7 @@ Runs commands on one or more managed nodes.
 
 #### Command example
 
-```!aws-ssm-command-run document_name=AWS target_key="Instance Ids" target_values=instance id print_polling_message=false```
+```!aws-ssm-command-run document_name=AWS target_key="Instance Ids" target_values=instance id```
 
 #### Context Example
 
@@ -1723,7 +1720,6 @@ Attempts to cancel the command specified by the Command ID. There is no guarante
 | interval_in_seconds | The interval in seconds between each poll. Default is 30. | Optional | 
 | first_run | This argument is used to determine whether the current execution of the command is the initial run. After the command is executed, the argument is updated to 'false.' During polling, the code checks the status only for the first execution. Default is True. | Optional | 
 | timeout | The timeout in seconds until polling ends. Default is 600. | Optional | 
-| print_polling_message | print the polling message to the war room every time it polls for status. Possible values are: true, false. Default is false. | Optional |  
 
 #### Context Output
 

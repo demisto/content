@@ -37,13 +37,19 @@ MAXIMUM_COMMAND_TIMEOUT = (
 )
 MINIMUM_COMMAND_TIMEOUT = 30  # Minimum timeout for running commands in ssm.
 DEFAULT_INTERVAL_IN_SECONDS = 30  # Interval for polling commands.
-TERMINAL_AUTOMATION_STATUSES = {
+TERMINAL_AUTOMATION_STATUSES = {  # the status for run automation command
     "Success": "The automation completed successfully.",
     "TimedOut": "A step or approval wasn't completed before the specified timeout period.",
     "Cancelled": "The automation was stopped by a requester before it completed.",
     "Failed": "The automation didn't complete successfully. This is a terminal state.",
 }
-TERMINAL_COMMAND_STATUSES = {
+CANCEL_TERMINAL_AUTOMATION_STATUSES = {  # the status for cancel automation command
+    "Success": "The cancel command failed, The automation completed successfully before the cancellation.",
+    "TimedOut": "The cancel command failed, the automation failed on timeout before the cancellation.",
+    "Cancelled": "The cancel command completed successfully, The automation was stopped by a requester before it completed.",
+    "Failed": "The cancel command failed, the automation failed before it completed.",
+}
+TERMINAL_COMMAND_STATUSES = {  # the status for run command command
     "Success": "The command completed successfully.",
     "Failed": "The command wasn't successful on the managed node.",
     "Delivery Timed Out": "The command wasn't delivered to the managed node before the total timeout expired.",
@@ -51,6 +57,22 @@ TERMINAL_COMMAND_STATUSES = {
     "doesn't have a value of Success. However, not enough invocations failed for the status to be Failed.",
     "Cancelled": "The command was canceled before it was completed.",
     "Canceled": "The command was canceled before it was completed.",  # AWS typo, British English (canceled)
+    "Rate Exceeded": "The number of managed nodes targeted by the command exceeded the account quota for pending invocations. "
+    "The system has canceled the command before executing it on any node.",
+    "Access Denied": "The user or role initiating the command doesn't have access to the targeted resource group. AccessDenied "
+    "doesn't count against the parent command's max-errors limit, "
+    "but does contribute to whether the parent command status is Success or Failed.",
+    "No Instances In Tag": "The tag key-pair value or resource group targeted by the command doesn't match any managed nodes. ",
+}
+
+CANCEL_TERMINAL_COMMAND_STATUSES = {  # the status for cancel command command
+    "Success": "The cancel command failed, The command completed successfully before the cancellation.",
+    "Failed": "The cancel command failed, the command failed before it completed.",
+    "Delivery Timed Out": "The command wasn't delivered to the managed node before the total timeout expired.",
+    "Incomplete": "The command was attempted on all managed nodes and one or more of the invocations "
+    "doesn't have a value of Success. However, not enough invocations failed for the status to be Failed.",
+    "Cancelled": "The cancel command completed successfully, The command was cancelled before it was completed.",
+    "Canceled": "The cancel command completed successfully, The command was canceled before it was completed.",  # AWS typo, British English (canceled)
     "Rate Exceeded": "The number of managed nodes targeted by the command exceeded the account quota for pending invocations. "
     "The system has canceled the command before executing it on any node.",
     "Access Denied": "The user or role initiating the command doesn't have access to the targeted resource group. AccessDenied "
@@ -1112,7 +1134,7 @@ def run_automation_execution_command(
                 require for polling only.
             - tag_key (str, optional): The key for tagging the automation execution.
             - tag_value (str, optional): The value for tagging the automation execution.
-            - parameters (str, optional): JSON-formatted string containing automation parameters.  #TODO change to regex
+            - parameters (str, optional): JSON-formatted string containing automation parameters.
             - mode (str, optional): The execution mode (default is "Auto").
             - client_token (str, optional): A unique identifier for the automation execution.
             - document_version (str, optional): The version of the SSM document to use.
@@ -1155,7 +1177,7 @@ def run_automation_execution_command(
         if target_key := args.get("target_key"):
             map_target_key = {
                 "Parameter Values": "ParameterValues",
-                "Tag Key": "Tag Key",
+                "Tag Key": "tag-key",
                 "Resource Group": "ResourceGroup",
             }
             kwargs["Targets"] = [
@@ -1165,7 +1187,7 @@ def run_automation_execution_command(
                 }
             ]
         #  ---end handling kwargs---
-
+        #  first call to run automation
         response = ssm_client.start_automation_execution(**kwargs)
         response.pop("ResponseMetadata")  # type: ignore
         execution_id = response["AutomationExecutionId"]
@@ -1181,6 +1203,7 @@ def run_automation_execution_command(
             continue_to_poll=True,
             args_for_next_run=args,
         )
+    # polling logic
     automation_execution = ssm_client.get_automation_execution(
         AutomationExecutionId=execution_id
     )["AutomationExecution"]
@@ -1191,21 +1214,15 @@ def run_automation_execution_command(
                 f"Execution {execution_id} failed with message: {FailureMessage}"
             )
         else:
-            readable_output = f"{status}, {TERMINAL_AUTOMATION_STATUSES[status]}"
+            readable_output = f"The automation status is {status}, {TERMINAL_AUTOMATION_STATUSES[status]}"
         return PollResult(  # if execution not in progress, return the status and end the polling loop
-            response=CommandResults(readable_output=readable_output),
+            response=CommandResults(readable_output=readable_output, outputs=automation_execution),
             continue_to_poll=False,
         )
-    args["hide_polling_output"] = not argToBoolean(args["print_polling_message"])
     return PollResult(
-        partial_result=CommandResults(
-            readable_output=f"Execution {execution_id} is in progress."
-        )
-        if argToBoolean(args["print_polling_message"])
-        else None,
         response=None,
         continue_to_poll=True,
-        args_for_next_run=args,
+        args_for_next_run=args
     )
 
 
@@ -1245,21 +1262,15 @@ def cancel_automation_execution_command(
         status = ssm_client.get_automation_execution(
             AutomationExecutionId=automation_execution_id
         )["AutomationExecution"]["AutomationExecutionStatus"]
-        if status in TERMINAL_AUTOMATION_STATUSES:
+        if status in CANCEL_TERMINAL_AUTOMATION_STATUSES:
             return PollResult(
                 response=CommandResults(
-                    readable_output=f"{status}, {TERMINAL_AUTOMATION_STATUSES[status]}",
+                    readable_output=f"The automation status is {status}, {CANCEL_TERMINAL_AUTOMATION_STATUSES[status]}",
                 ),
                 continue_to_poll=False,
             )
         # Continue polling
-        args["hide_polling_output"] = not argToBoolean(args["print_polling_message"])
         return PollResult(  # CONTINUE POLLING
-            partial_result=CommandResults(
-                readable_output=f"Execution {automation_execution_id} is {status}",
-            )
-            if argToBoolean(args["print_polling_message"])
-            else None,
             continue_to_poll=True,
             args_for_next_run=args,
             response=None,
@@ -1332,6 +1343,12 @@ def list_commands_command(
     response = convert_datetime_to_iso(response)
 
     commands = response.get("Commands", [])
+    # aws response sometime return empty commands and nextToken, so instead the user send the command agin with the next_token the code hendle with it
+    if not commands and (next_token := response.get("NextToken")):
+        kwargs["NextToken"] = next_token
+        response = ssm_client.list_commands(**kwargs)
+        response = convert_datetime_to_iso(response)
+        commands = response.get("Commands", [])
     command_result = []
     if next_token := response.get("NextToken"):
         command_result.append(
@@ -1377,20 +1394,12 @@ def run_command_command(args: dict[str, Any], ssm_client: "SSMClient") -> PollRe
         if status in TERMINAL_COMMAND_STATUSES:
             return PollResult(
                 response=CommandResults(
-                    readable_output=f"{status}, {TERMINAL_COMMAND_STATUSES[status]}",
+                    readable_output=f"The command status is {status}, {TERMINAL_COMMAND_STATUSES[status]}",
                 ),
                 continue_to_poll=False,
             )
         #  if command not in TERMINAL_COMMAND_STATUSES, continue polling
-        args["hide_polling_output"] = not argToBoolean(args["print_polling_message"])
-        if argToBoolean(args["print_polling_message"]):
-            readable_output = CommandResults(
-                readable_output=f"Command {command_id} is {status}"
-            )
-        else:
-            readable_output = None
         return PollResult(
-            partial_result=readable_output,
             continue_to_poll=True,
             args_for_next_run=args,
             response=None,
@@ -1398,7 +1407,7 @@ def run_command_command(args: dict[str, Any], ssm_client: "SSMClient") -> PollRe
     tag_key_map = {
         "Instance Ids": "InstanceIds",
         "Tag Key": "tag-key",
-        "Resource Group": "resource-groups",
+        "Resource Group": "resource-groups:Name",
     }
     kwargs = {
         "DocumentName": args["document_name"],
@@ -1429,7 +1438,7 @@ def run_command_command(args: dict[str, Any], ssm_client: "SSMClient") -> PollRe
     kwargs = update_if_value(args, kwargs, input_to_output_keys)
     if parameters := args.get("parameters"):
         parameters = format_parameters_arguments(parameters)
-
+    kwargs["Parameters"] = parameters
     command = ssm_client.send_command(**kwargs)
     command = convert_datetime_to_iso(command)["Command"]
 
@@ -1463,24 +1472,18 @@ def cancel_command_command(args: dict[str, Any], ssm_client: "SSMClient") -> Pol
 
     if not argToBoolean(args["first_run"]):
         status = get_command_status(command_id, ssm_client)
-        if status in TERMINAL_COMMAND_STATUSES:
+        if status in CANCEL_TERMINAL_COMMAND_STATUSES:
             return PollResult(
                 response=CommandResults(
-                    readable_output=f"{status}, {TERMINAL_COMMAND_STATUSES[status]}",
+                    readable_output=f"The status of the command is {status}, {CANCEL_TERMINAL_COMMAND_STATUSES[status]}",
                 ),
                 continue_to_poll=False,
             )
         # else, continue polling
-        args["hide_polling_output"] = not argToBoolean(args["print_polling_message"])
         return PollResult(  # CONTINUE POLLING
-            partial_result=CommandResults(
-                readable_output=f"Execution {command_id} is {status}",
-            )
-            if argToBoolean(args["print_polling_message"])
-            else None,
-            continue_to_poll=True,
-            args_for_next_run=args,
             response=None,
+            continue_to_poll=True,
+            args_for_next_run=args
         )
 
     # Initial command execution
