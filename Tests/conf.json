@@ -34,7 +34,7 @@
                 "Core REST API"
             ],
             "playbookID": "Test Playbook - Cortex XDR - True Positive Incident Handling",
-            "fromversion": "6.5.0"
+            "fromversion": "6.11.0"
         },
         {
             "playbookID": "T1036 - Masquerading - Test",
