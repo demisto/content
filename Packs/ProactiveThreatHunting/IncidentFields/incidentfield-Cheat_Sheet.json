@@ -22,5 +22,6 @@
     "unmapped": false,
     "unsearchable": true,
     "useAsKpi": false,
-    "version": -1
+    "version": -1,
+    "fromVersion": "6.9.0"
 }
