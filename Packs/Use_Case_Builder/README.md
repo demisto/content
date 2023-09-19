@@ -37,6 +37,7 @@ This pack includes 1 dashboards:
 
 - **Use Case Development Dashboard**: High level summary of all Use Cases in Development and their associated metric data.
 
+![image](https://raw.githubusercontent.com/joe-cosgrove/content/usecasebuildermodifications/Packs/Use_Case_Builder/doc_files/ucbmain.png)
 
 ## Dynamic Sections
 

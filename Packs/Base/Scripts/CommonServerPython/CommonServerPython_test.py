@@ -5,6 +5,7 @@ import json
 import os
 import re
 import sys
+import urllib
 import warnings
 
 import dateparser
@@ -1799,6 +1800,16 @@ class TestCommandResults:
         assert command_results.tags == ['tag1', 'tag2']
         assert command_results.to_context()['Tags'] == ['tag1', 'tag2']
 
+    @pytest.mark.parametrize('output', [True, False])
+    def test_with_boolean_output(self, output):
+        from CommonServerPython import CommandResults
+        command_results = CommandResults(
+            outputs=output,
+            outputs_prefix="BooleanOutput",
+            readable_output="Boolean Output: {}".format(output),
+        )
+        assert command_results.to_context()['Contents'] == output
+
     def test_dbot_score_is_in_to_context_ip(self):
         """
         Given
@@ -2599,6 +2610,28 @@ class TestCommandResults:
 
         assert results.to_context().get('Note') is True
 
+    def test_empty_readable_outputs(self):
+        """
+        Given:
+        - Outputs as str
+        - outputs_prefix is str
+        - No readable_output
+
+        When:
+        - Returning results
+
+        Then:
+        - Validate generated readable_output
+
+        """
+        from CommonServerPython import CommandResults
+        res = CommandResults(
+            outputs="outputs_test",
+            outputs_prefix="outputs_prefix_test"
+        )
+        context = res.to_context()
+        assert "outputs_test" == context.get('HumanReadable')
+
 
 def test_http_request_ssl_ciphers_insecure():
     if IS_PY3 and PY_VER_MINOR >= 10:
@@ -3012,6 +3045,45 @@ class TestBaseClient:
         response = Response()
         response.status_code = 400
         assert not self.client._is_status_code_valid(response)
+
+    def test_http_request_params_parser_none(self, requests_mock):
+        """
+            Given
+                - query params with spaces without specific quote function.
+
+            When
+                - Calling _https_request function.
+
+            Then
+                - Verify the spaces in the result is as expected.
+        """
+        mock_request = requests_mock.get('http://example.com/api/v2/', json={})
+        from CommonServerPython import BaseClient
+        mock_client = BaseClient('http://example.com/api/v2/')
+
+        mock_client._http_request('get', params={'key': 'value with spaces'})
+
+        assert mock_request.last_request.query == 'key=value+with+spaces'
+
+    @pytest.mark.skipif(not IS_PY3, reason='test not supported in py2')
+    def test_http_request_params_parser_quote(self, requests_mock):
+        """
+            Given
+                - query params with spaces with specific quote function.
+
+            When
+                - Calling _https_request function.
+
+            Then
+                - Verify the spaces in the result is as expected.
+        """
+        mock_request = requests_mock.get('http://example.com/api/v2/', json={})
+        from CommonServerPython import BaseClient
+        mock_client = BaseClient('http://example.com/api/v2/')
+
+        mock_client._http_request('get', params={'key': 'value with spaces'}, params_parser=urllib.parse.quote)
+
+        assert mock_request.last_request.query == 'key=value%20with%20spaces'
 
 
 def test_parse_date_string():

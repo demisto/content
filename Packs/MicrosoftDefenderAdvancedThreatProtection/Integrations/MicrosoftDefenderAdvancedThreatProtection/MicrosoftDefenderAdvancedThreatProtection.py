@@ -5223,7 +5223,7 @@ def run_polling_command(client: MsClient, args: dict, cmd: str, action_func: Cal
             error_msg += f'{command_result.outputs.get("commands", [{}])[0].get("errors")}'
         raise Exception(error_msg)
 
-    elif command_status != 'Completed' or action_status == 'InProgress':
+    elif command_status != 'Completed' or action_status in ('InProgress', 'Pending'):
         demisto.debug("action status is not completed")
         # schedule next poll
         polling_args = {

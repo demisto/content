@@ -470,7 +470,6 @@
         "current": true
       }
     ],
-    "attributes": [],
     "assetSecurityPolicies": [
       {
         "policyName": "content-security-policy-high",
@@ -1053,7 +1052,6 @@
         "lastSeen": 1543521869887
       }
     ],
-    "sslCerts": [],
     "firstSeen": 1539018024251,
     "lastSeen": 1591595881794,
     "count": 860,
