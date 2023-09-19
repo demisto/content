@@ -1089,6 +1089,7 @@ def fetch_investigation_alerts_command(client: Client, env: str, args=None):
 
 def fetch_investigation_command(client: Client, env: str, args=None):
     fields: str = ""
+    variables: Dict[str, Any] = {}
     if args.get("id"):
         # alerts, assets, and assignee to be deprecated in the future
         fields = args.get("fields") or """
@@ -1236,8 +1237,8 @@ def fetch_investigation_command(client: Client, env: str, args=None):
         }
         """ % (fields)
         variables = {
-            "page": arg_to_number(args.get("page", 0)),
-            "perPage": arg_to_number(args.get("page_size", 10)),
+            "page": arg_to_number(args.get("page")) or 0,
+            "perPage": arg_to_number(args.get("page_size")) or 10,
             "query": args.get("query", "deleted_at is null"),
             "orderByField": args.get("order_by", "created_at"),
             "orderDirection": args.get("order_direction", "desc")
