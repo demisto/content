@@ -57,7 +57,7 @@ def http_request(method, url_suffix, params_dict=None, headers=DEFAULT_HEADERS, 
             return "Request completed"
     except Exception as e:
         LOG(e)
-        raise(e)
+        raise (e)
 
 
 def underscore_to_camelcase(word):

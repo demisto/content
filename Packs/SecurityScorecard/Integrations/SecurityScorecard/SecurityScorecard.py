@@ -265,7 +265,6 @@ def get_last_run(
     last_run: str = demisto.getLastRun().get("last_run"),
     first_fetch: str = demisto.params().get("first_fetch", "2 days")
 ) -> datetime:
-
     """
     Helper function to return the last incident fetch runtime as a `datetime` object.
     It uses the datetime of last_run from the demisto instance and first_fetch parameter.
@@ -396,7 +395,7 @@ def test_module(
 
     client.fetch_alerts(page_size=1, page=1)
     demisto.debug("Test module successful")
-    return('ok')
+    return ('ok')
 
 # region Methods
 # ---------------
@@ -622,7 +621,6 @@ def company_factor_score_get_command(
 
 
 def company_history_score_get_command(client: SecurityScorecardClient, args: Dict[str, str]) -> CommandResults:
-
     """Retrieve company historical scores
 
     See https://securityscorecard.readme.io/reference#get_companies-scorecard-identifier-history-score
@@ -962,7 +960,6 @@ def company_services_get_command(client: SecurityScorecardClient, args: Dict[str
 
 
 def fetch_alerts(client: SecurityScorecardClient):
-
     """
     Fetch incidents/alerts from SecurityScorecard API
 
