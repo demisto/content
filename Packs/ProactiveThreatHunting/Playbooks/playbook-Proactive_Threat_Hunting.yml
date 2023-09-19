@@ -557,7 +557,7 @@ inputs:
   value:
     complex:
       root: lists
-      accessor: CheatSheetXQL
+      accessor: CheatSheetQueries
   required: false
   description: A list object that contains Query cheat sheet.
   playbookInputQuery:
