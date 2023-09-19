@@ -3657,7 +3657,7 @@ def _get_incidents_query_params(client, fetch_evidence, last_fetch_time):
         sources = argToList(client.alert_detectionsource_to_fetch)
         source_filter_list = [f"detectionSource+eq+'{DETECTION_SOURCE_TO_API_VALUE[source]}'" for source in sources]
         if len(source_filter_list) > 1:
-            source_filter_list = list(map(lambda x: f"({x})", source_filter_list))
+            source_filter_list = [f"({x})" for x in source_filter_list]
         filter_query = filter_query + " and (" + " or ".join(source_filter_list) + ")"
     if client.alert_status_to_fetch:
         statuses = argToList(client.alert_status_to_fetch)
