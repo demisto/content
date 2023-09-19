@@ -1,12 +1,5 @@
 {
-	"cacheVersn": 0,
-	"close": null,
-	"definitionId": "",
-	"description": "",
-	"detached": false,
-	"details": null,
 	"detailsV2": {
-		"TypeName": "",
 		"tabs": [
 			{
 				"id": "summary",
@@ -310,27 +303,110 @@
 				"id": "canvas",
 				"name": "Canvas",
 				"type": "canvas"
+			},
+			{
+				"hidden": false,
+				"id": "ylnxitvgfz",
+				"name": "CSPM IOM",
+				"sections": [
+					{
+						"h": 2,
+						"i": "caseinfoid-c913b190-5708-11ee-b8c5-492a12f3e713",
+						"items": [],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Resource Attributes",
+						"query": "ConvertResourceAttributesToTable",
+						"queryType": "script",
+						"static": false,
+						"type": "dynamic",
+						"w": 1,
+						"x": 0,
+						"y": 0
+					}
+				],
+				"type": "custom"
+			},
+			{
+				"hidden": false,
+				"id": "nt6k7x1vtu",
+				"name": "CSPM IOA",
+				"sections": [
+					{
+						"h": 2,
+						"i": "caseinfoid-03581350-5709-11ee-b8c5-492a12f3e713",
+						"items": [],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Response Elements",
+						"query": "ConvertResponseElementsToTable",
+						"queryType": "script",
+						"static": false,
+						"type": "dynamic",
+						"w": 1,
+						"x": 1,
+						"y": 0
+					},
+					{
+						"h": 2,
+						"i": "caseinfoid-041792c0-5709-11ee-b8c5-492a12f3e713",
+						"items": [],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "User Identity",
+						"query": "ConvertUserIdentityToTable",
+						"queryType": "script",
+						"static": false,
+						"type": "dynamic",
+						"w": 1,
+						"x": 2,
+						"y": 0
+					},
+					{
+						"h": 2,
+						"i": "caseinfoid-0512e2b0-5709-11ee-b8c5-492a12f3e713",
+						"items": [],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Request Parameters",
+						"query": "ConvertRequestParametersToTable",
+						"queryType": "script",
+						"static": false,
+						"type": "dynamic",
+						"w": 1,
+						"x": 0,
+						"y": 0
+					},
+					{
+						"h": 2,
+						"i": "caseinfoid-08944140-5709-11ee-b8c5-492a12f3e713",
+						"items": [],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Enrichments",
+						"query": "ConvertEnrichmentsToTable",
+						"queryType": "script",
+						"static": false,
+						"type": "dynamic",
+						"w": 1,
+						"x": 0,
+						"y": 2
+					}
+				],
+				"type": "custom"
 			}
 		]
 	},
-	"edit": null,
-	"fromServerVersion": "",
 	"group": "incident",
 	"id": "CrowdStrike Falcon Layout",
-	"indicatorsDetails": null,
-	"indicatorsQuickView": null,
-	"itemVersion": "",
-	"locked": false,
-	"mobile": null,
 	"name": "CrowdStrike Falcon Layout",
-	"packID": "",
-	"packName": "",
-	"propagationLabels": [
-		"all"
-	],
-	"quickView": null,
-	"quickViewV2": null,
 	"system": false,
-	"toServerVersion": "",
-	"version": -1
+	"version": -1,
+	"fromVersion": "5.0.0",
+	"description": ""
 }

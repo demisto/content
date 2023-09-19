@@ -40,8 +40,7 @@ HEADERS = {
 TOKEN_LIFE_TIME = 28
 INCIDENTS_PER_FETCH = int(demisto.params().get('incidents_per_fetch', 15))
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
-IDP_DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
-IOM_DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
+IDP_DATE_FORMAT = IOM_DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
 DEFAULT_TIMEOUT = 30
 # Remove proxy if not set to true in params
 handle_proxy()
@@ -361,8 +360,10 @@ def http_request(method, url_suffix, params=None, data=None, files=None, headers
         # Handling a case when we want to return an entry for 404 status code.
         if status_code:
             # To cover the condition when status_code is a list of status codes
-            valid_status_codes.update(status_code) if isinstance(status_code, list) else valid_status_codes.add(status_code)
-            # valid_status_codes.add(status_code)
+            if isinstance(status_code, list):
+                valid_status_codes.update(status_code)
+            else:
+                valid_status_codes.add(status_code)
         if res.status_code not in valid_status_codes:
             res_json = res.json()
             reason = res.reason

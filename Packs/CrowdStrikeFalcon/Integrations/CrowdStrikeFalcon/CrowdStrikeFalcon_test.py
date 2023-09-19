@@ -5499,10 +5499,6 @@ def test_run_batch_write_cmd_timeout_argument(mocker, timeout, expected_timeout)
     assert request_mock.call_args[1].get('params').get('timeout') == expected_timeout
 
 
-<< << << < HEAD
-# New Tests
-
-
 def assert_command_results(command_results_to_assert: CommandResults, expected_outputs: list | dict,
                            expected_outputs_key_field: str | list[str],
                            expected_outputs_prefix: str):
@@ -5521,10 +5517,6 @@ def assert_command_results(command_results_to_assert: CommandResults, expected_o
     assert command_results_to_assert.outputs == expected_outputs
     assert command_results_to_assert.outputs_key_field == expected_outputs_key_field
     assert command_results_to_assert. outputs_prefix == expected_outputs_prefix
-
-
-def test_format_time_to_custom_date_format(mocker: MockerFixture):
-    ...
 
 
 class TestCSFalconCSPMListPolicyDetialsCommand:
@@ -5730,13 +5722,14 @@ class TestCSFalconResolveIdentityDetectionCommand:
 class TestIOAFetch:
     # Since this integration fetches multiple incidents, the last run object contains a list of
     # last run objects for each incident type, for IOA, that is the 5th position
-    @pytest.mark.parametrize('fetch_query, error_message', [('account_id=1', 'A cloud provider is required as part of the IOA fetch query'),
-                                                            ("cloud_provider!='aws'", 'An unsupported parameter has been entered'),
-                                                            ("cloud_provider='aws'&weird_param=val",
-                                                             'An unsupported parameter has been entered'),
-                                                            ("cloud_provider='aws'&state=", 'cannot be an empty string'),
-                                                            ("cloud_provider='aws'&state:val", 'A query section has wrong format'),
-                                                            ("cloud_provider='aws'&state==val", 'A query section has wrong format')])
+    @pytest.mark.parametrize('fetch_query, error_message',
+                             [('account_id=1', 'A cloud provider is required as part of the IOA fetch query'),
+                              ("cloud_provider!='aws'", 'An unsupported parameter has been entered'),
+                              ("cloud_provider='aws'&weird_param=val",
+                               'An unsupported parameter has been entered'),
+                              ("cloud_provider='aws'&state=", 'cannot be an empty string'),
+                              ("cloud_provider='aws'&state:val", 'A query section has wrong format'),
+                              ("cloud_provider='aws'&state==val", 'A query section has wrong format')])
     def test_validate_ioa_fetch_query_error(self, fetch_query, error_message):
         """
         Given:
@@ -5832,8 +5825,8 @@ class TestIOAFetch:
             and the API limit is 2, that means in each fetch, we should do 2 API calls, using pagination, to acquire 4 results, or
             until no more results are found).
         Then
-            - Validate that we do API calls using the correct pagination arguments, and that we get the next token so it can be used
-            in the next fetch round.
+            - Validate that we do API calls using the correct pagination arguments, and that we get the next token so it can be
+            used in the next fetch round.
         """
         # We saved two responses, where both of them return a next token. We have that the api_limit=2,
         # and the fetch_limit=3, that way, we would need to do a request twice, and on the second request,
@@ -6110,8 +6103,8 @@ class TestIOMFetch:
             and the API limit is 2, that means in each fetch, we should do 2 API calls, using pagination, to acquire 4 results, or
             until no more results are found).
         Then
-            - Validate that we do API calls using the correct pagination arguments, and that we get the next token so it can be used
-            in the next fetch round.
+            - Validate that we do API calls using the correct pagination arguments, and that we get the next token so it can be
+            used in the next fetch round.
         """
         # Save two responses, where both of them return a next token with them. Make the api_limit=2,
         # and the fetch_limit=3, that way, we would need to do a request twice, and on the second request,
