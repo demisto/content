@@ -6,7 +6,7 @@ description: |-
 
   Note: Under the "Processes" input, the playbook should receive an array that contains the following keys:
   - value: *process name*
-  - commands: *command-line arguments*
+  - commands: *command-line arguments*.
 starttaskid: "0"
 tasks:
   "0":
@@ -442,6 +442,16 @@ tasks:
             iscontext: true
           right:
             value: {}
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.SearchXDRAlerts
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
     continueonerrortype: ""
     view: |-
       {
@@ -548,7 +558,12 @@ inputs:
   value:
     simple: "0.5"
   required: false
-  description: 'StringSimilarity automation threshold. A number between 0 and 1, where 1 represents the most similar results of string comparisons. The automation will output only the results with a similarity score equal to or greater than the specified threshold.'
+  description: StringSimilarity automation threshold. A number between 0 and 1, where 1 represents the most similar results of string comparisons. The automation will output only the results with a similarity score equal to or greater than the specified threshold.
+  playbookInputQuery:
+- key: SearchXDRAlerts
+  value: {}
+  required: false
+  description: Set to "True" if you want to hunt for processes that are part of XDR alerts
   playbookInputQuery:
 outputs:
 - contextPath: StringSimilarity

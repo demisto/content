@@ -1283,6 +1283,40 @@
                 "id": "canvas",
                 "name": "Canvas",
                 "type": "canvas"
+},
+            {
+                "hidden": false,
+                "id": "cis1gmcroi",
+                "name": "Cheat Sheet",
+                "sections": [
+                    {
+                        "displayType": "ROW",
+                        "h": 10,
+                        "hideName": true,
+                        "i": "caseinfoid-cis1gmcroi-caseinfoid-7d05e0a0-56c4-11ee-9a16-f746601c51f2",
+                        "items": [
+                            {
+                                "endCol": 6,
+                                "fieldId": "cheatsheet",
+                                "height": 44,
+                                "id": "7fce2860-56c4-11ee-9a16-f746601c51f2",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxH": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Cheat Sheet",
+                        "static": false,
+                        "w": 3,
+                        "x": 0,
+                        "y": 0
+                    }
+                ],
+                "type": "custom"
             }
         ]
     },

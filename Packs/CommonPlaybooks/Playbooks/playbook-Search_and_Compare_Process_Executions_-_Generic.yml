@@ -153,6 +153,9 @@ tasks:
       Processes:
         complex:
           root: inputs.Processes
+      SearchXDRAlerts:
+        complex:
+          root: inputs.SearchXDRAlerts
       StringSimilarityThreshold:
         complex:
           root: inputs.StringSimilarityThreshold
@@ -261,7 +264,12 @@ inputs:
   value:
     simple: "0.5"
   required: false
-  description: 'StringSimilarity automation threshold. A number between 0 and 1, where 1 represents the most similar results of string comparisons. The automation will output only the results with a similarity score equal to or greater than the specified threshold.'
+  description: StringSimilarity automation threshold. A number between 0 and 1, where 1 represents the most similar results of string comparisons. The automation will output only the results with a similarity score equal to or greater than the specified threshold.
+  playbookInputQuery:
+- key: SearchXDRAlerts
+  value: {}
+  required: false
+  description: Set to "True" if you want to hunt for processes that are part of XDR alerts
   playbookInputQuery:
 outputs:
 - contextPath: StringSimilarity
