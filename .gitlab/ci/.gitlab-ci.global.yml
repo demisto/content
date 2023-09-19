@@ -345,11 +345,11 @@
           demisto-sdk lint -p 10 -a --test-xml ./unit-tests --log-path $ARTIFACTS_FOLDER --failure-report $ARTIFACTS_FOLDER --coverage-report $ARTIFACTS_FOLDER/coverage_report -dt 120 --time-measurements-dir $ARTIFACTS_FOLDER --docker-image ${DOCKER}
         fi
         if [[ -n $BUCKET_UPLOAD ]]; then
-          demisto-sdk lint --console_log_threshold DEBUG -p 8 -g --no-mypy --prev-ver $LAST_UPLOAD_COMMIT -v --test-xml ./unit-tests --log-path $ARTIFACTS_FOLDER --failure-report $ARTIFACTS_FOLDER --coverage-report $ARTIFACTS_FOLDER/coverage_report -cdam --docker-image ${DOCKER}
+          demisto-sdk lint --console-log-threshold DEBUG -p 8 -g --no-mypy --prev-ver $LAST_UPLOAD_COMMIT -v --test-xml ./unit-tests --log-path $ARTIFACTS_FOLDER --failure-report $ARTIFACTS_FOLDER --coverage-report $ARTIFACTS_FOLDER/coverage_report -cdam --docker-image ${DOCKER}
         else
           if [[ "$CI_COMMIT_BRANCH" != "master" ]]; then
             # skip running `lint -g` on master
-            demisto-sdk lint --console_log_threshold DEBUG -p 8 -g --test-xml ./unit-tests --log-path ./artifacts --failure-report ./artifacts --coverage-report $ARTIFACTS_FOLDER/coverage_report -cdam --docker-image ${DOCKER}
+            demisto-sdk lint --console-log-threshold DEBUG -p 8 -g --test-xml ./unit-tests --log-path ./artifacts --failure-report ./artifacts --coverage-report $ARTIFACTS_FOLDER/coverage_report -cdam --docker-image ${DOCKER}
           fi
         fi
       
