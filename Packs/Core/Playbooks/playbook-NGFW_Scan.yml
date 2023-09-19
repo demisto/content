@@ -329,13 +329,13 @@ tasks:
     continueonerrortype: ""
   "23":
     id: "23"
-    taskid: 7cf5d18d-0e5c-45a8-84c2-337e2987903e
+    taskid: f6288d7e-39f3-4da3-8a9e-5c5ffcd318b1
     type: playbook
     task:
-      id: 7cf5d18d-0e5c-45a8-84c2-337e2987903e
+      id: f6288d7e-39f3-4da3-8a9e-5c5ffcd318b1
       version: -1
       name: Block IP - Generic v3
-      description: "This playbook blocks malicious IP addresses using all integrations that are enabled. The direction of the traffic that will be blocked is determined by the Cortex XSIAM user (and set by default to outgoing)\nNote the following:\n-  some of those integrations require specific parameters to run, which are based on the playbook inputs. Also, certain integrations use FW rules or appended network objects.\n- Note that the appended network objects should be specified in blocking rules inside the system later on. \n\n\nSupported integrations for this playbook [Network security products such as FW/WAF/IPs/etc.]: \n\n* Check Point Firewall\n* Palo Alto Networks PAN-OS\n* Zscaler\n* FortiGate\n* Aria Packet Intelligence\n* Cisco Firepower \n* Cisco Secure Cloud Analytics\n* Cisco ASA\n* Akamai WAF\n* F5 SilverLine\n* ThreatX\n* Signal Sciences WAF\n* Sophos Firewall\n\n"
+      description: "This playbook blocks malicious IP addresses using all integrations that are enabled. The direction of the traffic that will be blocked is determined by the XSOAR user (and set by default to outgoing)\nNote the following:\n-  some of those integrations require specific parameters to run, which are based on the playbook inputs. Also, certain integrations use FW rules or appended network objects.\n- Note that the appended network objects should be specified in blocking rules inside the system later on. \n\n\nSupported integrations for this playbook [Network security products such as FW/WAF/IPs/etc.]: \n\n* Check Point Firewall\n* Palo Alto Networks PAN-OS\n* Zscaler\n* FortiGate\n* Aria Packet Intelligence\n* Cisco Firepower \n* Cisco Secure Cloud Analytics\n* Cisco ASA\n* Akamai WAF\n* F5 SilverLine\n* ThreatX\n* Signal Sciences WAF\n* Sophos Firewall\n\n"
       playbookName: Block IP - Generic v3
       type: playbook
       iscommand: false
@@ -358,7 +358,10 @@ tasks:
       RuleName:
         simple: XSOAR - Block IP playbook - ${incident.id}
       UserVerification:
-        simple: "True"
+        complex:
+          root: inputs.UserVerification
+      Folder:
+        simple: Shared
     separatecontext: true
     loop:
       iscommand: false
@@ -1659,6 +1662,14 @@ inputs:
     simple: '${alert.name}. Alert ID: ${alert.id}'
   required: false
   description: Comment for the ticket.
+  playbookInputQuery:
+- key: UserVerification
+  value:
+    simple: "True"
+  required: false
+  description: |-
+    Possible values: True/False.  Default: True.
+    Whether to provide user verification for blocking IP addresses.
   playbookInputQuery:
 outputs: []
 tests:

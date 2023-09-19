@@ -1846,12 +1846,6 @@
             "playbookID": "OpenPhish Test Playbook"
         },
         {
-            "integrations": "jira-v2",
-            "playbookID": "Jira-v2-Test",
-            "timeout": 500,
-            "is_mockable": false
-        },
-        {
             "integrations": "Jira V3",
             "playbookID": "JiraV3 Test",
             "instance_names": "jira_basic_auth",
@@ -5563,7 +5557,6 @@
     ],
     "skipped_tests": {
         "generic-sql-mssql-encrypted-connection": "Instance issues",
-        "generic-sql-oracle": "Instance issues",
         "RSANetWitnessv115-Test": "mocking error CIAC-7576",
         "CiscoWSAv2": "No instance - developed by Qmasters",
         "DatadogCloudSIEM": "No instance - developed by Login soft",
@@ -5679,7 +5672,6 @@
         "SplunkPy_KV_commands_default_handler": "Issue 41419",
         "LogRhythm REST test": "Issue 40654",
         "Process Email - Generic - Test - Actual Incident": "Issue 45227",
-        "Jira-v2-Test": "Issue 33313",
         "Tanium Threat Response Test": "Issue CRTX-58729",
         "Tanium Threat Response - Create Connection v2 - Test": "Issue CRTX-58729",
         "AzureADTest": "Issue 40131",
