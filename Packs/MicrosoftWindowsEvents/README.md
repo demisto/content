@@ -8,6 +8,12 @@ Notes:
 
 To view logs only from the Windows Event log, apply the following filter to the datamodel query: *| filter xdm.observer.type="Microsoft-Windows-Security-\*" or xdm.event.type="System" or xdm.event.type="Application"*
 
+**Pay Attention**: 
+This pack excludes several events for the DNS, ADFS and AMSI Windows services.
+In order to get the full scope of available logs, the installation of the following packs is required, according to the relevant company's needs:
+* Microsoft DNS
+* Microsoft Windows AMSI
+* Microsoft AD FS Collection
 
 ## Collect Events from Vendor
 
