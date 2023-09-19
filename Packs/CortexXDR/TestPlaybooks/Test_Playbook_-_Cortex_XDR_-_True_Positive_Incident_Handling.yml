@@ -1,0 +1,1959 @@
+id: Test Playbook - Cortex XDR - True Positive Incident Handling
+version: -1
+name: Test Playbook - Cortex XDR - True Positive Incident Handling
+description: "This playbook tests the 'Cortex XDR - Get File Path from alerts by hash' playbook which is part of the 'Malware Investigation and Response' pack.\n\nFollowing are the tests conducted in the playbook:\n1- Verify that the playbook triggers the creation of a new ticket within Jira and ServiceNow.\n2- Ensure that the threat hunting results were marked as evidence.\n3- Review and validate that the proper tags were populated for the incident. \n4- Ensure the threat hunting results are marked as an indicator.\n5- Confirm that threat hunting results were added to XDR-banned Hashes."
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: ce53f9de-f436-41e7-8503-462a2f1d335b
+    type: start
+    task:
+      id: ce53f9de-f436-41e7-8503-462a2f1d335b
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "32"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 210,
+          "y": -2265
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: 00f09562-4eac-4d50-8694-90111ac65350
+    type: regular
+    task:
+      id: 00f09562-4eac-4d50-8694-90111ac65350
+      version: -1
+      name: Delete Context
+      description: The task deletes all of the context data. Having a clean beginning to a test playbook ensures that a test can be sterile and that unrelated issues can be eliminated.
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "261"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 210,
+          "y": -2135
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "84":
+    id: "84"
+    taskid: f95f38c0-4bde-4209-86ae-169074c46d40
+    type: title
+    task:
+      id: f95f38c0-4bde-4209-86ae-169074c46d40
+      version: -1
+      name: Start Testing
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "263"
+      - "264"
+      - "270"
+      - "283"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 210,
+          "y": -200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "202":
+    id: "202"
+    taskid: 8fcb70fe-56c8-472a-8624-63495efdd2f5
+    type: title
+    task:
+      id: 8fcb70fe-56c8-472a-8624-63495efdd2f5
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 210,
+          "y": 860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "251":
+    id: "251"
+    taskid: 6a36431a-1f2f-4a22-8d1d-10db60c3953c
+    type: regular
+    task:
+      id: 6a36431a-1f2f-4a22-8d1d-10db60c3953c
+      version: -1
+      name: Completed Task Manually - Specify IOCs to hunt upon
+      description: Wait and complete tasks by given status. Used for test playbooks.
+      scriptName: WaitAndCompleteTask
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "257"
+    scriptarguments:
+      complete_task:
+        simple: "true"
+      incident_id:
+        complex:
+          root: CreatedIncidentID
+      task_name:
+        simple: Specify IOCs to hunt upon
+      task_states:
+        simple: Waiting
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 210,
+          "y": -1010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "252":
+    id: "252"
+    taskid: 57eb6889-8a46-42d7-8ba6-322d7ba8a4c4
+    type: regular
+    task:
+      id: 57eb6889-8a46-42d7-8ba6-322d7ba8a4c4
+      version: -1
+      name: Set PANWHunting To Context
+      description: |-
+        Works the same as the 'Set' command, but can work across incidents by specifying 'id' as an argument.
+        Sets a value into the context with the given context key. Doesn't append by default.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: SetByIncidentId
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "256"
+    scriptarguments:
+      id:
+        complex:
+          root: CreatedIncidentID
+      key:
+        simple: PANWHunting
+      value:
+        simple: 8d5aec85593c85ecdc8d5ac601e163a1cc26d877f88c03e9e0e94c9dd4a38fca
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 210,
+          "y": -1810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "254":
+    id: "254"
+    taskid: 60e6a6d1-0bf5-402d-8f1c-a26204421e9b
+    type: regular
+    task:
+      id: 60e6a6d1-0bf5-402d-8f1c-a26204421e9b
+      version: -1
+      name: Completed Task Manually - Approve isolation
+      description: Wait and complete tasks by given status. Used for test playbooks.
+      scriptName: WaitAndCompleteTask
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "255"
+    scriptarguments:
+      complete_option:
+        simple: "No"
+      complete_task:
+        simple: "true"
+      incident_id:
+        complex:
+          root: CreatedIncidentID
+      task_name:
+        simple: Approve isolation
+      task_states:
+        simple: Waiting
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 210,
+          "y": -685
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "255":
+    id: "255"
+    taskid: 600d5db5-e50e-4375-8499-855624436111
+    type: regular
+    task:
+      id: 600d5db5-e50e-4375-8499-855624436111
+      version: -1
+      name: Completed Task Manually - Confirm Indicators to block
+      description: Wait and complete tasks by given status. Used for test playbooks.
+      scriptName: WaitAndCompleteTask
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "258"
+    scriptarguments:
+      complete_task:
+        simple: "true"
+      incident_id:
+        complex:
+          root: CreatedIncidentID
+      task_name:
+        simple: Confirm Indicators to block
+      task_states:
+        simple: Waiting
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 210,
+          "y": -525
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "256":
+    id: "256"
+    taskid: 5ac43bdc-e448-455b-8908-350970943f90
+    type: regular
+    task:
+      id: 5ac43bdc-e448-455b-8908-350970943f90
+      version: -1
+      name: Set 'Indicators to block.Answers.0' To Context
+      description: |-
+        Works the same as the 'Set' command, but can work across incidents by specifying 'id' as an argument.
+        Sets a value into the context with the given context key. Doesn't append by default.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: SetByIncidentId
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "262"
+    scriptarguments:
+      id:
+        complex:
+          root: CreatedIncidentID
+      key:
+        simple: Indicators to block.Answers.0
+      value:
+        simple: 8d5aec85593c85ecdc8d5ac601e163a1cc26d877f88c03e9e0e94c9dd4a38fca
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 210,
+          "y": -1650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "257":
+    id: "257"
+    taskid: a534fc2e-d7ef-4cf3-8662-98c0fa0da90b
+    type: regular
+    task:
+      id: a534fc2e-d7ef-4cf3-8662-98c0fa0da90b
+      version: -1
+      name: Completed Task Manually - Confirm which File Path will be deleted
+      description: Wait and complete tasks by given status. Used for test playbooks.
+      scriptName: WaitAndCompleteTask
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "254"
+    scriptarguments:
+      complete_task:
+        simple: "true"
+      incident_id:
+        complex:
+          root: CreatedIncidentID
+      task_name:
+        simple: Confirm which File Path will be deleted
+      task_states:
+        simple: Waiting
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 210,
+          "y": -850
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "258":
+    id: "258"
+    taskid: b47201bf-c45b-4a51-8a78-9b3cab6adcd6
+    type: regular
+    task:
+      id: b47201bf-c45b-4a51-8a78-9b3cab6adcd6
+      version: -1
+      name: Wait until 'Close  XSOAR incident' will done
+      description: Wait and complete tasks by given status. Used for test playbooks.
+      scriptName: WaitAndCompleteTask
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "84"
+    scriptarguments:
+      complete_task:
+        simple: "false"
+      incident_id:
+        complex:
+          root: CreatedIncidentID
+      task_name:
+        simple: Close  XSOAR incident
+      task_states:
+        simple: Completed
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 210,
+          "y": -365
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "259":
+    id: "259"
+    taskid: ddaf453a-18d2-4b09-8263-2847054c2af1
+    type: title
+    task:
+      id: ddaf453a-18d2-4b09-8263-2847054c2af1
+      version: -1
+      name: Check Incident Fields
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "260"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -420,
+          "y": 110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "260":
+    id: "260"
+    taskid: 498a18f5-c244-4fe1-841b-d20422e2b741
+    type: condition
+    task:
+      id: 498a18f5-c244-4fe1-841b-d20422e2b741
+      version: -1
+      name: Verify Tags
+      description: Verify that the 'Found additional assets' tag was set to the incident 'tags' field.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "269"
+      Verified:
+      - "284"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: foundIncidents.CustomFields
+                accessor: tags
+            iscontext: true
+          right:
+            value:
+              simple: Found additional assets
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -420,
+          "y": 240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "261":
+    id: "261"
+    taskid: 3dffb448-ccbc-4910-8967-6fc28446bd79
+    type: regular
+    task:
+      id: 3dffb448-ccbc-4910-8967-6fc28446bd79
+      version: -1
+      name: Create New Incident For Testing
+      description: commands.local.cmd.create.inc
+      script: Builtin|||createNewIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "252"
+    scriptarguments:
+      deviceid:
+        simple: f8a2f58846b542579c12090652e79f3d
+      filesha256:
+        simple: 37dda78756d7ab9e446f04816451c8946ab2fd6672cdfdfd731c38020b44f3e4
+      name:
+        simple: Test Incident for Cortex XDR - Cortex XDR - True Positive Incident Handling
+      processpaths:
+        simple: C:\Program Files (x86)\Google\Update\Install\{0F536705-DD98-4DF9-AD6D-CF35DB7FBEFB}\CR_5748B.tmp\setup.exe
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 210,
+          "y": -1975
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "262":
+    id: "262"
+    taskid: fcf659ec-dee0-4d20-8f07-eac386b66b87
+    type: regular
+    task:
+      id: fcf659ec-dee0-4d20-8f07-eac386b66b87
+      version: -1
+      name: Set playbook for new incident
+      description: commands.local.cmd.set.playbook
+      script: Builtin|||setPlaybook
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "294"
+    scriptarguments:
+      incidentId:
+        complex:
+          root: CreatedIncidentID
+      name:
+        simple: Cortex XDR - True Positive Incident Handling
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 210,
+          "y": -1490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "263":
+    id: "263"
+    taskid: 872409af-cd4e-4964-8602-4c54233781e5
+    type: regular
+    task:
+      id: 872409af-cd4e-4964-8602-4c54233781e5
+      version: -1
+      name: Get final incident fields
+      description: |-
+        Searches Demisto incidents. A summarized version of this scrips is avilable with the summarizedversion argument.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: SearchIncidentsV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "259"
+    scriptarguments:
+      id:
+        complex:
+          root: CreatedIncidentID
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -420,
+          "y": -55
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "264":
+    id: "264"
+    taskid: 4932d6f3-86cd-4223-86c8-feb52e78b42d
+    type: regular
+    task:
+      id: 4932d6f3-86cd-4223-86c8-feb52e78b42d
+      version: -1
+      name: Get Evidence Entries
+      description: Collect entries matching to the conditions in the war room
+      scriptName: GetEntries
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "265"
+    scriptarguments:
+      categories:
+        simple: evidence
+      id:
+        complex:
+          root: CreatedIncidentID
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 830,
+          "y": -55
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "265":
+    id: "265"
+    taskid: 27d53e2a-e8ca-4c97-802e-aa245f9486fb
+    type: title
+    task:
+      id: 27d53e2a-e8ca-4c97-802e-aa245f9486fb
+      version: -1
+      name: Check Incident Evidence
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "266"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 830,
+          "y": 110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "266":
+    id: "266"
+    taskid: 525bb1ee-e686-4553-88d5-4de417c53102
+    type: condition
+    task:
+      id: 525bb1ee-e686-4553-88d5-4de417c53102
+      version: -1
+      name: Verify Evidence
+      description: Verify that the threat hunting results have been marked as evidence. Considering that the 'Tag the threat hunting results as Evidence' task is the only one that marks an item as evidence, we can assume that the threat hunting results were classified as evidence if the 'Entry.ID' context key is present.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "267"
+      Verified:
+      - "268"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Entry
+                accessor: ID
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 830,
+          "y": 240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "267":
+    id: "267"
+    taskid: cb55f7a4-450c-47de-8075-655349f5228d
+    type: regular
+    task:
+      id: cb55f7a4-450c-47de-8075-655349f5228d
+      version: -1
+      name: Verify Incident Evidence Error
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The threat hunting results were not marked as evidence. This may indicate that one or more of the following changes have been made to the 'Cortex XDR - True Positive Incident Handling' playbook:
+          1- The 'entryIDs' input configuration was changed for the 'AddEvidence' automation used in the 'Tag the threat hunting results as Evidence' task.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 830,
+          "y": 480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "268":
+    id: "268"
+    taskid: 7b1af577-6e5b-4cd5-8392-bc550ace726c
+    type: title
+    task:
+      id: 7b1af577-6e5b-4cd5-8392-bc550ace726c
+      version: -1
+      name: Done verifying Incident Evidence
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "202"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 415
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "269":
+    id: "269"
+    taskid: e1422581-4900-42b1-8c83-ec51efb813c0
+    type: regular
+    task:
+      id: e1422581-4900-42b1-8c83-ec51efb813c0
+      version: -1
+      name: Verify Incident Field Error - Tags
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'Found additional assets' tag was not set to the incident 'tags' field. This may indicate that one or more of the following changes have been made to the 'Cortex XDR - True Positive Incident Handling' playbook:
+          1- The 'tags' input configuration was changed for the 'setIncident' automation used in the 'Add 'Found additional assets' tag to the incident' task.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -420,
+          "y": 480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "270":
+    id: "270"
+    taskid: 4b315b31-25f9-434f-8fe1-ec8822745b13
+    type: title
+    task:
+      id: 4b315b31-25f9-434f-8fe1-ec8822745b13
+      version: -1
+      name: Check Indicators
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "271"
+      - "272"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1530,
+          "y": -60
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "271":
+    id: "271"
+    taskid: e53de953-72f8-42cd-89a2-23530b334e97
+    type: title
+    task:
+      id: e53de953-72f8-42cd-89a2-23530b334e97
+      version: -1
+      name: XSOAR Indicators
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "273"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1220,
+          "y": 80
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "272":
+    id: "272"
+    taskid: 8d51f643-b0f8-4194-8fa6-d65e031bea40
+    type: title
+    task:
+      id: 8d51f643-b0f8-4194-8fa6-d65e031bea40
+      version: -1
+      name: XDR Indicators
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "307"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1910,
+          "y": 80
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "273":
+    id: "273"
+    taskid: 6a7c2477-b098-4b3b-8233-9247114e3e20
+    type: regular
+    task:
+      id: 6a7c2477-b098-4b3b-8233-9247114e3e20
+      version: -1
+      name: Get Indicators Details
+      description: |-
+        Searches Cortex XSOAR Indicators.
+
+        Search for XSOAR Indicators and returns the id, indicator_type, value, and score/verdict.
+
+        You can add additional fields from the indicators using the add_field_to_context argument.
+      scriptName: SearchIndicator
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "274"
+    scriptarguments:
+      add_fields_to_context:
+        simple: tags
+      query:
+        simple: value:${Indicators to block.Answers.0}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1220,
+          "y": 210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "274":
+    id: "274"
+    taskid: ead2da87-fe0e-4fbc-83cc-e773a807e04a
+    type: condition
+    task:
+      id: ead2da87-fe0e-4fbc-83cc-e773a807e04a
+      version: -1
+      name: Verify Indicators tags
+      description: Verify that the 'Found additional assets' tag was set XSOAR indicator.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      ' Verified':
+      - "282"
+      '#default#':
+      - "275"
+    separatecontext: false
+    conditions:
+    - label: ' Verified'
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: foundIndicators
+                accessor: tags
+            iscontext: true
+          right:
+            value:
+              simple: BlockTag
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1220,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "275":
+    id: "275"
+    taskid: 85b919ba-e8ec-4af3-8486-47c17594ecda
+    type: regular
+    task:
+      id: 85b919ba-e8ec-4af3-8486-47c17594ecda
+      version: -1
+      name: Verify XSOAR Indicators Error - Tags
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'BlockTag' tag was not set to the XSOAR indicator. This may indicate that one or more of the following changes have been made to the 'Cortex XDR - True Positive Incident Handling' playbook:
+          1- The 'tags' input configuration was changed for the 'setIndicators' automation used in the 'Tag Indicators' task.
+          2- The 'indicatorsValues' input configuration was changed for the 'setIndicators' automation used in the 'Tag Indicators' task.
+          3- The 'BlockTag' playbook input value was changed.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1220,
+          "y": 775
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "277":
+    id: "277"
+    taskid: a9dbe427-392e-4209-859e-32ef3360979c
+    type: regular
+    task:
+      id: a9dbe427-392e-4209-859e-32ef3360979c
+      version: -1
+      name: Remove indicators from XDR banned hashes
+      description: This task removes the SHA256 file hash from the Cortex XDR banned hashes list, as it was added for testing purposes.
+      script: Cortex XDR - IR|||xdr-remove-blocklist-files
+      type: regular
+      iscommand: true
+      brand: Cortex XDR - IR
+    nexttasks:
+      '#none#':
+      - "282"
+    scriptarguments:
+      comment:
+        simple: 'Removed by Cortex XSOAR - Test Incident #${CreatedIncidentID}'
+      hash_list:
+        simple: 8d5aec85593c85ecdc8d5ac601e163a1cc26d877f88c03e9e0e94c9dd4a38fca
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1680,
+          "y": 540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "281":
+    id: "281"
+    taskid: b3166589-d50e-4c5e-81d2-ebc2961fdd02
+    type: regular
+    task:
+      id: b3166589-d50e-4c5e-81d2-ebc2961fdd02
+      version: -1
+      name: Verify XDR Indicators Error - Indicators were not banned
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'xdr-blocklist-files' command output was not populated with the indicator file hash under the 'PaloAltoNetworksXDR.blocklist.added_hashes.fileHash' context key.
+          This may indicate an API error or that the following changes have been made to the 'Cortex XDR - True Positive Incident Handling' playbook:
+          1- The 'hash_list' argument input configuration was changed for the 'xdr-allowlist-files' automation used in the 'Create IOCs in Cortex XDR - Approved Hashes' task.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2110,
+          "y": 775
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "282":
+    id: "282"
+    taskid: ae8b792a-c6df-40af-889e-c18084a9d428
+    type: title
+    task:
+      id: ae8b792a-c6df-40af-889e-c18084a9d428
+      version: -1
+      name: Done Checking Indicators
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "202"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -820,
+          "y": 710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "283":
+    id: "283"
+    taskid: 51687b24-1427-4993-80bb-7f505dc6287e
+    type: title
+    task:
+      id: 51687b24-1427-4993-80bb-7f505dc6287e
+      version: -1
+      name: Check ticketing systems cases
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "285"
+      - "286"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2090,
+          "y": -55
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "284":
+    id: "284"
+    taskid: 190c82dc-1895-4760-8a4b-ec52bb7ba87a
+    type: title
+    task:
+      id: 190c82dc-1895-4760-8a4b-ec52bb7ba87a
+      version: -1
+      name: Done verifying Incident fields
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "202"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -20,
+          "y": 415
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "285":
+    id: "285"
+    taskid: a47523f5-994e-4e23-8530-1262dd430c2c
+    type: title
+    task:
+      id: a47523f5-994e-4e23-8530-1262dd430c2c
+      version: -1
+      name: Jira cases
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "297"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1480,
+          "y": 110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "286":
+    id: "286"
+    taskid: 585a9e45-58af-4c48-82ac-d7c09f2a8cd1
+    type: title
+    task:
+      id: 585a9e45-58af-4c48-82ac-d7c09f2a8cd1
+      version: -1
+      name: ServiceNow cases
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "296"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2690,
+          "y": 110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "294":
+    id: "294"
+    taskid: 08776200-c0ae-47a4-80d5-e8e86d1d6d1a
+    type: regular
+    task:
+      id: 08776200-c0ae-47a4-80d5-e8e86d1d6d1a
+      version: -1
+      name: Completed Task Manually - Open Jira ticket
+      description: commands.local.cmd.task.complete
+      script: Builtin|||taskComplete
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "295"
+    scriptarguments:
+      allowSkipped:
+        simple: "Yes"
+      args:
+        simple: |-
+          {
+            "summary": "Created by Cortex XDR - True Positive Incident Handling test playbook",
+            "issueTypeName": "Task",
+            "projectName": "demistodev"
+          }
+      id:
+        simple: "55"
+      incidentId:
+        complex:
+          root: CreatedIncidentID
+      isAutoRun:
+        simple: "true"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 210,
+          "y": -1330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "295":
+    id: "295"
+    taskid: 06e2d1c6-9018-443e-8908-60741dc56fc3
+    type: regular
+    task:
+      id: 06e2d1c6-9018-443e-8908-60741dc56fc3
+      version: -1
+      name: Completed Task Manually - Open Snow ticket
+      description: commands.local.cmd.task.complete
+      script: Builtin|||taskComplete
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "251"
+    scriptarguments:
+      allowSkipped:
+        simple: "Yes"
+      args:
+        simple: |-
+          {
+            "description": "Created by Cortex XDR - True Positive Incident Handling test playbook"
+          }
+      id:
+        simple: "54"
+      incidentId:
+        complex:
+          root: CreatedIncidentID
+      isAutoRun:
+        simple: "true"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 210,
+          "y": -1170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "296":
+    id: "296"
+    taskid: e6bf30e1-8206-468d-8f8e-73c67209a82e
+    type: regular
+    task:
+      id: e6bf30e1-8206-468d-8f8e-73c67209a82e
+      version: -1
+      name: Get the 'ServiceNow' context key
+      description: Gets a value from the specified incident's context.
+      scriptName: GetByIncidentId
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "300"
+      - "301"
+    scriptarguments:
+      get_key:
+        simple: ServiceNow
+      incident_id:
+        complex:
+          root: CreatedIncidentID
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2690,
+          "y": 240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "297":
+    id: "297"
+    taskid: d5f7f874-68ac-4b9f-88a5-765648d8fa73
+    type: regular
+    task:
+      id: d5f7f874-68ac-4b9f-88a5-765648d8fa73
+      version: -1
+      name: Get the 'Ticket' context key
+      description: Gets a value from the specified incident's context.
+      scriptName: GetByIncidentId
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "298"
+      - "299"
+    scriptarguments:
+      get_key:
+        simple: Ticket
+      incident_id:
+        complex:
+          root: CreatedIncidentID
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1480,
+          "y": 240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "298":
+    id: "298"
+    taskid: 3c853994-f28f-4f85-84ec-47b9d40af097
+    type: condition
+    task:
+      id: 3c853994-f28f-4f85-84ec-47b9d40af097
+      version: -1
+      name: Verify ID
+      description: Verify that the 'Ticket.Id’ context key was populated.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "302"
+      Verified:
+      - "306"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Ticket
+                accessor: Id
+            iscontext: true
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1280,
+          "y": 415
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "299":
+    id: "299"
+    taskid: 54750fdd-3a23-49c9-83ac-f16252017c89
+    type: condition
+    task:
+      id: 54750fdd-3a23-49c9-83ac-f16252017c89
+      version: -1
+      name: Verify Key
+      description: Verify that the 'Ticket.Key’ context key was populated.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "303"
+      Verified:
+      - "306"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Ticket
+                accessor: Key
+            iscontext: true
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1680,
+          "y": 415
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "300":
+    id: "300"
+    taskid: a142a501-9954-4d9a-87db-9f4a70de8cf5
+    type: condition
+    task:
+      id: a142a501-9954-4d9a-87db-9f4a70de8cf5
+      version: -1
+      name: Verify Incident Number
+      description: Verify that the 'ServiceNow.Incident.Number’ context key was populated.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "305"
+      Verified:
+      - "306"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: ServiceNow.Incident
+                accessor: Number
+            iscontext: true
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2480,
+          "y": 415
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "301":
+    id: "301"
+    taskid: 90690992-166e-4bc3-8e07-e260e6f15252
+    type: condition
+    task:
+      id: 90690992-166e-4bc3-8e07-e260e6f15252
+      version: -1
+      name: Verify Incident ID
+      description: Verify that the 'ServiceNow.Incident.ID’ context key was populated.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "304"
+      Verified:
+      - "306"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: ServiceNow.Incident
+                accessor: ID
+            iscontext: true
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2890,
+          "y": 415
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "302":
+    id: "302"
+    taskid: 9d5525cc-a8b1-493b-8e19-34749e9af6ca
+    type: regular
+    task:
+      id: 9d5525cc-a8b1-493b-8e19-34749e9af6ca
+      version: -1
+      name: Verify Jira Cases Error - ID
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'Ticket.Id' context key was not populated. This may indicate that one or more of the following changes have been made to the 'Cortex XDR - True Positive Incident Handling' playbook:
+          1- The 'jira-create-issue' operation failed.
+          2- The 'jira-create-issue' automation outputs have been modified and no longer contain the 'Ticket.Id' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1280,
+          "y": 635
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "303":
+    id: "303"
+    taskid: 0b4dbdef-2566-4169-80c5-d9865c577ff4
+    type: regular
+    task:
+      id: 0b4dbdef-2566-4169-80c5-d9865c577ff4
+      version: -1
+      name: Verify Jira Cases Error - Key
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'Ticket.Key' context key was not populated. This may indicate that one or more of the following changes have been made to the 'Cortex XDR - True Positive Incident Handling' playbook:
+          1- The 'jira-create-issue' operation failed.
+          2- The 'jira-create-issue' automation outputs have been modified and no longer contain the 'Ticket.Key' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1680,
+          "y": 635
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "304":
+    id: "304"
+    taskid: 7626ffda-659a-4853-8fe8-f83b1d94cf71
+    type: regular
+    task:
+      id: 7626ffda-659a-4853-8fe8-f83b1d94cf71
+      version: -1
+      name: Verify ServiceNow Cases Error- ID
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'ServiceNow.Incident.ID' context key was not populated. This may indicate that one or more of the following changes have been made to the 'Cortex XDR - True Positive Incident Handling' playbook:
+          1- The 'ServiceNowCreateIncident' operation failed.
+          2- The 'ServiceNowCreateIncident' automation outputs have been modified and no longer contain the 'ServiceNow.Incident.ID' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2890,
+          "y": 635
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "305":
+    id: "305"
+    taskid: de963074-a00a-4541-83a6-fcd56f15d069
+    type: regular
+    task:
+      id: de963074-a00a-4541-83a6-fcd56f15d069
+      version: -1
+      name: Verify ServiceNow Cases Error - ID
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'ServiceNow.Incident.Number' context key was not populated. This may indicate that one or more of the following changes have been made to the 'Cortex XDR - True Positive Incident Handling' playbook:
+          1- The 'ServiceNowCreateIncident' operation failed.
+          2- The 'ServiceNowCreateIncident' automation outputs have been modified and no longer contain the 'ServiceNow.Incident.Number' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2480,
+          "y": 635
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "306":
+    id: "306"
+    taskid: c8d90704-ad4b-445c-8fb2-40087ce3aa67
+    type: title
+    task:
+      id: c8d90704-ad4b-445c-8fb2-40087ce3aa67
+      version: -1
+      name: Done Verifying systems cases
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "202"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2090,
+          "y": 590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "307":
+    id: "307"
+    taskid: 7c586493-ab64-4788-8f4e-65946a913a7e
+    type: regular
+    task:
+      id: 7c586493-ab64-4788-8f4e-65946a913a7e
+      version: -1
+      name: Get the 'fileHash' context key
+      description: Gets a value from the specified incident's context.
+      scriptName: GetByIncidentId
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "308"
+    scriptarguments:
+      get_key:
+        simple: PaloAltoNetworksXDR.blocklist.added_hashes.fileHash
+      incident_id:
+        complex:
+          root: CreatedIncidentID
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1910,
+          "y": 210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "308":
+    id: "308"
+    taskid: 52c1be21-5138-4a6c-8078-890729bb95bd
+    type: condition
+    task:
+      id: 52c1be21-5138-4a6c-8078-890729bb95bd
+      version: -1
+      name: Verify indicator was added to XDR banned Hashes
+      description: Verify that the 'xdr-blocklist-files' command output was populated with the indicator file hash under the 'PaloAltoNetworksXDR.blocklist.added_hashes.fileHash' context key.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      ' Verified':
+      - "277"
+      '#default#':
+      - "309"
+    separatecontext: false
+    conditions:
+    - label: ' Verified'
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: PaloAltoNetworksXDR.blocklist.added_hashes
+                accessor: fileHash
+            iscontext: true
+          right:
+            value:
+              simple: 8d5aec85593c85ecdc8d5ac601e163a1cc26d877f88c03e9e0e94c9dd4a38fca
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1910,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "309":
+    id: "309"
+    taskid: b2c1eb1e-06cd-4cb7-8608-905c30499a3a
+    type: regular
+    task:
+      id: b2c1eb1e-06cd-4cb7-8608-905c30499a3a
+      version: -1
+      name: Remove indicator from XDR banned hashes
+      description: This task removes the SHA256 file hash from the Cortex XDR banned hashes list, as it was added for testing purposes.
+      script: Cortex XDR - IR|||xdr-remove-blocklist-files
+      type: regular
+      iscommand: true
+      brand: Cortex XDR - IR
+    nexttasks:
+      '#none#':
+      - "281"
+    scriptarguments:
+      comment:
+        simple: 'Removed by Cortex XSOAR - Test Incident #${CreatedIncidentID}'
+      hash_list:
+        simple: 8d5aec85593c85ecdc8d5ac601e163a1cc26d877f88c03e9e0e94c9dd4a38fca
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2110,
+          "y": 540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "274_282_ Verified": 0.25,
+      "298_306_Verified": 0.12,
+      "299_306_Verified": 0.22,
+      "301_306_Verified": 0.18
+    },
+    "paper": {
+      "dimensions": {
+        "height": 3190,
+        "width": 5380,
+        "x": -2110,
+        "y": -2265
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.11
