@@ -189,11 +189,11 @@
         "is_array": false
       },
       "ftntfgtpdstport": {
-        "type": "string",
+        "type": "int",
         "is_array": false
       },
       "ftntfgtpsrcport": {
-        "type": "string",
+        "type": "int",
         "is_array": false
       },
       "ftntfgtpolicyname": {
