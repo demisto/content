@@ -10,7 +10,7 @@ This is helpful to make your environment ready for testing purpose for your play
     | --- | --- | --- |
     | Incident type |  | False |
     | Long running instance |  | False |
-    | Port mapping (&lt;port&gt; or &lt;host port&gt;:&lt;docker port&gt;) | Runs the service on this port from within Cortex XSOAR. Requires a unique port for each long-running integration instance. Do not use the same port for multiple instances. Note: If you click the test button more than once, a failure may occur mistakenly indicating that the port is already in use. (For Cortex XSOAR 8 and Cortex XSIAM) If you do not enter a Listen Port, an unused port for the EDL will automatically be generated when the instance is saved. However, if using an engine, you must enter a Listen Port.  | True |
+    | Port mapping (&lt;port&gt; or &lt;host port&gt;:&lt;docker port&gt;) | Runs the service on this port from within Cortex XSOAR. Requires a unique port for each long-running integration instance. Do not use the same port for multiple instances. Note: If you click the test button more than once, a failure may occur mistakenly indicating that the port is already in use. (For Cortex XSOAR 8 and Cortex XSIAM) If you do not enter a port, an unused port for Web File Repository will automatically be generated when the instance is saved. However, if using an engine, you must enter a port.  | True |
     | User ID for Read/Write |  | False |
     | Password |  | False |
     | User ID for Read-Only |  | False |
