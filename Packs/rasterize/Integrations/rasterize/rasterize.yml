@@ -85,7 +85,7 @@ script:
       - 'False'
     - auto: PREDEFINED
       defaultValue: 'False'
-      description: Whether to include the URL bar in the returned screenshot. (Only for WebDriver mode. Ignored in Headless CLI mode)
+      description: Whether to include the URL bar in the returned screenshot. (Only for WebDriver mode. Ignored in Headless CLI mode).
       name: include_url
       predefined:
       - 'True'
@@ -94,22 +94,22 @@ script:
     name: rasterize
     outputs:
     - contextPath: InfoFile.EntryID
-      description: The EntryID of the image/pdf file
+      description: The EntryID of the image/pdf file.
       type: string
     - contextPath: InfoFile.Extension
-      description: The extension of the image/pdf file
+      description: The extension of the image/pdf file.
       type: string
     - contextPath: InfoFile.Name
-      description: The name of the image/pdf file
+      description: The name of the image/pdf file.
       type: string
     - contextPath: InfoFile.Info
-      description: The info of the image/pdf file
+      description: The info of the image/pdf file.
       type: string
     - contextPath: InfoFile.Size
-      description: The size of the image/pdf file
+      description: The size of the image/pdf file.
       type: number
     - contextPath: InfoFile.Type
-      description: The type of the image/pdf file
+      description: The type of the image/pdf file.
       type: string
   - arguments:
     - default: true
@@ -158,22 +158,22 @@ script:
     name: rasterize-email
     outputs:
     - contextPath: InfoFile.EntryID
-      description: The EntryID of the image/pdf file
+      description: The EntryID of the image/pdf file.
       type: string
     - contextPath: InfoFile.Extension
-      description: The extension of the image/pdf file
+      description: The extension of the image/pdf file.
       type: string
     - contextPath: InfoFile.Name
-      description: The name of the image/pdf file
+      description: The name of the image/pdf file.
       type: string
     - contextPath: InfoFile.Info
-      description: The info of the image/pdf file
+      description: The info of the image/pdf file.
       type: string
     - contextPath: InfoFile.Size
-      description: The size of the image/pdf file
+      description: The size of the image/pdf file.
       type: number
     - contextPath: InfoFile.Type
-      description: The type of the image/pdf file
+      description: The type of the image/pdf file.
       type: string
   - arguments:
     - default: true
@@ -207,22 +207,22 @@ script:
     name: rasterize-image
     outputs:
     - contextPath: InfoFile.EntryID
-      description: The EntryID of the pdf file
+      description: The EntryID of the pdf file.
       type: string
     - contextPath: InfoFile.Extension
-      description: The extension of the pdf file
+      description: The extension of the pdf file.
       type: string
     - contextPath: InfoFile.Name
-      description: The name of the pdf file
+      description: The name of the pdf file.
       type: string
     - contextPath: InfoFile.Info
-      description: The info of the pdf file
+      description: The info of the pdf file.
       type: string
     - contextPath: InfoFile.Size
-      description: The size of the pdf file
+      description: The size of the pdf file.
       type: number
     - contextPath: InfoFile.Type
-      description: The type of the pdf file
+      description: The type of the pdf file.
       type: string
   - arguments:
     - default: true
@@ -248,22 +248,22 @@ script:
     name: rasterize-pdf
     outputs:
     - contextPath: InfoFile.EntryID
-      description: The EntryID of the image file
+      description: The EntryID of the image file.
       type: string
     - contextPath: InfoFile.Extension
-      description: The extension of the image file
+      description: The extension of the image file.
       type: string
     - contextPath: InfoFile.Name
-      description: The name of the image file
+      description: The name of the image file.
       type: string
     - contextPath: InfoFile.Info
-      description: The info of the image file
+      description: The info of the image file.
       type: string
     - contextPath: InfoFile.Size
-      description: The size of the image file
+      description: The size of the image file.
       type: number
     - contextPath: InfoFile.Type
-      description: The type of the image file
+      description: The type of the image file.
       type: string
   - arguments:
     - default: true
@@ -294,24 +294,24 @@ script:
     name: rasterize-html
     outputs:
     - contextPath: InfoFile.EntryID
-      description: The EntryID of the image/pdf file
+      description: The EntryID of the image/pdf file.
       type: string
     - contextPath: InfoFile.Extension
-      description: The extension of the image/pdf file
+      description: The extension of the image/pdf file.
       type: string
     - contextPath: InfoFile.Name
-      description: The name of the image/pdf file
+      description: The name of the image/pdf file.
       type: string
     - contextPath: InfoFile.Info
-      description: The info of the image/pdf file
+      description: The info of the image/pdf file.
       type: string
     - contextPath: InfoFile.Size
-      description: The size of the image/pdf file
+      description: The size of the image/pdf file.
       type: number
     - contextPath: InfoFile.Type
-      description: The type of the image/pdf file
+      description: The type of the image/pdf file.
       type: string
-  dockerimage: demisto/chromium:116.0.5845.72863
+  dockerimage: demisto/chromium:117.0.5938.74233
   runonce: false
   script: '-'
   subtype: python3
