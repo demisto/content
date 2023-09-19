@@ -1239,7 +1239,7 @@ script:
     - description: The email address of the privilege-bearing service account for which the short-lived token is created.
       name: service_account_email
       required: true
-    - defaultValue: 3600s
+    - defaultValue: 3600
       description: Lifetime of the Access Token in seconds
       name: lifetime
       required: true

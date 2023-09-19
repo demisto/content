@@ -816,7 +816,7 @@ class Client:
 
         return response
 
-    def gcp_iam_service_account_generate_access_token_request(self, service_account_email: str, lifetime: str ) -> dict:
+    def gcp_iam_service_account_generate_access_token_request(self, service_account_email: str, lifetime: str) -> dict:
         """
         Create a short-lived access token
         Args:
@@ -828,12 +828,12 @@ class Client:
             dict: API response from GCP.
 
         """
-        resource_name="projects/-/serviceAccounts/{}".format(service_account_email)
+        resource_name = f"projects/-/serviceAccounts/{service_account_email}"
         body = {
             "scope": [
                 "https://www.googleapis.com/auth/cloud-platform"
             ],
-            "lifetime": lifetime
+            "lifetime": f"{arg_to_number(lifetime, required=True)}s"
         }
 
         request = self.iam_credentials.projects().serviceAccounts().generateAccessToken(name=resource_name, body=body)
