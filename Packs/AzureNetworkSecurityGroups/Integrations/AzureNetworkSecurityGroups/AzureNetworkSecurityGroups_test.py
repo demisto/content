@@ -47,7 +47,8 @@ def test_list_groups_command(mocker):
     """
     from AzureNetworkSecurityGroups import list_groups_command
     client = mock_client(mocker, util_load_json("test_data/list_network_groups_result.json"))
-    results = list_groups_command(client)
+    results = list_groups_command(client, args={}, params={'subscription_id': 'subscriptionID',
+                                                           'resource_group_name': 'resourceGroupName'})
     assert '### Network Security Groups' in results.readable_output
     assert results.outputs[0].get('name') == 'alerts-nsg'
 
@@ -60,9 +61,11 @@ def test_create_rule_command(mocker):
     """
     from AzureNetworkSecurityGroups import create_rule_command
     client = mock_client(mocker, util_load_json("test_data/list_network_groups_result.json"))
-    create_rule_command(client, security_group_name='securityGroup', security_rule_name='test_rule',
-                        direction='Inbound', action='Allow', protocol='Any', source='Any',
-                        source_ports='900-1000', destination_ports='1,2,3,4-6')
+    create_rule_command(client, args={'security_group_name': 'securityGroup', 'security_rule_name': 'test_rule',
+                        'direction': 'Inbound', 'action': 'Allow', 'protocol': 'Any', 'source': 'Any',
+                                      'source_ports': '900-1000', 'destination_ports': '1,2,3,4-6'},
+                        params={'subscription_id': 'subscriptionID',
+                                'resource_group_name': 'resourceGroupName'})
     properties = client.http_request.call_args_list[0][1].get('data').get('properties')
     assert properties.get('protocol') == '*'
     assert properties.get('sourceAddressPrefix') == '*'
@@ -81,9 +84,10 @@ def test_update_rule_command(mocker):
     """
     from AzureNetworkSecurityGroups import update_rule_command
     client = mock_client(mocker, util_load_json("test_data/get_rule_result.json"))
-    update_rule_command(client, security_group_name='securityGroup', security_rule_name='wow', direction='Inbound',
-                        action='Allow', protocol='Any', source='Any', source_ports='900-1000',
-                        destination_ports='1,2,3,4-6')
+    update_rule_command(client, args={'security_group_name': 'securityGroup', 'security_rule_name': 'wow', 'direction': 'Inbound',
+                        'action': 'Allow', 'protocol': 'Any', 'source': 'Any', 'source_ports': '900-1000',
+                                      'destination_ports': '1,2,3,4-6'}, params={'subscription_id': 'subscriptionID',
+                                                                                 'resource_group_name': 'resourceGroupName'})
     properties = client.http_request.call_args_list[1][1].get('data').get('properties')
     assert 'destinationPortRange' not in properties.keys()
     assert 'destinationPortRanges' in properties.keys()
@@ -98,7 +102,9 @@ def test_list_rules_command(mocker):
     """
     from AzureNetworkSecurityGroups import list_rules_command
     client = mock_client(mocker, util_load_json("test_data/list_rule_results.json"))
-    result = list_rules_command(client, 'groupName')
+    result = list_rules_command(client, args={'security_group_name': 'groupName'},
+                                params={'subscription_id': 'subscriptionID',
+                                        'resource_group_name': 'resourceGroupName'})
     assert '### Rules in groupName' in result.readable_output
     assert result.outputs[0].get('name') == 'Port_8080'
 
@@ -109,7 +115,10 @@ def test_get_rule(mocker):
     """
     from AzureNetworkSecurityGroups import get_rule_command
     client = mock_client(mocker, util_load_json("test_data/get_rule_result.json"))
-    result = get_rule_command(client, 'groupName', 'wow')
+    result = get_rule_command(client,
+                              args={'security_group_name': 'groupName', 'security_rule_name': 'wow'},
+                              params={'subscription_id': 'subscriptionID',
+                                      'resource_group_name': 'resourceGroupName'})
     assert '### Rules wow' in result.readable_output
     assert result.outputs[0].get('name') == 'wow'
 

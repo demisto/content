@@ -20,12 +20,12 @@
     "ownerOnly": false,
     "required": false,
     "selectValues": [
-        "None",
         "Phishing",
         "Malware",
         "Case Management",
         "Data Enrichment and Threat Intel",
-        "Network Security"
+        "Network Security",
+        "Other"
     ],
     "sla": 0,
     "system": false,

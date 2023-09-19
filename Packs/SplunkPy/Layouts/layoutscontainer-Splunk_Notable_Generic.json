@@ -308,6 +308,60 @@
                         "w": 1,
                         "x": 1,
                         "y": 2
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "splunk-comments-field",
+                        "items": [],
+                        "maxH": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Splunk Comments",
+                        "query": "SplunkConvertCommentsToTable",
+                        "queryType": "script",
+                        "static": false,
+                        "type": "dynamic",
+                        "w": 2,
+                        "x": 0,
+                        "y": 8
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 1,
+                        "hideName": false,
+                        "i": "splunk-add-comment-botton",
+                        "items": [
+                            {
+                                "args": {
+                                    "tags": {
+                                        "simple": "",
+                                        "userMarkedRequired": true
+                                    }
+                                },
+                                "buttonClass": "warning",
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 22,
+                                "id": "button",
+                                "index": 0,
+                                "name": "Press to add comment to Splunk",
+                                "scriptId": "SplunkAddComment",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxH": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Add Comment",
+                        "static": false,
+                        "w": 1,
+                        "x": 2,
+                        "y": 8
                     }
                 ],
                 "type": "custom"

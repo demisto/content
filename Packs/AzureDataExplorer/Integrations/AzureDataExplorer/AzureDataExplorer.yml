@@ -434,7 +434,7 @@ script:
   - description: Generate the login url used for Authorization code flow.
     name: azure-data-explorer-generate-login-url
     arguments: []
-  dockerimage: demisto/azure-kusto-data:1.0.0.65015
+  dockerimage: demisto/azure-kusto-data:1.0.0.66840
   runonce: false
   script: "-"
   subtype: python3

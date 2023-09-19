@@ -7,7 +7,7 @@
 /Tests/Marketplace/core_packs_mpv2_list.json @yaakovpraisler @bakatzir @GuyLibermanPA @demisto/content-leaders
 
 # Docker native image
-/Tests/docker_native_image_config.json @GuyAfik @JudahSchwartz
+/Tests/docker_native_image_config.json @GuyAfik @JudahSchwartz @samuelFain
 
 # Marketplace & Upload-Flow
 /Tests/scripts/create_artifacts_graph/create_artifacts.py @ilaner
@@ -40,7 +40,6 @@
 /Packs/PrismaSaasSecurity/Integrations/ @GuyAfik
 
 # Important Integrations
-/Packs/ServiceNow/Integrations/ServiceNowv2/* @Shellyber
 /Packs/QRadar/Integrations/QRadar_v3/* @ilaner
 /Packs/Slack/Integrations/* @amshamah419 @rshunim
 /Packs/SplunkPy/Integrations/SplunkPy/* @ilappe
@@ -81,9 +80,9 @@
 .gitlab/ci/* @yucohen
 .gitlab/* @yucohen
 .gitlab-ci.yml @yucohen
-.gitlab/ci/on-push.yml @daryakoval
+.gitlab/ci/.gitlab-ci.on-push.yml @daryakoval
 /Tests/scripts/wait_in_line_for_cloud_env.sh @daryakoval
-.gitlab/ci/staging.yml @ilaner
+.gitlab/ci/.gitlab-ci.staging.yml @ilaner
 /Tests/scripts/uninstall_packs_and_reset_bucket_cloud.sh @daryakoval
 /Tests/Marketplace/search_and_uninstall_pack.py @daryakoval
 /Tests/scripts/install_content_and_test_integrations.sh @daryakoval
@@ -95,7 +94,7 @@ Tests/scripts/test_modeling_rules.sh @daryakoval
 Tests/scripts/lock_cloud_machines.py @daryakoval
 
 # SDK Related
-.gitlab/ci/sdk-nightly.yml @dorschw
+.gitlab/ci/.gitlab-ci.sdk-nightly.yml @dorschw
 Utils/trigger_nightly_sdk_build.sh @dorschw
 .pre-commit-config_template.yaml @dorschw @ilaner
 

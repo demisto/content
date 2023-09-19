@@ -1,16 +1,16 @@
 !qradar-offenses-list enrichment=IPs filter="status=OPEN" range=0-2
-!qradar-offense-update offense_id=6 assigned_to=demisto enrichment="IPs And Assets" follow_up=true status=OPEN protected=false
+!qradar-offense-update offense_id=14 assigned_to=admin enrichment="IPs And Assets" follow_up=true status=OPEN protected=false
 !qradar-closing-reasons include_deleted=true include_reserved=true
-!qradar-offense-notes-list offense_id=6 filter="username='API_user: demisto'" range=0-1
-!qradar-offense-note-create note_text="Note Regarding The Offense" offense_id=6
+!qradar-offense-notes-list offense_id=14 filter="username='API_user: admin'" range=0-1
+!qradar-offense-note-create note_text="Note Regarding The Offense" offense_id=14
 !qradar-rules-list rule_type=COMMON range=0-2
 !qradar-rule-groups-list range=0-2
 !qradar-assets-list filter="id<1100" range=0-2
 !qradar-saved-searches-list range=0-1
 !qradar-searches-list
 !qradar-search-create query_expression="""SELECT "destinationPort" AS 'Destination Port', UniqueCount("sourceIP") AS 'Source IP (Unique Count)', UniqueCount("destinationIP") AS 'Destination IP (Unique Count)', UniqueCount(qid) AS 'Event Name (Unique Count)', UniqueCount(logSourceId) AS 'Log Source (Unique Count)', UniqueCount(category) AS 'Low Level Category (Unique Count)', UniqueCount("protocolId") AS 'Protocol (Unique Count)', UniqueCount("userName") AS 'Username (Unique Count)', MAX("magnitude") AS 'Magnitude (Maximum)', SUM("eventCount") AS 'Event Count (Sum)', COUNT(*) AS 'Count' from events where ( ("creEventList"='100120') or ("creEventList"='100122') or ("creEventList"='100135') AND "eventDirection"='R2L' ) GROUP BY "destinationPort" order by "Event Count (Sum)" desc last 6 hours"""
-!qradar-search-status-get search_id=e69df023-fff8-4d8c-a3b3-04d2b4b4af8a
-!qradar-search-results-get search_id=e69df023-fff8-4d8c-a3b3-04d2b4b4af8a range=0-3
+!qradar-search-status-get search_id=36227863-bc6a-488f-9aa4-0f9c6f767655
+!qradar-search-results-get search_id=36227863-bc6a-488f-9aa4-0f9c6f767655 range=0-3
 !qradar-reference-sets-list filter="timeout_type=FIRST_SEEN" range=0-2
 !qradar-reference-set-create element_type=IP ref_name="Malicious IPs" time_to_live="1 year" timeout_type=FIRST_SEEN
 !qradar-reference-set-value-upsert ref_name="Malicious IPs" value="1.2.3.4,1.2.3.5,192.168.1.3"
@@ -22,6 +22,6 @@
 !qradar-log-sources-list qrd_encryption_algorithm=AES128 range=0-2
 !qradar-get-custom-properties filter="id between 90 and 100" range=1-1231
 !qradar-reset-last-run
-!qradar-ips-source-get filter=`source_ip="172.42.18.211"` range=0-2
+!qradar-ips-source-get filter=`source_ip="192.168.0.15"` range=0-2
 !qradar-ips-local-destination-get filter=`local_destination_ip="172.42.18.211"`
-!qradar-get-events-polling offense_id=194
+!qradar-search-retrieve-events offense_id=14

@@ -1,4 +1,4 @@
-This playbook returns "RemediationAction" options based on the return from the Remediation Path Rules API, or defaults to data collection task options from the "Cortex ASM - Decision" sub-playbook.
+This playbook returns "RemediationAction" options based on the return from the Remediation Path Rules API, or defaults to data collection task.
 
 ## Dependencies
 
@@ -7,7 +7,6 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 ### Sub-playbooks
 
 * Cortex ASM - Remediation Objectives
-* Cortex ASM - Decision
 
 ### Integrations
 
@@ -18,6 +17,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 * RemediationPathRuleEvaluation
 * GetTime
 * Set
+* GridFieldSetup
 
 ### Commands
 

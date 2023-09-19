@@ -6,23 +6,6 @@
 
 ## Authorization
 
-#### Cortex XSOAR App
-
-In order to use the Cortex XSOAR Azure application, 
-use the Client ID - (application_id) (***ec854987-95fa-4c8f-8056-768dd0f409ac***).
-
-#### Self-Deployed App
-
-To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal, with mobile and desktop flows enabled.
-
-#### Required Permissions
-*Make sure to provide the following permissions for the app to work with Azure Risky Users:*
- - ***IdentityRiskyUser.Read.All*** - https://docs.microsoft.com/en-us/graph/api/riskyuser-list?view=graph-rest-1.0
- - ***IdentityRiskEvent.Read.All*** - https://docs.microsoft.com/en-us/graph/api/riskdetection-get?view=graph-rest-1.0
- - ***IdentityRiskEvent.ReadWrite.All***
- - ***IdentityRiskyUser.ReadWrite.All***
- - ***User.Read***
-
 ### Authentication Using the Client Credentials Flow (recommended)
 
 Follow these steps for a **self-deployed configuration**:
@@ -35,6 +18,7 @@ Follow these steps for a **self-deployed configuration**:
 6. Save the instance.
 7. Run the ***!azure-risky-users-auth-test*** command - a 'Success' message should be printed to the war-room.
 
+
 ### Authentication Using the Device Flow
 [Device authorization grant flow](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-device-code).
 
@@ -43,6 +27,18 @@ In order to connect to Microsoft Risky User using either **Cortex XSOAR App** or
 2. Run the ***!msgraph-identity-auth-start*** command.
 3. Follow the instructions that appear.
 4. Run the ***!msgraph-identity-auth-complete*** command.
+
+At the end of the process you'll see a message that you've logged in successfully.
+In both options below, the [device authorization grant flow](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-device-code) is used.
+
+#### Cortex XSOAR Azure App
+
+In order to use the Cortex XSOAR Azure application, 
+use the Client ID - (application_id) (***ec854987-95fa-4c8f-8056-768dd0f409ac***).
+
+#### Self-Deployed Azure App
+
+To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal, with mobile and desktop flows enabled.
 
 ### Azure Managed Identities Authentication
 ##### Note: This option is relevant only if the integration is running on Azure VM.
@@ -57,3 +53,12 @@ Follow one of these steps for authentication based on Azure Managed Identities:
    3. In the **Authentication Type** drop-down list, select **Azure Managed Identities**.
 
 For information about Azure Managed Identities see [Managed identities for Azure resources](https://learn.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/overview)
+
+
+#### Required Permissions
+*Make sure to provide the following permissions for the app to work with Azure Risky Users:*
+ - ***IdentityRiskyUser.Read.All*** - https://docs.microsoft.com/en-us/graph/api/riskyuser-list?view=graph-rest-1.0
+ - ***IdentityRiskEvent.Read.All*** - https://docs.microsoft.com/en-us/graph/api/riskdetection-get?view=graph-rest-1.0
+ - ***IdentityRiskEvent.ReadWrite.All***
+ - ***IdentityRiskyUser.ReadWrite.All***
+ - ***User.Read***

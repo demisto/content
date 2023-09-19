@@ -1,7 +1,7 @@
 args:
 - description: 'Hello command - prints hello to anyone.'
   name: name
-comment: Hello World Script
+comment: Hello World Script.
 commonfields:
   id: HelloWorldScript
   version: -1

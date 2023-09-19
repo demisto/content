@@ -1,7 +1,8 @@
 id: detonate_url_-_generic
 version: -1
+deprecated: true
 name: Detonate URL - Generic
-description: Detonate URL through active integrations that support URL detonation.
+description: Deprecated. Use Detonate URL - Generic v1.5 playbook instead. Detonate URL through active integrations that support URL detonation.
 starttaskid: "0"
 tasks:
   "0":
