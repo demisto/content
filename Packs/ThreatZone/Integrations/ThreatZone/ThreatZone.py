@@ -1,5 +1,6 @@
 
-import urllib3, requests
+import urllib3
+import requests
 from typing import Dict, Any
 
 # Disable insecure warnings
@@ -32,15 +33,15 @@ class Client(BaseClient):
         payload = []
         if param['scan_type'] == "sandbox":
             payload = [
-                { "metafieldId": "environment", "value": param['environment'] },
-                { "metafieldId": "private", "value": param['private'] },
-                { "metafieldId": "timeout", "value": param['timeout'] },
-                { "metafieldId": "work_path", "value": param['work_path'] },
-                { "metafieldId": "mouse_simulation", "value": param['mouse_simulation'] },
-                { "metafieldId": "https_inspection", "value": param['https_inspection'] },
-                { "metafieldId": "internet_connection", "value": param['internet_connection'] },
-                { "metafieldId": "raw_logs", "value": param['raw_logs'] },
-                { "metafieldId": "snapshot", "value": param['snapshot'] }
+                {"metafieldId": "environment", "value": param['environment']},
+                {"metafieldId": "private", "value": param['private']},
+                {"metafieldId": "timeout", "value": param['timeout']},
+                {"metafieldId": "work_path", "value": param['work_path']},
+                {"metafieldId": "mouse_simulation", "value": param['mouse_simulation']},
+                {"metafieldId": "https_inspection", "value": param['https_inspection']},
+                {"metafieldId": "internet_connection", "value": param['internet_connection']},
+                {"metafieldId": "raw_logs", "value": param['raw_logs']},
+                {"metafieldId": "snapshot", "value": param['snapshot']}
             ]
         suffix = '/public-api/scan/' + param['scan_type']
         return self._http_request(
@@ -67,7 +68,7 @@ class Client(BaseClient):
         url = f'https://app.threat.zone/download/v1/download/cdr/{uuid}'
         # this method is only for tests, sanitized file downlaod will be implemented in API side.
         headers = {
-        'Cookie': "accesstoken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2M2YyZDE3NzI0NGJmN2Q5NzIwOWFjMTQiLCJlbWFpbCI6ImlzbWFpbHB2bzE1MzVAZ21haWwuY29tIiwiaWF0IjoxNjk0Nzg3NDkxLCJleHAiOjE2OTQ3ODkyOTEsImlzcyI6Imh0dHBzOi8vYXBwLnRocmVhdC56b25lIn0.xCSBD-L0ZKwh3WAz5GOUtu3bW_ynsZAS04-3SWca8PM; refreshtoken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2M2YyZDE3NzI0NGJmN2Q5NzIwOWFjMTQiLCJlbWFpbCI6ImlzbWFpbHB2bzE1MzVAZ21haWwuY29tIiwiaWF0IjoxNjk0Nzg3NDkxLCJleHAiOjE2OTQ3OTgyOTEsImlzcyI6Imh0dHBzOi8vYXBwLnRocmVhdC56b25lIn0.xGSRZ8JuD1P3-tAoFNwP7IFVX2vBJE9md4BeNrwR8us"
+            'Cookie': "accesstoken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2M2YyZDE3NzI0NGJmN2Q5NzIwOWFjMTQiLCJlbWFpbCI6ImlzbWFpbHB2bzE1MzVAZ21haWwuY29tIiwiaWF0IjoxNjk0Nzg3NDkxLCJleHAiOjE2OTQ3ODkyOTEsImlzcyI6Imh0dHBzOi8vYXBwLnRocmVhdC56b25lIn0.xCSBD-L0ZKwh3WAz5GOUtu3bW_ynsZAS04-3SWca8PM; refreshtoken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2M2YyZDE3NzI0NGJmN2Q5NzIwOWFjMTQiLCJlbWFpbCI6ImlzbWFpbHB2bzE1MzVAZ21haWwuY29tIiwiaWF0IjoxNjk0Nzg3NDkxLCJleHAiOjE2OTQ3OTgyOTEsImlzcyI6Imh0dHBzOi8vYXBwLnRocmVhdC56b25lIn0.xGSRZ8JuD1P3-tAoFNwP7IFVX2vBJE9md4BeNrwR8us"
         }
         r = http.request('GET', url, headers=headers)
         return r.data
@@ -94,9 +95,9 @@ class Client(BaseClient):
         avaliable_submission = submission_limits["dailyLimit"] - limits_count["dailySubmissionCount"]
         avaliable_concurrent = submission_limits["concurrentLimit"] - limits_count["concurrentSubmissionCount"]
         limits = {
-            "Daily Submission Limit": f"{limits_count['dailySubmissionCount']}/{submission_limits['dailyLimit']}",
-            "Concurrent Limit": f"{limits_count['concurrentSubmissionCount']}/{submission_limits['concurrentLimit']}",
-            "API Limit": f"{limits_count['apiRequestCount']}/{submission_limits['apiLimit']}"
+            "Daily_Submission_Limit": f"{limits_count['dailySubmissionCount']}/{submission_limits['dailyLimit']}",
+            "Concurrent_Limit": f"{limits_count['concurrentSubmissionCount']}/{submission_limits['concurrentLimit']}",
+            "API_Limit": f"{limits_count['apiRequestCount']}/{submission_limits['apiLimit']}"
         }
         if avaliable_api < 1:
             return {
@@ -152,6 +153,7 @@ def test_module(params) -> str:
         raise e
     return 'ok'
 
+
 def encode_file_name(file_name):
     """
     encodes the file name - i.e ignoring non ASCII chars and removing backslashes
@@ -184,8 +186,9 @@ def generate_dbotscore(report):
 
     # db_score = Common.DBotScore(indicator=indicator, indicator_type=indicator_type,
     #                                 integration_name="ThreatZone", score=threat_text).to_context()
-        # we are using Common.DBotScore.CONTEXT_PATH for 5.5.0+ and CONTEXT_PATH for 5.0.0
+    # we are using Common.DBotScore.CONTEXT_PATH for 5.5.0+ and CONTEXT_PATH for 5.0.0
     return dbot_score
+
 
 def threatzone_get_result(client: Client, args: Dict[str, Any]) -> CommandResults:
     """Retrive the sample scan result from ThreatZone.
@@ -214,6 +217,7 @@ def threatzone_get_result(client: Client, args: Dict[str, Any]) -> CommandResult
         2: "Suspicious",
         3: "Malicious"
     }
+
     def create_res(readable_dict, output):
         readable_output = tableToMarkdown('Submission Result', readable_dict)
         return [
@@ -221,8 +225,8 @@ def threatzone_get_result(client: Client, args: Dict[str, Any]) -> CommandResult
                 readable_output=readable_output,
                 outputs_key_field='results',
                 outputs=output
-                )
-            ]
+            )
+        ]
     try:
         report_type = ""
         if result["reports"]["dynamic"]["enabled"]:
@@ -253,7 +257,7 @@ def threatzone_get_result(client: Client, args: Dict[str, Any]) -> CommandResult
             'SCAN_URL': result_url,
             'UUID': submission_uuid
         }
-        #dbot_score = generate_dbotscore(readable_dict)
+        # dbot_score = generate_dbotscore(readable_dict)
         output = {
             'ThreatZone.Result(val.Job_ID == obj.Job_ID)': {
                 'STATUS': status,
@@ -266,7 +270,7 @@ def threatzone_get_result(client: Client, args: Dict[str, Any]) -> CommandResult
                 'UUID': submission_uuid,
                 'REPORT': {report_type: result["reports"][report_type]}
             }
-            #,**dbot_score
+            # ,**dbot_score
         }
 
         res = create_res(readable_dict, output)
@@ -285,7 +289,8 @@ def threatzone_get_result(client: Client, args: Dict[str, Any]) -> CommandResult
         res = create_res(readable_output, output)
     return res
 
-def threatzone_check_limits(client: Client, args: Dict[str, Any]) -> CommandResults:
+
+def threatzone_check_limits(client: Client) -> CommandResults:
     availability = client.threatzone_check_limits(None)
     readable_output = tableToMarkdown('LIMITS', availability["Limits"])
     return CommandResults(
@@ -294,11 +299,13 @@ def threatzone_check_limits(client: Client, args: Dict[str, Any]) -> CommandResu
         outputs={'ThreatZone.Limits(val.Job_ID == obj.Job_ID)': availability["Limits"]}
     )
 
+
 def threatzone_sandbox_upload_sample(client: Client, args: Dict[str, Any]) -> CommandResults:
     """Uploads the sample to the ThreatZone sandbox to analyse with required or optional selections."""
     availability = client.threatzone_check_limits("sandbox")
     if not availability["avaliable"]:
-        return_error(f"Reason: {availability['Reason']}\nSuggestion: {availability['Suggestion']}\nLimits: {availability['Limits']}")
+        return_error(
+            f"Reason: {availability['Reason']}\nSuggestion: {availability['Suggestion']}\nLimits: {availability['Limits']}")
 
     ispublic = args.get('isPublic')
     environment = args.get('environment')
@@ -345,6 +352,7 @@ def threatzone_sandbox_upload_sample(client: Client, args: Dict[str, Any]) -> Co
                  'ThreatZone.Analysis(val.Job_ID == obj.Job_ID)': {'UUID': uuid, 'URL': url}}
     )
 
+
 def threatzone_static_upload_sample(client: Client, args: Dict[str, Any]) -> CommandResults:
     """Uploads the sample to the ThreatZone static engine to analyse with required or optional selections."""
     availability = client.threatzone_check_limits("static")
@@ -379,6 +387,7 @@ def threatzone_static_upload_sample(client: Client, args: Dict[str, Any]) -> Com
         outputs={'ThreatZone.Limits(val.Job_ID == obj.Job_ID)': availability["Limits"],
                  'ThreatZone.Analysis(val.Job_ID == obj.Job_ID)': {'UUID': uuid, 'URL': url}}
     )
+
 
 def threatzone_cdr_upload_sample(client: Client, args: Dict[str, Any]) -> CommandResults:
     """Uploads the sample to the ThreatZone to analyse with required or optional selections."""
@@ -417,6 +426,8 @@ def threatzone_cdr_upload_sample(client: Client, args: Dict[str, Any]) -> Comman
 
 
 ''' MAIN FUNCTION '''
+
+
 def main() -> None:
     """main function, parses params and runs command functions
 
@@ -446,13 +457,13 @@ def main() -> None:
         if command == 'test-module':
             demisto.results(test_module(params))
         elif command == 'tz-check-limits':
-             return_results(threatzone_check_limits(client, args))
+            return_results(threatzone_check_limits(client))
         elif command == 'tz-sandbox-upload-sample':
-             return_results(threatzone_sandbox_upload_sample(client, args))
+            return_results(threatzone_sandbox_upload_sample(client, args))
         elif command == 'tz-static-upload-sample':
-             return_results(threatzone_static_upload_sample(client, args))
+            return_results(threatzone_static_upload_sample(client, args))
         elif command == 'tz-cdr-upload-sample':
-             return_results(threatzone_cdr_upload_sample(client, args))
+            return_results(threatzone_cdr_upload_sample(client, args))
         elif command == 'tz-get-result':
             return_results(threatzone_get_result(client, args))
 

@@ -181,7 +181,20 @@ script:
     - contextPath: ThreatZone.Result.SANITIZED
       description: The url of the sanitized file.
       type: String
-      description: Retrive the analysis result from ThreatZone Sandbox.
+    description: Retrive the analysis result from ThreatZone.
+  - name: tz-check-limits
+    arguments: []
+    description: Check the plan limits from ThreatZone API.
+    outputs:
+    - contextPath: ThreatZone.Limits.API_Limit
+      description: The remaining/total API request limits of the current plan.
+      type: String
+    - contextPath: ThreatZone.Limits.Concurrent_Limit
+      description: The remaining/total concurrent analysis limits of the current plan.
+      type: String
+    - contextPath: ThreatZone.Limits.Daily_Submission_Limit
+      description: The remaining/total daily submission limits of the current plan.
+      type: String
   dockerimage: demisto/python3:3.10.13.73190
   runonce: false
   subtype: python3
