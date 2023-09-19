@@ -1,0 +1,40 @@
+commonfields:
+  id: SendCPAction
+  version: -1
+name: SendCPAction
+script: ""
+type: python
+tags: []
+comment: Send quarantine or restore action and update action task id.
+enabled: true
+args:
+- name: farm
+  required: true
+  type: String
+  description: Customer farm.
+- name: customer
+  required: true
+  type: String
+  description: Customer portal name.
+- name: entity
+  required: true
+  type: String
+  description: Email entity id.
+- name: action
+  required: true
+  auto: PREDEFINED
+  predefined:
+  - quarantine
+  - restore
+  description: Action name.
+scripttarget: 0
+subtype: python3
+dependson:
+  must:
+  - CheckPointHEC|||checkpointhec-send-action
+runonce: false
+dockerimage: demisto/python3:3.10.13.72123
+runas: DBotWeakRole
+fromversion: 6.9.0
+tests:
+- No tests (auto formatted)
