@@ -9,7 +9,7 @@ from urllib3.exceptions import HTTPError, HTTPWarning
 
 from Tests.scripts.utils import logging_wrapper as logging
 
-ALREADY_IN_PROGRESS = "create / update / delete operation is already in progress (10102)"
+ALREADY_IN_PROGRESS = "operation is already in progress"
 
 
 def generic_request_with_retries(client: demisto_client,
