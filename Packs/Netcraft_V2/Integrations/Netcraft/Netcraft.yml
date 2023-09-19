@@ -547,6 +547,7 @@ script:
     - name: takedown_id
       description: The ID of the takedown to update.
       required: true
+      default: true
     - name: customer_label
       description: A free-text field which can be used to keep track of particular attacks.
     - name: description
@@ -583,6 +584,7 @@ script:
     - name: takedown_id
       required: true
       description: The ID of the automated takedown to escalate.
+      default: true
     description: Escalate an automated takedown to a managed takedown.
     outputs: []
   - name: netcraft-takedown-note-create
@@ -590,6 +592,7 @@ script:
     - description: The ID of the takedown to add the note to.
       name: takedown_id
       required: true
+      default: true
     - description: The contents of the new note.
       name: note_text
       required: true
@@ -611,6 +614,7 @@ script:
     arguments:
     - description: Filter to notes that have been added to the takedown with the given ID.
       name: takedown_id
+      default: true
     - description: |
         Filter to notes that were created by the user with the given username.
         Notes that were created by Netcraft can be found by filtering to "Netcraft".
@@ -704,6 +708,7 @@ script:
     arguments:
     - description: Get a specific submission. If provided, all the others arguments will be ignored and an extensive report will be returned.
       name: submission_uuid
+      default: true
     - description: Filter submissions by start date.
       name: date_start
     - description: Filter submissions by end date.
@@ -981,6 +986,7 @@ script:
     - description: The submission's unique identifier. Submission UUIDs can be obtained by running the command "netcraft-submission-list".
       name: submission_uuid
       required: true
+      default: true
     - name: page
       description: The page number of file records to retrieve (used for pagination) starting from 1. The page size is defined by the "page_size" argument.
     - name: page_size
@@ -1016,6 +1022,7 @@ script:
     - description: The unique identifier of the submission from which to retrieve a file screenshot. Submission UUIDs can be obtained by running the command "netcraft-submission-list".
       name: submission_uuid
       required: true
+      default: true
     - description: The file's hash. Submission file hashes can be obtained by running the command "netcraft-submission-file-list".
       name: file_hash
       required: true
@@ -1170,6 +1177,7 @@ script:
     - description: The submission's unique identifier. Submission UUIDs can be obtained by running the command "netcraft-submission-list".
       name: submission_uuid
       required: true
+      default: true
     outputs:
     - contextPath: Netcraft.SubmissionMail.classification_log.date
       description: A unix timestamp of when this state change occurred.
@@ -1203,6 +1211,7 @@ script:
     - description: The unique identifier of the submission from which to retrieve a mail screenshot. Submission UUIDs can be obtained by running the command "netcraft-submission-list".
       name: submission_uuid
       required: true
+      default: true
     description: Get a screenshot for the mail associated with a submission.
     outputs:
     - contextPath: InfoFile.Size
@@ -1353,6 +1362,7 @@ script:
     - description: The submission's unique identifier. Submission UUIDs can be obtained by running the command "netcraft-submission-list".
       name: submission_uuid
       required: true
+      default: true
     - name: page
       description: The page number of URLs to retrieve (used for pagination). The page size is defined by the "page_size" argument.
     - name: page_size
@@ -1442,6 +1452,7 @@ script:
     - description: The unique identifier of the submission from which to retrieve a URL screenshot. Submission UUIDs can be obtained by running the command "netcraft-submission-list".
       name: submission_uuid
       required: true
+      default: true
     - description: The URL's UUID. Submission URL UUIDs can be obtained by running the command "netcraft-submission-url-list".
       name: url_uuid
       required: true

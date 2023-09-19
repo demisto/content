@@ -185,7 +185,7 @@ class Client(BaseClient):
     def mail_screenshot_get(self, submission_uuid: str) -> requests.Response:
         return self.submission_http_request(
             'GET', f'submission/{submission_uuid}/mail/screenshot',
-            resp_type='response',
+            resp_type='response', ok_codes=(200, 404)
         )
 
     def email_report_submit(self, body: dict) -> dict:
