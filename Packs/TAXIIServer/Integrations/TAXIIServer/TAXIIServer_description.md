@@ -37,7 +37,8 @@ To access the TAXII service by instance name, make sure ***Instance execute exte
 3. You can now trigger the webhook URL:
 
    - For Cortex XSOAR 6.x: **<CORTEX-XSOAR-URL>/instance/execute/<INTEGRATION-INSTANCE-NAME>**. For example, https://my.demisto.live/instance/execute/taxiiserver. Note that the string instance does not refer to the name of your XSOAR instance, but rather is part of the URL.
-   - For Cortex XSOAR 8 and Cortex XSIAM: **<ext-<CORTEX-XSOAR-URL>/xsoar/instance/execute/<INTEGRATION-INSTANCE-NAME>**. For example, https://ext-dev-tertius.crtx.us.paloaltonetworks.com/xsoar/instance/execute/taxiiserver1. Note that the string instance does not refer to the name of your XSOAR instance, but rather is part of the URL.
+For Cortex XSOAR 8: https://ext-/.crtx..paloaltonetworks.com/xsoar/instance/execute/
+For Cortex XSIAM: https://ext-/.crtx..paloaltonetworks.com/xsiam/instance/execute/
 
 ## How to use HTTPS
 To use HTTPS, a certificate and private key have to be supplied in the integration configuration. 
