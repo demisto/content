@@ -305,4 +305,5 @@ inputs:
 outputs: []
 tests:
 - Carbon Black Response Test
+- CBFindIP - Test
 fromversion: 5.5.0
