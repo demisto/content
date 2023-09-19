@@ -120,7 +120,8 @@
                 "slack",
                 "office-utils",
                 "chromium",
-                "tesseract"
+                "tesseract",
+                "netutils"
             ],
             "docker_ref": ""
         }
