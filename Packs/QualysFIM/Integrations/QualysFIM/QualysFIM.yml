@@ -372,7 +372,7 @@ script:
     - description: |-
         Comma-separated list of attributes to include in the response.
         By default, all attributes will be returned in the result,
-        i.e., attributes="attributes=interfaces.hostname"
+        i.e., attributes="attributes=interfaces.hostname".
       name: attributes
     - description: |-
         Filter the events list by providing a query using Qualys syntax.
@@ -399,7 +399,7 @@ script:
     - contextPath: QualysFIM.Assets.created
       description: Date the asset was created.
       type: String
-  dockerimage: demisto/python3:3.10.13.72123
+  dockerimage: demisto/python3:3.10.13.73190
   isfetch: true
   runonce: false
   script: '-'
