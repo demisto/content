@@ -16,7 +16,7 @@ def suppress_errors(func: Callable) -> Callable:
 
 
 class ConditionParser:
-    variables: dict[str, Any] = {
+    known_constants: dict[str, Any] = {
         'true': True,
         'false': False,
         'null': None
@@ -118,7 +118,7 @@ class ConditionParser:
     def get_value(self, node):
         match type(node):
             case ast.Name:
-                return self.variables[node.id]
+                return self.known_constants[node.id]
             case ast.Constant:
                 return node.value
             case ast.List:
