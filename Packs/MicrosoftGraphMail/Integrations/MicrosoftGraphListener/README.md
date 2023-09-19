@@ -59,6 +59,7 @@ The following permissions are required for all commands:
     | Use a self-deployed Azure application |  | False |
     | Incident type |  | False |
     | Display full email body | If not active, only a preview of the email will be fetched. |  |
+    | Fetch emails in an HTML format | Select this checkbox if you wish to retrieve the body of an email in an HTML format. If this checkbox is not selected, a psuedo-text representation of HTML emails will be returned and some functionality in other packs (e.g. email previews in the Email Communication pack) may not provide their full capabilities. | False |
     | Mark fetched emails as read | Relevant only if fetch incidents is active. |  |
     | Incidents Fetch Interval |  | False |
 
