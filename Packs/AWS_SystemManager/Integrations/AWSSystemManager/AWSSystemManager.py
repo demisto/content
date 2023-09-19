@@ -15,7 +15,6 @@ if TYPE_CHECKING:
         DocumentDescriptionTypeDef,
         GetInventoryRequestRequestTypeDef,
         ListAssociationsRequestRequestTypeDef,
-        ListCommandsRequestRequestTypeDef,
         ListDocumentsRequestRequestTypeDef,
     )
 """ CONSTANTS """
@@ -72,7 +71,8 @@ CANCEL_TERMINAL_COMMAND_STATUSES = {  # the status for cancel command command
     "Incomplete": "The command was attempted on all managed nodes and one or more of the invocations "
     "doesn't have a value of Success. However, not enough invocations failed for the status to be Failed.",
     "Cancelled": "The cancel command completed successfully, The command was cancelled before it was completed.",
-    "Canceled": "The cancel command completed successfully, The command was canceled before it was completed.",  # AWS typo, British English (canceled)
+    # AWS typo, British English (canceled)
+    "Canceled": "The cancel command completed successfully, The command was canceled before it was completed.",
     "Rate Exceeded": "The number of managed nodes targeted by the command exceeded the account quota for pending invocations. "
     "The system has canceled the command before executing it on any node.",
     "Access Denied": "The user or role initiating the command doesn't have access to the targeted resource group. AccessDenied "
@@ -1330,7 +1330,7 @@ def list_commands_command(
             for command in commands
         ]
 
-    kwargs: "ListCommandsRequestRequestTypeDef" = {
+    kwargs = {
         "MaxResults": arg_to_number(args.get("limit", 50)) or 50,
     }
     kwargs = update_if_value(
@@ -1341,10 +1341,11 @@ def list_commands_command(
     response = convert_datetime_to_iso(response)
 
     commands = response.get("Commands", [])
-    # aws response sometime return empty commands and nextToken, so instead the user send the command agin with the next_token the code hendle with it
+    # aws response sometime return empty commands and nextToken,
+    # so instead the user send the command agin with the next_token the code hendle with it
     if not commands and (next_token := response.get("NextToken")):
         kwargs["NextToken"] = next_token
-        response = ssm_client.list_commands(**kwargs)
+        response = ssm_client.list_commands(**kwargs)  # type: ignore
         response = convert_datetime_to_iso(response)
         commands = response.get("Commands", [])
     command_result = []
