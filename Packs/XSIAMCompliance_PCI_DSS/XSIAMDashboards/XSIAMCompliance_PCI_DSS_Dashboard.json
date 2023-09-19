@@ -419,7 +419,8 @@
       "default_dashboard_id": 1,
       "global_id": "983dc85446544ae79ed138bae0ac8037",
       "metadata": {
-        "lazy_load": true
+        "lazy_load": true,
+        "cache_ttl": 30
       }
     }
   ],
