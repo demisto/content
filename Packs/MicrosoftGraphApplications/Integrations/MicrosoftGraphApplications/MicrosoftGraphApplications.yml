@@ -125,10 +125,10 @@ script:
       description: A string that describes the purpose for which the key can be used; for example, “Verify”.
       type: String
     - contextPath: MSGraphApplication.keyCredentials.startDateTime
-      description: "The date and time at which the credential expires.The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 would look like this: '2014-01-01T00:00:00Z'"
+      description: "The date and time at which the credential expires.The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 would look like this: '2014-01-01T00:00:00Z'."
       type: Date
     - contextPath: MSGraphApplication.keyCredentials.endDateTime
-      description: "The date and time at which the credential becomes valid.The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 would look like this: '2014-01-01T00:00:00Z'"
+      description: "The date and time at which the credential becomes valid.The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 would look like this: '2014-01-01T00:00:00Z'."
       type: Date
     - contextPath: MSGraphApplication.accountEnabled
       description: 'true if the application account is enabled; otherwise, false.'
@@ -261,7 +261,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/crypto:1.0.0.66562
+  dockerimage: demisto/crypto:1.0.0.74057
 fromversion: 5.0.0
 tests:
 - MSGraph Applications Test
