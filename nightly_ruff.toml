@@ -55,6 +55,7 @@ select = [
     "F524", # string-dot-format-missing-arguments
     "F525", # string-dot-format-mixing-automatic
     "F541", # f-string-missing-placeholders
+    "F601", # multi-value-repeated-key-literal
     "F602", # multi-value-repeated-key-variable
     "F621", # expressions-in-star-assignment
     "F622", # multiple-starred-expressions
@@ -73,6 +74,7 @@ select = [
     "F822", # undefined-export
     "F823", # undefined-local
     "F841", # unused-variable
+    "F842", # unused-annotation
     "F901", # raise-not-implemented
 
     "G010", # logging-warn
@@ -187,6 +189,8 @@ select = [
     "YTT301", # sys-version0
     "YTT302", # sys-version-cmp-str10
     "YTT303", # sys-version-slice1
+
+    "TID252", # relative-imports
 ]
 
 line-length = 130
