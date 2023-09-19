@@ -546,7 +546,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 >| http:<span>//</span>google.com |
 
 
-### joe-list-lia-countries
+### joe-list–lia-countries
 ***
 Retrieve a list of localized internet anonymization countries.
 
