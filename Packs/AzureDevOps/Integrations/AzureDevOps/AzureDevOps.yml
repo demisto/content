@@ -283,7 +283,7 @@ script:
       description: 'The creation date of the pull request, using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2022 would be: "2022-01-01T00:00:00Z".'
       type: Date
     - contextPath: AzureDevOps.PullRequest.title
-      description: The title of the pull request
+      description: The title of the pull request.
       type: String
     - contextPath: AzureDevOps.PullRequest.description
       description: The description of the pull request.
@@ -370,7 +370,7 @@ script:
       description: 'The creation date of the pull request, using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2022 would be: "2022-01-01T00:00:00Z".'
       type: Date
     - contextPath: AzureDevOps.PullRequest.title
-      description: The title of the pull request
+      description: The title of the pull request.
       type: String
     - contextPath: AzureDevOps.PullRequest.description
       description: The description of the pull request.
@@ -446,7 +446,7 @@ script:
       description: 'The creation date of the pull request, using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2022 would be: "2022-01-01T00:00:00Z".'
       type: Date
     - contextPath: AzureDevOps.PullRequest.title
-      description: The title of the pull request
+      description: The title of the pull request.
       type: String
     - contextPath: AzureDevOps.PullRequest.description
       description: The description of the pull request.
@@ -600,7 +600,7 @@ script:
       description: 'The creation date of the pull request, using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2022 would be: "2022-01-01T00:00:00Z".'
       type: Date
     - contextPath: AzureDevOps.PullRequest.title
-      description: The title of the pull request
+      description: The title of the pull request.
       type: String
     - contextPath: AzureDevOps.PullRequest.description
       description: The description of the pull request.
@@ -703,7 +703,7 @@ script:
       description: The ID of the pipeline.
       type: Number
     - contextPath: AzureDevOps.PipelineRun.pipeline.name
-      description: Pipeline repository name
+      description: Pipeline repository name.
       type: String
     - contextPath: AzureDevOps.PipelineRun.state
       description: The run state.
@@ -2260,7 +2260,7 @@ script:
       required: false
       isArray: false
     - name: include_content
-      description: Include item content. 
+      description: Include item content.
       required: false
       isArray: false
       auto: PREDEFINED
@@ -2986,7 +2986,7 @@ script:
   - description: Generate the login url used for Authorization code flow.
     name: azure-devops-generate-login-url
     arguments: []
-  dockerimage: demisto/crypto:1.0.0.68914
+  dockerimage: demisto/crypto:1.0.0.74057
   isremotesyncout: true
   ismappable: true
   isfetch: true
