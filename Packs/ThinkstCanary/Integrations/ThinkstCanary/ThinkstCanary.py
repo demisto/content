@@ -272,9 +272,9 @@ def check_whitelist_command():
     outputs = {'CanaryTools.IP(val.Address && val.Address===obj.Address && val.Port && val.Port===obj.Port)': context}
 
     if res.get('is_ip_ignored'):
-        human_readable = 'The IP address {}:{} is Whitelisted'.format(ip, port)
+        human_readable = f'The IP address {ip}:{port} is Whitelisted'
     else:
-        human_readable = 'The IP address {}:{} is not Whitelisted'.format(ip, port)
+        human_readable = f'The IP address {ip}:{port} is not Whitelisted'
 
     return_outputs(readable_output=human_readable, outputs=outputs, raw_response=contents)
 
@@ -313,7 +313,7 @@ def whitelist_ip_command():
         }
         context = createContext(context, removeNull=True)
         contents = res
-        human_readable = 'The IP address {}:{} was added to the Whitelist'.format(ip, port)
+        human_readable = f'The IP address {ip}:{port} was added to the Whitelist'
         outputs = {
             'CanaryTools.IP(val.Address && val.Address===obj.Address && val.Port && val.Port===obj.Port)': context}
         return_outputs(readable_output=human_readable, outputs=outputs, raw_response=contents)
@@ -344,7 +344,7 @@ def alert_status_command():
         res = http_request('POST', SERVER + 'incident/acknowledge', params=params)
         if res.get('action') == 'acknowledged':
             contents = res
-            human_readable = 'The Alert {} was '.format(alert) + res.get('action')
+            human_readable = f'The Alert {alert} was ' + res.get('action')
             outputs = {'CanaryTools.Alert(val.ID && val.ID === obj.ID)': context}
             return_outputs(readable_output=human_readable, outputs=outputs, raw_response=contents)
 
@@ -352,7 +352,7 @@ def alert_status_command():
         res = http_request('POST', SERVER + 'incident/unacknowledge', params=params)
         if res.get('action') == 'unacknowledged':
             contents = res
-            human_readable = 'The Alert {} was '.format(alert) + res.get('action')
+            human_readable = f'The Alert {alert} was ' + res.get('action')
             outputs = {'CanaryTools.Alert(val.ID && val.ID === obj.ID)': context}
             return_outputs(readable_output=human_readable, outputs=outputs, raw_response=contents)
         else:
@@ -403,4 +403,4 @@ try:
     elif demisto.command() == 'fetch-incidents':
         fetch_incidents_command()
 except Exception as e:
-    return_error('Unable to perform command : {}, Reason: {}'.format(demisto.command, e))
+    return_error(f'Unable to perform command : {demisto.command}, Reason: {e}')
