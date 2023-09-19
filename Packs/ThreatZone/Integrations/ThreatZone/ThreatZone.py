@@ -1,7 +1,9 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 
 import urllib3
 import requests
-from typing import Dict, Any
+from typing import Any
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -24,7 +26,7 @@ class Client(BaseClient):
     For this  implementation, no special attributes defined
     """
 
-    def threatzone_add(self, param: dict) -> Dict[str, Any]:
+    def threatzone_add(self, param: dict) -> dict[str, Any]:
         """Sends the sample to ThreatZone url using the '/public-api/scan/' API endpoint
 
         :return: dict containing the sample uuid as returned from the API
@@ -52,7 +54,7 @@ class Client(BaseClient):
 
         )
 
-    def threatzone_get(self, param: dict) -> Dict[str, Any]:
+    def threatzone_get(self, param: dict) -> dict[str, Any]:
         """Gets the sample scan result from ThreatZone using the '/public-api/get/submission/' API endpoint
 
         :return: dict containing the sample scan results as returned from the API
@@ -68,7 +70,7 @@ class Client(BaseClient):
         url = f'https://app.threat.zone/download/v1/download/cdr/{uuid}'
         # this method is only for tests, sanitized file downlaod will be implemented in API side.
         headers = {
-            'Cookie': "accesstoken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2M2YyZDE3NzI0NGJmN2Q5NzIwOWFjMTQiLCJlbWFpbCI6ImlzbWFpbHB2bzE1MzVAZ21haWwuY29tIiwiaWF0IjoxNjk0Nzg3NDkxLCJleHAiOjE2OTQ3ODkyOTEsImlzcyI6Imh0dHBzOi8vYXBwLnRocmVhdC56b25lIn0.xCSBD-L0ZKwh3WAz5GOUtu3bW_ynsZAS04-3SWca8PM; refreshtoken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2M2YyZDE3NzI0NGJmN2Q5NzIwOWFjMTQiLCJlbWFpbCI6ImlzbWFpbHB2bzE1MzVAZ21haWwuY29tIiwiaWF0IjoxNjk0Nzg3NDkxLCJleHAiOjE2OTQ3OTgyOTEsImlzcyI6Imh0dHBzOi8vYXBwLnRocmVhdC56b25lIn0.xGSRZ8JuD1P3-tAoFNwP7IFVX2vBJE9md4BeNrwR8us"
+            'Cookie': ""
         }
         r = http.request('GET', url, headers=headers)
         return r.data
@@ -190,7 +192,7 @@ def generate_dbotscore(report):
     return dbot_score
 
 
-def threatzone_get_result(client: Client, args: Dict[str, Any]) -> CommandResults:
+def threatzone_get_result(client: Client, args: dict[str, Any]) -> CommandResults:
     """Retrive the sample scan result from ThreatZone.
         :param - uuid: For filtering with status
         :type uuid: ``str``
@@ -283,7 +285,7 @@ def threatzone_get_result(client: Client, args: Dict[str, Any]) -> CommandResult
             res = create_res(readable_dict, output)
             res.append(f_res)
 
-    except Exception as e:
+    except Exception:
         output = {'ThreatZone.Result(val.Job_ID == obj.Job_ID)': {'REPORT': result}}
         readable_output = tableToMarkdown('Submission Result', result)
         res = create_res(readable_output, output)
@@ -300,7 +302,7 @@ def threatzone_check_limits(client: Client) -> CommandResults:
     )
 
 
-def threatzone_sandbox_upload_sample(client: Client, args: Dict[str, Any]) -> CommandResults:
+def threatzone_sandbox_upload_sample(client: Client, args: dict[str, Any]) -> CommandResults:
     """Uploads the sample to the ThreatZone sandbox to analyse with required or optional selections."""
     availability = client.threatzone_check_limits("sandbox")
     if not availability["avaliable"]:
@@ -353,7 +355,7 @@ def threatzone_sandbox_upload_sample(client: Client, args: Dict[str, Any]) -> Co
     )
 
 
-def threatzone_static_upload_sample(client: Client, args: Dict[str, Any]) -> CommandResults:
+def threatzone_static_upload_sample(client: Client, args: dict[str, Any]) -> CommandResults:
     """Uploads the sample to the ThreatZone static engine to analyse with required or optional selections."""
     availability = client.threatzone_check_limits("static")
     if not availability["avaliable"]:
@@ -389,7 +391,7 @@ def threatzone_static_upload_sample(client: Client, args: Dict[str, Any]) -> Com
     )
 
 
-def threatzone_cdr_upload_sample(client: Client, args: Dict[str, Any]) -> CommandResults:
+def threatzone_cdr_upload_sample(client: Client, args: dict[str, Any]) -> CommandResults:
     """Uploads the sample to the ThreatZone to analyse with required or optional selections."""
     availability = client.threatzone_check_limits("cdr")
     if not availability["avaliable"]:

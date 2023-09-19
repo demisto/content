@@ -11,13 +11,13 @@ ThreatZone is a cloud-based sanbox with interactive access.
 2. Search for **ThreatZone**.
 3. Click **Add instance** to create and configure a new integration instance.
 
+
    | **Parameter**                      | **Required** |
    | :----------------------------------- | -------------- |
    | Server URL                         | True         |
    | API Key                            | True         |
    | Trust any certificate (not secure) | False        |
    | Use system proxy settings          | False        |
-
 4. Click **Test** to validate the URLs, API Key, and connection.
 
 ## Commands
@@ -25,6 +25,25 @@ ThreatZone is a cloud-based sanbox with interactive access.
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a human readable output appears in the War Room with the command details.
 All details and full analysis report is avaliable at Context Data.
+
+### tz-check-limits
+
+---
+
+Check the plan limits from ThreatZone API.
+
+#### Base Command
+
+`tz-check-limits`
+
+#### Output
+
+
+| **Path**                                 | **Type** | **Description**                                                     |
+| ------------------------------------------ | ---------- | --------------------------------------------------------------------- |
+| ThreatZone.Limits.API_Limit              | String   | The remaining/total API request limits of the current plan.         |
+| ThreatZone.Limits.Concurrent_Limit       | String   | The remaining/total concurrent analysis limits of the current plan. |
+| ThreatZone.Limits.Daily_Submission_Limit | String   | The remaining/total daily submission limits of the current plan.    |
 
 ### tz-sandbox-upload-sample
 
@@ -37,6 +56,7 @@ Submit a file for sandbox analysis.
 `tz-sandbox-upload-sample`
 
 #### Input
+
 
 | **Argument Name**   | **Description**                                                                                                                                        | **Required** |
 | --------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------- |
@@ -52,6 +72,7 @@ Submit a file for sandbox analysis.
 | snapshot            | Snapshot. Possible values are: true, false. Default is false.                                                                                          | Optional     |
 
 #### Output
+
 
 | **Path**                 | **Type** | **Description**                                     |
 | -------------------------- | ---------- | ----------------------------------------------------- |
@@ -70,11 +91,13 @@ Submit a file for static analysis.
 
 #### Input
 
-| **Argument Name**   | **Description**                                                                                                                                        | **Required** |
-| --------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------- |
-| entry_id            | EntryID of the file to analyze.                                                                                                                        | True         |
+
+| **Argument Name** | **Description**                 | **Required** |
+| ------------------- | --------------------------------- | -------------- |
+| entry_id          | EntryID of the file to analyze. | True         |
 
 #### Output
+
 
 | **Path**                 | **Type** | **Description**                                     |
 | -------------------------- | ---------- | ----------------------------------------------------- |
@@ -93,11 +116,13 @@ Submit a file to ThreatZone CDR.
 
 #### Input
 
-| **Argument Name**   | **Description**                                                                                                                                        | **Required** |
-| --------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------- |
-| entry_id            | EntryID of the file to analyze.                                                                                                                        | True         |
+
+| **Argument Name** | **Description**                 | **Required** |
+| ------------------- | --------------------------------- | -------------- |
+| entry_id          | EntryID of the file to analyze. | True         |
 
 #### Output
+
 
 | **Path**                 | **Type** | **Description**                                     |
 | -------------------------- | ---------- | ----------------------------------------------------- |
@@ -157,7 +182,7 @@ Gets the report of a UUID created for a submitted file or URL.
 
 #### Context Example for Sandbox
 
-```
+```json
 {
   "ThreatZone": {
     "Result": {
@@ -399,9 +424,9 @@ Gets the report of a UUID created for a submitted file or URL.
 }
 ```
 
-### Context Example for Static Scan
+#### Context Example for Static Scan
 
-```
+```json
 {
   "ThreatZone": {
     "Result": {
@@ -679,9 +704,9 @@ Gets the report of a UUID created for a submitted file or URL.
 }
 ```
 
-### Context Example for CDR
+#### Context Example for CDR
 
-```
+```json
 {
   "File": {
     "EntryID": "204@f2408274-2db1-4b29-8996-0db4a6e3d813",
@@ -735,21 +760,21 @@ Gets the report of a UUID created for a submitted file or URL.
 
 | FILE_NAME                                                            | MD5                              | PRIVATE | SCAN_URL                                                                | SHA1                                     | SHA256                                                           | STATUS                 | THREAT_LEVEL | UUID                                 |
 | ---------------------------------------------------------------------- | ---------------------------------- | --------- | ------------------------------------------------------------------------- | ------------------------------------------ | ------------------------------------------------------------------ | ------------------------ | -------------- | -------------------------------------- |
-| 80b5c38471c54298259cec965619fccb435641a01ee4254a3d7c62ec47849108.exe | 30bdb7e22e022bcf00d157f4da0e098e | false   | https://app.threat.zone/submission/95b6bc52-d040-4d82-a98b-af6fd5f6feea | 0cd47f6bb5bb8e8e9dc01286adcc493acf5dd649 | 80b5c38471c54298259cec965619fccb435641a01ee4254a3d7c62ec47849108 | Submission is finished | Malicious    | 95b6bc52-d040-4d82-a98b-af6fd5f6feea |
+| 80b5c38471c54298259cec965619fccb435641a01ee4254a3d7c62ec47849108.exe | 30bdb7e22e022bcf00d157f4da0e098e | false   | <https://app.threat.zone/submission/95b6bc52-d040-4d82-a98b-af6fd5f6feea> | 0cd47f6bb5bb8e8e9dc01286adcc493acf5dd649 | 80b5c38471c54298259cec965619fccb435641a01ee4254a3d7c62ec47849108 | Submission is finished | Malicious    | 95b6bc52-d040-4d82-a98b-af6fd5f6feea |
 
 #### Human Readable Output For Static-Scan
 
 
 | FILE_NAME              | MD5                              | PRIVATE | SCAN_URL                                                                | SHA1                                     | SHA256                                                           | STATUS                 | THREAT_LEVEL | UUID                                 |
 | ------------------------ | ---------------------------------- | --------- | ------------------------------------------------------------------------- | ------------------------------------------ | ------------------------------------------------------------------ | ------------------------ | -------------- | -------------------------------------- |
-| 0_nUlF45uRfpbPIaqC.png | fbce2f43185104ae8bf4d32571b19203 | false   | https://app.threat.zone/submission/7ddad84a-7f9b-4b56-b8f4-914287a0a1a3 | e0ecee70f2704093a8fb620d61a995b561b65c20 | e38dae160633fb5bf65a982374f1c7725c25ed32e89dbe2dce3a8f486cfae3cb | Submission is finished | Suspicious   | 7ddad84a-7f9b-4b56-b8f4-914287a0a1a3 |
+| 0_nUlF45uRfpbPIaqC.png | fbce2f43185104ae8bf4d32571b19203 | false   | <https://app.threat.zone/submission/7ddad84a-7f9b-4b56-b8f4-914287a0a1a3> | e0ecee70f2704093a8fb620d61a995b561b65c20 | e38dae160633fb5bf65a982374f1c7725c25ed32e89dbe2dce3a8f486cfae3cb | Submission is finished | Suspicious   | 7ddad84a-7f9b-4b56-b8f4-914287a0a1a3 |
 
 #### Human Readable Output For CDR
 
 
 | FILE_NAME                                 | MD5                              | PRIVATE | SANITIZED                                                                             | SCAN_URL                                                                | SHA1                                     | SHA256                                                           | STATUS                 | THREAT_LEVEL | UUID                                 |
 | ------------------------------------------- | ---------------------------------- | --------- | --------------------------------------------------------------------------------------- | ------------------------------------------------------------------------- | ------------------------------------------ | ------------------------------------------------------------------ | ------------------------ | -------------- | -------------------------------------- |
-| fff2035c-def9-482c-9e1a-405c4d427833.docx | cf543c55343c6307349aafd098fb6958 | false   | https://app.threat.zone/download/v1/download/cdr/1170250a-40ac-4b73-84f7-3c0b6026d8af | https://app.threat.zone/submission/1170250a-40ac-4b73-84f7-3c0b6026d8af | 1bec0d7bfea812ca7aa1f5399bb7ff3671006331 | 945678e901efcd35ece87a1a0eba82f39feb7d45ea4d38330a4795d1338872ca | Submission is finished | Not Measured | 1170250a-40ac-4b73-84f7-3c0b6026d8af |
+| fff2035c-def9-482c-9e1a-405c4d427833.docx | cf543c55343c6307349aafd098fb6958 | false   | <https://app.threat.zone/download/v1/download/cdr/1170250a-40ac-4b73-84f7-3c0b6026d8af> | <https://app.threat.zone/submission/1170250a-40ac-4b73-84f7-3c0b6026d8af> | 1bec0d7bfea812ca7aa1f5399bb7ff3671006331 | 945678e901efcd35ece87a1a0eba82f39feb7d45ea4d38330a4795d1338872ca | Submission is finished | Not Measured | 1170250a-40ac-4b73-84f7-3c0b6026d8af |
 
 
 | Property | Value                                                                                                                            |
@@ -762,4 +787,3 @@ Gets the report of a UUID created for a submitted file or URL.
 | SHA256   | **8a5d8c81d285359bf9099061d847d110c9b71a99ad5495f149e92d3abc8d3ecd**                                                             |
 | SHA512   | d6ddf83c0e3ffed2688e70adf4eb9ab5e99add4461a856f1a94f9586a722d8e08b697d345a64d71387dbd183d4bcaed2a9e0bf9b2f6b9a8d6e3ff84edd8d4dee |
 | SSDeep   | 768:ibrt4XX8p4Q/GxvCJgj5yOHUmcqnn5PRozB:ivCXX8p4Q/GxvCJgkCUmjnFGd                                                                |
-
