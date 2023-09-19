@@ -93,7 +93,6 @@ def test_euclidian_similarity_capped():
     assert distance[1] > 0
 
 
-@pytest.mark.filterwarnings("ignore::pandas.core.common.SettingWithCopyWarning", "ignore::UserWarning")
 def test_main_regular(mocker):
     global SIMILAR_INDICATORS, FETCHED_INCIDENT, CURRENT_INCIDENT
     FETCHED_INCIDENT = FETCHED_INCIDENT_NOT_EMPTY
@@ -128,7 +127,6 @@ def test_main_regular(mocker):
     assert res.loc['2', 'similarity indicators'] == 0.0
 
 
-@pytest.mark.filterwarnings("ignore::pandas.core.common.SettingWithCopyWarning")
 def test_main_no_indicators_found(mocker):
     """
     Test if no indicators found
@@ -166,7 +164,6 @@ def test_main_no_indicators_found(mocker):
     assert (res['similarity indicators'] == [0.0, 0.0, 0.0]).all()
 
 
-@pytest.mark.filterwarnings("ignore::pandas.core.common.SettingWithCopyWarning")
 def test_main_no_fetched_incidents_found(mocker):
     """
     Test output if no related incidents found - Should return None and MESSAGE_NO_INCIDENT_FETCHED
@@ -214,7 +211,6 @@ def test_main_some_incorrect_fields():
     assert correct_field_1 not in global_msg
 
 
-@pytest.mark.filterwarnings("ignore::pandas.core.common.SettingWithCopyWarning")
 def test_main_all_incorrect_field(mocker):
     """
     Test if only incorrect fields  -  Should return None and MESSAGE_INCORRECT_FIELD message for wrong fields
@@ -253,7 +249,6 @@ def test_main_all_incorrect_field(mocker):
     assert all(field in msg for field in [wrong_field_1, wrong_field_2, wrong_field_3, wrong_field_4])
 
 
-@pytest.mark.filterwarnings("ignore::pandas.core.common.SettingWithCopyWarning")
 def test_main_incident_truncated(mocker):
     """
     Test if fetched incident truncated  -  Should return MESSAGE_WARNING_TRUNCATED in the message
@@ -292,7 +287,6 @@ def test_main_incident_truncated(mocker):
     assert MESSAGE_WARNING_TRUNCATED % (limit, limit) in msg
 
 
-@pytest.mark.filterwarnings("ignore::pandas.core.common.SettingWithCopyWarning")
 def test_main_incident_nested(mocker):
     """
     Test if fetched incident truncated  -  Should return MESSAGE_WARNING_TRUNCATED in the message
