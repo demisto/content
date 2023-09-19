@@ -1,11 +1,10 @@
-from sqlite3 import Row
 
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
 from typing import Any
-from collections.abc import Callable, Sequence
+from collections.abc import Callable
 import sqlalchemy
 import pymysql
 import hashlib
