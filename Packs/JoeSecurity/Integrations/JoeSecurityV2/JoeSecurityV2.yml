@@ -572,7 +572,7 @@ script:
     - contextPath: DBotScore.Reliability
       description: Reliability of the source providing the intelligence data.
       type: String
-  - name: joe-list–lia-countries
+  - name: joe-list-lia-countries
     arguments: []
     description: Retrieve a list of localized internet anonymization countries.
     outputs:
