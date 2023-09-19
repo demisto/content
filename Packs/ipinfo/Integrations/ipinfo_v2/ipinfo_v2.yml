@@ -137,7 +137,7 @@ script:
       description: The type of the destination of the relationship.
       type: string
     - contextPath: IP.Geo.Location
-      description: The IP geographic location (coordinates as lat:lon)
+      description: The IP geographic location (coordinates as lat:lon).
       type: String
     - contextPath: IP.Geo.Country
       description: The IP country.
