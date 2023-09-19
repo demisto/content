@@ -292,13 +292,14 @@ def pre_process_result_query(client: Client, result: dict, headers: list[str]) -
     This function pre-processes the query's result to a list of dictionaries.
     """
     if client.dialect == "Teradata":
-        table = [dict(zip(headers, row)) for row in result]
-
+        # binding the headers with the columns
+        converted_table = [dict(zip(headers, row)) for row in result]
     else:
         # converting a sqlalchemy object to a table
         converted_table = [dict(row) for row in result]
-        # converting b'' and datetime objects to readable ones
-        table = [{str(key): str(value) for key, value in dictionary.items()} for dictionary in converted_table]
+
+    # converting b'' and datetime objects to readable ones
+    table = [{str(key): str(value) for key, value in dictionary.items()} for dictionary in converted_table]
 
     return table
 
