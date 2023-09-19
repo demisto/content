@@ -231,6 +231,26 @@ def test_teradata_connection(mocker, is_ldap, expected_url):
     assert expected_url == engine_url
 
 
+@pytest.mark.parametrize('dialect, expected_port', [
+    ("Microsoft SQL Server", "1433"),
+    ("ODBC Driver 18 for SQL Server", "1433"),
+    ("Teradata", "1025"),
+    ("DB_NOT_EXIST", None),
+])
+def test_generate_default_port_by_dialect(dialect: str, expected_port: str):
+    """
+    Given
+    - a dialect (DB)
+    When
+    - Executing generate_default_port_by_dialect() function
+    Then
+    - Ensure the right port is generated or None in case of DB not found
+    """
+
+    port = generate_default_port_by_dialect(dialect)
+    assert expected_port == port
+
+
 def test_sql_queries_with_empty_table(mocker):
     """Unit test
     Given
