@@ -195,9 +195,12 @@ def list_tokens_command():
     context = createContext(new_tokens, removeNull=True)
 
     contents = res_json
-    human_readable = tableToMarkdown('Canary Tools Tokens', new_tokens, headers=headers)
+    for token in new_tokens:
+        if 'TokenURL' in token:
+            del token['TokenURL']
+    human_readable = tableToMarkdown('Canary Tools Tokens', new_tokens, headers=headers, removeNull=True)
     outputs = {'CanaryTools.Token(val.CanaryToken && val.CanaryToken === obj.CanaryToken)': context}
-    return_outputs(readable_output=human_readable, outputs=outputs, raw_response=contents)
+    return_outputs(readable_output=human_readable, outputs=outputs, raw_response=contents, ignore_auto_extract=True)
 
 
 def get_token_command():
@@ -226,9 +229,12 @@ def get_token_command():
         token_file = fileResult(name, content)
         demisto.results(token_file)
     else:
-        human_readable = tableToMarkdown('Canary Tools Tokens', res.get('token'))
+        token_data = res.get('token')
+        if 'url' in token_data:
+            del token_data['url']
+        human_readable = tableToMarkdown('Canary Tools Tokens', token_data)
 
-    return_outputs(readable_output=human_readable, outputs=outputs, raw_response=contents)
+    return_outputs(readable_output=human_readable, outputs=outputs, raw_response=contents, ignore_auto_extract=True)
 
 
 def check_whitelist(ip, port):
