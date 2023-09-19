@@ -40,7 +40,7 @@ def main():   # pragma: no cover
     if not demisto_version:
         raise ValueError(f'Could not get the version of XSOAR')
 
-    page = 0
+    page_num = 0
     size = 100
 
     if demisto_version.startswith("6"):  # xsoar 6
@@ -48,14 +48,14 @@ def main():   # pragma: no cover
         body = {
             'fromDate': fetch_from,
             'query': "",
-            'page': page,
+            'page': page_num,
             'size': size
         }
     else:  # xsoar 8
         uri = "/public_api/v1/audits/management_logs"
         body = {
             "request_data": {
-                "search_from": page,
+                "search_from": page_num,
                 "search_to": size,
                 "filters": [
                     {
@@ -64,7 +64,6 @@ def main():   # pragma: no cover
                         'value': date_to_timestamp(fetch_back_date)
                     },
                 ]
-                # "page": page
             }
         }
 
@@ -77,20 +76,20 @@ def main():   # pragma: no cover
     # set the initial counts
     total = get_audit_logs_count(res)
     audits = get_audit_logs(res)
-    count = 1
+    page_num += 1
 
     # if there are more events than the default size, page through and get them all
     while len(audits) < total:
-        if 'page' in body:  # pagination for xsoar-6
-            body['page'] = count
+        if body.get("page"):  # pagination for xsoar-6
+            body["page"] = page_num
         else:  # pagination for xsoar-8
-            body["request_data"]["search_from"] = count
+            body["request_data"]["search_from"] = page_num
         args = {"uri": uri, "body": body}
         res = demisto.executeCommand("demisto-api-post", args)[0]["Contents"]["response"]
         audits.extend(get_audit_logs(res))
-        count += 1
+        page_num += 1
         # break if this goes crazy, if there are more than 100 pages of audit log entries.
-        if count == 100:
+        if page_num == 100:
             break
 
     file_date = fetch_back_date.strftime("%Y-%m-%d")
