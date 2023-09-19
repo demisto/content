@@ -318,10 +318,10 @@ tests_xsoar_server:
   parallel:
     matrix:
       - INSTANCE_ROLE:
-        - "Server 6.8"
         - "Server 6.9"
         - "Server 6.10"
         - "Server 6.11"
+        - "Server 6.12"
         - "Server Master"
 
 fan-in-nightly:
