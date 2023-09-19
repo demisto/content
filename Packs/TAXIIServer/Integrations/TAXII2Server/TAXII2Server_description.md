@@ -41,7 +41,7 @@ To access the TAXII service by instance name, make sure *Instance execute extern
 2. (For Cortex XSOAR 6.x only) In the **Server Configuration** section, verify that the *instance.execute.external* key is set to *true*. If this key does not exist, click **+ Add Server Configuration** and add the *instance.execute.external* and set the value to *true*.
 3. You can now trigger the webhook URL:
 
-   - (For Cortex XSOAR 6) In a web browser, go to https://*<demisto_address>*/instance/execute/*<instance_name>* .
+   - (For Cortex XSOAR 6) In a web browser, go to https://*<xsoar_address>*/instance/execute/*<instance_name>* .
    - (For Cortex XSOAR 8 and Cortex XSIAM) In a web browser, go to https://ext-<cortex-xsiam-address>/xsoar/instance/execute/<instance-name>.
 
 
