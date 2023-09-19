@@ -22,12 +22,16 @@ You can add a collection description as is doen in `collection1_name`, or enter 
 ## How to Access the TAXII Service
 
 (For Cortex XSOAR 6.x) Use one of the following options:
-- **https://*demisto_address*/instance/execute/*instance_name/{taxii2_api_endpoint}/**
-- **http://*demisto_address*:*listen_port/{taxii2_api_endpoint}/**
+- **https://*xsoar_address*/instance/execute/*instance_name/{taxii2_api_endpoint}/**
+- **http://*xsoar_address*:*listen_port/{taxii2_api_endpoint}/**
 
-(For Cortex XSOAR 8 and Cortex XSIAM) Use one of the following options: 
-- `https://ext-<cortex-xsiam-address>/xsoar/instance/execute/<instance-name>/<taxii2_api_endpoint>/`
-- `http://<demisto_address>:<listen_port>/<taxii2_api_endpoint>/`
+(For Cortex XSOAR 8) Use one of the following options: 
+- `https://ext-<XSOAR-tenant>.crtx.<region>.paloaltonetworks.com/xsoar/instance/execute/<instance-name>/<taxii2_api_endpoint>/`
+- `http://<xsoar_address>:<listen_port>/<taxii2_api_endpoint>/`
+
+(For Cortex XSIAM) Use one of the following options: 
+- `https://ext-<XSIAM-tenant>.crtx.<region>.paloaltonetworks.com/xsiam/instance/execute/<instance-name>/<taxii2_api_endpoint>/`
+- `http://<xsoar_address>:<listen_port>/<taxii2_api_endpoint>/`
   
 
 ## Access the TAXII Service by Instance Name
