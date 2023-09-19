@@ -7658,7 +7658,7 @@ nic_contact_regexes = [
     # nic.ir, individual  - this is a nasty one.
     "nic-hdl:\s+(?P<handle>.+)\norg:\s+(?P<organization>.+)\n(?:e-mail:\s+(?P<email>.+)\n)?(?:address:\s+(?P<street1>.+?)(?:,+ (?P<street2>.+?)(?:,+ (?P<street3>.+?)(?:,+ (?P<street4>.+?)(?:,+ (?P<street5>.+?)(?:,+ (?P<street6>.+?)(?:,+ (?P<street7>.+?))?)?)?)?)?)?, (?P<city>.+), (?P<state>.+), (?P<country>.+)\n)?(?:phone:\s+(?P<phone>.+)\n)?(?:fax-no:\s+(?P<fax>.+)\n)?",
     # nic.ir, organization
-    "(?:nic-hdl:[ ]*(?P<handle>.*?)|type:[ ]*(?P<type>.*?)|contact:[ ]*(?P<name>.*?)|(?:address:[ ]*(?P<street1>.*?)(?:address:[ ]*(?P<street2>.*?)\n)?(?:address:[ ]*(?P<street3>.*?)\n)?(?:address:[ ]*(?P<street4>.*?)\n)?)|country:[ ]*(?P<country>.*?)|phone:[ ]*(?P<phone>.*?)|e-mail:[ ]*(?P<email>.*?)|fax-no:[ ]*(?P<fax>.*?)|changed:[ ]*(?P<changed>.*?))\n"
+    "nic-hdl:[ ]*(?P<handle>.*?)\ntype:[ ]*(?P<type>.*)\ncontact:[ ]*(?P<name>.*?)\n(?:.*\n)*?(?:(?:address:[ ]*(?P<street1>.*?)\n)(?:address:[ ]*(?P<street2>.*?)\n)?(?:address:[ ]*(?P<street3>.*)\n)?(?:address:[ ]*(?P<street4>.*)\n)?(?:country:[ ]*(?P<country>.*?)\n)?)(?:phone:[ ]*(?P<phone>.*?)\n)?(?:fax-no:[ ]*(?P<fax>.*?)\n)?(?:.*\n)*?(?:e-mail:[ ]*(?P<email>.*?)\n)?registrar:[ ]*(?P<registrar>.*?)\n(?:.*?\n)*?(?:changed:[ ]*(?P<changedate>.*?)\n)?"
 ]
 
 organization_regexes = (
