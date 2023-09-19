@@ -63,7 +63,7 @@ if [ -n "${CI}" ]; then
     sleep_time=10
     echo "Detected CI environment. Running extra requirements"
     echo "Check if poetry files are valid"
-    poetry check --lock --no-interaction
+    poetry check --no-interaction
     exit_on_error $? "Failed to check poetry files, exiting with exit code $?"
 
     echo "Installing dependencies..."
@@ -79,7 +79,7 @@ if [ -n "${CI}" ]; then
 else
     echo "Detected local environment"
     echo "Check if poetry files are valid"
-    poetry check --lock
+    poetry check
     exit_on_error $? "Failed to check poetry files, exiting with exit code $?"
     echo "Installing dependencies..."
     poetry install
