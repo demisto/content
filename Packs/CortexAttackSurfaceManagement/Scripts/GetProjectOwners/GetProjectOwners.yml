@@ -1,5 +1,5 @@
 args:
-- description: List of potential service owners
+- description: List of potential service owners.
   isArray: true
   name: owners
 - name: external_service
