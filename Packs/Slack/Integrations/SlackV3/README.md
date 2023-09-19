@@ -25,7 +25,7 @@ to learn about configuring SlackV3 using the app manifest.
     | `incidentType` | Type of incidents created in Slack. | False |
     | `allow_incidents` | Allow external users to create incidents via direct messages. | False |
     | `proxy` | Use system proxy settings. | False |
-    | `unsecure` | Trust any certificate (not secure). Make sure to mark this param if you want SlackBlockBuilder script to send response back to the incident context. | False |
+    | `unsecure` | Trust any certificate (not secure). Make sure to mark this parameter if you want the SlackBlockBuilder script to send a response back to the incident context. | False |
     | `longRunning` | Long running instance. Required for investigation mirroring and direct messages. | False |
     | `bot_name` | Bot display name in Slack (Cortex XSOAR by default). | False |
     | `bot_icon` | Bot icon in Slack - Image URL (Cortex XSOAR icon by default). | False |
