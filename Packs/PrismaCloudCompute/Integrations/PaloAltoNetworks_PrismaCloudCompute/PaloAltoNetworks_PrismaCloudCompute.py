@@ -421,12 +421,21 @@ class PrismaCloudComputeClient(BaseClient):
 
     def get_ci_scan_results(self, params: Optional[dict] = None) -> List[dict]:
         """
-        Sends a request to get ci scan results information.
+        Sends a request to get CI scan results information.
 
         Returns:
-            list[dict]: ci scan results information.
+            list[dict]: CI scan results information.
         """
-        return self._http_request(method="GET", url_suffix="/scans", params=params)
+        return self._http_request(method="GET", url_suffix="scans", params=params)
+
+    def get_trusted_images(self) -> dict:
+        """
+        Sends a request to get trusted images information.
+
+        Returns:
+            list[dict]: trusted images information.
+        """
+        return self._http_request(method="GET", url_suffix="trust/data")
 
 
 def format_context(context):
@@ -1997,7 +2006,7 @@ def unstuck_fetch_stream_command():
 def get_ci_scan_results_list(client: PrismaCloudComputeClient, args: dict) -> CommandResults:
     """
     Retrieve a list of ci scan results and their information.
-    Implement the command prisma-cloud-compute-ci-scan-results-list'.
+    Implement the command 'prisma-cloud-compute-ci-scan-results-list'.
 
     Args:
         client (PrismaCloudComputeClient): prisma-cloud-compute client.
@@ -2014,16 +2023,17 @@ def get_ci_scan_results_list(client: PrismaCloudComputeClient, args: dict) -> Co
         argToList(args.get("region")), argToList(args.get("name")), argToList(args.get("search"))
     )
     scan_id, image_id = (args.get("scan_id"), args.get("image_id"))
-    _pass = argToBoolean(args.get("pass", "true"))
-    if to := args.get("to"):
+    _pass = args.get("pass", "true")
+    if to := args.get("scan_time_to"):
         to = parse_date_string_format(to, "%Y-%m-%dT%H:%M:%SZ")
 
     params = assign_params(
         offset=offset, limit=limit, search=search, accountIDs=account_ids, resourceIDs=resource_ids, region=region, _id=scan_id,
         jobName=name, imageID=image_id, to=to
     )
+    # add saved words to params
     params["pass"] = _pass
-    if _from := args.get("from"):
+    if _from := args.get("scan_time_from"):
         params["from"] = parse_date_string_format(_from, "%Y-%m-%dT%H:%M:%SZ")
 
     if ci_scan_results := client.get_ci_scan_results(params=params):
@@ -2039,6 +2049,7 @@ def get_ci_scan_results_list(client: PrismaCloudComputeClient, args: dict) -> Co
                     "Scan Time": scan.get("time"),
                 } for scan in ci_scan_results
             ],
+            headers=["Image", "ID", "OS Distribution", "OS Release", "Scan Status", "Scan Time"],
             removeNull=True,
         )
     else:
@@ -2050,6 +2061,58 @@ def get_ci_scan_results_list(client: PrismaCloudComputeClient, args: dict) -> Co
         outputs=ci_scan_results,
         readable_output=table,
         raw_response=ci_scan_results
+    )
+
+
+def get_trusted_images(client: PrismaCloudComputeClient) -> CommandResults:
+    """
+    Retrieve a list of trusted images rules and groups and their information.
+    Implement the command 'prisma-cloud-compute-trusted-images-get'.
+
+    Args:
+        client (PrismaCloudComputeClient): prisma-cloud-compute client.
+
+    Returns:
+        CommandResults: command-results object.
+    """
+    if trusted_images_results := client.get_trusted_images():
+        table = "## Trusted Images Details\n" + \
+            tableToMarkdown(
+                name="Policy Rules Information",
+                t=[
+                    {
+                        "Rule Name": policy_role.get("name"),
+                        "Allowed Groups": policy_role.get("allowedGroups"),
+                        "Effect": policy_role.get("effect"),
+                        "Modified": policy_role.get("modified"),
+                        "Owner": policy_role.get("owner")
+                    } for policy_role in trusted_images_results.get("policy", {}).get("rules", [])
+                ],
+                headers=["Rule Name", "Effect", "Owner", "Allowed Groups", "Modified"],
+                removeNull=True,
+            ) + \
+            tableToMarkdown(
+                name="Trust Groups Information",
+                t=[
+                    {
+                        "Modified": group.get("modified"),
+                        "Owner": group.get("owner"),
+                        "Group Name": group.get("name"),
+                        "ID": group.get("_id"),
+                    } for group in trusted_images_results.get("groups", [])
+                ],
+                headers=[ "ID", "Group Name", "Owner", "Modified"],
+                removeNull=True,
+            )
+    else:
+        table = "No results found."
+
+    return CommandResults(
+        outputs_prefix="PrismaCloudCompute.TrustedImage",
+        outputs_key_field="policy._id",
+        outputs=trusted_images_results,
+        readable_output=table,
+        raw_response=trusted_images_results
     )
 
 
@@ -2170,6 +2233,8 @@ def main():
             return_results(unstuck_fetch_stream_command())
         elif requested_command == "prisma-cloud-compute-ci-scan-results-list":
             return_results(results=get_ci_scan_results_list(client=client, args=demisto.args()))
+        elif requested_command == "prisma-cloud-compute-trusted-images-get":
+            return_results(results=get_trusted_images(client=client))
     # Log exceptions
     except Exception as e:
         return_error(f'Failed to execute {requested_command} command. Error: {str(e)}')

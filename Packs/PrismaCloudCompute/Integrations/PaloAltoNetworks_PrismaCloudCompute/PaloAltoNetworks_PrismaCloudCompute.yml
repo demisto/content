@@ -1990,9 +1990,9 @@ script:
       predefined:
       - "true"
       - "false"
-    - name: to
+    - name: scan_time_to
       description: Filters results by end datetime. Based on scan time.
-    - name: from 
+    - name: scan_time_from 
       description: Filters results by start datetime. Based on scan time.
     - name: limit
       description: The maximum number of CI scan results to return. Must be between 1-50.
@@ -2187,6 +2187,57 @@ script:
     - contextPath: PrismaCloudCompute.CIScan.entityInfo.malwareAnalyzedTime
       description: Malware analyzed time.
       type: String
+  - name: prisma-cloud-compute-trusted-images-get
+    description: Returns the trusted registries, repositories, and images. Maps to the image table in Defend > Compliance > Trusted Images in the Console UI.
+    outputs:
+    - contextPath: PrismaCloudCompute.TrustedImage.policy.enabled
+      description: Whether the trusted image policy is enabled.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.TrustedImage.policy._id
+      description: The ID of the trusted image policy.
+      type: String
+    - contextPath: PrismaCloudCompute.TrustedImage.policy.rules.name
+      description: The name of the trusted image rule.
+      type: String
+    - contextPath: PrismaCloudCompute.TrustedImage.policy.rules.allowedGroups
+      description: The allowed groups for the trusted image rule.
+      type: Unknown
+    - contextPath: PrismaCloudCompute.TrustedImage.policy.rules.effect
+      description: The effect of the trusted image rule.
+      type: String
+    - contextPath: PrismaCloudCompute.TrustedImage.policy.rules.modified 
+      description: The last modified timestamp for the trusted image rule.
+      type: Date
+    - contextPath: PrismaCloudCompute.TrustedImage.policy.rules.previousName
+      description: The previous name of the trusted image rule.
+      type: String
+    - contextPath: PrismaCloudCompute.TrustedImage.policy.rules.owner
+      description: The owner of the trusted image rule.
+      type: String
+    - contextPath: PrismaCloudCompute.TrustedImage.policy.rules.disabled
+      description: Whether the trusted image rule is disabled.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.TrustedImage.policy.rules.collections
+      description: The collections for the trusted image rule.
+      type: Unknown
+    - contextPath: PrismaCloudCompute.TrustedImage.groups.modified
+      description: The last modified timestamp for the trusted image group.
+      type: Date
+    - contextPath: PrismaCloudCompute.TrustedImage.groups.owner
+      description: The owner of the trusted image group.
+      type: String
+    - contextPath: PrismaCloudCompute.TrustedImage.groups.name
+      description: The name of the trusted image group.
+      type: String
+    - contextPath: PrismaCloudCompute.TrustedImage.groups.previousName
+      description: The previous name of the trusted image group.
+      type: String
+    - contextPath: PrismaCloudCompute.TrustedImage.groups._id
+      description: The ID of the trusted image group.
+      type: String
+    - contextPath: PrismaCloudCompute.TrustedImage.groups.images
+      description: The images in the trusted image group.
+      type: Unknown
 tests:
 - PaloAltoNetworks_PrismaCloudCompute-Test
 fromversion: 5.0.0
