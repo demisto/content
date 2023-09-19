@@ -582,10 +582,13 @@ script:
   - name: netcraft-takedown-escalate
     arguments:
     - name: takedown_id
-      required: true
       description: The ID of the automated takedown to escalate.
+      required: true
       default: true
-    description: Escalate an automated takedown to a managed takedown.
+    description: |
+      Escalate an automated takedown to a managed takedown.
+      The minimum access level required to escalate is "Escalator".
+      Note that escalating a takedown may cost one or more Netcraft managed credits.
     outputs: []
   - name: netcraft-takedown-note-create
     arguments:
