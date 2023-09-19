@@ -200,7 +200,7 @@ script:
       type: string
     description: This will get user information using email address.
     name: aws-iam-identitycenter-get-user-by-email
-  dockerimage: demisto/boto3py3:1.0.0.74162
+  dockerimage: demisto/boto3py3:1.0.0.74419
   runonce: false
   script: ''
   subtype: python3
