@@ -48,12 +48,39 @@ configuration:
 - defaultvalue: NetWitness Incident
   display: Incident type
   name: incidentType
-  type: 13
   required: false
+  type: 13
 - display: Fetch incidents
   name: isFetch
-  type: 8
   required: false
+  type: 8
+- defaultvalue: "1"
+  display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  required: false
+  type: 19
+- additionalinfo: 'Choose the direction to mirror the incident: Incoming (from RSA to Cortex XSOAR), Outgoing (from Cortex XSOAR to RSA), or Incoming and Outgoing (from/to Cortex XSOAR and RSA).'
+  display: Incident Mirroring Direction
+  name: mirror_direction
+  options:
+  - None
+  - Incoming
+  - Outgoing
+  - Incoming And Outgoing
+  required: false
+  type: 15
+- defaultvalue: "true"
+  display: Close Mirrored XSOAR Incident
+  additionalinfo: Check to close the Cortex XSOAR incident when the corresponding incident is closed in RSA NetWitness.
+  name: close_incident
+  required: false
+  type: 8
+- additionalinfo: This parameter represents the number of days the integration will mirror RSA incidents. The default value is 3 days, the maximum is 24 days.
+  display: Mirroring Days Limit
+  defaultvalue: '3'
+  name: max_mirror_time
+  required: false
+  type: 0
 description: The RSA NetWitness integration provides system log, network, and endpoint visibility for real-time collection, detection, and automated response with the Cortex XSOAR Enterprise platform. Using full session analysis, customers can extract critical data and effectively run security operations automated playbooks.
 display: RSANetWitness v11.5
 name: RSANetWitnessv115
@@ -88,7 +115,7 @@ script:
       description: The incident priority. Can be Low, Medium, High, or Critical.
       type: String
     - contextPath: RSANetWitness115.Incidents.riskScore
-      description: The incident risk score is calculated based on the associated alert’s risk score. Risk score ranges from 0 (no risk) to 100 (highest risk).
+      description: The incident risk score is calculated based on the associated alert's risk score. Risk score ranges from 0 (no risk) to 100 (highest risk).
       type: Number
     - contextPath: RSANetWitness115.Incidents.status
       description: The current incident status.
@@ -222,7 +249,7 @@ script:
       description: The incident priority. Can be Low, Medium, High, or Critical.
       type: String
     - contextPath: RSANetWitness115.Incidents.riskScore
-      description: The incident risk score is calculated based on the associated alert’s risk score. Risk score ranges from 0 (no risk) to 100 (highest risk).
+      description: The incident risk score is calculated based on the associated alert's risk score. Risk score ranges from 0 (no risk) to 100 (highest risk).
       type: Number
     - contextPath: RSANetWitness115.Incidents.status
       description: The current incident status.
@@ -309,7 +336,7 @@ script:
     - description: The unique incident identifier.
       name: id
       required: true
-    description: Remove a single incident using the incident’s unique identifier.
+    description: Remove a single incident using the incident's unique identifier.
     name: rsa-nw-remove-incident
   - arguments:
     - description: The unique incident identifier.
@@ -2002,9 +2029,34 @@ script:
       required: true
     description: Restores the network connection and removes IP addresses added to the exclusion list for the host with the specified agent ID.
     name: rsa-nw-endpoint-isolation-remove
-  dockerimage: demisto/python3:3.10.12.66339
+  - arguments: []
+    description: Returns the list of fields to map in outgoing mirroring. This command is only used for debugging purposes.
+    name: get-mapping-fields
+  - arguments:
+    - description: The remote incident ID.
+      name: id
+      required: true
+    - defaultValue: "0"
+      description: The UTC timestamp in seconds of the last update. The incident is only updated if it was modified after the last update time.
+      name: lastUpdate
+    description: Gets data from a remote incident. This method does not update the current incident, and should be used for debugging purposes only.
+    name: get-remote-data
+  - arguments:
+    - description: Date string representing the local time. The incident is only returned if it was modified after the last update time.
+      name: lastUpdate
+      required: true
+    description: Gets the list of incidents and detections that were modified since the last update time. This method is used for debugging purposes.
+    name: get-modified-remote-data
+  - arguments: []
+    description: Updates the remote incident with local incident changes. This method is only used for debugging purposes and will not update the current incident.
+    name: update-remote-system
+  dockerimage: demisto/python3:3.10.13.73190
   isfetch: true
-  script: '-'
+  ismappable: true
+  isremotesyncin: true
+  isremotesyncout: true
+  runonce: false
+  script: ''
   subtype: python3
   type: python
 tests:
