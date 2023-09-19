@@ -3,6 +3,7 @@ import ast
 import math
 import os
 import sys
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime
 from time import sleep
 from typing import Any
@@ -324,7 +325,7 @@ def sync_marketplace(client: demisto_client,
     return success
 
 
-def options_handler():
+def options_handler() -> argparse.Namespace:
     """
 
     Returns: options parsed from input arguments.
@@ -343,17 +344,8 @@ def options_handler():
     return options
 
 
-def main():
-    install_logging('cleanup_cloud_instance.log', logger=logging)
-
-    # In Cloud, We don't use demisto username
-    os.environ.pop('DEMISTO_USERNAME', None)
-
-    options = options_handler()
-    host = options.cloud_machine
-    logging.info(f'Starting cleanup for CLOUD server {host}')
-
-    api_key, _, base_url, xdr_auth_id = CloudBuild.get_cloud_configuration(options.cloud_machine,
+def clean_machine(options: argparse.Namespace, cloud_machine: str) -> bool:
+    api_key, _, base_url, xdr_auth_id = CloudBuild.get_cloud_configuration(cloud_machine,
                                                                            options.cloud_servers_path,
                                                                            options.cloud_servers_api_keys)
 
@@ -371,14 +363,40 @@ def main():
     success &= reset_core_pack_version(client, unremovable_packs)
     if success:
         if options.one_by_one:
-            success = uninstall_all_packs_one_by_one(client, host, unremovable_packs)
+            success = uninstall_all_packs_one_by_one(client, cloud_machine, unremovable_packs)
         else:
-            success = uninstall_all_packs(client, host, unremovable_packs) and \
+            success = uninstall_all_packs(client, cloud_machine, unremovable_packs) and \
                 wait_for_uninstallation_to_complete(client, unremovable_packs)
     success &= sync_marketplace(client=client)
+    return success
+
+
+def main():
+    install_logging('cleanup_cloud_instance.log', logger=logging)
+
+    # In Cloud, We don't use demisto username
+    os.environ.pop('DEMISTO_USERNAME', None)
+
+    options = options_handler()
+    logging.info(f'Starting cleanup for CLOUD servers:{options.cloud_machine}')
+    cloud_machines: list[str] = list(filter(None, options.cloud_machine.split(',')))
+    success = True
+    with ThreadPoolExecutor(max_workers=len(cloud_machines), thread_name_prefix='clean-machine') as executor:
+        futures = [
+            executor.submit(clean_machine, options, cloud_machine)
+            for cloud_machine in cloud_machines
+        ]
+        for future in as_completed(futures):
+            try:
+                success &= future.result()
+            except Exception as ex:
+                logging.exception(f'Failed to cleanup machine. Additional info: {str(ex)}')
+                success = False
+
     if not success:
+        logging.error('Failed to uninstall packs.')
         sys.exit(2)
-    logging.info('Uninstalling packs done.')
+    logging.info('Finished cleanup successfully.')
 
 
 if __name__ == '__main__':
