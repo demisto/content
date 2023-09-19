@@ -206,7 +206,7 @@ script:
       - HTML
     - auto: PREDEFINED
       defaultValue: notFlagged
-      description: 'The flag value that indicates the status of the draft. Can be: "notFlagged", "complete", or "flagged".'
+      description: The flag value that indicates the status of the draft.
       name: flag
       predefined:
       - notFlagged
@@ -214,7 +214,7 @@ script:
       - flagged
     - auto: PREDEFINED
       defaultValue: Low
-      description: 'The importance of the draft. Can be: "Low", "Normal", or "High".'
+      description: The importance of the draft.
       name: importance
       predefined:
       - Low
@@ -233,7 +233,7 @@ script:
       isArray: true
       name: attach_cids
     - deprecated: true
-      description: flag for rate limit retry
+      description: Flag for rate limit retry.
       name: ran_once_flag
     description: Creates a draft message in the specified user's mailbox.
     name: msgraph-mail-create-draft
@@ -254,7 +254,7 @@ script:
       description: The message ID of the draft email.
       type: String
     - contextPath: MicrosoftGraph.Draft.SentTime
-      description: The created time of the draft email.
+      description: The sent time of the draft email.
       type: Date
     - contextPath: MicrosoftGraph.Draft.Headers
       description: The headers of the draft email.
@@ -297,7 +297,7 @@ script:
       type: String
     polling: true
   - arguments:
-    - description: A CSV list of email addresses for the 'to' field.
+    - description: A comma-separated list of email addresses for the 'to' field.
       isArray: true
       name: to
       required: true
@@ -309,25 +309,25 @@ script:
     - name: inReplyTo
       required: true
       description: ID of the item to reply to.
-    - description: 'A CSV list of War Room entry IDs that contain files, and are used to attach files to the outgoing email. For example: attachIDs=15@8,19@8.'
+    - description: 'A comma-separated list of War Room entry IDs that contain files, and are used to attach files to the outgoing email. For example: attachIDs=15@8,19@8.'
       isArray: true
       name: attachIDs
-    - description: A CSV list of email addresses for the 'cc' field.
+    - description: A comma-separated list of email addresses for the 'cc' field.
       isArray: true
       name: cc
-    - description: A CSV list of email addresses for the 'bcc' field.
+    - description: A comma-separated list of email addresses for the 'bcc' field.
       isArray: true
       name: bcc
     - description: HTML formatted content (body) of the email to be sent. This argument overrides the "body" argument.
       name: htmlBody
-    - description: A CSV list of names of attachments to send. Should be the same number of elements as attachIDs.
+    - description: A comma-separated list of names of attachments to send. Should be the same number of elements as attachIDs.
       isArray: true
       name: attachNames
-    - description: A CSV list of CIDs to embed attachments within the email itself.
+    - description: A comma-separated list of CIDs to embed attachments within the email itself.
       isArray: true
       name: attachCIDs
     - deprecated: true
-      description: flag for rate limit retry
+      description: Flag for rate limit retry.
       name: ran_once_flag
     description: Replies to an email using Graph Mail Single User.
     name: reply-mail
@@ -375,7 +375,7 @@ script:
       predefined:
       - text
       - HTML
-    - description: 'Indicates whether to render the email body'
+    - description: Indicates whether to render the email body.
       name: renderBody
       auto: PREDEFINED
       predefined:
@@ -383,13 +383,13 @@ script:
       - 'false'
     - auto: PREDEFINED
       defaultValue: notFlagged
-      description: 'The flag value that indicates the status for the email. Can be: "notFlagged", "complete", or "flagged".'
+      description: The flag value that indicates the status for the email.
       name: flag
       predefined:
       - notFlagged
       - complete
       - flagged
-    - description: 'The importance of the email. Can be: "Low", "Normal", or "High".'
+    - description: The importance of the email.
       name: importance
       auto: PREDEFINED
       defaultValue: Low
@@ -425,7 +425,7 @@ script:
       isArray: true
       name: replyTo
     - deprecated: true
-      description: flag for rate limit retry
+      description: Flag for rate limit retry.
       name: ran_once_flag
     description: Sends an email using Microsoft Graph.
     name: send-mail
@@ -482,7 +482,7 @@ script:
       isArray: true
       name: attach_cids
     - deprecated: true
-      description: flag for rate limit retry
+      description: Flag for rate limit retry.
       name: ran_once_flag
     description: The replies to the recipients of a message.
     name: msgraph-mail-reply-to
@@ -492,7 +492,7 @@ script:
       name: draft_id
       required: true
     - deprecated: true
-      description: flag for rate limit retry
+      description: Flag for rate limit retry.
       name: ran_once_flag
     description: Sends a draft email using Microsoft Graph.
     name: msgraph-mail-send-draft
@@ -510,13 +510,13 @@ script:
     - name: search
       description: 'The term for which to search. This argument cannot contain reserved characters such as !, $, #, @, etc. For further information, see https://tools.ietf.org/html/rfc3986#section-2.2'
     - name: page_size
-      description: Limit emails to fetch in one request
+      description: The maximum number of emails to fetch in one request.
       defaultValue: '20'
     - name: pages_to_pull
       description: The number of pages of emails to return (maximum is 10 emails per page).
       defaultValue: '1'
     - deprecated: true
-      description: flag for rate limit retry
+      description: Flag for rate limit retry.
       name: ran_once_flag
     outputs:
     - contextPath: MSGraphMail.ID
@@ -541,7 +541,7 @@ script:
       description: Whether the email has attachments.
       type: Boolean
     - contextPath: MSGraphMail.Subject
-      description: The subject of email.
+      description: The subject of the email.
       type: String
     - contextPath: MSGraphMail.IsDraft
       description: Whether the email is a draft.
@@ -550,7 +550,7 @@ script:
       description: The content (body) of the email.
       type: String
     - contextPath: MSGraphMail.Sender.Name
-      description: The name of sender.
+      description: The name of the sender.
       type: String
     - contextPath: MSGraphMail.Sender.Address
       description: The email address of the sender.
@@ -559,7 +559,7 @@ script:
       description: The name of the user in the 'from' field of the email.
       type: String
     - contextPath: MSGraphMail.From.Address
-      description: The email address of the user in the 'from' field of the email
+      description: The email address of the user in the 'from' field of the email.
       type: String
     - contextPath: MSGraphMail.CCRecipients.Name
       description: The names of the CC recipients.
@@ -586,7 +586,7 @@ script:
       description: The ID of the conversation.
       type: String
     - contextPath: MSGraphMail.InternetMessageID
-      description: Internet Message ID of the message
+      description: Internet Message ID of the message.
       type: String
     - contextPath: MSGraphMail.Recipients.Name
       description: The name of the user in the 'toRecipients' field of the email.
@@ -602,12 +602,12 @@ script:
   - name: msgraph-mail-list-attachments
     arguments:
     - name: message_id
-      description: The email message id
+      description: The email message id.
       required: true
     - name: folder_id
-      description: The id of the folder
+      description: The id of the folder.
     - deprecated: true
-      description: flag for rate limit retry
+      description: Flag for rate limit retry.
       name: ran_once_flag
     outputs:
     - contextPath: MSGraphMailAttachment.ID
@@ -625,19 +625,19 @@ script:
     - contextPath: MSGraphMailAttachment.UserID
       description: The ID of the user.
       type: String
-    description: Lists all of the attachments of given email
+    description: Lists all attachments of an email.
     polling: true
   - name: msgraph-mail-get-attachment
     arguments:
     - name: message_id
       required: true
-      description: The unique ID of the mail. You cannot use the the 'MessageID' key in the form '<message-id>'.
+      description: The unique ID of the mail. You cannot use the 'MessageID' key in the form '<message-id>'.
     - description: 'A comma-separated list of folder IDs, in the format: (mail_box,child_mail_box,child_mail_box).'
       name: folder_id
     - description: The ID of the attachment. In case not supplied, the command will return all the attachments.
       name: attachment_id
     - deprecated: true
-      description: flag for rate limit retry
+      description: Flag for rate limit retry.
       name: ran_once_flag
     outputs:
     - contextPath: File.Size
@@ -674,10 +674,10 @@ script:
     polling: true
   - name: msgraph-mail-get-email-as-eml
     arguments:
-    - description: The unique ID of the email. You cannot use the the 'MessageID' key in the form '<message-id>'.
+    - description: The unique ID of the email. You cannot use the 'MessageID' key in the form '<message-id>'.
       name: message_id
       required: true
-    - description: flag for rate limit retry
+    - description: Flag for rate limit retry.
       name: ran_once_flag
       deprecated: true
     description: Retrieves an email message by message ID and uploads the content as an EML file.
@@ -735,7 +735,82 @@ script:
   - description: Generate the login url used for Authorization code flow.
     name: msgraph-mail-generate-login-url
     arguments: []
-  dockerimage: demisto/crypto:1.0.0.68914
+  - arguments:
+    - description: display name of new folder.
+      name: new_folder_name
+      required: true
+    - description: The ID of the parent folder under which to create a new folder.
+      name: parent_folder_id
+    - description: Flag for rate limit retry.
+      name: ran_once_flag
+    description: Creates a new folder under the specified folder (parent).
+    name: msgraph-mail-create-folder
+    outputs:
+    - contextPath: MSGraphMail.Folders.ChildFolderCount
+      description: The number of child folders.
+      type: number
+    - contextPath: MSGraphMail.Folders.DisplayName
+      description: The folder display name.
+      type: string
+    - contextPath: MSGraphMail.Folders.ID
+      description: The Folder ID.
+      type: string
+    - contextPath: MSGraphMail.Folders.ParentFolderID
+      description: The parent folder ID.
+      type: string
+    - contextPath: MSGraphMail.Folders.TotalItemCount
+      description: The total number of email messages in the folder.
+      type: number
+    - contextPath: MSGraphMail.Folders.UnreadItemCount
+      description: The number of unread email messages in the folder.
+      type: number
+  - arguments:
+    - description: The unique ID of the mail. You cannot use the the 'MessageID' key in the form '<message-id>'.
+      name: message_id
+      required: true
+    - description: The ID of the destination folder.
+      name: destination_folder_id
+      required: true
+    - description: Flag for rate limit retry.
+      name: ran_once_flag
+    description: Moves a message to a different folder.
+    name: msgraph-mail-move-email
+    outputs:
+    - contextPath: MSGraphMail.MovedEmails.DestinationFolderID
+      description: The folder where the email message was moved.
+      type: string
+    - contextPath: MSGraphMail.MovedEmails.ID
+      description: The new ID of the moved email message.
+      type: string
+    - contextPath: MSGraphMail.MovedEmails.UserID
+      description: The user ID.
+  - arguments:
+    - description: The maximum number of mail folder lists to return. Default is 20.
+      name: limit
+    - description: Flag for rate limit retry.
+      name: ran_once_flag
+    description: Returns the mail folder list directly under the root folder.
+    name: msgraph-mail-list-folders
+    outputs:
+    - contextPath: MSGraphMail.Folders.ChildFolderCount
+      description: Number of child folders.
+      type: number
+    - contextPath: MSGraphMail.Folders.DisplayName
+      description: Folder display name.
+      type: string
+    - contextPath: MSGraphMail.Folders.ID
+      description: Target folder ID.
+      type: string
+    - contextPath: MSGraphMail.Folders.ParentFolderID
+      description: Parent folder ID.
+      type: string
+    - contextPath: MSGraphMail.Folders.TotalItemCount
+      description: The total number of email messages in the folder.
+      type: number
+    - contextPath: MSGraphMail.Folders.UnreadItemCount
+      description: The number of unread emails in the folder.
+      type: number
+  dockerimage: demisto/crypto:1.0.0.74057
   isfetch: true
   script: ''
   type: python
