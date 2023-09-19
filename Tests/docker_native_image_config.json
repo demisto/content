@@ -58,7 +58,8 @@
                 "slack",
                 "office-utils",
                 "chromium",
-                "tesseract"
+                "tesseract",
+                "netutils"
             ],
             "docker_ref":"demisto/py3-native:8.4.0.74548"
         },
