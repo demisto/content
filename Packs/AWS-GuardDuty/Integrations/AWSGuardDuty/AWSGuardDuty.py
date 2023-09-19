@@ -6,10 +6,17 @@ from AWSApiModule import *  # noqa: E402
 import urllib3.util
 import boto3
 from collections import defaultdict
-from typing import Tuple
+from typing import TYPE_CHECKING, Tuple
 
 # Disable insecure warnings
 urllib3.disable_warnings()
+
+
+# The following imports are used only for type hints and autocomplete.
+# They are not used at runtime, and not exist in the docker image.
+if TYPE_CHECKING:
+    from mypy_boto3_guardduty import GuardDutyClient
+
 
 ''' CONSTANTS '''
 
@@ -35,7 +42,7 @@ class DatetimeEncoder(json.JSONEncoder):
         return json.JSONEncoder.default(self, obj)
 
 
-def create_detector(client: boto3.client, args: dict) -> CommandResults:
+def create_detector(client: "GuardDutyClient", args: dict) -> CommandResults:
     """
     Creates a single Amazon GuardDuty detector.
     """
@@ -66,7 +73,7 @@ def create_detector(client: boto3.client, args: dict) -> CommandResults:
                           outputs_key_field='DetectorId')
 
 
-def delete_detector(client: boto3.client, args: dict):
+def delete_detector(client: "GuardDutyClient", args: dict):
     response = client.delete_detector(DetectorId=args.get('detectorId'))
     if response == dict() or response.get('ResponseMetadata', {}).get('HTTPStatusCode') == 200:
         return f"The Detector {args.get('detectorId')} has been deleted"
@@ -74,7 +81,7 @@ def delete_detector(client: boto3.client, args: dict):
         raise Exception(f"The Detector {args.get('detectorId')} failed to delete.")
 
 
-def get_detector(client: boto3.client, args: dict) -> CommandResults:
+def get_detector(client: "GuardDutyClient", args: dict) -> CommandResults:
     """
     Retrieves an Amazon GuardDuty detector specified by the detectorId.
     """
@@ -105,7 +112,7 @@ def get_detector(client: boto3.client, args: dict) -> CommandResults:
                           outputs_key_field='DetectorId')
 
 
-def update_detector(client: boto3.client, args: dict) -> str:
+def update_detector(client: "GuardDutyClient", args: dict) -> str:
     """
     Updates the Amazon GuardDuty detector specified by the detectorId.
     """
@@ -132,7 +139,7 @@ def update_detector(client: boto3.client, args: dict) -> str:
         raise Exception(f"Detector {args.get('detectorId')} failed to update. Response was: {response}")
 
 
-def list_detectors(client: boto3.client, args: dict) -> CommandResults:
+def list_detectors(client: "GuardDutyClient", args: dict) -> CommandResults:
     limit, page_size, page = get_pagination_args(args)
 
     paginator = client.get_paginator('list_detectors')
@@ -159,7 +166,7 @@ def list_detectors(client: boto3.client, args: dict) -> CommandResults:
                           outputs_key_field='DetectorId')
 
 
-def create_ip_set(client: boto3.client, args: dict):
+def create_ip_set(client: "GuardDutyClient", args: dict):
     kwargs = {'DetectorId': args.get('detectorId')}
     if args.get('activate') is not None:
         kwargs.update({'Activate': True if args.get('activate') == 'True' else False})
@@ -183,7 +190,7 @@ def create_ip_set(client: boto3.client, args: dict):
                           outputs_key_field='IpSetId')
 
 
-def delete_ip_set(client: boto3.client, args: dict):
+def delete_ip_set(client: "GuardDutyClient", args: dict):
     response = client.delete_ip_set(
         DetectorId=args.get('detectorId'),
         IpSetId=args.get('ipSetId')
@@ -195,7 +202,7 @@ def delete_ip_set(client: boto3.client, args: dict):
         raise Exception(f"Failed to delete ip set {args.get('ipSetId')} . Response was: {response}")
 
 
-def update_ip_set(client: boto3.client, args: dict):
+def update_ip_set(client: "GuardDutyClient", args: dict):
     kwargs = {
         'DetectorId': args.get('detectorId'),
         'IpSetId': args.get('ipSetId')
@@ -216,7 +223,7 @@ def update_ip_set(client: boto3.client, args: dict):
         raise Exception(f"Failed updating ip set {args.get('ipSetId')} . Response was: {response}")
 
 
-def get_ip_set(client: boto3.client, args: dict):
+def get_ip_set(client: "GuardDutyClient", args: dict):
     response = client.get_ip_set(DetectorId=args.get('detectorId'),
                                  IpSetId=args.get('ipSetId'))
     data = ({'DetectorId': args.get('detectorId'),
@@ -233,7 +240,7 @@ def get_ip_set(client: boto3.client, args: dict):
                           outputs_key_field='IpSetId')
 
 
-def list_ip_sets(client: boto3.client, args: dict) -> CommandResults:
+def list_ip_sets(client: "GuardDutyClient", args: dict) -> CommandResults:
     limit, page_size, page = get_pagination_args(args)
 
     paginator = client.get_paginator('list_ip_sets')
@@ -261,7 +268,7 @@ def list_ip_sets(client: boto3.client, args: dict) -> CommandResults:
                           outputs_key_field='IpSetId')
 
 
-def create_threat_intel_set(client: boto3.client, args: dict):
+def create_threat_intel_set(client: "GuardDutyClient", args: dict):
     kwargs = {'DetectorId': args.get('detectorId')}
     if args.get('activate') is not None:
         kwargs.update({'Activate': True if args.get('activate') == 'True' else False})
@@ -286,7 +293,7 @@ def create_threat_intel_set(client: boto3.client, args: dict):
                           outputs_key_field='ThreatIntelSetId')
 
 
-def delete_threat_intel_set(client: boto3.client, args: dict):
+def delete_threat_intel_set(client: "GuardDutyClient", args: dict):
     response = client.delete_threat_intel_set(
         DetectorId=args.get('detectorId'),
         ThreatIntelSetId=args.get('threatIntelSetId')
@@ -297,7 +304,7 @@ def delete_threat_intel_set(client: boto3.client, args: dict):
         raise Exception(f"Failed to delete ThreatIntel set {args.get('threatIntelSetId')} . Response was: {response}")
 
 
-def get_threat_intel_set(client: boto3.client, args: dict):
+def get_threat_intel_set(client: "GuardDutyClient", args: dict):
     response = client.get_threat_intel_set(
         DetectorId=args.get('detectorId'),
         ThreatIntelSetId=args.get('threatIntelSetId')
@@ -318,7 +325,7 @@ def get_threat_intel_set(client: boto3.client, args: dict):
                           outputs_key_field='ThreatIntelSetId')
 
 
-def list_threat_intel_sets(client: boto3.client, args: dict) -> CommandResults:
+def list_threat_intel_sets(client: "GuardDutyClient", args: dict) -> CommandResults:
     limit, page_size, page = get_pagination_args(args)
 
     paginator = client.get_paginator('list_threat_intel_sets')
@@ -346,7 +353,7 @@ def list_threat_intel_sets(client: boto3.client, args: dict) -> CommandResults:
                           outputs_key_field='ThreatIntelSetId')
 
 
-def update_threat_intel_set(client: boto3.client, args: dict):
+def update_threat_intel_set(client: "GuardDutyClient", args: dict):
     kwargs = {
         'DetectorId': args.get('detectorId'),
         'ThreatIntelSetId': args.get('threatIntelSetId')
@@ -393,7 +400,7 @@ def gd_severity_mapping(severity_list: List[str]):
     return gd_severity
 
 
-def list_findings(client: boto3.client, args: dict) -> CommandResults:
+def list_findings(client: "GuardDutyClient", args: dict) -> CommandResults:
     limit, page_size, page = get_pagination_args(args)
 
     paginator = client.get_paginator('list_findings')
@@ -477,7 +484,7 @@ def parse_finding(finding: dict) -> Dict:
     return parsed_finding
 
 
-def get_findings(client: boto3.client, args: dict) -> dict:
+def get_findings(client: "GuardDutyClient", args: dict) -> dict:
     return_raw_response = argToBoolean(args.get('returnRawResponse', 'false'))
 
     response = client.get_findings(
@@ -524,13 +531,13 @@ def time_to_unix_epoch(date_time: datetime) -> int:
     return int(date_time.timestamp() * 1000)
 
 
-def fetch_incidents(client: boto3.client, aws_gd_severity: List[str], last_run: dict, fetch_limit: int,
+def fetch_incidents(client: "GuardDutyClient", aws_gd_severity: List[str], last_run: dict, fetch_limit: int,
                     first_fetch_time: str, is_archive: bool) -> Tuple[Dict[str, Any], List[dict]]:
     """
     This function will execute each interval (default is 1 minute).
 
     Args:
-        client (Client): boto3.client client
+        client (Client): GuardDutyClient client
         aws_gd_severity (List[str]): Guard Duty Severity level
         last_run (dict): {'latest_created_time' (string): The greatest incident created_time we fetched from last fetch,
                           'latest_updated_time' (string): The greatest incident updated_time we fetched from last fetch,
@@ -631,7 +638,7 @@ def fetch_incidents(client: boto3.client, aws_gd_severity: List[str], last_run: 
     return next_run, incidents
 
 
-def create_sample_findings(client: boto3.client, args: dict):
+def create_sample_findings(client: "GuardDutyClient", args: dict):
     kwargs = {'DetectorId': args.get('detectorId')}
     if args.get('findingTypes') is not None:
         kwargs.update({'FindingTypes': argToList(args.get('findingTypes'))})
@@ -644,7 +651,7 @@ def create_sample_findings(client: boto3.client, args: dict):
         raise Exception(f"Failed to generate findings. Response was: {response}")
 
 
-def archive_findings(client: boto3.client, args: dict):
+def archive_findings(client: "GuardDutyClient", args: dict):
     kwargs = {'DetectorId': args.get('detectorId')}
     if args.get('findingIds') is not None:
         kwargs.update({'FindingIds': argToList(args.get('findingIds'))})
@@ -657,7 +664,7 @@ def archive_findings(client: boto3.client, args: dict):
         raise Exception(f"Failed to archive findings. Response was: {response}")
 
 
-def unarchive_findings(client: boto3.client, args: dict):
+def unarchive_findings(client: "GuardDutyClient", args: dict):
     kwargs: dict = {'DetectorId': args.get('detectorId')}
     if args.get('findingIds') is not None:
         kwargs.update({'FindingIds': argToList(args.get('findingIds'))})
@@ -670,7 +677,7 @@ def unarchive_findings(client: boto3.client, args: dict):
         raise Exception(f"Failed to archive findings. Response was: {response}")
 
 
-def update_findings_feedback(client: boto3.client, args: dict):
+def update_findings_feedback(client: "GuardDutyClient", args: dict):
     kwargs = {'DetectorId': args.get('detectorId')}
     if args.get('findingIds') is not None:
         kwargs.update({'FindingIds': argToList(args.get('findingIds'))})
@@ -686,7 +693,7 @@ def update_findings_feedback(client: boto3.client, args: dict):
         raise Exception(f"Failed to send findings feedback. Response was: {response}")
 
 
-def list_members(client: boto3.client, args: dict) -> CommandResults:
+def list_members(client: "GuardDutyClient", args: dict) -> CommandResults:
     limit, page_size, page = get_pagination_args(args)
 
     paginator = client.get_paginator('list_members')
@@ -713,7 +720,7 @@ def list_members(client: boto3.client, args: dict) -> CommandResults:
                           outputs_key_field='AccountId')
 
 
-def get_members(client: boto3.client, args: dict):
+def get_members(client: "GuardDutyClient", args: dict):
     accountId_list = []
     accountId_list.append(args.get('accountIds'))
 
@@ -733,7 +740,7 @@ def get_members(client: boto3.client, args: dict):
                           outputs_key_field='AccountId')
 
 
-def connection_test(client: boto3.client):
+def connection_test(client: "GuardDutyClient"):
     response = client.list_detectors()
     if response.get('DetectorIds'):
         return 'ok'
