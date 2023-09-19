@@ -96,7 +96,7 @@ configuration:
   section: Connect
   required: false
   advanced: true
-  additionalinfo: Trust any certificate (not secure). Make sure to mark this param if you want SlackBlockBuilder script to send response back to the incident context.
+  additionalinfo: Trust any certificate (not secure). Make sure to mark this parameter if you want the SlackBlockBuilder script to send a response back to the incident context.
 - defaultvalue: 'true'
   display: Enable Incident Mirroring
   name: mirroring
