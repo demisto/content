@@ -103,7 +103,8 @@ test_get_fetch_start_datetime_dict_args = [case_first_fetch,
 # test_parse_incident_entries arguments
 case_no_incidents = ({}, (None, None, {}))
 
-one_incident = [{'seqno': '00000000001', 'type': 'X_log_type', 'time_generated': '2022/01/01 12:00:00', 'device_name': 'testing_device1'}]
+one_incident = [{'seqno': '00000000001', 'type': 'X_log_type',
+                 'time_generated': '2022/01/01 12:00:00', 'device_name': 'testing_device1'}]
 one_incident_result = (
     {'testing_device1': '00000000001'}, utc_time_twelve,
     [{'name': 'testing_device1 00000000001', 'occurred': utc_time_twelve.isoformat() + 'Z',
