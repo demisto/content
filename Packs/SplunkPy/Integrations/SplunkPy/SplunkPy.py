@@ -2208,7 +2208,8 @@ def splunk_search_command(service: client.Service, args: dict) -> CommandResults
         dbot_scores.extend(batch_dbot_scores)
 
         results_offset += batch_size
-    entry_context_splunk_search, entry_context_dbot_score = create_entry_context(args, total_parsed_results, dbot_scores, status_cmd_result, str(job_sid))
+    entry_context_splunk_search, entry_context_dbot_score = create_entry_context(
+        args, total_parsed_results, dbot_scores, status_cmd_result, str(job_sid))
     human_readable = build_search_human_readable(args, total_parsed_results, str(job_sid))
     results = [CommandResults(
         outputs=entry_context_splunk_search,
@@ -2218,8 +2219,8 @@ def splunk_search_command(service: client.Service, args: dict) -> CommandResults
     dbot_table_headers = ['Indicator', 'Type', 'Vendor', 'Score', 'isTypedIndicator']
     if entry_context_dbot_score:
         results.append(CommandResults(
-        outputs=entry_context_dbot_score,
-        readable_output=tableToMarkdown("DBot Score", entry_context_dbot_score['DBotScore'], headers=dbot_table_headers)))
+            outputs=entry_context_dbot_score,
+            readable_output=tableToMarkdown("DBot Score", entry_context_dbot_score['DBotScore'], headers=dbot_table_headers)))
     return results
 
 
