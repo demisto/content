@@ -10,7 +10,7 @@ To view logs only from the Windows Event log, apply the following filter to the 
 
 **Pay Attention**: 
 This pack excludes several events for the DNS, ADFS and AMSI Windows services.
-In order to get the full scope of available logs, the installation of the following packs is required, according to the relevant company's needs:
+The installation of the following packs is required, should you wish to collect those logs as well:
 * Microsoft DNS
 * Microsoft Windows AMSI
 * Microsoft AD FS Collection
