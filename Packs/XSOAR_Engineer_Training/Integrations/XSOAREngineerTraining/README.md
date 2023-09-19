@@ -1,4 +1,4 @@
-This integration provides sample data to fetch events into XSOAR, and commands to build playbooks around.
+The XSOAR Engineer Training (XET) integration provides sample data to fetch events into XSOAR, and commands to build playbooks around.
 
 Use for training purposes only. 
 
@@ -21,14 +21,14 @@ Use for training purposes only.
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
-### xsoar-engineer-get-events
+### xet-get-events
 
 ***
-Fetches events for all clicks and messages relating to known threats within the specified time period. Details as per clicks/blocked.
+Fetches events from the XSOAR Engineer Training (XET) integration.
 
 #### Base Command
 
-`xsoar-engineer-get-events`
+`xet-get-events`
 
 #### Input
 
@@ -39,14 +39,14 @@ Fetches events for all clicks and messages relating to known threats within the 
 
 There is no context output for this command.
 
-### ad-get-user
+### xet-ad-get-user
 
 ***
 Retrieves detailed information about a user account. The user can be specified by username, email address, or as an Active Directory Distinguished Name (DN).
 
 #### Base Command
 
-`ad-get-user`
+`xet-ad-get-user`
 
 #### Input
 
@@ -75,14 +75,14 @@ Retrieves detailed information about a user account. The user can be specified b
 | Account.Username | unknown | The samAccountName of the user. | 
 | Account.Email | unknown | The email address of the user. | 
 
-### ad-expire-password
+### xet-ad-expire-password
 
 ***
 Expires the password of an Active Directory user.
 
 #### Base Command
 
-`ad-expire-password`
+`xet-ad-expire-password`
 
 #### Input
 
@@ -94,14 +94,14 @@ Expires the password of an Active Directory user.
 
 There is no context output for this command.
 
-### ad-set-new-password
+### xet-ad-set-new-password
 
 ***
 Sets a new password for an Active Directory user.
 
 #### Base Command
 
-`ad-set-new-password`
+`xet-ad-set-new-password`
 
 #### Input
 
@@ -114,14 +114,14 @@ Sets a new password for an Active Directory user.
 
 There is no context output for this command.
 
-### siem-search
+### xet-siem-search
 
 ***
 Searches the simulated SIEM for events.
 
 #### Base Command
 
-`siem-search`
+`xet-siem-search`
 
 #### Input
 
@@ -134,16 +134,16 @@ Searches the simulated SIEM for events.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SIEM.Result | unknown | The results of the SIEM search. The results are a JSON array, in which each item is a SIEM event. | 
+| SIEM.Result | array | The results of the SIEM search. The results are a JSON array, in which each item is a SIEM event. | 
 
-### send-mail
+### xet-send-mail
 
 ***
 Send an email (doesn't actually send an email)
 
 #### Base Command
 
-`send-mail`
+`xet-send-mail`
 
 #### Input
 

@@ -28,9 +28,6 @@ DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 
 ''' ACTIVE DIRECTORY QUERY V2 INTEGRATION '''
 
-# Lab version of AD. Simulate the ad-get-user, ad-expire-password, and ad-set-new-password responses.
-# Fun fact about data.  68% of all data is made up, but only 8% of people know that.
-
 USERS = [
     {
         "email": "james.bond@xsoar.local",
@@ -203,9 +200,9 @@ def simple_response_command(command):
     returns a text response for the Active Directory and send mail Commands
     """
     command_map = {
-        'ad-expire-password': 'Expired password successfully',
-        'ad-set-new-password': 'User password successfully set',
-        'send-mail': 'XSOAR Engineer Training: fake email notification not sent'
+        'xet-ad-expire-password': 'Expired password successfully',
+        'xet-ad-set-new-password': 'User password successfully set',
+        'xet-send-mail': 'XSOAR Engineer Training: fake email notification not sent'
     }
     return CommandResults(readable_output=command_map[command], ignore_auto_extract=True)
 
@@ -215,7 +212,7 @@ def ad_get_user_command(args):
     Returns the user details from our simulated AD if the user is found
     """
 
-    # error handing for Ori
+    # error handing if one of username, email or dn is not passed to the command
     if not args.get('username') and not args.get('email') and not args.get('dn'):
         return_error("Need either a username, email, or dn")
 
@@ -343,20 +340,20 @@ def main():
 
     try:
         commands = {
-            'xsoar-engineer-get-events': get_events_command,
-            'ad-expire-password': simple_response_command,
-            'ad-set-new-password': simple_response_command,
-            'send-mail': simple_response_command
+            'xet-get-events': get_events_command,
+            'xet-ad-expire-password': simple_response_command,
+            'xet-ad-set-new-password': simple_response_command,
+            'xet-send-mail': simple_response_command
         }
         if command == 'test-module':
             demisto.results('ok')
         elif demisto.command() == 'fetch-incidents':
             demisto.incidents(fetch_incidents(limit=fetch_limit))
-        elif demisto.command() == 'xsoar-engineer-get-events':
+        elif demisto.command() == 'xet-get-events':
             return_results(get_events_command(demisto.args()))
-        elif demisto.command() == 'ad-get-user':
+        elif demisto.command() == 'xet-ad-get-user':
             demisto.results(ad_get_user_command(demisto.args()))
-        elif demisto.command() == 'siem-search':
+        elif demisto.command() == 'xet-siem-search':
             return_results(siem_search_command(demisto.args()))
         elif command in commands:
             return_results(commands[command](command))
