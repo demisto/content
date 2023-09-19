@@ -837,22 +837,22 @@ def test_list_commands_command(mocker: MockerFixture) -> None:
     [
         pytest.param(
             "Success",
-            "Success, The automation completed successfully.",
+            "The automation status is Success, The automation completed successfully.",
             id="success",
         ),
         pytest.param(
             "Failed",
-            "Failed, The automation didn't complete successfully. This is a terminal state.",
+            "The automation status is Failed, The automation didn't complete successfully. This is a terminal state.",
             id="failed",
         ),
         pytest.param(
             "Cancelled",
-            "Cancelled, The automation was stopped by a requester before it completed.",
+            "The automation status is Cancelled, The automation was stopped by a requester before it completed.",
             id="cancelled",
         ),
         pytest.param(
             "TimedOut",
-            "TimedOut, A step or approval wasn't completed before the specified timeout period.",
+            "The automation status is TimedOut, A step or approval wasn't completed before the specified timeout period.",
             id="timed_out",
         ),
     ],
@@ -904,22 +904,22 @@ def test_run_automation_execution_command(
     [
         pytest.param(
             "Success",
-            "Success, The automation completed successfully.",
+            "The automation status is Success, The cancel command failed, The automation completed successfully before the cancellation.",
             id="status is Success",
         ),
         pytest.param(
             "Failed",
-            "Failed, The automation didn't complete successfully. This is a terminal state.",
+            "The automation status is Failed, The cancel command failed, the automation failed before it completed.",
             id="status is Failed",
         ),
         pytest.param(
             "Cancelled",
-            "Cancelled, The automation was stopped by a requester before it completed.",
+            "The automation status is Cancelled, The cancel command completed successfully, The automation was stopped by a requester before it completed.",
             id="status is Cancelled",
         ),
         pytest.param(
             "TimedOut",
-            "TimedOut, A step or approval wasn't completed before the specified timeout period.",
+            "The automation status is TimedOut, The cancel command failed, the automation failed on timeout before the cancellation.",
             id="status is TimedOut",
         ),
     ],
@@ -975,17 +975,17 @@ def test_cancel_automation_execution_command(
     [
         pytest.param(
             "Failed",
-            "Failed, The command wasn't successful on the managed node.",
+            "The command status is Failed, The command wasn't successful on the managed node.",
             id="status is Failed",
         ),
         pytest.param(
             "Cancelled",
-            "Cancelled, The command was canceled before it was completed.",
+            "The command status is Cancelled, The command was canceled before it was completed.",
             id="status is Cancelled",
         ),
         pytest.param(
             "Delivery Timed Out",
-            "Delivery Timed Out, The command wasn't delivered to the managed node before the total timeout expired.",
+            "The command status is Delivery Timed Out, The command wasn't delivered to the managed node before the total timeout expired.",
             id="status is Delivery Timed Out",
         ),
     ],
@@ -1038,17 +1038,17 @@ def test_run_command_command(
     [
         pytest.param(
             "Failed",
-            "Failed, The command wasn't successful on the managed node.",
+            "The command status is Failed, The cancel command failed, the command failed before it completed.",
             id="status is Failed",
         ),
         pytest.param(
             "Cancelled",
-            "Cancelled, The command was canceled before it was completed.",
+            "The command status is Cancelled, The cancel command completed successfully, The command was cancelled before it was completed.",
             id="status is Cancelled",
         ),
         pytest.param(
             "Delivery Timed Out",
-            "Delivery Timed Out, The command wasn't delivered to the managed node before the total timeout expired.",
+            "The command status is Delivery Timed Out, The command wasn't delivered to the managed node before the total timeout expired.",
             id="status is Delivery Timed Out",
         ),
     ],

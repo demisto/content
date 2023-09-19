@@ -1216,14 +1216,12 @@ def run_automation_execution_command(
         else:
             readable_output = f"The automation status is {status}, {TERMINAL_AUTOMATION_STATUSES[status]}"
         return PollResult(  # if execution not in progress, return the status and end the polling loop
-            response=CommandResults(readable_output=readable_output, outputs=automation_execution),
+            response=CommandResults(
+                readable_output=readable_output, outputs=automation_execution
+            ),
             continue_to_poll=False,
         )
-    return PollResult(
-        response=None,
-        continue_to_poll=True,
-        args_for_next_run=args
-    )
+    return PollResult(response=None, continue_to_poll=True, args_for_next_run=args)
 
 
 @polling_function(
@@ -1475,15 +1473,13 @@ def cancel_command_command(args: dict[str, Any], ssm_client: "SSMClient") -> Pol
         if status in CANCEL_TERMINAL_COMMAND_STATUSES:
             return PollResult(
                 response=CommandResults(
-                    readable_output=f"The status of the command is {status}, {CANCEL_TERMINAL_COMMAND_STATUSES[status]}",
+                    readable_output=f"The command status is {status}, {CANCEL_TERMINAL_COMMAND_STATUSES[status]}",
                 ),
                 continue_to_poll=False,
             )
         # else, continue polling
         return PollResult(  # CONTINUE POLLING
-            response=None,
-            continue_to_poll=True,
-            args_for_next_run=args
+            response=None, continue_to_poll=True, args_for_next_run=args
         )
 
     # Initial command execution
