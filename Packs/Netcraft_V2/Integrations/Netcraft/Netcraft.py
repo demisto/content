@@ -702,24 +702,16 @@ def get_submission(args: dict, submission_uuid: str, client: Client) -> PollResu
         return response
 
     def response_to_readable(submission: dict) -> str:
-        table = {
-            'Source': submission.get('source', {}).get('name'),
-            'Submitter': submission.get('submitter', {}).get('email'),
-            'Submission Date': str(arg_to_datetime(submission.get('date'))),
-            'State': submission.get('state'),
-            'Last Update': str(arg_to_datetime(submission.get('last_update'))),
-            'List URLs':
-                f'!netcraft-submission-url-list {submission_uuid=}'
-                if submission['has_urls']  # key added by response_to_context
-                else '*This submission has no URLs*',
-            'List Files':
-                f'!netcraft-submission-file-list {submission_uuid=}'
-                if submission['has_files']  # key added by response_to_context
-                else '*This submission has no Files*',
-        }
         return tableToMarkdown(
-            f'Submission {submission_uuid}',
-            table, list(table),
+            'Netcraft Submissions',
+            {
+                'Submission UUID': submission.get('uuid'),
+                'Submission Date': str(arg_to_datetime(submission.get('date'))),
+                'Submitter Email': submission.get('submitter_email'),
+                'State': submission.get('state'),
+                'Source': submission.get('source_name')
+            },
+            ['Submission UUID', 'Submission Date', 'Submitter Email', 'State', 'Source'],
             removeNull=True,
         )
 
@@ -881,7 +873,7 @@ def email_report_submit_command(args: dict, client: Client) -> CommandResults:
 
 def submission_mail_get_command(args: dict, client: Client) -> CommandResults:
 
-    def response_to_readable(mail: dict) -> str:  # TODO add command references
+    def response_to_readable(mail: dict) -> str:
         return tableToMarkdown(
             'Submission Mails',
             mail,
@@ -940,10 +932,12 @@ def submission_url_list_command(args: dict, client: Client) -> CommandResults:
                     'Hostname': url.get('hostname'),
                     'Classification': url.get('url_state'),
                     'URL Classification Log': yaml.safe_dump(url.get('classification_log')),
+                    'Screenshots': yaml.safe_dump(url.get('screenshots')),
+                    'UUID': url.get('uuid')
                 }
                 for url in urls
             ],
-            ['URL', 'Hostname', 'Classification', 'URL Classification Log'],
+            ['URL', 'Hostname', 'Classification', 'URL Classification Log', 'Screenshots', 'UUID'],
             removeNull=True,
         )
 

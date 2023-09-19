@@ -1,970 +1,1081 @@
 id: Netcraft
+version: 39
+vcShouldKeepItemLegacyProdMachine: false
 name: Netcraft
-version: -1
-fromversion: 4.5.0
-starttaskid: '0'
+starttaskid: "0"
 tasks:
-  '0':
-    id: '0'
-    taskid: '0'
+  "0":
+    id: "0"
+    taskid: efbe82b4-3884-4cc7-81d3-1793d9595eed
     type: start
     task:
-      id: '0'
+      id: efbe82b4-3884-4cc7-81d3-1793d9595eed
       version: -1
-      name: ''
+      name: ""
       iscommand: false
-      brand: ''
-      description: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '1'
+      - "1"
     separatecontext: false
-    view: '{"position":{"x":50,"y":50}}'
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 50
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-  '1':
-    id: 1
-    taskid: '1'
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: f60919e6-7179-405d-80f7-77d710720c44
     type: regular
     task:
-      id: '1'
+      id: f60919e6-7179-405d-80f7-77d710720c44
       version: -1
       name: DeleteContext
-      description: ''
       script: DeleteContext
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '2'
+      - "40"
     scriptarguments:
       all:
-        simple: yes
+        simple: "yes"
     separatecontext: false
-    view: '{"position":{"x":50,"y":200}}'
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 195
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '2':
-    id: 2
-    taskid: '2'
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 3a8f3ee3-971d-4ce1-8ee4-24126be9a9f4
     type: regular
     task:
-      id: '2'
+      id: 3a8f3ee3-971d-4ce1-8ee4-24126be9a9f4
       version: -1
-      name: 'netcraft-attack-report'
-      description: ''
+      name: netcraft-attack-report
       script: Netcraft|||netcraft-attack-report
       type: regular
       iscommand: true
-      brand: ''
+      brand: Netcraft
     nexttasks:
       '#none#':
-      - '3'
+      - "8"
     scriptarguments:
       attack:
-        simple: ''
-      comment:
-        simple: ''
-      brand:
-        simple: ''
+        simple: https://www.amazon.com/${RandomString}
       attack_type:
-        simple: ''
-      inactive:
-        simple: ''
-      force_auth:
-        simple: ''
-      malware:
-        simple: ''
-      suspected_fraud_domain:
-        simple: ''
-      password:
-        simple: ''
-      entry_id:
-        simple: ''
-      phishkit_fetch_url:
-        simple: ''
-      phishkit_phish_url:
-        simple: ''
+        complex:
+          root: Netcraft.AttackType
+          accessor: name
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+      comment:
+        simple: Very malicious
       customer_label:
-        simple: ''
+        simple: Test Playbook run
+      inactive:
+        simple: "true"
       tags:
-        simple: ''
-      region:
-        simple: ''
+        simple: coronavirus
     separatecontext: false
-    view: '{"position":{"x":50,"y":400}}'
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1040
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '3':
-    id: '3'
-    taskid: '3'
-    type: condition
-    task:
-      id: '3'
-      version: -1
-      name: Verify Outputs
-      type: condition
-      iscommand: false
-      description: ''
-      brand: ''
-    nexttasks:
-      yes:
-      - '4'
-    separatecontext: false
-    conditions: []
-    view: '{"position":{"x":50,"y":600}}'
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-  '4':
-    id: 4
-    taskid: '4'
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 6e3bf272-cbd3-4fe8-80a2-10baae1df269
     type: regular
     task:
-      id: '4'
+      id: 6e3bf272-cbd3-4fe8-80a2-10baae1df269
       version: -1
-      name: 'netcraft-takedown-list'
-      description: ''
+      name: netcraft-takedown-list
       script: Netcraft|||netcraft-takedown-list
       type: regular
       iscommand: true
-      brand: ''
+      brand: Netcraft
     nexttasks:
       '#none#':
-      - '5'
+      - "34"
     scriptarguments:
-      id:
-        simple: ''
-      statuses:
-        simple: ''
-      url:
-        simple: ''
-      false_positive:
-        simple: ''
-      ip:
-        simple: ''
-      id_before:
-        simple: ''
-      id_after:
-        simple: ''
-      date_from:
-        simple: ''
-      date_to:
-        simple: ''
-      reporter_email:
-        simple: ''
-      report_source:
-        simple: ''
       attack_types:
-        simple: ''
-      auth_given:
-        simple: ''
+        simple: coronavirus
+      date_from:
+        simple: last week
+      date_to:
+        simple: yesterday
       escalated:
-        simple: ''
-      sort:
-        simple: ''
-      sort_direction:
-        simple: ''
+        simple: "No"
       limit:
-        simple: ''
-      all_results:
-        simple: ''
-      region:
-        simple: ''
+        simple: "10"
     separatecontext: false
-    view: '{"position":{"x":50,"y":800}}'
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1915
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '5':
-    id: '5'
-    taskid: '5'
-    type: condition
-    task:
-      id: '5'
-      version: -1
-      name: Verify Outputs
-      type: condition
-      iscommand: false
-      description: ''
-      brand: ''
-    nexttasks:
-      yes:
-      - '6'
-    separatecontext: false
-    conditions: []
-    view: '{"position":{"x":50,"y":1000}}'
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-  '6':
-    id: 6
-    taskid: '6'
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 9f984d39-188d-481d-86fc-7ee7bc6c4772
     type: regular
     task:
-      id: '6'
+      id: 9f984d39-188d-481d-86fc-7ee7bc6c4772
       version: -1
-      name: 'netcraft-takedown-update'
-      description: ''
+      name: netcraft-takedown-update
       script: Netcraft|||netcraft-takedown-update
       type: regular
       iscommand: true
-      brand: ''
+      brand: Netcraft
     nexttasks:
       '#none#':
-      - '7'
+      - "4"
     scriptarguments:
-      takedown_id:
-        simple: ''
-      customer_label:
-        simple: ''
-      description:
-        simple: ''
-      brand:
-        simple: ''
-      suspected_fraud_domain:
-        simple: ''
-      suspected_fraud_hostname:
-        simple: ''
       add_tags:
-        simple: ''
+        simple: smishing,fake-shop-logo
       remove_tags:
-        simple: ''
-      region:
-        simple: ''
+        simple: coronavirus
+      retry-count:
+        simple: "3"
+      retry-interval:
+        simple: "10"
+      takedown_id:
+        simple: ${Netcraft.Takedown.id}
     separatecontext: false
-    view: '{"position":{"x":50,"y":1200}}'
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1740
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '7':
-    id: 7
-    taskid: '7'
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 7b46a9ce-cc48-4d23-88c1-d5497b059dbb
     type: regular
     task:
-      id: '7'
+      id: 7b46a9ce-cc48-4d23-88c1-d5497b059dbb
       version: -1
-      name: 'netcraft-takedown-escalate'
-      description: ''
+      name: netcraft-takedown-escalate
       script: Netcraft|||netcraft-takedown-escalate
       type: regular
       iscommand: true
-      brand: ''
+      brand: Netcraft
     nexttasks:
       '#none#':
-      - '8'
+      - "6"
     scriptarguments:
+      retry-count:
+        simple: "3"
+      retry-interval:
+        simple: "5"
       takedown_id:
-        simple: ''
+        simple: ${Netcraft.Takedown.id}
     separatecontext: false
-    view: '{"position":{"x":50,"y":1400}}'
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1565
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '8':
-    id: 8
-    taskid: '8'
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: c310f76f-12b8-46b8-855b-ba2d943ade30
     type: regular
     task:
-      id: '8'
+      id: c310f76f-12b8-46b8-855b-ba2d943ade30
       version: -1
-      name: 'netcraft-takedown-note-create'
-      description: ''
+      name: netcraft-takedown-note-create
       script: Netcraft|||netcraft-takedown-note-create
       type: regular
       iscommand: true
-      brand: ''
+      brand: Netcraft
     nexttasks:
       '#none#':
-      - '9'
+      - "10"
     scriptarguments:
-      takedown_id:
-        simple: ''
       note_text:
-        simple: ''
+        simple: TPB is running
       notify:
-        simple: ''
+        simple: "false"
+      takedown_id:
+        simple: ${Netcraft.Takedown.id}
     separatecontext: false
-    view: '{"position":{"x":50,"y":1600}}'
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1215
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '9':
-    id: '9'
-    taskid: '9'
-    type: condition
-    task:
-      id: '9'
-      version: -1
-      name: Verify Outputs
-      type: condition
-      iscommand: false
-      description: ''
-      brand: ''
-    nexttasks:
-      yes:
-      - '10'
-    separatecontext: false
-    conditions: []
-    view: '{"position":{"x":50,"y":1800}}'
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-  '10':
-    id: 10
-    taskid: '10'
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: a7db322b-e48b-41da-8e6b-405001f56537
     type: regular
     task:
-      id: '10'
+      id: a7db322b-e48b-41da-8e6b-405001f56537
       version: -1
-      name: 'netcraft-takedown-note-list'
-      description: ''
+      name: netcraft-takedown-note-list
       script: Netcraft|||netcraft-takedown-note-list
       type: regular
       iscommand: true
-      brand: ''
+      brand: Netcraft
     nexttasks:
       '#none#':
-      - '11'
+      - "7"
     scriptarguments:
-      takedown_id:
-        simple: ''
-      author_mail:
-        simple: ''
       all_results:
-        simple: 'false'
+        simple: "true"
+      takedown_id:
+        simple: ${Netcraft.Takedown.id}
     separatecontext: false
-    view: '{"position":{"x":50,"y":2000}}'
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1390
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '11':
-    id: '11'
-    taskid: '11'
-    type: condition
-    task:
-      id: '11'
-      version: -1
-      name: Verify Outputs
-      type: condition
-      iscommand: false
-      description: ''
-      brand: ''
-    nexttasks:
-      yes:
-      - '12'
-    separatecontext: false
-    conditions: []
-    view: '{"position":{"x":50,"y":2200}}'
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-  '12':
-    id: 12
-    taskid: '12'
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: fc89757d-b9bd-4ad8-89d3-fe0eb4dd8ece
     type: regular
     task:
-      id: '12'
+      id: fc89757d-b9bd-4ad8-89d3-fe0eb4dd8ece
       version: -1
-      name: 'netcraft-attack-type-list'
-      description: ''
+      name: netcraft-attack-type-list
       script: Netcraft|||netcraft-attack-type-list
       type: regular
       iscommand: true
-      brand: ''
+      brand: Netcraft
     nexttasks:
       '#none#':
-      - '13'
+      - "2"
     scriptarguments:
-      automated:
-        simple: ''
-      auto_escalation:
-        simple: ''
-      auto_authorise:
-        simple: ''
-      region:
-        simple: ''
       all_results:
-        simple: ''
+        simple: "false"
     separatecontext: false
-    view: '{"position":{"x":50,"y":2400}}'
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 865
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '13':
-    id: '13'
-    taskid: '13'
-    type: condition
-    task:
-      id: '13'
-      version: -1
-      name: Verify Outputs
-      type: condition
-      iscommand: false
-      description: ''
-      brand: ''
-    nexttasks:
-      yes:
-      - '14'
-    separatecontext: false
-    conditions: []
-    view: '{"position":{"x":50,"y":2600}}'
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-  '14':
-    id: 14
-    taskid: '14'
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: f34468e8-50b1-4aa3-8d00-9b35c5c2e470
     type: regular
     task:
-      id: '14'
+      id: f34468e8-50b1-4aa3-8d00-9b35c5c2e470
       version: -1
-      name: 'netcraft-submission-list'
-      description: ''
+      name: netcraft-submission-list
       script: Netcraft|||netcraft-submission-list
       type: regular
       iscommand: true
-      brand: ''
+      brand: Netcraft
     nexttasks:
       '#none#':
-      - '15'
+      - "15"
     scriptarguments:
-      submission_uuid:
-        simple: ''
+      date_end:
+        simple: 3 days ago
+      date_start:
+        simple: 2 days ago
+      limit:
+        simple: "20"
+      source_name:
+        simple: Palo Alto Networks
+      state:
+        simple: no threats
+      submitter_email:
+        simple: spadan@paloaltonetworks.com
     separatecontext: false
-    view: '{"position":{"x":50,"y":2800}}'
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1040
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '15':
-    id: '15'
-    taskid: '15'
-    type: condition
-    task:
-      id: '15'
-      version: -1
-      name: Verify Outputs
-      type: condition
-      iscommand: false
-      description: ''
-      brand: ''
-    nexttasks:
-      yes:
-      - '16'
-    separatecontext: false
-    conditions: []
-    view: '{"position":{"x":50,"y":3000}}'
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-  '16':
-    id: 16
-    taskid: '16'
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 4741cb98-ef3e-474d-839a-d74a54f1d1af
     type: regular
     task:
-      id: '16'
+      id: 4741cb98-ef3e-474d-839a-d74a54f1d1af
       version: -1
-      name: 'netcraft-file-report-submit'
-      description: ''
+      name: netcraft-submission-list with UUID
+      script: Netcraft|||netcraft-submission-list
+      type: regular
+      iscommand: true
+      brand: Netcraft
+    nexttasks:
+      '#none#':
+      - "38"
+      - "39"
+      - "37"
+    scriptarguments:
+      submission_uuid:
+        complex:
+          root: Netcraft.Submission
+          accessor: uuid
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: d96d9922-ba83-4204-8e12-d1efe56dd3c4
+    type: regular
+    task:
+      id: d96d9922-ba83-4204-8e12-d1efe56dd3c4
+      version: -1
+      name: netcraft-file-report-submit
       script: Netcraft|||netcraft-file-report-submit
       type: regular
       iscommand: true
-      brand: ''
+      brand: Netcraft
     nexttasks:
       '#none#':
-      - '17'
+      - "18"
     scriptarguments:
-      reporter_email:
-        simple: ''
+      extend-context:
+        simple: fileReportId=uuid
       file_content:
-        simple: ''
+        simple: ${RandomNumber}
       file_name:
-        simple: ''
-      entry_id:
-        simple: ''
-      reason:
-        simple: ''
-      polling:
-        simple: ''
+        simple: malicious.txt
       interval_in_seconds:
-        simple: ''
-      timeout:
-        simple: ''
+        simple: "15"
+      polling:
+        simple: "true"
+      reason:
+        simple: the file may be malicious
+      reporter_email:
+        simple: spadan@paloaltonetworks.com
     separatecontext: false
-    view: '{"position":{"x":50,"y":3200}}'
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1565
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '17':
-    id: '17'
-    taskid: '17'
-    type: condition
-    task:
-      id: '17'
-      version: -1
-      name: Verify Outputs
-      type: condition
-      iscommand: false
-      description: ''
-      brand: ''
-    nexttasks:
-      yes:
-      - '18'
-    separatecontext: false
-    conditions: []
-    view: '{"position":{"x":50,"y":3400}}'
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-  '18':
-    id: 18
-    taskid: '18'
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 6c2b9f69-7a15-4d57-892d-d624a537ab8c
     type: regular
     task:
-      id: '18'
+      id: 6c2b9f69-7a15-4d57-892d-d624a537ab8c
       version: -1
-      name: 'netcraft-submission-file-list'
-      description: ''
+      name: netcraft-submission-file-list
       script: Netcraft|||netcraft-submission-file-list
       type: regular
       iscommand: true
-      brand: ''
+      brand: Netcraft
     nexttasks:
       '#none#':
-      - '19'
+      - "20"
     scriptarguments:
-      submission_uuid:
-        simple: FNVOZqnhmD8mTbebJeY78kl6kkFsiuHP
-      page:
-        simple: '2'
-      page_size:
-        simple: '2'
       limit:
-        simple: '50'
+        simple: "50"
+      submission_uuid:
+        simple: ${fileReportId}
     separatecontext: false
-    view: '{"position":{"x":50,"y":3600}}'
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1740
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '19':
-    id: '19'
-    taskid: '19'
-    type: condition
-    task:
-      id: '19'
-      version: -1
-      name: Verify Outputs
-      type: condition
-      iscommand: false
-      description: ''
-      brand: ''
-    nexttasks:
-      yes:
-      - '20'
-    separatecontext: false
-    conditions: []
-    view: '{"position":{"x":50,"y":3800}}'
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-  '20':
-    id: 20
-    taskid: '20'
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: fab80ea9-0361-4a43-858c-0173ed276573
     type: regular
     task:
-      id: '20'
+      id: fab80ea9-0361-4a43-858c-0173ed276573
       version: -1
-      name: 'netcraft-file-screenshot-get'
-      description: ''
+      name: netcraft-file-screenshot-get
       script: Netcraft|||netcraft-file-screenshot-get
       type: regular
       iscommand: true
-      brand: ''
+      brand: Netcraft
     nexttasks:
       '#none#':
-      - '21'
+      - "34"
     scriptarguments:
-      submission_uuid:
-        simple: ''
       file_hash:
-        simple: ''
+        simple: ${Netcraft.SubmissionFile.hash}
+      submission_uuid:
+        simple: ${fileReportId}
     separatecontext: false
-    view: '{"position":{"x":50,"y":4000}}'
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1915
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '21':
-    id: '21'
-    taskid: '21'
-    type: condition
-    task:
-      id: '21'
-      version: -1
-      name: Verify Outputs
-      type: condition
-      iscommand: false
-      description: ''
-      brand: ''
-    nexttasks:
-      yes:
-      - '22'
-    separatecontext: false
-    conditions: []
-    view: '{"position":{"x":50,"y":4200}}'
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-  '22':
-    id: 22
-    taskid: '22'
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 98fa9bf2-00d4-4017-8e36-fe7d52f98f9e
     type: regular
     task:
-      id: '22'
+      id: 98fa9bf2-00d4-4017-8e36-fe7d52f98f9e
       version: -1
-      name: 'netcraft-email-report-submit'
-      description: ''
+      name: netcraft-email-report-submit
       script: Netcraft|||netcraft-email-report-submit
       type: regular
       iscommand: true
-      brand: ''
+      brand: Netcraft
     nexttasks:
       '#none#':
-      - '23'
+      - "24"
     scriptarguments:
-      reporter_email:
-        simple: ''
+      extend-context:
+        simple: mailReportId=uuid
       message:
-        simple: ''
-      password:
-        simple: ''
+        simple: |-
+          From: ${RandomString}@example.com
+          To: example@netcraft.com
+          Subject: Example mail
+          Date: Tue, 01 Jan 2019 00:00:00 +0000
+          MIME-Version: 1.0
+          Content-Type: text/plain; charset="UTF8"
+          Content-Transfer-Encoding: 8bit
+
+          Example mail body with http://example.com URL. and code "${RandomString}"
       polling:
-        simple: 'false'
+        simple: "true"
+      reporter_email:
+        simple: spadan@paloaltonetworks.com
     separatecontext: false
-    view: '{"position":{"x":50,"y":4400}}'
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1565
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '23':
-    id: '23'
-    taskid: '23'
-    type: condition
-    task:
-      id: '23'
-      version: -1
-      name: Verify Outputs
-      type: condition
-      iscommand: false
-      description: ''
-      brand: ''
-    nexttasks:
-      yes:
-      - '24'
-    separatecontext: false
-    conditions: []
-    view: '{"position":{"x":50,"y":4600}}'
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-  '24':
-    id: 24
-    taskid: '24'
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 87e0c36c-a309-483f-8c66-cb559a237409
     type: regular
     task:
-      id: '24'
+      id: 87e0c36c-a309-483f-8c66-cb559a237409
       version: -1
-      name: 'netcraft-submission-mail-get'
-      description: ''
+      name: netcraft-submission-mail-get
       script: Netcraft|||netcraft-submission-mail-get
       type: regular
       iscommand: true
-      brand: ''
+      brand: Netcraft
     nexttasks:
       '#none#':
-      - '25'
+      - "26"
     scriptarguments:
       submission_uuid:
-        simple: ''
+        simple: ${mailReportId}
     separatecontext: false
-    view: '{"position":{"x":50,"y":4800}}'
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1740
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '25':
-    id: '25'
-    taskid: '25'
-    type: condition
-    task:
-      id: '25'
-      version: -1
-      name: Verify Outputs
-      type: condition
-      iscommand: false
-      description: ''
-      brand: ''
-    nexttasks:
-      yes:
-      - '26'
-    separatecontext: false
-    conditions: []
-    view: '{"position":{"x":50,"y":5000}}'
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-  '26':
-    id: 26
-    taskid: '26'
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: 693db984-e9db-412a-8f5b-7d6dc69b3131
     type: regular
     task:
-      id: '26'
+      id: 693db984-e9db-412a-8f5b-7d6dc69b3131
       version: -1
-      name: 'netcraft-mail-screenshot-get'
-      description: ''
+      name: netcraft-mail-screenshot-get
       script: Netcraft|||netcraft-mail-screenshot-get
       type: regular
       iscommand: true
-      brand: ''
+      brand: Netcraft
     nexttasks:
       '#none#':
-      - '27'
+      - "34"
     scriptarguments:
       submission_uuid:
-        simple: ''
+        simple: ${mailReportId}
     separatecontext: false
-    view: '{"position":{"x":50,"y":5200}}'
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1915
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '27':
-    id: '27'
-    taskid: '27'
-    type: condition
-    task:
-      id: '27'
-      version: -1
-      name: Verify Outputs
-      type: condition
-      iscommand: false
-      description: ''
-      brand: ''
-    nexttasks:
-      yes:
-      - '28'
-    separatecontext: false
-    conditions: []
-    view: '{"position":{"x":50,"y":5400}}'
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-  '28':
-    id: 28
-    taskid: '28'
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: 2a2d2f21-e443-4c4f-8eb7-b3dde6be847b
     type: regular
     task:
-      id: '28'
+      id: 2a2d2f21-e443-4c4f-8eb7-b3dde6be847b
       version: -1
-      name: 'netcraft-url-report-submit'
-      description: ''
+      name: netcraft-url-report-submit
       script: Netcraft|||netcraft-url-report-submit
       type: regular
       iscommand: true
-      brand: ''
+      brand: Netcraft
     nexttasks:
       '#none#':
-      - '29'
+      - "30"
     scriptarguments:
+      extend-context:
+        simple: urlReportId=uuid
+      interval_in_seconds:
+        simple: "30"
+      polling:
+        simple: "true"
+      reason:
+        simple: The urls are probably malicious because of "${RandomString}"
       reporter_email:
         simple: spadan@paloaltonetworks.com
-      urls:
-        simple: ''
-      reason:
-        simple: ''
-      polling:
-        simple: 'true'
-      interval_in_seconds:
-        simple: '30'
       timeout:
-        simple: '300'
+        simple: "900"
+      urls:
+        simple: https://www.google.com/,https://example.com/,https://xsoar.pan.dev/${RandomString}
     separatecontext: false
-    view: '{"position":{"x":50,"y":5600}}'
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 1565
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '29':
-    id: '29'
-    taskid: '29'
-    type: condition
-    task:
-      id: '29'
-      version: -1
-      name: Verify Outputs
-      type: condition
-      iscommand: false
-      description: ''
-      brand: ''
-    nexttasks:
-      yes:
-      - '30'
-    separatecontext: false
-    conditions: []
-    view: '{"position":{"x":50,"y":5800}}'
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-  '30':
-    id: 30
-    taskid: '30'
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: 3f3f1d50-9d14-4285-832a-58e9913dccaa
     type: regular
     task:
-      id: '30'
+      id: 3f3f1d50-9d14-4285-832a-58e9913dccaa
       version: -1
-      name: 'netcraft-submission-url-list'
-      description: ''
+      name: netcraft-submission-url-list
       script: Netcraft|||netcraft-submission-url-list
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '31'
+      - "32"
     scriptarguments:
+      limit:
+        simple: "50"
+      page:
+        simple: "2"
+      page_size:
+        simple: "2"
       submission_uuid:
         simple: 0qQt98P04o0qk46UXveNsCHhUN7zLopY
-      page:
-        simple: '2'
-      page_size:
-        simple: '2'
-      limit:
-        simple: '50'
     separatecontext: false
-    view: '{"position":{"x":50,"y":6000}}'
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 1740
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '31':
-    id: '31'
-    taskid: '31'
-    type: condition
-    task:
-      id: '31'
-      version: -1
-      name: Verify Outputs
-      type: condition
-      iscommand: false
-      description: ''
-      brand: ''
-    nexttasks:
-      yes:
-      - '32'
-    separatecontext: false
-    conditions: []
-    view: '{"position":{"x":50,"y":6200}}'
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-  '32':
-    id: 32
-    taskid: '32'
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: 0ae0a465-217c-4c03-8098-69e51663673e
     type: regular
     task:
-      id: '32'
+      id: 0ae0a465-217c-4c03-8098-69e51663673e
       version: -1
-      name: 'netcraft-url-screenshot-get'
-      description: ''
+      name: netcraft-url-screenshot-get
       script: Netcraft|||netcraft-url-screenshot-get
       type: regular
       iscommand: true
-      brand: ''
+      brand: Netcraft
     nexttasks:
       '#none#':
-      - '33'
+      - "34"
     scriptarguments:
+      screenshot_hash:
+        simple: 06f8715ba1b1ca5dee4af05e98bbc63a
       submission_uuid:
         simple: 0qQt98P04o0qk46UXveNsCHhUN7zLopY
       url_uuid:
         simple: BZqSBm5i4KIoCq6TItXLWKZwGAm3nN08
-      screenshot_hash:
-        simple: 06f8715ba1b1ca5dee4af05e98bbc63a
     separatecontext: false
-    view: '{"position":{"x":50,"y":6400}}'
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 1915
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '33':
-    id: '33'
-    taskid: '33'
-    type: condition
-    task:
-      id: '33'
-      version: -1
-      name: Verify Outputs
-      type: condition
-      iscommand: false
-      description: ''
-      brand: ''
-    nexttasks:
-      yes:
-      - '34'
-    separatecontext: false
-    conditions: []
-    view: '{"position":{"x":50,"y":6600}}'
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-  '34':
-    id: '34'
-    taskid: '34'
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: 9e2eb721-054e-4ba4-8b6d-310be9fe396f
     type: title
     task:
-      id: '34'
+      id: 9e2eb721-054e-4ba4-8b6d-310be9fe396f
       version: -1
       name: Test Done
       type: title
       iscommand: false
-      brand: ''
-      description: ''
+      brand: ""
     separatecontext: false
-    view: '{"position":{"x":50,"y":6800}}'
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 2090
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-view: '{"linkLabelsPosition":{},"paper":{"dimensions":{"height":200,"width":380,"x":50,"y":50}}}'
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: 3c7e12bc-174a-418b-8e7d-58874362387e
+    type: title
+    task:
+      id: 3c7e12bc-174a-418b-8e7d-58874362387e
+      version: -1
+      name: Submission Service
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: e4af847f-1799-41c8-8e26-00241a1bd981
+    type: title
+    task:
+      id: e4af847f-1799-41c8-8e26-00241a1bd981
+      version: -1
+      name: Takedown Service
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: c8da53ac-6b50-49d0-843d-ae8f86e8bc49
+    type: title
+    task:
+      id: c8da53ac-6b50-49d0-843d-ae8f86e8bc49
+      version: -1
+      name: Report URLs
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 1405
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: 12421445-bfe0-42d1-82e2-9dd3e0168416
+    type: title
+    task:
+      id: 12421445-bfe0-42d1-82e2-9dd3e0168416
+      version: -1
+      name: Report Files
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1405
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: 932095ee-9b60-4366-8025-a8862a731b4a
+    type: title
+    task:
+      id: 932095ee-9b60-4366-8025-a8862a731b4a
+      version: -1
+      name: Report Mails
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1405
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "40":
+    id: "40"
+    taskid: 46a98517-71f6-41ec-8bd2-14080177d756
+    type: regular
+    task:
+      id: 46a98517-71f6-41ec-8bd2-14080177d756
+      version: -1
+      name: Generate random string
+      description: Generates random string
+      scriptName: GenerateRandomString
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "41"
+    scriptarguments:
+      Digits:
+        simple: "False"
+      Length:
+        simple: "10"
+      Lowercase:
+        simple: "True"
+      Punctuation:
+        simple: "False"
+      Uppercase:
+        simple: "True"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "41":
+    id: "41"
+    taskid: 144cfdd0-6bd0-4fd6-8fb3-b5a7498bad83
+    type: regular
+    task:
+      id: 144cfdd0-6bd0-4fd6-8fb3-b5a7498bad83
+      version: -1
+      name: Generate random number
+      description: Generates random string
+      scriptName: GenerateRandomString
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "36"
+      - "35"
+    scriptarguments:
+      Digits:
+        simple: "True"
+      Length:
+        simple: "10"
+      Lowercase:
+        simple: "False"
+      Punctuation:
+        simple: "False"
+      Uppercase:
+        simple: "False"
+      extend-context:
+        simple: RandomNumber=RandomString
+      ignore-outputs:
+        simple: "true"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2105,
+        "width": 1670,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
 inputs: []
 outputs: []
