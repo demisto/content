@@ -119,6 +119,8 @@ def test_list_destinations_command_fetch_destinations(requests_mock, mock_client
 
     data = response['data']
     expected_outputs = [data[0], data[2], data[3]]
+    response['meta']['total'] = len(expected_outputs)
+    response['data'] = expected_outputs
 
     assert command_results.outputs_prefix == (
         f'{CiscoUmbrellaCloudSecurityv2.INTEGRATION_OUTPUT_PREFIX}.'
