@@ -578,6 +578,7 @@ class takedown_update:
                 "set_suspected_fraudulent_hostname": "true",
                 "add_tags": "add_tags,add_tags2",
                 "remove_tags": "remove_tags,remove_tags2",
+                'takedown_id': 'takedown_id',
             },
             "files": None,
             "resp_type": "json",
@@ -599,8 +600,17 @@ class takedown_update:
         outputs=None,
         outputs_key_field=None,
         outputs_prefix=None,
-        raw_response=None,
         readable_output=takedown_update_readable,
+        raw_response={
+            "customer_label": "Internal Issue #12345",
+            "description": "New description of takedown",
+            "region": "example_region",
+            "suspected_fraudulent_domain": "false",
+            "suspected_fraudulent_hostname": "false",
+            "tags": ["tag1", "tag2"],
+            "takedown_id": "30480489",
+            "target_brand": "Example Brand",
+        }
     )
 
 
@@ -616,6 +626,7 @@ class submission_list:
         "submission_reason": "submission_reason",
         "submitter_email": "submitter_email",
         "polling": "false",
+        "ignore_404": False,
     }
     api_response = {
         "count": 25,
@@ -679,8 +690,8 @@ class submission_list:
                     "uuid": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
                 },
             ],
-            "Netcraft.SubmissionNextToken(val.NextPageToken)": {
-                "NextPageToken": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+            "Netcraft(val.SubmissionNextToken || true)": {
+                "SubmissionNextToken": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
             },
         },
         outputs_key_field="uuid",
@@ -702,6 +713,7 @@ class submission_list_with_uuid:
         "submission_uuid": "submission_uuid",
         "submitter_email": "submitter_email",
         "polling": "false",
+        "ignore_404": True,
     }
     api_response = {
         "classification_log": [
@@ -750,7 +762,7 @@ class submission_list_with_uuid:
             "json_data": None,
             "files": None,
             "resp_type": "json",
-            "ok_codes": None,
+            "ok_codes": (200, 404),
         },
     }
     outputs = CommandResults(
@@ -825,11 +837,11 @@ class email_report_submit:
                 "message": "message",
                 "password": "password",
             },
-            'files': None,
-         'full_url': 'https://report.netcraft.com/api/v3/report/mail',
-          'ok_codes': None,
-          'params': None,
-          'resp_type': 'json'
+            "files": None,
+            "full_url": "https://report.netcraft.com/api/v3/report/mail",
+            "ok_codes": None,
+            "params": None,
+            "resp_type": "json",
         },
     }
     get_submission_call_args = (
@@ -837,6 +849,7 @@ class email_report_submit:
             "polling": "true",
             "timeout": "600",
             "interval_in_seconds": "30",
+            "ignore_404": True,
         },
         "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
     )
@@ -844,7 +857,8 @@ class email_report_submit:
 
 class mail_screenshot_get:
     args = {"submission_uuid": "submission_uuid"}
-    api_response = b""
+    api_response = requests.Response()
+    api_response.status_code = 200
     http_func_args = {
         "args": ["GET"],
         "kwargs": {
@@ -852,11 +866,17 @@ class mail_screenshot_get:
             "params": None,
             "json_data": None,
             "files": None,
-            "resp_type": "content",
-            "ok_codes": None,
+            "resp_type": "response",
+            "ok_codes": (200, 404),
         },
     }
     outputs = "mail_screenshot_submission_uuid.png"
+
+
+class mail_screenshot_get_404(mail_screenshot_get):
+    api_response = requests.Response()
+    api_response.status_code = 404
+    outputs = "No screenshot for mail."
 
 
 class submission_mail_get:
@@ -940,6 +960,7 @@ class file_report_submit_with_file_name_and_content:
             "polling": "true",
             "timeout": "600",
             "interval_in_seconds": "30",
+            "ignore_404": True,
         },
         "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
     )
@@ -1095,7 +1116,6 @@ class submission_url_list:
             "ok_codes": None,
         },
     }
-
     outputs = CommandResults(
         outputs=[
             {
@@ -1231,7 +1251,8 @@ class takedown_note_list:
 
 class file_screenshot_get:
     args = {"file_hash": "file_hash", "submission_uuid": "submission_uuid"}
-    api_response = b""
+    api_response = requests.Response()
+    api_response.status_code = 200
     http_func_args = {
         "args": ["GET"],
         "kwargs": {
@@ -1239,11 +1260,17 @@ class file_screenshot_get:
             "params": None,
             "json_data": None,
             "files": None,
-            "resp_type": "content",
-            "ok_codes": None,
+            "resp_type": "response",
+            "ok_codes": (200, 404),
         },
     }
     outputs = "file_screenshot_file_hash.png"
+
+
+class file_screenshot_get_404(file_screenshot_get):
+    api_response = requests.Response()
+    api_response.status_code = 404
+    outputs = "No screenshot for file."
 
 
 class url_report_submit:
@@ -1267,11 +1294,11 @@ class url_report_submit:
                 "reason": "reason",
                 "urls": [{"url": "urls"}, {"url": "urls2"}],
             },
-            'files': None,
-         'full_url': 'https://report.netcraft.com/api/v3/report/urls',
-          'ok_codes': None,
-          'params': None,
-          'resp_type': 'json'
+            "files": None,
+            "full_url": "https://report.netcraft.com/api/v3/report/urls",
+            "ok_codes": None,
+            "params": None,
+            "resp_type": "json",
         },
     }
     get_submission_call_args = (
@@ -1279,6 +1306,7 @@ class url_report_submit:
             "polling": "true",
             "timeout": "600",
             "interval_in_seconds": "30",
+            "ignore_404": True,
         },
         "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
     )
@@ -1328,7 +1356,6 @@ class attack_type_list:
             "ok_codes": None,
         },
     }
-
     outputs = CommandResults(
         outputs=[
             {

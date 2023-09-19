@@ -151,9 +151,9 @@ class Client(BaseClient):
             'GET', 'submissions/', params=params,
         )
 
-    def get_submission(self, uuid: str) -> dict:
+    def get_submission(self, uuid: str, ignore_404: bool) -> dict:
         return self.submission_http_request(
-            'GET', f'submission/{uuid}',
+            'GET', f'submission/{uuid}', ok_codes=(200, 404 * ignore_404)
         )
 
     def file_report_submit(self, body: dict) -> dict:
@@ -166,10 +166,10 @@ class Client(BaseClient):
             'GET', f'submission/{submission_uuid}/files', params=params,
         )
 
-    def file_screenshot_get(self, submission_uuid: str, file_hash: str) -> bytes:
+    def file_screenshot_get(self, submission_uuid: str, file_hash: str) -> requests.Response:
         return self.submission_http_request(
             'GET', f'submission/{submission_uuid}/files/{file_hash}/screenshot',
-            resp_type='content',
+            resp_type='response', ok_codes=(200, 404)
         )
 
     def url_report_submit(self, body: dict) -> dict:
@@ -182,10 +182,10 @@ class Client(BaseClient):
             'GET', f'submission/{submission_uuid}/mail',
         )
 
-    def mail_screenshot_get(self, submission_uuid: str) -> bytes:
+    def mail_screenshot_get(self, submission_uuid: str) -> requests.Response:
         return self.submission_http_request(
             'GET', f'submission/{submission_uuid}/mail/screenshot',
-            resp_type='content',
+            resp_type='response',
         )
 
     def email_report_submit(self, body: dict) -> dict:
@@ -382,11 +382,10 @@ def fetch_incidents(client: Client) -> list[dict[str, str]]:
         demisto.debug(incident_id := incident['id'])
         return {
             'name': f'Takedown-{incident_id}',
-            'occurred': arg_to_datetime(
+            'occurred': arg_to_datetime(  # type: ignore[union-attr]
                 incident['date_submitted'],
                 required=True
             ).isoformat(),
-            # 'dbotMirrorId': incident_id,  TODO check if is ok without
             'rawJSON': json.dumps(incident),
         }
 
@@ -724,7 +723,7 @@ def get_submission(args: dict, submission_uuid: str, client: Client) -> PollResu
             removeNull=True,
         )
 
-    response = client.get_submission(submission_uuid)
+    response = client.get_submission(submission_uuid, args['ignore_404'])
     return PollResult(
         CommandResults(
             outputs_prefix='Netcraft.Submission',
@@ -732,7 +731,8 @@ def get_submission(args: dict, submission_uuid: str, client: Client) -> PollResu
             outputs=response_to_context(response, submission_uuid),
             readable_output=response_to_readable(response),
         ),
-        continue_to_poll=(response.get('state') == 'processing'),
+        # the submission may not be registered yet, hence the "None" option.
+        continue_to_poll=(response.get('state') in ('processing', None)),
         args_for_next_run=(args | {'submission_uuid': submission_uuid})
     )
 
@@ -821,7 +821,7 @@ def file_report_submit_command(args: dict, client: Client) -> CommandResults:
     response = client.file_report_submit(
         args_to_body(args)
     )
-    return get_submission(args, response['uuid'], client)
+    return get_submission(args | {'ignore_404': True}, response['uuid'], client)
 
 
 def submission_file_list_command(args: dict, client: Client) -> CommandResults:
@@ -858,10 +858,15 @@ def submission_file_list_command(args: dict, client: Client) -> CommandResults:
     )
 
 
-def file_screenshot_get_command(args: dict, client: Client) -> dict:
+def file_screenshot_get_command(args: dict, client: Client) -> dict | CommandResults:
+    response = client.file_screenshot_get(**args)
+    if response.status_code == 404:
+        return CommandResults(
+            readable_output='No screenshot for file.'
+        )
     return fileResult(
         f'file_screenshot_{args["file_hash"]}.png',
-        client.file_screenshot_get(**args),
+        response.content,
         EntryType.ENTRY_INFO_FILE,
     )
 
@@ -871,7 +876,7 @@ def email_report_submit_command(args: dict, client: Client) -> CommandResults:
     response = client.email_report_submit(
         {'email': args.pop('reporter_email')} | pop_keys(args, 'message', 'password')
     )
-    return get_submission(args, response['uuid'], client)
+    return get_submission(args | {'ignore_404': True}, response['uuid'], client)
 
 
 def submission_mail_get_command(args: dict, client: Client) -> CommandResults:
@@ -899,10 +904,15 @@ def submission_mail_get_command(args: dict, client: Client) -> CommandResults:
     )
 
 
-def mail_screenshot_get_command(args: dict, client: Client) -> dict:
+def mail_screenshot_get_command(args: dict, client: Client) -> dict | CommandResults:
+    response = client.mail_screenshot_get(**args)
+    if response.status_code == 404:
+        return CommandResults(
+            readable_output='No screenshot for mail.'
+        )
     return fileResult(
         f'mail_screenshot_{args["submission_uuid"]}.png',
-        client.mail_screenshot_get(**args),
+        response.content,
         EntryType.ENTRY_INFO_FILE,
     )
 
@@ -916,7 +926,7 @@ def url_report_submit_command(args: dict, client: Client) -> CommandResults:
             {'url': url} for url in argToList(args.pop('urls'))
         ]
     })
-    return get_submission(args, response['uuid'], client)
+    return get_submission(args | {'ignore_404': True}, response['uuid'], client)
 
 
 def submission_url_list_command(args: dict, client: Client) -> CommandResults:

@@ -64,6 +64,27 @@ If a takedown for the attack already exists in the Netcraft system it will be au
 | --- | --- | --- |
 | Netcraft.Takedown.id | String | The ID of the takedown. \(this key will only appear if the takedown has been created and verified\). | 
 
+#### Command example
+```!netcraft-attack-report attack="https://www.amazon.com/phishing_rods" comment="Very malicious" attack_type="phishing_url" inactive="true" customer_label="Test Playbook run" tags="coronavirus"```
+#### Context Example
+```json
+{
+    "Netcraft": {
+        "Takedown": {
+            "id": "45492113"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Netcraft Takedown
+>|Report status|Takedown ID|Response code|
+>|---|---|---|
+>| The attack was submitted to Netcraft successfully. | 45492113 | TD_OK |
+
+
 ### netcraft-takedown-list
 
 ***
@@ -140,8 +161,10 @@ Possible values:
  | 
 | Netcraft.Takedown.attack_type | String | The type of attack being taken down. | 
 | Netcraft.Takedown.certificate | Unknown | HTTPS certificate details for the hostname.
-The value returned is the output of PHP's "openssl_x509_parse" function with the additional keys spki_sha256 and spki_sha1, \(See https://www.php.net/manual/en/function.openssl-x509-parse.php\).
+The structure of the returned data is the output of PHP's "openssl_x509_parse" function with the additional keys spki_sha256 and spki_sha1, \(See https://www.php.net/manual/en/function.openssl-x509-parse.php\).
  | 
+| Netcraft.Takedown.certificate.spki_sha256 | Unknown | The SHA-256 hash of the Subject Public Key Info structure in the certificate. | 
+| Netcraft.Takedown.certificate.spki_sha1 | Unknown | The SHA-1 hash of the Subject Public Key Info structure in the certificate. | 
 | Netcraft.Takedown.deceptive_domain_score | String | The deceptive domain score of the domain.
 e.g. for the URL https://l0gin.example.com/, this value will contain the deceptive domain score for example.com.
  | 
@@ -233,6 +256,14 @@ Will be an empty array if the URL was not seen blocked by GSB on any platform.
 | Netcraft.Takedown.date_escalated | Date | The date and time that the takedown entered the managed state, in UTC. | 
 | Netcraft.Takedown.logged_credential_injections | String | An array of objects containing the type and value of each marked account injection associated with the takedown. | 
 | Netcraft.Takedown.whois_data | String | The WHOIS data for the takedown. | 
+
+#### Command example
+```!netcraft-takedown-list date_from="last week" attack_types=phishing_url escalated="No" sort=id sort_direction=asc limit=2 all_results=false```
+#### Human Readable Output
+
+>### Netcraft Takedowns
+>**No entries.**
+
 
 ### netcraft-takedown-update
 

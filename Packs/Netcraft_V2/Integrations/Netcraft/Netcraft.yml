@@ -191,18 +191,18 @@ script:
         ID. When using this argument we recommend that you also set the "sort" argument
         to id to ensure that no results are missed.
       name: id_after
-    - description: |
+    - description: |-
         Filter to takedowns that were submitted on or after the date/time
         provided.Values should be supplied as YYYY-MM-DD HH:MM:SS\_in UTC. If no time
         information is provided, the system will default to YYYY-MM-DD 00:00:00. Relative
         date/time formats are also supported, for example\_5 days ago,\_and monday
-        this week"
+        this week".
       name: date_from
-    - description: |
+    - description: |-
         Filter to takedowns that were submitted on or before the date/time
         provided. Values should be supplied as "YYYY-MM-DD HH:MM:SS" in UTC. If no time
         information is provided, the system will default to "YYYY-MM-DD 00:00:00". Relative
-        date/time formats are also supported, for example "5 days ago", and "monday this week"
+        date/time formats are also supported, for example "5 days ago", and "monday this week".
       name: date_to
     - description: Filter to takedowns that were reported by the given user.
       name: reporter_email
@@ -364,10 +364,16 @@ script:
     - contextPath: Netcraft.Takedown.attack_type
       description: The type of attack being taken down.
       type: String
-    - contextPath: Netcraft.Takedown.certificate  # TODO add descriptions for all keys
+    - contextPath: Netcraft.Takedown.certificate
       description: |
         HTTPS certificate details for the hostname.
-        The value returned is the output of PHP's "openssl_x509_parse" function with the additional keys spki_sha256 and spki_sha1, (See https://www.php.net/manual/en/function.openssl-x509-parse.php).
+        The structure of the returned data is the output of PHP's "openssl_x509_parse" function with the additional keys spki_sha256 and spki_sha1, (See https://www.php.net/manual/en/function.openssl-x509-parse.php).
+      type: Unknown
+    - contextPath: Netcraft.Takedown.certificate.spki_sha256
+      description: The SHA-256 hash of the Subject Public Key Info structure in the certificate.
+      type: Unknown
+    - contextPath: Netcraft.Takedown.certificate.spki_sha1
+      description: The SHA-1 hash of the Subject Public Key Info structure in the certificate.
       type: Unknown
     - contextPath: Netcraft.Takedown.deceptive_domain_score
       description: |
@@ -466,9 +472,9 @@ script:
         When returning multiple URLs, the list will be sorted by the time the screenshot was requested, with the earliest first.
       type: String
     - contextPath: Netcraft.Takedown.status_change_uptime
-      description: |
+      description: |-
         The total duration (hh:mm:ss) that the attack was available for after authorisation, as determined by the takedown status changes.
-        i.e. the total amount of time since authorisation that an attack was not in the resolved or resolved (monitoring)  state.'
+        i.e. the total amount of time since authorisation that an attack was not in the resolved or resolved (monitoring)  state.'.
       type: String
     - contextPath: Netcraft.Takedown.status
       description: |
@@ -500,19 +506,19 @@ script:
       description: The WHOIS data for the takedown.
       type: String
     - contextPath: Netcraft.Takedown.authorisation_source
-      description: |
+      description: |-
         The source of authorisation for the takedown. will be blank if the takedown has not bee authorised.  customer
-        Possible values: "customer" "netcraft"
+        Possible values: "customer" "netcraft".
       type: String
     - contextPath: Netcraft.Takedown.escalation_source
-      description: |
+      description: |-
         The source of escalation for the takedown. will be blank if the takedown has not been escalated.
-        Possible values: "customer" "netcraft"
+        Possible values: "customer" "netcraft".
       type: String
     - contextPath: Netcraft.Takedown.restart_date
-      description: |
+      description: |-
         The latest date and time, in UTC, that the takedown was restarted, i.e. went from the "resolved (monitoring)" status to a contacted status.
-        Will be empty if the takedown ha never been restarted.'
+        Will be empty if the takedown ha never been restarted.'.
       type: String
     - contextPath: Netcraft.Takedown.gsb_block_status
       description: |
@@ -681,7 +687,7 @@ script:
       description: The unique string identifier for the top-level parent type of this attack type.
       type: String
     - contextPath: Netcraft.AttackType.description
-      description: A short description of the attack type
+      description: A short description of the attack type.
       type: String
     - contextPath: Netcraft.AttackType.automated
       description: Indicates whether or not automated takedowns are available for this attack type.
@@ -732,6 +738,10 @@ script:
     - defaultValue: true
       hidden: true
       name: hide_polling_output
+      description: ''
+    - defaultValue: false
+      hidden: true
+      name: ignore_404
       description: ''
     outputs:
     - contextPath: Netcraft.Submission.date
@@ -980,7 +990,7 @@ script:
       defaultValue: '50'
     outputs:
     - contextPath: Netcraft.SubmissionFile.file_state
-      description: The classification state of the file. One of "processing", "no threats" or "malicious."
+      description: The classification state of the file. One of "processing", "no threats" or "malicious.".
       type: String
     - contextPath: Netcraft.SubmissionFile.filename
       description: The name of the file.
@@ -1157,7 +1167,7 @@ script:
       Get basic information about a submission's mail.
       When a submission is archived this command will return an error with the message "this submission has been archived".
     arguments:
-    - description:  The submission's unique identifier. Submission UUIDs can be obtained by running the command "netcraft-submission-list".
+    - description: The submission's unique identifier. Submission UUIDs can be obtained by running the command "netcraft-submission-list".
       name: submission_uuid
       required: true
     outputs:

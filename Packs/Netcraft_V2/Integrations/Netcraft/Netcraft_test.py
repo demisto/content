@@ -3,15 +3,12 @@ from test_data.test_data import *
 from Netcraft import Client
 import demistomock as demisto
 from CommonServerPython import ScheduledCommand
-# import json
-# import yaml
-# from unittest import mock
-# import requests
+
 
 MOCK_CLIENT = Client(
     {
-        'takedown_url': 'https://takedown.netcraft.com/api/v1/',
-        'submission_url': 'https://report.netcraft.com/api/v3/',
+        'takedown': 'https://takedown.netcraft.com/api/v1/',
+        'submission': 'https://report.netcraft.com/api/v3/',
     },
     verify=True,
     proxy=True,
@@ -586,14 +583,40 @@ def test_file_screenshot_get_command(mocker):
     from Netcraft import file_screenshot_get_command
 
     request = mocker.patch.object(Client, '_http_request', return_value=file_screenshot_get.api_response)
+    fileResult = mocker.patch('Netcraft.fileResult')
 
-    result = file_screenshot_get_command(file_screenshot_get.args, MOCK_CLIENT)
+    file_screenshot_get_command(file_screenshot_get.args, MOCK_CLIENT)
 
-    assert file_screenshot_get.outputs == result['File']
+    fileResult.assert_called_with(file_screenshot_get.outputs, None, 9)
 
     request.assert_called_with(
         *file_screenshot_get.http_func_args['args'],
         **file_screenshot_get.http_func_args['kwargs']
+    )
+
+
+def test_file_screenshot_get_with_404(mocker):
+    '''
+    Given:
+        - A request to get the screenshot of a given file which has no screenshot.
+
+    When:
+        - Running the "netcraft-file-screenshot-get" command.
+
+    Then:
+        - Return the message that the scan is not available.
+    '''
+    from Netcraft import file_screenshot_get_command
+
+    request = mocker.patch.object(Client, '_http_request', return_value=file_screenshot_get_404.api_response)
+
+    result = file_screenshot_get_command(file_screenshot_get_404.args, MOCK_CLIENT)
+
+    assert file_screenshot_get_404.outputs == result.readable_output
+
+    request.assert_called_with(
+        *file_screenshot_get_404.http_func_args['args'],
+        **file_screenshot_get_404.http_func_args['kwargs']
     )
 
 
@@ -611,10 +634,11 @@ def test_mail_screenshot_get_command(mocker):
     from Netcraft import mail_screenshot_get_command
 
     request = mocker.patch.object(Client, '_http_request', return_value=mail_screenshot_get.api_response)
+    fileResult = mocker.patch('Netcraft.fileResult')
 
-    result = mail_screenshot_get_command(mail_screenshot_get.args, MOCK_CLIENT)
+    mail_screenshot_get_command(mail_screenshot_get.args, MOCK_CLIENT)
 
-    assert mail_screenshot_get.outputs == result['File']
+    fileResult.assert_called_with(mail_screenshot_get.outputs, None, 9)
 
     request.assert_called_with(
         *mail_screenshot_get.http_func_args['args'],

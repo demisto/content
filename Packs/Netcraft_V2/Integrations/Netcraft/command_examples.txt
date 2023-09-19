@@ -1,5 +1,5 @@
-netcraft-attack-report attack= comment= brand= attack_type= inactive= force_auth= malware= suspected_fraud_domain= password= entry_id= phishkit_fetch_url= phishkit_phish_url= customer_label= tags= region=
-netcraft-takedown-list id= statuses= url= false_positive= ip= id_before= id_after= date_from= date_to= reporter_email= report_source= attack_types= auth_given= escalated= sort= sort_direction= limit= all_results= region=
+!netcraft-attack-report attack="https://www.amazon.com/phishing_rods" comment="Very malicious" attack_type="phishing_url" inactive="true" customer_label="Test Playbook run" tags="coronavirus"
+!netcraft-takedown-list date_from="last week" attack_types=phishing_url escalated="No" sort=id sort_direction=asc limit=2 all_results=false
 netcraft-takedown-update takedown_id= customer_label= description= brand= suspected_fraud_domain= suspected_fraud_hostname= add_tags= remove_tags= region=
 netcraft-takedown-escalate takedown_id=
 netcraft-takedown-note-create takedown_id= note_text= notify=
