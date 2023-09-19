@@ -1115,7 +1115,7 @@ def fetch_investigation_command(client: Client, env: str, args=None):
             }
             priority
             type
-            processingStatus {
+            processing_status {
                 assets
                 events
                 alerts
@@ -1199,7 +1199,7 @@ def fetch_investigation_command(client: Client, env: str, args=None):
             priority
             status
             type
-            processingStatus {
+            processing_status {
                 assets
                 events
                 alerts
@@ -1228,6 +1228,11 @@ def fetch_investigation_command(client: Client, env: str, args=None):
             $query: String
         ) {
             investigationsSearch(
+                page: $page
+                perPage: $perPage
+                orderByField: $orderByField
+                orderDirection: $orderDirection
+                query: $query
             ) {
                 totalCount
                 investigations {
