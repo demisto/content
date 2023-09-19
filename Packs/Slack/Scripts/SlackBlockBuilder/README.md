@@ -120,7 +120,7 @@ Verify your Slack blocks payload is valid. Try simplifying the payload. Test wit
 ---
 **Issue**: The survey is sent to Slack and submitted successfully, but the response does not show up in context data in Cortex XSOAR.
 
-**Troubleshooting**: The most likely cause is that there is no API key entered into the Slack v3 integration instance settings, or the API key was not created by default admin. Ensure an API key created by a default admin user is entered into the Slack v3 integration instance settings. Also, make sure to mark the **Trust any certificate (not secure)** integration param.
+**Troubleshooting**: The most likely cause is that there is no API key entered into the Slack v3 integration instance settings, or the API key was not created by default admin. Ensure an API key created by a default admin user is entered into the Slack v3 integration instance settings. Also, make sure to mark the **Trust any certificate (not secure)** integration parameter.
 
 ---
 **Issue**: The survey is sent to Slack successfully, but clicking the Submit button in Slack does nothing. No response is returned to Cortex XSOAR. There may be a ⚠️ icon next to the Submit button in Slack. 
