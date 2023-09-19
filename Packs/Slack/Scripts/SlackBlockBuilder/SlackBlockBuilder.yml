@@ -7,7 +7,7 @@ type: python
 tags:
 - slack
 enabled: true
-comment: SlackBlockBuilder will format a given Slack block into a format readable by the SlackV3 integration. The script will also send the block to the given destination. Make sure to mark Trust any certificate and fill the XSOAR API Key integration params if you wish to get the response to the incident context.
+comment: SlackBlockBuilder will format a given Slack block into a format readable by the SlackV3 integration. The script will also send the block to the given destination. Make sure to mark **Trust any certificate** and fill the **XSOAR API Key integration** parameters if you want to get a response to the incident context.
 args:
 - description: The URL copied from Slack's Block Builder.
   name: blocks_url
