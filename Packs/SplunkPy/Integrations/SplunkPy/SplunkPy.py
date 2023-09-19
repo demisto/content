@@ -2215,9 +2215,11 @@ def splunk_search_command(service: client.Service, args: dict) -> CommandResults
         raw_response=total_parsed_results,
         readable_output=human_readable
     )]
+    dbot_table_headers = ['Indicator', 'Type', 'Vendor', 'Score', 'isTypedIndicator']
     if entry_context_dbot_score:
         results.append(CommandResults(
-        outputs=entry_context_dbot_score))
+        outputs=entry_context_dbot_score,
+        readable_output=tableToMarkdown("DBot Score", entry_context_dbot_score['DBotScore'], headers=dbot_table_headers)))
     return results
 
 
