@@ -1,6 +1,6 @@
 category: IT Services
 commonfields:
-  id: GCP-IAM
+  id: GCP-IAM - Contribution
   version: -1
 configuration:
 - displaypassword: Service Account Private Key file content (JSON).
@@ -17,8 +17,8 @@ configuration:
   type: 8
   required: false
 description: Manage identity and access control for Google Cloud Platform resources.
-display: GCP-IAM
-name: GCP-IAM
+display: GCP-IAM - Contribution
+name: GCP-IAM - Contribution
 script:
   commands:
   - arguments:
