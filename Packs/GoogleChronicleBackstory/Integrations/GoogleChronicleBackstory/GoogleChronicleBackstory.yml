@@ -382,7 +382,7 @@ script:
       description: The vendor used to calculate the score.
       type: String
     - contextPath: DBotScore.Score
-      description: 'The reputation score (0: Unknown, 1: Good, 2: Suspicious, 3: Bad)'
+      description: 'The reputation score (0: Unknown, 1: Good, 2: Suspicious, 3: Bad).'
       type: Number
     - contextPath: IP.Address
       description: The IP address of the artifact.
@@ -439,7 +439,7 @@ script:
       description: The vendor used to calculate the score.
       type: String
     - contextPath: DBotScore.Score
-      description: 'The reputation score (0: Unknown, 1: Good, 2: Suspicious, 3: Bad)'
+      description: 'The reputation score (0: Unknown, 1: Good, 2: Suspicious, 3: Bad).'
       type: Number
     - contextPath: Domain.Name
       description: The domain name of the artifact.
@@ -3364,7 +3364,7 @@ script:
       defaultValue: ','
       description: |-
         Delimiter by which the content of the list is seperated.
-        Eg:  " , " , " : ", " ; "
+        Eg:  " , " , " : ", " ; ".
       name: delimiter
     description: Create a new reference list.
     name: gcb-create-reference-list
@@ -3453,7 +3453,7 @@ script:
     - defaultValue: ','
       description: |-
         Delimiter by which the content of the list is seperated.
-        Eg:  " , " , " : ", " ; "
+        Eg:  " , " , " : ", " ; ".
       name: delimiter
     description: Updates an existing reference list.
     name: gcb-update-reference-list
@@ -3497,7 +3497,7 @@ script:
       description: Whether the rule generating this detection is a single event or multi-event rule.
       type: String
     - contextPath: GoogleChronicleBackstory.StreamRules.list.detection.detection.ruleLabels
-      description: Information about the rule
+      description: Information about the rule.
       type: Unknown
     - contextPath: GoogleChronicleBackstory.StreamRules.list.detection.id
       description: Identifier for the detection.
@@ -3551,7 +3551,7 @@ script:
       description: Stores the products object ID.
       type: String
     - contextPath: GoogleChronicleBackstory.StreamRules.list.detection.collectionElements.references.event.principal.user.attribute.labels
-      description: Stores users session metrics
+      description: Stores users session metrics.
       type: Unknown
     - contextPath: GoogleChronicleBackstory.StreamRules.list.detection.collectionElements.references.event.principal.user.firstName
       description: Stores the first name for the user.
@@ -3578,7 +3578,7 @@ script:
       description: Stores users company name.
       type: String
     - contextPath: GoogleChronicleBackstory.StreamRules.list.detection.collectionElements.references.event.principal.user.department
-      description: Stores users departments
+      description: Stores users departments.
       type: Unknown
     - contextPath: GoogleChronicleBackstory.StreamRules.list.detection.collectionElements.references.event.principal.user.officeAddress.name
       description: Stores company official address name.
@@ -3981,65 +3981,65 @@ script:
       description: Relationship between entities in the relations.
       type: String
   - arguments:
-      - default: false
-        description: Unique identifier for a curated rule, defined and returned by the server. You can specify exactly one curated rule identifier.
-        isArray: false
-        name: id
-        required: true
-        secret: false
-      - auto: PREDEFINED
-        default: false
-        description: |-
-          Filter detections based on whether the alert state is ALERTING or NOT_ALERTING.
-          Do not specify to return all detections.
-        isArray: false
-        name: alert_state
-        predefined:
-          - ALERTING
-          - NOT_ALERTING
-        required: false
-        secret: false
-      - default: false
-        defaultValue: '100'
-        description: Specify the limit on the number of detections to display. You can specify between 1 and 1000.
-        isArray: false
-        name: page_size
-        required: false
-        secret: false
-      - default: false
-        description: A page token received from a previous call. Provide this to retrieve the subsequent page. If the page token is configured, overrides the detection start and end time arguments.
-        isArray: false
-        name: page_token
-        required: false
-        secret: false
-      - auto: PREDEFINED
-        default: false
-        description: Sort detections by "DETECTION_TIME" or by "CREATED_TIME". If not specified, it defaults to "DETECTION_TIME". Detections are returned in descending order of the timestamp.
-        isArray: false
-        name: list_basis
-        predefined:
-          - DETECTION_TIME
-          - CREATED_TIME
-        required: false
-        secret: false
-      - default: false
-        description: |-
-          Start time of the time range to return detections for, filtered by the detection field specified in the list_basis parameter. If not specified, the start time is treated as open-ended.
-          Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours.
-          Example: 2023-05-01T00:00:00Z, 2023-05-01, 2 days, 5 hours, 01 Mar 2021, 01 Feb 2023 04:45:33, 15 Jun.
-        isArray: false
-        name: start_time
-        required: false
-        secret: false
-      - default: false
-        description: |-
-          End time of the time range to return detections for, filtered by the detection field specified by the list_basis parameter. If not specified, the end time is treated as open-ended.
-          Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours.
-          Example: 2023-05-01T00:00:00Z, 2023-05-01, 2 days, 5 hours, 01 Mar 2023, 01 Feb 2021 04:45:33, 15 Jun.
-        isArray: false
-        name: end_time
-        required: false
-        secret: false
+    - default: false
+      description: Unique identifier for a curated rule, defined and returned by the server. You can specify exactly one curated rule identifier.
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: |-
+        Filter detections based on whether the alert state is ALERTING or NOT_ALERTING.
+        Do not specify to return all detections.
+      isArray: false
+      name: alert_state
+      predefined:
+      - ALERTING
+      - NOT_ALERTING
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '100'
+      description: Specify the limit on the number of detections to display. You can specify between 1 and 1000.
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
+    - default: false
+      description: A page token received from a previous call. Provide this to retrieve the subsequent page. If the page token is configured, overrides the detection start and end time arguments.
+      isArray: false
+      name: page_token
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Sort detections by "DETECTION_TIME" or by "CREATED_TIME". If not specified, it defaults to "DETECTION_TIME". Detections are returned in descending order of the timestamp.
+      isArray: false
+      name: list_basis
+      predefined:
+      - DETECTION_TIME
+      - CREATED_TIME
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        Start time of the time range to return detections for, filtered by the detection field specified in the list_basis parameter. If not specified, the start time is treated as open-ended.
+        Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours.
+        Example: 2023-05-01T00:00:00Z, 2023-05-01, 2 days, 5 hours, 01 Mar 2021, 01 Feb 2023 04:45:33, 15 Jun.
+      isArray: false
+      name: start_time
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        End time of the time range to return detections for, filtered by the detection field specified by the list_basis parameter. If not specified, the end time is treated as open-ended.
+        Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours.
+        Example: 2023-05-01T00:00:00Z, 2023-05-01, 2 days, 5 hours, 01 Mar 2023, 01 Feb 2021 04:45:33, 15 Jun.
+      isArray: false
+      name: end_time
+      required: false
+      secret: false
     deprecated: false
     description: Return the detections for the specified curated rule identifier.
     execution: false
@@ -6698,7 +6698,7 @@ script:
     - contextPath: GoogleChronicleBackstory.Events.securityResult.urlBackToProduct
       description: URL to direct you to the source product console for this security event.
       type: String
-  dockerimage: demisto/googleapi-python3:1.0.0.72624
+  dockerimage: demisto/googleapi-python3:1.0.0.74508
   isfetch: true
   runonce: false
   script: '-'
