@@ -1,5 +1,5 @@
 id: 3847056a-3983-4c84-8e4c-ed7c47efb9cc
-version: 3
+version: 1
 contentitemexportablefields:
   contentitemfields:
     packID: ""
@@ -84,10 +84,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 2871226f-5fd1-4057-82cd-822cde18c93f
+    taskid: a68a58ce-fbc3-4bee-84f7-0e4b27615e3a
     type: playbook
     task:
-      id: 2871226f-5fd1-4057-82cd-822cde18c93f
+      id: a68a58ce-fbc3-4bee-84f7-0e4b27615e3a
       version: -1
       name: GenericPolling
       description: |-
@@ -121,7 +121,7 @@ tasks:
         complex:
           root: inputs.Timeout
       dt:
-        simple: ThreatZone.Result(val.STATUS=='5')
+        simple: ThreatZone.Result.STATUS(val==5)
     separatecontext: true
     continueonerrortype: ""
     loop:
@@ -132,7 +132,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 270,
+          "x": 275,
           "y": 740
         }
       }

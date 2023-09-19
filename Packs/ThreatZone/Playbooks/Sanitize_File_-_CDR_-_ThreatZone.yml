@@ -1,5 +1,5 @@
 id: 3adbab96-107c-4523-8060-20286a368ded
-version: 5
+version: 1
 contentitemexportablefields:
   contentitemfields:
     packID: ""
@@ -49,14 +49,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 47577aee-ec21-4d9d-8987-3d76b3f0bd0a
+    taskid: f8e4afc5-0287-485c-804d-31a0af084eb9
     type: regular
     task:
-      id: 47577aee-ec21-4d9d-8987-3d76b3f0bd0a
+      id: f8e4afc5-0287-485c-804d-31a0af084eb9
       version: -1
       name: ThreatZone Submit File for Analysis
-      description: Submits a sample to ThreatZone for sandbox analysis.
-      script: '|||tz-sandbox-upload-sample'
+      description: Submits a sample to ThreatZone for CDR.
+      script: '|||tz-cdr-upload-sample'
       type: regular
       iscommand: true
       brand: ""
@@ -84,10 +84,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 2871226f-5fd1-4057-82cd-822cde18c93f
+    taskid: fe1f6e26-3ee3-450f-87bd-b9fd1c451046
     type: playbook
     task:
-      id: 2871226f-5fd1-4057-82cd-822cde18c93f
+      id: fe1f6e26-3ee3-450f-87bd-b9fd1c451046
       version: -1
       name: GenericPolling
       description: |-
@@ -121,7 +121,7 @@ tasks:
         complex:
           root: inputs.Timeout
       dt:
-        simple: ThreatZone.Result(val.STATUS=='5')
+        simple: ThreatZone.Result.STATUS(val==5)
     separatecontext: true
     continueonerrortype: ""
     loop:
@@ -132,7 +132,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 270,
+          "x": 275,
           "y": 740
         }
       }
@@ -280,10 +280,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 8cf79148-e769-4c1f-8d5d-e30fbc7b9551
+    taskid: cc090152-e2b8-4e74-8d02-e1b0e70c2fc3
     type: regular
     task:
-      id: 8cf79148-e769-4c1f-8d5d-e30fbc7b9551
+      id: cc090152-e2b8-4e74-8d02-e1b0e70c2fc3
       version: -1
       name: ThreatZone Get Report & Sanitized File
       description: Retrive the analysis result from ThreatZone Sandbox.

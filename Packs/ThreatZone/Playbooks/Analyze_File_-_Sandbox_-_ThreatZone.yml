@@ -1,5 +1,5 @@
 id: 855a078d-7bfa-40a2-83c4-7b5eb0ab75dd
-version: 22
+version: 1
 contentitemexportablefields:
   contentitemfields:
     packID: ""
@@ -84,10 +84,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 2871226f-5fd1-4057-82cd-822cde18c93f
+    taskid: 3934fe61-ddc7-45ce-801d-d18ab3440f25
     type: playbook
     task:
-      id: 2871226f-5fd1-4057-82cd-822cde18c93f
+      id: 3934fe61-ddc7-45ce-801d-d18ab3440f25
       version: -1
       name: GenericPolling
       description: |-
@@ -121,7 +121,7 @@ tasks:
         complex:
           root: inputs.Timeout
       dt:
-        simple: ThreatZone.Result(val.STATUS=='5')
+        simple: ThreatZone.Result.STATUS(val==5)
     separatecontext: true
     continueonerrortype: ""
     loop:
@@ -132,7 +132,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 270,
+          "x": 275,
           "y": 740
         }
       }
@@ -280,10 +280,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: ffdba815-2664-4dfb-8617-204fffdbcfc7
+    taskid: 6712a062-b960-4911-8e84-3e6eae249cdd
     type: regular
     task:
-      id: ffdba815-2664-4dfb-8617-204fffdbcfc7
+      id: 6712a062-b960-4911-8e84-3e6eae249cdd
       version: -1
       name: ThreatZone Get Report
       description: Retrive the analysis result from ThreatZone Sandbox.
