@@ -38,8 +38,8 @@ To access the File Management UI by instance name, make sure ***Instance execute
 
 1. In Cortex XSOAR, go to **Settings > About > Troubleshooting**.
 2. (For Cortex XSOAR 6.x) In the **Server Configuration** section, verify that the `instance.execute.external.<instance_name>` key is set to `true`. If this key does not exist, click **+ Add Server Configuration** and add the `instance.execute.external.<instance_name>` and set the value to `true`. See [this documentation](https://xsoar.pan.dev/docs/reference/articles/long-running-invoke) for further information.
-3. In a web browser, go to
-   (For Cortex XSOAR 6.x) `https://<cortex-xsoar-address>/instance/execute/<instance_name>/`.
+3. In a web browser, 
+   (For Cortex XSOAR 6.x) go to `https://<cortex-xsoar-address>/instance/execute/<instance_name>/`.
 
    In Multi Tenant environments, go to `https://<cortex-xsoar-address>/acc_<account name>/instance/execute/<instance_name>/`
 
