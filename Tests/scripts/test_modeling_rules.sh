@@ -1,27 +1,23 @@
-#!/bin/bash
-set -e
+#!/usr/bin/env bash
 
 MODELING_RULES_RESULTS_FILE_NAME="${ARTIFACTS_FOLDER}/modeling_rules_results.xml"
 
-if [[ ! -s "${ARTIFACTS_FOLDER}/modeling_rules_to_test.txt" ]]; then
-  echo "No modeling rules were marked for testing during test collection - writing empty junit file to ${MODELING_RULES_RESULTS_FILE_NAME}"
+function write_empty_test_results_file() {
   cat <<EOF > "${MODELING_RULES_RESULTS_FILE_NAME}"
 <?xml version='1.0' encoding='utf-8'?>
 <testsuites />
 EOF
+}
+
+if [[ ! -s "${ARTIFACTS_FOLDER}/modeling_rules_to_test.txt" ]]; then
+  echo "No modeling rules were marked for testing during test collection - writing empty junit file to ${MODELING_RULES_RESULTS_FILE_NAME}"
+  write_empty_test_results_file
   exit 0
 fi
 
 XSIAM_SERVERS_PATH=${XSIAM_SERVERS_PATH:-"xsiam_servers.json"}
 
-# Get XSIAM Tenant Config Details
-XSIAM_SERVER_CONFIG=$(jq -r ".[\"$CLOUD_CHOSEN_MACHINE_ID\"]" < "$XSIAM_SERVERS_PATH")
-XSIAM_URL=$(echo "$XSIAM_SERVER_CONFIG" | jq -r ".[\"base_url\"]")
-AUTH_ID=$(echo "$XSIAM_SERVER_CONFIG" | jq -r ".[\"x-xdr-auth-id\"]")
-API_KEY=$(jq -r ".[\"$CLOUD_CHOSEN_MACHINE_ID\"]" < "$XSIAM_API_KEYS")
-XSIAM_TOKEN=$(jq -r ".[\"$CLOUD_CHOSEN_MACHINE_ID\"]" < "$XSIAM_TOKENS")
 CURRENT_DIR=$(pwd)
-
 MODELING_RULES_ARRAY=($(cat "${ARTIFACTS_FOLDER}/modeling_rules_to_test.txt"))
 for modeling_rule in "${MODELING_RULES_ARRAY[@]}"; do
   MODELING_RULE_TEST_FILE_PATTERN="$CURRENT_DIR/Packs/$modeling_rule/*_testdata.json"
@@ -47,18 +43,38 @@ if DEMISTO_SDK_SKIP_VERSION_CHECK=True demisto-sdk modeling-rules test --help 2>
 else
   echo "Testing Modeling Rules - demisto-sdk version is too old, creating empty junit file to ${MODELING_RULES_RESULTS_FILE_NAME}"
   MODELING_RULES_RESULTS_ARG=()
-  cat <<EOF > "${MODELING_RULES_RESULTS_FILE_NAME}"
-<?xml version='1.0' encoding='utf-8'?>
-<testsuites />
-EOF
-    MODELING_RULES_RESULTS_FILE_NAME=""  # Reset the file name so that the next command will not try to use it.
+  write_empty_test_results_file
+  MODELING_RULES_RESULTS_FILE_NAME=""  # Reset the file name so that the next command will not try to use it.
 fi
 
-demisto-sdk modeling-rules test --xsiam-url="$XSIAM_URL" --auth-id="$AUTH_ID" --api-key="$API_KEY" \
-  --xsiam-token="$XSIAM_TOKEN" --non-interactive "${MODELING_RULES_RESULTS_ARG[@]}" \
-  ${MODELING_RULES_TO_TEST}
-exit_code=$?
-echo "Finished testing Modeling Rules, exit code:${exit_code}"
+exit_code=0
+if [ -n "${CLOUD_CHOSEN_MACHINE_IDS}" ]; then
+  IFS=', ' read -r -a CLOUD_CHOSEN_MACHINE_ID_ARRAY <<< "${CLOUD_CHOSEN_MACHINE_IDS}"
+  exit_code=0
+  for CLOUD_CHOSEN_MACHINE_ID in "${CLOUD_CHOSEN_MACHINE_ID_ARRAY[@]}"; do
+
+    # Get XSIAM Tenant Config Details
+    XSIAM_SERVER_CONFIG=$(jq -r ".[\"${CLOUD_CHOSEN_MACHINE_ID}\"]" < "$XSIAM_SERVERS_PATH")
+    XSIAM_URL=$(echo "$XSIAM_SERVER_CONFIG" | jq -r ".[\"base_url\"]")
+    AUTH_ID=$(echo "$XSIAM_SERVER_CONFIG" | jq -r ".[\"x-xdr-auth-id\"]")
+    API_KEY=$(jq -r ".[\"${CLOUD_CHOSEN_MACHINE_ID}\"]" < "$XSIAM_API_KEYS")
+    XSIAM_TOKEN=$(jq -r ".[\"${CLOUD_CHOSEN_MACHINE_ID}\"]" < "$XSIAM_TOKENS")
+
+    demisto-sdk modeling-rules test --xsiam-url="${XSIAM_URL}" --auth-id="${AUTH_ID}" --api-key="${API_KEY}" \
+      --xsiam-token="${XSIAM_TOKEN}" --non-interactive "${MODELING_RULES_RESULTS_ARG[@]}" \
+      ${MODELING_RULES_TO_TEST}
+    if [ $? -ne 0 ]; then
+      echo "Failed testing Modeling Rules on machine ${CLOUD_CHOSEN_MACHINE_ID}"
+      exit_code=1
+    fi
+  done
+  echo "Finished testing Modeling Rules, exit code:${exit_code}"
+  exit ${exit_code}
+else
+  echo "No machines were chosen, exiting with exit code 1"
+  write_empty_test_results_file
+  exit_code=1
+fi
 
 if [ -n "${NIGHTLY}" ]; then
   if [ -n "${MODELING_RULES_RESULTS_FILE_NAME}" ]; then
