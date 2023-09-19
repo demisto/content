@@ -3333,6 +3333,7 @@ script:
       name: project_id
     - description: The pipline ID to cancel.
       name: pipeline_id
+      required: true
     description: Cancels a GitLab pipeline.
     outputs:
     - contextPath: GitLab.Pipeline.id
