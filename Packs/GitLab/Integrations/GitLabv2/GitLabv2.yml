@@ -3327,6 +3327,65 @@ script:
     - contextPath: GitLab.Pipeline.user.web_url
       description: Web URL of the user who triggered the pipeline.
       type: String
+  - name: gitlab-cancel-pipeline
+    arguments:
+    - description: Project ID on which to cancel the pipeline.
+      name: project_id
+    - description: The pipline ID to cancel.
+      name: pipeline_id
+    description: Cancels a GitLab pipeline.
+    outputs:
+    - contextPath: GitLab.Pipeline.id
+      description: Pipeline ID.
+      type: Number
+    - contextPath: GitLab.Pipeline.project_id
+      description: Project ID that the pipeline belongs to.
+      type: Number
+    - contextPath: GitLab.Pipeline.status
+      description: Status of the pipeline.
+      type: String
+    - contextPath: GitLab.Pipeline.ref
+      description: Reference of the pipeline.
+      type: String
+    - contextPath: GitLab.Pipeline.sha
+      description: SHA of the pipeline.
+      type: String
+    - contextPath: GitLab.Pipeline.created_at
+      description: Time when the pipeline was created.
+      type: Date
+    - contextPath: GitLab.Pipeline.updated_at
+      description: Time when the pipeline was last updated.
+      type: Date
+    - contextPath: GitLab.Pipeline.started_at
+      description: Time when the pipeline was started.
+      type: Date
+    - contextPath: GitLab.Pipeline.finished_at
+      description: Time when the pipeline was finished.
+      type: Date
+    - contextPath: GitLab.Pipeline.duration
+      description: Duration of the pipeline in seconds.
+      type: Number
+    - contextPath: GitLab.Pipeline.web_url
+      description: Web URL of the pipeline.
+      type: String
+    - contextPath: GitLab.Pipeline.user.name
+      description: Name of the user who triggered the pipeline.
+      type: String
+    - contextPath: GitLab.Pipeline.user.username
+      description: Username that triggered the pipeline.
+      type: String
+    - contextPath: GitLab.Pipeline.user.id
+      description: ID of the user who triggered the pipeline.
+      type: Number
+    - contextPath: GitLab.Pipeline.user.state
+      description: State of the user who triggered the pipeline.
+      type: String
+    - contextPath: GitLab.Pipeline.user.avatar_url
+      description: Avatar URL of the user who triggered the pipeline.
+      type: String
+    - contextPath: GitLab.Pipeline.user.web_url
+      description: Web URL of the user who triggered the pipeline.
+      type: String
   runonce: false
   script: '-'
   type: python
