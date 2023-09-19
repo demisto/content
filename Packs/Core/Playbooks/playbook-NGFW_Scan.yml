@@ -131,7 +131,7 @@ tasks:
       {
         "position": {
           "x": 20,
-          "y": 3190
+          "y": 3370
         }
       }
     note: false
@@ -750,7 +750,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 3020
+          "y": 3200
         }
       }
     note: false
@@ -775,7 +775,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "41"
+      - "60"
       "yes":
       - "45"
     separatecontext: false
@@ -905,7 +905,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "41"
+      - "60"
     scriptarguments:
       releaseFile:
         simple: "false"
@@ -1478,6 +1478,52 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "60":
+    id: "60"
+    taskid: 69cd5fd5-bd1f-441a-8f03-aed480ea9ee4
+    type: condition
+    task:
+      id: 69cd5fd5-bd1f-441a-8f03-aed480ea9ee4
+      version: -1
+      name: Should close alert automatically?
+      description: Should close the alert automatically?
+      type: condition
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "41"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.AutoCloseAlert
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 3025
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -1487,7 +1533,6 @@ view: |-
       "26_57_yes": 0.48,
       "28_47_#default#": 0.51,
       "28_57_yes": 0.36,
-      "42_41_#default#": 0.53,
       "42_45_yes": 0.49,
       "43_44_#default#": 0.48,
       "47_48_Yes": 0.58,
@@ -1497,11 +1542,12 @@ view: |-
       "55_14_#default#": 0.28,
       "55_56_yes": 0.48,
       "56_14_#default#": 0.43,
-      "56_54_yes": 0.5
+      "56_54_yes": 0.5,
+      "60_5_#default#": 0.43
     },
     "paper": {
       "dimensions": {
-        "height": 4395,
+        "height": 4575,
         "width": 1620,
         "x": -240,
         "y": -1140
