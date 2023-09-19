@@ -26,7 +26,7 @@ Test Collection Unit-Test cases
 - `A` has a single pack with an integration and two test playbooks.
 - `B` has a single pack, with only test playbooks. (they should be collected)
 - `C` has a pack supported by both marketplaces, and one only for marketplacev2 and one only for XSOAR.
-- `D` has a single pack & test-playbook with from_version == to_version == 6.5, for testing the version range.
+- `D` has a single pack & test-playbook with from_version == to_version == 6.9, for testing the version range.
 - `E` has a single pack with a script tested using myTestPlaybook, and a Playbook used in myOtherTestPlaybook.
 - `F` has a single pack with a script set up as `no tests`, and a conf where myTestPlaybook is set as the script's test.
 - `G` has objects that trigger collection of the pack (without tests).
@@ -209,7 +209,7 @@ NIGHTLY_TESTS: tuple = (
      {'myXSIAMOnlyPack', 'bothMarketplacesPackOnlyXSIAMIntegration', 'Whois', 'CoreAlertFields'}, None, None),
 
     (MockerCases.D, XSOARNightlyTestCollector, {'myTestPlaybook'}, {'myPack'},
-     (Machine.V6_8, Machine.MASTER), None),
+     (Machine.V6_9, Machine.MASTER), None),
 
     (MockerCases.E, XSOARNightlyTestCollector,
      {'myTestPlaybook', 'myOtherTestPlaybook', 'Sanity Test - Playbook with Unmockable Whois Integration'},
@@ -309,7 +309,7 @@ XSIAM_BRANCH_ARGS = ('master', MarketplaceVersions.MarketplaceV2, None)
          ('myXSOAROnlyPack',)),
 
         # (8) Case D: playbook changes, expect it and its pack to be collected
-        (MockerCases.D, ('myTestPlaybook',), ('myPack',), (Machine.V6_8, Machine.MASTER,), None, XSOAR_BRANCH_ARGS,
+        (MockerCases.D, ('myTestPlaybook',), ('myPack',), (Machine.V6_9, Machine.MASTER,), None, XSOAR_BRANCH_ARGS,
          ('Packs/myPack/TestPlaybooks/myTestPlaybook.yml',), (), ('myPack',)),
 
         # (9) Case D: playbook changes, expect it and its pack to be collected
