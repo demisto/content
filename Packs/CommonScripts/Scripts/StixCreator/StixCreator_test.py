@@ -50,35 +50,12 @@ DOMAIN_INDICATORS = \
         'indicators':
             {
                 '0': {'expirationStatus': 'active', 'firstSeen': '2022-07-31T13:24:44Z',
-
                       'indicator_type': 'CVE',
                       'lastSeen': '2022-07-31T13:24:44Z', 'score': 'Unknown',
                       'timestamp': '2022-07-31T13:24:44Z',
                       'value': 'test.com'
                       },
                 '1': {'expirationStatus': 'active', 'firstSeen': '2022-07-31T13:24:40Z',
-                      'indicator_type': 'Attack Pattern',
-                      'lastSeen': '2022-07-31T13:24:40Z', 'score': 'suspicious',
-                      'timestamp': '2022-07-31T13:24:40Z',
-                      'value': 'bad.com'
-                      }
-            }
-    }
-
-
-DOMAIN_INDICATORS_WITH_VERSION = \
-    {
-        'indicators':
-            {
-                '0': {'expirationStatus': 'active', 'firstSeen': '2022-07-31T13:24:44Z',
-                      'spec_version': '2.1',
-                      'indicator_type': 'CVE',
-                      'lastSeen': '2022-07-31T13:24:44Z', 'score': 'Unknown',
-                      'timestamp': '2022-07-31T13:24:44Z',
-                      'value': 'test.com'
-                      },
-                '1': {'expirationStatus': 'active', 'firstSeen': '2022-07-31T13:24:40Z',
-                      'spec_version': '2.1',
                       'indicator_type': 'Attack Pattern',
                       'lastSeen': '2022-07-31T13:24:40Z', 'score': 'suspicious',
                       'timestamp': '2022-07-31T13:24:40Z',
@@ -353,7 +330,7 @@ def test_create_stix_sco_indicator(stix_id, stix_type, value, xsoar_indicator, e
     assert result == expectes_stix_indicator
 
 
-@pytest.mark.parametrize('indicators, stix_type', [(DOMAIN_INDICATORS_WITH_VERSION, 'bundle')])
+@pytest.mark.parametrize('indicators, stix_type', [(DOMAIN_INDICATORS, 'bundle')])
 def test_stixCreator_with_indicators_spec_version(mocker, indicators, stix_type):
     """
     Given:
@@ -369,5 +346,5 @@ def test_stixCreator_with_indicators_spec_version(mocker, indicators, stix_type)
     results = demisto.results.call_args[0]
     json_content = json.loads(results[0]['Contents'])
     assert "spec_version" in json_content
-    # assert json_content["spec_version"] == "2.1"
+    assert json_content["spec_version"] == "2.1"
     assert stix_type in results[0]['Contents']

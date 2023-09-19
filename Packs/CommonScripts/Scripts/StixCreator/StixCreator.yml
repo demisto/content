@@ -32,13 +32,13 @@ outputs:
   description: ' The type and value of indicators, for example: URL, IPv4, domain,email, and so on. '
   type: string
 - contextPath: StixExportedIndicators.score
-  description: The STIX impact score ("High", "Medium", "None", or "Not Specified")
+  description: The STIX impact score ("High", "Medium", "None", or "Not Specified").
   type: string
 - contextPath: StixExportedIndicators.modified
   description: The date/time that the indicator was last seen.
   type: date
 scripttarget: 0
-dockerimage: demisto/py3-tools:1.0.0.72621
+dockerimage: demisto/py3-tools:1.0.0.74403
 subtype: python3
 runas: DBotWeakRole
 tests:
