@@ -21,6 +21,7 @@ select = [
 
     "E101", # mixed-spaces-and-tabs
     "E401", # multiple-imports-on-one-line
+    "E501", # line-too-long
     "E701", # multiple-statements-on-one-line-colon
     "E702", # multiple-statements-on-one-line-semicolon
     "E703", # useless-semicolon
@@ -187,3 +188,14 @@ select = [
     "YTT302", # sys-version-cmp-str10
     "YTT303", # sys-version-slice1
 ]
+
+line-length = 130
+
+[per-file-ignores]
+".vulture_whitelist.py" = [
+    "F821", # undefined-name
+]
+"**/test_data/*" = ["E501"] # line-too-long
+"**/TestData/*" = ["E501"] # line-too-long
+"**/TestInput/*" = ["E501"] # line-too-long
+"**/TestsInput/*" = ["E501"] # line-too-long
