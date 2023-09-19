@@ -6,7 +6,7 @@ from typing import Literal, NamedTuple
 from collections.abc import Callable, Iterable
 from collections.abc import Sequence
 from requests import Response
-import curlify
+# import curlify
 
 import demistomock as demisto
 from CommonServerPython import *  # noqa: F401
@@ -193,9 +193,9 @@ class Client(BaseClient):
             resp_type="response",
             **kwargs,
         )
-        for r in response.history:
-            print(curlify.to_curl(r.request, compressed=True))
-        print(curlify.to_curl(response.request, compressed=True))
+        # for r in response.history:
+        #     print(curlify.to_curl(r.request, compressed=True))
+        # print(curlify.to_curl(response.request, compressed=True))
         try:
             response_body = json.loads(response.text)
             print()
