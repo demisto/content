@@ -42,7 +42,7 @@ def get_color(cvss: int | float) -> str:
 
 
 def main():
-    indicator = demisto.callingContext.get('args', {}).get('indicator', '')
+    indicator = demisto.callingContext.get('args', {}).get('indicator', {})
     cvss = indicator.get('CustomFields', {}).get('cvssscore', '')
     theme = demisto.callingContext.get('context', 'light').get('User', 'light').get('theme', 'light')
     cvss = 0 if not cvss else float(cvss)
