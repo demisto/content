@@ -1,8 +1,5 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-
-
-
 # type: ignore
 # pylint: disable=no-member
 import copy
@@ -20,10 +17,35 @@ class Client:
                   'https://www.googleapis.com/auth/iam', ]
         credentials = service_account.ServiceAccountCredentials.from_json_keyfile_dict(client_secret, scopes=scopes)
 
-        self.cloud_identity_service = discovery.build('cloudidentity', 'v1', credentials=credentials)
-        self.cloud_resource_manager_service = discovery.build('cloudresourcemanager', 'v3', credentials=credentials)
-        self.iam_service = discovery.build('iam', 'v1', credentials=credentials)
-        self.iam_credentials = discovery.build('iamcredentials', 'v1', credentials=credentials)
+        proxies = handle_proxy()
+
+        if proxy or verify_certificate:
+            http_client = credentials.authorize(self.get_http_client_with_proxy(proxies))
+            self.cloud_identity_service = discovery.build('cloudidentity', 'v1', http=http_client)
+            self.cloud_resource_manager_service = discovery.build('cloudresourcemanager', 'v3', http=http_client)
+            self.iam_service = discovery.build('iam', 'v1', http=http_client)
+
+        else:
+            self.cloud_identity_service = discovery.build('cloudidentity', 'v1', credentials=credentials)
+            self.cloud_resource_manager_service = discovery.build('cloudresourcemanager', 'v3', credentials=credentials)
+            self.iam_service = discovery.build('iam', 'v1', credentials=credentials)
+
+    def get_http_client_with_proxy(self, proxies: dict, proxy: bool = False, verify_certificate: bool = False):
+        proxy_info = None
+        if proxy:
+            if not proxies or not proxies['https']:
+                raise Exception('https proxy value is empty. Check Demisto server configuration')
+            https_proxy = proxies['https']
+            if not https_proxy.startswith('https') and not https_proxy.startswith('http'):
+                https_proxy = 'https://' + https_proxy
+            parsed_proxy = urlparse(https_proxy)
+            proxy_info = httplib2.ProxyInfo(
+                proxy_type=httplib2.socks.PROXY_TYPE_HTTP,  # disable-secrets-detection
+                proxy_host=parsed_proxy.hostname,
+                proxy_port=parsed_proxy.port,
+                proxy_user=parsed_proxy.username,
+                proxy_pass=parsed_proxy.password)
+        return httplib2.Http(proxy_info=proxy_info, disable_ssl_certificate_validation=verify_certificate)
 
     def gcp_iam_tagbindings_list_request(self, parent: str, limit: int = None) -> dict:
         """
