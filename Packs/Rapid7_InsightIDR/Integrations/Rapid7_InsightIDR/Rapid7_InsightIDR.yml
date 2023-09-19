@@ -71,7 +71,7 @@ name: Rapid7 InsightIDR
 script:
   commands:
   - arguments:
-    - description: An optional time range string (i.e 1 week, 1 day)
+    - description: An optional time range string (i.e 1 week, 1 day).
       name: time_range
     - description: "Only investigations whose createTime is after this date will be returned. If this argument is omitted, investigations with any create_time may be returned. Use ISO time format (e.g., 2018-07-01T00:00:00Z)."
       name: start_time
@@ -149,7 +149,7 @@ script:
       description: Name of the investigation assignee.
       type: String
     - contextPath: Rapid7InsightIDR.Investigation.alert.type
-      description: Type of alert in the investigation
+      description: Type of alert in the investigation.
       type: String
     - contextPath: Rapid7InsightIDR.Investigation.alert.type_description
       description: Description of the type of the alert in the investigation.
@@ -216,7 +216,7 @@ script:
       description: Name of the investigation assignee.
       type: String
     - contextPath: Rapid7InsightIDR.Investigation.alert.type
-      description: Type of alert in the investigation
+      description: Type of alert in the investigation.
       type: String
     - contextPath: Rapid7InsightIDR.Investigation.alert.type_description
       description: Description of the type of the alert in the investigation.
@@ -264,7 +264,7 @@ script:
       description: Type of alert in the investigation.
       type: String
   - arguments:
-    - description: Key of the threat (or threats) to add indicators to
+    - description: Key of the threat (or threats) to add indicators to.
       isArray: true
       name: key
       required: true
@@ -345,7 +345,7 @@ script:
       description: Log name.
       type: String
     - contextPath: Rapid7InsightIDR.LogSet.id
-      description: Log ID
+      description: Log ID.
       type: String
   - arguments:
     - description: IDs of the logs to download - up to 10 logs allowed.
@@ -366,17 +366,17 @@ script:
     name: rapid7-insight-idr-download-logs
     outputs: []
   - arguments:
-    - description: Logentries log key
+    - description: Logentries log key.
       name: log_id
       required: true
     - description: "A valid LEQL query to run against the logmore info: https://docs.rapid7.com/insightidr/build-a-query/"
       name: query
       required: true
-    - description: A time range string (i.e 1 week, 1 day) - While using this parameter, start_time and end_time isn't needed
+    - description: A time range string (i.e 1 week, 1 day) - While using this parameter, start_time and end_time isn't needed.
       name: time_range
-    - description: 'Lower bound of the time range you want to query against. Format: UNIX timestamp in milliseconds. Example:1450557004000'
+    - description: 'Lower bound of the time range you want to query against. Format: UNIX timestamp in milliseconds. Example:1450557004000.'
       name: start_time
-    - description: 'Upper bound of the time range you want to query against. Format: UNIX timestamp in milliseconds. Example:1460557604000'
+    - description: 'Upper bound of the time range you want to query against. Format: UNIX timestamp in milliseconds. Example:1460557604000.'
       name: end_time
     - description: The maximum number of log entries to return per page. Default of 50.
       name: logs_per_page
@@ -402,11 +402,11 @@ script:
     - description: "A valid LEQL query to run against the logmore info: https://docs.rapid7.com/insightidr/build-a-query/"
       name: query
       required: true
-    - description: A time range string (e.g., 1 week, 1 day) - While using this parameter, start_time and end_time isn't needed
+    - description: A time range string (e.g., 1 week, 1 day) - While using this parameter, start_time and end_time isn't needed.
       name: time_range
-    - description: 'Lower bound of the time range you want to query against. Format: UNIX timestamp in milliseconds. Example:1450557004000'
+    - description: 'Lower bound of the time range you want to query against. Format: UNIX timestamp in milliseconds. Example:1450557004000.'
       name: start_time
-    - description: 'Upper bound of the time range you want to query against. Format: UNIX timestamp in milliseconds. Example:1460557604000'
+    - description: 'Upper bound of the time range you want to query against. Format: UNIX timestamp in milliseconds. Example:1460557604000.'
       name: end_time
     - description: The maximum number of log entries to return per page. Default of 50.
       name: logs_per_page
@@ -424,7 +424,7 @@ script:
     - contextPath: Rapid7InsightIDR.Event.timestamp
       description: Time when the event was triggered.
       type: Number
-  dockerimage: demisto/python3:3.10.12.68714
+  dockerimage: demisto/python3:3.10.13.73190
   isfetch: true
   runonce: false
   script: '-'
