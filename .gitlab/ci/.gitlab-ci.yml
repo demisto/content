@@ -18,6 +18,7 @@ stages:
   - upload-to-marketplace
   - are-jobs-really-done
   - fan-in  # concentrate pipeline artifacts to single job before triggering child slack pipeline
+  - schedules
 
 
 variables:
@@ -62,6 +63,7 @@ variables:
   CONTENT_GITLAB_CI: "true"
   POETRY_VIRTUALENVS_OPTIONS_ALWAYS_COPY: "true"
   FF_USE_FASTZIP: "true"
+  DOCKER_IO: docker-io.art.code.pan.run
 
 include:
   - local: .gitlab/ci/.gitlab-ci.global.yml
@@ -72,3 +74,4 @@ include:
   - local: .gitlab/ci/.gitlab-ci.test-native-candidate.yml
   - local: .gitlab/ci/.gitlab-ci.security-scans.yml
   - local: .gitlab/ci/.gitlab-ci.build-machines-cleanup.yml
+  - local: .gitlab/ci/.gitlab-ci.mirror.yml
