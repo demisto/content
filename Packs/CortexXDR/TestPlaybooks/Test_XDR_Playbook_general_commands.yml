@@ -746,14 +746,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: 95807320-56e8-4a69-8be5-3baf127a07a3
+    taskid: fbd40471-993c-4111-8317-d2d0e5d8f72b
     type: regular
     task:
-      id: 95807320-56e8-4a69-8be5-3baf127a07a3
+      id: fbd40471-993c-4111-8317-d2d0e5d8f72b
       version: -1
-      name: xdr-unisolate-endpoint
-      description: xdr-unisolate-endpoint
-      script: '|||xdr-unisolate-endpoint'
+      name: xdr-endpoint-unisolate
+      description: Reverses the isolation of an endpoint.
+      script: '|||xdr-endpoint-unisolate'
       type: regular
       iscommand: true
       brand: ""
@@ -762,7 +762,7 @@ tasks:
       - "22"
     scriptarguments:
       endpoint_id:
-        simple: f8a2f58846b542579c12090652e79f3d
+        simple: ${Endpoint.ID}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -781,14 +781,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: c9a44025-c78c-471d-8efa-9dade67f86f3
+    taskid: 4d6980ee-6bc7-4138-86e1-c11dc441edba
     type: regular
     task:
-      id: c9a44025-c78c-471d-8efa-9dade67f86f3
+      id: 4d6980ee-6bc7-4138-86e1-c11dc441edba
       version: -1
-      name: xdr-isolate-endpoint
-      description: xdr-isolate-endpoint
-      script: '|||xdr-isolate-endpoint'
+      name: xdr-endpoint-isolate
+      description: Isolates the specified endpoint.
+      script: '|||xdr-endpoint-isolate'
       type: regular
       iscommand: true
       brand: ""
@@ -797,7 +797,7 @@ tasks:
       - "22"
     scriptarguments:
       endpoint_id:
-        simple: f8a2f58846b542579c12090652e79f3d
+        simple: ${Endpoint.ID}
     separatecontext: false
     continueonerrortype: ""
     view: |-
