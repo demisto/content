@@ -179,7 +179,7 @@ class Client:
             https://learn.microsoft.com/en-us/graph/api/application-removepassword?view=graph-rest-1.0&tabs=http
         """
         suffix = f'v1.0/applications{service_id}/removePassword'
-        return self.ms_client.http_request(method='POST', url_suffix=suffix, json_data=data,  return_empty_response=True)
+        return self.ms_client.http_request(method='POST', url_suffix=suffix, json_data=data, return_empty_response=True)
 
 
 ''' COMMAND FUNCTIONS '''

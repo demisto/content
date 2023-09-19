@@ -187,21 +187,23 @@ def test_remove_service_principals_command_validation(requests_mock):
 
 
 GET_SERVICE_PRINCIPAL_RESPONSE = {'@odata.context': 'https://graph.microsoft.com/v1.0/$metadata#servicePrincipals/$entity',
-                                 'id': 'XXXX', 'deletedDateTime': None, 'accountEnabled': True, 'alternativeNames': [],
-                                 'appDisplayName': 'Test', 'appDescription': None,
-                                 'appId': 'XXXX', 'applicationTemplateId': None, 'appOwnerOrganizationId': 'XXXX',
-                                 'appRoleAssignmentRequired': False, 'createdDateTime': '', 'description': None,
-                                 'disabledByMicrosoftStatus': None, 'displayName': 'Test', 'homepage': None, 'loginUrl': None,
-                                 'logoutUrl': None, 'notes': None, 'notificationEmailAddresses': [],
-                                 'preferredSingleSignOnMode': None, 'preferredTokenSigningKeyThumbprint': None, 'replyUrls': [],
-                                 'servicePrincipalNames': ['XXXX'], 'servicePrincipalType': 'Application',
-                                 'signInAudience': 'AzureADMyOrg',
-                                 'tags': ['HideApp', 'WindowsAzureActiveDirectoryIntegratedApp'], 'tokenEncryptionKeyId': None,
-                                 'samlSingleSignOnSettings': None, 'addIns': [], 'appRoles': [],
-                                 'info': {'logoUrl': None, 'marketingUrl': None, 'privacyStatementUrl': None, 'supportUrl': None,
-                                          'termsOfServiceUrl': None}, 'keyCredentials': [], 'oauth2PermissionScopes': [],
-                                 'passwordCredentials': [], 'resourceSpecificApplicationPermissions': [],
-                                 'verifiedPublisher': {'displayName': None, 'verifiedPublisherId': None, 'addedDateTime': None}}
+                                  'id': 'XXXX', 'deletedDateTime': None, 'accountEnabled': True, 'alternativeNames': [],
+                                  'appDisplayName': 'Test', 'appDescription': None,
+                                  'appId': 'XXXX', 'applicationTemplateId': None, 'appOwnerOrganizationId': 'XXXX',
+                                  'appRoleAssignmentRequired': False, 'createdDateTime': '', 'description': None,
+                                  'disabledByMicrosoftStatus': None, 'displayName': 'Test', 'homepage': None, 'loginUrl': None,
+                                  'logoutUrl': None, 'notes': None, 'notificationEmailAddresses': [],
+                                  'preferredSingleSignOnMode': None, 'preferredTokenSigningKeyThumbprint': None, 'replyUrls': [],
+                                  'servicePrincipalNames': ['XXXX'], 'servicePrincipalType': 'Application',
+                                  'signInAudience': 'AzureADMyOrg',
+                                  'tags': ['HideApp', 'WindowsAzureActiveDirectoryIntegratedApp'], 'tokenEncryptionKeyId': None,
+                                  'samlSingleSignOnSettings': None, 'addIns': [], 'appRoles': [],
+                                  'info': {'logoUrl': None, 'marketingUrl': None, 'privacyStatementUrl': None, 'supportUrl': None,
+                                           'termsOfServiceUrl': None}, 'keyCredentials': [], 'oauth2PermissionScopes': [],
+                                  'passwordCredentials': [], 'resourceSpecificApplicationPermissions': [],
+                                  'verifiedPublisher': {'displayName': None, 'verifiedPublisherId': None, 'addedDateTime': None}}
+
+
 def test_get_service_principal_command(requests_mock):
     """
         Given:
@@ -266,6 +268,8 @@ ADD_PASSWORD_RESPONSE = {
     "secretText": "xxxXXXXXXXXXXX",
     "startDateTime": ""
 }
+
+
 @pytest.mark.parametrize('args, expected_id, expected_args',
                          [
                              ({'id': 'TEST', 'app_id': None, 'display_name': 'Password friendly name'}, "/TEST",
@@ -342,4 +346,3 @@ def test_remove_password_application_command_without_required_arg(requests_mock,
 
     with pytest.raises(KeyError):
         remove_password_application_command(client, args=args)
-
