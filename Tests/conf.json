@@ -5557,7 +5557,6 @@
     ],
     "skipped_tests": {
         "generic-sql-mssql-encrypted-connection": "Instance issues",
-        "generic-sql-oracle": "Instance issues",
         "RSANetWitnessv115-Test": "mocking error CIAC-7576",
         "CiscoWSAv2": "No instance - developed by Qmasters",
         "DatadogCloudSIEM": "No instance - developed by Login soft",
