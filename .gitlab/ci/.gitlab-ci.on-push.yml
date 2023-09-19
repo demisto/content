@@ -122,7 +122,6 @@ validate-content-conf:
   script:
     - !reference [.download-demisto-conf]
     - !reference [.secrets-fetch]
-
     - section_start "Create or update content graph" --collapsed
 
     - echo "Updating the content graph"
