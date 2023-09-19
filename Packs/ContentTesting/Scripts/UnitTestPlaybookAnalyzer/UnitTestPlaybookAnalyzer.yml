@@ -1,16 +1,16 @@
 args:
-- description: Name of the playbook to analyze.
+- description: Name of the playbook to analyze
   name: playbook
   required: true
 - description: Sub-playbook for analysis versus the parent playbook
   name: subplaybook
-- description: 'First day to find incident occurrences using the playbook. For example: "2023-03-01".'
+- description: 'First day to find incident occurrences using the playbook. Example: "2023-03-01"'
   name: firstday
   required: true
 - description: 'Last day to find incident occurrences using the playbook: Example: "2023-03-31"'
   name: lastday
   required: true
-- description: Maximum number of incidents to analyze.
+- description: Maximum number of incidents to analyze
   name: maxinc
   required: false
 comment: |
@@ -21,7 +21,7 @@ commonfields:
 contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ""
-dockerimage: demisto/python3:3.10.12.68300
+dockerimage: demisto/python3:3.10.13.72123
 enabled: true
 name: UnitTestPlaybookAnalyzer
 runas: DBotWeakRole

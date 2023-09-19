@@ -1,0 +1,47 @@
+{
+    "id": "indicator_reportobjectreferences",
+    "version": -1,
+    "modified": "2023-08-30T10:38:14.869840617Z",
+    "name": "Report Object References",
+    "ownerOnly": false,
+    "description": "A list of STIX IDs referenced in the report.",
+    "cliName": "reportobjectreferences",
+    "type": "grid",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 2,
+    "hidden": false,
+    "openEnded": false,
+    "associatedToAll": true,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "columns": [
+        {
+            "key": "objectstixid",
+            "displayName": "Object STIX ID",
+            "type": "shortText",
+            "orgType": "shortText",
+            "required": false,
+            "script": "",
+            "width": 150,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": false,
+            "selectValues": null
+        }
+    ],
+    "defaultRows": [
+        {}
+    ],
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.9.0"
+}

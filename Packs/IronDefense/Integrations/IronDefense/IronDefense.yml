@@ -378,9 +378,9 @@ script:
       - Unknown
       - Expected
       - Unexpected
-    - description: The minimum Alert severity to filter by. (0-1000)
+    - description: The minimum Alert severity to filter by. (0-1000).
       name: min_severity
-    - description: The maximum Alert severity to filter by. (0-1000)
+    - description: The maximum Alert severity to filter by. (0-1000).
       name: max_severity
     - description: The minimum Alert created date to filter by in RFC 3339 format (E.g. 2017-10-13T07:20:50.52Z).
       name: min_created
@@ -427,7 +427,7 @@ script:
       description: The subcategory of the alert.
       type: string
     - contextPath: IronDefense.Alert.severity
-      description: The severity score of the alert. (0-1000)
+      description: The severity score of the alert. (0-1000).
       type: Number
     - contextPath: IronDefense.Alert.status
       description: The status of the alert.
@@ -789,7 +789,7 @@ script:
     - contextPath: IronDefense.Query.GetEvents.total
       description: The total number of results possible from the query.
       type: Number
-  dockerimage: demisto/python3:3.10.12.68714
+  dockerimage: demisto/python3:3.10.13.73190
   isfetch: true
   runonce: false
   script: '-'

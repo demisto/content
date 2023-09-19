@@ -95,6 +95,10 @@
     "task": {
       "type": "string",
       "is_array": false
-    }
+    },
+    "provider_guid": {
+      "type": "string",
+      "is_array": false
+      }
   }
 }

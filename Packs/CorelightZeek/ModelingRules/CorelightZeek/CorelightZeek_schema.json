@@ -183,6 +183,22 @@
         "cipher": {
             "type": "string",
             "is_array": false
+        },
+        "id_orig_h": {
+            "type": "string",
+            "is_array": false
+        },
+        "id_resp_h": {
+            "type": "string",
+            "is_array": false
+        },
+        "id_orig_p": {
+            "type": "string",
+            "is_array": false
+        },
+        "id_resp_p": {
+            "type": "string",
+            "is_array": false
         }
     }
 }
