@@ -146,7 +146,8 @@ To access the Export Indicators service by instance name, make sure ***Instance 
 2. (Cortex XSOAR 6.x only) In the **Server Configuration** section, verify that the ***instance.execute.external*** key is set to *true*. If this key does not exist, click **+ Add Server Configuration** and add the *instance.execute.external* and set the value to *true*. See [this documentation](https://xsoar.pan.dev/docs/reference/articles/long-running-invoke) for further information.
 3. In a web browser, go to:
    (For Cortex XSOAR 6.x) `https://*<xsoar_address>*/instance/execute/*<instance_name>*`
-   (For Cortex XSOAR 8) `https://ext-*<cortex-xsiam-address>*/xsoar/instance/execute/*<instance-name>*`
+   (For Cortex XSOAR 8) `https://ext-<XSOAR-tenant>.crtx.<region>.paloaltonetworks.com/xsoar/instance/execute/<instance-name>`
+   (For Cortex XSIAM) `https://ext-<XSIAM-tenant>.crtx.<region>.paloaltonetworks.com/xsiam/instance/execute/<instance-name>`
 
 
 ### URL Inline Arguments
