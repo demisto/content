@@ -157,7 +157,7 @@ class Client:
         Docs:
             https://learn.microsoft.com/en-us/graph/api/application-addpassword?view=graph-rest-1.0&tabs=http
         """
-        suffix = f'v1.0/applications{service_id}/addPassword'
+        suffix = f'v1.0/servicePrincipals{service_id}/addPassword'
         json_data = {"passwordCredential": data}
         return self.ms_client.http_request(method='POST', url_suffix=suffix, json_data=json_data)
 
@@ -178,7 +178,7 @@ class Client:
         Docs:
             https://learn.microsoft.com/en-us/graph/api/application-removepassword?view=graph-rest-1.0&tabs=http
         """
-        suffix = f'v1.0/applications{service_id}/removePassword'
+        suffix = f'v1.0/servicePrincipals{service_id}/removePassword'
         return self.ms_client.http_request(method='POST', url_suffix=suffix, json_data=data, return_empty_response=True)
 
 
