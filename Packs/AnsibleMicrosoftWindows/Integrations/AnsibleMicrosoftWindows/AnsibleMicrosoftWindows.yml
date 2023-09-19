@@ -1,6 +1,6 @@
 category: IT Services
 commonfields:
-  id: AnsibleMicrosoftWindows
+  id: AnsibleMicrosoftWindows_copy
   version: -1
 configuration:
 - additionalinfo: The credentials to associate with the instance.
@@ -21,9 +21,9 @@ configuration:
   required: true
   type: 0
 description: Agentless Windows host management over WinRM
-display: Ansible Microsoft Windows
+display: Ansible Microsoft Windows_copy
 fromversion: 6.0.0
-name: AnsibleMicrosoftWindows
+name: AnsibleMicrosoftWindows_copy
 script:
   commands:
   - arguments:
