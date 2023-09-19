@@ -12,28 +12,29 @@ def main():   # pragma: no cover
 
     # set time back for fetching
     fetch_back_date = date.today() - timedelta(days=int(demisto.args().get("days_back")))
-    fetch_from = fetch_back_date.strftime("%Y-%m-%dT00:00:00Z")
-    file_date = fetch_back_date.strftime("%Y-%m-%d")
-
-    # body of the request
-    body = {
-        'fromDate': fetch_from,
-        'query': "",
-        'page': 0,
-        'size': 100
-    }
 
     demisto_version: str = get_demisto_version().get("version")
+    demisto.debug(f'{demisto_version=}')
     if not demisto_version:
         raise ValueError(f'Could not get the version of XSOAR.')
+
     if demisto_version.startswith("6"):  # xsoar 6
         uri = "/settings/audits"
+        body = {
+            'fromDate': fetch_back_date.strftime("%Y-%m-%dT00:00:00Z"),
+            'query': "",
+            'page': 0,
+            'size': 100
+        }
     else:  # xsoar 8
         uri = "/public_api/v1/audits/management_logs"
-    demisto.log(f'{demisto_version=}')
-    # get the logs
+        body = {
+            "request_data": {
+                "search_from": date_to_timestamp(fetch_back_date)
+            }
+        }
 
-    args = {"uri": uri, "body": {"request_data": {}}}
+    args = {"uri": uri, "body": body}
     demisto.log(f'{args=}')
     res = demisto.executeCommand("demisto-api-post", args)
 
@@ -54,6 +55,8 @@ def main():   # pragma: no cover
         # break if this goes crazy, if there are more than 100 pages of audit log entries.
         if count == 100:
             break
+
+    file_date = fetch_back_date.strftime("%Y-%m-%d")
 
     if file_type == "csv":
         # write the results to a CSV
