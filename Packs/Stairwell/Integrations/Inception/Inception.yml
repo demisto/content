@@ -28,27 +28,27 @@ script:
     arguments:
     - name: sha256
       required: true
-      description: File hash (SHA256)
-    description: Discover variants using a file hash (SHA256)
+      description: File hash (SHA256).
+    description: Discover variants using a file hash (SHA256).
     outputs:
     - contextPath: Inception.Variants
       type: Dictionary
-      description: Variants discovered
+      description: Variants discovered.
   - name: inception-file-enrichment
     arguments:
     - name: fileHash
       required: true
-      description: File hash (MD5, SHA1, or SHA256)
-    description: Enrich files using file hash (MD5, SHA1, SHA256)
+      description: File hash (MD5, SHA1, or SHA256).
+    description: Enrich files using file hash (MD5, SHA1, SHA256).
     outputs:
     - contextPath: Inception.File_Details
       type: Dictionary
-      description: File details from enrichment
+      description: File details from enrichment.
   runonce: false
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.12.68714
+  dockerimage: demisto/python3:3.10.13.72123
 fromversion: 6.5.0
 tests:
 - No tests (auto formatted)
