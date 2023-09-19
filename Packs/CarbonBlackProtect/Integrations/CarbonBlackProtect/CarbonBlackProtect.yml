@@ -1,7 +1,4 @@
 category: Endpoint
-sectionOrder:
-- Connect
-- Collect
 commonfields:
   id: CarbonBlackProtectionV2
   version: -1
@@ -564,7 +561,7 @@ script:
       - Approved
       - Banned
     - auto: PREDEFINED
-      description: "Mechanism that created this rule. Can be one of: \n1 = Manual\n2 = Trusted Directory\n3 = Reputation\n4 = Imported\n5 = External (API)\n6 = Event Rule\n7 = Application Template\n8 = Unified Management"
+      description: "Mechanism that created this rule. Can be one of: \n1 = Manual\n 2 = Trusted Directory\n3 = Reputation\n4 = Imported\n5 = External (API)\n 6 = Event Rule\n7 = Application Template\n8 = Unified Management"
       name: sourceType
       predefined:
       - Manual
@@ -1475,11 +1472,12 @@ script:
     - contextPath: CBP.FileRule.ReportOnly
       description: Is this rule "reporting only" or is it also "enforcing".
       type: String
-  dockerimage: demisto/python3:3.10.13.72123
+  dockerimage: demisto/python3:3.10.13.73190
   subtype: python3
   isfetch: true
   script: ''
   type: python
+  runonce: false
 tests:
 - Carbon Black Enterprise Protection V2 Test
 fromversion: 5.0.0
