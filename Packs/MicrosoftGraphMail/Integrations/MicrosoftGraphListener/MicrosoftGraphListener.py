@@ -95,13 +95,6 @@ class MsGraphListenerClient(MsGraphMailBaseClient):
         demisto.info(f"fetched {len(incidents)} incidents")
         demisto.debug(f"{next_run=}")
 
-        demisto.debug(f"MicrosoftGraphMail - Number of incidents skipped: {len(fetched_emails)-len(incidents)}")
-        for incident in incidents:  # remove the ID from the incidents, they are used only for look-back.
-            incident.pop('ID', None)
-
-        demisto.info(f"fetched {len(incidents)} incidents")
-        demisto.debug(f"{next_run=}")
-
         return next_run, incidents
 
 
@@ -137,6 +130,7 @@ def main():     # pragma: no cover
     emails_fetch_limit = int(params.get('fetch_limit', '50'))
     display_full_email_body = argToBoolean(params.get("display_full_email_body", "false"))
     mark_fetched_read = argToBoolean(params.get("mark_fetched_read", "false"))
+    fetch_html_formatting = argToBoolean(params.get("fetch_html_formatting", "false"))
 
     # params related to self deployed
     tenant_id = refresh_token if self_deployed else ''
@@ -160,6 +154,7 @@ def main():     # pragma: no cover
         folder_to_fetch=folder_to_fetch,
         first_fetch_interval=first_fetch_interval,
         emails_fetch_limit=emails_fetch_limit,
+        fetch_html_formatting=fetch_html_formatting,
 
         refresh_token=refresh_token,
         auth_code=auth_code,

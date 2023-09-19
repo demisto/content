@@ -35,6 +35,7 @@ class MsGraphMailBaseClient(MicrosoftClient):
                  display_full_email_body: bool = False,
                  mark_fetched_read: bool = False,
                  look_back: int | None = 0,
+                 fetch_html_formatting = True,
                  **kwargs):
         super().__init__(retry_on_rate_limit=True, managed_identities_resource_uri=Resources.graph,
                          command_prefix="msgraph-mail",
@@ -46,6 +47,7 @@ class MsGraphMailBaseClient(MicrosoftClient):
         self._display_full_email_body = display_full_email_body
         self._mark_fetched_read = mark_fetched_read
         self._look_back = look_back
+        self.fetch_html_formatting = fetch_html_formatting
 
     @classmethod
     def _build_attachments_input(cls, ids, attach_names=None, is_inline=False):
@@ -894,11 +896,12 @@ class MsGraphMailBaseClient(MicrosoftClient):
         """
         # there are situations where the 'body' key won't be returned from the api response, hence taking the uniqueBody
         # in those cases for both html/text formats.
+
         def body_extractor(email, parsed_email):
             email_content_as_html, email_content_as_text = self.get_email_content_as_text_and_html(email)
-            parsed_email['Body'] = email_content_as_html
+            parsed_email['Body'] = email_content_as_html if self.fetch_html_formatting else email_content_as_text
             parsed_email['Text'] = email_content_as_text
-            parsed_email['BodyType'] = 'html'
+            parsed_email['BodyType'] = 'html' if self.fetch_html_formatting else 'text'
 
         parsed_email = GraphMailUtils.parse_item_as_dict(email, body_extractor)
 
