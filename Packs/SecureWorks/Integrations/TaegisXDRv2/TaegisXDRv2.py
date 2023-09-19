@@ -909,7 +909,8 @@ def fetch_incidents(
         asset_query = ""
         if include_assets:
             demisto.debug("include_assets=True, fetching assets with investigation")
-            asset_query = "assets {id hostnames {id hostname} tags {tag}}"
+            # Assets to be deprecated in the future
+            asset_query = "assets {id hostnames {id hostname} tags {tag}} assetsEvidence {id assetId}"
 
         query = """
         query investigationsSearch(
@@ -934,6 +935,12 @@ def fetch_incidents(
                 key_findings
                 assignee {
                     name
+                    id
+                    email
+                }
+                assignee_user {
+                    family_name
+                    given_name
                     id
                     email
                 }
@@ -966,6 +973,8 @@ def fetch_incidents(
                 status
                 created_at
                 archived_at
+                alertsEvidence {id alertId}
+                tags
                 %s
             }
           }
@@ -1081,6 +1090,7 @@ def fetch_investigation_alerts_command(client: Client, env: str, args=None):
 def fetch_investigation_command(client: Client, env: str, args=None):
     fields: str = ""
     if args.get("id"):
+        # alerts, assets, and assignee to be deprecated in the future
         fields = args.get("fields") or """
             id
             shortId
@@ -1088,11 +1098,19 @@ def fetch_investigation_command(client: Client, env: str, args=None):
             keyFindings
             alerts
             assets
+            alertsEvidence {id alertId}
+            assetsEvidence {id assetId}
             status
             assignee {
                 id
                 family_name
                 given_name
+            }
+            assignee_user {
+                id
+                family_name
+                given_name
+                email
             }
             priority
             type
@@ -1102,6 +1120,7 @@ def fetch_investigation_command(client: Client, env: str, args=None):
                 alerts
             }
             archivedAt
+            tags
             """
 
         query = """
@@ -1119,6 +1138,7 @@ def fetch_investigation_command(client: Client, env: str, args=None):
         }
         result = client.graphql_run(query=query, variables=variables)
     else:
+        # assignee {} to be deprecated in the future
         fields = args.get("fields") or """
             id
             tenant_id
@@ -1163,6 +1183,12 @@ def fetch_investigation_command(client: Client, env: str, args=None):
                 id
                 email
             }
+            assignee_user {
+                family_name
+                given_name
+                email
+                id
+            }
             archived_at
             created_at
             updated_at
@@ -1187,6 +1213,9 @@ def fetch_investigation_command(client: Client, env: str, args=None):
                     tag
                 }
             }
+            alertsEvidence {id alertId}
+            assetsEvidence {id assetId}
+            tags
             """
 
         query = """
