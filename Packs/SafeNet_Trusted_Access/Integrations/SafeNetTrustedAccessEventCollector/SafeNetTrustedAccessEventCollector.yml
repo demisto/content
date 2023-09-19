@@ -62,9 +62,9 @@ script:
       - 'true'
       - 'false'
       required: true
-    - description: 'Since date'
+    - description: 'Since date.'
       name: since
-    - description: 'Until date'
+    - description: 'Until date.'
       name: until
     - description: A string pointing at the next page of results. The marker can be found within the previous response.
       name: marker
