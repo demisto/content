@@ -1036,8 +1036,6 @@ def get_new_indicators(
         params = {
             "start_epoch": int(param_start_date.timestamp()),
             "limit": limit,
-            # TODO: Remove once deemed unnecessary
-            # "gte_mscore": minimum_mscore,
             "exclude_osint": exclude_osint,
             "last_updated": "asc"
         }  # type:ignore
@@ -1056,15 +1054,13 @@ def get_new_indicators(
         for indicator in new_indicators_list:
             # Check if indicator should be added no matter what
             # E.g. it meets the `param` requirements
-            if indicator.get("mscore") >= minimum_mscore:
+            if indicator["mscore"] >= minimum_mscore:
                 updated_indicators.append(indicator)
             else:
-                existing_indicators = list(IndicatorsSearcher(value=indicator.get("value")))
-                if len(existing_indicators) > 0 and int(existing_indicators[0].get("total")) > 0:
+                existing_indicators = list(IndicatorsSearcher(value=indicator["value"]))
+                if len(existing_indicators) > 0 and int(existing_indicators[0].get("total",0)) > 0:
                     updated_indicators.append(indicator)
         return updated_indicators
-
-    return []
 
 
 def get_indicator_list(
