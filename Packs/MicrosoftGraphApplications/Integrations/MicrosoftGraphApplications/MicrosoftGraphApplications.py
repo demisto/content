@@ -140,7 +140,7 @@ class Client:
         """
         self.ms_client.http_request(method='DELETE', url_suffix=f'v1.0/servicePrincipals{service_id}', return_empty_response=True)
 
-    def add_password_application(
+    def add_password_service_principal(
             self,
             service_id: str,
             data: dict
@@ -161,7 +161,7 @@ class Client:
         json_data = {"passwordCredential": data}
         return self.ms_client.http_request(method='POST', url_suffix=suffix, json_data=json_data)
 
-    def remove_password_application(
+    def remove_password_service_principal(
             self,
             service_id: str,
             data: dict
@@ -180,6 +180,30 @@ class Client:
         """
         suffix = f'v1.0/servicePrincipals{service_id}/removePassword'
         return self.ms_client.http_request(method='POST', url_suffix=suffix, json_data=data, return_empty_response=True)
+
+    def unlock_configuration_service_principal(
+            self,
+            service_id: str,
+    ):
+        """
+
+        Arguments:
+            service_id: object id or application id of the service.
+            data: the body request.
+
+        Returns:
+            Remove a password from an application.
+
+        Docs:
+            https://learn.microsoft.com/en-us/graph/api/application-removepassword?view=graph-rest-1.0&tabs=http
+        """
+        data = {"servicePrincipalLockConfiguration":
+                {"isEnabled": False,
+                 "credentialsWithUsageSign": True,
+                 "credentialsWithUsageVerify": True}
+                }
+        suffix = f'/beta/applications/{service_id}'
+        return self.ms_client.http_request(method='PATCH', url_suffix=suffix, json_data=data, return_empty_response=True)
 
 
 ''' COMMAND FUNCTIONS '''
@@ -374,9 +398,9 @@ def remove_service_principals_command(ms_client: Client, args: dict) -> CommandR
     )
 
 
-def add_password_application_command(ms_client: Client, args: dict) -> CommandResults:
+def add_password_service_principal_command(ms_client: Client, args: dict) -> CommandResults:
     """
-    Adds a strong password or secret to an application.
+    Adds a strong password or secret to the service principal.
 
     Arguments:
         ms_client: The Client
@@ -396,7 +420,7 @@ def add_password_application_command(ms_client: Client, args: dict) -> CommandRe
     if start_date_time := args.get("start_date_time"):
         data["startDateTime"] = start_date_time
 
-    results = ms_client.add_password_application(id_for_request, data=data)
+    results = ms_client.add_password_service_principal(id_for_request, data=data)
 
     return CommandResults(
         'MSGraphApplication',
@@ -406,9 +430,9 @@ def add_password_application_command(ms_client: Client, args: dict) -> CommandRe
     )
 
 
-def remove_password_application_command(ms_client: Client, args: dict) -> CommandResults:
+def remove_password_service_principal_command(ms_client: Client, args: dict) -> CommandResults:
     """
-    Remove a password from an application.
+    Remove a password from the service principal.
 
     Arguments:
         ms_client: The Client
@@ -421,10 +445,30 @@ def remove_password_application_command(ms_client: Client, args: dict) -> Comman
 
     data = {"keyId": args["key_id"]}
 
-    ms_client.remove_password_application(id_for_request, data=data)
+    ms_client.remove_password_service_principal(id_for_request, data=data)
 
     return CommandResults(
         readable_output=f'The password of the unique identifier {args["key_id"]} was removed successfully.'
+    )
+
+
+def unlock_configuration_service_principal_command(ms_client: Client, args: dict) -> CommandResults:
+    """
+    Unlock configuration of a service principal.
+
+    Arguments:
+        ms_client: The Client
+        args: demisto.args()
+
+    Returns:
+        Results to post in demisto
+    """
+    object_id = args["id"]  # required
+
+    ms_client.unlock_configuration_service_principal(object_id)
+
+    return CommandResults(
+        readable_output=f'The configuration of {object_id} was unlocked successfully.'
     )
 
 
@@ -490,10 +534,12 @@ def main():
             return_results(get_service_principal_command(client, args))
         elif command == 'msgraph-apps-service-principal-update':
             return_results(update_service_principal_command(client, args))
-        elif command == 'msgraph-apps-application-password-add':
-            return_results(add_password_application_command(client, args))
-        elif command == 'msgraph-apps-application-password-remove':
-            return_results(remove_password_application_command(client, args))
+        elif command == 'msgraph-apps-service-principal-password-add':
+            return_results(add_password_service_principal_command(client, args))
+        elif command == 'msgraph-apps-service-principal-password-remove':
+            return_results(remove_password_service_principal_command(client, args))
+        elif command == 'msgraph-apps-service-principal-unlock-configuration':
+            return_results(unlock_configuration_service_principal_command(client, args))
         else:
             raise NotImplementedError(f"Command '{command}' not found.")
 

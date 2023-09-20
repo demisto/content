@@ -486,8 +486,8 @@ script:
         description: Specifies the keyId of a public key from the keyCredentials collection. When configured, Azure AD issues tokens for this application encrypted using the key specified by this property. The application code that receives the encrypted token must use the matching private key to decrypt the token before it can be used for the signed-in user.
         required: false
     outputs: []
-  - description: Adds a strong password or secret to an application.
-    name: msgraph-apps-application-password-add
+  - description: Adds a strong password or secret to a service principal.
+    name: msgraph-apps-service-principal-password-add
     arguments:
       - name: id
         description: The application id to add password. Can be retrieved via the msgraph-apps-service-principal-list command.
@@ -526,8 +526,8 @@ script:
       - contextPath: MSGraphApplication.keyCredentials.hint
         description: The secretText prefix.
         type: String
-  - description: Remove a password from an application.
-    name: msgraph-apps-application-password-remove
+  - description: Remove a password from a service principal.
+    name: msgraph-apps-service-principal-password-remove
     arguments:
       - name: id
         description: The application id to remove password. Can be retrieved via the msgraph-apps-service-principal-list command.
@@ -539,6 +539,13 @@ script:
         description: The unique identifier for the password.
         required: true
     outputs: []
+  - description: Unlock configuration of a service principal.
+    name: msgraph-apps-service-principal-unlock-configuration
+    arguments:
+      - name: id
+        description: The application object id (not the app id).
+        required: true
+    outputs: [ ]
   runonce: false
   script: '-'
   type: python

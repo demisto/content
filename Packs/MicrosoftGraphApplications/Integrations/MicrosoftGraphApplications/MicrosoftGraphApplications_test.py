@@ -278,23 +278,23 @@ ADD_PASSWORD_RESPONSE = {
                                'start_date_time': 'start'}, "(appId='TEST')",
                               {'data': {'displayName': 'NAME', 'endDateTime': 'end', 'startDateTime': 'start'}})
                          ])
-def test_add_password_application_command(mocker, requests_mock, args, expected_id, expected_args):
+def test_add_password_service_principal_command(mocker, requests_mock, args, expected_id, expected_args):
     """
         Given:
             - Required arguments (id or app_id or both and display_name)
         When:
-            - Executing msgraph-apps-application-password-add command
+            - Executing msgraph-apps-service-principal-password-add command
         Then:
-            - Ensure add_password_application client's method was called with the right arguments
+            - Ensure add_password_service_principal client's method was called with the right arguments
     """
-    from MicrosoftGraphApplications import Client, add_password_application_command
+    from MicrosoftGraphApplications import Client, add_password_service_principal_command
 
     mock_token = {'access_token': 'test_token', 'expires_in': '86400'}
     requests_mock.post('https://login.microsoftonline.com/organizations/oauth2/v2.0/token', json=mock_token)
     client = Client(app_id='TEST', verify=False, proxy=False, connection_type='TEST', tenant_id='TEST', enc_key='TEST')
-    requests_mock.patch("https://graph.microsoft.com/v1.0/applications/TEST/addPassword", json=ADD_PASSWORD_RESPONSE)
-    mock_update_service_principals = mocker.patch.object(client, "add_password_application")
-    add_password_application_command(client, args=args)
+    requests_mock.patch("https://graph.microsoft.com/v1.0/servicePrincipals/TEST/addPassword", json=ADD_PASSWORD_RESPONSE)
+    mock_update_service_principals = mocker.patch.object(client, "add_password_service_principal")
+    add_password_service_principal_command(client, args=args)
 
     assert mock_update_service_principals.call_args[0][0] == expected_id
     assert mock_update_service_principals.call_args[1] == expected_args
@@ -305,44 +305,44 @@ def test_add_password_application_command(mocker, requests_mock, args, expected_
                              ({'id': 'TEST', 'app_id': None, 'key_id': 'XXXXXX'}, "/TEST", {'data': {'keyId': 'XXXXXX'}}),
                              ({'id': None, 'app_id': 'TEST', 'key_id': 'XXXXXX'}, "(appId='TEST')", {'data': {'keyId': 'XXXXXX'}})
                          ])
-def test_remove_password_application_command(mocker, requests_mock, args, expected_id, expected_args):
+def test_remove_password_service_principal_command(mocker, requests_mock, args, expected_id, expected_args):
     """
         Given:
             - Required arguments (id or app_id or both and key_id)
         When:
-            - Executing msgraph-apps-application-password-remove command
+            - Executing msgraph-apps-service-principal-password-remove command
         Then:
-            - Ensure remove_password_application client's method was called with the right arguments
+            - Ensure remove_password_service_principal client's method was called with the right arguments
     """
-    from MicrosoftGraphApplications import Client, remove_password_application_command
+    from MicrosoftGraphApplications import Client, remove_password_service_principal_command
 
     mock_token = {'access_token': 'test_token', 'expires_in': '86400'}
     requests_mock.post('https://login.microsoftonline.com/organizations/oauth2/v2.0/token', json=mock_token)
     client = Client(app_id='TEST', verify=False, proxy=False, connection_type='TEST', tenant_id='TEST', enc_key='TEST')
-    requests_mock.patch("https://graph.microsoft.com/v1.0/applications/TEST/removePassword", json={})
-    mock_update_service_principals = mocker.patch.object(client, "remove_password_application")
-    remove_password_application_command(client, args=args)
+    requests_mock.patch("https://graph.microsoft.com/v1.0/servicePrincipals/TEST/removePassword", json={})
+    mock_update_service_principals = mocker.patch.object(client, "remove_password_service_principal")
+    remove_password_service_principal_command(client, args=args)
 
     assert mock_update_service_principals.call_args[0][0] == expected_id
     assert mock_update_service_principals.call_args[1] == expected_args
 
 
 @pytest.mark.parametrize('args,', [({'id': 'TEST', 'app_id': None})])
-def test_remove_password_application_command_without_required_arg(requests_mock, args):
+def test_remove_password_service_principal_command_without_required_arg(requests_mock, args):
     """
         Given:
             - Missing required argument (key_id)
         When:
-            - Executing msgraph-apps-application-password-remove command
+            - Executing msgraph-apps-service-principal-password-remove command
         Then:
             - Ensure an exception is thrown due to missing required argument
     """
-    from MicrosoftGraphApplications import Client, remove_password_application_command
+    from MicrosoftGraphApplications import Client, remove_password_service_principal_command
 
     mock_token = {'access_token': 'test_token', 'expires_in': '86400'}
     requests_mock.post('https://login.microsoftonline.com/organizations/oauth2/v2.0/token', json=mock_token)
     client = Client(app_id='TEST', verify=False, proxy=False, connection_type='TEST', tenant_id='TEST', enc_key='TEST')
-    requests_mock.patch("https://graph.microsoft.com/v1.0/applications/TEST/removePassword", json={})
+    requests_mock.patch("https://graph.microsoft.com/v1.0/servicePrincipals/TEST/removePassword", json={})
 
     with pytest.raises(KeyError):
-        remove_password_application_command(client, args=args)
+        remove_password_service_principal_command(client, args=args)
