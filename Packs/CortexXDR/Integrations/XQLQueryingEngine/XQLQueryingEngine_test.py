@@ -965,8 +965,11 @@ def test_get_built_in_query_results_polling_command(mocker):
     res = mocker.patch('XQLQueryingEngine.start_xql_query_polling_command')
     mocker.patch.object(demisto, 'command', return_value='xdr-xql-file-event-query')
     XQLQueryingEngine.get_built_in_query_results_polling_command(CLIENT, args)
-    assert res.call_args.args[1]['query'] == '''dataset = xdr_data | filter agent_id in ("123456","654321") and event_type = FILE and action_file_sha256
+    assert (
+        res.call_args.args[1]["query"]
+        == """dataset = xdr_data | filter agent_id in ("123456","654321") and event_type = FILE and action_file_sha256
  in ("abcde","edcba","p1p2p3")| fields agent_hostname, agent_ip_addresses, agent_id, action_file_path, action_file_sha256,
- actor_process_file_create_time, EXTRA1, EXTRA2 | limit 400'''
+ actor_process_file_create_time, EXTRA1, EXTRA2 | limit 400"""
+    )
     assert res.call_args.args[1]['tenants'] == ["tenantID", "tenantID"]
     assert res.call_args.args[1]['time_frame'] == '7 days'
