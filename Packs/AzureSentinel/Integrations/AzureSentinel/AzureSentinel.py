@@ -813,6 +813,7 @@ def list_incidents_command(client: AzureSentinelClient, args, is_fetch_incidents
         }
         remove_nulls_from_dictionary(params)
 
+        demisto.debug(f"AS: Params for request: {params}")
         result = client.http_request('GET', url_suffix, params=params)
 
     incidents = [incident_data_to_xsoar_format(inc, is_fetch_incidents) for inc in result.get('value')]
@@ -1245,13 +1246,14 @@ def fetch_incidents(client: AzureSentinelClient, last_run: dict, first_fetch_tim
 
     """
     # Get the last fetch details, if exist
+    demisto.debug("Starting the fetch process")
     last_fetch_time = last_run.get('last_fetch_time')
     last_fetch_ids = last_run.get('last_fetch_ids', [])
     last_incident_number = last_run.get('last_incident_number')
     demisto.debug(f"{last_fetch_time=}, {last_fetch_ids=}, {last_incident_number=}")
 
     if last_fetch_time is None or last_incident_number is None:
-        demisto.debug("handle via timestamp")
+        demisto.debug("AS: Handle via timestamp")
         if last_fetch_time is None:
             last_fetch_time_str, _ = parse_date_range(first_fetch_time, DATE_FORMAT)
             latest_created_time = dateparser.parse(last_fetch_time_str)
@@ -1269,7 +1271,7 @@ def fetch_incidents(client: AzureSentinelClient, last_run: dict, first_fetch_tim
         }
 
     else:
-        demisto.debug("last fetch time is empty, trying to fetch incidents by last incident id")
+        demisto.debug("AS: Handle fetch incidents by last incident id")
         latest_created_time = dateparser.parse(last_fetch_time)
         if latest_created_time is None:
             raise DemistoException(f"{last_fetch_time=} couldn't be parsed")
@@ -1315,6 +1317,7 @@ def process_incidents(raw_incidents: list, last_fetch_ids: list, min_severity: i
         A next_run dictionary, and an array of incidents.
     """
 
+    demisto.debug("AS: Starting to process incidents.")
     incidents = []
     current_fetch_ids = []
     if not last_incident_number:
@@ -1325,8 +1328,9 @@ def process_incidents(raw_incidents: list, last_fetch_ids: list, min_severity: i
         demisto.debug(f"{incident.get('ID')=}, {incident_severity=}, {incident.get('IncidentNumber')=}")
 
         # create incident only for incidents that weren't fetched in the last run and their severity is at least min_severity
+        incident_created_time = dateparser.parse(incident.get('CreatedTimeUTC'))
         if incident.get('ID') not in last_fetch_ids:
-            incident_created_time = dateparser.parse(incident.get('CreatedTimeUTC'))
+            demisto.debug(f"AS: Incident {incident.get('IncidentNumber')} is not in the last fetch ids")
             current_fetch_ids.append(incident.get('ID'))
             if incident_severity >= min_severity:
                 add_mirroring_fields(incident)
@@ -1339,22 +1343,23 @@ def process_incidents(raw_incidents: list, last_fetch_ids: list, min_severity: i
                 incidents.append(xsoar_incident)
             else:
                 demisto.debug(f"drop creation of {incident.get('IncidentNumber')=} "
-                              "due to the {incident_severity=} is lower then {min_severity=}")
+                              f"due to the {incident_severity=} is lower then {min_severity=}")
 
             # Update last run to the latest fetch time
-            if incident_created_time is None:
-                raise DemistoException(f"{incident.get('CreatedTimeUTC')=} couldn't be parsed")
+        if incident_created_time is None:
+            raise DemistoException(f"{incident.get('CreatedTimeUTC')=} couldn't be parsed")
 
-            if incident_created_time > latest_created_time:
-                latest_created_time = incident_created_time
-            if incident.get('IncidentNumber') > last_incident_number:
-                last_incident_number = incident.get('IncidentNumber')
+        if incident_created_time > latest_created_time:
+            latest_created_time = incident_created_time
+        if incident.get('IncidentNumber') > last_incident_number:
+            last_incident_number = incident.get('IncidentNumber')
 
     next_run = {
         'last_fetch_time': latest_created_time.strftime(DATE_FORMAT),
         'last_fetch_ids': current_fetch_ids,
         'last_incident_number': last_incident_number,
     }
+    demisto.debug(f"AS: The next run: {next_run}")
     return next_run, incidents
 
 
