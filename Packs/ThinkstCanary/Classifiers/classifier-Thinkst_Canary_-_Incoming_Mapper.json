@@ -46,6 +46,14 @@
                         "transformers": []
                     }
                 },
+                "Src": {
+                    "complex": {
+                        "accessor": "src_host",
+                        "filters": [],
+                        "root": "description",
+                        "transformers": []
+                    }
+                },
                 "Thinkst Canary Flock Id": {
                     "complex": {
                         "accessor": "flock_id",
