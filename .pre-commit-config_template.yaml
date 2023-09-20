@@ -36,25 +36,26 @@ repos:
   hooks:
   - id: ruff
 
-  - repo: https://github.com/pre-commit/mirrors-autopep8
-    rev: "v2.0.1"
-    hooks:
-      - id: autopep8
-  - repo: local
-    hooks:
-      - id: is-circle-changed
-        name: is-circle-changed
-        description: Checks if circle files are changed, and checkout to current if it is.
-        entry: ./Tests/scripts/is_file_up_to_date.sh .circleci/config.yml "" false
-        language: script
-        pass_filenames: false
+- repo: https://github.com/pre-commit/mirrors-autopep8
+  rev: "v2.0.1"
+  hooks:
+  - id: autopep8
+- repo: local
+  hooks:
+  - id: is-circle-changed
+    name: is-circle-changed
+    description: Checks if circle files are changed, and checkout to current if it is.
+    entry: ./Tests/scripts/is_file_up_to_date.sh .circleci/config.yml "" false
+    language: script
+    pass_filenames: false
 
-      - id: is-gitlab-changed
-        name: is-gitlab-changed
-        description: Checks if gitlab files are changed, and checkout to current if it is.
-        entry: ./Tests/scripts/is_file_up_to_date.sh .gitlab "" false
-        language: script
-        pass_filenames: false
+  - id: is-gitlab-changed
+    name: is-gitlab-changed
+    description: Checks if gitlab files are changed, and checkout to current if it is.
+    entry: ./Tests/scripts/is_file_up_to_date.sh .gitlab "" false
+    language: script
+    pass_filenames: false
+
 - repo: https://github.com/demisto/demisto-sdk
   rev: ""
   hooks:
