@@ -63,6 +63,7 @@ class Key:
     That allows you to sort values even if them have different types of values.
     The key given by Key.get() can be used for list.sort().
     """
+
     def __init__(self, value: Any, path: Optional[str]) -> None:
         """
         Initialize the key.
