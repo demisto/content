@@ -19,10 +19,10 @@ def get_audit_logs(res: Dict):
 
 def get_audit_logs_count(res: Dict):
     def get_xsoar6_audit_logs_count():
-        return res.get('total', 0)
+        return res.get('total') or 0
 
     def get_xsoar8_audit_logs_count():
-        return res.get('total_count', 0)
+        return res.get('total_count') or 0
 
     return arg_to_number(get_xsoar6_audit_logs_count() or get_xsoar8_audit_logs_count())
 
@@ -36,7 +36,7 @@ def main():   # pragma: no cover
     fetch_from = fetch_back_date.strftime("%Y-%m-%dT00:00:00Z")
 
     demisto_version: str = get_demisto_version().get("version")
-    demisto.debug(f'{demisto_version=}')
+    demisto.debug(f'The version of XSOAR is: {demisto_version}')
     if not demisto_version:
         raise ValueError('Could not get the version of XSOAR')
 
@@ -68,7 +68,6 @@ def main():   # pragma: no cover
         }
 
     args = {"uri": uri, "body": body}
-    demisto.log(f'{args=}')
     res = demisto.executeCommand("demisto-api-post", args)[0]["Contents"]["response"]
     if is_error(res):
         raise DemistoException(f'error occurred when trying to retrieve the audit logs using {args=}, error: {res}')
