@@ -37,9 +37,16 @@ def mocked_requests_post(*args, **kwargs):
         return MockResponse(str(e), 404)
 
 
-@pytest.mark.parametrize('file_name, data, expected_md_results', [
-    ('2022年年年年年.docx', '年年年年年', '# OPSWAT-Metadefender\nThe file has been successfully submitted to scan.\nScan id: mock_id\n')
-])
+@pytest.mark.parametrize(
+    "file_name, data, expected_md_results",
+    [
+        (
+            "2022年年年年年.docx",
+            "年年年年年",
+            "# OPSWAT-Metadefender\nThe file has been successfully submitted to scan.\nScan id: mock_id\n",
+        )
+    ],
+)
 def test_scan_file_command(mocker, file_name, data, expected_md_results):
     """
     Given:
