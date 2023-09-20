@@ -38,7 +38,7 @@ def main():   # pragma: no cover
     demisto_version: str = get_demisto_version().get("version")
     demisto.debug(f'{demisto_version=}')
     if not demisto_version:
-        raise ValueError(f'Could not get the version of XSOAR')
+        raise ValueError('Could not get the version of XSOAR')
 
     page_num = 0
     size = 100

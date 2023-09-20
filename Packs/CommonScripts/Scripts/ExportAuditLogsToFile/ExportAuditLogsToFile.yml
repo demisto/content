@@ -10,7 +10,7 @@ args:
   required: true
 - auto: PREDEFINED
   defaultValue: csv
-  description: Type of File to return, either JSON, or CSV
+  description: Type of File to return, either JSON, or CSV.
   name: output
   predefined:
   - csv
