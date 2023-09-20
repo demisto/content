@@ -5,7 +5,6 @@ import glob
 import json
 import os
 import re
-import sys
 import traceback
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from functools import lru_cache
@@ -603,14 +602,14 @@ def get_pack_installation_request_data(pack_id: str, pack_version: str):
     }
 
 
-def install_all_content_packs_for_nightly(client: demisto_client, host: str, service_account: str):
+def install_all_content_packs_for_nightly(client: demisto_client, host: str, service_account: str) -> bool:
     """ Iterates over the packs currently located in the Packs directory. Wrapper for install_packs.
     Retrieving the latest version of each pack from the production bucket.
 
     :param client: Demisto-py client to connect to the server.
     :param host: FQDN of the server.
     :param service_account: The full path to the service account json.
-    :return: None. Prints the response from the server in the build.
+    :return: Boolean value indicating whether the installation was successful or not.
     """
     all_packs = []
 
@@ -678,7 +677,7 @@ def install_all_content_packs_from_build_bucket(client: demisto_client, host: st
 
 def upload_zipped_packs(client: demisto_client,
                         host: str,
-                        pack_path: str):
+                        pack_path: str) -> bool:
     """
     Install packs from zip file.
 
@@ -686,6 +685,8 @@ def upload_zipped_packs(client: demisto_client,
         client (demisto_client): The configured client to use.
         host (str): The server URL.
         pack_path (str): path to pack zip.
+    Returns:
+        bool: True if the operation succeeded and False otherwise.
     """
     header_params = {
         'Content-Type': 'multipart/form-data'
@@ -711,7 +712,8 @@ def upload_zipped_packs(client: demisto_client,
             raise Exception(f'Failed to install packs - with status code {status_code}\n{message}')
     except Exception:  # noqa
         logging.exception('The request to install packs has failed.')
-        sys.exit(1)
+        return False
+    return True
 
 
 def search_and_install_packs_and_their_dependencies_private(test_pack_path: str,
