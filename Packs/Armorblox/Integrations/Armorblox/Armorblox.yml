@@ -76,19 +76,19 @@ name: Armorblox
 script:
   commands:
   - arguments: []
-    description: Gets a list of armorblox incidents
+    description: Gets a list of armorblox incidents.
     name: fetch-incidents
   - arguments:
-    - description: The incident id of the incident under inspection
+    - description: The incident id of the incident under inspection.
       name: incident_id
       required: true
-    description: Check the recommended remediation action for any incident
+    description: Check the recommended remediation action for any incident.
     name: armorblox-check-remediation-action
     outputs:
     - contextPath: Armorblox.Threat.remediation_actions
-      description: Should be the remediation action name for the incident under inspection
+      description: Should be the remediation action name for the incident under inspection.
       type: string
-  dockerimage: demisto/armorblox:1.0.0.72209
+  dockerimage: demisto/armorblox:1.0.0.73719
   isfetch: true
   script: ''
   subtype: python3
