@@ -107,7 +107,7 @@ demisto-sdk-nightly:mpv2-prepare-testing-bucket:
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_MPV2}"
     MARKETPLACE_VERSION: "marketplacev2"
     MARKETPLACE_BUCKET: "$GCS_MARKET_V2_BUCKET"
-    PRODUCTNAME: "Cortex XSIAM"
+    PRODUCT_NAME: "Cortex XSIAM"
     IFRA_ENV_TYPE: "Server Master"
     KUBERNETES_CPU_REQUEST: 2000m
   cache:
@@ -128,7 +128,7 @@ demisto-sdk-nightly:xpanse-prepare-testing-bucket:
   variables:
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XPANSE}"
     MARKETPLACE_VERSION: "xpanse"
-    PRODUCTNAME: "Cortex XPANSE"
+    PRODUCT_NAME: "Cortex XPANSE"
     MARKETPLACE_BUCKET: "$GCS_MARKET_XPANSE_BUCKET"
     IFRA_ENV_TYPE: "Server Master"
     KUBERNETES_CPU_REQUEST: 2000m
