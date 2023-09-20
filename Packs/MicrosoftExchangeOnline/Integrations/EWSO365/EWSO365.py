@@ -2167,8 +2167,8 @@ def parse_incident_from_item(item):     # pragma: no cover
                             data = attached_email_bytes.decode('utf-8')
                         except UnicodeDecodeError:
                             # In case the detected encoding fails apply the default encoding
-                            demisto.info(f'Could not decode attached email using utf-8. returned the content without decoding')
-                            data = attached_email_bytes
+                            demisto.info('Could not decode attached email using utf-8. returned the content without decoding')
+                            data = attached_email_bytes  # type: ignore
 
                     file_result = fileResult(get_attachment_name(attachment.name), data)
 
