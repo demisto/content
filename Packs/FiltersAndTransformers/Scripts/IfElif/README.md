@@ -17,6 +17,7 @@ In order to prevent injections, context values should be retrieved from the valu
 | <= | Less than or equal to | x <= y |
 | in | In | x in y|
 | not in | Not in | x not in y|
+**Note:** If a comparison is incomparable by nature (e.g. `'a' < 3`), it will evaluate to false.
 
 **Logical operators** also follow the Python syntax:
 | Operator | Description | Example |
@@ -28,6 +29,7 @@ In order to prevent injections, context values should be retrieved from the valu
 **Regular expressions** are implemented with the "regex_match" function, in the format: `regex_match('pattern', 'string')`. The behavior of the function is controlled with the *flags* argument.
 
 **Literal strings** should preferably be surrounded by single quotes. Do not use `#{...}` in a string, instead, use the `+` operator. For example: `'first ' + #{second.string} + ' third'` will be equal to the common `"first ${second.string} third"`. (This method can be used for lists too.)
+**Note:** If the `+` operator is used on distinct types (e.g. `'a' + None`), it will evaluate to `None` (null).
 
 The following flags can be used in the *flags* argument to control the transformer's behavior:
 |Flag|Effect|Example|
@@ -50,7 +52,7 @@ ${.}
 [
   {
     "condition": "'www.' + #{domain.name} + '.com' not in #{approved.sites}",
-    "return": #{domain.name}
+    "return": #{domain.name} + "/home"
   },
   {
     "condition": "#{number} >= 5 and #{path.to.string} == 'Yes'",
