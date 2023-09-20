@@ -24,7 +24,7 @@ from AbnormalSecurity import (Client, check_the_status_of_an_action_requested_on
                               get_the_activity_of_a_specific_vendor_command,
                               get_a_list_of_vendor_cases_command,
                               get_the_details_of_a_vendor_case_command,
-                              get_a_list_of_unanalyzed_abuse_mailbox_campaigns_command, fetch_incidents)
+                              get_a_list_of_unanalyzed_abuse_mailbox_campaigns_command, fetch_incidents, ISO_8601_FORMAT)
 from CommonServerPython import DemistoException
 from datetime import datetime
 
@@ -34,8 +34,6 @@ from test_data.fixtures \
 headers = {
     'Authorization': f"Bearer {apikey}",
 }
-
-ISO_8601_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 
 
 class MockResponse:
