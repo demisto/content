@@ -228,7 +228,7 @@ def get_token_command():
         token_file = fileResult(name, content)
         demisto.results(token_file)
     else:
-        token_data = res.get('token')
+        token_data = res.get('token', [])
         token_data.pop('url', None)
         human_readable = tableToMarkdown('Canary Tools Tokens', token_data)
 
