@@ -1996,7 +1996,7 @@ script:
       description: Filters results by start datetime. Based on scan time.
     - name: limit
       description: The maximum number of CI scan results to return. Must be between 1-50.
-      defaultValue: "15"
+      defaultValue: "50"
     - name: offset
       description: The offset by which to begin listing CI scan results.
       defaultValue: "0"
@@ -2238,6 +2238,80 @@ script:
     - contextPath: PrismaCloudCompute.TrustedImage.groups.images
       description: The images in the trusted image group.
       type: Unknown
+  - name: prisma-cloud-compute-container-scan-results
+    description: Retrieves container scan reports. Maps to Monitor > Compliance > Images > Deployed in the Console UI.
+    arguments:
+    - name: collections
+      description: Filters the result based on collection names that you have defined in Prisma Cloud Compute.
+      isArray: true
+    - name: account_ids
+      description: Filters the result based on cloud account IDs.
+      isArray: true
+    - name: clusters
+      description: Clusters to filter by.
+      isArray: true
+    - name: namespaces
+      description: Namespaces to filter by.
+      isArray: true
+    - name: resource_ids
+      description: Scopes the query by resource ID.
+      isArray: true
+    - name: region
+      description: Scopes the query by cloud region.
+      isArray: true
+    - name: container_ids
+      description: Container ID to retrieve details for.
+      isArray: true
+    - name: profile_id
+      description: Runtime profile ID to filter by.
+      isArray: true
+    - name: image_name
+      description: Image name to filter by.
+      isArray: true
+    - name: image_id
+      description: Image ID to filter by.
+      isArray: true
+    - name: hostname
+      description: Hostname to filter by.
+      isArray: true
+    - name: compliance_ids
+      description: Compliance IDs to filter by.
+      isArray: true
+    - name: agentless
+      description: Filter by agentless scans.
+      predefined:
+      - "true"
+      - "false"
+    - name: search
+      description: Term to search for.
+    - name: limit
+      description: The maximum number of container scan reports to return. Must be between 1-50.
+      defaultValue: "50"
+    - name: offset
+      description: The offset by which to begin listing container scan reports.
+      defaultValue: "0"
+    outputs:
+    - contextPath: PrismaCloudCompute.ContainersScanResults.ID
+      description: The container scan ID.
+      type: String
+    - contextPath: PrismaCloudCompute.ContainersScanResults.Hostname
+      description: The scanned container hostname.
+      type: String
+    - contextPath: PrismaCloudCompute.ContainersScanResults.ScanTime
+      description: The container scan time.
+      type: Date
+    - contextPath: PrismaCloudCompute.ContainersScanResults.ImageID
+      description: The container image ID.
+      type: String
+    - contextPath: PrismaCloudCompute.ContainersScanResults.ImageName
+      description: The container image name.
+      type: String
+    - contextPath: PrismaCloudCompute.ContainersScanResults.Name
+      description: The container name.
+      type: String
+    - contextPath: PrismaCloudCompute.ContainersScanResults.App
+      description: The container application name.
+      type: String
 tests:
 - PaloAltoNetworks_PrismaCloudCompute-Test
 fromversion: 5.0.0

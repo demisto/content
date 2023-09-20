@@ -2016,7 +2016,7 @@ def get_ci_scan_results_list(client: PrismaCloudComputeClient, args: dict) -> Co
         CommandResults: command-results object.
     """
     limit, offset = parse_limit_and_offset_values(
-        limit=args.get("limit", "20"), offset=args.get("offset", "0")
+        limit=args.get("limit", "50"), offset=args.get("offset", "0")
     )
     account_ids, resource_ids, region, name, search = (
         argToList(args.get("account_ids")), argToList(args.get("resource_ids")),
@@ -2057,7 +2057,7 @@ def get_ci_scan_results_list(client: PrismaCloudComputeClient, args: dict) -> Co
 
     return CommandResults(
         outputs_prefix="PrismaCloudCompute.CIScan",
-        outputs_key_field="ID",
+        outputs_key_field="entityInfo._id",
         outputs=ci_scan_results,
         readable_output=table,
         raw_response=ci_scan_results
@@ -2101,7 +2101,7 @@ def get_trusted_images(client: PrismaCloudComputeClient) -> CommandResults:
                         "ID": group.get("_id"),
                     } for group in trusted_images_results.get("groups", [])
                 ],
-                headers=[ "ID", "Group Name", "Owner", "Modified"],
+                headers=["ID", "Group Name", "Owner", "Modified"],
                 removeNull=True,
             )
     else:
@@ -2113,6 +2113,64 @@ def get_trusted_images(client: PrismaCloudComputeClient) -> CommandResults:
         outputs=trusted_images_results,
         readable_output=table,
         raw_response=trusted_images_results
+    )
+
+
+def get_container_scan_results(client: PrismaCloudComputeClient, args: dict) -> CommandResults:
+    """
+    Retrieve a list of container scan reports and their information.
+    Implement the command 'prisma-cloud-compute-container-scan-results'.
+
+    Args:
+        client (PrismaCloudComputeClient): prisma-cloud-compute client.
+        args (dict): prisma-cloud-compute-container-scan-results command arguments.
+
+    Returns:
+        CommandResults: command-results object.
+    """
+    limit, offset = parse_limit_and_offset_values(
+        limit=args.get("limit", "50"), offset=args.get("offset", "0")
+    )
+    collections, account_ids, clusters, namespaces, resource_ids, region, container_ids, profile_id, image_name, image_id, hostname, \
+        compliance_ids, agentless, search = (
+            argToList(args.get("collections")), argToList(args.get("account_ids")), argToList(args.get("clusters")),
+            argToList(args.get("namespaces")), argToList(args.get("resource_ids")), argToList(args.get("region")),
+            argToList(args.get("container_ids")), argToList(args.get("profile_id")), argToList(args.get("image_name")),
+            argToList(args.get("image_id")), argToList(args.get("hostname")), argToList(args.get("compliance_ids")),
+            args.get("agentless"), args.get("search")
+        )
+    params = assign_params(
+        offset=offset, limit=limit, collections=collections, accountIDs=account_ids, clusters=clusters, namespaces=namespaces, 
+        resourceIDs=resource_ids, region=region, id=container_ids, profileId=profile_id, image=image_name, image_id=image_id, 
+        hostname=hostname, complianceIDs=compliance_ids, agentless=agentless, search=search
+    )
+
+    if container_scan_results := client.get_container_scan_results(params=params):
+        table = tableToMarkdown(
+            name="CI Scan Information",
+            t=[
+                {
+                    "ID": container.get("_id"),
+                    "Hostname": container.get("hostname"),
+                    "Scan Time": container.get("scanTime"),
+                    "Image ID": container.get("info", {}).get("imageID"),
+                    "Image Name": container.get("info", {}).get("imageName"),
+                    "Name": container.get("info", {}).get("name"),
+                    "App": container.get("info", {}).get("app"),
+                } for container in container_scan_results
+            ],
+            headers=["ID", "Hostname", "Scan Time", "Image ID", "Image Name", "Name", "App"],
+            removeNull=True,
+        )
+    else:
+        table = "No results found."
+
+    return CommandResults(
+        outputs_prefix="PrismaCloudCompute.ContainersScanResults",
+        outputs_key_field="_id",
+        outputs=container_scan_results,
+        readable_output=table,
+        raw_response=container_scan_results
     )
 
 
@@ -2235,6 +2293,8 @@ def main():
             return_results(results=get_ci_scan_results_list(client=client, args=demisto.args()))
         elif requested_command == "prisma-cloud-compute-trusted-images-get":
             return_results(results=get_trusted_images(client=client))
+        elif requested_command == "prisma-cloud-compute-container-scan-results":
+            return_results(results=get_container_scan_results(client=client, args=demisto.args()))
     # Log exceptions
     except Exception as e:
         return_error(f'Failed to execute {requested_command} command. Error: {str(e)}')
