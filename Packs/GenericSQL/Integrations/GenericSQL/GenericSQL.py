@@ -77,7 +77,7 @@ class Client:
         if dialect == MICROSOFT_SQL_SERVER:
             connect_parameters_dict['driver'] = 'FreeTDS'
             connect_parameters_dict.setdefault('autocommit', 'True')
-        elif dialect == 'Microsoft SQL Server - MS ODBC Driver':
+        elif dialect == MS_ODBC_DRIVER:
             connect_parameters_dict['driver'] = 'ODBC Driver 18 for SQL Server'
             connect_parameters_dict.setdefault('autocommit', 'True')
             if not verify_certificate:
@@ -95,7 +95,7 @@ class Client:
             module = "mysql"
         elif dialect == POSTGRES_SQL:
             module = "postgresql"
-        elif dialect == "Oracle":
+        elif dialect == ORACLE:
             module = "oracle"
         elif dialect in {MICROSOFT_SQL_SERVER, MS_ODBC_DRIVER}:
             module = "mssql+pyodbc"
@@ -130,7 +130,7 @@ class Client:
                      database=self.dbname,
                      query=self.connect_parameters)
         if self.ssl_connect:
-            if self.dialect == 'PostgreSQL':
+            if self.dialect == POSTGRES_SQL:
                 ssl_connection = {'sslmode': 'require'}
             else:
                 ssl_connection = {'ssl': {'ssl-mode': 'preferred'}}  # type: ignore[dict-item]
