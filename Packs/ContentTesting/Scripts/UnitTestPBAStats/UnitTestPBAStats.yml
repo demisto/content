@@ -4,7 +4,7 @@ commonfields:
 contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ""
-comment: ''
+comment: Playbook statistics.
 dockerimage: demisto/python3:3.10.13.72123
 enabled: true
 name: UnitTestPBAStats
