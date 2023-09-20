@@ -28,7 +28,7 @@ def read_file_contents(file_path: str) -> list | None:
 
 def print_test_summary(failed_tests_path: str, succeeded_tests_path: str) -> None:
     """
-    Takes the information stored in the files and prints it in a human readable way.
+    Takes the information stored in the files and prints it in a human-readable way.
     """
     succeeded_playbooks = read_file_contents(succeeded_tests_path)
     failed_playbooks = read_file_contents(failed_tests_path)
@@ -59,7 +59,7 @@ def print_test_summary(failed_tests_path: str, succeeded_tests_path: str) -> Non
 
 def main():
     try:
-        install_logging('print_testplaybook_summary.log', logger=logging)
+        install_logging('print_test_playbook_summary.log', logger=logging)
         options = options_handler()
         print_test_summary(failed_tests_path=options.failed_tests_path,
                            succeeded_tests_path=options.succeeded_tests_path)

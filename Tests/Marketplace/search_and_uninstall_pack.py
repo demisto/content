@@ -49,11 +49,11 @@ def check_if_pack_still_installed(client: demisto_client,
                                         success_handler=success_handler)
 
 
-def get_all_installed_packs(client: demisto_client, unremovable_packs: list):
+def get_all_installed_packs(client: demisto_client, non_removable_packs: list):
     """
 
     Args:
-        unremovable_packs: list of packs that can't be uninstalled.
+        non_removable_packs: list of packs that can't be uninstalled.
         client (demisto_client): The client to connect to.
 
     Returns:
@@ -73,7 +73,7 @@ def get_all_installed_packs(client: demisto_client, unremovable_packs: list):
             installed_packs_ids_str = ', '.join(installed_packs_ids)
             logging.debug(
                 f'The following packs are currently installed from a previous build run:\n{installed_packs_ids_str}')
-            for pack in unremovable_packs:
+            for pack in non_removable_packs:
                 if pack in installed_packs_ids:
                     installed_packs_ids.remove(pack)
             return installed_packs_ids
@@ -86,17 +86,17 @@ def get_all_installed_packs(client: demisto_client, unremovable_packs: list):
         return None
 
 
-def uninstall_all_packs_one_by_one(client: demisto_client, hostname, unremovable_packs: list):
+def uninstall_all_packs_one_by_one(client: demisto_client, hostname, non_removable_packs: list):
     """ Lists all installed packs and uninstalling them.
     Args:
         client (demisto_client): The client to connect to.
         hostname (str): cloud hostname
-        unremovable_packs: list of packs that can't be uninstalled.
+        non_removable_packs: list of packs that can't be uninstalled.
 
     Returns (bool):
         A flag that indicates if the operation succeeded or not.
     """
-    packs_to_uninstall = get_all_installed_packs(client, unremovable_packs)
+    packs_to_uninstall = get_all_installed_packs(client, non_removable_packs)
     logging.info(f'Starting to search and uninstall packs in server: {hostname}, packs count to '
                  f'uninstall: {len(packs_to_uninstall)}')
     uninstalled_count = 0
@@ -198,10 +198,10 @@ def uninstall_packs(client: demisto_client, pack_ids: list):
     return True
 
 
-def uninstall_all_packs(client: demisto_client, hostname, unremovable_packs: list):
+def uninstall_all_packs(client: demisto_client, hostname, non_removable_packs: list):
     """ Lists all installed packs and uninstalling them.
     Args:
-        unremovable_packs: list of packs that can't be uninstalled.
+        non_removable_packs: list of packs that can't be uninstalled.
         client (demisto_client): The client to connect to.
         hostname (str): cloud hostname
 
@@ -210,25 +210,25 @@ def uninstall_all_packs(client: demisto_client, hostname, unremovable_packs: lis
     """
     logging.info(f'Starting to search and uninstall packs in server: {hostname}')
 
-    packs_to_uninstall: list = get_all_installed_packs(client, unremovable_packs)
+    packs_to_uninstall: list = get_all_installed_packs(client, non_removable_packs)
     if packs_to_uninstall:
         return uninstall_packs(client, packs_to_uninstall)
     logging.debug('Skipping packs uninstallation - nothing to uninstall')
     return True
 
 
-def reset_core_pack_version(client: demisto_client, unremovable_packs: list):
+def reset_core_pack_version(client: demisto_client, non_removable_packs: list):
     """
     Resets core pack version to prod version.
 
     Args:
-        unremovable_packs: list of packs that can't be uninstalled.
+        non_removable_packs: list of packs that can't be uninstalled.
         client (demisto_client): The client to connect to.
 
 
     """
     host = client.api_client.configuration.host.replace('https://api-', 'https://')  # disable-secrets-detection
-    _, success = search_and_install_packs_and_their_dependencies(pack_ids=unremovable_packs,
+    _, success = search_and_install_packs_and_their_dependencies(pack_ids=non_removable_packs,
                                                                  client=client,
                                                                  hostname=host,
                                                                  multithreading=False,
@@ -236,11 +236,11 @@ def reset_core_pack_version(client: demisto_client, unremovable_packs: list):
     return success
 
 
-def wait_for_uninstallation_to_complete(client: demisto_client, unremovable_packs: list):
+def wait_for_uninstallation_to_complete(client: demisto_client, non_removable_packs: list):
     """
     Query if there are still installed packs, as it might take time to complete.
     Args:
-        unremovable_packs: list of packs that can't be uninstalled.
+        non_removable_packs: list of packs that can't be uninstalled.
         client (demisto_client): The client to connect to.
 
     Returns: True if all packs were uninstalled successfully
@@ -249,12 +249,12 @@ def wait_for_uninstallation_to_complete(client: demisto_client, unremovable_pack
     retry = 0
     sleep_duration = 150
     try:
-        installed_packs = get_all_installed_packs(client, unremovable_packs)
+        installed_packs = get_all_installed_packs(client, non_removable_packs)
         # Monitoring when uninstall packs don't work
         installed_packs_amount_history, failed_uninstall_attempt_count = len(installed_packs), 0
         # new calculation for num of retries
         retries = math.ceil(len(installed_packs) / 2)
-        while len(installed_packs) > len(unremovable_packs):
+        while len(installed_packs) > len(non_removable_packs):
             if retry > retries:
                 raise Exception('Waiting time for packs to be uninstalled has passed, there are still installed '
                                 'packs. Aborting.')
@@ -263,7 +263,7 @@ def wait_for_uninstallation_to_complete(client: demisto_client, unremovable_pack
             logging.info(f'The process of uninstalling all packs is not over! There are still {len(installed_packs)} '
                          f'packs installed. Sleeping for {sleep_duration} seconds.')
             sleep(sleep_duration)
-            installed_packs = get_all_installed_packs(client, unremovable_packs)
+            installed_packs = get_all_installed_packs(client, non_removable_packs)
 
             if len(installed_packs) == installed_packs_amount_history:
                 # did not uninstall any pack
@@ -335,7 +335,7 @@ def options_handler() -> argparse.Namespace:
     parser.add_argument('--cloud_machine', help='cloud machine to use, if it is cloud build.')
     parser.add_argument('--cloud_servers_path', help='Path to secret cloud server metadata file.')
     parser.add_argument('--cloud_servers_api_keys', help='Path to the file with cloud Servers api keys.')
-    parser.add_argument('--unremovable_packs', help='List of packs that cant be removed.')
+    parser.add_argument('--non-removable-packs', help='List of packs that cant be removed.')
     parser.add_argument('--one-by-one', help='Uninstall pack one pack at a time.', action='store_true')
     parser.add_argument('--build-number', help='CI job number where the instances were created', required=True)
 
@@ -359,14 +359,14 @@ def clean_machine(options: argparse.Namespace, cloud_machine: str) -> bool:
     # We are syncing marketplace since we are copying production bucket to build bucket and if packs were configured
     # in earlier builds they will appear in the bucket as it is cached.
     success = sync_marketplace(client=client)
-    unremovable_packs = options.unremovable_packs.split(',')
-    success &= reset_core_pack_version(client, unremovable_packs)
+    non_removable_packs = options.non_removable_packs.split(',')
+    success &= reset_core_pack_version(client, non_removable_packs)
     if success:
         if options.one_by_one:
-            success = uninstall_all_packs_one_by_one(client, cloud_machine, unremovable_packs)
+            success = uninstall_all_packs_one_by_one(client, cloud_machine, non_removable_packs)
         else:
-            success = uninstall_all_packs(client, cloud_machine, unremovable_packs) and \
-                wait_for_uninstallation_to_complete(client, unremovable_packs)
+            success = uninstall_all_packs(client, cloud_machine, non_removable_packs) and \
+                wait_for_uninstallation_to_complete(client, non_removable_packs)
     success &= sync_marketplace(client=client)
     return success
 
