@@ -355,8 +355,9 @@ def test_parse_nic_contact():
                  'phone': '+1.2083895740', 'fax': '+1.2083895771', 'email': 'email@markmonitor.com',
                  'changedate': '2023-09-07T07:32:23.899353Z', 'country': 'US', 'registrar': 'MARKMONITOR Inc.'},
                 {'handle': 'GIHU101-FRNIC', 'type': 'ORGANIZATION', 'name': 'Google Ireland Holdings Unlimited Company',
-                 'street1': "70 Sir John Rogerson's Quay", 'street2': '2 Dublin', 'street3': None, 'street4': None, 'phone': '+353.14361000',
-                 'fax': None, 'email': 'email@google.com', 'changedate': None, 'country': 'IE', 'registrar': 'MARKMONITOR Inc.'}]
+                 'street1': "70 Sir John Rogerson's Quay", 'street2': '2 Dublin', 'street3': None, 'street4': None,
+                 'phone': '+353.14361000', 'fax': None, 'email': 'email@google.com', 'changedate': None, 'country': 'IE',
+                 'registrar': 'MARKMONITOR Inc.'}]
 
     assert res == expected
 
