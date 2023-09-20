@@ -83,7 +83,7 @@ def main():   # pragma: no cover
         if body.get("page"):  # pagination for xsoar-6
             body["page"] = page_num
         else:  # pagination for xsoar-8
-            body["request_data"]["search_from"] = page_num
+            body["request_data"]["search_from"] = page_num  # type: ignore[index]
         args = {"uri": uri, "body": body}
         res = demisto.executeCommand("demisto-api-post", args)[0]["Contents"]["response"]
         audits.extend(get_audit_logs(res))
