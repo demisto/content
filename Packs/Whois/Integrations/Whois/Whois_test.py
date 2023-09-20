@@ -341,7 +341,7 @@ def test_whois_with_verbose(args, expected_res, mocker: MockerFixture):
 
 
 def test_parse_nic_contact():
-    with open('./test_data/whois_response.txt', 'r') as f:
+    with open('./test_data/whois_response.txt') as f:
         data = [f.read()]
 
     res = Whois.parse_nic_contact(data)
@@ -349,7 +349,7 @@ def test_parse_nic_contact():
     expected = [{'handle': 'GIHU100-FRNIC', 'type': 'ORGANIZATION', 'name': 'Google Ireland Holdings Unlimited Company',
                  'street1': 'Google Ireland Holdings Unlimited Company', 'street2': "70 Sir John Rogerson's Quay",
                  'street3': '2 Dublin', 'country': 'IE', 'phone': '+353.14361000', 'fax': None, 'email': 'email@google.com',
-                 'changedate': '2022-10-15T05:41:14.918179Z', 'registrar': 'MARKMONITOR Inc.', 'street4': None,},
+                 'changedate': '2022-10-15T05:41:14.918179Z', 'registrar': 'MARKMONITOR Inc.', 'street4': None, },
                 {'handle': 'MI3669-FRNIC', 'type': 'ORGANIZATION', 'name': 'MarkMonitor Inc.',
                  'street1': '2150 S. Bonito Way, Suite 150', 'street2': '83642 Meridian', 'street3': None, 'street4': None,
                  'phone': '+1.2083895740', 'fax': '+1.2083895771', 'email': 'email@markmonitor.com',
