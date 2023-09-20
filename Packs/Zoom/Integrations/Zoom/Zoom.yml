@@ -116,7 +116,6 @@ script:
     - description: >
         For recurring meetings only.
         Select the final date on which the meeting will recur before it is canceled.
-
         For example: 2017-11-25T12:00:00Z.
       name: end_date_time
     - description: >
@@ -131,9 +130,8 @@ script:
 
         State the day in a month, the meeting should recur. The value range is from 1 to 31. Default = 1.
       name: monthly_day
-    - description: >
+    - description: >-
         For recurring meetings with Monthly recurrence_type only.
-
         State the week of the month when the meeting should recur. If you use this field, you must also use the monthly_week_day field to state the day of the week when the meeting should recur.
         Allowed: -1 (for last week of the month) ┃1┃2┃3┃4.
       name: monthly_week
@@ -337,9 +335,8 @@ script:
       description: A user ID. This is for a single user.
       type: string
     - name: role_id
-      description: >
+      description: >-
         Filter the response by a specific role.
-
         For example: role_id=0 (Owner), role_id=2 (Member).
     description: List the existing users
     name: zoom-list-users
@@ -745,10 +742,8 @@ script:
     execution: true
     name: zoom-delete-channel
   - name: zoom-update-channel
-    description: >
-      Update an existing channel in a Zoom account.
-      Use the command zoom-list-account-public-channels in order to fetch the channel ID by the channel name.
-      "Need to provide at least one of the following arguments:  posting_permissions or channnel_name."
+    description: >-
+      Update an existing channel in a Zoom account. Use the command zoom-list-account-public-channels in order to fetch the channel ID by the channel name. "Need to provide at least one of the following arguments:  posting_permissions or channnel_name.".
     execution: true
     arguments:
     - description: The channel ID.

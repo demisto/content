@@ -92,7 +92,6 @@ def check_access_token_validation():
 
 
 def get_access_token():
-
     """
     Generate a new Access Token using ClientID, ClientSecret and configured Authentication Code
     """
