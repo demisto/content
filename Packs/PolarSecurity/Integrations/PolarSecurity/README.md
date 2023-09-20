@@ -11,6 +11,7 @@ Polar Security, an innovator in technology that helps companies discover, contin
     | Username | False |
     | Password | False |
     | Trust any certificate (not secure) | False |
+    | Use system proxy settings | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
@@ -59,6 +60,9 @@ List observed data stores
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
+| limit | Maximum results to return. Default is 50. | Optional | 
+| page_size | Maximum results to return per page. Default is 50. | Optional | 
+| next_token | Hash value for the next page. | Optional | 
 
 #### Context Output
 
@@ -120,6 +124,9 @@ Get a list of all data stores a specific 3rd party vendor can access. See whethe
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | vendor_id | Specific vendor ID retrieved from polar-list-linked-vendors command. | Required | 
+| limit | Maximum results to return. Default is 50. | Optional | 
+| page_size | Maximum results to return per page. Default is 50. | Optional | 
+| next_token | Hash value for the next page. | Optional | 
 
 #### Context Output
 
@@ -199,3 +206,23 @@ List all data stores accessible by 3rd party vendors, along with which vendors h
 | PolarSecurity.DataStores.Stores.dataStoreName | string | Name of data store | 
 | PolarSecurity.DataStores.Stores.dataStoreType | string | Type of data store | 
 | PolarSecurity.DataStores.Stores.sensitivitiesSummary | unknown | Array of objects \(SensitivitySummary\) | 
+
+### polar-apply-label
+
+***
+Add or update a custom label to a data store
+
+#### Base Command
+
+`polar-apply-label`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| label | 256 character max string. | Required | 
+| store_id | Which store to apply label. | Required | 
+
+#### Context Output
+
+There is no context output for this command.

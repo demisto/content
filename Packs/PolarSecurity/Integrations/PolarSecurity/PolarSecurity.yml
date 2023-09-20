@@ -18,6 +18,11 @@ configuration:
   name: insecure
   required: false
   type: 8
+- defaultvalue: "false"
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
 description: Polar Security, an innovator in technology that helps companies discover, continuously monitor and secure cloud and software-as-a-service (SaaS) application data – and addresses the growing shadow data problem.
 display: Polar Security
 name: Polar Security
@@ -51,7 +56,17 @@ script:
     - contextPath: PolarSecurity.Vendors.certificates.certificateName
       description: The vendor certification ("PCI" "HIPAA" "GDPR", etc)
       type: string
-  - arguments: []
+  - arguments:
+    - defaultValue: "50"
+      description: Maximum results to return
+      name: limit
+      type: textArea
+    - defaultValue: "50"
+      description: Maximum results to return per page.
+      name: page_size
+      type: textArea
+    - description: Hash value for the next page.
+      name: next_token
     description: List observed data stores
     name: polar-list-data-stores
     outputs:
@@ -123,6 +138,14 @@ script:
     - description: Specific vendor ID retrieved from polar-list-linked-vendors command
       name: vendor_id
       required: true
+    - defaultValue: "50"
+      description: Maximum results to return
+      name: limit
+    - defaultValue: "50"
+      description: Maximum results to return per page.
+      name: page_size
+    - description: Hash value for the next page.
+      name: next_token
     description: Get a list of all data stores a specific 3rd party vendor can access. See whether they have sensitivities and with what role the access is made possible.
     name: polar-list-vendors-data-stores
     outputs:
@@ -237,7 +260,18 @@ script:
       type: string
     - contextPath: PolarSecurity.DataStores.Stores.sensitivitiesSummary
       description: Array of objects (SensitivitySummary)
-  dockerimage: demisto/python3:3.10.12.68714
+  - arguments:
+    - description: 256 character max string
+      name: label
+      required: true
+      type: textArea
+    - description: Which store to apply label
+      name: store_id
+      required: true
+      type: textArea
+    description: Add or update a custom label to a data store
+    name: polar-apply-label
+  dockerimage: demisto/python3:3.10.13.74666
   runonce: false
   script: ''
   subtype: python3
