@@ -2,7 +2,8 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
-from typing import Any, Tuple, Dict, List, Callable, Optional
+from typing import Any
+from collections.abc import Callable
 import sqlalchemy
 import pymysql
 import hashlib
@@ -12,6 +13,7 @@ from sqlalchemy.engine.url import URL
 from urllib.parse import parse_qsl
 import dateparser
 
+ORACLE = "Oracle"
 POSTGRES_SQL = "PostgreSQL"
 MY_SQL = "MySQL"
 MS_ODBC_DRIVER = "Microsoft SQL Server - MS ODBC Driver"
@@ -200,18 +202,20 @@ def generate_variable_names_and_mapping(bind_variables_values_list: list, query:
     Returns: A mapping (dict) and an edited query.
 
     """
-    mapping_dialect_regex = {MICROSOFT_SQL_SERVER: "\\?",
-                             MS_ODBC_DRIVER: "\\?",
-                             POSTGRES_SQL: "%s",
-                             MY_SQL: "%s"
+    # For counting and replacing, re.findall needs "//?", whereas replace needs "?"
+    mapping_dialect_regex = {MICROSOFT_SQL_SERVER: ("\\?", "?"),
+                             MS_ODBC_DRIVER: ("\\?", "?"),
+                             POSTGRES_SQL: ("%s", "%s"),
+                             MY_SQL: ("%s", "%s"),
+                             ORACLE: ("%s", "%s")
                              }
     try:
-        char_to_replace = mapping_dialect_regex[dialect]
+        char_to_count, char_to_replace = mapping_dialect_regex[dialect]
     except Exception as e:
         raise DemistoException(
             "Placeholder was not found for the given dialect"
         ) from e
-    count = len(re.findall(char_to_replace, query))
+    count = len(re.findall(char_to_count, query))
 
     bind_variables_names_list = []
     for i in range(count):
