@@ -118,6 +118,22 @@ def get_pr_tagged_reviewers(pr_number, github_token, verify_ssl, pack):
 
     return result_tagged_reviewers
 
+def notify_author_about_contributors_md(author: str, pr_number: str, github_token: str = None,
+                   verify_ssl: bool = True):
+    comments_endpoint = f"https://api.github.com/repos/{REPO_OWNER}/{REPO_NAME}/issues/{pr_number}/comments"
+    headers = {"Authorization": "Bearer " + github_token} if github_token else {}
+
+    comment_body = {
+        "body": f"Hi {author},\n"
+                f"You have contributed to an XSOAR-supported pack. To get credit for your generous contribution Follow this"
+                f" [link](https://xsoar.pan.dev/docs/packs/packs-format#contributorsjson)\n"
+    }
+    response = requests.post(comments_endpoint, headers=headers, verify=verify_ssl, json=comment_body)
+
+    if response.status_code not in [200, 201]:
+        print(f"Failed posting comment on PR {pr_number}:\n{response.text}")
+        sys.exit(1)
+
 
 def check_pack_and_request_review(pr_number, github_token=None, verify_ssl=True, email_api_token=None):
     modified_packs, modified_files = get_pr_modified_files_and_packs(pr_number=pr_number, github_token=github_token,
@@ -185,8 +201,12 @@ def check_pack_and_request_review(pr_number, github_token=None, verify_ssl=True,
                         modified_files=modified_files
                     )
 
-        elif pack_metadata.get('support') == XSOAR_SUPPORT:
-            print(f"Skipping check of {pack} pack supported by {XSOAR_SUPPORT}")
+        elif pack_metadata.get('support') == XSOAR_SUPPORT and pack_metadata.get('currentVersion') != '1.0.0':
+            if "contributors" not in modified_files:
+                notify_author_about_contributors_md(author= pr_author, github_token=github_token, pr_number= pr_number,
+                                                    verify_ssl=verify_ssl)
+
+            #print(f"Skipping check of {pack} pack supported by {XSOAR_SUPPORT}")
         else:
             print(f"{pack} pack has no default github reviewer")
 
