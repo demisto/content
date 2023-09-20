@@ -793,7 +793,7 @@ outputs:
   description: The terminated process from endpoint
   type: unknown
 tests:
-- No tests (auto formatted)
+- Eradication plan - Test
 marketplaces:
 - marketplacev2
 fromversion: 6.6.0

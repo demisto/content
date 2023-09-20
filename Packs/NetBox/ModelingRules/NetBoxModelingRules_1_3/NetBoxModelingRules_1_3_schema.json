@@ -1,5 +1,9 @@
 {
   "netbox_irm_raw": {
+    "user": {
+      "type": "string",
+      "is_array": false
+    },
     "comments": {
       "type": "string",
       "is_array": false

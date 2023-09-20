@@ -32,7 +32,11 @@ ALWAYS_INSTALLED_PACKS_MAPPING = {
     MarketplaceVersions.XPANSE: ALWAYS_INSTALLED_PACKS_XPANSE,
 }
 
-DEFAULT_MARKETPLACE_WHEN_MISSING: MarketplaceVersions = MarketplaceVersions.XSOAR
+DEFAULT_MARKETPLACE_WHEN_MISSING: MarketplaceVersions = [
+    MarketplaceVersions.XSOAR,
+    MarketplaceVersions.MarketplaceV2,
+    MarketplaceVersions.XPANSE
+]
 
 SKIPPED_CONTENT_ITEMS__NOT_UNDER_PACK: set[str] = {
     # these are not under packs, and are not supported anymore.
@@ -110,6 +114,7 @@ IGNORED_FILE_TYPES: set[FileType] = {
     FileType.INI,
     FileType.PEM,
     FileType.LICENSE,
+    FileType.VULTURE_WHITELIST,
 }
 
 NON_CONTENT_FOLDERS: set[str] = set(TESTS_AND_DOC_DIRECTORIES) | {SAMPLES_DIR}
