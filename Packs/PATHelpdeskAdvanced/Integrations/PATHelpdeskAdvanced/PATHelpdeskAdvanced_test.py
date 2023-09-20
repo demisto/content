@@ -1,6 +1,7 @@
 from PATHelpdeskAdvanced import convert_response_dates, paginate, Field
 import pytest
-from datetime import datetime
+from datetime import datetime, timezone
+from PATHelpdeskAdvanced import create_ticket_command, DATETIME_FORMAT
 
 
 @pytest.mark.parametrize(
@@ -59,13 +60,17 @@ def test_converts_date_fields():
     EPOCH_2023_INT = 1693573200000
     EPOCH_2022_INT = 1641042000000
 
-    STR_2023 = str(datetime.fromtimestamp(EPOCH_2023_INT / 1000))
-    STR_2022 = str(datetime.fromtimestamp(EPOCH_2022_INT / 1000))
+    STR_2023 = (
+        datetime.fromtimestamp(EPOCH_2023_INT / 1000, tz=timezone.utc)
+    ).strftime(DATETIME_FORMAT)
+    STR_2022 = (
+        datetime.fromtimestamp(EPOCH_2022_INT / 1000, tz=timezone.utc)
+    ).strftime(DATETIME_FORMAT)
 
     raw = {
         "Date1": f"/Date({EPOCH_2023_INT})/",
         "Date2": [f"/Date({EPOCH_2023_INT})/", f"/Date({EPOCH_2022_INT})/", "🕒"],
-        "other": [EPOCH_2023_INT, STR_2023]
+        "other": [EPOCH_2023_INT, STR_2023],
     }
 
     result = convert_response_dates(raw)
@@ -73,3 +78,56 @@ def test_converts_date_fields():
     assert result["Date1"] == STR_2023
     assert result["Date2"] == [STR_2023, STR_2022, "🕒"]
     assert result["other"] == raw["other"]
+
+
+@pytest.fixture
+def client(mocker):
+    """Given a mocked Client instance"""
+    return mocker.Mock()
+
+
+def test_create_ticket_success(client):
+    """
+    Given a client instance and arguments for creating a ticket
+    When create_ticket_command is called with the client and args
+    Then it should return a CommandResults instance with the expected outputs
+    """
+    args = {"subject": "Test ticket", "problem": "Something went wrong"}
+    client.create_ticket.return_value = {
+        "id": 123,
+        "data": {
+            "ObjectDescription": "Test ticket",
+            "ObjectEntity": "ticket",
+            "Solution": "Fixed the issue",
+            "TicketClassificationId": 1,
+            "IsNew": True,
+            "ExpirationDate": "/Date(1609459200000)/",
+            "FirstUpdateUserId": 1,
+            "OwnerUserId": 2,
+            "Date": "/Date(1609459200000)/",
+            "AssignedUserId": 2,
+        },
+    }
+
+    result = create_ticket_command(client, args)
+    assert result.outputs == {
+        "id": 123,
+        "data": {
+            "ObjectDescription": "Test ticket",
+            "ObjectEntity": "ticket",
+            "Solution": "Fixed the issue",
+            "TicketClassificationId": 1,
+            "IsNew": True,
+            "ExpirationDate": "2021-01-01T00:00:00Z",
+            "FirstUpdateUserId": 1,
+            "OwnerUserId": 2,
+            "Date": "2021-01-01T00:00:00Z",
+            "AssignedUserId": 2,
+        },
+    }
+    assert result.raw_response == client.create_ticket.return_value
+    assert result.readable_output == (
+        "### Ticket Created\n|Object Description|Object Entity|Solution|Is New|Expiration Date|Date|\n"
+        "|---|---|---|---|---|---|\n| "
+        "Test ticket | ticket | Fixed the issue | true | 2021-01-01T00:00:00Z | 2021-01-01T00:00:00Z |\n"
+    )

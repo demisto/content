@@ -13,12 +13,13 @@ import demistomock as demisto
 from CommonServerPython import *  # noqa: F401
 from CommonServerUserPython import *  # noqa
 
+DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 VENDOR = "HelpdeskAdvanced"
 OPERATORS = ("eq", "gt", "lt", "ge", "le", "sw", "nw")
 FILTER_CONDITION_REGEX = re.compile(
     rf"\A\"(?P<key>.*?)\" (?P<op>{'|'.join(OPERATORS)}) (?P<value>(?:\".*?\"|null))\Z"
 )
-DATE_VALUE_REGEX = re.compile(r"/Date\((\d+)\)/")
+PAT_DATE_FORMAT_REGEX = re.compile(r"/Date\((\d+)\)/")
 HTML_H_TAG_REGEX = re.compile(r"<h\d>(.*?)<\/h\d>", flags=re.S)
 
 
@@ -111,26 +112,27 @@ def safe_arg_to_number(argument: str | None, argument_name: str) -> int:
 
 
 def parse_filter_conditions(strings: Sequence[str]) -> list[dict]:
-    return [_parse_filter_condition(string) for string in strings]
+    def _parse_single_condition(string: str) -> dict:
+        if not (match := FILTER_CONDITION_REGEX.match(string)):
+            raise DemistoException(
+                f'Cannot parse {string}. Expected a phrase of the form "key" operator "value" or "key" operator null'
+            )
+        return {
+            "property": match["key"],
+            "op": match["op"],
+            "value": None
+            if ((value := match["value"]) == "null")
+            else value.strip('"'),
+        }
 
-
-def _parse_filter_condition(string: str) -> dict:
-    if not (match := FILTER_CONDITION_REGEX.match(string)):
-        raise DemistoException(
-            f'Cannot parse {string}. Expected a phrase of the form "key" operator "value" or "key" operator null'
-        )
-    return {
-        "property": match["key"],
-        "op": match["op"],
-        "value": None if ((value := match["value"]) == "null") else value.strip('"'),
-    }
+    return [_parse_single_condition(string) for string in strings]
 
 
 def create_params_dict(
     required_fields: tuple[Field, ...] = (),
     optional_fields: tuple[Field, ...] = (),
     **kwargs,
-):
+) -> dict[str, Any]:
     result = {field.hda_name: kwargs[field.demisto_name] for field in required_fields}
 
     for field in optional_fields:
@@ -161,23 +163,28 @@ def map_id_to_description(response: dict) -> dict[str, str]:
 
 
 def convert_response_dates(response: dict) -> dict:
-    def fix_value(value: str) -> str | datetime:
+    def convert_value(value: str) -> str | datetime:
         if (
             isinstance(value, str)
             and value
-            and (match := DATE_VALUE_REGEX.match(value))
+            and (match := PAT_DATE_FORMAT_REGEX.match(value))
         ):
-            return str(datetime.fromtimestamp(int(match[1][:-3])))
+            return datetime.fromtimestamp(
+                int(match[1][:-3]),  # :-3 omits miliseconds
+                tz=timezone.utc,
+            ).strftime(DATETIME_FORMAT)
         return value
 
-    def fix_recursively(value):  # no typing as the cases are complex and confuse mypy
+    def convert_recursively(
+        value,
+    ):  # no typing as the cases are complex and confuse mypy
         if isinstance(value, dict):
-            return {k: fix_recursively(v) for k, v in value.items()}
+            return {k: convert_recursively(v) for k, v in value.items()}
         elif isinstance(value, list):
-            return [fix_recursively(v) for v in value]
-        return fix_value(value)
+            return [convert_recursively(v) for v in value]
+        return convert_value(value)
 
-    return fix_recursively(response)
+    return convert_recursively(response)
 
 
 class Client(BaseClient):
@@ -633,8 +640,8 @@ def pat_table_to_markdown(
 
 
 def create_ticket_command(client: Client, args: dict) -> CommandResults:
-    response = client.create_ticket(**args)
-    response = convert_response_dates(response)
+    raw_response = client.create_ticket(**args)
+    response = convert_response_dates(raw_response)
 
     response_for_human_readable = response.copy()["data"]
 
@@ -646,6 +653,7 @@ def create_ticket_command(client: Client, args: dict) -> CommandResults:
         outputs_prefix=f"{VENDOR}.Ticket",
         outputs_key_field=ID.hda_name,
         outputs=response,
+        raw_response=raw_response,
         readable_output=pat_table_to_markdown(
             title="Ticket Created",
             output=response_for_human_readable,
