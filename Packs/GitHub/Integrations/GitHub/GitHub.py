@@ -151,7 +151,7 @@ def http_request(method, url_suffix, params=None, data=None, headers=None, is_ra
             raise DemistoException(f'Error in API call to GitHub Integration [{res.status_code}] - {res.reason}')
 
     try:
-        if res.status_code == 204:
+        if res.status_code in (204, 202):
             return res
         elif is_raw_response:
             return res.content.decode('utf-8')
@@ -2077,13 +2077,13 @@ def github_cancel_workflow_command():
     repository = args.get('repository') or REPOSITORY
     workflow_id = args.get('workflow_id')
 
-    suffix = f"/repos/{owner}/{repository}/actions/workflows/{workflow_id}/cancel"
+    suffix = f"/repos/{owner}/{repository}/actions/runs/{workflow_id}/cancel"
     headers = {
         "Authorization": f"Bearer {TOKEN}",
         "Accept": "application/vnd.github.v3+json"
     }
 
-    response = http_request('POST', url_suffix=suffix, headers=headers, data=data)
+    response = http_request('POST', url_suffix=suffix, headers=headers)
 
     if response.status_code == 202:
         return_results(CommandResults(readable_output="Workflow canceled successfully."))

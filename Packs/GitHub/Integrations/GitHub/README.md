@@ -2916,7 +2916,7 @@ There is no context output for this command.
 ### GitHub-cancel-workflow
 
 ***
-Cancels a GitHub workflow on a given repository and workflow.
+Cancels a GitHub workflow.
 
 #### Base Command
 
