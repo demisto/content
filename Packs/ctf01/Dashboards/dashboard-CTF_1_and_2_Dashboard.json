@@ -405,7 +405,8 @@
                         "avg|ctf01.totalDuration"
                     ],
                     "limitType": "bottom",
-                    "valuesFormat": "abbreviated"
+                    "showGraphValues": false,
+                    "valuesFormat": "hours"
                 },
                 "prevName": "Top 10 users finished CTF 01",
                 "primaryTerm": 5,
@@ -468,8 +469,9 @@
                         "avg|ctf02.totalDuration"
                     ],
                     "limitType": "bottom",
+                    "showGraphValues": false,
                     "showOthers": false,
-                    "valuesFormat": "abbreviated"
+                    "valuesFormat": "hours"
                 },
                 "prevName": "Top 10 users finished CTF 01",
                 "primaryTerm": 5,
