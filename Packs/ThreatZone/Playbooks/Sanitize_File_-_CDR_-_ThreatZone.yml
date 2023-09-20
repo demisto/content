@@ -121,7 +121,7 @@ tasks:
         complex:
           root: inputs.Timeout
       dt:
-        simple: ThreatZone.Result.STATUS(val==5)
+        simple: ThreatZone.Result(val.STATUS!==5).REPORT
     separatecontext: true
     continueonerrortype: ""
     loop:
