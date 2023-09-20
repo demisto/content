@@ -154,7 +154,7 @@ validate-content-conf:
       then
         echo "Replace Cortex XSOAR for non-xsoar build."
         pushd "$ARTIFACTS_FOLDER"
-        find content_packs -type f -not \( -path "*/ReleaseNotes/*" \) -exec sed -i -e 's/Cortex XSOAR/'"$PRODUCTNAME"'/gI' {} \;
+        find content_packs -type f -not \( -path "*/ReleaseNotes/*" \) -exec sed -i -e 's/Cortex XSOAR/'"$PRODUCT_NAME"'/gI' {} \;
         pushd content_packs; zip -r ../content_packs.zip * 1> /dev/null; popd
         rm -rf content_packs
         popd
@@ -209,7 +209,7 @@ mpv2-prepare-testing-bucket:
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_MPV2}"
     MARKETPLACE_VERSION: "marketplacev2"
     MARKETPLACE_BUCKET: "$GCS_MARKET_V2_BUCKET"
-    PRODUCTNAME: "Cortex XSIAM"
+    PRODUCT_NAME: "Cortex XSIAM"
   extends:
     - .generic-prepare-testing-bucket
 
@@ -217,7 +217,7 @@ xpanse-prepare-testing-bucket:
   variables:
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XPANSE}"
     MARKETPLACE_VERSION: "xpanse"
-    PRODUCTNAME: "Cortex XPANSE"
+    PRODUCT_NAME: "Cortex XPANSE"
     MARKETPLACE_BUCKET: "$GCS_MARKET_XPANSE_BUCKET"
   extends:
     - .generic-prepare-testing-bucket
@@ -481,7 +481,7 @@ xsiam_server_ga:
     GCS_MACHINES_BUCKET: "marketplace-v2-dist-dev/upload-flow/builds-xsiam"
     SERVER_TYPE: "XSIAM"
     MARKETPLACE_NAME: "marketplacev2"
-    UNREMOVABLE_PACKS: "Base"
+    NON_REMOVABLE_PACKS: "Base"
     JIRA_COMPONENT: "Test Modeling Failure"
     JIRA_ISSUE_TYPE: "XSOAR Dev Bug"
     JIRA_ISSUE_UNRESOLVED_TRANSITION_NAME: "Backlog"
@@ -526,7 +526,7 @@ xsoar_ng_server_ga:
     GCS_MACHINES_BUCKET: "marketplace-dist-dev/upload-flow/builds-xsoar-ng"
     SERVER_TYPE: "XSIAM"
     MARKETPLACE_NAME: "xsoar"
-    UNREMOVABLE_PACKS: "Base"
+    NON_REMOVABLE_PACKS: "Base"
   needs:
     - job: xsoar-prepare-testing-bucket
       optional: true
@@ -588,7 +588,7 @@ test-upload-flow:
   extends:
     - .default-job-settings
   script:
-    - python3 ./Tests/Marketplace/print_testplaybook_summary.py --failed_tests_path $ARTIFACTS_FOLDER/failed_tests.txt --succeeded_tests_path $ARTIFACTS_FOLDER/succeeded_tests.txt
+    - python3 ./Tests/Marketplace/print_test_playbook_summary.py --failed_tests_path $ARTIFACTS_FOLDER/failed_tests.txt --succeeded_tests_path $ARTIFACTS_FOLDER/succeeded_tests.txt
 
 
 merge-dev-secrets:
@@ -607,7 +607,7 @@ merge-dev-secrets:
     - ./Tests/scripts/download_conf_repos.sh 2>&1 | tee --append "${ARTIFACTS_FOLDER}/logs/download_conf_repos.log"
     - section_end "Download content-test-conf and infra"
     - section_start "Merging and deleting dev secrets" --collapsed
-    - python3 ./Tests/scripts/merge_and_delete_dev_secrets.py -sa "$GSM_SERVICE_ACCOUNT" -gpidd "$GSM_PROJECT_ID_DEV" -gpidp "$GSM_PROJECT_ID" >> $ARTIFACTS_FOLDER/logs/merge_secrets.log
+    - python3 ./Tests/scripts/merge_and_delete_dev_secrets.py -sa "$GSM_SERVICE_ACCOUNT" --gsm_project_id_dev "$GSM_PROJECT_ID_DEV" --gsm_project_id_prod "$GSM_PROJECT_ID" >> $ARTIFACTS_FOLDER/logs/merge_secrets.log
     - section_end "Merging and deleting dev secrets"
   allow_failure: true
 
