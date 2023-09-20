@@ -1,12 +1,9 @@
 # uncomment the import statements for debugging in PyCharm, VS Code or other IDEs.
 # import demistomock as demisto
-# from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
-# from CommonServerUserPython import *  # noqa
+from CommonServerPython import *  # noqa: F401 # pylint: disable=unused-wildcard-import
+from CommonServerUserPython import *   # noqa: F401
 
 TRANSLATE_OUTPUT_PREFIX = 'Phrase'
-
-# Disable insecure warnings
-requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 
 
 class Client(BaseClient):
