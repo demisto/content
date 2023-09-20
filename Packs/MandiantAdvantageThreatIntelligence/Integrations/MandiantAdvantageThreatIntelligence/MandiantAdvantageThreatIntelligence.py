@@ -1058,7 +1058,7 @@ def get_new_indicators(
                 updated_indicators.append(indicator)
             else:
                 existing_indicators = list(IndicatorsSearcher(value=indicator["value"]))
-                if len(existing_indicators) > 0 and int(existing_indicators[0].get("total",0)) > 0:
+                if len(existing_indicators) > 0 and int(existing_indicators[0].get("total", 0)) > 0:
                     updated_indicators.append(indicator)
         return updated_indicators
 
