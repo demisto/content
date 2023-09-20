@@ -3,9 +3,10 @@ from json import JSONDecodeError
 from pathlib import Path
 from pprint import pformat
 from typing import Literal, NamedTuple
-from collections.abc import Callable, Iterable
+from collections.abc import Callable
 from collections.abc import Sequence
 from requests import Response
+
 # import curlify
 
 import demistomock as demisto
@@ -611,31 +612,23 @@ def paginate(**kwargs) -> PaginateArgs:
 
 
 def pat_table_to_markdown(
-    title: str, output: dict, fields: Iterable[Field] | None
+    title: str, output: dict, fields: Sequence[Field] | None
 ) -> str:
-    """
-    Converts the given PAT Helpdesk output table to markdown format.
-
-    Args:
-        title (str): The title to use for the markdown table.
-        output (dict): The PAT Helpdesk output data.
-        fields (Iterable[Field], optional): PAD HDA fields to include in the output.
-            If None, all fields will be included.
-
-    Returns:
-        str: The markdown formatted table string.
-    """
-    if fields is None:
-        output_for_human_readable = output
-    else:
+    if fields is not None:
         output_for_human_readable = {
-            k: v for k, v in output.items() if k in {field.hda_name for field in fields}
+            field: output[field]
+            for field in (field_object.hda_name for field_object in fields)
+            if field in output
         }
+
+    else:
+        output_for_human_readable = output
 
     return tableToMarkdown(
         name=title,
         t=output_for_human_readable,
         headerTransform=pascalToSpace,
+        sort_headers=False,
     )
 
 
@@ -643,7 +636,8 @@ def create_ticket_command(client: Client, args: dict) -> CommandResults:
     response = client.create_ticket(**args)
     response = convert_response_dates(response)
 
-    response_for_human_readable = response.copy()
+    response_for_human_readable = response.copy()["data"]
+
     if not response_for_human_readable.get(SOLUTION.hda_name):
         # do not show empty or missing `Solution` value
         response_for_human_readable.pop(SOLUTION.hda_name, None)
@@ -651,9 +645,23 @@ def create_ticket_command(client: Client, args: dict) -> CommandResults:
     return CommandResults(
         outputs_prefix=f"{VENDOR}.Ticket",
         outputs_key_field=ID.hda_name,
-        outputs=response,  # todo check human readable, titles
+        outputs=response,
         readable_output=pat_table_to_markdown(
-            "Ticket Created", response_for_human_readable, fields=None
+            title="Ticket Created",
+            output=response_for_human_readable,
+            fields=(
+                TICKET_ID,
+                OBJECT_DESCTIPTION,
+                OBJECT_ENTITY,
+                SOLUTION,
+                TICKET_CLASSIFICATION_ID,
+                IS_NEW,
+                EXPIRATION_DATE,
+                FIRST_UPDATE_USER_ID,
+                OWNER_USER_ID,
+                DATE,
+                ASSIGNED_USER_ID,
+            ),
         ),
     )
 
