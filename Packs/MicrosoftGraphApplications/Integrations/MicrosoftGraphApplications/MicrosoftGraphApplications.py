@@ -255,13 +255,14 @@ def list_service_principals_command(ms_client: Client, args: dict) -> CommandRes
 
 def validate_service_principal_input(args: dict) -> tuple:
     """
-    Ensure at least one argument is given.
+    Ensure at least one argument (object) id or app id is given.
 
     Args:
         args: The arguments were passed with the command.
 
     Returns:
-        If the two arguments are missing, raise an exception, otherwise return one of them.
+        If the two arguments are missing, raise an exception, otherwise return the (object) id.
+        This validation returns tuple, the first element will be sent to the api call, the second is the given id/app id as is.
     """
     object_id = args.get('id')
     app_client_id = args.get('app_id')
