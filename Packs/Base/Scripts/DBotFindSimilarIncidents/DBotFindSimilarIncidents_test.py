@@ -1,5 +1,4 @@
 # from CommonServerPython import *
-import pytest
 from DBotFindSimilarIncidents import normalize_command_line, main, demisto, keep_high_level_field, \
     preprocess_incidents_field, PREFIXES_TO_REMOVE, check_list_of_dict, REGEX_IP, match_one_regex, \
     SIMILARITY_COLUNM_NAME_INDICATOR, SIMILARITY_COLUNM_NAME, euclidian_similarity_capped, find_incorrect_fields, \
