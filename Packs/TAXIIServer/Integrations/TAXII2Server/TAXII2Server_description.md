@@ -21,15 +21,30 @@ You can add a collection description as is doen in `collection1_name`, or enter 
 
 ## How to Access the TAXII Service
 
-Use one of the following options:
-- **https://*demisto_address*/instance/execute/*instance_name/{taxii2_api_endpoint}/*** 
-- **http://*demisto_address*:*listen_port/{taxii2_api_endpoint}/***
+(For Cortex XSOAR 6.x) Use one of the following options:
+- **https://*xsoar_address*/instance/execute/*instance_name/{taxii2_api_endpoint}/**
+- **http://*xsoar_address*:*listen_port/{taxii2_api_endpoint}/**
+
+(For Cortex XSOAR 8) Use one of the following options: 
+- `https://ext-<XSOAR-tenant>.crtx.<region>.paloaltonetworks.com/xsoar/instance/execute/<instance-name>/<taxii2_api_endpoint>/`
+- `http://<xsoar_address>:<listen_port>/<taxii2_api_endpoint>/`
+
+(For Cortex XSIAM) Use one of the following options: 
+- `https://ext-<XSIAM-tenant>.crtx.<region>.paloaltonetworks.com/xsiam/instance/execute/<instance-name>/<taxii2_api_endpoint>/`
+- `http://<xsoar_address>:<listen_port>/<taxii2_api_endpoint>/`
+  
 
 ## Access the TAXII Service by Instance Name
 To access the TAXII service by instance name, make sure *Instance execute external* is enabled. 
 
 1. In Cortex XSOAR, go to **Settings > About > Troubleshooting**.
-2. In the **Server Configuration** section, verify that the *instance.execute.external* key is set to *true*. If this key does not exist, click **+ Add Server Configuration** and add the *instance.execute.external* and set the value to *true*.
+2. (For Cortex XSOAR 6.x only) In the **Server Configuration** section, verify that the *instance.execute.external* key is set to *true*. If this key does not exist, click **+ Add Server Configuration** and add the *instance.execute.external* and set the value to *true*.
+3. You can now trigger the webhook URL:
+
+   - (For Cortex XSOAR 6) In a web browser, go to https://*<xsoar_address>*/instance/execute/*<instance_name>* .
+   -  (For Cortex XSOAR 8) go to `https://ext-<XSOAR-tenant>.crtx.<region>.paloaltonetworks.com/xsoar/instance/execute/<instance-name>`
+   - (For Cortex XSIAM) go to `https://ext-<XSIAM-tenant>.crtx.<region>.paloaltonetworks.com/xsiam/instance/execute/<instance-name>`
+
 
 ## How to use HTTPS
 To use HTTPS, a certificate and private key have to be supplied in the integration configuration. 
