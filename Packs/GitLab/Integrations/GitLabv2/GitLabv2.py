@@ -1771,7 +1771,8 @@ def gitlab_cancel_pipeline_command(client: Client, args: dict[str, str]) -> Comm
         (CommandResults).
     """
     project_id = args.get('project_id') or client.project_id
-    pipeline_id = args.get('pipeline_id')
+    if not (pipeline_id := args.get('pipeline_id', '')):
+        return_error("The pipline id is required in order to cancel it")
 
     response = client.gitlab_cancel_pipeline(project_id, pipeline_id)
 
