@@ -10,7 +10,7 @@ import hashlib
 # Imports for LangChain - https://python.langchain.com/docs/get_started/introduction.html
 from langchain.llms import OpenAI,AzureOpenAI
 from langchain.embeddings import OpenAIEmbeddings
-from langchain.document_loaders import UnstructuredFileLoader
+from langchain.document_loaders import TextLoader, PyPDFLoader
 from langchain.vectorstores import FAISS
 from langchain.chains import ConversationalRetrievalChain
 from langchain.text_splitter import RecursiveCharacterTextSplitter
@@ -189,13 +189,13 @@ def process_text_input_args(text: str, entry_id: str) -> list:
     if text:  # string text input
         docs = text_splitter.create_documents([text])
     else:  # text file input
-        docs = load_unstructured_file(entry_id, text_splitter)
+        docs = load_file(entry_id, text_splitter)
     return docs
 
 
-def load_unstructured_file(entry_id: str, text_splitter: RecursiveCharacterTextSplitter) -> list:
+def load_file(entry_id: str, text_splitter: RecursiveCharacterTextSplitter) -> list:
     """
-        Use LangChain UnstructuredFileLoader to load file contents based on entry ID
+        Use LangChain document loader to load file contents based on entry ID
 
         Args:
             entry_id (str): XSOAR entry ID of file to load
@@ -213,8 +213,12 @@ def load_unstructured_file(entry_id: str, text_splitter: RecursiveCharacterTextS
     with NamedTemporaryFile(suffix=file_ext) as tmp:
         tmp.write(contents)
         tmp.seek(0)
-        # https://python.langchain.com/docs/modules/data_connection/document_loaders/integrations/unstructured_file
-        loader = UnstructuredFileLoader(tmp.name)
+        if file_ext.lower() == ".pdf":
+            # https://python.langchain.com/docs/modules/data_connection/document_loaders/pdf
+            loader = PyPDFLoader(tmp.name)
+        else:  # text
+            # https://python.langchain.com/docs/modules/data_connection/document_loaders/
+            loader = TextLoader(tmp.name)
         document = loader.load()
         docs = text_splitter.split_documents(document)
         return docs

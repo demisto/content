@@ -124,7 +124,7 @@ script:
       required: true
     - description: Data for the model to use to answer the question. Either arg "text" or "entry_id" is required.
       name: text
-    - description: Entry ID of file for the model to use to answer the question. Either arg "text" or "entry_id" is required.
+    - description: Entry ID of file for the model to use to answer the question. Supported file types: text or PDF. Either arg "text" or "entry_id" is required.
       name: entry_id
     - defaultValue: text-davinci-003
       description: Name of model to use. Used for Azure OpenAI only.
@@ -148,7 +148,7 @@ script:
   - arguments:
     - description: Text for the model to summarize. Either arg "text" or "entry_id" is required.
       name: text
-    - description: Entry ID of file for the model to summarize. Either arg "text" or "entry_id" is required.
+    - description: Entry ID of file for the model to summarize. Supported file types: text or PDF. Either arg "text" or "entry_id" is required.
       name: entry_id
     - description: Additional prompt to optionally add more specific instructions
       name: prompt
