@@ -5,14 +5,14 @@ from functools import reduce, partial
 import ast
 
 
-def suppress_errors(func: Callable) -> Callable:
+def return_none_on_error(func: Callable) -> Callable:
     '''Makes a function return None if an error is raised.'''
-    def error_catcher(*args):
+    def new_func(*args):
         try:
             return func(*args)
         except Exception:
             return None
-    return error_catcher
+    return new_func
 
 
 class ConditionParser:
@@ -25,12 +25,12 @@ class ConditionParser:
     comparison_operators: dict[type, Callable] = {
         ast.Eq: lambda x, y: x == y,
         ast.NotEq: lambda x, y: x != y,
-        ast.Lt: suppress_errors(lambda x, y: x < y),
-        ast.LtE: suppress_errors(lambda x, y: x <= y),
-        ast.Gt: suppress_errors(lambda x, y: x > y),
-        ast.GtE: suppress_errors(lambda x, y: x >= y),
-        ast.In: suppress_errors(lambda x, y: x in y),
-        ast.NotIn: suppress_errors(lambda x, y: x not in y),
+        ast.Lt: return_none_on_error(lambda x, y: x < y),
+        ast.LtE: return_none_on_error(lambda x, y: x <= y),
+        ast.Gt: return_none_on_error(lambda x, y: x > y),
+        ast.GtE: return_none_on_error(lambda x, y: x >= y),
+        ast.In: return_none_on_error(lambda x, y: x in y),
+        ast.NotIn: return_none_on_error(lambda x, y: x not in y),
     }
 
     boolean_operators: dict[type, Callable] = {
@@ -44,7 +44,7 @@ class ConditionParser:
     }
 
     binary_operators: dict[type, Callable] = {
-        ast.Add: suppress_errors(lambda x, y: x + y),
+        ast.Add: return_none_on_error(lambda x, y: x + y),
     }
 
     def __init__(self, context, conditions, flags=None):
