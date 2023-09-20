@@ -2376,7 +2376,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/boto3py3:1.0.0.74419
+  dockerimage: demisto/boto3py3:1.0.0.74661
 fromversion: 6.9.0
 marketplaces:
 - xsoar
