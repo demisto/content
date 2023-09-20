@@ -1,24 +1,34 @@
 Netcraft takedown, submission and screenshot management.
 
+## Use Cases
+
+1. Verify the incident image of the reported URL.
+2. Authorise takedowns.
+3. Escalate takedowns.
+4. Track takedowns.
+5. Submit a report - mail, file, URL.
+6. Take a screenshot of the site.
+7. Fetch incidents from attacks.
+
 ## Configure Netcraft on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for Netcraft.
 3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | Takedown Server URL | True |
-    | Submission Server URL | True |
-    | API Key | True |
-    | Netcraft_image | True |
-    | Trust any certificate (not secure) | False |
-    | Use system proxy settings | False |
-    | Fetch incidents | False |
-    | Incident type | False |
-    | Maximum number of incidents per fetch | False |
-    | First fetch time | True |
-    | Incidents Fetch Interval | False |
+    | **Parameter** | **Description** | **Required** |
+    | --- | --- | --- |
+    | Takedown Server URL | The URL to use for the Takedown Service. | True |
+    | Submission Server URL | The URL to use for the Submission Service. | True |
+    | API Key | The API key associated with the Netcraft account. | True |
+    | Region | The default region to use with the takedown service. | True |
+    | Trust any certificate (not secure) |  | False |
+    | Use system proxy settings |  | False |
+    | Fetch incidents |  | False |
+    | Incident type |  | False |
+    | Maximum number of incidents per fetch |  | False |
+    | First fetch time |  | True |
+    | Incidents Fetch Interval |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
@@ -42,7 +52,7 @@ If a takedown for the attack already exists in the Netcraft system it will be au
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| attack | The location of the attack to take down, e.g. a phishing URL, or a fraudulent email address. | Required | 
+| attack | The digital location of the attack to take down, e.g. a phishing URL, or a fraudulent email address. | Required | 
 | comment | The reason for the report, such as a description of the attack. | Required | 
 | brand | The brand to report the takedown under. If no brand is specified, the brand of the provided "region" will be used. | Optional | 
 | attack_type | The type of attack being reported.<br/>Run the command "netcraft-attack-type-list" to get the list of available types, use the "Name" field of the type for this argument.<br/>. Default is phishing_url. | Optional | 
@@ -107,8 +117,8 @@ Netcraft has a limit of 1,000,000 objects returned within a 24 hour period (movi
 | ip | Filter to attacks that are hosted on the given IPv4 address, or within the given IPv4 CIDR range. Please note that partial IP addresses will not be matched. | Optional | 
 | id_before | Filter to takedowns that were submitted before the specified takedown ID. | Optional | 
 | id_after | Filter to takedowns that were submitted after the specified takedown<br/>ID. When using this argument we recommend that you also set the "sort" argument<br/>to id to ensure that no results are missed.<br/>. | Optional | 
-| date_from | Filter to takedowns that were submitted on or after the date/time<br/>provided.Values should be supplied as YYYY-MM-DD HH:MM:SS\_in UTC. If no time<br/>information is provided, the system will default to YYYY-MM-DD 00:00:00. Relative<br/>date/time formats are also supported, for example\_5 days ago,\_and monday<br/>this week"<br/>. | Optional | 
-| date_to | Filter to takedowns that were submitted on or before the date/time<br/>provided. Values should be supplied as "YYYY-MM-DD HH:MM:SS" in UTC. If no time<br/>information is provided, the system will default to "YYYY-MM-DD 00:00:00". Relative<br/>date/time formats are also supported, for example "5 days ago", and "monday this week"<br/>. | Optional | 
+| date_from | Filter to takedowns that were submitted on or after the date/time<br/>provided.Values should be supplied as YYYY-MM-DD HH:MM:SS\_in UTC. If no time<br/>information is provided, the system will default to YYYY-MM-DD 00:00:00. Relative<br/>date/time formats are also supported, for example\_5 days ago,\_and monday<br/>this week". | Optional | 
+| date_to | Filter to takedowns that were submitted on or before the date/time<br/>provided. Values should be supplied as "YYYY-MM-DD HH:MM:SS" in UTC. If no time<br/>information is provided, the system will default to "YYYY-MM-DD 00:00:00". Relative<br/>date/time formats are also supported, for example "5 days ago", and "monday this week". | Optional | 
 | reporter_email | Filter to takedowns that were reported by the given user. | Optional | 
 | report_source | Filter to takedowns that were reported through the given mechanism. Possible values are: Interface, Phishing Feed, Referer, Forensic, Api, Email Feed, Fraud Detection. | Optional | 
 | attack_types | Filter to takedowns of the given attack type. Multiple values may be provided as a comma-separated list.<br/>Run the command "netcraft-attack-type-list" to get the list of available types, use the "Name" field of the type for this argument.<br/>. | Optional | 
@@ -216,8 +226,7 @@ When returning a single URL as a string \(the default behaviour\) the returned U
 When returning multiple URLs, the list will be sorted by the time the screenshot was requested, with the earliest first.
  | 
 | Netcraft.Takedown.status_change_uptime | String | The total duration \(hh:mm:ss\) that the attack was available for after authorisation, as determined by the takedown status changes.
-i.e. the total amount of time since authorisation that an attack was not in the resolved or resolved \(monitoring\)  state.'
- | 
+i.e. the total amount of time since authorisation that an attack was not in the resolved or resolved \(monitoring\)  state.'. | 
 | Netcraft.Takedown.status | String | The status of the takedown.
 Possible values:
   "Unverified" - The report has not yet been verified as fraudulent by Netcraft.
@@ -238,14 +247,11 @@ e.g. for the URL https://l0gin.example.com/, this value will contain the risk ra
  | 
 | Netcraft.Takedown.whois_server | String | The WHOIS data for the takedown. | 
 | Netcraft.Takedown.authorisation_source | String | The source of authorisation for the takedown. will be blank if the takedown has not bee authorised.  customer
-Possible values: "customer" "netcraft"
- | 
+Possible values: "customer" "netcraft". | 
 | Netcraft.Takedown.escalation_source | String | The source of escalation for the takedown. will be blank if the takedown has not been escalated.
-Possible values: "customer" "netcraft"
- | 
+Possible values: "customer" "netcraft". | 
 | Netcraft.Takedown.restart_date | String | The latest date and time, in UTC, that the takedown was restarted, i.e. went from the "resolved \(monitoring\)" status to a contacted status.
-Will be empty if the takedown ha never been restarted.'
- | 
+Will be empty if the takedown ha never been restarted.'. | 
 | Netcraft.Takedown.gsb_block_status | Unknown | An array of objects containing the Google Safe Browsing block status on all platforms \(iOS, Android and Desktop\).
 Will be an empty array if the takedown is not a Phishing URL takedown, or if Netcraft hasn't tested the GSB block status for the takedown.
  | 
@@ -295,6 +301,9 @@ There is no context output for this command.
 
 ***
 Escalate an automated takedown to a managed takedown.
+The minimum access level required to escalate is "Escalator".
+Note that escalating a takedown may cost one or more Netcraft managed credits.
+
 
 #### Base Command
 
@@ -388,7 +397,7 @@ Get information on the attack types that are available under a given region.
 | Netcraft.AttackType.name | String | The unique string identifier for the attack type. | 
 | Netcraft.AttackType.display_name | String | The human-readable name of the attack type. | 
 | Netcraft.AttackType.base_type | String | The unique string identifier for the top-level parent type of this attack type. | 
-| Netcraft.AttackType.description | String | A short description of the attack type | 
+| Netcraft.AttackType.description | String | A short description of the attack type. | 
 | Netcraft.AttackType.automated | Boolean | Indicates whether or not automated takedowns are available for this attack type. | 
 | Netcraft.AttackType.auto_escalation | Boolean | Indicates whether or not you have chosen to automatically escalate takedowns under this type to managed takedowns after the configured escalation period. | 
 | Netcraft.AttackType.auto_authorise | Boolean | Indicates whether or not you have chosen to automatically authorise takedowns under this type. | 
@@ -543,7 +552,7 @@ When a submission is archived this command will return an error with the message
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Netcraft.SubmissionFile.file_state | String | The classification state of the file. One of "processing", "no threats" or "malicious." | 
+| Netcraft.SubmissionFile.file_state | String | The classification state of the file. One of "processing", "no threats" or "malicious.". | 
 | Netcraft.SubmissionFile.filename | String | The name of the file. | 
 | Netcraft.SubmissionFile.has_screenshot | Boolean | Whether the file has a screenshot associated with it. | 
 | Netcraft.SubmissionFile.hash | String | The hash of the file. | 

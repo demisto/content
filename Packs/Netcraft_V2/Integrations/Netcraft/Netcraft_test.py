@@ -28,10 +28,11 @@ def mock_demisto(mocker):
     ({'a': 1, 'b': 0}, ['a'], {'a': True, 'b': 0}),
     ({'a': '1', 'b': '0'}, ['a', 'b'], {'a': True, 'b': False}),
     ({'x': 'yes', 'y': 'no'}, ['x'], {'x': None, 'y': 'no'}),
+    ({'x': 'yes', 'y': 'no'}, [], {'x': 'yes', 'y': 'no'}),
 ])
-def test_convert_keys_to_bool(input_dict, keys, expected):
-    from Netcraft import convert_keys_to_bool
-    convert_keys_to_bool(input_dict, *keys)
+def test_convert_binary_keys_to_bool(input_dict, keys, expected):
+    from Netcraft import convert_binary_keys_to_bool
+    convert_binary_keys_to_bool(input_dict, *keys)
     assert input_dict == expected
 
 
@@ -121,11 +122,11 @@ def test_fetch_incidents(mocker, data):
 
     Netcraft.PARAMS = data.params
     mocker.patch.object(demisto, 'getLastRun', return_value=data.last_run)
-    mocker.patch.object(demisto, 'setLastRun')
+    setLastRun = mocker.patch.object(demisto, 'setLastRun')
     request = mocker.patch.object(Client, '_http_request', return_value=data.api_response)
 
     incidents = Netcraft.fetch_incidents(MOCK_CLIENT)
-
+    setLastRun.assert_called_with(data.set_last_run)
     request.assert_called_with(
         *data.http_func_args['args'],
         **data.http_func_args['kwargs']

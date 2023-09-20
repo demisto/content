@@ -102,6 +102,7 @@ class fetch_incidents_first_run:
         {"id": "1", "date_submitted": "2022-02-22 00:00:00"},
         {"id": "2", "date_submitted": "2022-02-22 00:00:00"},
     ]
+    set_last_run = {"id": "2"}
     http_func_args = {
         "args": ["GET"],
         "kwargs": {
@@ -133,7 +134,7 @@ class fetch_incidents_first_run:
 
 
 class fetch_incidents:
-    last_run = "1111111111111"
+    last_run = {"id": "1111111111111"}
     params = {
         "first_fetch": "2022-02-22 00:00:00",
         "max_fetch": "50",
@@ -144,6 +145,7 @@ class fetch_incidents:
         {"id": "1", "date_submitted": "2022-02-22 00:00:00"},
         {"id": "2", "date_submitted": "2022-02-22 00:00:00"},
     ]
+    set_last_run = {"id": "2"}
     http_func_args = {
         "args": ["GET"],
         "kwargs": {

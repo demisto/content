@@ -1,7 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from collections.abc import Callable, Generator, Iterable
-from functools import partial
+from math import ceil
 import base64
 import yaml
 
@@ -11,6 +11,8 @@ import yaml
 PARAMS: dict = demisto.params()
 TAKEDOWN_API_LIMIT = 100_000
 SUBMISSION_API_LIMIT = 1000
+MAX_FETCH_DEFAULT = 10
+TAKEDOWN_OK_CODE = 'TD_OK'
 AUTH_HEADERS = {
     'Authorization': f'Bearer {PARAMS["credentials"]["password"]}'
 }
@@ -19,7 +21,7 @@ SERVICE_TO_URL_MAP = {
     'submission': PARAMS['submission_url'],
 }
 RES_CODE_TO_MESSAGE = {
-    'TD_OK': 'The attack was submitted to Netcraft successfully.',
+    TAKEDOWN_OK_CODE: 'The attack was submitted to Netcraft successfully.',
     'TD_EXISTS': 'The attack was not submitted to Netcraft because it already exists in the system.',
     'TD_WILDCARD': 'The attack was not submitted because it is a wildcard sub-domain variation of an existing takedown.',
     'TD_VERIFY':
@@ -234,9 +236,24 @@ def int_to_bool(val: str | int | None) -> bool | None:
     return {'0': False, '1': True}.get(str(val))
 
 
-def convert_keys_to_bool(d: dict, *keys):
-    '''
-    Applies int_to_bool() on the given 'keys' of 'd', in place.
+def convert_binary_keys_to_bool(d: dict, *keys):
+    '''Converts values of specified keys in a dictionary to booleans.
+
+    This takes a dictionary and list of keys, and converts the values of those keys
+    in the dictionary to True/False based on their string or int values of "0", "1", 0 or 1.
+
+    Args:
+        d (dict): The dictionary to modify in-place.
+        *keys: The list of keys in the dictionary to convert.
+
+    Returns:
+        None
+
+    Examples:
+        >>> d = {'a': '1', 'b': '0'}
+        >>> convert_binary_keys_to_bool(d, 'a', 'b')
+        >>> print(d)
+        {'a': True, 'b': False}
     '''
     d |= {
         key: int_to_bool(d.get(key))
@@ -244,7 +261,7 @@ def convert_keys_to_bool(d: dict, *keys):
     }
 
 
-def base46_encode_file(filepath: str) -> str:
+def read_base64encoded_file(filepath: str) -> str:
     '''Returns a base64 encoded string of the file'''
     with open(filepath, 'rb') as f:
         return base64.b64encode(f.read()).decode()
@@ -256,7 +273,7 @@ def paginate_with_token(
     limit: str | int | None,
     page_size: str | int | None,
     next_token: str | None,
-    pages_key_path: Iterable | None,
+    pages_key_path: Iterable | None = (),
     api_limit: int = 1000,
     api_token_key: str = 'marker',
     api_page_size_key: str = 'page_size',
@@ -286,28 +303,45 @@ def paginate_with_token(
     '''
 
     def page_sizes(limit: int, api_limit: int) -> Generator[int, None, None]:
+        '''Generates page sizes for pagination based on the api_limit.
+    
+        This generates page sizes to use for pagination with
+        where all but the last are the API limit and the last is the remainder.
+        It yields page sizes until the total limit is reached.
+
+        Args:
+            limit: The total number of results to fetch.
+            api_limit: The limit the API has per page/request.
+
+        Yields: 
+            int: The next page size to use, not exceeding the API limit.
+        '''
         while limit > api_limit:
             yield api_limit
             limit -= api_limit
         yield limit
 
-    get_page = partial(dict_safe_get, keys=pages_key_path or (), return_type=list)
+    def get_page(pagination_args: dict) -> tuple[list, Any]:
+        response = client_func(api_params | pagination_args)
+        return (
+            dict_safe_get(response, keys=pages_key_path, return_type=list),
+            response.get(api_token_key)
+        )
+
     page_size = min(api_limit, arg_to_number(page_size) or api_limit)
 
     if next_token:
         pagination_args = {api_token_key: next_token, api_page_size_key: page_size}
-        response = client_func(api_params | pagination_args)
-        return get_page(response), response.get(api_token_key)
+        return get_page(pagination_args)
     else:
         pages = []
         for page_size in page_sizes(arg_to_number(limit) or 50, api_limit):
             pagination_args = {api_token_key: next_token, api_page_size_key: page_size}
-            response = client_func(api_params | pagination_args)
-            next_token = response.get(api_token_key)
-            pages += get_page(response)
+            new_page, next_token = get_page(pagination_args)
+            pages += new_page
             if next_token == stop_on_token:
                 break
-        return pages, response.get(api_token_key)
+        return pages, next_token
 
 
 def paginate_with_page_num_and_size(
@@ -354,7 +388,7 @@ def paginate_with_page_num_and_size(
     else:
         limit = arg_to_number(limit) or 50
         pages = []
-        for page in range(1, -(-limit // api_limit) + 1):  # ceiling(limit / api_limit)
+        for page in range(1, ceil(limit / api_limit) + 1):
             pagination_args = {api_page_num_key: page, api_page_size_key: api_limit}
             new_page = get_page(pagination_args)
             pages += new_page
@@ -391,17 +425,19 @@ def fetch_incidents(client: Client) -> list[dict[str, str]]:
 
     params = {
         'max_results': min(
-            arg_to_number(PARAMS['max_fetch']) or 10,
+            arg_to_number(PARAMS['max_fetch']) or MAX_FETCH_DEFAULT,
             TAKEDOWN_API_LIMIT
         ),
         'sort': 'id',
         'region': PARAMS['region']
     }
 
-    if last_id := demisto.getLastRun():
-        demisto.debug(f'Fetching IDs from: {last_id}')
+    if last_run := demisto.getLastRun():
+        last_id = last_run['id']
         params['id_after'] = last_id
+        demisto.debug(f'Fetching IDs from: {last_id}')
     else:
+        last_id = None
         params['date_from'] = str(
             arg_to_datetime(
                 PARAMS['first_fetch'],
@@ -411,7 +447,7 @@ def fetch_incidents(client: Client) -> list[dict[str, str]]:
 
     incidents = client.get_takedowns(params) or []
     if incidents:
-        demisto.setLastRun(incidents[-1]['id'])
+        demisto.setLastRun({'id': incidents[-1]['id']})
         # the first incident from the API call should be a duplicate of last_id
         if incidents[0]['id'] == last_id:
             del incidents[0]
@@ -448,7 +484,7 @@ def attack_report_command(args: dict, client: Client) -> CommandResults:
             'Response code': code,
         }
         return {
-            'outputs': {'id': takedown_id} if code == 'TD_OK' else None,
+            'outputs': {'id': takedown_id} if code == TAKEDOWN_OK_CODE else None,
             'readable_output': tableToMarkdown(
                 'Netcraft Takedown',
                 table, list(table),
@@ -582,7 +618,7 @@ def takedown_update_command(args: dict, client: Client) -> CommandResults:
 
 def takedown_escalate_command(args: dict, client: Client) -> CommandResults:
     response = client.takedown_escalate(args)
-    if response.get('status') != 'TD_OK':
+    if response.get('status') != TAKEDOWN_OK_CODE:
         raise DemistoException(
             f'Error in Netcraft API call:\n{yaml.dump(response)}'
         )
@@ -694,7 +730,7 @@ def get_submission(args: dict, submission_uuid: str, client: Client) -> PollResu
             'source_name': response.get('source', {}).pop('name', None),
             'submitter_email': response.pop('submitter', {}).get('email'),
         }
-        convert_keys_to_bool(
+        convert_binary_keys_to_bool(
             response,
             'has_cryptocurrency_addresses', 'has_files', 'has_issues', 'has_mail',
             'has_phone_numbers', 'has_urls', 'is_archived', 'pending'
@@ -799,7 +835,7 @@ def file_report_submit_command(args: dict, client: Client) -> CommandResults:
             }
         ] if content and name else [
             {
-                'content': base46_encode_file(file['path']),
+                'content': read_base64encoded_file(file['path']),
                 'filename': file['name'],
             }
             for file in map(demisto.getFilePath, entry_ids)
@@ -833,7 +869,7 @@ def submission_file_list_command(args: dict, client: Client) -> CommandResults:
 
     def response_to_context(files: list[dict]) -> list[dict]:
         for file in files:
-            convert_keys_to_bool(file, 'has_screenshot')
+            convert_binary_keys_to_bool(file, 'has_screenshot')
         return files
 
     files = paginate_with_page_num_and_size(

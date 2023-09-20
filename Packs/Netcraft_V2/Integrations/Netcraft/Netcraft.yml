@@ -15,23 +15,27 @@ configuration:
   type: 0
   required: true
   section: Connect
+  additionalinfo: The URL to use for the Takedown Service.
 - display: Submission Server URL
   name: submission_url
   defaultvalue: "https://report.netcraft.com/api/v3"
   type: 0
   required: true
   section: Connect
+  additionalinfo: The URL to use for the Submission Service.
 - name: credentials
   type: 9
   required: true
   displaypassword: API Key
   hiddenusername: true
   section: Connect
+  additionalinfo: The API key associated with the Netcraft account.
 - name: region
   type: 0
   required: true
   display: Region
   section: Connect
+  additionalinfo: The default region to use with the takedown service.
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -83,7 +87,7 @@ script:
     arguments:
     - name: attack
       required: true
-      description: The location of the attack to take down, e.g. a phishing URL, or a fraudulent email address.
+      description: The digital location of the attack to take down, e.g. a phishing URL, or a fraudulent email address.
     - name: comment
       required: true
       description: The reason for the report, such as a description of the attack.
