@@ -33,13 +33,13 @@ To use this integration, you need to connect an application with a certificate.
 
 4. Assign Azure AD roles to the application.
     1. You have two options:
-        1. Assign Azure AD roles to the application.
-        2. Assign custom role groups to the application using service principals.
-    2. In Azure AD portal at https://portal.azure.com/, start typing roles and administrators in the Search box at the
+        - Assign Azure AD roles to the application.
+        - Assign custom role groups to the application using service principals.
+    2. In the Azure AD portal at https://portal.azure.com/, start typing roles and administrators in the Search box at the
        top of the page, and then select Azure AD roles and administrators from the results in the Services section.
     3. On the Roles and administrators page that opens, find and select one of the supported roles by clicking on the
-       name of the role (not the check box) in the results.
-    4. On the Assignments page that opens, select Add assignments.
+       name of the role (not the checkbox) in the results.
+    4. On the Assignments page that opens, select **Add assignments**.
     5. In the Add assignments flyout that opens, find and select the app that you created in Step 1.
 
 
