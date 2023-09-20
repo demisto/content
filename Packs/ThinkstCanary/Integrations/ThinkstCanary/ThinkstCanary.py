@@ -196,8 +196,7 @@ def list_tokens_command():
 
     contents = res_json
     for token in new_tokens:
-        if 'TokenURL' in token:
-            del token['TokenURL']
+        token.pop('TokenURL', None)
     human_readable = tableToMarkdown('Canary Tools Tokens', new_tokens, headers=headers, removeNull=True)
     outputs = {'CanaryTools.Token(val.CanaryToken && val.CanaryToken === obj.CanaryToken)': context}
     return_outputs(readable_output=human_readable, outputs=outputs, raw_response=contents, ignore_auto_extract=True)
@@ -230,8 +229,7 @@ def get_token_command():
         demisto.results(token_file)
     else:
         token_data = res.get('token')
-        if 'url' in token_data:
-            del token_data['url']
+        token_data.pop('url', None)
         human_readable = tableToMarkdown('Canary Tools Tokens', token_data)
 
     return_outputs(readable_output=human_readable, outputs=outputs, raw_response=contents, ignore_auto_extract=True)
