@@ -1,41 +1,41 @@
 from datetime import datetime
 
 FINDING = {
-            'AccountId': 'string',
-            'Arn': 'string',
-            'Confidence': 123.0,
-            'CreatedAt': '2022-11-08T14:24:52.908Z',
-            'Description': 'desc',
-            'Id': 'string',
-            'Partition': 'string',
-            'Region': 'string',
-            'Resource': {
-                'AccessKeyDetails': {
-                    'AccessKeyId': 'string',
-                    'PrincipalId': 'string',
-                    'UserName': 'string',
-                    'UserType': 'string'
-                },
-                'S3BucketDetails': [
-                    {
-                        'Arn': 'string',
-                        'Name': 'string',
+    'AccountId': 'string',
+    'Arn': 'string',
+    'Confidence': 123.0,
+    'CreatedAt': '2022-11-08T14:24:52.908Z',
+    'Description': 'desc',
+    'Id': 'string',
+    'Partition': 'string',
+    'Region': 'string',
+    'Resource': {
+        'AccessKeyDetails': {
+            'AccessKeyId': 'string',
+            'PrincipalId': 'string',
+            'UserName': 'string',
+            'UserType': 'string'
+        },
+        'S3BucketDetails': [
+            {
+                'Arn': 'string',
+                'Name': 'string',
                         'Type': 'string',
                         'CreatedAt': datetime(2015, 1, 1),
                         'Owner': {
                             'Id': 'string'
                         },
-                        'Tags': [
+                'Tags': [
                             {
                                 'Key': 'string',
                                 'Value': 'string'
                             },
                         ],
-                        'DefaultServerSideEncryption': {
+                'DefaultServerSideEncryption': {
                             'EncryptionType': 'string',
                             'KmsMasterKeyArn': 'string'
                         },
-                        'PublicAccess': {
+                'PublicAccess': {
                             'PermissionConfiguration': {
                                 'BucketLevelPermissions': {
                                     'AccessControlList': {
@@ -64,63 +64,63 @@ FINDING = {
                             },
                             'EffectivePermission': 'string'
                         }
-                    },
-                ],
-                'InstanceDetails': {
-                    'AvailabilityZone': 'string',
-                    'IamInstanceProfile': {
-                        'Arn': 'string',
-                        'Id': 'string'
-                    },
-                    'ImageDescription': 'string',
-                    'ImageId': 'string',
-                    'InstanceId': 'string',
-                    'InstanceState': 'string',
-                    'InstanceType': 'string',
-                    'OutpostArn': 'string',
-                    'LaunchTime': 'string',
-                    'NetworkInterfaces': [
-                        {
+            },
+        ],
+        'InstanceDetails': {
+            'AvailabilityZone': 'string',
+            'IamInstanceProfile': {
+                'Arn': 'string',
+                'Id': 'string'
+            },
+            'ImageDescription': 'string',
+            'ImageId': 'string',
+            'InstanceId': 'string',
+            'InstanceState': 'string',
+            'InstanceType': 'string',
+            'OutpostArn': 'string',
+            'LaunchTime': 'string',
+            'NetworkInterfaces': [
+                {
                             'Ipv6Addresses': [
                                 'string',
                             ],
-                            'NetworkInterfaceId': 'string',
-                            'PrivateDnsName': 'string',
-                            'PrivateIpAddress': 'string',
-                            'PrivateIpAddresses': [
+                    'NetworkInterfaceId': 'string',
+                    'PrivateDnsName': 'string',
+                    'PrivateIpAddress': 'string',
+                    'PrivateIpAddresses': [
                                 {
                                     'PrivateDnsName': 'string',
                                     'PrivateIpAddress': 'string'
                                 },
                             ],
-                            'PublicDnsName': 'string',
-                            'PublicIp': 'string',
-                            'SecurityGroups': [
+                    'PublicDnsName': 'string',
+                    'PublicIp': 'string',
+                    'SecurityGroups': [
                                 {
                                     'GroupId': 'string',
                                     'GroupName': 'string'
                                 },
                             ],
-                            'SubnetId': 'string',
-                            'VpcId': 'string'
-                        },
-                    ],
-                    'Platform': 'string',
-                    'ProductCodes': [
+                    'SubnetId': 'string',
+                    'VpcId': 'string'
+                },
+            ],
+            'Platform': 'string',
+            'ProductCodes': [
                         {
                             'Code': 'string',
                             'ProductType': 'string'
                         },
-                    ],
-                    'Tags': [
-                        {
-                            'Key': 'string',
-                            'Value': 'string'
-                        },
-                    ]
+            ],
+            'Tags': [
+                {
+                    'Key': 'string',
+                    'Value': 'string'
                 },
-                'EksClusterDetails': {
-                    'Name': 'string',
+            ]
+        },
+        'EksClusterDetails': {
+            'Name': 'string',
                     'Arn': 'string',
                     'VpcId': 'string',
                     'Status': 'string',
@@ -130,18 +130,18 @@ FINDING = {
                             'Value': 'string'
                         },
                     ],
-                    'CreatedAt': datetime(2015, 1, 1)
-                },
-                'KubernetesDetails': {
-                    'KubernetesUserDetails': {
-                        'Username': 'string',
-                        'Uid': 'string',
-                        'Groups': [
+            'CreatedAt': datetime(2015, 1, 1)
+        },
+        'KubernetesDetails': {
+            'KubernetesUserDetails': {
+                'Username': 'string',
+                'Uid': 'string',
+                'Groups': [
                             'string',
-                        ]
-                    },
-                    'KubernetesWorkloadDetails': {
-                        'Name': 'string',
+                ]
+            },
+            'KubernetesWorkloadDetails': {
+                'Name': 'string',
                         'Type': 'string',
                         'Uid': 'string',
                         'Namespace': 'string',
@@ -164,7 +164,7 @@ FINDING = {
                                 }
                             },
                         ],
-                        'Volumes': [
+                'Volumes': [
                             {
                                 'Name': 'string',
                                 'HostPath': {
@@ -172,11 +172,11 @@ FINDING = {
                                 }
                             },
                         ]
-                    }
-                },
-                'ResourceType': 'string',
-                'EbsVolumeDetails': {
-                    'ScannedVolumeDetails': [
+            }
+        },
+        'ResourceType': 'string',
+        'EbsVolumeDetails': {
+            'ScannedVolumeDetails': [
                         {
                             'VolumeArn': 'string',
                             'VolumeType': 'string',
@@ -186,21 +186,21 @@ FINDING = {
                             'SnapshotArn': 'string',
                             'KmsKeyArn': 'string'
                         },
-                    ],
-                    'SkippedVolumeDetails': [
-                        {
-                            'VolumeArn': 'string',
-                            'VolumeType': 'string',
-                            'DeviceName': 'string',
-                            'VolumeSizeInGB': 123,
-                            'EncryptionType': 'string',
-                            'SnapshotArn': 'string',
-                            'KmsKeyArn': 'string'
-                        },
-                    ]
+            ],
+            'SkippedVolumeDetails': [
+                {
+                    'VolumeArn': 'string',
+                    'VolumeType': 'string',
+                    'DeviceName': 'string',
+                    'VolumeSizeInGB': 123,
+                    'EncryptionType': 'string',
+                    'SnapshotArn': 'string',
+                    'KmsKeyArn': 'string'
                 },
-                'EcsClusterDetails': {
-                    'Name': 'string',
+            ]
+        },
+        'EcsClusterDetails': {
+            'Name': 'string',
                     'Arn': 'string',
                     'Status': 'string',
                     'ActiveServicesCount': 123,
@@ -212,7 +212,7 @@ FINDING = {
                             'Value': 'string'
                         },
                     ],
-                    'TaskDetails': {
+            'TaskDetails': {
                         'Arn': 'string',
                         'DefinitionArn': 'string',
                         'Version': 'string',
@@ -253,11 +253,11 @@ FINDING = {
                         ],
                         'Group': 'string'
                     }
-                },
-                'ContainerDetails': {
-                    'ContainerRuntime': 'string',
-                    'Id': 'string',
-                    'Name': 'string',
+        },
+        'ContainerDetails': {
+            'ContainerRuntime': 'string',
+            'Id': 'string',
+            'Name': 'string',
                     'Image': 'string',
                     'ImagePrefix': 'string',
                     'VolumeMounts': [
@@ -266,65 +266,101 @@ FINDING = {
                             'MountPath': 'string'
                         },
                     ],
-                    'SecurityContext': {
+            'SecurityContext': {
                         'Privileged': True
                     }
+        }
+    },
+    'SchemaVersion': 'string',
+    'Service': {
+        'Action': {
+            'ActionType': 'string',
+            'AwsApiCallAction': {
+                'Api': 'string',
+                'CallerType': 'string',
+                'DomainDetails': {
+                    'Domain': 'string'
+                },
+                'ErrorCode': 'string',
+                'UserAgent': 'string',
+                'RemoteIpDetails': {
+                    'City': {
+                        'CityName': 'string'
+                    },
+                    'Country': {
+                        'CountryCode': 'string',
+                        'CountryName': 'string'
+                    },
+                    'GeoLocation': {
+                        'Lat': 123.0,
+                        'Lon': 123.0
+                    },
+                    'IpAddressV4': 'string',
+                    'Organization': {
+                        'Asn': 'string',
+                        'AsnOrg': 'string',
+                        'Isp': 'string',
+                        'Org': 'string'
+                    }
+                },
+                'ServiceName': 'string',
+                'RemoteAccountDetails': {
+                    'AccountId': 'string',
+                    'Affiliated': True
+                },
+                'AffectedResources': {
+                    'string': 'string'
                 }
             },
-            'SchemaVersion': 'string',
-            'Service': {
-                'Action': {
-                    'ActionType': 'string',
-                    'AwsApiCallAction': {
-                        'Api': 'string',
-                        'CallerType': 'string',
-                        'DomainDetails': {
-                            'Domain': 'string'
-                        },
-                        'ErrorCode': 'string',
-                        'UserAgent': 'string',
-                        'RemoteIpDetails': {
-                            'City': {
-                                'CityName': 'string'
-                            },
-                            'Country': {
-                                'CountryCode': 'string',
-                                'CountryName': 'string'
-                            },
-                            'GeoLocation': {
-                                'Lat': 123.0,
-                                'Lon': 123.0
-                            },
-                            'IpAddressV4': 'string',
-                            'Organization': {
-                                'Asn': 'string',
-                                'AsnOrg': 'string',
-                                'Isp': 'string',
-                                'Org': 'string'
-                            }
-                        },
-                        'ServiceName': 'string',
-                        'RemoteAccountDetails': {
-                            'AccountId': 'string',
-                            'Affiliated': True
-                        },
-                        'AffectedResources': {
-                            'string': 'string'
-                        }
+            'DnsRequestAction': {
+                'Domain': 'string',
+                'Protocol': 'string',
+                'Blocked': True
+            },
+            'NetworkConnectionAction': {
+                'Blocked': True,
+                'ConnectionDirection': 'string',
+                'LocalPortDetails': {
+                    'Port': 123,
+                    'PortName': 'string'
+                },
+                'Protocol': 'string',
+                'LocalIpDetails': {
+                            'IpAddressV4': 'string'
+                },
+                'RemoteIpDetails': {
+                    'City': {
+                        'CityName': 'string'
                     },
-                    'DnsRequestAction': {
-                        'Domain': 'string',
-                        'Protocol': 'string',
-                        'Blocked': True
+                    'Country': {
+                        'CountryCode': 'string',
+                        'CountryName': 'string'
                     },
-                    'NetworkConnectionAction': {
-                        'Blocked': True,
-                        'ConnectionDirection': 'string',
+                    'GeoLocation': {
+                        'Lat': 123.0,
+                        'Lon': 123.0
+                    },
+                    'IpAddressV4': 'string',
+                    'Organization': {
+                        'Asn': 'string',
+                        'AsnOrg': 'string',
+                        'Isp': 'string',
+                        'Org': 'string'
+                    }
+                },
+                'RemotePortDetails': {
+                    'Port': 123,
+                    'PortName': 'string'
+                }
+            },
+            'PortProbeAction': {
+                'Blocked': True,
+                'PortProbeDetails': [
+                    {
                         'LocalPortDetails': {
                             'Port': 123,
                             'PortName': 'string'
                         },
-                        'Protocol': 'string',
                         'LocalIpDetails': {
                             'IpAddressV4': 'string'
                         },
@@ -347,54 +383,18 @@ FINDING = {
                                 'Isp': 'string',
                                 'Org': 'string'
                             }
-                        },
-                        'RemotePortDetails': {
-                            'Port': 123,
-                            'PortName': 'string'
                         }
                     },
-                    'PortProbeAction': {
-                        'Blocked': True,
-                        'PortProbeDetails': [
-                            {
-                                'LocalPortDetails': {
-                                    'Port': 123,
-                                    'PortName': 'string'
-                                },
-                                'LocalIpDetails': {
-                                    'IpAddressV4': 'string'
-                                },
-                                'RemoteIpDetails': {
-                                    'City': {
-                                        'CityName': 'string'
-                                    },
-                                    'Country': {
-                                        'CountryCode': 'string',
-                                        'CountryName': 'string'
-                                    },
-                                    'GeoLocation': {
-                                        'Lat': 123.0,
-                                        'Lon': 123.0
-                                    },
-                                    'IpAddressV4': 'string',
-                                    'Organization': {
-                                        'Asn': 'string',
-                                        'AsnOrg': 'string',
-                                        'Isp': 'string',
-                                        'Org': 'string'
-                                    }
-                                }
-                            },
-                        ]
-                    },
-                    'KubernetesApiCallAction': {
-                        'RequestUri': 'string',
-                        'Verb': 'string',
+                ]
+            },
+            'KubernetesApiCallAction': {
+                'RequestUri': 'string',
+                'Verb': 'string',
                         'SourceIps': [
                             'string',
                         ],
-                        'UserAgent': 'string',
-                        'RemoteIpDetails': {
+                'UserAgent': 'string',
+                'RemoteIpDetails': {
                             'City': {
                                 'CityName': 'string'
                             },
@@ -414,62 +414,62 @@ FINDING = {
                                 'Org': 'string'
                             }
                         },
-                        'StatusCode': 123,
-                        'Parameters': 'string'
-                    }
-                },
-                'Evidence': {
-                    'ThreatIntelligenceDetails': [
-                        {
-                            'ThreatListName': 'string',
-                            'ThreatNames': [
-                                'string',
-                            ]
-                        },
+                'StatusCode': 123,
+                'Parameters': 'string'
+            }
+        },
+        'Evidence': {
+            'ThreatIntelligenceDetails': [
+                {
+                    'ThreatListName': 'string',
+                    'ThreatNames': [
+                        'string',
                     ]
                 },
-                'Archived': True,
-                'Count': 123,
-                'DetectorId': 'string',
-                'EventFirstSeen': 'string',
-                'EventLastSeen': 'string',
-                'ResourceRole': 'string',
-                'ServiceName': 'string',
-                'UserFeedback': 'string',
-                'AdditionalInfo': {
-                    'Value': 'string',
-                    'Type': 'string'
+            ]
+        },
+        'Archived': True,
+        'Count': 123,
+        'DetectorId': 'string',
+        'EventFirstSeen': 'string',
+        'EventLastSeen': 'string',
+        'ResourceRole': 'string',
+        'ServiceName': 'string',
+        'UserFeedback': 'string',
+        'AdditionalInfo': {
+            'Value': 'string',
+            'Type': 'string'
+        },
+        'FeatureName': 'string',
+        'EbsVolumeScanDetails': {
+            'ScanId': 'string',
+            'ScanStartedAt': datetime(2015, 1, 1),
+            'ScanCompletedAt': datetime(2015, 1, 1),
+            'TriggerFindingId': 'string',
+            'Sources': [
+                'string',
+            ],
+            'ScanDetections': {
+                'ScannedItemCount': {
+                    'TotalGb': 123,
+                    'Files': 123,
+                    'Volumes': 123
                 },
-                'FeatureName': 'string',
-                'EbsVolumeScanDetails': {
-                    'ScanId': 'string',
-                    'ScanStartedAt': datetime(2015, 1, 1),
-                    'ScanCompletedAt': datetime(2015, 1, 1),
-                    'TriggerFindingId': 'string',
-                    'Sources': [
-                        'string',
-                    ],
-                    'ScanDetections': {
-                        'ScannedItemCount': {
-                            'TotalGb': 123,
-                            'Files': 123,
-                            'Volumes': 123
-                        },
-                        'ThreatsDetectedItemCount': {
-                            'Files': 123
-                        },
-                        'HighestSeverityThreatDetails': {
-                            'Severity': 'string',
-                            'ThreatName': 'string',
-                            'Count': 123
-                        },
-                        'ThreatDetectedByName': {
-                            'ItemCount': 123,
-                            'UniqueThreatNameCount': 123,
-                            'Shortened': True,
-                            'ThreatNames': [
-                                {
-                                    'Name': 'string',
+                'ThreatsDetectedItemCount': {
+                    'Files': 123
+                },
+                'HighestSeverityThreatDetails': {
+                    'Severity': 'string',
+                    'ThreatName': 'string',
+                    'Count': 123
+                },
+                'ThreatDetectedByName': {
+                    'ItemCount': 123,
+                    'UniqueThreatNameCount': 123,
+                    'Shortened': True,
+                    'ThreatNames': [
+                        {
+                            'Name': 'string',
                                     'Severity': 'string',
                                     'ItemCount': 123,
                                     'FilePaths': [
@@ -480,17 +480,17 @@ FINDING = {
                                             'FileName': 'string'
                                         },
                                     ]
-                                },
-                            ]
-                        }
-                    }
+                        },
+                    ]
                 }
-            },
-            'Severity': 123.0,
-            'Title': 'title',
-            'Type': 'string',
-            'UpdatedAt': '2022-11-08T14:24:52.908Z'
+            }
         }
+    },
+    'Severity': 123.0,
+    'Title': 'title',
+    'Type': 'string',
+            'UpdatedAt': '2022-11-08T14:24:52.908Z'
+}
 
 GET_MEMBERS_RESPONSE = {
     'Members': [

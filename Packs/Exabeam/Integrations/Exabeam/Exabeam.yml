@@ -720,7 +720,7 @@ script:
       description: Source of the event.
       type: String
   - arguments:
-    - description: ID of the asset to fetch info for
+    - description: ID of the asset to fetch info for.
       name: asset_id
       required: true
     - auto: PREDEFINED
@@ -1179,7 +1179,7 @@ script:
     description: Removes items from a watchlist.
     name: exabeam-watchlist-remove-items
   - arguments:
-    - description: The name of the context table
+    - description: The name of the context table.
       name: context_table_name
       required: true
     - defaultValue: '50'
@@ -1562,7 +1562,7 @@ script:
       description: The asset ID of the sequence.
       type: String
   - arguments:
-    - description: The asset sequence ID
+    - description: The asset sequence ID.
       name: asset_sequence_id
       required: true
     - description: String to search for inside display name.
@@ -1692,7 +1692,7 @@ script:
     - contextPath: Exabeam.incidents.fields.description
       description: The incident description.
       type: String
-  dockerimage: demisto/python3:3.10.13.72123
+  dockerimage: demisto/python3:3.10.13.73190
   isfetch: true
   runonce: false
   script: '-'

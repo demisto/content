@@ -152,6 +152,13 @@ configuration:
   section: Connect
   advanced: true
   required: false
+- display: Log type max number of job pulling attempts
+  name: fetch_job_polling_max_num_attempts
+  additionalinfo: "The maximum number of attempts to try and pull results for each log type from a job that was created by its query. Each attempt takes around 1 second. Increasing this value is useful in case there are many logs to pull from a given log type.\nNote: When increasing this number, in case fetching more than 4 logs types together, it is recommended to split different log types for different integration instances"
+  type: 0
+  defaultvalue: 10
+  advanced: true
+  section: Collect
 - display: Traffic Log Type Query
   name: traffic_query
   additionalinfo: "Traffic Log Type query example: (addr.src in {source}) and (addr.dst in {destination}) and (action eq {action}).\nIn case of multiple devices, for the sake of speed it is recommended to narrow the query to a specific device. \nFor example:(device_name eq dummy_device)"
@@ -213,7 +220,7 @@ configuration:
   type: 13
   section: Connect
   required: false
-description: Manage Palo Alto Networks Firewall and Panorama. Use this pack to manage Prisma Access through Panorama. For more information, see the Panorama documentation
+description: Manage Palo Alto Networks Firewall and Panorama. Use this pack to manage Prisma Access through Panorama. For more information, see the Panorama documentation.
 display: Palo Alto Networks PAN-OS
 name: Panorama
 script:
@@ -239,7 +246,7 @@ script:
       name: category
     - description: The XML structure that defines the command. Used for operation commands.
       name: cmd
-    - description: The command to run. For example, command =<show><arp><entry name='all'/></arp></show>
+    - description: The command to run. For example, command =<show><arp><entry name='all'/></arp></show>.
       name: command
     - description: The specified destination.
       name: dst
@@ -255,9 +262,9 @@ script:
       name: log-type
     - description: The type of move operation (for example, where=after, where=before, where=top, where=bottom).
       name: where
-    - description: The time period. For example, period=last-24-hrs
+    - description: The time period. For example, period=last-24-hrs.
       name: period
-    - description: The xpath location. For example, xpath=/config/predefined/application/entry[@name='hotmail']
+    - description: The xpath location. For example, xpath=/config/predefined/application/entry[@name='hotmail'].
       name: xpath
     - description: The PCAP ID included in the threat log.
       name: pcap-id
@@ -532,9 +539,9 @@ script:
       name: description
     - description: The FQDN of the new address.
       name: fqdn
-    - description: The IP Netmask of the new address. For example, 10.10.10.10/24
+    - description: The IP Netmask of the new address. For example, 10.10.10.10/24.
       name: ip_netmask
-    - description: The IP range of the new address IP. For example, 10.10.10.0-10.10.10.255
+    - description: The IP range of the new address IP. For example, 10.10.10.0-10.10.10.255.
       name: ip_range
     - description: The device group for which to return addresses (Panorama instances).
       name: device-group
@@ -661,7 +668,7 @@ script:
       - dynamic
       - static
       required: true
-    - description: The dynamic address group match. For example "1.1.1.1 or 2.2.2.2"
+    - description: The dynamic address group match. For example "1.1.1.1 or 2.2.2.2".
       name: match
     - description: The static address group list of addresses.
       isArray: true
@@ -1746,7 +1753,7 @@ script:
       description: The blocked direction.
       type: string
     - contextPath: Panorama.SecurityRule.Target
-      description: The target firewall (Panorama instances)
+      description: The target firewall (Panorama instances).
       type: string
     - contextPath: Panorama.SecurityRule.LogForwarding
       description: The log forwarding profile (Panorama instances).
@@ -1951,7 +1958,7 @@ script:
       description: The job ID details.
       type: string
     - contextPath: Panorama.Commit.Warnings
-      description: The job ID warnings
+      description: The job ID warnings.
       type: String
   - arguments:
     - description: The job ID to check.
@@ -1988,7 +1995,7 @@ script:
       required: true
     - description: The serial number of the firewall to download the PCAP from.
       name: serialNumber
-    - description: The
+    - description: The.
       name: from
     - description: The new name for the PCAP file after downloading. If this argument is not specified, the file name is the PCAP file name set in the firewall.
       name: localName
@@ -3561,7 +3568,7 @@ script:
       description: The name of the user interface.
       type: String
     - contextPath: Panorama.UserInterfaces.Zone
-      description: The zone to which the interface is connected
+      description: The zone to which the interface is connected.
       type: String
     - contextPath: Panorama.UserInterfaces.EnableUserIdentification
       description: Whether user identification is enabled.
@@ -3709,7 +3716,7 @@ script:
       name: category
     - description: Specifies the XML structure that defines the command. Used for operation commands (op type command). Can be retrieved from the PAN-OS web UI debugger or enabling debugging via the CLI using `debug cli on`.
       name: cmd
-    - description: The command to run. For example, command =<show><arp><entry name='all'/></arp></show>
+    - description: The command to run. For example, command =<show><arp><entry name='all'/></arp></show>.
       name: command
     - description: The specified destination.
       name: dst
@@ -3725,7 +3732,7 @@ script:
       name: log-type
     - description: The type of move operation (for example, where=after, where=before, where=top, where=bottom).
       name: where
-    - description: The time period, for example period=last-24-hrs
+    - description: The time period, for example period=last-24-hrs.
       name: period
     - description: xpath location. xpath defines the location of the object. For example, xpath=/config/predefined/application/entry[@name='hotmail']. Documentation - https://docs.paloaltonetworks.com/pan-os/9-1/pan-os-panorama-api/about-the-pan-os-xml-api/structure-of-a-pan-os-xml-api-request/xml-and-xpath.
       name: xpath
@@ -3764,7 +3771,7 @@ script:
       name: vsys
     - description: The device group in which to run the command.
       name: device-group
-    - description: Return raw XML
+    - description: Return raw XML.
       name: is_xml
     description: Runs any command supported in the API.
     name: pan-os
@@ -3992,11 +3999,11 @@ script:
       name: description
     - description: The FQDN of the new address.
       name: fqdn
-    - description: The IP netmask of the new address. For example, 10.10.10.10/24
+    - description: The IP netmask of the new address. For example, 10.10.10.10/24.
       name: ip_netmask
-    - description: The IP range of the new address IP. For example, 10.10.10.0-10.10.10.255
+    - description: The IP range of the new address IP. For example, 10.10.10.0-10.10.10.255.
       name: ip_range
-    - description: The IP wildcard of the new address. For example, 10.20.1.0/0.0.248.255
+    - description: The IP wildcard of the new address. For example, 10.20.1.0/0.0.248.255.
       name: ip_wildcard
     - description: The device group for which to return addresses (Panorama instances).
       name: device-group
@@ -4100,7 +4107,7 @@ script:
       required: true
     - description: The device group for which to return addresses (Panorama instances).
       name: device-group
-    description: Gets details for the specified address group
+    description: Gets details for the specified address group.
     name: pan-os-get-address-group
     outputs:
     - contextPath: Panorama.AddressGroups.Name
@@ -4135,7 +4142,7 @@ script:
       - dynamic
       - static
       required: true
-    - description: The dynamic address group match. For example "1.1.1.1 or 2.2.2.2"
+    - description: The dynamic address group match. For example "1.1.1.1 or 2.2.2.2".
       name: match
     - description: The static address group list of addresses.
       isArray: true
@@ -4888,7 +4895,7 @@ script:
       required: true
     - description: The device group for which to return addresses for the EDL (Panorama instances).
       name: device-group
-    description: Returns information for an external dynamic list
+    description: Returns information for an external dynamic list.
     name: pan-os-get-edl
     outputs:
     - contextPath: Panorama.EDL.Name
@@ -5021,12 +5028,12 @@ script:
   - arguments:
     - description: The serial number of the device.
       name: target
-    description: Pull the running config file
+    description: Pull the running config file.
     name: pan-os-get-running-config
   - arguments:
     - description: The serial number of the device.
       name: target
-    description: Pull the merged config file
+    description: Pull the merged config file.
     name: pan-os-get-merged-config
   - arguments:
     - description: The name of the EDL.
@@ -5494,7 +5501,7 @@ script:
       description: The job ID details.
       type: string
     - contextPath: Panorama.Commit.Warnings
-      description: The job ID warnings
+      description: The job ID warnings.
       type: String
   - arguments:
     - description: The job ID to check.
@@ -5516,7 +5523,7 @@ script:
       description: The job ID details.
       type: string
     - contextPath: Panorama.Push.Warnings
-      description: The job ID warnings
+      description: The job ID warnings.
       type: String
   - arguments:
     - description: The type of packet capture.
@@ -7743,7 +7750,7 @@ script:
     outputs:
     - contextPath: PANOS.ShowBGPPeers.Summary.hostid
       type: String
-      description: The host ID
+      description: The host ID.
     - contextPath: PANOS.ShowBGPPeers.Summary.peer
       description: The name of the Border Gateway Protocol (BGP) peer.
       type: String
@@ -7781,7 +7788,7 @@ script:
       description: The total accepted routes from the peer.
       type: String
     - contextPath: PANOS.ShowBGPPeers.Result.incoming_rejected
-      description: The total rejected routes from peer
+      description: The total rejected routes from peer.
       type: String
     - contextPath: PANOS.ShowBGPPeers.Result.policy_rejected
       description: The total routes rejected by the peer by policy.
@@ -7932,7 +7939,7 @@ script:
     outputs:
     - contextPath: PANOS.RestartStatus.Summary.hostid
       type: String
-      description: The host ID
+      description: The host ID.
     - contextPath: PANOS.RestartStatus.Summary.started
       description: Whether the download process started.
       type: String
@@ -8305,7 +8312,7 @@ script:
     outputs:
     - contextPath: PANOS.ConfigurationHygieneFix.hostid
       type: String
-      description: The host ID
+      description: The host ID.
     - contextPath: PANOS.ConfigurationHygieneFix.container_name
       description: What parent container (DG, Template, VSYS) this object belongs to.
       type: String
@@ -8799,7 +8806,7 @@ script:
       description: The filter interface(s).
       type: Unknown
     - contextPath: Panorama.RedistributionProfile.FilterType
-      description: The filter type(s)
+      description: The filter type(s).
       type: Unknown
     - contextPath: Panorama.RedistributionProfile.FilterDestination
       description: The filter destination(s).
@@ -9188,7 +9195,7 @@ script:
       description: The list of the applications that the application-group has.
       type: Unknown
     - contextPath: Panorama.ApplicationGroup.Members
-      description: The number of the application that are part of the application-group
+      description: The number of the application that are part of the application-group.
       type: Number
   - arguments:
     - description: The name for the application-group to be created with.
@@ -9240,7 +9247,7 @@ script:
       description: The list of the applications that the application-group has.
       type: Unknown
     - contextPath: Panorama.ApplicationGroup.Members
-      description: The number of the applications that are part of the application-group
+      description: The number of the applications that are part of the application-group.
       type: Number
   - arguments:
     - description: The name of the application-group to delete. Can be retrieved from the pan-os-list-application-groups command.
@@ -9248,7 +9255,7 @@ script:
       required: true
     - description: The device-group in which the application-group is part of. Only for a Panorama instance.
       name: device-group
-    description: Deletes an application-group
+    description: Deletes an application-group.
     name: pan-os-delete-application-group
     outputs: []
   - arguments:
@@ -9334,7 +9341,7 @@ script:
     - contextPath: Panorama.DeviceGroupNames
       description: The list of device groups.
       type: string
-  dockerimage: demisto/pan-os-python:1.0.0.72295
+  dockerimage: demisto/pan-os-python:1.0.0.73711
   isfetch: true
   runonce: false
   script: ''
