@@ -25,7 +25,7 @@ configuration:
   name: isFetch
   required: false
   type: 8
-- additionalinfo: Maximum number of incidents per fetch. The default value is 200. 
+- additionalinfo: Maximum number of incidents per fetch. The default value is 200.
   defaultvalue: 200
   display: Maximum incidents to fetch.
   name: max_fetch
