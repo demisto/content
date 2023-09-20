@@ -1,0 +1,73 @@
+{
+    "status": {
+        "code": 200,
+        "text": "OK"
+    },
+    "meta": {
+        "page": 1,
+        "limit": 100,
+        "total": 3
+    },
+    "data": [
+        {
+            "id": 123,
+            "organizationId": 12345,
+            "access": "allow",
+            "isGlobal": true,
+            "name": "Global Allow List",
+            "thirdpartyCategoryId": null,
+            "createdAt": 1638798710,
+            "modifiedAt": 1685975729,
+            "isMspDefault": false,
+            "markedForDeletion": false,
+            "bundleTypeId": 1,
+            "meta": {
+                "destinationCount": 11,
+                "domainCount": 9,
+                "urlCount": 0,
+                "ipv4Count": 2,
+                "applicationCount": 0
+            }
+        },
+        {
+            "id": 456,
+            "organizationId": 12345,
+            "access": "block",
+            "isGlobal": true,
+            "name": "Global Block List",
+            "thirdpartyCategoryId": null,
+            "createdAt": 1638798710,
+            "modifiedAt": 1638798710,
+            "isMspDefault": false,
+            "markedForDeletion": false,
+            "bundleTypeId": 1,
+            "meta": {
+                "destinationCount": 0,
+                "domainCount": 0,
+                "urlCount": 0,
+                "ipv4Count": 0,
+                "applicationCount": 0
+            }
+        },
+        {
+            "id": 789,
+            "organizationId": 12345,
+            "access": "block",
+            "isGlobal": false,
+            "name": "Lior was here",
+            "thirdpartyCategoryId": null,
+            "createdAt": 1668962192,
+            "modifiedAt": 1668962192,
+            "isMspDefault": false,
+            "markedForDeletion": false,
+            "bundleTypeId": 1,
+            "meta": {
+                "destinationCount": 0,
+                "domainCount": 0,
+                "urlCount": 0,
+                "ipv4Count": 0,
+                "applicationCount": 0
+            }
+        }
+    ]
+}

@@ -27,6 +27,15 @@ If you are interested in alternative or advanced settings, such as configuring f
 - [Configuring Advanced Settings](https://help.ivanti.com/ps/help/en_US/PCS/9.1R13/pcsag/logging_n_monitoring.htm#logging_and_monitoring_1494202195_1023706). 
 - [Enabling Client-Side Logging](https://help.ivanti.com/ps/help/en_US/PCS/9.1R13/pcsag/logging_n_monitoring.htm#logging_and_monitoring_1494202195_1022619).
 
+* Pay attention: Timestamp parsing is supported for [RFC 3339](https://www.rfc-editor.org/rfc/rfc3339) of the following formats:
+  * %Y-%m-%dT%H:%M:%SZ - UTC +00:00 format.
+  * %Y-%m-%dT%H:%M:E3SZ - UTC +00:00 format with 3 digits of fractional precision.
+  * %Y-%m-%dT%H:%M:E*SZ - UTC +00:00 format with 6 digits of fractional precision. 
+  * %Y-%m-%d{Key}%H:%M:%S%Ez - RFC 3339 numeric time zone (+HH:MM or -HH:MM).
+  * %Y-%m-%d{Key}%H:%M:%E3S%Ez - RFC 3339 numeric time zone (+HH:MM or -HH:MM) with 3 digits of fractional precision.
+  * %Y-%m-%d{Key}%H:%M:%E*S%Ez - RFC 3339 numeric time zone (+HH:MM or -HH:MM) with 6 digits of fractional precision.
+
+
 ## Collect Events from Vendor
 In order to use the collector, use the [Broker VM](#broker-vm) option.
 

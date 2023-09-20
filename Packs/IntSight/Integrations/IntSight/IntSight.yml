@@ -4,7 +4,7 @@ commonfields:
 sectionOrder:
 - Connect
 - Collect
-name: IntSights (Deprecated)
+name: IntSights
 display: IntSights (Deprecated)
 category: Data Enrichment & Threat Intelligence
 description: Deprecated. Use Rapid7 Threat Command instead.

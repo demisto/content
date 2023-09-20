@@ -4,7 +4,6 @@ from CommonServerUserPython import *  # noqa
 
 import urllib3
 import math
-from typing import Tuple
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -13,7 +12,7 @@ urllib3.disable_warnings()
 
 MAX_EVENTS_PER_REQUEST = 100
 VENDOR = 'Workday'
-PRODUCT = 'Workday'
+PRODUCT = 'Activity'
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 
 ''' CLIENT CLASS '''
@@ -43,7 +42,7 @@ class Client(BaseClient):
         self.max_fetch = max_fetch
         self.access_token = self.get_access_token()
 
-    def get_access_token(self):
+    def get_access_token(self):  # pragma: no cover
         """
          Getting access token from Workday API.
         """
@@ -58,6 +57,7 @@ class Client(BaseClient):
                                                 auth=(self.client_id, self.client_secret))
         if workday_resp_token:
             return workday_resp_token.get("access_token")
+        return None
 
     def http_request(self,
                      method: str,
@@ -145,14 +145,16 @@ def remove_duplications(activity_loggings: list, last_run: dict):
     demisto.debug('Started removing duplications')
     last_log_stored = last_run.get('last_log')
     log_found = False
+    final_count = 0
     if last_log_stored:
         for count, log in enumerate(activity_loggings):
             if log == last_log_stored:
                 log_found = True
+                final_count = count
                 break
         if log_found:
-            demisto.debug(f"Found duplicated with {last_log_stored}, returning from {count}")
-            return activity_loggings[count + 1:]
+            demisto.debug(f"Found duplicated with {last_log_stored}, returning from {final_count}")
+            return activity_loggings[final_count + 1:]
     demisto.debug("Didn't find duplications, returning everything")
     return activity_loggings
 
@@ -178,7 +180,7 @@ def remove_milliseconds_from_time_of_logging(activity_logging: dict):
 
 
 def get_activity_logging_command(client: Client, from_date: str, to_date: str, limit: Optional[int],
-                                 offset: Optional[int]) -> Tuple[list, CommandResults]:
+                                 offset: Optional[int]) -> tuple[list, CommandResults]:
     """
 
     Args:

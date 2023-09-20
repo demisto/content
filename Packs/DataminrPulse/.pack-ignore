@@ -73,9 +73,6 @@ ignore=IF115
 [file:incidentfield-Dataminr-Pulse-Watchlists-Matched-By-Type.json]
 ignore=IF115
 
-[file:DataminrPulseDisplayRelatedAlerts.py]
-ignore=W9012
-
 [known_words]
 pv
 Dataminr

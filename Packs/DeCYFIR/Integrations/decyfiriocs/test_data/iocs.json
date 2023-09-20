@@ -1,0 +1,788 @@
+{
+    "IN_DATA_1": [
+        {
+            "Reputation": "feedReputation",
+            "fields": {
+                "aliases": [
+                ],
+                "description": "Sample Testing",
+                "firstseenbysource": "2023-07-11T06:21:42.110Z",
+                "geocountry": "United States",
+                "ipv4-addr:value": "0.0.0.0",
+                "modified": "2023-07-11T06:21:42.110Z",
+                "stixid": "indicator--e3eccca4-f0f6-4d89-90ae-85427b7894f3",
+                "tags": [
+                    "feedTags",
+                    "group 83",
+                    "macdownloader",
+                    "parastoo",
+                    "Charming Kitten"
+                ],
+                "trafficlightprotocol": "tlp_color"
+            },
+            "rawJSON": {
+                "created": "2023-07-11T06:21:42.110Z",
+                "description": "Sample Testing",
+                "first_seen": "2022-06-06T00:00:00.000Z",
+                "id": "indicator--e3eccca4-f0f6-4d89-90ae-85427b7894f3",
+                "indicator_types": [
+                    "attribution"
+                ],
+                "kill_chain_phases  ": [
+                    "Command & Control"
+                ],
+                "labels": [
+                    {
+                        "geographies": "United States",
+                        "tags": [
+                            "group 83",
+                            "macdownloader",
+                            "parastoo",
+                            "Charming Kitten"
+                        ]
+                    }
+                ],
+                "last_seen": "2022-12-16T00:00:00.000Z",
+                "modified": "2023-07-11T06:21:42.110Z",
+                "name": "0.0.0.0",
+                "pattern": "[ipv4-addr:value = '0.0.0.0']",
+                "pattern_type": "stix",
+                "spec_version": "2.1",
+                "type": "indicator",
+                "valid_from": "2023-07-11T06:21:42.110Z"
+            },
+            "relationships": [
+            ],
+            "service": "DeCYFIR",
+            "type": "IP",
+            "value": "0.0.0.0"
+        },
+        {
+            "relationships": [
+            ]
+        }
+    ],
+    "IN_DATA_2": [
+        {
+            "Reputation": "feedReputation",
+            "fields": {
+                "aliases": [
+                ],
+                "description": "Sample Testing",
+                "firstseenbysource": "2023-07-11T06:21:42.110Z",
+                "geocountry": "United States",
+                "ipv4-addr:value": "0.0.0.0",
+                "modified": "2023-07-11T06:21:42.110Z",
+                "stixid": "indicator--e3eccca4-f0f6-4d89-90ae-85427b7894f3",
+                "tags": [
+                    "feedTags",
+                    "group 83",
+                    "macdownloader",
+                    "parastoo",
+                    "Charming Kitten"
+                ],
+                "trafficlightprotocol": "tlp_color"
+            },
+            "rawJSON": {
+                "created": "2023-07-11T06:21:42.110Z",
+                "description": "Sample Testing",
+                "first_seen": "2022-06-06T00:00:00.000Z",
+                "id": "indicator--e3eccca4-f0f6-4d89-90ae-85427b7894f3",
+                "indicator_types": [
+                    "attribution"
+                ],
+                "kill_chain_phases  ": [
+                    "Command & Control"
+                ],
+                "labels": [
+                    {
+                        "geographies": "United States",
+                        "tags": [
+                            "group 83",
+                            "macdownloader",
+                            "parastoo",
+                            "Charming Kitten"
+                        ]
+                    }
+                ],
+                "last_seen": "2022-12-16T00:00:00.000Z",
+                "modified": "2023-07-11T06:21:42.110Z",
+                "name": "0.0.0.0",
+                "pattern": "[ipv4-addr:value = '0.0.0.0']",
+                "pattern_type": "stix",
+                "spec_version": "2.1",
+                "type": "indicator",
+                "valid_from": "2023-07-11T06:21:42.110Z"
+            },
+            "service": "DeCYFIR",
+            "type": "IP",
+            "value": "0.0.0.0"
+        }
+    ],
+    "IN_DATA_3": [
+        {
+            "value": "Gibberish Panda",
+            "name": "Gibberish Panda",
+            "type": "Threat Actor",
+            "score": 3,
+            "service": "DeCYFIR",
+            "relationships": [],
+            "rawJSON": {
+                "type": "threat-actor",
+                "spec_version": "2.1",
+                "id": "threat-actor--e69fedf8-2777-487f-8bff-b8f578e199ac",
+                "created": "2023-07-17T11:27:42.558Z",
+                "modified": "2023-07-17T11:27:42.558Z",
+                "description": "China based threat actor.",
+                "aliases": [
+                    "Gibberish Panda"
+                ],
+                "labels": [
+                    {
+                        "origin-of-country": "China",
+                        "target-technologies": [
+                            "Office Suites Software",
+                            "Web Application",
+                            "Operating System"
+                        ],
+                        "target-industries": [
+                            "Software",
+                            "IT Services"
+                        ],
+                        "target-countries": [
+                        ]
+                    }
+                ],
+                "name": "Gibberish Panda",
+                "threat_actor_types": [
+                    "crime-syndicate"
+                ],
+                "primary_motivation": "personal-gain"
+            },
+            "fields": {
+                "stixid": "threat-actor--e69fedf8-2777-487f-8bff-b8f578e199ac",
+                "description": "China based threat actor.",
+                "firstseenbysource": "2023-07-17T11:27:42.558Z",
+                "modified": "2023-07-17T11:27:42.558Z",
+                "trafficlightprotocol": "tlp_color",
+                "aliases": [
+                    "Gibberish Panda"
+                ],
+                "tags": [
+                    "feedTags"
+                ],
+                "primary_motivation": "Cyber Crime",
+                "secondary_motivations": "personal-gain",
+                "sophistication": "advanced",
+                "resource_level": "team",
+                "threatactortypes": [
+                    "crime-syndicate"
+                ],
+                "killchainphases": [
+                ],
+                "geocountry": "China",
+                "targetindustries": [
+                    "Software",
+                    "IT Services"
+                ]
+            }
+        },
+        {
+            "value": "Pale Panda",
+            "name": "Pale Panda",
+            "type": "Threat Actor",
+            "score": 3,
+            "service": "DeCYFIR",
+            "relationships": [],
+            "rawJSON": {
+                "type": "threat-actor",
+                "spec_version": "2.1",
+                "id": "threat-actor--d91267c4-a109-4d2a-bab6-0d234082c16e",
+                "created": "2023-07-17T11:27:42.558Z",
+                "modified": "2023-07-17T11:27:42.558Z",
+                "description": "Chinese threat actor that uses PlugX",
+                "labels": [
+                    {
+                        "origin-of-country": "China",
+                        "target-technologies": [
+                            "Office Suites Software",
+                            "Web Application",
+                            "Operating System"
+                        ],
+                        "target-industries": [
+                            "Software",
+                            "IT Services"
+                        ],
+                        "target-countries": [
+                        ]
+                    }
+                ],
+                "name": "Pale Panda",
+                "threat_actor_types": [
+                    "crime-syndicate"
+                ],
+                "primary_motivation": "personal-gain"
+            },
+            "fields": {
+                "stixid": "threat-actor--d91267c4-a109-4d2a-bab6-0d234082c16e",
+                "description": "Chinese threat actor that uses PlugX",
+                "firstseenbysource": "2023-07-17T11:27:42.558Z",
+                "modified": "2023-07-17T11:27:42.558Z",
+                "trafficlightprotocol": "tlp_color",
+                "aliases": [
+                ],
+                "tags": [
+                    "feedTags"
+                ],
+                "primary_motivation": "Cyber Crime",
+                "secondary_motivations": "personal-gain",
+                "sophistication": "advanced",
+                "resource_level": "team",
+                "threatactortypes": [
+                    "crime-syndicate"
+                ],
+                "killchainphases": [
+                ],
+                "geocountry": "China",
+                "targetindustries": [
+                    "Software",
+                    "IT Services"
+                ]
+            }
+        }
+    ],
+    "IN_DATA_4": [
+        {
+            "Reputation": "feedReputation",
+            "fields": {
+                "aliases": [
+                ],
+                "description": "Sample Testing",
+                "firstseenbysource": "2023-07-11T06:21:42.110Z",
+                "geocountry": "United States",
+                "ipv4-addr:value": "0.0.0.0",
+                "modified": "2023-07-11T06:21:42.110Z",
+                "stixid": "indicator--e3eccca4-f0f6-4d89-90ae-85427b7894f3",
+                "tags": [
+                    "feedTags",
+                    "group 83",
+                    "macdownloader",
+                    "parastoo",
+                    "Charming Kitten"
+                ],
+                "trafficlightprotocol": "tlp_color"
+            },
+            "rawJSON": {
+                "created": "2023-07-11T06:21:42.110Z",
+                "description": "Sample Testing",
+                "first_seen": "2022-06-06T00:00:00.000Z",
+                "id": "indicator--e3eccca4-f0f6-4d89-90ae-85427b7894f3",
+                "indicator_types": [
+                    "attribution"
+                ],
+                "kill_chain_phases  ": [
+                    "Command & Control"
+                ],
+                "labels": [
+                    {
+                        "geographies": "United States",
+                        "tags": [
+                            "group 83",
+                            "macdownloader",
+                            "parastoo",
+                            "Charming Kitten"
+                        ]
+                    }
+                ],
+                "last_seen": "2022-12-16T00:00:00.000Z",
+                "modified": "2023-07-11T06:21:42.110Z",
+                "name": "0.0.0.0",
+                "pattern": "[ipv4-addr:value = '0.0.0.0']",
+                "pattern_type": "stix",
+                "spec_version": "2.1",
+                "type": "indicator",
+                "valid_from": "2023-07-11T06:21:42.110Z"
+            },
+            "service": "DeCYFIR",
+            "type": "IP",
+            "value": "0.0.0.0"
+        }
+    ],
+    "IN_DATA_5": [
+        {
+            "name": "indicator-of",
+            "reverseName": "indicated-by",
+            "type": "IndicatorToIndicator",
+            "entityA": "0.0.0.0",
+            "entityAFamily": "Indicator",
+            "entityAType": "IP",
+            "entityB": "Gibberish Panda",
+            "entityBFamily": "Indicator",
+            "entityBType": "Threat Actor",
+            "fields": {
+            }
+        }
+    ],
+    "IN_DATA_6": [
+        {
+            "name": "attributed-to",
+            "reverseName": "attributed-by",
+            "type": "IndicatorToIndicator",
+            "entityA": "Gibberish Panda",
+            "entityAFamily": "Indicator",
+            "entityAType": "Threat Actor",
+            "entityB": "Gamaredon Group",
+            "entityBFamily": "Indicator",
+            "entityBType": "Intrusion Set",
+            "fields": {
+            }
+        }
+    ],
+    "IN_DATA_7": [
+        {
+            "value": "Gamaredon Group",
+            "name": "Gamaredon Group",
+            "type": "Intrusion Set",
+            "score": 3,
+            "service": "DeCYFIR",
+            "rawJSON": {
+                "id": "intrusion-set--2e290bfe-93b5-48ce-97d6-edcd6d32b7cf",
+                "name": "Gamaredon Group",
+                "description": "Gamaredon Group",
+                "external_references": [
+                    {
+                        "url": "https://attack.mitre.org/groups/G0047",
+                        "source_name": "mitre-attack",
+                        "external_id": "G0047"
+                    },
+                    {
+                        "source_name": "ACTINIUM"
+                    },
+                    {
+                        "source_name": "DEV-0157"
+                    }
+                ],
+                "created_by_ref": "identity--c78cb6e5-0c4b-4611-8297-d1b8b55e40b5",
+                "created": "2017-05-31T21:32:09.849Z",
+                "modified": "2022-04-15T13:46:34.474Z",
+                "type": "intrusion-set",
+                "objectMarkingRefs": [
+                    "marking-definition--fa42a846-8d90-4e51-bc29-71d5b4802168"
+                ],
+                "xMitreDomains": [
+                    "enterprise-attack"
+                ],
+                "aliases": [
+                    "Gamaredon Group",
+                    "IRON TILDEN",
+                    "Primitive Bear"
+                ],
+                "isDeprecated": false,
+                "labels": [
+                    {
+                        "origin-of-country": "Russia",
+                        "target-technologies": [
+                            "Office Suites Software",
+                            "Web Application",
+                            "Operating System"
+                        ],
+                        "target-industries": [
+                            "Aerospace & Defense",
+                            "cryptocurrency",
+                            "Software and Services",
+                            "Education"
+                        ],
+                        "target-countries": [
+                            "South Korea",
+                            "Cambodia",
+                            "Ukraine",
+                            "United Kingdom"
+                        ]
+                    }
+                ]
+            },
+            "relationships": [
+                {
+                    "name": "attributed-to",
+                    "reverseName": "attributed-by",
+                    "type": "IndicatorToIndicator",
+                    "entityA": "Gamaredon Group",
+                    "entityAFamily": "Indicator",
+                    "entityAType": "Intrusion Set",
+                    "entityB": "Gamaredon",
+                    "entityBFamily": "Indicator",
+                    "entityBType": "Threat Actor",
+                    "fields": {
+                    }
+                }
+            ],
+            "fields": {
+                "stixid": "intrusion-set--2e290bfe-93b5-48ce-97d6-edcd6d32b7cf",
+                "description": "Gamaredon Group",
+                "firstseenbysource": "2017-05-31T21:32:09.849Z",
+                "modified": "2022-04-15T13:46:34.474Z",
+                "trafficlightprotocol": "tlp_color",
+                "aliases": [
+                    "Gamaredon Group",
+                    "IRON TILDEN",
+                    "Primitive Bear"
+                ],
+                "tags": [
+                    "G0047",
+                    "feedTags"
+                ],
+                "primary_motivation": "Cyber Crime",
+                "secondary_motivations": "",
+                "sophistication": "advanced",
+                "resource_level": "team",
+                "threatactortypes": "",
+                "killchainphases": [
+                ],
+                "geocountry": "Russia",
+                "targetcountries": [
+                    "South Korea",
+                    "Cambodia",
+                    "Ukraine",
+                    "United Kingdom"
+                ],
+                "targetindustries": [
+                    "Aerospace & Defense",
+                    "cryptocurrency",
+                    "Software and Services",
+                    "Education"
+                ]
+            }
+        },
+        {
+            "value": "CVE-2021-40444",
+            "name": "CVE-2021-40444",
+            "type": "CVE",
+            "score": 0,
+            "service": "DeCYFIR",
+            "rawJSON": {
+                "id": "vulnerability--1d1f168b-bf1e-42df-9ab2-d3314ec9d434",
+                "type": "vulnerability",
+                "name": "CVE-2021-40444",
+                "description": "Microsoft MSHTML Remote Code Execution",
+                "created": "2021-09-15T12:15:00.000Z",
+                "modified": "2022-10-14T11:49:00.000Z",
+                "spec_version": "2.1",
+                "labels": [
+                    {
+                        "cvss_version": "3.1",
+                        "cvss_score": "7.8",
+                        "cvss_vector": "CVSS:3.1/AV:L/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:H",
+                        "cvss_metrics_data": {
+                            "attack_complexity": "LOW",
+                            "integrity_impact": "HIGH",
+                            "impact_score": 5.9,
+                            "access_vector": "NETWORK",
+                            "attack_vector": "LOCAL",
+                            "privileges_required": "NONE",
+                            "products": [
+                                "windows server"
+                            ],
+                            "availability_impact": "HIGH",
+                            "technologies": [
+                                "microsoft"
+                            ],
+                            "user_interaction": "REQUIRED",
+                            "scope": "UNCHANGED",
+                            "confidentiality_impact": "HIGH",
+                            "vendors": [
+                                "microsoft"
+                            ],
+                            "access_complexity": "MEDIUM",
+                            "exploitability_score": 1.8,
+                            "authentication": "NONE"
+                        }
+                    }
+                ],
+                "external_references": [
+                    {
+                        "source_name": "cve",
+                        "external_id": "CVE-2021-40444"
+                    }
+                ]
+            },
+            "relationships": [
+                {
+                    "name": "targets",
+                    "reverseName": "targeted-by",
+                    "type": "IndicatorToIndicator",
+                    "entityA": "Gamaredon",
+                    "entityAFamily": "Indicator",
+                    "entityAType": "Threat Actor",
+                    "entityB": "CVE-2021-40444",
+                    "entityBFamily": "Indicator",
+                    "entityBType": "CVE",
+                    "fields": {
+                    }
+                }
+            ],
+            "fields": {
+                "stixid": "vulnerability--1d1f168b-bf1e-42df-9ab2-d3314ec9d434",
+                "description": "Microsoft MSHTML Remote Code Execution",
+                "firstseenbysource": "2021-09-15T12:15:00.000Z",
+                "modified": "2022-10-14T11:49:00.000Z",
+                "trafficlightprotocol": "tlp_color",
+                "aliases": [
+                ],
+                "tags": [
+                    "CVE-2021-40444",
+                    "feedTags"
+                ],
+                "primary_motivation": "Cyber Crime",
+                "secondary_motivations": "",
+                "sophistication": "advanced",
+                "resource_level": "team",
+                "threatactortypes": "",
+                "cvedescription": "Microsoft MSHTML Remote Code Execution",
+                "cvemodified": "2022-10-14T11:49:00.000Z",
+                "killchainphases": [
+                ],
+                "cvssscore": "7.8",
+                "cvssvector": "CVSS:3.1/AV:L/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:H",
+                "cvssversion": "3.1",
+                "cvsstable": [
+                    {
+                        "metrics": "Availability impact",
+                        "value": "HIGH"
+                    },
+                    {
+                        "metrics": "Integrity impact",
+                        "value": "HIGH"
+                    },
+                    {
+                        "metrics": "Impact score",
+                        "value": 5.9
+                    },
+                    {
+                        "metrics": "Exploitability score",
+                        "value": 1.8
+                    },
+                    {
+                        "metrics": "Confidentiality impact",
+                        "value": "HIGH"
+                    },
+                    {
+                        "metrics": "Attack vector",
+                        "value": "LOCAL"
+                    },
+                    {
+                        "metrics": "Attack complexity",
+                        "value": "LOW"
+                    },
+                    {
+                        "metrics": "Privileges required",
+                        "value": "NONE"
+                    },
+                    {
+                        "metrics": "User interaction",
+                        "value": "REQUIRED"
+                    },
+                    {
+                        "metrics": "Scope",
+                        "value": "UNCHANGED"
+                    },
+                    {
+                        "metrics": "Vendors",
+                        "value": "microsoft"
+                    },
+                    {
+                        "metrics": "Products",
+                        "value": "windows server"
+                    },
+                    {
+                        "metrics": "Technologies",
+                        "value": "microsoft"
+                    }
+                ]
+            }
+        },
+        {
+            "value": "Component Object Model",
+            "name": "Component Object Model",
+            "type": "Attack Pattern",
+            "score": 2,
+            "service": "DeCYFIR",
+            "rawJSON": {
+                "name": "Component Object Model",
+                "description": "Adversaries may use the Windows Component Object",
+                "kill_chain_phases": [
+                    {
+                        "kill_chain_name": "mitre-attack",
+                        "phase_name": "execution"
+                    }
+                ],
+                "external_references": [
+                    {
+                        "url": "https://attack.mitre.org/techniques/T1559/001",
+                        "source_name": "mitre-attack",
+                        "external_id": "T1559.001"
+                    }
+                ],
+                "created_by_ref": "identity--c78cb6e5-0c4b-4611-8297-d1b8b55e40b5",
+                "id": "attack-pattern--2f6b4ed7-fef1-44ba-bcb8-1b4beb610b64",
+                "created": "2020-02-12T14:09:53.107Z",
+                "modified": "2021-07-26T22:51:20.448Z",
+                "type": "attack-pattern",
+                "objectMarkingRefs": [
+                    "marking-definition--fa42a846-8d90-4e51-bc29-71d5b4802168"
+                ],
+                "xMitrePlatforms": [
+                    "Windows"
+                ],
+                "xMitreDataSources": [
+                    "Script: Script Execution",
+                    "Module: Module Load",
+                    "Process: Process Creation"
+                ],
+                "xMitreDomains": [
+                    "enterprise-attack"
+                ]
+            },
+            "relationships": [
+                {
+                    "name": "uses",
+                    "reverseName": "used-by",
+                    "type": "IndicatorToIndicator",
+                    "entityA": "Gamaredon Group",
+                    "entityAFamily": "Indicator",
+                    "entityAType": "Intrusion Set",
+                    "entityB": "Component Object Model",
+                    "entityBFamily": "Indicator",
+                    "entityBType": "Attack Pattern",
+                    "fields": {
+                    }
+                }
+            ],
+            "fields": {
+                "stixid": "attack-pattern--2f6b4ed7-fef1-44ba-bcb8-1b4beb610b64",
+                "description": "Adversaries may use the Windows Component Object",
+                "firstseenbysource": "2020-02-12T14:09:53.107Z",
+                "modified": "2021-07-26T22:51:20.448Z",
+                "trafficlightprotocol": "tlp_color",
+                "aliases": [
+                ],
+                "tags": [
+                    "Script: Script Execution",
+                    "Module: Module Load",
+                    "Process: Process Creation",
+                    "T1559.001",
+                    "feedTags"
+                ],
+                "primary_motivation": "Cyber Crime",
+                "secondary_motivations": "",
+                "sophistication": "advanced",
+                "resource_level": "team",
+                "threatactortypes": "",
+                "operatingsystemrefs": [
+                    "Windows"
+                ],
+                "killchainphases": [
+                    "execution"
+                ]
+            }
+        },
+        {
+            "value": "Gamaredon",
+            "name": "Gamaredon",
+            "type": "Threat Actor",
+            "score": 3,
+            "service": "DeCYFIR",
+            "rawJSON": {
+                "type": "threat-actor",
+                "spec_version": "2.1",
+                "id": "threat-actor--8f2045b0-ddd4-41f6-acc3-c4cd86838085",
+                "created": "2023-07-17T14:20:31.646Z",
+                "modified": "2023-07-17T14:20:31.646Z",
+                "description": "We believe this shift indicates",
+                "aliases": [
+                    "Primitive Bear",
+                    "Shuckworm",
+                    "Trident Ursa"
+                ],
+                "labels": [
+                    {
+                        "origin-of-country": "Russia",
+                        "target-technologies": [
+                            "Office Suites Software",
+                            "Web Application",
+                            "Operating System"
+                        ],
+                        "target-industries": [
+                            "Aerospace & Defense",
+                            "cryptocurrency",
+                            "Software and Services",
+                            "Education"
+                        ],
+                        "target-countries": [
+                            "South Korea",
+                            "Cambodia",
+                            "Ukraine",
+                            "United Kingdom"
+                        ]
+                    }
+                ],
+                "name": "Gamaredon",
+                "threat_actor_types": [
+                    "crime-syndicate"
+                ],
+                "primary_motivation": "personal-gain"
+            },
+            "relationships": [
+                {
+                    "name": "targets",
+                    "reverseName": "targeted-by",
+                    "type": "IndicatorToIndicator",
+                    "entityA": "Gamaredon",
+                    "entityAFamily": "Indicator",
+                    "entityAType": "Threat Actor",
+                    "entityB": "CVE-2021-40444",
+                    "entityBFamily": "Indicator",
+                    "entityBType": "CVE",
+                    "fields": {
+                    }
+                }
+            ],
+            "fields": {
+                "stixid": "threat-actor--8f2045b0-ddd4-41f6-acc3-c4cd86838085",
+                "description": "We believe this shift indicates",
+                "firstseenbysource": "2023-07-17T14:20:31.646Z",
+                "modified": "2023-07-17T14:20:31.646Z",
+                "trafficlightprotocol": "tlp_color",
+                "aliases": [
+                    "Primitive Bear",
+                    "Shuckworm",
+                    "Trident Ursa"
+                ],
+                "tags": [
+                    "feedTags"
+                ],
+                "primary_motivation": "Cyber Crime",
+                "secondary_motivations": "personal-gain",
+                "sophistication": "advanced",
+                "resource_level": "team",
+                "threatactortypes": [
+                    "crime-syndicate"
+                ],
+                "killchainphases": [
+                ],
+                "geocountry": "Russia",
+                "targetcountries": [
+                    "South Korea",
+                    "Cambodia",
+                    "Ukraine",
+                    "United Kingdom"
+                ],
+                "targetindustries": [
+                    "Aerospace & Defense",
+                    "cryptocurrency",
+                    "Software and Services",
+                    "Education"
+                ]
+            }
+        }
+    ]
+}

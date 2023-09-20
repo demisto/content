@@ -40,15 +40,7 @@
         "type": "string",
         "is_array": false
       },
-      "_product": {
-        "type": "string",
-        "is_array": false
-      },
       "cat": {
-        "type": "string",
-        "is_array": false
-      },
-      "_vendor": {
         "type": "string",
         "is_array": false
       },
@@ -111,6 +103,50 @@
        "cefSeverity": {
         "type": "string",
         "is_array": false
-      }  
+      },
+      "FTNTFGTlogdesc": {
+        "type": "string",
+        "is_array": false
+      },
+      "FTNTFGTrcvdpkt": {
+        "type": "string",
+        "is_array": false
+      },
+      "FTNTFGTsentpkt": {
+        "type": "string",
+        "is_array": false
+      },
+      "FTNTFGTduration": {
+        "type": "string",
+        "is_array": false
+      },
+      "deviceExternalId": {
+        "type": "string",
+        "is_array": false
+      },
+      "cefDeviceVersion": {
+        "type": "string",
+        "is_array": false
+      },
+      "FTNTFGTsubtype": {
+        "type": "string",
+        "is_array": false
+      },
+      "FTNTFGTlevel": {
+        "type": "string",
+        "is_array": false
+      },
+      "_vendor": {
+        "type": "string",
+        "is_array": false
+      },
+      "_product": {
+        "type": "string",
+        "is_array": false
+      },            
+      "FTNTFGTvd": {
+        "type": "string",
+        "is_array": false
+      }                                                     
     }
   }

@@ -1,0 +1,294 @@
+{
+    "id": "KLMHU9EB4N8C",
+    "created_at": "2023-08-02T09:52:47Z",
+    "details": [
+        "microsoft"
+    ],
+    "alerts": [
+        {
+            "id": "475fde88-00dc-4024-9499-8197e334dfe7",
+            "created_at": "2023-08-02T08:37:45Z",
+            "cve": "CVE-2021-28478",
+            "details": {
+                "products": [],
+                "vendors": [
+                    "microsoft"
+                ],
+                "filters": [
+                    "summary",
+                    "cvss"
+                ]
+            }
+        },
+        {
+            "id": "7d6aca91-1837-4134-97b2-31f8ffa4edda",
+            "created_at": "2023-08-02T08:34:33Z",
+            "cve": "CVE-2021-31178",
+            "details": {
+                "products": [],
+                "vendors": [
+                    "microsoft"
+                ],
+                "filters": [
+                    "cwes"
+                ]
+            }
+        },
+        {
+            "id": "c2799c03-8011-4b5a-ace3-f85c1bdb56f1",
+            "created_at": "2023-08-02T08:31:33Z",
+            "cve": "CVE-2021-31168",
+            "details": {
+                "products": [],
+                "vendors": [
+                    "microsoft"
+                ],
+                "filters": [
+                    "summary"
+                ]
+            }
+        },
+        {
+            "id": "8123cb1b-0af0-4077-a982-4eb7fd8a5a90",
+            "created_at": "2023-08-02T08:26:33Z",
+            "cve": "CVE-2021-28479",
+            "details": {
+                "products": [],
+                "vendors": [
+                    "microsoft"
+                ],
+                "filters": [
+                    "cwes"
+                ]
+            }
+        },
+        {
+            "id": "d6790144-362f-4bd9-af0a-75ba5bad32ff",
+            "created_at": "2023-08-02T08:23:48Z",
+            "cve": "CVE-2021-31207",
+            "details": {
+                "products": [],
+                "vendors": [
+                    "microsoft"
+                ],
+                "filters": [
+                    "cvss"
+                ]
+            }
+        },
+        {
+            "id": "7c78ec53-b887-433e-bd8a-43368aa9ecba",
+            "created_at": "2023-08-02T08:20:34Z",
+            "cve": "CVE-2021-31169",
+            "details": {
+                "products": [],
+                "vendors": [
+                    "microsoft"
+                ],
+                "filters": [
+                    "summary"
+                ]
+            }
+        },
+        {
+            "id": "8a189ff5-d14c-4062-96ed-6cf9324c004e",
+            "created_at": "2023-08-02T08:16:07Z",
+            "cve": "CVE-2021-31198",
+            "details": {
+                "products": [],
+                "vendors": [
+                    "microsoft"
+                ],
+                "filters": [
+                    "summary",
+                    "cwes"
+                ]
+            }
+        },
+        {
+            "id": "e42275cf-c1e9-4ad7-9013-e95dde943936",
+            "created_at": "2023-08-02T08:11:18Z",
+            "cve": "CVE-2021-31208",
+            "details": {
+                "products": [],
+                "vendors": [
+                    "microsoft"
+                ],
+                "filters": [
+                    "summary"
+                ]
+            }
+        },
+        {
+            "id": "07d15fe3-02e6-45c9-af9c-419b30c578ba",
+            "created_at": "2023-08-02T08:07:35Z",
+            "cve": "CVE-2021-31188",
+            "details": {
+                "products": [],
+                "vendors": [
+                    "microsoft"
+                ],
+                "filters": [
+                    "summary",
+                    "cvss"
+                ]
+            }
+        },
+        {
+            "id": "fa929556-6ac7-455b-ac2e-8cf5fc4d44f4",
+            "created_at": "2023-08-02T08:04:26Z",
+            "cve": "CVE-2021-31176",
+            "details": {
+                "products": [],
+                "vendors": [
+                    "microsoft"
+                ],
+                "filters": [
+                    "summary"
+                ]
+            }
+        },
+        {
+            "id": "dd4b57e5-4b2d-4783-b225-98482ae89ef9",
+            "created_at": "2023-08-02T08:02:11Z",
+            "cve": "CVE-2021-28465",
+            "details": {
+                "products": [],
+                "vendors": [
+                    "microsoft"
+                ],
+                "filters": [
+                    "cwes"
+                ]
+            }
+        },
+        {
+            "id": "e91de3e8-e394-4de1-a843-81569512f8bc",
+            "created_at": "2023-08-02T07:59:20Z",
+            "cve": "CVE-2021-26422",
+            "details": {
+                "products": [],
+                "vendors": [
+                    "microsoft"
+                ],
+                "filters": [
+                    "cwes"
+                ]
+            }
+        },
+        {
+            "id": "b9ec3801-8b0a-44dd-bc06-5ce1b51de81d",
+            "created_at": "2023-08-02T07:55:10Z",
+            "cve": "CVE-2021-31184",
+            "details": {
+                "products": [],
+                "vendors": [
+                    "microsoft"
+                ],
+                "filters": [
+                    "cwes"
+                ]
+            }
+        },
+        {
+            "id": "f0b3ebf4-39bf-4781-982f-88c97305b934",
+            "created_at": "2023-08-02T07:48:33Z",
+            "cve": "CVE-2021-31936",
+            "details": {
+                "products": [],
+                "vendors": [
+                    "microsoft"
+                ],
+                "filters": [
+                    "cvss"
+                ]
+            }
+        },
+        {
+            "id": "0a109aaf-c777-4567-a1e5-381204f5a71e",
+            "created_at": "2023-08-02T07:44:04Z",
+            "cve": "CVE-2021-31171",
+            "details": {
+                "products": [],
+                "vendors": [
+                    "microsoft"
+                ],
+                "filters": [
+                    "cwes",
+                    "cvss"
+                ]
+            }
+        },
+        {
+            "id": "a3b5476d-b975-4295-bdf9-ad7190592099",
+            "created_at": "2023-08-02T07:41:26Z",
+            "cve": "CVE-2021-31175",
+            "details": {
+                "products": [],
+                "vendors": [
+                    "microsoft"
+                ],
+                "filters": [
+                    "summary"
+                ]
+            }
+        },
+        {
+            "id": "05548c3c-5d4f-472d-aa62-ec65fd6663f5",
+            "created_at": "2023-08-02T07:35:08Z",
+            "cve": "CVE-2021-31186",
+            "details": {
+                "products": [],
+                "vendors": [
+                    "microsoft"
+                ],
+                "filters": [
+                    "cvss",
+                    "cwes"
+                ]
+            }
+        },
+        {
+            "id": "bf374720-4114-4e3e-8be5-5eb848eccc9a",
+            "created_at": "2023-08-02T07:31:28Z",
+            "cve": "CVE-2021-31192",
+            "details": {
+                "products": [],
+                "vendors": [
+                    "microsoft"
+                ],
+                "filters": [
+                    "cvss"
+                ]
+            }
+        },
+        {
+            "id": "ae0a67ab-b30e-4dbd-b864-1a3157394889",
+            "created_at": "2023-08-02T07:27:56Z",
+            "cve": "CVE-2021-31167",
+            "details": {
+                "products": [],
+                "vendors": [
+                    "microsoft"
+                ],
+                "filters": [
+                    "summary"
+                ]
+            }
+        },
+        {
+            "id": "4a8d5f1e-2d5e-439b-990f-818eaba683e5",
+            "created_at": "2023-08-02T07:25:11Z",
+            "cve": "CVE-2021-31211",
+            "details": {
+                "products": [],
+                "vendors": [
+                    "microsoft"
+                ],
+                "filters": [
+                    "summary"
+                ]
+            }
+        }
+    ]
+}

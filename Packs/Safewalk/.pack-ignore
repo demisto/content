@@ -1,9 +1,5 @@
-[file:SafewalkReports.yml]
-ignore=IN118
-
 [file:SafewalkManagement_image.png]
 ignore=IM111
 
 [file:SafewalkReports_image.png]
 ignore=IM111
-

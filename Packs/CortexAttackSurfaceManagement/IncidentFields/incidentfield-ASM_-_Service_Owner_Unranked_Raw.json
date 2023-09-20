@@ -66,7 +66,7 @@
     "description": "Original set of potential service owners gathered through playbook",
     "editForm": true,
     "group": 0,
-    "hidden": true,
+    "hidden": false,
     "id": "incident_asmserviceownerunrankedraw",
     "isReadOnly": false,
     "locked": false,

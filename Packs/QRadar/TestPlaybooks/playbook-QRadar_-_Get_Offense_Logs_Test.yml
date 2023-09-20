@@ -107,7 +107,7 @@ view: |-
 inputs:
 - key: ID
   value:
-    simple: "145"
+    simple: "14"
   required: false
   description: ""
   playbookInputQuery: null
