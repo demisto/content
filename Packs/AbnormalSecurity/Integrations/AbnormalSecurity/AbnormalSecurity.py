@@ -618,8 +618,8 @@ def submit_false_positive_report_command(client, args):
 
 
 def get_a_list_of_vendors_command(client, args):
-    page_size = str(args.get('page_size', ''))
-    page_number = str(args.get('page_number', ''))
+    page_size = arg_to_number(args.get("page_size", None))
+    page_number = arg_to_number(args.get("page_number", 100))
     response = client.get_a_list_of_vendors_request(page_size, page_number)
     markdown = tableToMarkdown('Vendor Domains', response.get('vendors'), headers=['vendorDomain'], removeNull=True)
     command_results = CommandResults(
@@ -667,8 +667,8 @@ def get_the_activity_of_a_specific_vendor_command(client, args):
 
 def get_a_list_of_vendor_cases_command(client, args):
     filter_ = str(args.get('filter', ''))
-    page_size = str(args.get('page_size', ''))
-    page_number = str(args.get('page_number', ''))
+    page_size = arg_to_number(args.get("page_size", None))
+    page_number = arg_to_number(args.get("page_number", 100))
 
     response = client.get_a_list_of_vendor_cases_request(filter_, page_size, page_number)
     markdown = tableToMarkdown('Vendor Case IDs', response.get('vendorCases'), removeNull=True)
