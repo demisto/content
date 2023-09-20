@@ -2163,10 +2163,8 @@ def parse_incident_from_item(item):     # pragma: no cover
                         demisto.info(f'Could not decode attached email using detected encoding:{encoding}, retrying '
                                      f'using utf-8.\nAttached email:\n{attached_email}')
                         try:
-                            # Trying to decode using the detected encoding
                             data = attached_email_bytes.decode('utf-8')
                         except UnicodeDecodeError:
-                            # In case the detected encoding fails apply the default encoding
                             demisto.info('Could not decode attached email using utf-8. returned the content without decoding')
                             data = attached_email_bytes  # type: ignore
 
