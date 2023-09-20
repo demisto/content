@@ -74,7 +74,7 @@ description: Use the Prisma Cloud Compute integration to fetch incidents from yo
 display: Palo Alto Networks - Prisma Cloud Compute
 name: PaloAltoNetworks_PrismaCloudCompute
 script:
-  dockerimage: demisto/python3:3.10.13.73190
+  dockerimage: demisto/python3:3.10.13.74666
   isfetch: true
   runonce: false
   script: "-"
@@ -801,6 +801,7 @@ script:
       isArray: true
       defaultValue: ""
       default: true
+      required: true
     outputs:
     - contextPath: CVE.ID
       description: "The ID of the CVE, for example: CVE-2015-1653."
@@ -1960,7 +1961,8 @@ script:
     - contextPath: PrismaCloudCompute.Backups.Time
       description: The time of the backup.
       type: Date
-  - name: prisma-cloud-compute-get-file-integrity-events
+  - description: Get runtime file integrity audit events.
+    name: prisma-cloud-compute-get-file-integrity-events
     arguments:
     - name: hostname
       description: Hostname for which to get runtime file integrity audit events. Either event_id or hostname is required.
@@ -2024,7 +2026,6 @@ script:
     - contextPath: PrismaCloudCompute.FileIntegrity.Description
       description: A human readable description of the action performed on the path.
       type: string
-    description: Get runtime file integrity audit events.
   - description: Use this command to unstuck the fetch stream in case it's getting duplicated incidents.
     name: prisma-cloud-compute-unstuck-fetch-stream
 tests:
