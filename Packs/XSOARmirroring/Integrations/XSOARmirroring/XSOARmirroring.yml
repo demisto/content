@@ -23,10 +23,10 @@ configuration:
   additionalinfo: The API key to access the server. The key must be provided by the server to which you are connecting.
   hidden: true
   required: false
-- displaypassword: API Key
-  name: credentials_api_key
-  hiddenusername: true
-  additionalinfo: The API key to access the server. The key must be provided by the server to which you are connecting.
+- name: credentials_api_key
+  display: API Key ID (for XSOAR 8.x only)
+  displaypassword: API Key
+  additionalinfo: The API key to access the server. The key must be provided by the server to which you are connecting. When the target server is XSOAR 8.x, an API key ID is required as well (not relevant for XSOAR 6.x).
   type: 9
   required: false
 - display: Fetch incidents
@@ -105,8 +105,8 @@ configuration:
   defaultvalue: "false"
   type: 8
   additionalinfo: >
-   Will mirror historical notes,tags and attachments in case their corresponding incidents were deleted.
-   Notice can impact performance if combined with "Reset the "last run" timestamp" and multiple incidents in system.
+    Will mirror historical notes,tags and attachments in case their corresponding incidents were deleted.
+    Notice can impact performance if combined with "Reset the "last run" timestamp" and multiple incidents in system.
   required: false
 script:
   script: ''
@@ -156,7 +156,7 @@ script:
   - name: get-mapping-fields
     arguments: []
     description: Retrieves the mapping schema from a remote incident.
-  dockerimage: demisto/python3:3.10.12.68714
+  dockerimage: demisto/python3:3.10.13.72123
   isfetch: true
   subtype: python3
   ismappable: true

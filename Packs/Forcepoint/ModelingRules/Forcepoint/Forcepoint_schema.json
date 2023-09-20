@@ -62,31 +62,31 @@
       },
       "cefSeverity": {
         "type": "string",
-        "is_array": true
+        "is_array": false
       },
       "deviceFacility": {
         "type": "string",
-        "is_array": true
+        "is_array": false
       },
       "cefDeviceVersion": {
         "type": "string",
-        "is_array": true
+        "is_array": false
       },
       "deviceExternalId": {
         "type": "string",
-        "is_array": true
+        "is_array": false
       },
       "cefDeviceEventClassId": {
         "type": "string",
-        "is_array": true
+        "is_array": false
       },
       "destinationServiceName": {
         "type": "string",
-        "is_array": true
+        "is_array": false
       },                              
       "proto": {
         "type": "string",
-        "is_array": true
+        "is_array": false
       }
     }
   }

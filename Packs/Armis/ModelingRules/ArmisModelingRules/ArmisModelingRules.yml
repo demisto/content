@@ -1,0 +1,6 @@
+fromversion: 6.10.0
+id: armis_security_ModelingRule
+name: Armis Security Modeling Rule
+rules: ''
+schema: ''
+tags: security

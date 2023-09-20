@@ -6,7 +6,6 @@
         "cortexxsoarext.xsoar",
         "GitLab.gitlab-workflow",
         "ms-python.python",
-        "timonwong.shellcheck",
         "GitHub.vscode-pull-request-github",
         "eamodio.gitlens",
         "ms-azuretools.vscode-docker",
@@ -14,18 +13,17 @@
         "streetsidesoftware.code-spell-checker",
         "njpwerner.autodocstring",
         "VisualStudioExptTeam.vscodeintellicode",
-        "yzhang.markdown-all-in-one",
-        "shd101wyy.markdown-preview-enhanced",
-        "Gruntfuggly.todo-tree",
         "redhat.vscode-yaml",
         "PKief.material-icon-theme",
         "mikestead.dotenv",
         "KevinRose.vsc-python-indent",
-        "rangav.vscode-thunder-client",
-        "ms-python.black-formatter",
         "LittleFoxTeam.vscode-python-test-adapter",
         "charliermarsh.ruff",
-        "ryanluker.vscode-coverage-gutters"
+        "ryanluker.vscode-coverage-gutters",
+        "ms-python.debugpy",
+        "EditorConfig.EditorConfig",
+        "DavidAnson.vscode-markdownlint",
+        "ms-vscode.powershell"
     ],
     // List of extensions recommended by VS Code that should not be recommended for users of this workspace.
     "unwantedRecommendations": [
