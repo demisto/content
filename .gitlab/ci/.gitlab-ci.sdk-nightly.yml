@@ -203,7 +203,7 @@ demisto-sdk-nightly:run-commands-against-instance:
     - demisto-sdk validate -i Packs/HelloWorld/
     - section_end "Run Validate"
     - section_start "Run Lint" --collapsed
-    - demisto-sdk lint --console_log_threshold DEBUG -i Packs/HelloWorld/
+    - demisto-sdk lint --console-log-threshold DEBUG -i Packs/HelloWorld/
     - section_end "Run Lint"
     - *change-file-ids
     - *upload-entities-to-cortex-xsoar
