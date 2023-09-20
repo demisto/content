@@ -2162,6 +2162,8 @@ def main():
             return_results(results=get_logs_defender_download_command(client=client, args=demisto.args()))
         elif requested_command == "prisma-cloud-compute-unstuck-fetch-stream":
             return_results(unstuck_fetch_stream_command())
+        elif requested_command == "prisma-cloud-compute-get-file-integrity-events":
+            return_results(results=get_file_integrity_events_command(client=client, args=demisto.args()))
     # Log exceptions
     except Exception as e:
         return_error(f'Failed to execute {requested_command} command. Error: {str(e)}')
