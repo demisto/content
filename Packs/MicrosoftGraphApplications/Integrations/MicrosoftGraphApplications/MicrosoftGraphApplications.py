@@ -311,69 +311,25 @@ def update_service_principal_command(ms_client: Client, args: dict) -> CommandRe
         an informative message.
     """
     id_for_request, service_id = validate_service_principal_input(args=args)
-    data = {}
+    origin_keys = ["add_ins", "alternative_names", "app_role_assignment_required", "app_roles", "custom_security_attributes",
+                   "display_name", "home_page", "key_credentials", "logout_url", "oauth2_permission_scopes",
+                   "preferred_single_sign_on_mode", "service_principal_names", "tags", "token_encryption_key_id"]
+    alternative_names = ["addIns", "alternativeNames", "appRoleAssignmentRequired", "appRoles", "customSecurityAttributes",
+                         "displayName", "homepage", "keyCredentials", "logoutUrl", "oauth2PermissionScopes",
+                         "preferredSingleSignOnMode", "servicePrincipalNames", "tags", "tokenEncryptionKeyId"]
 
-    if account_enabled := args.get("account_enabled"):
-        data["accountEnabled"] = argToBoolean(account_enabled)
+    origin_boolean_keys = ["account_enabled", "app_role_assignment_required"]
+    alternative_names_for_boolean = ["accountEnabled", "appRoleAssignmentRequired"]
 
-    # Dict
-    if add_ins := args.get("add_ins"):
-        data["addIns"] = add_ins
+    data = {
+        alternative_name: args[origin_key]
+        for origin_key, alternative_name in zip(origin_keys, alternative_names)
+        if origin_key in args
+    }
 
-    # String collection
-    if alternative_names := args.get("alternative_names"):
-        data["alternativeNames"] = alternative_names
-
-    if app_role_assignment_required := args.get("app_role_assignment_required"):
-        data["appRoleAssignmentRequired"] = argToBoolean(app_role_assignment_required)
-
-    # Dict collection
-    if app_roles := args.get("app_roles"):
-        data["appRoles"] = app_roles
-
-    # Dict
-    if custom_security_attributes := args.get("custom_security_attributes"):
-        data["customSecurityAttributes"] = custom_security_attributes
-
-    # String
-    if display_name := args.get("display_name"):
-        data["displayName"] = display_name
-
-    # String
-    if home_page := args.get("home_page"):
-        data["homepage"] = home_page
-
-    # Dict collection
-    if key_credentials := args.get("key_credentials"):
-        data["keyCredentials"] = key_credentials
-
-    # String
-    if logout_url := args.get("logout_url"):
-        data["logoutUrl"] = logout_url
-
-    # Dict collection
-    if oauth2_permission_scopes := args.get("oauth2_permission_scopes"):
-        data["oauth2PermissionScopes"] = oauth2_permission_scopes
-
-    # String
-    if preferred_single_sign_on_mode := args.get("preferred_single_sign_on_mode"):
-        data["preferredSingleSignOnMode"] = preferred_single_sign_on_mode
-
-    # String collection
-    if reply_urls := args.get("reply_urls"):
-        data["replyUrls"] = reply_urls
-
-    # String collection
-    if service_principal_names := args.get("service_principal_names"):
-        data["servicePrincipalNames"] = service_principal_names
-
-    # String collection
-    if tags := args.get("tags"):
-        data["tags"] = tags
-
-    # String
-    if token_encryption_key_id := args.get("token_encryption_key_id"):
-        data["tokenEncryptionKeyId"] = token_encryption_key_id
+    for origin_key, alternative_name in zip(origin_boolean_keys, alternative_names_for_boolean):
+        if origin_key in args:
+            data[alternative_name] = argToBoolean(args[origin_key])
 
     ms_client.update_single_service_principal(id_for_request, data=data)
 
@@ -412,14 +368,14 @@ def add_password_service_principal_command(ms_client: Client, args: dict) -> Com
     """
     id_for_request, service_id = validate_service_principal_input(args=args)
 
-    data = {}
+    origin_keys = ["display_name", "end_date_time", "start_date_time"]
+    alternative_names = ["displayName", "endDateTime", "startDateTime"]
 
-    if display_name := args.get("display_name"):
-        data["displayName"] = display_name
-    if end_date_time := args.get("end_date_time"):
-        data["endDateTime"] = end_date_time
-    if start_date_time := args.get("start_date_time"):
-        data["startDateTime"] = start_date_time
+    data = {
+        alternative_name: args[origin_key]
+        for origin_key, alternative_name in zip(origin_keys, alternative_names)
+        if origin_key in args
+    }
 
     results = ms_client.add_password_service_principal(id_for_request, data=data)
 
