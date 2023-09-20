@@ -12,6 +12,6 @@ SECRET_GET_ARGS_CONTEXT = {
         "lastModified": "2022-05-17T10:55:41Z",
         "lastModifiedBy": "users:thy-one:testuser@accessecm.com",
         "path": "accounts:xsoar",
-        "version": "1" 
+        "version": "1"
     }
 }

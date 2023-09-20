@@ -143,4 +143,4 @@ def test_cymulate_get_incident_info(mocker, requests_mock):
 
     technical_info = cymulate_get_incident_info(client=client, attack_id=attack_id)
 
-    assert(technical_info[0]['ID'] == CYMULATE_GET_INCIDENT_INFO_TEST['data'][0]['ID'])
+    assert (technical_info[0]['ID'] == CYMULATE_GET_INCIDENT_INFO_TEST['data'][0]['ID'])
