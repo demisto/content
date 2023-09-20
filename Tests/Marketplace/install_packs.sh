@@ -2,7 +2,7 @@
 
 function exit_on_error {
     if [ "${1}" -ne 0 ]; then
-        echo "ERROR: ${2}"
+        echo "ERROR: ${2}, exiting with code ${1}"
         exit "${1}"
     fi
 }
@@ -27,7 +27,7 @@ fi
 
 echo "Trying to authenticate with GCS..."
 gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" > auth.out 2>&1
-exit_on_error $? "Failed to authenticate with GCS, exiting..."
+exit_on_error $? "Failed to authenticate with GCS"
 
 echo "Successfully authenticated with GCS."
 
@@ -45,7 +45,7 @@ if [[ "${INSTANCE_ROLE}" == "XSIAM" ]]; then
       fi
     done
 
-    exit_on_error "${exit_code}" "Finished configure_and_install_packs script with exit code ${exit_code}"
+    exit_on_error "${exit_code}" "Finished configure_and_install_packs script"
 
     echo "Finished configure_and_install_packs successfully"
     exit 0
@@ -56,7 +56,7 @@ if [[ "${INSTANCE_ROLE}" == "XSIAM" ]]; then
 else
   # Running on XSOAR instance roles
   python3 ./Tests/Marketplace/configure_and_install_packs.py -s "$SECRET_CONF_PATH" --ami_env "${INSTANCE_ROLE}" --branch "$CI_COMMIT_BRANCH" --build_number "$CI_PIPELINE_ID" --service_account $GCS_MARKET_KEY -e "$EXTRACT_FOLDER" --pack_ids_to_install "$ARTIFACTS_FOLDER/content_packs_to_install.txt"
-  exit_on_error "$?" "Finished configure_and_install_packs script with exit code $?"
+  exit_on_error "$?" "Finished configure_and_install_packs script"
 
   echo "Finished configure_and_install_packs successfully"
   exit 0

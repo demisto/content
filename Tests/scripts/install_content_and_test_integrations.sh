@@ -2,7 +2,7 @@
 
 function exit_on_error {
     if [ "${1}" -ne 0 ]; then
-        echo "ERROR: ${2}"
+        echo "ERROR: ${2}, exiting with code ${1}"
         exit "${1}"
     fi
 }
@@ -28,7 +28,7 @@ fi
 if [ -f ./Tests/test_pack.zip ]; then
   echo "Copying test_pack.zip to artifacts folder:${ARTIFACTS_FOLDER}"
   cp ./Tests/test_pack.zip "$ARTIFACTS_FOLDER"
-  exit_on_error $? "Failed to copy test_pack.zip to artifacts folder:${ARTIFACTS_FOLDER} - Exiting with code $?"
+  exit_on_error $? "Failed to copy test_pack.zip to artifacts folder:${ARTIFACTS_FOLDER}"
 else
   echo "test_pack.zip was not found in the build directory, skipping..."
 fi
