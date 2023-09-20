@@ -12,5 +12,9 @@
     "tags": [],
     "useCases": [],
     "keywords": [],
-    "githubUser": [ "cforbes-tw" ]
+    "githubUser": [ "cforbes-tw" ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }
