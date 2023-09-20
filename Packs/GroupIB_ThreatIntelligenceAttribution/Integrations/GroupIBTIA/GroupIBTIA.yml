@@ -1303,7 +1303,7 @@ script:
       type: String
     deprecated: false
     execution: false
-  dockerimage: demisto/python3:3.10.13.72123
+  dockerimage: demisto/python3:3.10.13.73190
   isfetch: true
   runonce: false
   script: '-'
