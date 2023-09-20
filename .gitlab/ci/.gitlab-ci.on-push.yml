@@ -294,15 +294,15 @@ xpanse-prepare-testing-bucket:
         cp ./Tests/test_playbooks_report.json $ARTIFACTS_FOLDER/test_playbooks_report.json
       fi
     - section_end "Run Tests"
-    - section_start "Destroy Instances"
-    - |
-      if [ -z "${TIME_TO_LIVE}" -a "$CI_PIPELINE_SOURCE" = "contrib" ]; then
-        TIME_TO_LIVE=300
-      fi
-      python3 ./Tests/scripts/destroy_instances.py --artifacts-dir $ARTIFACTS_FOLDER --env-file $ARTIFACTS_FOLDER/env_results.json --instance-role "$INSTANCE_ROLE" || EXIT_CODE=$?
-    - section_end "Destroy Instances"
     - job-done
     - exit $EXIT_CODE
+  after_script:
+    - section_start "Destroy Instances"
+    - python3 ./Tests/scripts/destroy_instances.py --artifacts-dir $ARTIFACTS_FOLDER --env-file $ARTIFACTS_FOLDER/env_results.json --instance-role "$INSTANCE_ROLE"
+    - if [ $? -ne 0 ]; then
+        echo "Failed to destroy instances";
+      fi
+    - section_end "Destroy Instances"
 
 tests_xsoar_server:
   extends:
@@ -437,9 +437,10 @@ slack-notify-nightly-build:
     - section_end "Test Modeling Rules"
 
     - !reference [.cloud-machine-information]
-    - !reference [.unlock-machine]
     - job-done
     - exit $EXIT_CODE
+  after_script:
+    - !reference [.unlock-machine]
 
 #xsiam_server_dev:
 #  extends:

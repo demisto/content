@@ -231,17 +231,21 @@
   - echo "Auth done successfully"
   - ./Tests/scripts/wait_in_line_for_cloud_env.sh "$CLOUD_MACHINES_TYPE"
   - source CloudEnvVariables
-  - echo "CLOUD Chosen machine ids are:${CLOUD_CHOSEN_MACHINE_IDS}"
+  - echo "CLOUD Chosen machine ids are:${CLOUD_CHOSEN_MACHINE_IDS}" | tee $ARTIFACTS_FOLDER/logs/lock_file.txt
   - section_end "Lock Machine"
 
 .unlock-machine:
   - section_start "Unlock Machine" --collapsed
   - |
-    if ! [ -z "${CLOUD_CHOSEN_MACHINE_IDS}" ]; then
-      echo "Job finished, removing lock file for machine ids:${CLOUD_CHOSEN_MACHINE_IDS}"
-      gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" > $ARTIFACTS_FOLDER/logs/gauth.out 2>$ARTIFACTS_FOLDER/logs/gauth.err
-      gsutil rm "gs://xsoar-ci-artifacts/$GCS_LOCKS_PATH/machines_locks/*-lock-$CI_JOB_ID"
-      echo "Finished removing lock file"
+    if [[ -n "${CLOUD_CHOSEN_MACHINE_IDS}" ]]; then
+      if [[ -e "$ARTIFACTS_FOLDER/logs/lock_file.txt" ]]; then
+        echo "Job finished, removing lock file for machine ids:${CLOUD_CHOSEN_MACHINE_IDS}"
+        gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" > $ARTIFACTS_FOLDER/logs/gauth.out 2>$ARTIFACTS_FOLDER/logs/gauth.err
+        gsutil rm "gs://xsoar-ci-artifacts/$GCS_LOCKS_PATH/machines_locks/*-lock-$CI_JOB_ID"
+        echo "Finished removing lock file"
+      else
+        echo "No lock file found, skipping unlocking"
+      fi
     else
       echo "No machine ids were chosen, skipping unlocking"
     fi
