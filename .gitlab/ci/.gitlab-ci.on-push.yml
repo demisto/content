@@ -94,6 +94,8 @@ run-unittests-and-lint:
           echo "not on master"
           if [$CI_JOB_STATUS == 'failed' ]; then
             echo "====Send Slack Notify===="
+          else
+            echo $CI_JOB_STATUS
           fi
         fi
 # runs in gitlab for the on-push flow (except for contributors)
