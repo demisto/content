@@ -16,13 +16,11 @@ EXTRACT_FOLDER=$(mktemp -d)
 
 INSTANCE_ROLE=${1}
 if [ -z "${INSTANCE_ROLE}" ]; then
-  echo "INSTANCE_ROLE not set aborting pack installation!"
-  exit 1
+  exit_on_error 1 "INSTANCE_ROLE not set aborting pack installation"
 fi
 
 if [[ ! -f "$GCS_MARKET_KEY" ]]; then
-    echo "GCS_MARKET_KEY not set aborting pack installation!"
-    exit 1
+    exit_on_error 1 "GCS_MARKET_KEY not set aborting pack installation"
 fi
 
 echo "Trying to authenticate with GCS..."
@@ -50,8 +48,7 @@ if [[ "${INSTANCE_ROLE}" == "XSIAM" ]]; then
     echo "Finished configure_and_install_packs successfully"
     exit 0
   else
-    echo "No machines were chosen, exiting with exit code 1"
-    exit 1
+    exit_on_error 1 "No machines were chosen"
   fi
 else
   # Running on XSOAR instance roles
