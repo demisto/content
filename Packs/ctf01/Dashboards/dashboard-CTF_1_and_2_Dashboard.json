@@ -402,7 +402,7 @@
                         "owner"
                     ],
                     "keys": [
-                        "sum|ctf01.totalDuration"
+                        "avg|ctf01.totalDuration"
                     ],
                     "limitType": "bottom",
                     "valuesFormat": "abbreviated"
