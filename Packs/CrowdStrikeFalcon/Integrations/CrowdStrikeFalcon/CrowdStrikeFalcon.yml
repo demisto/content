@@ -83,14 +83,14 @@ configuration:
   type: 0
   section: Collect
   advanced: true
-  additionalinfo: "Use the Falcon Query Language to configure the fetch query: https://falconpy.io/Usage/Falcon-Query-Language.html"
+  additionalinfo: "Use the Falcon Query Language. For more information, refer to the documentation."
 - display: IOA fetch query
   name: ioa_fetch_query
   required: false
   type: 0
   section: Collect
   advanced: true
-  additionalinfo: "In the format: cloud_provider=aws&aws_account_id=1234. The query must have the argument 'cloud_provider' configured."
+  additionalinfo: "In the format: cloud_provider=aws&aws_account_id=1234. The query must have the argument 'cloud_provider' configured. For more information, refer to the documentation."
 - defaultvalue: 'true'
   display: Fetch incidents
   name: isFetch
