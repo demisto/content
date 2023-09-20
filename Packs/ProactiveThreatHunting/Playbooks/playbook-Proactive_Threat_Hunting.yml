@@ -149,10 +149,6 @@ tasks:
     - incidentfield: User Block Status
       output:
         simple: Not Executed
-    - incidentfield: Cheat Sheet
-      output:
-        complex:
-          root: inputs.CheatSheetList
     skipunavailable: false
     quietmode: 0
     isoversize: false
@@ -552,14 +548,6 @@ inputs:
     simple: "0.5"
   required: false
   description: StringSimilarity automation threshold. A number between 0 and 1, where 1 represents the most similar results of string comparisons. The automation will output only the results with a similarity score equal to or greater than the specified threshold.
-  playbookInputQuery:
-- key: CheatSheetList
-  value:
-    complex:
-      root: lists
-      accessor: CheatSheetQueries
-  required: false
-  description: A list object that contains Query cheat sheet.
   playbookInputQuery:
 outputs: []
 tests:
