@@ -202,19 +202,17 @@ def generate_variable_names_and_mapping(bind_variables_values_list: list, query:
     Returns: A mapping (dict) and an edited query.
 
     """
-    # For counting and replacing, re.findall needs "//?", whereas replace needs "?"
+    # For counting and replacing, re.findall needs "\\?", whereas replace needs "?"
     mapping_dialect_regex = {MICROSOFT_SQL_SERVER: ("\\?", "?"),
                              MS_ODBC_DRIVER: ("\\?", "?"),
                              POSTGRES_SQL: ("%s", "%s"),
                              MY_SQL: ("%s", "%s"),
                              ORACLE: ("%s", "%s")
                              }
-    try:
-        char_to_count, char_to_replace = mapping_dialect_regex[dialect]
-    except Exception as e:
-        raise DemistoException(
-            "Placeholder was not found for the given dialect"
-        ) from e
+
+    # dialect is a configuration parameter with multiple choices, so it should be one of the keys in the mapping
+    char_to_count, char_to_replace = mapping_dialect_regex[dialect]
+
     count = len(re.findall(char_to_count, query))
 
     bind_variables_names_list = []
