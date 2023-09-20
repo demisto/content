@@ -460,7 +460,7 @@ def test_create_ediscovery_custodian_site_source_command(mocker):
     results = list_ediscovery_custodian_site_sources_command(client_mocker,
                                                              {'case_id': 'case_id', 'custodian_id': 'custodian_id'})
     assert mock.call_args.kwargs['url_suffix'] == \
-           'security/cases/ediscoveryCases/case_id/custodians/custodian_id/siteSources'
+        'security/cases/ediscoveryCases/case_id/custodians/custodian_id/siteSources'
     assert not any('@odata.id' in o for o in results.outputs)
     assert results.outputs_prefix == 'MsGraph.CustodianSiteSource'
     assert results.outputs_key_field == 'SiteSourceId'
@@ -580,25 +580,25 @@ def test_list_ediscovery_case_command(mocker):
 def test_activate_ediscovery_custodian_command(mocker):
     mocker.patch.object(client_mocker, 'activate_edsicovery_custodian', return_value=None)
     assert activate_ediscovery_custodian_command(client_mocker, {'case_id': 'caseid', 'custodian_id': 'custodian_id'}) \
-           .readable_output == 'Custodian with id custodian_id Case was reactivated on case with id caseid successfully.'
+        .readable_output == 'Custodian with id custodian_id Case was reactivated on case with id caseid successfully.'
 
 
 def test_release_ediscovery_custodian_command(mocker):
     mocker.patch.object(client_mocker, 'release_edsicovery_custodian', return_value=None)
     assert release_ediscovery_custodian_command(client_mocker, {'case_id': 'caseid', 'custodian_id': 'custodian_id'}) \
-           .readable_output == 'Custodian with id custodian_id was released from case with id caseid successfully.'
+        .readable_output == 'Custodian with id custodian_id was released from case with id caseid successfully.'
 
 
 def test_close_ediscovery_case_command(mocker):
     mocker.patch.object(client_mocker, 'close_edsicovery_case', return_value=None)
     assert close_ediscovery_case_command(client_mocker, {'case_id': 'caseid'}) \
-           .readable_output == 'Case with id caseid was closed successfully.'
+        .readable_output == 'Case with id caseid was closed successfully.'
 
 
 def test_reopen_ediscovery_case_command(mocker):
     mocker.patch.object(client_mocker, 'reopen_edsicovery_case', return_value=None)
     assert reopen_ediscovery_case_command(client_mocker, {'case_id': 'caseid'}) \
-           .readable_output == 'Case with id caseid was reopened successfully.'
+        .readable_output == 'Case with id caseid was reopened successfully.'
 
 
 @pytest.mark.parametrize('site, email, should_error', [('exists', None, False),
