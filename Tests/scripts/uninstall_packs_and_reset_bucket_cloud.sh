@@ -7,8 +7,17 @@ function exit_on_error {
     fi
 }
 
-CLOUD_SERVERS_PATH=$(cat "${CLOUD_SERVERS_FILE}")
-echo "${CLOUD_API_KEYS}" > "cloud_api_keys.json"
+if [ -n "${CLOUD_SERVERS_FILE}" ]; then
+  CLOUD_SERVERS_PATH=$(cat "${CLOUD_SERVERS_FILE}")
+  echo "CLOUD_SERVERS_PATH is set to: ${CLOUD_SERVERS_PATH}"
+else
+  echo "CLOUD_SERVERS_FILE is not set, exiting"
+  exit 1
+fi
+
+if [ -n "${CLOUD_API_KEYS}" ]; then
+  echo "${CLOUD_API_KEYS}" > "cloud_api_keys.json"
+fi
 
 if [[ -z "${CLOUD_CHOSEN_MACHINE_IDS}" ]]; then
   echo "CLOUD_CHOSEN_MACHINE_IDS is not defined, exiting with exit code 1"

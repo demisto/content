@@ -2,8 +2,14 @@
 
 INSTANCE_ROLE=$1
 SECRET_CONF_PATH=$(cat secret_conf_path)
-CLOUD_SERVERS_PATH=$(cat "${CLOUD_SERVERS_FILE}")
-echo "${CLOUD_API_KEYS}" > "cloud_api_keys.json"
+if [ -n "${CLOUD_SERVERS_FILE}" ]; then
+  CLOUD_SERVERS_PATH=$(cat "${CLOUD_SERVERS_FILE}")
+  echo "CLOUD_SERVERS_PATH is set to: ${CLOUD_SERVERS_PATH}"
+fi
+if [ -n "${CLOUD_API_KEYS}" ]; then
+  echo "${CLOUD_API_KEYS}" > "cloud_api_keys.json"
+fi
+
 CONF_PATH="./Tests/conf.json"
 
 [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false

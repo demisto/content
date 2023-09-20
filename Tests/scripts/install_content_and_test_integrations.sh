@@ -8,8 +8,13 @@ function exit_on_error {
 }
 
 SECRET_CONF_PATH=$(cat secret_conf_path)
-CLOUD_SERVERS_PATH=$(cat "${CLOUD_SERVERS_FILE}")
-echo "${CLOUD_API_KEYS}" > "cloud_api_keys.json"
+if [ -n "${CLOUD_SERVERS_FILE}" ]; then
+  CLOUD_SERVERS_PATH=$(cat "${CLOUD_SERVERS_FILE}")
+  echo "CLOUD_SERVERS_PATH is set to: ${CLOUD_SERVERS_PATH}"
+fi
+if [ -n "${CLOUD_API_KEYS}" ]; then
+  echo "${CLOUD_API_KEYS}" > "cloud_api_keys.json"
+fi
 
 INSTANCE_ROLE=$1
 SERVER_TYPE=$2
