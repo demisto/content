@@ -608,7 +608,7 @@ script:
       type: Boolean
     - contextPath: AbnormalSecurity.VendorActivity.eventTimeline.recipient
       description: The recipient targeted by the event, if applicable.
-      type: Unknown
+      type: String
     - contextPath: AbnormalSecurity.VendorActivity.eventTimeline.threatId
       description: Unique identifier for the threat.
       type: String
