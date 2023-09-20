@@ -12,6 +12,20 @@
     "tags": [],
     "useCases": [],
     "keywords": [],
+    "dependencies": {
+        "MicrosoftDNS": {
+            "mandatory": false,
+            "display_name": "Microsoft DNS"
+        },
+        "MicrosoftADFS": {
+            "mandatory": false,
+            "display_name": "Microsoft AD FS Collection"
+        },
+        "MicrosoftWindowsAMSI": {
+            "mandatory": false,
+            "display_name": "Microsoft Windows AMSI"
+        }
+    },
     "marketplaces": [
         "marketplacev2"
     ]

@@ -160,7 +160,7 @@ def test_fetch_indicators_from_api(mocker, url, status_code, json_data, expected
 
             if status_code == 204:
                 assert demisto.info.call_args[0][0] == \
-                       'FireEye Feed info - API Status Code: 204 No Content Available for this timeframe.'
+                    'FireEye Feed info - API Status Code: 204 No Content Available for this timeframe.'
 
         else:
             with pytest.raises(SystemExit) as e:
