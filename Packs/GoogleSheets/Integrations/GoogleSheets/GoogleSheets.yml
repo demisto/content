@@ -596,7 +596,7 @@ script:
     description: Appends values to a spreadsheet. The input range is used to search for existing data and find a "table" within that range. Values will be appended to the next row of the table, starting with the first column of the table. See the guide (https://developers.google.com/sheets/api/guides/values#appending_values) and sample code (https://developers.google.com/sheets/api/samples/writing#append_values) for specific details of how tables are detected and data is appended. The caller must specify the spreadsheet ID, range, and a valueInputOption. The valueInputOption only controls how the input data will be added to the sheet (column-wise or row-wise), it does not influence what cell the data starts being written to.
     arguments:
     - name: spreadsheet_id
-      description: Spreadsheet ID
+      description: Spreadsheet ID.
       required: true
       defaultValue: ""
     - name: range
@@ -665,7 +665,7 @@ script:
     - contextPath: GoogleSheets.Spreadsheet.updatedSpreadsheet.sheets.title
       description: Sheet title.
       type: String
-  dockerimage: demisto/googleapi-python3:1.0.0.72624
+  dockerimage: demisto/googleapi-python3:1.0.0.74508
   runonce: false
   script: "-"
   subtype: python3
