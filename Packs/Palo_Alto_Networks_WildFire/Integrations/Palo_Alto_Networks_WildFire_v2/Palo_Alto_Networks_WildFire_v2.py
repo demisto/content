@@ -972,7 +972,8 @@ def parse_file_report(file_hash, reports, file_info, extended_data: bool):
                         udp_port.append(udp_obj["@port"])
                     if extended_data and (network_udp_dict := parse_wildfire_object(report=udp_obj,
                                                                                     keys=[('@ip', 'IP'), ('@port', 'Port'),
-                                                                                          ('@country', 'Country'), ('@ja3', 'JA3'),
+                                                                                          ('@country', 'Country'),
+                                                                                          ('@ja3', 'JA3'),
                                                                                           ('@ja3s', 'JA3S')])):
                         network_udp.append(network_udp_dict)
 
@@ -990,7 +991,8 @@ def parse_file_report(file_hash, reports, file_info, extended_data: bool):
                         tcp_port.append(tcp_obj['@port'])
                     if extended_data and (network_tcp_dict := parse_wildfire_object(report=tcp_obj,
                                                                                     keys=[('@ip', 'IP'), ('@port', 'Port'),
-                                                                                          ('@country', 'Country'), ('@ja3', 'JA3'),
+                                                                                          ('@country', 'Country'),
+                                                                                          ('@ja3', 'JA3'),
                                                                                           ('@ja3s', 'JA3S')])):
                         network_tcp.append(network_tcp_dict)
 
