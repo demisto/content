@@ -1788,12 +1788,14 @@ def test_create_indicators_list(names_and_indicators_list, notes, expected_resul
 @pytest.mark.parametrize(
     "args, expected_data, expected_output",
     [
-        {"indicator_ids": "123,456", "tags": "tag1,tag2"},
-        {
-            "ids": ["123", "456"],
-            "tags": [{"name": "tag1", "tlp": "red"}, {"name": "tag2", "tlp": "red"}],
-        },
-        "The tags have been successfully added for the following ids:\n `123, 456`",
+        (
+            {"indicator_ids": "123,456", "tags": "tag1,tag2"},
+            {
+                "ids": ["123", "456"],
+                "tags": [{"name": "tag1", "tlp": "red"}, {"name": "tag2", "tlp": "red"}],
+            },
+            "The tags have been successfully added for the following ids:\n `123, 456`",
+        )
     ],
 )
 def test_add_indicator_tag_success(
@@ -1825,8 +1827,10 @@ def test_add_indicator_tag_success(
 @pytest.mark.parametrize(
     "args, expected_exception",
     [
-        {"indicator_ids": "1,2", "tags": "tag1,tag2"},
-        "The tags were successfully deleted for the following ids:\n `1, 2`",
+        (
+            {"indicator_ids": "1,2", "tags": "tag1,tag2"},
+            "The tags were successfully deleted for the following ids:\n `1, 2`",
+        )
     ],
 )
 def test_remove_indicator_tag_command_success(
