@@ -86,6 +86,52 @@ Newly fetched incidents or detections will be mirrored in the chosen direction. 
    the lookback to a number that is greater than the previous value, then in the initial incident fetching there will be incidents duplications.
    If the integration was already set with lookback > 0, and the lookback is not being increased at any point of time, then those incident duplications would not occur.
 
+
+### Fetch Incidents
+
+#### IOM Incidents
+
+The [FQL](https://falconpy.io/Usage/Falcon-Query-Language.html) filter expression is used to configure the IOM fetch query.
+Available filter:
+
+- use_current_scan_ids (use this to get records for latest scans)
+- account_name
+- account_id
+- agent_id
+- attack_types
+- azure_subscription_id
+- cloud_provider
+- cloud_service_keyword
+- custom_policy_id
+- is_managed
+- policy_id
+- policy_type
+- resource_id
+- region
+- status
+- severity
+- severity_string
+
+Exmample: `cloud_provider: 'aws'+account_id: 'my_id'`
+
+#### IOA Incidents
+
+The IOA fetch query uses the following format:
+**param1=val1&param2=val2**
+Available parameters:
+
+- cloud_provider (required in every query)
+- account_id
+- aws_account_id
+- azure_subscription_id
+- azure_tenant_id
+- severity
+- region
+- service
+- state
+
+Exmample: `cloud_provider=aws&region=eu-west-2`
+
 ### 1. Search for a device
 
 ---
