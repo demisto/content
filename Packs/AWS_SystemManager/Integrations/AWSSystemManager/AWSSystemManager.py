@@ -43,10 +43,10 @@ TERMINAL_AUTOMATION_STATUSES = {  # the status for run automation command
     "Failed": "The automation didn't complete successfully. This is a terminal state.",
 }
 CANCEL_TERMINAL_AUTOMATION_STATUSES = {  # the status for cancel automation command
-    "Success": "The cancel command failed, The automation completed successfully before the cancellation.",
-    "TimedOut": "The cancel command failed, the automation failed on timeout before the cancellation.",
-    "Cancelled": "The cancel command completed successfully, The automation was stopped by a requester before it completed.",
-    "Failed": "The cancel command failed, the automation failed before it completed.",
+    "Success": "The cancel command failed. The automation completed successfully before the cancellation.",
+    "TimedOut": "The cancel command failed. The automation failed on timeout before the cancellation.",
+    "Cancelled": "The cancel command completed successfullyT The automation was stopped by a requester before it completed.",
+    "Failed": "The cancel command failed. The automation failed before it completed.",
 }
 TERMINAL_COMMAND_STATUSES = {  # the status for run command command
     "Success": "The command completed successfully.",
@@ -65,14 +65,14 @@ TERMINAL_COMMAND_STATUSES = {  # the status for run command command
 }
 
 CANCEL_TERMINAL_COMMAND_STATUSES = {  # the status for cancel command command
-    "Success": "The cancel command failed, The command completed successfully before the cancellation.",
-    "Failed": "The cancel command failed, the command failed before it completed.",
+    "Success": "The cancel command failed. The command completed successfully before the cancellation.",
+    "Failed": "The cancel command failed. The command failed before it completed.",
     "Delivery Timed Out": "The command wasn't delivered to the managed node before the total timeout expired.",
     "Incomplete": "The command was attempted on all managed nodes and one or more of the invocations "
     "doesn't have a value of Success. However, not enough invocations failed for the status to be Failed.",
     "Cancelled": "The cancel command completed successfully, The command was cancelled before it was completed.",
     # AWS typo, British English (canceled)
-    "Canceled": "The cancel command completed successfully, The command was canceled before it was completed.",
+    "Canceled": "The cancel command completed successfully. The command was canceled before it was completed.",
     "Rate Exceeded": "The number of managed nodes targeted by the command exceeded the account quota for pending invocations. "
     "The system has canceled the command before executing it on any node.",
     "Access Denied": "The user or role initiating the command doesn't have access to the targeted resource group. AccessDenied "
@@ -154,7 +154,7 @@ def format_parameters_arguments(parameters: str) -> dict[str, Any]:
     ----
         parameters (str): A string containing key-value pairs separated by colons and
             values separated by commas.
-            the valid format:
+            The valid format:
             1. type dict: {"key": "value1, value2"}
             2. type str: `"key":["value1","value2"]`
             3. type str: `{"key":["value1","value2"]}`
@@ -175,9 +175,9 @@ def format_parameters_arguments(parameters: str) -> dict[str, Any]:
 
     Note:
     ----
-        - The input from the war-room  should follow the format `"key":["value1","value2"]` or `{"key":["value1","value2"]}`.
-        - The input from the playbook  should follow the format {"key": "value1, value2"}.
-        - the type of the parameter, from playbook is dict and from the war room is str.
+        - The input from the War Room should follow the format `"key":["value1","value2"]` or `{"key":["value1","value2"]}`.
+        - The input from the playbook should follow the format {"key": "value1, value2"}.
+        - The type of the parameter, from the playbook is dict and from the War Room is str.
     """
     parameters_dict = {}
     if isinstance(parameters, str):
@@ -217,8 +217,8 @@ def format_parameters_arguments(parameters: str) -> dict[str, Any]:
 
 
 def format_document_version(document_version: str) -> str:
-    """Formats an AWS Systems Manager (SSM) document version .
-    convert the string to the correct format for the API call.
+    """Formats an AWS Systems Manager (SSM) document version.
+    Converts the string to the correct format for the API call.
 
     Args:
     ----
@@ -765,7 +765,7 @@ def get_association_command(
     document_name = args.get("document_name")
 
     if not (association_id or (instance_id and document_name)):
-        msg = "This command must provide either association id or instance_id and document_name."
+        msg = "This command must provide either association_id or instance_id and document_name."
         raise DemistoException(msg)
 
     kwargs = {
@@ -807,7 +807,7 @@ def list_versions_association_command(
     Returns:
     -------
         list[CommandResults]: A list of CommandResults objects, containing information about the association versions.
-            if next_token provide in the response, the first CommandResults in the list will contain the next token.
+            If next_token provide in the response, the first CommandResults in the list will contain the next token.
     """
 
     def _parse_association_versions(
@@ -1051,7 +1051,7 @@ def list_automation_executions_command(
     Returns:
     -------
         list[CommandResults]: A list of objects containing the results of the command.
-        if next_token provide in the response, the first CommandResults in the list will contain the next token.
+        If next_token provide in the response, the first CommandResults in the list will contain the next token.
     """
     kwargs: "DescribeAutomationExecutionsRequestRequestTypeDef" = {
         "MaxResults": arg_to_number(args.get("limit", 50)) or 50,
@@ -1105,11 +1105,11 @@ def validate_target_arguments(args: dict[str, Any]) -> None:
         )
     if args.get("target_values") and not args.get("target_parameter_name"):
         raise DemistoException(
-            "You must provide a target_parameter_name when specifying a target_values."
+            "You must provide a target_parameter_name when specifying target_values."
         )
     if args.get("target_key") and not args.get("target_values"):
         raise DemistoException(
-            "You must provide a target_values when specifying a target_key."
+            "You must provide target_values when specifying a target_key."
         )
 
 
@@ -1126,7 +1126,7 @@ def run_automation_execution_command(
     ssm_client: "SSMClient",
 ) -> PollResult:
     """Initiates or polls the status of an AWS Systems Manager (SSM) automation execution.
-    Note: The argument "execution_id" is hidden in the yml file, and is used to pass the execution id between polling
+    Note: The argument "execution_id" is hidden in the yml file, and is used to pass the execution_id between polling
     Args:
         args (dict[str, Any]): A dictionary containing command arguments.
             - document_name (str, required): The name of the SSM automation document.
@@ -1238,7 +1238,7 @@ def cancel_automation_execution_command(
     ssm_client: "SSMClient",
 ) -> PollResult:
     """Cancels an AWS Systems Manager (SSM) automation execution or monitors its cancellation status.
-        Note: the argument `first_run` is hidden: true in the yml file,
+        Note: The argument `first_run` is hidden: true in the yml file,
             and is used to determine if this is the first time the function.
 
     Args:
@@ -1496,7 +1496,7 @@ def cancel_command_command(args: dict[str, Any], ssm_client: "SSMClient") -> Pol
             readable_output="Cancellation command was sent successful.",
         ),  # if the polling is stop after first run, this will be the final result in the war room
         partial_result=CommandResults(
-            readable_output="Cancellation command was sent successful.",
+            readable_output="Cancellation command was sent successfully.",
         ),  # if the polling is not stop after first run, this will be the partial result
         continue_to_poll=include_polling,
     )
@@ -1586,7 +1586,7 @@ def main():
             case "aws-ssm-document-get":
                 results = get_document_command(args, ssm_client)
             case "aws-ssm-automation-execution-list":
-                if args.get("execution_id"):
+                if "execution_id" in args:
                     results = get_automation_execution_command(args, ssm_client)
                 else:
                     results = list_automation_executions_command(args, ssm_client)
