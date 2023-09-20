@@ -79,7 +79,7 @@ configuration:
   section: Collect
   advanced: true
   required: false
-description: Perform malware dynamic analysis
+description: Perform malware dynamic analysis.
 display: Palo Alto Networks WildFire v2
 name: WildFire-v2
 script:
@@ -186,19 +186,19 @@ script:
     - defaultValue: '60'
       description: Interval in seconds between each poll.
       name: interval_in_seconds
-    - defaultValue: '600'
-      description: The timeout in seconds until polling ends.
+    - description: The timeout in seconds until polling ends.
       name: timeout_in_seconds
+      defaultValue: '600'
     - description: Used for the inner polling flow. For uploading a file, use the 'upload' argument instead.
-      isArray: true
       name: md5
+      isArray: true
     - auto: PREDEFINED
-      defaultValue: pdf
+      defaultValue: 'pdf'
       description: The type of structured report (XML or PDF) to request. Only relevant when polling=true.
       name: format
       predefined:
-      - xml
-      - pdf
+      - 'xml'
+      - 'pdf'
     - auto: PREDEFINED
       defaultValue: 'false'
       description: Whether to receive extended information from WildFire. Only relevant when polling=true.
@@ -439,12 +439,12 @@ script:
       description: The timeout in seconds until polling ends.
       name: timeout_in_seconds
     - auto: PREDEFINED
-      defaultValue: pdf
+      defaultValue: 'pdf'
       description: The type of structured report (XML or PDF) to request. Only relevant when polling=true.
       name: format
       predefined:
-      - xml
-      - pdf
+      - 'xml'
+      - 'pdf'
     - auto: PREDEFINED
       defaultValue: 'false'
       description: Whether to receive extended information from WildFire. Only relevant when polling=true.
@@ -772,7 +772,7 @@ script:
       description: The submission related URI.
       type: string
     - contextPath: WildFire.Report.NetworkInfo.URL.UserAgent
-      description: The submission related user agent
+      description: The submission related user agent.
       type: string
     - contextPath: WildFire.Report.NetworkInfo.UDP.IP
       description: The submission related IPs, in UDP protocol.
@@ -898,7 +898,7 @@ script:
       description: The shell commands.
       type: string
     - contextPath: WildFire.Report.maec_report
-      description: MAEC report output
+      description: MAEC report output.
       type: string
   - arguments:
     - description: Comma-separated list of hashes to get the verdict for.
@@ -996,12 +996,12 @@ script:
       description: The timeout in seconds until polling ends.
       name: timeout_in_seconds
     - auto: PREDEFINED
-      defaultValue: pdf
+      defaultValue: 'pdf'
       description: The type of structured report (XML or PDF) to request. Only relevant when polling=true.
       name: format
       predefined:
-      - xml
-      - pdf
+      - 'xml'
+      - 'pdf'
     - auto: PREDEFINED
       defaultValue: 'false'
       description: Whether to receive extended information from WildFire. Only relevant when polling=true.

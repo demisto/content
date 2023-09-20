@@ -3,11 +3,9 @@ from CommonServerPython import *  # noqa: F401
 import shutil
 from collections.abc import Callable
 
-
 import tarfile
 import io
 import urllib3
-
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -60,7 +58,6 @@ if API_KEY_SOURCE in ['pcc', 'prismaaccessapi', 'xsoartim']:
 else:
     # we have an 'other' api key that requires no additional api key headers for agent
     AGENT_VALUE = ''
-
 
 if URL and not URL.endswith('/publicapi'):
     if URL[-1] != '/':
@@ -397,7 +394,6 @@ def hash_list_to_file(hash_list):
 
 
 def create_relationship(name: str, entities: tuple, types: tuple) -> list[EntityRelationship | None]:
-
     if CREATE_RELATIONSHIPS:
         return [EntityRelationship(
             name=name,
@@ -865,44 +861,43 @@ def wildfire_get_url_webartifacts_command():
 
             empty_screenshot_tar = False
             # add check for inline screenshot extraction
-            if types in ['screenshot']:
+            if types in ['screenshot'] and screenshot_inline in ['true']:
                 # we have a screenshot found - only a screenshot,
                 # this will not extract a screenshot from a tgz with files for security reasons
-                if screenshot_inline in ['true']:
-                    # we have a screenshot returned and we have inline extaction requested
+                # we have a screenshot returned and we have inline extaction requested
 
-                    files = []
-                    exported_files = []
+                files = []
+                exported_files = []
 
-                    # test for 0 byte tgz returned
-                    try:
-                        image_content = result.content
-                        file_like_object = io.BytesIO(image_content)
-                        tar = tarfile.open(fileobj=file_like_object)
-                        # get the names of the files in the TAR
-                        files = tar.getnames()
-                        # we have a TAR file with entries to extract
-                        # this assumes there is only one screenshot per tgz
-                        if files[0] in ['screenshot']:
-                            # first element is the folder name screenshot
+                # test for 0 byte tgz returned
+                try:
+                    image_content = result.content
+                    file_like_object = io.BytesIO(image_content)
+                    tar = tarfile.open(fileobj=file_like_object)
+                    # get the names of the files in the TAR
+                    files = tar.getnames()
+                    # we have a TAR file with entries to extract
+                    # this assumes there is only one screenshot per tgz
+                    if files[0] in ['screenshot']:
+                        # first element is the folder name screenshot
 
-                            members = tar.getmembers()
-                            data = tar.extractfile(members[1])  # type:ignore
-                            fdata = data.read()  # type:ignore
-                            exported_files.append(members[1].name)
-                            stored_img = fileResult(f'screenshot_{url}.png', fdata)
+                        members = tar.getmembers()
+                        data = tar.extractfile(members[1])  # type:ignore
+                        fdata = data.read()  # type:ignore
+                        exported_files.append(members[1].name)
+                        stored_img = fileResult(f'screenshot_{url}.png', fdata)
 
-                            demisto.results({
-                                'Type': entryTypes['image'],
-                                'ContentsFormat': formats['text'],
-                                'File': stored_img['File'],
-                                'FileID': stored_img['FileID'],
-                                'Contents': ''
-                            })
+                        demisto.results({
+                            'Type': entryTypes['image'],
+                            'ContentsFormat': formats['text'],
+                            'File': stored_img['File'],
+                            'FileID': stored_img['FileID'],
+                            'Contents': ''
+                        })
 
-                    except Exception:
-                        # the tgz for screenshot is empty, no screenshot provided
-                        empty_screenshot_tar = True
+                except Exception:
+                    # the tgz for screenshot is empty, no screenshot provided
+                    empty_screenshot_tar = True
 
             if empty_screenshot_tar is True:
                 file_entry = fileResult(f'empty_{url}_webartifacts.tgz', result.content, entryTypes['entryInfoFile'])
@@ -1031,23 +1026,23 @@ def parse_file_report(file_hash, reports, file_info, extended_data: bool):
                                                                                           ('@user_agent', 'UserAgent')])):
                         network_url.append(network_url_dict)
 
-        if 'evidence' in report and report["evidence"] and 'file' in report["evidence"]:
-            if isinstance(report["evidence"]["file"], dict) and 'entry' in report["evidence"]["file"]:
-                if '@md5' in report["evidence"]["file"]["entry"]:
-                    evidence_md5.append(report["evidence"]["file"]["entry"]["@md5"])
-                if '@text' in report["evidence"]["file"]["entry"]:
-                    evidence_text.append(report["evidence"]["file"]["entry"]["@text"])
+        if 'evidence' in report and report["evidence"] and 'file' in report["evidence"] \
+                and isinstance(report["evidence"]["file"], dict) and 'entry' in report["evidence"]["file"]:
+            if '@md5' in report["evidence"]["file"]["entry"]:
+                evidence_md5.append(report["evidence"]["file"]["entry"]["@md5"])
+            if '@text' in report["evidence"]["file"]["entry"]:
+                evidence_text.append(report["evidence"]["file"]["entry"]["@text"])
 
         if 'elf_info' in report and report["elf_info"]:
-            if 'Domains' in report["elf_info"]:
-                if isinstance(report["elf_info"]["Domains"], dict) and 'entry' in report["elf_info"]["Domains"]:
-                    entry = report["elf_info"]["Domains"]["entry"]
-                    # when there is only one entry, it is returned as a single string not a list
-                    if not isinstance(entry, list):
-                        entry = [entry]
-                    for domain in entry:
-                        feed_related_indicators.append({'value': domain, 'type': 'Domain'})
-                        relationships.extend(create_relationship('related-to', (file_hash, domain), ('file', 'domain')))
+            if 'Domains' in report["elf_info"] and isinstance(report["elf_info"]["Domains"], dict) and 'entry' in \
+                    report["elf_info"]["Domains"]:
+                entry = report["elf_info"]["Domains"]["entry"]
+                # when there is only one entry, it is returned as a single string not a list
+                if not isinstance(entry, list):
+                    entry = [entry]
+                for domain in entry:
+                    feed_related_indicators.append({'value': domain, 'type': 'Domain'})
+                    relationships.extend(create_relationship('related-to', (file_hash, domain), ('file', 'domain')))
             if 'IP_Addresses' in report["elf_info"] and isinstance(report["elf_info"]["IP_Addresses"], dict) and 'entry' in \
                     report["elf_info"]["IP_Addresses"]:
                 entry = report["elf_info"]["IP_Addresses"]["entry"]
@@ -1057,24 +1052,24 @@ def parse_file_report(file_hash, reports, file_info, extended_data: bool):
                 for ip in entry:
                     feed_related_indicators.append({'value': ip, 'type': 'IP'})
                     relationships.extend(create_relationship('related-to', (file_hash, ip), ('file', 'ip')))
-            if 'suspicious' in report["elf_info"]:
-                if isinstance(report["elf_info"]["suspicious"], dict) and 'entry' in report["elf_info"]['suspicious']:
-                    entry = report["elf_info"]["suspicious"]["entry"]
-                    # when there is only one entry, it is returned as a single json not a list
-                    if not isinstance(entry, list):
-                        entry = [entry]
-                    for entry_obj in entry:
-                        if '#text' in entry_obj and '@description' in entry_obj:
-                            behavior.append({'details': entry_obj['#text'], 'action': entry_obj['@description']})
-            if 'URLs' in report["elf_info"]:
-                if isinstance(report["elf_info"]["URLs"], dict) and 'entry' in report["elf_info"]['URLs']:
-                    entry = report["elf_info"]["URLs"]["entry"]
-                    # when there is only one entry, it is returned as a single string not a list
-                    if not isinstance(entry, list):
-                        entry = [entry]
-                    for url in entry:
-                        feed_related_indicators.append({'value': url, 'type': 'URL'})
-                        relationships.extend(create_relationship('related-to', (file_hash, url), ('file', 'url')))
+            if 'suspicious' in report["elf_info"] and isinstance(report["elf_info"]["suspicious"], dict) and 'entry' in \
+                    report["elf_info"]['suspicious']:
+                entry = report["elf_info"]["suspicious"]["entry"]
+                # when there is only one entry, it is returned as a single json not a list
+                if not isinstance(entry, list):
+                    entry = [entry]
+                for entry_obj in entry:
+                    if '#text' in entry_obj and '@description' in entry_obj:
+                        behavior.append({'details': entry_obj['#text'], 'action': entry_obj['@description']})
+            if 'URLs' in report["elf_info"] and isinstance(report["elf_info"]["URLs"], dict) and 'entry' \
+                    in report["elf_info"]['URLs']:
+                entry = report["elf_info"]["URLs"]["entry"]
+                # when there is only one entry, it is returned as a single string not a list
+                if not isinstance(entry, list):
+                    entry = [entry]
+                for url in entry:
+                    feed_related_indicators.append({'value': url, 'type': 'URL'})
+                    relationships.extend(create_relationship('related-to', (file_hash, url), ('file', 'url')))
             if extended_data and (shell_commands := demisto.get(report, 'elf_info.Shell_Commands.entry')):
                 elf_shell_commands.append(shell_commands)
 
@@ -1564,11 +1559,10 @@ def main():  # pragma: no cover
 
         # if the apikey is longer than 32 characters agent is not set,
         # send exception othewise API calls will fail
-        if len(TOKEN) > 32:
+        if len(TOKEN) > 32 and API_KEY_SOURCE not in ['pcc', 'prismaaccessapi', 'xsoartim']:
             # the token is longer than 32 so either PPC or Prismaaccessapi needs to be set
-            if API_KEY_SOURCE not in ['pcc', 'prismaaccessapi', 'xsoartim']:
-                raise DemistoException(
-                    'API Key longer than 32 chars, agent value must be selected in the intergration instance.')
+            raise DemistoException(
+                'API Key longer than 32 chars, agent value must be selected in the intergration instance.')
 
         if command == 'test-module':
             test_module()
