@@ -1825,7 +1825,7 @@ def test_add_indicator_tag_success(
 
 
 @pytest.mark.parametrize(
-    "args, expected_exception",
+    "args, expected_output",
     [
         (
             {"indicator_ids": "1,2", "tags": "tag1,tag2"},
