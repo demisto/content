@@ -6,8 +6,7 @@
 # This script requires the gitlab-ci trigger token. The branch to run against is an optional second parameter (the default is the current branch). The slack channel to send messages to is an optional third parameter (the default is the 'dmst-build-test')
 
 # Ways to run this script are:
-# 1. Utils/gitlab_triggers/trigger_content_nightly_build.sh -ct <trigger-token> -b <branch-name> -ch <slack-channel-name>
-# 2. Utils/gitlab_triggers/trigger_content_nightly_build.sh -ct <trigger-token>
+# trigger_content_nightly_build.sh -ct <trigger-token> [-b <branch-name> -ch <slack-channel-name>]
 if [ "$#" -lt "1" ]; then
   echo "Usage:
   $0 -ct <token>
@@ -61,7 +60,8 @@ if [ -z "$_ci_token" ]; then
     exit 1
 fi
 
-source Utils/gitlab_triggers/trigger_build_url.sh
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+source ${SCRIPT_DIR}/trigger_build_url.sh
 
 curl "$BUILD_TRIGGER_URL" --form "ref=${_branch}" --form "token=${_ci_token}" \
     --form "variables[OVERRIDE_SDK_REF]=${DEMISTO_SDK_NIGHTLY}" \
