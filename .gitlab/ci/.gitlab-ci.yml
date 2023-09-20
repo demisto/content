@@ -9,6 +9,7 @@ default:
     when: always
 
 stages:
+  - cleanup
   - security
   - unittests-and-validations
   - prepare-testing-bucket
@@ -66,8 +67,8 @@ include:
   - local: .gitlab/ci/.gitlab-ci.global.yml
   - local: .gitlab/ci/.gitlab-ci.on-push.yml
   - local: .gitlab/ci/.gitlab-ci.bucket-upload.yml
-  - local: .gitlab/ci/.gitlab-ci.instance-test.yml
   - local: .gitlab/ci/.gitlab-ci.sdk-nightly.yml
   - local: .gitlab/ci/.gitlab-ci.miscellaneous.yml
   - local: .gitlab/ci/.gitlab-ci.test-native-candidate.yml
   - local: .gitlab/ci/.gitlab-ci.security-scans.yml
+  - local: .gitlab/ci/.gitlab-ci.build-machines-cleanup.yml
