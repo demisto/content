@@ -1,5 +1,5 @@
 from copy import deepcopy
-from typing import Generator, Tuple
+from collections.abc import Generator
 import jbxapi
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
@@ -117,9 +117,9 @@ def build_analysis_hr(analysis: Dict[str, Any]) -> Dict[str, Any]:
     tags = analysis.get('tags')
     hr_analysis = {'Id': analysis.get('webid'), 'SampleName': file_name, 'Status': analysis.get('status'),
                    'Time': analysis.get('time'), 'MD5': md5, 'SHA1': sha1, 'SHA256': sha256,
-                   'Systems': list(set([run.get('system') for run in analysis.get('runs', [])])),
-                   'Result': list(set([run.get('detection') for run in analysis.get('runs', [])])), 'Tags': tags,
-                   'Errors': list(set([run.get('error') for run in analysis.get('runs', [])])),
+                   'Systems': list({run.get('system') for run in analysis.get('runs', [])}),
+                   'Result': list({run.get('detection') for run in analysis.get('runs', [])}), 'Tags': tags,
+                   'Errors': list({run.get('error') for run in analysis.get('runs', [])}),
                    'Comments': analysis.get('comments'), }
     return hr_analysis
 
@@ -144,7 +144,7 @@ def build_search_hr(analysis: Dict[str, Any]) -> Dict[str, Any]:
     return hr_analysis
 
 
-def build_quota_hr(res: Dict[str, Any]) -> Tuple[Dict[str, Any], List[str]]:
+def build_quota_hr(res: Dict[str, Any]) -> tuple[Dict[str, Any], List[str]]:
     """
          Helper function that supports the building of the human-readable output for quota command.
 
@@ -166,7 +166,7 @@ def build_quota_hr(res: Dict[str, Any]) -> Tuple[Dict[str, Any], List[str]]:
     return hr, headers
 
 
-def build_submission_hr(res: Dict[str, Any], analyses: List[Dict[str, Any]]) -> Tuple[Dict[str, Any], List[str]]:
+def build_submission_hr(res: Dict[str, Any], analyses: List[Dict[str, Any]]) -> tuple[Dict[str, Any], List[str]]:
     """
             Helper function that supports the building of the human-readable output for submission command.
 
@@ -324,7 +324,7 @@ def build_url_object(client: Client, analysis: Dict[str, Any], analyses: List[Di
                           readable_output=tableToMarkdown('Url Result:', {'Url': url}))
 
 
-def indicator_calculate_score(detection: str = '') -> Tuple[int, str]:
+def indicator_calculate_score(detection: str = '') -> tuple[int, str]:
     """
          Calculate the DBot Score based on analysis detection.
 
@@ -896,9 +896,9 @@ def main() -> None:  # pragma: no cover
         elif command == 'joe-is-online':
             return_results(is_online_command(client))
         elif command == 'joe-analysis-info':
-            return_results((analysis_info_command(client, args)))
+            return_results(analysis_info_command(client, args))
         elif command == 'joe-list-analysis':
-            return_results((list_analysis_command(client, args)))
+            return_results(list_analysis_command(client, args))
         elif command == 'joe-download-report':
             demisto.results(download_report_command(client, args))
         elif command == 'joe-download-sample':
@@ -909,7 +909,7 @@ def main() -> None:  # pragma: no cover
             return_results(file_command(client, args))
         elif command == 'url':
             return_results(url_command(client, args))
-        elif command == 'joe-list–lia-countries':
+        elif command == 'joe-list–lia-countries':  # noqa: RUF001 (backwards compatibility)
             return_results(list_lia_countries_command(client))
         elif command == 'joe-list-lang-locales':
             return_results(list_lang_locales_command(client))
