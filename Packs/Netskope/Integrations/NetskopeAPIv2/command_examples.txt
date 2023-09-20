@@ -1,7 +1,0 @@
-!netskope-alert-list start_time="2023-07-07 11:06" alert_type=policy limit=2
-!netskope-event-list event_type=page start_time="2023-07-07 11:06" limit=2
-!netskope-url-list-update url_list_id=2 name="NewURLList" urls="google.com" list_type=regex deploy=false
-!netskope-url-list-create name="NewNewURLlist" urls="xsoar.com,qmasters.com" list_type=regex
-!netskope-url-lists-list
-!netskope-url-list-delete url_list_id=7
-!netskope-client-list page=1 limit=2
