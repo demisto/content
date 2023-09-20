@@ -926,7 +926,7 @@ def test_module(client):
     demisto.results("ok")
 
 
-def main(): # pragma: nocover
+def main():  # pragma: nocover
     params = demisto.params()
     args = demisto.args()
     url = params.get('url')
