@@ -3595,6 +3595,16 @@ script:
     - description: The GitHub owner (organization or username) of the repository.
       name: owner
     - description: The GitHub repository name.
+      name: repository
+    - description: The ID of the workflow to cancel.
+      name: workflow_id
+      required: true
+    description: Cancels a GitHub workflow.
+    name: GitHub-cancel-workflow
+  - arguments:
+    - description: The GitHub owner (organization or username) of the repository.
+      name: owner
+    - description: The GitHub repository name.
       isArray: true
       name: repository
     - description: The name of your workflow file.

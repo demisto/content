@@ -2060,6 +2060,40 @@ def github_trigger_workflow_command():
         ))
 
 
+def github_cancel_workflow_command():
+    """
+    Cancels a GitHub workflow.
+
+        Args:
+            owner (str): The GitHub owner (organization or username) of the repository.
+            repository (str): The GitHub repository name.
+            workflow_id (str): The workflow id to cancel.
+
+        Returns:
+            CommandResults object with informative printout if trigger the workflow succeeded or not.
+    """
+    args = demisto.args()
+    owner = args.get('owner') or USER
+    repository = args.get('repository') or REPOSITORY
+    workflow_id = args.get('workflow_id')
+
+    suffix = f"/repos/{owner}/{repository}/actions/workflows/{workflow_id}/cancel"
+    headers = {
+        "Authorization": f"Bearer {TOKEN}",
+        "Accept": "application/vnd.github.v3+json"
+    }
+
+    response = http_request('POST', url_suffix=suffix, headers=headers, data=data)
+
+    if response.status_code == 202:
+        return_results(CommandResults(readable_output="Workflow canceled successfully."))
+    else:
+        return_results(CommandResults(
+            raw_response=response,
+            readable_output=f"Failed to cancel workflow. {response.json().get('message')}"
+        ))
+
+
 def github_list_workflows_command():
     """Returns a list of GitHub workflows on a given repository.
 
@@ -2149,6 +2183,7 @@ COMMANDS = {
     'GitHub-delete-comment': github_delete_comment_command,
     'GitHub-add-assignee': github_add_assignee_command,
     'GitHub-trigger-workflow': github_trigger_workflow_command,
+    'GitHub-cancel-workflow': github_cancel_workflow_command,
     'GitHub-list-workflows': github_list_workflows_command,
 }
 
