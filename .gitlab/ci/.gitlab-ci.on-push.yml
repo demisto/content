@@ -92,8 +92,10 @@ run-unittests-and-lint:
         echo "$CI_JOB_STATUS"
         echo $CI_COMMIT_BRANCH
         echo $CI_JOB_STATUS
-        if ['$CI_COMMIT_BRANCH' != 'master' && '$CI_JOB_STATUS' =='failed' ]; then
-          echo "====Send Slack Notify====";
+        if [ $CI_COMMIT_BRANCH != 'master' ]; then
+          if [$CI_JOB_STATUS == 'failed' ]; then
+            echo "====Send Slack Notify====";
+          fi
         fi
 # runs in gitlab for the on-push flow (except for contributors)
 run-validations:
