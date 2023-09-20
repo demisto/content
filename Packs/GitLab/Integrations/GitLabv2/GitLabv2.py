@@ -1772,8 +1772,6 @@ def gitlab_cancel_pipeline_command(client: Client, args: dict[str, str]) -> Comm
     """
     project_id = args.get('project_id') or client.project_id
     pipeline_id = args.get('pipeline_id')
-    if not client.trigger_token:
-        return_error("A trigger token is required in the integration instance configuration")
 
     response = client.gitlab_cancel_pipeline(project_id, pipeline_id)
 
