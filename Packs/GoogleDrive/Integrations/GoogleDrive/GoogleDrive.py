@@ -32,6 +32,7 @@ MESSAGES: dict[str, str] = {
 
 HR_MESSAGES: dict[str, str] = {
     'DRIVE_CREATE_SUCCESS': 'A new shared drive created.',
+    'DRIVE_DELETE_SUCCESS': 'The following shared drive was deleted. Drive ID: {}',
     'NOT_FOUND': 'No {} found.',
     'LIST_COMMAND_SUCCESS': 'Total Retrieved {}: {}',
     'DELETE_COMMAND_SUCCESS': 'Total Deleted {}: {}',
@@ -858,6 +859,35 @@ def drive_get_command(client: 'GSuiteClient', args: dict[str, str]) -> CommandRe
     return handle_response_single_drive(response, args)
 
 
+@logger
+def drive_delete_command(client: 'GSuiteClient', args: dict[str, str]) -> CommandResults:
+    """
+    google-drive-drive-delete
+    Deletes a single shared drive in Google Drive.
+
+    :param client: Client object.
+    :param args: Command arguments.
+
+    :return: Command Result.
+    """
+    drive_id = args.get('drive_id')
+
+    # Specific drive
+    prepare_drives_request_res = prepare_drives_request(client, args)
+    http_request_params = prepare_drives_request_res['http_request_params']
+    http_request_params['useDomainAdminAccess'] = 'true' if argToBoolean(args.get('use_domain_admin_access')) else 'false'
+    http_request_params['allowItemDeletion'] = 'true' if argToBoolean(args.get('allow_item_deletion')) else 'false'
+    http_request_params['fields'] = '*'
+    url_suffix = URL_SUFFIX['DRIVE_DRIVES_ID'].format(drive_id)
+    response = client.http_request(url_suffix=url_suffix, method='DELETE', params=http_request_params)
+
+    ret_value = CommandResults(
+        raw_response=response,
+        readable_output=HR_MESSAGES['DRIVE_DELETE_SUCCESS'].format(drive_id),
+    )
+    return ret_value
+
+
 def handle_response_drive_list(response: dict[str, Any]) -> CommandResults:
     outputs_context = []
     readable_output = ''
@@ -947,13 +977,26 @@ def prepare_single_drive_human_readable(outputs_context: dict[str, Any], args: d
 
 
 def prepare_file_read_request(client: 'GSuiteClient', args: dict[str, str]) -> dict[str, Any]:
+    corpora_values = {
+        'User': 'user',
+        'Domain': 'domain',
+        'Drive': 'drive',
+        'All Drives': 'allDrives'
+    }
+
     http_request_params: dict[str, str] = assign_params(
         q=args.get('query'),
         pageSize=args.get('page_size'),
         pageToken=args.get('page_token'),
-        supportsAllDrives=args.get('supports_all_drives'),
-        includeItemsFromAllDrives=args.get('include_items_from_all_drives')
+        supportsAllDrives=argToBoolean(args.get('supports_all_drives', False)),
+        includeItemsFromAllDrives=args.get('include_items_from_all_drives'),
+        driveId=args.get('drive_id'),
+        corpora=corpora_values[args.get('corpora', 'User')]
     )
+
+    # driveId must be specified if and only if corpora is set to drive
+    if http_request_params.get('driveId'):
+        http_request_params['corpora'] = 'drive'
 
     # user_id can be overridden in the args
     user_id = args.get('user_id') or client.user_id
@@ -1788,7 +1831,7 @@ def fetch_incidents(client: 'GSuiteClient', last_run: dict, params: dict, is_tes
     return incidents, {'last_fetch': last_fetch}
 
 
-def main() -> None:
+def main() -> None:  # pragma: no cover
     """
          PARSE AND VALIDATE INTEGRATION PARAMS
     """
@@ -1801,6 +1844,8 @@ def main() -> None:
 
         'google-drive-drives-list': drives_list_command,
         'google-drive-drive-get': drive_get_command,
+        'google-drive-drive-create': drive_create_command,
+        'google-drive-drive-delete': drive_delete_command,
 
         'google-drive-files-list': files_list_command,
         'google-drive-file-get': file_get_command,

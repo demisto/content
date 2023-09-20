@@ -1,0 +1,648 @@
+id: Recorded Future - Threat Actor Search
+version: -1
+description: Template playbook to initiate an Automated Threat Hunt based on the Threat Map in Recorded Future. The Playbook fetches links related to the Threat Actors part of the Threat Map from Recorded Future and launches a hunt in the SIEM for any detections within the environment.
+name: Recorded Future - Threat Actor Search
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 77c2800f-5bc5-4e58-89dc-59acb3d6e189
+    type: start
+    task:
+      id: 77c2800f-5bc5-4e58-89dc-59acb3d6e189
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "20"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 807.5,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 5e6d35e2-073b-47b6-8a96-443fe44fb82a
+    type: regular
+    task:
+      id: 5e6d35e2-073b-47b6-8a96-443fe44fb82a
+      version: -1
+      name: Threat Actor Map Search
+      description: Get threat actors map.
+      script: '|||recordedfuture-threat-map'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      actor_name:
+        complex:
+          root: inputs.threat_actor
+      include_links:
+        simple: "false"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 807.5,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: b936a7ba-c115-4cfc-835b-b4fc75ce964e
+    type: regular
+    task:
+      id: b936a7ba-c115-4cfc-835b-b4fc75ce964e
+      version: -1
+      name: Threat Actor Links Search
+      description: Search links
+      script: Recorded Future v2|||recordedfuture-threat-links
+      type: regular
+      iscommand: true
+      brand: Recorded Future v2
+    nexttasks:
+      '#none#':
+      - "4"
+      - "21"
+    scriptarguments:
+      entity_id:
+        complex:
+          root: RecordedFuture.ThreatMap
+          accessor: id
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 807.5,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 8400c994-4dc0-44ed-8486-753319712b53
+    type: condition
+    task:
+      id: 8400c994-4dc0-44ed-8486-753319712b53
+      version: -1
+      name: Detection Rules Returned?
+      description: Was there a detection rule found?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RecordedFuture.DetectionRules.id
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 260,
+          "y": 1075
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 6e2d72df-a069-439c-80c7-870316314aba
+    type: condition
+    task:
+      id: 6e2d72df-a069-439c-80c7-870316314aba
+      version: -1
+      name: IoCs Returned?
+      description: Were IoCs returned for the threat actor?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "25"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RecordedFuture.Links.links
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 807.5,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 933d18a0-ca4e-45a2-8765-d8249a85e029
+    type: regular
+    task:
+      id: 933d18a0-ca4e-45a2-8765-d8249a85e029
+      version: -1
+      name: Download Detection Rules Manually
+      description: Utilize the Recorded Future portal to download any detection rules found.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 260,
+          "y": 1345
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 1d9d1382-eb04-476f-8fff-2ea959e22595
+    type: title
+    task:
+      id: 1d9d1382-eb04-476f-8fff-2ea959e22595
+      version: -1
+      name: Done
+      description: Post detection to collective insight
+      type: title
+      iscommand: false
+      brand: Recorded Future v2
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 807.5,
+          "y": 1565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 61d221dc-4277-48da-8449-a744852c542d
+    type: condition
+    task:
+      id: 61d221dc-4277-48da-8449-a744852c542d
+      version: -1
+      name: Is SIEM enabled?
+      description: Checks if there is an active instance of Splunk or QRadar enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "24"
+      qradar:
+      - "26"
+      splunk:
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: splunk
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: containsString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Splunk
+                    ignorecase: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                    ignorecase: true
+                accessor: brand
+            iscontext: true
+          right:
+            value: {}
+    - label: qradar
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: containsString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: QRadar
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1262.5,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 355ec7d4-87c8-4019-8bac-d32e178adafa
+    type: playbook
+    task:
+      id: 355ec7d4-87c8-4019-8bac-d32e178adafa
+      version: -1
+      name: Splunk Indicator Hunting
+      description: This playbook queries Splunk for indicators such as file hashes, IP addresses, domains, or urls. It outputs detected users, ip addresses, and hostnames related to the indicators.
+      playbookName: Splunk Indicator Hunting
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 872.5,
+          "y": 1320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 7f2917d3-1b3a-40a6-81d8-6d60cbdf36dd
+    type: regular
+    task:
+      id: 7f2917d3-1b3a-40a6-81d8-6d60cbdf36dd
+      version: -1
+      name: Detection Rules Search
+      description: Search detection rules.
+      script: Recorded Future v2|||recordedfuture-detection-rules
+      type: regular
+      iscommand: true
+      brand: Recorded Future v2
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      entity_id:
+        complex:
+          root: RecordedFuture.Links.entity
+          accessor: id
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 260,
+          "y": 900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 5fa4d495-bb82-4308-8ecc-71725f6bb7c0
+    type: title
+    task:
+      id: 5fa4d495-bb82-4308-8ecc-71725f6bb7c0
+      version: -1
+      name: Enrich Threat Actor
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 807.5,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 9d406a87-005a-43b0-8dbd-3476f0e2e73d
+    type: title
+    task:
+      id: 9d406a87-005a-43b0-8dbd-3476f0e2e73d
+      version: -1
+      name: Look For Detection Rules
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "15"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 260,
+          "y": 750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 177272bf-3c22-439d-8a59-522a344b8dd3
+    type: title
+    task:
+      id: 177272bf-3c22-439d-8a59-522a344b8dd3
+      version: -1
+      name: Hunt Related IoCs
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "10"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1262.5,
+          "y": 900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 1d9af62d-bd63-47bc-8fa2-7235af3f1291
+    type: regular
+    task:
+      id: 1d9af62d-bd63-47bc-8fa2-7235af3f1291
+      version: -1
+      name: Hunt Indicators Manually
+      description: Review the indicators and initiate a manual investigation.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1660,
+          "y": 1320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 16c113eb-688f-4bef-8591-b7ee0e05d881
+    type: regular
+    task:
+      id: 16c113eb-688f-4bef-8591-b7ee0e05d881
+      version: -1
+      name: Extract Links
+      description: commands.local.cmd.extract.indicators
+      script: Builtin|||extractIndicators
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      text:
+        complex:
+          root: RecordedFuture.Links
+          accessor: links
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1262.5,
+          "y": 735
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: f3e9b929-1dc3-4472-8dc3-b137e27f26f8
+    type: playbook
+    task:
+      id: f3e9b929-1dc3-4472-8dc3-b137e27f26f8
+      version: -1
+      name: QRadar Indicator Hunting V2
+      description: 'The Playbook queries QRadar SIEM for indicators such as file hashes, IP addresses, domains, or urls. '
+      playbookName: QRadar Indicator Hunting V2
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 1262.5,
+          "y": 1320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "10_11_splunk": 0.63,
+      "10_26_qradar": 0.64,
+      "3_6_yes": 0.6,
+      "4_25_yes": 0.9
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1580,
+        "width": 1780,
+        "x": 260,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: threat_actor
+  value: {}
+  required: false
+  description: The threat actor to enrich & hunt indicators for.
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.9.0
