@@ -634,7 +634,7 @@ def get_a_list_of_vendors_command(client, args):
 
 
 def get_the_details_of_a_specific_vendor_command(client, args):
-    vendor_domain = str(args.get('vendor_domain', ''))
+    vendor_domain: str = args['vendor_domain']
 
     response = client.get_the_details_of_a_specific_vendor_request(vendor_domain)
     markdown = tableToMarkdown('Vendor Domain Details', response, removeNull=True)
@@ -650,7 +650,7 @@ def get_the_details_of_a_specific_vendor_command(client, args):
 
 
 def get_the_activity_of_a_specific_vendor_command(client, args):
-    vendor_domain = str(args.get('vendor_domain', ''))
+    vendor_domain: str = args['vendor_domain']
 
     response = client.get_the_activity_of_a_specific_vendor_request(vendor_domain)
     markdown = tableToMarkdown('Vendor Activity', response.get('eventTimeline'), removeNull=True)
@@ -685,7 +685,7 @@ def get_a_list_of_vendor_cases_command(client, args):
 
 
 def get_the_details_of_a_vendor_case_command(client, args):
-    case_id = str(args.get('case_id', ''))
+    case_id: str = args['case_id']
 
     response = client.get_the_details_of_a_vendor_case_request(case_id)
 
