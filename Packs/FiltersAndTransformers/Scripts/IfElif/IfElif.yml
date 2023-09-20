@@ -21,7 +21,7 @@ args:
   required: true
   type: textArea
 - name: flags
-  description: Flags to control comparison and regular expression behavior. 
+  description: Flags to control comparison and regular expression behavior.
   isArray: true
   auto: PREDEFINED
   predefined:
@@ -33,7 +33,7 @@ args:
 scripttarget: 0
 subtype: python3
 runonce: false
-dockerimage: demisto/python3:3.10.13.73190
+dockerimage: demisto/python3:3.10.13.74666
 runas: DBotWeakRole
 fromversion: 6.9.0
 tests:
