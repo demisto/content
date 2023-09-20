@@ -1851,7 +1851,7 @@ def main() -> None:
     filter_value = params.get("filter_value")
     recipient_filter_operator = params.get("recipient_filter_operator")
     recipient_filter_value = params.get("recipient_filter_value")
-    timeout = arg_to_number(params.get("timeout")) if params.get("timeout") else None
+    timeout = arg_to_number(params.get("timeout"))
     verify_certificate: bool = not params.get("insecure", False)
     proxy = params.get("proxy", False)
 

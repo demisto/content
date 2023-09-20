@@ -76,7 +76,7 @@ configuration:
   display: Timeout
   type: 0
   defaultvalue: '60'
-  additionalinfo: Timeout for the integration HTTP requests in seconds.
+  additionalinfo: HTTP requests timeout in seconds. The default is 60 seconds.
   required: false
 - name: proxy
   display: Use system proxy settings
