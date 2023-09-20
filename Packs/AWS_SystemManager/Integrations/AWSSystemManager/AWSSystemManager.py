@@ -319,7 +319,8 @@ def convert_datetime_to_iso(response) -> dict[str, Any]:
             return obj.isoformat()
         raise TypeError(f"Type {type(obj)} is not serializable.")
 
-    # json.dumps(default=): If specified, default should be a function that gets called for objects that can’t otherwise be serialized.
+    # json.dumps(default=): If specified, default should be a function that
+    # gets called for objects that can’t otherwise be serialized.
     # It should return a JSON encodable version of the object or raise a TypeError. If not specified, TypeError is raised.
     return json.loads(json.dumps(response, default=_datetime_to_string))
 
@@ -1170,7 +1171,8 @@ def run_automation_execution_command(
         #  ---end handling kwargs---
         #  first call to run automation
         response = ssm_client.start_automation_execution(**kwargs)
-        # added type ignore because "Key "ResponseMetadata" of TypedDict "StartAutomationExecutionResultTypeDef" cannot be deleted"
+        # added type ignore
+        # because "Key "ResponseMetadata" of TypedDict "StartAutomationExecutionResultTypeDef" cannot be deleted"
         response.pop("ResponseMetadata")  # type: ignore[misc]
         execution_id = response["AutomationExecutionId"]
         # needed for the polling and is `hidden: true` in the yml file.
