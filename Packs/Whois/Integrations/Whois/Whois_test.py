@@ -349,15 +349,15 @@ def test_parse_nic_contact():
     expected = [{'handle': 'GIHU100-FRNIC', 'type': 'ORGANIZATION', 'name': 'Google Ireland Holdings Unlimited Company',
                  'street1': 'Google Ireland Holdings Unlimited Company', 'street2': "70 Sir John Rogerson's Quay",
                  'street3': '2 Dublin', 'country': 'IE', 'phone': '+353.14361000', 'fax': None, 'email': 'email@google.com',
-                 'changedate': '2022-10-15T05:41:14.918179Z', 'registrar': 'MARKMONITOR Inc.'},
+                 'changedate': '2022-10-15T05:41:14.918179Z', 'registrar': 'MARKMONITOR Inc.', 'street4': None,},
                 {'handle': 'MI3669-FRNIC', 'type': 'ORGANIZATION', 'name': 'MarkMonitor Inc.',
-                 'street1': '2150 S. Bonito Way, Suite 150', 'street2': '83642 Meridian', 'street3': None,
+                 'street1': '2150 S. Bonito Way, Suite 150', 'street2': '83642 Meridian', 'street3': None, 'street4': None,
                  'phone': '+1.2083895740', 'fax': '+1.2083895771', 'email': 'email@markmonitor.com',
-                 'changedate': '2023-09-07T07:32:23.899353Z','country': 'US', 'registrar': 'MARKMONITOR Inc.'},
+                 'changedate': '2023-09-07T07:32:23.899353Z', 'country': 'US', 'registrar': 'MARKMONITOR Inc.'},
                 {'handle': 'GIHU101-FRNIC', 'type': 'ORGANIZATION', 'name': 'Google Ireland Holdings Unlimited Company',
-                 'street1': "70 Sir John Rogerson's Quay", 'street2': '2 Dublin', 'street3': None, 'phone': '+353.14361000',
+                 'street1': "70 Sir John Rogerson's Quay", 'street2': '2 Dublin', 'street3': None, 'street4': None, 'phone': '+353.14361000',
                  'fax': None, 'email': 'email@google.com', 'changedate': None, 'country': 'IE', 'registrar': 'MARKMONITOR Inc.'}]
-    
+
     assert res == expected
 
 
