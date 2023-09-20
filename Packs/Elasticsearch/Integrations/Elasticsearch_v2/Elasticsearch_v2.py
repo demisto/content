@@ -838,6 +838,23 @@ def search_eql_command(args, proxies):
     )
 
 
+def index_document(args, proxies):
+    """
+    Indexes a given document into an Elasticsearch index.
+    return: Result returned from elasticsearch lib
+    """
+    index = args.get('index')
+    doc = args.get('doc')
+    doc_id = args.get('id', '')
+    es = elasticsearch_builder(proxies)
+
+    if doc_id:
+        resp = es.index(index=index, id=doc_id, document=doc)
+    else:
+        resp = es.index(index=index, document=doc)
+    return resp['result']
+
+
 def main():
     proxies = handle_proxy()
     proxies = proxies if proxies else None
@@ -853,6 +870,8 @@ def main():
             return_results(get_mapping_fields_command())
         elif demisto.command() == 'es-eql-search':
             return_results(search_eql_command(demisto.args(), proxies))
+        elif demisto.command() == 'es-index':
+            return_results(index_document(demisto.args(), proxies))
     except Exception as e:
         if 'The client noticed that the server is not a supported distribution of Elasticsearch' in str(e):
             return_error('Failed executing {}. Seems that the client does not support the server\'s distribution, '

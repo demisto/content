@@ -179,3 +179,24 @@ Search using EQL query
 | Elasticsearch.Search.took | Number | The time in milliseconds taken for the search to complete. | 
 | Elasticsearch.Search.Page | Number | The page number from which the search started. | 
 | Elasticsearch.Search.Size | Number | The maximum number of scores that a search can return. |
+
+### es-index
+***
+Indexes a document into an Elasticsearch index.
+
+
+#### Base Command
+
+`es-index`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| index | The name of the index to ingest into. | Required | 
+| doc | The document to be indexed. | Required | 
+| id | The id of the indexed document (will be generated if empty). | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
