@@ -19,6 +19,7 @@ This integration was integrated and tested with version 12.0 of Cisco Security M
     | Filter value | The value to search for. | False |
     | Recipient filter operator | Recipient operator filter. | False |
     | Recipient filter value | Recipient filter value to fetch by message field. | False |
+    | Timeout | HTTP requests timeout in seconds. The default is 60 seconds. | False |
     | Use system proxy settings |  | False |
     | Trust any certificate (not secure) |  | False |
     | Incident type |  | False |
