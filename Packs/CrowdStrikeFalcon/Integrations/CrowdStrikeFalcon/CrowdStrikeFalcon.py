@@ -2673,17 +2673,15 @@ def fetch_incidents():
     if 'Indicator of Misconfiguration' in fetch_incidents_or_detections:
         demisto.debug('Fetching Indicator of Misconfiguration incidents')
         demisto.debug(f'{current_fetch_info_iom_configs=}')
-        first_fetch_timestamp = format_time_to_custom_date_format(
+        first_fetch_timestamp = reformat_timestamp(
             time=FETCH_TIME,
             date_format=IOM_DATE_FORMAT,
             dateparser_settings={'TIMEZONE': 'UTC', 'RETURN_AS_TIMEZONE_AWARE': True})
         new_scan_time = last_scan_time = current_fetch_info_iom_configs.get('last_scan_time', first_fetch_timestamp)
-        # The offset is used when not all the results have been returned from the API, therefore,
-        # we would need to do pagination using the offset query parameter
+        # Paginating using offset until all results are returned from the API
         iom_next_token = current_fetch_info_iom_configs.get('iom_next_token')
-        # In order to deal with duplicates, we retrieve the last resource ids of the last run, so we can
-        # compare them with the newly fetched ids, and ignore any duplicates
-        last_fetch_resource_ids: list[str] = current_fetch_info_iom_configs.get('last_resource_ids', [])
+        # In order to ignore duplicates, we compare fetched ids with resource ids of the last run
+        last_resource_ids: list[str] = current_fetch_info_iom_configs.get('last_resource_ids', [])
         filter = 'scan_time:'
         if iom_next_token:
             # If entered here, that means we are currently doing pagination, and we need to use the
@@ -2692,7 +2690,7 @@ def fetch_incidents():
         else:
             # If entered here, that means we aren't doing pagination
             if last_scan_time == first_fetch_timestamp:
-                # This means that this is the first fetch, and we want to include resources with a scan time
+                # First fetch, we want to include resources with a scan time
                 # EQUAL or GREATER than the first fetch timestamp
                 filter = f"{filter} >='{last_scan_time}'"
             else:
@@ -2712,42 +2710,41 @@ def fetch_incidents():
                                                                   fetch_limit=fetch_limit,
                                                                   api_limit=500)
         demisto.debug(f'Fetched the following IOM resource IDS: {", ".join(iom_resource_ids)}')
+        # Hold the scan time of all fetched incidents, to acquire the largest date
+        scan_time_list: list[datetime] = [datetime.strptime(new_scan_time, IOM_DATE_FORMAT)]
         # Since the first API call is only in charge of retrieving the IDs of the iom resources, we need
         # another API call to actually get the entity/detail of each resource.
-        iom_resources = get_iom_resources_for_fetch(iom_resource_ids=iom_resource_ids)
-        for iom_resource in iom_resources:
+        for iom_resource in get_iom_resources_for_fetch(iom_resource_ids=iom_resource_ids):
             resource_id = iom_resource.get('id', '')
-            if resource_id not in last_fetch_resource_ids:
+            if resource_id not in last_resource_ids:
                 demisto.debug(f'Creating an incident for CrowdStrike IOM with ID: {resource_id}')
                 iom_resource['incident_type'] = 'iom_configurations'
-                iom_resource_to_context = create_incident_from_iom_resource(iom_resource=iom_resource)
+                iom_resource_to_context = iom_resource_to_incident(iom_resource=iom_resource)
                 iom_config_incidents.append(iom_resource_to_context)
                 # The time_scan date returned from the API contains nanoseconds, which is yet to be
                 # supported when using datetime.strptime(some_time, format), therefore, we need to convert the
                 # date to the supported format (IOM_DATE_FORMAT).
-                scan_time = format_time_to_custom_date_format(iom_resource.get('scan_time', ''), IOM_DATE_FORMAT)
-                # Other than creating an incident out of the iom resources, we also need to save the latest
-                # scan time
-                if datetime.strptime(scan_time, IOM_DATE_FORMAT) > datetime.strptime(new_scan_time, IOM_DATE_FORMAT):
-                    new_scan_time = scan_time
+                scan_time = reformat_timestamp(iom_resource.get('scan_time', ''), IOM_DATE_FORMAT)
+                scan_time_list.append(datetime.strptime(scan_time, IOM_DATE_FORMAT))
+                # if datetime.strptime(scan_time, IOM_DATE_FORMAT) > datetime.strptime(new_scan_time, IOM_DATE_FORMAT):
+                #     new_scan_time = scan_time
             else:
-                demisto.debug(f'The {resource_id=} was fetched in the last run')
+                demisto.debug(f'Ignoring incident with {resource_id=} - was already fetched in the previous run')
+        new_scan_time = max(scan_time_list).strftime(IOM_DATE_FORMAT)
         if iom_new_next_token or iom_next_token:
             # If the next run will do pagination, or the current run did pagination, we should keep the ids from the last fetch
             # until progress is made, so we exclude them in the next fetch.
-            # TODO Add a threshold of 500 saved incidents
-            iom_resource_ids.extend(last_fetch_resource_ids)
+            iom_resource_ids.extend(last_resource_ids)
         current_fetch_info_iom_configs = {'iom_next_token': iom_new_next_token, 'last_scan_time': new_scan_time,
                                           'last_fetch_filter': filter,
-                                          'last_resource_ids': iom_resource_ids or last_fetch_resource_ids}
+                                          'last_resource_ids': iom_resource_ids or last_resource_ids}
 
     if 'Indicator of Attack' in fetch_incidents_or_detections:
-        # TODO Add validation for the fetch query
         demisto.debug('Fetching Indicator of Attack incidents')
         demisto.debug(f'{current_fetch_info_ioa_events=}')
         fetch_query = demisto.params().get('ioa_fetch_query')
         validate_ioa_fetch_query(ioa_fetch_query=fetch_query)
-        first_fetch_timestamp = format_time_to_custom_date_format(
+        first_fetch_timestamp = reformat_timestamp(
             time=FETCH_TIME,
             date_format=DATE_FORMAT,
             dateparser_settings={'TIMEZONE': 'UTC', 'RETURN_AS_TIMEZONE_AWARE': True})
@@ -2780,9 +2777,9 @@ def fetch_incidents():
                 demisto.debug(f'Creating an incident for CrowdStrike IOA with ID: {event_id}')
                 ioa_event_ids.append(event_id)
                 ioa_event['incident_type'] = 'ioa_events'
-                ioa_event_to_context = create_incident_from_ioa_event(ioa_event=ioa_event)
+                ioa_event_to_context = ioa_event_to_incident(ioa_event=ioa_event)
                 ioa_event_incidents.append(ioa_event_to_context)
-                event_created = format_time_to_custom_date_format(ioa_event.get('event_created', ''), DATE_FORMAT)
+                event_created = reformat_timestamp(ioa_event.get('event_created', ''), DATE_FORMAT)
                 # When observing the response from the API, we can see that the events are sorted in descending order
                 # with respect to the event_created field, therefore, we need to save the latest time an event
                 # has been created, so we can continue the fetching mechanism from that point after we are done
@@ -2791,11 +2788,10 @@ def fetch_incidents():
                     new_date_time_since = add_seconds_to_date(date=event_created, seconds_to_add=0,
                                                               date_format=DATE_FORMAT)
             else:
-                demisto.debug(f'The {event_id=} was fetched in the last run')
+                demisto.debug(f'Ignoring incident with {event_id=} - was already fetched in the previous run')
         if ioa_new_next_token or ioa_next_token:
             # If the next run will do pagination, or the current run did pagination, we should keep the ids from the last fetch
             # until progress is made, so we exclude them in the next fetch.
-            # TODO Add a threshold of 500 saved incidents
             ioa_event_ids.extend(last_fetch_event_ids)
         current_fetch_info_ioa_events = {'ioa_next_token': ioa_new_next_token, 'last_date_time_since': new_date_time_since,
                                          'last_fetch_query': fetch_query, 'last_event_ids': ioa_event_ids or last_fetch_event_ids}
@@ -2804,10 +2800,7 @@ def fetch_incidents():
     return incidents + detections + idp_detections + iom_config_incidents + ioa_event_incidents
 
 
-# def ioa_events_to_incidents
-
 def validate_iom_fetch_query(iom_fetch_query: str) -> None:
-    demisto.debug(f'Validating IOM {iom_fetch_query=}')
     if 'scan_time' in iom_fetch_query:
         raise DemistoException('scan_time is not allowed as part of the IOM fetch query.')
 
@@ -2827,7 +2820,7 @@ def add_seconds_to_date(date: str, seconds_to_add: int, date_format: str) -> str
     return added_datetime.strftime(date_format)
 
 
-def create_incident_from_ioa_event(ioa_event: dict[str, Any]) -> dict[str, Any]:
+def ioa_event_to_incident(ioa_event: dict[str, Any]) -> dict[str, Any]:
     """Create an incident from an IOA event.
 
     Args:
@@ -2836,18 +2829,26 @@ def create_incident_from_ioa_event(ioa_event: dict[str, Any]) -> dict[str, Any]:
     Returns:
         dict[str, Any]: An incident from an IOA event.
     """
-    ioa_event['mirror_direction'] = MIRROR_DIRECTION
-    ioa_event['mirror_instance'] = INTEGRATION_INSTANCE
-    ioa_event['extracted_account_id'] = demisto.get(ioa_event, 'cloud_account_id.aws_account_id') or \
-        demisto.get(ioa_event, 'cloud_account_id.azure_account_id')
+    # ioa_event['mirror_direction'] = MIRROR_DIRECTION
+    # ioa_event['mirror_instance'] = INTEGRATION_INSTANCE
+    # ioa_event['extracted_account_id'] = demisto.get(ioa_event, 'cloud_account_id.aws_account_id') or \
+    #     demisto.get(ioa_event, 'cloud_account_id.azure_account_id')
     resource = demisto.get(ioa_event, 'aggregate.resource', {})
     id = resource.get('id', [])
     uuid = resource.get('uuid', [])
-    ioa_event['extracted_uuid'] = uuid[0] if uuid else None
-    ioa_event['extracted_resource_id'] = id[0] if id else None
+    incident_metadata = assign_params(
+        mirror_direction=MIRROR_DIRECTION,
+        mirror_instance=INTEGRATION_INSTANCE,
+        extracted_account_id=demisto.get(ioa_event, 'cloud_account_id.aws_account_id')
+        or demisto.get(ioa_event, 'cloud_account_id.azure_account_id'),
+        extracted_uuid=uuid[0] if uuid else None,
+        extracted_resource_id=id[0] if id else None
+    )
+    # ioa_event['extracted_uuid'] = uuid[0] if uuid else None
+    # ioa_event['extracted_resource_id'] = id[0] if id else None
     incident_context = {
         'name': f'IOA Event ID: {ioa_event.get("event_id")}',
-        'rawJSON': json.dumps(ioa_event)
+        'rawJSON': json.dumps(ioa_event | incident_metadata)
     }
     return incident_context
 
@@ -2880,7 +2881,8 @@ def ioa_events_pagination(ioa_fetch_query: str, api_limit: int, ioa_next_token: 
         fetched_ioa_events.extend(ioa_events)
         total_incidents_count += len(ioa_events)
         demisto.debug(f'Results of IOA pagination: {total_incidents_count=}, {ioa_new_next_token=}')
-        if total_incidents_count >= fetch_limit or ioa_new_next_token is None:
+        if (ioa_new_next_token is None) or (total_incidents_count >= fetch_limit):
+            demisto.debug('Number of incidents reached the fetching limit, or there are no more results, stopping pagination')
             # If the number of fetched incidents reaches the fetching limit, or there are no more results to be fetched
             # (by checking the next token variable), then we should stop the pagination process
             continue_pagination = False
@@ -2897,8 +2899,8 @@ def get_ioa_events_for_fetch(ioa_fetch_query: str, ioa_next_token: str | None,
         limit (int, optional): The maximum amount to fetch IOA events. Defaults to INCIDENTS_PER_FETCH.
 
     Returns:
-        tuple[list[dict[str, Any]], str | None]: A tuple where the first element is the returned events, and the second is the next token that
-        will be used in the next API call.
+        tuple[list[dict[str, Any]], str | None]: A tuple where the first element is the returned events, and the second is the
+        next token that will be used in the next API call.
     """
     # The API does not support a `query` parameter, rather a set of query params
     if ioa_next_token:
@@ -2912,8 +2914,10 @@ def get_ioa_events_for_fetch(ioa_fetch_query: str, ioa_next_token: str | None,
     next_token = pagination_obj.get('next_token')
     if next_token:
         # If next_token has a value, that means more pagination is needed, and the next run should use it
+        demisto.debug('next_token has a value, more pagination is needed for the next run')
         return events, next_token
     else:
+        demisto.debug('next_token is None, no pagination is needed for the next run')
         # If it is None, that means no more pagination is required, therefore,
         # the next token for the next run should be None
         return events, None
@@ -2939,8 +2943,7 @@ def validate_ioa_fetch_query(ioa_fetch_query: str) -> None:
     supported_params = ('cloud_provider', 'account_id', 'aws_account_id', 'azure_subscription_id', 'azure_tenant_id',
                         'severity', 'region', 'service', 'state')
     # The query has a format of 'param1=val1&param2=val2'
-    query_sections = ioa_fetch_query.split('&')
-    for section in query_sections:
+    for section in ioa_fetch_query.split('&'):
         param_and_value = section.split('=')
         # Since each section should have a format of 'param1=val1', then when splitting by '=', we should get
         # a list of length 2, where the first element holds the parameter that we want to validate
@@ -2951,12 +2954,10 @@ def validate_ioa_fetch_query(ioa_fetch_query: str) -> None:
             if param_and_value[1] == '':
                 raise DemistoException(f'The value of the parameter {param_and_value[0]} cannot be an empty string')
         else:
-            raise DemistoException(f'A query section has wrong format, {section}. Use the following format: '
-                                   '"param=val"')
+            raise DemistoException(f'query section "{section}" does not match the parameter=value format')
 
 
-def format_time_to_custom_date_format(time: str, date_format: str,
-                                      dateparser_settings: Any | None = None) -> str:
+def reformat_timestamp(time: str, date_format: str, dateparser_settings: Any | None = None) -> str:
     """Format the given time according to the supplied date format.
 
     Args:
@@ -2975,7 +2976,7 @@ def format_time_to_custom_date_format(time: str, date_format: str,
         raise DemistoException(f'{time=} is not a proper date string')
 
 
-def create_incident_from_iom_resource(iom_resource: dict[str, Any]) -> dict[str, Any]:
+def iom_resource_to_incident(iom_resource: dict[str, Any]) -> dict[str, Any]:
     """Create an incident from an IOM entity.
 
     Args:
@@ -2997,7 +2998,8 @@ def create_incident_from_iom_resource(iom_resource: dict[str, Any]) -> dict[str,
 def iom_ids_pagination(filter: str, api_limit: int, iom_next_token: str | None,
                        fetch_limit: int = INCIDENTS_PER_FETCH) -> tuple[list[str], str | None]:
     """This is in charge of doing the pagination process in a single fetch run, since the fetch limit can be greater than
-    the api limit, in such a case, we do multiple API calls until we reach the fetch limit, or no more results are found by the API.
+    the api limit, in such a case, we do multiple API calls until we reach the fetch limit, or no more results are found by the
+    API.
 
     Args:
         filter (str): The IOM filter query parameter.
@@ -3006,8 +3008,8 @@ def iom_ids_pagination(filter: str, api_limit: int, iom_next_token: str | None,
         fetch_limit (int, optional): The fetch limit. Defaults to INCIDENTS_PER_FETCH.
 
     Returns:
-        tuple[list[dict[str, Any]], str | None]: A tuple where the first element is the fetched resources, and the second is the next token that
-        will be used in the next fetch run.
+        tuple[list[dict[str, Any]], str | None]: A tuple where the first element is the fetched resources, and the second is the
+        next token that will be used in the next fetch run.
     """
     total_incidents_count = 0
     iom_new_next_token = iom_next_token
@@ -5999,7 +6001,7 @@ def cs_falcon_cspm_list_policy_details_command(args: dict[str, Any]) -> CommandR
                 'Perhaps the policy IDs are invalid?'
             )
         for error in errors:
-            if error.get('code') in (400,):
+            if error.get('code')  == 400:
                 return_warning(
                     'CS Falcon CSPM returned an error.\n'
                     f'Code:  {error.get("code")}\n'
@@ -6054,6 +6056,7 @@ def cs_falcon_cspm_list_service_policy_settings_command(args: dict[str, Any]) ->
     cloud_platform = args.get('cloud_platform', '')
     service = args.get('service', '')
     limit = arg_to_number(args.get('limit')) or 50
+
     raw_response = cspm_list_service_policy_settings_request(policy_id=policy_id, cloud_platform=cloud_platform,
                                                              service=service)
     if resources := raw_response.get('resources', []):
@@ -6088,6 +6091,7 @@ def cspm_update_policy_settings_request(account_id: str, enabled: bool, policy_i
         dict[str, Any]: The raw response of the API.
     """
     # https://assets.falcon.crowdstrike.com/support/api/swagger.html#/cspm-registration/UpdateCSPMPolicySettings
+    # You have to be logged into https://falcon.crowdstrike.com/
     resources_body: dict[str, Any] = {
         'resources': [
             assign_params(
@@ -6122,7 +6126,7 @@ def cs_falcon_cspm_update_policy_settings_command(args: dict[str, Any]) -> Comma
     policy_id = arg_to_number(args.get('policy_id'))
     if policy_id is None:
         raise DemistoException('policy_id must be an integer')
-    regions = argToList(args.get('regions', '')) or []
+    regions = argToList(args.get('regions', []))
     severity = args.get('severity', '')
     tag_excluded = args.get('tag_excluded')
     tag_excluded = argToBoolean(tag_excluded) if tag_excluded else tag_excluded
@@ -6161,11 +6165,6 @@ def resolve_identity_detection_prepare_body_request(ids: list[str],
             param = {"name": key, "value": value}
             action_params.append(param)
     return {'action_parameters': action_params, 'ids': ids}
-
-# def resolve_identity_detection_request(ids: list[str], update_status: str, assign_to_user_email: str,
-#                                        assign_to_name: str, assign_to_uuid: str, unassign: bool | None,
-#                                        append_comment: str, add_tag: str, remove_tag: str,
-#                                        show_in_ui: bool | None) -> dict[str, Any]:
 
 
 def resolve_identity_detection_request(ids: list[str], **kwargs) -> dict[str, Any]:
