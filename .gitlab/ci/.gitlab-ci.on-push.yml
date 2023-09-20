@@ -271,7 +271,7 @@ xpanse-prepare-testing-bucket:
 
     - section_end "Copy env results to artifacts folder"
     - section_start "Install Packs and run Test-Module"
-    - ./Tests/scripts/install_content_and_test_integrations.sh "$INSTANCE_ROLE" "$SERVER_TYPE"|| EXIT_CODE=$?
+    - ./Tests/scripts/install_content_and_test_integrations.sh "$INSTANCE_ROLE" "$SERVER_TYPE" || EXIT_CODE=$?
     - cp -f $ARTIFACTS_FOLDER/conf.json Tests/conf.json
     - section_end "Install Packs and run Test-Module"
     - section_start "Wait Until Server Ready"
