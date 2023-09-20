@@ -3,7 +3,7 @@ sectionOrder:
 - Connect
 - Collect
 commonfields:
-  id: MicrosoftGraphApplications - dev
+  id: MicrosoftGraphApplications
   version: -1
 configuration:
 - defaultvalue: 6b071e63-f701-454b-9e54-ede4c96483e6
@@ -79,8 +79,8 @@ configuration:
   section: Connect
   required: false
 description: Use the Azure Active Directory Applications integration to manage authorized applications.
-display: Azure Active Directory Applications - dev
-name: MicrosoftGraphApplications - dev
+display: Azure Active Directory Applications
+name: MicrosoftGraphApplications
 script:
   commands:
   - description: Run this command to start the authorization process and follow the instructions in the command results.
