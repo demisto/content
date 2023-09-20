@@ -37,7 +37,6 @@ alter
     xdm.source.user.domain = FTNTFGTvd,
     xdm.alert.subcategory = FTNTFGTlogdesc,
     xdm.source.application.name = ftntfgtapp,
-    //xdm.auth.service = if(ftntfgtdstunauthusersource != "" and ftntfgtdstunauthusersource != null, ftntfgtdstunauthusersource, ftntfgtunauthusersource != "" and ftntfgtunauthusersource != null, ftntfgtunauthusersource),
     xdm.event.id = to_string(ftntfgtlogid),
     xdm.target.host.mac_addresses = arraycreate(if(ftntfgtdstmac != "" and  ftntfgtdstmac != null, ftntfgtdstmac)),
     xdm.source.host.mac_addresses = arraycreate(if(ftntfgtsrcmac != "" and  ftntfgtsrcmac != null, ftntfgtsrcmac)),
