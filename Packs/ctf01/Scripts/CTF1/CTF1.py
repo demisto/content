@@ -39,11 +39,10 @@ good_images = [
 ]
 
 bad_images = [
-    "https://raw.githubusercontent.com/demisto/content/ctf/Packs/ctf01/doc_files/idola-idola-industries.gif",
-    "https://raw.githubusercontent.com/demisto/content/ctf/Packs/ctf01/doc_files/it-doesnt-work-that-way-john-edward.gif",
-    "https://raw.githubusercontent.com/demisto/content/ctf/Packs/ctf01/doc_files/lion-king.gif",
-    "https://raw.githubusercontent.com/demisto/content/ctf/Packs/ctf01/doc_files/robert-downey-jr-maybe.gif",
-    "https://raw.githubusercontent.com/demisto/content/ctf/Packs/ctf01/doc_files/the-rock-look-the-rock-meme.gif"
+    "https://raw.githubusercontent.com/demisto/content/9e0946e3f76ed1862c6e40ea79ab85a9449d7102/Packs/ctf01/doc_files/G2.gif",
+    "https://raw.githubusercontent.com/demisto/content/9e0946e3f76ed1862c6e40ea79ab85a9449d7102/Packs/ctf01/doc_files/G3.gif",
+    "https://raw.githubusercontent.com/demisto/content/9e0946e3f76ed1862c6e40ea79ab85a9449d7102/Packs/ctf01/doc_files/G4.gif",
+    "https://raw.githubusercontent.com/demisto/content/9e0946e3f76ed1862c6e40ea79ab85a9449d7102/Packs/ctf01/doc_files/G5.gif"
 ]
 
 HTML_MESSAGE_1 = '''

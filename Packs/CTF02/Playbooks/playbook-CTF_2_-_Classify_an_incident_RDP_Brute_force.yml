@@ -150,7 +150,7 @@ tasks:
       id: b7f452b8-b4b1-4560-8224-c6f1a0ede173
       version: -1
       name: Nicely done! Let's do this!
-      description: "Great Job! You have finished the entire CTF Challenge.\nHope you enjoyed the challenge and gained some knowledge on the system.\nSee you on the next challenge :) \n___\n![myfile]https://raw.githubusercontent.com/demisto/content/10b88c87c2954c3b97108b3c07596fcf3cf128b7/Packs/ctf01/doc_files/F4.gif)\n___\n"
+      description: "Great Job! You have finished the entire CTF Challenge.\nHope you enjoyed the challenge and gained some knowledge on the system.\nSee you on the next challenge :) \n___\n![myfile](https://raw.githubusercontent.com/demisto/content/9e0946e3f76ed1862c6e40ea79ab85a9449d7102/Packs/ctf01/doc_files/I.gif)\n___\n"
       type: regular
       iscommand: false
       brand: ""
