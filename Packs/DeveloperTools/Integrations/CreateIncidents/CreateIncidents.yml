@@ -44,14 +44,14 @@ script:
     - description: |-
         The path of json file containing incidents. Can contain one incident
         or a list of incidents. For example: Packs/somePack/TestPlaybooks/examples.json'. 
-        Incidents without name will be named Mocked Incident
+        Incidents without name will be named Mocked Incident.
       name: incidents_path
       required: true
     - description: 'The paths of the files to be added to incidents as attachment. Would be added to all incidents provided in the incident_path file. For example: Packs/somePack/TestPlaybooks/attach.eml'
       name: attachment_paths
     description: Creates incidents from json files provided, and stores it in the instance context.
     name: create-test-incident-from-file
-  dockerimage: demisto/python3:3.10.13.72123
+  dockerimage: demisto/python3:3.10.13.73190
   isfetch: true
   runonce: false
   script: '-'
