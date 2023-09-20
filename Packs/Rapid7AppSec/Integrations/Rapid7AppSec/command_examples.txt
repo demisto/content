@@ -1,0 +1,23 @@
+!app-sec-app-list limit=1
+!app-sec-module-list limit=1
+!app-sec-attack-template-list limit=1
+!app-sec-engine-list limit=1
+!app-sec-engine-group-list limit=1
+!app-sec-scan-config-list limit=1
+!app-sec-vulnerability-list limit=1
+!app-sec-vulnerability-update vulnerability_id=${Rapid7AppSec.Vulnerability.id} severity=High
+!app-sec-vulnerability-history-list vulnerability_id=${Rapid7AppSec.Vulnerability.id}
+!app-sec-vulnerability-comment-create vulnerability_id=${Rapid7AppSec.Vulnerability.id} comment_content="test"
+!app-sec-vulnerability-comment-list vulnerability_id=${Rapid7AppSec.Vulnerability.id}
+!app-sec-vulnerability-comment-update vulnerability_id=${Rapid7AppSec.Vulnerability.id} comment_id=${Rapid7AppSec.VulnerabilityComment.id} comment_content="test2"
+!app-sec-vulnerability-comment-delete vulnerability_id=${Rapid7AppSec.Vulnerability.id} comment_id=${Rapid7AppSec.VulnerabilityComment.id}
+!app-sec-attack-get module_id=${Rapid7AppSec.Vulnerability.Variances.module_id} attack_id=${Rapid7AppSec.Vulnerability.Variances.attack_id}
+!app-sec-attack-documentation-get module_id=${Rapid7AppSec.Vulnerability.Variances.module_id} attack_id=${Rapid7AppSec.Vulnerability.Variances.attack_id}
+!app-sec-scan-list limit=1
+!app-sec-scan-submit scan_config_id=${Rapid7AppSec.ScanConfig.id}
+!app-sec-scan-delete scan_id=${Rapid7AppSec.Scan.id}
+!app-sec-scan-engine-event-list scan_id=${Rapid7AppSec.Scan.id}
+!app-sec-scan-platform-event-list scan_id=${Rapid7AppSec.Scan.id}
+!app-sec-scan-execution-details-get scan_id=${Rapid7AppSec.Scan.id}
+!app-sec-scan-action-get scan_id=${Rapid7AppSec.Scan.id}
+!app-sec-scan-action-submit scan_id=${Rapid7AppSec.Scan.id} action=Stop
