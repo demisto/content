@@ -19,8 +19,9 @@ def execute_command_side_effect(command: str, args: Dict):
 def test_main_no_logs_xsoar6(mocker):
     mocker.patch.object(demisto, 'args', return_value={'output': 'html', 'days_back': '5'})
     execute_command_mock = mocker.patch.object(
-        demisto, 'executeCommand', return_value=[{'Contents': {'response': {'total': 0}}}]
+        demisto, 'executeCommand', return_value=[{'Contents': {'response': {'total': 0, "Type": entryTypes["note"]}}}]
     )
+    mocker.patch.object(ExportAuditLogsToFile, "get_demisto_version", return_value={"version": "6.10"})
     ExportAuditLogsToFile.main()
     assert execute_command_mock.call_args.args[1]['body']['fromDate'] == '2020-04-15T00:00:00Z'
 
