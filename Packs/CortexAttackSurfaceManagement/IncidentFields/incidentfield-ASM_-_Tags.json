@@ -15,7 +15,8 @@
             "script": "",
             "selectValues": null,
             "type": "shortText",
-            "width": 150
+            "width": 150,
+            "_comment": "Mandatory: Key of key/value tag or could be a list entry if not key/value format."
         },
         {
             "displayName": "Value",
@@ -28,7 +29,8 @@
             "script": "",
             "selectValues": null,
             "type": "shortText",
-            "width": 150
+            "width": 150,
+            "_comment": "Optional: Value of key/value tag or n/a if list format. Some CSPs only provide a key."
         },
         {
             "displayName": "Source",
@@ -41,7 +43,8 @@
             "script": "",
             "selectValues": null,
             "type": "shortText",
-            "width": 150
+            "width": 150,
+            "_comment": "Mandatory: The source of tag. Ex: ServiceNOW, AWS, GCP, Tenable, etc."
         }
     ],
     "content": true,
