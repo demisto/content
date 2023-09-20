@@ -171,7 +171,7 @@ script:
       name: limit
     - description: The index of the first indicator to fetch.
       name: offset
-    - description: The minimum timestamp to fetch indicators by
+    - description: The minimum timestamp to fetch indicators by.
       name: last_run
     description: Gets indicators from the CrowdStrike Falcon Intel Feed.
     name: crowdstrike-indicators-list
