@@ -30,6 +30,7 @@ repos:
   rev: v2.1.2
   hooks:
   - id: pycln
+    args: [--all]
 
 - repo: https://github.com/charliermarsh/ruff-pre-commit
   rev: "v0.0.272"
