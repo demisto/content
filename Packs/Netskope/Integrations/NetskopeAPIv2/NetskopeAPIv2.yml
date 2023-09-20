@@ -18,7 +18,7 @@ configuration:
   name: insecure
   required: false
   type: 8
-- additionalinfo: "Netskope API access token (make sure to generate token for the following endpoints: api/v2/events/data/application, api/v2/events/data/audit, api/v2/events/data/page, api/v2/events/data/network, api/v2/events/data/infrastructure, api/v2/events/data/alert, api/v2/policy/urllist (read + write), api/v2/policy/urllist/deploy (read + write), api/v2/scim/Users)."
+- additionalinfo: "Netskope API access token (make sure to generate token for the required endpoints)."
   displaypassword: API token
   name: credentials
   required: true
