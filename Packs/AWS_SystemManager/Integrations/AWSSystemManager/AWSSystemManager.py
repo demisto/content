@@ -45,12 +45,12 @@ TERMINAL_AUTOMATION_STATUSES = {  # the status for run automation command
 CANCEL_TERMINAL_AUTOMATION_STATUSES = {  # the status for cancel automation command
     "Success": "The cancel command failed. The automation completed successfully before the cancellation.",
     "TimedOut": "The cancel command failed. The automation failed on timeout before the cancellation.",
-    "Cancelled": "The cancel command completed successfullyT The automation was stopped by a requester before it completed.",
+    "Cancelled": "The cancel command completed successfully, The automation was stopped by a requester before it completed.",
     "Failed": "The cancel command failed. The automation failed before it completed.",
 }
 TERMINAL_COMMAND_STATUSES = {  # the status for run command command
     "Success": "The command completed successfully.",
-    "Failed": "The command wasn't successful on the managed node.",
+    "Failed": "The command wasn't successfully on the managed node.",
     "Delivery Timed Out": "The command wasn't delivered to the managed node before the total timeout expired.",
     "Incomplete": "The command was attempted on all managed nodes and one or more of the invocations "
     "doesn't have a value of Success. However, not enough invocations failed for the status to be Failed.",
@@ -193,32 +193,10 @@ def format_parameters_arguments(parameters: str) -> dict[str, Any]:
         for key, value in parameters.items():
             parameters_dict[key] = argToList(value)
     return parameters_dict
-    # items = parameters.split(",")
-    # formatted_parameters = {}
-    # current_key = None
-
-    # for item in items:
-    #     parts = item.split(":")
-
-    #     if len(parts) == 2:
-    #         key, value = parts
-
-    #         if key != current_key:
-    #             current_key = key
-    #             formatted_parameters[key] = [value]
-    #         else:
-    #             formatted_parameters[key].append(value)
-    #     elif current_key is not None:
-    #         for part in parts:
-    #             if part.strip():
-    #                 formatted_parameters[current_key].append(part)
-
-    # return formatted_parameters
 
 
 def format_document_version(document_version: str) -> str:
-    """Formats an AWS Systems Manager (SSM) document version.
-    Converts the string to the correct format for the API call.
+    """Convert the version str to AWS SSM document version string format.
 
     Args:
     ----
@@ -228,7 +206,6 @@ def format_document_version(document_version: str) -> str:
     -------
         str: The formatted document version string.
             - If "latest", it returns "$LATEST".
-            - If None or any other value, it returns "$DEFAULT".
 
     Example:
     -------
@@ -340,8 +317,10 @@ def convert_datetime_to_iso(response) -> dict[str, Any]:
     def _datetime_to_string(obj: Any) -> str:
         if isinstance(obj, datetime):
             return obj.isoformat()
-        return str(obj)
+        raise TypeError(f"Type {type(obj)} is not serializable.")
 
+    # json.dumps(default=): If specified, default should be a function that gets called for objects that can’t otherwise be serialized.
+    # It should return a JSON encodable version of the object or raise a TypeError. If not specified, TypeError is raised.
     return json.loads(json.dumps(response, default=_datetime_to_string))
 
 
@@ -399,7 +378,15 @@ def get_command_status(command_id: str, ssm_client: "SSMClient") -> str:
         - Terminated
         - Access Denied
     """
-    return ssm_client.list_commands(CommandId=command_id)["Commands"][0]["Status"]
+    response = ssm_client.list_commands(CommandId=command_id)
+    try:
+        return response["Commands"][0]["Status"]
+    except IndexError as e:
+        raise DemistoException(f"Command ID {command_id} not found in response") from e
+    except KeyError as e:
+        raise DemistoException(
+            f"Status key not found for command ID {command_id}"
+        ) from e
 
 
 def parse_automation_execution(automation: dict[str, Any]) -> dict[str, Any]:
@@ -504,37 +491,24 @@ def list_inventory_command(
         list[CommandResults]: A list of CommandResults containing the inventory information.
     """
 
-    def _parse_inventory_entities(
-        entities: list[dict],
-    ) -> list[dict]:
-        """Parses a list of entities and returns a list of dictionaries containing relevant information.
-
-        Args:
-        ----
-            entities: A list of entities to parse.
-
-        Returns:
-        -------
-            list of dict containing relevant information.
-        """
-
-        def _parse_inventory(data: dict[str, Any]) -> dict[str, Any]:
-            return {
-                "Instance Id": data.get("InstanceId"),
-                "Computer Name": data.get("ComputerName"),
-                "Platform Type": data.get("PlatformType"),
-                "Platform Name": data.get("PlatformName"),
-                "Agent version": data.get("AgentVersion"),
-                "IP address": data.get("IpAddress"),
-                "Resource Type": data.get("ResourceType"),
-            }
-
+    def _parse_inventory_entities(entities: list[dict]) -> list[dict]:
         parsed_entities = []
         for entity in entities:
             entity_content: list = entity.get("Content", [])
             parsed_entity = {"Id": entity.get("Id")}
             for content in entity_content:
-                parsed_entities.append(parsed_entity | _parse_inventory(content))
+                parsed_entities.append(
+                    parsed_entity
+                    | {
+                        "Instance Id": content.get("InstanceId"),
+                        "Computer Name": content.get("ComputerName"),
+                        "Platform Type": content.get("PlatformType"),
+                        "Platform Name": content.get("PlatformName"),
+                        "Agent version": content.get("AgentVersion"),
+                        "IP address": content.get("IpAddress"),
+                        "Resource Type": content.get("ResourceType"),
+                    }
+                )
         return parsed_entities
 
     kwargs: "GetInventoryRequestRequestTypeDef" = {
@@ -559,10 +533,11 @@ def list_inventory_command(
 
     entities = list(response.get("Entities", []))
     # Extract the Data field from the object and add it to the main dictionary, Data contain a dict.
-
+    # added type ignore(1) because  "Argument 1 to "update" of "MutableMapping" has incompatible type..."
+    # added type ignore(2) because "Argument 1 to "update" of "TypedDict" has incompatible type...."
     for item in entities:
-        item["Data"].update(item["Data"].pop("AWS:InstanceInformation", {}))  # type: ignore
-        item.update(item.pop("Data"))  # type: ignore
+        item["Data"].update(item["Data"].pop("AWS:InstanceInformation", {}))  # type: ignore[arg-type]
+        item.update(item.pop("Data"))  # type: ignore[typeddict-item]
 
     command_results.append(
         CommandResults(
@@ -631,12 +606,14 @@ def list_inventory_entry_command(
     kwargs = update_if_value(args, kwargs, {"next_token": "NextToken"})
 
     response = ssm_client.list_inventory_entries(**kwargs)
-    response.pop("ResponseMetadata")  # type: ignore
+    # added type ignore because "Key "ResponseMetadata" of TypedDict "ListInventoryEntriesResultTypeDef" cannot be deleted"
+    response.pop("ResponseMetadata")  # type: ignore[misc]
     entries = response.get("Entries", [])
 
     command_results = []
     if next_token := response.get("NextToken"):
-        response.pop("NextToken")  # type: ignore
+        # added type ignore because "Key NextToken" of TypedDict "ListInventoryEntriesResultTypeDef" cannot be deleted"
+        response.pop("NextToken")  # type: ignore[misc]
         command_results.append(
             next_token_command_result(next_token, "InventoryEntryNextToken"),
         )
@@ -1095,19 +1072,23 @@ def list_automation_executions_command(
 
 
 def validate_target_arguments(args: dict[str, Any]) -> None:
-    if args.get("target_parameter_name") and not args.get("target_key"):
+    target_parameter_name = args.get("target_parameter_name")
+    target_key = args.get("target_key")
+    target_values = args.get("target_values")
+
+    if target_parameter_name and not target_key:
         raise DemistoException(
             "You must provide a target_key when specifying a target_parameter_name."
         )
-    if args.get("target_key") and not args.get("target_parameter_name"):
+    if target_key and not target_parameter_name:
         raise DemistoException(
             "You must provide a target_parameter_name when specifying a target_key."
         )
-    if args.get("target_values") and not args.get("target_parameter_name"):
+    if target_values and not target_parameter_name:
         raise DemistoException(
             "You must provide a target_parameter_name when specifying target_values."
         )
-    if args.get("target_key") and not args.get("target_values"):
+    if target_key and not target_values:
         raise DemistoException(
             "You must provide target_values when specifying a target_key."
         )
@@ -1189,7 +1170,8 @@ def run_automation_execution_command(
         #  ---end handling kwargs---
         #  first call to run automation
         response = ssm_client.start_automation_execution(**kwargs)
-        response.pop("ResponseMetadata")  # type: ignore
+        # added type ignore because "Key "ResponseMetadata" of TypedDict "StartAutomationExecutionResultTypeDef" cannot be deleted"
+        response.pop("ResponseMetadata")  # type: ignore[misc]
         execution_id = response["AutomationExecutionId"]
         # needed for the polling and is `hidden: true` in the yml file.
         args["execution_id"] = execution_id
@@ -1239,7 +1221,7 @@ def cancel_automation_execution_command(
 ) -> PollResult:
     """Cancels an AWS Systems Manager (SSM) automation execution or monitors its cancellation status.
         Note: The argument `first_run` is hidden: true in the yml file,
-            and is used to determine if this is the first time the function.
+            and is used to determine if this is the first time the function runs.
 
     Args:
     ----
@@ -1345,7 +1327,8 @@ def list_commands_command(
     # so instead the user send the command agin with the next_token the code hendle with it
     if not commands and (next_token := response.get("NextToken")):
         kwargs["NextToken"] = next_token
-        response = ssm_client.list_commands(**kwargs)  # type: ignore
+        # added type ignore because "Incompatible types in assignment"
+        response = ssm_client.list_commands(**kwargs)  # type: ignore[assignment]
         response = convert_datetime_to_iso(response)
         commands = response.get("Commands", [])
     command_result = []
@@ -1448,7 +1431,7 @@ def run_command_command(args: dict[str, Any], ssm_client: "SSMClient") -> PollRe
         continue_to_poll=True,
         args_for_next_run=args,
         partial_result=CommandResults(
-            readable_output=f"Command {command_id} was sent successful.",
+            readable_output=f"Command {command_id} was sent successfully.",
             outputs=command,
             outputs_prefix="AWS.SSM.Command",
             outputs_key_field="CommandId",
@@ -1474,7 +1457,7 @@ def cancel_command_command(args: dict[str, Any], ssm_client: "SSMClient") -> Pol
         if status in CANCEL_TERMINAL_COMMAND_STATUSES:
             return PollResult(
                 response=CommandResults(
-                    readable_output=f"The command status is {status}, {CANCEL_TERMINAL_COMMAND_STATUSES[status]}",
+                    readable_output=f"The command status is {status}, {CANCEL_TERMINAL_COMMAND_STATUSES[status]} polling stops.",
                 ),
                 continue_to_poll=False,
             )
@@ -1493,7 +1476,7 @@ def cancel_command_command(args: dict[str, Any], ssm_client: "SSMClient") -> Pol
 
     return PollResult(
         response=CommandResults(
-            readable_output="Cancellation command was sent successful.",
+            readable_output="Cancellation command was sent successfully.",
         ),  # if the polling is stop after first run, this will be the final result in the war room
         partial_result=CommandResults(
             readable_output="Cancellation command was sent successfully.",

@@ -198,11 +198,10 @@ def test_format_parameters_arguments(
 @pytest.mark.parametrize(
     ("document_version", "expected_response"),
     [
-        ("test_version", "test_version"),
-        ("default", "$DEFAULT"),
-        ("latest", "$LATEST"),
+        pytest.param("test_version", "test_version", id="Custom version"),
+        pytest.param("default", "$DEFAULT", id="Default version"),
+        pytest.param("latest", "$LATEST", id="Latest version"),
     ],
-    ids=["custom version", "default version", "latest version"],
 )
 def test_format_document_version(document_version: str, expected_response: str) -> None:
     """Given
@@ -218,17 +217,21 @@ def test_format_document_version(document_version: str, expected_response: str) 
 @pytest.mark.parametrize(
     ("args", "expected_error_message"),
     [
-        ({"instance_id": "test_id"}, "Invalid instance id: test_id"),
-        ({"association_id": "test_id"}, "Invalid association id: test_id"),
-        (
+        pytest.param(
+            {"instance_id": "test_id"},
+            "Invalid instance id: test_id",
+            id="Invalid instance id",
+        ),
+        pytest.param(
+            {"association_id": "test_id"},
+            "Invalid association id: test_id",
+            id="Invalid association id",
+        ),
+        pytest.param(
             {"association_version": "test_version"},
             "Invalid association version: test_version",
+            id="Invalid association version",
         ),
-    ],
-    ids=[
-        "Invalid instance id",
-        "Invalid association id",
-        "Invalid association version",
     ],
 )
 def test_validate_args(args: dict[str, str], expected_error_message: str) -> None:
@@ -271,19 +274,21 @@ def test_next_token_command_result(next_token: str, prefix: str) -> None:
 @pytest.mark.parametrize(
     ("data", "expected_response"),
     [
-        (
+        pytest.param(
             {"Associations": [{"LastExecutionDate": "test"}]},
             {"Associations": [{"LastExecutionDate": "test"}]},
+            id="dict with string value",
         ),
-        (
+        pytest.param(
             {
                 "Associations": [
                     {"LastExecutionDate": datetime(2023, 7, 25, 18, 51, 28, 607000)},
                 ],
             },
             {"Associations": [{"LastExecutionDate": "2023-07-25T18:51:28.607000"}]},
+            id="dict with key that contain datetime object",
         ),
-        (
+        pytest.param(
             {
                 "AssociationDescription": {
                     "LastExecutionDate": datetime(2023, 7, 25, 18, 51, 28, 607000),
@@ -296,12 +301,8 @@ def test_next_token_command_result(next_token: str, prefix: str) -> None:
                     "Date": "2023-07-25T18:51:28.607000",
                 },
             },
+            id="dict with multiply keys with datetime object",
         ),
-    ],
-    ids=[
-        "dict with string value",
-        "dict with key that contain datetime object",
-        "dict with multiply keys with datetime object",
     ],
 )
 def test_convert_datetime_to_iso(
@@ -320,6 +321,17 @@ def test_convert_datetime_to_iso(
         (modify only the keys that contain datetime object.)
     """
     assert convert_datetime_to_iso(data) == expected_response
+
+
+def test_convert_datetime_to_iso_raise_type_error() -> None:
+    with pytest.raises(TypeError, match="Type <class 'function'> is not serializable."):
+        convert_datetime_to_iso(
+            {
+                "Associations": [
+                    {"LastExecutionDate": lambda x: ...},
+                ],
+            }
+        )
 
 
 def test_get_command_status(mocker: MockerFixture) -> None:
@@ -905,12 +917,12 @@ def test_run_automation_execution_command(
         pytest.param(
             "Success",
             "The automation status is Success,"
-            " The cancel command failed, The automation completed successfully before the cancellation.",
+            " The cancel command failed. The automation completed successfully before the cancellation.",
             id="status is Success",
         ),
         pytest.param(
             "Failed",
-            "The automation status is Failed, The cancel command failed, the automation failed before it completed.",
+            "The automation status is Failed, The cancel command failed. The automation failed before it completed.",
             id="status is Failed",
         ),
         pytest.param(
@@ -922,7 +934,7 @@ def test_run_automation_execution_command(
         pytest.param(
             "TimedOut",
             "The automation status is TimedOut,"
-            " The cancel command failed, the automation failed on timeout before the cancellation.",
+            " The cancel command failed. The automation failed on timeout before the cancellation.",
             id="status is TimedOut",
         ),
     ],
@@ -978,7 +990,7 @@ def test_cancel_automation_execution_command(
     [
         pytest.param(
             "Failed",
-            "The command status is Failed, The command wasn't successful on the managed node.",
+            "The command status is Failed, The command wasn't successfully on the managed node.",
             id="status is Failed",
         ),
         pytest.param(
@@ -1020,7 +1032,7 @@ def test_run_command_command(
 
     result: CommandResults = run_command_command(args, MockClient())
 
-    assert result.readable_output == "Command command_id_test was sent successful."
+    assert result.readable_output == "Command command_id_test was sent successfully."
     assert result.outputs == mock_response["Command"]
 
     args_to_next_run = result.scheduled_command._args
@@ -1042,19 +1054,19 @@ def test_run_command_command(
     [
         pytest.param(
             "Failed",
-            "The command status is Failed, The cancel command failed, the command failed before it completed.",
+            "The command status is Failed, The cancel command failed. The command failed before it completed. polling stops.",
             id="status is Failed",
         ),
         pytest.param(
             "Cancelled",
             "The command status is Cancelled, The cancel command completed successfully, "
-            "The command was cancelled before it was completed.",
+            "The command was cancelled before it was completed. polling stops.",
             id="status is Cancelled",
         ),
         pytest.param(
             "Delivery Timed Out",
             "The command status is Delivery Timed Out, "
-            "The command wasn't delivered to the managed node before the total timeout expired.",
+            "The command wasn't delivered to the managed node before the total timeout expired. polling stops.",
             id="status is Delivery Timed Out",
         ),
     ],
@@ -1089,7 +1101,7 @@ def test_cancel_command_command(
     )
     response: CommandResults = cancel_command_command(args, MockClient())
 
-    assert response.readable_output == "Cancellation command was sent successful."
+    assert response.readable_output == "Cancellation command was sent successfully."
 
     args_to_next_run = response.scheduled_command._args
     assert args_to_next_run == {
