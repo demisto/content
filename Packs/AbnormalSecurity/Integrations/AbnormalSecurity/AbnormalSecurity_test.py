@@ -181,7 +181,7 @@ def test_get_the_details_of_a_specific_vendor_command(mocker):
             - Assert output prefix data is as expected
     """
     client = mock_client(mocker, util_load_json('test_data/test_get_the_details_of_a_specific_vendor.json'))
-    results = get_the_details_of_a_specific_vendor_command(client, {})
+    results = get_the_details_of_a_specific_vendor_command(client, {"vendor_domain":"test.com"})
     assert results.outputs.get('vendorDomain') == 'test-domain-1.com'
     assert results.outputs.get('vendorContacts')[0] == 'john.doe@test-domain-1.com'
     assert results.outputs_prefix == 'AbnormalSecurity.VendorDetails'
@@ -196,7 +196,7 @@ def test_get_the_activity_of_a_specific_vendor_command(mocker):
             - Assert output prefix data is as expected
     """
     client = mock_client(mocker, util_load_json('test_data/test_get_the_activity_of_a_specific_vendor.json'))
-    results = get_the_activity_of_a_specific_vendor_command(client, {})
+    results = get_the_activity_of_a_specific_vendor_command(client, {"vendor_domain":"test.com"})
     assert results.outputs.get('eventTimeline')[0].get('suspiciousDomain') == 'test@test-domain.com'
     assert results.outputs_prefix == 'AbnormalSecurity.VendorActivity'
 
@@ -225,7 +225,7 @@ def test_get_the_details_of_a_vendor_case_command(mocker):
             - Assert output prefix data is as expected
     """
     client = mock_client(mocker, util_load_json('test_data/test_get_the_details_of_a_vendor_case.json'))
-    results = get_the_details_of_a_vendor_case_command(client, {})
+    results = get_the_details_of_a_vendor_case_command(client, {"case_id":2})
     assert results.outputs.get('vendorCaseId') == 123
     assert results.outputs.get('timeline')[0].get('threatId') == 1234
     assert results.outputs_prefix == 'AbnormalSecurity.VendorCaseDetails'
