@@ -22,6 +22,7 @@ If you are upgrading from a previous version of this integration, see [Breaking 
     | Minimum risk score for importing incidents (0-10), where 0 is low risk and 10 is high risk. Relevant for API version 2.0. |  | False |
     | Defines Alert severity to fetch. |  | False |
     | Define which Alerts should be fetched. |  | False |
+    | Define which Threats should be fetched. |  | False |
     | Fetch limit: The maximum number of threats or alerts to fetch |  | False |
     | Site IDs | Comma-separated list of site IDs to fetch incidents for. Leave blank to fetch all sites. | False |
     | Block Site IDs | Comma-separated list of site IDs for where hashes should be blocked. If left blank all hashes will be blocked globally. If filled out with site ids all hashes will be no longer be blocked globally, they will now be blocked in the scope of those sites. | False |
@@ -193,7 +194,8 @@ Returns threats according to the specified filters.
 | threat_ids | A comma-separated list of threat IDs, for example: "225494730938493804,225494730938493915". | Optional | 
 | classifications | A comma-separated list of threat classifications to search, for example: "Malware", "Network", "Benign". Possible values are: Engine, Static, Cloud, Behavioral. | Optional | 
 | rank | Risk level threshold to retrieve (1-10). Relevant for API version 2.0 only. | Optional | 
-| site_ids | A comma-separated list of site IDs to search for threats, for example: "225494730938493804,225494730938493915". | Optional | 
+| site_ids | A comma-separated list of site IDs to search for threats, for example: "225494730938493804,225494730938493915". | Optional |
+| incident_statuses | Incident status. Example: "IN_PROGRESS, UNRESOLVED". | Optional |
 
 #### Context Output
 
@@ -1757,4 +1759,5 @@ To set up the mirroring:
 
 
 Newly fetched incidents will be mirrored in the chosen direction. However, this selection does not affect existing incidents.
+
 **Important Note:** To ensure the mirroring works as expected, mappers are required, both for incoming and outgoing, to map the expected fields in Cortex XSOAR and SentinelOne v2.
