@@ -14,10 +14,10 @@ NIGHTLY_JOBS = [
     'xpanse-prepare-testing-bucket',
     'xsoar-prepare-testing-bucket',
     'xsiam_server_ga',
-    'tests_xsoar_server: [Server 6.8]',
     'tests_xsoar_server: [Server 6.9]',
     'tests_xsoar_server: [Server 6.10]',
     'tests_xsoar_server: [Server 6.11]',
+    'tests_xsoar_server: [Server 6.12]',
     'tests_xsoar_server: [Server Master]',
 ]
 
@@ -40,10 +40,10 @@ UPLOAD_JOBS = [
     'upload-id-set-bucket',
     'xpanse-prepare-testing-bucket-upload-flow',
     'xsoar-prepare-testing-bucket-upload-flow',
-    'install-packs-in-server6_8',
     'install-packs-in-server6_9',
     'install-packs-in-server6_10',
     'install-packs-in-server6_11',
+    'install-packs-in-server6_12',
     'install-packs-in-server-master',
     'install-packs-in-xsiam-ga',
     'upload-packs-to-marketplace',
@@ -59,10 +59,10 @@ PUSH_JOBS = [
     'xpanse-prepare-testing-bucket',
     'xsoar-prepare-testing-bucket',
     'xsiam_server_ga',
-    'tests_xsoar_server: [Server 6.8]',
     'tests_xsoar_server: [Server 6.9]',
     'tests_xsoar_server: [Server 6.10]',
     'tests_xsoar_server: [Server 6.11]',
+    'tests_xsoar_server: [Server 6.12]',
     'tests_xsoar_server: [Server Master]',
 ]
 JOBS_PER_BUILD_TYPE = {
