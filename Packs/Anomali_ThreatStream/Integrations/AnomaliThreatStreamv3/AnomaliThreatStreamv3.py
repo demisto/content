@@ -2538,6 +2538,40 @@ def search_intelligence(client: Client, **kwargs):
     )
 
 
+def add_indicator_tag_command(client: Client, **kwargs) -> CommandResults:
+    indicator_ids: list[str] = argToList(kwargs["indicator_ids"])
+    tags: list[str] = argToList(kwargs["tags"])
+
+    data_request = {
+        "ids": indicator_ids,
+        "tags": [{"name": tag, "tlp": "red"} for tag in tags],
+    }
+
+    client.http_request("POST", "v2/intelligence/bulk_tagging/", data=json.dumps(data_request))
+
+    return CommandResults(
+        readable_output=f"The tags have been successfully added"
+                        f" for the following ids:\n `{', '.join(indicator_ids)}`"
+    )
+
+
+def remove_indicator_tag_command(client: Client, **kwargs) -> CommandResults:
+    indicator_ids: list[str] = argToList(kwargs["indicator_ids"])
+    tags: list[str] = argToList(kwargs["tags"])
+
+    data_request = {
+        "ids": indicator_ids,
+        "tags": [{"name": tags}],
+    }
+
+    client.http_request("PATCH", "v2/intelligence/bulk_remove_tags/", data=json.dumps(data_request))
+
+    return CommandResults(
+        readable_output=f"The tags were successfully deleted"
+                        f" for the following ids:\n `{', '.join(indicator_ids)}`"
+    )
+
+
 def main():
     """
     Initiate integration command
@@ -2606,6 +2640,9 @@ def main():
         'threatstream-approve-import-job': approve_import_job_command,
         'threatstream-search-threat-model': search_threat_model_command,
         'threatstream-add-threat-model-association': add_threat_model_association_command,
+
+        'threatstream-add-indicator-tag': add_indicator_tag_command,
+        'threatstream-remove-indicator-tag': remove_indicator_tag_command,
     }
     try:
 
