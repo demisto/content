@@ -12,6 +12,11 @@ configuration:
   type: 0
   required: true
   additionalinfo: The base URL. For a cloud instance, use the default URL as configured. For an OnPrem instance, use your respective domain.
+- display: User name
+  name: basic_credentials
+  displaypassword: API key
+  required: false
+  type: 9
 - name: cloud_id
   display: Cloud ID
   type: 0
@@ -20,12 +25,12 @@ configuration:
 - name: callback_url
   display: Callback URL
   type: 0
-  required: true
+  required: false
 - display: Client ID
   type: 9
   name: credentials
   displaypassword: Client Secret
-  required: true
+  required: false
 - defaultvalue: status!=done
   display: Query (in JQL) for fetching incidents
   additionalinfo: The field that was selected in the "Issue Field to fetch by" can't be used. in the query.
@@ -328,15 +333,9 @@ script:
       description: The last time the ticket was updated.
       type: Date
   - arguments:
-    - default: false
-      description: The query that will be used to retrieve the first issue ID in it.
-      isArray: false
+    - description: The query that will be used to retrieve the first issue ID in it.
       name: query
-      required: false
-      secret: false
-    deprecated: false
     description: Returns the ID offset, which is the ID of the first issue that was created in the current Jira instance, or the ID of the first issue with respect to the given query argument if given. You can use its result as the initial ID when fetching incidents by the issue id field.
-    execution: false
     name: jira-get-id-offset
     outputs:
     - contextPath: Ticket.idOffSet
@@ -1399,7 +1398,7 @@ script:
     name: get-modified-remote-data
   - description: Updates the remote incident with local incident changes. This method is only used for debugging purposes and will not update the current incident.
     name: update-remote-system
-  dockerimage: demisto/btfl-soup:1.0.1.63668
+  dockerimage: demisto/btfl-soup:1.0.1.72793
   isfetch: true
   ismappable: true
   isremotesyncin: true
@@ -1409,7 +1408,7 @@ script:
   subtype: python3
   type: python
 tests:
-- No tests
+- JiraV3 Test
 defaultmapperin: classifier-mapper-incoming-JiraV3
 defaultmapperout: JiraV3 Outgoing Mapper
 fromversion: 6.8.0

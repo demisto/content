@@ -1,0 +1,134 @@
+{
+    "name": "Getting Started with XSOAR",
+    "description": "This wizard is designed to provide a step-by-step walkthough on getting started with XSOAR",
+    "support": "community",
+    "videos": [
+    "https://www.youtube.com/watch?v=03TmGeAzvOQ"
+    ],
+    "currentVersion": "1.0.0",
+    "author": "Joe Cosgrove",
+    "url": "https://live.paloaltonetworks.com/t5/cortex-xsoar-discussions/bd-p/Cortex_XSOAR_Discussions",
+    "email": "",
+    "categories": [
+        "Utilities"
+    ],
+    "tags": ["Getting Started", "Simulation", "New", "Trending","Plug & Enrich"],
+    "useCases": ["Case Management"],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "devEmail": [
+        "joecosgrove@paloaltonetworks.com"
+    ],
+    "keywords": [],
+    "dependencies": {
+        "CommonScripts": {
+            "mandatory": true,
+            "display_name": "Common Scripts"
+        },
+        "sampleSiem": {
+            "mandatory": true,
+            "display_name": "Sample Incident Generator"
+        },
+        "CaseManagement-Generic": {
+            "mandatory": true,
+            "display_name": "Case Management"
+        },
+        "CoreAlertFields": {
+            "mandatory": true,
+            "display_name": "Core Alert Fields"
+        },
+        "CommonTypes": {
+            "mandatory": true,
+            "display_name": "Common Types"
+        },
+        "MailSenderNew": {
+            "mandatory": false,
+            "display_name": "Mail Sender (New)"
+        },
+        "CommonPlaybooks": {
+            "mandatory": true,
+            "display_name": "Common Playbooks"
+        },
+        "EWSMailSender": {
+            "mandatory": false,
+            "display_name": "EWS Mail Sender"
+        },
+        "JoeSecurity": {
+            "mandatory": false,
+            "display_name": "Joe Security"
+        },
+        "Palo_Alto_Networks_WildFire": {
+            "mandatory": false,
+            "display_name": "Palo Alto Networks WildFire"
+        },
+        "FeedMitreAttackv2": {
+            "mandatory": false,
+            "display_name": "MITRE ATT&CK v2"
+        },
+        "ServiceNow": {
+            "mandatory": false,
+            "display_name": "ServiceNow"
+        },
+        "Jira": {
+            "mandatory": false,
+            "display_name": "Atlassian Jira"
+        },
+        "AutoFocus": {
+            "mandatory": false,
+            "display_name": "AutoFocus"
+        },
+        "Gmail": {
+            "mandatory": false,
+            "display_name": "Gmail"
+        },
+        "MicrosoftGraphMail": {
+            "mandatory": false,
+            "display_name": "Microsoft Graph Mail"
+        },
+        "VirusTotal": {
+            "mandatory": false,
+            "display_name": "VirusTotal"
+        },
+        "Splunk": {
+            "mandatory": false,
+            "display_name": "Splunk"
+        },
+        "Unit42Intel": {
+            "mandatory": false,
+            "display_name": "Unit 42 Intel"
+        },
+        "PAN-OS": {
+            "mandatory": false,
+            "display_name": "PAN-OS by Palo Alto Network"
+        },
+        "FeedTorExitAddresses": {
+            "mandatory": false,
+            "display_name": "Tor Exit Addresses Feed"
+        },
+        "FeedOffice365": {
+            "mandatory": false,
+            "display_name": "Office 365 Feed"
+        },
+        "Feedsslabusech": {
+            "mandatory": false,
+            "display_name": "Abuse.ch SSL Blacklist Feed"
+        },
+        "MailListener": {
+            "mandatory": false,
+            "display_name": "Mail Listener"
+        }
+    },
+    "itemPrefix": [
+        "GettingStartedWithXSOAR",
+        "CaseManagement-Generic"
+    ],
+    "displayedImages": [
+        "CommonScripts",
+        "CaseManagement-Generic",
+        "CoreAlertFields",
+        "CommonTypes",
+        "CoreAlertFields"
+    ]
+}

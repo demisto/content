@@ -11,7 +11,8 @@ class Client:
     Client to use in the APN-OS Policy Optimizer integration.
     """
 
-    def __init__(self, url: str, username: str, password: str, vsys: str, device_group: str, verify: bool, tid: int):
+    def __init__(self, url: str, username: str, password: str, vsys: str, device_group: str,
+                 verify: bool, tid: int, version: str):
         # The TID is used to track individual commands send to the firewall/Panorama during a PHP session, and
         # is also used to generate the security token (Data String) that is used to validate each command.
         # Setting tid as a global variable with an arbitrary value of 50
@@ -30,6 +31,7 @@ class Client:
             self.machine = device_group
             self.is_cms_selected = True
         self.verify = verify
+        self.version = version
         handle_proxy()
         # Use Session() in order to maintain cookies for persisting the login PHP session cookie
         self.session = requests.Session()
@@ -65,7 +67,7 @@ class Client:
         }
         try:
             headers = {}
-            if LooseVersion(demisto.params().get('version', '8')) >= LooseVersion('10.1.6'):
+            if LooseVersion(self.version) >= LooseVersion('10.1.6'):
                 # We do this to get the cookie we need to add to the requests in the new version of PAN-OS
                 response = self.session.get(url=f'{self.session_metadata["base_url"]}/php/login.php?',
                                             verify=self.verify)
@@ -89,7 +91,7 @@ class Client:
         # Use RegEx to parse the ServerToken string from the JavaScript variable
         match = re.search(r'(?:window\.Pan\.st\.st\.st[0-9]+\s=\s\")(\w+)(?:\")', response.text)
         # Fix to login validation for version 9
-        if LooseVersion(demisto.params().get('version', '8')) >= LooseVersion('9'):
+        if LooseVersion(self.version) >= LooseVersion('9'):
             if 'window.Pan.staticMOTD' not in response.text:
                 match = None
         # The JavaScript calls the ServerToken a "cookie" so we will use that variable name
@@ -107,18 +109,21 @@ class Client:
         :return: hash token
         """
         data_code = f'{self.session_metadata["cookie_key"]}{str(self.session_metadata["tid"])}'
-        # Use the hashlib library function to calculate the MD5
-        data_hash = hashlib.md5(data_code.encode())  # nosec
+        # Use the hashlib library function to calculate the MD5, or SHA256 for version 10.2.0 and above
+        if LooseVersion(self.version) >= LooseVersion('10.2.0'):
+            data_hash = hashlib.sha256(data_code.encode())  # nosec
+        else:
+            data_hash = hashlib.md5(data_code.encode())  # nosec
         data_string = data_hash.hexdigest()  # Convert the hash to a proper hex string
         return data_string
 
-    def get_policy_optimizer_statistics(self) -> dict:
+    def get_policy_optimizer_statistics(self, position: str) -> dict:
         self.session_metadata['tid'] += 1  # Increment TID
         json_cmd = {
             "action": "PanDirect", "method": "run", "data": [
                 self.token_generator(),
                 "PoliciesDirect.getRuleCountInRuleUsage",
-                [{"type": "security", "position": "main", "vsysName": self.machine}]
+                [{"type": "security", "position": position, "vsysName": self.machine}]
             ],
             "type": "rpc", "tid": self.session_metadata['tid']
         }
@@ -127,7 +132,8 @@ class Client:
             url=f'{self.session_metadata["base_url"]}/php/utils/router.php/PoliciesDirect.getRuleCountInRuleUsage',
             json_cmd=json_cmd)
 
-    def policy_optimizer_no_apps(self) -> dict:
+    def policy_optimizer_no_apps(self, position: str) -> dict:
+        isCmsSelected = is_cms_selected(self.version, self.is_cms_selected)
         self.session_metadata['tid'] += 1  # Increment TID
         json_cmd = {
             "action": "PanDirect", "method": "run",
@@ -136,9 +142,9 @@ class Client:
                 "PoliciesDirect.getPoliciesByUsage", [
                     {
                         "type": "security",
-                        "position": "main",
+                        "position": position,
                         "vsysName": self.machine,
-                        "isCmsSelected": False,
+                        "isCmsSelected": isCmsSelected,
                         "isMultiVsys": False,
                         "showGrouped": False,
                         "usageAttributes": {
@@ -160,7 +166,8 @@ class Client:
             url=f'{self.session_metadata["base_url"]}/php/utils/router.php/PoliciesDirect.getPoliciesByUsage',
             json_cmd=json_cmd)
 
-    def policy_optimizer_get_unused_apps(self) -> dict:
+    def policy_optimizer_get_unused_apps(self, position: str) -> dict:
+        isCmsSelected = is_cms_selected(self.version, self.is_cms_selected)
         self.session_metadata['tid'] += 1  # Increment TID
         json_cmd = {
             "action": "PanDirect", "method": "run",
@@ -170,10 +177,10 @@ class Client:
                 [
                     {
                         "type": "security",
-                        "position": "main",
+                        "position": position,
                         "vsysName": self.machine,
                         "serialNumber": "",
-                        "isCmsSelected": False,
+                        "isCmsSelected": isCmsSelected,
                         "isMultiVsys": False,
                         "showGrouped": False,
                         "usageAttributes": {
@@ -291,13 +298,18 @@ def get_unused_rules_by_position(client: Client, position, exclude, rule_type, u
     return raw_response, (stats.get('result') or {}).get('entry') or []
 
 
-def get_policy_optimizer_statistics_command(client: Client) -> CommandResults:
+def get_policy_optimizer_statistics_command(client: Client, args: dict) -> CommandResults:
     """
     Gets the Policy Optimizer Statistics as seen from the User Interface
+    Args:
+        client:  APN-OS Policy Optimizer client
+        args:  Demisto arguments, will be used in panorama instance only
     """
     outputs_stats = {}
-    raw_response = client.get_policy_optimizer_statistics()
+    # panorama instance has multiple positions, firewall instance has only main position
+    position = define_position(version=client.version, args=args, is_panorama=client.is_cms_selected)
 
+    raw_response = client.get_policy_optimizer_statistics(position)
     stats = raw_response['result']
     if '@status' in stats and stats['@status'] == 'error':
         raise Exception(f'Operation Failed with: {str(stats)}')
@@ -315,12 +327,19 @@ def get_policy_optimizer_statistics_command(client: Client) -> CommandResults:
     )
 
 
-def policy_optimizer_no_apps_command(client: Client) -> CommandResults:
+def policy_optimizer_no_apps_command(client: Client, args: dict) -> CommandResults:
     """
     Gets the Policy Optimizer Statistics as seen from the User Interface
+    Args:
+        client:  APN-OS Policy Optimizer client
+        args:  Demisto arguments, will be used in panorama instance only
+    Returns:
+        CommandResults object
     """
-    raw_response = client.policy_optimizer_no_apps()
+    # panorama instance has multiple positions, firewall instance has only main position
+    position = define_position(version=client.version, args=args, is_panorama=client.is_cms_selected)
 
+    raw_response = client.policy_optimizer_no_apps(position=position)
     stats = raw_response['result']
     if '@status' in stats and stats['@status'] == 'error':
         raise Exception(f'Operation Failed with: {str(stats)}')
@@ -345,12 +364,19 @@ def policy_optimizer_no_apps_command(client: Client) -> CommandResults:
     )
 
 
-def policy_optimizer_get_unused_apps_command(client: Client) -> CommandResults:
+def policy_optimizer_get_unused_apps_command(client: Client, args: dict) -> CommandResults:
     """
     Gets the Policy Optimizer Statistics as seen from the User Interface
+    Args:
+        client:  APN-OS Policy Optimizer client
+        args:  Demisto arguments, will be used in panorama instance only
+    Returns:
+        CommandResults object
     """
-    raw_response = client.policy_optimizer_get_unused_apps()
+    # panorama instance has multiple positions, firewall instance has only main position
+    position = define_position(version=client.version, args=args, is_panorama=client.is_cms_selected)
 
+    raw_response = client.policy_optimizer_get_unused_apps(position=position)
     stats = raw_response['result']
     if '@status' in stats and stats['@status'] == 'error':
         raise Exception(f'Operation Failed with: {str(stats)}')
@@ -459,30 +485,70 @@ def policy_optimizer_get_dag_command(client: Client, args: dict) -> CommandResul
     )
 
 
+''' HELPER FUNCTIONS '''
+
+
+def define_position(version: str, args: dict, is_panorama: bool) -> str:
+    """
+    This function defines the rule's position in the query. For Panorama instances from versions 10.2.0 and above
+    it uses the `position` argument;
+    for Firewall instances, it always uses 'main' position.
+    Currently, it's fixed for versions 10.2.0 and above, as those are the accessible versions.
+    Args:
+        version: PAN-OS version
+        args: Demisto arguments
+        is_panorama: True if the instance is Panorama, False if the instance is a firewall
+    Returns:
+        The position of the rule in the query (pre, post or main)
+    """
+    if LooseVersion(version) >= LooseVersion('10.2.0') and is_panorama:
+        return args.get('position', 'pre')
+    else:
+        return 'main'
+
+
+def is_cms_selected(version: str, is_panorama: bool) -> bool:
+    """"
+    in panorama the 'isCmsSelected' parameter should be True, in firewall it is False.
+    this should be probably fixed in all versions,
+    but for now we'll just fix it for version 10.2.0 and above since that's the version we have access to.
+    Args:
+        version (str): PAN-OS version
+        is_panorama (bool): True if the instance is Panorama, False if the instance is a firewall
+
+    Returns:
+        bool: True or False
+    """
+    return is_panorama if LooseVersion(version) >= LooseVersion('10.2.0') else False
+
+
 def main():  # pragma: no cover
     command = demisto.command()
     params = demisto.params()
     args = demisto.args()
+    version = params.get('version') or '8'
     demisto.debug(f'Command being called is: {command}')
     client: Client = None  # type: ignore
     try:
         client = Client(url=params.get('server_url'), username=params['credentials']['identifier'],
                         password=params['credentials']['password'], vsys=params.get('vsys'),
-                        device_group=params.get('device_group'), verify=not params.get('insecure'), tid=50)
+                        device_group=params.get('device_group'), verify=not params.get('insecure'), tid=50, version=version)
         client.session_metadata['cookie_key'] = client.login()  # Login to PAN-OS and return the GUI cookie value
         headers = {}
-        if LooseVersion(demisto.params().get('version', '8')) >= LooseVersion('10.1.6'):
+        if LooseVersion(version) >= LooseVersion('10.1.6'):
             headers['Cookie'] = client.session_metadata["cookie"]
             headers['Content-Type'] = 'application/json'
             client.session_metadata["headers"] = headers
         if command == 'test-module':
-            return_results('ok')  # if login was successful, instance configuration is ok.
+            # run a command to test connectivity
+            get_policy_optimizer_statistics_command(client, args)
+            return_results('ok')
         elif command == 'pan-os-po-get-stats':
-            return_results(get_policy_optimizer_statistics_command(client))
+            return_results(get_policy_optimizer_statistics_command(client, args))
         elif command == 'pan-os-po-no-apps':
-            return_results(policy_optimizer_no_apps_command(client))
+            return_results(policy_optimizer_no_apps_command(client, args))
         elif command == 'pan-os-po-unused-apps':
-            return_results(policy_optimizer_get_unused_apps_command(client))
+            return_results(policy_optimizer_get_unused_apps_command(client, args))
         elif command == 'pan-os-po-get-rules':
             return_results(policy_optimizer_get_rules_command(client, args))
         elif command == 'pan-os-po-app-and-usage':

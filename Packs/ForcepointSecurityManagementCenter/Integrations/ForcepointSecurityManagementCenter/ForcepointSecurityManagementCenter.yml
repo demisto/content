@@ -1,0 +1,702 @@
+category: Network Security
+commonfields:
+  id: Forcepoint Security Management Center
+  version: -1
+configuration:
+- display: Server URL
+  name: url
+  required: true
+  type: 0
+- displaypassword: API Key
+  additionalinfo: The API Key to use for connection
+  name: credentials
+  required: true
+  hiddenusername: true
+  type: 9
+- defaultvalue: '8082'
+  display: Port
+  name: port
+  required: true
+  type: 0
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: Forcepoint SMC provides unified, centralized management of all models of Forcepoint engines whether physical, virtual or cloud—across large, geographically distributed enterprise environments.
+display: 'Forcepoint Security Management Center'
+name: Forcepoint Security Management Center
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: The name of the IP list to create.
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - default: false
+      description: A comma-separated list of IP addresses.
+      isArray: false
+      name: addresses
+      required: false
+    - default: false
+      description: The comment to add to the IP List.
+      isArray: false
+      name: comment
+      required: false
+    description: Creates an IP list.
+    execution: false
+    name: forcepoint-smc-ip-list-create
+    outputs:
+    - contextPath: ForcepointSMC.IPList.Name
+      description: The name of the IP list.
+      type: String
+    - contextPath: ForcepointSMC.IPList.Addresses
+      description: The list of addresses in the IP list.
+      type: Unknown
+    - contextPath: ForcepointSMC.IPList.Comment
+      description: The comment for the IP list.
+      type: String
+  - arguments:
+    - default: false
+      description: The name of the IP list.
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - default: false
+      description: A comma-separated list of addresses to update.
+      isArray: true
+      name: addresses
+      required: false
+    - default: false
+      auto: PREDEFINED
+      description: If false, the list of addresses will be appended to the existing one. Else, the list will be overwritten. Default is False.
+      isArray: false
+      name: is_override
+      predefined:
+      - 'False'
+      - 'True'
+      required: false
+    description: Updates an IP list.
+    execution: false
+    name: forcepoint-smc-ip-list-update
+    outputs:
+    - contextPath: ForcepointSMC.IPList.Name
+      description: The name of the IP list.
+      type: String
+    - contextPath: ForcepointSMC.IPList.Addresses
+      description: 'The list of addresses in the IPList'
+      type: Unknown
+    - contextPath: ForcepointSMC.IPList.Comment
+      description: The comment for the IP list.
+      type: String
+  - arguments:
+    - default: false
+      description: The name of a specific IP list to fetch. Overrides the other arguments if used.
+      isArray: false
+      name: name
+      required: false
+      secret: false
+    - default: false
+      description: The maximum number of IP lists to return. Default value is 50.
+      isArray: false
+      name: limit
+      required: false
+    - default: false
+      description: Whether to return all of the results or not. Default value is False.
+      isArray: false
+      name: all_results
+      required: false
+    description: Lists the IP Lists in the system.
+    execution: false
+    name: forcepoint-smc-ip-list-list
+    outputs:
+    - contextPath: ForcepointSMC.IPList.Name
+      description: The name of the IP list.
+      type: String
+    - contextPath: ForcepointSMC.IPList.Addresses
+      description: The list of addresses in the IP list.
+      type: Unknown
+    - contextPath: ForcepointSMC.IPList.Comment
+      description: The comment for the IP list.
+      type: String
+  - arguments:
+    - default: false
+      description: The name of the IP list to delete.
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    description: Deletes an IP list.
+    execution: false
+    name: forcepoint-smc-ip-list-delete
+    outputs:
+    - contextPath: ForcepointSMC.IPList.Name
+      description: The name of the IP list.
+      type: String
+    - contextPath: ForcepointSMC.IPList.Deleted
+      description: Whether the IP list was deleted.
+      type: Boolean
+  - arguments:
+    - default: false
+      description: The name of a specific host to fetch.
+      isArray: false
+      name: name
+      required: false
+      secret: false
+    - default: false
+      description: The maximum number of hosts to return. Default value is 50.
+      isArray: false
+      name: limit
+      required: false
+    - default: false
+      description: Whether to return all of the results. Overrides the other arguments if used. Default value is False.
+      isArray: false
+      name: all_results
+      required: false
+    description: Lists the hosts in the system.
+    execution: false
+    name: forcepoint-smc-host-list
+    outputs:
+    - contextPath: ForcepointSMC.Host.Name
+      description: The name of the host.
+      type: String
+    - contextPath: ForcepointSMC.Host.Address
+      description: The address of the host.
+      type: String
+    - contextPath: ForcepointSMC.Host.IPv6_address
+      description: The IPv6 address of the host.
+      type: String
+    - contextPath: ForcepointSMC.Host.Secondary_address
+      description: The secondary address of the host.
+      type: String
+    - contextPath: ForcepointSMC.Host.Comment
+      description: The comment for the host.
+      type: String
+  - arguments:
+    - default: false
+      description: The name of a specific host to fetch.
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - default: false
+      description: The address of the host. Cannot be combined with the ipv6_address argument.
+      isArray: false
+      name: address
+      required: false
+    - default: false
+      description: The IPv6 address of the host. Cannot be combined with the address argument.
+      isArray: false
+      name: ipv6_address
+      required: false
+    - default: false
+      description: A comma-separated list of secondary addresses of the host.
+      isArray: true
+      name: secondary_address
+      required: false
+    - default: false
+      description: The comment to add to the host.
+      isArray: false
+      name: comment
+      required: false
+    description: Creates a new host.
+    execution: false
+    name: forcepoint-smc-host-create
+    outputs:
+    - contextPath: ForcepointSMC.Host.Name
+      description: The name of the host.
+      type: String
+    - contextPath: ForcepointSMC.Host.Address
+      description: The address of the host.
+      type: String
+    - contextPath: ForcepointSMC.Host.IPv6_address
+      description: The IPv6 address of the host.
+      type: String
+    - contextPath: ForcepointSMC.Host.Secondary_address
+      description: The secondary address of the host.
+      type: Unknown
+    - contextPath: ForcepointSMC.Host.Comment
+      description: The comment for the host.
+      type: String
+  - arguments:
+    - default: false
+      description: The name of the host to update.
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - default: false
+      description: The address of the host. Cannot be combined with the ipv6_address argument.
+      isArray: false
+      name: address
+      required: false
+    - default: false
+      description: The IPv6 address of the host. Cannot be combined with the address argument.
+      isArray: false
+      name: ipv6_address
+      required: false
+    - default: false
+      description:  comma-separated list of secondary addresses of the host. 
+      isArray: true
+      name: secondary_address
+      required: false
+    - default: false
+      description: The comment to add to the host.
+      isArray: false
+      name: comment
+      required: false
+    description: Updates a host.
+    execution: false
+    name: forcepoint-smc-host-update
+    outputs:
+    - contextPath: ForcepointSMC.Host.Name
+      description: The name of the host.
+      type: String
+    - contextPath: ForcepointSMC.Host.Address
+      description: The address of the host.
+      type: String
+    - contextPath: ForcepointSMC.Host.IPv6_address
+      description: The IPv6 address of the host.
+      type: String
+    - contextPath: ForcepointSMC.Host.Secondary_address
+      description: The secondary address of the host.
+      type: String
+    - contextPath: ForcepointSMC.Host.Comment
+      description: The comment for the host.
+      type: String
+  - arguments:
+    - default: false
+      description: The name of the host to delete.
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    description: Deletes a host.
+    execution: false
+    name: forcepoint-smc-host-delete
+    outputs:
+    - contextPath: ForcepointSMC.Host.Name
+      description: The name of the host.
+      type: String
+    - contextPath: ForcepointSMC.Host.Deleted
+      description: Whether the host was deleted.
+      type: Boolean
+  - arguments:
+    - default: false
+      description: The name of the domain to create.
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - default: false
+      description: The comment to add to the domain.
+      isArray: false
+      name: comment
+      required: false
+    description: Creates a new domain.
+    execution: false
+    name: forcepoint-smc-domain-create
+    outputs:
+    - contextPath: ForcepointSMC.Domain.Name
+      description: The name of the host.
+      type: String
+    - contextPath: ForcepointSMC.Domain.Comment
+      description: The comment of the host.
+      type: String
+  - arguments:
+    - default: false
+      description: The name of a specific domain to fetch.
+      isArray: false
+      name: name
+      required: false
+      secret: false
+    - default: false
+      description: The maximum number of hosts to return. Default value is 50.
+      isArray: false
+      name: limit
+      required: false
+    - default: false
+      description: Whether to return all of the results. Overrides the other arguments if used. Default value is False.
+      isArray: false
+      name: all_results
+      required: false
+    description: Lists the domains in the system.
+    execution: false
+    name: forcepoint-smc-domain-list
+    outputs:
+    - contextPath: ForcepointSMC.Domain.Name
+      description: The name of the domain.
+      type: String
+    - contextPath: ForcepointSMC.Domain.Comment
+      description: The comment for the domain.
+      type: String
+  - arguments:
+    - default: false
+      description: The name of the domain to delete.
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    description: Deletes a domain.
+    execution: false
+    name: forcepoint-smc-domain-delete
+    outputs:
+    - contextPath: ForcepointSMC.Domain.Name
+      description: The name of the domain.
+      type: String
+    - contextPath: ForcepointSMC.Domain.Deleted
+      description: Whether the domain was deleted.
+      type: Boolean
+  - arguments:
+    - default: false
+      description: The maximum number of policy templates to return. Default value is 50.
+      isArray: false
+      name: limit
+      required: false
+    - default: false
+      description: Whether to return all of the results. Overrides the other arguments if used. Default value is False.
+      isArray: false
+      name: all_results
+      required: false
+    description: Lists the policy templates in the system.
+    execution: false
+    name: forcepoint-smc-policy-template-list
+    outputs:
+    - contextPath: ForcepointSMC.PolicyTemplate.Name
+      description: The name of the firewall policy template.
+      type: String
+    - contextPath: ForcepointSMC.PolicyTemplate.Comment
+      description: The comment for the firewall policy.
+      type: String
+  - arguments:
+    - default: false
+      description: The maximum number of firewall policies to return. Default value is 50.
+      isArray: false
+      name: limit
+      required: false
+    - default: false
+      description: Whether to return all of the results. Overrides the other arguments if used. Default value is False.
+      isArray: false
+      name: all_results
+      required: false
+    description: Lists the firewall policies in the system.
+    execution: false
+    name: forcepoint-smc-firewall-policy-list
+    outputs:
+    - contextPath: ForcepointSMC.Policy.Name
+      description: The name of the firewall policy.
+      type: String
+    - contextPath: ForcepointSMC.Policy.Comment
+      description: The comment for the firewall policy.
+      type: String
+  - arguments:
+    - default: false
+      description: The name of the firewall policy.
+      isArray: false
+      name: name
+      required: true
+    - default: false
+      description: The template name to use to create the firewall policy. Run the forcepoint-smc-policy-template-list command to get the list of policy templates.
+      isArray: false
+      name: template
+      required: true
+    description: Creates a firewall policy.
+    execution: false
+    name: forcepoint-smc-firewall-policy-create
+    outputs:
+    - contextPath: ForcepointSMC.Policy.Name
+      description: The name of the firewall policy.
+      type: String
+    - contextPath: ForcepointSMC.Policy.Comment
+      description: The comment for the firewall policy.
+      type: String
+  - arguments:
+    - default: false
+      description: The name of the policy to delete.
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    description: Deletes a firewall policy.
+    execution: false
+    name: forcepoint-smc-firewall-policy-delete
+    outputs:
+    - contextPath: ForcepointSMC.Policy.Name
+      description: The name of the firewall policy.
+      type: String
+    - contextPath: ForcepointSMC.Policy.Deleted
+      description: Whether the policy was deleted.
+      type: Boolean
+  - arguments:
+    - default: false
+      description: The name of the firewall policy.
+      isArray: false
+      name: policy_name
+      required: true
+    - default: false
+      description: The name of the rule to create.
+      isArray: false
+      name: rule_name
+      required: true
+    - default: false
+      description: The ip_version of the rule.
+      auto: PREDEFINED
+      isArray: false
+      name: ip_version
+      required: true
+      predefined:
+      - "V4"
+      - "V6"
+    - default: false
+      description: A comma-separated list of source ip-list names to use to create the rule. Run the forcepoint-ip-list-list command to get the list of ip lists.
+      isArray: true
+      name: source_ip_list
+      required: false
+    - default: false
+      description: A comma-separated list of source host names to use to create the rule. Run the forcepoint-host-list command to get the list of hosts.
+      isArray: true
+      name: source_host
+      required: false
+    - default: false
+      description: A comma-separated list of source domain names to use to create the rule. Run the forcepoint-domain-list command to get the list of domains.
+      isArray: true
+      name: source_domain
+      required: false
+    - default: false
+      description: A comma-separated list of destination ip-list names to use to create the rule. Run the forcepoint-ip-list-list command to get the list of ip lists.
+      isArray: true
+      name: destination_ip_list
+      required: false
+    - default: false
+      description: A comma-separated list of destination host names to use to create the rule. Run the forcepoint-host-list command to get the list of hosts.
+      isArray: true
+      name: destination_host
+      required: false
+    - default: false
+      description: A comma-separated list of destination domain names to use to create the rule. Run the forcepoint-domain-list command to get the list of domains.
+      isArray: true
+      name: destination_domain
+      required: false
+    - default: false
+      auto: PREDEFINED
+      description: The action of the rule.
+      isArray: false
+      name: action
+      required: true
+      predefined:
+      - allow
+      - continue
+      - discard
+      - refuse
+      - enforce_vpn
+      - apply_vpn
+      - forward_vpn
+      - blacklist
+      - forced_next_hop
+    - default: false
+      description: The comment to add to the rule.
+      isArray: false
+      name: comment
+      required: false
+    description: Creates a rule.
+    execution: false
+    name: forcepoint-smc-rule-create
+    outputs:
+    - contextPath: ForcepointSMC.Rule.Name
+      description: The name of the rule.
+      type: String
+    - contextPath: ForcepointSMC.Rule.ID
+      description: The ID of the rule.
+      type: String
+    - contextPath: ForcepointSMC.Rule.IP_version
+      description: The IP version of the rule.
+      type: String
+    - contextPath: ForcepointSMC.Rule.Action
+      description: The action of the rule.
+      type: String
+    - contextPath: ForcepointSMC.Rule.Comment
+      description: The comment for the rule.
+      type: String
+  - arguments:
+    - default: false
+      description: The name of the firewall policy.
+      isArray: false
+      name: policy_name
+      required: true
+    - default: false
+      description: The name of the rule to update.
+      isArray: false
+      name: rule_name
+      required: true
+    - default: false
+      auto: PREDEFINED
+      description: Whether to override the existing values. Default value is False.
+      isArray: false
+      name: is_override
+      required: false
+      predefined:
+      - 'False'
+      - 'True'
+    - default: false
+      description: The ip_version of the rule.
+      isArray: false
+      auto: PREDEFINED
+      name: ip_version
+      required: true
+      predefined:
+      - 'V4'
+      - 'V6'
+    - default: false
+      description: A comma-separated list of source ip-list names to use to update the rule. Run the forcepoint-ip-list-list command to get the list of ip lists.
+      isArray: true
+      name: source_ip_list
+      required: false
+    - default: false
+      description: A comma-separated list of source host names to use to update the rule. Run the forcepoint-host-list command to get the list of hosts.
+      isArray: true
+      name: source_host
+      required: false
+    - default: false
+      description: A comma-separated list of source domain names to use to update the rule. Run the forcepoint-domain-list command to get the list of domains.
+      isArray: true
+      name: source_domain
+      required: false
+    - default: false
+      description: A comma-separated list of destination ip-list names to use to update the rule. Run the forcepoint-ip-list-list command to get the list of ip lists.
+      isArray: true
+      name: destination_ip_list
+      required: false
+    - default: false
+      description: A comma-separated list of destination host names to use to update the rule. Run the forcepoint-host-list command to get the list of hosts.
+      isArray: true
+      name: destination_host
+      required: false
+    - default: false
+      description: A comma-separated list of destination domain names to use to update the rule. Run the forcepoint-domain-list command to get the list of domains.
+      isArray: true
+      name: destination_domain
+      required: false
+    - default: false
+      auto: PREDEFINED
+      description: The action of the rule.
+      isArray: true
+      name: action
+      required: false
+      predefined:
+      - allow
+      - continue
+      - discard
+      - refuse
+      - enforce_vpn
+      - apply_vpn
+      - forward_vpn
+      - blacklist
+      - forced_next_hop
+    - default: false
+      description: The comment to add to the rule.
+      isArray: false
+      name: comment
+      required: false
+    description: 'Updates a rule.'
+    execution: false
+    name: forcepoint-smc-rule-update
+  - arguments:
+    - default: false
+      description: The name of the firewall policy.
+      isArray: false
+      name: policy_name
+      required: true
+    description: 'Lists the rules in a specific policy.'
+    execution: false
+    name: forcepoint-smc-rule-list
+    outputs:
+    - contextPath: ForcepointSMC.Rule.Name
+      description: 'The name of the rule.'
+      type: String
+    - contextPath: ForcepointSMC.Rule.ID
+      description: 'The ID of the rule.'
+      type: String
+    - contextPath: ForcepointSMC.Rule.IP_version
+      description: 'The IP version of the rule.'
+      type: String
+    - contextPath: ForcepointSMC.Rule.Sources
+      description: 'The sources of the rule.'
+      type: Unknown
+    - contextPath: ForcepointSMC.Rule.Destinations
+      description: 'The destinations of the rule.'
+      type: Unknown
+    - contextPath: ForcepointSMC.Rule.Services
+      description: 'The services of the rule.'
+      type: Unknown
+    - contextPath: ForcepointSMC.Rule.Actions
+      description: 'The actions of the rule.'
+      type: Unknown
+    - contextPath: ForcepointSMC.Rule.Comment
+      description: 'The comment of the rule.'
+      type: String
+  - arguments:
+    - default: false
+      description: The name of the firewall policy.
+      isArray: false
+      name: policy_name
+      required: true
+    - default: false
+      description: The name of the rule to delete.
+      isArray: false
+      name: rule_name
+      required: true
+    - default: false
+      auto: PREDEFINED
+      description: The ip_version of the rule.
+      isArray: false
+      name: ip_version
+      required: true
+      predefined:
+      - 'V4'
+      - 'V6'
+    description: Deletes a rule.
+    execution: false
+    name: forcepoint-smc-rule-delete
+    outputs:
+    - contextPath: ForcepointSMC.Rule.ID
+      description: The ID of the rule.
+      type: String
+    - contextPath: ForcepointSMC.Rule.Deleted
+      description: Whether the rule was deleted.
+      type: Boolean
+  - arguments:
+    - default: false
+      description: The maximum number of engines to return. Default value is 50.
+      isArray: false
+      name: limit
+      required: false
+    - default: false
+      description: Whether to return all of the results or not, overrides the other arguments if used. Default value is False.
+      isArray: false
+      name: all_results
+      required: false
+    description: Lists the engines in the system.
+    execution: false
+    name: forcepoint-smc-engine-list
+    outputs:
+    - contextPath: ForcepointSMC.Engine.Name
+      description: The name of the engine.
+      type: String
+    - contextPath: ForcepointSMC.Engine.Comment
+      description: The comment for the engine.
+      type: String
+  isfetch: false
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/fp-smc:1.0.22.72248
+fromversion: 6.8.0
+tests:
+- ForcepointSecurityManagementCenter_test

@@ -2038,7 +2038,7 @@ def github_trigger_workflow_command():
     repository = args.get('repository') or REPOSITORY
     branch = args.get('branch', 'master')
     workflow = args.get('workflow')
-    inputs = json.loads(args.get('inputs', '{}'))
+    inputs = json.loads(args.get('inputs', '{}'), strict=False)
 
     suffix = f"/repos/{owner}/{repository}/actions/workflows/{workflow}/dispatches"
     headers = {

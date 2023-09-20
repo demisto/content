@@ -1,0 +1,13 @@
+[INGEST:vendor="aws", product="waf", target_dataset="aws_waf_raw", no_hit=keep]
+// Supports Epoch (Unix time) timestamp in either seconds, milliseconds, microseconds or nanoseconds 
+filter to_string(timestamp) ~= "\d{10}|\d{13}|\d{16}|\d{19}" 
+| alter tmp_epoch_string = to_string(timestamp)
+| alter tmp_epoch_int = to_integer(tmp_epoch_string)
+| alter tmp_len = to_integer(len(tmp_epoch_string))| alter tmp_time = if( 
+    // in_case of nanoseconds, we convert them to microseconds since to_timestamp does not support nanoseconds
+    tmp_len = 10, to_timestamp(tmp_epoch_int, "SECONDS"), 
+    tmp_len = 13, to_timestamp(tmp_epoch_int, "MILLIS"),  
+    tmp_len = 16, to_timestamp(tmp_epoch_int, "MICROS"),  
+    tmp_len = 19, to_timestamp(divide(tmp_epoch_int, 1000), "MICROS")) 
+| alter _time = tmp_time
+| fields - tmp*;

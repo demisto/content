@@ -1,0 +1,74 @@
+category: Analytics & SIEM
+description: Palo Alto Networks Trend Micro Email Security Event Collector integration for XSIAM.
+display: Trend Micro Email Security Event Collector
+name: Trend Micro Email Security Event Collector
+commonfields:
+  id: Trend Micro Email Security Event Collector
+  version: -1
+configuration:
+- display: Server URL
+  defaultvalue: https://<ServerURL>
+  name: url
+  required: true
+  type: 0
+  section: Connect
+- display: User name
+  name: credentials
+  required: true
+  type: 9
+  displaypassword: API Key
+  section: Connect
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+  section: Connect
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+  section: Connect
+- display: Hide sensitive details from email
+  additionalinfo: Hide subject and file name from emails
+  name: hide_sensitive
+  required: false
+  defaultvalue: 'true'
+  type: 8
+  section: Collect
+- display: The maximum number of events per fetch per event type.
+  additionalinfo: The maximum number of events to fetch every time fetch is executed.
+  defaultvalue: "5000"
+  name: max_fetch
+  required: false
+  type: 0
+  section: Collect
+script:
+  commands:
+  - deprecated: false
+    description: Manual command to fetch events and display them.
+    name: trend-micro-get-events
+    arguments:
+    - name: max_fetch
+      description: The maximum number of events to get.
+      defaultValue: "500"
+    - name: since
+      description: Occurrence time of the least recent event to include (inclusive).
+      defaultValue: 3 days
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: If true, the command will create events, otherwise it will only display them.
+      name: should_push_events
+      predefined:
+      - 'true'
+      - 'false'
+      required: true
+  dockerimage: demisto/python3:3.10.12.68714
+  isfetchevents: true
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- No tests (auto formatted)
+marketplaces:
+- marketplacev2
+fromversion: 6.8.0

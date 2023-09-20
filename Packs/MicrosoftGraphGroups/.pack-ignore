@@ -1,6 +1,3 @@
-[file:MicrosoftGraphGroups-Test.yml]
-ignore=auto-test
-
 [file:README.md]
 ignore=RM106
 

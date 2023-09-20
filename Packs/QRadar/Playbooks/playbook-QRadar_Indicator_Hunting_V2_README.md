@@ -1,53 +1,63 @@
-Queries QRadar SIEM for indicators such as file hashes, IP addresses, domains, or URLs. 
+The Playbook queries QRadar SIEM for indicators such as file hashes, IP addresses, domains, or urls. 
 
 ## Dependencies
+
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* QRadarFullSearch
+
+This playbook does not use any sub-playbooks.
 
 ### Integrations
-This playbook does not use any integrations.
+
+* QRadar_v3
 
 ### Scripts
+
 * IsIPInRanges
-* Set
 * SetAndHandleEmpty
+* Set
 
 ### Commands
-* qradar-get-assets
+
+* qradar-search-retrieve-events
+* qradar-assets-list
 
 ## Playbook Inputs
+
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
-| --- | --- | --- | --- | 
-| MD5 | The MD5 hash or an array of hashes to search. | - | Optional |
-| QradarMD5Field | The MD5 hash field to search in QRadar. If none are specified, the search will use a payload contains filter. | - | Optional |
-| SHA1 | The SHA1 hash or an array of hashes to search. | - | Optional |
-| QradarSHA1Field | The SHA1 hash field to search in QRadar. If none are specified, the search will use a payload contains filter. | - |  Optional |
-| SHA256 | The SHA256 hash or an array of hashes to search. | - | Optional |
-| QradarSHA256Field | The SHA256 hash field to search in QRadar. If none are specified, the search will use a payload contains filter. | - | Optional |
-| IPAddress | The source or destination IP address to search. Can be a single address or an array of addresses. | - | Optional |
-| QradarIPfield | The IP address field to search in QRadar. If none are specified, the search will use `sourceip` or `destinationip` (combined). | sourceip,destinationip | Optional |
-| URLDomain | Domain or URL can be single or an array of domain/URLs to search. By default the **LIKE** clause is used. | - | Optional |
-| QradarURLDomainField | URL/Domain field to search in QRadar. If none are specified, the search will use a payload contains filter.  | - | Optional |
-| TimeFrame | Time frame as used in AQL. For example, "LAST 7 DAYS", "START '2019-09-25 15:51' STOP '2019-09-25 17:51'". For more examples review IBM's AQL documentation. | LAST 7 DAYS | Optional |
-| InternalRange | A list of internal IP address ranges to check IP addresses against. The list should be provided in CIDR notation, separated by commas. An example of a list of ranges would be: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" (without quotes). If a list is not provided, will use default list provided in the `IsIPInRanges` script (the known IPv4 private address ranges). | - | Optional |
+| --- | --- | --- | --- |
+| MD5 | MD5 hash file or an array of hashes to search. |  | Optional |
+| QradarMD5Field | MD5 field to search in QRadar. If none are specified, the search will use a payload contains filter. |  | Optional |
+| SHA1 | SHA1 hash file or an array of hashes to search. |  | Optional |
+| QradarSHA1Field | SHA1 field to search in QRadar. If none are specified, the search will use a payload contains filter. |  | Optional |
+| SHA256 | SHA256 hash file or an array of hashes to search. |  | Optional |
+| QradarSHA256Field | SHA256 field to search in QRadar. If none are specified, the search will use a payload contains filter. |  | Optional |
+| IPAddress | Source or destination IP to search. Can be a single address or an array of addresses.<br/> |  | Optional |
+| QradarIPfield | IP field to search in QRadar. If none are specified, the search will use sourceip or destinationip \(combined\). | sourceip,destinationip | Optional |
+| URLDomain | Domain or Url can be single or an array of domain/urls to search. By default the LIKE clause is used.<br/> |  | Optional |
+| QradarURLDomainField | URL/Domain field to search in QRadar. If none are specified, the search will use a payload contains filter.  |  | Optional |
+| TimeFrame | Time frame as used in AQL<br/>Examples can be<br/>LAST 7 DAYS<br/>START '2019-09-25 15:51' STOP '2019-09-25 17:51'<br/>For more examples review IBM's AQL documentation. | LAST 7 DAYS | Optional |
+| InternalRange | A list of internal IP ranges to check IP addresses against. The list should be provided in CIDR notation, separated by commas. An example of a list of ranges would be: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" \(without quotes\). If a list is not provided, will use default list provided in the IsIPInRanges script \(the known IPv4 private address ranges\). |  | Optional |
 | InvestigationIPFields | The values of these QRadar fields will be used for the playbook IP addresses outputs. | sourceip,destinationip | Required |
 | InvestigationUserFields | The values of these QRadar fields will be used for the playbook user name outputs. | username | Required |
 
 ## Playbook Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| QRadar.DetectedUsers | The users detected based on the username field in your search. | string |
-| QRadar.DetectedInternalIPs | The internal IP addresses detected based on fields and inputs in your search. | string |
-| QRadar.DetectedExternalIPs | The external IP addresses detected based on fields and inputs in your search. | string |
-| QRadar.DetectedInternalHosts | The internal host names detected based on hosts in your assets table. Note that the data accuracy depends on how the asset mapping is configured in QRadar. | string |
-| QRadar.DetectedExternalHosts | The external host names detected based on hosts in your assets table. Note that the data accuracy depends on how the asset mapping is configured in QRadar. | string |
+| QRadar.DetectedUsers | Users detected based on the username field in your search. | string |
+| QRadar.DetectedInternalIPs | Internal IP addresses detected based on fields and inputs in your search. | string |
+| QRadar.DetectedExternalIPs | External IP addresses detected based on fields and inputs in your search. | string |
+| QRadar.DetectedInternalHosts | Internal host names detected based on hosts in your assets table. Note that the data accuracy depends on how the Asset mapping is configured in QRadar. | string |
+| QRadar.DetectedExternalHosts | External host names detected based on hosts in your assets table. Note that the data accuracy depends on how the Asset mapping is configured in QRadar. | string |
 
 ## Playbook Image
+
 ---
-![QRadar_Indicator_Hunting_V2](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/QRadar_Indicator_Hunting_V2.png)
+
+![QRadar Indicator Hunting V2](../doc_files/QRadar_Indicator_Hunting_V2.png)

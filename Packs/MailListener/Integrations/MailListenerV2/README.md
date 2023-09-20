@@ -27,6 +27,7 @@ Listens to a mailbox and enables incident triggering via e-mail.
     * __TLS_connection__: Use TLS for connection (defaults to True)
     * __insecure__: Trust any certificate (not secure)
     * __incidentFetchInterval__: Incidents Fetch Interval
+    * __clientCertAndKey__: Client Certificate And Private Key (PEM) (Use this parameter if the IMAP server requires client certificates and private keys)
 4. Click __Test__ to validate the connection and the authentication.
 
 ## Commands:

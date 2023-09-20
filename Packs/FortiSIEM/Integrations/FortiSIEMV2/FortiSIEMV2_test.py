@@ -25,7 +25,7 @@ def load_json_mock_response(file_name: str) -> dict:
     Returns:
         str: Mock file content.
     """
-    with open(f'test_data/{file_name}', mode='r', encoding='utf-8') as mock_file:
+    with open(f'test_data/{file_name}', encoding='utf-8') as mock_file:
         return json.loads(mock_file.read())
 
 
@@ -657,3 +657,97 @@ def test_fetch_incidents_with_pagination(post_mock):
     assert len(incidents) == 5
     assert updated_last_run['create_time'] == 1646237070000
     assert updated_last_run['last_incidents'] == [9, 10, 11, 12, 13]
+
+
+@pytest.mark.parametrize('nested_attr, expected_result', [
+    ('key:value', ('key', 'value')),
+    ('key:value:extra', ('key', 'value')),
+    ('', (None, None)),
+    ('key', (None, None)),
+])
+def test_format_nested_incident_attribute(nested_attr, expected_result):
+    """
+    Formatting incident attributes.
+    Given:
+        - Some incident attributes.
+    When:
+        - format_nested_incident_attribute is running.
+    Then:
+        - Check that the formatted incident attribute is as expected.
+    """
+    from FortiSIEMV2 import format_nested_incident_attribute
+
+    assert format_nested_incident_attribute(nested_attr) == expected_result
+
+
+@pytest.mark.parametrize('events_mock_response, expected_result', [
+    ({'result': {'description': 'The incident detail was not found for incident 123465'}}, 0),
+    (load_json_mock_response("triggered_events.json"), 5),
+    (load_json_mock_response("triggered_events_dict.json"), 5),
+])
+def test_get_related_events_for_fetch_command(events_mock_response, expected_result, requests_mock):
+    """
+    Fetching events per incident.
+    Given:
+        - Incident ID with/without events.
+    When:
+        - get_related_events_for_fetch_command is running.
+    Then:
+        - Check that the sum of the events is as expected.
+    """
+    from FortiSIEMV2 import FortiSIEMClient, get_related_events_for_fetch_command
+    client: FortiSIEMClient = mock_client()
+    requests_mock.get(f'{client._base_url}pub/incident/triggeringEvents', json=events_mock_response)
+
+    assert len(get_related_events_for_fetch_command('123456', 20, client)) == expected_result
+
+
+@pytest.mark.commands
+@freeze_time(time.ctime(1646205070))
+def test_fetch_incidents_without_incident_title(requests_mock):
+    """
+    Fetching incidents.
+    Given:
+        - 'fetch-incidents' arguments.
+    Scenarios:
+        - Last run do not exist.
+        - Last run exists
+        - No incidents to fetch.
+        - Incidents to fetch with events.
+        - New incidents came in the same time like prev last incidents.
+    Then:
+        - Validate incidents & updated last run obj.
+    """
+
+    incidents_file = "fetch_incidents_without_incidentTitle.json"
+    expected_output = {
+        'incidents_number': 1,
+        'events_number': 0,
+        'last_run': {
+            'create_time': 1646092830000,
+            'last_incidents': [1],
+            'start_index': 0
+        }
+    }
+    from FortiSIEMV2 import FortiSIEMClient, fetch_incidents
+    client: FortiSIEMClient = mock_client()
+    status_list = ['Active']
+    max_fetch = 1
+    max_events_fetch = 5
+    first_fetch = "1 week"
+
+    mock_response = load_json_mock_response(incidents_file)
+    requests_mock.post(f'{client._base_url}pub/incident', json=mock_response)
+    incidents, updated_last_run = fetch_incidents(client, max_fetch, first_fetch, status_list, False,
+                                                  max_events_fetch, {})
+
+    expected_incidents_number = expected_output.get('incidents_number')
+    expected_events_number = expected_output.get('events_number')
+    expected_last_run = expected_output.get('last_run')
+    incident_raw_json = json.loads(incidents[0]['rawJSON']) if incidents else {}
+    events = incident_raw_json.get('events')
+    events_number = len(events) if events else 0
+    assert len(incidents) == expected_incidents_number
+    assert updated_last_run == expected_last_run
+    assert incidents[0].get("name") == 'FortiSIEM incident: 1'
+    assert events_number == expected_events_number

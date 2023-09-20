@@ -63,5 +63,6 @@
                 "xdm.event.type": "All Users Logon"
             }
         }
-    ]
+    ],
+    "ignored_validations": ["schema_test_data_types"]
 }

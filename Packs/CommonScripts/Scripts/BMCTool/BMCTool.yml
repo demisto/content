@@ -1,0 +1,32 @@
+args:
+- name: EntryID
+  description: The RDP cache file's entryID to process.
+- defaultValue: "False"
+  name: verbose
+  description: Should the command produce verbose output.
+- defaultValue: "64"
+  name: width
+  description: Image width.
+commonfields:
+  id: BMCTool
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+dockerimage: demisto/python3:3.10.12.66339
+enabled: true
+name: BMCTool
+comment: Parse RDP bitmap cache data into a single collage image file.
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 6.9.0
+tests:
+- No tests (auto formatted)
+outputs:
+- contextPath: Collages
+  description: Collage image of the tiles from the RDP session cache.

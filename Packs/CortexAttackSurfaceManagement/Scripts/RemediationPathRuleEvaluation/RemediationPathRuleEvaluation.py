@@ -7,7 +7,7 @@ a given alert
 """
 
 import traceback
-from typing import Any, Dict, List
+from typing import Any
 
 # should match IncidentSeverity in CommonServerPython
 SEVERITY_MAP = {
@@ -20,7 +20,7 @@ SEVERITY_MAP = {
 }
 
 
-def match_remediation_rule(alert_context: Dict[str, Any], rules: List) -> List:
+def match_remediation_rule(alert_context: dict[str, Any], rules: list) -> list:
     """
     For the given alert (with the field in alert_context), finds the most recently created
     remediation path rule where the alert meets the rule's criteria
@@ -71,7 +71,7 @@ def match_remediation_rule(alert_context: Dict[str, Any], rules: List) -> List:
         return []
 
 
-def evaluate_criteria(cond: Dict, alert_context: Dict) -> bool:
+def evaluate_criteria(cond: dict, alert_context: dict) -> bool:
     """
     Evaluate whether a criteria condition is met based on the given alert's context fields
 
@@ -122,9 +122,9 @@ def evaluate_criteria(cond: Dict, alert_context: Dict) -> bool:
             if alert_context_value:
                 if isinstance(alert_context_value, str):
                     alert_context_value = [alert_context_value]
-                providers_set = set(
-                    [provider.lower() for provider in alert_context_value]
-                )
+                providers_set = {
+                    provider.lower() for provider in alert_context_value
+                }
                 if value in providers_set:
                     return True
             return False
@@ -142,8 +142,8 @@ def evaluate_criteria(cond: Dict, alert_context: Dict) -> bool:
                 # build set of tag values to check against
                 tags = set()
                 for tag in alert_context_value:
-                    tags.add(tag.get("Value").lower())
-                    tags.add(tag.get("Key").lower())
+                    tags.add(tag.get("value").lower())
+                    tags.add(tag.get("key").lower())
 
                 if value in tags:
                     return True

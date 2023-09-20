@@ -2,7 +2,7 @@ id: Cortex ASM - Decision
 version: -1
 name: Cortex ASM - Decision
 description: |-
-  This playbook returns "RemediationAction" options based on meeting "Automated Remediation Requirements" (https://github.com/demisto/content/tree/master/Packs/CortexAttackSurfaceManagement#automated-remediation-requirements) as well as whether ServiceNowV2 integration is set up.  Possible return values are:
+  Deprecated. No available replacement. This playbook returns "RemediationAction" options based on meeting "Automated Remediation Requirements" (https://github.com/demisto/content/tree/master/Packs/CortexAttackSurfaceManagement#automated-remediation-requirements) as well as whether ServiceNowV2 integration is set up.  Possible return values are:
   - Prompt base - data collection task with only email/manual options.
   - Prompt all options - data collection task with all options (meets Automated Remediation requirements and ServiceNow is enabled).
   - Prompt no snow - all options except ServiceNow (Automated Remediation requirements are met).
@@ -343,3 +343,4 @@ outputs:
 tests:
 - No tests (auto formatted)
 fromversion: 6.5.0
+deprecated: true
