@@ -651,6 +651,7 @@ def run_polling_command(args: dict, cmd: str, upload_function: Callable, results
     """
     ScheduledCommand.raise_error_if_not_supported()
     command_results_list = []
+    timeout_in_seconds = arg_to_number(args.pop('timeout_in_seconds', 600))
     interval_in_secs = int(args.get('interval_in_seconds', 60))
     # distinguish between the initial run, which is the upload run, and the results run
     is_new_search = 'url' not in args and 'md5' not in args and 'sha256' not in args and 'hash' not in args
@@ -673,7 +674,7 @@ def run_polling_command(args: dict, cmd: str, upload_function: Callable, results
                 command=cmd,
                 next_run_in_seconds=interval_in_secs,
                 args=polling_args,
-                timeout_in_seconds=600)
+                timeout_in_seconds=timeout_in_seconds)
             command_results.scheduled_command = scheduled_command
             command_results_list.append(command_results)
         return command_results_list
@@ -690,7 +691,7 @@ def run_polling_command(args: dict, cmd: str, upload_function: Callable, results
             command=cmd,
             next_run_in_seconds=interval_in_secs,
             args=polling_args,
-            timeout_in_seconds=600)
+            timeout_in_seconds=timeout_in_seconds)
 
         command_results_list = [CommandResults(scheduled_command=scheduled_command)]
     return command_results_list

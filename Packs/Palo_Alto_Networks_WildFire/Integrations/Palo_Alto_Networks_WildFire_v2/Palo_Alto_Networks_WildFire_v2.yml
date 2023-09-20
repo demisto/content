@@ -186,6 +186,9 @@ script:
     - defaultValue: '60'
       description: Interval in seconds between each poll.
       name: interval_in_seconds
+    - defaultValue: '600'
+      description: The timeout in seconds until polling ends.
+      name: timeout_in_seconds
     - description: Used for the inner polling flow. For uploading a file, use the 'upload' argument instead.
       isArray: true
       name: md5
@@ -432,6 +435,9 @@ script:
     - defaultValue: '60'
       description: Interval in seconds between each poll.
       name: interval_in_seconds
+    - defaultValue: '600'
+      description: The timeout in seconds until polling ends.
+      name: timeout_in_seconds
     - auto: PREDEFINED
       defaultValue: pdf
       description: The type of structured report (XML or PDF) to request. Only relevant when polling=true.
@@ -986,6 +992,9 @@ script:
     - defaultValue: '60'
       description: Interval in seconds between each poll.
       name: interval_in_seconds
+    - defaultValue: '600'
+      description: The timeout in seconds until polling ends.
+      name: timeout_in_seconds
     - auto: PREDEFINED
       defaultValue: pdf
       description: The type of structured report (XML or PDF) to request. Only relevant when polling=true.
