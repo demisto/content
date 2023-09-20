@@ -71,6 +71,8 @@ run-unittests-and-lint:
       when: never
     - if: '$SECURITY_SCANS == "true"'
       when: never
+    - if: '$BUILD_MACHINES_CLEANUP == "true"'
+      when: never
     - if: '$FORCE_BUCKET_UPLOAD == "true"'
       when: never
     - if: '$DEMISTO_TEST_NATIVE_CANDIDATE == "true"'
@@ -119,7 +121,7 @@ validate-content-conf:
   stage: prepare-testing-bucket
   script:
     - !reference [.download-demisto-conf]
-    - !reference [.create-release-notes-and-common-docs]
+    - !reference [.secrets-fetch]
     - section_start "Create or update content graph" --collapsed
 
     - echo "Updating the content graph"
@@ -246,6 +248,7 @@ xpanse-prepare-testing-bucket:
       fi
     - section_end "Check if should run Server Master"
     - !reference [.download-demisto-conf]
+    - !reference [.secrets-fetch]
     - export TEMP=$(cat $ARTIFACTS_FOLDER/filter_envs.json | jq ".\"$INSTANCE_ROLE\"")
     # If instance was not created
     - |
@@ -268,7 +271,7 @@ xpanse-prepare-testing-bucket:
 
     - section_end "Copy env results to artifacts folder"
     - section_start "Install Packs and run Test-Module"
-    - ./Tests/scripts/install_content_and_test_integrations.sh "$INSTANCE_ROLE" "$SERVER_TYPE"|| EXIT_CODE=$?
+    - ./Tests/scripts/install_content_and_test_integrations.sh "$INSTANCE_ROLE" "$SERVER_TYPE" || EXIT_CODE=$?
     - cp -f $ARTIFACTS_FOLDER/conf.json Tests/conf.json
     - section_end "Install Packs and run Test-Module"
     - section_start "Wait Until Server Ready"
@@ -315,10 +318,10 @@ tests_xsoar_server:
   parallel:
     matrix:
       - INSTANCE_ROLE:
-        - "Server 6.8"
         - "Server 6.9"
         - "Server 6.10"
         - "Server 6.11"
+        - "Server 6.12"
         - "Server Master"
 
 fan-in-nightly:
@@ -397,6 +400,7 @@ slack-notify-nightly-build:
   script:
     - EXIT_CODE=0
     - !reference [.download-demisto-conf]
+    - !reference [.secrets-fetch]
     - section_start "Are there tests to run?" --collapsed
     - |
       if ! [[ -s $ARTIFACTS_FOLDER/content_packs_to_install.txt || -s $ARTIFACTS_FOLDER/filter_file.txt ]]; then
@@ -405,21 +409,11 @@ slack-notify-nightly-build:
         job-done
         exit $EXIT_CODE
       fi
+    - cp "$ARTIFACTS_FOLDER/filter_file.txt" "./artifacts/filter_file.txt"
     - section_end "Are there tests to run?"
 
-    - section_start "Lock Machine" --collapsed
-    - cp "$ARTIFACTS_FOLDER/filter_file.txt" "./artifacts/filter_file.txt"
-    - echo "Authenticating GCP"
-    - gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" > $ARTIFACTS_FOLDER/logs/gauth.out 2>$ARTIFACTS_FOLDER/logs/gauth.err
-    - echo "Auth done successfully"
-    - ./Tests/scripts/wait_in_line_for_cloud_env.sh "$CLOUD_MACHINES_TYPE"
-    - source CloudEnvVariables
-    - echo "CLOUD chosen_machine_id is $CLOUD_CHOSEN_MACHINE_ID"
-    - section_end "Lock Machine"
-
-    - section_start "Clean Machine" --collapsed
-    - ./Tests/scripts/uninstall_packs_and_reset_bucket_cloud.sh || EXIT_CODE=$?
-    - section_end "Clean Machine"
+    - !reference [.lock-machine]
+    - !reference [.uninstall-packs-and-reset-bucket-cloud]
 
     - section_start "Install Packs and run Test-Module"
     - ./Tests/scripts/install_content_and_test_integrations.sh "$INSTANCE_ROLE" "$SERVER_TYPE" || EXIT_CODE=$?
@@ -442,20 +436,8 @@ slack-notify-nightly-build:
     - ./Tests/scripts/test_modeling_rules.sh || EXIT_CODE=$?
     - section_end "Test Modeling Rules"
 
-    - section_start "Cloud Machine information"
-    - ./Tests/scripts/print_cloud_machine_details.sh
-    - section_end "Cloud Machine information"
-
-    - section_start "After script" --collapsed
-    - |
-      if ! [ -z "$CLOUD_CHOSEN_MACHINE_ID" ]
-      then
-        echo "Job finished, removing lock file"
-        gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" > $ARTIFACTS_FOLDER/logs/gauth.out 2>$ARTIFACTS_FOLDER/logs/gauth.err
-        gsutil rm "gs://xsoar-ci-artifacts/$GCS_LOCKS_PATH/machines_locks/*-lock-$CI_JOB_ID"
-        echo "Finished removing lock file"
-      fi
-    - section_end "After script"
+    - !reference [.cloud-machine-information]
+    - !reference [.unlock-machine]
     - job-done
     - exit $EXIT_CODE
 
@@ -482,9 +464,11 @@ xsiam_server_ga:
       when: always
       variables:
         CLOUD_MACHINES_TYPE: "nightly"
+        CLOUD_MACHINES_COUNT: 1
         GCS_LOCKS_PATH: "content-locks/locks-xsiam-ga-nightly"
   variables:
     CLOUD_MACHINES_TYPE: "build"
+    CLOUD_MACHINES_COUNT: 1
     INSTANCE_ROLE: "XSIAM"
     GCS_QUEUE_FILE: "queue-ga"
     GCS_LOCKS_PATH: "content-locks/locks-xsiam-ga"
@@ -530,6 +514,7 @@ xsoar_ng_server_ga:
       when: always
   variables:
     CLOUD_MACHINES_TYPE: "build"
+    CLOUD_MACHINES_COUNT: 1
     INSTANCE_ROLE: "XSIAM"
     GCS_QUEUE_FILE: "queue-ga"
     GCS_LOCKS_PATH: "content-locks/locks-xsoar-ng"
