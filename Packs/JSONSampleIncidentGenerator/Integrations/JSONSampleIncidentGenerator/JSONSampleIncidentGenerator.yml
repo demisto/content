@@ -1,6 +1,6 @@
 category: Utilities
 commonfields:
-  id: JSONSampleIncidentGenerator
+  id: JSONSampleIncidentGenerator_copy
   version: -1
 configuration:
 - display: Fetch incidents
@@ -26,8 +26,8 @@ configuration:
   required: false
 description: |-
   A utility for testing incident fetching with mock JSON data.
-display: JSON Sample Incident Generator
-name: JSONSampleIncidentGenerator
+display: JSON Sample Incident Generator_copy
+name: JSONSampleIncidentGenerator_copy
 script:
   commands:
   - arguments:
