@@ -161,6 +161,7 @@ class Client:
             sql_query = text(sql_query)
 
         result = self.connection.execute(sql_query, bind_vars)
+        self.connection.commit()
         # extracting the table from the response
         if fetch_limit:
             table = result.mappings().fetchmany(fetch_limit)
