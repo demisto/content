@@ -1,5 +1,4 @@
 # from CommonServerPython import *
-import pytest
 from DBotFindSimilarIncidents import normalize_command_line, main, demisto, keep_high_level_field, \
     preprocess_incidents_field, PREFIXES_TO_REMOVE, check_list_of_dict, REGEX_IP, match_one_regex, \
     SIMILARITY_COLUNM_NAME_INDICATOR, SIMILARITY_COLUNM_NAME, euclidian_similarity_capped, find_incorrect_fields, \
@@ -50,13 +49,11 @@ def executeCommand(command, args):
             return [{'Contents': json.dumps(FETCHED_INCIDENT), 'Type': 'note'}]
         else:
             return [{'Contents': json.dumps(CURRENT_INCIDENT), 'Type': 'note'}]
+    return None
 
 
 def check_exist_dataframe_columns(*fields, df):
-    for field in fields:
-        if field not in df.columns.tolist():
-            return False
-    return True
+    return all(field in df.columns.tolist() for field in fields)
 
 
 def test_keep_high_level_field():
@@ -95,7 +92,6 @@ def test_euclidian_similarity_capped():
     assert distance[1] > 0
 
 
-@pytest.mark.filterwarnings("ignore::pandas.core.common.SettingWithCopyWarning", "ignore::UserWarning")
 def test_main_regular(mocker):
     global SIMILAR_INDICATORS, FETCHED_INCIDENT, CURRENT_INCIDENT
     FETCHED_INCIDENT = FETCHED_INCIDENT_NOT_EMPTY
@@ -130,7 +126,6 @@ def test_main_regular(mocker):
     assert res.loc['2', 'similarity indicators'] == 0.0
 
 
-@pytest.mark.filterwarnings("ignore::pandas.core.common.SettingWithCopyWarning")
 def test_main_no_indicators_found(mocker):
     """
     Test if no indicators found
@@ -168,7 +163,6 @@ def test_main_no_indicators_found(mocker):
     assert (res['similarity indicators'] == [0.0, 0.0, 0.0]).all()
 
 
-@pytest.mark.filterwarnings("ignore::pandas.core.common.SettingWithCopyWarning")
 def test_main_no_fetched_incidents_found(mocker):
     """
     Test output if no related incidents found - Should return None and MESSAGE_NO_INCIDENT_FETCHED
@@ -216,7 +210,6 @@ def test_main_some_incorrect_fields():
     assert correct_field_1 not in global_msg
 
 
-@pytest.mark.filterwarnings("ignore::pandas.core.common.SettingWithCopyWarning")
 def test_main_all_incorrect_field(mocker):
     """
     Test if only incorrect fields  -  Should return None and MESSAGE_INCORRECT_FIELD message for wrong fields
@@ -255,7 +248,6 @@ def test_main_all_incorrect_field(mocker):
     assert all(field in msg for field in [wrong_field_1, wrong_field_2, wrong_field_3, wrong_field_4])
 
 
-@pytest.mark.filterwarnings("ignore::pandas.core.common.SettingWithCopyWarning")
 def test_main_incident_truncated(mocker):
     """
     Test if fetched incident truncated  -  Should return MESSAGE_WARNING_TRUNCATED in the message
@@ -294,7 +286,6 @@ def test_main_incident_truncated(mocker):
     assert MESSAGE_WARNING_TRUNCATED % (limit, limit) in msg
 
 
-@pytest.mark.filterwarnings("ignore::pandas.core.common.SettingWithCopyWarning")
 def test_main_incident_nested(mocker):
     """
     Test if fetched incident truncated  -  Should return MESSAGE_WARNING_TRUNCATED in the message
@@ -331,3 +322,10 @@ def test_main_incident_nested(mocker):
     df, msg = main()
     assert not df.empty
     assert (df['similarity %s' % nested_field] == [1.0, 1.0, 1.0]).all()
+
+
+def test_get_get_data_from_indicators_automation():
+    from DBotFindSimilarIncidents import get_data_from_indicators_automation
+
+    res = get_data_from_indicators_automation(None, TAG_SCRIPT_INDICATORS)
+    assert res is None
