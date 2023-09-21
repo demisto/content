@@ -227,7 +227,7 @@ def main():
     print('contributors section')
     pack_name = get_pack_name(pr_files[0])
     print(f'pack name is: {pack_name}')
-    ver = get_pack_metadata(pack_name).get('version')
+    ver = get_pack_metadata(pack_name)
     print(f'version is: {ver}')
     if 'contributors' not in pr_files and XSOAR_SUPPORT_LEVEL_LABEL in labels_to_add and ver != '1.0.0':
         pr.create_issue_comment("EDI TEST")
