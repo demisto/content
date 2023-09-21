@@ -42,6 +42,9 @@ class ConnectionMock:
     def execution_options(self, isolation_level):
         pass
 
+    def commit(self):
+        pass
+
 
 ARGS1 = {
     'query': "select Name from city",
