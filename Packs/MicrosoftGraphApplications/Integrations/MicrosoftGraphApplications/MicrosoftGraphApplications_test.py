@@ -389,3 +389,25 @@ def test_unlock_configuration_service_principal_command_exception(mocker, reques
 
     with pytest.raises(KeyError):
         unlock_configuration_service_principal_command(client, args={})
+
+
+def test_start_auth(mocker, requests_mock):
+    """
+        Given:
+            - A client object
+        When:
+            - start_auth function is called
+        Then:
+            - Ensure CommandResults is returned and contains the readable_output as expected
+
+    """
+    from MicrosoftGraphApplications import Client, start_auth
+
+    mock_token = {'access_token': 'test_token', 'expires_in': '86400'}
+    requests_mock.post('https://login.microsoftonline.com/organizations/oauth2/v2.0/token', json=mock_token)
+    client = Client(app_id='TEST', verify=False, proxy=False, connection_type='TEST', tenant_id='TEST', enc_key='TEST')
+    client.ms_client.start_auth = mocker.patch("MicrosoftGraphApplications.MicrosoftClient.start_auth")
+    client.ms_client.start_auth.return_value = "TEST"
+    readable_output = "TEST"
+
+    assert start_auth(client=client).readable_output == readable_output
