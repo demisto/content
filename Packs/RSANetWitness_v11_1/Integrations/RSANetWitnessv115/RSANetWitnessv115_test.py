@@ -1,8 +1,7 @@
 import json
 import pytest
 import demistomock as demisto
-
-
+from freezegun import freeze_time
 from CommonServerPython import CommandResults, DemistoException
 import RSANetWitnessv115
 from RSANetWitnessv115 import Client, list_incidents_command, update_incident_command, remove_incident_command, \
@@ -433,6 +432,7 @@ def test_update_remote_system_command_with_nonupdated_incident(mocker):
         Then:
             Check if RSA status was not updated.
     """
+
     class UpdateRemoteSystemArgsResponse:
         def __init__(self) -> dict:
             self.delta = {"key": "value"}
@@ -591,6 +591,7 @@ def test_struct_inc_context():
     assert struct_inc_context(1, 1, True) == expected_result
 
 
+@freeze_time('2023-09-18T00:00:00Z')
 def test_clean_old_inc_context_with_non_expired_incident(mocker):
     """
         Given:
@@ -615,6 +616,7 @@ def test_clean_old_inc_context_with_non_expired_incident(mocker):
                                       "refresh_token": "SECRET REPLACED", "token": "SECRET REPLACED"})
 
 
+@freeze_time('2023-09-18T00:00:00Z')
 def test_clean_old_inc_context_with_expired_incident(mocker):
     """
         Given:
@@ -629,14 +631,14 @@ def test_clean_old_inc_context_with_expired_incident(mocker):
     from datetime import datetime, timedelta
     max_time_mirror_inc = 24
     DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%MZ'
-    created_date = datetime.now() - timedelta(days=max_time_mirror_inc + 1)
+    created_date = datetime.now() - timedelta(days=max_time_mirror_inc + 10)
 
     mocker.patch.object(demisto, "getIntegrationContext",
                         return_value={"IncidentsDataCount": {"INC-1": {"Created": created_date.strftime(DATE_FORMAT)}}})
-    mocker_setint = mocker.patch.object(demisto, "setIntegrationContext")
+    mocker_set_integration = mocker.patch.object(demisto, "setIntegrationContext")
     clean_old_inc_context(max_time_mirror_inc)
-    mocker_setint.assert_called_with({"IncidentsDataCount": {},
-                                      "refresh_token": "SECRET REPLACED", "token": "SECRET REPLACED"})
+    mocker_set_integration.assert_called_with({"IncidentsDataCount": {},
+                                               "refresh_token": "SECRET REPLACED", "token": "SECRET REPLACED"})
 
 
 def test_clean_secret_integration_context(mocker):

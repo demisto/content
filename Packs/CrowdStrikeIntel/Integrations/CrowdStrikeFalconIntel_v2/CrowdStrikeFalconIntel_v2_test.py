@@ -133,7 +133,7 @@ class TestHelperFunctions:
             assert get_indicator_object(ind_val, ind_type, dbot_score) == output
         else:
             assert get_indicator_object(ind_val, ind_type, dbot_score).to_context() == \
-                   output.to_context()
+                output.to_context()
 
     @pytest.mark.parametrize('items_list, ret_type, keys, output', [
         ([{'value': 1, 'name': 2}], 'str', 'value', '1'),
