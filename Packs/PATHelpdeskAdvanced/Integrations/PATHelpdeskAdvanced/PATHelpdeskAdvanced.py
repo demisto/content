@@ -15,7 +15,7 @@ from CommonServerUserPython import *  # noqa
 
 DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 VENDOR = "HelpdeskAdvanced"
-OPERATORS = ("eq", "gt", "lt", "ge", "le", "sw", "nw")
+OPERATORS = ("eq", "gt", "lt", "ge", "le", "sw", "nw", "ne")
 FILTER_CONDITION_REGEX = re.compile(
     rf"\A\"(?P<key>.*?)\" (?P<op>{'|'.join(OPERATORS)}) (?P<value>(?:\".*?\"|null))\Z"
 )
@@ -36,6 +36,9 @@ class Field:
 
         self.demisto_name = demisto_name  # lower_case
         self.hda_name = "".join(title_parts)  # PascalCase
+
+    def __repr__(self) -> str:
+        return self.hda_name
 
 
 OBJECT_TYPE_ID = Field("object_type_id")
@@ -619,21 +622,46 @@ def paginate(**kwargs) -> PaginateArgs:
 
 
 def pat_table_to_markdown(
-    title: str, output: dict, fields: Sequence[Field] | None
+    title: str,
+    output: dict | list[dict],
+    fields: Sequence[Field] | None,
+    field_replacements: dict[Field, Field] | None = None,
 ) -> str:
-    if fields is not None:
-        output_for_human_readable = {
-            field: output[field]
-            for field in (field_object.hda_name for field_object in fields)
-            if field in output
-        }
+    def replace_fields(item: Any):
+        assert field_replacements, "field_replacements is required"
+        if isinstance(item, dict):
+            return {
+                field_replacements.get(key, key): value for key, value in item.items()
+            }
+        elif isinstance(item, list):
+            return [replace_fields(v) for v in item]
+        return item
 
-    else:
-        output_for_human_readable = output
+    def filter_fields(item: dict | list[dict]) -> dict | list[dict]:
+        assert fields, "Fields must be provided to filter"
+
+        def _filter_dict(dictionary: dict) -> dict:
+            return {
+                field: dictionary[field]
+                for field in (field_object.hda_name for field_object in fields)
+                if field in dictionary
+            }
+
+        if isinstance(item, dict):
+            return _filter_dict(item)
+        elif isinstance(item, list):
+            return [filter_fields(list_item) for list_item in item]  # type:ignore[misc]
+        raise TypeError(f"cannot filter {type(item)}")
+
+    if field_replacements:
+        output = replace_fields(output)
+
+    if fields is not None:
+        output = filter_fields(output)
 
     return tableToMarkdown(
         name=title,
-        t=output_for_human_readable,
+        t=output,
         headerTransform=pascalToSpace,
         sort_headers=False,
     )
@@ -675,11 +703,12 @@ def create_ticket_command(client: Client, args: dict) -> CommandResults:
 
 
 def list_tickets_command(client: Client, args: dict) -> CommandResults:
-    response = client.list_tickets(**args)
-    response = convert_response_dates(response)
+    raw_response = client.list_tickets(**args)
+    response = convert_response_dates(raw_response)
 
     return CommandResults(
         outputs=response["data"],
+        raw_response=raw_response,
         outputs_prefix=f"{VENDOR}.Ticket",
         outputs_key_field=ID.hda_name,  # TODO choose fields for HR?
         readable_output=pat_table_to_markdown(
@@ -696,8 +725,8 @@ def list_tickets_command(client: Client, args: dict) -> CommandResults:
                 OWNER_USER_ID,
                 ACCOUNT_ID,
             ),
+            field_replacements={ID: TICKET_ID},
         ),
-        raw_response=response,
     )
 
 

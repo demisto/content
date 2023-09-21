@@ -6,9 +6,13 @@
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
-    "categories": [],
+    "categories": [
+        "Case Management"
+    ],
     "tags": [],
-    "useCases": [],
+    "useCases": [
+        "Case Management"
+    ],
     "keywords": [],
     "marketplaces": [
         "xsoar",
