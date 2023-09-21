@@ -72,10 +72,10 @@ If a takedown for the attack already exists in the Netcraft system it will be au
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Netcraft.Takedown.id | String | The ID of the takedown. \(this key will only appear if the takedown has been created and verified\). | 
+| Netcraft.Takedown.id | String | The ID of the takedown. (this key will only appear if the takedown has been created and verified). | 
 
 #### Command example
-```!netcraft-attack-report attack="https://www.amazon.com/phishing_rods" comment="Very malicious" attack_type="phishing_url" inactive="true" customer_label="Test Playbook run" tags="coronavirus"```
+```!netcraft-attack-report attack="https://www.example.com/" comment="Very malicious" attack_type="phishing_url" inactive="true" customer_label="Test Playbook run" tags="coronavirus"```
 #### Context Example
 ```json
 {
@@ -264,11 +264,230 @@ Will be an empty array if the URL was not seen blocked by GSB on any platform.
 | Netcraft.Takedown.whois_data | String | The WHOIS data for the takedown. | 
 
 #### Command example
-```!netcraft-takedown-list date_from="last week" attack_types=phishing_url escalated="No" sort=id sort_direction=asc limit=2 all_results=false```
+```!netcraft-takedown-list attack_types="coronavirus" date_from="last week" date_to="yesterday" escalated="No" limit="3"```
+#### Context Example
+```json
+{
+    "Netcraft": {
+        "Takedown": [
+            {
+                "attack_type": "survey_scam",
+                "attack_url": "https://www.example.com",
+                "authgiven": "0",
+                "authorisation_source": "",
+                "certificate": {
+                    "spki_sha1": "a1a15014c6b818bad729ee738a63e2ea9518a1a1",
+                    "spki_sha256": "a1a12eaa37f2f3eb1046a195d73a1a112015967afa18948c431514f20671a1a1",
+                },
+                "certificate_revoked": "Not revoked",
+                "country_code": "us",
+                "customer_label": "",
+                "customer_tag": "",
+                "date_authed": "",
+                "date_escalated": "",
+                "date_first_actioned": "",
+                "date_submitted": "2023-09-19 19:05:21 UTC",
+                "deceptive_domain_score": "0.00",
+                "domain": "dynamicelevate.com",
+                "domain_attack": "yes",
+                "domain_risk_rating": "1",
+                "escalated": "0",
+                "escalation_source": "",
+                "evidence_url": "https://incident.netcraft.com/85e57bf4d933/",
+                "false_positive": false,
+                "final_outage": "",
+                "final_resolved": "",
+                "first_contact": "",
+                "first_inactive": "",
+                "first_outage": "",
+                "first_resolved": "",
+                "fwd_owner": "[unknown]",
+                "group_id": "45535862",
+                "gsb_block_status": [],
+                "gsb_first_blocked": [],
+                "has_phishing_kit": "0",
+                "host": "Cloudflare",
+                "hostname": "ganu.dynamicelevate.com",
+                "hostname_attack": "no",
+                "hostname_ddss_score": "0.00",
+                "id": "45535866",
+                "ip": "1.1.1.1",
+                "is_redirect": "no_redirect",
+                "language": "english",
+                "last_updated": "2023-09-19 19:27:06 UTC",
+                "malware_category": "",
+                "malware_family": "",
+                "managed": false,
+                "phishing_kit_hash": [],
+                "region": "paloalto-xsoar-test",
+                "registrar": "Internet Domain Service BS Corp.",
+                "report_source": "Phishing Feed",
+                "reported_url": "http://www.example.com",
+                "reporter": "netcraft",
+                "restart_date": "",
+                "rev_owner": "cloudflare.com",
+                "reverse_dns": "",
+                "screenshot_url": "https://screenshot.netcraft.com/images/archive/2023-09-19/sce6d3ba3f08df24091b33333771b8c6.png?url=1&title=1&proxy=1",
+                "site_risk_rating": "1",
+                "status": "Verified",
+                "status_change_uptime": "",
+                "stop_monitoring_date": "",
+                "tags": [],
+                "target_brand": "Cortex XSOAR",
+                "targeted_url": "",
+                "whois_server": "whois.internet.bs"
+            },
+            {
+                "attack_type": "fake_shop",
+                "attack_url": "https://www.example.com/",
+                "authgiven": "0",
+                "authorisation_source": "",
+                "certificate": {
+                    "spki_sha1": "a1a15014c6b818bad729ee738a63e2ea9518a1a1",
+                    "spki_sha256": "a1a12eaa37f2f3eb1046a195d73a1a112015967afa18948c431514f20671a1a1",
+                },
+                "certificate_revoked": "Not revoked",
+                "country_code": "ca",
+                "customer_label": "",
+                "customer_tag": "",
+                "date_authed": "",
+                "date_escalated": "",
+                "date_first_actioned": "",
+                "date_submitted": "2023-09-19 04:34:18 UTC",
+                "deceptive_domain_score": "0.00",
+                "domain": "sawbladeonsale.com",
+                "domain_attack": "yes",
+                "domain_risk_rating": "10",
+                "escalated": "0",
+                "escalation_source": "",
+                "evidence_url": "https://incident.netcraft.com/b440f677254f/",
+                "false_positive": false,
+                "final_outage": "",
+                "final_resolved": "",
+                "first_contact": "",
+                "first_inactive": "2023-09-19 12:18:20 UTC",
+                "first_outage": "",
+                "first_resolved": "",
+                "fwd_owner": "[unknown]",
+                "group_id": "45510294",
+                "gsb_block_status": [],
+                "gsb_first_blocked": [],
+                "has_phishing_kit": "0",
+                "host": "net-minders.com",
+                "hostname": "www.sawbladeonsale.com",
+                "hostname_attack": "yes",
+                "hostname_ddss_score": "0.00",
+                "id": "45510294",
+                "ip": "1.1.1.1",
+                "is_redirect": "no_redirect",
+                "language": "english",
+                "last_updated": "2023-09-19 12:50:53 UTC",
+                "malware_category": "",
+                "malware_family": "",
+                "managed": false,
+                "phishing_kit_hash": [],
+                "region": "paloalto-xsoar-test",
+                "registrar": "Gname.com Pte. Ltd.",
+                "report_source": "Phishing Feed",
+                "reported_url": "https://www.example.com/",
+                "reporter": "netcraft",
+                "restart_date": "",
+                "rev_owner": "net-minders.com",
+                "reverse_dns": "",
+                "screenshot_url": "https://screenshot.netcraft.com/images/archive/2023-09-19/sc58c54455971009699acdb235e4b8bd.png?url=1&title=1&proxy=1",
+                "site_risk_rating": "10",
+                "status": "Verified",
+                "status_change_uptime": "",
+                "stop_monitoring_date": "",
+                "tags": [
+                    "generic-fake-shop"
+                ],
+                "target_brand": "Cortex XSOAR",
+                "targeted_url": "",
+                "whois_server": "whois.gname.com"
+            },
+            {
+                "attack_type": "fake_shop",
+                "attack_url": "http://www.example.com/",
+                "authgiven": "0",
+                "authorisation_source": "",
+                "certificate": {
+                    "spki_sha1": "a1a15014c6b818bad729ee738a63e2ea9518a1a1",
+                    "spki_sha256": "a1a12eaa37f2f3eb1046a195d73a1a112015967afa18948c431514f20671a1a1",
+                },
+                "certificate_revoked": "Not revoked",
+                "country_code": "za",
+                "customer_label": "",
+                "customer_tag": "",
+                "date_authed": "",
+                "date_escalated": "",
+                "date_first_actioned": "",
+                "date_submitted": "2023-09-19 00:36:25 UTC",
+                "deceptive_domain_score": "0.00",
+                "domain": "kitchesell.com",
+                "domain_attack": "yes",
+                "domain_risk_rating": "6",
+                "escalated": "0",
+                "escalation_source": "",
+                "evidence_url": "https://incident.netcraft.com/6d7067101545/",
+                "false_positive": false,
+                "final_outage": "",
+                "final_resolved": "",
+                "first_contact": "",
+                "first_inactive": "",
+                "first_outage": "",
+                "first_resolved": "",
+                "fwd_owner": "cloudflare.com",
+                "group_id": "45502344",
+                "gsb_block_status": [],
+                "gsb_first_blocked": [],
+                "has_phishing_kit": "0",
+                "host": "Fibergrid Group",
+                "hostname": "www.kitchesell.com",
+                "hostname_attack": "yes",
+                "hostname_ddss_score": "0.00",
+                "id": "45502434",
+                "ip": "1.1.1.1",
+                "is_redirect": "redirect",
+                "language": "english",
+                "last_updated": "2023-09-19 00:52:01 UTC",
+                "malware_category": "",
+                "malware_family": "",
+                "managed": false,
+                "phishing_kit_hash": [],
+                "region": "paloalto-xsoar-test",
+                "registrar": "Name.com, Inc.",
+                "report_source": "Phishing Feed",
+                "reported_url": "http://www.example.com/",
+                "reporter": "netcraft",
+                "restart_date": "",
+                "rev_owner": "fibergrid.net",
+                "reverse_dns": "",
+                "screenshot_url": "https://screenshot.netcraft.com/images/archive/2023-09-19/sbf28d4700b79019c802dac611e9514c.png?url=1&title=1&proxy=1",
+                "site_risk_rating": "6",
+                "status": "Verified",
+                "status_change_uptime": "",
+                "stop_monitoring_date": "",
+                "tags": [
+                    "fake-shop-logo"
+                ],
+                "target_brand": "Cortex XSOAR",
+                "targeted_url": "",
+                "whois_server": "whois.name.com"
+            }
+        ]
+    }
+}
+```
+
 #### Human Readable Output
 
 >### Netcraft Takedowns
->**No entries.**
+>|ID|Auth|Brand|Attack Type|Status|Attack URL|Date Reported|Last Updated|Date Authorised|Date Escalated|First Inactive (Monitoring)|First Resolved|
+>|---|---|---|---|---|---|---|---|---|---|---|---|
+>| 45535866 | No | Cortex XSOAR | survey_scam | Verified | https:<span>//</span>ganu.dynamicelevate.com/ze/xufawa/namu/index.php?rpclk=8wocgxnwZlVgWqCl4amyElWSdU%2B8SEBm6%2F1vWOh6CEpdwEcFOH6aEWZY8JIqG1yHriIwkvzBnonP07noIGpSFWVojTWPE%2FqBGCYHt2%2FxNJG7sMIb73v2Ba1AdgiFoBWGKZamryDq2xk8JtxfVtgUclt4PWFF3I1CWFqXAH%2FvbFg%2F1Mv%2F0EOWJS6dUJy2IWbtCJvNnuBcJWYF0bEosXgsnv5KmRQDEVAhJjIp4eyvMJr8yPmJWCYMKCH0QJS8kqmnp5AWegynT78OnZyPx1Gf7LS4wbWQ5lB3V3CYpBjgDXmH8UgS69M3RU1HXvQxMXTeHobGqoqBL1odDt5026Cvg014jKzORjPbPRX5O46z6siX%2B0%2BNqGkmwJj4NOmAp%2B%2Bcr07NFz2PRkTnzxhUOULhDux6dICLkRn0Yx30fsQWOznrGGF27ipnKVFY2Ipaa76vpNWzhrklt%2FZhTlWWsS0SsBR0yEKyQDyk6qVv%2BK8DMRA4lZf1XZfY2hNGLJ6nwMVApzIt5iMdgKL78roTKNR3lVSZ6w8rtIEB2NtiiOxFF9ikytLlIHQXSevd6fHvSuXeb3n6Omdyj3ONKIZY%2B3%2FjiIXuPplxffD9kv5dGR2QgXK93cMbhWi8uajt5pHQH3BEQcBAJO%2BcHmh6auGjLuzGCbaWVkueArhTPnw83%2FoI%2BVGEPa7VdwsBJiV55QBTO8%2BWoazxW70VZ4fpKeTA8xB2f3Tg9GQ%2FpdwwdT24f%2BUbnYPgzkIqSqU%2FZhf%2FFQCi2JP0wwE7ffh7T%2Bz0il%2Fkb4EaYEVIpAUdcG5q%2BxJt%2BrIn8Xrw83Hh%2Bci6gSbGwU1A1TWSresXSX01EJ8%2F3Guf2C%2FT0DM0CwpbAFJxz22bILkDOoFx6ICxFKNaKTZcjtKGjrgQfoxhWr%2FCH5%2BU%2B4FhBp6iz8tw6gSR5kxQZYiYTZtoJjJPsHIX5wGV2zYM%2B7LXp7f4EP0Wy%2FS1Pm1ryAiPaIbUUbbh4mWFzwFroDjNt43lD6VK3G3RbpWHI0Fo5k%2F6wlFhev%2Blq6qCeS02P3arwPrF0Qcv%2FGWeFI5Bq2H7LUs0ToCHYUa%2FJo4BA%2Bji0v6WlRN1DS7%2F7k%2F1Zw4ykzxgZN8f712rnKsKLCKIp0AidTPWuVm3DaSk5LRKnHpvMIXYFSus99BSuBqcMGl5J%2BAP9qwXVbtsvPxkr4E%2BhmWRPzaT7At5%2BZen%2B%2BE4f6TWqrDimFbMJoYyiqzxloGQYU%2Fm0FMZhRyicVPXHDg1Y2qWEk8Qh0WtjyQq2jBWuZTDlMixP4kpTU4EaXSXgJsWf5jfIQmZLICAuNWRU3ZJTXB0Q%2FoFOE0dWjKpZ%2BBqIj6ei6hivIUU8F0NblPo98zbIgl%2FKjcBVgq9s3thc%2B257QwNf3D9zKyU0%2FoIHDMAcCe4qIqfMZ6mQ2dTVNbfMe0GvjUHfX9qi2j0RCDLO9WZxCAsDM6eZF7c7TlBrn4DNmugpwRAkdJeUim52UcXOQyVpmtmv0UzOGttUS1SKVOBfhSUZaA5QZbWUHeKtqJnxlRepFBIr2NLtv3IUs1gV4aYpE9lrlbCLuunKuNxgfRhsJbxmt7yxfPnYJ0THmqM%2Fzi2ucbal91xCZN3pV35J8KV8BNt3dXtS38UazqPtnAIfI6W77OBItaQEQ5C5FtpWw2gPGqjEK2%2FscgRBTHWElB3FGGdyiYEE1ymLRJudGux4vdsbndaP6NRKgraYt83HkIWxukpvayoLGtzyAgGNS7mAuoPeILzGwSpz3Vu7lWjBHRbWUY5%2BdRVBsXUcWuj7T6sqGf8pQX7j80rPZ%2ByDHO5agY7ukNOKe7%2BcM1VHhZOEpDDnj5MBp8O%2BpQqxX7tgszsMG9s9YpmmIaztnf6hYo6dM4G3bKae%2FVgNWRPZQb692UHqLGoZqinMP3MqFDfxxpPFVJlsb2yFvqeQUhYOVZlqIASA9sN8nAyLXv%2BhymUTzdyx0lvgqk56M9%2FZGlOkoFibOsAfRp1at4nptRLJ3QZVMg7hI3%2BQs0HjuVRvgF%2Fu5%2BZ5KvytxfanXfdqaOstxSrq7Q1BPW1MRIZ0xIyal%2FYsdEKxMqCr20GOOaha4T1bsj9R7d6lUBJ1HNEXC3BFgPSz0x3%2BUBGBtI7tD%2F6Te5dJ2brm0NmOh%2Fpv1%2Bd%2Bg0RyJoYruyHA2LsMTYP54l2vC30ygGnl7o%2BRLwBMZCkFvKgdD1lP%2BYIqcdUE5xNe4YyJN7nAwPkfq5nro1WlOybHWpwnHmRBu9RSE2hEV4IfyQPLCuBAQbrxdW4sOvnqgxOA7fGqqurj%2BDdUDgcmtzY8tewKpBCBPUV%2BEKGlRTHlOSlilHWu3VPqJVkggviJ2QF8XDa5NISy1nJ6t%2F3D4bfC0y72r%2F%2FsK%2BdRqFvL%2FBcavzhqU1H8jVTvIDz%2Bq9ju2l6%2FVTl2zR1nPg2P2kOWr3u2EDnrwbymtGMEXf39JbldX8UII4JTKNfVuJIYzK8VWqDGaQbmT2vN3Cfh17DD%2B%2BNF%2FsMNl2KL1pgF%2BQtb%2FRGy4Dfs0vWy%2B0Q5HlTwbRVO1COe6QNvOvYtrKY7dlED1le6dn8joEZmptJMx%2BhRd08JARuxfsgOK917RlcAwAYxJh8qgRoJ9ZdtJ9BscTcAhTkclWUD%2Flr75io%3A%3Adeb2860c8e29b6c68bd296fe1cd42554&p=yyKy6P3Jm1mmQPoGQYvkuk6Ug3gYBg%3D%3D%3A%3Afb77cfae6566e293f1c681f8c6c33b5d&oho=t4.radiantascendhq.com&ptf=b932a9b8ce22aed66461b2591cbbb5ed | 2023-09-19 19:05:21 UTC | 2023-09-19 19:27:06 UTC | N/A | N/A | N/A | N/A |
+>| 45510294 | No | Cortex XSOAR | fake_shop | Verified | https:<span>//</span>www.example.com/ | 2023-09-19 04:34:18 UTC | 2023-09-19 12:50:53 UTC | N/A | N/A | 2023-09-19 12:18:20 UTC | N/A |
+>| 45502434 | No | Cortex XSOAR | fake_shop | Verified | http:<span>//</span>www.example2.com/ | 2023-09-19 00:36:25 UTC | 2023-09-19 00:52:01 UTC | N/A | N/A | N/A | N/A |
 
 
 ### netcraft-takedown-update
@@ -297,6 +516,16 @@ Update one or more fields related to a takedown.
 #### Context Output
 
 There is no context output for this command.
+#### Command example
+```!netcraft-takedown-update add_tags="smishing,fake-shop-logo" remove_tags="coronavirus" takedown_id=45492113```
+#### Human Readable Output
+
+>### Takedown successfully updated.
+>|Takedown ID|
+>|---|
+>| 45492113 |
+
+
 ### netcraft-takedown-escalate
 
 ***
@@ -318,6 +547,16 @@ Note that escalating a takedown may cost one or more Netcraft managed credits.
 #### Context Output
 
 There is no context output for this command.
+#### Command example
+```!netcraft-takedown-escalate takedown_id=45470682```
+#### Human Readable Output
+
+>### Takedown successfully escalated.
+>|Takedown ID|
+>|---|
+>| 45470682 |
+
+
 ### netcraft-takedown-note-create
 
 ***
@@ -340,6 +579,27 @@ Add a new note to an existing takedown.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Netcraft.TakedownNote.note_id | Number | The ID of the note added to the takedown. | 
+
+#### Command example
+```!netcraft-takedown-note-create note_text="important not" notify="false" takedown_id=45470682```
+#### Context Example
+```json
+{
+    "Netcraft": {
+        "TakedownNote": {
+            "note_id": 1394724283
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Note successfully added to takedown.
+>|Note ID|Takedown ID|
+>|---|---|
+>| 1394724283 | 45470682 |
+
 
 ### netcraft-takedown-note-list
 
@@ -370,6 +630,43 @@ This will only be set if the note has been attached to all takedowns in the grou
 | Netcraft.TakedownNote.time | Date | The date and time that the note was created. | 
 | Netcraft.TakedownNote.author | String | The username of the account that created the note. Notes added by Netcraft will show as "Netcraft". | 
 | Netcraft.TakedownNote.note | String | The contents of the note. | 
+
+#### Command example
+```!netcraft-takedown-note-list all_results="true" takedown_id=45470682```
+#### Context Example
+```json
+{
+    "Netcraft": {
+        "TakedownNote": [
+            {
+                "author": "reporter@socteam.com",
+                "group_id": 0,
+                "note": "Takedown escalated from automated to managed",
+                "note_id": 1394719264,
+                "takedown_id": 45470682,
+                "time": "2023-09-21 08:08:52"
+            },
+            {
+                "author": "reporter@socteam.com",
+                "group_id": 45470682,
+                "note": "important not",
+                "note_id": 1394724283,
+                "takedown_id": 45470682,
+                "time": "2023-09-21 08:23:56"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Takedown Notes
+>|Note ID|Takedown ID|Group ID|Time|Author|Note|
+>|---|---|---|---|---|---|
+>| 1394719264 | 45470682 | 0 | 2023-09-21 08:08:52 | reporter@socteam.com | Takedown escalated from automated to managed |
+>| 1394724283 | 45470682 | 45470682 | 2023-09-21 08:23:56 | reporter@socteam.com | important not |
+
 
 ### netcraft-attack-type-list
 
@@ -402,6 +699,305 @@ Get information on the attack types that are available under a given region.
 | Netcraft.AttackType.auto_escalation | Boolean | Indicates whether or not you have chosen to automatically escalate takedowns under this type to managed takedowns after the configured escalation period. | 
 | Netcraft.AttackType.auto_authorise | Boolean | Indicates whether or not you have chosen to automatically authorise takedowns under this type. | 
 
+#### Command example
+```!netcraft-attack-type-list all_results="false" automated=true```
+#### Context Example
+```json
+{
+    "Netcraft": {
+        "AttackType": [
+            {
+                "auto_authorise": true,
+                "auto_escalation": false,
+                "automated": true,
+                "base_type": "url",
+                "description": "The URL for a webpage which impersonates your company in an attempt to trick users into submitting their login details. Usually the URL is linked to in an email sent to your users.",
+                "display_name": "Phishing URL",
+                "name": "phishing_url"
+            },
+            {
+                "auto_authorise": true,
+                "auto_escalation": false,
+                "automated": true,
+                "base_type": "url",
+                "description": "The URL of a webpage which receives user's details from a HTML attachment sent to users via email.",
+                "display_name": "Phishing Dropsite",
+                "name": "dropsite"
+            },
+            {
+                "auto_authorise": true,
+                "auto_escalation": false,
+                "automated": true,
+                "base_type": "url",
+                "description": "The URL for a fraudulent mobile application, found on a mobile application store, that is targeting your customers.",
+                "display_name": "Fake Mobile App",
+                "name": "fake_mobile_app"
+            },
+            {
+                "auto_authorise": true,
+                "auto_escalation": false,
+                "automated": true,
+                "base_type": "url",
+                "description": "A URL from which a phishing kit archive can be downloaded. A phishing kit is an archive containing all the files necessary for a phishing attack, it is usually uploaded and extracted on a server by the phisher to launch an attack.",
+                "display_name": "Phishkit Archive",
+                "name": "phishkit_archive"
+            },
+            {
+                "auto_authorise": true,
+                "auto_escalation": false,
+                "automated": true,
+                "base_type": "url",
+                "description": "",
+                "display_name": "Malware Infrastructure URL",
+                "name": "malware_c2"
+            },
+            {
+                "auto_authorise": true,
+                "auto_escalation": false,
+                "automated": true,
+                "base_type": "url",
+                "description": "A URL used as the Command and Control Centre (C2) for a malware binary.",
+                "display_name": "Malware Command and Control Centre",
+                "name": "malware_c2_c2"
+            },
+            {
+                "auto_authorise": true,
+                "auto_escalation": false,
+                "automated": true,
+                "base_type": "url",
+                "description": "A URL used to distribute a malicious binary.",
+                "display_name": "Malware Distribution URL",
+                "name": "malware_c2_distribution"
+            },
+            {
+                "auto_authorise": true,
+                "auto_escalation": false,
+                "automated": true,
+                "base_type": "url",
+                "description": "A URL used to collect payments from victims of malware attacks, specifically ransomware.",
+                "display_name": "Malware Payment URL",
+                "name": "malware_c2_payment"
+            },
+            {
+                "auto_authorise": true,
+                "auto_escalation": false,
+                "automated": true,
+                "base_type": "url",
+                "description": "A URL for a Facebook page which is maliciously infringing on your trademark.",
+                "display_name": "Facebook Brand Infringement",
+                "name": "facebook_brand_infringement"
+            },
+            {
+                "auto_authorise": true,
+                "auto_escalation": false,
+                "automated": true,
+                "base_type": "url",
+                "description": "A URL for an Instagram profile which is maliciously infringing on your trademark.",
+                "display_name": "Instagram Brand Infringement",
+                "name": "instagram_brand_infringement"
+            },
+            {
+                "auto_authorise": true,
+                "auto_escalation": false,
+                "automated": true,
+                "base_type": "url",
+                "description": "A URL to a LinkedIn company listing which is maliciously infringing on your trademark.",
+                "display_name": "LinkedIn Brand Infringement",
+                "name": "linkedin_brand_infringement"
+            },
+            {
+                "auto_authorise": true,
+                "auto_escalation": false,
+                "automated": true,
+                "base_type": "url",
+                "description": "A URL to a Twitter account which is maliciously infringing on your trademark.",
+                "display_name": "Twitter Brand Infringement",
+                "name": "twitter_brand_infringement"
+            },
+            {
+                "auto_authorise": true,
+                "auto_escalation": false,
+                "automated": true,
+                "base_type": "url",
+                "description": "A URL for a YouTube channel or video which is maliciously infringing on your trademark.",
+                "display_name": "YouTube Brand Infringement",
+                "name": "youtube"
+            },
+            {
+                "auto_authorise": true,
+                "auto_escalation": false,
+                "automated": true,
+                "base_type": "url",
+                "description": "A URL to a Skype profile which is maliciously infringing on your trademark.",
+                "display_name": "Skype Brand Infringement",
+                "name": "skype_brand_infringement"
+            },
+            {
+                "auto_authorise": true,
+                "auto_escalation": false,
+                "automated": true,
+                "base_type": "url",
+                "description": "A URL to a Telegram user or channel which is maliciously infringing on your trademark.",
+                "display_name": "Telegram Brand Infringement",
+                "name": "telegram_brand_infringement"
+            },
+            {
+                "auto_authorise": true,
+                "auto_escalation": false,
+                "automated": true,
+                "base_type": "url",
+                "description": "A URL to a Weibo page which is maliciously infringing on your trademark.",
+                "display_name": "Weibo Brand Infringement",
+                "name": "weibo_brand_infringement"
+            },
+            {
+                "auto_authorise": true,
+                "auto_escalation": false,
+                "automated": true,
+                "base_type": "url",
+                "description": "A URL to a Pinterest profile or pin which is maliciously infringing on your trademark.",
+                "display_name": "Pinterest Brand Infringement",
+                "name": "pinterest_brand_infringement"
+            },
+            {
+                "auto_authorise": true,
+                "auto_escalation": false,
+                "automated": true,
+                "base_type": "url",
+                "description": "A URL for a TikTok account which is maliciously infringing on your trademark.",
+                "display_name": "TikTok Brand Infringement",
+                "name": "tiktok_brand_infringement"
+            },
+            {
+                "auto_authorise": true,
+                "auto_escalation": false,
+                "automated": true,
+                "base_type": "url",
+                "description": "A URL for a WhatsApp phone number which is maliciously infringing on your trademark.",
+                "display_name": "WhatsApp Brand Infringement",
+                "name": "whatsapp_brand_infringement"
+            },
+            {
+                "auto_authorise": true,
+                "auto_escalation": false,
+                "automated": true,
+                "base_type": "url",
+                "description": "A Google Adwords advert which redirects to a phishing webpage.",
+                "display_name": "Google Adwords",
+                "name": "adwords"
+            },
+            {
+                "auto_authorise": true,
+                "auto_escalation": false,
+                "automated": true,
+                "base_type": "url",
+                "description": "A Bing advert which redirects to a phishing webpage.",
+                "display_name": "Bing Ad",
+                "name": "bing_ad"
+            },
+            {
+                "auto_authorise": true,
+                "auto_escalation": false,
+                "automated": true,
+                "base_type": "malware_c2_ip",
+                "description": "An IP address and port being used to conduct a malware attack.",
+                "display_name": "Malware C2 IP",
+                "name": "malware_c2_ip"
+            },
+            {
+                "auto_authorise": true,
+                "auto_escalation": false,
+                "automated": true,
+                "base_type": "malware_c2_ip",
+                "description": "A mail server IP identified during the analysis of a malware binary. Possibly used for exfiltrating data.",
+                "display_name": "Malware SMTP C2",
+                "name": "malware_c2_mailserver"
+            },
+            {
+                "auto_authorise": true,
+                "auto_escalation": false,
+                "automated": true,
+                "base_type": "email",
+                "description": "An email address involved in carrying out an Advance Fee Fraud scam. Advance fee fraud is when fraudsters target victims to make advance or upfront payments for goods, services and/or financial gains that do not materialise.",
+                "display_name": "Advance Fee Fraud",
+                "name": "advance_fee_fraud"
+            },
+            {
+                "auto_authorise": true,
+                "auto_escalation": false,
+                "automated": true,
+                "base_type": "server",
+                "description": "The IP address of a mail server which is sending phishing emails that contain a link to a phishing website.",
+                "display_name": "Phishing URL Mail Server",
+                "name": "sends_phishing_url"
+            },
+            {
+                "auto_authorise": true,
+                "auto_escalation": false,
+                "automated": true,
+                "base_type": "server",
+                "description": "The IP address of a mail server which is sending emails that contain a link to a website which is serving malware.",
+                "display_name": "Malware URL Mail Server",
+                "name": "sends_malware_url"
+            },
+            {
+                "auto_authorise": true,
+                "auto_escalation": false,
+                "automated": true,
+                "base_type": "server",
+                "description": "The IP address of a mail server which is sending emails that contain a malicious attachment which infects a victim's computer with malware.",
+                "display_name": "Malware Attachment Mail Server",
+                "name": "sends_malware_attachments"
+            },
+            {
+                "auto_authorise": true,
+                "auto_escalation": false,
+                "automated": true,
+                "base_type": "server",
+                "description": "The IP address of a mail server which is sending Advance Fee Fraud emails. Advance fee fraud is when fraudsters target victims to make advance or upfront payments for goods, services and/or financial gains that do not materialise.",
+                "display_name": "Advance Fee Fraud Mail Server",
+                "name": "sends_advance_fee_fraud"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Takedown Notes
+>|Name|Display Name|Base Type|Description|Automated|Auto Escalation|Auto Authorise|
+>|---|---|---|---|---|---|---|
+>| phishing_url | Phishing URL | url | The URL for a webpage which impersonates your company in an attempt to trick users into submitting their login details. Usually the URL is linked to in an email sent to your users. | true | false | true |
+>| dropsite | Phishing Dropsite | url | The URL of a webpage which receives user's details from a HTML attachment sent to users via email. | true | false | true |
+>| fake_mobile_app | Fake Mobile App | url | The URL for a fraudulent mobile application, found on a mobile application store, that is targeting your customers. | true | false | true |
+>| phishkit_archive | Phishkit Archive | url | A URL from which a phishing kit archive can be downloaded. A phishing kit is an archive containing all the files necessary for a phishing attack, it is usually uploaded and extracted on a server by the phisher to launch an attack. | true | false | true |
+>| malware_c2 | Malware Infrastructure URL | url |  | true | false | true |
+>| malware_c2_c2 | Malware Command and Control Centre | url | A URL used as the Command and Control Centre (C2) for a malware binary. | true | false | true |
+>| malware_c2_distribution | Malware Distribution URL | url | A URL used to distribute a malicious binary. | true | false | true |
+>| malware_c2_payment | Malware Payment URL | url | A URL used to collect payments from victims of malware attacks, specifically ransomware. | true | false | true |
+>| facebook_brand_infringement | Facebook Brand Infringement | url | A URL for a Facebook page which is maliciously infringing on your trademark. | true | false | true |
+>| instagram_brand_infringement | Instagram Brand Infringement | url | A URL for an Instagram profile which is maliciously infringing on your trademark. | true | false | true |
+>| linkedin_brand_infringement | LinkedIn Brand Infringement | url | A URL to a LinkedIn company listing which is maliciously infringing on your trademark. | true | false | true |
+>| twitter_brand_infringement | Twitter Brand Infringement | url | A URL to a Twitter account which is maliciously infringing on your trademark. | true | false | true |
+>| youtube | YouTube Brand Infringement | url | A URL for a YouTube channel or video which is maliciously infringing on your trademark. | true | false | true |
+>| skype_brand_infringement | Skype Brand Infringement | url | A URL to a Skype profile which is maliciously infringing on your trademark. | true | false | true |
+>| telegram_brand_infringement | Telegram Brand Infringement | url | A URL to a Telegram user or channel which is maliciously infringing on your trademark. | true | false | true |
+>| weibo_brand_infringement | Weibo Brand Infringement | url | A URL to a Weibo page which is maliciously infringing on your trademark. | true | false | true |
+>| pinterest_brand_infringement | Pinterest Brand Infringement | url | A URL to a Pinterest profile or pin which is maliciously infringing on your trademark. | true | false | true |
+>| tiktok_brand_infringement | TikTok Brand Infringement | url | A URL for a TikTok account which is maliciously infringing on your trademark. | true | false | true |
+>| whatsapp_brand_infringement | WhatsApp Brand Infringement | url | A URL for a WhatsApp phone number which is maliciously infringing on your trademark. | true | false | true |
+>| adwords | Google Adwords | url | A Google Adwords advert which redirects to a phishing webpage. | true | false | true |
+>| bing_ad | Bing Ad | url | A Bing advert which redirects to a phishing webpage. | true | false | true |
+>| malware_c2_ip | Malware C2 IP | malware_c2_ip | An IP address and port being used to conduct a malware attack. | true | false | true |
+>| malware_c2_mailserver | Malware SMTP C2 | malware_c2_ip | A mail server IP identified during the analysis of a malware binary. Possibly used for exfiltrating data. | true | false | true |
+>| advance_fee_fraud | Advance Fee Fraud | email | An email address involved in carrying out an Advance Fee Fraud scam. Advance fee fraud is when fraudsters target victims to make advance or upfront payments for goods, services and/or financial gains that do not materialise. | true | false | true |
+>| sends_phishing_url | Phishing URL Mail Server | server | The IP address of a mail server which is sending phishing emails that contain a link to a phishing website. | true | false | true |
+>| sends_malware_url | Malware URL Mail Server | server | The IP address of a mail server which is sending emails that contain a link to a website which is serving malware. | true | false | true |
+>| sends_malware_attachments | Malware Attachment Mail Server | server | The IP address of a mail server which is sending emails that contain a malicious attachment which infects a victim's computer with malware. | true | false | true |
+>| sends_advance_fee_fraud | Advance Fee Fraud Mail Server | server | The IP address of a mail server which is sending Advance Fee Fraud emails. Advance fee fraud is when fraudsters target victims to make advance or upfront payments for goods, services and/or financial gains that do not materialise. | true | false | true |
+
+
 ### netcraft-submission-list
 
 ***
@@ -429,6 +1025,7 @@ Get basic information about a submissions.
 | interval_in_seconds | . Default is 30. | Optional | 
 | timeout | . Default is 600. | Optional | 
 | hide_polling_output | . Default is True. | Optional | 
+| ignore_404 | . | Optional | 
 
 #### Context Output
 
@@ -468,6 +1065,67 @@ Get basic information about a submissions.
 | Netcraft.Submission.warnings.link | String | A link to further information about the warning. This key appears only if the "submission_uuid" argument is provided. | 
 | Netcraft.Submission.warnings.warning | String | The warning. This key appears only if the "submission_uuid" argument is provided. | 
 | Netcraft.SubmissionNextToken | String | The submission UUID to provide as the "next_token" argument in a subsequent request for pagination. This key appears only if the "submission_uuid" argument is \*not\* provided. | 
+
+#### Command example
+```!netcraft-submission-list submission_uuid=RUxOzbo2OGfEAaq5G3vsAsdUqDh7wa70```
+#### Context Example
+```json
+{
+    "Netcraft": {
+        "Submission": {
+            "classification_log": [
+                {
+                    "date": 1695130047,
+                    "from_state": "processing",
+                    "to_state": "no threats"
+                }
+            ],
+            "date": 1695129915,
+            "files": "https://report.netcraft.com/api/v3/submission/RUxOzbo2OGfEAaq5G3vsAsdUqDh7wa70/files",
+            "has_cryptocurrency_addresses": false,
+            "has_files": true,
+            "has_issues": false,
+            "has_mail": false,
+            "has_phone_numbers": false,
+            "has_urls": false,
+            "is_archived": false,
+            "last_update": 1695130047,
+            "mail": "https://report.netcraft.com/api/v3/submission/RUxOzbo2OGfEAaq5G3vsAsdUqDh7wa70/mail",
+            "mail_state": "processing",
+            "original_source": {
+                "name": "report.netcraft.com",
+                "type": "web"
+            },
+            "pending": false,
+            "reason": null,
+            "source": {
+                "type": "email"
+            },
+            "source_name": "Palo Alto Networks",
+            "state": "no threats",
+            "state_counts": {
+                "files": {
+                    "no threats": 1
+                },
+                "urls": {}
+            },
+            "submitter_email": "reporter@socteam.com",
+            "tags": [],
+            "urls": "https://report.netcraft.com/api/v3/submission/RUxOzbo2OGfEAaq5G3vsAsdUqDh7wa70/urls",
+            "uuid": "RUxOzbo2OGfEAaq5G3vsAsdUqDh7wa70",
+            "warnings": []
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Netcraft Submissions
+>|Submission UUID|Submission Date|Submitter Email|State|Source|
+>|---|---|---|---|---|
+>| RUxOzbo2OGfEAaq5G3vsAsdUqDh7wa70 | 2023-09-19 13:25:15+00:00 | reporter@socteam.com | no threats | Palo Alto Networks |
+
 
 ### netcraft-file-report-submit
 
@@ -528,6 +1186,64 @@ Report files to Netcraft for analysis.
 | Netcraft.Submission.warnings.link | String | A link to further information about the warning. | 
 | Netcraft.Submission.warnings.warning | String | The warning. | 
 
+#### Command example
+```!netcraft-file-report-submit file_content="a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1" file_name="malicious.txt" interval_in_seconds="15" polling="true" reason="the file may be malicious" reporter_email="reporter@socteam.com"```
+
+#### Context Example
+```json
+{
+    "Netcraft": {
+        "Submission": {
+            "classification_log": [],
+            "date": 1695129915,
+            "files": "https://report.netcraft.com/api/v3/submission/RUxOzbo2OGfEAaq5G3vsAsdUqDh7wa70/files",
+            "has_cryptocurrency_addresses": false,
+            "has_files": true,
+            "has_issues": false,
+            "has_mail": false,
+            "has_phone_numbers": false,
+            "has_urls": false,
+            "is_archived": false,
+            "last_update": 1695130047,
+            "mail": "https://report.netcraft.com/api/v3/submission/RUxOzbo2OGfEAaq5G3vsAsdUqDh7wa70/mail",
+            "mail_state": "processing",
+            "original_source": {
+                "name": "report.netcraft.com",
+                "type": "web"
+            },
+            "pending": false,
+            "reason": null,
+            "source": {
+                "type": "email"
+            },
+            "source_name": "Palo Alto Networks",
+            "state": "no threats",
+            "state_counts": {
+                "files": {
+                    "no threats": 1
+                },
+                "urls": {}
+            },
+            "submitter_email": "reporter@socteam.com",
+            "tags": [],
+            "urls": "https://report.netcraft.com/api/v3/submission/RUxOzbo2OGfEAaq5G3vsAsdUqDh7wa70/urls",
+            "uuid": "RUxOzbo2OGfEAaq5G3vsAsdUqDh7wa70",
+            "warnings": []
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>Submission pending:
+
+>### Netcraft Submissions
+>|Submission UUID|Submission Date|Submitter Email|State|Source|
+>|---|---|---|---|---|
+>| RUxOzbo2OGfEAaq5G3vsAsdUqDh7wa70 | 2023-09-19 13:25:15+00:00 | reporter@socteam.com | no threats | Palo Alto Networks |
+
+
 ### netcraft-submission-file-list
 
 ***
@@ -560,6 +1276,31 @@ When a submission is archived this command will return an error with the message
 | Netcraft.SubmissionFile.classification_log.from_state | String | The state the entity moved out of. | 
 | Netcraft.SubmissionFile.classification_log.to_state | String | The state the entity moved into. | 
 
+#### Command example
+```!netcraft-submission-file-list limit="50" submission_uuid=RUxOzbo2OGfEAaq5G3vsAsdUqDh7wa70```
+#### Context Example
+```json
+{
+    "Netcraft": {
+        "SubmissionFile": {
+            "classification_log": [],
+            "file_state": "no threats",
+            "filename": "1695129341388_Netcraft.py}",
+            "has_screenshot": false,
+            "hash": "77fb7e37d57adddf4071f946cbd2a3dc"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Submission Files
+>|Filename|Hash|Classification|
+>|---|---|---|
+>| 1695129341388_Netcraft.py} | 77fb7e37d57adddf4071f946cbd2a3dc | no threats |
+
+
 ### netcraft-file-screenshot-get
 
 ***
@@ -586,6 +1327,27 @@ Get a screenshot for a file associated with a submission.
 | InfoFile.Info | string | The format and encoding of the screenshot. | 
 | InfoFile.Type | string | The type of the screenshot. | 
 | InfoFile.Extension | unknown | The file extension of the screenshot. | 
+
+#### Command example
+```!netcraft-file-screenshot-get file_hash=77fb7e37d57adddf4071f946cbd2a3dc submission_uuid=RUxOzbo2OGfEAaq5G3vsAsdUqDh7wa70```
+
+#### Context Example
+```json
+{
+    "InfoFile": {
+        "EntryID": "1743@9dfe60aa-7485-4813-822a-03de171d38cb",
+        "Extension": "png",
+        "Info": "image/png",
+        "Name": "file_screenshot_77fb7e37d57adddf4071f946cbd2a3dc.png",
+        "Size": 4584,
+        "Type": "JPEG image data, JFIF standard 1.01"
+    }
+}
+```
+
+#### Human Readable Output
+
+>Returned file: file_screenshot_77fb7e37d57adddf4071f946cbd2a3dc.png [Download](https://www.paloaltonetworks.com/cortex)
 
 ### netcraft-email-report-submit
 
@@ -645,7 +1407,65 @@ Optionally, mails can be encrypted before upload. If a mail is encrypted before 
 | Netcraft.Submission.tags.description | String | The tag's description. | 
 | Netcraft.Submission.urls | String | An API URL to get details about the URLs associated with this submission. | 
 | Netcraft.Submission.warnings.link | String | A link to further information about the warning. | 
-| Netcraft.Submission.warnings.warning | String | The warning. | 
+| Netcraft.Submission.warnings.warning | String | The warning. |
+
+#### Command example
+```!netcraft-email-report-submit message="From: suspicious@example.com\nTo: example@netcraft.com\nSubject: Example mail\nDate: Tue, 01 Jan 2019 00:00:00 +0000\nMIME-Version: 1.0\nContent-Type: text/plain; charset="UTF8"\nContent-Transfer-Encoding: 8bit\n\nExample mail body with http://example.com URL." polling="true" reporter_email="reporter@socteam.com"```
+
+#### Context Example
+```json
+{
+    "Netcraft": {
+        "Submission": {
+            "classification_log": [],
+            "date": 1695129915,
+            "files": "https://report.netcraft.com/api/v3/submission/RUxOzbo2OGfEAaq5G3vsAsdUqDh7wa70/files",
+            "has_cryptocurrency_addresses": false,
+            "has_files": true,
+            "has_issues": false,
+            "has_mail": true,
+            "has_phone_numbers": false,
+            "has_urls": true,
+            "is_archived": false,
+            "last_update": 1695130047,
+            "mail": "https://report.netcraft.com/api/v3/submission/RUxOzbo2OGfEAaq5G3vsAsdUqDh7wa70/mail",
+            "mail_state": "processing",
+            "original_source": {
+                "name": "report.netcraft.com",
+                "type": "web"
+            },
+            "pending": false,
+            "reason": null,
+            "source": {
+                "type": "email"
+            },
+            "source_name": "Palo Alto Networks",
+            "state": "no threats",
+            "state_counts": {
+                "files": {
+                    "no threats": 1
+                },
+                "urls": {}
+            },
+            "submitter_email": "reporter@socteam.com",
+            "tags": [],
+            "urls": "https://report.netcraft.com/api/v3/submission/RUxOzbo2OGfEAaq5G3vsAsdUqDh7wa70/urls",
+            "uuid": "RUxOzbo2OGfEAaq5G3vsAsdUqDh7wa70",
+            "warnings": []
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>Submission pending:
+
+>### Netcraft Submissions
+>|Submission UUID|Submission Date|Submitter Email|State|Source|
+>|---|---|---|---|---|
+>| RUxOzbo2OGfEAaq5G3vsAsdUqDh7wa70 | 2023-09-19 13:25:15+00:00 | reporter@socteam.com | no threats | Palo Alto Networks |
+
 
 ### netcraft-submission-mail-get
 
@@ -678,6 +1498,45 @@ When a submission is archived this command will return an error with the message
 | Netcraft.SubmissionMail.subject | String | The subject of the mail submitted. | 
 | Netcraft.SubmissionMail.to | String | The email addresses of the mail recipients. | 
 
+#### Command example
+```!netcraft-submission-mail-get submission_uuid=bavSyjpYf4HpO7KlYzu6Z32FkHcXbZpT```
+#### Context Example
+```json
+{
+    "Netcraft": {
+        "SubmissionMail": {
+            "classification_log": [
+                {
+                    "date": 1694095036,
+                    "from_state": "processing",
+                    "to_state": "no threats"
+                }
+            ],
+            "from": [
+                "fraudster@example.com"
+            ],
+            "has_screenshot": 1,
+            "hash": "6fabfd92d854588b9f5295aacc561782",
+            "reply_to": [],
+            "state": "no threats",
+            "subject": "Example mail",
+            "tags": [],
+            "to": [
+                "example@netcraft.com"
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Submission Mails
+>|Subject|From|To|Classification|
+>|---|---|---|---|
+>| Example mail | fraudster@example.com | example@netcraft.com | no threats |
+
+
 ### netcraft-mail-screenshot-get
 
 ***
@@ -703,6 +1562,26 @@ Get a screenshot for the mail associated with a submission.
 | InfoFile.Info | string | The format and encoding of the screenshot. | 
 | InfoFile.Type | string | The type of the screenshot. | 
 | InfoFile.Extension | unknown | The file extension of the screenshot. | 
+
+#### Command example
+```!netcraft-mail-screenshot-get submission_uuid=bavSyjpYf4HpO7KlYzu6Z32FkHcXbZpT```
+#### Context Example
+```json
+{
+    "InfoFile": {
+        "EntryID": "1743@9dfe60aa-7485-4813-822a-03de171d38cb",
+        "Extension": "png",
+        "Info": "image/png",
+        "Name": "mail_screenshot_bavSyjpYf4HpO7KlYzu6Z32FkHcXbZpT.png",
+        "Size": 4584,
+        "Type": "JPEG image data, JFIF standard 1.01"
+    }
+}
+```
+
+#### Human Readable Output
+
+>Returned file: mail_screenshot_bavSyjpYf4HpO7KlYzu6Z32FkHcXbZpT.png [Download](https://www.paloaltonetworks.com/cortex)
 
 ### netcraft-url-report-submit
 
@@ -761,6 +1640,63 @@ Report URLs to Netcraft for analysis.
 | Netcraft.Submission.warnings.link | String | A link to further information about the warning. | 
 | Netcraft.Submission.warnings.warning | String | The warning. | 
 
+#### Command example
+```!netcraft-file-report-submit file_content="a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1" file_name="malicious.txt" interval_in_seconds="15" polling="true" reason="the file may be malicious" reporter_email="reporter@socteam.com"```
+
+#### Context Example
+```json
+{
+    "Netcraft": {
+        "Submission": {
+            "classification_log": [],
+            "date": 1695129915,
+            "files": "https://report.netcraft.com/api/v3/submission/RUxOzbo2OGfEAaq5G3vsAsdUqDh7wa70/files",
+            "has_cryptocurrency_addresses": false,
+            "has_files": true,
+            "has_issues": false,
+            "has_mail": false,
+            "has_phone_numbers": false,
+            "has_urls": false,
+            "is_archived": false,
+            "last_update": 1695130047,
+            "mail": "https://report.netcraft.com/api/v3/submission/RUxOzbo2OGfEAaq5G3vsAsdUqDh7wa70/mail",
+            "mail_state": "processing",
+            "original_source": {
+                "name": "report.netcraft.com",
+                "type": "web"
+            },
+            "pending": false,
+            "reason": null,
+            "source": {
+                "type": "email"
+            },
+            "source_name": "Palo Alto Networks",
+            "state": "no threats",
+            "state_counts": {
+                "files": {
+                    "no threats": 1
+                },
+                "urls": {}
+            },
+            "submitter_email": "reporter@socteam.com",
+            "tags": [],
+            "urls": "https://report.netcraft.com/api/v3/submission/RUxOzbo2OGfEAaq5G3vsAsdUqDh7wa70/urls",
+            "uuid": "RUxOzbo2OGfEAaq5G3vsAsdUqDh7wa70",
+            "warnings": []
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>Submission pending:
+
+>### Netcraft Submissions
+>|Submission UUID|Submission Date|Submitter Email|State|Source|
+>|---|---|---|---|---|
+>| RUxOzbo2OGfEAaq5G3vsAsdUqDh7wa70 | 2023-09-19 13:25:15+00:00 | reporter@socteam.com | no threats | Palo Alto Networks |
+
 ### netcraft-submission-url-list
 
 ***
@@ -811,6 +1747,14 @@ When a submission is archived this command will return an error with the message
 | Netcraft.SubmissionURL.url_takedown_state | String | The progress of Netcraft's takedown action against the URL. One of "not injected", "not started", "in progress" or "resolved". | 
 | Netcraft.SubmissionURL.uuid | String | The UUID of the URL. | 
 
+#### Command example
+```!netcraft-submission-url-list limit="50" page="2" page_size="2" submission_uuid=bavSyjpYf4HpO7KlYzu6Z32FkHcXbZpT```
+#### Human Readable Output
+
+>### Submission URLs
+>**No entries.**
+
+
 ### netcraft-url-screenshot-get
 
 ***
@@ -838,3 +1782,24 @@ Download associated screenshots for a specified URL.
 | InfoFile.Info | string | The format and encoding of the screenshot. | 
 | InfoFile.Type | string | The type of the screenshot. | 
 | InfoFile.Extension | unknown | The file extension of the screenshot. | 
+
+#### Command example
+```!netcraft-url-screenshot-get screenshot_hash="06f8715ba1b1ca5dee4af05e98bbc63a" submission_uuid="0qQt98P04o0qk46UXveNsCHhUN7zLopY" url_uuid="BZqSBm5i4KIoCq6TItXLWKZwGAm3nN08"```
+
+#### Context Example
+```json
+{
+    "InfoFile": {
+        "EntryID": "1743@9dfe60aa-7485-4813-822a-03de171d38cb",
+        "Extension": "png",
+        "Info": "image/png",
+        "Name": "url_screenshot_06f8715ba1b1ca5dee4af05e98bbc63a.png",
+        "Size": 4584,
+        "Type": "JPEG image data, JFIF standard 1.01"
+    }
+}
+```
+
+#### Human Readable Output
+
+>Returned file: url_screenshot_06f8715ba1b1ca5dee4af05e98bbc63a.png [Download](https://www.paloaltonetworks.com/cortex)
