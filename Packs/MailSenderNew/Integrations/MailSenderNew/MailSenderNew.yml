@@ -41,46 +41,46 @@ configuration:
   name: insecure
   type: 8
   required: false
-description: Send emails implemented in Python with embedded image support
+description: Send emails implemented in Python with embedded image support.
 display: Mail Sender (New)
 name: Mail Sender (New)
 script:
   commands:
   - arguments:
     - default: true
-      description: Email addresses for the 'To' field
+      description: Email addresses for the 'To' field.
       isArray: true
       name: to
-    - description: Email addresses for the 'Cc' field
+    - description: Email addresses for the 'Cc' field.
       isArray: true
       name: cc
-    - description: Email addresses for the 'Bcc' field
+    - description: Email addresses for the 'Bcc' field.
       isArray: true
       name: bcc
-    - description: Subject for the email to be sent
+    - description: Subject for the email to be sent.
       name: subject
-    - description: The contents (body) of the email to be sent in plain text
+    - description: The contents (body) of the email to be sent in plain text.
       name: body
-    - description: The contents (body) of the email to be sent in HTML format
+    - description: The contents (body) of the email to be sent in HTML format.
       name: htmlBody
-    - description: Address that should be used to reply to the message
+    - description: Address that should be used to reply to the message.
       name: replyTo
-    - description: A comma-separated list of IDs of war room entries that contain the files that should be attached to the email
+    - description: A comma-separated list of IDs of war room entries that contain the files that should be attached to the email.
       isArray: true
       name: attachIDs
-    - description: A comma-separated list to rename file-names of corresponding attachments IDs. (e.g. rename first two files - attachNames=file_name1,file_name2. rename first and third file - attachNames=file_name1,,file_name3)
+    - description: A comma-separated list to rename file-names of corresponding attachments IDs. (e.g. rename first two files - attachNames=file_name1,file_name2. rename first and third file - attachNames=file_name1,,file_name3).
       isArray: true
       name: attachNames
-    - description: A comma-separated list of CIDs to embed attachments inside the email itself
+    - description: A comma-separated list of CIDs to embed attachments inside the email itself.
       isArray: true
       name: attachCIDs
-    - description: Desired name for attached file. Multiple files are supported as comma-separated list. (e.g. transientFile="t1.txt,temp.txt,t3.txt" transientFileContent="test 2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz")
+    - description: Desired name for attached file. Multiple files are supported as comma-separated list. (e.g. transientFile="t1.txt,temp.txt,t3.txt" transientFileContent="test 2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz").
       isArray: true
       name: transientFile
-    - description: Content for attached file. Multiple files are supported as comma-separated list. (e.g. transientFile="t1.txt,temp.txt,t3.txt" transientFileContent="test 2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz")
+    - description: Content for attached file. Multiple files are supported as comma-separated list. (e.g. transientFile="t1.txt,temp.txt,t3.txt" transientFileContent="test 2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz").
       isArray: true
       name: transientFileContent
-    - description: CID for attached file if we want it inline. Multiple files are supported as comma-separated list. (e.g. transientFile="t1.txt,temp.txt,t3.txt" transientFileContent="test 2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz")
+    - description: CID for attached file if we want it inline. Multiple files are supported as comma-separated list. (e.g. transientFile="t1.txt,temp.txt,t3.txt" transientFileContent="test 2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz").
       isArray: true
       name: transientFileCID
     - description: 'Replace {varname} variables with values from this argument. Expected values are in the form of a JSON document like {"varname": {"value": "some value", "key": "context key"}}. Each var name can either be provided with the value or a context key to retrieve the value from. Note that only context data is accessible for this argument, while incident fields are not.'
@@ -97,19 +97,19 @@ script:
       predefined:
       - HTML
       - Text
-    - description: Indicates whether to render the email body
+    - description: Indicates whether to render the email body.
       name: renderBody
       auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
-    description: Send an email
+    description: Send an email.
     name: send-mail
   runonce: false
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.13.72123
+  dockerimage: demisto/python3:3.10.13.73190
 tests:
 - Mail Sender (New) Test
 fromversion: 5.0.0
