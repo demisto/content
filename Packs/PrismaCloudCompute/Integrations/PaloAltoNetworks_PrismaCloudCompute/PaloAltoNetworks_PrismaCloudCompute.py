@@ -437,7 +437,7 @@ class PrismaCloudComputeClient(BaseClient):
         """
         return self._http_request(method="GET", url_suffix="trust/data")
 
-    def update_trusted_images(self, data:str):
+    def update_trusted_images(self, data: str):
         """
         Sends a request to update trusted images information.
         """
@@ -460,6 +460,15 @@ class PrismaCloudComputeClient(BaseClient):
             list[dict]: host information.
         """
         return self._http_request(method="GET", url_suffix="hosts/info", params=params)
+
+    def get_runtime_container_audit_events(self, params: Optional[dict] = None) -> List[dict]:
+        """
+        Sends a request to get runtime container audit events.
+
+        Returns:
+            list[dict]: runtime container audit events information.
+        """
+        return self._http_request(method="GET", url_suffix="audits/runtime/container", params=params)
 
 
 def format_context(context):
@@ -2042,18 +2051,18 @@ def get_ci_scan_results_list(client: PrismaCloudComputeClient, args: dict) -> Co
     limit, offset = parse_limit_and_offset_values(
         limit=args.get("limit", "50"), offset=args.get("offset", "0")
     )
-    account_ids, resource_ids, region, name, search, scan_id, image_id = (
+    account_ids, resource_ids, region, job_name, search, scan_id, image_id = (
         argToList(args.get("account_ids")), argToList(args.get("resource_ids")),
-        argToList(args.get("region")), argToList(args.get("name")), args.get("search"),
+        argToList(args.get("region")), argToList(args.get("job_name")), args.get("search"),
         args.get("scan_id"), args.get("image_id")
-        )
+    )
     _pass = args.get("pass", "true")
     if to := args.get("scan_time_to"):
         to = parse_date_string_format(to, "%Y-%m-%dT%H:%M:%SZ")
 
     params = assign_params(
         offset=offset, limit=limit, search=search, accountIDs=account_ids, resourceIDs=resource_ids, region=region, _id=scan_id,
-        jobName=name, imageID=image_id, to=to
+        jobName=job_name, imageID=image_id, to=to
     )
     # add saved words to params
     params["pass"] = _pass
@@ -2101,33 +2110,33 @@ def get_trusted_images(client: PrismaCloudComputeClient) -> CommandResults:
     """
     if trusted_images_results := client.get_trusted_images():
         table = "## Trusted Images Details\n" + \
+                tableToMarkdown(
+                    name="Policy Rules Information",
+                    t=[
+                        {
+                            "Rule Name": policy_role.get("name"),
+                            "Allowed Groups": policy_role.get("allowedGroups"),
+                            "Effect": policy_role.get("effect"),
+                            "Modified": policy_role.get("modified"),
+                            "Owner": policy_role.get("owner")
+                        } for policy_role in trusted_images_results.get("policy", {}).get("rules", [])
+                    ],
+                    headers=["Rule Name", "Effect", "Owner", "Allowed Groups", "Modified"],
+                    removeNull=True,
+                ) + \
             tableToMarkdown(
-                name="Policy Rules Information",
-                t=[
-                    {
-                        "Rule Name": policy_role.get("name"),
-                        "Allowed Groups": policy_role.get("allowedGroups"),
-                        "Effect": policy_role.get("effect"),
-                        "Modified": policy_role.get("modified"),
-                        "Owner": policy_role.get("owner")
-                    } for policy_role in trusted_images_results.get("policy", {}).get("rules", [])
-                ],
-                headers=["Rule Name", "Effect", "Owner", "Allowed Groups", "Modified"],
-                removeNull=True,
-            ) + \
-            tableToMarkdown(
-                name="Trust Groups Information",
-                t=[
-                    {
-                        "Modified": group.get("modified"),
-                        "Owner": group.get("owner"),
-                        "Group Name": group.get("name"),
-                        "ID": group.get("_id"),
-                    } for group in trusted_images_results.get("groups", [])
-                ],
-                headers=["ID", "Group Name", "Owner", "Modified"],
-                removeNull=True,
-            )
+                    name="Trust Groups Information",
+                    t=[
+                        {
+                            "Modified": group.get("modified"),
+                            "Owner": group.get("owner"),
+                            "Group Name": group.get("name"),
+                            "ID": group.get("_id"),
+                        } for group in trusted_images_results.get("groups", [])
+                    ],
+                    headers=["ID", "Group Name", "Owner", "Modified"],
+                    removeNull=True,
+                    )
     else:
         table = "No results found."
 
@@ -2159,6 +2168,7 @@ def update_trusted_images(client: PrismaCloudComputeClient, args: dict) -> Comma
         readable_output="Trusted repository, image, and registry updated successfully.",
     )
 
+
 def get_container_scan_results(client: PrismaCloudComputeClient, args: dict) -> CommandResults:
     """
     Retrieve a list of container scan reports and their information.
@@ -2183,8 +2193,8 @@ def get_container_scan_results(client: PrismaCloudComputeClient, args: dict) -> 
             args.get("agentless"), args.get("search")
         )
     params = assign_params(
-        offset=offset, limit=limit, collections=collections, accountIDs=account_ids, clusters=clusters, namespaces=namespaces, 
-        resourceIDs=resource_ids, region=region, id=container_ids, profileId=profile_id, image=image_name, imageId=image_id, 
+        offset=offset, limit=limit, collections=collections, accountIDs=account_ids, clusters=clusters, namespaces=namespaces,
+        resourceIDs=resource_ids, region=region, id=container_ids, profileId=profile_id, image=image_name, imageId=image_id,
         hostname=hostname, complianceIDs=compliance_ids, agentless=agentless, search=search
     )
 
@@ -2233,12 +2243,12 @@ def get_hosts_info(client: PrismaCloudComputeClient, args: dict) -> CommandResul
         limit=args.get("limit", "50"), offset=args.get("offset", "0")
     )
     collections, account_ids, clusters, resource_ids, region, hostname, compliance_ids, agentless, search = (
-            argToList(args.get("collections")), argToList(args.get("account_ids")), argToList(args.get("clusters")),
-            argToList(args.get("resource_ids")), argToList(args.get("region")), argToList(args.get("hostname")), 
-            argToList(args.get("compliance_ids")), args.get("agentless"), args.get("search")
-        )
+        argToList(args.get("collections")), argToList(args.get("account_ids")), argToList(args.get("clusters")),
+        argToList(args.get("resource_ids")), argToList(args.get("region")), argToList(args.get("hostname")),
+        argToList(args.get("compliance_ids")), args.get("agentless"), args.get("search")
+    )
     params = assign_params(
-        offset=offset, limit=limit, collections=collections, accountIDs=account_ids, clusters=clusters, resourceIDs=resource_ids, 
+        offset=offset, limit=limit, collections=collections, accountIDs=account_ids, clusters=clusters, resourceIDs=resource_ids,
         region=region, hostname=hostname, complianceIDs=compliance_ids, agentless=agentless, search=search
     )
 
@@ -2267,6 +2277,67 @@ def get_hosts_info(client: PrismaCloudComputeClient, args: dict) -> CommandResul
         outputs=hosts_info,
         readable_output=table,
         raw_response=hosts_info
+    )
+
+
+def get_runtime_container_audit_events(client: PrismaCloudComputeClient, args: dict) -> CommandResults:
+    """
+    Retrieve a list of runtime container audit events information.
+    Implement the command 'prisma-cloud-compute-runtime-container-audit-events-get'.
+
+    Args:
+        client (PrismaCloudComputeClient): prisma-cloud-compute client.
+        args (dict):prisma-cloud-compute-runtime-container-audit-events-get command arguments.
+
+    Returns:
+        CommandResults: command-results object.
+    """
+    limit, offset = parse_limit_and_offset_values(
+        limit=args.get("limit", "50"), offset=args.get("offset", "0")
+    )
+    collections, account_ids, clusters, namespaces, resource_ids, region, audit_id, profile_id, image_name, container, \
+        container_id, type, effect, user, os, app, hostname, search = (
+            argToList(args.get("collections")), argToList(args.get("account_ids")), argToList(args.get("clusters")),
+            argToList(args.get("namespaces")), argToList(args.get("resource_ids")), argToList(args.get("region")),
+            argToList(args.get("audit_id")), argToList(args.get("profile_id")), argToList(args.get("image_name")),
+            argToList(args.get("container")), argToList(args.get("container_id")), argToList(args.get("type")),
+            argToList(args.get("effect")), argToList(args.get("user")), argToList(args.get("os")), argToList(args.get("app")),
+            argToList(args.get("hostname")), args.get("search")
+        )
+    params = assign_params(
+        offset=offset, limit=limit, collections=collections, accountIDs=account_ids, clusters=clusters, namespaces=namespaces,
+        resourceIDs=resource_ids, region=region, id=audit_id, profileID=profile_id, imageName=image_name,
+        container=container, containerID=container_id, type=type, effect=effect, user=user, os=os, app=app,
+        hostname=hostname, search=search,
+    )
+
+    if runtime_container_audit_events := client.get_runtime_container_audit_events(params=params):
+        table = tableToMarkdown(
+            name="Runtime Container Audit Events Information",
+            t=[
+                {
+                    "ID": audit_events.get("_id"),
+                    "Hostname": audit_events.get("hostname"),
+                    "Container Name": audit_events.get("containerName"),
+                    "Image Name": audit_events.get("imageName"),
+                    "Effect": audit_events.get("effect"),
+                    "Type": audit_events.get("type"),
+                    "Attack Type": audit_events.get("attackType"),
+                    "Severity": audit_events.get("severity")
+                } for audit_events in runtime_container_audit_events
+            ],
+            headers=["ID", "Hostname", "Container Name", "Image Name", "Effect", "Type", "Attack Type", "Severity"],
+            removeNull=True,
+        )
+    else:
+        table = "No results found."
+
+    return CommandResults(
+        outputs_prefix="PrismaCloudCompute.RuntimeContainerAuditEvents",
+        outputs_key_field="_id",
+        outputs=runtime_container_audit_events,
+        readable_output=table,
+        raw_response=runtime_container_audit_events
     )
 
 
@@ -2395,6 +2466,8 @@ def main():
             return_results(results=get_container_scan_results(client=client, args=demisto.args()))
         elif requested_command == "prisma-cloud-compute-hosts-info":
             return_results(results=get_hosts_info(client=client, args=demisto.args()))
+        elif requested_command == "prisma-cloud-compute-runtime-container-audit-events-get":
+            return_results(results=get_runtime_container_audit_events(client=client, args=demisto.args()))
     # Log exceptions
     except Exception as e:
         return_error(f'Failed to execute {requested_command} command. Error: {str(e)}')

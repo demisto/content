@@ -1978,7 +1978,7 @@ script:
       description: Scan ID used in the image layers fetch.
     - name: image_id
       description: Image ID of scanned image.
-    - name: name
+    - name: job_name
       description: A comma-separated list of Jenkins job names.
       isArray: true
     - name: search
@@ -2474,6 +2474,159 @@ script:
     - contextPath: PrismaCloudCompute.Hosts.agentless
       description: Whether the host was scanned agentlessly.
       type: Boolean
+  - name: prisma-cloud-compute-runtime-container-audit-events-get
+    description: Retrieves all container audit events when a runtime sensor such as process, network, file system, or system call detects an activity that deviates from the predictive model.
+    arguments:
+    - name: collections
+      description: A comma-separated list of collection names that you have defined in Prisma Cloud Compute.
+      isArray: true
+    - name: account_ids   
+      description: A comma-separated list of cloud account IDs.
+      isArray: true
+    - name: clusters
+      description: A comma-separated list of cluster names.
+      isArray: true
+    - name: namespaces
+      description: A comma-separated list of namespace names.
+      isArray: true
+    - name: resource_ids
+      description: A comma-separated list of resource IDs.
+      isArray: true
+    - name: region  
+      description: A comma-separated list of cloud region names.
+      isArray: true
+    - name: audit_id
+      description: A comma-separated list of audit event IDs.
+      isArray: true
+    - name: profile_id
+      description: A comma-separated list of runtime profile IDs.
+      isArray: true
+    - name: image_name
+      description: A comma-separated list of image names.
+      isArray: true
+    - name: container
+      description: A comma-separated list of container names.
+      isArray: true
+    - name: container_id
+      description: A comma-separated list of container IDs.
+      isArray: true
+    - name: type
+      description: A comma-separated list of audit event types.
+      isArray: true
+    - name: effect
+      description: A comma-separated list of audit event effects.
+      isArray: true
+    - name: user
+      description: A comma-separated list of users.
+      isArray: true
+    - name: os
+      description: A comma-separated list of operating systems.
+      isArray: true
+    - name: app
+      description: A comma-separated list of applications.
+      isArray: true
+    - name: hostname
+      description: A comma-separated list of hostnames.
+      isArray: true
+    - name: search
+      description: Term to search for.
+    - name: limit
+      description: The maximum number of container scan reports to return. Must be between 1-50.
+      defaultValue: "50"
+    - name: offset
+      description: The offset by which to begin listing container scan reports.
+      defaultValue: "0"
+    outputs:
+    - contextPath: PrismaCloudCompute.RuntimeContainerAuditEvents.os
+      description: The operating system of the container.
+      type: String
+    - contextPath: PrismaCloudCompute.RuntimeContainerAuditEvents._id
+      description: The audit event ID.
+      type: String
+    - contextPath: PrismaCloudCompute.RuntimeContainerAuditEvents.time
+      description: The audit event time.
+      type: Date
+    - contextPath: PrismaCloudCompute.RuntimeContainerAuditEvents.hostname
+      description: The hostname.
+      type: String
+    - contextPath: PrismaCloudCompute.RuntimeContainerAuditEvents.fqdn
+      description: The audited event container's fully qualified domain name.
+      type: String
+    - contextPath: PrismaCloudCompute.RuntimeContainerAuditEvents.user
+      description: The audited event user.
+      type: String
+    - contextPath: PrismaCloudCompute.RuntimeContainerAuditEvents.type
+      description: The audit event type.
+      type: String
+    - contextPath: PrismaCloudCompute.RuntimeContainerAuditEvents.containerId
+      description: The container ID.
+      type: String
+    - contextPath: PrismaCloudCompute.RuntimeContainerAuditEvents.containerName
+      description: The container name.
+      type: String
+    - contextPath: PrismaCloudCompute.RuntimeContainerAuditEvents.imageName
+      description: The image name.
+      type: String
+    - contextPath: PrismaCloudCompute.RuntimeContainerAuditEvents.imageId
+      description: The image ID.
+      type: String  
+    - contextPath: PrismaCloudCompute.RuntimeContainerAuditEvents.namespace
+      description: The namespace.
+      type: String
+    - contextPath: PrismaCloudCompute.RuntimeContainerAuditEvents.effect
+      description: The audit event effect.
+      type: String
+    - contextPath: PrismaCloudCompute.RuntimeContainerAuditEvents.ruleName
+      description: The rule name.
+      type: String
+    - contextPath: PrismaCloudCompute.RuntimeContainerAuditEvents.msg
+      description: The audit event message.
+      type: String
+    - contextPath: PrismaCloudCompute.RuntimeContainerAuditEvents.profileId
+      description: The profile ID.
+      type: String
+    - contextPath: PrismaCloudCompute.RuntimeContainerAuditEvents.pid
+      description: The process ID.
+      type: Number
+    - contextPath: PrismaCloudCompute.RuntimeContainerAuditEvents.processPath
+      description: The process path.
+      type: String
+    - contextPath: PrismaCloudCompute.RuntimeContainerAuditEvents.collections
+      description: The collections.
+      type: Unknown
+    - contextPath: PrismaCloudCompute.RuntimeContainerAuditEvents.attackType
+      description: The attack type.
+      type: String
+    - contextPath: PrismaCloudCompute.RuntimeContainerAuditEvents.count
+      description: The count of audit events.
+      type: Number
+    - contextPath: PrismaCloudCompute.RuntimeContainerAuditEvents.container
+      description: Whether the audit event was from a container.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.RuntimeContainerAuditEvents.severity
+      description: The severity of the audit event.
+      type: String
+    - contextPath: PrismaCloudCompute.RuntimeContainerAuditEvents.region
+      description: The region of the container.
+      type: String
+    - contextPath: PrismaCloudCompute.RuntimeContainerAuditEvents.accountID
+      description: The account ID of the container.
+      type: String
+    - contextPath: PrismaCloudCompute.RuntimeContainerAuditEvents.cluster
+      description: The cluster of the container.
+      type: String
+    - contextPath: PrismaCloudCompute.RuntimeContainerAuditEvents.filepath
+      description: The file path of the audit event.
+      type: String
+    - contextPath: PrismaCloudCompute.RuntimeContainerAuditEvents.md5
+      description: The MD5 hash of the file.
+      type: String
+    - contextPath: PrismaCloudCompute.RuntimeContainerAuditEvents.command
+      description: The command of the audit event.
+      type: String
+    - contextPath: PrismaCloudCompute.RuntimeContainerAuditEvents.provider
+      description: The provider of the container.
+      type: String
 tests:
 - PaloAltoNetworks_PrismaCloudCompute-Test
 fromversion: 5.0.0
