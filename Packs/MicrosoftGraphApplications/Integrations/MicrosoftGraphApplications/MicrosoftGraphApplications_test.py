@@ -369,6 +369,7 @@ def test_unlock_configuration_service_principal_command(mocker, requests_mock):
     assert mock_unlock_configuration_service_principal.call_args[0][0] == 'TEST'
     assert mock_unlock_configuration_service_principal.call_args[1] == {}
 
+
 def test_unlock_configuration_service_principal_command_exception(mocker, requests_mock):
     """
         Given:
