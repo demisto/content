@@ -68,13 +68,16 @@ def main():   # pragma: no cover
         }
 
     args = {"uri": uri, "body": body}
-    res = demisto.executeCommand("demisto-api-post", args)[0]["Contents"]["response"]
+    res = demisto.executeCommand("demisto-api-post", args)
+    demisto.log(f'{res=}')
     if is_error(res):
         raise DemistoException(f'error occurred when trying to retrieve the audit logs using {args=}, error: {res}')
 
+    response = res[0]["Contents"]["response"]
+
     # set the initial counts
-    total = get_audit_logs_count(res)
-    audits = get_audit_logs(res)
+    total = get_audit_logs_count(response)
+    audits = get_audit_logs(response)
     page_num += 1
 
     # if there are more events than the default size, page through and get them all
@@ -84,8 +87,11 @@ def main():   # pragma: no cover
         else:  # pagination for xsoar-8
             body["request_data"]["search_from"] = page_num  # type: ignore[index]
         args = {"uri": uri, "body": body}
-        res = demisto.executeCommand("demisto-api-post", args)[0]["Contents"]["response"]
-        audits.extend(get_audit_logs(res))
+        res = demisto.executeCommand("demisto-api-post", args)
+        if is_error(res):
+            raise DemistoException(f'error occurred when trying to retrieve the audit logs using {args=}, error: {res}')
+        response = res[0]["Contents"]["response"]
+        audits.extend(get_audit_logs(response))
         page_num += 1
         # break if this goes crazy, if there are more than 100 pages of audit log entries.
         if page_num == 100:
