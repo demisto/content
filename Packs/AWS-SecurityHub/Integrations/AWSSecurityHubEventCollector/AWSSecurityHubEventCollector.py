@@ -1,3 +1,4 @@
+from mypy_boto3_securityhub import SecurityHubClient
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import datetime as dt
@@ -5,8 +6,6 @@ import urllib3
 from typing import Iterator
 
 from AWSApiModule import *
-
-import boto3
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -50,14 +49,14 @@ def generate_last_run(events: list[dict]) -> dict:
     }
 
 
-def get_events(client: boto3.client, start_time: dt.datetime | None = None,
+def get_events(client: SecurityHubClient, start_time: dt.datetime | None = None,
                end_time: dt.datetime | None = None, id_ignore_list: list[str] | None = None,
                page_size: int = API_MAX_PAGE_SIZE, limit: int = 0) -> Iterator[list[dict]]:
     """
     Fetch events from AWS Security Hub.
 
     Args:
-        client (boto3.client): Boto3 client to use.
+        client (SecurityHubClient): Boto3 client to use.
         start_time (datetime | None, optional): Start time to fetch events from. Required if end_time is set.
         end_time (datetime | None, optional): Time to fetch events until. Defaults to current time.
         id_ignore_list (list[str] | None, optional): List of finding IDs to not include in the results.
@@ -105,7 +104,7 @@ def get_events(client: boto3.client, start_time: dt.datetime | None = None,
         response = client.get_findings(**kwargs)
         result = response.get('Findings', [])
         count += len(result)
-        yield result
+        yield result  # type: ignore[misc]
 
         if 'NextToken' in response and (limit == 0 or count < limit):
             kwargs['NextToken'] = response['NextToken']
@@ -114,13 +113,13 @@ def get_events(client: boto3.client, start_time: dt.datetime | None = None,
             break
 
 
-def fetch_events(client: boto3.client, last_run: dict, first_fetch_time: dt.datetime | None,
+def fetch_events(client: SecurityHubClient, last_run: dict, first_fetch_time: dt.datetime | None,
                  page_size: int = API_MAX_PAGE_SIZE, limit: int = 0) -> tuple[list[dict], dict, Exception | None]:
     """
     Fetch events from AWS Security Hub and send them to XSIAM.
 
     Args:
-        client (boto3.client): Boto3 client to use.
+        client (SecurityHubClient): Boto3 client to use.
         last_run (dict): Dict containing the last fetched event creation time.
         first_fetch_time (datetime | None, optional): In case of first fetch, fetch events from this datetime.
         page_size (int, optional): Number of results to fetch per request. Defaults to API_MAX_PAGE_SIZE.
@@ -161,13 +160,13 @@ def fetch_events(client: boto3.client, last_run: dict, first_fetch_time: dt.date
     return events, next_run, error
 
 
-def get_events_command(client: boto3.client, should_push_events: bool,
+def get_events_command(client: SecurityHubClient, should_push_events: bool,
                        page_size: int, limit: int = 0) -> CommandResults:
     """
     Fetch events from AWS Security Hub.
 
     Args:
-        client (boto3.client): Boto3 client to use.
+        client (SecurityHubClient): Boto3 client to use.
         should_push_events (bool): Whether to push events to XSIAM.
         page_size (int, optional): Number of results to fetch per request. Defaults to API_MAX_PAGE_SIZE.
         limit (int, optional): Maximum number of events to fetch. Defaults to 0 (no limit).

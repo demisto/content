@@ -1,3 +1,4 @@
+from mypy_boto3_waf import WAFClient
 import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
@@ -425,7 +426,7 @@ def append_new_rule(rules: list, rule: dict) -> list:
     return updated_rules
 
 
-def get_required_response_fields_from_rule_group(client: boto3.client, kwargs: dict) -> Tuple[list, dict, str]:
+def get_required_response_fields_from_rule_group(client: WAFClient, kwargs: dict) -> Tuple[list, dict, str]:
     """
     Gets all the fields from the response that are required for the update request
     Args:
@@ -448,7 +449,7 @@ def get_required_response_fields_from_rule_group(client: boto3.client, kwargs: d
 '''CLIENT FUNCTIONS'''
 
 
-def update_rule_group_rules(client: boto3.client,
+def update_rule_group_rules(client: WAFClient,
                             kwargs: dict,
                             lock_token: str,
                             updated_rules: list,
@@ -465,7 +466,7 @@ def update_rule_group_rules(client: boto3.client,
 ''' COMMAND FUNCTIONS '''
 
 
-def connection_test(client: boto3.client) -> str:  # pragma: no cover
+def connection_test(client: WAFClient) -> str:  # pragma: no cover
     """ Command to test the connection to the API"""
     try:
         client.list_ip_sets(Scope=SCOPE_MAP[DEFAULT_SCOPE])
@@ -475,7 +476,7 @@ def connection_test(client: boto3.client) -> str:  # pragma: no cover
     return 'ok'
 
 
-def create_ip_set_command(client: boto3.client, args: dict) -> CommandResults:
+def create_ip_set_command(client: WAFClient, args: dict) -> CommandResults:
     """ Command to create an IP set"""
     tag_keys = argToList(args.get('tag_key')) or []
     tag_values = argToList(args.get('tag_value')) or []
@@ -503,7 +504,7 @@ def create_ip_set_command(client: boto3.client, args: dict) -> CommandResults:
                           outputs_key_field='Id')
 
 
-def get_ip_set_command(client: boto3.client, args: dict) -> CommandResults:
+def get_ip_set_command(client: WAFClient, args: dict) -> CommandResults:
     """ Command to get a specific IP set"""
     kwargs = {
         'Name': args.get('name', ''),
@@ -524,7 +525,7 @@ def get_ip_set_command(client: boto3.client, args: dict) -> CommandResults:
                           outputs_key_field='Id')
 
 
-def update_ip_set_command(client: boto3.client, args: dict) -> CommandResults:
+def update_ip_set_command(client: WAFClient, args: dict) -> CommandResults:
     """ Command to update a specific IP set"""
     kwargs = {
         'Name': args.get('name', ''),
@@ -555,7 +556,7 @@ def update_ip_set_command(client: boto3.client, args: dict) -> CommandResults:
                           raw_response=response)
 
 
-def list_ip_set_command(client: boto3.client, args: dict) -> CommandResults:
+def list_ip_set_command(client: WAFClient, args: dict) -> CommandResults:
     """ Command to get a list of all IP sets"""
     kwargs = {
         'Scope': SCOPE_MAP[args.get('scope') or DEFAULT_SCOPE],
@@ -580,7 +581,7 @@ def list_ip_set_command(client: boto3.client, args: dict) -> CommandResults:
                           outputs_key_field='Id')
 
 
-def delete_ip_set_command(client: boto3.client, args: dict) -> CommandResults:
+def delete_ip_set_command(client: WAFClient, args: dict) -> CommandResults:
     """ Command to delete a specific IP set"""
     kwargs = {
         'Name': args.get('name', ''),
@@ -600,7 +601,7 @@ def delete_ip_set_command(client: boto3.client, args: dict) -> CommandResults:
                           raw_response=response)
 
 
-def create_regex_set_command(client: boto3.client, args: dict) -> CommandResults:
+def create_regex_set_command(client: WAFClient, args: dict) -> CommandResults:
     """ Command to create a regex set"""
     tag_keys = argToList(args.get('tag_key')) or []
     tag_values = argToList(args.get('tag_value')) or []
@@ -628,7 +629,7 @@ def create_regex_set_command(client: boto3.client, args: dict) -> CommandResults
                           outputs_key_field='Id')
 
 
-def get_regex_set_command(client: boto3.client, args: dict) -> CommandResults:
+def get_regex_set_command(client: WAFClient, args: dict) -> CommandResults:
     """ Command to get a specific regex set"""
     kwargs = {
         'Name': args.get('name', ''),
@@ -649,7 +650,7 @@ def get_regex_set_command(client: boto3.client, args: dict) -> CommandResults:
                           outputs_key_field='Id')
 
 
-def update_regex_set_command(client: boto3.client, args: dict) -> CommandResults:
+def update_regex_set_command(client: WAFClient, args: dict) -> CommandResults:
     """ Command to update a specific regex set"""
     kwargs = {
         'Name': args.get('name', ''),
@@ -680,7 +681,7 @@ def update_regex_set_command(client: boto3.client, args: dict) -> CommandResults
                           raw_response=response)
 
 
-def list_regex_set_command(client: boto3.client, args: dict) -> CommandResults:
+def list_regex_set_command(client: WAFClient, args: dict) -> CommandResults:
     """ Command to get a list of all regex sets"""
     kwargs = {
         'Scope': SCOPE_MAP[args.get('scope') or DEFAULT_SCOPE],
@@ -705,7 +706,7 @@ def list_regex_set_command(client: boto3.client, args: dict) -> CommandResults:
                           outputs_key_field='Id')
 
 
-def delete_regex_set_command(client: boto3.client, args: dict) -> CommandResults:
+def delete_regex_set_command(client: WAFClient, args: dict) -> CommandResults:
     """ Command to delete a specific regex set"""
     kwargs = {
         'Name': args.get('name', ''),
@@ -725,7 +726,7 @@ def delete_regex_set_command(client: boto3.client, args: dict) -> CommandResults
                           raw_response=response)
 
 
-def list_rule_group_command(client: boto3.client, args: dict) -> CommandResults:
+def list_rule_group_command(client: WAFClient, args: dict) -> CommandResults:
     """ Command to get a list of all rule groups"""
     kwargs = {
         'Scope': SCOPE_MAP[args.get('scope') or DEFAULT_SCOPE],
@@ -750,7 +751,7 @@ def list_rule_group_command(client: boto3.client, args: dict) -> CommandResults:
                           outputs_key_field='Id')
 
 
-def get_rule_group_command(client: boto3.client, args: dict) -> CommandResults:
+def get_rule_group_command(client: WAFClient, args: dict) -> CommandResults:
     """ Command to get a specific rule group"""
     kwargs = {
         'Name': args.get('name', ''),
@@ -770,7 +771,7 @@ def get_rule_group_command(client: boto3.client, args: dict) -> CommandResults:
                           outputs_key_field='Id')
 
 
-def delete_rule_group_command(client: boto3.client, args: dict) -> CommandResults:
+def delete_rule_group_command(client: WAFClient, args: dict) -> CommandResults:
     """ Command to delete a specific rule group"""
     kwargs = {
         'Name': args.get('name', ''),
@@ -790,7 +791,7 @@ def delete_rule_group_command(client: boto3.client, args: dict) -> CommandResult
                           raw_response=response)
 
 
-def create_rule_group_command(client: boto3.client, args: dict) -> CommandResults:
+def create_rule_group_command(client: WAFClient, args: dict) -> CommandResults:
     """ Command to create a rule group"""
     tag_keys = argToList(args.get('tag_key')) or []
     tag_values = argToList(args.get('tag_value')) or []
@@ -825,7 +826,7 @@ def create_rule_group_command(client: boto3.client, args: dict) -> CommandResult
                           outputs_key_field='Id')
 
 
-def create_ip_rule_command(client: boto3.client, args: dict) -> CommandResults:
+def create_ip_rule_command(client: WAFClient, args: dict) -> CommandResults:
     """ Command to create an ip rule"""
     kwargs = get_required_args_for_get_rule_group(args)
 
@@ -846,7 +847,7 @@ def create_ip_rule_command(client: boto3.client, args: dict) -> CommandResults:
                           raw_response=response)
 
 
-def create_country_rule_command(client: boto3.client, args: dict) -> CommandResults:
+def create_country_rule_command(client: WAFClient, args: dict) -> CommandResults:
     """ Command to create a country rule"""
     kwargs = get_required_args_for_get_rule_group(args)
 
@@ -867,7 +868,7 @@ def create_country_rule_command(client: boto3.client, args: dict) -> CommandResu
                           raw_response=response)
 
 
-def create_string_match_rule_command(client: boto3.client, args: dict) -> CommandResults:
+def create_string_match_rule_command(client: WAFClient, args: dict) -> CommandResults:
     """ Command to create a string match rule"""
     kwargs = get_required_args_for_get_rule_group(args)
 
@@ -888,7 +889,7 @@ def create_string_match_rule_command(client: boto3.client, args: dict) -> Comman
                           raw_response=response)
 
 
-def delete_rule_command(client: boto3.client, args: dict) -> CommandResults:
+def delete_rule_command(client: WAFClient, args: dict) -> CommandResults:
     """ Command to delete a specific rule"""
     kwargs = get_required_args_for_get_rule_group(args)
 
@@ -908,7 +909,7 @@ def delete_rule_command(client: boto3.client, args: dict) -> CommandResults:
                           raw_response=response)
 
 
-def add_ip_statement_command(client: boto3.client, args: dict) -> CommandResults:
+def add_ip_statement_command(client: WAFClient, args: dict) -> CommandResults:
     """ Command to add an ip statement to a rule"""
     kwargs = get_required_args_for_get_rule_group(args)
     rules, rule_group_visibility_config, lock_token = get_required_response_fields_from_rule_group(client, kwargs)
@@ -928,7 +929,7 @@ def add_ip_statement_command(client: boto3.client, args: dict) -> CommandResults
                           raw_response=response)
 
 
-def add_country_statement_command(client: boto3.client, args: dict) -> CommandResults:
+def add_country_statement_command(client: WAFClient, args: dict) -> CommandResults:
     """ Command to add a country statement to a rule"""
     kwargs = get_required_args_for_get_rule_group(args)
 
@@ -950,7 +951,7 @@ def add_country_statement_command(client: boto3.client, args: dict) -> CommandRe
                           raw_response=response)
 
 
-def add_string_match_statement_command(client: boto3.client, args: dict) -> CommandResults:
+def add_string_match_statement_command(client: WAFClient, args: dict) -> CommandResults:
     """ Command to add a string match statement to a rule"""
     kwargs = get_required_args_for_get_rule_group(args)
 
@@ -972,7 +973,7 @@ def add_string_match_statement_command(client: boto3.client, args: dict) -> Comm
                           raw_response=response)
 
 
-def add_json_statement_command(client: boto3.client, args: dict) -> CommandResults:
+def add_json_statement_command(client: WAFClient, args: dict) -> CommandResults:
     """ Command to add a json object represents a statement to a rule"""
     kwargs = get_required_args_for_get_rule_group(args)
 

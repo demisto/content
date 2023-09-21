@@ -1,3 +1,4 @@
+from mypy_boto3_guardduty import GuardDutyClient
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from AWSApiModule import *  # noqa: E402
@@ -6,7 +7,6 @@ from typing import Tuple
 from datetime import datetime, date
 
 import urllib3.util
-import boto3
 import json
 
 # Disable insecure warnings
@@ -52,7 +52,7 @@ def convert_events_with_datetime_to_str(events: list) -> list:
     return output_events
 
 
-def get_events(aws_client: boto3.client, collect_from: dict, collect_from_default: Optional[datetime], last_ids: dict,
+def get_events(aws_client: GuardDutyClient, collect_from: dict, collect_from_default: Optional[datetime], last_ids: dict,
                severity: str, limit: int = MAX_RESULTS, detectors_num: int = MAX_RESULTS,
                max_ids_per_req: int = MAX_IDS_PER_REQ) -> Tuple[list, dict, dict]:
     """Get events from AWSGuardDuty.
@@ -91,7 +91,7 @@ def get_events(aws_client: boto3.client, collect_from: dict, collect_from_defaul
 
         response = aws_client.list_detectors(**list_detectors_args)
         detector_ids += response.get('DetectorIds', [])
-        next_token = response.get('NextToken')
+        next_token = response.get('NextToken', '')
 
     demisto.debug(f"AWSGuardDutyEventCollector - Found detector ids: {detector_ids}")
 
@@ -124,7 +124,7 @@ def get_events(aws_client: boto3.client, collect_from: dict, collect_from_defaul
                 list_finding_args.update({'NextToken': next_token})
             list_findings = aws_client.list_findings(**list_finding_args)
             finding_ids += list_findings.get('FindingIds', [])
-            next_token = list_findings.get('NextToken')
+            next_token = list_findings.get('NextToken', '')
 
             # Handle duplicates and findings updated at the same time.
             if last_ids.get(detector_id) and last_ids.get(detector_id) in finding_ids:
