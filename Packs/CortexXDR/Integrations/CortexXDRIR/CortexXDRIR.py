@@ -844,10 +844,10 @@ def handle_incoming_user_unassignment(incident_data):
 
 
 def handle_incoming_closing_incident(incident_data):
-    closing_entry = {}  # type: Dict
+    return_entry = {}  # type: Dict
     if incident_data.get('status') in XDR_RESOLVED_STATUS_TO_XSOAR:
         demisto.debug(f"Closing XDR issue {incident_data.get('incident_id')}")
-        closing_entry = {
+        return_entry = {
             'Type': EntryType.NOTE,
             'Contents': {
                 'dbotIncidentClose': True,
@@ -856,15 +856,22 @@ def handle_incoming_closing_incident(incident_data):
             },
             'ContentsFormat': EntryFormat.JSON
         }
-        incident_data['closeReason'] = closing_entry['Contents']['closeReason']
-        incident_data['closeNotes'] = closing_entry['Contents']['closeNotes']
+        incident_data['closeReason'] = return_entry['Contents']['closeReason']
+        incident_data['closeNotes'] = return_entry['Contents']['closeNotes']
 
         if incident_data.get('status') == 'resolved_known_issue':
             close_notes = f'Known Issue.\n{incident_data.get("closeNotes", "")}'
-            closing_entry['Contents']['closeNotes'] = close_notes
+            return_entry['Contents']['closeNotes'] = close_notes
             incident_data['closeNotes'] = close_notes
-
-    return closing_entry
+    else:
+        return_entry = {
+            'Type': EntryType.NOTE,
+            'Contents': {
+                'dbotIncidentReopen': True,
+            },
+            'ContentsFormat': EntryFormat.JSON
+        }
+    return return_entry
 
 
 def get_mapping_fields_command():
