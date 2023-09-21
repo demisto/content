@@ -3,11 +3,14 @@ import os
 import sys
 import json
 import glob
+import argparse
 from datetime import datetime
 import logging
 
 from packaging.version import Version
+import requests
 from demisto_sdk.commands.common.tools import run_command, get_dict_from_file
+from Tests.scripts.utils.log_util import install_logging
 
 PACKS_DIR = 'Packs'
 DATE_FORMAT = '%d %B %Y'
@@ -416,3 +419,103 @@ def get_pack_version_suffix(pack_metadata):
     elif is_community_supported_in_metadata(pack_metadata):
         suffix = ' (Community Contributed)'
     return suffix
+
+
+def get_release_notes_draft(github_token, asset_id):
+    """
+    if possible, download current release draft from content repository in github.
+
+    :param github_token: github token with push permission (in order to get the draft).
+    :param asset_id: content build's asset id.
+    :return: draft text (or empty string on error).
+    """
+    if github_token is None:
+        logging.warning('Unable to download draft without github token.')
+        return ''
+
+    # Disable insecure warnings
+    import urllib3
+    urllib3.disable_warnings()
+    try:
+        res = requests.get('https://api.github.com/repos/demisto/content/releases',
+                           verify=False,  # guardrails-disable-line
+                           headers={'Authorization': f'token {github_token}'})
+    except requests.exceptions.ConnectionError as exc:
+        logging.warning(f'Unable to get release draft, reason:\n{str(exc)}')
+        return ''
+
+    if res.status_code != 200:
+        logging.warning(f'Unable to get release draft ({res.status_code}), reason:\n{res.text}')
+        return ''
+
+    drafts = [release for release in res.json() if release.get('draft', False)]
+    if drafts:
+        if len(drafts) == 1:
+            draft_body = drafts[0]['body']
+            raw_asset = re.findall(r'Release Notes for version .* \((\d{5,}|xxxxx)\)', draft_body, re.IGNORECASE)
+            if raw_asset:
+                draft_body = draft_body.replace(raw_asset[0], asset_id)
+
+            return draft_body
+
+        logging.warning(f'Too many drafts to choose from ({len(drafts)}), skipping update.')
+
+    return ''
+
+
+def create_content_descriptor(release_notes, version, asset_id, github_token):
+    # time format example 2017 - 06 - 11T15:25:57.0 + 00:00
+    current_date = datetime.now().strftime("%Y-%m-%dT%H:%M:%S.0+00:00")
+
+    content_descriptor = {
+        "installDate": "0001-01-01T00:00:00Z",
+        "assetId": int(asset_id),
+        "releaseNotes": release_notes,
+        "modified": current_date,
+        "ignoreGit": False,
+        "releaseDate": current_date,
+        "version": -1,
+        "release": version,
+        "id": ""
+    }
+
+    draft = get_release_notes_draft(github_token, asset_id)
+    if draft:
+        content_descriptor['releaseNotes'] = draft
+
+    with open('content-descriptor.json', 'w') as outfile:
+        json.dump(content_descriptor, outfile)
+
+
+def main():
+    install_logging('Build_Content_Descriptor.log')
+    arg_parser = argparse.ArgumentParser()
+    arg_parser.add_argument('version', help='Release version')
+    arg_parser.add_argument('git_sha1', help='commit sha1 to compare changes with')
+    arg_parser.add_argument('asset_id', help='Asset ID')
+    arg_parser.add_argument('--output', help='Output file, default is ./packs-release-notes.md',
+                            default='./packs-release-notes.md')
+    arg_parser.add_argument('--github-token', help='Github token')
+    args = arg_parser.parse_args()
+
+    new_packs = get_new_packs(args.git_sha1)
+    new_packs_release_notes = {}
+    new_packs_metadata = {}
+    for pack in new_packs:
+        pack_metadata = get_pack_metadata(pack)
+        pack_name = pack_metadata.get('name')
+        new_packs_release_notes[pack_name] = get_pack_entities(pack)
+        new_packs_metadata[pack_name] = pack_metadata
+
+    packs_metadata_dict = {}
+    modified_release_notes = get_all_modified_release_note_files(args.git_sha1)
+    modified_release_notes_dict, modified_packs_metadata = get_release_notes_dict(modified_release_notes)
+    packs_metadata_dict.update(new_packs_metadata)
+    packs_metadata_dict.update(modified_packs_metadata)
+    release_notes = generate_release_notes_summary(new_packs_release_notes, modified_release_notes_dict,
+                                                   packs_metadata_dict, args.version, args.asset_id, args.output)
+    create_content_descriptor(release_notes, args.version, args.asset_id, args.github_token)
+
+
+if __name__ == "__main__":
+    main()
