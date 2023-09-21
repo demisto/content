@@ -33,6 +33,7 @@ connection: Connection | None = None
 
 ''' GLOBAL VARS '''
 
+# test
 # userAccountControl is a bitmask used to store a number of settings.
 # find more at:
 # https://support.microsoft.com/en-gb/help/305144/how-to-use-the-useraccountcontrol-flags-to-manipulate-user-account-pro
