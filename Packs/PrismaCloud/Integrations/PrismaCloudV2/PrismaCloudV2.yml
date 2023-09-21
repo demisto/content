@@ -111,7 +111,7 @@ script:
   script: ''
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.12.68714
+  dockerimage: demisto/python3:3.10.13.74666
   isfetch: true
   isremotesyncin: true
   isremotesyncout: true
@@ -306,7 +306,7 @@ script:
       predefined:
       - 'true'
       - 'false'
-    description: Gets remediation command list details for the given alerts or policy. Either policy ID or alert IDs must be provided. When no absolute time nor relative time arguments are provided, the default time range is all times.
+    description: Generates and returns a list of remediation commands for the specified alerts and policies. Data returned for a successful call include fully constructed commands for remediation. Either a policy ID or alert IDs must be provided. The returned information can be retrieved in the UI by clicking the "Remediate" button under the "Actions" column for supported alerts. When no absolute time nor relative time arguments are provided, the default time range is all times.
     name: prisma-cloud-remediation-command-list
     outputs:
     - contextPath: PrismaCloud.AlertRemediation.description
@@ -327,8 +327,21 @@ script:
       name: alert_id
       required: true
     name: prisma-cloud-alert-remediate
-    description: Remediates the alert with the specified ID, if that alert is associated with a remediable policy.
+    description: Remediates the alert with the specified ID, if that alert is associated with a remediable policy. In order to check what remediation would run, use the "prisma-cloud-remediation-command-list" command first.
     execution: true
+    outputs:
+    - contextPath: PrismaCloud.AlertRemediation.alertId
+      description: The ID of the alert to which the remediation apply.
+      type: String
+    - contextPath: PrismaCloud.AlertRemediation.successful
+      description: Whether the remediation was successful.
+      type: Boolean
+    - contextPath: PrismaCloud.AlertRemediation.failureReason
+      description: The failure reason for the remediation.
+      type: String
+    - contextPath: PrismaCloud.AlertRemediation.errorValue
+      description: The error value for the remediation.
+      type: String
   - arguments:
     - description: Comma-separated list of alert IDs to be reopened.
       isArray: true
@@ -944,6 +957,182 @@ script:
     - contextPath: PrismaCloud.Resource.data
       description: Prisma Cloud resource specific data.
       type: Unknown
+  - arguments:
+    - description: The resource list type.
+      name: list_type
+    - description: The namespace to return only resources associated with it.
+      name: namespace
+    - defaultValue: '50'
+      description: Maximum number of entries to return.
+      name: limit
+    - auto: PREDEFINED
+      description: Whether to retrieve all results. The "limit" argument will be ignored.
+      name: all_results
+      predefined:
+      - 'true'
+      - 'false'
+    description: Returns all the resource lists. Maps to the Resource Lists under Settings > Resource Lists in the Console UI.
+    name: prisma-cloud-resource-list
+    outputs:
+    - contextPath: PrismaCloud.ResourceList.id
+      description: Prisma Cloud resource list ID.
+      type: String
+    - contextPath: PrismaCloud.ResourceList.name
+      description: Resource list name.
+      type: String
+    - contextPath: PrismaCloud.ResourceList.resourceListType
+      description: Resource list type.
+      type: String
+    - contextPath: PrismaCloud.ResourceList.description
+      description: Resource list description.
+      type: String
+    - contextPath: PrismaCloud.ResourceList.lastModifiedBy
+      description: Resource list last modified user.
+      type: String
+    - contextPath: PrismaCloud.ResourceList.lastModifiedTs
+      description: Resource list last modified time.
+      type: Date
+    - contextPath: PrismaCloud.ResourceList.members
+      description: Resource list members.
+      type: Unknown
+    - contextPath: PrismaCloud.ResourceList.namespaces
+      description: Resource list namespaces.
+      type: Unknown
+  - arguments:
+    - description: The role id to get details of.
+      name: role_id
+    - description: The resource list name to return only user roles associated with it.
+      name: resource_list_name
+    - defaultValue: '50'
+      description: Maximum number of entries to return.
+      name: limit
+    - auto: PREDEFINED
+      description: Whether to retrieve all results. The "limit" argument will be ignored.
+      name: all_results
+      predefined:
+      - 'true'
+      - 'false'
+    description: Retrieves user roles. Maps to Settings > Access Control > Roles in the Console UI.
+    name: prisma-cloud-user-roles-list
+    outputs:
+    - contextPath: PrismaCloud.UserRoles.id
+      description: Prisma Cloud user roles ID.
+      type: String
+    - contextPath: PrismaCloud.UserRoles.name
+      description: User roles name.
+      type: String
+    - contextPath: PrismaCloud.UserRoles.resourceListIds
+      description: User roles resource list IDs.
+      type: Unknown
+    - contextPath: PrismaCloud.UserRoles.description
+      description: User roles description.
+      type: String
+    - contextPath: PrismaCloud.UserRoles.lastModifiedBy
+      description: User roles last modified user.
+      type: String
+    - contextPath: PrismaCloud.UserRoles.lastModifiedTs
+      description: User roles last modified time.
+      type: Date
+    - contextPath: PrismaCloud.UserRoles.associatedUsers
+      description: User roles associated users.
+      type: Unknown
+    - contextPath: PrismaCloud.UserRoles.restrictDismissalAccess
+      description: Whether dismissal access is restricted for the user role.
+      type: Boolean
+    - contextPath: PrismaCloud.UserRoles.roleType
+      description: User roles role type.
+      type: String
+    - contextPath: PrismaCloud.UserRoles.additionalAttributes
+      description: User roles additional attributes.
+      type: Unknown
+    - contextPath: PrismaCloud.UserRoles.codeRepositoryIds
+      description: User roles code repository IDs.
+      type: Unknown
+    - contextPath: PrismaCloud.UserRoles.accountGroupIds
+      description: User roles account group IDs.
+      type: Unknown
+    - contextPath: PrismaCloud.UserRoles.resourceLists
+      description: User roles resource lists.
+      type: Unknown
+    - contextPath: PrismaCloud.UserRoles.permissionGroup
+      description: User roles permission group.
+      type: Unknown
+    - contextPath: PrismaCloud.UserRoles.codeRepositories
+      description: User roles code repositories.
+      type: Unknown
+    - contextPath: PrismaCloud.UserRoles.accountGroups
+      description: User roles account groups.
+      type: Unknown
+  - arguments:
+    - defaultValue: '50'
+      description: Maximum number of entries to return.
+      name: limit
+    - auto: PREDEFINED
+      description: Whether to retrieve all results. The "limit" argument will be ignored.
+      name: all_results
+      predefined:
+      - 'true'
+      - 'false'
+    - description: Usernames to return only users associated with.
+      name: usernames
+      isArray: true
+    description: Lists all users and service accounts for your tenant. Maps to Settings > Access Control > Users in the Console UI.
+    name: prisma-cloud-users-list
+    outputs:
+    - contextPath: PrismaCloud.Users.email
+      description: Prisma Cloud user email.
+      type: String
+    - contextPath: PrismaCloud.Users.firstName
+      description: User first name.
+      type: String
+    - contextPath: PrismaCloud.Users.lastName
+      description: User last name.
+      type: String
+    - contextPath: PrismaCloud.Users.timeZone
+      description: User time zone.
+      type: String
+    - contextPath: PrismaCloud.Users.enabled
+      description: User enabled.
+      type: Boolean
+    - contextPath: PrismaCloud.Users.lastModifiedBy
+      description: User last modified user.
+      type: String
+    - contextPath: PrismaCloud.Users.lastModifiedTs
+      description: User last modified time.
+      type: Date
+    - contextPath: PrismaCloud.Users.lastLoginTs
+      description: User last login time.
+      type: Date
+    - contextPath: PrismaCloud.Users.displayName
+      description: User display name.
+      type: String
+    - contextPath: PrismaCloud.Users.ssoBypassAllowed
+      description: Whether SSO bypass is allowed for the user role.
+      type: Boolean
+    - contextPath: PrismaCloud.Users.accessKeysAllowed
+      description: Whether access keys are allowed for the user role.
+      type: Boolean
+    - contextPath: PrismaCloud.Users.defaultRoleId
+      description: User default role ID.
+      type: String
+    - contextPath: PrismaCloud.Users.roleIds
+      description: User role IDs.
+      type: Unknown
+    - contextPath: PrismaCloud.Users.roles
+      description: User roles.
+      type: Unknown
+    - contextPath: PrismaCloud.Users.username
+      description: User username.
+      type: String
+    - contextPath: PrismaCloud.Users.type
+      description: User type.
+      type: String
+    - contextPath: PrismaCloud.Users.enableKeyExpiration
+      description: Whether key expiration is enabled for the user role.
+      type: Boolean
+    - contextPath: PrismaCloud.Users.accessKeysCount
+      description: User access keys count.
+      type: Number
   - arguments:
     - auto: PREDEFINED
       defaultValue: 'false'

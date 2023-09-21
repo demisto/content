@@ -42,7 +42,8 @@ if [ -z "$_ci_token" ]; then
     exit 1
 fi
 
-source Utils/gitlab_triggers/trigger_build_url.sh
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+source ${SCRIPT_DIR}/trigger_build_url.sh
 
 curl -k --request POST \
   --form token="${_ci_token}" \

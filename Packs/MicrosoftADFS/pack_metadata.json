@@ -12,6 +12,12 @@
     "tags": [],
     "useCases": [],
     "keywords": [],
+    "dependencies": {
+        "MicrosoftWindowsEvents": {
+            "mandatory": true,
+            "display_name": "Microsoft Windows Event Logs"
+        }
+    },
     "marketplaces": [
         "marketplacev2"
     ]
