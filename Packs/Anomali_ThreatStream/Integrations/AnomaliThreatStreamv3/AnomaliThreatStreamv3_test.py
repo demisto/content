@@ -1790,10 +1790,10 @@ def test_create_indicators_list(names_and_indicators_list, notes, expected_resul
     [
         (
             {"indicator_ids": "123,456", "tags": "tag1,tag2"},
-            json.dumps({
+            {
                 "ids": ["123", "456"],
                 "tags": [{"name": "tag1", "tlp": "red"}, {"name": "tag2", "tlp": "red"}],
-            }),
+            },
             "The tags have been successfully added for the following ids:\n `123, 456`",
         )
     ],
@@ -1812,16 +1812,14 @@ def test_add_indicator_tag_success(
     """
     # Arrange
     client = mock_client()
-    mock_http_request = mocker.patch.object(client, "http_request", return_value={})
+    mock_http_request = mocker.patch.object(client, "add_indicator_tag_request", return_value={})
 
     # Act
     result = add_indicator_tag_command(client, **args)
 
     # Assert
     assert expected_output == result.readable_output
-    mock_http_request.assert_called_with(
-        "POST", "v2/intelligence/bulk_tagging/", data=expected_data
-    )
+    mock_http_request.assert_called_with(data_request=expected_data)
 
 
 @pytest.mark.parametrize(
@@ -1847,7 +1845,7 @@ def test_remove_indicator_tag_command_success(
     """
     client = mock_client()
     # Mock API response
-    mocker.patch.object(client, "http_request", json={})
+    mocker.patch.object(client, "remove_indicator_tag_request", json={})
 
     # Call function
     result = remove_indicator_tag_command(

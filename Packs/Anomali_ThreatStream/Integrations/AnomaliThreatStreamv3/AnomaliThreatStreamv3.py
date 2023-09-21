@@ -456,6 +456,18 @@ class Client(BaseClient):
         return self.http_request("POST", url_suffix,
                                  json={'ids': associated_entity_ids_list})
 
+    def add_indicator_tag_request(self, data_request: dict[str, object]):
+        self.http_request(
+            method="POST",
+            url_suffix="v2/intelligence/bulk_tagging/",
+            data=json.dumps(data_request))
+
+    def remove_indicator_tag_request(self, data_request: dict[str, object]):
+        self.http_request(
+            method="PATCH",
+            url_suffix="v2/intelligence/bulk_remove_tags/",
+            data=json.dumps(data_request))
+
 
 class DBotScoreCalculator:
     """
@@ -2547,7 +2559,7 @@ def add_indicator_tag_command(client: Client, **kwargs) -> CommandResults:
         "tags": [{"name": tag, "tlp": "red"} for tag in tags],
     }
 
-    client.http_request("POST", "v2/intelligence/bulk_tagging/", data=json.dumps(data_request))
+    client.add_indicator_tag_request(data_request=data_request)
 
     return CommandResults(
         readable_output=f"The tags have been successfully added"
@@ -2564,7 +2576,7 @@ def remove_indicator_tag_command(client: Client, **kwargs) -> CommandResults:
         "tags": [{"name": tags}],
     }
 
-    client.http_request("PATCH", "v2/intelligence/bulk_remove_tags/", data=json.dumps(data_request))
+    client.remove_indicator_tag_request(data_request=data_request)
 
     return CommandResults(
         readable_output=f"The tags were successfully deleted"
