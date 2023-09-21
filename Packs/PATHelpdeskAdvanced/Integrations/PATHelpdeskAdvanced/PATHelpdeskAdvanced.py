@@ -114,7 +114,7 @@ def safe_arg_to_number(argument: str | None, argument_name: str) -> int:
     return result
 
 
-def parse_filter_conditions(strings: Sequence[str]) -> str:
+def parse_filter_conditions(strings: Sequence[str] | str) -> str:
     def _parse_single_condition(string: str) -> dict:
         if not (match := FILTER_CONDITION_REGEX.match(string)):
             raise DemistoException(
@@ -128,9 +128,10 @@ def parse_filter_conditions(strings: Sequence[str]) -> str:
             else value.strip('"'),
         }
 
-    return json.dumps(
-        [_parse_single_condition(string) for string in argToList(strings)]
-    )
+    if isinstance(strings, str):
+        strings = argToList(strings)
+
+    return json.dumps([_parse_single_condition(string) for string in strings])
 
 
 def create_params_dict(
