@@ -367,7 +367,7 @@ script:
     - name: id
       description: The id of the indexed document (will be generated if empty).
     description: Indexes a document into an Elasticsearch index.
-  dockerimage: demisto/py3-tools:1.0.0.72621
+  dockerimage: demisto/py3-tools:1.0.0.74702
   isfetch: true
   runonce: false
   script: '-'
