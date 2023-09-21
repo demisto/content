@@ -290,11 +290,21 @@ def test_process_root_get_ls(mocker, integration_context_filename, dir_name, rec
     assert equals_object(response.body, expected)
 
 
-@pytest.mark.parametrize(argnames='integration_context_filename, path, output_filename',
-                         argvalues=[
-                             ('./test_data/integration_ctx_common.json', '/a.dat', './test_data/download_out_01.dat'),
-                             ('./test_data/integration_ctx_common.json', '/x/XYZ/アイウエオ.txt', './test_data/download_out_02.dat'),
-                         ])
+@pytest.mark.parametrize(
+    argnames="integration_context_filename, path, output_filename",
+    argvalues=[
+        (
+            "./test_data/integration_ctx_common.json",
+            "/a.dat",
+            "./test_data/download_out_01.dat",
+        ),
+        (
+            "./test_data/integration_ctx_common.json",
+            "/x/XYZ/アイウエオ.txt",
+            "./test_data/download_out_02.dat",
+        ),
+    ],
+)
 def test_process_root_get_download(mocker, integration_context_filename, path, output_filename):
     """
         Given:
