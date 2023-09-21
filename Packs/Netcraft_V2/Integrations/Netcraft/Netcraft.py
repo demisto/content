@@ -824,6 +824,16 @@ def submission_list_command(args: dict, client: Client) -> CommandResults:
 
 def file_report_submit_command(args: dict, client: Client) -> CommandResults:
 
+    def validate_args(args: dict):  # TODO add tests
+        if not (
+            (
+                args.get('file_content')
+                and args.get('file_name')
+            )
+            or args.get('entry_id')
+        ):
+            raise DemistoException('A file must be provided. Use file_content and file_name OR entry_id')
+
     def args_to_body(args: dict) -> dict:
         content = args.pop('file_content', None)
         name = args.pop('file_name', None)
