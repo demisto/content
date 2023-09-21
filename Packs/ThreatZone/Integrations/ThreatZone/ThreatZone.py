@@ -58,7 +58,7 @@ class Client(BaseClient):
         """Gets the sample scan result from ThreatZone using the '/public-api/get/submission/' API endpoint
 
         :return: dict containing the sample scan results as returned from the API
-        :rtype: ``Dict[str, Any]``
+        :rtype: ``dict[str, Any]``
         """
         return self._http_request(
             method='GET',
@@ -165,31 +165,89 @@ def encode_file_name(file_name):
     """
     return file_name.encode('ascii', 'ignore')
 
+def translate_score(score: int,) -> int:
+    """Translate ThreatZone threat level to DBot score enum."""
+    if score == 0:
+        return Common.DBotScore.UNKNOWN
+    elif score == 1:
+        return Common.DBotScore.GOOD
+    elif score == 2:
+        return Common.DBotScore.SUSPICIOUS
+    else:
+        return Common.DBotScore.BAD
 
-def generate_dbotscore(report):
-    """Creates DBotScore object based on the contents of 'report' argument
-    :param:Object returned by ThreatZone API call in 'threatzone_get' function.
-    :ptype: dict
+def get_reputation_reliability(reliability):
+    if reliability == "A+ - 3rd party enrichment":
+        return DBotScoreReliability.A_PLUS
+    if reliability == "A - Completely reliable":
+        return DBotScoreReliability.A
+    if reliability == "B - Usually reliable":
+        return DBotScoreReliability.B
+    if reliability == "C - Fairly reliable":
+        return DBotScoreReliability.C
+    if reliability == "D - Not usually reliable":
+        return DBotScoreReliability.D
+    if reliability == "E - Unreliable":
+        return DBotScoreReliability.E
+    if reliability == "F - Reliability cannot be judged":
+        return DBotScoreReliability.F
+
+def generate_dbotscore(indicator, report, type=None):
+    """Creates DBotScore object based on the content of 'indicator' argument
+    :type indicator: ``str``
+    :param indicator: The value of the indicator
+
+    :type report: ``dict``
+    :param report: The readable report dict 
+
     :return: A DBotScore object.
     :rtype: dict
     """
-    indicator_type = 'SHA256'
-    threat_text = report.get('THREAT_LEVEL')
-    indicator = report.get('SHA256')
-    dbot_score = {
-        "DBotScore": {
-            "Indicator": indicator,
-            "Type": indicator_type,
-            "Vendor": "ThreatZone",
-            "Score": threat_text,
-            "Reliability": demisto.params().get("integrationReliability")
-        }
-    }
+    def _type_selector(_type):
+        try:
+            types =  {
+                "ip": DBotScoreType.IP,
+                "file": DBotScoreType.FILE,
+                "domain": DBotScoreType.DOMAIN,
+                "url": DBotScoreType.URL,
+                "email": DBotScoreType.EMAIL,
+                "custom": DBotScoreType.CUSTOM,
+            }
+            return types[_type]
+        except:
+            return DBotScoreType.CUSTOM
 
-    # db_score = Common.DBotScore(indicator=indicator, indicator_type=indicator_type,
-    #                                 integration_name="ThreatZone", score=threat_text).to_context()
-    # we are using Common.DBotScore.CONTEXT_PATH for 5.5.0+ and CONTEXT_PATH for 5.0.0
-    return dbot_score
+    return Common.DBotScore(
+        indicator = indicator,
+        indicator_type = _type_selector(type),
+        integration_name= 'ThreatZone',
+        score= translate_score(report.get('THREAT_LEVEL')),
+        reliability=get_reputation_reliability(demisto.params().get('integrationReliability'))
+    )
+
+def generate_indicator(indicator, report, type=None):
+    """Creates Indicator object based on the content of 'indicator' argument
+    
+    :type indicator: ``str``
+    :param indicator: The value of the indicator
+
+    :type report: ``dict``
+    :param report: The readable report dict 
+
+    :return: A Indicator object.
+    :rtype: dict
+    """
+    dbot_score = generate_dbotscore(indicator, report, type)
+    if type == "file":
+        return Common.File(dbot_score=dbot_score, sha256=indicator)
+    elif type == "ip":
+        return Common.IP(ip=indicator, dbot_score=dbot_score)
+    elif type == "url":
+        return Common.URL(url=indicator, dbot_score=dbot_score)
+    elif type == "domain":
+        return Common.Domain(domain=indicator, dbot_score=dbot_score)
+    elif type == "email":
+        return Common.EMAIL(address=indicator, dbot_score=dbot_score)
 
 
 def threatzone_get_result(client: Client, args: dict[str, Any]) -> CommandResults:
@@ -207,7 +265,7 @@ def threatzone_get_result(client: Client, args: dict[str, Any]) -> CommandResult
     result = client.threatzone_get(param=param)
     stats = {
         1: "File received",
-        2: "Submission is failed",
+        2: "Submission is accepted",
         3: "Submission is running",
         4: "Submission VM is ready",
         5: "Submission is finished"
@@ -226,7 +284,8 @@ def threatzone_get_result(client: Client, args: dict[str, Any]) -> CommandResult
             CommandResults(
                 readable_output=readable_output,
                 outputs_key_field='results',
-                outputs=output
+                outputs=output,
+                indicator= generate_indicator(readable_dict["SHA256"], readable_dict, "file")
             )
         ]
     try:
@@ -244,8 +303,15 @@ def threatzone_get_result(client: Client, args: dict[str, Any]) -> CommandResult
         sha256 = result['fileInfo']['hashes']['sha256']
         submission_info = {'file_name': result['fileInfo']['name'],
                            'private': result['private']}
+        submission_info = {'file_name': result['fileInfo']['name'],
+                           'private': result['private']}
 
         submission_uuid = result['uuid']
+        if status == 0:
+            return_error(
+            f"Reason: {stats[status]}\nUUID: {submission_uuid}\nSuggestion: Re-analyze submission or contact us."
+            )
+
         result_url = f"https://app.threat.zone/submission/{submission_uuid}"
         level = result['level']
         readable_dict = {
@@ -259,7 +325,7 @@ def threatzone_get_result(client: Client, args: dict[str, Any]) -> CommandResult
             'SCAN_URL': result_url,
             'UUID': submission_uuid
         }
-        # dbot_score = generate_dbotscore(readable_dict)
+        
         output = {
             'ThreatZone.Result(val.Job_ID == obj.Job_ID)': {
                 'STATUS': status,
@@ -272,7 +338,6 @@ def threatzone_get_result(client: Client, args: dict[str, Any]) -> CommandResult
                 'UUID': submission_uuid,
                 'REPORT': {report_type: result["reports"][report_type]}
             }
-            # ,**dbot_score
         }
 
         res = create_res(readable_dict, output)
@@ -285,10 +350,10 @@ def threatzone_get_result(client: Client, args: dict[str, Any]) -> CommandResult
             res = create_res(readable_dict, output)
             res.append(f_res)
 
-    except Exception:
+    except Exception as e:
+        raise e
         output = {'ThreatZone.Result(val.Job_ID == obj.Job_ID)': {'REPORT': result}}
-        readable_output = tableToMarkdown('Submission Result', result)
-        res = create_res(readable_output, output)
+        res = create_res(result, output)
     return res
 
 
