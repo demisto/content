@@ -5863,7 +5863,8 @@
         "ThreatGridv2": "No instance - developed by Qmasters",
         "SentinelOne V2": "No instance - developed by partner",
         "CheckPhish": "Issue CRTX-86562",
-        "SecurityAndComplianceV2": "Can only be authenticated via MFA and requires user interaction to configure."
+        "SecurityAndComplianceV2": "Can only be authenticated via MFA and requires user interaction to configure.",
+        "ThreatExchange v2": "No instance"
     },
     "nightly_packs": [
         "CommonScripts",
