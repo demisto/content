@@ -4,7 +4,7 @@
     "feed": false,
     "id": "Netcraft Incoming Mapper",
     "mapping": {
-        "Netcraft Attack": {
+        "dbot_classification_incident_type_all": {
             "dontMapEventToLabels": true,
             "internalMapping": {
                 "Alert ID": {
