@@ -3674,6 +3674,10 @@
             "fromversion": "5.0.0"
         },
         {
+            "playbookID": "If-Elif Test",
+            "fromversion": "6.9.0"
+        },
+        {
             "integrations": "Imperva WAF",
             "playbookID": "Imperva WAF - Test"
         },
