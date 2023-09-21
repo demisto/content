@@ -5729,8 +5729,8 @@ class TestIOAFetch:
                               ("cloud_provider='aws'&weird_param=val",
                                'An unsupported parameter has been entered'),
                               ("cloud_provider='aws'&state=", 'cannot be an empty string'),
-                              ("cloud_provider='aws'&state:val", 'A query section has wrong format'),
-                              ("cloud_provider='aws'&state==val", 'A query section has wrong format')])
+                              ("cloud_provider='aws'&state:val", 'does not match the parameter=value format'),
+                              ("cloud_provider='aws'&state==val", 'does not match the parameter=value format')])
     def test_validate_ioa_fetch_query_error(self, fetch_query, error_message):
         """
         Given:
@@ -5760,7 +5760,8 @@ class TestIOAFetch:
         ioa_next_token = 'dummy_token'
         last_run_object: list[dict[str, Any]] = [{}, {}, {}, {},
                                                  {'ioa_next_token': ioa_next_token,
-                                                  'last_fetch_query': last_fetch_query, 'last_date_time_since': 'some_date_time'}]
+                                                  'last_fetch_query': last_fetch_query,
+                                                  'last_date_time_since': '2023-01-01T00:00:00Z'}]
         mocker.patch.object(demisto, 'params',
                             return_value={'fetch_incidents_or_detections': 'Indicator of Attack',
                                           'ioa_fetch_query': fetch_query})
@@ -5780,7 +5781,7 @@ class TestIOAFetch:
             - Validate that the passed date_date_since date is appended to the supplied fetch query.
         """
         from CrowdStrikeFalcon import fetch_incidents
-        last_date_time_since = 'some_date_time'
+        last_date_time_since = '2023-01-01T00:00:00Z'
         fetch_query = 'cloud_provider=aws'
         last_run_object: list[dict[str, Any]] = [{}, {}, {}, {},
                                                  {'last_date_time_since': last_date_time_since}]
@@ -5881,7 +5882,7 @@ class TestIOAFetch:
         mocker.patch('CrowdStrikeFalcon.ioa_events_pagination',
                      return_value=([{'event_id': '2', 'event_created': '2023-01-01T00:00:00Z'},
                                     {'event_id': '3', 'event_created': '2023-01-01T00:00:00Z'}], None))
-        mocker.patch('CrowdStrikeFalcon.format_time_to_custom_date_format', return_value='2023-01-01T00:00:00Z')
+        mocker.patch('CrowdStrikeFalcon.reformat_timestamp', return_value='2023-01-01T00:00:00Z')
         fetched_incidents = fetch_incidents()
         assert len(fetched_incidents) == 1
         rawJSON = json.loads(fetched_incidents[0].get('rawJSON'))
@@ -5911,7 +5912,7 @@ class TestIOAFetch:
         mocker.patch.object(demisto, 'getLastRun', return_value=last_run_object)
         mocker.patch('CrowdStrikeFalcon.ioa_events_pagination',
                      return_value=([{'event_id': '2', 'event_created': '2023-01-01T00:00:00Z'}], 'next_token'))
-        mocker.patch('CrowdStrikeFalcon.format_time_to_custom_date_format', return_value='2023-01-01T00:00:00Z')
+        mocker.patch('CrowdStrikeFalcon.reformat_timestamp', return_value='2023-01-01T00:00:00Z')
         set_last_run_mocker = mocker.patch.object(demisto, 'setLastRun', side_effect=demisto.setLastRun)
         fetch_incidents()
         assert set_last_run_mocker.call_args_list[0][0][0][4].get('last_event_ids') == ['2', '1']
@@ -5938,7 +5939,7 @@ class TestIOAFetch:
         mocker.patch.object(demisto, 'getLastRun', return_value=last_run_object)
         mocker.patch('CrowdStrikeFalcon.ioa_events_pagination',
                      return_value=([{'event_id': '2', 'event_created': '2023-01-01T00:00:00Z'}], None))
-        mocker.patch('CrowdStrikeFalcon.format_time_to_custom_date_format', return_value='2023-01-01T00:00:00Z')
+        mocker.patch('CrowdStrikeFalcon.reformat_timestamp', return_value='2023-01-01T00:00:00Z')
         set_last_run_mocker = mocker.patch.object(demisto, 'setLastRun', side_effect=demisto.setLastRun)
         fetch_incidents()
         assert set_last_run_mocker.call_args_list[0][0][0][4].get('last_event_ids') == ['2', '1']
@@ -6010,7 +6011,8 @@ class TestIOMFetch:
         iom_next_token = 'dummy_token'
         last_run_object: list[dict[str, Any]] = [{}, {}, {},
                                                  {'iom_next_token': iom_next_token,
-                                                  'last_fetch_filter': last_fetch_filter, 'last_scan_time': 'some_date_time'},
+                                                  'last_fetch_filter': last_fetch_filter,
+                                                  'last_scan_time': '2023-01-01T00:00:00.000000Z'},
                                                  {}]
         mocker.patch.object(demisto, 'params',
                             return_value={'fetch_incidents_or_detections': 'Indicator of Misconfiguration',
@@ -6031,7 +6033,7 @@ class TestIOMFetch:
             - Validate that we append the last_scan_time date, while using '>' in the fetch query.
         """
         from CrowdStrikeFalcon import fetch_incidents
-        last_scan_time = 'some_scan_time'
+        last_scan_time = '2023-01-01T00:00:00.000000Z'
         fetch_filter = "cloud_provider: 'aws'"
         last_run_object: list[dict[str, Any]] = [{}, {}, {},
                                                  {'last_scan_time': last_scan_time},
@@ -6162,7 +6164,7 @@ class TestIOMFetch:
         mocker.patch('CrowdStrikeFalcon.get_iom_resources_for_fetch',
                      return_value=[{'id': '2', 'scan_time': '2023-01-01T00:00:00.00Z'},
                                    {'id': '3', 'scan_time': '2023-01-01T00:00:00.00Z'}])
-        mocker.patch('CrowdStrikeFalcon.format_time_to_custom_date_format', return_value='2023-01-01T00:00:00.00Z')
+        mocker.patch('CrowdStrikeFalcon.reformat_timestamp', return_value='2023-01-01T00:00:00.00Z')
         fetched_incidents = fetch_incidents()
         assert len(fetched_incidents) == 1
         rawJSON = json.loads(fetched_incidents[0].get('rawJSON'))
@@ -6194,7 +6196,7 @@ class TestIOMFetch:
         mocker.patch('CrowdStrikeFalcon.iom_ids_pagination', return_value=(['2'], 'next_token'))
         mocker.patch('CrowdStrikeFalcon.get_iom_resources_for_fetch',
                      return_value=[{'id': '2', 'scan_time': '2023-01-01T00:00:00.00Z'}])
-        mocker.patch('CrowdStrikeFalcon.format_time_to_custom_date_format', return_value='2023-01-01T00:00:00.00Z')
+        mocker.patch('CrowdStrikeFalcon.reformat_timestamp', return_value='2023-01-01T00:00:00.00Z')
         set_last_run_mocker = mocker.patch.object(demisto, 'setLastRun', side_effect=demisto.setLastRun)
         fetch_incidents()
         assert set_last_run_mocker.call_args_list[0][0][0][3].get('last_resource_ids') == ['2', '1']
@@ -6223,7 +6225,7 @@ class TestIOMFetch:
         mocker.patch('CrowdStrikeFalcon.iom_ids_pagination', return_value=(['2'], None))
         mocker.patch('CrowdStrikeFalcon.get_iom_resources_for_fetch',
                      return_value=[{'id': '2', 'scan_time': '2023-01-01T00:00:00.00Z'}])
-        mocker.patch('CrowdStrikeFalcon.format_time_to_custom_date_format', return_value='2023-01-01T00:00:00.00Z')
+        mocker.patch('CrowdStrikeFalcon.reformat_timestamp', return_value='2023-01-01T00:00:00.00Z')
         set_last_run_mocker = mocker.patch.object(demisto, 'setLastRun', side_effect=demisto.setLastRun)
         fetch_incidents()
         assert set_last_run_mocker.call_args_list[0][0][0][3].get('last_resource_ids') == ['2', '1']

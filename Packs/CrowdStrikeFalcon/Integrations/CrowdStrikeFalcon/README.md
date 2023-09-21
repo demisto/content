@@ -6247,39 +6247,39 @@ List identity entities.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CrowdStrike.CSPMPolicy.ID | Integer | The policy ID | 
-| CrowdStrike.CSPMPolicy.CreatedAt | Date | The creation date | 
-| CrowdStrike.CSPMPolicy.UpdatedAt | Date | The update date | 
-| CrowdStrike.CSPMPolicy.DeletedAt | Date | The deletion date | 
-| CrowdStrike.CSPMPolicy.description | String | The policy description | 
-| CrowdStrike.CSPMPolicy.policy_statement | String | The policy statement | 
-| CrowdStrike.CSPMPolicy.policy_remediation | String | The policy remediation | 
-| CrowdStrike.CSPMPolicy.cloud_service_subtype | String | The cloud service subtype | 
-| CrowdStrike.CSPMPolicy.cloud_document | String | The cloud document | 
-| CrowdStrike.CSPMPolicy.mitre_attack_cloud_matrix | String | URL to the MITRE attack tactic | 
-| CrowdStrike.CSPMPolicy.mitre_attack_cloud_subtype | String | URL to the MITRE attack technique | 
-| CrowdStrike.CSPMPolicy.alert_logic | String | The alert logic | 
-| CrowdStrike.CSPMPolicy.api_command | String | The api command | 
-| CrowdStrike.CSPMPolicy.cli_command | String | The cli command | 
-| CrowdStrike.CSPMPolicy.cloud_platform_type | String | The cloud platform type | 
-| CrowdStrike.CSPMPolicy.cloud_service_type | String | The cloud service type | 
-| CrowdStrike.CSPMPolicy.default_severity | String | The default severity | 
-| CrowdStrike.CSPMPolicy.cis_benchmark_ids | Array | The CIS benchmark ids | 
-| CrowdStrike.CSPMPolicy.nist_benchmark_ids | Array | The NIST benchmark ids | 
-| CrowdStrike.CSPMPolicy.pci_benchmark_ids | Array | The pci benchmark ids | 
-| CrowdStrike.CSPMPolicy.policy_type | String | The policy type | 
-| CrowdStrike.CSPMPolicy.tactic_url | String | The tactic url | 
-| CrowdStrike.CSPMPolicy.technique_url | String | The technique url | 
-| CrowdStrike.CSPMPolicy.tactic | String | The tactic used | 
-| CrowdStrike.CSPMPolicy.technique | String | The technique used | 
-| CrowdStrike.CSPMPolicy.tactic_id | String | The tactic id | 
-| CrowdStrike.CSPMPolicy.technique_id | String | The technique id | 
-| CrowdStrike.CSPMPolicy.attack_types | Array | The attack types | 
-| CrowdStrike.CSPMPolicy.asset_type_id | Integer | The asset type id | 
-| CrowdStrike.CSPMPolicy.cloud_asset_type | String | The cloud asset type | 
-| CrowdStrike.CSPMPolicy.is_remediable | Boolean | If is remediable or not | 
-| CrowdStrike.CSPMPolicy.is_enabled | Boolean | If is enabled or not | 
-| CrowdStrike.CSPMPolicy.account_scope | String | The account scope | 
+| CrowdStrike.CSPMPolicy.ID | Integer | The policy ID. | 
+| CrowdStrike.CSPMPolicy.CreatedAt | Date | The creation date. | 
+| CrowdStrike.CSPMPolicy.UpdatedAt | Date | The update date. | 
+| CrowdStrike.CSPMPolicy.DeletedAt | Date | The deletion date. | 
+| CrowdStrike.CSPMPolicy.description | String | The policy description. | 
+| CrowdStrike.CSPMPolicy.policy_statement | String | The policy statement. | 
+| CrowdStrike.CSPMPolicy.policy_remediation | String | The policy remediation. | 
+| CrowdStrike.CSPMPolicy.cloud_service_subtype | String | The cloud service subtype. | 
+| CrowdStrike.CSPMPolicy.cloud_document | String | The cloud document. | 
+| CrowdStrike.CSPMPolicy.mitre_attack_cloud_matrix | String | URL to the MITRE attack tactics. | 
+| CrowdStrike.CSPMPolicy.mitre_attack_cloud_subtype | String | URL to the MITRE attack techniques. | 
+| CrowdStrike.CSPMPolicy.alert_logic | String | The alert logic. | 
+| CrowdStrike.CSPMPolicy.api_command | String | The API command. | 
+| CrowdStrike.CSPMPolicy.cli_command | String | The CLI command. | 
+| CrowdStrike.CSPMPolicy.cloud_platform_type | String | The cloud platform type. | 
+| CrowdStrike.CSPMPolicy.cloud_service_type | String | The cloud service type. | 
+| CrowdStrike.CSPMPolicy.default_severity | String | The default severity. | 
+| CrowdStrike.CSPMPolicy.cis_benchmark_ids | Array | The CIS benchmark IDs. | 
+| CrowdStrike.CSPMPolicy.nist_benchmark_ids | Array | The NIST benchmark IDs. | 
+| CrowdStrike.CSPMPolicy.pci_benchmark_ids | Array | The pci benchmark IDs. | 
+| CrowdStrike.CSPMPolicy.policy_type | String | The policy type. | 
+| CrowdStrike.CSPMPolicy.tactic_url | String | The tactic URL. | 
+| CrowdStrike.CSPMPolicy.technique_url | String | The technique URL. | 
+| CrowdStrike.CSPMPolicy.tactic | String | The tactic used. | 
+| CrowdStrike.CSPMPolicy.technique | String | The technique used. | 
+| CrowdStrike.CSPMPolicy.tactic_id | String | The tactic ID. | 
+| CrowdStrike.CSPMPolicy.technique_id | String | The technique ID. | 
+| CrowdStrike.CSPMPolicy.attack_types | Array | The attack types. | 
+| CrowdStrike.CSPMPolicy.asset_type_id | Integer | The asset type ID. | 
+| CrowdStrike.CSPMPolicy.cloud_asset_type | String | The cloud asset type. | 
+| CrowdStrike.CSPMPolicy.is_remediable | Boolean | Whether the policy is remediable or not. | 
+| CrowdStrike.CSPMPolicy.is_enabled | Boolean | Whether the policy is enabled or not. | 
+| CrowdStrike.CSPMPolicy.account_scope | String | The account scope. | 
 
 #### Command example
 ```!cs-falcon-cspm-list-policy-details policy_ids=1,2```
@@ -6424,39 +6424,39 @@ Returns information about current policy settings.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CrowdStrike.CSPMPolicySetting.is_remediable | Boolean | If is remediable or not | 
-| CrowdStrike.CSPMPolicySetting.created_at | String | The creation date | 
-| CrowdStrike.CSPMPolicySetting.updated_at | String | The update date | 
-| CrowdStrike.CSPMPolicySetting.policy_id | Integer | The policy id | 
-| CrowdStrike.CSPMPolicySetting.name | String | The policy setting name | 
+| CrowdStrike.CSPMPolicySetting.is_remediable | Boolean | Whether the policy setting is remediable or not. | 
+| CrowdStrike.CSPMPolicySetting.created_at | String | The creation date. | 
+| CrowdStrike.CSPMPolicySetting.updated_at | String | The update date. | 
+| CrowdStrike.CSPMPolicySetting.policy_id | Integer | The policy ID. | 
+| CrowdStrike.CSPMPolicySetting.name | String | The policy setting name. | 
 | CrowdStrike.CSPMPolicySetting.policy_type | String | The policy type | 
-| CrowdStrike.CSPMPolicySetting.cloud_service_subtype | String | The cloud service subtype | 
-| CrowdStrike.CSPMPolicySetting.cloud_service | String | The cloud service | 
-| CrowdStrike.CSPMPolicySetting.cloud_service_friendly | String | The cloud friendly service | 
-| CrowdStrike.CSPMPolicySetting.cloud_asset_type | String | The cloud asset type | 
-| CrowdStrike.CSPMPolicySetting.cloud_asset_type_id | Integer | The cloud asset type id | 
-| CrowdStrike.CSPMPolicySetting.cloud_provider | String | The cloud provider | 
-| CrowdStrike.CSPMPolicySetting.default_severity | String | The default severity | 
-| CrowdStrike.CSPMPolicySetting.policy_timestamp | Date | The policy timestamp | 
-| CrowdStrike.CSPMPolicySetting.policy_settings | Array | An array that holds policy settings | 
-| CrowdStrike.CSPMPolicySetting.policy_settings.account_id | String | The account id correlated to the policy | 
-| CrowdStrike.CSPMPolicySetting.policy_settings.regions | Array | The regions in which the policy is configured at | 
-| CrowdStrike.CSPMPolicySetting.policy_settings.severity | String | The severity of the policy | 
-| CrowdStrike.CSPMPolicySetting.policy_settings.enabled | Boolean | If is enabled or not | 
-| CrowdStrike.CSPMPolicySetting.policy_settings.tag_excluded | Boolean | If tag is excluded or not | 
-| CrowdStrike.CSPMPolicySetting.cis_benchmark | Array | An array of CIS benchmark details | 
-| CrowdStrike.CSPMPolicySetting.cis_benchmark.id | Integer | The CIS benchmark id | 
-| CrowdStrike.CSPMPolicySetting.cis_benchmark.benchmark_short | String | The CIS benchmark shortname | 
-| CrowdStrike.CSPMPolicySetting.cis_benchmark.recommendation_number | String | The CIS benchmark recommendation number | 
-| CrowdStrike.CSPMPolicySetting.pci_benchmark | Array | An array of PCI benchmark details | 
-| CrowdStrike.CSPMPolicySetting.pci_benchmark.id | Integer | The PCI benchmark id | 
-| CrowdStrike.CSPMPolicySetting.pci_benchmark.benchmark_short | String | The PCI benchmark shortname | 
-| CrowdStrike.CSPMPolicySetting.pci_benchmark.recommendation_number | String | The PCI benchmark recommendation number | 
-| CrowdStrike.CSPMPolicySetting.nist_benchmark | Array | An array of NIST benchmark details | 
-| CrowdStrike.CSPMPolicySetting.nist_benchmark.id | Integer | The NIST benchmark id | 
-| CrowdStrike.CSPMPolicySetting.nist_benchmark.benchmark_short | String | The NIST benchmark shortname | 
-| CrowdStrike.CSPMPolicySetting.nist_benchmark.recommendation_number | String | The NIST benchmark recommendation number | 
-| CrowdStrike.CSPMPolicySetting.attack_types | Array | The attack types | 
+| CrowdStrike.CSPMPolicySetting.cloud_service_subtype | String | The cloud service subtype. | 
+| CrowdStrike.CSPMPolicySetting.cloud_service | String | The cloud service. | 
+| CrowdStrike.CSPMPolicySetting.cloud_service_friendly | String | The cloud friendly service. | 
+| CrowdStrike.CSPMPolicySetting.cloud_asset_type | String | The cloud asset type. | 
+| CrowdStrike.CSPMPolicySetting.cloud_asset_type_id | Integer | The cloud asset type ID. | 
+| CrowdStrike.CSPMPolicySetting.cloud_provider | String | The cloud provider. | 
+| CrowdStrike.CSPMPolicySetting.default_severity | String | The default severity. | 
+| CrowdStrike.CSPMPolicySetting.policy_timestamp | Date | The policy timestamp. | 
+| CrowdStrike.CSPMPolicySetting.policy_settings | Array | An array that holds policy settings. | 
+| CrowdStrike.CSPMPolicySetting.policy_settings.account_id | String | The account ID correlated to the policy. | 
+| CrowdStrike.CSPMPolicySetting.policy_settings.regions | Array | The regions in which the policy is configured at. | 
+| CrowdStrike.CSPMPolicySetting.policy_settings.severity | String | The severity of the policy. | 
+| CrowdStrike.CSPMPolicySetting.policy_settings.enabled | Boolean | Whether the policy settings are enabled or not. | 
+| CrowdStrike.CSPMPolicySetting.policy_settings.tag_excluded | Boolean | Whether the tag is excluded or not. | 
+| CrowdStrike.CSPMPolicySetting.cis_benchmark | Array | An array of CIS benchmark details. | 
+| CrowdStrike.CSPMPolicySetting.cis_benchmark.id | Integer | The CIS benchmark id. | 
+| CrowdStrike.CSPMPolicySetting.cis_benchmark.benchmark_short | String | The CIS benchmark shortname. | 
+| CrowdStrike.CSPMPolicySetting.cis_benchmark.recommendation_number | String | The CIS benchmark recommendation number. | 
+| CrowdStrike.CSPMPolicySetting.pci_benchmark | Array | An array of PCI benchmark details. | 
+| CrowdStrike.CSPMPolicySetting.pci_benchmark.id | Integer | The PCI benchmark id. | 
+| CrowdStrike.CSPMPolicySetting.pci_benchmark.benchmark_short | String | The PCI benchmark shortname. | 
+| CrowdStrike.CSPMPolicySetting.pci_benchmark.recommendation_number | String | The PCI benchmark recommendation number. | 
+| CrowdStrike.CSPMPolicySetting.nist_benchmark | Array | An array of NIST benchmark details. | 
+| CrowdStrike.CSPMPolicySetting.nist_benchmark.id | Integer | The NIST benchmark id. | 
+| CrowdStrike.CSPMPolicySetting.nist_benchmark.benchmark_short | String | The NIST benchmark shortname. | 
+| CrowdStrike.CSPMPolicySetting.nist_benchmark.recommendation_number | String | The NIST benchmark recommendation number. | 
+| CrowdStrike.CSPMPolicySetting.attack_types | Array | The attack types. | 
 
 #### Command example
 ```!cs-falcon-cspm-list-service-policy-settings limit=2```

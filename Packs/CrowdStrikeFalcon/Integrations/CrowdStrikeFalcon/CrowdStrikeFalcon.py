@@ -1,3 +1,4 @@
+from more_itertools import last
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *
 
@@ -2682,21 +2683,9 @@ def fetch_incidents():
         iom_next_token = current_fetch_info_iom_configs.get('iom_next_token')
         # In order to ignore duplicates, we compare fetched ids with resource ids of the last run
         last_resource_ids: list[str] = current_fetch_info_iom_configs.get('last_resource_ids', [])
-        filter = 'scan_time:'
-        if iom_next_token:
-            # If entered here, that means we are currently doing pagination, and we need to use the
-            # same fetch query as the previous round
-            filter = current_fetch_info_iom_configs.get('last_fetch_filter', '')
-        else:
-            # If entered here, that means we aren't doing pagination
-            if last_scan_time == first_fetch_timestamp:
-                # First fetch, we want to include resources with a scan time
-                # EQUAL or GREATER than the first fetch timestamp
-                filter = f"{filter} >='{last_scan_time}'"
-            else:
-                # This means that this is not the first fetch, and we only want to include resources with a scan time
-                # GREATER than the last configured scan time, to prevent duplicates.
-                filter = f"{filter} >'{last_scan_time}'"
+        filter = get_iom_filter(iom_next_token=iom_next_token,
+                                last_fetch_filter=current_fetch_info_iom_configs.get('last_fetch_filter', ''),
+                                last_scan_time=last_scan_time, first_fetch_timestamp=first_fetch_timestamp)
         fetch_limit = current_fetch_info_detections.get('limit') or INCIDENTS_PER_FETCH
         # Default filter for first fetch
         fetch_query = demisto.params().get('iom_fetch_query')
@@ -2726,8 +2715,6 @@ def fetch_incidents():
                 # date to the supported format (IOM_DATE_FORMAT).
                 scan_time = reformat_timestamp(iom_resource.get('scan_time', ''), IOM_DATE_FORMAT)
                 scan_time_list.append(datetime.strptime(scan_time, IOM_DATE_FORMAT))
-                # if datetime.strptime(scan_time, IOM_DATE_FORMAT) > datetime.strptime(new_scan_time, IOM_DATE_FORMAT):
-                #     new_scan_time = scan_time
             else:
                 demisto.debug(f'Ignoring incident with {resource_id=} - was already fetched in the previous run')
         new_scan_time = max(scan_time_list).strftime(IOM_DATE_FORMAT)
@@ -2770,6 +2757,8 @@ def fetch_incidents():
                                                                fetch_limit=fetch_limit,
                                                                api_limit=1000)
         ioa_event_ids: list[str] = []
+        # Hold the date_time_since of all fetched incidents, to acquire the largest date
+        date_time_since_list: list[datetime] = [datetime.strptime(new_date_time_since, DATE_FORMAT)]
         demisto.debug(f'Fetched the following IOA event IDs: {[event.get("event_id") for event in ioa_events]}')
         for ioa_event in ioa_events:
             event_id = ioa_event.get('event_id', '')
@@ -2784,11 +2773,10 @@ def fetch_incidents():
                 # with respect to the event_created field, therefore, we need to save the latest time an event
                 # has been created, so we can continue the fetching mechanism from that point after we are done
                 # with our pagination
-                if datetime.strptime(event_created, DATE_FORMAT) > datetime.strptime(new_date_time_since, DATE_FORMAT):
-                    new_date_time_since = add_seconds_to_date(date=event_created, seconds_to_add=0,
-                                                              date_format=DATE_FORMAT)
+                date_time_since_list.append(datetime.strptime(event_created, DATE_FORMAT))
             else:
                 demisto.debug(f'Ignoring incident with {event_id=} - was already fetched in the previous run')
+        new_date_time_since = max(date_time_since_list).strftime(DATE_FORMAT)
         if ioa_new_next_token or ioa_next_token:
             # If the next run will do pagination, or the current run did pagination, we should keep the ids from the last fetch
             # until progress is made, so we exclude them in the next fetch.
@@ -2798,6 +2786,39 @@ def fetch_incidents():
     demisto.setLastRun([current_fetch_info_detections, current_fetch_info_incidents, current_fetch_info_idp_detections,
                         current_fetch_info_iom_configs, current_fetch_info_ioa_events])
     return incidents + detections + idp_detections + iom_config_incidents + ioa_event_incidents
+
+
+def get_iom_filter(iom_next_token: Any | None, last_fetch_filter: str,
+                   last_scan_time: str, first_fetch_timestamp: str) -> str:
+    """Retrieve the IOM filter that will be used in the current fetch round.
+
+    Args:
+        iom_next_token (Any | None): If paginating, this will hold the next token.
+        last_fetch_filter (str): The last fetch filter that was used in the previous round.
+        last_scan_time (str): The last scan time.
+        first_fetch_timestamp (str): The first fetch timestamp.
+
+    Returns:
+        str: The IOM filter that will be used in the current fetch.
+    """
+    filter = 'scan_time:'
+    if iom_next_token:
+        # Doing pagination, we need to use the same fetch query as the previous round
+        filter = last_fetch_filter
+        demisto.debug(f'Doing pagination, using the same query as the previous round. Filter is {filter}')
+    else:
+        # If entered here, that means we aren't doing pagination
+        if last_scan_time == first_fetch_timestamp:
+            # First fetch, we want to include resources with a scan time
+            # EQUAL or GREATER than the first fetch timestamp
+            filter = f"{filter} >='{last_scan_time}'"
+            demisto.debug(f'First fetch, looking for scan time >= {last_scan_time=}. Filter is {filter}')
+        else:
+            # Not first fetch, we only want to include resources with a scan time
+            # GREATER than the last configured scan time, to prevent duplicates.
+            filter = f"{filter} >'{last_scan_time}'"
+            demisto.debug(f'Not first fetch, only looking for scan time > {last_scan_time=}. Filter is {filter}')
+    return filter
 
 
 def validate_iom_fetch_query(iom_fetch_query: str) -> None:
@@ -2954,7 +2975,7 @@ def validate_ioa_fetch_query(ioa_fetch_query: str) -> None:
             if param_and_value[1] == '':
                 raise DemistoException(f'The value of the parameter {param_and_value[0]} cannot be an empty string')
         else:
-            raise DemistoException(f'query section "{section}" does not match the parameter=value format')
+            raise DemistoException(f'Query section "{section}" does not match the parameter=value format')
 
 
 def reformat_timestamp(time: str, date_format: str, dateparser_settings: Any | None = None) -> str:
@@ -6001,7 +6022,7 @@ def cs_falcon_cspm_list_policy_details_command(args: dict[str, Any]) -> CommandR
                 'Perhaps the policy IDs are invalid?'
             )
         for error in errors:
-            if error.get('code')  == 400:
+            if error.get('code') == 400:
                 return_warning(
                     'CS Falcon CSPM returned an error.\n'
                     f'Code:  {error.get("code")}\n'
