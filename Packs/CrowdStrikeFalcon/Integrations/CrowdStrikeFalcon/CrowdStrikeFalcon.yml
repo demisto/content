@@ -1455,6 +1455,9 @@ script:
     - contextPath: CrowdStrike.IOC.Platforms
       description: The platforms of the IOC.
       type: Unknown
+    - contextPath: CrowdStrike.IOC.Filename
+      description: Name of the file for file indicators. Applies to hashes only. A common filename, or a filename in your environment. Filenames can be helpful for identifying hashes or filtering IOCs.
+      type: string
   - arguments:
     - description: The ID of the IOC to update. Can be retrieved by running the cs-falcon-search-custom-iocs command.
       name: ioc_id
@@ -1531,6 +1534,10 @@ script:
     - contextPath: CrowdStrike.IOC.ModifiedBy
       description: The identity of the user/process who last updated the IOC.
       type: string
+    - contextPath: CrowdStrike.IOC.Filename
+      description: Name of the file for file indicators. Applies to hashes only. A common filename, or a filename in your environment. Filenames can be helpful for identifying hashes or filtering IOCs.
+      type: string
+
   - arguments:
     - description: The ID of the IOC to delete. Can be retrieved by running the cs-falcon-search-custom-iocs command.
       name: ioc_id

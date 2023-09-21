@@ -2890,6 +2890,7 @@ def upload_custom_ioc_command(
     entry_objects_list = []
     for ioc in iocs:
         ec = [get_trasnformed_dict(ioc, IOC_KEY_MAP)]
+        ec[0]["Filename"] = ioc.get("metadata", {}).get("filename")
         entry_objects_list.append(create_entry_object(
             contents=raw_res,
             ec={'CrowdStrike.IOC(val.ID === obj.ID)': ec},
@@ -2932,6 +2933,7 @@ def update_custom_ioc_command(
     handle_response_errors(raw_res)
     iocs = raw_res.get('resources', [])
     ec = [get_trasnformed_dict(iocs[0], IOC_KEY_MAP)]
+    ec[0]["Filename"] = iocs[0].get("metadata", {}).get("filename")
     return create_entry_object(
         contents=raw_res,
         ec={'CrowdStrike.IOC(val.ID === obj.ID)': ec},
