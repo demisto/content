@@ -452,6 +452,15 @@ class PrismaCloudComputeClient(BaseClient):
         """
         return self._http_request(method="GET", url_suffix="containers", params=params)
 
+    def get_hosts_info(self, params: Optional[dict] = None) -> List[dict]:
+        """
+        Sends a request to get hosts information.
+
+        Returns:
+            list[dict]: host information.
+        """
+        return self._http_request(method="GET", url_suffix="hosts/info", params=params)
+
 
 def format_context(context):
     """
@@ -2208,6 +2217,59 @@ def get_container_scan_results(client: PrismaCloudComputeClient, args: dict) -> 
     )
 
 
+def get_hosts_info(client: PrismaCloudComputeClient, args: dict) -> CommandResults:
+    """
+    Retrieve a list of hosts information.
+    Implement the command 'prisma-cloud-compute-hosts-info'.
+
+    Args:
+        client (PrismaCloudComputeClient): prisma-cloud-compute client.
+        args (dict): prisma-cloud-compute-hosts-info command arguments.
+
+    Returns:
+        CommandResults: command-results object.
+    """
+    limit, offset = parse_limit_and_offset_values(
+        limit=args.get("limit", "50"), offset=args.get("offset", "0")
+    )
+    collections, account_ids, clusters, resource_ids, region, hostname, compliance_ids, agentless, search = (
+            argToList(args.get("collections")), argToList(args.get("account_ids")), argToList(args.get("clusters")),
+            argToList(args.get("resource_ids")), argToList(args.get("region")), argToList(args.get("hostname")), 
+            argToList(args.get("compliance_ids")), args.get("agentless"), args.get("search")
+        )
+    params = assign_params(
+        offset=offset, limit=limit, collections=collections, accountIDs=account_ids, clusters=clusters, resourceIDs=resource_ids, 
+        region=region, hostname=hostname, complianceIDs=compliance_ids, agentless=agentless, search=search
+    )
+
+    if hosts_info := client.get_hosts_info(params=params):
+        table = tableToMarkdown(
+            name="Hosts Information",
+            t=[
+                {
+                    "ID": host.get("_id"),
+                    "Hostname": host.get("hostname"),
+                    "Scan Time": host.get("scanTime"),
+                    "Distro": host.get("distro"),
+                    "Distro Release": host.get("osDistroRelease"),
+                    "Clusters": host.get("clusters"),
+                } for host in hosts_info
+            ],
+            headers=["ID", "Hostname", "Scan Time", "Distro", "Distro Release", "Clusters"],
+            removeNull=True,
+        )
+    else:
+        table = "No results found."
+
+    return CommandResults(
+        outputs_prefix="PrismaCloudCompute.Hosts",
+        outputs_key_field="_id",
+        outputs=hosts_info,
+        readable_output=table,
+        raw_response=hosts_info
+    )
+
+
 def main():
     """
     PARSE AND VALIDATE INTEGRATION PARAMS
@@ -2331,6 +2393,8 @@ def main():
             return_results(results=update_trusted_images(client=client, args=demisto.args()))
         elif requested_command == "prisma-cloud-compute-container-scan-results":
             return_results(results=get_container_scan_results(client=client, args=demisto.args()))
+        elif requested_command == "prisma-cloud-compute-hosts-info":
+            return_results(results=get_hosts_info(client=client, args=demisto.args()))
     # Log exceptions
     except Exception as e:
         return_error(f'Failed to execute {requested_command} command. Error: {str(e)}')

@@ -2385,6 +2385,95 @@ script:
     - contextPath: PrismaCloudCompute.ContainersScanResults.info.startTime
       description: Container start time.
       type: Date
+  - name: prisma-cloud-compute-hosts-info
+    description: Returns minimal information that includes hostname, distro, distro-release, collections, clusters, and agentless about all deployed hosts.
+    arguments:
+    - name: collections
+      description: A comma-separated list of collection names that you have defined in Prisma Cloud Compute.
+      isArray: true
+    - name: account_ids
+      description: A comma-separated list of cloud account IDs.
+      isArray: true  
+    - name: clusters
+      description: A comma-separated list of clusters to filter by.
+      isArray: true
+    - name: resource_ids
+      description: A comma-separated list of resource IDs to scope the query by.
+      isArray: true
+    - name: region
+      description: A comma-separated list of regions to scope the query by.
+      isArray: true
+    - name: hostname
+      description: A comma-separated list of hostnames to filter by.
+      isArray: true
+    - name: compliance_ids
+      description: A comma-separated list of compliance IDs to filter by. 
+      isArray: true
+    - name: agentless
+      description: Filter by agentless scans.
+      predefined:
+      - "true"
+      - "false"
+    - name: search
+      description: Term to search for.
+    - name: limit
+      description: The maximum number of container scan reports to return. Must be between 1-50.
+      defaultValue: "50"
+    - name: offset
+      description: The offset by which to begin listing container scan reports.
+      defaultValue: "0"
+    outputs:
+    - contextPath: PrismaCloudCompute.Hosts._id
+      description: The host ID.
+      type: String
+    - contextPath: PrismaCloudCompute.Hosts.type
+      description: The host type.
+      type: String
+    - contextPath: PrismaCloudCompute.Hosts.hostname
+      description: The host hostname.
+      type: String
+    - contextPath: PrismaCloudCompute.Hosts.scanTime
+      description: The host scan time.
+      type: Date
+    - contextPath: PrismaCloudCompute.Hosts.Secrets
+      description: Secrets found on the host.
+      type: Unknown
+    - contextPath: PrismaCloudCompute.Hosts.osDistro
+      description: The OS distribution.
+      type: String
+    - contextPath: PrismaCloudCompute.Hosts.osDistroVersion
+      description: The OS distribution version.
+      type: String
+    - contextPath: PrismaCloudCompute.Hosts.osDistroRelease
+      description: The OS distribution release.
+      type: String
+    - contextPath: PrismaCloudCompute.Hosts.distro
+      description: The host distribution.
+      type: String
+    - contextPath: PrismaCloudCompute.Hosts.foundSecrets
+      description: Whether secrets were found.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.Hosts.vulnerabilitiesCount
+      description: Number of vulnerabilities found.
+      type: Number
+    - contextPath: PrismaCloudCompute.Hosts.complianceIssuesCount
+      description: Number of compliance issues found. 
+      type: Number
+    - contextPath: PrismaCloudCompute.Hosts.vulnerabilityRiskScore
+      description: The host's vulnerability risk score.
+      type: Number
+    - contextPath: PrismaCloudCompute.Hosts.complianceRiskScore
+      description: The host's compliance risk score.
+      type: Number
+    - contextPath: PrismaCloudCompute.Hosts.riskFactors
+      description: Risk factors for the host.
+      type: Unknown
+    - contextPath: PrismaCloudCompute.Hosts.collections
+      description: The collections the host belongs to.
+      type: Unknown
+    - contextPath: PrismaCloudCompute.Hosts.agentless
+      description: Whether the host was scanned agentlessly.
+      type: Boolean
 tests:
 - PaloAltoNetworks_PrismaCloudCompute-Test
 fromversion: 5.0.0
