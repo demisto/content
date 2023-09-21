@@ -92,7 +92,7 @@ run-unittests-and-lint:
       - >
         if [ "$CI_COMMIT_BRANCH" != "master" ]; then
           echo "not on master"
-          if ["$CI_JOB_STATUS" == "failed" ]; then
+          if [ "$CI_JOB_STATUS" == "failed" ]; then
             echo "====Send Slack Notify===="
           else
             echo "$CI_JOB_STATUS"
