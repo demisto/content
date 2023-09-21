@@ -67,19 +67,19 @@ else
             echo "Poetry installed with a different version:$(poetry --version) required:${POETRY_VERSION}"
         fi
     else
-        echo "Poetry isn't previously installed"
+        echo "Poetry isn't installed"
     fi
     if [[ "${should_install_poetry}" == "yes" ]]; then
         echo "Installing Poetry version:${POETRY_VERSION}"
         curl -sSL https://install.python-poetry.org | python3 - --version "${POETRY_VERSION}"
         exit_on_error $? "Failed to install Poetry version:${POETRY_VERSION}"
         if ! command -v poetry >/dev/null 2>&1; then
-            exit_on_error $? "Poetry command isn't available"
+            exit_on_error $? "Poetry isn't installed"
         fi
         if [[ "$(poetry --version)" == "Poetry (version ${POETRY_VERSION})" ]]; then
-          echo "Poetry version installed successfully"
+          echo "Poetry version ${POETRY_VERSION} installed successfully"
         else
-          exit_on_error 1 "Poetry version doesn't match - required:${POETRY_VERSION} installed:$(poetry --version)"
+          exit_on_error 1 "Poetry version $(poetry --version) doesn't match the required version: ${POETRY_VERSION}"
         fi
     fi
 fi
