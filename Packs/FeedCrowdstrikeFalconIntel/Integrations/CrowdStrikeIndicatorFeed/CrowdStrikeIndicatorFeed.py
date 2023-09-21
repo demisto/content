@@ -77,6 +77,26 @@ INDICATOR_TO_CROWDSTRIKE_RELATION_DICT: Dict[str, Any] = {
 CROWDSTRIKE_INDICATOR_RELATION_FIELDS = ['reports', 'actors', 'malware_families', 'vulnerabilities', 'relations']
 
 
+def kill_chain_standard_values(phases: list | None):
+    """
+    Will convert crowdstrike's return values for kill chain to our standard kill chain syntax.
+    Args:
+        phase: the raw inout from the api
+    Returns: the standardized value, or the given value if not found
+    """
+    if not phases:
+        return phases
+    return [{
+        'reconnaissance': 'Reconnaissance',
+        'weaponization': 'Weaponization',
+        'installation': 'Installation',
+        'exploitation': 'Exploitation',
+        'delivery': 'Delivery',
+        'c2': 'Command & Control',
+        'actionOnObjectives': 'Actions on Objectives'
+    }.get(phase.lower(), phase) for phase in phases]
+
+
 class Client(CrowdStrikeClient):
 
     def __init__(self, credentials, base_url, include_deleted, type, limit, tlp_color=None, feed_tags=None,
@@ -271,7 +291,7 @@ class Client(CrowdStrikeClient):
                 'fields': {'actor': resource.get('actors'),
                            'reports': resource.get('reports'),
                            'malwarefamily': resource.get('malware_families'),
-                           'stixkillchainphases': resource.get('kill_chains'),
+                           'stixkillchainphases': kill_chain_standard_values(resource.get('kill_chains')),
                            'ipaddress': resource.get('ip_address_types'),
                            'domainname': resource.get('domain_types'),
                            'targets': resource.get('targets'),
