@@ -1,17 +1,17 @@
 import os
 import re
 import pytest
-from Utils.release_notes_handler import (get_release_notes_dict,
-                                         generate_release_notes_summary,
-                                         get_pack_entities,
-                                         get_pack_version_from_path,
-                                         read_and_format_release_note,
-                                         merge_version_blocks,
-                                         EMPTY_LINES_REGEX,
-                                         get_new_entity_record,
-                                         construct_entities_block,
-                                         aggregate_release_notes,
-                                         aggregate_release_notes_for_marketplace)
+from Utils.release_notes_generator import (get_release_notes_dict,
+                                           generate_release_notes_summary,
+                                           get_pack_entities,
+                                           get_pack_version_from_path,
+                                           read_and_format_release_note,
+                                           merge_version_blocks,
+                                           EMPTY_LINES_REGEX,
+                                           get_new_entity_record,
+                                           construct_entities_block,
+                                           aggregate_release_notes,
+                                           aggregate_release_notes_for_marketplace)
 
 TEST_DATA_PATH = 'Tests/scripts/infrastructure_tests/tests_data/RN_tests_data'
 

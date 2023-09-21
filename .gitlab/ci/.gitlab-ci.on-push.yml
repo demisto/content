@@ -121,6 +121,7 @@ validate-content-conf:
   stage: prepare-testing-bucket
   script:
     - !reference [.download-demisto-conf]
+    - !reference [.create-release-notes-and-common-docs]
     - !reference [.secrets-fetch]
     - section_start "Create or update content graph" --collapsed
 
