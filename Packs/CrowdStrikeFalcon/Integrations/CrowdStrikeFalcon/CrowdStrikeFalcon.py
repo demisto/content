@@ -3076,7 +3076,7 @@ def get_iom_ids_for_fetch(filter: str, iom_next_token: str | None = None,
     demisto.debug(f'{pagination_obj=}')
     next_token = pagination_obj.get('next_token')
     if next_token:
-       # If next_token has a value, that means more pagination is needed, and the next run should use it
+        # If next_token has a value, that means more pagination is needed, and the next run should use it
         return resource_ids, next_token
     else:
         # If it is None, that means no more pagination is required, therefore,
