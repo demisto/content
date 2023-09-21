@@ -211,6 +211,10 @@ tasks:
         simple: "123"
       alertname:
         simple: test
+      hostip:
+        complex:
+          root: Core.Endpoint
+          accessor: ip
       initiatorpath:
         simple: c:\Windows\System32\calc.exe
       initiatorsha256:
