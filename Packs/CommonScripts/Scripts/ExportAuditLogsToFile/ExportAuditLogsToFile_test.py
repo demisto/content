@@ -10,8 +10,8 @@ def execute_command_side_effect(command: str, args: Dict):
         return [{'Contents': {'response': ["result1"]}}]
     if command == "demisto-api-post":
         if args["uri"] == '/settings/audits':
-            return [{'Contents': {'response': {'total': 2, "audits": ["audit1", "audit2"], "Type": entryTypes["note"]}}}]
-        return [{'Contents': {'response': {'total': 2, "reply": {"data": ["audit1", "audit2"]}, "Type": entryTypes["note"]}}}]
+            return [{'Contents': {'response': {'total': 2, "audits": ["audit1", "audit2"]}}, "Type": entryTypes["note"]}]
+        return [{'Contents': {'response': {'total': 2, "reply": {"data": ["audit1", "audit2"]}}}, "Type": entryTypes["note"]}]
     return None
 
 
@@ -19,7 +19,7 @@ def execute_command_side_effect(command: str, args: Dict):
 def test_main_no_logs_xsoar6(mocker):
     mocker.patch.object(demisto, 'args', return_value={'output': 'html', 'days_back': '5'})
     execute_command_mock = mocker.patch.object(
-        demisto, 'executeCommand', return_value=[{'Contents': {'response': {'total': 0, "Type": entryTypes["note"]}}}]
+        demisto, 'executeCommand', return_value=[{'Contents': {'response': {'total': 0}}, "Type": entryTypes["note"]}]
     )
     mocker.patch.object(ExportAuditLogsToFile, "get_demisto_version", return_value={"version": "6.10"})
     ExportAuditLogsToFile.main()
