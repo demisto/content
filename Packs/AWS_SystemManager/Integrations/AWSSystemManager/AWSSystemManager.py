@@ -1422,7 +1422,7 @@ def run_command_command(args: dict[str, Any], ssm_client: "SSMClient") -> PollRe
     kwargs = update_if_value(args, kwargs, input_to_output_keys)
     if parameters := args.get("parameters"):
         parameters = format_parameters_arguments(parameters)
-    kwargs["Parameters"] = parameters
+        kwargs["Parameters"] = parameters
     command = ssm_client.send_command(**kwargs)
     command = convert_datetime_to_iso(command)["Command"]
 
