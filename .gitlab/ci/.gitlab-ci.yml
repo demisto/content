@@ -62,6 +62,7 @@ variables:
   CONTENT_GITLAB_CI: "true"
   POETRY_VIRTUALENVS_OPTIONS_ALWAYS_COPY: "true"
   FF_USE_FASTZIP: "true"
+  POETRY_VERSION: "1.6.1"
 
 include:
   - local: .gitlab/ci/.gitlab-ci.global.yml

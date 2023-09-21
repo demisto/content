@@ -126,6 +126,11 @@
   - section_end "getting contrib packs"
 
 .install_venv: &install_venv
+  - section_start "Install Poetry" --collapsed
+  - echo "Installing Poetry version:${POETRY_VERSION}"
+  - curl -sSL https://install.python-poetry.org | python3 - --version "${POETRY_VERSION}"
+  - poetry --version
+  - section_end "Install Poetry"
   - section_start "Installing Virtualenv" --collapsed
   - echo "Checking if pyproject.toml is consistent with poetry.lock"
   - poetry lock --check
