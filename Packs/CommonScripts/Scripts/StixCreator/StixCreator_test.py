@@ -328,3 +328,23 @@ def test_create_stix_sco_indicator(stix_id, stix_type, value, xsoar_indicator, e
     """
     result = create_stix_sco_indicator(stix_id, stix_type, value, xsoar_indicator)
     assert result == expectes_stix_indicator
+
+
+@pytest.mark.parametrize('indicators, stix_type', [(DOMAIN_INDICATORS, 'bundle')])
+def test_stixCreator_with_indicators_spec_version(mocker, indicators, stix_type):
+    """
+    Given:
+        - A list of indicators.
+    When:
+        - Creating a bundle.
+    Then:
+         - Assert the spec_version is not empty.
+    """
+    mocker.patch.object(demisto, 'args', return_value=indicators)
+    mocker.patch.object(demisto, 'results')
+    main()
+    results = demisto.results.call_args[0]
+    json_content = json.loads(results[0]['Contents'])
+    assert "spec_version" in json_content
+    assert json_content["spec_version"] == "2.1"
+    assert stix_type in results[0]['Contents']
