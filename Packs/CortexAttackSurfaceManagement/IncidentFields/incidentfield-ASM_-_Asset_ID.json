@@ -4,7 +4,7 @@
     "cliName": "asmassetid",
     "closeForm": false,
     "content": true,
-    "description": "UUID for ASM Asset",
+    "description": "UUID for ASM Asset.",
     "editForm": true,
     "group": 0,
     "hidden": false,
