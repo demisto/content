@@ -30,7 +30,7 @@ Netcraft takedown, submission and screenshot management.
     | First fetch time |  | True |
     | Incidents Fetch Interval |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
+4. Click **Test** to validate the URLs, API Key, and connection.
 
 ## Commands
 
@@ -149,9 +149,7 @@ Netcraft has a limit of 1,000,000 objects returned within a 24 hour period (movi
 | Netcraft.Takedown.registrar | String | The name of the registrar responsible for the domain name used in the attack. | 
 | Netcraft.Takedown.customer_label | String | A custom field which may be provided along with the takedown report. | 
 | Netcraft.Takedown.date_authed | Date | The date and time that the takedown was authorised, in UTC. | 
-| Netcraft.Takedown.stop_monitoring_date | Date | The date and time that the takedown system stopped monitoring the attack, in UTC.
-If the attack is still being monitored, an empty string is given.
- | 
+| Netcraft.Takedown.stop_monitoring_date | Date | The date and time that the takedown system stopped monitoring the attack, in UTC. If the attack is still being monitored, an empty string is given. | 
 | Netcraft.Takedown.domain | String | The domain of the url or email address being taken down.
 This will be blank for an attack with no domain name.
  | 
