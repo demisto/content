@@ -1027,6 +1027,9 @@ script:
       description: A comma-separated list of image repositories to filter the results by.
       isArray: true
       defaultValue: ""
+    - name: compliance_ids
+      description: A comma-separated list of compliance IDs to filter the results by.
+      isArray: true
     - name: limit_record
       description: The maximum number of scan image records to return.
       defaultValue: "10"
@@ -1036,6 +1039,12 @@ script:
     - name: offset
       description: The offset by which to begin listing image scan results.
       defaultValue: "0"
+    - name: all_results
+      description: Whether to retrieve all results. The "limit_record" and "limit_stats" arguments will be ignored. More than 1,500 results will slow down the process.
+      defaultValue: "false"
+      predefined:
+      - "true"
+      - "false"
     outputs:
     - contextPath: PrismaCloudCompute.ReportsImagesScan._id
       description: Image identifier (image ID or repo:tag).
@@ -1243,6 +1252,9 @@ script:
       description: A comma-separated list of cloud providers to filter the results by.
       isArray: true
       defaultValue: ""
+    - name: compliance_ids
+      description: A comma-separated list of compliance IDs to filter the results by.
+      isArray: true
     - name: limit_record
       description: The maximum number of scan host records to return.
       defaultValue: "10"
@@ -1252,6 +1264,12 @@ script:
     - name: offset
       description: The offset by which to begin listing host scan results.
       defaultValue: "0"
+    - name: all_results
+      description: Whether to retrieve all results. The "limit_record" and "limit_stats" arguments will be ignored. More than 1,500 results will slow down the process.
+      defaultValue: "false"
+      predefined:
+      - "true"
+      - "false"
     outputs:
     - contextPath: PrismaCloudCompute.ReportHostScan._id
       description: The host identifier (host ID or hostname).

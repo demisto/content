@@ -254,19 +254,50 @@ class PrismaCloudComputeClient(BaseClient):
         """
         return self._http_request(method="GET", url_suffix="/radar/container/namespaces", params=params)
 
-    def get_images_scan_info(self, params: Optional[dict] = None) -> List[dict]:
+    def _get_all_results(self, url_suffix: str, params: Optional[dict] = None):
+        """
+        Gets all results by calling the API until the Total-Count of results is reached.
+        """
+        if not params:
+            params = {}
+        params.update({"limit": MAX_API_LIMIT, "offset": 0})
+        response = self._http_request(method="GET", url_suffix=url_suffix, params=params, resp_type='response')
+        
+        total_count = int(response.headers.get("Total-Count", -1))
+        response = response.json()
+        current_count = len(response)
+        while current_count < total_count:
+            try:
+                params["offset"] = current_count
+                response.extend(self._http_request(method="GET", url_suffix=url_suffix, params=params))
+                current_count = len(response)
+            
+            except DemistoException as de:
+                if not (hasattr(de, "res") and hasattr(de.res, "status_code")):
+                    raise
+                if de.res.status_code == 429:
+                    # The API rate limit of 30 requests per minute was exceeded for this endpoint
+                    demisto.info(f"Rate limit exceeded, waiting 60 seconds before continuing.\nCurrent count: {current_count}, total count: {total_count}.")
+                    time.sleep(60)
+            
+        return response
+
+    def get_images_scan_info(self, all_results: bool = False, params: Optional[dict] = None) -> List[dict]:
         """
         Sends a request to get information about images scans.
 
         Args:
+            all_results (bool): whether to return all results or just the first page.
             params (dict): query parameters.
 
         Returns:
             list[dict]: images scan information.
         """
+        if all_results:
+            return self._get_all_results(url_suffix="/images", params=params)
         return self._http_request(method="GET", url_suffix="/images", params=params)
 
-    def get_hosts_scan_info(self, params: Optional[dict] = None) -> List[dict]:
+    def get_hosts_scan_info(self, all_results: bool = False, params: Optional[dict] = None) -> List[dict]:
         """
         Sends a request to get information about hosts scans.
 
@@ -276,6 +307,8 @@ class PrismaCloudComputeClient(BaseClient):
         Returns:
             list[dict]: hosts scan information.
         """
+        if all_results:
+            return self._get_all_results(url_suffix="/hosts", params=params)
         return self._http_request(method="GET", url_suffix="/hosts", params=params)
 
     def get_impacted_resources(self, cve: str, resource_type: str) -> dict:
@@ -1488,24 +1521,26 @@ def get_images_scan_list(client: PrismaCloudComputeClient, args: dict) -> Comman
         limit=args.pop("limit_record", "10"), offset=args.get("offset", "0")
     )
     stats_limit, _ = parse_limit_and_offset_values(limit=args.pop("limit_stats", "10"))
+    all_results = argToBoolean(args.get("all_results", "false"))
     compact = argToBoolean(value=args.get("compact", "true"))
-    clusters, fields, hostname, id, name = (
-        args.get("clusters"), args.get("fields"), args.get("hostname"), args.get("id"), args.get("name")
+    clusters, fields, hostname, id, name, compliance_ids = (
+        args.get("clusters"), args.get("fields"), args.get("hostname"), args.get("id"), args.get("name"),
+        argToList(args.get("compliance_ids"))
     )
     registry, repository = args.get("registry"), args.get("repository")
 
     params = assign_params(
         limit=limit, offset=offset, compact=compact, clusters=clusters, fields=fields,
-        hostname=hostname, id=id, name=name, registry=registry, repository=repository
+        hostname=hostname, id=id, name=name, registry=registry, repository=repository, complianceIDs=compliance_ids
     )
 
-    if images_scans := client.get_images_scan_info(params=params):
+    if images_scans := client.get_images_scan_info(all_results=all_results, params=params):
         for scan in images_scans:
             if "vulnerabilities" in scan:
                 # filter the vulnerabilities amount according to stats_limit
                 scan["vulnerabilities"] = filter_api_response(
                     api_response=scan.get("vulnerabilities"), limit=stats_limit
-                )
+                ) if not all_results else scan.get("vulnerabilities")
                 if vulnerabilities := scan.get("vulnerabilities"):
                     for vuln in vulnerabilities:
                         if "fixDate" in vuln:
@@ -1514,7 +1549,7 @@ def get_images_scan_list(client: PrismaCloudComputeClient, args: dict) -> Comman
                 # filter the complianceIssues amount according to stats_limit
                 scan["complianceIssues"] = filter_api_response(
                     api_response=scan.get("complianceIssues"), limit=stats_limit
-                )
+                ) if not all_results else scan.get("complianceIssues")
                 if compliances := scan.get("complianceIssues"):
                     for compliance in compliances:
                         if "fixDate" in compliance:
@@ -1625,22 +1660,24 @@ def get_hosts_scan_list(client: PrismaCloudComputeClient, args: dict) -> Command
         limit=args.pop("limit_record", "10"), offset=args.get("offset", "0")
     )
     stats_limit, _ = parse_limit_and_offset_values(limit=args.pop("limit_stats", "10"))
+    all_results = argToBoolean(args.get("all_results", "false"))
     compact = argToBoolean(value=args.get("compact", "true"))
-    clusters, fields, hostname, provider, distro = (
-        args.get("clusters"), args.get("fields"), args.get("hostname"), args.get("provider"), args.get("distro")
+    clusters, fields, hostname, provider, distro, compliance_ids = (
+        args.get("clusters"), args.get("fields"), args.get("hostname"), args.get(
+            "provider"), args.get("distro"), argToList(args.get("compliance_ids"))
     )
 
     params = assign_params(
-        limit=limit, offset=offset, compact=compact, clusters=clusters,
+        limit=limit, offset=offset, compact=compact, clusters=clusters, complianceIDs=compliance_ids,
         fields=fields, hostname=hostname, provider=provider, distro=distro
     )
 
-    if hosts_scans := client.get_hosts_scan_info(params=params):
+    if hosts_scans := client.get_hosts_scan_info(all_results, params=params):
         for scan in hosts_scans:
             if "vulnerabilities" in scan:
                 scan["vulnerabilities"] = filter_api_response(
                     api_response=scan.get("vulnerabilities"), limit=stats_limit
-                )
+                ) if not all_results else scan.get("vulnerabilities")
                 if vulnerabilities := scan.get("vulnerabilities"):
                     for vuln in vulnerabilities:
                         if "fixDate" in vuln:
@@ -1648,7 +1685,7 @@ def get_hosts_scan_list(client: PrismaCloudComputeClient, args: dict) -> Command
             if "complianceIssues" in scan:
                 scan["complianceIssues"] = filter_api_response(
                     api_response=scan.get("complianceIssues"), limit=stats_limit
-                )
+                ) if not all_results else scan.get("complianceIssues")
                 if compliances := scan.get("complianceIssues"):
                     for compliance in compliances:
                         if "fixDate" in compliance:
