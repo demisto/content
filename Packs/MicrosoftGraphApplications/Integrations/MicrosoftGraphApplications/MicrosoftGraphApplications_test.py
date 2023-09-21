@@ -346,3 +346,45 @@ def test_remove_password_service_principal_command_without_required_arg(requests
 
     with pytest.raises(KeyError):
         remove_password_service_principal_command(client, args=args)
+
+
+def test_unlock_configuration_service_principal_command(mocker, requests_mock):
+    """
+        Given:
+            - Service principal (object) id
+        When:
+            - Executing msgraph-apps-service-principal-unlock-configuration command
+        Then:
+            - Ensure unlock_configuration_service_principal client's method was called with the right arguments
+    """
+    from MicrosoftGraphApplications import Client, unlock_configuration_service_principal_command
+
+    mock_token = {'access_token': 'test_token', 'expires_in': '86400'}
+    requests_mock.post('https://login.microsoftonline.com/organizations/oauth2/v2.0/token', json=mock_token)
+    client = Client(app_id='TEST', verify=False, proxy=False, connection_type='TEST', tenant_id='TEST', enc_key='TEST')
+    requests_mock.patch("https://graph.microsoft.com/beta/applications/TEST", json={})
+    mock_unlock_configuration_service_principal = mocker.patch.object(client, "unlock_configuration_service_principal")
+    unlock_configuration_service_principal_command(client, args={'id': 'TEST'})
+
+    assert mock_unlock_configuration_service_principal.call_args[0][0] == 'TEST'
+    assert mock_unlock_configuration_service_principal.call_args[1] == {}
+
+def test_unlock_configuration_service_principal_command_exception(mocker, requests_mock):
+    """
+        Given:
+            - Missing service principal (object) id
+        When:
+            - Executing msgraph-apps-service-principal-unlock-configuration command
+        Then:
+            - Ensure KeyError Exception is thrown
+    """
+    from MicrosoftGraphApplications import Client, unlock_configuration_service_principal_command
+
+    mock_token = {'access_token': 'test_token', 'expires_in': '86400'}
+    requests_mock.post('https://login.microsoftonline.com/organizations/oauth2/v2.0/token', json=mock_token)
+    client = Client(app_id='TEST', verify=False, proxy=False, connection_type='TEST', tenant_id='TEST', enc_key='TEST')
+    requests_mock.patch("https://graph.microsoft.com/beta/applications/TEST", json={})
+    mocker.patch.object(client, "unlock_configuration_service_principal")
+
+    with pytest.raises(KeyError):
+        unlock_configuration_service_principal_command(client, args={})
