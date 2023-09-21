@@ -6241,7 +6241,7 @@ List identity entities.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| policy_ids | Comma separated list of policy IDs to look for. | Required | 
+| policy_ids | Comma-separated list of policy IDs to look for. | Required | 
 
 #### Context Output
 
@@ -6445,15 +6445,15 @@ Returns information about current policy settings.
 | CrowdStrike.CSPMPolicySetting.policy_settings.enabled | Boolean | Whether the policy settings are enabled or not. | 
 | CrowdStrike.CSPMPolicySetting.policy_settings.tag_excluded | Boolean | Whether the tag is excluded or not. | 
 | CrowdStrike.CSPMPolicySetting.cis_benchmark | Array | An array of CIS benchmark details. | 
-| CrowdStrike.CSPMPolicySetting.cis_benchmark.id | Integer | The CIS benchmark id. | 
+| CrowdStrike.CSPMPolicySetting.cis_benchmark.id | Integer | The CIS benchmark ID. | 
 | CrowdStrike.CSPMPolicySetting.cis_benchmark.benchmark_short | String | The CIS benchmark shortname. | 
 | CrowdStrike.CSPMPolicySetting.cis_benchmark.recommendation_number | String | The CIS benchmark recommendation number. | 
 | CrowdStrike.CSPMPolicySetting.pci_benchmark | Array | An array of PCI benchmark details. | 
-| CrowdStrike.CSPMPolicySetting.pci_benchmark.id | Integer | The PCI benchmark id. | 
+| CrowdStrike.CSPMPolicySetting.pci_benchmark.id | Integer | The PCI benchmark ID. | 
 | CrowdStrike.CSPMPolicySetting.pci_benchmark.benchmark_short | String | The PCI benchmark shortname. | 
 | CrowdStrike.CSPMPolicySetting.pci_benchmark.recommendation_number | String | The PCI benchmark recommendation number. | 
 | CrowdStrike.CSPMPolicySetting.nist_benchmark | Array | An array of NIST benchmark details. | 
-| CrowdStrike.CSPMPolicySetting.nist_benchmark.id | Integer | The NIST benchmark id. | 
+| CrowdStrike.CSPMPolicySetting.nist_benchmark.id | Integer | The NIST benchmark ID. | 
 | CrowdStrike.CSPMPolicySetting.nist_benchmark.benchmark_short | String | The NIST benchmark shortname. | 
 | CrowdStrike.CSPMPolicySetting.nist_benchmark.recommendation_number | String | The NIST benchmark recommendation number. | 
 | CrowdStrike.CSPMPolicySetting.attack_types | Array | The attack types. | 

@@ -4392,7 +4392,7 @@ script:
       description: The identity entity email address.
       type: String
   - arguments:
-    - description: Comma separated list of policy IDs to look for.
+    - description: Comma-separated list of policy IDs to look for.
       name: policy_ids
       isArray: true
       required: true
@@ -4581,7 +4581,7 @@ script:
       description: An array of CIS benchmark details.
       type: Array
     - contextPath: CrowdStrike.CSPMPolicySetting.cis_benchmark.id
-      description: The CIS benchmark id.
+      description: The CIS benchmark ID.
       type: Integer
     - contextPath: CrowdStrike.CSPMPolicySetting.cis_benchmark.benchmark_short
       description: The CIS benchmark shortname.
@@ -4593,7 +4593,7 @@ script:
       description: An array of PCI benchmark details.
       type: Array
     - contextPath: CrowdStrike.CSPMPolicySetting.pci_benchmark.id
-      description: The PCI benchmark id.
+      description: The PCI benchmark ID.
       type: Integer
     - contextPath: CrowdStrike.CSPMPolicySetting.pci_benchmark.benchmark_short
       description: The PCI benchmark shortname.
@@ -4605,7 +4605,7 @@ script:
       description: An array of NIST benchmark details.
       type: Array
     - contextPath: CrowdStrike.CSPMPolicySetting.nist_benchmark.id
-      description: The NIST benchmark id.
+      description: The NIST benchmark ID.
       type: Integer
     - contextPath: CrowdStrike.CSPMPolicySetting.nist_benchmark.benchmark_short
       description: The NIST benchmark shortname.
