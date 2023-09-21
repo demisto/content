@@ -1,1 +1,174 @@
-{"dashboards_data": [{"name": "CyberArk Posture Overview", "description": "example"", "status": "ENABLED", "layout": [{"id": "row-9527", "data": [{"key": "xql_1695216800242", "data": {"type": "Custom XQL", "width": 100, "height": 666, "params": [{"name": "action", "value": "*"}, {"name": "source_ip", "value": "*"}, {"name": "dest_ip", "value": "*"}, {"name": "severity", "value": "*"}, {"name": "sub_type", "value": "*"}], "phrase": "dataset = panw_ngfw_threat_raw  \n| filter action in($action) and source_ip in($source_ip) and dest_ip in($dest_ip) and severity in($severity) and sub_type in($sub_type) and threat_category != \"dns-malware\" and threat_category != \"info-leak\"\n| comp count(_id) as Total by threat_category\n| sort desc Total", "time_frame": {"relativeTime": 86400000}, "viewOptions": {"type": "table", "commands": []}, "gridRawStorageInfo": {"sort": null, "coldefs": {}, "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}", "columnWidth": null}}}]}], "default_dashboard_id": 1, "global_id": "1e49879917b94fb4823343037974ae4f", "metadata": {"params": [{"name": "action", "type": "STATIC", "title": "Parameter Title - 1", "value": "", "valueOptions": ["192"], "investigation": null, "filterComponentType": "SINGLE_SELECT"}, {"name": "source_ip", "type": "STATIC", "title": "Parameter Title - 2", "value": "", "valueOptions": ["192"], "investigation": null, "filterComponentType": "SINGLE_SELECT"}, {"name": "dest_ip", "type": "STATIC", "title": "Parameter Title - 3", "value": "", "valueOptions": ["192"], "investigation": null, "filterComponentType": "SINGLE_SELECT"}, {"name": "severity", "type": "STATIC", "title": "Parameter Title - 4", "value": "", "valueOptions": ["192"], "investigation": null, "filterComponentType": "SINGLE_SELECT"}, {"name": "sub_type", "type": "STATIC", "title": "Parameter Title - 5", "value": "", "valueOptions": ["192"], "investigation": null, "filterComponentType": "SINGLE_SELECT"}]}}], "widgets_data": [{"widget_key": "xql_1695216800242", "title": "dyanmic_example", "creation_time": 1695216800242, "description": "example", "data": {"params": [{"name": "action", "value": "*"}, {"name": "source_ip", "value": "*"}, {"name": "dest_ip", "value": "*"}, {"name": "severity", "value": "*"}, {"name": "sub_type", "value": "*"}], "phrase": "dataset = panw_ngfw_threat_raw  \n| filter action in($action) and source_ip in($source_ip) and dest_ip in($dest_ip) and severity in($severity) and sub_type in($sub_type) and threat_category != \"dns-malware\" and threat_category != \"info-leak\"\n| comp count(_id) as Total by threat_category\n| sort desc Total", "time_frame": {"relativeTime": 86400000}, "viewOptions": {"type": "table", "commands": []}, "gridRawStorageInfo": {"sort": null, "coldefs": {}, "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}", "columnWidth": null}}, "support_time_range": true, "additional_info": {"query_tables": ["panw_ngfw_threat_raw"], "query_uses_library": false} }],"fromVersion": "8.4.0"}
+{
+    "dashboards_data": [
+        {
+            "name": "CyberArk Posture Overview",
+            "description": "example",
+            "status": "ENABLED",
+            "layout": [
+                {
+                    "id": "row-9527",
+                    "data": [
+                        {
+                            "key": "xql_1695216800242",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 100,
+                                "height": 666,
+                                "params": [
+                                    {
+                                        "name": "action",
+                                        "value": "*"
+                                    },
+                                    {
+                                        "name": "source_ip",
+                                        "value": "*"
+                                    },
+                                    {
+                                        "name": "dest_ip",
+                                        "value": "*"
+                                    },
+                                    {
+                                        "name": "severity",
+                                        "value": "*"
+                                    },
+                                    {
+                                        "name": "sub_type",
+                                        "value": "*"
+                                    }
+                                ],
+                                "phrase": "dataset = panw_ngfw_threat_raw  \n| filter action in($action) and source_ip in($source_ip) and dest_ip in($dest_ip) and severity in($severity) and sub_type in($sub_type) and threat_category != \"dns-malware\" and threat_category != \"info-leak\"\n| comp count(_id) as Total by threat_category\n| sort desc Total",
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "table",
+                                    "commands": []
+                                },
+                                "gridRawStorageInfo": {
+                                    "sort": null,
+                                    "coldefs": {},
+                                    "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+                                    "columnWidth": null
+                                }
+                            }
+                        }
+                    ]
+                }
+            ],
+            "default_dashboard_id": 1,
+            "global_id": "1e49879917b94fb4823343037974ae4f",
+            "metadata": {
+                "params": [
+                    {
+                        "name": "action",
+                        "type": "STATIC",
+                        "title": "Parameter Title - 1",
+                        "value": "",
+                        "valueOptions": [
+                            "192"
+                        ],
+                        "investigation": null,
+                        "filterComponentType": "SINGLE_SELECT"
+                    },
+                    {
+                        "name": "source_ip",
+                        "type": "STATIC",
+                        "title": "Parameter Title - 2",
+                        "value": "",
+                        "valueOptions": [
+                            "192"
+                        ],
+                        "investigation": null,
+                        "filterComponentType": "SINGLE_SELECT"
+                    },
+                    {
+                        "name": "dest_ip",
+                        "type": "STATIC",
+                        "title": "Parameter Title - 3",
+                        "value": "",
+                        "valueOptions": [
+                            "192"
+                        ],
+                        "investigation": null,
+                        "filterComponentType": "SINGLE_SELECT"
+                    },
+                    {
+                        "name": "severity",
+                        "type": "STATIC",
+                        "title": "Parameter Title - 4",
+                        "value": "",
+                        "valueOptions": [
+                            "192"
+                        ],
+                        "investigation": null,
+                        "filterComponentType": "SINGLE_SELECT"
+                    },
+                    {
+                        "name": "sub_type",
+                        "type": "STATIC",
+                        "title": "Parameter Title - 5",
+                        "value": "",
+                        "valueOptions": [
+                            "192"
+                        ],
+                        "investigation": null,
+                        "filterComponentType": "SINGLE_SELECT"
+                    }
+                ]
+            }
+        }
+    ],
+    "widgets_data": [
+        {
+            "widget_key": "xql_1695216800242",
+            "title": "dyanmic_example",
+            "creation_time": 1695216800242,
+            "description": "example",
+            "data": {
+                "params": [
+                    {
+                        "name": "action",
+                        "value": "*"
+                    },
+                    {
+                        "name": "source_ip",
+                        "value": "*"
+                    },
+                    {
+                        "name": "dest_ip",
+                        "value": "*"
+                    },
+                    {
+                        "name": "severity",
+                        "value": "*"
+                    },
+                    {
+                        "name": "sub_type",
+                        "value": "*"
+                    }
+                ],
+                "phrase": "dataset = panw_ngfw_threat_raw  \n| filter action in($action) and source_ip in($source_ip) and dest_ip in($dest_ip) and severity in($severity) and sub_type in($sub_type) and threat_category != \"dns-malware\" and threat_category != \"info-leak\"\n| comp count(_id) as Total by threat_category\n| sort desc Total",
+                "time_frame": {
+                    "relativeTime": 86400000
+                },
+                "viewOptions": {
+                    "type": "table",
+                    "commands": []
+                },
+                "gridRawStorageInfo": {
+                    "sort": null,
+                    "coldefs": {},
+                    "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+                    "columnWidth": null
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [
+                    "panw_ngfw_threat_raw"
+                ],
+                "query_uses_library": false
+            }
+        }
+    ],     "fromVersion": "8.4.0"
+}
