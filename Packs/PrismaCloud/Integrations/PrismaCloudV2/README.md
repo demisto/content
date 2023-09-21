@@ -2133,7 +2133,7 @@ Lists all users and service accounts for your tenant. Maps to Settings > Access 
 | --- | --- | --- |
 | limit | Maximum number of entries to return. Default is 50. | Optional | 
 | all_results | Whether to retrieve all results. The "limit" argument will be ignored. Possible values are: true, false. | Optional | 
-
+| usernames | Usernames to return only users associated with. | Optional | 
 
 #### Context Output
 
