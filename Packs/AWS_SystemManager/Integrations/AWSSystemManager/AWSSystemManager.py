@@ -1191,6 +1191,7 @@ def run_automation_execution_command(
     automation_execution = ssm_client.get_automation_execution(
         AutomationExecutionId=execution_id
     )["AutomationExecution"]
+    automation_execution = convert_datetime_to_iso(automation_execution)
     status = automation_execution["AutomationExecutionStatus"]
     if status in TERMINAL_AUTOMATION_STATUSES:
         if FailureMessage := automation_execution.get("FailureMessage"):
