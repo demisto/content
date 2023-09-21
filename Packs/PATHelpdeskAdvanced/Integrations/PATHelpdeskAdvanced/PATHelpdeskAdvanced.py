@@ -114,7 +114,7 @@ def safe_arg_to_number(argument: str | None, argument_name: str) -> int:
     return result
 
 
-def parse_filter_conditions(strings: Sequence[str]) -> list[dict]:
+def parse_filter_conditions(strings: Sequence[str]) -> str:
     def _parse_single_condition(string: str) -> dict:
         if not (match := FILTER_CONDITION_REGEX.match(string)):
             raise DemistoException(
@@ -128,7 +128,9 @@ def parse_filter_conditions(strings: Sequence[str]) -> list[dict]:
             else value.strip('"'),
         }
 
-    return [_parse_single_condition(string) for string in strings]
+    return json.dumps(
+        [_parse_single_condition(string) for string in argToList(strings)]
+    )
 
 
 def create_params_dict(
@@ -425,13 +427,11 @@ class Client(BaseClient):
             "entity": "Attachments",
             "start": 0,  # TODO necessary?
             "limit": safe_arg_to_number(kwargs["limit"], "limit"),
-            "filter": str(
-                parse_filter_conditions(
-                    (
-                        f'"{PARENT_OBJECT.hda_name}" eq "Ticket"',
-                        f'"{PARENT_OBJECT_ID.hda_name}" eq "{ticket_id}"',
-                    )
-                ),
+            "filter": parse_filter_conditions(
+                (
+                    f'"{PARENT_OBJECT.hda_name}" eq "Ticket"',
+                    f'"{PARENT_OBJECT_ID.hda_name}" eq "{ticket_id}"',
+                )
             ),
         }
 
@@ -577,9 +577,9 @@ class Client(BaseClient):
         }
 
         if group_id := kwargs.get("group_id"):
-            params["filter"] = [
-                parse_filter_conditions(f'{ID.hda_name} eq "{group_id}"')
-            ]
+            params["filter"] = parse_filter_conditions(
+                (f'{ID.hda_name} eq "{group_id}"',)
+            )
 
         return self.http_request(
             url_suffix="WSC/Projection",
