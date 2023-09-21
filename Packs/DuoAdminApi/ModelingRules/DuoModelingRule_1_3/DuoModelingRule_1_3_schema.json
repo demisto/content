@@ -47,7 +47,7 @@
     "context": {
       "type": "string",
       "is_array": false
-    }, 
+    },
     "phone": {
       "type": "string",
       "is_array": false
