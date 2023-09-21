@@ -868,6 +868,8 @@ def handle_incoming_closing_incident(incident_data):
             'Type': EntryType.NOTE,
             'Contents': {
                 'dbotIncidentReopen': True,
+                'closeReason': None,
+                'closeNotes': None
             },
             'ContentsFormat': EntryFormat.JSON
         }
