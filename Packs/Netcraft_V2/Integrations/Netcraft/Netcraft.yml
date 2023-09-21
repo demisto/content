@@ -11,14 +11,14 @@ sectionOrder:
 configuration:
 - display: Takedown Server URL
   name: takedown_url
-  defaultvalue: "https://takedown.netcraft.com/api/v1"
+  defaultvalue: "https://takedown.netcraft.com"
   type: 0
   required: true
   section: Connect
   additionalinfo: The URL to use for the Takedown Service.
 - display: Submission Server URL
   name: submission_url
-  defaultvalue: "https://report.netcraft.com/api/v3"
+  defaultvalue: "https://report.netcraft.com"
   type: 0
   required: true
   section: Connect
@@ -722,8 +722,14 @@ script:
       name: date_end
     - description: Filter the submissions by source.
       name: source_name
-    - description: The state of the submissions. One of "processing", "no threats", "suspicious" or "malicious". Note, in the case of a misclassification, a submission may be assigned a higher-severity state several days after its initial classification.
+    - description: The state of the submissions. Note, in the case of a misclassification, a submission may be assigned a higher-severity state several days after its initial classification.
       name: state
+      auto: PREDEFINED
+      predefined:
+      - processing
+      - no threats
+      - suspicious
+      - malicious
     - description: Filter the submissions by words contained in the submission reason.
       name: submission_reason
     - description: Filter the submissions by submitter email.

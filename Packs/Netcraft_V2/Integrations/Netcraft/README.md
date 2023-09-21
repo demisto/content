@@ -7,7 +7,7 @@ Netcraft takedown, submission and screenshot management.
 3. Escalate takedowns.
 4. Track takedowns.
 5. Submit a report - mail, file, URL.
-6. Take a screenshot of the site.
+6. Take a screenshot of the mail, file or URL.
 7. Fetch incidents from attacks.
 
 ## Configure Netcraft on Cortex XSOAR
@@ -953,7 +953,7 @@ Get basic information about a submissions.
 | date_start | Filter submissions by start date. | Optional | 
 | date_end | Filter submissions by end date. | Optional | 
 | source_name | Filter the submissions by source. | Optional | 
-| state | The state of the submissions. One of "processing", "no threats", "suspicious" or "malicious". Note, in the case of a misclassification, a submission may be assigned a higher-severity state several days after its initial classification. | Optional | 
+| state | The state of the submissions. Note, in the case of a misclassification, a submission may be assigned a higher-severity state several days after its initial classification. Possible values: "processing", "no threats", "suspicious", "malicious".  | Optional | 
 | submission_reason | Filter the submissions by words contained in the submission reason. | Optional | 
 | submitter_email | Filter the submissions by submitter email. | Optional | 
 | limit | The number of submissions to return. Default is 50. | Optional | 

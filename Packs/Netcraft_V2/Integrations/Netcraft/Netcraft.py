@@ -114,95 +114,95 @@ class Client(BaseClient):
     def get_takedowns(self, params: dict) -> list[dict]:
         '''Used by fetch-incidents and netcraft-takedown-list'''
         return self.takedown_http_request(
-            'GET', 'attacks/', params=params,
+            'GET', 'api/v1/attacks/', params=params,
         )
 
     def attack_report(self, body: dict, file: dict | None) -> str:
         return self.takedown_http_request(
-            'POST', 'report/',
+            'POST', 'api/v1/report/',
             data=body, resp_type='text', files=file,
         )
 
     def takedown_update(self, body: dict) -> dict:
         return self.takedown_http_request(
-            'POST', 'update-attack/', data=body,
+            'POST', 'api/v1/update-attack/', data=body,
         )
 
     def takedown_escalate(self, body: dict) -> dict:
         return self.takedown_http_request(
-            'POST', 'escalate/', data=body,
+            'POST', 'api/v1/escalate/', data=body,
         )
 
     def takedown_note_create(self, body: dict) -> dict:
         return self.takedown_http_request(
-            'POST', 'notes/', data=body,
+            'POST', 'api/v1/notes/', data=body,
         )
 
     def takedown_note_list(self, params: dict) -> list[dict]:
         return self.takedown_http_request(
-            'GET', 'notes/', params=params,
+            'GET', 'api/v1/notes/', params=params,
         )
 
     def attack_type_list(self, params: dict) -> list[dict]:
         return self.takedown_http_request(
-            'GET', 'attack-types/', params=params,
+            'GET', 'api/v1/attack-types/', params=params,
         )
 
     def submission_list(self, params: dict) -> dict:
         return self.submission_http_request(
-            'GET', 'submissions/', params=params,
+            'GET', 'api/v3/submissions/', params=params,
         )
 
     def get_submission(self, uuid: str, ignore_404: bool) -> dict:
         return self.submission_http_request(
-            'GET', f'submission/{uuid}', ok_codes=(200, 404 * ignore_404)
+            'GET', f'api/v3/submission/{uuid}', ok_codes=(200, 404 * ignore_404)
         )
 
     def file_report_submit(self, body: dict) -> dict:
         return self.submission_http_request(
-            'POST', 'report/files', json_data=body,
+            'POST', 'api/v3/report/files', json_data=body,
         )
 
     def submission_file_list(self, submission_uuid, params: dict) -> dict:
         return self.submission_http_request(
-            'GET', f'submission/{submission_uuid}/files', params=params,
+            'GET', f'api/v3/submission/{submission_uuid}/files', params=params,
         )
 
     def file_screenshot_get(self, submission_uuid: str, file_hash: str) -> requests.Response:
         return self.submission_http_request(
-            'GET', f'submission/{submission_uuid}/files/{file_hash}/screenshot',
+            'GET', f'api/v3/submission/{submission_uuid}/files/{file_hash}/screenshot',
             resp_type='response', ok_codes=(200, 404)
         )
 
     def url_report_submit(self, body: dict) -> dict:
         return self.submission_http_request(
-            'POST', 'report/urls', json_data=body,
+            'POST', 'api/v3/report/urls', json_data=body,
         )
 
     def submission_mail_get(self, submission_uuid: str) -> dict:
         return self.submission_http_request(
-            'GET', f'submission/{submission_uuid}/mail',
+            'GET', f'api/v3/submission/{submission_uuid}/mail',
         )
 
     def mail_screenshot_get(self, submission_uuid: str) -> requests.Response:
         return self.submission_http_request(
-            'GET', f'submission/{submission_uuid}/mail/screenshot',
+            'GET', f'api/v3/submission/{submission_uuid}/mail/screenshot',
             resp_type='response', ok_codes=(200, 404)
         )
 
     def email_report_submit(self, body: dict) -> dict:
         return self.submission_http_request(
-            'POST', 'report/mail', json_data=body,
+            'POST', 'api/v3/report/mail', json_data=body,
         )
 
     def submission_url_list(self, submission_uuid, params: dict) -> dict:
         return self.submission_http_request(
-            'GET', f'submission/{submission_uuid}/urls', params=params,
+            'GET', f'api/v3/submission/{submission_uuid}/urls', params=params,
         )
 
     def url_screenshot_get(self, submission_uuid: str, url_uuid: str, screenshot_hash: str) -> requests.Response:
         return self.submission_http_request(
-            'GET', f'submission/{submission_uuid}/urls/{url_uuid}/screenshots/{screenshot_hash}',
+            'GET', f'api/v3/submission/{submission_uuid}/urls/{url_uuid}/screenshots/{screenshot_hash}',
             resp_type='response',
         )
 
@@ -404,8 +404,17 @@ def paginate_with_page_num_and_size(
 def test_module(client: Client) -> str:
     if PARAMS.get('isFetch') and not arg_to_datetime(PARAMS['first_fetch']):
         raise ValueError(f'{PARAMS["first_fetch"]!r} is not a valid time.')
-    client.get_takedowns({'page_size': 1})  # test takedown service
-    client.submission_list({'max_results': 1})  # test submission service
+    try:
+        service = 'Takedown'
+        client.get_takedowns({'page_size': 1})  # test takedown service
+        service = 'Submission'
+        client.submission_list({'max_results': 1})  # test submission service
+    except DemistoException as e:
+        demisto.debug(str(e))
+        raise DemistoException(
+            f'Unable to connect to the Netcraft {service} service.'
+            f' Make sure the {service} URL and API key are correct'
+        )
     return 'ok'
 
 
@@ -610,7 +619,6 @@ def takedown_update_command(args: dict, client: Client) -> CommandResults:
         readable_output=tableToMarkdown(
             'Takedown successfully updated.',
             {'Takedown ID': response['takedown_id']},
-            ['Takedown ID']
         ),
         raw_response=response
     )
@@ -627,7 +635,6 @@ def takedown_escalate_command(args: dict, client: Client) -> CommandResults:
         readable_output=tableToMarkdown(
             'Takedown successfully escalated.',
             {'Takedown ID': args['takedown_id']},
-            ['Takedown ID']
         )
     )
 
@@ -860,6 +867,16 @@ def file_report_submit_command(args: dict, client: Client) -> CommandResults:
     response = client.file_report_submit(
         args_to_body(args)
     )
+    if not argToBoolean(args['polling']):  # TODO test
+        return CommandResults(
+            outputs_prefix='Netcraft.Submission',
+            outputs_key_field='uuid',
+            outputs={'uuid': response['uuid']},
+            readable_output=tableToMarkdown(
+                'Submission successfully reported.',
+                {'Submission UUID': response['uuid']}
+            ),
+        )
     return get_submission(args | {'ignore_404': True}, response['uuid'], client)
 
 
@@ -915,6 +932,16 @@ def email_report_submit_command(args: dict, client: Client) -> CommandResults:
     response = client.email_report_submit(
         {'email': args.pop('reporter_email')} | pop_keys(args, 'message', 'password')
     )
+    if not argToBoolean(args['polling']):
+        return CommandResults(
+            outputs_prefix='Netcraft.Submission',
+            outputs_key_field='uuid',
+            outputs={'uuid': response['uuid']},
+            readable_output=tableToMarkdown(
+                'Submission successfully reported.',
+                {'Submission UUID': response['uuid']}
+            ),
+        )
     return get_submission(args | {'ignore_404': True}, response['uuid'], client)
 
 
@@ -965,6 +992,16 @@ def url_report_submit_command(args: dict, client: Client) -> CommandResults:
             {'url': url} for url in argToList(args.pop('urls'))
         ]
     })
+    if not argToBoolean(args['polling']):
+        return CommandResults(
+            outputs_prefix='Netcraft.Submission',
+            outputs_key_field='uuid',
+            outputs={'uuid': response['uuid']},
+            readable_output=tableToMarkdown(
+                'Submission successfully reported.',
+                {'Submission UUID': response['uuid']}
+            ),
+        )
     return get_submission(args | {'ignore_404': True}, response['uuid'], client)
 
 
@@ -975,16 +1012,15 @@ def submission_url_list_command(args: dict, client: Client) -> CommandResults:
             'Submission URLs',
             [
                 {
+                    'UUID': url.get('uuid'),
                     'URL': url.get('url'),
                     'Hostname': url.get('hostname'),
                     'Classification': url.get('url_state'),
                     'URL Classification Log': yaml.safe_dump(url.get('classification_log')),
-                    'Screenshots': yaml.safe_dump(url.get('screenshots')),
-                    'UUID': url.get('uuid')
                 }
                 for url in urls
             ],
-            ['URL', 'Hostname', 'Classification', 'URL Classification Log', 'Screenshots', 'UUID'],
+            ['UUID', 'URL', 'Hostname', 'Classification', 'URL Classification Log'],
             removeNull=True,
         )
 
@@ -1074,7 +1110,7 @@ def main() -> None:
                 raise NotImplementedError(f'{command!r} is not a Netcraft command.')
 
     except Exception as e:
-        return_error(f'Failed to execute {command!r}.\nError: {e.__class__.__name__}\nCause: {e}')
+        return_error(f'Failed to execute {command!r}:\n{e}')
 
 
 ''' ENTRY POINT '''
