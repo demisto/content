@@ -1,0 +1,78 @@
+%%
+%% This is the AFNIC Whois server.
+%%
+%% complete date format: YYYY-MM-DDThh:mm:ssZ
+%%
+%% Rights restricted by copyright.
+%% See test
+%%
+%%
+
+domain:                        test.fr
+status:                        TEST
+eppstatus:                     TEST
+hold:                          TEST
+holder-c:                      TEST
+admin-c:                       TEST
+tech-c:                        TEST
+registrar:                     TEST
+Expiry Date:                   2026-06-09T14:25:21.617352Z
+created:                       2026-06-09T14:25:21.638904Z
+last-update:                   2027-06-16T13:38:17.476151Z
+source:                        TEST
+
+nserver:                       test.com
+nserver:                       test.com
+source:                        TEST
+
+registrar:                     TEST
+address:                       TEST 1
+address:                       TEST
+country:                       TEST
+phone:                         +12.1234
+fax-no:                        +12.1234
+e-mail:                        test@test.net
+website:                       http://www.test.net/tld/fr
+anonymous:                     TEST
+registered:                    2006-07-24T00:00:00Z
+source:                        TEST
+
+nic-hdl:                       TEST
+type:                          TEST
+contact:                       TEST
+address:                       TEST
+address:                       9 TEST
+address:                       1234 TEST
+country:                       TEST
+phone:                         +12.1234
+e-mail:                        test@test.fr
+registrar:                     TEST
+anonymous:                     TEST
+obsoleted:                     TEST
+eppstatus:                     TEST
+eppstatus:                     TEST
+eligstatus:                    TEST
+reachstatus:                   TEST
+source:                        TEST
+
+nic-hdl:                       TEST
+type:                          TEST
+contact:                       TEST
+address:                       TEST
+address:                       TEST 1
+address:                       TEST
+country:                       TEST
+phone:                         +12.1234
+e-mail:                        test@test.net
+registrar:                     TEST
+changed:                       2023-09-09T22:59:54.000448Z
+anonymous:                     TEST
+obsoleted:                     TEST
+eppstatus:                     TEST
+eppstatus:                     TEST
+eligstatus:                    TEST
+reachstatus:                   TEST
+source:                        TEST
+
+>>> WHOIS request date: 2023-09-11T11:59:51.886322Z <<<
+
