@@ -437,6 +437,21 @@ class PrismaCloudComputeClient(BaseClient):
         """
         return self._http_request(method="GET", url_suffix="trust/data")
 
+    def update_trusted_images(self, data:str):
+        """
+        Sends a request to update trusted images information.
+        """
+        return self._http_request(method="PUT", url_suffix="trust/data", data=data)
+
+    def get_container_scan_results(self, params: Optional[dict] = None) -> List[dict]:
+        """
+        Sends a request to get container scan results information.
+
+        Returns:
+            list[dict]: container scan results information.
+        """
+        return self._http_request(method="GET", url_suffix="containers", params=params)
+
 
 def format_context(context):
     """
@@ -2018,11 +2033,11 @@ def get_ci_scan_results_list(client: PrismaCloudComputeClient, args: dict) -> Co
     limit, offset = parse_limit_and_offset_values(
         limit=args.get("limit", "50"), offset=args.get("offset", "0")
     )
-    account_ids, resource_ids, region, name, search = (
+    account_ids, resource_ids, region, name, search, scan_id, image_id = (
         argToList(args.get("account_ids")), argToList(args.get("resource_ids")),
-        argToList(args.get("region")), argToList(args.get("name")), argToList(args.get("search"))
-    )
-    scan_id, image_id = (args.get("scan_id"), args.get("image_id"))
+        argToList(args.get("region")), argToList(args.get("name")), args.get("search"),
+        args.get("scan_id"), args.get("image_id")
+        )
     _pass = args.get("pass", "true")
     if to := args.get("scan_time_to"):
         to = parse_date_string_format(to, "%Y-%m-%dT%H:%M:%SZ")
@@ -2116,6 +2131,25 @@ def get_trusted_images(client: PrismaCloudComputeClient) -> CommandResults:
     )
 
 
+def update_trusted_images(client: PrismaCloudComputeClient, args: dict) -> CommandResults:
+    """
+    Updates the list of trusted images rules and groups and their information.
+    Implement the command 'prisma-cloud-compute-trusted-images-update'.
+
+    Args:
+        client (PrismaCloudComputeClient): prisma-cloud-compute client.
+        args (dict): prisma-cloud-compute-trusted-images-update command arguments.
+
+    Returns:
+        CommandResults: command-results object.
+    """
+    images_list_json = json.dumps(args.get("images_list_json"))
+
+    client.update_trusted_images(data=images_list_json)
+    return CommandResults(
+        readable_output="Trusted repository, image, and registry updated successfully.",
+    )
+
 def get_container_scan_results(client: PrismaCloudComputeClient, args: dict) -> CommandResults:
     """
     Retrieve a list of container scan reports and their information.
@@ -2141,7 +2175,7 @@ def get_container_scan_results(client: PrismaCloudComputeClient, args: dict) -> 
         )
     params = assign_params(
         offset=offset, limit=limit, collections=collections, accountIDs=account_ids, clusters=clusters, namespaces=namespaces, 
-        resourceIDs=resource_ids, region=region, id=container_ids, profileId=profile_id, image=image_name, image_id=image_id, 
+        resourceIDs=resource_ids, region=region, id=container_ids, profileId=profile_id, image=image_name, imageId=image_id, 
         hostname=hostname, complianceIDs=compliance_ids, agentless=agentless, search=search
     )
 
@@ -2293,6 +2327,8 @@ def main():
             return_results(results=get_ci_scan_results_list(client=client, args=demisto.args()))
         elif requested_command == "prisma-cloud-compute-trusted-images-get":
             return_results(results=get_trusted_images(client=client))
+        elif requested_command == "prisma-cloud-compute-trusted-images-update":
+            return_results(results=update_trusted_images(client=client, args=demisto.args()))
         elif requested_command == "prisma-cloud-compute-container-scan-results":
             return_results(results=get_container_scan_results(client=client, args=demisto.args()))
     # Log exceptions

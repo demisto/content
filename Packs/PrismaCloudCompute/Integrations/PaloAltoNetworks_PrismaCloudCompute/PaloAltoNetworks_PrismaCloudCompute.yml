@@ -1966,20 +1966,20 @@ script:
     description: Retrieves all scan reports for images scanned by the Jenkins plugin or twistcli. Maps to Monitor > Vulnerabilities > Images > CI in the Console UI. The default will retrieve only the passed scans.
     arguments:
     - name: account_ids
-      description: Filters the result based on cloud account IDs.
+      description: A comma-separated list of cloud account IDs to filter the result by.  
       isArray: true
     - name: resource_ids
-      description: Scopes the query by resource ID.
-      isArray: true 
+      description: A comma-separated list of resource IDs to scope the query by.
+      isArray: true
     - name: region
-      description: Scopes the query by cloud region.
+      description: A comma-separated list of regions to scope the query by.
       isArray: true
     - name: scan_id
       description: Scan ID used in the image layers fetch.
     - name: image_id
       description: Image ID of scanned image.
     - name: name
-      description: Jenkins job name.
+      description: A comma-separated list of Jenkins job names.
       isArray: true
     - name: search
       description: Retrieves the result for a search term.
@@ -2238,44 +2238,51 @@ script:
     - contextPath: PrismaCloudCompute.TrustedImage.groups.images
       description: The images in the trusted image group.
       type: Unknown
+  - name: prisma-cloud-compute-trusted-images-update
+    description: Updates a trusted image to the system. Specify trusted images using either the image name or layers properties. This is a potentially harmful command, please use with caution.
+    execution: true
+    arguments:
+    - name: images_list_json
+      description: JSON containing the list of trusted images to update. In order to view the structure, use ***prisma-cloud-compute-trusted-images-get*** to retrieve the current state of the list.
+      required: true  
   - name: prisma-cloud-compute-container-scan-results
     description: Retrieves container scan reports. Maps to Monitor > Compliance > Images > Deployed in the Console UI.
     arguments:
     - name: collections
-      description: Filters the result based on collection names that you have defined in Prisma Cloud Compute.
+      description: A comma-separated list of collection names that you have defined in Prisma Cloud Compute.
       isArray: true
     - name: account_ids
-      description: Filters the result based on cloud account IDs.
+      description: A comma-separated list of cloud account IDs.
       isArray: true
     - name: clusters
-      description: Clusters to filter by.
+      description: A comma-separated list of clusters to filter by.
       isArray: true
     - name: namespaces
-      description: Namespaces to filter by.
+      description: A comma-separated list of namespaces to filter by.
       isArray: true
     - name: resource_ids
-      description: Scopes the query by resource ID.
+      description: A comma-separated list of resource IDs to scope the query by.
       isArray: true
     - name: region
-      description: Scopes the query by cloud region.
+      description: A comma-separated list of regions to scope the query by.
       isArray: true
     - name: container_ids
-      description: Container ID to retrieve details for.
+      description: A comma-separated list of container IDs to retrieve details for.
       isArray: true
     - name: profile_id
-      description: Runtime profile ID to filter by.
+      description: A comma-separated list of runtime profile IDs to filter by.
       isArray: true
     - name: image_name
-      description: Image name to filter by.
+      description: A comma-separated list of image names to filter by.
       isArray: true
     - name: image_id
-      description: Image ID to filter by.
+      description: A comma-separated list of image IDs to filter by.
       isArray: true
     - name: hostname
-      description: Hostname to filter by.
+      description: A comma-separated list of hostnames to filter by.
       isArray: true
     - name: compliance_ids
-      description: Compliance IDs to filter by.
+      description: A comma-separated list of compliance IDs to filter by.
       isArray: true
     - name: agentless
       description: Filter by agentless scans.
