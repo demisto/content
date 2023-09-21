@@ -2,7 +2,7 @@ import pytest
 from test_data.test_data import *
 from Netcraft import Client
 import demistomock as demisto
-from CommonServerPython import ScheduledCommand
+from CommonServerPython import ScheduledCommand, DemistoException
 
 
 MOCK_CLIENT = Client(
@@ -428,6 +428,23 @@ def test_file_report_submit_command(mocker, data):
         *data.http_func_args['args'],
         **data.http_func_args['kwargs']
     )
+
+
+def test_file_report_submit_command_error():
+    '''
+    Given:
+        - Args without file_content and file_name or entry_id.
+
+    When:
+        - Running the "netcraft-file-report-submit" command.
+
+    Then:
+        - Raise an error.
+    '''
+    from Netcraft import file_report_submit_command
+
+    with pytest.raises(DemistoException, match='A file must be provided. Use file_content and file_name OR entry_id'):
+        file_report_submit_command({}, MOCK_CLIENT)
 
 
 def test_submission_file_list_command(mocker):

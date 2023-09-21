@@ -824,7 +824,7 @@ def submission_list_command(args: dict, client: Client) -> CommandResults:
 
 def file_report_submit_command(args: dict, client: Client) -> CommandResults:
 
-    def validate_args(args: dict):  # TODO add tests
+    def validate_args(args: dict):
         if not (
             (
                 args.get('file_content')
@@ -856,6 +856,7 @@ def file_report_submit_command(args: dict, client: Client) -> CommandResults:
             'files': files,
         }
 
+    validate_args(args)
     response = client.file_report_submit(
         args_to_body(args)
     )
