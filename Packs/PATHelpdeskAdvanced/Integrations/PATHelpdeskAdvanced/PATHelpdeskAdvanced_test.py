@@ -320,12 +320,18 @@ def test_parse_filter_conditions_valid():
     When parse_filter_conditions is called with the list
     Then it should return a list of parsed condition dicts
     """
-    conditions = ['"id" eq "123"', '"name" lt "john"', '"nullvalue" ne null']
+    conditions = (
+        '"id" eq "123"',
+        '"name" lt "john"',
+        '"nullvalue" ne null',
+        '"notanullvalue" ne "none"',  # quotes make it a string, not null
+    )
     expected = json.dumps(
         [
             {"property": "id", "op": "eq", "value": "123"},
             {"property": "name", "op": "lt", "value": "john"},
             {"property": "nullvalue", "op": "ne", "value": None},
+            {"property": "notanullvalue", "op": "ne", "value": "none"},
         ]
     )
 
