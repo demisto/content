@@ -30,6 +30,7 @@ _bucket_xsoar_saas="marketplace-saas-dist-dev"
 _bucket_upload="true"
 _slack_channel="dmst-bucket-upload"
 _storage_base_path=""
+_infra_env_type=${IFRA_ENV_TYPE:-Bucket-Upload}
 _sdk_ref=${SDK_REF:-master}
 # Parsing the user inputs.
 
@@ -165,7 +166,7 @@ curl --request POST \
   --form "variables[GCS_MARKET_V2_BUCKET]=${_bucket_v2}" \
   --form "variables[GCS_MARKET_XPANSE_BUCKET]=${_bucket_xpanse}" \
   --form "variables[GCS_MARKET_XSOAR_SAAS_BUCKET]=${_bucket_xsoar_saas}" \
-  --form "variables[IFRA_ENV_TYPE]=Bucket-Upload" \
+  --form "variables[IFRA_ENV_TYPE]=${_infra_env_type}" \
   --form "variables[STORAGE_BASE_PATH]=${_storage_base_path}" \
   --form "variables[OVERRIDE_ALL_PACKS]=${_override_all_packs}" \
   --form "variables[CREATE_DEPENDENCIES_ZIP]=${_create_dependencies_zip}" \
