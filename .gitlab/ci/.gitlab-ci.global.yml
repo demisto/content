@@ -65,7 +65,7 @@
 .secrets-fetch:
   - section_start "Secrets Fetch" --collapsed
   - SECRET_CONF_PATH=$(cat secret_conf_path)
-  - python3 ./Tests/scripts/add_secrets_file_to_build.py -sa "$GSM_SERVICE_ACCOUNT" -sf "$SECRET_CONF_PATH" -u "$DEMISTO_USERNAME" -p "$DEMISTO_PASSWORD" -gpidd "$GSM_PROJECT_ID_DEV" -gpidp "$GSM_PROJECT_ID" >> $ARTIFACTS_FOLDER/logs/handle_secrets.log
+  - python3 ./Tests/scripts/add_secrets_file_to_build.py -sa "$GSM_SERVICE_ACCOUNT" -sf "$SECRET_CONF_PATH" -u "$DEMISTO_USERNAME" -p "$DEMISTO_PASSWORD" --gsm_project_id_dev "$GSM_PROJECT_ID_DEV" --gsm_project_id_prod "$GSM_PROJECT_ID" >> $ARTIFACTS_FOLDER/logs/handle_secrets.log
   - section_end "Secrets Fetch"
 
 .ssh-config-setup:
@@ -345,11 +345,11 @@
           demisto-sdk lint -p 10 -a --test-xml ./unit-tests --log-path $ARTIFACTS_FOLDER --failure-report $ARTIFACTS_FOLDER --coverage-report $ARTIFACTS_FOLDER/coverage_report -dt 120 --time-measurements-dir $ARTIFACTS_FOLDER --docker-image ${DOCKER}
         fi
         if [[ -n $BUCKET_UPLOAD ]]; then
-          demisto-sdk lint --console-log-threshold DEBUG -p 8 -g --no-mypy --prev-ver $LAST_UPLOAD_COMMIT -v --test-xml ./unit-tests --log-path $ARTIFACTS_FOLDER --failure-report $ARTIFACTS_FOLDER --coverage-report $ARTIFACTS_FOLDER/coverage_report -cdam --docker-image ${DOCKER}
+          demisto-sdk lint --console-log-threshold DEBUG -p 8 -g --no-mypy --prev-ver $LAST_UPLOAD_COMMIT -v --test-xml ./unit-tests --log-path $ARTIFACTS_FOLDER --failure-report $ARTIFACTS_FOLDER --coverage-report $ARTIFACTS_FOLDER/coverage_report --check-dependent-api-module --docker-image ${DOCKER}
         else
           if [[ "$CI_COMMIT_BRANCH" != "master" ]]; then
             # skip running `lint -g` on master
-            demisto-sdk lint --console-log-threshold DEBUG -p 8 -g --test-xml ./unit-tests --log-path ./artifacts --failure-report ./artifacts --coverage-report $ARTIFACTS_FOLDER/coverage_report -cdam --docker-image ${DOCKER}
+            demisto-sdk lint --console-log-threshold DEBUG -p 8 -g --test-xml ./unit-tests --log-path ./artifacts --failure-report ./artifacts --coverage-report $ARTIFACTS_FOLDER/coverage_report --check-dependent-api-module --docker-image ${DOCKER}
           fi
         fi
       
