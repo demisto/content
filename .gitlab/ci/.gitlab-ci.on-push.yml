@@ -227,6 +227,7 @@ xpanse-prepare-testing-bucket:
     - gke
   extends:
     - .default-job-settings
+    - .default-after-script
     - .push-rule
   variables:
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
@@ -297,7 +298,6 @@ xpanse-prepare-testing-bucket:
     - job-done
     - exit $EXIT_CODE
   after_script:
-    - source .gitlab/helper_functions.sh
     - section_start "Destroy Instances"
     - python3 ./Tests/scripts/destroy_instances.py --artifacts-dir $ARTIFACTS_FOLDER --env-file $ARTIFACTS_FOLDER/env_results.json --instance-role "$INSTANCE_ROLE"
     - if [ $? -ne 0 ]; then
@@ -394,6 +394,7 @@ slack-notify-nightly-build:
     - us-west1
   extends:
     - .default-job-settings
+    - .default-after-script
     - .push-rule
   variables:
     EXTRACT_PRIVATE_TESTDATA: "true"

@@ -15,6 +15,7 @@ build-machines-cleanup:
   extends:
     - .build-machines-cleanup-rule
     - .default-job-settings
+    - .default-after-script
   script:
     - EXIT_CODE=0
     - !reference [.download-demisto-conf]
@@ -24,7 +25,6 @@ build-machines-cleanup:
     - job-done
     - exit "${EXIT_CODE}"
   after_script:
-    - source .gitlab/helper_functions.sh
     - !reference [.unlock-machine]
   variables:
     CLOUD_MACHINES_TYPE: "nightly"
