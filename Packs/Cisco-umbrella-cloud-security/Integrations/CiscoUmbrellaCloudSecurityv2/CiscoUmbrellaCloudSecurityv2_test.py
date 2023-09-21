@@ -83,10 +83,6 @@ def test_list_destinations_command(requests_mock, mock_client):
             f'{args["destination_list_id"]}/destinations?page={i}&limit={4}',
         )
         requests_mock.get(url=url, json=response)
-    # response = load_mock_response('destinations1.json')
-    # url = CommonServerPython.urljoin(DESTINATION_ENDPOINT, f'{args["destination_list_id"]}/destinations')
-
-    # requests_mock.get(url=url, json=response)
 
     command_results: CommonServerPython.CommandResults = CiscoUmbrellaCloudSecurityv2.list_destinations_command(
         mock_client, args
