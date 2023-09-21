@@ -277,7 +277,8 @@ class PrismaCloudComputeClient(BaseClient):
                     raise
                 if de.res.status_code == 429:
                     # The API rate limit of 30 requests per minute was exceeded for this endpoint
-                    demisto.info(f"Rate limit exceeded, waiting 60 seconds before continuing.\nCurrent count: {current_count}, total count: {total_count}.")
+                    demisto.info(f"Rate limit exceeded, waiting 60 seconds before continuing.\n"
+                                 f"Current count: {current_count}, total count: {total_count}.")
                     time.sleep(60)
 
         return response
@@ -302,6 +303,7 @@ class PrismaCloudComputeClient(BaseClient):
         Sends a request to get information about hosts scans.
 
         Args:
+            all_results (bool): whether to return all results or just the first page.
             params (dict): query parameters.
 
         Returns:
@@ -2223,7 +2225,7 @@ def get_trusted_images(client: PrismaCloudComputeClient) -> CommandResults:
                     headers=["Rule Name", "Effect", "Owner", "Allowed Groups", "Modified"],
                     removeNull=True,
                 ) + \
-            tableToMarkdown(
+                tableToMarkdown(
                     name="Trust Groups Information",
                     t=[
                         {
@@ -2235,7 +2237,7 @@ def get_trusted_images(client: PrismaCloudComputeClient) -> CommandResults:
                     ],
                     headers=["ID", "Group Name", "Owner", "Modified"],
                     removeNull=True,
-                    )
+                )
     else:
         table = "No results found."
 
@@ -2264,7 +2266,7 @@ def update_trusted_images(client: PrismaCloudComputeClient, args: dict) -> Comma
 
     client.update_trusted_images(data=images_list_json)
     return CommandResults(
-        readable_output="Trusted repository, image, and registry updated successfully.",
+        readable_output="Updated successfully the trusted repository, image, and registry.",
     )
 
 
@@ -2283,14 +2285,14 @@ def get_container_scan_results(client: PrismaCloudComputeClient, args: dict) -> 
     limit, offset = parse_limit_and_offset_values(
         limit=args.get("limit", "50"), offset=args.get("offset", "0")
     )
-    collections, account_ids, clusters, namespaces, resource_ids, region, container_ids, profile_id, image_name, image_id, hostname, \
-        compliance_ids, agentless, search = (
-            argToList(args.get("collections")), argToList(args.get("account_ids")), argToList(args.get("clusters")),
-            argToList(args.get("namespaces")), argToList(args.get("resource_ids")), argToList(args.get("region")),
-            argToList(args.get("container_ids")), argToList(args.get("profile_id")), argToList(args.get("image_name")),
-            argToList(args.get("image_id")), argToList(args.get("hostname")), argToList(args.get("compliance_ids")),
-            args.get("agentless"), args.get("search")
-        )
+    collections, account_ids, clusters, namespaces, resource_ids, region, container_ids, profile_id, image_name, image_id, \
+    hostname, compliance_ids, agentless, search = (
+        argToList(args.get("collections")), argToList(args.get("account_ids")), argToList(args.get("clusters")),
+        argToList(args.get("namespaces")), argToList(args.get("resource_ids")), argToList(args.get("region")),
+        argToList(args.get("container_ids")), argToList(args.get("profile_id")), argToList(args.get("image_name")),
+        argToList(args.get("image_id")), argToList(args.get("hostname")), argToList(args.get("compliance_ids")),
+        args.get("agentless"), args.get("search")
+    )
     params = assign_params(
         offset=offset, limit=limit, collections=collections, accountIDs=account_ids, clusters=clusters, namespaces=namespaces,
         resourceIDs=resource_ids, region=region, id=container_ids, profileId=profile_id, image=image_name, imageId=image_id,
@@ -2395,14 +2397,14 @@ def get_runtime_container_audit_events(client: PrismaCloudComputeClient, args: d
         limit=args.get("limit", "50"), offset=args.get("offset", "0")
     )
     collections, account_ids, clusters, namespaces, resource_ids, region, audit_id, profile_id, image_name, container, \
-        container_id, type, effect, user, os, app, hostname, search = (
-            argToList(args.get("collections")), argToList(args.get("account_ids")), argToList(args.get("clusters")),
-            argToList(args.get("namespaces")), argToList(args.get("resource_ids")), argToList(args.get("region")),
-            argToList(args.get("audit_id")), argToList(args.get("profile_id")), argToList(args.get("image_name")),
-            argToList(args.get("container")), argToList(args.get("container_id")), argToList(args.get("type")),
-            argToList(args.get("effect")), argToList(args.get("user")), argToList(args.get("os")), argToList(args.get("app")),
-            argToList(args.get("hostname")), args.get("search")
-        )
+    container_id, type, effect, user, os, app, hostname, search = (
+        argToList(args.get("collections")), argToList(args.get("account_ids")), argToList(args.get("clusters")),
+        argToList(args.get("namespaces")), argToList(args.get("resource_ids")), argToList(args.get("region")),
+        argToList(args.get("audit_id")), argToList(args.get("profile_id")), argToList(args.get("image_name")),
+        argToList(args.get("container")), argToList(args.get("container_id")), argToList(args.get("type")),
+        argToList(args.get("effect")), argToList(args.get("user")), argToList(args.get("os")), argToList(args.get("app")),
+        argToList(args.get("hostname")), args.get("search")
+    )
     params = assign_params(
         offset=offset, limit=limit, collections=collections, accountIDs=account_ids, clusters=clusters, namespaces=namespaces,
         resourceIDs=resource_ids, region=region, id=audit_id, profileID=profile_id, imageName=image_name,
