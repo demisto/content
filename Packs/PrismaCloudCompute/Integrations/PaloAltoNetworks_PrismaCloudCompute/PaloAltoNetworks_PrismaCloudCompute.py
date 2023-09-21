@@ -419,6 +419,32 @@ class PrismaCloudComputeClient(BaseClient):
         headers = self._headers
         return self._http_request('get', 'logs/defender/download', params=params, headers=headers, resp_type="content")
 
+    def get_file_integrity_events(self, limit, sort, hostname=None, event_id=None, from_date=None,
+                                  to_date=None, search_term=None):
+        """
+        Get runtime file integrity audit events
+
+        Args:
+            hostname (str): The hostname for which to get runtime file integrity events
+
+        Returns:
+            HTTP response
+        """
+        endpoint = "audits/runtime/file-integrity"
+
+        headers = self._headers
+        params = {
+            "hostname": hostname,
+            "id": event_id,
+            "limit": limit,
+            "from": from_date,
+            "to": to_date,
+            "search": search_term,
+            "sort": "time",
+            "reverse": sort == "desc"
+        }
+        return self._http_request('get', endpoint, params=params, headers=headers)
+
 
 def format_context(context):
     """
@@ -1967,6 +1993,42 @@ def get_logs_defender_download_command(client: PrismaCloudComputeClient, args: d
     return fileResult(f"{hostname}-logs.tar.gz", response, entryTypes["entryInfoFile"])
 
 
+def get_file_integrity_events_command(client: PrismaCloudComputeClient, args: dict):
+    """
+    Get runtime file integrity audit events for the given hostname
+
+    Args:
+        client (PrismaCloudComputeClient): prisma-cloud-compute client.
+        args (dict): prisma-cloud-compute-get-file-integrity-events command arguments
+
+    Returns:
+        HTTP Response object
+    """
+    hostname = args.get('hostname')
+    event_id = args.get('event_id')
+    limit = args.get('limit')
+    from_date = args.get('from_date')
+    to_date = args.get('to_date')
+    search_term = args.get('search_term')
+    sort = args.get('sort')
+
+    response = client.get_file_integrity_events(
+        limit, sort, hostname=hostname, event_id=event_id,
+        from_date=from_date, to_date=to_date, search_term=search_term
+    )
+    if not response:
+        readable_output = "No results for the given search."
+    else:
+        readable_output = None
+    return CommandResults(
+        outputs_prefix='PrismaCloudCompute.FileIntegrity',
+        outputs_key_field='_id',
+        outputs=format_context(response),
+        raw_response=response,
+        readable_output=readable_output
+    )
+
+
 def unstuck_fetch_stream_command():
     """
     Adds a field to ensure that is_command_is_fetch will recognize the next fetch incidents run as fetch.
@@ -2100,6 +2162,8 @@ def main():
             return_results(results=get_logs_defender_download_command(client=client, args=demisto.args()))
         elif requested_command == "prisma-cloud-compute-unstuck-fetch-stream":
             return_results(unstuck_fetch_stream_command())
+        elif requested_command == "prisma-cloud-compute-get-file-integrity-events":
+            return_results(results=get_file_integrity_events_command(client=client, args=demisto.args()))
     # Log exceptions
     except Exception as e:
         return_error(f'Failed to execute {requested_command} command. Error: {str(e)}')

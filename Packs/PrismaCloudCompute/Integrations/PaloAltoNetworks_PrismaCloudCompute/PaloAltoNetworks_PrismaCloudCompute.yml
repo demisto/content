@@ -74,7 +74,7 @@ description: Use the Prisma Cloud Compute integration to fetch incidents from yo
 display: Palo Alto Networks - Prisma Cloud Compute
 name: PaloAltoNetworks_PrismaCloudCompute
 script:
-  dockerimage: demisto/python3:3.10.13.73190
+  dockerimage: demisto/python3:3.10.13.74666
   isfetch: true
   runonce: false
   script: "-"
@@ -1960,6 +1960,71 @@ script:
     - contextPath: PrismaCloudCompute.Backups.Time
       description: The time of the backup.
       type: Date
+  - description: Get runtime file integrity audit events.
+    name: prisma-cloud-compute-get-file-integrity-events
+    arguments:
+    - name: hostname
+      description: Hostname for which to get runtime file integrity audit events. Either event_id or hostname is required.
+    - name: event_id
+      description: Event ID of runtime file integrity audit event for which to get details. Either event_id or hostname is required.
+    - name: limit
+      description: Limit on number of events to return. Only relevant if filtering by hostname.
+      defaultValue: "10"
+    - description: 'Minimum timestamp for event search. Format: YYYY-mm-ddTHH:MM:SSZ.'
+      name: from_date
+    - description: 'Maximum timestamp for event search. Format: YYYY-mm-ddTHH:MM:SSZ.'
+      name: to_date
+    - description: Search term to search events for.
+      name: search_term
+    - auto: PREDEFINED
+      defaultValue: desc
+      description: Whether to sort by ascending or descending time.
+      name: sort
+      predefined:
+      - asc
+      - desc
+    outputs:
+    - contextPath: PrismaCloudCompute.FileIntegrity.Path
+      description: The absolute path of the event.
+      type: string
+    - contextPath: PrismaCloudCompute.FileIntegrity.RuleName
+      description: The name of the applied rule for auditing file integrity rules.
+      type: string
+    - contextPath: PrismaCloudCompute.FileIntegrity.AccountID
+      description: The cloud account ID.
+      type: string
+    - contextPath: PrismaCloudCompute.FileIntegrity.User
+      description: The user that initiated the event.
+      type: string
+    - contextPath: PrismaCloudCompute.FileIntegrity.Time
+      description: The time of the event.
+      type: date
+    - contextPath: PrismaCloudCompute.FileIntegrity.Hostname
+      description: The hostname on which the event was found.
+      type: string
+    - contextPath: PrismaCloudCompute.FileIntegrity.EventType
+      description: 'Represents the type of the file integrity event. Possible values: [metadata,read,write].'
+      type: string
+    - contextPath: PrismaCloudCompute.FileIntegrity.Collections
+      description: Collections to which this event applies.
+    - contextPath: PrismaCloudCompute.FileIntegrity.Fqdn
+      description: The current fully qualified domain name used in audit alerts.
+      type: string
+    - contextPath: PrismaCloudCompute.FileIntegrity.FileType
+      description: Represents the file type.
+      type: number
+    - contextPath: PrismaCloudCompute.FileIntegrity.ProcessName
+      description: The name of the process that initiated the event.
+      type: string
+    - contextPath: PrismaCloudCompute.FileIntegrity.Cluster
+      description: The cluster on which the event was found.
+      type: string
+    - contextPath: PrismaCloudCompute.FileIntegrity._Id
+      description: The activity's unique identifier.
+      type: string
+    - contextPath: PrismaCloudCompute.FileIntegrity.Description
+      description: A human readable description of the action performed on the path.
+      type: string
   - description: Use this command to unstuck the fetch stream in case it's getting duplicated incidents.
     name: prisma-cloud-compute-unstuck-fetch-stream
 tests:
