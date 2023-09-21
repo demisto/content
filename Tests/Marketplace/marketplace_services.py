@@ -30,7 +30,7 @@ from Tests.Marketplace.marketplace_constants import PackFolders, Metadata, GCPCo
     PackTags, PackIgnored, Changelog, BASE_PACK_DEPENDENCY_DICT, SIEM_RULES_OBJECTS, PackStatus, PACK_FOLDERS_TO_ID_SET_KEYS, \
     CONTENT_ROOT_PATH, XSOAR_MP, XSIAM_MP, XPANSE_MP, TAGS_BY_MP, CONTENT_ITEM_NAME_MAPPING, \
     ITEMS_NAMES_TO_DISPLAY_MAPPING, RN_HEADER_TO_ID_SET_KEYS
-from Utils.release_notes_handler import aggregate_release_notes_for_marketplace, merge_version_blocks, construct_entities_block
+from Utils.release_notes_generator import aggregate_release_notes_for_marketplace, merge_version_blocks, construct_entities_block
 from Tests.scripts.utils import logging_wrapper as logging
 
 PULL_REQUEST_PATTERN = '\(#(\d+)\)'
