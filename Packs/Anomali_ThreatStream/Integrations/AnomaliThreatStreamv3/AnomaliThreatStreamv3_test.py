@@ -1790,10 +1790,10 @@ def test_create_indicators_list(names_and_indicators_list, notes, expected_resul
     [
         (
             {"indicator_ids": "123,456", "tags": "tag1,tag2"},
-            {
+            json.dumps({
                 "ids": ["123", "456"],
                 "tags": [{"name": "tag1", "tlp": "red"}, {"name": "tag2", "tlp": "red"}],
-            },
+            }),
             "The tags have been successfully added for the following ids:\n `123, 456`",
         )
     ],
