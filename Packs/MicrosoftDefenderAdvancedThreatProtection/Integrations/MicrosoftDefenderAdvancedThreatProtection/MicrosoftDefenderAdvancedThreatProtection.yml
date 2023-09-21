@@ -2976,8 +2976,7 @@ script:
       name: network_destination_cidr_block
     - description: The IPv4 IP address destination.
       name: network_destination_ipv4
-    - description: |
-        The IPv6 IP address destination.
+    - description: The IPv6 IP address destination.
       name: network_destination_ipv6
     - description: The TCP port destination.
       name: network_destination_port
@@ -3692,6 +3691,23 @@ script:
     - defaultValue: '50'
       description: The maximum number of indicators to return.
       name: limit
+    - description: The number of indicators that are to be skipped and not included in the result.
+      name: skip
+    - description: The value of the indicator to get.
+      name: indicator_value
+    - description: The title of the indicator to get.
+      name: indicator_title
+    - auto: PREDEFINED
+      description: The type of the indicator to get.
+      name: indicator_type
+      predefined:
+      - FileSha1
+      - FileSha256
+      - FileMd5
+      - IpAddress
+      - DomainName
+      - Url
+      - CertificateThumbprint
     - deprecated: true
       description: Flag for the rate limit retry.
       name: ran_once_flag
@@ -4890,7 +4906,7 @@ script:
       type: String
     polling: true
   - arguments:
-    - description: When you select a “query_purpose” argument, a designated query template is used. "scheduled_job" - Did the process create any scheduled jobs? "registry_entry" - Did it write to the registry? Requires also the process_cmd argument to be provided. "startup_folder_changes" - Was anything added to the startup folder? "new_service_created" - Was a new service created? "service_updated" - Was an existing service edited? "file_replaced" - Was a file replaced in program files? "new_user" - Was a new user created (on the local machine)? "new_group" - Was a new group created? "group_user_change" - Was a user added to a group (on the local machine)? "local_firewall_change" - Was there a change to the local FW rules? "host_file_change" - Was there a change to the hosts file?.
+    - description: When you select a “query_purpose” argument, a designated query template is used. "scheduled_job" - Did the process create any scheduled jobs? "registry_entry" - Did it write to the registry? Requires also the process_cmd argument to be provided. "startup_folder_changes" - Was anything added to the startup folder? "new_service_created" - Was a new service created? "service_updated" - Was an existing service edited? "file_replaced" - Was a file replaced in program files? "new_user" - Was a new user created (on the local machine)? "new_group" - Was a new group created? "group_user_change" - Was a user added to a group (on the local machine)? "local_firewall_change" - Was there a change to the local FW rules? "host_file_change" - Whether there was a change to the hosts file or not.
       name: query_purpose
       required: true
       auto: PREDEFINED
@@ -5039,7 +5055,7 @@ script:
       type: String
     polling: true
   - arguments:
-    - description: When you select a “query_purpose” argument, a designated query template is used. "parent_process" - Parent process. "grandparent_process" - Grandparent process. "process_details" - Process hash, path, signature details. "beaconing_evidence" - Does the process appear to be beaconing? "powershell_execution_unsigned_files" - Has the file executed PowerShell? Query without specifying processes. No additional arguments are required. "process_excecution_powershell" - Has the file executed PowerShell?.
+    - description: When you select a “query_purpose” argument, a designated query template is used. "parent_process" - Parent process. "grandparent_process" - Grandparent process. "process_details" - Process hash, path, signature details. "beaconing_evidence" - Does the process appear to be beaconing? "powershell_execution_unsigned_files" - Has the file executed PowerShell? Query without specifying processes. No additional arguments are required. "process_excecution_powershell" - Whether there the file executed PowerShell or not.
       name: query_purpose
       required: true
       auto: PREDEFINED
@@ -5509,7 +5525,7 @@ script:
     execution: false
     name: microsoft-atp-auth-reset
     arguments: []
-  dockerimage: demisto/crypto:1.0.0.74979
+  dockerimage: demisto/crypto:1.0.0.74660
   isfetch: true
   runonce: false
   script: '-'
