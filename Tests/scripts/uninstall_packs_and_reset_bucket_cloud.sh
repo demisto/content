@@ -39,6 +39,6 @@ else
     --non-removable-packs "${NON_REMOVABLE_PACKS}" --one-by-one --build-number "${CI_PIPELINE_ID}"
   exit_on_error $? "Failed to uninstall packs from cloud machines:${CLOUD_CHOSEN_MACHINE_IDS}"
 
-  echo "Finished successfully to uninstall packs from cloud machines"
+  echo "Successfully finished uninstalling packs from cloud machines"
   exit 0
 fi
