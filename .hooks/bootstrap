@@ -51,7 +51,7 @@ else
 fi
 
 echo "======================="
-if [ -z "${POETRY_VERSION}" ]; then
+if [ -z "${INSTALL_POETRY}" ]; then
     if ! command -v poetry >/dev/null 2>&1; then
         echo "ERROR: poetry is missing. Please run the following command to install poetry:
                curl -sSL https://install.python-poetry.org | python3 -" 1>&2
