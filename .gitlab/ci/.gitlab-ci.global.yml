@@ -236,6 +236,7 @@
 
 .unlock-machine:
   - section_start "Unlock Machine" --collapsed
+  - source CloudEnvVariables
   - |
     if [[ -n "${CLOUD_CHOSEN_MACHINE_IDS}" ]]; then
       if [[ -e "$ARTIFACTS_FOLDER/logs/lock_file.txt" ]]; then
