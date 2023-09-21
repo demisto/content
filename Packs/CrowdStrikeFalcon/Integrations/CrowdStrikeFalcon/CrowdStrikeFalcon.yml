@@ -4587,10 +4587,10 @@ script:
       description: The CIS benchmark shortname.
       type: String
     - contextPath: CrowdStrike.CSPMPolicySetting.cis_benchmark.recommendation_number
-      description: The CIS benchmark recommendation number
+      description: The CIS benchmark recommendation number.
       type: String
     - contextPath: CrowdStrike.CSPMPolicySetting.pci_benchmark
-      description: An array of PCI benchmark details
+      description: An array of PCI benchmark details.
       type: Array
     - contextPath: CrowdStrike.CSPMPolicySetting.pci_benchmark.id
       description: The PCI benchmark id.
@@ -4685,7 +4685,7 @@ script:
       auto: PREDEFINED
     description: Perform actions on alerts.
     name: cs-falcon-resolve-identity-detection
-  dockerimage: demisto/py3-tools:1.0.0.74403
+  dockerimage: demisto/py3-tools:1.0.0.74702
   isfetch: true
   ismappable: true
   isremotesyncin: true

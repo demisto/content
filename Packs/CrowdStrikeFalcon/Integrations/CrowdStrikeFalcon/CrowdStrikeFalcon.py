@@ -2877,7 +2877,8 @@ def ioa_event_to_incident(ioa_event: dict[str, Any]) -> dict[str, Any]:
 def ioa_events_pagination(ioa_fetch_query: str, api_limit: int, ioa_next_token: str | None,
                           fetch_limit: int = INCIDENTS_PER_FETCH) -> tuple[list[dict[str, Any]], str | None]:
     """This is in charge of doing the pagination process in a single fetch run, since the fetch limit can be greater than
-    the api limit, in such a case, we do multiple API calls until we reach the fetch limit, or no more results are found by the API.
+    the api limit, in such a case, we do multiple API calls until we reach the fetch limit, or no more results are found
+    by the API.
 
     Args:
         ioa_fetch_query (str): The IOA fetch query.
@@ -2886,8 +2887,8 @@ def ioa_events_pagination(ioa_fetch_query: str, api_limit: int, ioa_next_token: 
         fetch_limit (int, optional): The fetch limit. Defaults to INCIDENTS_PER_FETCH.
 
     Returns:
-        tuple[list[dict[str, Any]], str | None]: A tuple where the first element is the fetched events, and the second is the next token that
-        will be used in the next fetch run.
+        tuple[list[dict[str, Any]], str | None]: A tuple where the first element is the fetched events, and the second is the next
+        token that will be used in the next fetch run.
     """
     total_incidents_count = 0
     ioa_new_next_token = ioa_next_token
@@ -3061,8 +3062,8 @@ def get_iom_ids_for_fetch(filter: str, iom_next_token: str | None = None,
         limit (int, optional): The maximum amount to fetch IOA events. Defaults to INCIDENTS_PER_FETCH.
 
     Returns:
-        tuple[list[dict[str, Any]], str | None]: A tuple where the first element is the returned events, and the second is the next token that
-        will be used in the next API call.
+        tuple[list[dict[str, Any]], str | None]: A tuple where the first element is the returned events, and the second is the
+        next token that will be used in the next API call.
     """
     query_params = assign_params(
         filter=filter,
