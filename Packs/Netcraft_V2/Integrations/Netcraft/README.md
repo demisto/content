@@ -150,67 +150,32 @@ Netcraft has a limit of 1,000,000 objects returned within a 24 hour period (movi
 | Netcraft.Takedown.customer_label | String | A custom field which may be provided along with the takedown report. | 
 | Netcraft.Takedown.date_authed | Date | The date and time that the takedown was authorised, in UTC. | 
 | Netcraft.Takedown.stop_monitoring_date | Date | The date and time that the takedown system stopped monitoring the attack, in UTC. If the attack is still being monitored, an empty string is given. | 
-| Netcraft.Takedown.domain | String | The domain of the url or email address being taken down.
-This will be blank for an attack with no domain name.
- | 
+| Netcraft.Takedown.domain | String | The domain of the url or email address being taken down. This will be blank for an attack with no domain name. | 
 | Netcraft.Takedown.language | String | The language used in the attack \(if it can be determined\). | 
-| Netcraft.Takedown.date_first_actioned | Date | The date and time of the first action taken by netcraft
-after the takedown was reported, in UTC. This is calculated as the first time
-that the takedown was moved out of the "unverified" status.
- | 
+| Netcraft.Takedown.date_first_actioned | Date | The date and time of the first action taken by Netcraft after the takedown was reported, in UTC. This is calculated as the first time that the takedown was moved out of the "unverified" status. | 
 | Netcraft.Takedown.escalated | Boolean | Indicates whether the takedown has been escalated. | 
 | Netcraft.Takedown.first_contact | Date | The date and time that the takedown first entered a contacted state, in UTC. | 
 | Netcraft.Takedown.first_inactive | Date | The date and time that the takedown first entered the inactive \(monitoring\) state. | 
-| Netcraft.Takedown.is_redirect | String | Whether or not the attack redirects to another location.
-Possible values:
-  "final" - the attack is the final destination of another redirect.
-  "redirect" - the attack redirects to another location.
-  "no_redirect" - the attack does not redirect.
- | 
+| Netcraft.Takedown.is_redirect | String | Whether or not the attack redirects to another location. Possible values: "final" - the attack is the final destination of another redirect. "redirect" - the attack redirects to another location. "no_redirect" - the attack does not redirect. | 
 | Netcraft.Takedown.attack_type | String | The type of attack being taken down. | 
-| Netcraft.Takedown.certificate | Unknown | HTTPS certificate details for the hostname.
-The structure of the returned data is the output of PHP's "openssl_x509_parse" function with the additional keys spki_sha256 and spki_sha1, \(See https://www.php.net/manual/en/function.openssl-x509-parse.php\).
- | 
+| Netcraft.Takedown.certificate | Unknown | HTTPS certificate details for the hostname. The structure of the returned data is the output of PHP's "openssl_x509_parse" function with the additional keys spki_sha256 and spki_sha1, \(See https://www.php.net/manual/en/function.openssl-x509-parse.php\). |   
 | Netcraft.Takedown.certificate.spki_sha256 | Unknown | The SHA-256 hash of the Subject Public Key Info structure in the certificate. | 
 | Netcraft.Takedown.certificate.spki_sha1 | Unknown | The SHA-1 hash of the Subject Public Key Info structure in the certificate. | 
-| Netcraft.Takedown.deceptive_domain_score | String | The deceptive domain score of the domain.
-e.g. for the URL https://l0gin.example.com/, this value will contain the deceptive domain score for example.com.
- | 
-| Netcraft.Takedown.domain_risk_rating | String | A score from 0 to 10 which represents the risk that the domain is hosting a malicious website.
-e.g. for the url https://l0gin.example.com/, this value wil contain the risk rating for "example.com".
-This score is distinct from the "deceptive domain score", and takes a range of factors into account,
-such as the reputation of the hosting provider, age of the domain name, search engine rankings and more.
- | 
+| Netcraft.Takedown.deceptive_domain_score | String | The deceptive domain score of the domain. e.g. for the URL https://l0gin.example.com/, this value will contain the deceptive domain score for example.com. | 
+| Netcraft.Takedown.domain_risk_rating | String | A score from 0 to 10 which represents the risk that the domain is hosting a malicious website. e.g. for the url https://l0gin.example.com/, this value wil contain the risk rating for "example.com". This score is distinct from the "deceptive domain score", and takes a range of factors into account, such as the reputation of the hosting provider, age of the domain name, search engine rankings and more. | 
 | Netcraft.Takedown.final_outage | String | The duration \(hh:mm:ss\) between when the takedown was
-authorised, and the final time that the attack went offline \(final_resolved - date_authed\).
- | 
+authorised, and the final time that the attack went offline \(final_resolved - date_authed\). | 
 | Netcraft.Takedown.final_resolved | Date | The date and time that the attack went offline for the final time, in UTC. | 
 | Netcraft.Takedown.first_outage | Date | The duration \(hh:mm:ss\) between when the takedown was authorised, and the first time that the attack went offline \(first_resolved - date_authed\). | 
 | Netcraft.Takedown.first_resolved | Date | The date and time that the attack first went offline, in UTC. | 
 | Netcraft.Takedown.fwd_owner | String | The owner of the forward DNS infrastructure. | 
 | Netcraft.Takedown.has_phishing_kit | Boolean | Indicates whether the takedown has an associated phishing kit. | 
 | Netcraft.Takedown.hostname | String | The full hostname of the URL or email address being taken down. this will be blank for attacks with no hostname. | 
-| Netcraft.Takedown.hostname_ddss_score | String | The deceptive domain score of the hostname.
-e.g. for the URL https://l0gin.example.com/, this value will contain the deceptive domain score for l0gin.example.com.
- | 
+| Netcraft.Takedown.hostname_ddss_score | String | The deceptive domain score of the hostname. e.g. for the URL https://l0gin.example.com/, this value will contain the deceptive domain score for l0gin.example.com.  | 
 | Netcraft.Takedown.evidence_url | String | A url to the public incident report for this attack. | 
-| Netcraft.Takedown.domain_attack | String | Whether or not the domain name used in the attack is believed to be fraudulent.
-Possible values \(non exhaustive\):
-  "all" - All attacks.
-  "yes" - There is a high confidence that the domain name is fraudulent.
-          the domain registrar will be contacted, and the webmaster will not be contacted.
-  "yes_low_confidence" - The domain is likely fraudulent. The domain registrar
-                        will be contacted, and the webmaster will still be contacted.
-  "no" - The domain name is not believed to be fraudulent, this is likely compromised site.
- | 
+| Netcraft.Takedown.domain_attack | String | Whether or not the domain name used in the attack is believed to be fraudulent. Possible values \(non exhaustive\): "all" - All attacks. "yes" - There is a high confidence that the domain name is fraudulent. the domain registrar will be contacted, and the webmaster will not be contacted. "yes_low_confidence" - The domain is likely fraudulent. The domain registrar will be contacted, and the webmaster will still be contacted. "no" - The domain name is not believed to be fraudulent, this is likely compromised site. | 
 | Netcraft.Takedown.false_positive | Boolean | Indicates whether the reported content was incorrectly flagged as malicious. | 
-| Netcraft.Takedown.hostname_attack | String | Whether or not the hostname used in the attack is believed to be fraudulent.
-Possible values \(non exhaustive\):
-  "all" - All attacks.
-  "yes" - There is a high confidence that the hostname is fraudulent. the certificate authority will be contacted.
-  "yes_low_confidence" - The hostname is likely fraudulent.
-  "no" - The hostname is not believed to be fraudulent, this is likely compromised site.
- | 
+| Netcraft.Takedown.hostname_attack | String | Whether or not the hostname used in the attack is believed to be fraudulent. Possible values \(non exhaustive\): "all" - All attacks. "yes" - There is a high confidence that the hostname is fraudulent. the certificate authority will be contacted. "yes_low_confidence" - The hostname is likely fraudulent. "no" - The hostname is not believed to be fraudulent, this is likely compromised site. | 
 | Netcraft.Takedown.malware_category | String | The category of malware detected. Only set for malware attack types. May be empty if category cannot be determined. | 
 | Netcraft.Takedown.malware_family | String | The family of malware detected. only set for malware attack types. may be empty if family cannot be determined. | 
 | Netcraft.Takedown.phishing_kit_hash | Unknown | The sha1 hashes of all phishing kits available for download which are related to this takedown. | 
@@ -219,43 +184,18 @@ Possible values \(non exhaustive\):
 | Netcraft.Takedown.rev_owner | String | The owner of the reverse DNS infrastructure. | 
 | Netcraft.Takedown.reverse_dns | String | The output of a reverse DNS lookup on the IP of the attack. | 
 | Netcraft.Takedown.certificate_revoked | String | If the SSL certificate has been revoked, then the date this was detected \(in UTC\) is returned, else "Not revoked" is returned. | 
-| Netcraft.Takedown.screenshot_url | String | The URL\(s\) at which a screenshot of the attack can be found.
-When returning a single URL as a string \(the default behaviour\) the returned URL will be the best guess of the screenshot which displays the live attack.
-When returning multiple URLs, the list will be sorted by the time the screenshot was requested, with the earliest first.
- | 
-| Netcraft.Takedown.status_change_uptime | String | The total duration \(hh:mm:ss\) that the attack was available for after authorisation, as determined by the takedown status changes.
-i.e. the total amount of time since authorisation that an attack was not in the resolved or resolved \(monitoring\)  state.'. | 
-| Netcraft.Takedown.status | String | The status of the takedown.
-Possible values:
-  "Unverified" - The report has not yet been verified as fraudulent by Netcraft.
-  "Inactive \(Monitoring\)" - The attack went offline before Netcraft was authorised to start the takedown process, and is being monitored in case it returns.
-  "Verified" - The report has been verified as fraudulent, but no takedown notices have been sent.
-  "Contacted Hosting" - Takedown notices have been sent to the hosting provider
-  "Contacted Police" - The takedown has been escalated to local law enforcement.
-  "Contacted Upstream" - The takedown has been escalated to the organisation providing connectivity to the hosting provider.
-  "Monitoring" - The attack is offline, as is being monitored in case it returns.
-  "Resolved" - The attack has been offline for 7 consecutive days, and is no longer being monitored.
-  "Stale" - The attack went offline before Netcraft was authorised to start the takedown process, and is no longer being monitored.
-  "Invalid" - The report is not a valid takedown target.
- | 
+| Netcraft.Takedown.screenshot_url | String | The URL\(s\) at which a screenshot of the attack can be found. When returning a single URL as a string \(the default behaviour\) the returned URL will be the best guess of the screenshot which displays the live attack. When returning multiple URLs, the list will be sorted by the time the screenshot was requested, with the earliest first. | 
+| Netcraft.Takedown.status_change_uptime | String | The total duration \(hh:mm:ss\) that the attack was available for after authorisation, as determined by the takedown status changes. i.e. the total amount of time since authorisation that an attack was not in the resolved or resolved \(monitoring\)  state.'. | 
+| Netcraft.Takedown.status | String | The status of the takedown. Possible values:   "Unverified" - The report has not yet been verified as fraudulent by Netcraft.   "Inactive \(Monitoring\)" - The attack went offline before Netcraft was authorised to start the takedown process, and is being monitored in case it returns.   "Verified" - The report has been verified as fraudulent, but no takedown notices have been sent. "Contacted Hosting" - Takedown notices have been sent to the hosting provider. "Contacted Police" - The takedown has been escalated to local law enforcement.   "Contacted Upstream" - The takedown has been escalated to the organisation providing connectivity to the hosting provider.   "Monitoring" - The attack is offline, as is being monitored in case it returns.   "Resolved" - The attack has been offline for 7 consecutive days, and is no longer being monitored.   "Stale" - The attack went offline before Netcraft was authorised to start the takedown process, and is no longer being monitored.   "Invalid" - The report is not a valid takedown target.  | 
 | Netcraft.Takedown.tags | String | List of tags applied to the group. | 
 | Netcraft.Takedown.targeted_url | String | The URL which this attack is masquerading as, e.g. the URL of the legitimate login form that a phishing attack is targeting. | 
-| Netcraft.Takedown.site_risk_rating | String | A score from 0 to 10 which represents the risk that the hostname is hosting a malicious website.
-e.g. for the URL https://l0gin.example.com/, this value will contain the risk rating for l0gin.example.com.
- | 
+| Netcraft.Takedown.site_risk_rating | String | A score from 0 to 10 which represents the risk that the hostname is hosting a malicious website. e.g. for the URL https://l0gin.example.com/, this value will contain the risk rating for l0gin.example.com.  | 
 | Netcraft.Takedown.whois_server | String | The WHOIS data for the takedown. | 
-| Netcraft.Takedown.authorisation_source | String | The source of authorisation for the takedown. will be blank if the takedown has not bee authorised.  customer
-Possible values: "customer" "netcraft". | 
-| Netcraft.Takedown.escalation_source | String | The source of escalation for the takedown. will be blank if the takedown has not been escalated.
-Possible values: "customer" "netcraft". | 
-| Netcraft.Takedown.restart_date | String | The latest date and time, in UTC, that the takedown was restarted, i.e. went from the "resolved \(monitoring\)" status to a contacted status.
-Will be empty if the takedown ha never been restarted.'. | 
-| Netcraft.Takedown.gsb_block_status | Unknown | An array of objects containing the Google Safe Browsing block status on all platforms \(iOS, Android and Desktop\).
-Will be an empty array if the takedown is not a Phishing URL takedown, or if Netcraft hasn't tested the GSB block status for the takedown.
- | 
-| Netcraft.Takedown.gsb_first_blocked | Unknown | An array of objects containing the first time that the URL was seen blocked in Google Safe Browsing \(GSB\) by Netcraft.
-Will be an empty array if the URL was not seen blocked by GSB on any platform.
- | 
+| Netcraft.Takedown.authorisation_source | String | The source of authorisation for the takedown. will be blank if the takedown has not bee authorised.  customer Possible values: "customer" "netcraft". | 
+| Netcraft.Takedown.escalation_source | String | The source of escalation for the takedown. will be blank if the takedown has not been escalated. Possible values: "customer" "netcraft". | 
+| Netcraft.Takedown.restart_date | String | The latest date and time, in UTC, that the takedown was restarted, i.e. went from the "resolved \(monitoring\)" status to a contacted status. Will be empty if the takedown ha never been restarted.'. | 
+| Netcraft.Takedown.gsb_block_status | Unknown | An array of objects containing the Google Safe Browsing block status on all platforms \(iOS, Android and Desktop\). Will be an empty array if the takedown is not a Phishing URL takedown, or if Netcraft hasn't tested the GSB block status for the takedown.  | 
+| Netcraft.Takedown.gsb_first_blocked | Unknown | An array of objects containing the first time that the URL was seen blocked in Google Safe Browsing \(GSB\) by Netcraft. Will be an empty array if the URL was not seen blocked by GSB on any platform.  | 
 | Netcraft.Takedown.managed | Boolean | Indicates whether the takedown is being performed under the managed service. | 
 | Netcraft.Takedown.date_escalated | Date | The date and time that the takedown entered the managed state, in UTC. | 
 | Netcraft.Takedown.logged_credential_injections | String | An array of objects containing the type and value of each marked account injection associated with the takedown. | 
