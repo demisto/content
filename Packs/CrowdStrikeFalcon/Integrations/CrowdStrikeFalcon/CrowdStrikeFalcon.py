@@ -1,4 +1,3 @@
-from more_itertools import last
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *
 
