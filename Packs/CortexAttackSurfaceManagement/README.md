@@ -161,13 +161,13 @@ A playbook that is used to create Jira tickets directed toward service owners to
 
 A playbook that given and IP address, port and protocol of a service, enriches using on-prem integrations to find the related firewall rule and other related information.
 
-![Cortex ASM - On Prem Enrichment](ADD LINK)
+![Cortex ASM - On Prem Enrichment](https://raw.githubusercontent.com/demisto/content/8eb2a558a040e76040191456fd707f102cb16647/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_On_Prem_Enrichment.png)
 
 #### Cortex ASM - On Prem Remediation
 
 A playbook that adds new block rule(s) to on-prem firewall vendors in order to block internet access for internet exposures.
 
-![Cortex ASM - On Prem Remediation](ADD LINK)
+![Cortex ASM - On Prem Remediation](https://raw.githubusercontent.com/demisto/content/8eb2a558a040e76040191456fd707f102cb16647/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_On_Prem_Remediation.png)
 
 #### Cortex ASM - Prisma Cloud Enrichment
 
