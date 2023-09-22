@@ -13,6 +13,8 @@ def get_plain_text(html_regex):
                     'copy': '(C)', 'reg': '(R)', 'tilde': '~', 'ldquo': '"', 'rdquo': '"', 'hellip': '...'}
         for e in entities:
             data = data.replace(f'&{e};', entities[e])
+        data = re.sub(r'[ \t]{2,}', ' ', data)
+        data = re.sub(r'(\r?\n){2,}', '\n', data)
     return data
 
 
