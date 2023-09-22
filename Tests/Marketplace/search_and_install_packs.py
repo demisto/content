@@ -392,7 +392,6 @@ def install_packs(client: demisto_client,
                 raise Exception(f"malformed packs: {malformed_ids}") from ex
 
             # We've more attempts, retrying without tho malformed packs.
-            success = False
             logging.error(f"Unable to install malformed packs: {malformed_ids}, retrying without them.")
             packs_to_install = [
                 pack_to_install for pack_to_install in packs_to_install if pack_to_install['id'] not in malformed_ids
