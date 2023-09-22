@@ -1,4 +1,4 @@
-Given and IP address, port and protocol of a service, this playbook enriches on-premise integrations to find the related firewall rule and other related information.
+Given and IP address, port and protocol of a service, this playbook enriches on-prem integrations to find the related firewall rule and other related information.
 
 Conditions:
 - This is currently limited to stand-alone firewalls for PAN-OS.

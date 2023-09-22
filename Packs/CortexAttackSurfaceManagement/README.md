@@ -159,7 +159,7 @@ A playbook that is used to create Jira tickets directed toward service owners to
 
 #### Cortex ASM - On Prem Enrichment
 
-A playbook that given and IP address, port and protocol of a service, enriches on-prem integrations to find the related firewall rule and other related information.
+A playbook that given and IP address, port and protocol of a service, enriches using on-prem integrations to find the related firewall rule and other related information.
 
 ![Cortex ASM - On Prem Enrichment](ADD LINK)
 
