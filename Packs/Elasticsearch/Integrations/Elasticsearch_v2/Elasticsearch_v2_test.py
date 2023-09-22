@@ -579,6 +579,19 @@ MOC_ES7_SERVER_RESPONSE = {
     }
 }
 
+MOCK_INDEX_RESPONSE = {
+    '_index': 'test-index', 
+    '_id': '1', 
+    '_version': 1, 
+    'result': 'created', 
+    '_shards': {
+        'total': 2, 
+        'successful': 2, 
+        'failed': 0}, 
+    '_seq_no': 5, 
+    '_primary_term': 1
+    }
+
 MOCK_PARAMS = [
     {
         'client_type': 'Elasticsearch',
@@ -992,3 +1005,12 @@ def test_convert_date_to_timestamp(date_time, time_method, expected_time):
     """
     Elasticsearch_v2.TIME_METHOD = time_method
     assert Elasticsearch_v2.convert_date_to_timestamp(date_time) == expected_time
+
+
+def test_index_document(mocker):
+    import Elasticsearch_v2
+    mocker.patch.object(
+        Elasticsearch_v2.Elasticsearch, 'index', return_value=MOCK_INDEX_RESPONSE
+    )
+    mocker.patch.object(Elasticsearch_v2.Elasticsearch, '__init__', return_value=None)
+    assert Elasticsearch_v2.index_document({'index_name':'test-index','document':'{}','id':'1'}, '') == MOCK_INDEX_RESPONSE

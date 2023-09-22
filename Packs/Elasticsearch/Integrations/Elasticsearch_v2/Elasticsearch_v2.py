@@ -847,11 +847,16 @@ def index_document(args, proxies):
     doc = args.get('document')
     doc_id = args.get('id', '')
     es = elasticsearch_builder(proxies)
-
+    # Because of using elasticsearch lib <8 'document' param is called 'body'
     if doc_id:
-        resp = es.index(index=index, id=doc_id, document=doc)
+        response = es.index(index=index, id=doc_id, body=doc)
     else:
-        resp = es.index(index=index, document=doc)
+        response = es.index(index=index, body=doc)
+    return response
+
+
+def index_document_command(args, proxies):
+    resp = index_document(args, proxies)
     index_context = {
         '_id': resp.get('_id', ''),
         '_index': resp.get('_index', ''),
@@ -886,7 +891,7 @@ def main():
         elif demisto.command() == 'es-eql-search':
             return_results(search_eql_command(demisto.args(), proxies))
         elif demisto.command() == 'es-index':
-            return_results(index_document(demisto.args(), proxies))
+            return_results(index_document_command(demisto.args(), proxies))
     except Exception as e:
         if 'The client noticed that the server is not a supported distribution of Elasticsearch' in str(e):
             return_error('Failed executing {}. Seems that the client does not support the server\'s distribution, '
