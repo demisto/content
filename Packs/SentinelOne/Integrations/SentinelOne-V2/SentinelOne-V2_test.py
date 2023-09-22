@@ -628,7 +628,14 @@ def test_get_remote_data_command(mocker, requests_mock):
 
     call = sentinelone_v2.return_results.call_args_list
     command_results = vars(call[0].args[0])
-    assert command_results == {'mirrored_object': {'name': 'test', 'id': '123456', 'incident_type': 'incident'}, 'entries': []}
+    assert command_results == {
+        'mirrored_object': {
+            'name': 'test',
+            'id': '123456',
+            'incident_type': 'SentinelOne Incident'
+        },
+        'entries': []
+    }
 
 
 def test_get_modified_remote_data_command(mocker, requests_mock):
