@@ -8,7 +8,7 @@ import re
 def get_plain_text(html_regex):
     data = ''
     if html_regex and html_regex.group(0):
-        data = re.sub(r'<.*?>', '', html_regex.group(0))
+        data = re.sub(r'<.*?>', '', html_regex.group(0), flags=re.M + re.S + re.I + re.U)
         entities = {'quot': '"', 'amp': '&', 'apos': "'", 'lt': '<', 'gt': '>', 'nbsp': ' ',
                     'copy': '(C)', 'reg': '(R)', 'tilde': '~', 'ldquo': '"', 'rdquo': '"', 'hellip': '...'}
         for e in entities:
