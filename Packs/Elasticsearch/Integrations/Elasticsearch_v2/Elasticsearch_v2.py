@@ -843,8 +843,8 @@ def index_document(args, proxies):
     Indexes a given document into an Elasticsearch index.
     return: Result returned from elasticsearch lib
     """
-    index = args.get('index')
-    doc = args.get('doc')
+    index = args.get('index_name')
+    doc = args.get('document')
     doc_id = args.get('id', '')
     es = elasticsearch_builder(proxies)
 
@@ -852,7 +852,22 @@ def index_document(args, proxies):
         resp = es.index(index=index, id=doc_id, document=doc)
     else:
         resp = es.index(index=index, document=doc)
-    return resp['result']
+    index_context = {
+        '_id': resp.get('_id', ''),
+        '_index': resp.get('_index', ''),
+        '_version': resp.get('_version', ''),
+        'result': resp.get('result', '')
+    }
+    human_readable = "Document with id {} in index {} has been {}".format(
+        index_context.get('_id'),
+        index_context.get('_index'),
+        index_context.get('result')
+    )
+    return CommandResults(
+        readable_output=human_readable,
+        outputs_prefix='Elasticsearch.Index',
+        outputs=index_context
+    )
 
 
 def main():

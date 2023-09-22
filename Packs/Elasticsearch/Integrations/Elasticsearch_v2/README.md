@@ -192,11 +192,16 @@ Indexes a document into an Elasticsearch index.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| index | The name of the index to ingest into. | Required | 
-| doc | The document to be indexed. | Required | 
+| index_name | The name of the index to ingest into. | Required | 
+| document | The document object (JSON format) to be indexed. See Elasticsearch documentation for further information about indexing documents. | Required | 
 | id | The id of the indexed document (will be generated if empty). | Optional | 
 
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Elasticsearch.Index._id | String | The ID of the indexed document. |
+| Elasticsearch.Index._index | String | The name of the index which the document was ingested to. |  
+| Elasticsearch.Index._version | Number | The version number of the indexed document. | 
+| Elasticsearch.Index.result | String | The result of the index operation. | 
