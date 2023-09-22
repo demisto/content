@@ -218,12 +218,11 @@
     - *build_parameters
 
 .default-after-script:
-  after_script:
-    - source .gitlab/helper_functions.sh
-    - *setup-network-certs
-    - *setup-artifactory
-    - *install_node_modules
-    - *install_venv
+  - source .gitlab/helper_functions.sh
+  - *setup-network-certs
+  - *setup-artifactory
+  - *install_node_modules
+  - *install_venv
 
 .default-job-settings:
   interruptible: true

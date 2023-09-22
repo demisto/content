@@ -221,7 +221,6 @@ install-packs-in-server-master:
   extends:
     - .bucket-upload-rule
     - .default-job-settings
-    - .default-after-script
   script:
     - EXIT_CODE=0
     - section_start "Download content-test-conf and infra" --collapsed
@@ -269,6 +268,7 @@ install-packs-in-server-master:
     - job-done
     - exit "$EXIT_CODE"
   after_script:
+    - source .gitlab/helper_functions.sh
     - !reference [ .unlock-machine ]
 
 #install-packs-in-xsiam-dev:
