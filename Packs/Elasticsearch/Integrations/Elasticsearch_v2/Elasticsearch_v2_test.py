@@ -580,17 +580,17 @@ MOC_ES7_SERVER_RESPONSE = {
 }
 
 MOCK_INDEX_RESPONSE = {
-    '_index': 'test-index', 
-    '_id': '1', 
-    '_version': 1, 
-    'result': 'created', 
+    '_index': 'test-index',
+    '_id': '1',
+    '_version': 1,
+    'result': 'created',
     '_shards': {
-        'total': 2, 
-        'successful': 2, 
-        'failed': 0}, 
-    '_seq_no': 5, 
+        'total': 2,
+        'successful': 2,
+        'failed': 0},
+    '_seq_no': 5,
     '_primary_term': 1
-    }
+}
 
 MOCK_PARAMS = [
     {
@@ -1013,4 +1013,4 @@ def test_index_document(mocker):
         Elasticsearch_v2.Elasticsearch, 'index', return_value=MOCK_INDEX_RESPONSE
     )
     mocker.patch.object(Elasticsearch_v2.Elasticsearch, '__init__', return_value=None)
-    assert Elasticsearch_v2.index_document({'index_name':'test-index','document':'{}','id':'1'}, '') == MOCK_INDEX_RESPONSE
+    assert Elasticsearch_v2.index_document({'index_name': 'test-index', 'document': '{}', 'id': '1'}, '') == MOCK_INDEX_RESPONSE
