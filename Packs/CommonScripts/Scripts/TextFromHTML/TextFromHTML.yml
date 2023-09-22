@@ -18,6 +18,15 @@ args:
   default: true
   defaultValue: body
   description: Specify HTML tag to extract the text from within.
+- name: allow_body_fallback
+  default: true
+  auto: PREDEFINED
+  predefined:
+  - "true"
+  - "false"
+  description: 'Allow using the input HTML as a fallback for the Body, if no body-tag is found (default: false).
+    This only applies, if html_tag is set to body.'
+  defaultValue: "false"
 scripttarget: 0
 fromversion: 5.0.0
 dockerimage: demisto/python3:3.10.12.63474
