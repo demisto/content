@@ -1,7 +1,7 @@
 commonfields:
-  id: Netcraft
+  id: Netcraft V2
   version: -1
-name: Netcraft
+name: Netcraft V2
 display: Netcraft
 category: Utilities
 description: Netcraft takedown, submission and screenshot management.
@@ -1498,5 +1498,5 @@ script:
   runonce: false
 fromversion: 6.9.0
 tests:
-- No tests (deprecated)
+- Test - Netcraft
 defaultmapperin: Netcraft Incoming Mapper
