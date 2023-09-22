@@ -79,6 +79,9 @@ def download_and_extract_index(storage_bucket: Any, extract_destination_path: st
 
     """
     logging.info('Start of download_and_extract_index')
+    logging.info(f'Test - {extract_destination_path=}')
+    logging.info(f'Test - {storage_base_path=}')
+    logging.info(f'Test - {storage_bucket=}')
     if storage_bucket.name == GCPConfig.PRODUCTION_PRIVATE_BUCKET:
         index_storage_path = os.path.join(GCPConfig.PRIVATE_BASE_PATH, f"{GCPConfig.INDEX_NAME}.zip")
     else:
@@ -360,6 +363,10 @@ def create_corepacks_config(storage_bucket: Any, build_number: str, index_folder
         marketplace (str): the marketplace type of the bucket. possible options: xsoar, marketplace_v2 or xpanse
 
     """
+    logging.info(f'create_corepacks_config {marketplace=}')
+    logging.info(f'create_corepacks_config {storage_base_path=}')
+    logging.info(f'create_corepacks_config {storage_bucket=}')
+    logging.info(f'create_corepacks_config {index_folder_path=}')
     required_core_packs = GCPConfig.get_core_packs(marketplace)
     corepacks_files_names = [GCPConfig.CORE_PACK_FILE_NAME]
     corepacks_files_names.extend(GCPConfig.get_core_packs_unlocked_files(marketplace))
@@ -1206,6 +1213,8 @@ def main():
     force_upload = option.force_upload
     marketplace = option.marketplace
     is_create_dependencies_zip = option.create_dependencies_zip
+
+    logging.info(f'{storage_bucket_name}')
 
     # google cloud storage client initialized
     storage_client = init_storage_client(service_account)
