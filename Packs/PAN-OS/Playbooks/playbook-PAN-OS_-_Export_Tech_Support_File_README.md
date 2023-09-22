@@ -14,11 +14,13 @@ This playbook does not use any integrations.
 
 ### Scripts
 
-This playbook does not use any scripts.
+* Set
+* SetAndHandleEmpty
 
 ### Commands
 
-* pan-os
+* pan-os-download-tech-support-file
+* pan-os-export-tech-support-file
 
 ## Playbook Inputs
 
@@ -26,7 +28,7 @@ This playbook does not use any scripts.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| PanOSInstance | Which instance of the PAN-OS integration to use |  | Required |
+| PanOSInstance | Which instance of the PAN-OS integration to use |  | Optional |
 
 ## Playbook Outputs
 
@@ -37,4 +39,4 @@ There are no outputs for this playbook.
 
 ---
 
-![PAN-OS Export Tech Support File](../doc_files/PAN-OS_Export_Tech_Support_File.png)
+![PAN-OS - Export Tech Support File](../doc_files/PAN-OS_-_Export_Tech_Support_File.png)

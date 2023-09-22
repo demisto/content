@@ -171,7 +171,7 @@ PAN_DB_URL_FILTERING_CATEGORIES = {
     'questionable',
     'real-estate',
     'recreation-and-hobbies',
-    'reference-and-research',
+    'reference-and-research    ',
     'religion',
     'search-engines',
     'sex-education',
@@ -285,8 +285,8 @@ class PanosResponse():
 
 
 def http_request(uri: str, method: str, headers: dict = {},
-                 body: dict = {}, params: dict = {}, files: dict | None = None,
-                 is_xml: bool = False, is_file: bool = False) -> Any:
+                 body: dict = {}, params: dict = {}, files: dict | None = None, is_file: bool = False,
+                 is_xml: bool = False) -> Any:
     """
     Makes an API call with the given arguments
     """
@@ -304,7 +304,7 @@ def http_request(uri: str, method: str, headers: dict = {},
         raise Exception(
             'Request Failed. with status: ' + str(result.status_code) + '. Reason is: ' + str(result.reason))
 
-    # if pcap download or file download
+    # if pcap download
     if is_file:
         return result
     if is_xml:
@@ -834,6 +834,123 @@ def list_device_groups_names():
     )
 
 
+def start_tsf_export():
+    """
+    Start export of tech support file (TSF) from PAN-OS:
+    https://docs.paloaltonetworks.com/pan-os/11-0/pan-os-panorama-api/pan-os-xml-api-request-types/export-files-api/export-technical-support-data
+    """
+    return_results('Starting TSF export...')
+    params = {
+        'type': 'export',
+        'category': 'tech-support',
+        'key': API_KEY
+    }
+    result = http_request(
+        URL,
+        'GET',
+        params=params
+    )
+    return result
+
+
+def get_tsf_export_status(args: dict):
+    """
+    Get status of TSF export.
+    """
+    return_results('Getting TSF export status...')
+    params = {
+        'type': 'export',
+        'category': 'tech-support',
+        'action': 'status',
+        'job-id': args.get('job_id'),
+        'key': API_KEY
+    }
+    result = http_request(
+        URL,
+        'GET',
+        params=params
+    )
+    return result
+
+
+def download_tsf_command(args: dict):
+    """
+    Download an exported TSF.
+    """
+    params = {
+        'type': 'export',
+        'category': 'tech-support',
+        'action': 'get',
+        'job-id': args.get('job_id'),
+        'key': API_KEY
+    }
+    result = http_request(
+        URL,
+        'GET',
+        params=params,
+        is_file=True
+    )
+    return fileResult("tech_support_file.tar.gz", result.content)
+
+
+@polling_function(
+    name=demisto.command(),
+    interval=arg_to_number(demisto.args().get('interval_in_seconds', 60)),
+    timeout=arg_to_number(demisto.args().get('timeout', 1200))
+)
+def export_tsf_command(args: dict):
+    """
+    Export a TSF from PAN-OS.
+    """
+    if job_id := args.get('job_id'):
+        export_tsf_status = get_tsf_export_status({'job_id': job_id}).get('response', {}).get('result', {})
+        job_status = export_tsf_status.get('job', {}).get('status')
+        context_output = {
+            'JobID': job_id,
+            'Status': job_status
+        }
+        return PollResult(
+            response=CommandResults(  # this is what the response will be in case job has finished
+                outputs_prefix='Panorama.TSF',
+                outputs_key_field='JobID',
+                outputs=context_output,
+                readable_output=tableToMarkdown('Export Status:', context_output, removeNull=True)
+            ),
+            continue_to_poll=job_status != 'FIN',  # continue polling if job isn't done
+        )
+    else:  # either no polling is required or this is the first run
+        result = start_tsf_export()
+        job_id = result.get('response', {}).get('result', {}).get('job', '')
+        if job_id:
+            context_output = {
+                'JobID': job_id,
+                'Status': 'Pending'
+            }
+            continue_to_poll = True
+            export_tsf_output = CommandResults(  # type: ignore[assignment]
+                outputs_prefix='Panorama.TSF',
+                outputs_key_field='JobID',
+                outputs=context_output,
+                readable_output=tableToMarkdown('Export Status:', context_output, removeNull=True)
+            )
+        else:  # no job ID which is unexpected
+            raise DemistoException("Failed to start tech support file export.")
+
+        return PollResult(
+            response=export_tsf_output,
+            continue_to_poll=continue_to_poll,
+            args_for_next_run={
+                'job_id': job_id,
+                'polling': argToBoolean(args.get('polling')),
+                'interval_in_seconds': arg_to_number(args.get('interval_in_seconds')),
+                'timeout': arg_to_number(args.get('timeout'))
+            },
+            partial_result=CommandResults(
+                readable_output=f'Waiting for tech support file export with job ID {job_id} to finish...'
+            )
+        )
+
+
 def device_group_test():
     """
     Test module for the Device group specified
@@ -883,74 +1000,31 @@ def template_test(template: str):
                         f' The available Templates for this instance: {", ".join(template_names)}.')
 
 
-@polling_function(
-    name=demisto.command(),
-    interval=60,
-    timeout=1200
-)
-def pan_os_command_polling(args: dict, result: dict):
-    """
-    Polls job status until it is done
-    """
-    job_id = args.get("job-id")
-    status = result.get('response', {}).get('result', {}).get('job', {}).get('status', '')
-    if not job_id:
-        raise DemistoException("job-id is required when polling=true.")
-
-    context_output = {
-        'JobID': job_id,
-        'Status': status
-    }
-    res = CommandResults(
-        outputs=result,
-        readable_output=f'Job status: {status}'
-    )
-    return PollResult(
-        response=res,
-        continue_to_poll=status != 'FIN',  # continue polling if job isn't done
-        partial_result=CommandResults(
-            readable_output=f'Waiting for Job-ID {job_id} to finish...'
-        )
-    )
-
-
+@logger
 def panorama_command(args: dict):
     """
     Executes a command
     """
     params = {}
     is_xml = False
-    is_file = False
-    polling = False
-    param_args = list(args.keys())
-    param_args.remove("file_name")
-    for arg in param_args:
+    for arg in args.keys():
         if arg == "is_xml":
             is_xml = argToBoolean(args[arg])
-        elif arg == "is_file":
-            is_file = argToBoolean(args[arg])
-        elif arg == "polling":
-            polling = argToBoolean(args[arg])
         else:
             params[arg] = args[arg]
     params['key'] = API_KEY
+
     result = http_request(
         URL,
         'POST',
         body=params,
-        is_xml=is_xml,
-        is_file=is_file,
+        is_xml=is_xml
     )
 
-    if polling:
-        return_results(pan_os_command_polling(args, result))
-    elif is_file:
-        return_results(fileResult(args.get("file_name", "PanOSResultFile"), result.content))
-    else:
-        return_results(CommandResults(
-            outputs=result,
-            readable_output='Command was executed successfully.'
-        ))
+    return_results(CommandResults(
+        outputs=result,
+        readable_output='Command was executed successfully.'
+    ))
 
 
 @logger
@@ -5336,7 +5410,7 @@ def build_logs_query(address_src: Optional[str], address_dst: Optional[str], ip_
 
 @logger
 def panorama_query_logs(log_type: str, number_of_logs: str, query: str, address_src: str, address_dst: str, ip_: str,
-                        zone_src: str, zone_dst: str, time_generated: str, time_generated_after: str, action: str,
+                        zone_src: str, zone_dst: str, time_generated: str, time_generated_after: str,  action: str,
                         port_dst: str, rule: str, url: str, filedigest: str):
     params = {
         'type': 'log',
@@ -14713,6 +14787,10 @@ def main():  # pragma: no cover
             return_results(pan_os_delete_tag_command(args))
         elif command == 'pan-os-list-device-groups':
             return_results(list_device_groups_names())
+        elif command == 'pan-os-export-tech-support-file':
+            return_results(export_tsf_command(args))
+        elif command == 'pan-os-download-tech-support-file':
+            return_results(download_tsf_command(args))
         else:
             raise NotImplementedError(f'Command {command} is not implemented.')
     except Exception as err:
