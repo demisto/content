@@ -9,7 +9,7 @@ main = sentinelone_v2.main
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -514,7 +514,7 @@ def test_get_events(mocker, requests_mock):
 
     call = sentinelone_v2.return_results.call_args_list
     context_outputs = call[0].args[0].outputs
-    assert all(key in context_outputs.keys() for key in expected_context.keys())
+    assert all(key in context_outputs for key in expected_context)
 
 
 def test_run_remote_script(mocker, requests_mock):
@@ -601,7 +601,7 @@ def test_get_installed_applications(mocker, requests_mock):
 
     call = sentinelone_v2.return_results.call_args_list
     command_results = call[0].args[0]
-    assert command_results.outputs == [{'InstalledOn': '2023-02-10', 'Name': 'test', 'Publisher': 'abc', 'Size': 50, 'Version': '2.1'}] # noqa
+    assert command_results.outputs == [{'InstalledOn': '2023-02-10', 'Name': 'test', 'Publisher': 'abc', 'Size': 50, 'Version': '2.1'}]  # noqa
 
 
 def test_get_remote_data_command(mocker, requests_mock):
