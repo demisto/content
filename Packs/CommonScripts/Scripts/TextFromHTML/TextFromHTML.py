@@ -41,5 +41,12 @@ def text_from_html(args):
 
 
 if __name__ in ["__builtin__", "builtins"]:
-    result = text_from_html(demisto.args())
+    text = text_from_html(demisto.args())
+    context_path = demisto.args().get('context_path', None)
+    result = CommandResults(
+        outputs_prefix=context_path,
+        outputs=text if context_path else None,
+        readable_output=text
+    )
+
     demisto.results(result)
