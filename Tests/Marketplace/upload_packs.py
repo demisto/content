@@ -380,9 +380,10 @@ def create_corepacks_config(storage_bucket: Any, build_number: str, index_folder
 
                 with open(pack_metadata_path) as metadata_file:
                     metadata = json.load(metadata_file)
-
+                
                 pack_current_version = metadata.get('currentVersion', Pack.PACK_INITIAL_VERSION)
                 core_pack_relative_path = os.path.join(pack.name, pack_current_version, f"{pack.name}.zip")
+                logging.info(f'{core_pack_relative_path=}')
                 core_pack_storage_path = os.path.join(storage_base_path, core_pack_relative_path)
 
                 if not storage_bucket.blob(core_pack_storage_path).exists():
