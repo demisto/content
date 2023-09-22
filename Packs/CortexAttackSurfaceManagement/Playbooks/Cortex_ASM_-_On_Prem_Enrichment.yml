@@ -1,9 +1,8 @@
 id: Cortex ASM - On Prem Enrichment
-version: 32
-vcShouldKeepItemLegacyProdMachine: false
+version: -1
 name: Cortex ASM - On Prem Enrichment
 description: |-
-  Given and IP address, port and protocol of a service, this playbook enriches on-premise integrations to find the related firewall rule and other related information.
+  Given and IP address, port and protocol of a service, this playbook enriches on-prem integrations to find the related firewall rule and other related information.
 
   Conditions:
   - This is currently limited to stand-alone firewalls for PAN-OS.
@@ -19,6 +18,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "24"
@@ -78,8 +78,7 @@ tasks:
       id: 3f58a27a-4a30-44bb-81fb-dcbdc9928dce
       version: -1
       name: pan-os-security-policy-match
-      description: Checks whether a session matches a specified security policy. This
-        command is only available on firewall instances.
+      description: Checks whether a session matches a specified security policy. This command is only available on firewall instances.
       script: Panorama|||pan-os-security-policy-match
       type: regular
       iscommand: true
@@ -185,6 +184,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "17"
@@ -258,9 +258,7 @@ tasks:
       id: 0455d8ba-b8b2-484c-8563-d8cc68f6e94b
       version: -1
       name: pan-os-list-rules
-      description: Returns a list of predefined Security Rules. (When passing a query,
-        all other arguments are overridden. Make sure the query includes all the filters
-        you want).
+      description: Returns a list of predefined Security Rules. (When passing a query, all other arguments are overridden. Make sure the query includes all the filters you want).
       script: Panorama|||pan-os-list-rules
       type: regular
       iscommand: true
@@ -297,8 +295,7 @@ tasks:
       id: c8e13ab6-9f8b-408e-8714-1b7c6ff12371
       version: -1
       name: Set system IDs grid field (type)
-      description: Sets the type of cloud asset to the grid field for the ASM system
-        IDs object.
+      description: Sets the type of cloud asset to the grid field for the ASM system IDs object.
       scriptName: GridFieldSetup
       type: regular
       iscommand: false
@@ -390,8 +387,7 @@ tasks:
       id: 00c3867d-cd18-4ebc-8088-8625090c75e0
       version: -1
       name: Set system IDs grid field (firewall rule name)
-      description: Sets the type of cloud asset to the grid field for the ASM system
-        IDs object.
+      description: Sets the type of cloud asset to the grid field for the ASM system IDs object.
       scriptName: GridFieldSetup
       type: regular
       iscommand: false
@@ -520,8 +516,7 @@ tasks:
       id: e79adc9f-a635-4f4c-86b2-b52642754674
       version: -1
       name: Was enrichment performed?
-      description: Check if enrichment was performed by checking for a value of true
-        in the relevant flag variable.
+      description: Check if enrichment was performed by checking for a value of true in the relevant flag variable.
       type: condition
       iscommand: false
       brand: ""
@@ -612,6 +607,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "9"
@@ -642,6 +638,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "10"
@@ -716,6 +713,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -834,7 +832,7 @@ inputs:
       accessor: remoteip
   required: true
   description: IP address of the service.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: RemotePort
   value:
     complex:
@@ -842,7 +840,7 @@ inputs:
       accessor: remoteport
   required: true
   description: Port number of the service.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: RemoteProtocol
   value:
     complex:
@@ -850,5 +848,8 @@ inputs:
       accessor: appid
   required: true
   description: Protocol of the service.
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.8.0 
