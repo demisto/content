@@ -2184,13 +2184,10 @@ class TestFetch:
         requests_mock.post(f'{SERVER_URL}/detects/entities/summaries/GET/v1',
                            json={'resources': [{'detection_id': 'ldt:1',
                                                 'created_timestamp': '2020-09-04T09:16:11Z',
-                                                'max_severity_displayname': 'Low',
-                                                'first_behavior': '2020-09-04T09:16:11Z'
-                                                },
+                                                'max_severity_displayname': 'Low'},
                                                {'detection_id': 'ldt:2',
                                                 'created_timestamp': '2020-09-04T09:20:11Z',
-                                                'max_severity_displayname': 'Low',
-                                                'first_behavior': '2020-09-04T09:16:11Z'}]})
+                                                'max_severity_displayname': 'Low'}]})
         requests_mock.get(f'{SERVER_URL}/incidents/queries/incidents/v1', json={})
         requests_mock.post(f'{SERVER_URL}/incidents/entities/incidents/GET/v1', json={})
 
@@ -2258,16 +2255,11 @@ class TestFetch:
         requests_mock.post(f'{SERVER_URL}/detects/entities/summaries/GET/v1',
                            json={'resources': [{'detection_id': 'ldt:1',
                                                 'created_timestamp': '2020-09-04T09:16:11Z',
-                                                'max_severity_displayname': 'Low', 'first_behavior': '2020-09-04T09:16:11Z'},
-                                               {'detection_id': 'ldt:2',
-                                                'created_timestamp': '2020-09-04T09:16:11Z',
-                                                'max_severity_displayname': 'Low', 'first_behavior': '2020-09-04T09:16:11Z'}
-                                               ]})
+                                                'max_severity_displayname': 'Low'}]})
         from CrowdStrikeFalcon import fetch_incidents
         fetch_incidents()
         assert demisto.setLastRun.mock_calls[0][1][0][0] == {
-            'time': '2020-09-04T09:16:11Z', 'limit': 2, "found_incident_ids": {'Detection ID: ldt:1': 1599210970,
-                                                                               'Detection ID: ldt:2': 1599210970}}
+            'time': '2020-09-04T09:16:11Z', 'limit': 2, "found_incident_ids": {'Detection ID: ldt:1': 1599210970}}
 
     def test_fetch_incident_type(self, set_up_mocks, mocker):
         """
@@ -2402,14 +2394,12 @@ class TestIncidentFetch:
                                                                       'offset': 2}, {}])
         # Override post to have 1 results so FETCH_LIMIT won't be reached
         requests_mock.post(f'{SERVER_URL}/incidents/entities/incidents/GET/v1',
-                           json={'resources': [{'incident_id': 'ldt:1', 'start': '2020-09-04T09:16:11Z'},
-                                               {'incident_id': 'ldt:2', 'start': '2020-09-04T09:16:11Z'}]})
+                           json={'resources': [{'incident_id': 'ldt:1', 'start': '2020-09-04T09:16:11Z'}]})
         from CrowdStrikeFalcon import fetch_incidents
         fetch_incidents()
         assert demisto.setLastRun.mock_calls[0][1][0][1] == {'time': '2020-09-04T09:16:11Z',
                                                              'limit': 2,
-                                                             'found_incident_ids': {'Incident ID: ldt:1': 1598462533,
-                                                                                    'Incident ID: ldt:2': 1598462533}}
+                                                             'found_incident_ids': {'Incident ID: ldt:1': 1598462533}}
 
     def test_incident_type_in_fetch(self, set_up_mocks, mocker):
         """Tests the addition of incident_type field to the context
@@ -5512,24 +5502,3 @@ def test_list_detection_summaries_command_no_results(mocker):
     mocker.patch('CrowdStrikeFalcon.http_request', return_value=response)
     res = list_detection_summaries_command()
     assert res.readable_output == '### CrowdStrike Detections\n**No entries.**\n'
-
-
-def test_sort_incidents_summaries_by_ids_order():
-    """
-    Test sort incidents in the order by incidents ids
-
-    Given:
-     - Full incidents response, sorted ids
-    When:
-     - Searching for detections using fetch_incidents()
-    Then:
-     - The incidents returned in sorted order
-    """
-    from CrowdStrikeFalcon import sort_incidents_summaries_by_ids_order
-    full_incidents = [{"id": "2", "name": "test2"},
-                      {"id": "3", "name": "test3"},
-                      {"id": "1", "name": "test1"}]
-    res = sort_incidents_summaries_by_ids_order(ids_order=["1", "2", "3"], full_incidents=full_incidents, id_field="id")
-    assert res == [{"id": "1", "name": "test1"}, {"id": "2", "name": "test2"},
-                   {"id": "3", "name": "test3"},
-                   ]
