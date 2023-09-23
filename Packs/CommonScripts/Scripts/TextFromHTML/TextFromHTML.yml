@@ -31,7 +31,7 @@ args:
   description: The Context path to store the Converted Text.
 scripttarget: 0
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.10.12.63474
+dockerimage: demisto/python3:3.10.13.74666
 tests:
 - TextFromHTML_test_playbook
 contentitemexportablefields:
