@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 
 
 def test_text_from_html_success_english():
@@ -34,7 +33,7 @@ def test_text_from_html_success_english():
     }
     res = TextFromHTML.text_from_html(args)
 
-    assert res == '\nThis is heading 1\n'
+    assert res == '\nThis is heading 1'
 
 
 def test_text_from_html_success_hebrew():
@@ -56,7 +55,7 @@ def test_text_from_html_success_hebrew():
     """
     import TextFromHTML
 
-    html = u"""
+    html = """
 <!DOCTYPE html>
 <html>
 <body>
@@ -70,7 +69,7 @@ def test_text_from_html_success_hebrew():
     }
     res = TextFromHTML.text_from_html(args)
 
-    assert res == '\nמשפט בעברית לבדיקה\n'
+    assert res == '\nמשפט בעברית לבדיקה'  # noqa: RUF001
 
 
 def test_text_from_html_success_spanish():
@@ -92,7 +91,7 @@ def test_text_from_html_success_spanish():
     """
     import TextFromHTML
 
-    html = u"""
+    html = """
 <!DOCTYPE html>
 <html>
 <body>
@@ -106,7 +105,7 @@ def test_text_from_html_success_spanish():
     }
     res = TextFromHTML.text_from_html(args)
 
-    assert res == '\nFrase en español para revisión\n'
+    assert res == '\nFrase en español para revisión'
 
 
 def test_extract_text_from_complex_html():
@@ -124,8 +123,6 @@ def test_extract_text_from_complex_html():
 
         </body>
         </html>
-
-
 
     When
     - extracting text from the html
@@ -154,7 +151,48 @@ def test_extract_text_from_complex_html():
     }
     res = TextFromHTML.text_from_html(args)
 
-    assert res == '\n\nHTML Links\nHTML links are defined with the a tag:\n\nThis is a link\n\n'
+    assert res == '\n\nHTML Links\nHTML links are defined with the a tag:\n\nThis is a link'
+
+
+def test_extract_text_from_html_with_breaks():
+    """
+    Given
+    - html string:
+        <!DOCTYPE html>
+        <html>
+        <body>
+        <h2>HTML Breaks</h2>
+        <p>HTML can contain break tags</p>
+        <br>
+        <p>Which should lead to a proper linebreak</p>
+        </body>
+        </html>
+
+    When
+    - extracting text from the html
+
+    Then
+    - ensure we return "\nHTML Breaks\nHTML can contain break tags\n\nWhich should lead to a proper linebreak"
+    """
+    import TextFromHTML
+
+    html = """
+<!DOCTYPE html>
+<html>
+<body>
+<h2>HTML Breaks</h2>
+<p>HTML can contain break tags</p>
+<br>
+<p>Which should lead to a proper linebreak</p>
+</body>
+</html>
+"""
+
+    args = {
+        'html': html
+    }
+    res = TextFromHTML.text_from_html(args)
+    assert res == '\nHTML Breaks\nHTML can contain break tags\n\nWhich should lead to a proper linebreak'
 
 
 def test_extract_text_from_specific_tag():
@@ -178,3 +216,48 @@ def test_extract_text_from_specific_tag():
     res = TextFromHTML.text_from_html(args)
 
     assert res == 'HTML links are defined with the a tag:'
+
+
+def test_extract_with_fallback():
+    """
+    Given
+    - html string:
+        <div>Some HTML does not have a body Tag</div>
+    When
+    - extracting text from the html with fallback enabled
+    Then
+    - ensure we return "Some HTML does not have a body Tag"
+    """
+    import TextFromHTML
+
+    html = """<div>Some HTML does not have a body Tag</div>"""
+
+    args = {
+        'html': html,
+        'allow_body_fallback': 'true'
+    }
+    res = TextFromHTML.text_from_html(args)
+
+    assert res == 'Some HTML does not have a body Tag'
+
+
+def test_extract_without_fallback():
+    """
+    Given
+    - html string:
+        <div>Some HTML does not have a body Tag</div>
+    When
+    - extracting text from the html
+    Then
+    - ensure we return "Could not extract text"
+    """
+    import TextFromHTML
+
+    html = """<div>Some HTML does not have a body Tag</div>"""
+
+    args = {
+        'html': html
+    }
+    res = TextFromHTML.text_from_html(args)
+
+    assert res == 'Could not extract text'
