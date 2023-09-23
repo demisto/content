@@ -1238,6 +1238,7 @@ def main():
     current_commit_hash, previous_commit_hash = get_recent_commits_data(content_repo, index_folder_path,
                                                                         is_bucket_upload_flow, ci_branch)
 
+    logging.info(f'Test {current_commit_hash=} -- {previous_commit_hash=}')
     # detect packs to upload
     pack_names_to_upload = get_packs_names(modified_packs_to_upload)
     extract_packs_artifacts(packs_artifacts_path, extract_destination_path)

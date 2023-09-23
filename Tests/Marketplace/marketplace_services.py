@@ -4290,6 +4290,7 @@ def get_last_commit_from_index(service_account):
     """
     storage_client = init_storage_client(service_account)
     storage_bucket = storage_client.bucket(GCPConfig.PRODUCTION_BUCKET)
+    logging.info(f'{storage_bucket=} --- {GCPConfig.PRODUCTION_BUCKET=}')
     index_storage_path = os.path.join('content/packs/', f"{GCPConfig.INDEX_NAME}.json")
     index_blob = storage_bucket.blob(index_storage_path)
     index_string = index_blob.download_as_string()

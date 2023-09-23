@@ -128,6 +128,7 @@ class GCPConfig:
     def get_core_packs(cls, marketplace):
         mapping = {
             'xsoar': cls.CORE_PACKS_LIST,
+            'xsoar_saas': cls.CORE_PACKS_LIST,
             'marketplacev2': cls.CORE_PACKS_MPV2_LIST,
             'xpanse': cls.CORE_PACKS_XPANSE_LIST,
         }
@@ -137,8 +138,9 @@ class GCPConfig:
     def get_core_packs_to_upgrade(cls, marketplace):
         mapping = {
             'xsoar': cls.CORE_PACKS_LIST_TO_UPDATE,
+            'xsoar_saas': cls.CORE_PACKS_LIST_TO_UPDATE,
             'marketplacev2': cls.CORE_PACKS_MPV2_LIST_TO_UPDATE,
-            'xpanse': cls.CORE_PACKS_XPANSE_LIST_TO_UPDATE,
+            'xpanse': cls.CORE_PACKS_XPANSE_LIST_TO_UPDATE
         }
         return mapping.get(marketplace, GCPConfig.CORE_PACKS_LIST_TO_UPDATE)
 
