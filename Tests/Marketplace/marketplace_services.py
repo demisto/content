@@ -4289,7 +4289,8 @@ def get_last_commit_from_index(service_account, marketplace=MarketplaceVersions.
     Returns: last upload commit.
 
     """
-    production_bucket_name = MarketplaceVersionToMarketplaceName(marketplace)
+    production_bucket_name = MarketplaceVersionToMarketplaceName.get(marketplace)
+    logging.info(f'{production_bucket_name=}')
     storage_client = init_storage_client(service_account)
     storage_bucket = storage_client.bucket(production_bucket_name)
     logging.info(f'{storage_bucket=}')
