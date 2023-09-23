@@ -5,7 +5,7 @@ from CommonServerPython import *  # noqa: F401
 import re
 
 
-def get_plain_text(html):
+def get_plain_text(html: str):
     data = ''
     if html:
         data = re.sub(r'<.*?>', '', html, flags=re.M + re.S + re.I + re.U)
@@ -18,7 +18,7 @@ def get_plain_text(html):
     return data
 
 
-def get_body(html, html_tag, allow_fallback=False):
+def get_body(html: str, html_tag: str, allow_fallback: bool = False):
     if html and html_tag:
         body = re.search(fr'<{html_tag}.*/{html_tag}>', html, re.M + re.S + re.I + re.U)
 
@@ -29,8 +29,8 @@ def get_body(html, html_tag, allow_fallback=False):
     return ''
 
 
-def text_from_html(args):
-    html = args['html']
+def text_from_html(args: dict):
+    html = args.get('html', '')
     html_tag = args.get('html_tag', 'body')
     allow_fallback = str(args.get('allow_body_fallback', 'false')).lower() == 'true'
 
@@ -40,13 +40,20 @@ def text_from_html(args):
     return data if data != '' else 'Could not extract text'
 
 
-if __name__ in ["__builtin__", "builtins"]:
-    text = text_from_html(demisto.args())
-    context_path = demisto.args().get('context_path', None)
-    result = CommandResults(
-        outputs_prefix=context_path,
-        outputs=text if context_path else None,
-        readable_output=text
-    )
+def main():
+    try:
+        text = text_from_html(demisto.args())
+        context_path = demisto.args().get('context_path', None)
+        result = CommandResults(
+            outputs_prefix=context_path,
+            outputs=text if context_path else None,
+            readable_output=text
+        )
 
-    demisto.results(result)
+        return_results(result)
+    except Exception as ex:
+        return_error(message="failed to extract text", error=ex)
+
+
+if __name__ in ["__builtin__", "builtins"]:
+    main()
