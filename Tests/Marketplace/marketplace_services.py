@@ -4290,15 +4290,12 @@ def get_last_commit_from_index(service_account, marketplace=MarketplaceVersions.
 
     """
     production_bucket_name = MarketplaceVersionToMarketplaceName.get(marketplace)
-    logging.info(f'{production_bucket_name=}')
     storage_client = init_storage_client(service_account)
     storage_bucket = storage_client.bucket(production_bucket_name)
-    logging.info(f'{storage_bucket=}')
     index_storage_path = os.path.join('content/packs/', f"{GCPConfig.INDEX_NAME}.json")
     index_blob = storage_bucket.blob(index_storage_path)
     index_string = index_blob.download_as_string()
     index_json = json.loads(index_string)
-    logging.info(f'Commit from index.json {index_json.get("commit")}')
     return index_json.get('commit')
 
 
