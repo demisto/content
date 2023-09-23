@@ -1092,6 +1092,7 @@ class BranchTestCollector(TestCollector):
             private_test_data = tuple(filter(lambda f: f.startswith('Packs/'), repo.untracked_files))
             changed_files.extend(private_test_data)
 
+        logger.info(f'{previous_commit}...{current_commit}')
         diff = repo.git.diff(f'{previous_commit}...{current_commit}', '--name-status')
         logger.debug(f'raw changed files string:\n{diff}')
 
