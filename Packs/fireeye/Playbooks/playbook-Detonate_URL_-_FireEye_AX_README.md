@@ -31,7 +31,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | --- | --- | --- | --- |
 | URL | URL to detonate | URL.Data | Optional |
 | interval | How often to poll for results. | 1 | Optional |
-| timeout | How long to wait before giving up waiting for results. | 10 | Optional |
+| timeout | How long to wait before giving up waiting for results. | 30 | Optional |
 
 ## Playbook Outputs
 
@@ -39,7 +39,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| FireEyeAX.Submissions.Key | The submission key. | unknown |
+| FireEyeAX.Submissions.URL.Key | The submission key. | unknown |
 | FireEyeAX.Submissions.Severity | The severity level of the file. | unknown |
 | FireEyeAX.Submissions.InfoLevel | The info level of the report. | unknown |
 | DBotScore.Score | The actual score. | unknown |

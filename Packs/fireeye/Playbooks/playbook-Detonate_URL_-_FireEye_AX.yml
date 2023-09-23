@@ -295,7 +295,7 @@ tasks:
       - '6'
     scriptarguments:
       submission_Key:
-        simple: ${FireEyeAX.Submissions.Key}
+        simple: ${FireEyeAX.Submissions.URL.Key}
     separatecontext: false
     view: |-
       {
@@ -365,7 +365,7 @@ tasks:
       - '4'
     scriptarguments:
       submission_Key:
-        simple: ${FireEyeAX.Submissions.Key}
+        simple: ${FireEyeAX.Submissions.URL.Key}
     separatecontext: false
     view: |-
       {
@@ -411,12 +411,12 @@ inputs:
   playbookInputQuery:
 - key: timeout
   value:
-    simple: '10'
+    simple: '30'
   required: false
   description: How long to wait before giving up waiting for results.
   playbookInputQuery:
 outputs:
-- contextPath: FireEyeAX.Submissions.Key
+- contextPath: FireEyeAX.Submissions.URL.Key
   description: The submission key.
 - contextPath: FireEyeAX.Submissions.Severity
   description: The severity level of the file.
