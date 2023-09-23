@@ -28,14 +28,17 @@ ALWAYS_INSTALLED_PACKS_XPANSE = ALWAYS_INSTALLED_PACKS_MARKETPLACE_V2
 
 ALWAYS_INSTALLED_PACKS_MAPPING = {
     MarketplaceVersions.XSOAR: ALWAYS_INSTALLED_PACKS_XSOAR,
+    MarketplaceVersions.XSOAR_SAAS: ALWAYS_INSTALLED_PACKS_XSOAR,
     MarketplaceVersions.MarketplaceV2: ALWAYS_INSTALLED_PACKS_MARKETPLACE_V2,
     MarketplaceVersions.XPANSE: ALWAYS_INSTALLED_PACKS_XPANSE,
 }
 
 DEFAULT_MARKETPLACE_WHEN_MISSING: MarketplaceVersions = [
     MarketplaceVersions.XSOAR,
+    MarketplaceVersions.XSOAR_SAAS,
     MarketplaceVersions.MarketplaceV2,
     MarketplaceVersions.XPANSE
+    # @TODO:  Why is expanse in the default marketplaces?
 ]
 
 SKIPPED_CONTENT_ITEMS__NOT_UNDER_PACK: set[str] = {

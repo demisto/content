@@ -5,7 +5,7 @@ from abc import ABC, abstractmethod
 from argparse import ArgumentParser
 from enum import Enum
 from pathlib import Path
-from typing import Optional
+from typing import Optional, Tuple
 from collections.abc import Iterable, Sequence
 
 from demisto_sdk.commands.common.constants import FileType, MarketplaceVersions, CONTENT_ENTITIES_DIRS
@@ -481,6 +481,7 @@ class TestCollector(ABC):
             self.__validate_skipped_integration(id_, path)
             self.__validate_deprecated_integration(path)
         pack_marketplaces = PACK_MANAGER.get_pack_metadata(pack_id).marketplaces
+        pack_marketplaces = self.handle_xsoar_marketplaces(pack_marketplaces)
         self.__validate_marketplace_compatibility(marketplaces or pack_marketplaces or (), path)
         self.__validate_support_level_is_xsoar(pack_id, version_range)
 
@@ -742,6 +743,23 @@ class TestCollector(ABC):
         if not_found := set(tests).difference(self.id_set.id_to_test_playbook.keys()):
             not_found_string = ', '.join(sorted(not_found))
             logger.warning(f'{len(not_found)} tests were not found in id-set: \n{not_found_string}')
+
+    @staticmethod
+    def handle_xsoar_marketplaces(pack_marketplaces: Optional[Tuple[MarketplaceVersions, ...]]) -> Optional[Tuple[MarketplaceVersions, ...]]:            
+        '''
+        If xsoar marketplace supported add xsoar_saas marketplace.
+        If xsoar_on_prem marketplace supported add xsoar marketplace.
+        '''
+        if not pack_marketplaces: 
+            return pack_marketplaces
+        marketplaces_set = set(pack_marketplaces)
+        if MarketplaceVersions.XSOAR in marketplaces_set:
+            marketplaces_set.add(MarketplaceVersions.XSOAR_SAAS)
+       
+        if MarketplaceVersions.XSOAR_ON_PREM in marketplaces_set:
+            marketplaces_set.add(MarketplaceVersions.XSOAR)
+
+        return tuple(marketplaces_set)
 
 
 class BranchTestCollector(TestCollector):
@@ -1394,9 +1412,7 @@ if __name__ == '__main__':
     branch_name = PATHS.content_repo.active_branch.name
 
     marketplace = MarketplaceVersions(args.marketplace)
-    if marketplace == MarketplaceVersions.XSOAR_SAAS:
-        # When collecting test xsoar is equivalent to xsoar saas
-        marketplace = MarketplaceVersions.XSOAR
+
 
     nightly = args.nightly
     service_account = args.service_account
