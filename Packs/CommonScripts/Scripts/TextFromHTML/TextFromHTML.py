@@ -8,6 +8,7 @@ import re
 def get_plain_text(html: str):
     data = ''
     if html:
+        data = re.sub(r'<br>', '\n', html, flags=re.M + re.S + re.I + re.U)
         data = re.sub(r'<.*?>', '', html, flags=re.M + re.S + re.I + re.U)
         entities = {'quot': '"', 'amp': '&', 'apos': "'", 'lt': '<', 'gt': '>', 'nbsp': ' ',
                     'copy': '(C)', 'reg': '(R)', 'tilde': '~', 'ldquo': '"', 'rdquo': '"', 'hellip': '...'}
@@ -15,6 +16,7 @@ def get_plain_text(html: str):
             data = data.replace(f'&{e};', entities[e])
         data = re.sub(r'[ \t]{2,}', ' ', data)
         data = re.sub(r'(\r?\n){3,}', '\n\n', data)
+        data = re.sub(r'\s+$', '', data)
     return data
 
 
