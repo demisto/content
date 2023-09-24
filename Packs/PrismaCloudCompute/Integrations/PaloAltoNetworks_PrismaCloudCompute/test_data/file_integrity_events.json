@@ -1,0 +1,59 @@
+[
+    {
+        "AccountID": "123",
+        "Cluster": "",
+        "Collections": [
+            "All",
+            "123"
+        ],
+        "Description": "Process touch wrote to path (user: root)",
+        "EventType": "write",
+        "FileType": 2,
+        "Fqdn": "",
+        "Hostname": "host123",
+        "Path": "/tmp/alert/test1",
+        "ProcessName": "touch",
+        "RuleName": "Default - alert on suspicious runtime behavior",
+        "Time": "2023-08-30T01:16:01.037Z",
+        "User": "root",
+        "_Id": "64ee985138b8ac44a6f3d468"
+    },
+    {
+        "AccountID": "123",
+        "Cluster": "",
+        "Collections": [
+            "All",
+            "123"
+        ],
+        "Description": "Process touch wrote to path (user: root)",
+        "EventType": "write",
+        "FileType": 2,
+        "Fqdn": "",
+        "Hostname": "host123",
+        "Path": "/tmp/alert/test1",
+        "ProcessName": "touch",
+        "RuleName": "Default - alert on suspicious runtime behavior",
+        "Time": "2023-08-30T00:16:01.883Z",
+        "User": "root",
+        "_Id": "64ee8a4138b8ac44a6f3d460"
+    },
+    {
+        "AccountID": "123",
+        "Cluster": "",
+        "Collections": [
+            "All",
+            "123"
+        ],
+        "Description": "Process touch wrote to path (user: root)",
+        "EventType": "write",
+        "FileType": 2,
+        "Fqdn": "",
+        "Hostname": "host123",
+        "Path": "/tmp/alert/test1",
+        "ProcessName": "touch",
+        "RuleName": "Default - alert on suspicious runtime behavior",
+        "Time": "2023-08-29T23:16:01.673Z",
+        "User": "root",
+        "_Id": "64ee7c3138b8ac44a6f3d458"
+    }
+]
