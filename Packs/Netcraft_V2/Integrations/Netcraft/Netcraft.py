@@ -264,7 +264,7 @@ def convert_binary_keys_to_bool(d: dict, *keys):
 def read_base64encoded_file(filepath: str) -> str:
     '''Returns a base64 encoded string of the file'''
     with open(filepath, 'rb') as f:
-        return base64.b64encode(f.read()).decode()
+        return base64.b64encode(f.read()).decode('ascii')
 
 
 def paginate_with_token(
@@ -304,7 +304,7 @@ def paginate_with_token(
 
     def page_sizes(limit: int, api_limit: int) -> Generator[int, None, None]:
         '''Generates page sizes for pagination based on the api_limit.
-    
+
         This generates page sizes to use for pagination with
         where all but the last are the API limit and the last is the remainder.
         It yields page sizes until the total limit is reached.
@@ -325,7 +325,7 @@ def paginate_with_token(
         response = client_func(api_params | pagination_args)
         return (
             dict_safe_get(response, keys=pages_key_path, return_type=list),
-            response.get(api_token_key)
+            response.get(api_token_key),
         )
 
     page_size = min(api_limit, arg_to_number(page_size) or api_limit)
@@ -468,8 +468,11 @@ def attack_report_command(args: dict, client: Client) -> CommandResults:
 
     def args_to_api_body_and_file(args: dict) -> tuple[dict, dict | None]:
         if entry_id := args.get('entry_id'):
-            file_contents = demisto.getFilePath(entry_id)
-            file = {'evidence': open(file_contents['path'], 'rb')}
+            try:
+                file_contents = demisto.getFilePath(entry_id)
+                file = {'evidence': open(file_contents['path'], 'rb')}
+            except ValueError:
+                raise DemistoException(f'Could not find file: {entry_id!r}')
         else:
             file = None
 
@@ -486,9 +489,13 @@ def attack_report_command(args: dict, client: Client) -> CommandResults:
     def response_to_outputs(response: str) -> dict[str, Any]:
         '''Returns the commands context and readable outputs'''
         # the response contains one or two lines inf the form "<code>\n<id (if it exists)>"
-        code, takedown_id, *rest = response.splitlines() + ['']
+        code, takedown_id, *_ = response.splitlines() + ['']
+        if code not in RES_CODE_TO_MESSAGE:
+            raise DemistoException(
+                f'Error in Netcraft API call:\n{response}'
+            )
         table = {
-            'Report status': RES_CODE_TO_MESSAGE.get(code, ' '.join(rest)),
+            'Report status': RES_CODE_TO_MESSAGE[code],
             'Takedown ID': takedown_id,
             'Response code': code,
         }
@@ -641,7 +648,11 @@ def takedown_escalate_command(args: dict, client: Client) -> CommandResults:
 
 def takedown_note_create_command(args: dict, client: Client) -> CommandResults:
     response = client.takedown_note_create(
-        args | {'text': args.pop('note_text')}
+        {
+            'takedown_id': args['takedown_id'],
+            'text': args['note_text'],
+            'notify': argToBoolean(args['notify']),
+        }
     )
     if not response.get('note_id'):
         raise DemistoException(
@@ -777,7 +788,7 @@ def submission_list(args: dict, client: Client) -> CommandResults:
     def args_to_params(args: dict) -> dict:
         return sub_dict(
             args,
-            'source_name', 'state', 'submission_reason', 'submitter_email'
+            'source_name', 'submission_reason', 'submitter_email'
         ) | {
             'date_start':
                 str(date.date())
@@ -787,6 +798,7 @@ def submission_list(args: dict, client: Client) -> CommandResults:
                 str(date.date())
                 if (date := arg_to_datetime(args.get('date_end')))
                 else None,
+            'state': args.get('state', '').lower()
         }
 
     def response_to_readable(submissions: list[dict]) -> str:
@@ -847,39 +859,39 @@ def handle_submission_report(args: dict, response: dict, client: Client) -> Comm
 
 def file_report_submit_command(args: dict, client: Client) -> CommandResults:
 
-    def validate_args(args: dict):
-        if not (
-            (
-                args.get('file_content')
-                and args.get('file_name')
-            )
-            or args.get('entry_id')
-        ):
-            raise DemistoException('A file must be provided. Use file_content and file_name OR entry_id')
-
     def args_to_body(args: dict) -> dict:
         content = args.pop('file_content', None)
         name = args.pop('file_name', None)
         entry_ids = argToList(args.pop('entry_id', None))
-        files = [
-            {
-                'content': content,
-                'filename': name,
-            }
-        ] if content and name else [
-            {
-                'content': read_base64encoded_file(file['path']),
-                'filename': file['name'],
-            }
-            for file in map(demisto.getFilePath, entry_ids)
-        ]
+        files = []
+        if content and name:
+            files.append(
+                {
+                    'content': content,
+                    'filename': name,
+                }
+            )
+        elif entry_ids:
+            try:
+                for entry_id in entry_ids:
+                    file = demisto.getFilePath(entry_id)
+                    files.append(
+                        {
+                            'content': read_base64encoded_file(file['path']),
+                            'filename': file['name'],
+                        }
+                    )
+            except ValueError:
+                raise DemistoException(f'Could not find file: {entry_id!r}')
+        else:
+            raise DemistoException('A file must be provided. Use file_content and file_name OR entry_id')
+
         return {
             'email': args.pop('reporter_email'),
             'reason': args.pop('reason', None),
             'files': files,
         }
 
-    validate_args(args)
     response = client.file_report_submit(
         args_to_body(args)
     )

@@ -84,7 +84,7 @@ tasks:
       - "8"
     scriptarguments:
       attack:
-        simple: https://www.amazon.com/${RandomString}
+        simple: https://www.example.com/${RandomString}
       attack_type:
         complex:
           root: Netcraft.AttackType

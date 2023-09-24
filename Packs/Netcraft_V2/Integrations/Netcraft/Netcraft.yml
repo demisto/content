@@ -119,8 +119,7 @@ script:
     - auto: PREDEFINED
       description: |
         Should be set to true if the reported content contains or is related to a computer virus.
-        This is used to determine the correct attack type in the case where the type parameter has not been provided.
-        This argument is required for all malware attacks where the type parameter has not been provided.
+        This is used to determine the correct attack type in the case where the attack_type argument has not been provided.
       name: malware
       predefined:
       - 'true'
@@ -726,10 +725,10 @@ script:
       name: state
       auto: PREDEFINED
       predefined:
-      - processing
-      - no threats
-      - suspicious
-      - malicious
+      - Processing
+      - No Threats
+      - Suspicious
+      - Malicious
     - description: Filter the submissions by words contained in the submission reason.
       name: submission_reason
     - description: Filter the submissions by submitter email.

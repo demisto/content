@@ -449,7 +449,7 @@ class takedown_note_create:
             "full_url": "https://takedown.netcraft.com/api/v1/notes/",
             "params": None,
             "data": {
-                "notify": "true",
+                "notify": True,
                 "takedown_id": "takedown_id",
                 "text": "note_text",
             },
@@ -624,7 +624,7 @@ class submission_list:
         "next_token": "next_token",
         "page_size": "2",
         "source_name": "source_name",
-        "state": "state",
+        "state": "No Threats",
         "submission_reason": "submission_reason",
         "submitter_email": "submitter_email",
         "polling": "false",
@@ -657,7 +657,7 @@ class submission_list:
         "kwargs": {
             "full_url": "https://report.netcraft.com/api/v3/submissions/",
             "params": {
-                "state": "state",
+                "state": "no threats",
                 "source_name": "source_name",
                 "submission_reason": "submission_reason",
                 "submitter_email": "submitter_email",
