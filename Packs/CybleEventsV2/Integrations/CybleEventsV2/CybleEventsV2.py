@@ -46,7 +46,8 @@ COMMAND = {
     "cyble-vision-fetch-iocs": "iocs",
     "test-module": "test",
     "fetch-incidents": "alerts",
-    "update-remote-system": "alerts"
+    "update-remote-system": "alerts",
+    'get-mapping-fields': "alerts"
 }
 
 
@@ -323,9 +324,7 @@ def cyble_events(client, method, token, url, args, base_url, last_run, hide_cvv_
     input_params['from_da'] = arg_to_number(args.get('from', 0))
     input_params['limit'] = MAX_ALERTS
 
-    # input_params['limit'] = arg_to_number(args.get('limit', 10))
-
-    max_fetch = arg_to_number(demisto.params().get('max_fetch', 0))
+    max_fetch = arg_to_number(demisto.params().get('max_fetch', 1))
 
     if skip:
         validate_input(args, False)
@@ -420,6 +419,17 @@ def cyble_events(client, method, token, url, args, base_url, last_run, hide_cvv_
 
 
 def update_remote_system(client, method, token, args, url):
+    """
+    Updates any changes in any mappable incident to remote server
+    Args:
+        client: instance of client to communicate with server
+        method: Requests method to be used
+        token: API access token
+        url: end point URL
+        args: input args
+
+    Returns: None
+    """
 
     parsed_args = UpdateRemoteSystemArgs(args)
 
@@ -464,7 +474,16 @@ def update_remote_system(client, method, token, args, url):
     return None
 
 
-def get_mapping_fields(client, token):
+def get_mapping_fields(client, token, url):
+    """
+    Fetches all the fields associated with incidents for creating outgoing mapper
+    Args:
+        client: instance of client to communicate with server
+        token: API access token
+        url: end point URL
+
+    Returns: None
+    """
 
     input_params = {}
 
@@ -481,7 +500,7 @@ def get_mapping_fields(client, token):
 
     final_input_structure = alert_input_structure(input_params)
 
-    alerts = set_request(client, 'POST', token, final_input_structure, 'https://api.cyble.ai/apollo/api/v1/y/alerts')
+    alerts = set_request(client, 'POST', token, final_input_structure, url)
 
     fields = {}
 
@@ -542,7 +561,7 @@ def cyble_alert_group(client, method, token, url, args):
     input_params_alerts_group: Dict[str, Any] = {
         "orderBy": [
             {
-                "created_at": args.get('order_by', "desc")
+                "created_at": args.get('order_by', "asc")
             }
         ],
         "skip": arg_to_number(args.get('from', 0)),
@@ -702,7 +721,7 @@ def main():
             demisto.incidents(data)
 
         elif demisto.command() == 'update-remote-system':
-
+            # Updates changes in incidents to remote system
             if mirror:
                 url = base_url + str(ROUTES[COMMAND[demisto.command()]])
                 return_results(update_remote_system(client, 'PUT', token, args, url))
@@ -710,7 +729,10 @@ def main():
             return
 
         elif demisto.command() == 'get-mapping-fields':
-            return_results(get_mapping_fields(client, token))
+            # Fetches mapping fields for outgoing mapper
+            url = base_url + str(ROUTES[COMMAND[demisto.command()]])
+
+            return_results(get_mapping_fields(client, token, url))
 
         elif demisto.command() == "cyble-vision-subscribed-services":
             # This is the call made when subscribed-services command.

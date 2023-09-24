@@ -96,8 +96,8 @@ script:
       - ioc_type
     - auto: PREDEFINED
       default: true
-      defaultValue: desc
-      description: A sorting order for ioc. Either Ascending or Descending. The default value is Descending.
+      defaultValue: asc
+      description: A sorting order for ioc. Either Ascending or Descending. The default value is Ascending.
       name: order
       predefined:
       - asc
@@ -125,8 +125,8 @@ script:
       name: end_date
       required: true
     - auto: PREDEFINED
-      defaultValue: desc
-      description: A sorting order for the fetched alerts. Either Ascending or Descending. The default value is Descending.
+      defaultValue: asc
+      description: A sorting order for the fetched alerts. Either Ascending or Descending. The default value is Ascending.
       name: order_by
       predefined:
       - asc
@@ -152,8 +152,8 @@ script:
       type: Unknown
   - arguments:
     - auto: PREDEFINED
-      defaultValue: desc
-      description: A sorting order for the fetched alerts. Either Ascending or Descending. he default value is Descending.
+      defaultValue: asc
+      description: A sorting order for the fetched alerts. Either Ascending or Descending. The default value is Ascending.
       name: order_by
       predefined:
       - asc
