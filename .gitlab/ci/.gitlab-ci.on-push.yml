@@ -299,7 +299,8 @@ xpanse-prepare-testing-bucket:
     - exit $EXIT_CODE
   after_script:
     - !reference [.default-after-script]
-    - !reference [ .ssh-config-setup ]
+    - !reference [.install_ssh_keys]
+    - !reference [.ssh-config-setup]
     - section_start "Destroy Instances"
     - python3 ./Tests/scripts/destroy_instances.py --artifacts-dir $ARTIFACTS_FOLDER --env-file $ARTIFACTS_FOLDER/env_results.json --instance-role "$INSTANCE_ROLE"
     - if [ $? -ne 0 ]; then
