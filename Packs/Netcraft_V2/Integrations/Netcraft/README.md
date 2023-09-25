@@ -1348,7 +1348,18 @@ Optionally, mails can be encrypted before upload. If a mail is encrypted before 
 | Netcraft.Submission.warnings.warning | String | The warning. |
 
 #### Command example
-```!netcraft-email-report-submit message="From: suspicious@example.com\nTo: example@netcraft.com\nSubject: Example mail\nDate: Tue, 01 Jan 2019 00:00:00 +0000\nMIME-Version: 1.0\nContent-Type: text/plain; charset="UTF8"\nContent-Transfer-Encoding: 8bit\n\nExample mail body with http://example.com URL." polling="true" reporter_email="reporter@socteam.com"```
+```
+!netcraft-email-report-submit message="""From: fraudster@example.com
+To: example@netcraft.com
+Subject: Example mail
+Date: Tue, 01 Jan 2019 00:00:00 +0000
+MIME-Version: 1.0
+Content-Type: text/plain; charset="UTF8"
+Content-Transfer-Encoding: 8bit
+
+Example mail body with http://example.com URL.
+""" reporter_email="reporter@socteam.com"
+```
 
 #### Context Example
 ```json

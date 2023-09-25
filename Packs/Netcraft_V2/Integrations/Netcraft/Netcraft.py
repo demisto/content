@@ -841,7 +841,7 @@ def submission_list_command(args: dict, client: Client) -> CommandResults:
         return submission_list(args, client)
 
 
-def handle_submission_report(args: dict, response: dict, client: Client) -> CommandResults:
+def sumbmission_report_results(args: dict, response: dict, client: Client) -> CommandResults:
     '''Handle the response from a submission report endpoint and poll if needed.'''
 
     if not argToBoolean(args['polling']):
@@ -895,7 +895,7 @@ def file_report_submit_command(args: dict, client: Client) -> CommandResults:
     response = client.file_report_submit(
         args_to_body(args)
     )
-    return handle_submission_report(args, response, client)
+    return sumbmission_report_results(args, response, client)
 
 
 def submission_file_list_command(args: dict, client: Client) -> CommandResults:
@@ -950,7 +950,7 @@ def email_report_submit_command(args: dict, client: Client) -> CommandResults:
     response = client.email_report_submit(
         {'email': args.pop('reporter_email')} | pop_keys(args, 'message', 'password')
     )
-    return handle_submission_report(args, response, client)
+    return sumbmission_report_results(args, response, client)
 
 
 def submission_mail_get_command(args: dict, client: Client) -> CommandResults:
@@ -1000,7 +1000,7 @@ def url_report_submit_command(args: dict, client: Client) -> CommandResults:
             {'url': url} for url in argToList(args.pop('urls'))
         ]
     })
-    return handle_submission_report(args, response, client)
+    return sumbmission_report_results(args, response, client)
 
 
 def submission_url_list_command(args: dict, client: Client) -> CommandResults:
