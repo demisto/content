@@ -47,7 +47,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | SrcIPAddress | The remote IP address which executed the process | incident.xdralerts.actionremoteip | Optional |
 | alerts_ids | The ID's of the relevant alerts | incident.xdralerts.alert_id | Optional |
 | AutoRemediation | Whether remediation will be run automatically or manually. If set to "True" - remediation will be automatic. | false | Optional |
-| LOLBASFeedLimit | LOLBAS Feed results limit | 100 | Optional |
+| LOLBASFeedLimit | LOLBAS Feed results limit. | 100 | Optional |
 | EndpointIDs | The IDs of the victim endpoint | incident.xdralerts.endpoint_id | Optional |
 
 ## Playbook Outputs
