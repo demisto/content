@@ -21,10 +21,10 @@
                 "Cloud Region List": {
                     "simple": "cloud_region"
                 },
-                "Vertex ID": {
+                "CrowdStrike Falcon Vertex ID": {
                     "simple": "vertex_id"
                 },
-                "Vertex Type": {
+                "CrowdStrike Falcon Vertex Type": {
                     "simple": "vertex_type"
                 },
                 "Event ID": {
