@@ -70,7 +70,7 @@ attack_report_readable = """### Netcraft Takedown
 
 submission_url_list_readable = """### Submission URLs
 |UUID|URL|Hostname|Classification|URL Classification Log|
-|---|---|---|---|---|---|
+|---|---|---|---|---|
 | 46b1921f9b4e4b34b547bdf20c0c0263 | http://example.com/ | example.com | string | - date: 1000000000<br>  from_state: processing<br>  to_state: no threats<br> |
 """
 

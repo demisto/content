@@ -1,19 +1,19 @@
 id: Test - Netcraft
-version: 39
-vcShouldKeepItemLegacyProdMachine: false
+version: -1
 name: Test - Netcraft
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: efbe82b4-3884-4cc7-81d3-1793d9595eed
+    taskid: 2ae59ef3-d523-42f8-87f6-ab7cbb2c98e9
     type: start
     task:
-      id: efbe82b4-3884-4cc7-81d3-1793d9595eed
+      id: 2ae59ef3-d523-42f8-87f6-ab7cbb2c98e9
       version: -1
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -22,7 +22,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 592.5,
           "y": 50
         }
       }
@@ -35,10 +35,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: f60919e6-7179-405d-80f7-77d710720c44
+    taskid: 4a38264b-bd63-41aa-8bc3-4485da9930ec
     type: regular
     task:
-      id: f60919e6-7179-405d-80f7-77d710720c44
+      id: 4a38264b-bd63-41aa-8bc3-4485da9930ec
       version: -1
       name: DeleteContext
       script: DeleteContext
@@ -56,7 +56,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 592.5,
           "y": 195
         }
       }
@@ -69,16 +69,16 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 3a8f3ee3-971d-4ce1-8ee4-24126be9a9f4
+    taskid: 540a2f79-4402-4624-8392-cd7f2829c249
     type: regular
     task:
-      id: 3a8f3ee3-971d-4ce1-8ee4-24126be9a9f4
+      id: 540a2f79-4402-4624-8392-cd7f2829c249
       version: -1
       name: netcraft-attack-report
-      script: Netcraft|||netcraft-attack-report
+      script: Netcraft V2|||netcraft-attack-report
       type: regular
       iscommand: true
-      brand: Netcraft
+      brand: Netcraft V2
     nexttasks:
       '#none#':
       - "8"
@@ -96,9 +96,9 @@ tasks:
                 value:
                   simple: "0"
       comment:
-        simple: Very malicious
+        simple: Test attack report.
       customer_label:
-        simple: Test Playbook run
+        simple: Test customer label
       inactive:
         simple: "true"
       tags:
@@ -108,7 +108,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 162.5,
           "y": 1040
         }
       }
@@ -121,37 +121,35 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 6e3bf272-cbd3-4fe8-80a2-10baae1df269
+    taskid: 9272bcde-6e43-476f-84ca-3f820f72db9a
     type: regular
     task:
-      id: 6e3bf272-cbd3-4fe8-80a2-10baae1df269
+      id: 9272bcde-6e43-476f-84ca-3f820f72db9a
       version: -1
       name: netcraft-takedown-list
-      script: Netcraft|||netcraft-takedown-list
+      script: Netcraft V2|||netcraft-takedown-list
       type: regular
       iscommand: true
-      brand: Netcraft
+      brand: Netcraft V2
     nexttasks:
       '#none#':
-      - "34"
+      - "42"
     scriptarguments:
-      attack_types:
-        simple: coronavirus
-      date_from:
-        simple: last week
-      date_to:
-        simple: yesterday
+      all_results:
+        simple: "true"
       escalated:
         simple: "No"
-      limit:
-        simple: "10"
+      sort:
+        simple: Id
+      statuses:
+        simple: unverified
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1915
+          "x": 162.5,
+          "y": 1740
         }
       }
     note: false
@@ -163,22 +161,26 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 9f984d39-188d-481d-86fc-7ee7bc6c4772
+    taskid: 15578e78-8104-4196-8bf7-dfae7aeedae9
     type: regular
     task:
-      id: 9f984d39-188d-481d-86fc-7ee7bc6c4772
+      id: 15578e78-8104-4196-8bf7-dfae7aeedae9
       version: -1
       name: netcraft-takedown-update
-      script: Netcraft|||netcraft-takedown-update
+      script: Netcraft V2|||netcraft-takedown-update
       type: regular
       iscommand: true
-      brand: Netcraft
+      brand: Netcraft V2
     nexttasks:
       '#none#':
       - "4"
     scriptarguments:
       add_tags:
         simple: smishing,fake-shop-logo
+      customer_label:
+        simple: Test customer label
+      description:
+        simple: Test description
       remove_tags:
         simple: coronavirus
       retry-count:
@@ -192,8 +194,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1740
+          "x": 162.5,
+          "y": 1565
         }
       }
     note: false
@@ -205,34 +207,47 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 7b46a9ce-cc48-4d23-88c1-d5497b059dbb
+    taskid: 88323e19-7f9c-46ac-8b37-a0e424afdc0c
     type: regular
     task:
-      id: 7b46a9ce-cc48-4d23-88c1-d5497b059dbb
+      id: 88323e19-7f9c-46ac-8b37-a0e424afdc0c
       version: -1
       name: netcraft-takedown-escalate
-      script: Netcraft|||netcraft-takedown-escalate
+      script: Netcraft V2|||netcraft-takedown-escalate
       type: regular
       iscommand: true
-      brand: Netcraft
+      brand: Netcraft V2
     nexttasks:
       '#none#':
-      - "6"
+      - "34"
     scriptarguments:
       retry-count:
-        simple: "3"
+        simple: "0"
       retry-interval:
-        simple: "5"
+        simple: "0"
       takedown_id:
-        simple: ${Netcraft.Takedown.id}
+        complex:
+          root: Netcraft.Takedown
+          filters:
+          - - operator: isTrue
+              left:
+                value:
+                  simple: Netcraft.Takedown.authgiven
+                iscontext: true
+          accessor: id
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
     separatecontext: false
-    continueonerror: true
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1565
+          "y": 2090
         }
       }
     note: false
@@ -244,22 +259,22 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: c310f76f-12b8-46b8-855b-ba2d943ade30
+    taskid: 66ef17bc-7b23-4e7d-8b7c-244751acacfa
     type: regular
     task:
-      id: c310f76f-12b8-46b8-855b-ba2d943ade30
+      id: 66ef17bc-7b23-4e7d-8b7c-244751acacfa
       version: -1
       name: netcraft-takedown-note-create
-      script: Netcraft|||netcraft-takedown-note-create
+      script: Netcraft V2|||netcraft-takedown-note-create
       type: regular
       iscommand: true
-      brand: Netcraft
+      brand: Netcraft V2
     nexttasks:
       '#none#':
       - "10"
     scriptarguments:
       note_text:
-        simple: TPB is running
+        simple: Test note text
       notify:
         simple: "false"
       takedown_id:
@@ -269,7 +284,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 162.5,
           "y": 1215
         }
       }
@@ -282,19 +297,19 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: a7db322b-e48b-41da-8e6b-405001f56537
+    taskid: 34fcdcfa-4227-42d4-8f72-2a396c78bb8f
     type: regular
     task:
-      id: a7db322b-e48b-41da-8e6b-405001f56537
+      id: 34fcdcfa-4227-42d4-8f72-2a396c78bb8f
       version: -1
       name: netcraft-takedown-note-list
-      script: Netcraft|||netcraft-takedown-note-list
+      script: Netcraft V2|||netcraft-takedown-note-list
       type: regular
       iscommand: true
-      brand: Netcraft
+      brand: Netcraft V2
     nexttasks:
       '#none#':
-      - "7"
+      - "6"
     scriptarguments:
       all_results:
         simple: "true"
@@ -305,7 +320,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 162.5,
           "y": 1390
         }
       }
@@ -318,16 +333,16 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: fc89757d-b9bd-4ad8-89d3-fe0eb4dd8ece
+    taskid: 29597d12-4639-4e42-8382-cab7136efdbc
     type: regular
     task:
-      id: fc89757d-b9bd-4ad8-89d3-fe0eb4dd8ece
+      id: 29597d12-4639-4e42-8382-cab7136efdbc
       version: -1
       name: netcraft-attack-type-list
-      script: Netcraft|||netcraft-attack-type-list
+      script: Netcraft V2|||netcraft-attack-type-list
       type: regular
       iscommand: true
-      brand: Netcraft
+      brand: Netcraft V2
     nexttasks:
       '#none#':
       - "2"
@@ -339,7 +354,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 162.5,
           "y": 865
         }
       }
@@ -352,16 +367,16 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: f34468e8-50b1-4aa3-8d00-9b35c5c2e470
+    taskid: 0771fb9a-2381-4e18-883f-cc726f11c388
     type: regular
     task:
-      id: f34468e8-50b1-4aa3-8d00-9b35c5c2e470
+      id: 0771fb9a-2381-4e18-883f-cc726f11c388
       version: -1
       name: netcraft-submission-list
-      script: Netcraft|||netcraft-submission-list
+      script: Netcraft V2|||netcraft-submission-list
       type: regular
       iscommand: true
-      brand: Netcraft
+      brand: Netcraft V2
     nexttasks:
       '#none#':
       - "15"
@@ -383,7 +398,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
+          "x": 1032.5,
           "y": 1040
         }
       }
@@ -396,16 +411,16 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: 4741cb98-ef3e-474d-839a-d74a54f1d1af
+    taskid: 861058c2-e08e-42c0-804e-0e0b8ca1629b
     type: regular
     task:
-      id: 4741cb98-ef3e-474d-839a-d74a54f1d1af
+      id: 861058c2-e08e-42c0-804e-0e0b8ca1629b
       version: -1
       name: netcraft-submission-list with UUID
-      script: Netcraft|||netcraft-submission-list
+      script: Netcraft V2|||netcraft-submission-list
       type: regular
       iscommand: true
-      brand: Netcraft
+      brand: Netcraft V2
     nexttasks:
       '#none#':
       - "38"
@@ -427,7 +442,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
+          "x": 1032.5,
           "y": 1215
         }
       }
@@ -440,16 +455,16 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: d96d9922-ba83-4204-8e12-d1efe56dd3c4
+    taskid: 7aadd9ce-7057-42f7-8729-f36e3716cb6c
     type: regular
     task:
-      id: d96d9922-ba83-4204-8e12-d1efe56dd3c4
+      id: 7aadd9ce-7057-42f7-8729-f36e3716cb6c
       version: -1
       name: netcraft-file-report-submit
-      script: Netcraft|||netcraft-file-report-submit
+      script: Netcraft V2|||netcraft-file-report-submit
       type: regular
       iscommand: true
-      brand: Netcraft
+      brand: Netcraft V2
     nexttasks:
       '#none#':
       - "18"
@@ -465,7 +480,7 @@ tasks:
       polling:
         simple: "true"
       reason:
-        simple: the file may be malicious
+        simple: Test submission.
       reporter_email:
         simple: spadan@paloaltonetworks.com
     separatecontext: false
@@ -473,8 +488,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 1565
+          "x": 602.5,
+          "y": 1740
         }
       }
     note: false
@@ -486,16 +501,16 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: 6c2b9f69-7a15-4d57-892d-d624a537ab8c
+    taskid: 52463f7c-fe99-4201-8d2a-e91c64801e99
     type: regular
     task:
-      id: 6c2b9f69-7a15-4d57-892d-d624a537ab8c
+      id: 52463f7c-fe99-4201-8d2a-e91c64801e99
       version: -1
       name: netcraft-submission-file-list
-      script: Netcraft|||netcraft-submission-file-list
+      script: Netcraft V2|||netcraft-submission-file-list
       type: regular
       iscommand: true
-      brand: Netcraft
+      brand: Netcraft V2
     nexttasks:
       '#none#':
       - "20"
@@ -509,8 +524,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 1740
+          "x": 602.5,
+          "y": 1915
         }
       }
     note: false
@@ -522,16 +537,16 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: fab80ea9-0361-4a43-858c-0173ed276573
+    taskid: 3e5e5e80-072f-4c03-87cc-b59bb1bbb9bb
     type: regular
     task:
-      id: fab80ea9-0361-4a43-858c-0173ed276573
+      id: 3e5e5e80-072f-4c03-87cc-b59bb1bbb9bb
       version: -1
       name: netcraft-file-screenshot-get
-      script: Netcraft|||netcraft-file-screenshot-get
+      script: Netcraft V2|||netcraft-file-screenshot-get
       type: regular
       iscommand: true
-      brand: Netcraft
+      brand: Netcraft V2
     nexttasks:
       '#none#':
       - "34"
@@ -545,8 +560,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 1915
+          "x": 602.5,
+          "y": 2090
         }
       }
     note: false
@@ -558,16 +573,16 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: 98fa9bf2-00d4-4017-8e36-fe7d52f98f9e
+    taskid: 0e617bba-6255-43c2-8e85-e89ca1f8e837
     type: regular
     task:
-      id: 98fa9bf2-00d4-4017-8e36-fe7d52f98f9e
+      id: 0e617bba-6255-43c2-8e85-e89ca1f8e837
       version: -1
       name: netcraft-email-report-submit
-      script: Netcraft|||netcraft-email-report-submit
+      script: Netcraft V2|||netcraft-email-report-submit
       type: regular
       iscommand: true
-      brand: Netcraft
+      brand: Netcraft V2
     nexttasks:
       '#none#':
       - "24"
@@ -594,8 +609,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 1565
+          "x": 1032.5,
+          "y": 1740
         }
       }
     note: false
@@ -607,16 +622,16 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: 87e0c36c-a309-483f-8c66-cb559a237409
+    taskid: 01be780b-82b8-42ba-85a3-8e88ef8563e1
     type: regular
     task:
-      id: 87e0c36c-a309-483f-8c66-cb559a237409
+      id: 01be780b-82b8-42ba-85a3-8e88ef8563e1
       version: -1
       name: netcraft-submission-mail-get
-      script: Netcraft|||netcraft-submission-mail-get
+      script: Netcraft V2|||netcraft-submission-mail-get
       type: regular
       iscommand: true
-      brand: Netcraft
+      brand: Netcraft V2
     nexttasks:
       '#none#':
       - "26"
@@ -628,8 +643,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 1740
+          "x": 1032.5,
+          "y": 1915
         }
       }
     note: false
@@ -641,16 +656,16 @@ tasks:
     isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: 693db984-e9db-412a-8f5b-7d6dc69b3131
+    taskid: aa7033a2-61fc-4042-824c-397056e9c7bb
     type: regular
     task:
-      id: 693db984-e9db-412a-8f5b-7d6dc69b3131
+      id: aa7033a2-61fc-4042-824c-397056e9c7bb
       version: -1
       name: netcraft-mail-screenshot-get
-      script: Netcraft|||netcraft-mail-screenshot-get
+      script: Netcraft V2|||netcraft-mail-screenshot-get
       type: regular
       iscommand: true
-      brand: Netcraft
+      brand: Netcraft V2
     nexttasks:
       '#none#':
       - "34"
@@ -662,8 +677,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 1915
+          "x": 1032.5,
+          "y": 2090
         }
       }
     note: false
@@ -675,16 +690,16 @@ tasks:
     isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: 2a2d2f21-e443-4c4f-8eb7-b3dde6be847b
+    taskid: e3f29cdf-51b6-47bf-8747-231a725c8d6e
     type: regular
     task:
-      id: 2a2d2f21-e443-4c4f-8eb7-b3dde6be847b
+      id: e3f29cdf-51b6-47bf-8747-231a725c8d6e
       version: -1
       name: netcraft-url-report-submit
-      script: Netcraft|||netcraft-url-report-submit
+      script: Netcraft V2|||netcraft-url-report-submit
       type: regular
       iscommand: true
-      brand: Netcraft
+      brand: Netcraft V2
     nexttasks:
       '#none#':
       - "30"
@@ -696,7 +711,7 @@ tasks:
       polling:
         simple: "true"
       reason:
-        simple: The urls are probably malicious because of "${RandomString}"
+        simple: 'Test submission with random string: "${RandomString}"'
       reporter_email:
         simple: spadan@paloaltonetworks.com
       timeout:
@@ -708,7 +723,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1340,
+          "x": 1472.5,
           "y": 1565
         }
       }
@@ -721,34 +736,30 @@ tasks:
     isautoswitchedtoquietmode: false
   "30":
     id: "30"
-    taskid: 3f3f1d50-9d14-4285-832a-58e9913dccaa
+    taskid: eef77bb1-9e90-4298-8ff3-369243a5fd8d
     type: regular
     task:
-      id: 3f3f1d50-9d14-4285-832a-58e9913dccaa
+      id: eef77bb1-9e90-4298-8ff3-369243a5fd8d
       version: -1
       name: netcraft-submission-url-list
-      script: Netcraft|||netcraft-submission-url-list
+      script: Netcraft V2|||netcraft-submission-url-list
       type: regular
       iscommand: true
-      brand: ""
+      brand: Netcraft V2
     nexttasks:
       '#none#':
-      - "32"
+      - "43"
     scriptarguments:
       limit:
         simple: "50"
-      page:
-        simple: "2"
-      page_size:
-        simple: "2"
       submission_uuid:
-        simple: 0qQt98P04o0qk46UXveNsCHhUN7zLopY
+        simple: ${urlReportId}
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 1340,
+          "x": 1472.5,
           "y": 1740
         }
       }
@@ -761,33 +772,56 @@ tasks:
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: 0ae0a465-217c-4c03-8098-69e51663673e
+    taskid: b7de5e8c-fae0-416b-8354-382f09c35d81
     type: regular
     task:
-      id: 0ae0a465-217c-4c03-8098-69e51663673e
+      id: b7de5e8c-fae0-416b-8354-382f09c35d81
       version: -1
       name: netcraft-url-screenshot-get
-      script: Netcraft|||netcraft-url-screenshot-get
+      script: Netcraft V2|||netcraft-url-screenshot-get
       type: regular
       iscommand: true
-      brand: Netcraft
+      brand: Netcraft V2
     nexttasks:
       '#none#':
       - "34"
     scriptarguments:
       screenshot_hash:
-        simple: 06f8715ba1b1ca5dee4af05e98bbc63a
+        complex:
+          root: Netcraft.SubmissionURL.screenshots
+          accessor: hash
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
       submission_uuid:
-        simple: 0qQt98P04o0qk46UXveNsCHhUN7zLopY
+        simple: ${urlReportId}
       url_uuid:
-        simple: BZqSBm5i4KIoCq6TItXLWKZwGAm3nN08
+        complex:
+          root: Netcraft.SubmissionURL
+          filters:
+          - - operator: isExists
+              left:
+                value:
+                  simple: Netcraft.SubmissionURL.screenshots.hash
+                iscontext: true
+          accessor: uuid
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
     separatecontext: false
+    continueonerror: true
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 1340,
-          "y": 1915
+          "x": 1585,
+          "y": 2090
         }
       }
     note: false
@@ -799,22 +833,23 @@ tasks:
     isautoswitchedtoquietmode: false
   "34":
     id: "34"
-    taskid: 9e2eb721-054e-4ba4-8b6d-310be9fe396f
+    taskid: d211fcf9-aaa0-4b1a-816a-2c25360faaca
     type: title
     task:
-      id: 9e2eb721-054e-4ba4-8b6d-310be9fe396f
+      id: d211fcf9-aaa0-4b1a-816a-2c25360faaca
       version: -1
       name: Test Done
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 2090
+          "x": 817.5,
+          "y": 2265
         }
       }
     note: false
@@ -826,15 +861,16 @@ tasks:
     isautoswitchedtoquietmode: false
   "35":
     id: "35"
-    taskid: 3c7e12bc-174a-418b-8e7d-58874362387e
+    taskid: 051cf86c-8259-4570-899c-604300f3a1cf
     type: title
     task:
-      id: 3c7e12bc-174a-418b-8e7d-58874362387e
+      id: 051cf86c-8259-4570-899c-604300f3a1cf
       version: -1
       name: Submission Service
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "14"
@@ -843,7 +879,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
+          "x": 1032.5,
           "y": 880
         }
       }
@@ -856,15 +892,16 @@ tasks:
     isautoswitchedtoquietmode: false
   "36":
     id: "36"
-    taskid: e4af847f-1799-41c8-8e26-00241a1bd981
+    taskid: a41a6b4e-b3cc-4bf0-85e7-c40acb553767
     type: title
     task:
-      id: e4af847f-1799-41c8-8e26-00241a1bd981
+      id: a41a6b4e-b3cc-4bf0-85e7-c40acb553767
       version: -1
       name: Takedown Service
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "12"
@@ -873,7 +910,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 162.5,
           "y": 720
         }
       }
@@ -886,15 +923,16 @@ tasks:
     isautoswitchedtoquietmode: false
   "37":
     id: "37"
-    taskid: c8da53ac-6b50-49d0-843d-ae8f86e8bc49
+    taskid: ff5ca91b-6c77-48da-8440-1d3ae58e98d4
     type: title
     task:
-      id: c8da53ac-6b50-49d0-843d-ae8f86e8bc49
+      id: ff5ca91b-6c77-48da-8440-1d3ae58e98d4
       version: -1
       name: Report URLs
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "28"
@@ -903,7 +941,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1340,
+          "x": 1472.5,
           "y": 1405
         }
       }
@@ -916,15 +954,16 @@ tasks:
     isautoswitchedtoquietmode: false
   "38":
     id: "38"
-    taskid: 12421445-bfe0-42d1-82e2-9dd3e0168416
+    taskid: 21ee4353-59e3-4a50-8645-9de8fac337f7
     type: title
     task:
-      id: 12421445-bfe0-42d1-82e2-9dd3e0168416
+      id: 21ee4353-59e3-4a50-8645-9de8fac337f7
       version: -1
       name: Report Files
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "16"
@@ -933,8 +972,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 1405
+          "x": 602.5,
+          "y": 1580
         }
       }
     note: false
@@ -946,15 +985,16 @@ tasks:
     isautoswitchedtoquietmode: false
   "39":
     id: "39"
-    taskid: 932095ee-9b60-4366-8025-a8862a731b4a
+    taskid: 2444ca0f-b496-4b18-86e8-b792c7130ad8
     type: title
     task:
-      id: 932095ee-9b60-4366-8025-a8862a731b4a
+      id: 2444ca0f-b496-4b18-86e8-b792c7130ad8
       version: -1
       name: Report Mails
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "22"
@@ -963,8 +1003,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 1405
+          "x": 1032.5,
+          "y": 1580
         }
       }
     note: false
@@ -976,10 +1016,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "40":
     id: "40"
-    taskid: 46a98517-71f6-41ec-8bd2-14080177d756
+    taskid: 7a851a86-53d5-498e-83ce-5ff821e247fc
     type: regular
     task:
-      id: 46a98517-71f6-41ec-8bd2-14080177d756
+      id: 7a851a86-53d5-498e-83ce-5ff821e247fc
       version: -1
       name: Generate random string
       description: Generates random string
@@ -1006,7 +1046,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 592.5,
           "y": 370
         }
       }
@@ -1019,10 +1059,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "41":
     id: "41"
-    taskid: 144cfdd0-6bd0-4fd6-8fb3-b5a7498bad83
+    taskid: b06f96a3-6bda-471f-8cba-167ce15057fd
     type: regular
     task:
-      id: 144cfdd0-6bd0-4fd6-8fb3-b5a7498bad83
+      id: b06f96a3-6bda-471f-8cba-167ce15057fd
       version: -1
       name: Generate random number
       description: Generates random string
@@ -1054,8 +1094,95 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 592.5,
           "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "42":
+    id: "42"
+    taskid: d2c0b380-5d8f-488c-8672-a8ba08eea316
+    type: condition
+    task:
+      id: d2c0b380-5d8f-488c-8672-a8ba08eea316
+      version: -1
+      name: Are there authorised takedowns?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "34"
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Netcraft.Takedown
+                filters:
+                - - operator: isTrue
+                    left:
+                      value:
+                        simple: Netcraft.Takedown.authgiven
+                      iscontext: true
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1915
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "43":
+    id: "43"
+    taskid: aa45902c-bfb1-468a-803a-3a2bac366322
+    type: condition
+    task:
+      id: aa45902c-bfb1-468a-803a-3a2bac366322
+      version: -1
+      name: Are there URL screenshots?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "34"
+      "yes":
+      - "32"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Netcraft.SubmissionURL.screenshots.hash
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1472.5,
+          "y": 1915
         }
       }
     note: false
@@ -1070,8 +1197,8 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2105,
-        "width": 1670,
+        "height": 2280,
+        "width": 1915,
         "x": 50,
         "y": 50
       }
@@ -1079,3 +1206,5 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 6.9.0
+description: Test playbook for Netcraft

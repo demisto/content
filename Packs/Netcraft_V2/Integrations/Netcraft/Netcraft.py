@@ -555,32 +555,32 @@ def takedown_list_command(args: dict, client: Client) -> CommandResults:
             'region': args.get('region') or PARAMS['region']
         }
 
+    def response_to_context(response: list[dict]) -> list[dict]:
+        for takedown in response:
+            takedown['authgiven'] = int_to_bool(takedown.get('authgiven'))
+        return response
+
     def response_to_readable(response: list[dict]) -> str:
+        header_map = {
+            'id': 'ID',
+            'authgiven': 'Auth',
+            'target_brand': 'Brand',
+            'attack_type': 'Attack Type',
+            'status': 'Status',
+            'attack_url': 'Attack URL',
+            'date_submitted': 'Date Reported',
+            'last_updated': 'Last Updated',
+            'date_authed': 'Date Authorised',
+            'date_escalated': 'Date Escalated',
+            'first_contact': 'First Contact',
+            'first_inactive': 'First Inactive (Monitoring)',
+            'first_resolved': 'First Resolved'
+        }
         return tableToMarkdown(
             'Netcraft Takedowns',
-            [
-                {
-                    'ID': d.get('id'),
-                    'Auth': int_to_readable_bool(d.get('authgiven')),
-                    'Brand': d.get('target_brand'),
-                    'Attack Type': d.get('attack_type'),
-                    'Status': d.get('status'),
-                    'Attack URL': d.get('attack_url'),
-                    'Date Reported': d.get('date_submitted'),
-                    'Last Updated': d.get('last_updated'),
-                    'Date Authorised': d.get('date_authed') or 'N/A',
-                    'Date Escalated': d.get('date_escalated') or 'N/A',
-                    'First Contact': d.get('first_contact'),
-                    'First Inactive (Monitoring)': d.get('first_inactive') or 'N/A',
-                    'First Resolved': d.get('first_resolved') or 'N/A',
-                }
-                for d in response
-            ],
-            [
-                'ID', 'Auth', 'Brand', 'Attack Type', 'Status', 'Attack URL',
-                'Date Reported', 'Last Updated', 'Date Authorised', 'Date Escalated',
-                'First Contact', 'First Inactive (Monitoring)', 'First Resolved'
-            ],
+            response,
+            list(header_map),
+            headerTransform=header_map.get,
             removeNull=True
         )
 
@@ -588,10 +588,10 @@ def takedown_list_command(args: dict, client: Client) -> CommandResults:
         args_to_params(args)
     )
     return CommandResults(
-        readable_output=response_to_readable(response),
         outputs_prefix='Netcraft.Takedown',
         outputs_key_field='id',
-        outputs=response,
+        outputs=response_to_context(response),
+        readable_output=response_to_readable(response),
     )
 
 
@@ -683,7 +683,8 @@ def takedown_note_list_command(args: dict, client: Client) -> CommandResults:
             'note': 'Note'
         }
         return tableToMarkdown(
-            'Takedown Notes', response, list(header_map),
+            'Takedown Notes', response,
+            list(header_map),
             headerTransform=header_map.get,
             removeNull=True
         )
@@ -901,15 +902,16 @@ def file_report_submit_command(args: dict, client: Client) -> CommandResults:
 def submission_file_list_command(args: dict, client: Client) -> CommandResults:
 
     def response_to_readable(files: list[dict]) -> str:
+        header_map = {
+            'filename': 'Filename',
+            'hash': 'Hash',
+            'file_state': 'Classification',
+        }
         return tableToMarkdown(
             'Submission Files',
             files,
-            ['filename', 'hash', 'file_state'],
-            headerTransform={
-                'filename': 'Filename',
-                'hash': 'Hash',
-                'file_state': 'Classification',
-            }.get,
+            list(header_map),
+            headerTransform=header_map.get,
             removeNull=True,
         )
 
@@ -956,16 +958,17 @@ def email_report_submit_command(args: dict, client: Client) -> CommandResults:
 def submission_mail_get_command(args: dict, client: Client) -> CommandResults:
 
     def response_to_readable(mail: dict) -> str:
+        header_map = {
+            'subject': 'Subject',
+            'from': 'From',
+            'to': 'To',
+            'state': 'Classification',
+        }
         return tableToMarkdown(
             'Submission Mails',
             mail,
-            ['subject', 'from', 'to', 'state'],
-            headerTransform={
-                'subject': 'Subject',
-                'from': 'From',
-                'to': 'To',
-                'state': 'Classification',
-            }.get,
+            list(header_map),
+            headerTransform=header_map.get,
             removeNull=True,
         )
 
