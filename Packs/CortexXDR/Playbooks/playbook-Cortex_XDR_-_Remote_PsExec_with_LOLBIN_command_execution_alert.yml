@@ -1043,7 +1043,7 @@ inputs:
           ignorecase: true
       accessor: alert_id
   required: false
-  description: The ID's of the relevant alerts
+  description: The IDs of the relevant alerts.
   playbookInputQuery:
 - key: AutoRemediation
   value:
