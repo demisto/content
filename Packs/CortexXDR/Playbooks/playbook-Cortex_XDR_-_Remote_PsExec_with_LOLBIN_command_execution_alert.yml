@@ -1025,7 +1025,7 @@ inputs:
       transformers:
       - operator: uniq
   required: false
-  description: The remote IP address which executed the process
+  description: The remote IP address that executed the process.
   playbookInputQuery:
 - key: alerts_ids
   value:
