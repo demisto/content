@@ -492,10 +492,10 @@ script:
       description: Specifies whether Managed Identity is used to access blob storage.
       type: Boolean
   - arguments:
-    - description: Server name
+    - description: Server name.
       name: server_name
       required: true
-    - description: Database name
+    - description: Database name.
       name: db_name
       required: true
     - auto: PREDEFINED
@@ -544,7 +544,7 @@ script:
       description: Threat policy location.
       type: String
     - contextPath: AzureSQL.DBThreatPolicy.id
-      description: Threat policy ID
+      description: Threat policy ID.
       type: String
     - contextPath: AzureSQL.DBThreatPolicy.name
       description: Threat policy name.
@@ -651,7 +651,7 @@ script:
     - contextPath: AzureSQL.ResourceGroup.tags
       description: The tags attached to the resource group.
       type: String
-  dockerimage: demisto/crypto:1.0.0.66562
+  dockerimage: demisto/crypto:1.0.0.74057
   runonce: false
   script: '-'
   subtype: python3
