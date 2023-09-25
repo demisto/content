@@ -6,17 +6,17 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Cortex ASM - ServiceNow CMDB Enrichment
-* Cortex ASM - Rapid7 Enrichment
-* Cortex ASM - Tenable.io Enrichment
-* Cortex ASM - Splunk Enrichment
-* Cortex ASM - Azure Enrichment
-* Cortex ASM - Qualys Enrichment
-* Cortex ASM - On Prem Enrichment
 * Cortex ASM - AWS Enrichment
+* Cortex ASM - Azure Enrichment
 * Cortex ASM - GCP Enrichment
+* Cortex ASM - On Prem Enrichment
 * Cortex ASM - Prisma Cloud Enrichment
+* Cortex ASM - Qualys Enrichment
+* Cortex ASM - Rapid7 Enrichment
 * Cortex ASM - Service Ownership
+* Cortex ASM - ServiceNow CMDB Enrichment
+* Cortex ASM - Splunk Enrichment
+* Cortex ASM - Tenable.io Enrichment
 
 ### Integrations
 
