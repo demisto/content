@@ -537,10 +537,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: bc6cff21-c1d2-4e5c-8b24-2873597b2c9c
+    taskid: 547608f7-8933-4aed-8cd1-ce8179b4be93
     type: regular
     task:
-      id: bc6cff21-c1d2-4e5c-8b24-2873597b2c9c
+      id: 547608f7-8933-4aed-8cd1-ce8179b4be93
       version: -1
       name: Set cloud grid field
       description: |-
@@ -564,10 +564,8 @@ tasks:
         simple: n/a
       val3:
         complex:
-          root: AWS.EC2.Instances.NetworkInterfaces.Association
-          accessor: IpOwnerId
-          transformers:
-          - operator: FirstArrayElement
+          root: AWS.EC2.SecurityGroups
+          accessor: OwnerId
       val4:
         complex:
           root: AWS.EC2.Instances
@@ -720,9 +718,6 @@ tasks:
       iscommand: false
       brand: ""
       description: ''
-    nexttasks:
-      '#none#':
-      - "51"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -739,6 +734,9 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    nexttasks:
+      '#none#':
+      - "51"
   "22":
     id: "22"
     taskid: 83764637-09bd-4581-81b2-16b469347e0e
@@ -1712,6 +1710,8 @@ inputs:
   description: Attack Surface Management Rule ID.
   playbookInputQuery:
 outputs: []
-fromversion: 6.5.0
 tests:
 - No tests (auto formatted)
+fromversion: 6.5.0
+contentitemexportablefields:
+  contentitemfields: {}
