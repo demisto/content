@@ -109,3 +109,6 @@ ignore=BA124
 [file:XCloudRegionsPieWidget.yml]
 ignore=BA124
 
+[file:incidentfields-CommandLine_Verdict.json]
+ignore=IF113
+
