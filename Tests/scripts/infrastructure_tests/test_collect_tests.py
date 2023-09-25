@@ -666,7 +666,24 @@ def test_upload_all_packs(monkeypatch, case_mocker, expected_tests: set[str] | N
     then:   Make sure all packs are collected to the pack_to_upload, and the pack_to_install list is empty.
     """
     _test(monkeypatch, case_mocker, collector_class=UploadAllCollector,
-          expected_tests=expected_tests, expected_packs=expected_packs,
-          expected_packs_to_upload=expected_packs_to_upload,
+          expected_tests=expected_tests, expected_packs=expected_packs,     # type: ignore
+          expected_packs_to_upload=expected_packs_to_upload,    # type: ignore
           expected_machines=expected_machines, expected_modeling_rules_to_test=expected_modeling_rules_to_test,
-          collector_class_args=collector_class_args)
+          collector_class_args=collector_class_args)    # type: ignore
+
+
+@pytest.mark.parametrize('marketplaces, expected_results',
+                         [(['xsoar'], {MarketplaceVersions.XSOAR,
+                                     MarketplaceVersions.XSOAR_SAAS}),
+                          (['xsoar_saas'], {MarketplaceVersions.XSOAR_SAAS}),
+                          (['xsoar_on_prem'], {MarketplaceVersions.XSOAR_ON_PREM, MarketplaceVersions.XSOAR}),
+                          (['marketplacev2', 'xsoar'], {MarketplaceVersions.XSOAR, MarketplaceVersions.XSOAR_SAAS, MarketplaceVersions.MarketplaceV2}),
+                          ([], None)])
+def test_handle_xsoar_marketplces(marketplaces, expected_results):
+    from Tests.scripts.collect_tests.utils import DictBased
+    metadata_dict = {'marketplaces': marketplaces}
+    dict_based_obj = DictBased(metadata_dict)
+    if dict_based_obj.marketplaces:
+        assert set(dict_based_obj.marketplaces) == expected_results
+    else:
+        assert dict_based_obj.marketplaces is None

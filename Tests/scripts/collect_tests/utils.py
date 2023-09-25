@@ -1,7 +1,7 @@
 from configparser import ConfigParser, MissingSectionHeaderError
 from enum import Enum
 from pathlib import Path
-from typing import Any, NamedTuple
+from typing import Any, NamedTuple, Optional, Tuple
 from collections.abc import Iterator
 
 from demisto_sdk.commands.common.constants import FileType, MarketplaceVersions
@@ -88,8 +88,7 @@ class DictBased:
         self.from_version: Version | NegativeInfinityType = self._calculate_from_version()
         self.to_version: Version | InfinityType = self._calculate_to_version()
         self.version_range = VersionRange(self.from_version, self.to_version)
-        self.marketplaces: tuple[MarketplaceVersions, ...] | None = \
-            tuple(MarketplaceVersions(v) for v in self.get('marketplaces', (), warn_if_missing=False)) or None
+        self.marketplaces: tuple[MarketplaceVersions, ...] | None = self._handle_xsoar_marketplaces()
 
     def get(self, key: str, default: Any = None, warn_if_missing: bool = True, warning_comment: str = ''):
         """
@@ -125,6 +124,23 @@ class DictBased:
         ):
             return Version(value)
         return version.Infinity
+
+    def _handle_xsoar_marketplaces(self) -> Optional[Tuple[MarketplaceVersions, ...]]:
+        '''
+        If xsoar marketplace supported add xsoar_saas marketplace.
+        If xsoar_on_prem marketplace supported add xsoar marketplace.
+        '''
+        pack_marketplaces = set(MarketplaceVersions(v) for v in self.get('marketplaces', (), warn_if_missing=False)) or None
+        if not pack_marketplaces:
+            return pack_marketplaces
+
+        if MarketplaceVersions.XSOAR in pack_marketplaces:
+            pack_marketplaces.add(MarketplaceVersions.XSOAR_SAAS)
+
+        if MarketplaceVersions.XSOAR_ON_PREM in pack_marketplaces:
+            pack_marketplaces.add(MarketplaceVersions.XSOAR)
+
+        return tuple(pack_marketplaces)
 
 
 class DictFileBased(DictBased):

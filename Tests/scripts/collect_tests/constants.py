@@ -38,7 +38,6 @@ DEFAULT_MARKETPLACE_WHEN_MISSING: MarketplaceVersions = [
     MarketplaceVersions.XSOAR_SAAS,
     MarketplaceVersions.MarketplaceV2,
     MarketplaceVersions.XPANSE
-    # @TODO:  Why is expanse in the default marketplaces?
 ]
 
 SKIPPED_CONTENT_ITEMS__NOT_UNDER_PACK: set[str] = {

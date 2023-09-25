@@ -5,7 +5,7 @@ from abc import ABC, abstractmethod
 from argparse import ArgumentParser
 from enum import Enum
 from pathlib import Path
-from typing import Optional, Tuple
+from typing import Optional
 from collections.abc import Iterable, Sequence
 
 from demisto_sdk.commands.common.constants import FileType, MarketplaceVersions, CONTENT_ENTITIES_DIRS
@@ -330,6 +330,8 @@ class TestCollector(ABC):
                 return tuple(self.conf['test_marketplacev2'])
             case MarketplaceVersions.XSOAR:
                 return XSOAR_SANITY_TEST_NAMES
+            case MarketplaceVersions.XSOAR_SAAS:
+                return XSOAR_SANITY_TEST_NAMES
             case MarketplaceVersions.XPANSE:
                 return ()  # none at the moment
             case _:
@@ -481,7 +483,6 @@ class TestCollector(ABC):
             self.__validate_skipped_integration(id_, path)
             self.__validate_deprecated_integration(path)
         pack_marketplaces = PACK_MANAGER.get_pack_metadata(pack_id).marketplaces
-        pack_marketplaces = self.handle_xsoar_marketplaces(pack_marketplaces)
         self.__validate_marketplace_compatibility(marketplaces or pack_marketplaces or (), path)
         self.__validate_support_level_is_xsoar(pack_id, version_range)
 
@@ -733,7 +734,7 @@ class TestCollector(ABC):
                 if (MarketplaceVersions.MarketplaceV2 not in content_item_marketplaces) or \
                         (MarketplaceVersions.XSOAR in content_item_marketplaces):
                     raise IncompatibleMarketplaceException(content_item_path, self.marketplace)
-            case MarketplaceVersions.XSOAR | MarketplaceVersions.XPANSE:
+            case MarketplaceVersions.XSOAR | MarketplaceVersions.XPANSE | MarketplaceVersions.XSOAR_SAAS:
                 if self.marketplace not in content_item_marketplaces:
                     raise IncompatibleMarketplaceException(content_item_path, self.marketplace)
             case _:
@@ -743,23 +744,6 @@ class TestCollector(ABC):
         if not_found := set(tests).difference(self.id_set.id_to_test_playbook.keys()):
             not_found_string = ', '.join(sorted(not_found))
             logger.warning(f'{len(not_found)} tests were not found in id-set: \n{not_found_string}')
-
-    @staticmethod
-    def handle_xsoar_marketplaces(pack_marketplaces: Optional[Tuple[MarketplaceVersions, ...]]) -> Optional[Tuple[MarketplaceVersions, ...]]:            
-        '''
-        If xsoar marketplace supported add xsoar_saas marketplace.
-        If xsoar_on_prem marketplace supported add xsoar marketplace.
-        '''
-        if not pack_marketplaces: 
-            return pack_marketplaces
-        marketplaces_set = set(pack_marketplaces)
-        if MarketplaceVersions.XSOAR in marketplaces_set:
-            marketplaces_set.add(MarketplaceVersions.XSOAR_SAAS)
-       
-        if MarketplaceVersions.XSOAR_ON_PREM in marketplaces_set:
-            marketplaces_set.add(MarketplaceVersions.XSOAR)
-
-        return tuple(marketplaces_set)
 
 
 class BranchTestCollector(TestCollector):
@@ -1336,8 +1320,8 @@ class XSIAMNightlyTestCollector(NightlyTestCollector):
 
 
 class XSOARNightlyTestCollector(NightlyTestCollector):
-    def __init__(self, graph: bool = False):
-        super().__init__(MarketplaceVersions.XSOAR, graph=graph)
+    def __init__(self, marketplace: MarketplaceVersions, graph: bool = False):
+        super().__init__(marketplace, graph=graph)
 
     def _collect(self) -> CollectionResult | None:
         return CollectionResult.union((
@@ -1413,7 +1397,6 @@ if __name__ == '__main__':
 
     marketplace = MarketplaceVersions(args.marketplace)
 
-
     nightly = args.nightly
     service_account = args.service_account
     graph = args.graph
@@ -1436,7 +1419,7 @@ if __name__ == '__main__':
             case False, _:  # not nightly
                 collector = BranchTestCollector(branch_name, marketplace, service_account, graph=graph)
             case True, MarketplaceVersions.XSOAR:
-                collector = XSOARNightlyTestCollector(graph=graph)
+                collector = XSOARNightlyTestCollector(marketplace, graph=graph)
             case True, MarketplaceVersions.MarketplaceV2:
                 collector = XSIAMNightlyTestCollector(graph=graph)
             case True, MarketplaceVersions.XPANSE:
