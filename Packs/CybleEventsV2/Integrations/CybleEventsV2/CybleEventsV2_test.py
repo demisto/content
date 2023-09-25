@@ -189,7 +189,7 @@ def test_get_alert(requests_mock):
 
     url = "https://test.com/apollo/api/v1/y/alerts"
 
-    response, next = cyble_events(client, 'POST', "some_random_token", url, args, 'https://test.com', {})
+    response, next = cyble_events(client, 'POST', "some_random_token", url, args, 'https://test.com', {}, False)
 
     assert isinstance(response, list)
     assert len(response) == 1
@@ -395,7 +395,7 @@ def test_get_alert_output(requests_mock):
 
     url = "https://test.com/apollo/api/v1/y/alerts"
 
-    response, next = cyble_events(client, 'POST', "some_random_token", url, args, 'https://test.com', {})
+    response, next = cyble_events(client, 'POST', "some_random_token", url, args, 'https://test.com', {}, False)
 
     assert isinstance(response, list)
     assert response[0]['alert_group_id'] == '00000000-0000-0000-0000-000000000000'
@@ -453,3 +453,34 @@ def test_get_subscribed_services_for_other_alert(requests_mock):
     response = fetch_subscribed_services_alert(client, 'GET', 'https://test.com', "some_random_token").outputs
     assert isinstance(response, list)
     assert response[0]['name'] == 'name_1'
+
+
+def test_update_incident(requests_mock):
+    """
+    Test the module update-remote-system
+    :param requests_mock:
+    :return:
+    """
+    from CybleEventsV2 import Client, cyble_events
+
+    mock_response_1 = util_load_json("dummy_update_incidents.json")
+    requests_mock.put('https://test.com/apollo/api/v1/y/alerts', json=mock_response_1)
+
+    client = Client(
+        base_url='https://test.com',
+        verify=False
+    )
+
+    args = {
+        'from': 0,
+        'limit': 1,
+        'start_date': '2023-09-18T00:00:00+00:00',
+        'end_date': '2023-09-19T00:00:00+00:00'
+    }
+
+    url = "https://test.com/apollo/api/v1/y/alerts"
+
+    response, next = cyble_events(client, 'PUT', "some_random_token", url, args, 'https://test.com', {}, False)
+
+    assert isinstance(response, list)
+    assert len(response) == 1
