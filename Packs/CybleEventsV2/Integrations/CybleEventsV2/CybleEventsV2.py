@@ -732,6 +732,8 @@ def main():
             # Fetches mapping fields for outgoing mapper
             url = base_url + str(ROUTES[COMMAND[demisto.command()]])
 
+            url = url + base_url + str(ROUTES[COMMAND[demisto.command()]])
+
             return_results(get_mapping_fields(client, token, url))
 
         elif demisto.command() == "cyble-vision-subscribed-services":
