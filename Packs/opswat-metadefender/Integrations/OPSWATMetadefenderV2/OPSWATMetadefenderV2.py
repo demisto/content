@@ -89,6 +89,11 @@ def get_dbot_file_context(file_hash, dbotscore):
     return {'Indicator': file_hash, 'Type': 'file', 'Vendor': 'OPSWAT', 'Score': dbotscore}
 
 
+def get_sanitized_file(scan_id):
+    res = http_req(method='GET', url_suffix=f'file/converted/{scan_id}', parse_json=False)
+    return res
+
+
 def get_hash_info_command():
     file_hash = demisto.args()['hash']
     res = get_hash_info(file_hash)
@@ -246,12 +251,25 @@ def get_scan_result_command():
     demisto.results(entry)
 
 
+def get_sanitized_file_command():
+    scan_id = demisto.args()['id']
+    res = get_scan_result(scan_id)
+    # Check the scan report whether there is a sanitized file.
+    if res.get('process_info', {}).get('post_processing', {}).get('actions_ran', {}) == "Sanitized":
+        sanitized_file_name = res['process_info']['post_processing'].get('converted_destination', 'sanitized.file')
+        res = get_sanitized_file(scan_id)
+        demisto.results(fileResult(filename=sanitized_file_name, data=res, file_type=EntryType.ENTRY_INFO_FILE))
+    else:
+        myErrorText = "No sanitized file."
+        demisto.results({"Type": entryTypes["warning"], "ContentsFormat": formats["text"], "Contents": myErrorText})
+
+
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 
 def main():  # pragma: no cover
     command = demisto.command()
-    demisto.info(f"Command being called is: {command}")
+    demisto.info(f"Command bein^g called is: {command}")
 
     try:
         # Remove proxy if not set to true in params
@@ -267,6 +285,8 @@ def main():  # pragma: no cover
             get_hash_info_command()
         if command == 'opswat-scan-result':
             get_scan_result_command()
+        if command == 'opswat-sanitization-result':
+            get_sanitized_file_command()
     except Exception as e:
         message = f'Unexpected error: {e}'
         LOG(str(e))
