@@ -634,7 +634,7 @@ tasks:
       id: da2e19eb-8767-48fa-8fc0-9424af00f12d
       version: -1
       name: Found additional alerts or suspicious command line?
-      description: Check if any malicious verdict is found.
+      description: Check if a malicious verdict was found.
       type: condition
       iscommand: false
       brand: ""
