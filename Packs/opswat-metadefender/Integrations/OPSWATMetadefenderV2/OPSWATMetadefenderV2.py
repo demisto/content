@@ -269,7 +269,7 @@ def get_sanitized_file_command():
 
 def main():  # pragma: no cover
     command = demisto.command()
-    demisto.info(f"Command bein^g called is: {command}")
+    demisto.info(f"Command being called is: {command}")
 
     try:
         # Remove proxy if not set to true in params
