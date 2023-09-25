@@ -23,16 +23,17 @@ To send alerts from Prisma Cloud Compute to Cortex XSOAR, you need to create an 
 2. Search for **Prisma Cloud Compute**.
 3. Click **Add instance** to create and configure a new integration.
    
-   | Parameter | Description | Example |
-   | -------------- | ----------- | ------- |
-   | **Name** | A meaningful name for the integration instance. | Prisma Cloud Compute_&lt;alertProfileName&gt; |
-   | **Fetches incidents** | Configures this integration instance to fetch alerts from Prisma Cloud Compute. | N/A |
-   | **Prisma Cloud Compute Console URL** | URL address and port of your Prisma Cloud Compute console. Copy the address from the alert profile created in Prisma Cloud Compute. | https:/<span></span>/proxyserver.com |
+   | Parameter                                             | Description | Example |
+-------------------------------------------------------| -------------- | ----------- | ------- |
+   | **Name**                                              | A meaningful name for the integration instance. | Prisma Cloud Compute_&lt;alertProfileName&gt; |
+   | **Fetches incidents**                                 | Configures this integration instance to fetch alerts from Prisma Cloud Compute. | N/A |
+   | **Prisma Cloud Compute Console URL**                  | URL address and port of your Prisma Cloud Compute console. Copy the address from the alert profile created in Prisma Cloud Compute. | https:/<span></span>/proxyserver.com |
    | **Prisma Cloud Compute Project Name (if applicable)** | Copy the project name from the alert profile created in Prisma Cloud Compute and paste in this field. | N/A |
-   | **Trust any certificate (not secure)** | Skips verification of the CA certificate (not recommended). | N/A |
-   | **Use system proxy settings** | Runs the integration instance using the proxy server (HTTP or HTTPS) that you defined in the server configuration. | <span></span>https://proxyserver.com |
-   | **Username** | Prisma Cloud Compute login credentials. | N/A |
-   | **Prisma Cloud Compute CA Certificate** | CA Certificate used by Prisma Cloud Compute. Copy the certificate from the alert profile created in Prisma Cloud Compute. | N/A |
+   | **Trust any certificate (not secure)**                | Skips verification of the CA certificate (not recommended). | N/A |
+   | **Use system proxy settings**                         | Runs the integration instance using the proxy server (HTTP or HTTPS) that you defined in the server configuration. | <span></span>https://proxyserver.com |
+   | **Username**                                          | Prisma Cloud Compute login credentials. | N/A |
+   | **Prisma Cloud Compute CA Certificate**               | CA Certificate used by Prisma Cloud Compute. Copy the certificate from the alert profile created in Prisma Cloud Compute. | N/A |
+   | **Source Reliability**                                   | Reliability of the source providing the intelligence data. | False |
 4. Click **Test** to validate the integration.
 5. Click **Done** to save the integration.
 
@@ -219,7 +220,7 @@ devSecOps
             ], 
             "collections": [
                 "All", 
-                "676921422616"
+                "123"
             ], 
             "time": "2021-12-10T11:06:03.206Z", 
             "sshEvents": [
@@ -257,7 +258,7 @@ devSecOps
 >### Host Description
 >|Hostname|Distribution|Collections|
 >|---|---|---|
->| host163 | amzn 2 | All,<br>676921422616 |
+>| host163 | amzn 2 | All,<br>123 |
 >### Apps
 >|AppName|StartupProcess|User|LaunchTime|
 >|---|---|---|---|
@@ -273,8 +274,8 @@ devSecOps
 >### Host Description
 >|Hostname|Distribution|Collections|
 >|---|---|---|
->| host163 | amzn 2 | All,<br>676921422616 |
->| host249 | Ubuntu 16.04 | All,<br>676921422616 |
+>| host163 | amzn 2 | All,<br>123 |
+>| host249 | Ubuntu 16.04 | All,<br>123 |
 
 
 
@@ -442,7 +443,7 @@ devSecOps
             "state": "active", 
             "collections": [
                 "All", 
-                "676921422616", 
+                "123", 
                 "Prisma Cloud resources"
             ], 
             "entrypoint": "/usr/local/bin/defender", 
@@ -451,7 +452,7 @@ devSecOps
             "hash": 3, 
             "infra": false, 
             "accountIDs": [
-                "676921422616"
+                "123"
             ], 
             "processes": {
                 "static": [
@@ -1056,6 +1057,7 @@ devOps
 | DBotScore.Score | Number | The indicator score. | 
 | DBotScore.Type | String | The indicator type. | 
 | DBotScore.Vendor | String | The vendor reporting the score of the indicator. | 
+| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. | 
 
 
 #### Command Example
@@ -1232,7 +1234,7 @@ vulnerabilityManager
             "version": "21.04.439", 
             "collections": [
                 "All", 
-                "676921422616"
+                "123"
             ], 
             "proxy": {
                 "httpProxy": "", 
@@ -1669,7 +1671,7 @@ vulnerabilityManager
             }, 
             "collections": [
                 "All", 
-                "676921422616", 
+                "123", 
                 "Test Collection"
             ], 
             "startupBinaries": [
@@ -1925,7 +1927,7 @@ vulnerabilityManager
             }, 
             "collections": [
                 "All", 
-                "676921422616", 
+                "123", 
                 "Test Collection"
             ], 
             "startupBinaries": null, 
@@ -2213,7 +2215,7 @@ vulnerabilityManager
             }, 
             "collections": [
                 "All", 
-                "676921422616", 
+                "123", 
                 "Test Collection"
             ], 
             "startupBinaries": [], 
@@ -2434,7 +2436,7 @@ vulnerabilityManager
             }, 
             "collections": [
                 "All", 
-                "676921422616", 
+                "123", 
                 "Test Collection"
             ], 
             "startupBinaries": null, 
@@ -3303,3 +3305,146 @@ Returns the available backups.
 >| monthly-22.12.585-1679972425.tar.gz | monthly | 22.12.585 | 2023-03-28T03:00:25Z |
 >| weekly-22.12.585-1681184909.tar.gz | weekly | 22.12.585 | 2023-04-11T03:48:29Z |
 
+
+### prisma-cloud-compute-get-file-integrity-events
+
+***
+
+#### Base Command
+
+`prisma-cloud-compute-get-file-integrity-events`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| hostname | Hostname for which to get runtime file integrity audit events. Either event_id or hostname is required. | Optional | 
+| event_id | Event ID of runtime file integrity audit event for which to get details. Either event_id or hostname is required. | Optional | 
+| limit | Limit on number of events to return. Only relevant if filtering by hostname. Default is 10. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PrismaCloudCompute.FileIntegrity.Path | string | The absolute path of the event. | 
+| PrismaCloudCompute.FileIntegrity.RuleName | string | The name of the applied rule for auditing file integrity rules. | 
+| PrismaCloudCompute.FileIntegrity.AccountID | string | The cloud account ID. | 
+| PrismaCloudCompute.FileIntegrity.User | string | The user that initiated the event. | 
+| PrismaCloudCompute.FileIntegrity.Time | date | The time of the event. | 
+| PrismaCloudCompute.FileIntegrity.Hostname | string | The hostname on which the event was found. | 
+| PrismaCloudCompute.FileIntegrity.EventType | string | Represents the type of the file integrity event. Possible values: \[metadata,read,write\]. | 
+| PrismaCloudCompute.FileIntegrity.Collections | unknown | Collections to which this event applies. | 
+| PrismaCloudCompute.FileIntegrity.Fqdn | string | The current fully qualified domain name used in audit alerts. | 
+| PrismaCloudCompute.FileIntegrity.FileType | number | Represents the file type. | 
+| PrismaCloudCompute.FileIntegrity.ProcessName | string | The name of the process that initiated the event. | 
+| PrismaCloudCompute.FileIntegrity.Cluster | string | The cluster on which the event was found. | 
+| PrismaCloudCompute.FileIntegrity._Id | string | The activity's unique identifier. | 
+| PrismaCloudCompute.FileIntegrity.Description | unknown | A human readable description of the action performed on the path. | 
+
+#### Command example
+```!prisma-cloud-compute-get-file-integrity-events hostname=host123 limit=3```
+#### Context Example
+```json
+{
+    "PrismaCloudCompute": {
+        "FileIntegrity": [
+            {
+                "AccountID": "123",
+                "Cluster": "",
+                "Collections": [
+                    "All",
+                    "123"
+                ],
+                "Description": "Process touch wrote to path (user: root)",
+                "EventType": "write",
+                "FileType": 2,
+                "Fqdn": "",
+                "Hostname": "host123",
+                "Path": "/tmp/alert/test1",
+                "ProcessName": "touch",
+                "RuleName": "Default - alert on suspicious runtime behavior",
+                "Time": "2023-08-30T01:16:01.037Z",
+                "User": "root",
+                "_Id": "64ee985138b8ac44a6f3d468"
+            },
+            {
+                "AccountID": "123",
+                "Cluster": "",
+                "Collections": [
+                    "All",
+                    "123"
+                ],
+                "Description": "Process touch wrote to path (user: root)",
+                "EventType": "write",
+                "FileType": 2,
+                "Fqdn": "",
+                "Hostname": "host123",
+                "Path": "/tmp/alert/test1",
+                "ProcessName": "touch",
+                "RuleName": "Default - alert on suspicious runtime behavior",
+                "Time": "2023-08-30T00:16:01.883Z",
+                "User": "root",
+                "_Id": "64ee8a4138b8ac44a6f3d460"
+            },
+            {
+                "AccountID": "123",
+                "Cluster": "",
+                "Collections": [
+                    "All",
+                    "123"
+                ],
+                "Description": "Process touch wrote to path (user: root)",
+                "EventType": "write",
+                "FileType": 2,
+                "Fqdn": "",
+                "Hostname": "host123",
+                "Path": "/tmp/alert/test1",
+                "ProcessName": "touch",
+                "RuleName": "Default - alert on suspicious runtime behavior",
+                "Time": "2023-08-29T23:16:01.673Z",
+                "User": "root",
+                "_Id": "64ee7c3138b8ac44a6f3d458"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Results
+>|AccountID|Cluster|Collections|Description|EventType|FileType|Fqdn|Hostname|Path|ProcessName|RuleName|Time|User|_Id|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| 123 |  | All,<br/>123 | Process touch wrote to path (user: root) | write | 2 |  | host123 | /tmp/alert/test1 | touch | Default - alert on suspicious runtime behavior | 2023-08-30T01:16:01.037Z | root | 64ee985138b8ac44a6f3d468 |
+>| 123 |  | All,<br/>123 | Process touch wrote to path (user: root) | write | 2 |  | host123 | /tmp/alert/test1 | touch | Default - alert on suspicious runtime behavior | 2023-08-30T00:16:01.883Z | root | 64ee8a4138b8ac44a6f3d460 |
+>| 123 |  | All,<br/>123 | Process touch wrote to path (user: root) | write | 2 |  | host123 | /tmp/alert/test1 | touch | Default - alert on suspicious runtime behavior | 2023-08-29T23:16:01.673Z | root | 64ee7c3138b8ac44a6f3d458 |
+
+
+### prisma-cloud-compute-unstuck-fetch-stream
+
+***
+Use this command to unstuck the fetch stream in case it's getting duplicated incidents.
+
+#### Base Command
+
+`prisma-cloud-compute-unstuck-fetch-stream`
+
+#### Input
+
+- No input.
+
+#### Context Output
+
+- No context output for this command.
+
+#### Command example
+```!prisma-cloud-compute-unstuck-fetch-stream```
+
+
+#### Human Readable Output
+
+```The fetch stream was released successfully.```
+
+## General Note:
+- Do not use the reset last run button as it will cause incidents duplications to the instance. 
+- In case you pressed reset last run button and you get duplicated incidents, run **prisma-cloud-compute-unstuck-fetch-stream** command.

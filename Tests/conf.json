@@ -1846,12 +1846,6 @@
             "playbookID": "OpenPhish Test Playbook"
         },
         {
-            "integrations": "jira-v2",
-            "playbookID": "Jira-v2-Test",
-            "timeout": 500,
-            "is_mockable": false
-        },
-        {
             "integrations": "Jira V3",
             "playbookID": "JiraV3 Test",
             "instance_names": "jira_basic_auth",
@@ -2137,17 +2131,21 @@
         {
             "integrations": "Microsoft Defender Advanced Threat Protection",
             "playbookID": "Microsoft Defender - ATP - Indicators SC Test",
-            "instance_names": "microsoft_defender_atp_dev_self_deployed"
+            "instance_names": "microsoft_defender_atp_dev_self_deployed",
+            "is_mockable": false
+
         },
         {
             "integrations": "Microsoft Defender Advanced Threat Protection",
             "playbookID": "Microsoft Defender - ATP - Indicators SC Test",
-            "instance_names": "microsoft_defender_atp_dev"
+            "instance_names": "microsoft_defender_atp_dev",
+            "is_mockable": false
         },
         {
             "integrations": "Microsoft Defender Advanced Threat Protection",
             "playbookID": "Microsoft Defender - ATP - Indicators SC Test",
-            "instance_names": "microsoft_defender_atp_prod"
+            "instance_names": "microsoft_defender_atp_prod",
+            "is_mockable": false
         },
         {
             "integrations": "Microsoft 365 Defender",
@@ -3674,6 +3672,10 @@
         {
             "playbookID": "IfThenElse-Test",
             "fromversion": "5.0.0"
+        },
+        {
+            "playbookID": "If-Elif Test",
+            "fromversion": "6.9.0"
         },
         {
             "integrations": "Imperva WAF",
@@ -5563,7 +5565,6 @@
     ],
     "skipped_tests": {
         "generic-sql-mssql-encrypted-connection": "Instance issues",
-        "generic-sql-oracle": "Instance issues",
         "RSANetWitnessv115-Test": "mocking error CIAC-7576",
         "CiscoWSAv2": "No instance - developed by Qmasters",
         "DatadogCloudSIEM": "No instance - developed by Login soft",
@@ -5679,7 +5680,6 @@
         "SplunkPy_KV_commands_default_handler": "Issue 41419",
         "LogRhythm REST test": "Issue 40654",
         "Process Email - Generic - Test - Actual Incident": "Issue 45227",
-        "Jira-v2-Test": "Issue 33313",
         "Tanium Threat Response Test": "Issue CRTX-58729",
         "Tanium Threat Response - Create Connection v2 - Test": "Issue CRTX-58729",
         "AzureADTest": "Issue 40131",
@@ -5871,7 +5871,8 @@
         "ThreatGridv2": "No instance - developed by Qmasters",
         "SentinelOne V2": "No instance - developed by partner",
         "CheckPhish": "Issue CRTX-86562",
-        "SecurityAndComplianceV2": "Can only be authenticated via MFA and requires user interaction to configure."
+        "SecurityAndComplianceV2": "Can only be authenticated via MFA and requires user interaction to configure.",
+        "ThreatExchange v2": "No instance"
     },
     "nightly_packs": [
         "CommonScripts",
