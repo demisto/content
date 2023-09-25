@@ -1,17 +1,15 @@
 id: Cortex XDR Alerts Handling
 version: -1
-contentitemexportablefields:
-  contentitemfields: {}
 name: Cortex XDR Alerts Handling
-description: "This playbook is used to loop over every alert in a Cortex XDR incident. \nSupported alert categories:\n- Malware\n- Port Scan\n- Cryptojacking\n- RDP Brute-Force\n- First SSO Access\n- Cloud IAM User Access Investigation"
+description: "This playbook is used to loop over every alert in a Cortex XDR incident. \nSupported alert categories:\n- Malware\n- Port Scan\n- Cloud Cryptojacking\n- Cloud Token Theft\n- RDP Brute-Force\n- First SSO Access\n- Cloud IAM User Access Investigation\n- Remote PsExec-like LOLBIN command execution from an unsigned non-standard PsExec service."
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 9c36d95d-b324-4c82-8a03-1994ede59fdf
+    taskid: 862017c1-0ffa-477a-8ef7-ffaec232b830
     type: start
     task:
-      id: 9c36d95d-b324-4c82-8a03-1994ede59fdf
+      id: 862017c1-0ffa-477a-8ef7-ffaec232b830
       version: -1
       name: ""
       iscommand: false
@@ -38,10 +36,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 9c5856ab-ab1b-4d03-8d24-4c4ca596e324
+    taskid: 139f847b-399f-4dbd-898f-953a2cce2d85
     type: condition
     task:
-      id: 9c5856ab-ab1b-4d03-8d24-4c4ca596e324
+      id: 139f847b-399f-4dbd-898f-953a2cce2d85
       version: -1
       name: Choose playbook by category
       description: Choose the playbook to run by the alert category.
@@ -61,8 +59,8 @@ tasks:
       - "8"
       RDP Brute-Force:
       - "13"
-      Remote PsExec of LOLBIN Command Execution:
-      - "16"
+      Remote PsExec with LOLBIN command:
+      - "17"
     separatecontext: false
     conditions:
     - label: Malware
@@ -188,7 +186,7 @@ tasks:
           right:
             value:
               simple: First successful SSO connection from a country in organization
-    - label: Remote PsExec of LOLBIN Command Execution
+    - label: Remote PsExec with LOLBIN command
       condition:
       - - operator: containsGeneral
           left:
@@ -205,19 +203,18 @@ tasks:
                       value:
                         simple: inputs.alert_id
                       iscontext: true
-                    ignorecase: true
                 accessor: name
             iscontext: true
           right:
             value:
-              simple: Remote PsExec-like LOLBIN command execution
+              simple: Remote PsExec-like LOLBIN command execution from an unsigned non-standard PsExec service
           ignorecase: true
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 480,
-          "y": 380
+          "y": 370
         }
       }
     note: false
@@ -229,10 +226,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 3ee49877-ed34-469e-8f5b-73536d3d40bd
+    taskid: 87d45ead-cf1a-46a7-8573-a01aaa35bb24
     type: title
     task:
-      id: 3ee49877-ed34-469e-8f5b-73536d3d40bd
+      id: 87d45ead-cf1a-46a7-8573-a01aaa35bb24
       version: -1
       name: Done
       type: title
@@ -257,10 +254,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 12258730-025a-4931-8da9-9f68bfb6a32c
+    taskid: 5a55a08e-b92c-47ad-8e57-41ba092de5e0
     type: regular
     task:
-      id: 12258730-025a-4931-8da9-9f68bfb6a32c
+      id: 5a55a08e-b92c-47ad-8e57-41ba092de5e0
       version: -1
       name: Cortex XDR - get incident extra data
       description: Returns additional data for the specified incident, for example, related alerts, file artifacts, network artifacts, and so on.
@@ -293,10 +290,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 73393504-1664-4f81-8baf-f5e29f222cea
+    taskid: d97568b9-5a47-470e-846f-cebc005682bb
     type: title
     task:
-      id: 73393504-1664-4f81-8baf-f5e29f222cea
+      id: d97568b9-5a47-470e-846f-cebc005682bb
       version: -1
       name: Other alert category
       type: title
@@ -311,8 +308,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1860,
-          "y": 565
+          "x": 1980,
+          "y": 575
         }
       }
     note: false
@@ -324,10 +321,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: dbf4c20e-2308-41d5-88df-477133c8e571
+    taskid: 05c8eb70-a418-411e-8ce4-78ebe5d31fce
     type: playbook
     task:
-      id: dbf4c20e-2308-41d5-88df-477133c8e571
+      id: 05c8eb70-a418-411e-8ce4-78ebe5d31fce
       version: -1
       name: Cortex XDR - Port Scan - Adjusted
       playbookName: Cortex XDR - Port Scan - Adjusted
@@ -357,7 +354,7 @@ tasks:
       {
         "position": {
           "x": 920,
-          "y": 565
+          "y": 575
         }
       }
     note: false
@@ -369,10 +366,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: af3de00a-e938-41a9-8756-de6e561c3b20
+    taskid: 26a00b69-8d50-4f7e-81ce-5a12d226058c
     type: playbook
     task:
-      id: af3de00a-e938-41a9-8756-de6e561c3b20
+      id: 26a00b69-8d50-4f7e-81ce-5a12d226058c
       version: -1
       name: Cortex XDR - Malware Investigation
       description: |
@@ -493,7 +490,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 565
+          "y": 575
         }
       }
     note: false
@@ -506,16 +503,16 @@ tasks:
     continueonerrortype: ""
   "10":
     id: "10"
-    taskid: 819510f8-39d8-4237-82e5-fb57fd806749
+    taskid: 9defef93-b31a-4fc4-8487-262cba322f86
     type: playbook
     task:
-      id: 819510f8-39d8-4237-82e5-fb57fd806749
+      id: 9defef93-b31a-4fc4-8487-262cba322f86
       version: -1
-      name: Cortex XDR - Cloud Cryptomining
+      name: Cortex XDR - XCloud Cryptojacking
+      playbookName: Cortex XDR - XCloud Cryptojacking
       type: playbook
       iscommand: false
       brand: ""
-      playbookId: Cortex XDR - Cloud Cryptomining
       description: ''
     nexttasks:
       '#none#':
@@ -550,7 +547,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -750,
+          "x": -730,
           "y": 920
         }
       }
@@ -563,10 +560,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 0aa062ec-14be-440b-8606-a05efe27dd8f
+    taskid: 90bbcce2-7c98-4e53-8d9c-11131a9cb25c
     type: playbook
     task:
-      id: 0aa062ec-14be-440b-8606-a05efe27dd8f
+      id: 90bbcce2-7c98-4e53-8d9c-11131a9cb25c
       version: -1
       name: GenericPolling
       description: |-
@@ -607,8 +604,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -520,
-          "y": 565
+          "x": -730,
+          "y": 575
         }
       }
     note: false
@@ -620,10 +617,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: 18ea3ba1-78ee-4ce3-844b-44853df600da
+    taskid: 887caea0-e329-4f52-87de-71ab6d7ebeb2
     type: condition
     task:
-      id: 18ea3ba1-78ee-4ce3-844b-44853df600da
+      id: 887caea0-e329-4f52-87de-71ab6d7ebeb2
       version: -1
       name: Which XCLOUD alert was found?
       description: Checks which XCLOUD alert was found in the incident.
@@ -637,6 +634,8 @@ tasks:
       - "10"
       IAM User Access:
       - "15"
+      Token Theft:
+      - "16"
     separatecontext: false
     conditions:
     - label: Cryptojacking
@@ -684,11 +683,166 @@ tasks:
           right:
             value:
               simple: Penetration testing tool attempt
+    - label: Token Theft
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.Incident.alerts.name
+            iscontext: true
+          right:
+            value:
+              simple: Suspicious usage of EC2 token
+          ignorecase: true
+        - operator: containsGeneral
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.Incident.alerts.name
+            iscontext: true
+          right:
+            value:
+              simple: Suspicious usage of VM Service Account token
+          ignorecase: true
+        - operator: containsGeneral
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.Incident.alerts.name
+            iscontext: true
+          right:
+            value:
+              simple: Suspicious usage of AWS Lambda’s token
+          ignorecase: true
+        - operator: containsGeneral
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.Incident.alerts.name
+            iscontext: true
+          right:
+            value:
+              simple: Suspicious usage of AWS Lambda’s role
+          ignorecase: true
+        - operator: containsGeneral
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.Incident.alerts.name
+            iscontext: true
+          right:
+            value:
+              simple: Remote usage of an AWS service token
+          ignorecase: true
+        - operator: containsGeneral
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.Incident.alerts.name
+            iscontext: true
+          right:
+            value:
+              simple: Remote usage of an AWS EKS token
+          ignorecase: true
+        - operator: containsGeneral
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.Incident.alerts.name
+            iscontext: true
+          right:
+            value:
+              simple: Suspicious usage of an AWS EKS token
+          ignorecase: true
+        - operator: containsGeneral
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.Incident.alerts.name
+            iscontext: true
+          right:
+            value:
+              simple: Suspicious usage of an AWS ECS token
+          ignorecase: true
+        - operator: containsGeneral
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.Incident.alerts.name
+            iscontext: true
+          right:
+            value:
+              simple: Remote usage of an AWS ECS token
+          ignorecase: true
+        - operator: containsGeneral
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.Incident.alerts.name
+            iscontext: true
+          right:
+            value:
+              simple: Suspicious usage of AWS service token
+          ignorecase: true
+        - operator: containsGeneral
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.Incident.alerts.name
+            iscontext: true
+          right:
+            value:
+              simple: Remote usage of an App engine Service Account token
+          ignorecase: true
+        - operator: containsGeneral
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.Incident.alerts.name
+            iscontext: true
+          right:
+            value:
+              simple: Suspicious usage of App engine Service Account token
+          ignorecase: true
+        - operator: containsGeneral
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.Incident.alerts.name
+            iscontext: true
+          right:
+            value:
+              simple: Suspicious usage of App engine Service Account token
+          ignorecase: true
+        - operator: containsGeneral
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.Incident.alerts.name
+            iscontext: true
+          right:
+            value:
+              simple: Suspicious usage of VM Service Account token
+          ignorecase: true
+        - operator: containsGeneral
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.Incident.alerts.name
+            iscontext: true
+          right:
+            value:
+              simple: Remote usage of an App engine Service Account token
+          ignorecase: true
+        - operator: containsGeneral
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.Incident.alerts.name
+            iscontext: true
+          right:
+            value:
+              simple: Suspicious usage of App engine Service Account token
+          ignorecase: true
+        - operator: containsGeneral
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.Incident.alerts.name
+            iscontext: true
+          right:
+            value:
+              simple: Remote usage of VM Service Account token
+          ignorecase: true
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -520,
+          "x": -730,
           "y": 730
         }
       }
@@ -701,10 +855,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: f2999d13-c387-4ef3-8e20-c44109eec244
+    taskid: eab62e11-9343-4b82-8a6f-778ee3a60fe5
     type: playbook
     task:
-      id: f2999d13-c387-4ef3-8e20-c44109eec244
+      id: eab62e11-9343-4b82-8a6f-778ee3a60fe5
       version: -1
       name: Cortex XDR - Possible External RDP Brute-Force
       description: "This playbook investigates a “Possible External RDP Brute Force” XDR Alert by gathering user, IP, and hostname information, and investigating if the following suspicious elements exists:\n- \"IP Reputation\" - Dbot Score is 2-3 \n- \"Source geolocation\" - Connection from unusual country \n-  Related to campaign - IP address related to campaign, based on TIM module\n-  Hunting results - hunt for indicators related to the source IP and the related campaign returned results\n-  XDR Alert search -XDR Alerts related to the same username and endpoint\n\nSet verdict method:\n* Suspicious Element - The \"Suspicious Element\" input allows you to select a specific element that, if identified as suspicious,  the investigation's final verdict will be deemed a \"True Positive\".\n\n* Final Verdict -  Each suspicious element is being added to an array called \"Suspicious Elements\", which is used to count potential security threats. The array size will be compared to a final threshold. If the size is greater than or equal to the threshold, the investigation's final verdict will be deemed a \"True Positive\".\n\n* User Engagement - The \"UserEngagementThreshold\" input allows you to set the number of suspicious elements that trigger user engagement. When this threshold is met, an email will be sent to the user and their manager asking for authorization of RDP activity. If the RDP activity is not authorized by the user, the investigation's final verdict will be deemed a \"True Positive\".\n\nUsed Sub-playbooks:\n* Account Enrichment - Generic v2.1\n* Block Indicators - Generic v3\n* Cortex XDR - Get entity alerts by MITRE tactics - Endpoint\n* Cortex XDR - Get entity alerts by MITRE tactics - user\n* User Investigation - Generic\n* TIM - Indicator Relationships Analysis\n* Threat Hunting - Generic\n* Cortex XDR - Possible External RDP Brute Force - Set Verdict\n* Cortex XDR - Isolate Endpoint\n"
@@ -830,7 +984,7 @@ tasks:
       {
         "position": {
           "x": 40,
-          "y": 565
+          "y": 575
         }
       }
     note: false
@@ -842,24 +996,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 14129f69-d407-4640-8114-b5548a37dbc0
+    taskid: fe9fcf9f-3465-4351-83aa-78972fa38d09
     type: playbook
     task:
-      id: 14129f69-d407-4640-8114-b5548a37dbc0
+      id: fe9fcf9f-3465-4351-83aa-78972fa38d09
       version: -1
       name: Cortex XDR - First SSO Access
       description: |-
-        Investigates a Cortex XDR incident containing First SSO access from ASN in an organization
-         or First successful SSO connection from a country in an organization.
-
-        The playbook executes the following:
-        - IP and User Enrichment.
-        - User Investigation - Using 'User Investigation - Generic' sub-playbook.
-        - First SSO Access investigation - Using 'Cortex XDR - First SSO Investigation' sub-playbook.
-        - Set alert's verdict - Using 'Cortex XDR - First SSO access - Set Verdict' sub-playbook.
-        - Response based on the verdict.
-
-        The playbook is used as a sub-playbook in ‘Cortex XDR Incident Handling - v3’.
+        The \"Remote PsExec-like LOLBIN Command Execution\" playbook is designed to address and respond to alerts indicating suspicious activities related to remote PsExec-like LOLBIN command execution from an unsigned non-standard source. \nThe playbook aims to efficiently:\n\n- Get the alert data and check if the execution is blocked. If not will terminate the process (Manually by default).\n- Enrich any entities and indicators from the alert and find any related campaigns.\n- Perform command analysis to provide insights and verdict for the executed command.\n- Perform further endpoint investigation using XDR.\n- Checks for any malicious verdict found to raise the severity of the alert.\n- Perform Automatic/Manual remediation response by blocking any malicious indicators found.\n\nThe playbook is designed to run as a sub-playbook in ‘Cortex XDR Incident Handling - v3 & Cortex XDR Alerts Handling’.\nIt depends on the data from the parent playbooks and cannot be used as a standalone version.
       playbookName: Cortex XDR - First SSO Access
       type: playbook
       iscommand: false
@@ -965,8 +1109,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1100,
-          "y": 565
+          "x": -1430,
+          "y": 575
         }
       }
     note: false
@@ -978,10 +1122,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: f9856c2e-ccdd-4156-8173-1867d2bd48f9
+    taskid: 3eb85485-0eca-46cd-8802-3f0dc70db9d4
     type: playbook
     task:
-      id: f9856c2e-ccdd-4156-8173-1867d2bd48f9
+      id: 3eb85485-0eca-46cd-8802-3f0dc70db9d4
       version: -1
       name: Cortex XDR - Cloud IAM User Access Investigation
       description: "Investigate and respond to Cortex XDR Cloud alerts where a Cloud IAM user`s access key is used suspiciously to access the cloud environment. \nThe following alerts are supported for AWS, Azure, and GCP environments.\n- Penetration testing tool attempt\n- Penetration testing tool activity\n- Suspicious API call from a Tor exit node\n\n"
@@ -1043,14 +1187,42 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: 685218be-adf7-4765-808b-1f01fbafee0d
+    taskid: 9272bed8-28d1-4e64-8d72-eed1d776c362
     type: playbook
     task:
-      id: 685218be-adf7-4765-808b-1f01fbafee0d
+      id: 9272bed8-28d1-4e64-8d72-eed1d776c362
       version: -1
-      name: Remote PsExec with LOLBIN command execution alert
-      description: "The \"Remote PsExec-like LOLBIN Command Execution\" playbook is designed to address and respond to alerts indicating suspicious activities related to remote PsExec-like LOLBIN command execution from an unsigned non-standard source. \nThe playbook aims to efficiently:\n\n- Get the alert data and check if the execution is blocked. If not will terminate the process (Manually by default).\n- Enrich any entities and indicators from the alert and find any related campaigns.\n- Perform command analysis to provide insights and verdict for the executed command.\n- Perform further endpoint investigation using XDR.\n- Checks for any malicious verdict found to raise the severity of the alert.\n- Perform Automatic/Manual remediation response by blocking any malicious indicators found.\n\nThe playbook is designed to run as a sub-playbook in ‘Cortex XDR Incident Handling - v3 & Cortex XDR Alerts Handling’.\nIt depends on the data from the parent playbooks and can not be used as a standalone version."
-      playbookName: Remote PsExec with LOLBIN command execution alert
+      name: Cortex XDR - XCloud Token Theft Response
+      description: |-
+        ---
+
+        ## Cloud Token Theft Response Playbook
+
+        The **Cloud Token Theft Response Playbook** provides a structured and comprehensive flow to effectively respond to and mitigate alerts involving the theft of cloud tokens. The playbook supports AWS, GCP, and Azure and executes the following:
+
+        **Cloud Enrichment:**
+        - Enriches the involved resources
+        - Enriches the involved identities
+        - Enriches the involved IPs
+
+        **Verdict Decision Tree:**
+        - Determines the appropriate verdict based on the investigation findings
+
+        **Early Containment using the Cloud Response - Generic Playbook:**
+        - Implements early containment measures to prevent further impact
+
+        **Cloud Persistence Threat Hunting:**
+        - Conducts threat hunting activities to identify any cloud persistence techniques
+
+        **Enriching and Responding to Hunting Findings:**
+        - Performs additional enrichment and responds to the findings from threat hunting
+
+        **Verdict Handling:**
+        - Handles false positives identified during the investigation
+        - Handles true positives by initiating appropriate response actions
+
+        ---
+      playbookName: Cortex XDR - XCloud Token Theft Response
       type: playbook
       iscommand: false
       brand: ""
@@ -1058,44 +1230,24 @@ tasks:
       '#none#':
       - "5"
     scriptarguments:
-      AutoRemediation:
-        simple: "false"
-      EndpointIDs:
+      ResolveIP:
+        simple: "True"
+      alert_id:
         complex:
-          root: incident.xdralerts
+          root: PaloAltoNetworksXDR.Incident.alerts
           filters:
-          - - operator: containsGeneral
+          - - operator: inList
               left:
                 value:
-                  simple: incident.xdralerts.name
+                  simple: PaloAltoNetworksXDR.Incident.alerts.name
                 iscontext: true
               right:
                 value:
-                  simple: Remote PsExec-like LOLBIN command execution
-              ignorecase: true
-          accessor: endpoint_id
-      LOLBASFeedLimit:
-        simple: "100"
-      SrcIPAddress:
-        complex:
-          root: incident.xdralerts
-          accessor: actionremoteip
-          transformers:
-          - operator: uniq
-      alerts_ids:
-        complex:
-          root: incident.xdralerts
-          filters:
-          - - operator: containsGeneral
-              left:
-                value:
-                  simple: incident.xdralerts.name
-                iscontext: true
-              right:
-                value:
-                  simple: Remote PsExec-like LOLBIN command execution
+                  simple: Suspicious usage of EC2 token, Suspicious usage of VM Service Account token, Suspicious usage of AWS Lambda’s token, Suspicious usage of AWS Lambda’s role, Remote usage of an AWS service token, Remote usage of an AWS EKS token, Suspicious usage of an AWS EKS token, Suspicious usage of an AWS ECS token, Remote usage of an AWS ECS token, Suspicious usage of AWS service token, Remote usage of an App engine Service Account token, Suspicious usage of App engine Service Account token, Remote usage of VM Service Account token, Suspicious usage of VM Service Account token, Remote usage of an App engine Service Account token, Suspicious usage of App engine Service Account token
               ignorecase: true
           accessor: alert_id
+      earlyContainment:
+        simple: "False"
     separatecontext: true
     continueonerrortype: ""
     loop:
@@ -1106,33 +1258,63 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1360,
-          "y": 565
+          "x": -1140,
+          "y": 920
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: true
+    skipunavailable: false
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-system: true
+  "17":
+    id: "17"
+    taskid: 70166990-846c-413a-873e-9ff6242703d6
+    type: playbook
+    task:
+      id: 70166990-846c-413a-873e-9ff6242703d6
+      version: -1
+      name: Remote PsExec with LOLBIN command execution alert
+      description: "The \"Remote PsExec-like LOLBIN Command Execution\" playbook is designed to address and respond to alerts indicating suspicious activities related to remote PsExec-like LOLBIN command execution from an unsigned non-standard source. \nThe playbook aims to efficiently:\n\n- Get the alert data and check if the execution is blocked. If not will terminate the process (Manually by default).\n- Enrich any entities and indicators from the alert and find any related campaigns.\n- Perform command analysis to provide insights and verdict for the executed command.\n- Perform further endpoint investigation using XDR.\n- Checks for any malicious verdict found to raise the severity of the alert.\n- Perform Automatic/Manual remediation response by blocking any malicious indicators found.\n\nThe playbook is designed to run as a sub-playbook in ‘Cortex XDR Incident Handling - v3 & Cortex XDR Alerts Handling’.\nIt depends on the data from the parent playbooks and can not be used as a standalone version."
+      playbookName: Remote PsExec with LOLBIN command execution alert
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1380,
+          "y": 575
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
       "12_15_IAM User Access": 0.59,
       "1_11_Cloud": 0.81,
       "1_14_First SSO Access": 0.82,
-      "1_16_Remote PsExec of LOLBIN Command Execution": 0.77,
-      "1_7_#default#": 0.8,
+      "1_7_#default#": 0.77,
       "1_9_Malware": 0.65
     },
     "paper": {
       "dimensions": {
         "height": 1095,
-        "width": 3340,
-        "x": -1100,
+        "width": 3790,
+        "x": -1430,
         "y": 70
       }
     }
