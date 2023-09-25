@@ -733,7 +733,7 @@ script:
     description: Delete an existing ticket in Freshservice.
     name: freshservice-ticket-delete
   - arguments:
-    - description: 'Page number of paginated results. Minimum value: 1'
+    - description: 'Page number of paginated results. Minimum value: 1.'
       name: page
     - description: The number of items per page.
       name: page_size
@@ -917,7 +917,7 @@ script:
     description: Delete the task on a ticket with the given ID from Freshservice.
     name: freshservice-ticket-task-delete
   - arguments:
-    - description: 'Page number of paginated results. Minimum value: 1'
+    - description: 'Page number of paginated results. Minimum value: 1.'
       name: page
     - description: The number of items per page.
       name: page_size
@@ -1133,7 +1133,7 @@ script:
     description: Delete the conversation on a ticket with the given ID from Freshservice.
     name: freshservice-ticket-conversation-delete
   - arguments:
-    - description: 'Page number of paginated results. Minimum value: 1'
+    - description: 'Page number of paginated results. Minimum value: 1.'
       name: page
     - description: The number of items per page.
       name: page_size
@@ -1468,7 +1468,7 @@ script:
     description: Delete the problem with the given ID from Freshservice.
     name: freshservice-problem-delete
   - arguments:
-    - description: 'Page number of paginated results. Minimum value: 1'
+    - description: 'Page number of paginated results. Minimum value: 1.'
       name: page
     - description: The number of items per page.
       name: page_size
@@ -1652,7 +1652,7 @@ script:
     description: Delete the task on a problem with the given ID from Freshservice.
     name: freshservice-problem-task-delete
   - arguments:
-    - description: 'Page number of paginated results. Minimum value: 1'
+    - description: 'Page number of paginated results. Minimum value: 1.'
       name: page
     - description: The number of items per page.
       name: page_size
@@ -2054,7 +2054,7 @@ script:
     description: Delete the change request with the given ID from Freshservice.
     name: freshservice-change-delete
   - arguments:
-    - description: 'Page number of paginated results. Minimum value: 1'
+    - description: 'Page number of paginated results. Minimum value: 1.'
       name: page
     - description: The number of items per page.
       name: page_size
@@ -2238,7 +2238,7 @@ script:
     description: Delete the task on a change request with the given ID from Freshservice.
     name: freshservice-change-task-delete
   - arguments:
-    - description: 'Page number of paginated results. Minimum value: 1'
+    - description: 'Page number of paginated results. Minimum value: 1.'
       name: page
     - description: The number of items per page.
       name: page_size
@@ -2563,7 +2563,7 @@ script:
     description: Delete a release with the given ID from Freshservice.
     name: freshservice-release-delete
   - arguments:
-    - description: 'Page number of paginated results. Minimum value: 1'
+    - description: 'Page number of paginated results. Minimum value: 1.'
       name: page
     - description: The number of items per page.
       name: page_size
@@ -2747,7 +2747,7 @@ script:
     description: Delete the task on a release with the given ID from Freshservice.
     name: freshservice-release-task-delete
   - arguments:
-    - description: 'Page number of paginated results. Minimum value: 1'
+    - description: 'Page number of paginated results. Minimum value: 1.'
       name: page
     - description: The number of items per page.
       name: page_size
@@ -2865,7 +2865,7 @@ script:
       description: Requester work phone number.
       type: Unknown
   - arguments:
-    - description: 'Page number of paginated results. Minimum value: 1'
+    - description: 'Page number of paginated results. Minimum value: 1.'
       name: page
     - description: The number of items per page.
       name: page_size
@@ -3010,7 +3010,7 @@ script:
       description: Agent workspace IDs.
       type: Number
   - arguments:
-    - description: 'Page number of paginated results. Minimum value: 1'
+    - description: 'Page number of paginated results. Minimum value: 1.'
       name: page
     - description: The number of items per page.
       name: page_size
@@ -3044,7 +3044,7 @@ script:
       description: Role type.
       type: Number
   - arguments:
-    - description: 'Page number of paginated results. Minimum value: 1'
+    - description: 'Page number of paginated results. Minimum value: 1.'
       name: page
     - description: The number of items per page.
       name: page_size
@@ -3102,7 +3102,7 @@ script:
       description: Timestamp when the vendor was updated.
       type: Date
   - arguments:
-    - description: 'Page number of paginated results. Minimum value: 1'
+    - description: 'Page number of paginated results. Minimum value: 1.'
       name: page
     - description: The number of items per page.
       name: page_size
@@ -3166,7 +3166,7 @@ script:
       description: Software application category.
       type: Unknown
   - arguments:
-    - description: 'Page number of paginated results. Minimum value: 1'
+    - description: 'Page number of paginated results. Minimum value: 1.'
       name: page
     - description: The number of items per page.
       name: page_size
@@ -3264,7 +3264,7 @@ script:
       description: Asset workspace ID.
       type: Number
   - arguments:
-    - description: 'Page number of paginated results. Minimum value: 1'
+    - description: 'Page number of paginated results. Minimum value: 1.'
       name: page
     - description: The number of items per page.
       name: page_size
@@ -3313,7 +3313,7 @@ script:
       description: Purchase order workspace ID.
       type: Number
   - arguments:
-    - description: 'Page number of paginated results. Minimum value: 1'
+    - description: 'Page number of paginated results. Minimum value: 1.'
       name: page
     - description: The number of items per page.
       name: page_size
@@ -3359,7 +3359,7 @@ script:
       description: Agent group unassigned for.
       type: String
   - arguments:
-    - description: 'Page number of paginated results. Minimum value: 1'
+    - description: 'Page number of paginated results. Minimum value: 1.'
       name: page
     - description: The number of items per page.
       name: page_size
@@ -3448,7 +3448,7 @@ script:
       name: lastUpdate
     description: Gets the list of incidents that were modified since the last update time. Note that this method is here for debugging purposes. The get-modified-remote-data command is used as part of a Mirroring feature, which is available in Cortex XSOAR from version 6.1.
     name: get-modified-remote-data
-  dockerimage: demisto/python3:3.10.13.72123
+  dockerimage: demisto/python3:3.10.13.73190
   isfetch: true
   ismappable: true
   isremotesyncin: true

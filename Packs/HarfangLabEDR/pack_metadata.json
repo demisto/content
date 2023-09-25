@@ -15,5 +15,9 @@
     "keywords": [],
     "githubUser": [
         "Pierre-HarfangLab"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
     ]
 }

@@ -1370,7 +1370,7 @@ def test_get_waas_policies(mocker):
     """
     from PaloAltoNetworks_PrismaCloudCompute import get_waas_policies, PrismaCloudComputeClient
 
-    with open("test_data/get_waas_policies.json", "r") as f:
+    with open("test_data/get_waas_policies.json") as f:
         d = json.load(f)
 
     mocker.patch.object(PrismaCloudComputeClient, 'get_waas_policies', return_value=d)
@@ -1399,7 +1399,7 @@ def test_update_waas_policies(mocker):
     mocker.patch.object(PrismaCloudComputeClient, 'update_waas_policies',
                         return_value=type('Response', (object,), {"status_code": 200}))
 
-    with open("test_data/update_waas_policy.json", "r") as f:
+    with open("test_data/update_waas_policy.json") as f:
         policy = json.load(f)
 
     client = PrismaCloudComputeClient(base_url=BASE_URL, verify='False', project='', auth=('test', 'test'))
@@ -1426,7 +1426,7 @@ def test_get_audit_firewall_container_alerts(mocker):
     """
     from PaloAltoNetworks_PrismaCloudCompute import get_audit_firewall_container_alerts, PrismaCloudComputeClient
 
-    with open("test_data/get_audit_firewall_container_alerts.json", "r") as f:
+    with open("test_data/get_audit_firewall_container_alerts.json") as f:
         d = json.load(f)
 
     mocker.patch.object(PrismaCloudComputeClient, 'get_firewall_audit_container_alerts', return_value=d)
@@ -1557,3 +1557,74 @@ def test_get_logs_defender_download_command(requests_mock):
     }
     r = get_logs_defender_download_command(client, args)
     assert r["File"] == f"{args.get('hostname')}-logs.tar.gz"
+
+
+def test_get_file_integrity_events_command(requests_mock):
+    """
+    Given:
+        - An app client object
+        - Relevant arguments
+    When:
+        - Calling 'prisma-cloud-compute-get-file-integrity-events' command
+    Then:
+        - Ensure the file integrity events output equals the raw_response object which is mocked
+    """
+    from PaloAltoNetworks_PrismaCloudCompute import get_file_integrity_events_command, PrismaCloudComputeClient
+    with open("test_data/file_integrity_events.json") as f:
+        d = json.load(f)
+
+    requests_mock.get(url=BASE_URL + '/audits/runtime/file-integrity', json=d)
+    client = PrismaCloudComputeClient(base_url=BASE_URL, verify='False', project='', auth=('test', 'test'))
+    args = {
+        "hostname": "test123",
+        "limit": 3
+    }
+
+    assert get_file_integrity_events_command(client, args).raw_response == d
+
+
+EXAMPLE_CVES = [
+    {
+        "cve": "cve1",
+        "distro": "distro",
+        "distro_release": "distro_release",
+        "type": "type",
+        "package": "package",
+        "severity": "unimportant",
+        "status": "fixed in 2.22-15",
+        "cvss": 5,
+        "rules": ["<2.22-15"],
+        "conditions": None,
+        "modified": 1606135803,
+        "fixDate": 0,
+        "link_id": "",
+        "description": "description1"
+    }
+]
+
+
+@pytest.mark.parametrize("reliability",
+                         ["A+ - 3rd party enrichment",
+                          "A - Completely reliable",
+                          "B - Usually reliable",
+                          "C - Fairly reliable",
+                          "D - Not usually reliable",
+                          "E - Unreliable",
+                          "F - Reliability cannot be judged"])
+def test_get_cve_different_reliability(requests_mock, reliability, client):
+    """
+    Given:
+        - Different source reliability param
+    When:
+        - Running cve command
+    Then:
+        - Ensure the reliability specified is returned.
+    """
+    args = {
+        "cve": "cve_id_value",
+    }
+    requests_mock.get(url=f"{BASE_URL}/cves", json=EXAMPLE_CVES)
+
+    response = get_cves(client=client, args=args, reliability=reliability)[0]
+
+    assert response.indicator.dbot_score.reliability == reliability
