@@ -1055,7 +1055,7 @@ inputs:
   value:
     simple: "100"
   required: false
-  description: LOLBAS Feed results limit
+  description: LOLBAS Feed results limit.
   playbookInputQuery:
 - key: EndpointIDs
   value:
