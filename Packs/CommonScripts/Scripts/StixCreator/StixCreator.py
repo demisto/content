@@ -1,6 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-import dateparser as dateparser
+import dateparser
 
 
 ''' IMPORTS '''
@@ -9,7 +9,9 @@ import uuid
 from stix2 import Bundle, ExternalReference, Indicator, Vulnerability
 from stix2 import AttackPattern, Campaign, Malware, Infrastructure, IntrusionSet, Report, ThreatActor
 from stix2 import Tool, CourseOfAction
-from typing import Any, Callable
+from stix2.exceptions import InvalidValueError
+from typing import Any
+from collections.abc import Callable
 
 SCOs: dict[str, str] = {  # pragma: no cover
     "md5": "file:hashes.md5",
@@ -83,6 +85,49 @@ HASH_TYPE_TO_STIX_HASH_TYPE = {  # pragma: no cover
 }
 
 
+def search_related_indicators(value: str) -> list[dict]:
+    relationships = demisto.searchRelationships({"entities": [value]}).get("data", [])
+
+    query = ""
+    for rel in relationships:
+        entity_a = rel.get("entityA", "").lower()
+        entity_b = rel.get("entityB", "").lower()
+        if entity_a == value.lower():
+            query += f'"{entity_b}"'
+        elif entity_b == value.lower():
+            query += f'"{entity_a}"'
+        else:
+            demisto.info(f"Relationship: {rel} is not relevant for indicator: {value}")
+            continue
+        query += " or "
+    if not query:
+        demisto.info(f"No relevant relationship found for indicator: {value}")
+        return []
+    demisto_indicators = demisto.searchIndicators(query=query).get("iocs", [])
+    return demisto_indicators
+
+
+def get_indicators_stix_ids(value: str, indicator_type: str, indicators: list[dict]) -> list[str]:
+    stix_ids = []
+    for indicator in indicators:
+        if stix_id := indicator.get("stixid"):
+            demisto.debug(f"Found stix id: {stix_id} for indicator: {indicator}")
+            stix_ids.append(stix_id)
+        else:
+            if indicator_type in SDOs:
+                stix_type = XSOAR_TYPES_TO_STIX_SDO.get(indicator.get("indicator_type", "indicator"))
+                stix_id = create_sdo_stix_uuid(indicator, stix_type, indicator.get("value", ""))
+            elif indicator_type in SCOs:
+                stix_type = XSOAR_TYPES_TO_STIX_SCO.get(indicator.get("indicator_type", "indicator"), 'indicator')
+                stix_id = create_sco_stix_uuid(indicator, stix_type, indicator.get("value", ""))
+            else:
+                demisto.info(f"Indicator type: {indicator_type}, with the value: {value} is unknown.")
+                continue
+            demisto.debug(f"Created stix id: {stix_id} for indicator: {indicator}")
+        stix_ids.append(stix_id)
+    return stix_ids
+
+
 def hash_type(value: str) -> str:  # pragma: no cover
     length = len(value)
     if length == 32:
@@ -128,13 +173,13 @@ def create_sco_stix_uuid(xsoar_indicator: dict, stix_type: Optional[str], value:
     elif stix_type == 'windows-registry-key':
         unique_id = uuid.uuid5(SCO_DET_ID_NAMESPACE, f'{{"key":"{value}"}}')
     elif stix_type == 'file':
-        if 'md5' == get_hash_type(value):
+        if get_hash_type(value) == 'md5':
             unique_id = uuid.uuid5(SCO_DET_ID_NAMESPACE, f'{{"hashes":{{"MD5":"{value}"}}}}')
-        elif 'sha1' == get_hash_type(value):
+        elif get_hash_type(value) == 'sha1':
             unique_id = uuid.uuid5(SCO_DET_ID_NAMESPACE, f'{{"hashes":{{"SHA-1":"{value}"}}}}')
-        elif 'sha256' == get_hash_type(value):
+        elif get_hash_type(value) == 'sha256':
             unique_id = uuid.uuid5(SCO_DET_ID_NAMESPACE, f'{{"hashes":{{"SHA-256":"{value}"}}}}')
-        elif 'sha512' == get_hash_type(value):
+        elif get_hash_type(value) == 'sha512':
             unique_id = uuid.uuid5(SCO_DET_ID_NAMESPACE, f'{{"hashes":{{"SHA-512":"{value}"}}}}')
         else:
             unique_id = uuid.uuid5(SCO_DET_ID_NAMESPACE, f'{{"value":"{value}"}}')
@@ -235,10 +280,7 @@ def main():
         xsoar_indicator = all_args[indicator_fields]
         demisto_indicator_type = xsoar_indicator.get('indicator_type', 'Unknown')
 
-        if doubleBackslash:
-            value = xsoar_indicator.get('value', '').replace('\\', r'\\')
-        else:
-            value = xsoar_indicator.get('value', '')
+        value = xsoar_indicator.get("value", "").replace("\\", "\\\\") if doubleBackslash else xsoar_indicator.get("value", "")
 
         if demisto_indicator_type in XSOAR_TYPES_TO_STIX_SCO and is_sco:
             stix_type = XSOAR_TYPES_TO_STIX_SCO.get(demisto_indicator_type)
@@ -278,6 +320,8 @@ def main():
                     indicator_type = hash_type(value)
                 if indicator_type not in SCOs and indicator_type not in SDOs:
                     indicator_type = guess_indicator_type(indicator_type, value)
+                demisto.debug(f"Creating an indicator with the following pattern: [{SCOs[indicator_type]} = '{value}']")
+
                 indicator = Indicator(pattern=f"[{SCOs[indicator_type]} = '{value}']",
                                       pattern_type='stix',
                                       **kwargs)
@@ -306,6 +350,13 @@ def main():
 
                         kwargs['is_family'] = argToBoolean(xsoar_indicator.get('ismalwarefamily', 'False').lower())
 
+                    if indicator_type == 'report':
+                        kwargs['published'] = dateparser.parse(xsoar_indicator.get('timestamp', ''))
+
+                        related_indicators = search_related_indicators(value)
+                        stix_ids = get_indicators_stix_ids(value, indicator_type, related_indicators)
+                        kwargs["object_refs"] = stix_ids
+                    demisto.debug(f"Creating {indicator_type} indicator: {value}, with the following kwargs: {kwargs}")
                     indicator = SDOs[indicator_type](
                         name=value,
                         **kwargs
@@ -313,14 +364,25 @@ def main():
 
                     indicators.append(indicator)
 
-                except (KeyError, TypeError) as e:
+                except (KeyError, TypeError):
                     demisto.info(
-                        "Indicator type: {}, with the value: {} is not STIX compatible".format(demisto_indicator_type, value))
-                    demisto.info("Export failure excpetion: {}".format(e))
+                        f"Indicator type: {demisto_indicator_type}, with the value: {value} is not STIX compatible")
+                    demisto.info(f"Export failure exception: {traceback.format_exc()}")
                     continue
 
+                except InvalidValueError:
+                    demisto.info(
+                        f"Indicator type: {demisto_indicator_type}, with the value: {value} is not STIX compatible. Skipping.")
+                    demisto.info(f"Export failure exception: {traceback.format_exc()}")
+                    continue
+
+            except InvalidValueError:
+                demisto.info(
+                    f"Indicator type: {demisto_indicator_type}, with the value: {value} is not STIX compatible. Skipping.")
+                demisto.info(f"Export failure exception: {traceback.format_exc()}")
+                continue
     if len(indicators) > 1:
-        bundle = Bundle(indicators, allow_custom=True)
+        bundle = Bundle(indicators, allow_custom=True, spec_version='2.1')
         context = {
             'StixExportedIndicators(val.pattern && val.pattern == obj.pattern)': json.loads(str(bundle))
         }

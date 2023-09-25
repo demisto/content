@@ -189,20 +189,48 @@ def test_remediation_command_list_command(mocker, prisma_cloud_v2_client):
                                                'policies': ['a11b2cc3-1111-2222-33aa-a1b23ccc4dd5']})
 
 
-def test_alert_remediate_command(mocker, prisma_cloud_v2_client):
+def test_alert_remediate_command_pass(mocker, prisma_cloud_v2_client):
     """
     Given:
         - All relevant arguments for the command that is executed
     When:
-        - prisma-cloud-alert-remediate command is executed
+        - prisma-cloud-alert-remediate command is executed with an alert id that can be remediated
     Then:
-        - The http request is called with the right arguments
+        - The http request is called with the right arguments and the right result is returned
     """
     from PrismaCloudV2 import alert_remediate_command
     http_request = mocker.patch.object(prisma_cloud_v2_client, '_http_request')
     args = {'alert_id': 'P-123456'}
-    alert_remediate_command(prisma_cloud_v2_client, args)
+    command_results = alert_remediate_command(prisma_cloud_v2_client, args)
     http_request.assert_called_with('PATCH', 'alert/remediation/P-123456', resp_type='response')
+    assert command_results.outputs == {'alertId': 'P-123456', 'successful': True}
+
+
+def test_alert_remediate_command_fail(mocker, prisma_cloud_v2_client):
+    """
+    Given:
+        - All relevant arguments for the command that is executed
+    When:
+        - prisma-cloud-alert-remediate command is executed with an alert id that cannot be remediated
+    Then:
+        - The http request is called with the right arguments and the right result is returned
+    """
+    from PrismaCloudV2 import alert_remediate_command
+
+    class MockRes:
+        def __init__(self, headers, status_code) -> None:
+            self.headers = headers
+            self.status_code = status_code
+
+    error_header = '[{"i18nKey":"remediation_unavailable","severity":"error","subject":null}]'
+    http_request = mocker.patch.object(prisma_cloud_v2_client, '_http_request',
+                                       side_effect=DemistoException(message='Error in API call [405] - Method Not Allowed',
+                                                                    res=MockRes({'x-redlock-status': error_header}, 405)))
+    args = {'alert_id': 'P-123456'}
+    command_results = alert_remediate_command(prisma_cloud_v2_client, args)
+    http_request.assert_called_with('PATCH', 'alert/remediation/P-123456', resp_type='response')
+    assert command_results.outputs == {'alertId': 'P-123456', 'successful': False, 'failureReason': 'remediation unavailable',
+                                       'errorValue': None}
 
 
 def test_config_search_command(mocker, prisma_cloud_v2_client):
@@ -313,6 +341,90 @@ def test_resource_get_command(mocker, prisma_cloud_v2_client):
     args = {'rrn': 'rrn::name:place:111:a1b2:a%3Ajj55-2023-01-29-09-25'}
     resource_get_command(prisma_cloud_v2_client, args)
     http_request.assert_called_with('POST', 'resource', json_data={'rrn': 'rrn::name:place:111:a1b2:a%3Ajj55-2023-01-29-09-25'})
+
+
+def test_resource_list_command(mocker, prisma_cloud_v2_client):
+    """
+    Given:
+        - All relevant arguments for the command that is executed
+    When:
+        - prisma-cloud-resource-list command is executed
+    Then:
+        - The http request is called with the right arguments
+    """
+    from PrismaCloudV2 import resource_list_command
+    http_request = mocker.patch.object(prisma_cloud_v2_client, '_http_request')
+    args = {'list_type': 'TAG'}
+    resource_list_command(prisma_cloud_v2_client, args)
+    http_request.assert_called_with('GET', 'v1/resource_list', params={'listType': 'TAG'})
+
+
+def test_user_roles_list_command_with_user(mocker, prisma_cloud_v2_client):
+    """
+    Given:
+        - All relevant arguments for the command that is executed
+    When:
+        - prisma-cloud-user-roles-list command is executed
+    Then:
+        - The http request is called with the right arguments
+    """
+    from PrismaCloudV2 import user_roles_list_command
+    http_request = mocker.patch.object(prisma_cloud_v2_client, '_http_request', return_value={'id': 'a1b2-a1b2'})
+    args = {'role_id': 'a1b2-a1b2'}
+    user_roles_list_command(prisma_cloud_v2_client, args)
+    http_request.assert_called_with('GET', 'user/role/a1b2-a1b2')
+
+
+def test_user_roles_list_command_without_user(mocker, prisma_cloud_v2_client):
+    """
+    Given:
+        - All relevant arguments for the command that is executed
+    When:
+        - prisma-cloud-user-roles-list command is executed
+    Then:
+        - The http request is called with the right arguments
+    """
+    from PrismaCloudV2 import user_roles_list_command
+    http_request = mocker.patch.object(prisma_cloud_v2_client, '_http_request')
+    args = {}
+    user_roles_list_command(prisma_cloud_v2_client, args)
+    http_request.assert_called_with('GET', 'user/role')
+
+
+def test_users_list_command(mocker, prisma_cloud_v2_client):
+    """
+    Given:
+        - All relevant arguments for the command that is executed
+    When:
+        - prisma-cloud-users-list command is executed
+    Then:
+        - The http request is called with the right arguments and the right result is returned
+    """
+    from PrismaCloudV2 import users_list_command
+    return_value = [{"displayName": "User Test", "email": "test@paloaltonetworks.com", "enabled": True,
+                     "roles": [{"id": "a4b4", "name": "Read Only", "type": "Account Group Read Only"},
+                               {"id": "b2n3", "name": "Other Role", "type": "Role"}],
+                     "type": "USER_ACCOUNT", "username": "test@paloaltonetworks.com"},
+                    {"displayName": "User Other", "email": "other@paloaltonetworks.com", "enabled": True,
+                     "roles": [{"id": "a4b4", "name": "Read Only", "type": "Account Group Read Only"}],
+                     "type": "USER_ACCOUNT", "username": "other@paloaltonetworks.com"},
+                    {"displayName": "User Not Listed", "email": "mail", "enabled": True,
+                     "roles": [{"id": "a4b4", "name": "Read Only", "type": "Account Group Read Only"}],
+                     "type": "USER_ACCOUNT", "username": "not_to_appear"},
+                    ]
+    http_request = mocker.patch.object(prisma_cloud_v2_client, '_http_request', return_value=return_value)
+    args = {'usernames': 'test@paloaltonetworks.com,other@paloaltonetworks.com'}
+    command_results = users_list_command(prisma_cloud_v2_client, args)
+    http_request.assert_called_with('GET', 'v3/user')
+    assert command_results.outputs == [{'displayName': 'User Test', 'email': 'test@paloaltonetworks.com', 'enabled': True,
+                                        'roles': [{'id': 'a4b4', 'name': 'Read Only', 'type': 'Account Group Read Only'},
+                                                  {'id': 'b2n3', 'name': 'Other Role', 'type': 'Role'}],
+                                        'roles names': ['Read Only', 'Other Role'], 'type': 'USER_ACCOUNT',
+                                        'username': 'test@paloaltonetworks.com'},
+                                       {'displayName': 'User Other', 'email': 'other@paloaltonetworks.com', 'enabled': True,
+                                        'roles': [{'id': 'a4b4', 'name': 'Read Only', 'type': 'Account Group Read Only'}],
+                                        'roles names': ['Read Only'], 'type': 'USER_ACCOUNT',
+                                        'username': 'other@paloaltonetworks.com'}]
 
 
 def test_account_list_command(mocker, prisma_cloud_v2_client):
