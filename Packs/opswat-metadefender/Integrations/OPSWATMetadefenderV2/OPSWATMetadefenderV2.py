@@ -28,12 +28,15 @@ HTTP_ERROR_CODES = {
 ''' HELPER FUNCTIONS '''
 
 
-def http_req(method='GET', url_suffix='', file_name=None, parse_json=True):
+def http_req(method='GET', url_suffix='', file_name=None, parse_json=True, scan_rule=None):
     data = None
     url = BASE_URL + url_suffix
     headers = DEFAULT_HEADERS
     if USE_CLOUD:
         headers['apikey'] = API_KEY
+    if scan_rule:
+        demisto.debug(f'Using explicit rule: {scan_rule}')
+        headers['rule'] = scan_rule.encode('utf-8')
     if file_name:
         headers['filename'] = file_name.encode('utf-8')  # type: ignore
         with open(file_name, 'rb') as file_:
@@ -57,7 +60,7 @@ def http_req(method='GET', url_suffix='', file_name=None, parse_json=True):
         return res.content
 
 
-def scan_file(file_entry_id):
+def scan_file(file_entry_id, scan_rule=None):
     try:
         file_entry = demisto.getFilePath(file_entry_id)
     except ValueError as e:
@@ -65,7 +68,7 @@ def scan_file(file_entry_id):
     file_name = file_entry['name']
     shutil.copy(file_entry['path'], file_name)
     try:
-        res = http_req(method='POST', url_suffix='file', file_name=file_name)
+        res = http_req(method='POST', url_suffix='file', file_name=file_name, scan_rule=scan_rule)
     finally:
         shutil.rmtree(file_name, ignore_errors=True)
     return res, file_name
@@ -153,7 +156,8 @@ def get_hash_info_command():
 
 def scan_file_command():
     file_entry_id = demisto.args()['fileId']
-    res, file_name = scan_file(file_entry_id)
+    scan_rule_name = demisto.args().get('scanRule', None)
+    res, file_name = scan_file(file_entry_id, scan_rule_name)
     scan_id = res['data_id']
     md = '# OPSWAT-Metadefender\n'
     ec = {'OPSWAT': {
