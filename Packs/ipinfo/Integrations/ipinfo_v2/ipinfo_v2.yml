@@ -137,7 +137,7 @@ script:
       description: The type of the destination of the relationship.
       type: string
     - contextPath: IP.Geo.Location
-      description: The IP geographic location (coordinates as lat:lon)
+      description: The IP geographic location (coordinates as lat:lon).
       type: String
     - contextPath: IP.Geo.Country
       description: The IP country.
@@ -166,7 +166,7 @@ script:
     - contextPath: DBotScore.Vendor
       description: The vendor used to calculate the score.
       type: String
-  dockerimage: demisto/python3:3.10.12.68714
+  dockerimage: demisto/python3:3.10.13.73190
   runonce: false
   script: '-'
   subtype: python3
