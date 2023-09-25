@@ -1,5 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+
+
 from abc import ABCMeta
 from collections.abc import Callable
 from collections import defaultdict
@@ -628,6 +630,23 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
             url_suffix=f'rest/api/{self.api_version}/issue/{issue_id_or_key}',
             params=query_params,
             resp_type='response',
+        )
+
+    def update_assignee(self, issue_id_or_key: str, assignee_body: Dict[str, Any]) -> requests.Response:
+        """This method is in charge of assigning the issue to the specific user.
+
+        Args:
+            issue_id_or_key (str): The id or the key of the issue to delete.
+            assignee_body (Dict[str, Any]): Dictionary containing assignee_id / assignee
+
+        Returns:
+            requests.Response: The raw response of the endpoint.
+        """
+        return self.http_request(
+            method='PUT',
+            url_suffix=f'rest/api/{self.api_version}/issue/{issue_id_or_key}/assignee',
+            json_data=assignee_body,
+            resp_type="text"
         )
 
     def get_transitions(self, issue_id_or_key: str) -> Dict[str, Any]:
@@ -2000,6 +2019,34 @@ def delete_issue_command(client: JiraBaseClient, args: Dict[str, str]) -> Comman
                                           issue_key=args.get('issue_key', ''))
     client.delete_issue(issue_id_or_key=issue_id_or_key)
     return CommandResults(readable_output='Issue deleted successfully.')
+
+
+def update_issue_assignee_command(client: JiraBaseClient, args: Dict[str, str]) -> CommandResults:
+    body = None
+    if args.get("assignee"):  # for jira server
+        body = {"name": args["assignee"]}
+    elif args.get("assignee_id"):  # for jira cloud
+        body = {"accountId": args["assignee_id"]}
+    else:
+        raise DemistoException('Please provide assignee for Jira Server or assignee_id for Jira Cloud')
+
+    issue_id_or_key = get_issue_id_or_key(issue_id=args.get('issue_id', ''),
+                                          issue_key=args.get('issue_key', ''))
+
+    demisto.debug(f'Updating assignee of the issue with the issue fields: {body}')
+    client.update_assignee(issue_id_or_key=issue_id_or_key, assignee_body=body)
+    demisto.debug(f'Issue {issue_id_or_key} was updated successfully')
+
+    res = client.get_issue(issue_id_or_key=issue_id_or_key)
+    markdown_dict, outputs = create_issue_md_and_outputs_dict(issue_data=res)
+    return CommandResults(
+        outputs_prefix='Ticket',
+        outputs=outputs,
+        outputs_key_field='Id',
+        readable_output=tableToMarkdown(name=f'Issue {outputs.get("Key", "")}', t=markdown_dict,
+                                        headerTransform=pascalToSpace),
+        raw_response=res
+    )
 
 
 def delete_comment_command(client: JiraBaseClient, args: Dict[str, str]) -> CommandResults:
@@ -3910,6 +3957,7 @@ def main():  # pragma: no cover
         'jira-get-comments': get_comments_command,
         'jira-get-issue': get_issue_command,
         'jira-create-issue': create_issue_command,
+        'jira-issue-assign': update_issue_assignee_command,
         'jira-edit-issue': edit_issue_command,
         'jira-delete-issue': delete_issue_command,
         'jira-list-transitions': get_transitions_command,
