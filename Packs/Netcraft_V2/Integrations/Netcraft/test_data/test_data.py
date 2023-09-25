@@ -4,9 +4,9 @@ import requests
 # flake8: noqa
 
 takedown_list_readable = """### Netcraft Takedowns
-|ID|Brand|Attack Type|Status|Attack URL|Date Reported|Last Updated|Date Authorised|Date Escalated|First Contact|First Inactive (Monitoring)|First Resolved|
+|ID|Auth|Brand|Attack Type|Status|Attack URL|Date Reported|Last Updated|Date Authorised|Date Escalated|First Contact|First Resolved|
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| 30480489 | Example Brand | phishing_url | Monitoring | https://l0gin.example.com/app/ | 2023-09-10 14:13:55.120309 | 2023-09-11 12:19:01 UTC | 2023-09-10 14:13:55.120309 | 2023-09-10 14:13:55.120309 | 2023-09-11 11:29:01 UTC | N/A | 2023-09-11 12:09:01 UTC |
+| 30480489 | true | Example Brand | phishing_url | Monitoring | https://l0gin.example.com/app/ | 2023-09-10 14:13:55.120309 | 2023-09-11 12:19:01 UTC | 2023-09-10 14:13:55.120309 | 2023-09-10 14:13:55.120309 | 2023-09-11 11:29:01 UTC | 2023-09-11 12:09:01 UTC |
 """
 
 
@@ -48,9 +48,9 @@ submission_list_readable = """### Netcraft Submissions
 
 
 submission_list_with_uuid_readable = """### Submission submission_uuid
-|Submission Date|State|Last Update|List URLs|List Files|
+|Submission UUID|Submission Date|Submitter Email|State|Source|
 |---|---|---|---|---|
-| 2001-09-09 01:46:40+00:00 | processing | 2001-09-09 01:46:40+00:00 | !netcraft-submission-url-list submission_uuid='submission_uuid' | *This submission has no Files* |
+| submission_uuid | 2001-09-09 01:46:40+00:00 | test@example.com | processing | scam@example.com |
 """
 
 
@@ -232,7 +232,7 @@ class takedown_list:
         {
             "attack_type": "phishing_url",
             "attack_url": "https://l0gin.example.com/app/",
-            "authgiven": True,
+            "authgiven": "1",
             "authorisation_source": "netcraft",
             "certificate": [],
             "certificate_revoked": "2023-09-11 12:04:01 UTC",
@@ -247,10 +247,10 @@ class takedown_list:
             "domain": "examp1eb4nk.com",
             "domain_attack": "yes",
             "domain_risk_rating": 10,
-            "escalated": "false",
+            "escalated": False,
             "escalation_source": "",
             "evidence_url": "https://incident.netcraft.com/1b24dexample/",
-            "false_positive": False,
+            "false_positive": "0",
             "final_outage": "00:45:00",
             "final_resolved": "2023-09-11 12:19:01 UTC",
             "first_contact": "2023-09-11 11:29:01 UTC",
@@ -281,7 +281,7 @@ class takedown_list:
                 {"first_blocked": "2023-09-11 12:01:01 UTC", "platform": "desktop"},
                 {"first_blocked": "2023-09-11 12:05:01 UTC", "platform": "ios"},
             ],
-            "has_phishing_kit": True,
+            "has_phishing_kit": "1",
             "host": "Example Host",
             "hostname": "l0gin.examp1eb4nk.com",
             "hostname_attack": "yes_low_confidence",
@@ -297,7 +297,7 @@ class takedown_list:
             ],
             "malware_category": "",
             "malware_family": "",
-            "managed": False,
+            "managed": "0",
             "phishing_kit_hash": "2818a25d2f839c3e0608f00af34bb98ca2571c74",
             "region": "example_region",
             "registrar": "Example Registrar",
@@ -339,7 +339,7 @@ class takedown_list:
                 "domain": "examp1eb4nk.com",
                 "domain_attack": "yes",
                 "domain_risk_rating": 10,
-                "escalated": "false",
+                "escalated": False,
                 "escalation_source": "",
                 "evidence_url": "https://incident.netcraft.com/1b24dexample/",
                 "false_positive": False,

@@ -228,12 +228,12 @@ def int_to_readable_bool(val: str | int | None) -> str | None:
     return {'0': 'No', '1': 'Yes'}.get(str(val))
 
 
-def int_to_bool(val: str | int | None) -> bool | None:
+def int_to_bool(val: str | int | None) -> Any:
     '''
     Converts the 1 or 0 values returned by netcraft to a boolean for the context, if possible.
     The val provided can be an int, str or None (in which case None should be returned).
     '''
-    return {'0': False, '1': True}.get(str(val))
+    return {'0': False, '1': True}.get(str(val), val)
 
 
 def convert_binary_keys_to_bool(d: dict, *keys):
@@ -557,7 +557,11 @@ def takedown_list_command(args: dict, client: Client) -> CommandResults:
 
     def response_to_context(response: list[dict]) -> list[dict]:
         for takedown in response:
-            takedown['authgiven'] = int_to_bool(takedown.get('authgiven'))
+            convert_binary_keys_to_bool(
+                takedown,
+                'authgiven', 'escalated', 'has_phishing_kit',
+                'false_positive', 'managed'
+            )
         return response
 
     def response_to_readable(response: list[dict]) -> str:
@@ -758,9 +762,9 @@ def get_submission(args: dict, submission_uuid: str, client: Client) -> PollResu
 
     def response_to_readable(submission: dict) -> str:
         return tableToMarkdown(
-            'Netcraft Submissions',
+            f'Submission {submission["uuid"]}',
             {
-                'Submission UUID': submission.get('uuid'),
+                'Submission UUID': submission['uuid'],
                 'Submission Date': str(arg_to_datetime(submission.get('date'))),
                 'Submitter Email': submission.get('submitter_email'),
                 'State': submission.get('state'),

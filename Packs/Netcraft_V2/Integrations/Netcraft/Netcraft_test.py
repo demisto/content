@@ -27,8 +27,9 @@ def mock_demisto(mocker):
 @pytest.mark.parametrize("input_dict,keys,expected", [
     ({'a': 1, 'b': 0}, ['a'], {'a': True, 'b': 0}),
     ({'a': '1', 'b': '0'}, ['a', 'b'], {'a': True, 'b': False}),
-    ({'x': 'yes', 'y': 'no'}, ['x'], {'x': None, 'y': 'no'}),
+    ({'x': 'yes', 'y': 'no'}, ['x'], {'x': 'yes', 'y': 'no'}),
     ({'x': 'yes', 'y': 'no'}, [], {'x': 'yes', 'y': 'no'}),
+    ({'x': True, 'y': 'no'}, ['x'], {'x': True, 'y': 'no'}),
 ])
 def test_convert_binary_keys_to_bool(input_dict, keys, expected):
     from Netcraft import convert_binary_keys_to_bool
