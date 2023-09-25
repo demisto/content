@@ -1,8 +1,5 @@
 #!/usr/bin/env bash
 
-# exit on errors
-set -e
-
 #
 # Bootstraps a development environment.
 #
@@ -11,19 +8,25 @@ set -e
 # * setup content dependencies with poetry
 # * Setup npm
 
+function exit_on_error {
+    if [ "${1}" -ne 0 ]; then
+        echo "ERROR: ${2}, exiting with code ${1}" 1>&2
+        exit "${1}"
+    fi
+}
+
 # poetry is installed in ~/.local/bin
 PATH=~/.local/bin:$PATH
 
-if [ "$1" == "-h" -o "$1" == "--help" ]; then
-    cat << EOF
+if [[ "$1" == "-h" ]] || [[ "$1" == "--help" ]]; then
+    cat << __EOF__
 Setup development environment (run with no arguments):
 * install pre-commit hooks (set NO_HOOKS=1 to skip)
-
-EOF
-exit 0
+__EOF__
+    exit 0
 fi
 
-if [ ! "$PWD" == "$(git rev-parse --show-toplevel)" ]; then
+if [ ! "${PWD}" == "$(git rev-parse --show-toplevel)" ]; then
     cat >&2 <<__EOF__
 ERROR: this script must be run at the root of the source tree
 __EOF__
@@ -33,68 +36,108 @@ fi
 HOOKS_DIR="${PWD}/.hooks"
 GIT_HOOKS_DIR="${PWD}/.git/hooks"
 
-if [ -n "$NO_HOOKS" ]; then
-    echo "Skipping hooks setup as environment varialbe NO_HOOKS is set"
+if [ -n "${NO_HOOKS}" ]; then
+    echo "Skipping hooks setup as environment variable NO_HOOKS is set"
 else
     if [ ! -e "${GIT_HOOKS_DIR}/pre-commit" ]; then
         echo "Installing 'pre-commit' hooks"
         ln -s "${HOOKS_DIR}/pre-commit" "${GIT_HOOKS_DIR}/pre-commit"
+        exit_on_error $? "Failed to install pre-commit hook"
     else
         echo "Skipping install of pre-commit hook as it already exists."
         echo "If you want to re-install: 'rm ${GIT_HOOKS_DIR}/pre-commit' and then run this script again."
+        exit 1
     fi
 fi
 
 echo "======================="
-
-
-if ! command -v poetry >/dev/null 2>&1; then
-    echo "ERROR: poetry is missing. Please run the following command to install poetry:
-           curl -sSL https://install.python-poetry.org | python3 -" 1>&2
-    exit 1
-fi
-
-echo "Check if poetry files are valid"
-poetry check
-echo "Installing dependencies..."
-if [ -n "$CI" ]; then
-    echo "Detected CI env. Running extra requiements"
-    for _ in {1..3}; do
-        poetry install --with ci && s=0 && break || s=$?
-        rm -rf .venv
-        echo "Sleeping for 10 seconds before retrying"
-        sleep 10
-    done
-    if [ $s -ne 0 ]; then
-        echo "Failed to install dependencies after 3 tries"
+if [ -z "${INSTALL_POETRY}" ]; then
+    if ! command -v poetry >/dev/null 2>&1; then
+        echo "ERROR: poetry is missing. Please run the following command to install poetry:
+               curl -sSL https://install.python-poetry.org | python3 -" 1>&2
         exit 1
     fi
 else
-    echo "Detected local env."
+    should_install_poetry="yes"
+    if command -v poetry >/dev/null 2>&1; then
+        if [[ "$(poetry --version)" == "Poetry (version ${POETRY_VERSION})" ]]; then
+            echo "Poetry already installed:$(poetry --version) with correct version"
+            should_install_poetry="no"
+        else
+            echo "Poetry installed with a different version:$(poetry --version) required:${POETRY_VERSION}"
+        fi
+    else
+        echo "Poetry isn't installed"
+    fi
+    if [[ "${should_install_poetry}" == "yes" ]]; then
+        echo "Installing Poetry version:${POETRY_VERSION}"
+        curl -sSL https://install.python-poetry.org | python3 - --version "${POETRY_VERSION}"
+        exit_on_error $? "Failed to install Poetry version:${POETRY_VERSION}"
+        if ! command -v poetry >/dev/null 2>&1; then
+            exit_on_error $? "Poetry isn't installed"
+        fi
+        if [[ "$(poetry --version)" == "Poetry (version ${POETRY_VERSION})" ]]; then
+          echo "Poetry version ${POETRY_VERSION} installed successfully"
+        else
+          exit_on_error 1 "Poetry version $(poetry --version) doesn't match the required version: ${POETRY_VERSION}"
+        fi
+    fi
+fi
+
+if [ -n "${CI}" ]; then
+    retry_count=3
+    sleep_time=10
+    echo "Detected CI environment. Running extra requirements"
+    echo "Check if poetry files are valid"
+    poetry check --no-interaction
+    exit_on_error $? "Failed to check poetry files, exiting with exit code $?"
+
+    echo "Installing dependencies..."
+    for ((i=1; i <= retry_count; i++)); do
+        poetry install --no-interaction --with ci && exit_code=0 && break || exit_code=$?
+        [ -d .venv ] && rm -rf .venv
+        if [ "${i}" -ne "${retry_count}" ]; then
+            echo "Sleeping for ${sleep_time} seconds before retrying"
+            sleep "${sleep_time}"
+        fi
+    done
+    exit_on_error "${exit_code}" "Failed to install dependencies after ${retry_count} tries, with exit code ${exit_code}"
+else
+    echo "Detected local environment"
+    echo "Check if poetry files are valid"
+    poetry check
+    exit_on_error $? "Failed to check poetry files, exiting with exit code $?"
+    echo "Installing dependencies..."
     poetry install
+    exit_on_error $? "Failed to install dependencies, exiting with exit code $?"
 fi
 
 echo "=========================="
 echo "Done setting up virtualenv with poetry"
 echo "Activate the venv by running: poetry shell"
 echo "Deactivate by running: deactivate"
-
-
 echo "======================="
 
-if [ -n "$CI" ]; then
-    echo "Detected CI env. Running npm ci..."
-    npm ci --cache .npm --prefer-offline
-elif [ -n "$NO_NPM" ]; then
-    echo "Skipping npm node modules setup as environment varialbe NO_NPM is set"
+if [ -n "${CI}" ]; then
+    echo "Detected CI environment. Running npm ci..."
+    npm ci --cache .npm --prefer-offline --no-fund --no-audit  # Clean install
+    exit_on_error $? "Failed to install npm dependencies, exiting with exit code $?"
+elif [ -n "${NO_NPM}" ]; then
+    echo "Skipping npm node modules setup as environment variable NO_NPM is set"
 else
     if ! command -v npm >/dev/null 2>&1; then
-        echo "Skipping npm node modules as 'npm' command was not found!!"
-        echo "node and npm are optional but recommended. We use node for validating README files."
-        echo "You can install node and npm on your machine."
-        echo "and then run: 'npm install'"
+            cat >&2 <<__EOF__
+Skipping npm node modules as 'npm' command was not found!
+node and npm are optional but recommended. We use node for validating README files.
+You can install node and npm on your machine, and then run: 'npm install'
+__EOF__
+        exit 1
     else
         echo "Running: npm install ..."        
         npm install --no-fund --no-audit
+        exit_on_error $? "Failed to install npm dependencies, exiting with exit code $?"
     fi
 fi
+
+echo "Finished setting up the environment."
+exit 0
