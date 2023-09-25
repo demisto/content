@@ -113,7 +113,7 @@ configuration:
 defaultmapperin: Hurukai alert mapper
 defaultmapperout: Hurukai outgoing mapper
 defaultclassifier: Hurukai classifier
-description: |-.
+description: |-
   HarfangLab EDR Connector,
   Compatible version 2.13.7+
 display: HarfangLab EDR

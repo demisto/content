@@ -2108,7 +2108,7 @@ def hunt_search_runned_process_hash(client, args):
         )
 
 
-def isolate_endpoint(client, args) -> dict[str, Any]:
+def isolate_endpoint(client, args) -> Dict[str, Any]:
     agentid = args.get('agent_id', None)
     data = client.isolate_endpoint(agentid)
 
@@ -2129,7 +2129,7 @@ def isolate_endpoint(client, args) -> dict[str, Any]:
     )
 
 
-def deisolate_endpoint(client, args) -> dict[str, Any]:
+def deisolate_endpoint(client, args) -> Dict[str, Any]:
     agentid = args.get('agent_id', None)
     data = client.deisolate_endpoint(agentid)
 
@@ -2290,6 +2290,7 @@ class TelemetryProcesses(Telemetry):
             ('image_name', 'image_name'),
         ]
         self.output_keys = [
+            ('process_unique_id', 'process_unique_id'),
             ('create date', '@event_create_date'),
             ('hostname', ['agent', 'hostname']),
             ('process name', 'process_name'),
