@@ -161,6 +161,8 @@ class Client:
             sql_query = text(sql_query)
 
         result = self.connection.execute(sql_query, bind_vars)
+
+        # for MSSQL autocommit is True, so no need to commit again here
         if self.dialect not in {MICROSOFT_SQL_SERVER, MS_ODBC_DRIVER}:
             self.connection.commit()
         # extracting the table from the response
