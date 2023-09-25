@@ -91,7 +91,7 @@ class MsGraphListenerClient(MsGraphMailBaseClient):
         demisto.debug(f"MicrosoftGraphMail - Number of incidents skipped: {len(fetched_emails)-len(incidents)}")
         
         """
-        THe below pop is here to maintain parity between this (single-user) version of the graph mail integration and the application-permission version.
+        The below pop is here to maintain parity between this (single-user) version of the graph mail integration and the application-permission version.
         It is output by the ApiModule but does not provide any functionaltiy and consideration should be given in the future to either removing it's
         addition in the Api module.
         """
@@ -201,13 +201,13 @@ def main():     # pragma: no cover
         elif command == 'msgraph-mail-get-attachment':
             return_results(get_attachment_command(client, args))
         elif command == 'msgraph-mail-create-folder':
-            return_results(create_folder_command(client,args))
+            return_results(create_folder_command(client, args))
         elif command == 'msgraph-mail-get-email-as-eml':
             return_results(get_email_as_eml_command(client, args))
         elif command == 'msgraph-mail-move-email':
-            return_results(move_email_command(client,args))
+            return_results(move_email_command(client, args))
         elif command == 'msgraph-mail-list-folders':
-            return_results(list_folders_command(client,args))
+            return_results(list_folders_command(client, args))
         elif command == 'msgraph-mail-send-draft':
             return_results(send_draft_command(client, args))  # pylint: disable=E1123
         elif command == 'msgraph-update-email-status':
