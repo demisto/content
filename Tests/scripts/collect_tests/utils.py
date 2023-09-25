@@ -1,7 +1,7 @@
 from configparser import ConfigParser, MissingSectionHeaderError
 from enum import Enum
 from pathlib import Path
-from typing import Any, NamedTuple, Optional, Tuple
+from typing import Any, NamedTuple
 from collections.abc import Iterator
 
 from demisto_sdk.commands.common.constants import FileType, MarketplaceVersions
@@ -125,12 +125,12 @@ class DictBased:
             return Version(value)
         return version.Infinity
 
-    def _handle_xsoar_marketplaces(self) -> Optional[Tuple[MarketplaceVersions, ...]]:
+    def _handle_xsoar_marketplaces(self) -> tuple[MarketplaceVersions, ...] | None:
         '''
         If xsoar marketplace supported add xsoar_saas marketplace.
         If xsoar_on_prem marketplace supported add xsoar marketplace.
         '''
-        pack_marketplaces = set(MarketplaceVersions(v) for v in self.get('marketplaces', (), warn_if_missing=False)) or None
+        pack_marketplaces = {MarketplaceVersions(v) for v in self.get('marketplaces', (), warn_if_missing=False)} or None
         if not pack_marketplaces:
             return pack_marketplaces
 

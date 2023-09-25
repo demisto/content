@@ -1320,7 +1320,7 @@ class XSIAMNightlyTestCollector(NightlyTestCollector):
 
 
 class XSOARNightlyTestCollector(NightlyTestCollector):
-    def __init__(self, marketplace: MarketplaceVersions, graph: bool = False):
+    def __init__(self, marketplace: MarketplaceVersions = MarketplaceVersions.XSOAR, graph: bool = False):
         super().__init__(marketplace, graph=graph)
 
     def _collect(self) -> CollectionResult | None:
@@ -1419,7 +1419,7 @@ if __name__ == '__main__':
             case False, _:  # not nightly
                 collector = BranchTestCollector(branch_name, marketplace, service_account, graph=graph)
             case True, MarketplaceVersions.XSOAR:
-                collector = XSOARNightlyTestCollector(marketplace, graph=graph)
+                collector = XSOARNightlyTestCollector(marketplace=marketplace, graph=graph)
             case True, MarketplaceVersions.MarketplaceV2:
                 collector = XSIAMNightlyTestCollector(graph=graph)
             case True, MarketplaceVersions.XPANSE:
