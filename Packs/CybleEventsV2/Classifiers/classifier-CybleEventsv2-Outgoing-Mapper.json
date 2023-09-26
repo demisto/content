@@ -15,7 +15,7 @@
 	"locked": false,
 	"logicalVersion": 0,
 	"mapping": {
-		"CybleEventsv2-IncidentType": {
+		"CybleEventsv2": {
 			"dontMapEventToLabels": true,
 			"internalMapping": {
 				"id": {
