@@ -59,158 +59,158 @@ script:
   script: ''
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.13.74666
   commands:
   - name: canarytools-list-canaries
     arguments: []
     outputs:
     - contextPath: CanaryTools.Device.ID
-      description: Device ID
+      description: Device ID.
       type: string
     - contextPath: CanaryTools.Device.Name
-      description: Device name
+      description: Device name.
       type: string
     - contextPath: CanaryTools.Device.Description
-      description: Device description
+      description: Device description.
       type: string
     - contextPath: CanaryTools.Device.Address
-      description: Device IP address
+      description: Device IP address.
       type: string
     - contextPath: CanaryTools.Device.Status
-      description: Device status - Live (True/False)
+      description: Device status - Live (True/False).
       type: boolean
     - contextPath: CanaryTools.Device.Location
-      description: Device location
+      description: Device location.
       type: string
     - contextPath: CanaryTools.Device.Version
-      description: Device version
+      description: Device version.
       type: string
     - contextPath: CanaryTools.Device.LastSeen
-      description: Device last seen time
+      description: Device last seen time.
       type: date
     - contextPath: CanaryTools.Device.LastUpdated
-      description: Device last updated time
+      description: Device last updated time.
       type: date
     description: Lists all registered Canaries.
   - name: canarytools-list-tokens
     arguments: []
     outputs:
     - contextPath: CanaryTools.Token.CanaryToken
-      description: Canary Token
+      description: Canary Token.
       type: string
     - contextPath: CanaryTools.Token.CreatedTime
-      description: Token Created time
+      description: Token Created time.
       type: date
     - contextPath: CanaryTools.token.Enabled
-      description: Token status - Enabled (True / False)
+      description: Token status - Enabled (True / False).
       type: boolean
     - contextPath: CanaryTools.Token.Kind
-      description: Token Kind
+      description: Token Kind.
       type: string
     - contextPath: CanaryTools.Token.Triggered
-      description: Token triggered count
+      description: Token triggered count.
       type: number
     - contextPath: CanaryTools.Token.DocName
-      description: Token document name (If the token is from type document)
+      description: Token document name (If the token is from type document).
       type: string
     - contextPath: CanaryTools.Token.TokenURL
-      description: Token URL (How the token is presented)
+      description: Token URL (How the token is presented).
       type: string
     description: Lists all Canary tokens.
   - name: canarytools-check-whitelist
     arguments:
     - name: ip
       required: true
-      description: IP address
+      description: IP address.
     - name: port
-      description: Destination port
+      description: Destination port.
     outputs:
     - contextPath: CanaryTools.IP.Address
-      description: IP address
+      description: IP address.
       type: string
     - contextPath: CanaryTools.IP.Port
-      description: Destination port for the IP allow list
+      description: Destination port for the IP allow list.
       type: string
     - contextPath: CanaryTools.IP.Whitelisted
-      description: Is the IP address on allow list (true/false)
+      description: Is the IP address on allow list (true/false).
       type: boolean
     description: Checks whether a given IP address and port are on allow list.
   - name: canarytools-whitelist-ip
     arguments:
     - name: ip
       required: true
-      description: IP address to add to allow list
+      description: IP address to add to allow list.
     - name: port
-      description: Destination port to add to allow list
+      description: Destination port to add to allow list.
     outputs:
     - contextPath: CanaryTools.IP.Address
-      description: IP address
+      description: IP address.
       type: string
     - contextPath: CanaryTools.IP.Port
-      description: Destination port for the IP allow list
+      description: Destination port for the IP allow list.
       type: string
     - contextPath: CanaryTools.IP.Whitelisted
-      description: Is the IP address on allow list (True/False)
+      description: Is the IP address on allow list (True/False).
       type: boolean
-    description: Adds an IP address to the allow list in Canary
+    description: Adds an IP address to the allow list in Canary.
   - name: canarytools-edit-alert-status
     arguments:
     - name: alert_id
       required: true
-      description: 'Alert ID (e.g., incident:canarytoken:d6fe0ae4dfd36cc3cc6d9d4f::1548593719, Can be retrieved through fetch incidents)'
+      description: 'Alert ID (e.g., incident:canarytoken:d6fe0ae4dfd36cc3cc6d9d4f::1548593719, Can be retrieved through fetch incidents).'
     - name: status
       required: true
       auto: PREDEFINED
       predefined:
       - Acknowledge
       - Unacknowledge
-      description: Required status for the alert (Acknowledge, Unacknowledge)
+      description: Required status for the alert (Acknowledge, Unacknowledge).
     outputs:
     - contextPath: CanaryTools.Alert.ID
-      description: Alert ID
+      description: Alert ID.
       type: string
     - contextPath: CanaryTools.Alert.Status
-      description: Alert status
+      description: Alert status.
       type: string
     description: Edits the status for an alert in Canary Tools.
   - name: canarytools-get-token
     arguments:
     - name: token
       required: true
-      description: Canary Token, Can be retrieved through list-tokens command
+      description: Canary Token, Can be retrieved through list-tokens command.
     outputs:
     - contextPath: CanaryTools.Token.CanaryToken
-      description: Canary Token
+      description: Canary Token.
       type: string
     - contextPath: File.Size
-      description: File Size
+      description: File Size.
       type: string
     - contextPath: File.SHA1
-      description: File SHA-1
+      description: File SHA-1.
       type: string
     - contextPath: File.SHA256
-      description: File SHA-256
+      description: File SHA-256.
       type: string
     - contextPath: File.Name
-      description: File name
+      description: File name.
       type: string
     - contextPath: File.SSDeep
-      description: File SSDeep
+      description: File SSDeep.
       type: string
     - contextPath: File.EntryID
-      description: File EntryID
+      description: File EntryID.
       type: string
     - contextPath: File.Info
-      description: File info
+      description: File info.
       type: string
     - contextPath: File.Type
-      description: File type
+      description: File type.
       type: string
     - contextPath: File.MD5
-      description: File MD5
+      description: File MD5.
       type: string
     - contextPath: File.Extension
-      description: File extension
+      description: File extension.
       type: string
     description: Fetches a Canary Token file from the Canary Tools server.
   isfetch: true
