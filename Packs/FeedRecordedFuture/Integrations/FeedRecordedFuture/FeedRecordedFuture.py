@@ -169,6 +169,7 @@ class Client(BaseClient):
             with open("response.txt", "w") as f:
                 f.write(response.text)
         demisto.info('done build_iterator')
+
     def get_batches_from_file(self, limit):
         demisto.info('reading from file')
         # we do this try to make sure the file gets deleted at the end
