@@ -1830,7 +1830,7 @@
             "integrations": "CrowdstrikeFalcon",
             "playbookID": "Test - CrowdStrike Falcon",
             "fromversion": "4.1.0",
-            "timeout": 800,
+            "timeout": 1000,
             "is_mockable": false
         },
         {
