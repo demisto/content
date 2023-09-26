@@ -21,6 +21,12 @@
     "testInterval": 20,
     "tests": [
         {
+            "playbookID": "Test Playbook - WildFire Malware",
+            "integrations": "VirusTotal (API v3)",
+            "instance_names": "virus_total_v3",
+            "timeout": 1600
+        },
+        {
             "playbookID": "T1036 - Masquerading - Test",
             "integrations": "VirusTotal (API v3)",
             "instance_names": "virus_total_v3",
@@ -1003,7 +1009,8 @@
         },
         {
             "integrations": "Thinkst Canary",
-            "playbookID": "CanaryTools Test"
+            "playbookID": "CanaryTools Test",
+            "is_mockable": false
         },
         {
             "integrations": "ThreatMiner",
