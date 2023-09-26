@@ -54,7 +54,8 @@ https://xsoar.pan.dev/docs/integrations/unit-testing
 
 import json
 from CommonServerPython import DemistoException
-from HelloWorld import Client, ip_reputation_command, item_list_command, validate_api_key, dedup_by_ids, incident_note_create_command
+from HelloWorld import (Client, ip_reputation_command, item_list_command, validate_api_key,
+                        dedup_by_ids, incident_note_create_command, fetch_incidents)
 import pytest
 
 
@@ -147,7 +148,7 @@ def test_convert_to_demisto_severity(hello_world_severity, expected_xsoar_severi
 
 
 def test_api_key():
-    """Validates an API key. Since this is toturial, there is a dummy API key.
+    """Validates an API key. Since this is tutorial, there is a dummy API key.
 
     When:
         - An API key is provided as a string argument
@@ -280,7 +281,7 @@ class TestItemListCommand:
 
         mocked_list_call.assert_called()
         mocked_list_call.assert_called_once_with(limit=expected_limit, severity=expected_severity)
-        assert result.readable_output.startswith('### Items List (Example Data)')
+        assert result.readable_output.startswith('### Items List (Example Data)')  # type: ignore
 
 
 class TestIncidentNoteCreate:
@@ -297,3 +298,43 @@ class TestIncidentNoteCreate:
 
         assert result.readable_output == 'Note was created successfully.'
         assert result.outputs['status'] == 'success'
+
+
+# class TestFetchIncidents:
+# 
+#     EXAMPLE_ALERTS = [{'id': 1, 'title': 'Incident 1'},
+#                       {'id': 2, 'title': 'Incident 2'},
+#                       {'id': 3, 'title': 'Incident 3'}]
+#     
+#     @pytest.fixture(autouse=True)
+#     def setup(self):
+#         self.client = create_mock_client()
+#         
+#     def test_first_run(self, mocker):
+#         mocker.patch.object(self.client, 'get_incident_list_for_fetch', return_value=self.EXAMPLE_ALERTS)
+# 
+#         last_run : dict = {}
+#         first_fetch = '2021-01-01T00:00:00Z'
+#         
+#         next_run, incidents = fetch_incidents(
+#             self.client,
+#             max_results=50,
+#             last_run=last_run,
+#             first_fetch_time=first_fetch
+#         )
+# 
+#         # Assertions
+#         assert len(incidents) == 3
+#         assert incidents[0]['name'] == 'test'
+#         # etc
+# 
+#     def test_subsequent_run(self, mock_client):
+#         last_run = {'last_fetch': '2021-01-01T01:00:00Z'}  
+#         first_fetch = '2021-01-01T00:00:00Z'
+#         
+#         next_run, incidents = fetch_incidents(self.client, 
+#                                               max_results=2, last_run=last_run, first_fetch_time=first_fetch)
+#         
+#         # Assertions
+#         assert incidents[0]['date'] > last_run['last_fetch']
+#         # etc
