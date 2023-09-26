@@ -1,7 +1,7 @@
 import enum
 import http
-from typing import Any, TypeVar
 from collections.abc import Callable
+from typing import Any, TypeVar
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
@@ -418,7 +418,7 @@ def handle_pagination(
     page_size: int | None = None,
     page: int | None = None,
     **kwargs,
-) -> tuple[list[dict[str, Any]] | dict[str, Any], list[dict[str, Any]] | dict[str, Any]]:
+) -> tuple[list[dict[str, Any]] | dict[str, Any], dict[str, Any]]:
     """Handles pagination for the given list_command.
 
     Args:
@@ -432,7 +432,7 @@ def handle_pagination(
         **kwargs: Keyword arguments passed down by the CLI to configure the request.
 
     Returns:
-        tuple[list[dict[str, Any]] | dict[str, Any], list[dict[str, Any]] | dict[str, Any]]:
+        tuple[list[dict[str, Any]] | dict[str, Any], dict[str, Any]]:
             A tuple containing the list of items and raw responses, or a single item and raw response if page is None.
     """
     if page:
@@ -442,9 +442,7 @@ def handle_pagination(
         return raw_response.get('data', []), raw_response
 
     page = 1
-
     outputs: list[dict[str, Any]] = []
-    raw_responses: list[dict[str, Any]] = []
 
     # Keep calling the API until the required amount of items have been met.
     while limit > 0:
@@ -462,7 +460,6 @@ def handle_pagination(
         if limit < received_items:
             output = output[:limit]
 
-        raw_responses.append(raw_response)
         outputs += output
 
         # If the API returned less than the required amount of items, we're done.
@@ -473,10 +470,11 @@ def handle_pagination(
         limit -= received_items
         page += 1
 
+    raw_response['meta']['total'] = len(outputs)
     outputs_result = get_single_or_full_list(outputs)
-    raw_response_result = get_single_or_full_list(raw_responses)
+    raw_response['data'] = outputs_result
 
-    return outputs_result, raw_response_result
+    return outputs_result, raw_response
 
 
 @logger
@@ -485,7 +483,7 @@ def find_destinations(
     destination_list_id: str,
     destinations: set[str] | None = None,
     destination_ids: set[str] | None = None,
-) -> tuple[list[dict[str, Any]] | dict[str, Any], list[dict[str, Any]] | dict[str, Any]]:
+) -> tuple[list[dict[str, Any]] | dict[str, Any], dict[str, Any]]:
     """Fetches and returns destinations and their associated data from a given list_command callable.
 
     Args:
@@ -500,7 +498,7 @@ def find_destinations(
         ValueError: If both destinations and destination_ids weren't provided.
 
     Returns:
-        tuple[list[dict[str, Any]] | dict[str, Any], list[dict[str, Any]] | dict[str, Any]]:
+        tuple[list[dict[str, Any]] | dict[str, Any], dict[str, Any]]:
             A tuple containing two lists: one with the fetched data,
             and one with the raw responses from the list command.
     """
@@ -542,12 +540,11 @@ def find_destinations(
     destinations = set(destinations) if destinations else None
     destination_ids = set(destination_ids) if destination_ids else None
 
-    page = 1
-
+    page = 0
     outputs: list[dict[str, Any]] = []
-    raw_responses: list[dict[str, Any]] = []
 
     while destinations or destination_ids:
+        page += 1
         demisto.debug(f'Calling list command with {destination_list_id=}, {page=}, limit={MAX_LIMIT}')
         raw_response = list_command(destination_list_id=destination_list_id, page=page, limit=MAX_LIMIT)
         items = raw_response.get('data', [])
@@ -555,8 +552,6 @@ def find_destinations(
         if not items:
             demisto.debug(f'The API returned no items for {page=}, stopping')
             break
-
-        raw_responses.append(raw_response)
 
         for item in items:
             # Called twice to avoid duplicates if an item was given in ID and destination.
@@ -577,10 +572,11 @@ def find_destinations(
             demisto.debug(f'These are the last items in the API {page=}, stopping')
             break
 
+    raw_response['meta']['total'] = len(outputs)
     outputs_result = get_single_or_full_list(outputs)
-    raw_response_result = get_single_or_full_list(raw_responses)
+    raw_response['data'] = outputs_result
 
-    return outputs_result, raw_response_result
+    return outputs_result, raw_response
 
 
 @logger
