@@ -2048,12 +2048,13 @@ def build_search_query(args):
 
 def create_entry_context(args: dict, parsed_search_results, dbot_scores, status_res, job_id):
     ec = {}
+    dbot_ec = {}
     number_of_results = len(parsed_search_results)
 
     if args.get('update_context', "true") == "true":
         ec['Splunk.Result'] = parsed_search_results
         if len(dbot_scores) > 0:
-            ec['DBotScore'] = dbot_scores
+            dbot_ec['DBotScore'] = dbot_scores
         if status_res:
             ec['Splunk.JobStatus(val.SID && val.SID === obj.SID)'] = {
                 **status_res.outputs, 'TotalResults': number_of_results}
@@ -2062,7 +2063,7 @@ def create_entry_context(args: dict, parsed_search_results, dbot_scores, status_
         ec['Splunk.JobStatus(val.SID && val.SID === obj.SID)'] = [{'SID': job_id,
                                                                    'TotalResults': number_of_results,
                                                                    'Status': status}]
-    return ec
+    return ec, dbot_ec
 
 
 def schedule_polling_command(command: str, args: dict, interval_in_secs: int) -> ScheduledCommand:
@@ -2160,7 +2161,7 @@ def parse_batch_of_results(current_batch_of_results, max_results_to_add, app):
     return parsed_batch_results, batch_dbot_scores
 
 
-def splunk_search_command(service: client.Service, args: dict) -> CommandResults:
+def splunk_search_command(service: client.Service, args: dict) -> CommandResults | list[CommandResults]:
     query = build_search_query(args)
     polling = argToBoolean(args.get("polling", False))
     search_kwargs = build_search_kwargs(args, polling)
@@ -2207,14 +2208,20 @@ def splunk_search_command(service: client.Service, args: dict) -> CommandResults
         dbot_scores.extend(batch_dbot_scores)
 
         results_offset += batch_size
-    entry_context = create_entry_context(args, total_parsed_results, dbot_scores, status_cmd_result, str(job_sid))
+    entry_context_splunk_search, entry_context_dbot_score = create_entry_context(
+        args, total_parsed_results, dbot_scores, status_cmd_result, str(job_sid))
     human_readable = build_search_human_readable(args, total_parsed_results, str(job_sid))
-
-    return CommandResults(
-        outputs=entry_context,
+    results = [CommandResults(
+        outputs=entry_context_splunk_search,
         raw_response=total_parsed_results,
         readable_output=human_readable
-    )
+    )]
+    dbot_table_headers = ['Indicator', 'Type', 'Vendor', 'Score', 'isTypedIndicator']
+    if entry_context_dbot_score:
+        results.append(CommandResults(
+            outputs=entry_context_dbot_score,
+            readable_output=tableToMarkdown("DBot Score", entry_context_dbot_score['DBotScore'], headers=dbot_table_headers)))
+    return results
 
 
 def splunk_job_create_command(service: client.Service, args: dict):
