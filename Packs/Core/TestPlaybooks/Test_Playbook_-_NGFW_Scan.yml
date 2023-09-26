@@ -2885,7 +2885,7 @@ tasks:
     conditions:
     - label: Verified
       condition:
-      - - operator: isExists
+      - - operator: isNotEmpty
           left:
             value:
               complex:
