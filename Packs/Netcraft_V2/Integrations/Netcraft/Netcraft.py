@@ -1083,47 +1083,46 @@ def main() -> None:
 
     demisto.debug(f'Command being called is {command}')
     try:
-        match command:
-            case 'test-module':
-                return_results(test_module(client))
-            case 'fetch-incidents':
-                demisto.incidents(fetch_incidents(client))
-            case 'netcraft-attack-report':
-                return_results(attack_report_command(args, client))
-            case 'netcraft-takedown-list':
-                return_results(takedown_list_command(args, client))
-            case 'netcraft-takedown-update':
-                return_results(takedown_update_command(args, client))
-            case 'netcraft-takedown-escalate':
-                return_results(takedown_escalate_command(args, client))
-            case 'netcraft-takedown-note-create':
-                return_results(takedown_note_create_command(args, client))
-            case 'netcraft-takedown-note-list':
-                return_results(takedown_note_list_command(args, client))
-            case 'netcraft-attack-type-list':
-                return_results(attack_type_list_command(args, client))
-            case 'netcraft-submission-list':
-                return_results(submission_list_command(args, client))
-            case 'netcraft-submission-file-list':
-                return_results(submission_file_list_command(args, client))
-            case 'netcraft-file-screenshot-get':
-                return_results(file_screenshot_get_command(args, client))
-            case 'netcraft-submission-mail-get':
-                return_results(submission_mail_get_command(args, client))
-            case 'netcraft-mail-screenshot-get':
-                return_results(mail_screenshot_get_command(args, client))
-            case 'netcraft-submission-url-list':
-                return_results(submission_url_list_command(args, client))
-            case 'netcraft-url-screenshot-get':
-                return_results(url_screenshot_get_command(args, client))
-            case 'netcraft-file-report-submit':
-                return_results(file_report_submit_command(args, client))
-            case 'netcraft-url-report-submit':
-                return_results(url_report_submit_command(args, client))
-            case 'netcraft-email-report-submit':
-                return_results(email_report_submit_command(args, client))
-            case _:
-                raise NotImplementedError(f'{command!r} is not a Netcraft command.')
+        if command == 'test-module':
+            return_results(test_module(client))
+        elif command == 'fetch-incidents':
+            demisto.incidents(fetch_incidents(client))
+        elif command == 'netcraft-attack-report':
+            return_results(attack_report_command(args, client))
+        elif command == 'netcraft-takedown-list':
+            return_results(takedown_list_command(args, client))
+        elif command == 'netcraft-takedown-update':
+            return_results(takedown_update_command(args, client))
+        elif command == 'netcraft-takedown-escalate':
+            return_results(takedown_escalate_command(args, client))
+        elif command == 'netcraft-takedown-note-create':
+            return_results(takedown_note_create_command(args, client))
+        elif command == 'netcraft-takedown-note-list':
+            return_results(takedown_note_list_command(args, client))
+        elif command == 'netcraft-attack-type-list':
+            return_results(attack_type_list_command(args, client))
+        elif command == 'netcraft-submission-list':
+            return_results(submission_list_command(args, client))
+        elif command == 'netcraft-submission-file-list':
+            return_results(submission_file_list_command(args, client))
+        elif command == 'netcraft-file-screenshot-get':
+            return_results(file_screenshot_get_command(args, client))
+        elif command == 'netcraft-submission-mail-get':
+            return_results(submission_mail_get_command(args, client))
+        elif command == 'netcraft-mail-screenshot-get':
+            return_results(mail_screenshot_get_command(args, client))
+        elif command == 'netcraft-submission-url-list':
+            return_results(submission_url_list_command(args, client))
+        elif command == 'netcraft-url-screenshot-get':
+            return_results(url_screenshot_get_command(args, client))
+        elif command == 'netcraft-file-report-submit':
+            return_results(file_report_submit_command(args, client))
+        elif command == 'netcraft-url-report-submit':
+            return_results(url_report_submit_command(args, client))
+        elif command == 'netcraft-email-report-submit':
+            return_results(email_report_submit_command(args, client))
+        else:
+            raise NotImplementedError(f'{command!r} is not a Netcraft command.')
 
     except Exception as e:
         return_error(f'Failed to execute {command!r}:\n{e}')
