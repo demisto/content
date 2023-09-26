@@ -2,7 +2,7 @@
 
 function exit_on_error {
     if [ "${1}" -ne 0 ]; then
-        echo "ERROR: ${2}, exiting with code ${1}"
+        echo "ERROR: ${2}, exiting with code ${1}" 1>&2
         exit "${1}"
     fi
 }
@@ -24,7 +24,6 @@ else
   gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" > auth.out 2>&1
   exit_on_error $? "Failed to authenticate with GCS_MARKET_KEY"
 
-  exit_code=0
   IFS=', ' read -r -a CLOUD_CHOSEN_MACHINE_ID_ARRAY <<< "${CLOUD_CHOSEN_MACHINE_IDS}"
   for CLOUD_CHOSEN_MACHINE_ID in "${CLOUD_CHOSEN_MACHINE_ID_ARRAY[@]}"; do
     echo "Copying prod bucket to ${CLOUD_CHOSEN_MACHINE_ID} bucket."
@@ -40,6 +39,6 @@ else
     --non-removable-packs "${NON_REMOVABLE_PACKS}" --one-by-one --build-number "${CI_PIPELINE_ID}"
   exit_on_error $? "Failed to uninstall packs from cloud machines:${CLOUD_CHOSEN_MACHINE_IDS}"
 
-  echo "Finished uninstalling packs from cloud machines with exit code ${exit_code}"
-  exit "${exit_code}"
+  echo "Successfully finished uninstalling packs from cloud machines"
+  exit 0
 fi
