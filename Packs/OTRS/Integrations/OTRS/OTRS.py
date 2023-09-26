@@ -12,7 +12,6 @@ urllib3.disable_warnings()
 
 ''' GLOBAL VARS '''
 
-
 ''' HELPER FUNCTIONS '''
 
 
@@ -48,7 +47,7 @@ def translate_state(state: str):
         'PendingReminder': 'pending reminder',
         'New': 'new'
     }
-    return state_dict[state]
+    return state_dict.get(state, state)
 
 
 def translate_priority(priority: str):
@@ -59,7 +58,7 @@ def translate_priority(priority: str):
         '4High': '4 high',
         '5VeryHigh': '5 very high'
     }
-    return priority_dict[priority]
+    return priority_dict.get(priority, priority)
 
 
 def calculate_age(seconds: int):
@@ -131,14 +130,23 @@ class OTRSClient:
 
     def search_ticket(self, states: list[Any] | None = None, created_before: datetime | None = None,
                       created_after: datetime | None = None, title: str | None = None, queue: list[Any] | None = None,
-                      priority: list[Any] | None = None, ticket_type: str | None = None):
+                      priority: list[Any] | None = None, ticket_type: str | None = None,
+                      article_create_time_newer_minutes: int | None = None, pattern: str | None = None):
         args = {'States': states,
                 'TicketCreateTimeOlderDate': created_before,
                 'TicketCreateTimeNewerDate': created_after,
                 'Title': title,
                 'Queues': queue,
                 'Priorities': priority,
-                'Types': ticket_type}
+                'Types': ticket_type,
+                'ArticleCreateTimeNewerMinutes': article_create_time_newer_minutes}
+
+        if pattern:
+            args["FullTextIndex"] = "1"
+            args["ContentSearch"] = "OR"
+            args["MIMEBase_Body"] = f"%{pattern}%"
+            args["MIMEBase_Subject"] = f"%{pattern}%"
+
         return self.execute_otrs_method(self.client.ticket_search, args)
 
     def create_ticket(self, new_ticket: Ticket, article: Article | None, df: list[Any] | None, attachments: list[Any] | None):
@@ -147,17 +155,21 @@ class OTRSClient:
 
     def update_ticket(self, ticket_id: str, title: str | None = None, queue: str | None = None, state: str | None = None,
                       priority: str | None = None, article: Article | None = None, ticket_type: str | None = None,
-                      df: list[Any] | None = None, attachments: list[Any] | None = None):
-        kwargs = {'Type': ticket_type}
-        args = {'ticket_id': ticket_id,
-                'Title': title,
-                'Queue': queue,
-                'State': state,
-                'Priority': priority,
-                'article': article,
-                'dynamic_fields': df,
-                'attachments': attachments,
-                'kwargs': kwargs}
+                      df: list[Any] | None = None, attachments: list[Any] | None = None, owner: str | None = None,
+                      customer_user: str | None = None):
+        args = {
+            'ticket_id': ticket_id,
+            'Title': title,
+            'Queue': queue,
+            'State': state,
+            'Priority': priority,
+            'article': article,
+            'dynamic_fields': df,
+            'attachments': attachments,
+            'Owner': owner,
+            'CustomerUser': customer_user,
+            'Type': ticket_type
+        }
         return self.execute_otrs_method(self.client.ticket_update, args)
 
     def update_session(self):
@@ -300,8 +312,9 @@ def search_ticket_command(client: Client, args: dict[str, str]):
         priority_list: list[str] = argToList(args.get('priority'))
         priority = [translate_priority(p) for p in priority_list]
     ticket_type = args.get('type')
+    pattern = args.get("pattern")
 
-    tickets = client.search_ticket(states, created_before, created_after, title, queue, priority, ticket_type)
+    tickets = client.search_ticket(states, created_before, created_after, title, queue, priority, ticket_type, pattern=pattern)
 
     if tickets:
         output = []
@@ -345,6 +358,7 @@ def create_ticket_command(client: Client, args: dict[str, str]):
     state = translate_state(args['state'])
     priority = translate_priority(args['priority'])
     customer_user = args.get('customer_user')
+    owner = args.get("owner")
     article_subject = args.get('article_subject')
     article_body = args.get('article_body')
     ticket_type = args.get('type')
@@ -366,13 +380,16 @@ def create_ticket_command(client: Client, args: dict[str, str]):
         attachments_list = argToList(attachment)
         attachments = demisto_entry_to_otrs_attachment(attachments_list)
 
-    new_ticket = Ticket.create_basic(
-        Title=title,
-        Queue=queue,
-        State=state,
-        Priority=priority,
-        CustomerUser=customer_user,
-        Type=ticket_type
+    new_ticket = Ticket(
+        {
+            "Title": title,
+            "Queue": queue,
+            "State": state,
+            "Priority": priority,
+            "CustomerUser": customer_user,
+            "Type": ticket_type,
+            "Owner": owner
+        }
     )
 
     article = Article({
@@ -417,6 +434,8 @@ def update_ticket_command(client: Client, args: dict[str, str]):
     title = args.get('title')
     queue = args.get('queue')
     state = args.get('state')
+    owner = args.get("owner", None)
+    customer_user = args.get("customer_user")
     priority = args.get('priority')
     article_subject = args.get('article_subject')
     article_body = args.get('article_body')
@@ -425,7 +444,8 @@ def update_ticket_command(client: Client, args: dict[str, str]):
     attachment = args.get('attachment')
 
     if all(v is None for v in [title, queue, state, priority, article_subject,
-                               article_body, ticket_type, dynamic_fields, attachment]):
+                               article_body, ticket_type, dynamic_fields, attachment,
+                               owner, customer_user]):
         raise Exception('No fields to update were given')
 
     if (article_subject and article_body is None) or (article_subject is None and article_body):
@@ -458,7 +478,8 @@ def update_ticket_command(client: Client, args: dict[str, str]):
         attachments_list = argToList(attachment)
         attachments = demisto_entry_to_otrs_attachment(attachments_list)
 
-    ticket = client.update_ticket(ticket_id, title, queue, state, priority, article, ticket_type, df, attachments)
+    ticket = client.update_ticket(ticket_id, title, queue, state, priority, article, ticket_type, df, attachments, owner=owner,
+                                  customer_user=customer_user)
 
     context = {
         'ID': ticket['TicketID'],
@@ -493,6 +514,7 @@ def close_ticket_command(client: Client, args: dict[str, str]):
     ticket_id = args.get('ticket_id')
     article_subject = args.get('article_subject')
     article_body = args.get('article_body')
+    state = args.get('state', 'closed successful')
 
     article_object = {
         'Subject': article_subject,
@@ -501,11 +523,11 @@ def close_ticket_command(client: Client, args: dict[str, str]):
 
     article = Article(article_object)
 
-    ticket = client.update_ticket(ticket_id, article=article, state='closed successful')
+    ticket = client.update_ticket(ticket_id, article=article, state=state)
 
     context = {
         'ID': ticket['TicketID'],
-        'State': 'closed successful',
+        'State': state,
         'Article': article_object
     }
     output = 'Closed ticket {} successfully'.format(ticket['TicketID'])
@@ -572,6 +594,105 @@ def fetch_incidents(client: Client, fetch_queue: str, fetch_priority: str, fetch
     demisto.setLastRun({'time': last_created, 'last_fetched_ids': raw_tickets})
 
 
+def get_remote_data_command(client: Client, args: dict[str, str]):
+    ticket_id = args.get("id")
+    demisto.debug(f"Getting update for remote {ticket_id}")
+    if args.get("lastUpdate"):
+        last_update = round(
+            datetime.strptime(
+                args["lastUpdate"].split(".")[0], "%Y-%m-%dT%H:%M:%S"
+            ).timestamp()
+        )
+    else:
+        last_update = 0
+    retry_count = 3
+
+    demisto.debug(f"last_update is {last_update}")
+
+    while retry_count:
+        ticket = client.get_ticket(ticket_id)
+        if not ticket or not isinstance(ticket, dict):
+            demisto.debug("Ticket was not found.")
+            retry_count -= 1
+        else:
+            break
+    ticket_last_update = ticket["UnlockTimeout"]
+
+    if last_update > ticket_last_update:
+        demisto.debug(f"Nothing new in the ticket since {last_update}")
+        ticket = {}
+    else:
+        demisto.debug(f"ticket is updated: {ticket}")
+        entries = []
+        # get latest comments and files
+        articles = ticket.get("Article")
+        if articles:
+            for article in articles:
+
+                # Get article details
+                description = f'ID: {str(article["ArticleID"])}\nTo: {article.get("To")}\nCC: {article.get("Cc")}\n'\
+                              f'Subject: {article["Subject"]}\nCreateTime: {article["CreateTime"]}\n'\
+                              f'From: {article["From"]}\nContentType: {article["ContentType"]}\nBody:\n\n{article["Body"]}'
+
+                if article["IncomingTime"] > last_update:
+                    entries.append({
+                        'Type': EntryType.NOTE,
+                        'Contents': description,
+                        'ContentsFormat': EntryFormat.TEXT,
+                        'Tags': [],  # the list of tags to add to the entry
+                        'Note': False  # boolean, True for Note, False otherwise
+                    })
+
+        return_results(GetRemoteDataResponse(mirrored_object=ticket, entries=entries))
+
+
+def update_remote_system_command(client: Client, args: dict[str, str]):
+    parsed_args = UpdateRemoteSystemArgs(args)
+    demisto.debug(
+        f"Sending incident with remote ID [{parsed_args.remote_incident_id}] to remote system\n"
+    )
+    ticket_id: str = parsed_args.remote_incident_id
+
+    if parsed_args.delta:
+        demisto.debug(
+            f"Got the following delta keys {str(list(parsed_args.delta.keys()))}"
+        )
+
+    if parsed_args.entries:
+        for entry in parsed_args.entries:
+            demisto.debug(f'Sending entry {entry.get("id")}')
+            article_object = {
+                "Subject": "Update from Cortex XSOAR",
+                "Body": str(entry.get("contents", "")),
+            }
+
+            article = Article(article_object)
+            client.update_ticket(ticket_id, article=article)
+
+    # Close incident if relevant
+    demisto.debug(f"Incident Status {parsed_args.inc_status}")
+    if parsed_args.inc_status == 2:
+        demisto.debug(f"Sending closure message to remote incident {ticket_id}")
+        article_object = {
+            "Subject": "Cortex XSOAR Alert closed - " + parsed_args.data.get("closeReason"),
+            "Body": parsed_args.data.get("closeNotes"),
+        }
+        article = Article(article_object)
+        client.update_ticket(ticket_id, article=article)
+
+    return_results(ticket_id)
+
+
+def get_modified_remote_data_command(client: Client, args: dict[str, str]):
+    demisto.debug('Performing get-modified-remote-data command for last 5 minutes.')
+
+    raw_incidents = client.search_ticket(article_create_time_newer_minutes=5)
+
+    demisto.debug(f"raw tickets: {raw_incidents}")
+
+    return_results(GetModifiedRemoteDataResponse(raw_incidents))
+
+
 def main():
     params = demisto.params()
     base_url = params.get('server', '').strip('/')
@@ -615,6 +736,16 @@ def main():
 
         elif demisto.command() == 'otrs-close-ticket':
             close_ticket_command(otrs_client, args)
+
+        elif demisto.command() == "get-remote-data":
+            get_remote_data_command(otrs_client, args)
+
+        elif demisto.command() == "update-remote-system":
+            update_remote_system_command(otrs_client, args)
+
+        elif demisto.command() == 'get-modified-remote-data':
+            get_modified_remote_data_command(otrs_client, args)
+
         else:
             raise NotImplementedError(f'Command not implemented: {demisto.command()}')
 
