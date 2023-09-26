@@ -149,7 +149,7 @@ class Client:
 
         Arguments:
             service_id: object id or application id of the service.
-            data: the body request.
+            data: the body request. As you can see in the documentation, it may have displayName, endDateTime, and startDateTime.
 
         Returns:
             Adds a strong password or secret to an application.
@@ -170,7 +170,8 @@ class Client:
 
         Arguments:
             service_id: object id or application id of the service.
-            data: the body request.
+            data: the body request. As you can see in the documentation, it should contain the keyId,
+            the unique identifier for the password.
 
         Returns:
             Remove a password from an application.
@@ -189,7 +190,6 @@ class Client:
 
         Arguments:
             service_id: object id or application id of the service.
-            data: the body request.
 
         Returns:
             Remove a password from an application.
@@ -311,25 +311,25 @@ def update_service_principal_command(ms_client: Client, args: dict) -> CommandRe
         an informative message.
     """
     id_for_request, service_id = validate_service_principal_input(args=args)
-    origin_keys = ["add_ins", "alternative_names", "app_role_assignment_required", "app_roles", "custom_security_attributes",
-                   "display_name", "home_page", "key_credentials", "logout_url", "oauth2_permission_scopes",
-                   "preferred_single_sign_on_mode", "service_principal_names", "tags", "token_encryption_key_id"]
-    alternative_names = ["addIns", "alternativeNames", "appRoleAssignmentRequired", "appRoles", "customSecurityAttributes",
-                         "displayName", "homepage", "keyCredentials", "logoutUrl", "oauth2PermissionScopes",
-                         "preferredSingleSignOnMode", "servicePrincipalNames", "tags", "tokenEncryptionKeyId"]
-
-    origin_boolean_keys = ["account_enabled", "app_role_assignment_required"]
-    alternative_names_for_boolean = ["accountEnabled", "appRoleAssignmentRequired"]
+    fields_to_update = {"add_ins": "addIns", "alternative_names": "alternativeNames",
+                        "app_role_assignment_required": "appRoleAssignmentRequired", "app_roles": "appRoles",
+                        "custom_security_attributes": "customSecurityAttributes", "display_name": "displayName",
+                        "home_page": "homepage", "key_credentials": "keyCredentials", "logout_url": "logoutUrl",
+                        "oauth2_permission_scopes": "oauth2PermissionScopes",
+                        "preferred_single_sign_on_mode": "preferredSingleSignOnMode",
+                        "service_principal_names": "servicePrincipalNames", "tags": "tags",
+                        "token_encryption_key_id": "tokenEncryptionKeyId"}
+    boolean_fields_to_update = {"account_enabled": "accountEnabled", "app_role_assignment_required": "appRoleAssignmentRequired"}
 
     data = {
-        alternative_name: args[origin_key]
-        for origin_key, alternative_name in zip(origin_keys, alternative_names)
-        if origin_key in args
+        fields_to_update[field]: args[field]
+        for field in fields_to_update
+        if field in args
     }
 
-    for origin_key, alternative_name in zip(origin_boolean_keys, alternative_names_for_boolean):
-        if origin_key in args:
-            data[alternative_name] = argToBoolean(args[origin_key])
+    for field in boolean_fields_to_update:
+        if field in args:
+            data[boolean_fields_to_update[field]] = argToBoolean(args[field])
 
     ms_client.update_single_service_principal(id_for_request, data=data)
 
@@ -368,13 +368,12 @@ def add_password_service_principal_command(ms_client: Client, args: dict) -> Com
     """
     id_for_request, service_id = validate_service_principal_input(args=args)
 
-    origin_keys = ["display_name", "end_date_time", "start_date_time"]
-    alternative_names = ["displayName", "endDateTime", "startDateTime"]
+    fields_for_body_request = {"display_name": "displayName", "end_date_time": "endDateTime", "start_date_time": "startDateTime"}
 
     data = {
-        alternative_name: args[origin_key]
-        for origin_key, alternative_name in zip(origin_keys, alternative_names)
-        if origin_key in args
+        fields_for_body_request[field]: args[field]
+        for field in fields_for_body_request
+        if field in args
     }
 
     results = ms_client.add_password_service_principal(id_for_request, data=data)
