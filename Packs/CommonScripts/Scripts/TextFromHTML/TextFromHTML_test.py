@@ -69,7 +69,7 @@ def test_text_from_html_success_hebrew():
     }
     res = TextFromHTML.text_from_html(args)
 
-    assert res == '\nמשפט בעברית לבדיקה'  # noqa: RUF001
+    assert res == '\nמשפט בעברית לבדיקה'
 
 
 def test_text_from_html_success_spanish():
