@@ -1,10 +1,11 @@
 commonfields:
   id: TruSTAR v2
   version: -1
+deprecated: true
 name: TruSTAR v2
-display: TruSTAR v2
+display: TruSTAR v2 (Deprecated)
 category: Data Enrichment & Threat Intelligence
-description: TruSTAR is an Intelligence Management Platform that helps you operationalize data across tools and teams, helping you prioritize investigations and accelerate incident response.
+description: Deprecated. No available replacement.
 configuration:
 - display: Server URL (e.g. https://api.trustar.co)
   name: server
