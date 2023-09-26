@@ -253,7 +253,7 @@ def list_service_principals_command(ms_client: Client, args: dict) -> CommandRes
     )
 
 
-def validate_service_principal_input(args: dict) -> tuple:
+def validate_service_principal_input(args: dict) -> tuple[str, str]:
     """
     Ensure at least one argument (object) id or app id is given.
 
@@ -267,7 +267,7 @@ def validate_service_principal_input(args: dict) -> tuple:
     object_id = args.get('id')
     app_client_id = args.get('app_id')
     if not (object_id or app_client_id):
-        raise DemistoException("User must provide one of (object) id or application id.")
+        raise DemistoException("Either the (object's) `id` or the `application_id` arguments must be provided.")
 
     # if both are provided, pass the object_id
     if object_id:
@@ -419,7 +419,7 @@ def unlock_configuration_service_principal_command(ms_client: Client, args: dict
     Returns:
         Results to post in demisto
     """
-    object_id = args["id"]  # required
+    object_id = args["id"]
 
     ms_client.unlock_configuration_service_principal(object_id)
 
