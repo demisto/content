@@ -193,67 +193,81 @@ NIGHTLY_EXPECTED_TESTS = {'myTestPlaybook', 'myOtherTestPlaybook'}
 NIGHTLY_EXPECTED_TESTS_XSIAM = NIGHTLY_EXPECTED_TESTS | {'Sanity Test - Playbook with Unmockable Whois Integration'}
 
 NIGHTLY_TESTS: tuple = (
-    (MockerCases.A_xsoar, XSOARNightlyTestCollector, NIGHTLY_EXPECTED_TESTS, ('myXSOAROnlyPack',), None, None),
-    (MockerCases.B_xsoar, XSOARNightlyTestCollector, NIGHTLY_EXPECTED_TESTS, ('myXSOAROnlyPack',), None, None),
+    (MockerCases.A_xsoar, XSOARNightlyTestCollector, NIGHTLY_EXPECTED_TESTS, ('myXSOAROnlyPack',), None, None, ()),
+
+    (MockerCases.A_xsoar, XSOARNightlyTestCollector, NIGHTLY_EXPECTED_TESTS, ('myXSOAROnlyPack',),
+     None, None, (MarketplaceVersions.XSOAR_SAAS,)),
+
+    (MockerCases.B_xsoar, XSOARNightlyTestCollector, NIGHTLY_EXPECTED_TESTS, ('myXSOAROnlyPack',), None, None, ()),
+
+    (MockerCases.B_xsoar, XSOARNightlyTestCollector, NIGHTLY_EXPECTED_TESTS, ('myXSOAROnlyPack',),
+     None, None, (MarketplaceVersions.XSOAR_SAAS,)),
+
     (MockerCases.A_xsiam, XSIAMNightlyTestCollector, NIGHTLY_EXPECTED_TESTS_XSIAM,
-     ('myXSIAMOnlyPack', 'Whois', 'CoreAlertFields'), None, None),
+     ('myXSIAMOnlyPack', 'Whois', 'CoreAlertFields'), None, None, ()),
+
     (MockerCases.B_xsiam, XSIAMNightlyTestCollector, NIGHTLY_EXPECTED_TESTS_XSIAM,
-     ('myXSIAMOnlyPack', 'Whois', 'CoreAlertFields'), None, None),
+     ('myXSIAMOnlyPack', 'Whois', 'CoreAlertFields'), None, None, ()),
 
     (MockerCases.C, XSOARNightlyTestCollector,
      {'myXSOAROnlyTestPlaybook', 'myTestPlaybook', 'Sanity Test - Playbook with Unmockable Whois Integration'},
-     {'bothMarketplacesPack', 'bothMarketplacesPackOnlyXSIAMIntegration', 'myXSOAROnlyPack', 'Whois'}, None, None),
+     {'bothMarketplacesPack', 'bothMarketplacesPackOnlyXSIAMIntegration', 'myXSOAROnlyPack', 'Whois'}, None, None, ()),
+
+    (MockerCases.C, XSOARNightlyTestCollector,
+     {'myXSOAROnlyTestPlaybook', 'myTestPlaybook', 'Sanity Test - Playbook with Unmockable Whois Integration'},
+     {'bothMarketplacesPack', 'bothMarketplacesPackOnlyXSIAMIntegration', 'myXSOAROnlyPack', 'Whois'}, None, None, (MarketplaceVersions.XSOAR_SAAS,)),
 
     (MockerCases.C, XSIAMNightlyTestCollector,
      {'myXSIAMOnlyTestPlaybook', 'Sanity Test - Playbook with Unmockable Whois Integration'},
-     {'myXSIAMOnlyPack', 'bothMarketplacesPackOnlyXSIAMIntegration', 'Whois', 'CoreAlertFields'}, None, None),
+     {'myXSIAMOnlyPack', 'bothMarketplacesPackOnlyXSIAMIntegration', 'Whois', 'CoreAlertFields'}, None, None, ()),
 
     (MockerCases.D, XSOARNightlyTestCollector, {'myTestPlaybook'}, {'myPack'},
-     (Machine.V6_9, Machine.MASTER), None),
+     (Machine.V6_9, Machine.MASTER), None, ()),
 
     (MockerCases.E, XSOARNightlyTestCollector,
      {'myTestPlaybook', 'myOtherTestPlaybook', 'Sanity Test - Playbook with Unmockable Whois Integration'},
-     {'myPack', 'Whois'}, None, None),
+     {'myPack', 'Whois'}, None, None, ()),
 
     (MockerCases.E, XSIAMNightlyTestCollector,
      {'Sanity Test - Playbook with Unmockable Whois Integration'},
      ALWAYS_INSTALLED_PACKS_MARKETPLACE_V2 + ('Whois',),
-     None, None),
+     None, None, ()),
 
     (MockerCases.F, XSOARNightlyTestCollector, {'myTestPlaybook', 'myOtherTestPlaybook'}, {'myPack'},
-     None, None),
+     None, None, ()),
 
-    (MockerCases.I_xsoar, XSOARNightlyTestCollector, {'myTestPlaybook'}, {'myXSOAROnlyPack'}, None, None),
+    (MockerCases.I_xsoar, XSOARNightlyTestCollector, {'myTestPlaybook'}, {'myXSOAROnlyPack'}, None, None, ()),
 
     # cases where nightly_packs doesn't hold all packs
     (MockerCases.limited_nightly_packs, XSOARNightlyTestCollector, {'myTestPlaybook'}, {'myPack', 'myOtherPack'},
-     None, None),
+     None, None, ()),
 
-    (MockerCases.non_api_test, XSOARNightlyTestCollector, {'myTestPlaybook'}, {'myPack'}, None, None),
+    (MockerCases.non_api_test, XSOARNightlyTestCollector, {'myTestPlaybook'}, {'myPack'}, None, None, ()),
 
     (MockerCases.script_non_api_test, XSOARNightlyTestCollector, {'myTestPlaybook'}, {'myPack', 'myOtherPack'},
-     None, None),
+     None, None, ()),
 
-    (MockerCases.skipped_nightly_test, XSOARNightlyTestCollector, {}, {'myPack'}, None, None),
+    (MockerCases.skipped_nightly_test, XSOARNightlyTestCollector, {}, {'myPack'}, None, None, ()),
 
     # modeling rule testdata file exists, expect modeling rule to be collected
     (MockerCases.MR1, XSIAMNightlyTestCollector, (), ('MyXSIAMPack', 'CoreAlertFields'), None,
-     (Path('MyXSIAMPack/ModelingRules/HarryRule'),)),
+     (Path('MyXSIAMPack/ModelingRules/HarryRule'),), ()),
 
     # only parsing rule component exists, expect the pack to be collected for installation
     (MockerCases.PR1, XSIAMNightlyTestCollector, (), ('MyXSIAMPack', 'CoreAlertFields'), None,
-     None),
+     None, ()),
 )
 
 
 @pytest.mark.parametrize(
     'case_mocker,collector_class,expected_tests,'
-    'expected_packs,expected_machines,expected_modeling_rules_to_test', NIGHTLY_TESTS
+    'expected_packs,expected_machines,expected_modeling_rules_to_test,collector_class_args', NIGHTLY_TESTS
 )
 def test_nightly(monkeypatch, case_mocker: CollectTestsMocker, collector_class: Callable, expected_tests: set[str],
                  expected_packs: tuple[str],
                  expected_machines: tuple[Machine] | None,
-                 expected_modeling_rules_to_test: Iterable[str | Path] | None):
+                 expected_modeling_rules_to_test: Iterable[str | Path] | None,
+                 collector_class_args: tuple[Any, ...]):
     """
     given:  a content folder
     when:   collecting tests with a NightlyTestCollector
@@ -262,7 +276,8 @@ def test_nightly(monkeypatch, case_mocker: CollectTestsMocker, collector_class: 
     _test(monkeypatch, case_mocker=case_mocker, collector_class=collector_class,
           expected_tests=expected_tests, expected_packs=expected_packs, expected_packs_to_upload={},
           expected_machines=expected_machines,
-          expected_modeling_rules_to_test=expected_modeling_rules_to_test)
+          expected_modeling_rules_to_test=expected_modeling_rules_to_test,
+          collector_class_args=collector_class_args)
 
 
 XSOAR_BRANCH_ARGS = ('master', MarketplaceVersions.XSOAR, None)
