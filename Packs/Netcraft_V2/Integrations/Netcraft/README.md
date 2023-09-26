@@ -6,8 +6,8 @@ Netcraft takedown, submission and screenshot management.
 2. Authorize takedowns.
 3. Escalate takedowns.
 4. Track takedowns.
-5. Submit a report - mail, file, URL.
-6. Take a screenshot of the mail, file or URL.
+5. Submit a report - email, file, URL.
+6. Take a screenshot of the email, file or URL.
 7. Fetch incidents from attacks.
 
 ## Configure Netcraft on Cortex XSOAR
@@ -848,7 +848,7 @@ Get information on the attack types that are available under a given region.
                 "auto_escalation": false,
                 "automated": true,
                 "base_type": "malware_c2_ip",
-                "description": "A mail server IP identified during the analysis of a malware binary. Possibly used for exfiltrating data.",
+                "description": "A email server IP identified during the analysis of a malware binary. Possibly used for exfiltrating data.",
                 "display_name": "Malware SMTP C2",
                 "name": "malware_c2_mailserver"
             },
@@ -866,7 +866,7 @@ Get information on the attack types that are available under a given region.
                 "auto_escalation": false,
                 "automated": true,
                 "base_type": "server",
-                "description": "The IP address of a mail server which is sending phishing emails that contain a link to a phishing website.",
+                "description": "The IP address of a email server which is sending phishing emails that contain a link to a phishing website.",
                 "display_name": "Phishing URL Mail Server",
                 "name": "sends_phishing_url"
             },
@@ -875,7 +875,7 @@ Get information on the attack types that are available under a given region.
                 "auto_escalation": false,
                 "automated": true,
                 "base_type": "server",
-                "description": "The IP address of a mail server which is sending emails that contain a link to a website which is serving malware.",
+                "description": "The IP address of a email server which is sending emails that contain a link to a website which is serving malware.",
                 "display_name": "Malware URL Mail Server",
                 "name": "sends_malware_url"
             },
@@ -884,7 +884,7 @@ Get information on the attack types that are available under a given region.
                 "auto_escalation": false,
                 "automated": true,
                 "base_type": "server",
-                "description": "The IP address of a mail server which is sending emails that contain a malicious attachment which infects a victim's computer with malware.",
+                "description": "The IP address of a email server which is sending emails that contain a malicious attachment which infects a victim's computer with malware.",
                 "display_name": "Malware Attachment Mail Server",
                 "name": "sends_malware_attachments"
             },
@@ -893,7 +893,7 @@ Get information on the attack types that are available under a given region.
                 "auto_escalation": false,
                 "automated": true,
                 "base_type": "server",
-                "description": "The IP address of a mail server which is sending Advance Fee Fraud emails. Advance fee fraud is when fraudsters target victims to make advance or upfront payments for goods, services and/or financial gains that do not materialise.",
+                "description": "The IP address of a email server which is sending Advance Fee Fraud emails. Advance fee fraud is when fraudsters target victims to make advance or upfront payments for goods, services and/or financial gains that do not materialise.",
                 "display_name": "Advance Fee Fraud Mail Server",
                 "name": "sends_advance_fee_fraud"
             }
@@ -929,12 +929,12 @@ Get information on the attack types that are available under a given region.
 >| adwords | Google Adwords | url | A Google Adwords advert which redirects to a phishing webpage. | true | false | true |
 >| bing_ad | Bing Ad | url | A Bing advert which redirects to a phishing webpage. | true | false | true |
 >| malware_c2_ip | Malware C2 IP | malware_c2_ip | An IP address and port being used to conduct a malware attack. | true | false | true |
->| malware_c2_mailserver | Malware SMTP C2 | malware_c2_ip | A mail server IP identified during the analysis of a malware binary. Possibly used for exfiltrating data. | true | false | true |
+>| malware_c2_mailserver | Malware SMTP C2 | malware_c2_ip | An email server IP identified during the analysis of a malware binary. Possibly used for exfiltrating data. | true | false | true |
 >| advance_fee_fraud | Advance Fee Fraud | email | An email address involved in carrying out an Advance Fee Fraud scam. Advance fee fraud is when fraudsters target victims to make advance or upfront payments for goods, services and/or financial gains that do not materialise. | true | false | true |
->| sends_phishing_url | Phishing URL Mail Server | server | The IP address of a mail server which is sending phishing emails that contain a link to a phishing website. | true | false | true |
->| sends_malware_url | Malware URL Mail Server | server | The IP address of a mail server which is sending emails that contain a link to a website which is serving malware. | true | false | true |
->| sends_malware_attachments | Malware Attachment Mail Server | server | The IP address of a mail server which is sending emails that contain a malicious attachment which infects a victim's computer with malware. | true | false | true |
->| sends_advance_fee_fraud | Advance Fee Fraud Mail Server | server | The IP address of a mail server which is sending Advance Fee Fraud emails. Advance fee fraud is when fraudsters target victims to make advance or upfront payments for goods, services and/or financial gains that do not materialise. | true | false | true |
+>| sends_phishing_url | Phishing URL Mail Server | server | The IP address of an email server which is sending phishing emails that contain a link to a phishing website. | true | false | true |
+>| sends_malware_url | Malware URL Mail Server | server | The IP address of an email server which is sending emails that contain a link to a website which is serving malware. | true | false | true |
+>| sends_malware_attachments | Malware Attachment Mail Server | server | The IP address of an email server which is sending emails that contain a malicious attachment which infects a victim's computer with malware. | true | false | true |
+>| sends_advance_fee_fraud | Advance Fee Fraud Mail Server | server | The IP address of an email server which is sending Advance Fee Fraud emails. Advance fee fraud is when fraudsters target victims to make advance or upfront payments for goods, services and/or financial gains that do not materialise. | true | false | true |
 
 
 ### netcraft-submission-list
@@ -951,8 +951,8 @@ Get basic information about a submissions.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | submission_uuid | Get a specific submission. If provided, all the others arguments will be ignored and an extensive report will be returned. | Optional | 
-| date_start | Filter submissions by start date. | Optional | 
-| date_end | Filter submissions by end date. | Optional | 
+| date_start | Filter submissions by start date. Use UTC format or plain English for example "5 days ago". | Optional | 
+| date_end | Filter submissions by end date. Use UTC format or plain English for example "5 days ago". | Optional | 
 | source_name | Filter the submissions by source. | Optional | 
 | state | The state of the submissions. Note, in the case of a misclassification, a submission may be assigned a higher-severity state several days after its initial classification. Possible values: "processing", "no threats", "suspicious", "malicious".  | Optional | 
 | submission_reason | Filter the submissions by words contained in the submission reason. | Optional | 
@@ -983,13 +983,13 @@ Get basic information about a submissions.
 | Netcraft.Submission.has_cryptocurrency_addresses | Boolean | Whether the submission contains cryptocurrency addresses. This key appears only if the "submission_uuid" argument is provided. | 
 | Netcraft.Submission.has_files | Boolean | Whether the submission contains files. This key appears only if the "submission_uuid" argument is provided. | 
 | Netcraft.Submission.has_issues | Boolean | Whether the submission contains issues. This key appears only if the "submission_uuid" argument is provided. | 
-| Netcraft.Submission.has_mail | Boolean | Whether the submission has a mail. This key appears only if the "submission_uuid" argument is provided. | 
+| Netcraft.Submission.has_mail | Boolean | Whether the submission has an email. This key appears only if the "submission_uuid" argument is provided. | 
 | Netcraft.Submission.has_phone_numbers | Boolean | Whether the submission contains phone numbers. This key appears only if the "submission_uuid" argument is provided. | 
 | Netcraft.Submission.has_urls | Boolean | Whether the submission contains URLs. This key appears only if the "submission_uuid" argument is provided. | 
 | Netcraft.Submission.is_archived | Boolean | Whether the submission has been archived. This key appears only if the "submission_uuid" argument is provided. | 
 | Netcraft.Submission.last_update | Number | A unix timestamp of when this submission was last updated. This key appears only if the "submission_uuid" argument is provided. | 
-| Netcraft.Submission.mail | String | An API URL to get details about the mail associated with this submission. This key appears only if the "submission_uuid" argument is provided. | 
-| Netcraft.Submission.mail_state | String | The state of the mail in the submission. This key appears only if the "submission_uuid" argument is provided. | 
+| Netcraft.Submission.mail | String | An API URL to get details about the email associated with this submission. This key appears only if the "submission_uuid" argument is provided. | 
+| Netcraft.Submission.mail_state | String | The state of the email in the submission. This key appears only if the "submission_uuid" argument is provided. | 
 | Netcraft.Submission.original_source.name | String | The name of the submission source. This key appears only if the "submission_uuid" argument is provided. | 
 | Netcraft.Submission.original_source.type | String | The type of submission source. This key appears only if the "submission_uuid" argument is provided. | 
 | Netcraft.Submission.pending | Boolean | Whether the submission is still pending. This key appears only if the "submission_uuid" argument is provided. | 
@@ -1104,13 +1104,13 @@ Report files to Netcraft for analysis.
 | Netcraft.Submission.has_cryptocurrency_addresses | Boolean | Whether the submission contains cryptocurrency addresses. | 
 | Netcraft.Submission.has_files | Boolean | Whether the submission contains files. | 
 | Netcraft.Submission.has_issues | Boolean | Whether the submission contains issues. | 
-| Netcraft.Submission.has_mail | Boolean | Whether the submission has a mail. | 
+| Netcraft.Submission.has_mail | Boolean | Whether the submission has an email. | 
 | Netcraft.Submission.has_phone_numbers | Boolean | Whether the submission contains phone numbers. | 
 | Netcraft.Submission.has_urls | Boolean | Whether the submission contains URLs. | 
 | Netcraft.Submission.is_archived | Boolean | Whether the submission has been archived. | 
 | Netcraft.Submission.last_update | Number | A unix timestamp of when this submission was last updated. | 
-| Netcraft.Submission.mail | String | An API URL to get details about the mail associated with this submission. | 
-| Netcraft.Submission.mail_state | String | The state of the mail in the submission. | 
+| Netcraft.Submission.mail | String | An API URL to get details about the email associated with this submission. | 
+| Netcraft.Submission.mail_state | String | The state of the email in the submission. | 
 | Netcraft.Submission.original_source.name | String | The name of the submission source. | 
 | Netcraft.Submission.original_source.type | String | The type of submission source. | 
 | Netcraft.Submission.pending | Boolean | Whether the submission is still pending. | 
@@ -1292,8 +1292,8 @@ Get a screenshot for a file associated with a submission.
 
 ***
 Report email messages to Netcraft for analysis.
-The mail will be examined for malicious attachments and URLs.
-Optionally, mails can be encrypted before upload. If a mail is encrypted before upload, it should be encrypted with AES-256-CBC, for example using OpenSSL.
+The email will be examined for malicious attachments and URLs.
+Optionally, emails can be encrypted before upload. If an email is encrypted before upload, it should be encrypted with AES-256-CBC, for example using OpenSSL.
 
 
 #### Base Command
@@ -1305,8 +1305,8 @@ Optionally, mails can be encrypted before upload. If a mail is encrypted before 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | reporter_email | The reporter's email address, to which the result of Netcraft's analysis will be sent. | Required | 
-| message | Either a plain text string of the malicious mail in MIME format or if the "password" argument is provided, a base64 encoded AES-256-CBC encrypted mail in MIME format. Max message size is 20MiB. | Required | 
-| password | The password used to encrypt/decrypt the MIME mail. Should not be provided if the mail is not encrypted. | Optional | 
+| message | Either a plain text string of the malicious email in MIME format or if the "password" argument is provided, a base64 encoded AES-256-CBC encrypted email in MIME format. Max message size is 20MiB. | Required | 
+| password | The password used to encrypt/decrypt the MIME email. Should not be provided if the email is not encrypted. | Optional | 
 | polling | Use Cortex XSOAR built-in polling to wait for the report to be processed. Possible values are: true, false. Default is true. | Optional | 
 | interval_in_seconds | Indicates how long to wait between command executions (in seconds) when the 'polling' argument is true. Minimum value is 10 seconds. Default is 30. | Optional | 
 | timeout | Indicates the time in seconds until the polling sequence times out. Default is 600. | Optional | 
@@ -1327,13 +1327,13 @@ Optionally, mails can be encrypted before upload. If a mail is encrypted before 
 | Netcraft.Submission.has_cryptocurrency_addresses | Boolean | Whether the submission contains cryptocurrency addresses. | 
 | Netcraft.Submission.has_files | Boolean | Whether the submission contains files. | 
 | Netcraft.Submission.has_issues | Boolean | Whether the submission contains issues. | 
-| Netcraft.Submission.has_mail | Boolean | Whether the submission has a mail. | 
+| Netcraft.Submission.has_mail | Boolean | Whether the submission has an email. | 
 | Netcraft.Submission.has_phone_numbers | Boolean | Whether the submission contains phone numbers. | 
 | Netcraft.Submission.has_urls | Boolean | Whether the submission contains URLs. | 
 | Netcraft.Submission.is_archived | Boolean | Whether the submission has been archived. | 
 | Netcraft.Submission.last_update | Number | A unix timestamp of when this submission was last updated. | 
-| Netcraft.Submission.mail | String | An API URL to get details about the mail associated with this submission. | 
-| Netcraft.Submission.mail_state | String | The state of the mail in the submission. | 
+| Netcraft.Submission.mail | String | An API URL to get details about the email associated with this submission. | 
+| Netcraft.Submission.mail_state | String | The state of the email in the submission. | 
 | Netcraft.Submission.original_source.name | String | The name of the submission source. | 
 | Netcraft.Submission.original_source.type | String | The type of submission source. | 
 | Netcraft.Submission.pending | Boolean | Whether the submission is still pending. | 
@@ -1352,13 +1352,13 @@ Optionally, mails can be encrypted before upload. If a mail is encrypted before 
 ```
 !netcraft-email-report-submit message="""From: fraudster@example.com
 To: example@netcraft.com
-Subject: Example mail
+Subject: Example email
 Date: Tue, 01 Jan 2019 00:00:00 +0000
 MIME-Version: 1.0
 Content-Type: text/plain; charset="UTF8"
 Content-Transfer-Encoding: 8bit
 
-Example mail body with http://example.com URL.
+Example email body with http://example.com URL.
 """ reporter_email="reporter@socteam.com"
 ```
 
@@ -1420,7 +1420,7 @@ Example mail body with http://example.com URL.
 ### netcraft-submission-mail-get
 
 ***
-Get basic information about a submission's mail.
+Get basic information about a submission's email.
 When a submission is archived this command will return an error with the message "this submission has been archived".
 
 
@@ -1441,12 +1441,12 @@ When a submission is archived this command will return an error with the message
 | Netcraft.SubmissionMail.classification_log.date | Number | A unix timestamp of when this state change occurred. | 
 | Netcraft.SubmissionMail.classification_log.from_state | String | The state the entity moved out of. | 
 | Netcraft.SubmissionMail.classification_log.to_state | String | The state the entity moved into. | 
-| Netcraft.SubmissionMail.from | String | The email addresses of the mail senders. | 
-| Netcraft.SubmissionMail.hash | String | The MD5 hash of the mail associated with this submission. | 
-| Netcraft.SubmissionMail.reply_to | String | The email addresses that reply messages of the mail were sent to. | 
-| Netcraft.SubmissionMail.state | String | The classification state of the mail. One of "processing", "no threats" or "malicious". | 
-| Netcraft.SubmissionMail.subject | String | The subject of the mail submitted. | 
-| Netcraft.SubmissionMail.to | String | The email addresses of the mail recipients. | 
+| Netcraft.SubmissionMail.from | String | The email addresses of the email senders. | 
+| Netcraft.SubmissionMail.hash | String | The MD5 hash of the email associated with this submission. | 
+| Netcraft.SubmissionMail.reply_to | String | The email addresses that reply messages of the email were sent to. | 
+| Netcraft.SubmissionMail.state | String | The classification state of the email. One of "processing", "no threats" or "malicious". | 
+| Netcraft.SubmissionMail.subject | String | The subject of the email submitted. | 
+| Netcraft.SubmissionMail.to | String | The email addresses of the email recipients. | 
 
 #### Command example
 ```!netcraft-submission-mail-get submission_uuid=bavSyjpYf4HpO7KlYzu6Z32FkHcXbZpT```
@@ -1469,7 +1469,7 @@ When a submission is archived this command will return an error with the message
             "hash": "6fabfd92d854588b9f5295aacc561782",
             "reply_to": [],
             "state": "no threats",
-            "subject": "Example mail",
+            "subject": "Example email",
             "tags": [],
             "to": [
                 "example@netcraft.com"
@@ -1484,13 +1484,13 @@ When a submission is archived this command will return an error with the message
 >### Submission Mails
 >|Subject|From|To|Classification|
 >|---|---|---|---|
->| Example mail | fraudster@example.com | example@netcraft.com | no threats |
+>| Example email | fraudster@example.com | example@netcraft.com | no threats |
 
 
 ### netcraft-mail-screenshot-get
 
 ***
-Get a screenshot for the mail associated with a submission.
+Get a screenshot for the email associated with a submission.
 
 #### Base Command
 
@@ -1500,7 +1500,7 @@ Get a screenshot for the mail associated with a submission.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| submission_uuid | The unique identifier of the submission from which to retrieve a mail screenshot. Submission UUIDs can be obtained by running the command "netcraft-submission-list". | Required | 
+| submission_uuid | The unique identifier of the submission from which to retrieve an email screenshot. Submission UUIDs can be obtained by running the command "netcraft-submission-list". | Required | 
 
 #### Context Output
 
@@ -1531,7 +1531,7 @@ Get a screenshot for the mail associated with a submission.
 
 #### Human Readable Output
 
->Returned file: mail_screenshot_bavSyjpYf4HpO7KlYzu6Z32FkHcXbZpT.png [Download](https://www.paloaltonetworks.com/cortex)
+>Returned file: email_screenshot_bavSyjpYf4HpO7KlYzu6Z32FkHcXbZpT.png [Download](https://www.paloaltonetworks.com/cortex)
 
 ### netcraft-url-report-submit
 
@@ -1569,13 +1569,13 @@ Report URLs to Netcraft for analysis.
 | Netcraft.Submission.has_cryptocurrency_addresses | Boolean | Whether the submission contains cryptocurrency addresses. | 
 | Netcraft.Submission.has_files | Boolean | Whether the submission contains files. | 
 | Netcraft.Submission.has_issues | Boolean | Whether the submission contains issues. | 
-| Netcraft.Submission.has_mail | Boolean | Whether the submission has a mail. | 
+| Netcraft.Submission.has_mail | Boolean | Whether the submission has an email. | 
 | Netcraft.Submission.has_phone_numbers | Boolean | Whether the submission contains phone numbers. | 
 | Netcraft.Submission.has_urls | Boolean | Whether the submission contains URLs. | 
 | Netcraft.Submission.is_archived | Boolean | Whether the submission has been archived. | 
 | Netcraft.Submission.last_update | Number | A unix timestamp of when this submission was last updated. | 
-| Netcraft.Submission.mail | String | An API URL to get details about the mail associated with this submission. | 
-| Netcraft.Submission.mail_state | String | The state of the mail in the submission. | 
+| Netcraft.Submission.mail | String | An API URL to get details about the email associated with this submission. | 
+| Netcraft.Submission.mail_state | String | The state of the email in the submission. | 
 | Netcraft.Submission.original_source.name | String | The name of the submission source. | 
 | Netcraft.Submission.original_source.type | String | The type of submission source. | 
 | Netcraft.Submission.pending | Boolean | Whether the submission is still pending. | 

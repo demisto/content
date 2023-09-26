@@ -1003,7 +1003,7 @@ def mail_screenshot_get_command(args: dict, client: Client) -> dict | CommandRes
             readable_output='No screenshot for mail.'
         )
     return fileResult(
-        f'mail_screenshot_{args["submission_uuid"]}.png',
+        f'email_screenshot_{args["submission_uuid"]}.png',
         response.content,
         EntryType.ENTRY_INFO_FILE,
     )

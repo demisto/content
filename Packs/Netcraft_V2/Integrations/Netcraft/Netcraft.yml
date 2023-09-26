@@ -716,9 +716,9 @@ script:
     - description: Get a specific submission. If provided, all the others arguments will be ignored and an extensive report will be returned.
       name: submission_uuid
       default: true
-    - description: Filter submissions by start date.
+    - description: Filter submissions by start date. Use UTC format or plain English for example "5 days ago".
       name: date_start
-    - description: Filter submissions by end date.
+    - description: Filter submissions by end date. Use UTC format or plain English for example "5 days ago".
       name: date_end
     - description: Filter the submissions by source.
       name: source_name
@@ -744,23 +744,23 @@ script:
     - name: polling
       hidden: true
       defaultValue: 'false'
-      description: ''
+      description: Use Cortex XSOAR built-in polling to wait for the report to be processed.
     - defaultValue: '30'
       hidden: true
       name: interval_in_seconds
-      description: ''
+      description: Indicates the time in seconds until the polling sequence times out.
     - defaultValue: '600'
       hidden: true
       name: timeout
-      description: ''
+      description: Indicates how long to wait between command executions (in seconds).
     - defaultValue: true
       hidden: true
       name: hide_polling_output
-      description: ''
+      description: whether to hide the output of the polling on each run, should always be "true".
     - defaultValue: false
       hidden: true
       name: ignore_404
-      description: ''
+      description: Whether to ignore 404 responses from the API. Used when creating a submission as Netcraft may not have updated the system yet.
     outputs:
     - contextPath: Netcraft.Submission.date
       description: The unix timestamp of the submission.
@@ -802,7 +802,7 @@ script:
       description: Whether the submission contains issues. This key appears only if the "submission_uuid" argument is provided.
       type: Boolean
     - contextPath: Netcraft.Submission.has_mail
-      description: Whether the submission has a mail. This key appears only if the "submission_uuid" argument is provided.
+      description: Whether the submission has an email. This key appears only if the "submission_uuid" argument is provided.
       type: Boolean
     - contextPath: Netcraft.Submission.has_phone_numbers
       description: Whether the submission contains phone numbers. This key appears only if the "submission_uuid" argument is provided.
@@ -817,10 +817,10 @@ script:
       description: A unix timestamp of when this submission was last updated. This key appears only if the "submission_uuid" argument is provided.
       type: Number
     - contextPath: Netcraft.Submission.mail
-      description: An API URL to get details about the mail associated with this submission. This key appears only if the "submission_uuid" argument is provided.
+      description: An API URL to get details about the email associated with this submission. This key appears only if the "submission_uuid" argument is provided.
       type: String
     - contextPath: Netcraft.Submission.mail_state
-      description: The state of the mail in the submission. This key appears only if the "submission_uuid" argument is provided.
+      description: The state of the email in the submission. This key appears only if the "submission_uuid" argument is provided.
       type: String
     - contextPath: Netcraft.Submission.original_source.name
       description: The name of the submission source. This key appears only if the "submission_uuid" argument is provided.
@@ -932,7 +932,7 @@ script:
       description: Whether the submission contains issues.
       type: Boolean
     - contextPath: Netcraft.Submission.has_mail
-      description: Whether the submission has a mail.
+      description: Whether the submission has an email.
       type: Boolean
     - contextPath: Netcraft.Submission.has_phone_numbers
       description: Whether the submission contains phone numbers.
@@ -947,10 +947,10 @@ script:
       description: A unix timestamp of when this submission was last updated.
       type: Number
     - contextPath: Netcraft.Submission.mail
-      description: An API URL to get details about the mail associated with this submission.
+      description: An API URL to get details about the email associated with this submission.
       type: String
     - contextPath: Netcraft.Submission.mail_state
-      description: The state of the mail in the submission.
+      description: The state of the email in the submission.
       type: String
     - contextPath: Netcraft.Submission.original_source.name
       description: The name of the submission source.
@@ -1061,16 +1061,16 @@ script:
     polling: true
     description: |
       Report email messages to Netcraft for analysis.
-      The mail will be examined for malicious attachments and URLs.
-      Optionally, mails can be encrypted before upload. If a mail is encrypted before upload, it should be encrypted with AES-256-CBC, for example using OpenSSL.
+      The email will be examined for malicious attachments and URLs.
+      Optionally, emails can be encrypted before upload. If an email is encrypted before upload, it should be encrypted with AES-256-CBC, for example using OpenSSL.
     arguments:
     - description: The reporter's email address, to which the result of Netcraft's analysis will be sent.
       name: reporter_email
       required: true
-    - description: Either a plain text string of the malicious mail in MIME format or if the "password" argument is provided, a base64 encoded AES-256-CBC encrypted mail in MIME format. Max message size is 20MiB.
+    - description: Either a plain text string of the malicious email in MIME format or if the "password" argument is provided, a base64 encoded AES-256-CBC encrypted email in MIME format. Max message size is 20MiB.
       name: message
       required: true
-    - description: The password used to encrypt/decrypt the MIME mail. Should not be provided if the mail is not encrypted.
+    - description: The password used to encrypt/decrypt the MIME email. Should not be provided if the email is not encrypted.
       name: password
     - auto: PREDEFINED
       description: Use Cortex XSOAR built-in polling to wait for the report to be processed.
@@ -1123,7 +1123,7 @@ script:
       description: Whether the submission contains issues.
       type: Boolean
     - contextPath: Netcraft.Submission.has_mail
-      description: Whether the submission has a mail.
+      description: Whether the submission has an email.
       type: Boolean
     - contextPath: Netcraft.Submission.has_phone_numbers
       description: Whether the submission contains phone numbers.
@@ -1138,10 +1138,10 @@ script:
       description: A unix timestamp of when this submission was last updated.
       type: Number
     - contextPath: Netcraft.Submission.mail
-      description: An API URL to get details about the mail associated with this submission.
+      description: An API URL to get details about the email associated with this submission.
       type: String
     - contextPath: Netcraft.Submission.mail_state
-      description: The state of the mail in the submission.
+      description: The state of the email in the submission.
       type: String
     - contextPath: Netcraft.Submission.original_source.name
       description: The name of the submission source.
@@ -1184,7 +1184,7 @@ script:
       type: String
   - name: netcraft-submission-mail-get
     description: |
-      Get basic information about a submission's mail.
+      Get basic information about a submission's email.
       When a submission is archived this command will return an error with the message "this submission has been archived".
     arguments:
     - description: The submission's unique identifier. Submission UUIDs can be obtained by running the command "netcraft-submission-list".
@@ -1202,30 +1202,30 @@ script:
       description: The state the entity moved into.
       type: String
     - contextPath: Netcraft.SubmissionMail.from
-      description: The email addresses of the mail senders.
+      description: The email addresses of the email senders.
       type: String
     - contextPath: Netcraft.SubmissionMail.hash
-      description: The MD5 hash of the mail associated with this submission.
+      description: The MD5 hash of the email associated with this submission.
       type: String
     - contextPath: Netcraft.SubmissionMail.reply_to
-      description: The email addresses that reply messages of the mail were sent to.
+      description: The email addresses that reply messages of the email were sent to.
       type: String
     - contextPath: Netcraft.SubmissionMail.state
-      description: The classification state of the mail. One of "processing", "no threats" or "malicious".
+      description: The classification state of the email. One of "processing", "no threats" or "malicious".
       type: String
     - contextPath: Netcraft.SubmissionMail.subject
-      description: The subject of the mail submitted.
+      description: The subject of the email submitted.
       type: String
     - contextPath: Netcraft.SubmissionMail.to
-      description: The email addresses of the mail recipients.
+      description: The email addresses of the email recipients.
       type: String
   - name: netcraft-mail-screenshot-get
     arguments:
-    - description: The unique identifier of the submission from which to retrieve a mail screenshot. Submission UUIDs can be obtained by running the command "netcraft-submission-list".
+    - description: The unique identifier of the submission from which to retrieve an email screenshot. Submission UUIDs can be obtained by running the command "netcraft-submission-list".
       name: submission_uuid
       required: true
       default: true
-    description: Get a screenshot for the mail associated with a submission.
+    description: Get a screenshot for the email associated with a submission.
     outputs:
     - contextPath: InfoFile.Size
       description: The size of the screenshot in bytes.
@@ -1308,7 +1308,7 @@ script:
       description: Whether the submission contains issues.
       type: Boolean
     - contextPath: Netcraft.Submission.has_mail
-      description: Whether the submission has a mail.
+      description: Whether the submission has an email.
       type: Boolean
     - contextPath: Netcraft.Submission.has_phone_numbers
       description: Whether the submission contains phone numbers.
@@ -1323,10 +1323,10 @@ script:
       description: A unix timestamp of when this submission was last updated.
       type: Number
     - contextPath: Netcraft.Submission.mail
-      description: An API URL to get details about the mail associated with this submission.
+      description: An API URL to get details about the email associated with this submission.
       type: String
     - contextPath: Netcraft.Submission.mail_state
-      description: The state of the mail in the submission.
+      description: The state of the email in the submission.
       type: String
     - contextPath: Netcraft.Submission.original_source.name
       description: The name of the submission source.
