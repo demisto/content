@@ -107,7 +107,7 @@ script:
           name: limit
         - description: which severity to filter by the incidents.
           name: severity
-      description: Lists the incidents found in the api
+      description: Lists the example incidents as it would be fetched from the api.
       name: helloworld-incident-list
       outputs:
         - contextPath: HelloWorld.Incident.assignee_id
@@ -304,6 +304,8 @@ script:
           name: note_text
           required: true
       name: helloworld-incident-note-create
+      description: Example of creating new item in the api.
+
       outputs:
         - contextPath: HelloWorld.Note.id
           description: The id of the note
@@ -365,8 +367,7 @@ script:
         - contextPath: HelloWorld.Scan.policy_breaks.validity
           description: 'Validity of the found secret. Can be "no_checker", "valid", "invalid", "failed_to_check" or "unknown"'
           type: String
-    - name: ip
-      arguments:
+    - arguments:  # ip
         - name: ip
           default: true
           description: List of IPs.
@@ -374,6 +375,7 @@ script:
         - name: threshold
           description: If the IP has reputation above the threshold then the IP defined as malicious. If threshold not set, then threshold from instance configuration is used.
           defaultValue: 65
+      name: ip
       outputs:
         - contextPath: DBotScore.Indicator
           description: The indicator that was tested.

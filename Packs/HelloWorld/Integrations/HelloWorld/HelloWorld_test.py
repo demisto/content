@@ -55,7 +55,7 @@ https://xsoar.pan.dev/docs/integrations/unit-testing
 import json
 from CommonServerPython import DemistoException
 from HelloWorld import (Client, ip_reputation_command, item_list_command, validate_api_key,
-                        dedup_by_ids, incident_note_create_command, fetch_incidents)
+                        dedup_by_ids, incident_note_create_command)
 import pytest
 
 
@@ -301,40 +301,40 @@ class TestIncidentNoteCreate:
 
 
 # class TestFetchIncidents:
-# 
+#
 #     EXAMPLE_ALERTS = [{'id': 1, 'title': 'Incident 1'},
 #                       {'id': 2, 'title': 'Incident 2'},
 #                       {'id': 3, 'title': 'Incident 3'}]
-#     
+#
 #     @pytest.fixture(autouse=True)
 #     def setup(self):
 #         self.client = create_mock_client()
-#         
+#
 #     def test_first_run(self, mocker):
 #         mocker.patch.object(self.client, 'get_incident_list_for_fetch', return_value=self.EXAMPLE_ALERTS)
-# 
+#
 #         last_run : dict = {}
 #         first_fetch = '2021-01-01T00:00:00Z'
-#         
+#
 #         next_run, incidents = fetch_incidents(
 #             self.client,
 #             max_results=50,
 #             last_run=last_run,
 #             first_fetch_time=first_fetch
 #         )
-# 
+#
 #         # Assertions
 #         assert len(incidents) == 3
 #         assert incidents[0]['name'] == 'test'
 #         # etc
-# 
+#
 #     def test_subsequent_run(self, mock_client):
-#         last_run = {'last_fetch': '2021-01-01T01:00:00Z'}  
+#         last_run = {'last_fetch': '2021-01-01T01:00:00Z'}
 #         first_fetch = '2021-01-01T00:00:00Z'
-#         
-#         next_run, incidents = fetch_incidents(self.client, 
+#
+#         next_run, incidents = fetch_incidents(self.client,
 #                                               max_results=2, last_run=last_run, first_fetch_time=first_fetch)
-#         
+#
 #         # Assertions
 #         assert incidents[0]['date'] > last_run['last_fetch']
 #         # etc

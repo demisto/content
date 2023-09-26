@@ -327,7 +327,6 @@ class Client(BaseClient):
                     "harmless": 0,
                     "malicious": 1
                 },
-                "whois": "NetRange: :range:\nCIDR: :cidr:\nNetName: ENCRYPTED-TRANSIT-IPV4\nNetHandle: :net-handle:\nParent: :parent:\nNetType: Direct Allocation\nOriginAS: :oas:\nOrganization: :org name: (:org-id:)\nRegDate: 2017-07-19\nUpdated: 2017-07-19\nComment: :comment:\nRef: :ref:\nOrgName: :org name:\nOrgId: :org-id:\nAddress: 815 1st Ave # 331\nCity: Seattle\nStateProv: WA\nPostalCode: :code:\nCountry: US\nRegDate: 2017-06-20\nUpdated: 2018-11-15\nRef: :ref:\nOrgTechHandle: :handle:\nOrgTechName: Technical Support\nOrgTechPhone: :phone: \nOrgTechEmail: tech@example.com\nOrgTechRef: :ref:/:handle:\nOrgAbuseHandle: :abuse-handle:\nOrgAbuseName: Abuse Management\nOrgAbusePhone: :phone: \nOrgAbuseEmail: abuse@example.com\nOrgAbuseRef: :ref:/:abuse-handle:\nOrgNOCHandle: NETWO8737-ARIN\nOrgNOCName: Network Operations\nOrgNOCPhone: :phone: \nOrgNOCEmail: noc@example.com\nOrgNOCRef: :ref::ref\n",
                 "whois_date": 1611870274
             },
             "id": "x.x.x.x",
@@ -650,8 +649,10 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict,
 
     # INTEGRATION DEVELOPER TIP
     # Incidents might be duplicated in some cases:
-    # 1. Pagination done without next page's token (the exact time of the last incident is queried again so the same incident will return again).
-    # 2. Limit is exceeded but there are more incident in the same time to fetch in the next run (Especially happen when API does not support milliseconds).
+    # 1. Pagination done without next page's token -
+    #   The exact time of the last incident is queried again so the same incident will be fetched again).
+    # 2. Limit is exceeded but there are more incident in the same time to fetch in the next run-
+    #   (Mostly happens when API does not support milliseconds).
 
     alerts, number_of_dups = dedup_by_ids(alerts, last_ids)
     demisto.debug(f'recieved {number_of_dups} duplicates incidents to skip.')
