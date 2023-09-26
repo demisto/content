@@ -699,6 +699,9 @@ sync-buckets-between-projects:
     - gke
   extends:
     - .bucket-upload-rule
+  rules:
+    - if: '$TEST_XDR_ENV == true'
+      when: never
   stage: upload-to-marketplace
   needs: ["upload-packs-to-marketplace", "upload-packs-to-marketplace-v2", "upload-packs-to-xpanse-marketplace"]
   when: always
