@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: b8cad38d-bb69-4657-8c48-3327a9f2bccb
+    taskid: c4f04383-aae8-453b-83d8-0aec37f12a07
     type: start
     task:
-      id: b8cad38d-bb69-4657-8c48-3327a9f2bccb
+      id: c4f04383-aae8-453b-83d8-0aec37f12a07
       version: -1
       name: ""
       iscommand: false
@@ -23,7 +23,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": -570
+          "y": -790
         }
       }
     note: false
@@ -36,10 +36,10 @@ tasks:
     continueonerrortype: ""
   "1":
     id: "1"
-    taskid: 16ede025-3f7c-4aa5-8b9a-340b75704b61
+    taskid: 9406d496-c199-447b-879b-004d2b3b49d4
     type: regular
     task:
-      id: 16ede025-3f7c-4aa5-8b9a-340b75704b61
+      id: 9406d496-c199-447b-879b-004d2b3b49d4
       version: -1
       name: Parse Audit Alert
       description: Parse raw vulnerabilities JSON data
@@ -60,7 +60,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": -110
+          "y": -330
         }
       }
     note: false
@@ -73,10 +73,10 @@ tasks:
     continueonerrortype: ""
   "2":
     id: "2"
-    taskid: bb543220-36bd-476c-8b51-6347ccbb443e
+    taskid: d0004c46-d840-4074-89fa-c9d48b66ed76
     type: regular
     task:
-      id: bb543220-36bd-476c-8b51-6347ccbb443e
+      id: d0004c46-d840-4074-89fa-c9d48b66ed76
       version: -1
       name: Pull Images Details
       description: Returns images by the query specification.
@@ -86,7 +86,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "40"
+      - "58"
     scriptarguments:
       name:
         complex:
@@ -101,7 +101,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 390
+          "y": 190
         }
       }
     note: false
@@ -114,10 +114,10 @@ tasks:
     continueonerrortype: ""
   "3":
     id: "3"
-    taskid: 0550e4f6-5170-4987-821d-ccd59ad95d94
+    taskid: 66b5ecfb-bb17-4357-82d0-75f3ef0b0ade
     type: regular
     task:
-      id: 0550e4f6-5170-4987-821d-ccd59ad95d94
+      id: 66b5ecfb-bb17-4357-82d0-75f3ef0b0ade
       version: -1
       name: Create Indicators from Image Vulnerabilities
       description: commands.local.cmd.new.indicator
@@ -173,10 +173,10 @@ tasks:
     continueonerrortype: ""
   "4":
     id: "4"
-    taskid: 991ff22f-7c53-49b4-883b-bbf5ece186d4
+    taskid: d7608152-9d50-4c25-8a8c-ce9ba068c748
     type: regular
     task:
-      id: 991ff22f-7c53-49b4-883b-bbf5ece186d4
+      id: d7608152-9d50-4c25-8a8c-ce9ba068c748
       version: -1
       name: Gather Image Compliance Issues
       description: Grab the compliance issues under the image details from PCC.
@@ -222,10 +222,10 @@ tasks:
     continueonerrortype: ""
   "5":
     id: "5"
-    taskid: 3270c9d3-d15e-46df-85f2-7bd541ea7c9d
+    taskid: d87d7bfd-d210-430f-8bf1-96565af0ae81
     type: title
     task:
-      id: 3270c9d3-d15e-46df-85f2-7bd541ea7c9d
+      id: d87d7bfd-d210-430f-8bf1-96565af0ae81
       version: -1
       name: Case Details
       type: title
@@ -240,7 +240,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": -435
+          "y": -655
         }
       }
     note: false
@@ -253,10 +253,10 @@ tasks:
     continueonerrortype: ""
   "6":
     id: "6"
-    taskid: 3f01efb6-5fdf-476c-80a7-8b1f38c06fb8
+    taskid: 51d53db3-9245-4d9d-8eaf-153c19a9583a
     type: title
     task:
-      id: 3f01efb6-5fdf-476c-80a7-8b1f38c06fb8
+      id: 51d53db3-9245-4d9d-8eaf-153c19a9583a
       version: -1
       name: Vulnerability
       type: title
@@ -284,10 +284,10 @@ tasks:
     continueonerrortype: ""
   "7":
     id: "7"
-    taskid: a798abb6-2f31-49fc-8480-d20a3dd71e19
+    taskid: 1abbb280-d4bf-4355-8d0e-1a9f2aa375f8
     type: title
     task:
-      id: a798abb6-2f31-49fc-8480-d20a3dd71e19
+      id: 1abbb280-d4bf-4355-8d0e-1a9f2aa375f8
       version: -1
       name: Compliance
       type: title
@@ -318,10 +318,10 @@ tasks:
     continueonerrortype: ""
   "8":
     id: "8"
-    taskid: a1fd0a16-7ff2-4d32-8de0-11b92e91153b
+    taskid: 333b4ff1-514c-4672-866c-ae63a9e8b6d0
     type: regular
     task:
-      id: a1fd0a16-7ff2-4d32-8de0-11b92e91153b
+      id: 333b4ff1-514c-4672-866c-ae63a9e8b6d0
       version: -1
       name: Get Defender Policy
       description: DefenderSettings returns the settings in the Defender policy.
@@ -357,10 +357,10 @@ tasks:
     continueonerrortype: ""
   "9":
     id: "9"
-    taskid: 8bf97c07-9387-4044-82bd-df41cbd8b37a
+    taskid: 956c7df8-947f-4b80-89e8-2d606180ee17
     type: regular
     task:
-      id: 8bf97c07-9387-4044-82bd-df41cbd8b37a
+      id: 956c7df8-947f-4b80-89e8-2d606180ee17
       version: -1
       name: Get Alert Profiles
       description: AlertProfiles returns all the alert profiles.
@@ -395,10 +395,10 @@ tasks:
     continueonerrortype: ""
   "11":
     id: "11"
-    taskid: 45741321-60f5-4fb3-8bda-19fdbde05523
+    taskid: d1225274-1d20-4f40-8fa8-0966ff69acd1
     type: title
     task:
-      id: 45741321-60f5-4fb3-8bda-19fdbde05523
+      id: d1225274-1d20-4f40-8fa8-0966ff69acd1
       version: -1
       name: Remediation
       type: title
@@ -426,10 +426,10 @@ tasks:
     continueonerrortype: ""
   "26":
     id: "26"
-    taskid: 8491f442-0681-4802-84e5-ec2cefcfceca
+    taskid: b69aedcf-bdd8-4fdd-8c37-d3b0d1b25452
     type: regular
     task:
-      id: 8491f442-0681-4802-84e5-ec2cefcfceca
+      id: b69aedcf-bdd8-4fdd-8c37-d3b0d1b25452
       version: -1
       name: Close Investigation
       description: commands.local.cmd.close.inv
@@ -458,10 +458,10 @@ tasks:
     continueonerrortype: ""
   "27":
     id: "27"
-    taskid: 85e7d517-c525-44eb-8a1b-0f45a7494d3e
+    taskid: 13107dad-970c-48b2-8336-6924420d3178
     type: title
     task:
-      id: 85e7d517-c525-44eb-8a1b-0f45a7494d3e
+      id: 13107dad-970c-48b2-8336-6924420d3178
       version: -1
       name: Done
       type: title
@@ -486,10 +486,10 @@ tasks:
     continueonerrortype: ""
   "29":
     id: "29"
-    taskid: 4b5331e2-09e9-4575-8327-4596493235ca
+    taskid: 493af945-6056-40ba-872f-c4b3da228e82
     type: title
     task:
-      id: 4b5331e2-09e9-4575-8327-4596493235ca
+      id: 493af945-6056-40ba-872f-c4b3da228e82
       version: -1
       name: Forensics
       type: title
@@ -519,10 +519,10 @@ tasks:
     continueonerrortype: ""
   "30":
     id: "30"
-    taskid: 4976a808-ac1d-406b-80ce-1d9fdf6425e2
+    taskid: b604d22b-fe66-46b5-88a5-10cf9c855ec1
     type: regular
     task:
-      id: 4976a808-ac1d-406b-80ce-1d9fdf6425e2
+      id: b604d22b-fe66-46b5-88a5-10cf9c855ec1
       version: -1
       name: Get Defender Logs
       description: DefenderLogs returns the last Defender logs.
@@ -560,10 +560,10 @@ tasks:
     continueonerrortype: ""
   "31":
     id: "31"
-    taskid: 7084d2ee-7eed-4e50-8b4c-59347d0502f9
+    taskid: 8d590347-7386-49b2-8af0-04245ad471d7
     type: regular
     task:
-      id: 7084d2ee-7eed-4e50-8b4c-59347d0502f9
+      id: 8d590347-7386-49b2-8af0-04245ad471d7
       version: -1
       name: List Defender Backups
       description: List returns the available backups.
@@ -598,10 +598,10 @@ tasks:
     continueonerrortype: ""
   "32":
     id: "32"
-    taskid: 4bfb4069-1bf0-401d-8d60-0de974b1bfc7
+    taskid: 5841378b-a708-4951-85ee-114b3060765c
     type: regular
     task:
-      id: 4bfb4069-1bf0-401d-8d60-0de974b1bfc7
+      id: 5841378b-a708-4951-85ee-114b3060765c
       version: -1
       name: Download Defender Logs
       description: DownloadDefenderLogs downloads all defender logs and metadata.
@@ -639,10 +639,10 @@ tasks:
     continueonerrortype: ""
   "34":
     id: "34"
-    taskid: aea663df-ab82-4729-8705-675669862237
+    taskid: af5097a1-b684-4600-8b57-ea3aa859ef93
     type: regular
     task:
-      id: aea663df-ab82-4729-8705-675669862237
+      id: af5097a1-b684-4600-8b57-ea3aa859ef93
       version: -1
       name: Set Logs to Layout
       description: Convert an array to a nice table display (usually from the context).
@@ -682,10 +682,10 @@ tasks:
     continueonerrortype: ""
   "36":
     id: "36"
-    taskid: 8460f4e9-3aab-4967-814b-bc5c2b7f6fe9
+    taskid: 900c3626-a9d7-475c-8a47-1afaebea33b3
     type: regular
     task:
-      id: 8460f4e9-3aab-4967-814b-bc5c2b7f6fe9
+      id: 900c3626-a9d7-475c-8a47-1afaebea33b3
       version: -1
       name: Get Container WaaS Policies
       description: Get the Waas container policies from Defend >> WAAS >> Containers.
@@ -719,10 +719,10 @@ tasks:
     continueonerrortype: ""
   "37":
     id: "37"
-    taskid: 87944974-ee2b-41ed-8761-009c20ec4473
+    taskid: 0845147d-22c9-4e59-8bfa-3fab23234826
     type: regular
     task:
-      id: 87944974-ee2b-41ed-8761-009c20ec4473
+      id: 0845147d-22c9-4e59-8bfa-3fab23234826
       version: -1
       name: Get container profile
       description: Get information about the containers and their profile events. This command supports asterisks which allows you to get container profiles by filtering its fields according to a specific substring.
@@ -758,10 +758,10 @@ tasks:
     continueonerrortype: ""
   "38":
     id: "38"
-    taskid: 20811232-3825-4624-8c33-916a75eb249a
+    taskid: 41ca4c1c-ca35-453c-803a-d18f15628f20
     type: regular
     task:
-      id: 20811232-3825-4624-8c33-916a75eb249a
+      id: 41ca4c1c-ca35-453c-803a-d18f15628f20
       version: -1
       name: Get container forensics
       description: Get runtime forensics data for a specific container on a specific host
@@ -799,10 +799,10 @@ tasks:
     continueonerrortype: ""
   "39":
     id: "39"
-    taskid: 0d682658-fc69-443b-841e-feaca015321e
+    taskid: fab534fc-bf2a-434e-84fd-3f38617b618b
     type: regular
     task:
-      id: 0d682658-fc69-443b-841e-feaca015321e
+      id: fab534fc-bf2a-434e-84fd-3f38617b618b
       version: -1
       name: Get Host Profile
       description: Get information about the hosts and their profile events. This command supports asterisks which allows you to get host profiles by filtering its fields according to a specific substring.
@@ -836,10 +836,10 @@ tasks:
     continueonerrortype: ""
   "40":
     id: "40"
-    taskid: fd40d971-ac8e-4e22-8ec5-4abec7fcb2bc
+    taskid: ca957966-443c-402b-8cec-34af34a66070
     type: regular
     task:
-      id: fd40d971-ac8e-4e22-8ec5-4abec7fcb2bc
+      id: ca957966-443c-402b-8cec-34af34a66070
       version: -1
       name: 'Get container audits '
       description: Get the audits for the firewall container policies.
@@ -881,10 +881,10 @@ tasks:
     continueonerrortype: ""
   "41":
     id: "41"
-    taskid: c0a6815b-d403-47b8-861d-ff6197b3880a
+    taskid: 5189c3ab-079b-44fc-82da-d22503554b2f
     type: regular
     task:
-      id: c0a6815b-d403-47b8-861d-ff6197b3880a
+      id: 5189c3ab-079b-44fc-82da-d22503554b2f
       version: -1
       name: Set Audits to Table
       description: Convert an array to a nice table display (usually, from the context).
@@ -926,10 +926,10 @@ tasks:
     continueonerrortype: ""
   "42":
     id: "42"
-    taskid: 39207cd4-9146-4e05-80d3-4c9ee5dfd887
+    taskid: f95d24a8-697e-4235-86d6-3d082ee15cf0
     type: regular
     task:
-      id: 39207cd4-9146-4e05-80d3-4c9ee5dfd887
+      id: f95d24a8-697e-4235-86d6-3d082ee15cf0
       version: -1
       name: Manually Remediate
       type: regular
@@ -957,10 +957,10 @@ tasks:
     continueonerrortype: ""
   "43":
     id: "43"
-    taskid: 8745366a-0e8a-40ab-834e-0276ecc6cb23
+    taskid: 6ef8b605-1d49-4898-8453-4f92a18ffe69
     type: regular
     task:
-      id: 8745366a-0e8a-40ab-834e-0276ecc6cb23
+      id: 6ef8b605-1d49-4898-8453-4f92a18ffe69
       version: -1
       name: Create Indicator Table
       description: commands.local.cmd.find.indicators
@@ -996,10 +996,10 @@ tasks:
     continueonerrortype: ""
   "45":
     id: "45"
-    taskid: 9677d16e-4e9b-4bcd-87fc-09f6da0edeb1
+    taskid: 30163389-b2d5-4823-8feb-283fd3218eee
     type: regular
     task:
-      id: 9677d16e-4e9b-4bcd-87fc-09f6da0edeb1
+      id: 30163389-b2d5-4823-8feb-283fd3218eee
       version: -1
       name: Set Incident Link
       description: commands.local.cmd.set.incident
@@ -1035,7 +1035,7 @@ tasks:
       {
         "position": {
           "x": 732.5,
-          "y": 400
+          "y": 180
         }
       }
     note: false
@@ -1048,10 +1048,10 @@ tasks:
     continueonerrortype: ""
   "46":
     id: "46"
-    taskid: 5a725c5e-683b-431e-88dd-8cfa5dff0d9a
+    taskid: c11e7b71-15b2-40d8-8bcc-5fa2e3e3e75d
     type: condition
     task:
-      id: 5a725c5e-683b-431e-88dd-8cfa5dff0d9a
+      id: c11e7b71-15b2-40d8-8bcc-5fa2e3e3e75d
       version: -1
       name: Check if alert has image vulnerabilities
       description: ''
@@ -1100,10 +1100,10 @@ tasks:
     continueonerrortype: ""
   "47":
     id: "47"
-    taskid: 81bd9583-af00-4521-815e-7f6d1765cf12
+    taskid: daab9038-adfb-4457-8ca8-5bd43e3b6810
     type: condition
     task:
-      id: 81bd9583-af00-4521-815e-7f6d1765cf12
+      id: daab9038-adfb-4457-8ca8-5bd43e3b6810
       version: -1
       name: Does baseUrl exist in inputs?
       type: condition
@@ -1137,7 +1137,7 @@ tasks:
       {
         "position": {
           "x": 732.5,
-          "y": 190
+          "y": -30
         }
       }
     note: false
@@ -1150,10 +1150,10 @@ tasks:
     continueonerrortype: ""
   "48":
     id: "48"
-    taskid: aee0edb5-f5b0-4b51-8ceb-9e47d84041f6
+    taskid: d928642c-9c7b-47fe-8de2-6ef0be57778b
     type: condition
     task:
-      id: aee0edb5-f5b0-4b51-8ceb-9e47d84041f6
+      id: d928642c-9c7b-47fe-8de2-6ef0be57778b
       version: -1
       name: Check if Image Compliance Issues Exist
       description: ''
@@ -1191,10 +1191,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "50":
     id: "50"
-    taskid: b1c67630-80cb-4408-855e-4ea5e41f5898
+    taskid: 9250d30f-8950-4875-8113-91f9e2661689
     type: condition
     task:
-      id: b1c67630-80cb-4408-855e-4ea5e41f5898
+      id: 9250d30f-8950-4875-8113-91f9e2661689
       version: -1
       name: Check if Raw Alert JSON exist
       description: ''
@@ -1234,7 +1234,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": -300
+          "y": -520
         }
       }
     note: false
@@ -1246,10 +1246,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "53":
     id: "53"
-    taskid: 8143a4fd-8535-4b19-8598-e01a4c215948
+    taskid: 658ebd9e-3289-4e1d-8843-7e71bb7b0221
     type: title
     task:
-      id: 8143a4fd-8535-4b19-8598-e01a4c215948
+      id: 658ebd9e-3289-4e1d-8843-7e71bb7b0221
       version: -1
       name: Gather Additional Details
       type: title
@@ -1266,7 +1266,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 50
+          "y": -170
         }
       }
     note: false
@@ -1278,10 +1278,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "55":
     id: "55"
-    taskid: afa81dc6-8074-41aa-8223-a822e36510a7
+    taskid: b72ffc8b-99a7-4ae8-8576-efcaa6e516ec
     type: condition
     task:
-      id: afa81dc6-8074-41aa-8223-a822e36510a7
+      id: b72ffc8b-99a7-4ae8-8576-efcaa6e516ec
       version: -1
       name: Check if project name exist
       description: ''
@@ -1320,10 +1320,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "56":
     id: "56"
-    taskid: 2eb0f68e-ec03-45a2-8892-1686cd64737e
+    taskid: e083a0be-b96d-48bf-8203-6c3f57fedd72
     type: condition
     task:
-      id: 2eb0f68e-ec03-45a2-8892-1686cd64737e
+      id: e083a0be-b96d-48bf-8203-6c3f57fedd72
       version: -1
       name: Is Container alert type
       description: ''
@@ -1375,10 +1375,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "57":
     id: "57"
-    taskid: 2ce48662-aeb6-4a92-892f-a248a72c2bbe
+    taskid: 358db035-2569-4031-86b8-1a98b8c05f01
     type: condition
     task:
-      id: 2ce48662-aeb6-4a92-892f-a248a72c2bbe
+      id: 358db035-2569-4031-86b8-1a98b8c05f01
       version: -1
       name: Is there an image name
       description: ''
@@ -1406,7 +1406,48 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 200
+          "y": -20
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "58":
+    id: "58"
+    taskid: 896ee77a-73e2-4a9f-82d0-c9339d159830
+    type: condition
+    task:
+      id: 896ee77a-73e2-4a9f-82d0-c9339d159830
+      version: -1
+      name: Assert Image Name Exist
+      description: ''
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "40"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PrismaCloudCompute.ReportsImagesScan.cloudMetadata
+                accessor: image
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 380
         }
       }
     note: false
@@ -1422,21 +1463,22 @@ view: |-
       "46_3_yes": 0.6,
       "55_9_yes": 0.54,
       "56_11_#default#": 0.13,
-      "57_2_yes": 0.43
+      "57_2_yes": 0.43,
+      "58_40_yes": 0.51
     },
     "paper": {
       "dimensions": {
-        "height": 4095,
+        "height": 4315,
         "width": 1962.5,
         "x": -850,
-        "y": -570
+        "y": -790
       }
     }
   }
 inputs:
 - key: baseUrl
   value:
-    simple: https://app2.prismacloud.io
+    simple: https://app.prismacloud.io
   required: false
   description: The base URL of the Prisma Cloud Compute Instance used to create a link back to the alerts for an image.
   playbookInputQuery:
