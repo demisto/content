@@ -430,7 +430,8 @@ def append_new_rule(rules: list, rule: dict) -> list:
     return updated_rules
 
 
-def get_required_response_fields_from_rule_group(client: "WAFV2Client", kwargs: dict) -> Tuple[List["RuleOutputTypeDef"], "VisibilityConfigTypeDef", str]:
+def get_required_response_fields_from_rule_group(client: "WAFV2Client", kwargs: dict
+                                                 ) -> Tuple[List["RuleOutputTypeDef"], "VisibilityConfigTypeDef", str]:
     """
     Gets all the fields from the response that are required for the update request
     Args:
@@ -457,7 +458,8 @@ def update_rule_group_rules(client: "WAFV2Client",
                             kwargs: dict,
                             lock_token: str,
                             updated_rules: list,
-                            rule_group_visibility_config: "VisibilityConfigTypeDef") -> "UpdateRuleGroupResponseTypeDef":  # pragma: no cover
+                            rule_group_visibility_config: "VisibilityConfigTypeDef"
+                            ) -> "UpdateRuleGroupResponseTypeDef":  # pragma: no cover
     """ Updates rule group with new rules list"""
     kwargs |= {'LockToken': lock_token,
                'Rules': updated_rules,
