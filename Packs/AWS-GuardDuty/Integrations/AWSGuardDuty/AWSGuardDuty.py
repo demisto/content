@@ -772,7 +772,7 @@ def main():  # pragma: no cover
                                timeout, retries, sts_endpoint_url=sts_endpoint_url, endpoint_url=endpoint_url)
         args = demisto.args()
 
-        client = aws_client.aws_session(service=SERVICE, region=args.get('region'),
+        client: "GuardDutyClient" = aws_client.aws_session(service=SERVICE, region=args.get('region'),
                                         role_arn=args.get('roleArn'),
                                         role_session_name=args.get('roleSessionName'),
                                         role_session_duration=args.get('roleSessionDuration'))

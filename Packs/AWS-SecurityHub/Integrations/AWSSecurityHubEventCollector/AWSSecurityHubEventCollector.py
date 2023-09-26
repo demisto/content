@@ -241,7 +241,7 @@ def main():  # pragma: no cover
             retries=retries,
         )
 
-        client = aws_client.aws_session(
+        client: "SecurityHubClient" = aws_client.aws_session(
             service='securityhub',
             region=aws_default_region,
             role_arn=aws_role_arn,
