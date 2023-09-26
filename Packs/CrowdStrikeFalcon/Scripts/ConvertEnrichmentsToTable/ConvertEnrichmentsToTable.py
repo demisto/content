@@ -5,7 +5,7 @@ from CommonServerPython import *
 def convert_to_table(context_results: str) -> CommandResults:
     """
     Args:
-        context_results (str): String representing a list of subtasks entries.
+        context_results (str): String representing the data of the incident field.
 
     Returns:
         CommandResults: CommandResults object containing only readable_output
@@ -14,8 +14,8 @@ def convert_to_table(context_results: str) -> CommandResults:
     comment_entries = json.loads(context_results)
 
     md = tableToMarkdown(
-        '',
-        comment_entries,
+        name='',
+        t=comment_entries,
         headers=list(comment_entries.keys()),
         removeNull=True,
         sort_headers=False,

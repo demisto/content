@@ -5,7 +5,7 @@ from CommonServerPython import *
 def convert_to_table(context_results: str) -> CommandResults:
     """
     Args:
-        context_results (str): String representing a list of subtasks entries.
+        context_results (str): String representing the data of the incident field.
 
     Returns:
         CommandResults: CommandResults object containing only readable_output
