@@ -99,7 +99,7 @@ script:
       required: true
     description: Send an email (doesn't actually send an email).
     name: xet-send-mail
-  dockerimage: demisto/python3:3.10.13.73190
+  dockerimage: demisto/python3:3.10.13.74666
   isfetch: true
   runonce: false
   script: ''
