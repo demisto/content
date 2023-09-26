@@ -76,33 +76,33 @@ script:
       description: A description explaining why the IP address was reported as malicious.
       type: string
     - contextPath: GreyNoise.IP.address
-      description: IP Queried
+      description: IP Queried.
       type: string
     - contextPath: GreyNoise.IP.noise
-      description: Is IP Classified as Internet Background Noise
+      description: Is IP Classified as Internet Background Noise.
       type: boolean
     - contextPath: GreyNoise.IP.riot
-      description: Does IP belong to a known benign service
+      description: Does IP belong to a known benign service.
       type: boolean
     - contextPath: GreyNoise.IP.classification
-      description: GreyNoise IP Classification
+      description: GreyNoise IP Classification.
       type: string
     - contextPath: GreyNoise.IP.name
-      description: Actor or Service Name
+      description: Actor or Service Name.
       type: string
     - contextPath: GreyNoise.IP.link
-      description: Link to GreyNoise Visualizer
+      description: Link to GreyNoise Visualizer.
       type: string
     - contextPath: GreyNoise.IP.last_seen
-      description: Date IP was last observed or updated
+      description: Date IP was last observed or updated.
       type: date
     - contextPath: GreyNoise.IP.message
-      description: Additional Information
+      description: Additional Information.
       type: string
     - contextPath: IP.Address
       description: IP address.
       type: String
-  dockerimage: demisto/greynoise:1.0.0.72262
+  dockerimage: demisto/greynoise:1.0.0.73477
   runonce: false
   script: '-'
   subtype: python3

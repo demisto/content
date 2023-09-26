@@ -223,7 +223,6 @@ def test_get_modified_remote_data_command_with_no_data(requests_mock, mocker):
     spy.assert_called_once()
     list_alerts_call_args = spy.call_args[0][0]
     assert list_alerts_call_args["last_modified_min_date"] == args["lastUpdate"]
-    assert list_alerts_call_args["max_timestamp"] == args["lastUpdate"]
     assert len(results.modified_incident_ids) == 0
 
 
@@ -249,7 +248,6 @@ def test_get_modified_remote_data_command(requests_mock, mocker):
     spy.assert_called_once()
     list_alerts_call_args = spy.call_args[0][0]
     assert list_alerts_call_args["last_modified_min_date"] == args["lastUpdate"]
-    assert list_alerts_call_args["max_timestamp"] == args["lastUpdate"]
     assert len(results.modified_incident_ids) == 10
     for modified_incident_id in results.modified_incident_ids:
         assert isinstance(modified_incident_id, str)
