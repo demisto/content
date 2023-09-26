@@ -4,6 +4,7 @@ import json
 from urllib.parse import unquote
 
 from _pytest.python_api import raises
+from regex import E
 
 import demistomock as demisto
 from CommonServerPython import (outputPaths, entryTypes, DemistoException, IncidentStatus, ScheduledCommand,
@@ -6031,6 +6032,30 @@ class TestIOMFetch:
         assert http_request_mocker.call_args_list[0][1].get('params').get('filter') == last_fetch_filter
         assert http_request_mocker.call_args_list[0][1].get('params').get('next_token') == iom_next_token
 
+    def test_fetch_query_with_paginating_empty_last_filter_error(self, mocker: MockerFixture):
+        """
+        Given:
+            - An empty filter as the last fetch filter, and the next token.
+        When
+            - Performing pagination and receiving the next token from the previous run.
+        Then
+            - Validate that an error is thrown if the last fetch filter is an empty string.
+        """
+        from CrowdStrikeFalcon import fetch_incidents
+        last_run_object: list[dict[str, Any]] = [{}, {}, {},
+                                                 {'iom_next_token': 'dummy_token',
+                                                  'last_fetch_filter': '',
+                                                  'last_scan_time': '2023-01-01T00:00:00.000000Z'},
+                                                 {}]
+        mocker.patch.object(demisto, 'params',
+                            return_value={'fetch_incidents_or_detections': 'Indicator of Misconfiguration',
+                                          'iom_fetch_query': "cloud_provider: 'aws'"})
+        mocker.patch.object(demisto, 'getLastRun', return_value=last_run_object)
+        mocker.patch('CrowdStrikeFalcon.http_request')
+        with pytest.raises(DemistoException) as e:
+            fetch_incidents()
+        assert 'Last fetch filter must not be empty when doing pagination' in str(e)
+
     def test_fetch_query_without_pagination_and_not_first_run(self, mocker: MockerFixture):
         """
         Given:
@@ -6224,7 +6249,8 @@ class TestIOMFetch:
         # resource '2', and in the new returned last run, the key last_resource_ids has a value of ['1', '2']
         from CrowdStrikeFalcon import fetch_incidents
         last_run_object: list[dict[str, Any]] = [{}, {}, {},
-                                                 {'last_resource_ids': ['1'], 'iom_next_token': 'next_token'},
+                                                 {'last_resource_ids': ['1'], 'iom_next_token': 'next_token',
+                                                  'last_fetch_filter': 'previous_filter'},
                                                  {}]
         mocker.patch.object(demisto, 'params',
                             return_value={'fetch_incidents_or_detections': 'Indicator of Misconfiguration',

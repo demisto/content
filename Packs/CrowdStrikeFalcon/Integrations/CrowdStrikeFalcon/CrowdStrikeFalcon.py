@@ -2775,6 +2775,8 @@ def get_iom_filter(iom_next_token: Any | None, last_fetch_filter: str,
     """
     filter = 'scan_time:'
     if iom_next_token:
+        if not last_fetch_filter:
+            raise DemistoException('Last fetch filter must not be empty when doing pagination')
         # Doing pagination, we need to use the same fetch query as the previous round
         filter = last_fetch_filter
         demisto.debug(f'Doing pagination, using the same query as the previous round. Filter is {filter}')
