@@ -796,6 +796,9 @@ script:
     - contextPath: AzureSentinel.IncidentAlert.Tactic
       description: The tactics of the alert.
       type: Unknown
+    - contextPath: AzureSentinel.IncidentAlert.Techniques
+      description: The techniques of the alert.
+      type: Unknown
     - contextPath: AzureSentinel.IncidentAlert.DisplayName
       description: The display name of the alert.
       type: String
@@ -2351,7 +2354,7 @@ script:
     execution: false
     name: azure-sentinel-auth-reset
     arguments: []
-  dockerimage: demisto/crypto:1.0.0.74057
+  dockerimage: demisto/crypto:1.0.0.74979
   isfetch: true
   runonce: false
   script: '-'
