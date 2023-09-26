@@ -4,7 +4,6 @@ import json
 from urllib.parse import unquote
 
 from _pytest.python_api import raises
-from regex import E
 
 import demistomock as demisto
 from CommonServerPython import (outputPaths, entryTypes, DemistoException, IncidentStatus, ScheduledCommand,
