@@ -994,7 +994,8 @@
         },
         {
             "integrations": "Thinkst Canary",
-            "playbookID": "CanaryTools Test"
+            "playbookID": "CanaryTools Test",
+            "is_mockable": false
         },
         {
             "integrations": "ThreatMiner",
