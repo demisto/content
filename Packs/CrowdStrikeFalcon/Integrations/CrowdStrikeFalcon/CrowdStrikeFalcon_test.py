@@ -5513,8 +5513,13 @@ class TestCSFalconCSPMListPolicyDetialsCommand:
 
     def test_http_request_with_status_code_400_500_207(self, mocker: MockerFixture):
         """
-        Validate that the http request of the command cs-falcon-cspm-list-policy-details
-        accepts the status codes 500, 400, and 207, since we deal with them manually.
+        Given:
+            - Policy IDs to retrieve their details.
+        When
+            - Making a http request for the cs-falcon-cspm-list-policy-details command.
+        Then
+            - Validate that the http_request function accepts the status codes 500, 400, and 207,
+            since we deal with them manually.
         """
         from CrowdStrikeFalcon import cspm_list_policy_details_request
         http_request_mocker = mocker.patch('CrowdStrikeFalcon.http_request')
@@ -5580,8 +5585,13 @@ class TestCSFalconCSPMListServicePolicySettingsCommand:
 
     def test_http_request_arguments(self, mocker: MockerFixture):
         """
-        Validate that the http request of the command cs-falcon-cspm-list-service-policy-settings
-        accepts the status code 207, and that the arguments are mapped correctly to the query parameters.
+        Given:
+            - Policy ID to retrieve their details.
+        When
+            - Making a http request for the cs-falcon-cspm-list-service-policy-settings command.
+        Then
+            - Validate that the http_request function accepts the status code 207, since we deal with it manually,
+            and that the arguments are mapped correctly to the appropriate params.
         """
         from CrowdStrikeFalcon import cspm_list_service_policy_settings_request
         http_request_mocker = mocker.patch('CrowdStrikeFalcon.http_request')
@@ -5595,7 +5605,7 @@ class TestCSFalconCSPMListServicePolicySettingsCommand:
         Given:
             - Arguments for the command.
         When
-            - Calling the cs-falcon-cspm-list-service-policy-settingss command.
+            - Calling the cs-falcon-cspm-list-service-policy-settings command.
         Then
             - Validate the data of the CommandResults object returned.
         """
@@ -5631,8 +5641,13 @@ class TestCSFalconCSPMUpdatePolicySettingsCommand:
 
     def test_http_request_arguments(self, mocker: MockerFixture):
         """
-        Validate that the http request of the command cs-falcon-cspm-update-policy_settings
-        accepts the status code 500, and that the arguments are mapped correctly to the json body.
+        Given:
+            - Arguments for the cs-falcon-cspm-update-policy_settings command.
+        When
+            - Making a http request.
+        Then
+            - Validate that the http_request function accepts the status code 500, since we deal with it manually,
+            and that the arguments are mapped correctly to the json body.
         """
         from CrowdStrikeFalcon import cspm_update_policy_settings_request
         http_request_mocker = mocker.patch('CrowdStrikeFalcon.http_request')
@@ -5681,8 +5696,12 @@ class TestCSFalconCSPMUpdatePolicySettingsCommand:
 class TestCSFalconResolveIdentityDetectionCommand:
     def test_http_request_arguments(self, mocker: MockerFixture):
         """
-        Validate http request body of the command cs-falcon-resolve-identity-detection,
-        and that the arguments are mapped correctly to the json body.
+        Given:
+            - Arguments for the cs-falcon-resolve-identity-detection command.
+        When
+            - Making a http request.
+        Then
+            - Validate that the arguments are mapped correctly to the json body.
         """
         from CrowdStrikeFalcon import resolve_identity_detection_request
         http_request_mocker = mocker.patch('CrowdStrikeFalcon.http_request')
@@ -5710,7 +5729,6 @@ class TestCSFalconResolveIdentityDetectionCommand:
 
 
 class TestIOAFetch:
-    # TODO Create test for ioa_event_to_incident!!!!
     # Since this integration fetches multiple incidents, the last run object contains a list of
     # last run objects for each incident type, for IOA, that is the 5th position
     @pytest.mark.parametrize('fetch_query, error_message',
