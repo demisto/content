@@ -111,7 +111,11 @@ script:
     - contextPath: LIS.GetByValue.Vulnerabilities
       description: Vulnerabilities
       type: String
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.13.74666
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3

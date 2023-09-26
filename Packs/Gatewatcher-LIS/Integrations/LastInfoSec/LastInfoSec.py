@@ -16,6 +16,7 @@ INDICATOR_TYPE_TO_DBOT_SCORE = {
 
 INTEGRATION_NAME = "Gatewatcher.LastInfoSec"
 
+
 class GwAPIException(Exception):
     """A base class from which all other exceptions inherit.
 
@@ -233,6 +234,7 @@ class GwClient(GwRequests):
                 response.text, response.status_code, response.reason
             )
 
+
 def get_dbot_indicator(dbot_type, dbot_score, value):
     if dbot_type == "FILE":
         hash_type = get_hash_type(value)
@@ -247,6 +249,7 @@ def get_dbot_indicator(dbot_type, dbot_score, value):
     if dbot_type == "URL":
         return Common.URL(url=value, dbot_score=dbot_score)
 
+
 def get_dbot_score(risk: str) -> int:
     if risk == 'Malicious':
         return Common.DBotScore.BAD
@@ -254,16 +257,17 @@ def get_dbot_score(risk: str) -> int:
         return Common.DBotScore.SUSPICIOUS
     if risk == 'High suspicious':
         return Common.DBotScore.SUSPICIOUS
-    if risk == 'Unknown':
-        return Common.DBotScore.NONE
+    return Common.DBotScore.NONE
 
 
-def generic_reputation_command(client: GwClient, args: dict, cmd_type: str, reliability: str) -> CommandResults:
+def generic_reputation_command(client: GwClient, args: dict, cmd_type: str, reliability: str) -> List[CommandResults]:
     """Checks the reputation of a file, domain or url
 
     Args:
         client: Client to interact with the LIS API.
         args: Command arguments.
+        cmd_type: Command type ("file", "domain" or "url")
+        reliability: Integration reliability
 
     Return
         CommandResults object with the type prefix.
@@ -303,6 +307,7 @@ def generic_reputation_command(client: GwClient, args: dict, cmd_type: str, reli
             )
         )
     return results
+
 
 def test_module(client: GwClient) -> str:  # noqa: E501
     """tests API connectivity.
