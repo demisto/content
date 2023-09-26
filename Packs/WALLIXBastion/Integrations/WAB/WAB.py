@@ -37,7 +37,7 @@ class Client(BaseClient):
 
     def _raise_client_exc(self, res: Response):
         if res.status_code == 401:
-            raise AuthError()
+            raise AuthError
         self.client_error_handler(res)
 
     def _http_request(self, *args, **kwargs):
@@ -1697,6 +1697,20 @@ class Client(BaseClient):
 
         return CommandResults(outputs_prefix="WAB.user_get", outputs_key_field="", outputs=response, raw_response=response)
 
+    def get_password_for_target(self, args: Dict[str, Any]):
+        account_name = str_arg(args, "account_name")
+        key_format = str_arg(args, "key_format")
+        cert_format = str_arg(args, "cert_format")
+        authorization = str_arg(args, "authorization")
+        duration = int_arg(args, "duration")
+
+        params = assign_params(key_format=key_format, cert_format=cert_format, authorization=authorization, duration=duration)
+        response = self._http_request("get", f"/targetpasswords/checkout/{account_name}", params=params)
+
+        return CommandResults(
+            outputs_prefix="WAB.targetpasswords_get_checkout", outputs_key_field="", outputs=response, raw_response=response
+        )
+
     def extend_duration_time_to_get_passwords_for_target(self, args: Dict[str, Any]):
         account_name = str_arg(args, "account_name")
         authorization = str_arg(args, "authorization")
@@ -1772,9 +1786,8 @@ def get_session_token():
     token = integration_context.get("session_token")
     last_request_at = integration_context.get("last_request_at")
     time_now = int(time.time())
-    if token and last_request_at:
-        if time_now - last_request_at < 100:
-            return token
+    if token and last_request_at and time_now - last_request_at < 100:
+        return token
     return None
 
 
@@ -1936,6 +1949,7 @@ def main() -> None:
             "wab-get-users": client.get_users,
             "wab-add-user": client.add_user,
             "wab-get-user": client.get_user,
+            "wab-get-password-for-target": client.get_password_for_target,
             "wab-extend-duration-time-to-get-passwords-for-target": client.extend_duration_time_to_get_passwords_for_target,
             "wab-release-passwords-for-target": client.release_passwords_for_target,
             "wab-get-target-by-type": client.get_target_by_type,

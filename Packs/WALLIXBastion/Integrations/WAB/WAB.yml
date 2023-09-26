@@ -48,7 +48,7 @@ script:
   script: ""
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.13.73190
+  dockerimage: demisto/python3:3.10.13.74666
   commands:
   - name: wab-add-session-target-to-target-group
     description: Add a target account to a target group.
@@ -5004,6 +5004,45 @@ script:
     - type: String
       contextPath: WAB.user_get.gpg_public_key
       description: The GPG public key fingerprint.
+  - name: wab-get-password-for-target
+    description: Get the password for a given target.
+    arguments:
+    - name: account_name
+      description: 'A target name: ''account@domain@device'' for an account on a device, ''account@domain@application'' for an account on an application or ''account@domain'' for an account on a global domain.'
+      required: true
+    - name: key_format
+      description: 'The format of the SSH private key returned: ''openssh'' (by default) or ''putty''.'
+    - name: cert_format
+      description: 'The format of the returned certificate: ''openssh'' (by default) or ''ssh.com''.'
+    - name: authorization
+      description: The name of the authorization (in case of multiple authorizations to access the target).
+    - name: duration
+      description: Optional duration for the checkout (in seconds). It is used only in case of lock in the checkout policy, and it must be less than the checkout policy duration.
+    outputs:
+    - type: String
+      contextPath: WAB.targetpasswords_get_checkout.checkin_time
+      description: The date/time of automatic checkin on the account (if no manual checkin is made until this date/time).
+    - type: Boolean
+      contextPath: WAB.targetpasswords_get_checkout.locked
+      description: True if the account has been locked (a manual or automatic checkin is required), False if the account is not locked (checkin is then forbidden on this account).
+    - type: Boolean
+      contextPath: WAB.targetpasswords_get_checkout.checkin_change_password
+      description: True if the password will be automatically changed on checkin, False if the password is unchanged.
+    - type: String
+      contextPath: WAB.targetpasswords_get_checkout.login
+      description: The account login.
+    - type: String
+      contextPath: WAB.targetpasswords_get_checkout.password
+      description: The account password.
+    - type: String
+      contextPath: WAB.targetpasswords_get_checkout.ssh_key
+      description: The account SSH private key.
+    - type: String
+      contextPath: WAB.targetpasswords_get_checkout.ssh_certificate
+      description: The account SSH signed certificate.
+    - type: String
+      contextPath: WAB.targetpasswords_get_checkout.deconnection_time
+      description: The date/time of automatic deconnection when the account is used in a proxy session.
   - name: wab-extend-duration-time-to-get-passwords-for-target
     description: Extend the duration time to get the passwords for a given target.
     arguments:
