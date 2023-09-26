@@ -260,7 +260,7 @@ HELLOWORLD_SEVERITIES = ['Low', 'Medium', 'High', 'Critical']
 LIMIT = 10
 DEFAULT_PAGE_SIZE = 5
 DUMMY_API_KEY = 'dummy-key'
-ITEM_TEMPLATE = '"id": {id}, "name": "XSOAR Test Item #{id}", "severity": "{severity}", "time": "{time}", "status": "{status}"'
+ITEM_TEMPLATE = '"id": {id}, "name": "XSOAR Test Item #{id}", "severity": "{severity}", "date": "{date}", "status": "{status}"'
 ''' CLIENT CLASS '''
 
 
@@ -363,10 +363,10 @@ class Client(BaseClient):
             list[dict]: Dummy data of items as it would return from API.
         """
         mock_response: list[dict] = []
-        for i in range(limit):
+        for i in range(1, limit + 1):
             item = ITEM_TEMPLATE.format(id=i,
                                         severity=severity if severity else 'null',
-                                        time=datetime(2023, 9, 14, 11, 30, 39, 882955).isoformat(),
+                                        date=datetime(2023, 9, 14, 11, 30, 39, 882955).isoformat(),
                                         status='Testing')
             dict_item = json.loads("{" + item + "}")
             mock_response.append(dict_item)
@@ -385,7 +385,7 @@ class Client(BaseClient):
         """
         item = ITEM_TEMPLATE.format(id=item_id,
                                     severity='low',
-                                    time=datetime(2023, 9, 14, 11, 30, 39, 882955).isoformat(),
+                                    date=datetime(2023, 9, 14, 11, 30, 39, 882955).isoformat(),
                                     status='Testing')
         return json.loads("{" + item + "}")
 
@@ -416,7 +416,7 @@ class Client(BaseClient):
         """
         def mock_time(item):
             item['id'] = last_id + 1
-            item['time'] = datetime.strftime(datetime.now(), DATE_FORMAT)
+            item['date'] = datetime.strftime(datetime.now(), DATE_FORMAT)
 
         incidents = self.get_item_list(limit=limit, severity=severity)
         demisto.debug("Setting incidents time to now.")
@@ -592,7 +592,7 @@ def say_hello_command(client: Client, args: dict[str, Any]) -> CommandResults:
 
 
 def fetch_incidents(client: Client, max_results: int, last_run: dict,
-                    first_fetch_time: str, severity: str = None, page_size: int = DEFAULT_PAGE_SIZE
+                    first_fetch_time: str, severity: str = 'low', page_size: int = DEFAULT_PAGE_SIZE
                     ) -> tuple[dict, list[dict]]:
     """
     This function retrieves new alerts every interval (default is 1 minute).
@@ -975,7 +975,7 @@ def main() -> None:
 
         elif command == 'fetch-incidents':
             # Set and define the fetch incidents command to run after activated via integration settings.
-            severity = params.get('severity', None)
+            severity = params.get('severity', 'low')
 
             # Convert the argument to an int using helper function or set to MAX_INCIDENTS_TO_FETCH
             max_results = arg_to_number(

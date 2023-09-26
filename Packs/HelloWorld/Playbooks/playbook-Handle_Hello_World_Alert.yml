@@ -42,7 +42,7 @@ tasks:
       version: -1
       name: Get alert details
       description: Retrieve alert details for a HelloWorld alert by alert ID
-      script: '|||helloworld-get-alert'
+      script: '|||helloworld-incident-list'
       type: regular
       iscommand: true
       brand: ""

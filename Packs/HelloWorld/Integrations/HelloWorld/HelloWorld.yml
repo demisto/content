@@ -91,7 +91,7 @@ display: HelloWorld Dev
 name: HelloWorld Dev
 script:
   commands:
-    - arguments:  # say-hello
+    - arguments:  
         - description: The name of whom you want to say hello to.
           name: name
       description: Hello command - prints hello to anyone.
@@ -100,8 +100,8 @@ script:
         - contextPath: hello
           description: Should be Hello **something** here.
           type: String
-    - arguments:  # incident-list
-        - description: Filter by alert incident ID. If not provided, all IDs will be retrieved.
+    - arguments:  
+        - description: Filter by alert item ID. If not provided, all IDs will be retrieved.
           name: incident_id
         - description: How many alerts to fetch. Default is 10.
           name: limit
@@ -110,264 +110,47 @@ script:
       description: Lists the example incidents as it would be fetched from the api.
       name: helloworld-incident-list
       outputs:
-        - contextPath: HelloWorld.Incident.assignee_id
-          description: The assignee id
-          type: Number
-        - contextPath: HelloWorld.Incident.assignee_email
-          description: The email of the assignee
-          type: String
-        - contextPath: HelloWorld.Incident.date
-          description: The incident's date
-          type: Date
-        - contextPath: HelloWorld.Incident.detector.name
-          description: The incident's detector name
-          type: String
-        - contextPath: HelloWorld.Incident.detector.display_name
-          description: The display name of the incident's detector
-          type: String
-        - contextPath: HelloWorld.Incident.detector.nature
-          description: The nature of the incident's detector
-          type: String
-        - contextPath: HelloWorld.Incident.detector.family
-          description: The family of the incident's detector
-          type: String
-        - contextPath: HelloWorld.Incident.detector.detector_group_name
-          description: The group name of the incident's detector
-          type: String
-        - contextPath: HelloWorld.Incident.detector.detector_group_display_name
-          description: The group's display name of the incident's detector
-          type: String
-        - contextPath: HelloWorld.Incident.gitguardian_url
-          description: The url of the incident in the api
-          type: String
-        - contextPath: HelloWorld.Incident.id
-          description: The id of the incident
-          type: Number
-        - contextPath: HelloWorld.Incident.ignore_reason
-          description: The reason the incident has been ignored
-          type: String
-        - contextPath: HelloWorld.Incident.ignored_at
-          description: The time the incident was ignored at
-          type: Unknown
-        - contextPath: HelloWorld.Incident.ignorer_api_token_id
-          description: ""
-          type: Number
-        - contextPath: HelloWorld.Incident.ignorer_id
-          description: ""
-          type: Number
-        - contextPath: HelloWorld.Incident.occurrences.author_info
-          description: The author information of the occurence of the incident
-          type: String
-        - contextPath: HelloWorld.Incident.occurrences.author_name
-          description: The name of the incident's occurence author
-          type: String
-        - contextPath: HelloWorld.Incident.occurrences.date
-          description: The date of the incident's occurence
-          type: Date
-        - contextPath: HelloWorld.Incident.occurrences.filepath
-          description: The file path of the incident's occurence
-          type: String
-        - contextPath: HelloWorld.Incident.occurrences.id
-          description: The id of the incident's occurence
-          type: Number
-        - contextPath: HelloWorld.Incident.occurrences.incident_id
-          description: The id of the incident the occurence belong to
-          type: Number
-        - contextPath: HelloWorld.Incident.occurrences.kind
-          description: The kind of the incident's occurencr
-          type: String
-        - contextPath: HelloWorld.Incident.occurrences.matches.name
-          description: ""
-          type: String
-        - contextPath: HelloWorld.Incident.occurrences.matches.indice_start
-          description: ""
-          type: Number
-        - contextPath: HelloWorld.Incident.occurrences.matches.indice_end
-          description: ""
-          type: Number
-        - contextPath: HelloWorld.Incident.occurrences.matches.post_line_start
-          description: ""
-          type: Number
-        - contextPath: HelloWorld.Incident.occurrences.matches.post_line_end
-          description: ""
-          type: Number
-        - contextPath: HelloWorld.Incident.occurrences.presence
-          description: ""
-          type: String
-        - contextPath: HelloWorld.Incident.occurrences.sha
-          description: The sha of the incident's occurence
-          type: String
-        - contextPath: HelloWorld.Incident.occurrences.location
-          description: ""
-          type: String
-        - contextPath: HelloWorld.Incident.occurrences.source.id
-          description: ""
-          type: Number
-        - contextPath: HelloWorld.Incident.occurrences.source.url
-          description: ""
-          type: String
-        - contextPath: HelloWorld.Incident.occurrences.source.type
-          description: ""
-          type: String
-        - contextPath: HelloWorld.Incident.occurrences.source.full_name
-          description: ""
-          type: String
-        - contextPath: HelloWorld.Incident.occurrences.source.health
-          description: ""
-          type: String
-        - contextPath: HelloWorld.Incident.occurrences.source.default_branch
-          description: ""
-          type: String
-        - contextPath: HelloWorld.Incident.occurrences.source.default_branch_head
-          description: ""
-          type: String
-        - contextPath: HelloWorld.Incident.occurrences.source.open_incidents_count
-          description: ""
-          type: Number
-        - contextPath: HelloWorld.Incident.occurrences.source.closed_incidents_count
-          description: ""
-          type: Number
-        - contextPath: HelloWorld.Incident.occurrences.source.visibility
-          description: ""
-          type: String
-        - contextPath: HelloWorld.Incident.occurrences.source.last_scan.date
-          description: ""
-          type: Date
-        - contextPath: HelloWorld.Incident.occurrences.source.last_scan.status
-          description: ""
-          type: String
-        - contextPath: HelloWorld.Incident.occurrences.source.external_id
-          description: ""
-          type: String
-        - contextPath: HelloWorld.Incident.occurrences.url
-          description: ""
-          type: String
-        - contextPath: HelloWorld.Incident.occurrences.tags
-          description: ""
-          type: String
-        - contextPath: HelloWorld.Incident.tags
-          description: ""
-          type: String
-        - contextPath: HelloWorld.Incident.occurrences_count
-          description: The number of incident's occurrences
-          type: Number
-        - contextPath: HelloWorld.Incident.regression
-          description: ""
-          type: Boolean
-        - contextPath: HelloWorld.Incident.resolver_id
-          description: The id of the incident's resolver
-          type: Number
-        - contextPath: HelloWorld.Incident.secret_hash
-          description: The secret hash of the incident
-          type: String
-        - contextPath: HelloWorld.Incident.secret_revoked
-          description: ""
-          type: Boolean
-        - contextPath: HelloWorld.Incident.status
-          description: The status of the incident
-          type: String
-        - contextPath: HelloWorld.Incident.validity
-          description: The validity of the incident
-          type: String
-        - contextPath: HelloWorld.Incident.share_url
-          description: ""
-          type: String
-        - contextPath: HelloWorld.Incident.severity
-          description: The severity of the incident
-          type: String
-        - contextPath: HelloWorld.Note.id
-          description: The id of the note.
-          type: Number
-        - contextPath: HelloWorld.Note.member_id
-          description: Id of the member who created this note. Can be null if the note was not created by a member or if the member was deleted.
-          type: Number
-        - contextPath: HelloWorld.Note.api_token_id
-          description: ID of the API key which created this note. Can be null if the note was not created via the API.
-          type: String
-        - contextPath: HelloWorld.Note.created_at
-          description: Creation date of the note.
-          type: Date
-        - contextPath: HelloWorld.Note.updated_at
-          description: Last time the content of the note was updated. Null if the comment was never modified.
-          type: Date
-        - contextPath: HelloWorld.Note.comment
-          description: The comment on the note.
-          type: String
-        - contextPath: HelloWorld.Note.incident_id
-          description: Id of the related Incident.
-          type: Number
-    - arguments:  # note-create
-        - description: The incident's id to add note to.
+      - contextPath: HelloWorld.Incident.id
+        description: The id of the incident
+        type: Number
+      - contextPath: HelloWorld.Incident.name
+        description: The name of the incident.
+        type: String
+      - contextPath: HelloWorld.Incident.severity
+        description: The severity of the incident.
+        type: String
+      - contextPath: HelloWorld.Incident.date
+        description: The date of the incident occurrence.
+        type: Date
+      - contextPath: HelloWorld.Incident.status
+        description: The status of the incident.
+        type: String
+    - arguments:  
+        - description: The item's id to add note to.
           name: incident_id
           required: true
         - description: The comment to add to note.
           name: note_text
           required: true
-      name: helloworld-incident-note-create
+      name: helloworld-item-note-create
       description: Example of creating new item in the api.
-
       outputs:
-        - contextPath: HelloWorld.Note.id
-          description: The id of the note
-          type: Number
-        - contextPath: HelloWorld.Note.member_id
-          description: Id of the member who created this note. Can be null if the note was not created by a member or if the member was deleted.
-          type: Number
-        - contextPath: HelloWorld.Note.api_token_id
-          description: ID of the API key which created this note. Can be null if the note was not created via the API.
-          type: String
-        - contextPath: HelloWorld.Note.created_at
-          description: Creation date of the note.
-          type: Date
-        - contextPath: HelloWorld.Note.updated_at
-          description: Last time the content of the note was updated. Null if the comment was never modified.
-          type: Date
-        - contextPath: HelloWorld.Note.comment
-          description: The comment in the incident note.
-          type: String
-        - contextPath: HelloWorld.Note.incident_id
-          description: Id of the related Incident.
-          type: Number
-        - contextPath: HelloWorld.Scan.policy_break_count
-          description: Number of policy breaks on this document.
-          type: Number
-        - contextPath: HelloWorld.Scan.policies
-          description: Policies checked on this document.
-          type: String
-        - contextPath: HelloWorld.Scan.policy_breaks.type
-          description: Type of detected policy.
-          type: String
-        - contextPath: HelloWorld.Scan.policy_breaks.policy
-          description: Name of failing policy.
-          type: String
-        - contextPath: HelloWorld.Scan.policy_breaks.matches.type
-          description: Type of match.
-          type: String
-        - contextPath: HelloWorld.Scan.policy_breaks.matches.match
-          description: Matched string of failure
-          type: String
-        - contextPath: HelloWorld.Scan.policy_breaks.incident_url
-          description: The incident's URL on your GitGuardian dashboard, if it is a known secret, or an empty string otherwise.
-          type: String
-        - contextPath: HelloWorld.Scan.policy_breaks.known_secret
-          description: Indicates whether the secret is known by your GitGuardian dashboard.
-          type: Boolean
-        - contextPath: HelloWorld.Scan.policy_breaks.matches.index_start
-          description: start index of match in file as an array (index origin = 0).
-          type: Number
-        - contextPath: HelloWorld.Scan.policy_breaks.matches.index_end
-          description: end index of match in file as an array (index origin = 0).
-          type: Number
-        - contextPath: HelloWorld.Scan.policy_breaks.matches.line_start
-          description: start line number of match (index origin = 1).
-          type: Number
-        - contextPath: HelloWorld.Scan.policy_breaks.matches.line_end
-          description: end line number of match (index origin = 1).
-          type: Number
-        - contextPath: HelloWorld.Scan.policy_breaks.validity
-          description: 'Validity of the found secret. Can be "no_checker", "valid", "invalid", "failed_to_check" or "unknown"'
-          type: String
-    - arguments:  # ip
+      - contextPath: HelloWorld.Incident.id
+        description: The id of the incident
+        type: Number
+      - contextPath: HelloWorld.Incident.name
+        description: The name of the incident.
+        type: String
+      - contextPath: HelloWorld.Incident.severity
+        description: The severity of the incident.
+        type: String
+      - contextPath: HelloWorld.Incident.date
+        description: The date of the incident occurence.
+        type: Date
+      - contextPath: HelloWorld.Incident.status
+        description: The status of the incident.
+        type: String
+    - arguments:  
         - name: ip
           default: true
           description: List of IPs.
@@ -507,7 +290,7 @@ script:
           description: The type of the destination of the relationship.
           type: string
       description: Return IP information and reputation
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.13.74666
   isfetch: true
   runonce: false
   script: "-"
