@@ -253,7 +253,7 @@ def list_service_principals_command(ms_client: Client, args: dict) -> CommandRes
     )
 
 
-def validate_service_principal_input(args: dict) -> tuple:
+def validate_service_principal_input(args: dict) -> tuple[str, str]:
     """
     Ensure at least one argument (object) id or app id is given.
 
