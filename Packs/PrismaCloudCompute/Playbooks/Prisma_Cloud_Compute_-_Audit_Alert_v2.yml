@@ -1423,12 +1423,14 @@ tasks:
     task:
       id: 896ee77a-73e2-4a9f-82d0-c9339d159830
       version: -1
-      name: Assert Image Name Exist
+      name: Check if image scan report was found
       description: ''
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
+      '#default#':
+      - "6"
       "yes":
       - "40"
     separatecontext: false
