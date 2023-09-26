@@ -1,14 +1,15 @@
-from mypy_boto3_securityhub import SecurityHubClient
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import datetime as dt
-import urllib3
-from typing import Iterator
+from typing import TYPE_CHECKING, Iterator
 
 from AWSApiModule import *
 
-# Disable insecure warnings
-urllib3.disable_warnings()
+# The following import are used only for type hints and autocomplete.
+# It is not used at runtime, and not exist in the docker image.
+if TYPE_CHECKING:
+    from mypy_boto3_securityhub import SecurityHubClient
+
 
 VENDOR = 'AWS'
 PRODUCT = 'Security Hub'
@@ -49,7 +50,7 @@ def generate_last_run(events: list[dict]) -> dict:
     }
 
 
-def get_events(client: SecurityHubClient, start_time: dt.datetime | None = None,
+def get_events(client: "SecurityHubClient", start_time: dt.datetime | None = None,
                end_time: dt.datetime | None = None, id_ignore_list: list[str] | None = None,
                page_size: int = API_MAX_PAGE_SIZE, limit: int = 0) -> Iterator[list[dict]]:
     """
@@ -113,7 +114,7 @@ def get_events(client: SecurityHubClient, start_time: dt.datetime | None = None,
             break
 
 
-def fetch_events(client: SecurityHubClient, last_run: dict, first_fetch_time: dt.datetime | None,
+def fetch_events(client: "SecurityHubClient", last_run: dict, first_fetch_time: dt.datetime | None,
                  page_size: int = API_MAX_PAGE_SIZE, limit: int = 0) -> tuple[list[dict], dict, Exception | None]:
     """
     Fetch events from AWS Security Hub and send them to XSIAM.
@@ -160,7 +161,7 @@ def fetch_events(client: SecurityHubClient, last_run: dict, first_fetch_time: dt
     return events, next_run, error
 
 
-def get_events_command(client: SecurityHubClient, should_push_events: bool,
+def get_events_command(client: "SecurityHubClient", should_push_events: bool,
                        page_size: int, limit: int = 0) -> CommandResults:
     """
     Fetch events from AWS Security Hub.

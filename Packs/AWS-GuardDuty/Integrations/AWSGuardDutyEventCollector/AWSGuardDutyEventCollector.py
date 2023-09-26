@@ -1,16 +1,17 @@
-from mypy_boto3_guardduty import GuardDutyClient
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from AWSApiModule import *  # noqa: E402
 
-from typing import Tuple
+from typing import TYPE_CHECKING, Tuple
 from datetime import datetime, date
 
-import urllib3.util
 import json
 
-# Disable insecure warnings
-urllib3.disable_warnings()
+# The following import are used only for type hints and autocomplete.
+# It is not used at runtime, and not exist in the docker image.
+if TYPE_CHECKING:
+    from mypy_boto3_guardduty import GuardDutyClient
+
 
 CLIENT_SERVICE = 'guardduty'
 MAX_IDS_PER_REQ = 50
@@ -52,7 +53,7 @@ def convert_events_with_datetime_to_str(events: list) -> list:
     return output_events
 
 
-def get_events(aws_client: GuardDutyClient, collect_from: dict, collect_from_default: Optional[datetime], last_ids: dict,
+def get_events(aws_client: "GuardDutyClient", collect_from: dict, collect_from_default: Optional[datetime], last_ids: dict,
                severity: str, limit: int = MAX_RESULTS, detectors_num: int = MAX_RESULTS,
                max_ids_per_req: int = MAX_IDS_PER_REQ) -> Tuple[list, dict, dict]:
     """Get events from AWSGuardDuty.
