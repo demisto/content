@@ -348,7 +348,7 @@ def list_threat_intel_sets(client: "GuardDutyClient", args: dict) -> CommandResu
 
 
 def update_threat_intel_set(client: "GuardDutyClient", args: dict):
-    kwargs = {
+    kwargs: dict[str, Any] = {
         'DetectorId': args.get('detectorId'),
         'ThreatIntelSetId': args.get('threatIntelSetId')
     }
@@ -358,7 +358,7 @@ def update_threat_intel_set(client: "GuardDutyClient", args: dict):
         kwargs.update({'Location': args.get('location')})
     if args.get('name'):
         kwargs.update({'Name': args.get('name')})
-    response = client.update_threat_intel_set(**kwargs)  # type: ignore[arg-type]
+    response = client.update_threat_intel_set(**kwargs)
 
     if response == dict() or response.get('ResponseMetadata', {}).get('HTTPStatusCode') == 200:
         return f"The ThreatIntel set {args.get('threatIntelSetId')} has been updated"
