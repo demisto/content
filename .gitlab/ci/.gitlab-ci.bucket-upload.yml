@@ -232,7 +232,7 @@ install-packs-in-server-master:
     - section_end "Secrets Fetch"
     - section_start "Lock Machine"
     - |
-        if [[ $TEST_XDR_ENV == "true" ]]; then
+      if [[ $TEST_XDR_ENV == "true" ]]; then
         echo "Setting CLOUD_MACHINES_TYPE to testing in test xdr-env"
         CLOUD_MACHINES_TYPE="testing"
         GCS_LOCKS_PATH="content-locks/locks-xsiam-ga-testing"
