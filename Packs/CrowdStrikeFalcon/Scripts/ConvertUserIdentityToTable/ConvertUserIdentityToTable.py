@@ -14,8 +14,8 @@ def convert_to_table(context_results: str) -> CommandResults:
     comment_entries = json.loads(context_results)
 
     md = tableToMarkdown(
-        '',
-        comment_entries,
+        name='',
+        t=comment_entries,
         headers=list(comment_entries.keys()),
         removeNull=True,
         sort_headers=False,
