@@ -87,7 +87,7 @@ script:
     arguments:
     - name: attack
       required: true
-      description: The digital location of the attack to take down, e.g. a phishing URL, or a fraudulent email address.
+      description: The digital location of the attack to take down, e.g., a phishing URL, or a fraudulent email address.
     - name: comment
       required: true
       description: The reason for the report, such as a description of the attack.
@@ -156,7 +156,7 @@ script:
       name: region
     outputs:
     - contextPath: Netcraft.Takedown.id
-      description: The ID of the takedown. (this key will only appear if the takedown has been created and verified).
+      description: The ID of the takedown. (This key will only appear if the takedown has been created and verified).
       type: String
   - name: netcraft-takedown-list
     arguments:
@@ -180,30 +180,30 @@ script:
     - name: url
       description: Filter by URL, email, hostname, domain or IP.
     - name: false_positive
-      description: whether to filter to takedowns which have been incorrectly marked as malicious.
+      description: Whether to filter to takedowns which have been incorrectly marked as malicious.
       auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
     - name: ip
-      description: Filter to attacks that are hosted on the given IPv4 address, or within the given IPv4 CIDR range. Please note that partial IP addresses will not be matched.
+      description: Filter to attacks that are hosted on the given IPv4 address, or within the given IPv4 CIDR range. Note that partial IP addresses will not be matched.
     - description: Filter to takedowns that were submitted before the specified takedown ID.
       name: id_before
     - description: |
         Filter to takedowns that were submitted after the specified takedown
         ID. When using this argument we recommend that you also set the "sort" argument
-        to id to ensure that no results are missed.
+        to Id to ensure that no results are missed.
       name: id_after
     - description: |-
         Filter to takedowns that were submitted on or after the date/time
-        provided.Values should be supplied as YYYY-MM-DD HH:MM:SS\_in UTC. If no time
+        provided. Values should be supplied as "YYYY-MM-DD HH:MM:SS" in UTC format. If no time
         information is provided, the system will default to YYYY-MM-DD 00:00:00. Relative
-        date/time formats are also supported, for example\_5 days ago,\_and monday
+        date/time formats are also supported, for example "5 days ago"",\_and "monday
         this week".
       name: date_from
     - description: |-
         Filter to takedowns that were submitted on or before the date/time
-        provided. Values should be supplied as "YYYY-MM-DD HH:MM:SS" in UTC. If no time
+        provided. Values should be supplied as "YYYY-MM-DD HH:MM:SS" in UTC format. If no time
         information is provided, the system will default to "YYYY-MM-DD 00:00:00". Relative
         date/time formats are also supported, for example "5 days ago", and "monday this week".
       name: date_to
@@ -276,7 +276,7 @@ script:
       - 'false'
       - 'true'
     - description: |
-        The name of the region of which to list takedowns.
+        The name of the region for which to list takedowns.
         If not provided, the region specified in the instance configuration will be used.
       name: region
     description: |
@@ -287,10 +287,10 @@ script:
       description: The ID of the takedown.
       type: String
     - contextPath: Netcraft.Takedown.group_id
-      description: The ID of the group that the takedown belongs to. can potentially be the same a ID, or empty if there is no group.
+      description: The ID of the group that the takedown belongs to. Can potentially be the same ID, or empty if there is no group.
       type: String
     - contextPath: Netcraft.Takedown.attack_url
-      description: The location of the attack being taken down. This field contains a canonicalised value. see the reported_url field for the exact location that was reported to takedown.
+      description: The location of the attack being taken down. This field contains a canonicalized value. See the reported_url field for the exact location that was reported to takedown.
       type: String
     - contextPath: Netcraft.Takedown.reported_url
       description: The location of the attack as reported to takedown. See the attack_url field for the formatted location of the attack being taken down.
@@ -302,10 +302,10 @@ script:
       description: ISO country code of the advertised hosting location.
       type: String
     - contextPath: Netcraft.Takedown.date_submitted
-      description: The date and time that the takedown was reported, in UTC.
+      description: The date and time that the takedown was reported, in UTC format.
       type: Date
     - contextPath: Netcraft.Takedown.last_updated
-      description: The date and time of the last action taken on the takedown, in UTC.
+      description: The date and time of the last action taken on the takedown, in UTC format.
       type: Date
     - contextPath: Netcraft.Takedown.region
       description: The name of the area that the takedown resides in.
@@ -330,12 +330,12 @@ script:
       type: Date
     - contextPath: Netcraft.Takedown.stop_monitoring_date
       description: |
-        The date and time that the takedown system stopped monitoring the attack, in UTC.
+        The date and time that the takedown system stopped monitoring the attack, in UTC format.
         If the attack is still being monitored, an empty string is given.
       type: Date
     - contextPath: Netcraft.Takedown.domain
       description: |
-        The domain of the url or email address being taken down.
+        The domain of the URL or email address being taken down.
         This will be blank for an attack with no domain name.
       type: String
     - contextPath: Netcraft.Takedown.language
@@ -343,18 +343,18 @@ script:
       type: String
     - contextPath: Netcraft.Takedown.date_first_actioned
       description: |
-        The date and time of the first action taken by netcraft
-        after the takedown was reported, in UTC. This is calculated as the first time
+        The date and time of the first action taken by Netcraft
+        after the takedown was reported, in UTC format. This is calculated as the first time
         that the takedown was moved out of the "unverified" status.
       type: Date
     - contextPath: Netcraft.Takedown.escalated
       description: Indicates whether the takedown has been escalated.
       type: Boolean
     - contextPath: Netcraft.Takedown.first_contact
-      description: The date and time that the takedown first entered a contacted state, in UTC.
+      description: The date and time that the takedown first entered a contacted state, in UTC format.
       type: Date
     - contextPath: Netcraft.Takedown.first_inactive
-      description: The date and time that the takedown first entered the inactive (monitoring) state.
+      description: The date and time that the takedown first entered the inactive (monitoring) state in UTC format.
       type: Date
     - contextPath: Netcraft.Takedown.is_redirect
       description: |
@@ -370,7 +370,7 @@ script:
     - contextPath: Netcraft.Takedown.certificate
       description: |
         HTTPS certificate details for the hostname.
-        The structure of the returned data is the output of PHP's "openssl_x509_parse" function with the additional keys spki_sha256 and spki_sha1, (See https://www.php.net/manual/en/function.openssl-x509-parse.php).
+        The structure of the returned data is the output of PHP's "openssl_x509_parse" function with the additional keys spki_sha256 and spki_sha1. (See https://www.php.net/manual/en/function.openssl-x509-parse.php).
       type: Unknown
     - contextPath: Netcraft.Takedown.certificate.spki_sha256
       description: The SHA-256 hash of the Subject Public Key Info structure in the certificate.
@@ -381,12 +381,12 @@ script:
     - contextPath: Netcraft.Takedown.deceptive_domain_score
       description: |
         The deceptive domain score of the domain.
-        e.g. for the URL https://l0gin.example.com/, this value will contain the deceptive domain score for example.com.
+        E.g., for the URL https://l0gin.example.com/, this value will contain the deceptive domain score for example.com.
       type: String
     - contextPath: Netcraft.Takedown.domain_risk_rating
       description: |
         A score from 0 to 10 which represents the risk that the domain is hosting a malicious website.
-        e.g. for the url https://l0gin.example.com/, this value wil contain the risk rating for "example.com".
+        E.g., for the URL https://l0gin.example.com/, this value will contain the risk rating for "example.com".
         This score is distinct from the "deceptive domain score", and takes a range of factors into account,
         such as the reputation of the hosting provider, age of the domain name, search engine rankings and more.
       type: String
@@ -396,13 +396,13 @@ script:
         authorized, and the final time that the attack went offline (final_resolved - date_authed).
       type: String
     - contextPath: Netcraft.Takedown.final_resolved
-      description: The date and time that the attack went offline for the final time, in UTC.
+      description: The date and time that the attack went offline for the final time, in UTC format.
       type: Date
     - contextPath: Netcraft.Takedown.first_outage
       description: The duration (hh:mm:ss) between when the takedown was authorized, and the first time that the attack went offline (first_resolved - date_authed).
       type: Date
     - contextPath: Netcraft.Takedown.first_resolved
-      description: The date and time that the attack first went offline, in UTC.
+      description: The date and time that the attack first went offline, in UTC format.
       type: Date
     - contextPath: Netcraft.Takedown.fwd_owner
       description: The owner of the forward DNS infrastructure.
@@ -411,15 +411,15 @@ script:
       description: Indicates whether the takedown has an associated phishing kit.
       type: Boolean
     - contextPath: Netcraft.Takedown.hostname
-      description: The full hostname of the URL or email address being taken down. this will be blank for attacks with no hostname.
+      description: The full hostname of the URL or email address being taken down. This will be blank for attacks with no hostname.
       type: String
     - contextPath: Netcraft.Takedown.hostname_ddss_score
       description: |
         The deceptive domain score of the hostname.
-        e.g. for the URL https://l0gin.example.com/, this value will contain the deceptive domain score for l0gin.example.com.
+        E.g., For the URL https://l0gin.example.com/, this value will contain the deceptive domain score for l0gin.example.com.
       type: String
     - contextPath: Netcraft.Takedown.evidence_url
-      description: A url to the public incident report for this attack.
+      description: A URL for the public incident report for this attack.
       type: String
     - contextPath: Netcraft.Takedown.domain_attack
       description: |
@@ -427,10 +427,10 @@ script:
         Possible values (non exhaustive):
           "all" - All attacks.
           "yes" - There is a high confidence that the domain name is fraudulent.
-                  the domain registrar will be contacted, and the webmaster will not be contacted.
+                  The domain registrar will be contacted, and the webmaster will not be contacted.
           "yes_low_confidence" - The domain is likely fraudulent. The domain registrar
                                 will be contacted, and the webmaster will still be contacted.
-          "no" - The domain name is not believed to be fraudulent, this is likely compromised site.
+          "no" - The domain name is not believed to be fraudulent. This is likely a compromised site.
       type: String
     - contextPath: Netcraft.Takedown.false_positive
       description: Indicates whether the reported content was incorrectly flagged as malicious.
@@ -440,18 +440,18 @@ script:
         Whether or not the hostname used in the attack is believed to be fraudulent.
         Possible values (non exhaustive):
           "all" - All attacks.
-          "yes" - There is a high confidence that the hostname is fraudulent. the certificate authority will be contacted.
+          "yes" - There is a high confidence that the hostname is fraudulent. The certificate authority will be contacted.
           "yes_low_confidence" - The hostname is likely fraudulent.
-          "no" - The hostname is not believed to be fraudulent, this is likely compromised site.
+          "no" - The hostname is not believed to be fraudulent. This is likely a compromised site.
       type: String
     - contextPath: Netcraft.Takedown.malware_category
       description: The category of malware detected. Only set for malware attack types. May be empty if category cannot be determined.
       type: String
     - contextPath: Netcraft.Takedown.malware_family
-      description: The family of malware detected. only set for malware attack types. may be empty if family cannot be determined.
+      description: The family of malware detected. Only set for malware attack types. May be empty if family cannot be determined.
       type: String
     - contextPath: Netcraft.Takedown.phishing_kit_hash
-      description: The sha1 hashes of all phishing kits available for download which are related to this takedown.
+      description: The SHA-1 hashes of all phishing kits available for download that are related to this takedown.
       type: Unknown
     - contextPath: Netcraft.Takedown.report_source
       description: The method through which the takedown was submitted.
@@ -466,7 +466,7 @@ script:
       description: The output of a reverse DNS lookup on the IP of the attack.
       type: String
     - contextPath: Netcraft.Takedown.certificate_revoked
-      description: If the SSL certificate has been revoked, then the date this was detected (in UTC) is returned, else "Not revoked" is returned.
+      description: If the SSL certificate has been revoked, then the date this was detected (in UTC format) is returned, else "Not revoked" is returned.
       type: String
     - contextPath: Netcraft.Takedown.screenshot_url
       description: |
@@ -486,10 +486,10 @@ script:
           "Unverified" - The report has not yet been verified as fraudulent by Netcraft.
           "Inactive (Monitoring)" - The attack went offline before Netcraft was authorized to start the takedown process, and is being monitored in case it returns.
           "Verified" - The report has been verified as fraudulent, but no takedown notices have been sent.
-          "Contacted Hosting" - Takedown notices have been sent to the hosting provider
+          "Contacted Hosting" - Takedown notices have been sent to the hosting provider.
           "Contacted Police" - The takedown has been escalated to local law enforcement.
-          "Contacted Upstream" - The takedown has been escalated to the organisation providing connectivity to the hosting provider.
-          "Monitoring" - The attack is offline, as is being monitored in case it returns.
+          "Contacted Upstream" - The takedown has been escalated to the organization providing connectivity to the hosting provider.
+          "Monitoring" - The attack is offline, as it is being monitored in case it returns.
           "Resolved" - The attack has been offline for 7 consecutive days, and is no longer being monitored.
           "Stale" - The attack went offline before Netcraft was authorized to start the takedown process, and is no longer being monitored.
           "Invalid" - The report is not a valid takedown target.
@@ -498,12 +498,12 @@ script:
       description: List of tags applied to the group.
       type: String
     - contextPath: Netcraft.Takedown.targeted_url
-      description: The URL which this attack is masquerading as, e.g. the URL of the legitimate login form that a phishing attack is targeting.
+      description: The URL which this attack is masquerading as, e.g., the URL of the legitimate login form that a phishing attack is targeting.
       type: String
     - contextPath: Netcraft.Takedown.site_risk_rating
       description: |
         A score from 0 to 10 which represents the risk that the hostname is hosting a malicious website.
-        e.g. for the URL https://l0gin.example.com/, this value will contain the risk rating for l0gin.example.com.
+        E.g., For the URL https://l0gin.example.com/, this value will contain the risk rating for l0gin.example.com.
       type: String
     - contextPath: Netcraft.Takedown.whois_server
       description: The WHOIS data for the takedown.
@@ -515,13 +515,13 @@ script:
       type: String
     - contextPath: Netcraft.Takedown.escalation_source
       description: |-
-        The source of escalation for the takedown. will be blank if the takedown has not been escalated.
+        The source of escalation for the takedown. Will be blank if the takedown has not been escalated.
         Possible values: "customer" "netcraft".
       type: String
     - contextPath: Netcraft.Takedown.restart_date
       description: |-
-        The latest date and time, in UTC, that the takedown was restarted, i.e. went from the "resolved (monitoring)" status to a contacted status.
-        Will be empty if the takedown ha never been restarted.'.
+        The latest date and time, in UTC format, that the takedown was restarted, i.e., went from the "resolved (monitoring)" status to a contacted status.
+        Will be empty if the takedown had never been restarted.
       type: String
     - contextPath: Netcraft.Takedown.gsb_block_status
       description: |
@@ -537,7 +537,7 @@ script:
       description: Indicates whether the takedown is being performed under the managed service.
       type: Boolean
     - contextPath: Netcraft.Takedown.date_escalated
-      description: The date and time that the takedown entered the managed state, in UTC.
+      description: The date and time that the takedown entered the managed state, in UTC format.
       type: Date
     - contextPath: Netcraft.Takedown.logged_credential_injections
       description: An array of objects containing the type and value of each marked account injection associated with the takedown.
@@ -569,11 +569,11 @@ script:
       predefined:
       - 'true'
       - 'false'
-    - description: A comma separated list tags to add to the takedown group.
+    - description: A comma-separated list of tags to add to the takedown group.
       isArray: true
       name: add_tags
     - description: |
-        A comma separated list tags to remove from the takedown group.
+        A comma-separated list of tags to remove from the takedown group.
         Removing a tag from a group which already doesn't have that tag is permitted.
         However, including the same tag in both "add_tags" and "remove_tags" will return an error.
       isArray: true
@@ -763,7 +763,7 @@ script:
       description: Whether to ignore 404 responses from the API. Used when creating a submission as Netcraft may not have updated the system yet.
     outputs:
     - contextPath: Netcraft.Submission.date
-      description: The unix timestamp of the submission.
+      description: The UNIX timestamp of the submission.
       type: Number
     - contextPath: Netcraft.Submission.source_name
       description: The name of the source of this submission.
@@ -781,7 +781,7 @@ script:
       description: The unique identifier of the submitter. This key appears only if the "submission_uuid" argument is *not* provided.
       type: String
     - contextPath: Netcraft.Submission.classification_log.date
-      description: A unix timestamp of when this state change occurred. This key appears only if the "submission_uuid" argument is provided.
+      description: A UNIX timestamp of when this state change occurred. This key appears only if the "submission_uuid" argument is provided.
       type: Number
     - contextPath: Netcraft.Submission.classification_log.from_state
       description: The state the submission moved out of. This key appears only if the "submission_uuid" argument is provided.
@@ -814,7 +814,7 @@ script:
       description: Whether the submission has been archived. This key appears only if the "submission_uuid" argument is provided.
       type: Boolean
     - contextPath: Netcraft.Submission.last_update
-      description: A unix timestamp of when this submission was last updated. This key appears only if the "submission_uuid" argument is provided.
+      description: A UNIX timestamp of when this submission was last updated. This key appears only if the "submission_uuid" argument is provided.
       type: Number
     - contextPath: Netcraft.Submission.mail
       description: An API URL to get details about the email associated with this submission. This key appears only if the "submission_uuid" argument is provided.
@@ -871,15 +871,15 @@ script:
     - description: The reporter's email address, to which the result of Netcraft's analysis will be sent.
       name: reporter_email
       required: true
-    - description: A base64 encoded string of the file. To report multiple files, upload the files to XSOAR and provide the file entry IDs in the "entry_id" argument. Max 10 files per submission, with a maximum combined file size of 20MiB.
+    - description: A base64 encoded string of the file. To report multiple files, upload the files to Cortex XSOAR and provide the file entry IDs in the "entry_id" argument. Max 10 files per submission, with a maximum combined file size of 20MiB.
       name: file_content
     - description: |
-        The name of the file. To report multiple files, upload the files to XSOAR and provide the file entry IDs in the "entry_id" argument.
+        The name of the file. To report multiple files, upload the files to Cortex XSOAR and provide the file entry IDs in the "entry_id" argument.
       name: file_name
-    - description: A comma separated list of XSOAR file entry IDs to report. Max 10 files per submission, with a maximum combined file size of 20MiB. The arguments "file_content" and "file_name" can be used for reporting a single file.
+    - description: A comma-separated list of Cortex XSOAR file entry IDs to report. Max 10 files per submission, with a maximum combined file size of 20MiB. The arguments "file_content" and "file_name" can be used for reporting a single file.
       isArray: true
       name: entry_id
-    - description: The reason the file is considered malicious, should be less than 1000 characters.
+    - description: The reason the file is considered malicious. Should be less than 1000 characters.
       name: reason
     - auto: PREDEFINED
       description: Use Cortex XSOAR built-in polling to wait for the report to be processed.
@@ -896,7 +896,7 @@ script:
       name: timeout
     outputs:
     - contextPath: Netcraft.Submission.date
-      description: The unix timestamp of the submission.
+      description: The UNIX timestamp of the submission.
       type: Number
     - contextPath: Netcraft.Submission.source_name
       description: The name of the source of this submission.
@@ -911,7 +911,7 @@ script:
       description: The unique identifier of the submission.
       type: String
     - contextPath: Netcraft.Submission.classification_log.date
-      description: A unix timestamp of when this state change occurred.
+      description: A UNIX timestamp of when this state change occurred.
       type: Number
     - contextPath: Netcraft.Submission.classification_log.from_state
       description: The state the submission moved out of.
@@ -944,7 +944,7 @@ script:
       description: Whether the submission has been archived.
       type: Boolean
     - contextPath: Netcraft.Submission.last_update
-      description: A unix timestamp of when this submission was last updated.
+      description: A UNIX timestamp of when this submission was last updated.
       type: Number
     - contextPath: Netcraft.Submission.mail
       description: An API URL to get details about the email associated with this submission.
@@ -1021,7 +1021,7 @@ script:
       description: The hash of the file.
       type: String
     - contextPath: Netcraft.SubmissionFile.classification_log.date
-      description: A unix timestamp of when this state change occurred.
+      description: A UNIX timestamp of when this state change occurred.
       type: Number
     - contextPath: Netcraft.SubmissionFile.classification_log.from_state
       description: The state the entity moved out of.
@@ -1087,7 +1087,7 @@ script:
       name: timeout
     outputs:
     - contextPath: Netcraft.Submission.date
-      description: The unix timestamp of the submission.
+      description: The UNIX timestamp of the submission.
       type: Number
     - contextPath: Netcraft.Submission.source_name
       description: The name of the source of this submission.
@@ -1102,7 +1102,7 @@ script:
       description: The unique identifier of the submission.
       type: String
     - contextPath: Netcraft.Submission.classification_log.date
-      description: A unix timestamp of when this state change occurred.
+      description: A UNIX timestamp of when this state change occurred.
       type: Number
     - contextPath: Netcraft.Submission.classification_log.from_state
       description: The state the submission moved out of.
@@ -1135,7 +1135,7 @@ script:
       description: Whether the submission has been archived.
       type: Boolean
     - contextPath: Netcraft.Submission.last_update
-      description: A unix timestamp of when this submission was last updated.
+      description: A UNIX timestamp of when this submission was last updated.
       type: Number
     - contextPath: Netcraft.Submission.mail
       description: An API URL to get details about the email associated with this submission.
@@ -1251,7 +1251,7 @@ script:
     - description: The reporter's email address, to which the result of Netcraft's analysis will be sent.
       name: reporter_email
       required: true
-    - description: A comma separated list of URLs to report. Up to 1,000 URLs per submission are permitted.
+    - description: A comma-separated list of URLs to report. Up to 1,000 URLs per submission are permitted.
       isArray: true
       name: urls
       required: true
@@ -1272,7 +1272,7 @@ script:
       name: timeout
     outputs:
     - contextPath: Netcraft.Submission.date
-      description: The unix timestamp of the submission.
+      description: The UNIX timestamp of the submission.
       type: Number
     - contextPath: Netcraft.Submission.source_name
       description: The name of the source of this submission.
@@ -1287,7 +1287,7 @@ script:
       description: The unique identifier of the submission.
       type: String
     - contextPath: Netcraft.Submission.classification_log.date
-      description: A unix timestamp of when this state change occurred.
+      description: A UNIX timestamp of when this state change occurred.
       type: Number
     - contextPath: Netcraft.Submission.classification_log.from_state
       description: The state the submission moved out of.
@@ -1388,10 +1388,10 @@ script:
       description: The URL reported.
       type: String
     - contextPath: Netcraft.SubmissionURL.url_state
-      description: The state of the url. One of "processing", "no threats", "unavailable", "malicious", "rejected", or "suspicious".
+      description: The state of the URL. One of "processing", "no threats", "unavailable", "malicious", "rejected", or "suspicious".
       type: String
     - contextPath: Netcraft.SubmissionURL.classification_log.date
-      description: A unix timestamp of when this state change occurred.
+      description: A UNIX timestamp of when this state change occurred.
       type: Number
     - contextPath: Netcraft.SubmissionURL.classification_log.from_state
       description: The state the entity moved out of.
@@ -1427,7 +1427,7 @@ script:
       description: If this URL originated in a file, this is the hash of the file.
       type: String
     - contextPath: Netcraft.SubmissionURL.sources.file_name
-      description: f this URL originated in a file, this is the filename.
+      description: If this URL originated in a file, this is the filename.
       type: String
     - contextPath: Netcraft.SubmissionURL.sources.source
       description: The name of a source this URL was found in.
