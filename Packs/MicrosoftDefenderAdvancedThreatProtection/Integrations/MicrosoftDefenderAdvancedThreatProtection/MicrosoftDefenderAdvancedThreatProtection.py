@@ -1772,19 +1772,32 @@ class MsClient:
         cmd_url = f'/files/{file_hash}'
         return self.ms_client.http_request(method='GET', url_suffix=cmd_url)
 
-    def sc_list_indicators(self, indicator_id: str | None = None, limit: int | None = 50) -> list:
+    def sc_list_indicators(self, indicator_id: str | None = None, limit: int = 50, skip: int = 0, indicator_title:
+                           str | None = None, indicator_value: str | None = None, indicator_type: str | None = None) -> list:
         """Lists indicators. if indicator_id supplied, will get only that indicator.
 
                 Args:
                     indicator_id: if provided, will get only this specific id.
                     limit: Limit the returned results.
+                    skip: The number of indicators that are to be skipped and not included in the result.
+                    indicator_title: The title of the indicator to get.
+                    indicator_value: The value of the indicator to get.
+                    indicator_type: The type of the indicator to get.
 
                 Returns:
                     List of responses.
                 """
         cmd_url = urljoin(self.get_security_center_indicator_endpoint(),
                           indicator_id) if indicator_id else self.get_security_center_indicator_endpoint()
-        params = {'$top': limit}
+        params: dict = {'$top': limit, '$skip': skip}
+        if indicator_title:
+            params.setdefault("$filter", []).append(f"contains(title,'{indicator_title}')")
+        if indicator_value:
+            params.setdefault("$filter", []).append(f"contains(indicatorValue,'{indicator_value}')")
+        if indicator_type:
+            params.setdefault("$filter", []).append(f"indicatorType eq '{indicator_type}'")
+        if params.get("$filter"):
+            params["$filter"] = " and ".join(params["$filter"])
         resp = self.indicators_http_request(
             'GET', full_url=cmd_url, url_suffix=None, params=params, timeout=1000,
             ok_codes=(200, 204, 206, 404), resp_type='response', should_use_security_center=True)
@@ -4148,8 +4161,10 @@ def sc_list_indicators_command(client: MsClient, args: dict[str, str]) -> Comman
     Returns:
         human_readable, outputs.
     """
-    limit = arg_to_number(args.get('limit', 50))
-    raw_response = client.sc_list_indicators(args.get('indicator_id'), limit)
+    limit = arg_to_number(args.get('limit', 50)) or 50
+    skip = arg_to_number(args.get('skip', 0)) or 0
+    raw_response = client.sc_list_indicators(args.get('indicator_id'), limit, skip, args.get('indicator_title'),
+                                             args.get('indicator_value'), args.get('indicator_type'))
     if raw_response:
         command_results = []
         for indicator in raw_response:
