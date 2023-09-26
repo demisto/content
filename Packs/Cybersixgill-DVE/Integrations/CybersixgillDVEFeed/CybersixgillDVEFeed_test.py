@@ -859,6 +859,7 @@ class MockedResponse(object):
         self.url = url
         self.request = requests.Request("GET")
         self.ok = True if self.status_code == 200 else False
+        self.headers = ""
 
     def json(self):
         return json.loads(self.text)
