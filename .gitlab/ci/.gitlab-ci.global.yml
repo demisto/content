@@ -127,11 +127,11 @@
 
 .install_venv: &install_venv
   - section_start "Installing Virtualenv" --collapsed
-  - echo "Checking if pyproject.toml is consistent with poetry.lock"
-  - poetry lock --check
   # we still need to install even if cached. if cached, `poetry` will handle it
   - echo "installing venv, with always copy:${POETRY_VIRTUALENVS_OPTIONS_ALWAYS_COPY}"
   - NO_HOOKS=1 .hooks/bootstrap | tee --append $ARTIFACTS_FOLDER/logs/installations.log
+  - echo "Checking if pyproject.toml is consistent with poetry.lock"
+  - poetry lock --check
   - npm ci --cache .npm --prefer-offline | tee --append $ARTIFACTS_FOLDER/logs/installations.log
   - source ./.venv/bin/activate
   - |
