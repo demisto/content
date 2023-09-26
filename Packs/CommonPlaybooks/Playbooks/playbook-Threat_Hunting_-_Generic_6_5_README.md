@@ -7,24 +7,30 @@ This playbook enables threat hunting for IOCs in your enterprise. It currently s
 - Microsoft 365 Defender
 
 ## Dependencies
+
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* QRadar Indicator Hunting V2
+
 * Microsoft 365 Defender - Threat Hunting Generic
 * Splunk Indicator Hunting
 * Palo Alto Networks - Hunting And Threat Detection
+* QRadar Indicator Hunting V2
 
 ### Integrations
+
 This playbook does not use any integrations.
 
 ### Scripts
+
 This playbook does not use any scripts.
 
 ### Commands
+
 This playbook does not use any commands.
 
 ## Playbook Inputs
+
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
@@ -43,6 +49,7 @@ This playbook does not use any commands.
 | MessageID | This input will be used in the "Microsoft 365 Defender - Get Email URL clicks" playbook. MessageID of the email from which the URL was clicked. Please note that this can be either of the following 2 values:<br/>- The value of the header "Message-ID".<br/>- The internal ID of the message within Microsoft's products \(e.g. <br/> NetworkMessageId\).<br/><br/>Can be a single MessageID or an array of MessageIDs to search. |  | Optional |
 
 ## Playbook Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |
@@ -67,7 +74,7 @@ This playbook does not use any commands.
 | Microsoft365Defender.RetrievedEmails.SenderFromDomain | Sender domain. | string |
 | Microsoft365Defender.RetrievedEmails.EmailDirection | Email direction \(inbound/outbound\). | string |
 | Microsoft365Defender.RetrievedEmails.DeliveryLocation | Delivery location. | string |
-| Microsoft365Defender.RetrievedEmails.AuthenticationDetails | Authentication details \(SPF, DKIM, DMARC, CompAuth\) | string |
+| Microsoft365Defender.RetrievedEmails.AuthenticationDetails | Authentication details \(SPF, DKIM, DMARC, CompAuth\). | string |
 | Microsoft365Defender.RetrievedEmails.DeliveryAction | Email subject. | string |
 | Microsoft365Defender.RetrievedEmails.AttachmentCount | Number of attachments. | string |
 | Microsoft365Defender.RetrievedEmails.ThreatNames | Threat names. | string |
@@ -98,5 +105,7 @@ This playbook does not use any commands.
 | Microsoft365Defender.RetrievedEmails.ThreatTypes | Verdict from the email filtering stack on whether the email contains malware, phishing, or other threats. | unknown |
 
 ## Playbook Image
+
 ---
+
 ![Threat Hunting - Generic](../doc_files/Threat_Hunting_-_Generic_6_5.png)
