@@ -448,7 +448,7 @@ def get_required_response_fields_from_rule_group(client: "WAFV2Client", kwargs: 
     rule_group_visibility_config = rule_group.get('VisibilityConfig', {})
     lock_token = response.get('LockToken', '')
 
-    return rules, rule_group_visibility_config, lock_token
+    return rules, rule_group_visibility_config, lock_token  # type: ignore[return-value]
 
 
 '''CLIENT FUNCTIONS'''
