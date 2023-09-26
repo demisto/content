@@ -420,7 +420,7 @@ def unlock_configuration_service_principal_command(ms_client: Client, args: dict
     Returns:
         Results to post in demisto
     """
-    object_id = args["id"]  # required
+    object_id = args["id"]
 
     ms_client.unlock_configuration_service_principal(object_id)
 
