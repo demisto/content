@@ -2,10 +2,10 @@ id: Cortex ASM - On Prem Enrichment
 version: -1
 name: Cortex ASM - On Prem Enrichment
 description: |-
-  Given and IP address, port and protocol of a service, this playbook enriches on-prem integrations to find the related firewall rule and other related information.
+  Given an IP address, port, and protocol of a service, this playbook enriches on-prem integrations to find the related firewall rule and other related information.
 
   Conditions:
-  - This is currently limited to stand-alone firewalls for PAN-OS.
+  This is currently limited to standalone firewalls for PAN-OS.
 starttaskid: "0"
 tasks:
   "0":
@@ -738,7 +738,7 @@ tasks:
       id: e0061687-b532-4e7d-8951-bfd47cd72a2e
       version: -1
       name: Palo Alto Networks PAN-OS enabled?
-      description: Check whether PAN-OS integration is enabled.
+      description: Check whether the PAN-OS integration is enabled.
       type: condition
       iscommand: false
       brand: ""
