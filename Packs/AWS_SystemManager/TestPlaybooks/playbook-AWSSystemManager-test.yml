@@ -51,7 +51,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 5445
+          "y": 5270
         }
       }
     note: false
@@ -103,12 +103,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 2bcf4af4-55ab-498b-89ea-e170f3f95307
+    taskid: 229eeef6-1aa8-4fd8-8bbe-0acc7107e8c2
     type: regular
     task:
-      id: 2bcf4af4-55ab-498b-89ea-e170f3f95307
+      id: 229eeef6-1aa8-4fd8-8bbe-0acc7107e8c2
       version: -1
-      name: aws-ssm-document-list
+      name: aws-ssm-document-list with limit
       description: Returns all Systems Manager (SSM) documents in the current Amazon Web Services account and Amazon Web Services Region.
       script: AWS - System Manager|||aws-ssm-document-list
       type: regular
@@ -138,12 +138,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: bbef19a1-fbe3-4ea4-8928-6f626ddee5f1
+    taskid: c8c26a1a-3854-44c5-8fe4-7e280cca8ebd
     type: condition
     task:
-      id: bbef19a1-fbe3-4ea4-8928-6f626ddee5f1
+      id: c8c26a1a-3854-44c5-8fe4-7e280cca8ebd
       version: -1
-      name: Verify Output
+      name: Verify Output, verify limit
       type: condition
       iscommand: false
       brand: ""
@@ -179,12 +179,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 8735a9a9-ad4c-4249-86c6-0be2fb04672a
+    taskid: 08544203-8b9c-4af2-8d29-16bc4bb0e965
     type: regular
     task:
-      id: 8735a9a9-ad4c-4249-86c6-0be2fb04672a
+      id: 08544203-8b9c-4af2-8d29-16bc4bb0e965
       version: -1
-      name: aws-ssm-document-get
+      name: aws-ssm-document-get, get document name from the previous command document-list
       description: Describes the specified Amazon Web Services Systems Manager document (SSM document).
       script: '|||aws-ssm-document-get'
       type: regular
@@ -216,12 +216,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 9c016298-c9d6-4f5f-8651-49326e469051
+    taskid: 6a711ab6-9f4a-4778-87f3-4349ae82f0e8
     type: condition
     task:
-      id: 9c016298-c9d6-4f5f-8651-49326e469051
+      id: 6a711ab6-9f4a-4778-87f3-4349ae82f0e8
       version: -1
-      name: Verify Output
+      name: Verify Output, verify the name of the. owner start with Amazon
       type: condition
       iscommand: false
       brand: ""
@@ -257,10 +257,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 610cd395-96b3-4131-8960-01b5fc99b543
+    taskid: 888c9e90-47fe-473b-86ae-90972469b5c1
     type: regular
     task:
-      id: 610cd395-96b3-4131-8960-01b5fc99b543
+      id: 888c9e90-47fe-473b-86ae-90972469b5c1
       version: -1
       name: aws-ssm-tag-add
       description: |-
@@ -343,12 +343,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 386eb946-0948-4098-8cec-dfc44960b1fd
+    taskid: bd2820d6-69fd-4e59-81bd-6234e8ac26b6
     type: regular
     task:
-      id: 386eb946-0948-4098-8cec-dfc44960b1fd
+      id: bd2820d6-69fd-4e59-81bd-6234e8ac26b6
       version: -1
-      name: aws-ssm-inventory-list
+      name: aws-ssm-inventory-list with limit
       description: Query inventory information. This includes the managed node status, such as Stopped or Terminated.
       script: '|||aws-ssm-inventory-list'
       type: regular
@@ -378,12 +378,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: ee2fe7e5-d062-4161-8b13-7fdf19e6b9af
+    taskid: e9f4350a-47b5-4697-86a8-f72131718667
     type: condition
     task:
-      id: ee2fe7e5-d062-4161-8b13-7fdf19e6b9af
+      id: e9f4350a-47b5-4697-86a8-f72131718667
       version: -1
-      name: Verify Output
+      name: Verify Output, verfit limit
       description: Query inventory information. This includes the managed node status, such as Stopped or Terminated.
       type: condition
       iscommand: false
@@ -422,12 +422,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: f7ffb842-7e67-45ce-8db1-09d971f7e4ba
+    taskid: 55e32779-a214-41bf-83fc-6f319f8d7b29
     type: regular
     task:
-      id: f7ffb842-7e67-45ce-8db1-09d971f7e4ba
+      id: 55e32779-a214-41bf-83fc-6f319f8d7b29
       version: -1
-      name: aws-ssm-inventory-entry-list
+      name: aws-ssm-inventory-entry-list, get the inventory id from the previous command
       description: A list of inventory items returned by the request.
       script: '|||aws-ssm-inventory-entry-list'
       type: regular
@@ -459,12 +459,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 6d631626-0c03-4923-810b-8705d873d1e9
+    taskid: f54495a2-0fd7-4565-8378-6a6999307021
     type: condition
     task:
-      id: 6d631626-0c03-4923-810b-8705d873d1e9
+      id: f54495a2-0fd7-4565-8378-6a6999307021
       version: -1
-      name: Verify Output
+      name: Verify Output, verify that type_name is instance information
       type: condition
       iscommand: false
       brand: ""
@@ -500,12 +500,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 2bf26600-921d-4322-8e48-5a78a5a22605
+    taskid: 6bf92dce-4286-455b-8cfd-175bcab42a00
     type: regular
     task:
-      id: 2bf26600-921d-4322-8e48-5a78a5a22605
+      id: 6bf92dce-4286-455b-8cfd-175bcab42a00
       version: -1
-      name: aws-ssm-association-list
+      name: aws-ssm-association-list with limit
       description: 'Returns all State Manager associations in the current Amazon Web Services account and Amazon Web Services Region. Note: An association is a binding between a document and a set of targets with a schedule.'
       script: '|||aws-ssm-association-list'
       type: regular
@@ -535,12 +535,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: 1d0ac6a8-742f-400c-845a-f4123fa66be2
+    taskid: a19dd1f1-838b-4edc-8424-e2e36a4c1cbc
     type: condition
     task:
-      id: 1d0ac6a8-742f-400c-845a-f4123fa66be2
+      id: a19dd1f1-838b-4edc-8424-e2e36a4c1cbc
       version: -1
-      name: Verify Output
+      name: Verify Output, verify limit
       type: condition
       iscommand: false
       brand: ""
@@ -576,12 +576,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: 0d27bf39-51c0-4e83-8e5f-b67f0c44ada2
+    taskid: ec552365-2e0b-42ce-885a-1cee6dabf9a0
     type: regular
     task:
-      id: 0d27bf39-51c0-4e83-8e5f-b67f0c44ada2
+      id: ec552365-2e0b-42ce-885a-1cee6dabf9a0
       version: -1
-      name: 'aws-ssm-association-get '
+      name: aws-ssm-association-get , get the association id from the previous command
       description: Describes the association for the specified target or managed node. If the association was established using the Targets parameter, the association details must be retrieved using the associated ID. This command must provide either an association ID, or instance_id and document_name.
       script: '|||aws-ssm-association-get'
       type: regular
@@ -611,12 +611,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: 9ee4822a-0477-4f40-8b88-00088d4b6438
+    taskid: fb318525-e661-43aa-8c98-bde024e12144
     type: condition
     task:
-      id: 9ee4822a-0477-4f40-8b88-00088d4b6438
+      id: fb318525-e661-43aa-8c98-bde024e12144
       version: -1
-      name: Verify Output
+      name: 'Verify Output, verify that the name start with AWS '
       description: Prints text to war room (Markdown supported)
       type: condition
       iscommand: false
@@ -653,12 +653,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: 839f7857-5e07-4c45-8a5c-892f9a80f95d
+    taskid: aa39671e-1c72-4857-8e8e-643675b27b3d
     type: regular
     task:
-      id: 839f7857-5e07-4c45-8a5c-892f9a80f95d
+      id: aa39671e-1c72-4857-8e8e-643675b27b3d
       version: -1
-      name: aws-ssm-association-version-list
+      name: aws-ssm-association-version-list, get the association id from the previous command
       description: Retrieves all versions of an association for a specific association ID.
       script: '|||aws-ssm-association-version-list'
       type: regular
@@ -688,12 +688,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: eb41737f-7ab8-4a60-831c-0d5a1703c980
+    taskid: eca0ae69-70e6-4a0a-8177-2bc4e98fb2d7
     type: condition
     task:
-      id: eb41737f-7ab8-4a60-831c-0d5a1703c980
+      id: eca0ae69-70e6-4a0a-8177-2bc4e98fb2d7
       version: -1
-      name: Verify Output
+      name: Verify Output, verify that name start with AWS
       type: condition
       iscommand: false
       brand: ""
@@ -729,10 +729,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: c6eb48d0-5f39-4a56-895e-fe38bf344844
+    taskid: ea1ea761-5f73-4447-8b44-969ac8f79747
     type: regular
     task:
-      id: c6eb48d0-5f39-4a56-895e-fe38bf344844
+      id: ea1ea761-5f73-4447-8b44-969ac8f79747
       version: -1
       name: aws-ssm-command-list
       description: Lists the commands requested by users of the Amazon Web Services account.
@@ -742,7 +742,10 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "21"
+      - "32"
+    scriptarguments:
+      limit:
+        simple: "2"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -756,44 +759,7 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "21":
-    id: "21"
-    taskid: 95bb3df0-dd25-4c64-8c27-d21f914a536a
-    type: regular
-    task:
-      id: 95bb3df0-dd25-4c64-8c27-d21f914a536a
-      version: -1
-      name: list commands next token
-      description: Lists the commands requested by users of the Amazon Web Services account.
-      script: '|||aws-ssm-command-list'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "32"
-    scriptarguments:
-      limit:
-        simple: "2"
-      next_token:
-        simple: ${AWS.SSM.CommandNextToken.NextToken}
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 5095
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
+    quietmode: 2
     isoversize: false
     isautoswitchedtoquietmode: false
   "25":
@@ -839,12 +805,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: d0278ab8-2353-45ec-868d-7d79e5e465db
+    taskid: 4000da59-9db9-4eac-8d83-e5f70a885e8d
     type: regular
     task:
-      id: d0278ab8-2353-45ec-868d-7d79e5e465db
+      id: 4000da59-9db9-4eac-8d83-e5f70a885e8d
       version: -1
-      name: aws-ssm-tag-list
+      name: aws-ssm-tag-list, to verify that the tag added
       description: Returns a list of the tags assigned to the specified resource.
       script: '|||aws-ssm-tag-list'
       type: regular
@@ -876,12 +842,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: 6bc4ae28-4586-4ef1-8277-78a97c9627a1
+    taskid: ee13e037-e376-427a-8dec-8dda75755c9c
     type: regular
     task:
-      id: 6bc4ae28-4586-4ef1-8277-78a97c9627a1
+      id: ee13e037-e376-427a-8dec-8dda75755c9c
       version: -1
-      name: aws-ssm-tag-list
+      name: 'aws-ssm-tag-list, to verify that the tag removed '
       description: Returns a list of the tags assigned to the specified resource.
       script: '|||aws-ssm-tag-list'
       type: regular
@@ -918,7 +884,7 @@ tasks:
     task:
       id: a363ddcb-9096-438e-8256-c475702b3fe7
       version: -1
-      name: Verify Output, tag removed successfully
+      name: Verify Output, tag removed successfuly
       type: condition
       iscommand: false
       brand: ""
@@ -954,48 +920,25 @@ tasks:
     isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: 7d363318-bc5d-4cc6-899c-4a485b7dc22b
-    type: regular
+    taskid: b36882cd-99ce-4f8e-8726-7c2a12db39dc
+    type: title
     task:
-      id: 7d363318-bc5d-4cc6-899c-4a485b7dc22b
+      id: b36882cd-99ce-4f8e-8726-7c2a12db39dc
       version: -1
-      name: aws-ssm-command-run
+      name: ' Skipping the aws-ssm-command-run command, because sometimes it takes many hours to run'
       description: "Runs commands on one or more managed nodes.\nThe document_id arguments get from the aws-ssm-document-list \nwith the filter where the type of the document-type equal to Command "
-      script: '|||aws-ssm-command-run'
-      type: regular
-      iscommand: true
+      type: title
+      iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "31"
-    scriptarguments:
-      command_timeout:
-        simple: "30"
-      document_name:
-        complex:
-          root: AWS.SSM.Document
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: AWS.SSM.Document.DocumentType
-                iscontext: true
-              right:
-                value:
-                  simple: Command
-          accessor: Name
-          transformers:
-          - operator: FirstArrayElement
-      target_key:
-        simple: Instance Ids
-      target_values:
-        simple: ${AWS.SSM.Inventory.Content.InstanceId}
+      - "20"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 60,
           "y": 4570
         }
       }
@@ -1006,49 +949,12 @@ tasks:
     quietmode: 2
     isoversize: false
     isautoswitchedtoquietmode: false
-  "31":
-    id: "31"
-    taskid: 626f1050-2990-4d84-8671-184dfd7baaa6
-    type: regular
-    task:
-      id: 626f1050-2990-4d84-8671-184dfd7baaa6
-      version: -1
-      name: aws-ssm-command-cancel
-      description: Attempts to cancel the command specified by the Command ID. There is no guarantee that the command will be terminated and the underlying process stopped.
-      script: '|||aws-ssm-command-cancel'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "20"
-    scriptarguments:
-      command_id:
-        simple: ${AWS.SSM.Command.CommandId}
-      timeout:
-        simple: "60"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 4745
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: 462404d4-c517-4c7f-8550-946801cc9a28
+    taskid: d9130983-01b1-4be8-88fd-867497376572
     type: condition
     task:
-      id: 462404d4-c517-4c7f-8550-946801cc9a28
+      id: d9130983-01b1-4be8-88fd-867497376572
       version: -1
       name: verify outputs
       type: condition
@@ -1061,28 +967,27 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: containsGeneral
+      - - operator: hasLength
           left:
             value:
-              simple: AWS.SSM.Command.CommandId
+              simple: AWS.SSM.Command
             iscontext: true
           right:
             value:
-              simple: AWS.SSM.Command.CommandId
-            iscontext: true
+              simple: "2"
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 5270
+          "y": 5095
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quietmode: 0
+    quietmode: 2
     isoversize: false
     isautoswitchedtoquietmode: false
   "33":
@@ -1119,12 +1024,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "34":
     id: "34"
-    taskid: 5448f968-e2e2-4944-86b3-554f2377f466
+    taskid: 1aeb1f06-554e-4d1d-8453-1d77fdc491fd
     type: regular
     task:
-      id: 5448f968-e2e2-4944-86b3-554f2377f466
+      id: 1aeb1f06-554e-4d1d-8453-1d77fdc491fd
       version: -1
-      name: aws-ssm-automation-run
+      name: aws-ssm-automation-run, get the document name from the document-list where the document type equals to automation, and get the instance id from inventory-list
       description: Initiates execution of an Automation runbook.
       script: '|||aws-ssm-automation-execution-run'
       type: regular
@@ -1177,12 +1082,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "35":
     id: "35"
-    taskid: e2459ec9-2779-41ce-83bb-f76a6b4f1092
+    taskid: 480ef1c1-a665-470e-88cf-9c73260f3576
     type: regular
     task:
-      id: e2459ec9-2779-41ce-83bb-f76a6b4f1092
+      id: 480ef1c1-a665-470e-88cf-9c73260f3576
       version: -1
-      name: aws-ssm-automation-cancel
+      name: aws-ssm-automation-cancel, Doesn't really cancel the automation because it was already finished in the previous command, but checks that the command ran without errors
       description: Stop an Automation execution.
       script: '|||aws-ssm-automation-execution-cancel'
       type: regular
@@ -1257,8 +1162,8 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 5460,
-        "width": 380,
+        "height": 5285,
+        "width": 390,
         "x": 50,
         "y": 50
       }
