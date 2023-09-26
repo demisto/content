@@ -27,6 +27,23 @@ args:
   description: 'Allow using the input HTML as a fallback for the Body, if no body-tag is found (default: false).
     This only applies, if html_tag is set to body.'
   defaultValue: "false"
+- name: replace_line_breaks
+  default: true
+  auto: PREDEFINED
+  predefined:
+  - "true"
+  - "false"
+  description: 'Replace `br` in `html` with linebreaks in the output  (default: false).'
+  defaultValue: "false"
+- name: trim_result
+  default: true
+  auto: PREDEFINED
+  predefined:
+  - "true"
+  - "false"
+  description: 'Trim the extracted result (default: false).
+     When set to true, leading and trailing whitespaces are removed and blocks of more than 3 consecutive whitespaces are collapsed to two.'
+  defaultValue: "false"
 - name: context_path
   description: The Context path to store the Converted Text.
 scripttarget: 0

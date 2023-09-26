@@ -5,18 +5,21 @@ from CommonServerPython import *  # noqa: F401
 import re
 
 
-def get_plain_text(html: str):
+def get_plain_text(html: str, replace_line_breaks: bool, trim_result: bool):
     data = ''
     if html:
-        data = re.sub(r'<br>', '\n', html, flags=re.M + re.S + re.I + re.U)
+        data = re.sub(r'<\/?br\s?\/?>', '\n', html, flags=re.I) if replace_line_breaks else html
+
         data = re.sub(r'<.*?>', '', html, flags=re.M + re.S + re.I + re.U)
         entities = {'quot': '"', 'amp': '&', 'apos': "'", 'lt': '<', 'gt': '>', 'nbsp': ' ',
                     'copy': '(C)', 'reg': '(R)', 'tilde': '~', 'ldquo': '"', 'rdquo': '"', 'hellip': '...'}
         for e in entities:
             data = data.replace(f'&{e};', entities[e])
-        data = re.sub(r'[ \t]{2,}', ' ', data)
-        data = re.sub(r'(\r?\n){3,}', '\n\n', data)
-        data = re.sub(r'\s+$', '', data)
+
+        if trim_result:
+            data = re.sub(r'[ \t]{2,}', ' ', data)
+            data = re.sub(r'(\s*\r?\n){3,}', '\n\n', data)
+            data = data.strip()
     return data
 
 
@@ -35,9 +38,11 @@ def text_from_html(args: dict):
     html = args['html']
     html_tag = args.get('html_tag', 'body')
     allow_fallback = str(args.get('allow_body_fallback', 'false')).lower() == 'true'
+    replace_line_breaks = str(args.get('replace_line_breaks', 'false')).lower() == 'true'
+    trim_result = str(args.get('trim_result', 'false')).lower() == 'true'
 
     body = get_body(html, html_tag, allow_fallback)
-    data = get_plain_text(body)
+    data = get_plain_text(body, replace_line_breaks, trim_result)
 
     return data if data != '' else 'Could not extract text'
 
