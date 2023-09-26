@@ -84,7 +84,7 @@ class MsGraphListenerClient(MsGraphMailBaseClient):
             'LAST_RUN_FOLDER_ID': folder_id,
             'LAST_RUN_FOLDER_PATH': self._folder_to_fetch
         }
-        demisto.info(f"fetched {len(incidents)} incidents")
+
         demisto.debug(f'MicrosoftGraphMail - Next run after incidents fetching: {json.dumps(next_run)}')
         demisto.debug(f"MicrosoftGraphMail - Number of incidents before filtering: {len(fetched_emails)}")
         demisto.debug(f"MicrosoftGraphMail - Number of incidents after filtering: {len(incidents)}")
