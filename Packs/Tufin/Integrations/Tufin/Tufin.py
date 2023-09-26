@@ -6,8 +6,6 @@ import socket
 from typing import Dict, Any, List
 from netaddr import IPNetwork, IPAddress
 
-# Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
 
 '''
 Templates for change requests
