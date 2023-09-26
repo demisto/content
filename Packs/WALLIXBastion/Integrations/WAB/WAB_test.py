@@ -78,6 +78,11 @@ def test_commands(mocker):
 
     mocker.patch.object(Client, "_http_request", return_value={})
 
+    mocker.patch.object(demisto, "command", return_value="test-module")
+    mock_result = mocker.patch.object(demisto, "results")
+    main()
+    assert mock_result.call_count == 1
+
     for name in command_names:
         mocker.patch.object(demisto, "results")
         mocker.patch.object(demisto, "command", return_value=name)
