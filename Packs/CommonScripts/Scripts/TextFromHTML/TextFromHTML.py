@@ -32,7 +32,7 @@ def get_body(html: str, html_tag: str, allow_fallback: bool = False):
 
 
 def text_from_html(args: dict):
-    html = args.get('html', '')
+    html = args['html']
     html_tag = args.get('html_tag', 'body')
     allow_fallback = str(args.get('allow_body_fallback', 'false')).lower() == 'true'
 
