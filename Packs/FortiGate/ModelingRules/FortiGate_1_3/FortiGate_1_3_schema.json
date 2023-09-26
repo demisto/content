@@ -147,6 +147,74 @@
       "FTNTFGTvd": {
         "type": "string",
         "is_array": false
-      }                                                     
+      },
+      "ftntfgtapp": {
+        "type": "string",
+        "is_array": false
+      },
+      "ftntfgtdstunauthuser": {
+        "type": "string",
+        "is_array": false
+      },
+      "ftntfgtdstunauthusersource": {
+        "type": "string",
+        "is_array": false
+      },
+      "ftntfgtunauthuser": {
+        "type": "string",
+        "is_array": false
+      },
+      "ftntfgtunauthusersource": {
+        "type": "string",
+        "is_array": false
+      },
+      "ftntfgtlogid": {
+        "type": "string",
+        "is_array": false
+      },
+      "ftntfgtdstmac": {
+        "type": "string",
+        "is_array": false
+      },
+      "ftntfgtsrcmac": {
+        "type": "string",
+        "is_array": false
+      },
+      "ftntfgtmethod": {
+        "type": "string",
+        "is_array": false
+      },
+      "ftntfgtosname": {
+        "type": "string",
+        "is_array": false
+      },
+      "ftntfgtpdstport": {
+        "type": "int",
+        "is_array": false
+      },
+      "ftntfgtpsrcport": {
+        "type": "int",
+        "is_array": false
+      },
+      "ftntfgtpolicyname": {
+        "type": "string",
+        "is_array": false
+      },
+      "ftntfgtresult": {
+        "type": "string",
+        "is_array": false
+      },
+      "ftntfgtscertcname": {
+        "type": "string",
+        "is_array": false
+      },
+      "ftntfgtscertissuer": {
+        "type": "string",
+        "is_array": false
+      },
+      "ftntfgtsrcfamily": {
+        "type": "string",
+        "is_array": false
+      }
     }
   }
