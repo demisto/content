@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 0154d904-7dc4-4803-82f6-1eef0c3a166b
+    taskid: 55f49c4f-c36d-4bdf-8806-db9f294b7dd4
     type: start
     task:
-      id: 0154d904-7dc4-4803-82f6-1eef0c3a166b
+      id: 55f49c4f-c36d-4bdf-8806-db9f294b7dd4
       version: -1
       name: ""
       iscommand: false
@@ -17,14 +17,14 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "32"
+      - "10"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 450,
-          "y": -610
+          "y": -480
         }
       }
     note: false
@@ -36,10 +36,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 8467282d-e0ee-4982-8ab6-825fdd0b7092
+    taskid: 8626643b-7a5a-42a3-8326-066bb37ed6a4
     type: title
     task:
-      id: 8467282d-e0ee-4982-8ab6-825fdd0b7092
+      id: 8626643b-7a5a-42a3-8326-066bb37ed6a4
       version: -1
       name: Enrichment
       type: title
@@ -67,10 +67,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 696bda2d-f54c-439f-8fcb-52568c6634be
+    taskid: 0eef6360-d9b4-4a68-8a85-ace6e10d5cca
     type: playbook
     task:
-      id: 696bda2d-f54c-439f-8fcb-52568c6634be
+      id: 0eef6360-d9b4-4a68-8a85-ace6e10d5cca
       version: -1
       name: Entity Enrichment - Generic v4
       description: Enrich entities using one or more integrations.
@@ -171,10 +171,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 20eba91d-fa49-4b98-8ad3-308fd08a01b6
+    taskid: 7399f201-7b0b-4685-8fcf-96060318f157
     type: condition
     task:
-      id: 20eba91d-fa49-4b98-8ad3-308fd08a01b6
+      id: 7399f201-7b0b-4685-8fcf-96060318f157
       version: -1
       name: Is it blocked?
       description: Check if the command execution was blocked.
@@ -230,10 +230,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 8d072635-05ad-4b60-8866-3c9ea3cc965a
+    taskid: 9dd61261-5d13-4cac-8811-b438fdcf9635
     type: condition
     task:
-      id: 8d072635-05ad-4b60-8866-3c9ea3cc965a
+      id: 9dd61261-5d13-4cac-8811-b438fdcf9635
       version: -1
       name: Should auto terminate process?
       description: Check if auto remediation is set to True.
@@ -276,10 +276,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 55d5c170-018b-4d49-86f9-e8af7e2b682c
+    taskid: 1236bff2-cb53-4af8-8538-1211fadb9a4d
     type: playbook
     task:
-      id: 55d5c170-018b-4d49-86f9-e8af7e2b682c
+      id: 1236bff2-cb53-4af8-8538-1211fadb9a4d
       version: -1
       name: Command-Line Analysis
       description: "This playbook takes a command line from the alert and performs the following actions:\n- Checks for a base64 string and decodes it if it exists\n- Extracts and enriches indicators from the command line\n- Checks specific arguments for malicious usage \n\nAt the end of the playbook, it sets a possible verdict for the command line, based on the finding:\n1. Indicators found in the command line\n2. Found AMSI techniques\n3. Found suspicious parameters\n4. Usage of malicious tools\n5. Indication of network activity\n6. Indication of suspicious LOLBIN execution\n\nNote: In case you want to run this playbook with a list of command lines, set this playbook to run in a loop. To do so, navigate to 'Loop' and check \"For Each Input\"."
@@ -322,10 +322,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: 8ea8476e-5ce5-43bb-8d36-fa688120f0a3
+    taskid: 9bd2516a-36d8-4fd0-8028-d67a4b564a1d
     type: regular
     task:
-      id: 8ea8476e-5ce5-43bb-8d36-fa688120f0a3
+      id: 9bd2516a-36d8-4fd0-8028-d67a4b564a1d
       version: -1
       name: Raise incident severity
       description: Optionally increases the incident severity to the new value if it is greater than the existing severity.
@@ -357,10 +357,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: 2914691f-aa6b-4dff-8d1e-ed21cddcb56b
+    taskid: c741f536-4b08-4c61-8b51-22828cfe4d8a
     type: title
     task:
-      id: 2914691f-aa6b-4dff-8d1e-ed21cddcb56b
+      id: c741f536-4b08-4c61-8b51-22828cfe4d8a
       version: -1
       name: Remediation
       type: title
@@ -388,10 +388,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: b5e2096c-ba92-46cf-8f01-774705df3b0f
+    taskid: 3cd266b3-ea5c-4fe0-8795-04dbefc0eb4d
     type: condition
     task:
-      id: b5e2096c-ba92-46cf-8f01-774705df3b0f
+      id: 3cd266b3-ea5c-4fe0-8795-04dbefc0eb4d
       version: -1
       name: Should auto block indicators?
       description: Check if auto remediation is enabled.
@@ -434,10 +434,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: 6921f851-5b4e-47c5-8045-9a65572212ab
+    taskid: c3ca42ab-0075-4263-8816-2e5bb3c27e62
     type: title
     task:
-      id: 6921f851-5b4e-47c5-8045-9a65572212ab
+      id: c3ca42ab-0075-4263-8816-2e5bb3c27e62
       version: -1
       name: Done
       type: title
@@ -462,10 +462,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: a146d1b7-330d-4855-8e55-4611979b9eb1
+    taskid: 2f0319f6-51bc-46a7-84eb-44a699e42778
     type: title
     task:
-      id: a146d1b7-330d-4855-8e55-4611979b9eb1
+      id: 2f0319f6-51bc-46a7-84eb-44a699e42778
       version: -1
       name: Investigation & Analysis
       type: title
@@ -495,10 +495,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: a769fdbc-bbbe-4ba1-8376-cf9285e082fb
+    taskid: 7aa6e453-3f8d-4655-8353-b9b8313766d8
     type: playbook
     task:
-      id: a769fdbc-bbbe-4ba1-8376-cf9285e082fb
+      id: 7aa6e453-3f8d-4655-8353-b9b8313766d8
       version: -1
       name: Block Indicators - Generic v3
       description: |+
@@ -628,10 +628,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: da2e19eb-8767-48fa-8fc0-9424af00f12d
+    taskid: f0ed524b-de7c-4bcc-8cb2-f63f8157889c
     type: condition
     task:
-      id: da2e19eb-8767-48fa-8fc0-9424af00f12d
+      id: f0ed524b-de7c-4bcc-8cb2-f63f8157889c
       version: -1
       name: Found additional alerts or suspicious command line?
       description: Check if a malicious verdict was found.
@@ -676,47 +676,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "32":
-    id: "32"
-    taskid: 1c1d53d7-26ca-40a4-8dc7-8e89d6113644
-    type: regular
-    task:
-      id: 1c1d53d7-26ca-40a4-8dc7-8e89d6113644
-      version: -1
-      name: Get alert data
-      description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \nMultiple filter arguments will be concatenated using the AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
-      script: Cortex XDR - IR|||xdr-get-alerts
-      type: regular
-      iscommand: true
-      brand: Cortex XDR - IR
-    nexttasks:
-      '#none#':
-      - "10"
-    scriptarguments:
-      alert_id:
-        simple: ${inputs.alerts_ids}
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": -470
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "33":
     id: "33"
-    taskid: 1ee53496-9642-4564-86d9-59940ca07a5a
+    taskid: 48bb82e3-e243-42f4-8c2d-9464c1f6cde4
     type: playbook
     task:
-      id: 1ee53496-9642-4564-86d9-59940ca07a5a
+      id: 48bb82e3-e243-42f4-8c2d-9464c1f6cde4
       version: -1
       name: Threat Hunting - Generic
       description: "This playbook enables threat hunting for IOCs in your enterprise. It currently supports the following integrations: \n- Splunk\n- Qradar\n- PAN-OS \n- Cortex Data Lake \n- Autofocus\n- Microsoft 365 Defender"
@@ -780,10 +745,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "34":
     id: "34"
-    taskid: 3368d449-3e4a-4a36-8775-c327e5cad2ad
+    taskid: e4b0378f-9e89-44d7-8300-648920cfa34b
     type: playbook
     task:
-      id: 3368d449-3e4a-4a36-8775-c327e5cad2ad
+      id: e4b0378f-9e89-44d7-8300-648920cfa34b
       version: -1
       name: Cortex XDR - Endpoint Investigation
       description: "This playbook is part of the 'Malware Investigation And Response' pack. For more information, refer to https://xsoar.pan.dev/docs/reference/packs/malware-investigation-and-response. This playbook handles all the endpoint investigation actions available with Cortex XSOAR, including the following tasks:\n * Pre-defined MITRE Tactics\n * Host fields (Host ID)\n * Attacker fields (Attacker IP, External host)\n * MITRE techniques\n * File hash (currently, the playbook supports only SHA256)  \n\n Note: The playbook inputs enable manipulating the execution flow; read the input descriptions for details."
@@ -851,10 +816,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "35":
     id: "35"
-    taskid: 67f561f9-f463-4ad6-835e-417701212bef
+    taskid: d080df0d-0131-42ff-8522-a46794f221bf
     type: regular
     task:
-      id: 67f561f9-f463-4ad6-835e-417701212bef
+      id: d080df0d-0131-42ff-8522-a46794f221bf
       version: -1
       name: Terminate suspicious process
       description: Initiates a new endpoint script execution of shell commands.
@@ -924,10 +889,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "36":
     id: "36"
-    taskid: 85bf9d01-ef8d-4279-83a4-9262c260d884
+    taskid: 818dbfd1-a0db-4d54-8042-1dbb9e2811e8
     type: regular
     task:
-      id: 85bf9d01-ef8d-4279-83a4-9262c260d884
+      id: 818dbfd1-a0db-4d54-8042-1dbb9e2811e8
       version: -1
       name: Waiting for manual remediation
       description: |
@@ -960,10 +925,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "37":
     id: "37"
-    taskid: 4f71e8a9-f817-4378-86fe-77a6872cc75b
+    taskid: ea4afe26-ba45-4cb7-82fb-6774d735083a
     type: regular
     task:
-      id: 4f71e8a9-f817-4378-86fe-77a6872cc75b
+      id: ea4afe26-ba45-4cb7-82fb-6774d735083a
       version: -1
       name: Set Command-Line Verdict to Layout
       description: commands.local.cmd.set.incident
@@ -1009,10 +974,10 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 2535,
+        "height": 2405,
         "width": 1440,
         "x": 50,
-        "y": -610
+        "y": -480
       }
     }
   }

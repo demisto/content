@@ -17,25 +17,23 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Entity Enrichment - Generic v4
-* Command-Line Analysis
-* Cortex XDR - Endpoint Investigation
-* Block Indicators - Generic v3
 * Threat Hunting - Generic
+* Block Indicators - Generic v3
+* Entity Enrichment - Generic v4
+* Cortex XDR - Endpoint Investigation
+* Command-Line Analysis
 
 ### Integrations
 
-* Cortex XDR - IR
 * CortexXDRIR
 
 ### Scripts
 
-IncreaseIncidentSeverity
+* IncreaseIncidentSeverity
 
 ### Commands
 
 * xdr-script-commands-execute
-* xdr-get-alerts
 * setIncident
 
 ## Playbook Inputs
