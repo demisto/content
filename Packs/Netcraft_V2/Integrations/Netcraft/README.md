@@ -468,6 +468,7 @@ There is no context output for this command.
 
 ***
 Escalate an automated takedown to a managed takedown.
+Only attacks that are in an authorised state can be escalated.
 The minimum access level required to escalate is "Escalator".
 Note that escalating a takedown may cost one or more Netcraft managed credits.
 
