@@ -560,7 +560,7 @@ script:
       description: Netskope event ID.
       type: String
     - contextPath: Netskope.Event._insertion_epoch_timestamp
-      description: Netskope event insertion epoch timestamp
+      description: Netskope event insertion epoch timestamp.
       type: Number
     - contextPath: Netskope.Event._nshostname
       description: The hostname associated with Netskope.
@@ -841,6 +841,9 @@ script:
     - contextPath: Netskope.URLList.modify_time
       description: Netskope URL list modify time.
       type: Date
+    - contextPath: Netskope.URLList.modify_type
+      description: Netskope URL list modify type.
+      type: String
     - contextPath: Netskope.URLList.pending
       description: Netskope URL list pending.
       type: Number
@@ -891,12 +894,15 @@ script:
     - contextPath: Netskope.URLList.data.json_version
       description: Netskope URL list data JSON version.
       type: Number
-    - contextPath: Netskope.URLList.modify_type
-      description: Netskope URL list modify type.
+    - contextPath: Netskope.URLList.modify_by
+      description: Netskope URL list modify by.
       type: String
     - contextPath: Netskope.URLList.modify_time
       description: Netskope URL list modify time.
       type: Date
+    - contextPath: Netskope.URLList.modify_type
+      description: Netskope URL list modify type.
+      type: String
     - contextPath: Netskope.URLList.pending
       description: Netskope URL list pending.
       type: Number
@@ -1020,7 +1026,7 @@ script:
     - contextPath: Netskope.Client.emails
       description: Netskope client emails.
       type: String
-  dockerimage: demisto/python3:3.10.13.73190
+  dockerimage: demisto/python3:3.10.13.74666
   feed: false
   isfetch: true
   longRunning: false
