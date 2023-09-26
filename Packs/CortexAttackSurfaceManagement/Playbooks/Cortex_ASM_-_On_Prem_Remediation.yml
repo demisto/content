@@ -5,7 +5,7 @@ description: |-
   This playbook adds new block rule(s) to on-prem firewall vendors in order to block internet access for internet exposures.
 
   Conditions:
-  - This is currently limited to stand-alone firewalls for PAN-OS.
+  This is currently limited to stand-alone firewalls for PAN-OS.
 starttaskid: "0"
 tasks:
   "0":
@@ -82,7 +82,7 @@ tasks:
       id: 712db883-230a-4a69-83db-53391b6b80f2
       version: -1
       name: PAN-OS - Block Destination Service
-      description: 'This playbook blocks a destination IP and service (TCP or UDP port) by creating a rule for a specific device group on PAN-OS. '
+      description: This playbook blocks a destination IP and service (TCP or UDP port) by creating a rule for a specific device group on PAN-OS.
       playbookName: PAN-OS - Block Destination Service
       type: playbook
       iscommand: false
@@ -189,7 +189,7 @@ inputs:
 - key: RuleName
   value: {}
   required: true
-  description: Firewall rule name to lookup to company configuration setting for block rule.
+  description: Firewall rule name to look up in the company configuration setting for block rule.
   playbookInputQuery:
 - key: RemoteIP
   value:

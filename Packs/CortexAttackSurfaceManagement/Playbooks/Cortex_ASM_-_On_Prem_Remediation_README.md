@@ -1,7 +1,7 @@
 This playbook adds new block rule(s) to on-prem firewall vendors in order to block internet access for internet exposures.
 
 Conditions:
-- This is currently limited to stand-alone firewalls for PAN-OS.
+This is currently limited to stand-alone firewalls for PAN-OS.
 
 ## Dependencies
 
@@ -29,7 +29,7 @@ This playbook does not use any scripts.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| RuleName | Firewall rule name to lookup to company configuration setting for block rule. |  | Required |
+| RuleName | Firewall rule name to look up in the company configuration setting for block rule. |  | Required |
 | RemoteIP | IP address of the service. | alert.remoteip | Required |
 | RemoteProtocol | Protocol of the service. | alert.appid | Required |
 | RemotePort | Port number of the service. | alert.remoteport | Required |
