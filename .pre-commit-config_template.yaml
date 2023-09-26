@@ -30,6 +30,7 @@ repos:
   rev: v2.1.2
   hooks:
   - id: pycln
+    args: [--all]
 
 - repo: https://github.com/charliermarsh/ruff-pre-commit
   rev: "v0.0.272"
@@ -45,14 +46,14 @@ repos:
   - id: is-circle-changed
     name: is-circle-changed
     description: Checks if circle files are changed, and checkout to current if it is.
-    entry: ./Tests/scripts/is_file_up_to_date.sh .circleci/config.yml "" true
+    entry: ./Tests/scripts/is_file_up_to_date.sh .circleci/config.yml "" false
     language: script
     pass_filenames: false
 
   - id: is-gitlab-changed
     name: is-gitlab-changed
     description: Checks if gitlab files are changed, and checkout to current if it is.
-    entry: ./Tests/scripts/is_file_up_to_date.sh .gitlab "" true
+    entry: ./Tests/scripts/is_file_up_to_date.sh .gitlab "" false
     language: script
     pass_filenames: false
 

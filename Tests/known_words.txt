@@ -245,4 +245,4 @@ JavaScript
 sdk
 RFC
 datetime
-
+HSTS

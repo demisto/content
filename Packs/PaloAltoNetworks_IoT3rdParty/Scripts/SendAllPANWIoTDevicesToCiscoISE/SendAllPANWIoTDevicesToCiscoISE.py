@@ -274,8 +274,8 @@ def get_all_panw_iot_devices_and_send_to_cisco_ise():
             send_status_to_panw_iot_cloud("success", msg,)
         else:
             break
-    return(f'Total {count} devices pulled from PANW IoT Cloud.\n'
-           f'Exported {len(unique_macs)} devices (with available mac addresses) to Cisco ISE')
+    return (f'Total {count} devices pulled from PANW IoT Cloud.\n'
+            f'Exported {len(unique_macs)} devices (with available mac addresses) to Cisco ISE')
 
 
 def main():
