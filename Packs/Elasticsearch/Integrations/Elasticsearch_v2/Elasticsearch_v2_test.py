@@ -1008,6 +1008,16 @@ def test_convert_date_to_timestamp(date_time, time_method, expected_time):
 
 
 def test_index_document(mocker):
+    """
+    Given
+      - index name, document in JSON format, id of document
+
+    When
+    - executing index_document function.
+
+    Then
+     - Make sure that the returned function response is as expected with the correct format
+    """
     import Elasticsearch_v2
     mocker.patch.object(
         Elasticsearch_v2.Elasticsearch, 'index', return_value=MOCK_INDEX_RESPONSE

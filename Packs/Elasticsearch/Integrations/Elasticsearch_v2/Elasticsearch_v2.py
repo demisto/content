@@ -863,15 +863,25 @@ def index_document_command(args, proxies):
         '_version': resp.get('_version', ''),
         'result': resp.get('result', '')
     }
-    human_readable = "Document with id {} in index {} has been {}".format(
-        index_context.get('_id'),
-        index_context.get('_index'),
-        index_context.get('result')
+    human_readable = {
+        'ID': index_context.get('_id'),
+        'Index name': index_context.get('_index'),
+        'Version': index_context.get('_version'),
+        'Result': index_context.get('result')
+    }
+    headers = [str(k) for k in human_readable]
+    readable_output = tableToMarkdown(
+        name="Indexed document",
+        t=human_readable,
+        removeNull=True,
+        headers=headers
     )
     return CommandResults(
-        readable_output=human_readable,
+        readable_output=readable_output,
         outputs_prefix='Elasticsearch.Index',
-        outputs=index_context
+        outputs=index_context,
+        raw_response=resp,
+        outputs_key_field='_id'
     )
 
 

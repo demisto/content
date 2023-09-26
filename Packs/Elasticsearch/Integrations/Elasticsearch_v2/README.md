@@ -226,4 +226,7 @@ Indexes a document into an Elasticsearch index.
 
 #### Human Readable Output
 
->Document with id 1234 in index test-xsoar has been created
+> ### Indexed document
+>|ID|Index name|Version|Result|
+>|---|---|---|---|
+>| 1234 | test-xsoar | 1 | created | 
