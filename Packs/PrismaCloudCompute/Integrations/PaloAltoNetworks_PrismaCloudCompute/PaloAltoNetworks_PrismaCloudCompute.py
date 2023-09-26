@@ -279,7 +279,7 @@ class PrismaCloudComputeClient(BaseClient):
                     # The API rate limit of 30 requests per minute was exceeded for this endpoint
                     demisto.info(f"Rate limit exceeded, waiting 60 seconds before continuing.\n"
                                  f"Current count: {current_count}, total count: {total_count}.")
-                    time.sleep(60)
+                    time.sleep(60)  # pylint: disable=E9003
 
         return response
 
@@ -1551,7 +1551,7 @@ def get_images_scan_list(client: PrismaCloudComputeClient, args: dict) -> Comman
     stats_limit, _ = parse_limit_and_offset_values(limit=args.pop("limit_stats", "10"))
     all_results = argToBoolean(args.get("all_results", "false"))
     compact = argToBoolean(value=args.get("compact", "true"))
-    clusters, fields, hostname, id, name, compliance_ids = (
+    clusters, fields, hostname, _id, name, compliance_ids = (
         args.get("clusters"), args.get("fields"), args.get("hostname"), args.get("id"), args.get("name"),
         argToList(args.get("compliance_ids"))
     )
@@ -1559,7 +1559,7 @@ def get_images_scan_list(client: PrismaCloudComputeClient, args: dict) -> Comman
 
     params = assign_params(
         limit=limit, offset=offset, compact=compact, clusters=clusters, fields=fields,
-        hostname=hostname, id=id, name=name, registry=registry, repository=repository, complianceIDs=compliance_ids
+        hostname=hostname, id=_id, name=name, registry=registry, repository=repository, complianceIDs=compliance_ids
     )
 
     if images_scans := client.get_images_scan_info(all_results=all_results, params=params):
@@ -1954,8 +1954,8 @@ def get_audit_firewall_container_alerts(client: PrismaCloudComputeClient, args: 
     """
     now = datetime.now()
     from_day = arg_to_number(args.get("FromDays", 2))
-    from_time = now - timedelta(days=from_day)      # type: ignore
-    image_name = urllib.parse.quote(args.get("ImageName"), safe='')     # type: ignore
+    from_time = now - timedelta(days=from_day)  # type: ignore
+    image_name = urllib.parse.quote(args.get("ImageName"), safe='')  # type: ignore
     audit_type = args.get("audit_type")
     limit = arg_to_number(args.get("limit", 25))
     data = client.get_firewall_audit_container_alerts(
@@ -2224,8 +2224,7 @@ def get_trusted_images(client: PrismaCloudComputeClient) -> CommandResults:
                     ],
                     headers=["Rule Name", "Effect", "Owner", "Allowed Groups", "Modified"],
                     removeNull=True,
-                ) + \
-                tableToMarkdown(
+                ) + tableToMarkdown(
                     name="Trust Groups Information",
                     t=[
                         {
@@ -2286,13 +2285,13 @@ def get_container_scan_results(client: PrismaCloudComputeClient, args: dict) -> 
         limit=args.get("limit", "50"), offset=args.get("offset", "0")
     )
     collections, account_ids, clusters, namespaces, resource_ids, region, container_ids, profile_id, image_name, image_id, \
-    hostname, compliance_ids, agentless, search = (
-        argToList(args.get("collections")), argToList(args.get("account_ids")), argToList(args.get("clusters")),
-        argToList(args.get("namespaces")), argToList(args.get("resource_ids")), argToList(args.get("region")),
-        argToList(args.get("container_ids")), argToList(args.get("profile_id")), argToList(args.get("image_name")),
-        argToList(args.get("image_id")), argToList(args.get("hostname")), argToList(args.get("compliance_ids")),
-        args.get("agentless"), args.get("search")
-    )
+        hostname, compliance_ids, agentless, search = (
+            argToList(args.get("collections")), argToList(args.get("account_ids")), argToList(args.get("clusters")),
+            argToList(args.get("namespaces")), argToList(args.get("resource_ids")), argToList(args.get("region")),
+            argToList(args.get("container_ids")), argToList(args.get("profile_id")), argToList(args.get("image_name")),
+            argToList(args.get("image_id")), argToList(args.get("hostname")), argToList(args.get("compliance_ids")),
+            args.get("agentless"), args.get("search")
+        )
     params = assign_params(
         offset=offset, limit=limit, collections=collections, accountIDs=account_ids, clusters=clusters, namespaces=namespaces,
         resourceIDs=resource_ids, region=region, id=container_ids, profileId=profile_id, image=image_name, imageId=image_id,
@@ -2397,18 +2396,18 @@ def get_runtime_container_audit_events(client: PrismaCloudComputeClient, args: d
         limit=args.get("limit", "50"), offset=args.get("offset", "0")
     )
     collections, account_ids, clusters, namespaces, resource_ids, region, audit_id, profile_id, image_name, container, \
-    container_id, type, effect, user, os, app, hostname, search = (
-        argToList(args.get("collections")), argToList(args.get("account_ids")), argToList(args.get("clusters")),
-        argToList(args.get("namespaces")), argToList(args.get("resource_ids")), argToList(args.get("region")),
-        argToList(args.get("audit_id")), argToList(args.get("profile_id")), argToList(args.get("image_name")),
-        argToList(args.get("container")), argToList(args.get("container_id")), argToList(args.get("type")),
-        argToList(args.get("effect")), argToList(args.get("user")), argToList(args.get("os")), argToList(args.get("app")),
-        argToList(args.get("hostname")), args.get("search")
-    )
+        container_id, _type, effect, user, _os, app, hostname, search = (
+            argToList(args.get("collections")), argToList(args.get("account_ids")), argToList(args.get("clusters")),
+            argToList(args.get("namespaces")), argToList(args.get("resource_ids")), argToList(args.get("region")),
+            argToList(args.get("audit_id")), argToList(args.get("profile_id")), argToList(args.get("image_name")),
+            argToList(args.get("container")), argToList(args.get("container_id")), argToList(args.get("type")),
+            argToList(args.get("effect")), argToList(args.get("user")), argToList(args.get("os")), argToList(args.get("app")),
+            argToList(args.get("hostname")), args.get("search")
+        )
     params = assign_params(
         offset=offset, limit=limit, collections=collections, accountIDs=account_ids, clusters=clusters, namespaces=namespaces,
         resourceIDs=resource_ids, region=region, id=audit_id, profileID=profile_id, imageName=image_name,
-        container=container, containerID=container_id, type=type, effect=effect, user=user, os=os, app=app,
+        container=container, containerID=container_id, type=_type, effect=effect, user=user, os=_os, app=app,
         hostname=hostname, search=search,
     )
 

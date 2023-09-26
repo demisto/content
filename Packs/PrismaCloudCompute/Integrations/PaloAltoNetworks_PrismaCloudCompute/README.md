@@ -3539,6 +3539,260 @@ Retrieves all scan reports for images scanned by the Jenkins plugin or twistcli.
 | PrismaCloudCompute.CIScan.entityInfo.wildFireUsage | Unknown | WildFire usage data. | 
 | PrismaCloudCompute.CIScan.entityInfo.agentless | Boolean | Whether agentless scan. | 
 | PrismaCloudCompute.CIScan.entityInfo.malwareAnalyzedTime | String | Malware analyzed time. | 
+
+#### Command example
+```!prisma-cloud-compute-ci-scan-results-list limit=2```
+#### Context Example
+```json
+{
+    "PrismaCloudCompute": {
+        "CIScan": [
+            {
+                "_id": "aaa",
+                "entityInfo": {
+                    "Secrets": [
+                        "/opt/az/lib/python3.10/test/key.pem"
+                    ],
+                    "_id": "sha256:a1",
+                    "agentless": false,
+                    "allCompliance": {},
+                    "appEmbedded": false,
+                    "applications": [
+                        {
+                            "installedFromPackage": true,
+                            "knownVulnerabilities": 115,
+                            "layerTime": 1695214343,
+                            "name": "node",
+                            "path": "/usr/bin/node",
+                            "version": "12.22.9"
+                        }
+                    ],
+                    "binaries": [
+                        {
+                            "cveCount": 0,
+                            "fileMode": 493,
+                            "md5": "a1",
+                            "name": "python3.10",
+                            "path": "/opt/az/bin/python3.10"
+                        },
+                        {
+                            "cveCount": 0,
+                            "fileMode": 420,
+                            "md5": "a2",
+                            "name": "python.o",
+                            "path": "/opt/az/lib/python3.10/config-3.10-x86_64-linux-gnu/python.o"
+                        }
+                    ],
+                    "complianceIssuesCount": 5,
+                    "complianceRiskScore": 40100,
+                    "creationTime": "2023-09-20T12:53:00.899Z",
+                    "distro": "Ubuntu 22.04.3 LTS",
+                    "err": "",
+                    "files": [],
+                    "firewallProtection": {
+                        "enabled": false,
+                        "outOfBandMode": "",
+                        "supported": false
+                    },
+                    "firstScanTime": "2023-09-20T12:53:12.177Z",
+                    "foundSecrets": null,
+                    "history": [
+                        {
+                            "created": 1692165712,
+                            "emptyLayer": true,
+                            "id": "11",
+                            "instruction": "RELEASE"
+                        }
+                    ],
+                    "hostname": "aaa",
+                    "hosts": {},
+                    "id": "sha256:a3",
+                    "image": {
+                        "created": "2023-09-20T12:53:00.899Z",
+                        "entrypoint": [
+                            "python3"
+                        ]
+                    },
+                    "installedProducts": {
+                        "docker": "24.0.6",
+                        "hasPackageManager": true,
+                        "osDistro": "Ubuntu"
+                    },
+                    "instances": [
+                        {
+                            "host": "a4",
+                            "image": "1.dkr.ecr.eu-central-1.amazonaws.com/pythonscript:a3",
+                            "modified": "2023-09-20T12:53:36.956Z",
+                            "registry": "1.dkr.ecr.eu-central-1.amazonaws.com",
+                            "repo": "pythonscript",
+                            "tag": "tag"
+                        }
+                    ],
+                    "isARM64": false,
+                    "labels": [
+                        "org.opencontainers.image.ref.name:ubuntu"
+                    ],
+                    "layers": [
+                        "sha256:a5"
+                    ],
+                    "malwareAnalyzedTime": "0001-01-01T00:00:00Z",
+                    "osDistro": "ubuntu",
+                    "osDistroRelease": "jammy",
+                    "osDistroVersion": "22.04",
+                    "packageCorrelationDone": true,
+                    "packageManager": true,
+                    "pushTime": "0001-01-01T00:00:00Z",
+                    "redHatNonRPMImage": false,
+                    "repoDigests": [],
+                    "repoTag": {
+                        "registry": "1.dkr.ecr.eu-central-1.amazonaws.com",
+                        "repo": "pythonscript",
+                        "tag": "tag"
+                    },
+                    "riskFactors": {
+                        "Attack complexity: low": {},
+                        "Attack vector: network": {},
+                        "Critical severity": {},
+                        "DoS - High": {},
+                        "DoS - Low": {},
+                        "Exploit exists - POC": {},
+                        "Has fix": {},
+                        "High severity": {},
+                        "Medium severity": {},
+                        "Recent vulnerability": {},
+                        "Remote execution": {}
+                    },
+                    "scanBuildDate": "20230914",
+                    "scanID": 0,
+                    "scanTime": "2023-09-20T12:53:36.956Z",
+                    "scanVersion": "31.01.131",
+                    "secretScanMetrics": {},
+                    "tags": [
+                        {
+                            "registry": "1.dkr.ecr.eu-central-1.amazonaws.com",
+                            "repo": "pythonscript",
+                            "tag": "tag"
+                        }
+                    ],
+                    "topLayer": "sha256:a6",
+                    "trustStatus": "",
+                    "type": "ciImage",
+                    "complianceIssuesCount": 5,
+                    "complianceRiskScore": 40100,
+                    "creationTime": "2023-09-20T11:27:10.233Z",
+                    "distro": "Ubuntu 22.04.3 LTS",
+                    "err": "",
+                    "files": [],
+                    "firewallProtection": {
+                        "enabled": false,
+                        "outOfBandMode": "",
+                        "supported": false
+                    },
+                    "firstScanTime": "2023-09-20T11:27:22.081Z",
+                    "foundSecrets": null,
+                    "hostname": "aaa",
+                    "hosts": {},
+                    "id": "sha256:a1",
+                    "image": {
+                        "created": "2023-09-20T11:27:10.233Z",
+                        "entrypoint": [
+                            "python3"
+                        ]
+                    },
+                    "installedProducts": {
+                        "docker": "24.0.6",
+                        "hasPackageManager": true,
+                        "osDistro": "Ubuntu 22.04.3 LTS"
+                    },
+                    "instances": [
+                        {
+                            "host": "aaa",
+                            "image": "pythonserver.azurecr.io/pythonserver:a1",
+                            "modified": "2023-09-20T11:27:50.809Z",
+                            "registry": "pythonserver.azurecr.io",
+                            "repo": "pythonserver",
+                            "tag": "a1"
+                        }
+                    ],
+                    "isARM64": false,
+                    "labels": [
+                        "org.opencontainers.image.ref.name:ubuntu",
+                        "org.opencontainers.image.version:22.04"
+                    ],
+                    "layers": [
+                        "sha256:a1"
+                    ],
+                    "malwareAnalyzedTime": "0001-01-01T00:00:00Z",
+                    "osDistro": "ubuntu",
+                    "osDistroRelease": "jammy",
+                    "osDistroVersion": "22.04",
+                    "packageCorrelationDone": true,
+                    "packageManager": true,
+                    "pushTime": "0001-01-01T00:00:00Z",
+                    "redHatNonRPMImage": false,
+                    "repoDigests": [],
+                    "repoTag": {
+                        "registry": "pythonserver.azurecr.io",
+                        "repo": "pythonserver",
+                        "tag": "tag"
+                    },
+                    "riskFactors": {
+                        "Attack complexity: low": {},
+                        "Attack vector: network": {},
+                        "Critical severity": {},
+                        "DoS - High": {},
+                        "DoS - Low": {},
+                        "Exploit exists - POC": {},
+                        "Has fix": {},
+                        "High severity": {},
+                        "Medium severity": {},
+                        "Recent vulnerability": {},
+                        "Remote execution": {}
+                    },
+                    "scanBuildDate": "20230914",
+                    "scanID": 0,
+                    "scanTime": "2023-09-20T11:27:50.809Z",
+                    "scanVersion": "31.01.131",
+                    "secretScanMetrics": {},
+                    "tags": [
+                        {
+                            "registry": "pythonserver.azurecr.io",
+                            "repo": "pythonserver",
+                            "tag": "tag"
+                        }
+                    ],
+                    "topLayer": "sha256:a6",
+                    "trustStatus": "",
+                    "type": "ciImage",
+                    "vulnerabilitiesCount": 72,
+                    "vulnerabilityDistribution": {
+                        "critical": 1,
+                        "high": 5,
+                        "low": 34,
+                        "medium": 32,
+                        "total": 72
+                    },
+                    "vulnerabilityRiskScore": 1053234,
+                    "wildFireUsage": null
+                },
+                "pass": true,
+                "time": "2023-09-20T11:27:51.087Z",
+                "version": "31.01.131"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### CI Scan Information
+>|Image|ID|OS Distribution|OS Release|Scan Status|Scan Time|
+>|---|---|---|---|---|---|
+>| 1.dkr.ecr.eu-central-1.amazonaws.com/pythonscript:tag | sha256:a6 | ubuntu | jammy | true | 2023-09-20T12:53:37.229Z |
+>| pythonserver.azurecr.io/pythonserver:a1 | sha256:a5 | ubuntu | jammy | true | 2023-09-20T11:27:51.087Z |
+
+
 ### prisma-cloud-compute-trusted-images-get
 
 ***
@@ -3572,6 +3826,155 @@ There are no input arguments for this command.
 | PrismaCloudCompute.TrustedImage.groups.previousName | String | The previous name of the trusted image group. | 
 | PrismaCloudCompute.TrustedImage.groups._id | String | The ID of the trusted image group. | 
 | PrismaCloudCompute.TrustedImage.groups.images | Unknown | The images in the trusted image group. | 
+
+#### Command example
+```!prisma-cloud-compute-trusted-images-get```
+#### Context Example
+```json
+{
+    "PrismaCloudCompute": {
+        "TrustedImage": {
+            "groups": [
+                {
+                    "_id": "TRUSTED IMAGES",
+                    "images": [
+                        "img/aa:*",
+                        "img/bb:*"
+                    ],
+                    "modified": "2023-02-27T21:35:49.697Z",
+                    "name": "",
+                    "owner": "test@paloaltonetworks.com",
+                    "previousName": ""
+                }
+            ],
+            "policy": {
+                "_id": "trust",
+                "enabled": true,
+                "rules": [
+                    {
+                        "allowedGroups": [
+                            "test"
+                        ],
+                        "collections": [
+                            {
+                                "accountIDs": [
+                                    "*"
+                                ],
+                                "appIDs": [
+                                    "*"
+                                ],
+                                "clusters": [
+                                    "*"
+                                ],
+                                "codeRepos": [
+                                    "*"
+                                ],
+                                "color": "#3FA2F7",
+                                "containers": [
+                                    "*"
+                                ],
+                                "description": "System - all resources collection",
+                                "functions": [
+                                    "*"
+                                ],
+                                "hosts": [
+                                    "*"
+                                ],
+                                "images": [
+                                    "*"
+                                ],
+                                "labels": [
+                                    "*"
+                                ],
+                                "modified": "2021-01-31T08:21:54.823Z",
+                                "name": "All",
+                                "namespaces": [
+                                    "*"
+                                ],
+                                "owner": "system",
+                                "prisma": false,
+                                "system": true
+                            }
+                        ],
+                        "disabled": true,
+                        "effect": "alert",
+                        "modified": "2023-06-08T12:28:46.723Z",
+                        "name": "test",
+                        "owner": "test@paloaltonetworks.com",
+                        "previousName": ""
+                    },
+                    {
+                        "collections": [
+                            {
+                                "accountIDs": [
+                                    "*"
+                                ],
+                                "appIDs": [
+                                    "*"
+                                ],
+                                "clusters": [
+                                    "*"
+                                ],
+                                "codeRepos": [
+                                    "*"
+                                ],
+                                "color": "#3FA2F7",
+                                "containers": [
+                                    "*"
+                                ],
+                                "description": "System - all resources collection",
+                                "functions": [
+                                    "*"
+                                ],
+                                "hosts": [
+                                    "*"
+                                ],
+                                "images": [
+                                    "*"
+                                ],
+                                "labels": [
+                                    "*"
+                                ],
+                                "modified": "2021-01-31T08:21:54.823Z",
+                                "name": "All",
+                                "namespaces": [
+                                    "*"
+                                ],
+                                "owner": "system",
+                                "prisma": false,
+                                "system": true
+                            }
+                        ],
+                        "disabled": true,
+                        "effect": "alert",
+                        "modified": "2022-04-27T19:24:00.987Z",
+                        "name": "Default - alert all",
+                        "owner": "test@paloaltonetworks.com",
+                        "previousName": ""
+                    }
+                ]
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>## Trusted Images Details
+>### Policy Rules Information
+>|Rule Name|Effect|Owner|Allowed Groups|Modified|
+>|---|---|---|---|---|
+>| test | alert | test@paloaltonetworks.com | test | 2023-06-08T12:28:46.723Z |
+>| Default - alert all | alert | test@paloaltonetworks.com |  | 2022-04-27T19:24:00.987Z |
+>### Trust Groups Information
+>|ID|Owner|Modified|
+>|---|---|---|
+>| Deny All | test@paloaltonetworks.com | 2022-04-27T17:30:02.803Z |
+>| TRUSTED IMAGES | test@paloaltonetworks.com | 2023-02-27T21:35:49.697Z |
+>| test | test@paloaltonetworks.com | 2023-02-28T19:53:44.491Z |
+
+
 ### prisma-cloud-compute-trusted-images-update
 
 ***
@@ -3653,6 +4056,150 @@ Retrieves container scan reports. Maps to Monitor > Compliance > Images > Deploy
 | PrismaCloudCompute.ContainersScanResults.info.installedProducts | Unknown | Installed products data. | 
 | PrismaCloudCompute.ContainersScanResults.info.cloudMetadata | Unknown | Cloud metadata. | 
 | PrismaCloudCompute.ContainersScanResults.info.startTime | Date | Container start time. | 
+
+#### Command example
+```!prisma-cloud-compute-container-scan-results limit=2```
+#### Context Example
+```json
+{
+    "PrismaCloudCompute": {
+        "ContainersScanResults": [
+            {
+                "_id": "a1",
+                "collections": [
+                    "All",
+                    "Access Group"
+                ],
+                "csa": false,
+                "firewallProtection": {
+                    "enabled": false,
+                    "outOfBandMode": "",
+                    "supported": false
+                },
+                "hostname": "a1",
+                "info": {
+                    "allCompliance": {},
+                    "app": "a2",
+                    "cloudMetadata": {
+                        "accountID": "ii",
+                        "image": "img",
+                        "name": "a1",
+                        "provider": "gcp",
+                        "region": "europe-west4-c",
+                        "resourceID": "4"
+                    },
+                    "cluster": "demo",
+                    "clusterType": "GKE",
+                    "complianceDistribution": {
+                        "critical": 7,
+                        "high": 5,
+                        "low": 0,
+                        "medium": 0,
+                        "total": 12
+                    },
+                    "complianceIssues": [
+                    ],
+                    "complianceIssuesCount": 12,
+                    "complianceRiskScore": 7050000,
+                    "id": "a4",
+                    "image": "img3",
+                    "imageID": "sha256:a5",
+                    "imageName": "img5",
+                    "infra": false,
+                    "installedProducts": {
+                        "crio": true
+                    },
+                    "labels": [
+                        "aa"
+                    ],
+                    "name": "a7",
+                    "namespace": "system",
+                    "network": {
+                        "ports": []
+                    },
+                    "processes": [
+                        {
+                            "name": "a7"
+                        }
+                    ],
+                    "profileID": "sha256:a3",
+                    "startTime": "2023-09-10T01:46:16.542Z"
+                },
+                "scanTime": "2023-09-26T01:46:44.579Z"
+            },
+            {
+                "_id": "a2",
+                "agentless": true,
+                "agentlessScanID": 476,
+                "collections": [
+                    "All"
+                ],
+                "csa": false,
+                "firewallProtection": {
+                    "enabled": false,
+                    "outOfBandMode": "",
+                    "supported": false
+                },
+                "hostname": "hostname",
+                "info": {
+                    "allCompliance": {},
+                    "app": "app9",
+                    "cloudMetadata": {
+                        "accountID": "66",
+                        "image": "img7",
+                        "name": "a5-master",
+                        "provider": "aws",
+                        "region": "eu-south-1",
+                        "resourceID": "i-3",
+                        "type": "m5.xlarge"
+                    },
+                    "cluster": "a5",
+                    "clusterType": "",
+                    "complianceDistribution": {
+                        "critical": 7,
+                        "high": 5,
+                        "low": 0,
+                        "medium": 0,
+                        "total": 12
+                    },
+                    "complianceIssuesCount": 12,
+                    "complianceRiskScore": 7050000,
+                    "id": "a5",
+                    "image": "a7",
+                    "imageID": "a9",
+                    "imageName": "a7",
+                    "infra": false,
+                    "installedProducts": {
+                        "crio": true
+                    },
+                    "labels": [
+                        "tag"
+                    ],
+                    "name": "aaa",
+                    "namespace": "test",
+                    "network": {
+                        "ports": []
+                    },
+                    "processes": [],
+                    "profileID": "a9_test_a5",
+                    "startTime": "2022-09-14T09:07:18.502Z"
+                },
+                "scanTime": "2023-09-26T00:20:45.054Z"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### CI Scan Information
+>|ID|Hostname|Scan Time|Image ID|Image Name|Name|App|
+>|---|---|---|---|---|---|---|
+>| a1 | a1 | 2023-09-26T01:46:44.579Z | sha256:a1 | img5 | hhh | a2 |
+>| a5 | hostname | 2023-09-26T00:20:45.054Z | a9 | a7 | a9 | test |
+
+
 ### prisma-cloud-compute-hosts-info
 
 ***
@@ -3699,6 +4246,172 @@ Returns minimal information that includes hostname, distro, distro-release, coll
 | PrismaCloudCompute.Hosts.riskFactors | Unknown | Risk factors for the host. | 
 | PrismaCloudCompute.Hosts.collections | Unknown | The collections the host belongs to. | 
 | PrismaCloudCompute.Hosts.agentless | Boolean | Whether the host was scanned agentlessly. | 
+
+#### Command example
+```!prisma-cloud-compute-hosts-info limit=2```
+#### Context Example
+```json
+{
+    "PrismaCloudCompute": {
+        "Hosts": [
+            {
+                "Secrets": null,
+                "_id": "a9",
+                "agentless": false,
+                "allCompliance": {},
+                "appEmbedded": false,
+                "binaries": null,
+                "cloudMetadata": {},
+                "collections": [
+                    "All"
+                ],
+                "complianceDistribution": {
+                    "critical": 0,
+                    "high": 0,
+                    "low": 0,
+                    "medium": 0,
+                    "total": 0
+                },
+                "complianceIssues": null,
+                "complianceIssuesCount": 0,
+                "complianceRiskScore": 0,
+                "creationTime": "0001-01-01T00:00:00Z",
+                "distro": "Ubuntu 20.04.4 LTS",
+                "err": "",
+                "files": null,
+                "firewallProtection": {
+                    "enabled": false,
+                    "outOfBandMode": "",
+                    "supported": false
+                },
+                "firstScanTime": "0001-01-01T00:00:00Z",
+                "foundSecrets": null,
+                "history": null,
+                "hostname": "a9",
+                "hosts": null,
+                "image": {
+                    "created": "0001-01-01T00:00:00Z"
+                },
+                "installedProducts": {},
+                "instances": null,
+                "isARM64": false,
+                "malwareAnalyzedTime": "0001-01-01T00:00:00Z",
+                "osDistro": "",
+                "osDistroRelease": "focal",
+                "osDistroVersion": "",
+                "packageCorrelationDone": false,
+                "packageManager": false,
+                "packages": null,
+                "pushTime": "0001-01-01T00:00:00Z",
+                "redHatNonRPMImage": false,
+                "repoDigests": null,
+                "repoTag": null,
+                "riskFactors": null,
+                "scanID": 0,
+                "scanTime": "0001-01-01T00:00:00Z",
+                "secretScanMetrics": {},
+                "startupBinaries": null,
+                "tags": null,
+                "trustStatus": "",
+                "type": "",
+                "vulnerabilities": null,
+                "vulnerabilitiesCount": 0,
+                "vulnerabilityDistribution": {
+                    "critical": 0,
+                    "high": 0,
+                    "low": 0,
+                    "medium": 0,
+                    "total": 0
+                },
+                "vulnerabilityRiskScore": 0,
+                "wildFireUsage": null
+            },
+            {
+                "Secrets": null,
+                "_id": "a4",
+                "agentless": false,
+                "allCompliance": {},
+                "appEmbedded": false,
+                "binaries": null,
+                "cloudMetadata": {},
+                "collections": [
+                    "All"
+                ],
+                "complianceDistribution": {
+                    "critical": 0,
+                    "high": 0,
+                    "low": 0,
+                    "medium": 0,
+                    "total": 0
+                },
+                "complianceIssues": null,
+                "complianceIssuesCount": 0,
+                "complianceRiskScore": 0,
+                "creationTime": "0001-01-01T00:00:00Z",
+                "distro": "Ubuntu 20.04.4 LTS",
+                "err": "",
+                "files": null,
+                "firewallProtection": {
+                    "enabled": false,
+                    "outOfBandMode": "",
+                    "supported": false
+                },
+                "firstScanTime": "0001-01-01T00:00:00Z",
+                "foundSecrets": null,
+                "history": null,
+                "hostname": "hostname3",
+                "hosts": null,
+                "image": {
+                    "created": "0001-01-01T00:00:00Z"
+                },
+                "installedProducts": {},
+                "instances": null,
+                "isARM64": false,
+                "malwareAnalyzedTime": "0001-01-01T00:00:00Z",
+                "osDistro": "",
+                "osDistroRelease": "focal",
+                "osDistroVersion": "",
+                "packageCorrelationDone": false,
+                "packageManager": false,
+                "packages": null,
+                "pushTime": "0001-01-01T00:00:00Z",
+                "redHatNonRPMImage": false,
+                "repoDigests": null,
+                "repoTag": null,
+                "riskFactors": null,
+                "scanID": 0,
+                "scanTime": "0001-01-01T00:00:00Z",
+                "secretScanMetrics": {},
+                "startupBinaries": null,
+                "tags": null,
+                "trustStatus": "",
+                "type": "",
+                "vulnerabilities": null,
+                "vulnerabilitiesCount": 0,
+                "vulnerabilityDistribution": {
+                    "critical": 0,
+                    "high": 0,
+                    "low": 0,
+                    "medium": 0,
+                    "total": 0
+                },
+                "vulnerabilityRiskScore": 0,
+                "wildFireUsage": null
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Hosts Information
+>|ID|Hostname|Scan Time|Distro|Distro Release|
+>|---|---|---|---|---|
+>| a9 | a9 | 0001-01-01T00:00:00Z | Ubuntu 20.04.4 LTS | focal |
+>| a4 | hostname1 | 0001-01-01T00:00:00Z | Ubuntu 20.04.4 LTS | focal |
+
+
 ### prisma-cloud-compute-runtime-container-audit-events-get
 
 ***
@@ -3767,6 +4480,95 @@ Retrieves all container audit events when a runtime sensor such as process, netw
 | PrismaCloudCompute.RuntimeContainerAuditEvents.md5 | String | The MD5 hash of the file. | 
 | PrismaCloudCompute.RuntimeContainerAuditEvents.command | String | The command of the audit event. | 
 | PrismaCloudCompute.RuntimeContainerAuditEvents.provider | String | The provider of the container. | 
+
+#### Command example
+```!prisma-cloud-compute-runtime-container-audit-events-get limit=2```
+#### Context Example
+```json
+{
+    "PrismaCloudCompute": {
+        "RuntimeContainerAuditEvents": [
+            {
+                "_id": "a9",
+                "accountID": "11",
+                "attackType": "malwareFileFeed",
+                "cluster": "pc-demo-eks-ii",
+                "collections": [
+                    "All"
+                ],
+                "command": "cmd",
+                "container": true,
+                "containerId": "c2",
+                "containerName": "python-server-app",
+                "count": 1,
+                "effect": "block",
+                "filepath": "f5",
+                "fqdn": "",
+                "hostname": "hostname4",
+                "imageId": "sha256:r4",
+                "imageName": "r6",
+                "md5": "r8",
+                "msg": "msg6",
+                "namespace": "default",
+                "os": "Ubuntu 22.04.2 LTS",
+                "pid": 6283,
+                "processPath": "/usr/bin/git",
+                "profileId": "sha256:r4_default_pc-demo-eks-ii",
+                "provider": "aws",
+                "region": "eu-central-1",
+                "ruleName": "ii-pc-advanced-demo-eks-block",
+                "severity": "high",
+                "time": "2023-08-20T12:44:45.128Z",
+                "type": "filesystem",
+                "user": "root"
+            },
+            {
+                "_id": "b5",
+                "accountID": "s4",
+                "attackType": "malwareFileFeed",
+                "cluster": "pc-github",
+                "collections": [
+                    "All"
+                ],
+                "command": "cmd",
+                "container": true,
+                "containerId": "t6",
+                "containerName": "na6",
+                "count": 1,
+                "effect": "block",
+                "filepath": "f5",
+                "fqdn": "",
+                "hostname": "n7",
+                "imageId": "sha256:n6",
+                "imageName": "img6",
+                "md5": "r8",
+                "msg": "msg6",
+                "namespace": "default",
+                "os": "Ubuntu 22.04.3 LTS",
+                "pid": 25597,
+                "processPath": "/usr/bin/git",
+                "profileId": "sha256:n6_default_pc-github",
+                "provider": "aws",
+                "region": "us-east-2",
+                "ruleName": "ii-pc-advanced-demo-eks-block",
+                "severity": "high",
+                "time": "2023-08-20T12:45:45.405Z",
+                "type": "filesystem",
+                "user": "root"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Runtime Container Audit Events Information
+>|ID|Hostname|Container Name|Image Name|Effect|Type|Attack Type|Severity|
+>|---|---|---|---|---|---|---|---|
+>| a9 | hostname4 | python-server-app | r6 | block | filesystem | malwareFileFeed | high |
+>| b5 | n7 | na6 | img6 | block | filesystem | malwareFileFeed | high |
+
 
 ## General Note:
 - Do not use the reset last run button as it will cause incidents duplications to the instance. 
