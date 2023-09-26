@@ -143,6 +143,37 @@ To setup the mirroring follow these instructions:
 
 * `Owner` and `closeReason` mappings are done using the integration code, therefore they are not part of the out-of-the-box mapper and should not be specified in any future mapper.
 
+* In case of custom mapping requirements for close reasons, create new mappings using Lists. Settings > Advanced > Lists > Add a List and follow the following name and structure.
+  
+  * Modified resolved status XSOAR to XDR mapping:
+    * List Name: XSOAR_RESOLVED_STATUS_TO_XDR_MAP
+    * Type: JSON
+    * Content:
+      ```
+      {
+        "Other": "resolved_other",
+        "Duplicate": "resolved_duplicate",
+        "False Positive": "resolved_false_positive",
+        "Resolved": "resolved_true_positive"
+      }
+      ```
+    
+  * Modified resolved status XDR to XSOAR mapping:
+    * List Name: XDR_RESOLVED_STATUS_TO_XSOAR_MAP
+    * Type: JSON
+    * Content:
+      ```
+      {
+          "resolved_known_issue": "Other",
+          "resolved_duplicate": "Duplicate",
+          "resolved_false_positive": "False Positive",
+          "resolved_true_positive": "True Positive",
+          "resolved_security_testing": "Other",
+          "resolved_other": "Other",
+          "resolved_auto": "Resolved"
+      }
+      ```
+
 ### Fetch Behavior vs Mirroring
 
 Note: All incidents, including those with a "resolved" status, will be fetched into Cortex XSOAR as "active" incidents to enable the execution of our automations. However, the original resolved status of the incidents will be preserved in the incident details. If you prefer to keep certain incidents closed, you can utilize the "Incident Statuses to Fetch" filter during the configuration stage and choose not to import those specific incidents. Alternatively, you can utilize pre-processing rules to define specific types of incidents to be imported as closed.

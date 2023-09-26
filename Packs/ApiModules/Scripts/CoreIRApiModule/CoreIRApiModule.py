@@ -2,6 +2,7 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import urllib3
 import copy
+import json
 import re
 from operator import itemgetter
 
@@ -11,22 +12,42 @@ from typing import Tuple, Callable
 urllib3.disable_warnings()
 TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
 
-XSOAR_RESOLVED_STATUS_TO_XDR = {
-    'Other': 'resolved_other',
-    'Duplicate': 'resolved_duplicate',
-    'False Positive': 'resolved_false_positive',
-    'Resolved': 'resolved_true_positive',
-}
+XSOAR_RESOLVED_STATUS_TO_XDR = None
+XDR_RESOLVED_STATUS_TO_XSOAR = None
 
-XDR_RESOLVED_STATUS_TO_XSOAR = {
-    'resolved_known_issue': 'Other',
-    'resolved_duplicate': 'Duplicate',
-    'resolved_false_positive': 'False Positive',
-    'resolved_true_positive': 'Resolved',
-    'resolved_security_testing': 'Other',
-    'resolved_other': 'Other',
-    'resolved_auto': 'Resolved'
-}
+lists = demisto.internalHttpRequest('GET', '/lists').get('body')
+for item in json.loads(lists):
+    id = item.get('id')
+    if id == 'XSOAR_RESOLVED_STATUS_TO_XDR_MAP':
+        XSOAR_RESOLVED_STATUS_TO_XDR = json.loads(item.get('data'))
+
+    elif id == 'XDR_RESOLVED_STATUS_TO_XSOAR_MAP':
+        XDR_RESOLVED_STATUS_TO_XSOAR = json.loads(item.get('data'))
+
+if not XSOAR_RESOLVED_STATUS_TO_XDR:
+    demisto.debug('Could not find custom list. Using default XSOAR To XDR resolved status map ')
+    XSOAR_RESOLVED_STATUS_TO_XDR = {
+        'Other': 'resolved_other',
+        'Duplicate': 'resolved_duplicate',
+        'False Positive': 'resolved_false_positive',
+        'Resolved': 'resolved_true_positive'
+    }
+else:
+    demisto.debug('Did find custom list. Using custom XSOAR To XDR resolved status map ')
+
+if not XDR_RESOLVED_STATUS_TO_XSOAR:
+    demisto.debug('Could not find custom list. Using default XDR To XSOAR resolved status map ')
+    XDR_RESOLVED_STATUS_TO_XSOAR = {
+        'resolved_known_issue': 'Other',
+        'resolved_duplicate': 'Duplicate',
+        'resolved_false_positive': 'False Positive',
+        'resolved_true_positive': 'Resolved',
+        'resolved_security_testing': 'Other',
+        'resolved_other': 'Other',
+        'resolved_auto': 'Resolved'
+    }
+else:
+    demisto.debug('Did find custom list. Using custom XDR To XSOAR resolved status map ')
 
 ALERT_GENERAL_FIELDS = {
     'detection_modules',
