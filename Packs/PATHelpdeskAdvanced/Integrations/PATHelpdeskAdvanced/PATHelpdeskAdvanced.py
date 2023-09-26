@@ -99,9 +99,10 @@ CONTENT_TYPE = Field("content_type")
 LAST_UPDATE = Field("last_update")
 OPERATION_TYPE_ID = Field("operation_type_id")
 
+# Underscored fields are not real in HDA but used for the integration
 _PRIORITY = Field("priority")
 _TICKET_SOURCE = Field("ticket_source")
-
+_ATTACHMENT_ID = Field("attachment_id")
 
 ID_DESCRIPTION_COLUMN_NAMES = str([field.hda_name for field in (ID, DESCRIPTION)])
 
@@ -212,8 +213,8 @@ class Client(BaseClient):
         # print(curlify.to_curl(response.request, compressed=True))
         try:
             response_body = json.loads(response.text)
-            print()
-            print(f"Response: {pformat(response_body)}")
+            # print()
+            # print(f"Response: {pformat(response_body)}")
             if response_body["success"] is not True:  # request failed
                 raise RequestNotSuccessfulError(response, attempted_action)
             return response_body
@@ -280,13 +281,13 @@ class Client(BaseClient):
                 response = generate_request_token(refresh_token)
 
             except RequestNotSuccessfulError:
-                print(
+                demisto.debug(
                     "failed using refresh token, getting a new one using username and password"
                 )
                 response = generate_new_token()
 
         else:
-            print(
+            demisto.debug(
                 "refresh token expired or missing, logging in with username and password"
             )
             response = generate_new_token()
@@ -413,11 +414,11 @@ class Client(BaseClient):
             data={
                 "entity": "Ticket",
                 "entityID": kwargs["ticket_id"],
-            }
-            | {  # maps "TicketAttachment_i+1" to file content
+            },
+            files={
                 f"TicketAttachment_{i+1}": Path(
                     demisto.getFilePath(entry_id)["path"]
-                ).read_text()
+                ).open()
                 for i, entry_id in enumerate(entry_ids)
             },
         )
@@ -625,34 +626,37 @@ def paginate(**kwargs) -> PaginateArgs:
 def pat_table_to_markdown(
     title: str,
     output: dict | list[dict],
-    fields: Sequence[Field] | None,
+    fields: tuple[Field, ...] | None,
     field_replacements: dict[Field, Field] | None = None,
 ) -> str:
     def replace_fields(item: Any):
-        assert field_replacements, "field_replacements is required"
+        string_key_replacements = {
+            k.hda_name: v.hda_name for k, v in (field_replacements or {}).items()
+        }
         if isinstance(item, dict):
             return {
-                field_replacements.get(key, key): value for key, value in item.items()
+                string_key_replacements.get(key, key): value
+                for key, value in item.items()
             }
         elif isinstance(item, list):
             return [replace_fields(v) for v in item]
         return item
 
     def filter_fields(item: dict | list[dict]) -> dict | list[dict]:
-        assert fields, "Fields must be provided to filter"
-
         def _filter_dict(dictionary: dict) -> dict:
             return {
-                field: dictionary[field]
-                for field in (field_object.hda_name for field_object in fields)
-                if field in dictionary
+                field.hda_name: dictionary[field.hda_name]
+                # mypy doesn't notice fields can not be None here
+                for field in fields  # type:ignore[union-attr]
+                if field.hda_name in dictionary
             }
 
         if isinstance(item, dict):
             return _filter_dict(item)
         elif isinstance(item, list):
+            # mypy is confused by the type union
             return [filter_fields(list_item) for list_item in item]  # type:ignore[misc]
-        raise TypeError(f"cannot filter {type(item)}")
+        raise TypeError(f"cannot filter {type(item)}, expected dict|list[dict]")
 
     if field_replacements:
         output = replace_fields(output)
@@ -732,10 +736,11 @@ def list_tickets_command(client: Client, args: dict) -> CommandResults:
 
 
 def add_ticket_attachment_command(client: Client, args: dict) -> CommandResults:
-    entry_ids = args.pop("entry_id")
+    entry_ids = argToList(args.pop("entry_id", ()))
     response = client.add_ticket_attachment(entry_ids, **args)
+    print(response)
     return CommandResults(
-        readable_output=f"Added Attachment ID {response['attachmentId']} to ticket ID {args['ticket_id']}",
+        readable_output=f"Added Attachment ID {response['data']['attachmentID']} to ticket ID {args['ticket_id']}",
         raw_response=response,
     )
 
@@ -752,16 +757,17 @@ def list_ticket_attachments_command(client: Client, args: dict) -> CommandResult
             title="Attachments",
             output=response["data"],
             fields=(
-                OBJECT_DESCTIPTION,
-                OBJECT_ENTITY,
-                ID,  # TODO replace with AttachmentID?
+                ID,
                 FILE_NAME,
                 TICKET_ID,
-                CONTENT_TYPE,
-                FIRST_UPDATE_USER_ID,
                 LAST_UPDATE,
                 DESCRIPTION,
+                OBJECT_DESCTIPTION,
+                FIRST_UPDATE_USER_ID,
+                OBJECT_ENTITY,
+                CONTENT_TYPE,
             ),
+            field_replacements={ID: _ATTACHMENT_ID},
         ),
         raw_response=response,
     )
