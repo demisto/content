@@ -304,7 +304,7 @@ xpanse-prepare-testing-bucket:
     - section_start "Destroy Instances"
     - python3 ./Tests/scripts/destroy_instances.py --artifacts-dir $ARTIFACTS_FOLDER --env-file $ARTIFACTS_FOLDER/env_results.json --instance-role "$INSTANCE_ROLE"
     - if [ $? -ne 0 ]; then
-        echo "Failed to destroy instances";
+        echo "Failed to destroy instances, exit code"$?";
       fi
     - section_end "Destroy Instances"
 
