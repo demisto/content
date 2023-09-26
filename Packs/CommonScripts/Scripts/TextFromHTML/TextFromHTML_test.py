@@ -1,4 +1,4 @@
-
+# ruff: noqa: RUF001
 
 def test_text_from_html_success_english():
     """
