@@ -172,7 +172,7 @@ script:
     name: rf-feed-get-indicators
   - arguments:
     - auto: PREDEFINED
-      description: The indicator type
+      description: The indicator type.
       name: indicator_type
       predefined:
       - ip
