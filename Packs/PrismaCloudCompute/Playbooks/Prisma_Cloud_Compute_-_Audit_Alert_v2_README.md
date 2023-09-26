@@ -19,21 +19,22 @@ This playbook does not use any sub-playbooks.
 
 ### Commands
 
-* prisma-cloud-compute-profile-host-list
-* findIndicators
-* prisma-cloud-compute-get-alert-profiles
-* prisma-cloud-compute-get-settings-defender
-* closeInvestigation
+* prisma-cloud-compute-logs-defender
+* prisma-cloud-compute-images-scan-list
 * prisma-cloud-compute-get-waas-policies
 * prisma-cloud-compute-profile-container-list
-* prisma-cloud-compute-get-audit-firewall-container-alerts
-* prisma-cloud-compute-profile-container-forensic-list
-* prisma-cloud-compute-logs-defender
 * setIncident
-* prisma-cloud-compute-get-backups
+* prisma-cloud-compute-profile-container-forensic-list
+* findIndicators
 * createNewIndicator
-* prisma-cloud-compute-images-scan-list
 * prisma-cloud-compute-logs-defender-download
+* prisma-cloud-compute-host-forensic-list
+* prisma-cloud-compute-get-backups
+* prisma-cloud-compute-profile-host-list
+* prisma-cloud-compute-get-audit-firewall-container-alerts
+* prisma-cloud-compute-defenders-list
+* closeInvestigation
+* prisma-cloud-compute-get-alert-profiles
 
 ## Playbook Inputs
 
