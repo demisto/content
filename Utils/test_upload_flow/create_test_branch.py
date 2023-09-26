@@ -18,6 +18,7 @@ pack_items_dict = {}
 changed_packs = set()
 
 GITLAB_SERVER_HOST = get_env_var('CI_SERVER_HOST', 'code.pan.run')  # disable-secrets-detection
+GITLAB_PROJECT_NAMESPACE = get_env_var('CI_PROJECT_NAMESPACE', 'xsoar')  # disable-secrets-detection
 
 # HELPER FUNCTIONS
 
@@ -367,7 +368,8 @@ def main():
         repo.git.commit(m="Added Test file", no_verify=True)
         repo.git.push('--set-upstream',
                       f'https://GITLAB_PUSH_TOKEN:{args.gitlab_mirror_token}@'  # disable-secrets-detection
-                      f'{GITLAB_SERVER_HOST}/xsoar/content.git', branch, push_option="ci.skip")  # disable-secrets-detection
+                      f'{GITLAB_SERVER_HOST}/{GITLAB_PROJECT_NAMESPACE}/content.git',  # disable-secrets-detection
+                      branch, push_option="ci.skip")  # disable-secrets-detection
         logging.info("Successfully pushing the branch to Gitlab content repo")
 
     except GitCommandError as e:
