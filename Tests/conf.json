@@ -21,6 +21,12 @@
     "testInterval": 20,
     "tests": [
         {
+            "playbookID": "Test Playbook - WildFire Malware",
+            "integrations": "VirusTotal (API v3)",
+            "instance_names": "virus_total_v3",
+            "timeout": 1600
+        },
+        {
             "playbookID": "T1036 - Masquerading - Test",
             "integrations": "VirusTotal (API v3)",
             "instance_names": "virus_total_v3",
@@ -994,7 +1000,8 @@
         },
         {
             "integrations": "Thinkst Canary",
-            "playbookID": "CanaryTools Test"
+            "playbookID": "CanaryTools Test",
+            "is_mockable": false
         },
         {
             "integrations": "ThreatMiner",
@@ -2131,17 +2138,21 @@
         {
             "integrations": "Microsoft Defender Advanced Threat Protection",
             "playbookID": "Microsoft Defender - ATP - Indicators SC Test",
-            "instance_names": "microsoft_defender_atp_dev_self_deployed"
+            "instance_names": "microsoft_defender_atp_dev_self_deployed",
+            "is_mockable": false
+
         },
         {
             "integrations": "Microsoft Defender Advanced Threat Protection",
             "playbookID": "Microsoft Defender - ATP - Indicators SC Test",
-            "instance_names": "microsoft_defender_atp_dev"
+            "instance_names": "microsoft_defender_atp_dev",
+            "is_mockable": false
         },
         {
             "integrations": "Microsoft Defender Advanced Threat Protection",
             "playbookID": "Microsoft Defender - ATP - Indicators SC Test",
-            "instance_names": "microsoft_defender_atp_prod"
+            "instance_names": "microsoft_defender_atp_prod",
+            "is_mockable": false
         },
         {
             "integrations": "Microsoft 365 Defender",
@@ -3668,6 +3679,10 @@
         {
             "playbookID": "IfThenElse-Test",
             "fromversion": "5.0.0"
+        },
+        {
+            "playbookID": "If-Elif Test",
+            "fromversion": "6.9.0"
         },
         {
             "integrations": "Imperva WAF",
@@ -5863,7 +5878,8 @@
         "ThreatGridv2": "No instance - developed by Qmasters",
         "SentinelOne V2": "No instance - developed by partner",
         "CheckPhish": "Issue CRTX-86562",
-        "SecurityAndComplianceV2": "Can only be authenticated via MFA and requires user interaction to configure."
+        "SecurityAndComplianceV2": "Can only be authenticated via MFA and requires user interaction to configure.",
+        "ThreatExchange v2": "No instance"
     },
     "nightly_packs": [
         "CommonScripts",

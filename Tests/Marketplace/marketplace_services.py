@@ -30,7 +30,8 @@ from Tests.Marketplace.marketplace_constants import PackFolders, Metadata, GCPCo
     PackTags, PackIgnored, Changelog, BASE_PACK_DEPENDENCY_DICT, SIEM_RULES_OBJECTS, PackStatus, PACK_FOLDERS_TO_ID_SET_KEYS, \
     CONTENT_ROOT_PATH, XSOAR_MP, XSIAM_MP, XPANSE_MP, TAGS_BY_MP, CONTENT_ITEM_NAME_MAPPING, \
     ITEMS_NAMES_TO_DISPLAY_MAPPING, RN_HEADER_TO_ID_SET_KEYS
-from Utils.release_notes_handler import aggregate_release_notes_for_marketplace, merge_version_blocks, construct_entities_block
+from demisto_sdk.commands.common.constants import MarketplaceVersions, MarketplaceVersionToMarketplaceName
+from Utils.release_notes_generator import aggregate_release_notes_for_marketplace, merge_version_blocks, construct_entities_block
 from Tests.scripts.utils import logging_wrapper as logging
 
 PULL_REQUEST_PATTERN = '\(#(\d+)\)'
@@ -4279,7 +4280,7 @@ def underscore_file_name_to_dotted_version(file_name: str) -> str:
     return os.path.splitext(file_name)[0].replace('_', '.')
 
 
-def get_last_commit_from_index(service_account):
+def get_last_commit_from_index(service_account, marketplace=MarketplaceVersions.XSOAR):
     """ Downloading index.json from GCP and extract last upload commit.
 
     Args:
@@ -4288,8 +4289,9 @@ def get_last_commit_from_index(service_account):
     Returns: last upload commit.
 
     """
+    production_bucket_name = MarketplaceVersionToMarketplaceName.get(marketplace)
     storage_client = init_storage_client(service_account)
-    storage_bucket = storage_client.bucket(GCPConfig.PRODUCTION_BUCKET)
+    storage_bucket = storage_client.bucket(production_bucket_name)
     index_storage_path = os.path.join('content/packs/', f"{GCPConfig.INDEX_NAME}.json")
     index_blob = storage_bucket.blob(index_storage_path)
     index_string = index_blob.download_as_string()
