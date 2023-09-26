@@ -15,7 +15,7 @@
                 "severity": {
                     "simple": "severity"
                 },
-                "Service Type": {
+                "CrowdStrike Falcon Service Type": {
                     "simple": "service"
                 },
                 "Cloud Region List": {
