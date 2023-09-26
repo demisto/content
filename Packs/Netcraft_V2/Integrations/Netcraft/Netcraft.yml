@@ -82,8 +82,8 @@ script:
   commands:
   - name: netcraft-attack-report
     description: |
-      Report a new attack or authorise an existing attack in the Takedown service.
-      If a takedown for the attack already exists in the Netcraft system it will be authorised, otherwise, a new takedown will be added and authorised.
+      Report a new attack or authorize an existing attack in the Takedown service.
+      If a takedown for the attack already exists in the Netcraft system it will be authorized, otherwise, a new takedown will be added and authorized.
     arguments:
     - name: attack
       required: true
@@ -109,8 +109,8 @@ script:
       - 'false'
     - auto: PREDEFINED
       description: |
-        If set to true, Netcraft will be authorised to start the takedown as soon as the report has been processed.
-        If set to false, the takedown will only be authorised if you have automatic authorisation enabled for the given attack type, or if the takedown is manually authorised later through the web interface.
+        If set to true, Netcraft will be authorized to start the takedown as soon as the report has been processed.
+        If set to false, the takedown will only be authorized if you have automatic authorization enabled for the given attack type, or if the takedown is manually authorized later through the web interface.
       name: force_auth
       defaultValue: 'true'
       predefined:
@@ -225,7 +225,7 @@ script:
         Run the command "netcraft-attack-type-list" to get the list of available types, use the "Name" field of the type for this argument.
       name: attack_types
       isArray: true
-    - description: Filter based on whether and by who the takedown has been authorised.
+    - description: Filter based on whether and by who the takedown has been authorized.
       name: auth_given
       auto: PREDEFINED
       predefined:
@@ -314,7 +314,7 @@ script:
       description: The name of the brand being targeted by the attack.
       type: String
     - contextPath: Netcraft.Takedown.authgiven
-      description: Indicates whether the takedown has been authorised.
+      description: Indicates whether the takedown has been authorized.
       type: Boolean
     - contextPath: Netcraft.Takedown.host
       description: The name of the company responsible for the IP address.
@@ -326,7 +326,7 @@ script:
       description: A custom field which may be provided along with the takedown report.
       type: String
     - contextPath: Netcraft.Takedown.date_authed
-      description: The date and time that the takedown was authorised, in UTC.
+      description: The date and time that the takedown was authorized, in UTC.
       type: Date
     - contextPath: Netcraft.Takedown.stop_monitoring_date
       description: |
@@ -393,13 +393,13 @@ script:
     - contextPath: Netcraft.Takedown.final_outage
       description: |
         The duration (hh:mm:ss) between when the takedown was
-        authorised, and the final time that the attack went offline (final_resolved - date_authed).
+        authorized, and the final time that the attack went offline (final_resolved - date_authed).
       type: String
     - contextPath: Netcraft.Takedown.final_resolved
       description: The date and time that the attack went offline for the final time, in UTC.
       type: Date
     - contextPath: Netcraft.Takedown.first_outage
-      description: The duration (hh:mm:ss) between when the takedown was authorised, and the first time that the attack went offline (first_resolved - date_authed).
+      description: The duration (hh:mm:ss) between when the takedown was authorized, and the first time that the attack went offline (first_resolved - date_authed).
       type: Date
     - contextPath: Netcraft.Takedown.first_resolved
       description: The date and time that the attack first went offline, in UTC.
@@ -476,22 +476,22 @@ script:
       type: String
     - contextPath: Netcraft.Takedown.status_change_uptime
       description: |-
-        The total duration (hh:mm:ss) that the attack was available for after authorisation, as determined by the takedown status changes.
-        i.e. the total amount of time since authorisation that an attack was not in the resolved or resolved (monitoring)  state.'.
+        The total duration (hh:mm:ss) that the attack was available for after authorization, as determined by the takedown status changes.
+        i.e. the total amount of time since authorization that an attack was not in the resolved or resolved (monitoring)  state.'.
       type: String
     - contextPath: Netcraft.Takedown.status
       description: |
         The status of the takedown.
         Possible values:
           "Unverified" - The report has not yet been verified as fraudulent by Netcraft.
-          "Inactive (Monitoring)" - The attack went offline before Netcraft was authorised to start the takedown process, and is being monitored in case it returns.
+          "Inactive (Monitoring)" - The attack went offline before Netcraft was authorized to start the takedown process, and is being monitored in case it returns.
           "Verified" - The report has been verified as fraudulent, but no takedown notices have been sent.
           "Contacted Hosting" - Takedown notices have been sent to the hosting provider
           "Contacted Police" - The takedown has been escalated to local law enforcement.
           "Contacted Upstream" - The takedown has been escalated to the organisation providing connectivity to the hosting provider.
           "Monitoring" - The attack is offline, as is being monitored in case it returns.
           "Resolved" - The attack has been offline for 7 consecutive days, and is no longer being monitored.
-          "Stale" - The attack went offline before Netcraft was authorised to start the takedown process, and is no longer being monitored.
+          "Stale" - The attack went offline before Netcraft was authorized to start the takedown process, and is no longer being monitored.
           "Invalid" - The report is not a valid takedown target.
       type: String
     - contextPath: Netcraft.Takedown.tags
@@ -508,9 +508,9 @@ script:
     - contextPath: Netcraft.Takedown.whois_server
       description: The WHOIS data for the takedown.
       type: String
-    - contextPath: Netcraft.Takedown.authorisation_source
+    - contextPath: Netcraft.Takedown.authorization_source
       description: |-
-        The source of authorisation for the takedown. will be blank if the takedown has not bee authorised.  customer
+        The source of authorization for the takedown. will be blank if the takedown has not been authorized.  customer
         Possible values: "customer" "netcraft".
       type: String
     - contextPath: Netcraft.Takedown.escalation_source
@@ -590,7 +590,7 @@ script:
       default: true
     description: |
       Escalate an automated takedown to a managed takedown.
-      Only attacks that are in an authorised state can be escalated.
+      Only attacks that are in an authorized state can be escalated.
       The minimum access level required to escalate is "Escalator".
       Note that escalating a takedown may cost one or more Netcraft managed credits.
     outputs: []
@@ -671,7 +671,7 @@ script:
       - 'false'
     - auto: PREDEFINED
       description: Filter to attack types which you have chosen to automatically authorize takedowns against.
-      name: auto_authorise
+      name: auto_authorize
       predefined:
       - 'true'
       - 'false'
@@ -706,8 +706,8 @@ script:
     - contextPath: Netcraft.AttackType.auto_escalation
       description: Indicates whether or not you have chosen to automatically escalate takedowns under this type to managed takedowns after the configured escalation period.
       type: Boolean
-    - contextPath: Netcraft.AttackType.auto_authorise
-      description: Indicates whether or not you have chosen to automatically authorise takedowns under this type.
+    - contextPath: Netcraft.AttackType.auto_authorize
+      description: Indicates whether or not you have chosen to automatically authorize takedowns under this type.
       type: Boolean
   - name: netcraft-submission-list
     polling: true

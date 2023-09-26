@@ -4,7 +4,7 @@ import requests
 # flake8: noqa
 
 takedown_list_readable = """### Netcraft Takedowns
-|ID|Auth|Brand|Attack Type|Status|Attack URL|Date Reported|Last Updated|Date Authorised|Date Escalated|First Contact|First Resolved|
+|ID|Auth|Brand|Attack Type|Status|Attack URL|Date Reported|Last Updated|Date Authorized|Date Escalated|First Contact|First Resolved|
 |---|---|---|---|---|---|---|---|---|---|---|---|
 | 30480489 | true | Example Brand | phishing_url | Monitoring | https://l0gin.example.com/app/ | 2023-09-10 14:13:55.120309 | 2023-09-11 12:19:01 UTC | 2023-09-10 14:13:55.120309 | 2023-09-10 14:13:55.120309 | 2023-09-11 11:29:01 UTC | 2023-09-11 12:09:01 UTC |
 """
@@ -84,7 +84,7 @@ takedown_note_list_readable = """### Takedown Notes
 
 
 attack_type_list_readable = """### Takedown Notes
-|Name|Display Name|Base Type|Description|Automated|Auto Escalation|Auto Authorise|
+|Name|Display Name|Base Type|Description|Automated|Auto Escalation|Auto Authorize|
 |---|---|---|---|---|---|---|
 | phishing_url | Phishing URL | url | description | true | true | true |
 | phishing_url2 | Phishing URL2 | url2 | description2 | true | false | false |
@@ -325,7 +325,7 @@ class takedown_list:
                 "attack_type": "phishing_url",
                 "attack_url": "https://l0gin.example.com/app/",
                 "authgiven": True,
-                "authorisation_source": "netcraft",
+                "authorization_source": "netcraft",
                 "certificate": [],
                 "certificate_revoked": "2023-09-11 12:04:01 UTC",
                 "country_code": "us",
@@ -1317,7 +1317,7 @@ class url_report_submit:
 class attack_type_list:
     args = {
         "all_results": "false",
-        "auto_authorise": "true",
+        "auto_authorize": "true",
         "auto_escalation": "true",
         "automated": "true",
         "region": "region",
@@ -1361,7 +1361,7 @@ class attack_type_list:
     outputs = CommandResults(
         outputs=[
             {
-                "auto_authorise": True,
+                "authorize": True,
                 "auto_escalation": True,
                 "automated": True,
                 "base_type": "url",
@@ -1370,7 +1370,7 @@ class attack_type_list:
                 "name": "phishing_url",
             },
             {
-                "auto_authorise": False,
+                "authorize": False,
                 "auto_escalation": False,
                 "automated": True,
                 "base_type": "url2",

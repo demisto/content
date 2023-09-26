@@ -1112,7 +1112,7 @@ tasks:
     task:
       id: d2c0b380-5d8f-488c-8672-a8ba08eea316
       version: -1
-      name: Are there authorised takedowns?
+      name: Are there authorized takedowns?
       type: condition
       iscommand: false
       brand: ""

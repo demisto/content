@@ -3,7 +3,7 @@ Netcraft takedown, submission and screenshot management.
 ## Use Cases
 
 1. Verify the incident image of the reported URL.
-2. Authorise takedowns.
+2. Authorize takedowns.
 3. Escalate takedowns.
 4. Track takedowns.
 5. Submit a report - mail, file, URL.
@@ -40,8 +40,8 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### netcraft-attack-report
 
 ***
-Report a new attack or authorise an existing attack in the Takedown service.
-If a takedown for the attack already exists in the Netcraft system it will be authorised, otherwise, a new takedown will be added and authorised.
+Report a new attack or authorize an existing attack in the Takedown service.
+If a takedown for the attack already exists in the Netcraft system it will be authorized, otherwise, a new takedown will be added and authorized.
 
 
 #### Base Command
@@ -57,7 +57,7 @@ If a takedown for the attack already exists in the Netcraft system it will be au
 | brand | The brand to report the takedown under. If no brand is specified, the brand of the provided "region" will be used. | Optional | 
 | attack_type | The type of attack being reported.<br/>Run the command "netcraft-attack-type-list" to get the list of available types, use the "Name" field of the type for this argument.<br/>. Default is phishing_url. | Optional | 
 | inactive | Set to "true" if the attack is not currently active.<br/>This will place the takedown directly into the "Inactive (Monitoring)" status, which can be used to monitor suspicious sites.<br/>. Possible values are: true, false. Default is false. | Optional | 
-| force_auth | If set to true, Netcraft will be authorised to start the takedown as soon as the report has been processed.<br/>If set to false, the takedown will only be authorised if you have automatic authorisation enabled for the given attack type, or if the takedown is manually authorised later through the web interface.<br/>. Possible values are: true, false. Default is true. | Optional | 
+| force_auth | If set to true, Netcraft will be authorized to start the takedown as soon as the report has been processed.<br/>If set to false, the takedown will only be authorized if you have automatic authorization enabled for the given attack type, or if the takedown is manually authorized later through the web interface.<br/>. Possible values are: true, false. Default is true. | Optional | 
 | malware | Should be set to true if the reported content contains or is related to a computer virus.<br/>This is used to determine the correct attack type in the case where the attack_type argument has not been provided.<br/>. Possible values are: true, false. | Optional | 
 | suspected_fraud_domain | Should be set to true if you believe that the domain name has been registered as part of the fraud.<br/>This will ensure that the registrar is contacted to seek suspension of the domain name.<br/>. Possible values are: true, false. Default is false. | Optional | 
 | password | The password to extract any archived evidence provided via the evidence argument, if necessary. | Optional | 
@@ -122,7 +122,7 @@ Netcraft has a limit of 1,000,000 objects returned within a 24 hour period (movi
 | reporter_email | Filter to takedowns that were reported by the given user. | Optional | 
 | report_source | Filter to takedowns that were reported through the given mechanism. Possible values are: Interface, Phishing Feed, Referer, Forensic, Api, Email Feed, Fraud Detection. | Optional | 
 | attack_types | Filter to takedowns of the given attack type. Multiple values may be provided as a comma-separated list.<br/>Run the command "netcraft-attack-type-list" to get the list of available types, use the "Name" field of the type for this argument.<br/>. | Optional | 
-| auth_given | Filter based on whether and by who the takedown has been authorised. Possible values are: Yes, Yes Customer, Yes Netcraft, No. | Optional | 
+| auth_given | Filter based on whether and by who the takedown has been authorized. Possible values are: Yes, Yes Customer, Yes Netcraft, No. | Optional | 
 | escalated | Filter based on whether and by who the takedown has been escalated. Possible values are: Yes, Yes Customer, Yes Netcraft, No. | Optional | 
 | sort | The key that the list of takedowns should be sorted by. Possible values are: Auth Given, Customer Label, Date Submitted, Hoster, Id, Ip, Language, Last Updated, Registrar, Status. Default is Status. | Optional | 
 | sort_direction | The direction to sort takedowns in with the key specified in the "sort" argument. Possible values are: asc, desc. Default is asc. | Optional | 
@@ -144,11 +144,11 @@ Netcraft has a limit of 1,000,000 objects returned within a 24 hour period (movi
 | Netcraft.Takedown.last_updated | Date | The date and time of the last action taken on the takedown, in UTC. | 
 | Netcraft.Takedown.region | String | The name of the area that the takedown resides in. | 
 | Netcraft.Takedown.target_brand | String | The name of the brand being targeted by the attack. | 
-| Netcraft.Takedown.authgiven | Boolean | Indicates whether the takedown has been authorised. | 
+| Netcraft.Takedown.authgiven | Boolean | Indicates whether the takedown has been authorized. | 
 | Netcraft.Takedown.host | String | The name of the company responsible for the IP address. | 
 | Netcraft.Takedown.registrar | String | The name of the registrar responsible for the domain name used in the attack. | 
 | Netcraft.Takedown.customer_label | String | A custom field which may be provided along with the takedown report. | 
-| Netcraft.Takedown.date_authed | Date | The date and time that the takedown was authorised, in UTC. | 
+| Netcraft.Takedown.date_authed | Date | The date and time that the takedown was authorized, in UTC. | 
 | Netcraft.Takedown.stop_monitoring_date | Date | The date and time that the takedown system stopped monitoring the attack, in UTC. If the attack is still being monitored, an empty string is given. | 
 | Netcraft.Takedown.domain | String | The domain of the url or email address being taken down. This will be blank for an attack with no domain name. | 
 | Netcraft.Takedown.language | String | The language used in the attack \(if it can be determined\). | 
@@ -164,9 +164,9 @@ Netcraft has a limit of 1,000,000 objects returned within a 24 hour period (movi
 | Netcraft.Takedown.deceptive_domain_score | String | The deceptive domain score of the domain. e.g. for the URL https://l0gin.example.com/, this value will contain the deceptive domain score for example.com. | 
 | Netcraft.Takedown.domain_risk_rating | String | A score from 0 to 10 which represents the risk that the domain is hosting a malicious website. e.g. for the url https://l0gin.example.com/, this value wil contain the risk rating for "example.com". This score is distinct from the "deceptive domain score", and takes a range of factors into account, such as the reputation of the hosting provider, age of the domain name, search engine rankings and more. | 
 | Netcraft.Takedown.final_outage | String | The duration \(hh:mm:ss\) between when the takedown was
-authorised, and the final time that the attack went offline \(final_resolved - date_authed\). | 
+authorized, and the final time that the attack went offline \(final_resolved - date_authed\). | 
 | Netcraft.Takedown.final_resolved | Date | The date and time that the attack went offline for the final time, in UTC. | 
-| Netcraft.Takedown.first_outage | Date | The duration \(hh:mm:ss\) between when the takedown was authorised, and the first time that the attack went offline \(first_resolved - date_authed\). | 
+| Netcraft.Takedown.first_outage | Date | The duration \(hh:mm:ss\) between when the takedown was authorized, and the first time that the attack went offline \(first_resolved - date_authed\). | 
 | Netcraft.Takedown.first_resolved | Date | The date and time that the attack first went offline, in UTC. | 
 | Netcraft.Takedown.fwd_owner | String | The owner of the forward DNS infrastructure. | 
 | Netcraft.Takedown.has_phishing_kit | Boolean | Indicates whether the takedown has an associated phishing kit. | 
@@ -185,13 +185,13 @@ authorised, and the final time that the attack went offline \(final_resolved - d
 | Netcraft.Takedown.reverse_dns | String | The output of a reverse DNS lookup on the IP of the attack. | 
 | Netcraft.Takedown.certificate_revoked | String | If the SSL certificate has been revoked, then the date this was detected \(in UTC\) is returned, else "Not revoked" is returned. | 
 | Netcraft.Takedown.screenshot_url | String | The URL\(s\) at which a screenshot of the attack can be found. When returning a single URL as a string \(the default behaviour\) the returned URL will be the best guess of the screenshot which displays the live attack. When returning multiple URLs, the list will be sorted by the time the screenshot was requested, with the earliest first. | 
-| Netcraft.Takedown.status_change_uptime | String | The total duration \(hh:mm:ss\) that the attack was available for after authorisation, as determined by the takedown status changes. i.e. the total amount of time since authorisation that an attack was not in the resolved or resolved \(monitoring\)  state.'. | 
-| Netcraft.Takedown.status | String | The status of the takedown. Possible values:   "Unverified" - The report has not yet been verified as fraudulent by Netcraft.   "Inactive \(Monitoring\)" - The attack went offline before Netcraft was authorised to start the takedown process, and is being monitored in case it returns.   "Verified" - The report has been verified as fraudulent, but no takedown notices have been sent. "Contacted Hosting" - Takedown notices have been sent to the hosting provider. "Contacted Police" - The takedown has been escalated to local law enforcement.   "Contacted Upstream" - The takedown has been escalated to the organisation providing connectivity to the hosting provider.   "Monitoring" - The attack is offline, as is being monitored in case it returns.   "Resolved" - The attack has been offline for 7 consecutive days, and is no longer being monitored.   "Stale" - The attack went offline before Netcraft was authorised to start the takedown process, and is no longer being monitored.   "Invalid" - The report is not a valid takedown target.  | 
+| Netcraft.Takedown.status_change_uptime | String | The total duration \(hh:mm:ss\) that the attack was available for after authorization, as determined by the takedown status changes. i.e. the total amount of time since authorization that an attack was not in the resolved or resolved \(monitoring\)  state.'. | 
+| Netcraft.Takedown.status | String | The status of the takedown. Possible values:   "Unverified" - The report has not yet been verified as fraudulent by Netcraft.   "Inactive \(Monitoring\)" - The attack went offline before Netcraft was authorized to start the takedown process, and is being monitored in case it returns.   "Verified" - The report has been verified as fraudulent, but no takedown notices have been sent. "Contacted Hosting" - Takedown notices have been sent to the hosting provider. "Contacted Police" - The takedown has been escalated to local law enforcement.   "Contacted Upstream" - The takedown has been escalated to the organisation providing connectivity to the hosting provider.   "Monitoring" - The attack is offline, as is being monitored in case it returns.   "Resolved" - The attack has been offline for 7 consecutive days, and is no longer being monitored.   "Stale" - The attack went offline before Netcraft was authorized to start the takedown process, and is no longer being monitored.   "Invalid" - The report is not a valid takedown target.  | 
 | Netcraft.Takedown.tags | String | List of tags applied to the group. | 
 | Netcraft.Takedown.targeted_url | String | The URL which this attack is masquerading as, e.g. the URL of the legitimate login form that a phishing attack is targeting. | 
 | Netcraft.Takedown.site_risk_rating | String | A score from 0 to 10 which represents the risk that the hostname is hosting a malicious website. e.g. for the URL https://l0gin.example.com/, this value will contain the risk rating for l0gin.example.com.  | 
 | Netcraft.Takedown.whois_server | String | The WHOIS data for the takedown. | 
-| Netcraft.Takedown.authorisation_source | String | The source of authorisation for the takedown. will be blank if the takedown has not bee authorised.  customer Possible values: "customer" "netcraft". | 
+| Netcraft.Takedown.authorization_source | String | The source of authorization for the takedown. will be blank if the takedown has not been authorized.  customer Possible values: "customer" "netcraft". | 
 | Netcraft.Takedown.escalation_source | String | The source of escalation for the takedown. will be blank if the takedown has not been escalated. Possible values: "customer" "netcraft". | 
 | Netcraft.Takedown.restart_date | String | The latest date and time, in UTC, that the takedown was restarted, i.e. went from the "resolved \(monitoring\)" status to a contacted status. Will be empty if the takedown ha never been restarted.'. | 
 | Netcraft.Takedown.gsb_block_status | Unknown | An array of objects containing the Google Safe Browsing block status on all platforms \(iOS, Android and Desktop\). Will be an empty array if the takedown is not a Phishing URL takedown, or if Netcraft hasn't tested the GSB block status for the takedown.  | 
@@ -212,7 +212,7 @@ authorised, and the final time that the attack went offline \(final_resolved - d
                 "attack_type": "survey_scam",
                 "attack_url": "https://www.example.com",
                 "authgiven": "0",
-                "authorisation_source": "",
+                "authorization_source": "",
                 "certificate": {
                     "spki_sha1": "a1a15014c6b818bad729ee738a63e2ea9518a1a1",
                     "spki_sha256": "a1a12eaa37f2f3eb1046a195d73a1a112015967afa18948c431514f20671a1a1",
@@ -279,7 +279,7 @@ authorised, and the final time that the attack went offline \(final_resolved - d
                 "attack_type": "fake_shop",
                 "attack_url": "https://www.example.com/",
                 "authgiven": "0",
-                "authorisation_source": "",
+                "authorization_source": "",
                 "certificate": {
                     "spki_sha1": "a1a15014c6b818bad729ee738a63e2ea9518a1a1",
                     "spki_sha256": "a1a12eaa37f2f3eb1046a195d73a1a112015967afa18948c431514f20671a1a1",
@@ -348,7 +348,7 @@ authorised, and the final time that the attack went offline \(final_resolved - d
                 "attack_type": "fake_shop",
                 "attack_url": "http://www.example.com/",
                 "authgiven": "0",
-                "authorisation_source": "",
+                "authorization_source": "",
                 "certificate": {
                     "spki_sha1": "a1a15014c6b818bad729ee738a63e2ea9518a1a1",
                     "spki_sha256": "a1a12eaa37f2f3eb1046a195d73a1a112015967afa18948c431514f20671a1a1",
@@ -421,7 +421,7 @@ authorised, and the final time that the attack went offline \(final_resolved - d
 #### Human Readable Output
 
 >### Netcraft Takedowns
->|ID|Auth|Brand|Attack Type|Status|Attack URL|Date Reported|Last Updated|Date Authorised|Date Escalated|First Inactive (Monitoring)|First Resolved|
+>|ID|Auth|Brand|Attack Type|Status|Attack URL|Date Reported|Last Updated|Date Authorized|Date Escalated|First Inactive (Monitoring)|First Resolved|
 >|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 45535866 | false | Cortex XSOAR | survey_scam | Verified | https:<span>//</span>ganu.dynamicelevate.com/ze/xufawa/namu/index.php?rpclk=8wocgxnwZlVgWqCl4amyElWSdU%2B8SEBm6%2F1vWOh6CEpdwEcFOH6aEWZY8JIqG1yHriIwkvzBnonP07noIGpSFWVojTWPE%2FqBGCYHt2%2FxNJG7sMIb73v2Ba1AdgiFoBWGKZamryDq2xk8JtxfVtgUclt4PWFF3I1CWFqXAH%2FvbFg%2F1Mv%2F0EOWJS6dUJy2IWbtCJvNnuBcJWYF0bEosXgsnv5KmRQDEVAhJjIp4eyvMJr8yPmJWCYMKCH0QJS8kqmnp5AWegynT78OnZyPx1Gf7LS4wbWQ5lB3V3CYpBjgDXmH8UgS69M3RU1HXvQxMXTeHobGqoqBL1odDt5026Cvg014jKzORjPbPRX5O46z6siX%2B0%2BNqGkmwJj4NOmAp%2B%2Bcr07NFz2PRkTnzxhUOULhDux6dICLkRn0Yx30fsQWOznrGGF27ipnKVFY2Ipaa76vpNWzhrklt%2FZhTlWWsS0SsBR0yEKyQDyk6qVv%2BK8DMRA4lZf1XZfY2hNGLJ6nwMVApzIt5iMdgKL78roTKNR3lVSZ6w8rtIEB2NtiiOxFF9ikytLlIHQXSevd6fHvSuXeb3n6Omdyj3ONKIZY%2B3%2FjiIXuPplxffD9kv5dGR2QgXK93cMbhWi8uajt5pHQH3BEQcBAJO%2BcHmh6auGjLuzGCbaWVkueArhTPnw83%2FoI%2BVGEPa7VdwsBJiV55QBTO8%2BWoazxW70VZ4fpKeTA8xB2f3Tg9GQ%2FpdwwdT24f%2BUbnYPgzkIqSqU%2FZhf%2FFQCi2JP0wwE7ffh7T%2Bz0il%2Fkb4EaYEVIpAUdcG5q%2BxJt%2BrIn8Xrw83Hh%2Bci6gSbGwU1A1TWSresXSX01EJ8%2F3Guf2C%2FT0DM0CwpbAFJxz22bILkDOoFx6ICxFKNaKTZcjtKGjrgQfoxhWr%2FCH5%2BU%2B4FhBp6iz8tw6gSR5kxQZYiYTZtoJjJPsHIX5wGV2zYM%2B7LXp7f4EP0Wy%2FS1Pm1ryAiPaIbUUbbh4mWFzwFroDjNt43lD6VK3G3RbpWHI0Fo5k%2F6wlFhev%2Blq6qCeS02P3arwPrF0Qcv%2FGWeFI5Bq2H7LUs0ToCHYUa%2FJo4BA%2Bji0v6WlRN1DS7%2F7k%2F1Zw4ykzxgZN8f712rnKsKLCKIp0AidTPWuVm3DaSk5LRKnHpvMIXYFSus99BSuBqcMGl5J%2BAP9qwXVbtsvPxkr4E%2BhmWRPzaT7At5%2BZen%2B%2BE4f6TWqrDimFbMJoYyiqzxloGQYU%2Fm0FMZhRyicVPXHDg1Y2qWEk8Qh0WtjyQq2jBWuZTDlMixP4kpTU4EaXSXgJsWf5jfIQmZLICAuNWRU3ZJTXB0Q%2FoFOE0dWjKpZ%2BBqIj6ei6hivIUU8F0NblPo98zbIgl%2FKjcBVgq9s3thc%2B257QwNf3D9zKyU0%2FoIHDMAcCe4qIqfMZ6mQ2dTVNbfMe0GvjUHfX9qi2j0RCDLO9WZxCAsDM6eZF7c7TlBrn4DNmugpwRAkdJeUim52UcXOQyVpmtmv0UzOGttUS1SKVOBfhSUZaA5QZbWUHeKtqJnxlRepFBIr2NLtv3IUs1gV4aYpE9lrlbCLuunKuNxgfRhsJbxmt7yxfPnYJ0THmqM%2Fzi2ucbal91xCZN3pV35J8KV8BNt3dXtS38UazqPtnAIfI6W77OBItaQEQ5C5FtpWw2gPGqjEK2%2FscgRBTHWElB3FGGdyiYEE1ymLRJudGux4vdsbndaP6NRKgraYt83HkIWxukpvayoLGtzyAgGNS7mAuoPeILzGwSpz3Vu7lWjBHRbWUY5%2BdRVBsXUcWuj7T6sqGf8pQX7j80rPZ%2ByDHO5agY7ukNOKe7%2BcM1VHhZOEpDDnj5MBp8O%2BpQqxX7tgszsMG9s9YpmmIaztnf6hYo6dM4G3bKae%2FVgNWRPZQb692UHqLGoZqinMP3MqFDfxxpPFVJlsb2yFvqeQUhYOVZlqIASA9sN8nAyLXv%2BhymUTzdyx0lvgqk56M9%2FZGlOkoFibOsAfRp1at4nptRLJ3QZVMg7hI3%2BQs0HjuVRvgF%2Fu5%2BZ5KvytxfanXfdqaOstxSrq7Q1BPW1MRIZ0xIyal%2FYsdEKxMqCr20GOOaha4T1bsj9R7d6lUBJ1HNEXC3BFgPSz0x3%2BUBGBtI7tD%2F6Te5dJ2brm0NmOh%2Fpv1%2Bd%2Bg0RyJoYruyHA2LsMTYP54l2vC30ygGnl7o%2BRLwBMZCkFvKgdD1lP%2BYIqcdUE5xNe4YyJN7nAwPkfq5nro1WlOybHWpwnHmRBu9RSE2hEV4IfyQPLCuBAQbrxdW4sOvnqgxOA7fGqqurj%2BDdUDgcmtzY8tewKpBCBPUV%2BEKGlRTHlOSlilHWu3VPqJVkggviJ2QF8XDa5NISy1nJ6t%2F3D4bfC0y72r%2F%2FsK%2BdRqFvL%2FBcavzhqU1H8jVTvIDz%2Bq9ju2l6%2FVTl2zR1nPg2P2kOWr3u2EDnrwbymtGMEXf39JbldX8UII4JTKNfVuJIYzK8VWqDGaQbmT2vN3Cfh17DD%2B%2BNF%2FsMNl2KL1pgF%2BQtb%2FRGy4Dfs0vWy%2B0Q5HlTwbRVO1COe6QNvOvYtrKY7dlED1le6dn8joEZmptJMx%2BhRd08JARuxfsgOK917RlcAwAYxJh8qgRoJ9ZdtJ9BscTcAhTkclWUD%2Flr75io%3A%3Adeb2860c8e29b6c68bd296fe1cd42554&p=yyKy6P3Jm1mmQPoGQYvkuk6Ug3gYBg%3D%3D%3A%3Afb77cfae6566e293f1c681f8c6c33b5d&oho=t4.radiantascendhq.com&ptf=b932a9b8ce22aed66461b2591cbbb5ed | 2023-09-19 19:05:21 UTC | 2023-09-19 19:27:06 UTC | N/A | N/A | N/A | N/A |
 >| 45510294 | false | Cortex XSOAR | fake_shop | Verified | https:<span>//</span>www.example.com/ | 2023-09-19 04:34:18 UTC | 2023-09-19 12:50:53 UTC | N/A | N/A | 2023-09-19 12:18:20 UTC | N/A |
@@ -468,7 +468,7 @@ There is no context output for this command.
 
 ***
 Escalate an automated takedown to a managed takedown.
-Only attacks that are in an authorised state can be escalated.
+Only attacks that are in an authorized state can be escalated.
 The minimum access level required to escalate is "Escalator".
 Note that escalating a takedown may cost one or more Netcraft managed credits.
 
@@ -622,7 +622,7 @@ Get information on the attack types that are available under a given region.
 | --- | --- | --- |
 | automated | Filter to attack types where automated takedowns are available. Possible values are: true, false. | Optional | 
 | auto_escalation | Filter to attack types which you have chosen to escalate to managed takedowns after the configured escalation period. Possible values are: true, false. | Optional | 
-| auto_authorise | Filter to attack types which you have chosen to automatically authorize takedowns against. Possible values are: true, false. | Optional | 
+| auto_authorize | Filter to attack types which you have chosen to automatically authorize takedowns against. Possible values are: true, false. | Optional | 
 | region | The name of the region to create a takedown under.<br/>If not provided, the region specified in the instance configuration will be used.<br/>. | Optional | 
 | all_results | Whether to retrieve all attack types that match the filters. If set to false, only 50 will be returned. Possible values are: false, true. Default is false. | Optional | 
 
@@ -636,7 +636,7 @@ Get information on the attack types that are available under a given region.
 | Netcraft.AttackType.description | String | A short description of the attack type. | 
 | Netcraft.AttackType.automated | Boolean | Indicates whether or not automated takedowns are available for this attack type. | 
 | Netcraft.AttackType.auto_escalation | Boolean | Indicates whether or not you have chosen to automatically escalate takedowns under this type to managed takedowns after the configured escalation period. | 
-| Netcraft.AttackType.auto_authorise | Boolean | Indicates whether or not you have chosen to automatically authorise takedowns under this type. | 
+| Netcraft.AttackType.auto_authorize | Boolean | Indicates whether or not you have chosen to automatically authorize takedowns under this type. | 
 
 #### Command example
 ```!netcraft-attack-type-list all_results="false" automated=true```
@@ -646,7 +646,7 @@ Get information on the attack types that are available under a given region.
     "Netcraft": {
         "AttackType": [
             {
-                "auto_authorise": true,
+                "auto_authorize": true,
                 "auto_escalation": false,
                 "automated": true,
                 "base_type": "url",
@@ -655,7 +655,7 @@ Get information on the attack types that are available under a given region.
                 "name": "phishing_url"
             },
             {
-                "auto_authorise": true,
+                "auto_authorize": true,
                 "auto_escalation": false,
                 "automated": true,
                 "base_type": "url",
@@ -664,7 +664,7 @@ Get information on the attack types that are available under a given region.
                 "name": "dropsite"
             },
             {
-                "auto_authorise": true,
+                "auto_authorize": true,
                 "auto_escalation": false,
                 "automated": true,
                 "base_type": "url",
@@ -673,7 +673,7 @@ Get information on the attack types that are available under a given region.
                 "name": "fake_mobile_app"
             },
             {
-                "auto_authorise": true,
+                "auto_authorize": true,
                 "auto_escalation": false,
                 "automated": true,
                 "base_type": "url",
@@ -682,7 +682,7 @@ Get information on the attack types that are available under a given region.
                 "name": "phishkit_archive"
             },
             {
-                "auto_authorise": true,
+                "auto_authorize": true,
                 "auto_escalation": false,
                 "automated": true,
                 "base_type": "url",
@@ -691,7 +691,7 @@ Get information on the attack types that are available under a given region.
                 "name": "malware_c2"
             },
             {
-                "auto_authorise": true,
+                "auto_authorize": true,
                 "auto_escalation": false,
                 "automated": true,
                 "base_type": "url",
@@ -700,7 +700,7 @@ Get information on the attack types that are available under a given region.
                 "name": "malware_c2_c2"
             },
             {
-                "auto_authorise": true,
+                "auto_authorize": true,
                 "auto_escalation": false,
                 "automated": true,
                 "base_type": "url",
@@ -709,7 +709,7 @@ Get information on the attack types that are available under a given region.
                 "name": "malware_c2_distribution"
             },
             {
-                "auto_authorise": true,
+                "auto_authorize": true,
                 "auto_escalation": false,
                 "automated": true,
                 "base_type": "url",
@@ -718,7 +718,7 @@ Get information on the attack types that are available under a given region.
                 "name": "malware_c2_payment"
             },
             {
-                "auto_authorise": true,
+                "auto_authorize": true,
                 "auto_escalation": false,
                 "automated": true,
                 "base_type": "url",
@@ -727,7 +727,7 @@ Get information on the attack types that are available under a given region.
                 "name": "facebook_brand_infringement"
             },
             {
-                "auto_authorise": true,
+                "auto_authorize": true,
                 "auto_escalation": false,
                 "automated": true,
                 "base_type": "url",
@@ -736,7 +736,7 @@ Get information on the attack types that are available under a given region.
                 "name": "instagram_brand_infringement"
             },
             {
-                "auto_authorise": true,
+                "auto_authorize": true,
                 "auto_escalation": false,
                 "automated": true,
                 "base_type": "url",
@@ -745,7 +745,7 @@ Get information on the attack types that are available under a given region.
                 "name": "linkedin_brand_infringement"
             },
             {
-                "auto_authorise": true,
+                "auto_authorize": true,
                 "auto_escalation": false,
                 "automated": true,
                 "base_type": "url",
@@ -754,7 +754,7 @@ Get information on the attack types that are available under a given region.
                 "name": "twitter_brand_infringement"
             },
             {
-                "auto_authorise": true,
+                "auto_authorize": true,
                 "auto_escalation": false,
                 "automated": true,
                 "base_type": "url",
@@ -763,7 +763,7 @@ Get information on the attack types that are available under a given region.
                 "name": "youtube"
             },
             {
-                "auto_authorise": true,
+                "auto_authorize": true,
                 "auto_escalation": false,
                 "automated": true,
                 "base_type": "url",
@@ -772,7 +772,7 @@ Get information on the attack types that are available under a given region.
                 "name": "skype_brand_infringement"
             },
             {
-                "auto_authorise": true,
+                "auto_authorize": true,
                 "auto_escalation": false,
                 "automated": true,
                 "base_type": "url",
@@ -781,7 +781,7 @@ Get information on the attack types that are available under a given region.
                 "name": "telegram_brand_infringement"
             },
             {
-                "auto_authorise": true,
+                "auto_authorize": true,
                 "auto_escalation": false,
                 "automated": true,
                 "base_type": "url",
@@ -790,7 +790,7 @@ Get information on the attack types that are available under a given region.
                 "name": "weibo_brand_infringement"
             },
             {
-                "auto_authorise": true,
+                "auto_authorize": true,
                 "auto_escalation": false,
                 "automated": true,
                 "base_type": "url",
@@ -799,7 +799,7 @@ Get information on the attack types that are available under a given region.
                 "name": "pinterest_brand_infringement"
             },
             {
-                "auto_authorise": true,
+                "auto_authorize": true,
                 "auto_escalation": false,
                 "automated": true,
                 "base_type": "url",
@@ -808,7 +808,7 @@ Get information on the attack types that are available under a given region.
                 "name": "tiktok_brand_infringement"
             },
             {
-                "auto_authorise": true,
+                "auto_authorize": true,
                 "auto_escalation": false,
                 "automated": true,
                 "base_type": "url",
@@ -817,7 +817,7 @@ Get information on the attack types that are available under a given region.
                 "name": "whatsapp_brand_infringement"
             },
             {
-                "auto_authorise": true,
+                "auto_authorize": true,
                 "auto_escalation": false,
                 "automated": true,
                 "base_type": "url",
@@ -826,7 +826,7 @@ Get information on the attack types that are available under a given region.
                 "name": "adwords"
             },
             {
-                "auto_authorise": true,
+                "auto_authorize": true,
                 "auto_escalation": false,
                 "automated": true,
                 "base_type": "url",
@@ -835,7 +835,7 @@ Get information on the attack types that are available under a given region.
                 "name": "bing_ad"
             },
             {
-                "auto_authorise": true,
+                "auto_authorize": true,
                 "auto_escalation": false,
                 "automated": true,
                 "base_type": "malware_c2_ip",
@@ -844,7 +844,7 @@ Get information on the attack types that are available under a given region.
                 "name": "malware_c2_ip"
             },
             {
-                "auto_authorise": true,
+                "auto_authorize": true,
                 "auto_escalation": false,
                 "automated": true,
                 "base_type": "malware_c2_ip",
@@ -853,7 +853,7 @@ Get information on the attack types that are available under a given region.
                 "name": "malware_c2_mailserver"
             },
             {
-                "auto_authorise": true,
+                "auto_authorize": true,
                 "auto_escalation": false,
                 "automated": true,
                 "base_type": "email",
@@ -862,7 +862,7 @@ Get information on the attack types that are available under a given region.
                 "name": "advance_fee_fraud"
             },
             {
-                "auto_authorise": true,
+                "auto_authorize": true,
                 "auto_escalation": false,
                 "automated": true,
                 "base_type": "server",
@@ -871,7 +871,7 @@ Get information on the attack types that are available under a given region.
                 "name": "sends_phishing_url"
             },
             {
-                "auto_authorise": true,
+                "auto_authorize": true,
                 "auto_escalation": false,
                 "automated": true,
                 "base_type": "server",
@@ -880,7 +880,7 @@ Get information on the attack types that are available under a given region.
                 "name": "sends_malware_url"
             },
             {
-                "auto_authorise": true,
+                "auto_authorize": true,
                 "auto_escalation": false,
                 "automated": true,
                 "base_type": "server",
@@ -889,7 +889,7 @@ Get information on the attack types that are available under a given region.
                 "name": "sends_malware_attachments"
             },
             {
-                "auto_authorise": true,
+                "auto_authorize": true,
                 "auto_escalation": false,
                 "automated": true,
                 "base_type": "server",
@@ -905,7 +905,7 @@ Get information on the attack types that are available under a given region.
 #### Human Readable Output
 
 >### Takedown Notes
->|Name|Display Name|Base Type|Description|Automated|Auto Escalation|Auto Authorise|
+>|Name|Display Name|Base Type|Description|Automated|Auto Escalation|Auto Authorize|
 >|---|---|---|---|---|---|---|
 >| phishing_url | Phishing URL | url | The URL for a webpage which impersonates your company in an attempt to trick users into submitting their login details. Usually the URL is linked to in an email sent to your users. | true | false | true |
 >| dropsite | Phishing Dropsite | url | The URL of a webpage which receives user's details from a HTML attachment sent to users via email. | true | false | true |

@@ -562,6 +562,8 @@ def takedown_list_command(args: dict, client: Client) -> CommandResults:
                 'authgiven', 'escalated', 'has_phishing_kit',
                 'false_positive', 'managed'
             )
+            # Translates from British English to American.
+            takedown['authorization_source'] = takedown.pop('authorisation_source', None)
         return response
 
     def response_to_readable(response: list[dict]) -> str:
@@ -574,7 +576,7 @@ def takedown_list_command(args: dict, client: Client) -> CommandResults:
             'attack_url': 'Attack URL',
             'date_submitted': 'Date Reported',
             'last_updated': 'Last Updated',
-            'date_authed': 'Date Authorised',
+            'date_authed': 'Date Authorized',
             'date_escalated': 'Date Escalated',
             'first_contact': 'First Contact',
             'first_inactive': 'First Inactive (Monitoring)',
@@ -708,25 +710,34 @@ def takedown_note_list_command(args: dict, client: Client) -> CommandResults:
 
 def attack_type_list_command(args: dict, client: Client) -> CommandResults:
 
+    def response_to_context(response: list[dict]) -> list[dict]:
+        '''Translates from British English to American.'''
+        for attack_type in response:
+            attack_type['auto_authorize'] = attack_type.pop('auto_authorise', None)
+        return response
+
     def response_to_readable(response: list[dict]) -> str:
         return tableToMarkdown(
             'Takedown Notes', response,
             [
                 'name', 'display_name', 'base_type', 'description',
-                'automated', 'auto_escalation', 'auto_authorise',
+                'automated', 'auto_escalation', 'auto_authorize',
             ],
             headerTransform=string_to_table_header,
             removeNull=True
         )
 
     response = client.attack_type_list(
-        sub_dict(args, 'auto_escalation', 'auto_authorise', 'automated')
-        | {'region': args.get('region') or PARAMS['region']}
+        sub_dict(args, 'auto_escalation', 'automated')
+        | {
+            'auto_authorise': args.get('auto_authorize'), 
+            'region': args.get('region') or PARAMS['region']
+        }
     )
     response = response if argToBoolean(args['all_results']) else response[:50]
     return CommandResults(
         outputs_prefix='Netcraft.AttackType',
-        outputs=response,
+        outputs=response_to_context(response),
         readable_output=response_to_readable(response)
     )
 
