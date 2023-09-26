@@ -267,7 +267,7 @@ def validate_service_principal_input(args: dict) -> tuple[str, str]:
     object_id = args.get('id')
     app_client_id = args.get('app_id')
     if not (object_id or app_client_id):
-        raise DemistoException("User must provide one of (object) id or application id.")
+        raise DemistoException("Either the (object's) `id` or the `application_id` arguments must be provided.")
 
     # if both are provided, pass the object_id
     if object_id:
