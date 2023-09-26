@@ -55,3 +55,179 @@ Creates a new IAM Identity Center user for your AWS account.
 #### Command Example
 ```!aws-iam-identitycenter-create-user userName=Test familyName=Test givenName=Test userEmailAddress=test@test.com displayName="Test Test"```
 
+### aws-iam-identitycenter-add-user-to-group
+***
+Adds the specified user to the specified group.
+
+
+#### Base Command
+
+`aws-iam-identitycenter-add-user-to-group`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| userName | The name of the user to create. | Required | 
+| groupName | The group the user will be added to. | Required | 
+
+
+#### Command Example
+```!aws-iam-identitycenter-add-user-to-group userName=Test groupName=Test```
+
+### aws-iam-identitycenter-get-group
+***
+The name of the group to search.
+
+
+#### Base Command
+
+`aws-iam-identitycenter-get-group`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| groupName | The name of the group to search. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.IAM.IdentityCenter.Groups | string | The stable and unique string identifying the group. | 
+
+
+#### Command Example
+```!aws-iam-identitycenter-get-group groupName=Test```
+
+
+### aws-iam-identitycenter-get-user
+***
+Retrieves information about the specified IAM user, including the user's creation date, path, unique ID, and ARN.
+
+
+#### Base Command
+
+`aws-iam-identitycenter-get-user`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| userName | The name of the user to search. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.IAM.IdentityCenter.Users.UserName | string | The username of the user. | 
+| AWS.IAM.IdentityCenter.Users.UserId | string | The stable and unique string identifying the user. | 
+| AWS.IAM.IdentityCenter.Users.Email | string | The User Email Address. | 
+| AWS.IAM.IdentityCenter.Users.DisplayName | string | The user Display Name. | 
+
+
+#### Command Example
+```!aws-iam-identitycenter-get-user userName=Test```
+
+### aws-iam-identitycenter-get-user-by-email
+***
+Retrieves information about the specified IAM user using the email address, including the user's creation date, path, unique ID, and ARN.
+
+
+#### Base Command
+
+`aws-iam-identitycenter-get-user-by-email`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| emailAddress | The name of the user to search. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.IAM.IdentityCenter.Users.UserName | string | The username of the user. | 
+| AWS.IAM.IdentityCenter.Users.UserId | string | The stable and unique string identifying the user. | 
+| AWS.IAM.IdentityCenter.Users.Email | string | The User Email Address. | 
+| AWS.IAM.IdentityCenter.Users.DisplayName | string | The user Display Name. | 
+
+#### Command Example
+```!aws-iam-identitycenter-get-user-by-email emailAddress=Test@Test.LOCAL```
+
+### aws-iam-identitycenter-list-groups
+***
+Lists all the IAM groups in the AWS account
+
+
+#### Base Command
+
+`aws-iam-identitycenter-list-groups`
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.IAM.IdentityCenter.Groups.GroupId | string | The group ID. | 
+| AWS.IAM.IdentityCenter.Groups.DisplayName | string | The group name | 
+
+#### Command Example
+```!aws-iam-identitycenter-list-groups```
+
+### aws-iam-identitycenter-list-groups-for-user
+***
+Lists the IAM groups that the specified IAM user belongs to.
+
+
+#### Base Command
+
+`aws-iam-identitycenter-list-groups-for-user`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| userName | The username of the IAM user. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.IAM.IdentityCenter.Users.GroupMemeberships.GroupId | string | The group ID. | 
+| AWS.IAM.IdentityCenter.Users.GroupMemeberships.MembershipId | string | This ID is used as a unique string to link between the user and group | 
+
+#### Command Example
+```!aws-iam-identitycenter-list-groups-for-user userName=Test```
+
+### aws-iam-identitycenter-list-users
+***
+Lists the IAM users, returns all users in the AWS account.
+
+
+#### Base Command
+
+`aws-iam-identitycenter-list-users`
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.IAM.IdentityCenter.Users.UserName | string | The username of each IAM user. | 
+| AWS.IAM.IdentityCenter.Users.UserId | string | The User ID for each IAM User | 
+
+#### Command Example
+```!aws-iam-identitycenter-list-users```
+
+### aws-iam-identitycenter-remove-user-from-all-groups
+***
+This will remove the entered user from all groups/memberships
+
+
+#### Base Command
+
+`aws-iam-identitycenter-remove-user-from-all-groups`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| userName | The username of the IAM user. | Required | 
+
+
+#### Command Example
+```!aws-iam-identitycenter-remove-user-from-all-groups userName=Test```
