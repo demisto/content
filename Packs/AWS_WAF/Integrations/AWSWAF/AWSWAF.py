@@ -2,13 +2,18 @@ import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 from AWSApiModule import *  # noqa: E402
-from typing import TYPE_CHECKING, Callable, Tuple
+from typing import TYPE_CHECKING, Callable, Tuple, Any, List
 
 # The following import are used only for type hints and autocomplete.
 # It is not used at runtime, and not exist in the docker image.
 if TYPE_CHECKING:
     from mypy_boto3_wafv2 import WAFV2Client
-
+    from mypy_boto3_wafv2.type_defs import (
+        RegexTypeDef,
+        UpdateRuleGroupResponseTypeDef,
+        RuleOutputTypeDef,
+        VisibilityConfigTypeDef
+    )
 
 ''' CONSTANTS '''
 
@@ -148,7 +153,7 @@ def get_tags_dict_from_args(tag_keys: list, tag_values: list) -> list:
     return [{'Key': k, 'Value': v} for k, v in zip(tag_keys, tag_values)]
 
 
-def build_regex_pattern_object(regex_patterns: list) -> List[dict]:
+def build_regex_pattern_object(regex_patterns: list) -> List["RegexTypeDef"]:
     """
     Creates a list of dictionaries which represent a regex set object
     Args:
@@ -360,7 +365,7 @@ def build_regex_match_statement(web_request_component: str,
     }
 
 
-def build_new_rule_object(args: dict, rule_group_visibility_config: dict,
+def build_new_rule_object(args: dict, rule_group_visibility_config: "VisibilityConfigTypeDef",
                           build_rule_func: Callable[[dict], dict]) -> dict:
     """
     Creates a country rule object that can be added to a rule group rules list
@@ -425,7 +430,7 @@ def append_new_rule(rules: list, rule: dict) -> list:
     return updated_rules
 
 
-def get_required_response_fields_from_rule_group(client: "WAFV2Client", kwargs: dict) -> Tuple[list, dict, str]:
+def get_required_response_fields_from_rule_group(client: "WAFV2Client", kwargs: dict) -> Tuple[List["RuleOutputTypeDef"], "VisibilityConfigTypeDef", str]:
     """
     Gets all the fields from the response that are required for the update request
     Args:
@@ -440,7 +445,7 @@ def get_required_response_fields_from_rule_group(client: "WAFV2Client", kwargs: 
     rule_group = response.get('RuleGroup', {})
     rules = rule_group.get('Rules', [])
     rule_group_visibility_config = rule_group.get('VisibilityConfig', {})
-    lock_token = response.get('LockToken')
+    lock_token = response.get('LockToken', '')
 
     return rules, rule_group_visibility_config, lock_token
 
@@ -452,7 +457,7 @@ def update_rule_group_rules(client: "WAFV2Client",
                             kwargs: dict,
                             lock_token: str,
                             updated_rules: list,
-                            rule_group_visibility_config: dict) -> dict:  # pragma: no cover
+                            rule_group_visibility_config: "VisibilityConfigTypeDef") -> "UpdateRuleGroupResponseTypeDef":  # pragma: no cover
     """ Updates rule group with new rules list"""
     kwargs |= {'LockToken': lock_token,
                'Rules': updated_rules,
@@ -468,7 +473,7 @@ def update_rule_group_rules(client: "WAFV2Client",
 def connection_test(client: "WAFV2Client") -> str:  # pragma: no cover
     """ Command to test the connection to the API"""
     try:
-        client.list_ip_sets(Scope=SCOPE_MAP[DEFAULT_SCOPE])
+        client.list_ip_sets(Scope=SCOPE_MAP[DEFAULT_SCOPE])  # type: ignore[arg-type]
     except Exception as e:
         raise DemistoException(f'Failed to execute test module. Error: {str(e)}')
 
@@ -538,7 +543,7 @@ def update_ip_set_command(client: "WAFV2Client", args: dict) -> CommandResults:
     get_response = client.get_ip_set(**kwargs)
 
     lock_token = get_response.get('LockToken', '')
-    original_addresses = get_response.get('IPSet', {}).get('Addresses')
+    original_addresses = get_response.get('IPSet', {}).get('Addresses', [])
     if not overwrite:
         addresses_to_update.extend(original_addresses)
 
@@ -557,7 +562,7 @@ def update_ip_set_command(client: "WAFV2Client", args: dict) -> CommandResults:
 
 def list_ip_set_command(client: "WAFV2Client", args: dict) -> CommandResults:
     """ Command to get a list of all IP sets"""
-    kwargs = {
+    kwargs: dict[str, Any] = {
         'Scope': SCOPE_MAP[args.get('scope') or DEFAULT_SCOPE],
         'Limit': arg_to_number(args.get('limit')) or 50
     }
@@ -663,7 +668,7 @@ def update_regex_set_command(client: "WAFV2Client", args: dict) -> CommandResult
     get_response = client.get_regex_pattern_set(**kwargs)
 
     lock_token = get_response.get('LockToken', '')
-    original_patterns = get_response.get('RegexPatternSet', {}).get('RegularExpressionList')
+    original_patterns = get_response.get('RegexPatternSet', {}).get('RegularExpressionList', [])
     if not overwrite:
         patterns_to_update.extend(original_patterns)
 
@@ -682,7 +687,7 @@ def update_regex_set_command(client: "WAFV2Client", args: dict) -> CommandResult
 
 def list_regex_set_command(client: "WAFV2Client", args: dict) -> CommandResults:
     """ Command to get a list of all regex sets"""
-    kwargs = {
+    kwargs: dict[str, Any] = {
         'Scope': SCOPE_MAP[args.get('scope') or DEFAULT_SCOPE],
         'Limit': arg_to_number(args.get('limit')) or 50
     }
@@ -727,7 +732,7 @@ def delete_regex_set_command(client: "WAFV2Client", args: dict) -> CommandResult
 
 def list_rule_group_command(client: "WAFV2Client", args: dict) -> CommandResults:
     """ Command to get a list of all rule groups"""
-    kwargs = {
+    kwargs: dict[str, Any] = {
         'Scope': SCOPE_MAP[args.get('scope') or DEFAULT_SCOPE],
         'Limit': arg_to_number(args.get('limit')) or 50
     }
@@ -1059,7 +1064,7 @@ def main() -> None:  # pragma: no cover
                                retries=retries)
         args = demisto.args()
         command = demisto.command()
-        client = aws_client.aws_session(service=SERVICE, region=args.get('region'))
+        client: "WAFV2Client" = aws_client.aws_session(service=SERVICE, region=args.get('region'))
 
         if command == 'test-module':
             # This is the call made when pressing the integration test button.
