@@ -1,0 +1,8 @@
+{
+    "proofpoint_email_security_raw": {
+        "guid": {
+            "type": "string",
+            "is_array": false
+        }
+    }
+}
