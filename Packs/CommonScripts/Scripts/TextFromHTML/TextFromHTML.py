@@ -34,32 +34,29 @@ def get_body(html: str, html_tag: str, allow_fallback: bool = False):
     return ''
 
 
-def text_from_html(args: dict):
-    html = args['html']
-    html_tag = args.get('html_tag', 'body')
-    allow_fallback = str(args.get('allow_body_fallback', 'false')).lower() == 'true'
-    replace_line_breaks = str(args.get('replace_line_breaks', 'false')).lower() == 'true'
-    trim_result = str(args.get('trim_result', 'false')).lower() == 'true'
-
-    body = get_body(html, html_tag, allow_fallback)
-    data = get_plain_text(body, replace_line_breaks, trim_result)
-
-    return data if data != '' else 'Could not extract text'
-
-
 def main():
     try:
-        text = text_from_html(demisto.args())
-        context_path = demisto.args().get('context_path', None)
+        args = demisto.args()
+        html = args['html']
+        html_tag = args.get('html_tag', 'body')
+        allow_fallback = str(args.get('allow_body_fallback', 'false')).lower() == 'true'
+        replace_line_breaks = str(args.get('replace_line_breaks', 'false')).lower() == 'true'
+        trim_result = str(args.get('trim_result', 'false')).lower() == 'true'
+        context_path = str(demisto.args().get('output_to_context', 'false')).lower() == 'true'
+
+        body = get_body(html, html_tag, allow_fallback)
+        text = get_plain_text(body, replace_line_breaks, trim_result)
+        text = text if text != '' else 'Could not extract text'
+
         result = CommandResults(
-            outputs_prefix=context_path,
+            outputs_prefix='TextFromHTML',
             outputs=text if context_path else None,
             readable_output=text
         )
 
         return_results(result)
     except Exception as ex:
-        return_error(message="failed to extract text", error=ex)
+        return_error(message="Failed to extract text", error=ex)
 
 
 if __name__ in ["__builtin__", "builtins"]:

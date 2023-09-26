@@ -44,8 +44,18 @@ args:
   description: 'Trim the extracted result (default: false).
      When set to true, leading and trailing whitespaces are removed and blocks of more than 3 consecutive whitespaces are collapsed to two.'
   defaultValue: "false"
-- name: context_path
-  description: The Context path to store the Converted Text.
+- name: output_to_context
+  description: Store the converted Text in the Context.
+  default: true
+  auto: PREDEFINED
+  predefined:
+  - "true"
+  - "false"
+  defaultValue: "false"
+outputs:
+- contextPath: TextFromHTML
+  description: The Text extracted from the given HTML.
+  type: string
 scripttarget: 0
 fromversion: 5.0.0
 dockerimage: demisto/python3:3.10.13.74666
