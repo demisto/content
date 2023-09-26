@@ -194,7 +194,7 @@ Indexes a document into an Elasticsearch index.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | index_name | The name of the index to ingest into. | Required | 
-| document | The document object (JSON format) to be indexed. See Elasticsearch documentation for further information about indexing documents. | Required | 
+| document | The document object (JSON format) to be indexed. See [Elasticsearch documentation](https://www.elastic.co/guide/en/elasticsearch/client/python-api/current/examples.html#ex-index) for further information about indexing documents via the Elasticsearch client. | Required | 
 | id | The id of the indexed document (will be generated if empty). | Optional | 
 
 
