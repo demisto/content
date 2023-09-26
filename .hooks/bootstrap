@@ -4,7 +4,7 @@
 # Bootstraps a development environment.
 #
 # This includes:
-# * install pre-commit hooks
+# * install pre-push hooks
 # * setup content dependencies with poetry
 # * Setup npm
 
@@ -21,7 +21,7 @@ PATH=~/.local/bin:$PATH
 if [[ "$1" == "-h" ]] || [[ "$1" == "--help" ]]; then
     cat << __EOF__
 Setup development environment (run with no arguments):
-* install pre-commit hooks (set NO_HOOKS=1 to skip)
+* install pre-push hooks (set NO_HOOKS=1 to skip)
 __EOF__
     exit 0
 fi
@@ -39,13 +39,13 @@ GIT_HOOKS_DIR="${PWD}/.git/hooks"
 if [ -n "${NO_HOOKS}" ]; then
     echo "Skipping hooks setup as environment variable NO_HOOKS is set"
 else
-    if [ ! -e "${GIT_HOOKS_DIR}/pre-commit" ]; then
-        echo "Installing 'pre-commit' hooks"
-        ln -s "${HOOKS_DIR}/pre-commit" "${GIT_HOOKS_DIR}/pre-commit"
+    if [ ! -e "${GIT_HOOKS_DIR}/pre-push" ]; then
+        echo "Installing 'pre-push' hooks to validate each push"
+        ln -s "${HOOKS_DIR}/pre-push" "${GIT_HOOKS_DIR}/pre-push"
         exit_on_error $? "Failed to install pre-commit hook, exiting with exit code $?"
     else
-        echo "Skipping install of pre-commit hook as it already exists."
-        echo "If you want to re-install: 'rm ${GIT_HOOKS_DIR}/pre-commit' and then run this script again."
+        echo "Skipping install of pre-push hook as it already exists."
+        echo "If you want to re-install: 'rm ${GIT_HOOKS_DIR}/pre-push' and then run this script again."
         exit 1
     fi
 fi
