@@ -699,13 +699,13 @@ def test_get_forensic_file_information(mocker):
         mock_download_collected_file_info_response,
     )
     args = {
-        "task_id": "00000012",
+        "task_id": "00000003",
         "poll": "true",
         "poll_time_sec": 30,
     }
     result = download_information_collected_file(client, args)
-    assert result.outputs["id"] == "00000012"
-    assert result.outputs["action"] == "isolate"
+    assert result.outputs["id"] == "00000003"
+    assert result.outputs["action"] == "collectFile"
     assert result.outputs["status"] == "succeeded"
     assert result.outputs["agent_guid"] == "cb9c8412-1f64-4fa0-a36b-76bf41a07ede"
     assert result.outputs["endpoint_name"] == "trend-host-1"
@@ -944,9 +944,9 @@ def test_submit_urls_to_sandbox(mocker):
     )
     args = {
         "urls": [
-            "http://www.shadywebsite.com",
-            "http://www.virus2.com",
-            "https://testurl.com",
+            "https://www.example.com/",
+            "https://www.example.com/#bird",
+            "https://www.example.com/bed",
         ]
     }
     result = submit_urls_to_sandbox(client, args)
@@ -994,35 +994,33 @@ def test_sandbox_submission_polling(mocker):
 
 # Mock function for check task status
 def check_task_status_mock_response(*args, **kwargs):
-    return_value = {
-        "id": "00001824",
-        "action": "analyzeFile",
-        "status": "succeeded",
-        "account": "API key",
-        "description": "collect file.",
-        "created_date_time": "2023-08-31T01:37:59Z",
-        "last_action_date_time": "2023-08-31T01:38:32Z",
-    }
+    with open("./test_data/check_task_status.json") as f:
+        return_value = json.load(f)
     return return_value
 
 
 def test_check_task_status(mocker):
-    mocker.patch(
-        "TrendMicroVisionOneV3.Client.status_check",
-        check_task_status_mock_response,
+    mocker.patch.object(
+        TrendMicroVisionOneV3,
+        "get_task_status",
+        mock_sandbox_submission_polling_response,
     )
     mocker.patch(
         "CommonServerPython.ScheduledCommand.raise_error_if_not_supported", lambda: None
     )
     client = Client("https://tv1-mock-dev.trendmicro.com", api_key, proxy, verify)
-    args = {"task_id": "00001824"}
+    args = {
+        "task_id": "00000004",
+        "poll": "true",
+        "poll_time_sec": 30,
+    }
     result = get_task_status(args, client)
-    assert result["id"] == "00001824"
-    assert result["status"] == "succeeded"
-    assert isinstance(result["action"], str)
-    assert isinstance(result["created_date_time"], str)
-    assert isinstance(result["description"], str)
-    assert isinstance(result["last_action_date_time"], str)
+    assert result.outputs["id"] == "00000004"
+    assert result.outputs["status"] == "succeeded"
+    assert isinstance(result.outputs["action"], str)
+    assert isinstance(result.outputs["created_date_time"], str)
+    assert isinstance(result.outputs["description"], str)
+    assert isinstance(result.outputs["last_action_date_time"], str)
 
 
 # Mock for downloaded file information

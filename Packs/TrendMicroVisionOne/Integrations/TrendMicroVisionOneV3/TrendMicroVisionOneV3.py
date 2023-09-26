@@ -298,14 +298,6 @@ class Client(BaseClient):
             return_error(message=f"{unwrap(resp.error).message}", error=str(resp.error))
         # Assign values on a successful call
         message = unwrap(resp.response).dict()
-        # message = {
-        #     "taskId": unwrap(resp.response).id,
-        #     "taskStatus": unwrap(resp.response).status,
-        #     "createdDateTime": unwrap(resp.response).created_date_time,
-        #     "action": unwrap(resp.response).action,
-        #     "description": unwrap(resp.response).description,
-        #     "account": unwrap(resp.response).account,
-        # }
         return CommandResults(
             readable_output=tableToMarkdown(
                 table_name[CHECK_TASK_STATUS_COMMAND],
@@ -340,17 +332,18 @@ class Client(BaseClient):
 
         file_entry = None
         if task_status.lower() == SUCCEEDED:
-            resp = v1_client.get_sandbox_analysis_result(submit_id=task_id)
-            if _is_pytmv1_error(resp.result_code):
+            analysis_resp = v1_client.get_sandbox_analysis_result(submit_id=task_id)
+            if _is_pytmv1_error(analysis_resp.result_code):
                 return_error(
-                    message=f"{unwrap(resp.error).message}", error=str(resp.error)
+                    message=f"{unwrap(analysis_resp.error).message}",
+                    error=str(analysis_resp.error),
                 )
-            risk = unwrap(resp.response).risk_level
+            risk = unwrap(analysis_resp.response).risk_level
             risk_score = incident_severity_to_dbot_score(risk)
-            digest = unwrap(resp.response).digest
-            sha256 = unwrap(digest).sha256
-            md5 = unwrap(digest).md5
-            sha1 = unwrap(digest).sha1
+            digest = unwrap(unwrap(analysis_resp.response).digest)
+            sha256 = digest.sha256
+            md5 = digest.md5
+            sha1 = digest.sha1
             reliability = demisto.params().get("integrationReliability")
             dbot_score = Common.DBotScore(
                 indicator=sha256,
@@ -365,17 +358,17 @@ class Client(BaseClient):
             message = {
                 "status_code": 200,
                 "status": task_status,
-                "report_id": unwrap(resp.response).id,
-                "type": unwrap(resp.response).type,
-                "digest": unwrap(resp.response).digest.dict(),
-                "arguments": unwrap(resp.response).arguments,
+                "report_id": unwrap(analysis_resp.response).id,
+                "type": unwrap(analysis_resp.response).type,
+                "digest": unwrap(analysis_resp.response).digest.dict(),  # type: ignore
+                "arguments": unwrap(analysis_resp.response).arguments,
                 "analysis_completion_time": unwrap(
-                    resp.response
+                    analysis_resp.response
                 ).analysis_completion_date_time,
-                "risk_level": unwrap(resp.response).risk_level,
-                "detection_name_list": unwrap(resp.response).detection_names,
-                "threat_type_list": unwrap(resp.response).threat_types,
-                "file_type": unwrap(resp.response).true_file_type,
+                "risk_level": unwrap(analysis_resp.response).risk_level,
+                "detection_name_list": unwrap(analysis_resp.response).detection_names,
+                "threat_type_list": unwrap(analysis_resp.response).threat_types,
+                "file_type": unwrap(analysis_resp.response).true_file_type,
                 "DBotScore": {
                     "Score": dbot_score.score,
                     "Vendor": dbot_score.integration_name,
@@ -384,9 +377,9 @@ class Client(BaseClient):
             }
         else:
             message = {
-                "status": task_status,
+                "status": unwrap(resp.response).status,
                 "report_id": task_id,
-                "code": unwrap(resp.response).status,
+                "result_code": resp.result_code,
                 "message": unwrap(resp.response).action,
             }
         return CommandResults(
@@ -499,19 +492,19 @@ def _get_client(name: str, api_key: str, base_url: str) -> pytmv1.Client:
     return pytmv1.client(name, api_key, base_url)
 
 
-@staticmethod
+# @staticmethod
 def _is_pytmv1_error(result_code: ResultCode) -> bool:
     return result_code == ResultCode.ERROR
 
 
-@staticmethod
+# @staticmethod
 def _get_ot_enum(obj_type: str) -> ObjectType:
     if not obj_type.upper() in ObjectType.__members__:
         raise RuntimeError(f"Please check object type: {obj_type}")
     return ObjectType[obj_type.upper()]
 
 
-@staticmethod
+# @staticmethod
 def get_task_type(action: str) -> Any:
     task_dict: Dict[Any, List[str]] = {
         AccountTaskResp: [
@@ -560,7 +553,7 @@ def run_polling_command(
         "succeeded",
         "waitForApproval",
     ]
-    if command_results.get(STATUS) not in statuses:
+    if command_results.outputs[STATUS] not in statuses:
         # schedule next poll
         polling_args = {
             task_id: task_id,
@@ -604,7 +597,7 @@ def get_sandbox_submission_status(
     return run_polling_command(args, SANDBOX_SUBMISSION_POLLING_COMMAND, client)
 
 
-def test_module(client: Client) -> Any:
+def test_module(client: Client) -> str:
     """
     Performs basic get request to get item samples.
     :type client: ``Client``
@@ -720,7 +713,7 @@ def force_sign_out(client: Client, args: Dict[str, Any]) -> Union[str, CommandRe
     #     args.get(ACCOUNT_IDENTIFIERS, [{}])
     # )
     account_identifiers: List[Dict[str, str]] = []
-    for account in args["account_identifiers"]:
+    for account in args[ACCOUNT_IDENTIFIERS]:
         account_identifiers.append(account)
     account_tasks: List[AccountTask] = []
     message: List[Dict[str, Any]] = []
@@ -777,7 +770,7 @@ def force_password_reset(
     #     args.get(ACCOUNT_IDENTIFIERS, [{}])
     # )
     account_identifiers: List[Dict[str, str]] = []
-    for account in args["account_identifiers"]:
+    for account in args[ACCOUNT_IDENTIFIERS]:
         account_identifiers.append(account)
     account_tasks: List[AccountTask] = []
     message: List[Dict[str, Any]] = []
