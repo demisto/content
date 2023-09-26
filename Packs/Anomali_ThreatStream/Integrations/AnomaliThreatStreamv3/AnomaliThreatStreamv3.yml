@@ -6403,7 +6403,7 @@ script:
       name: tags
       required: true
       isArray: true
-    description: Add tags to the indicators
+    description: Add tags to the indicators.
     name: threatstream-add-indicator-tag
   - arguments:
     - description: A comma-separated list of unique IDs of the indicator to which you are removing tags.
@@ -6414,9 +6414,9 @@ script:
       name: tags
       required: true
       isArray: true
-    description: Remove tags from the indicators
+    description: Remove tags from the indicators.
     name: threatstream-remove-indicator-tag
-  dockerimage: demisto/py3-tools:1.0.0.74702
+  dockerimage: demisto/py3-tools:1.0.0.75615
   runonce: false
   script: '-'
   subtype: python3
