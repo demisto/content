@@ -3499,7 +3499,7 @@ Retrieves all scan reports for images scanned by the Jenkins plugin or twistcli.
 | PrismaCloudCompute.CIScan.entityInfo.applications | Unknown | Applications in the scanned entity. | 
 | PrismaCloudCompute.CIScan.entityInfo.isARM64 | Boolean | Whether the scanned entity is ARM64. | 
 | PrismaCloudCompute.CIScan.entityInfo.packageCorrelationDone | Boolean | Whether package correlation was done. | 
-| PrismaCloudCompute.CIScan.entityInfo.redHatNonRPMImage | Boolean | Whether a RedHat non-RPM image. | 
+| PrismaCloudCompute.CIScan.entityInfo.redHatNonRPMImage | Boolean | Whether it is a RedHat non-RPM image. | 
 | PrismaCloudCompute.CIScan.entityInfo.foundSecrets | Unknown | Whether secrets were found. | 
 | PrismaCloudCompute.CIScan.entityInfo.secretScanMetrics | Unknown | Secret scan metrics. | 
 | PrismaCloudCompute.CIScan.entityInfo.image | Unknown | The scanned image. | 
@@ -3537,7 +3537,7 @@ Retrieves all scan reports for images scanned by the Jenkins plugin or twistcli.
 | PrismaCloudCompute.CIScan.entityInfo.firewallProtection | Unknown | Firewall protection data. | 
 | PrismaCloudCompute.CIScan.entityInfo.appEmbedded | Boolean | Whether app is embedded. | 
 | PrismaCloudCompute.CIScan.entityInfo.wildFireUsage | Unknown | WildFire usage data. | 
-| PrismaCloudCompute.CIScan.entityInfo.agentless | Boolean | Whether agentless scan. | 
+| PrismaCloudCompute.CIScan.entityInfo.agentless | Boolean | Whether is is an agentless scan. | 
 | PrismaCloudCompute.CIScan.entityInfo.malwareAnalyzedTime | String | Malware analyzed time. | 
 
 #### Command example
@@ -3978,7 +3978,7 @@ There are no input arguments for this command.
 ### prisma-cloud-compute-trusted-images-update
 
 ***
-Updates a trusted image to the system. Specify trusted images using either the image name or layers properties. This is a potentially harmful command, please use with caution.
+Updates a trusted image to the system. Specify trusted images using either the image name or layers properties. This is a potentially harmful command, so use with caution.
 
 #### Base Command
 
@@ -4018,7 +4018,7 @@ Retrieves container scan reports. Maps to Monitor > Compliance > Images > Deploy
 | image_id | A comma-separated list of image IDs to filter by. | Optional | 
 | hostname | A comma-separated list of hostnames to filter by. | Optional | 
 | compliance_ids | A comma-separated list of compliance IDs to filter by. | Optional | 
-| agentless | Filter by agentless scans. Possible values are: true, false. | Optional | 
+| agentless | Whether to filter by agentless scans. Possible values are: true, false. | Optional | 
 | search | Term to search for. | Optional | 
 | limit | The maximum number of container scan reports to return. Must be between 1-50. Default is 50. | Optional | 
 | offset | The offset by which to begin listing container scan reports. Default is 0. | Optional | 
@@ -4220,7 +4220,7 @@ Returns minimal information that includes hostname, distro, distro-release, coll
 | region | A comma-separated list of regions to scope the query by. | Optional | 
 | hostname | A comma-separated list of hostnames to filter by. | Optional | 
 | compliance_ids | A comma-separated list of compliance IDs to filter by. | Optional | 
-| agentless | Filter by agentless scans. Possible values are: true, false. | Optional | 
+| agentless | Whether to filter by agentless scans. Possible values are: true, false. | Optional | 
 | search | Term to search for. | Optional | 
 | limit | The maximum number of container scan reports to return. Must be between 1-50. Default is 50. | Optional | 
 | offset | The offset by which to begin listing container scan reports. Default is 0. | Optional | 

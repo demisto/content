@@ -2151,7 +2151,7 @@ script:
       description: Whether package correlation was done.
       type: Boolean
     - contextPath: PrismaCloudCompute.CIScan.entityInfo.redHatNonRPMImage
-      description: Whether a RedHat non-RPM image.
+      description: Whether it is a RedHat non-RPM image.
       type: Boolean
     - contextPath: PrismaCloudCompute.CIScan.entityInfo.foundSecrets
       description: Whether secrets were found.
@@ -2265,7 +2265,7 @@ script:
       description: WildFire usage data.
       type: Unknown
     - contextPath: PrismaCloudCompute.CIScan.entityInfo.agentless
-      description: Whether agentless scan.
+      description: Whether it is an agentless scan.
       type: Boolean
     - contextPath: PrismaCloudCompute.CIScan.entityInfo.malwareAnalyzedTime
       description: Malware analyzed time.
@@ -2322,7 +2322,7 @@ script:
       description: The images in the trusted image group.
       type: Unknown
   - name: prisma-cloud-compute-trusted-images-update
-    description: Updates a trusted image to the system. Specify trusted images using either the image name or layers properties. This is a potentially harmful command, please use with caution.
+    description: Updates a trusted image to the system. Specify trusted images using either the image name or layers properties. This is a potentially harmful command, so use with caution.
     execution: true
     arguments:
     - name: images_list_json
@@ -2368,7 +2368,7 @@ script:
       description: A comma-separated list of compliance IDs to filter by.
       isArray: true
     - name: agentless
-      description: Filter by agentless scans.
+      description: Whether to filter by agentless scans.
       predefined:
       - "true"
       - "false"
@@ -2493,7 +2493,7 @@ script:
       description: A comma-separated list of compliance IDs to filter by.
       isArray: true
     - name: agentless
-      description: Filter by agentless scans.
+      description: Whether to filter by agentless scans.
       predefined:
       - "true"
       - "false"
