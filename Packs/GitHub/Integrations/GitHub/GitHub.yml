@@ -93,7 +93,7 @@ configuration:
   section: Connect
   advanced: true
   required: false
-description: Integration to GitHub API
+description: Integration to GitHub API.
 display: GitHub
 name: GitHub
 script:
@@ -163,7 +163,7 @@ script:
       description: The repository of the closed issue.
       type: String
     - contextPath: GitHub.Issue.Title
-      description: The title of the closed issue
+      description: The title of the closed issue.
       type: String
     - contextPath: GitHub.Issue.Body
       description: The body of the closed issue.
@@ -250,7 +250,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       defaultValue: open
-      description: The state of the issues to return. Can be 'open', 'closed' or 'all'. Default is 'open'
+      description: The state of the issues to return. Can be 'open', 'closed' or 'all'. Default is 'open'.
       name: state
       predefined:
       - open
@@ -415,28 +415,28 @@ script:
   - arguments:
     - default: true
       defaultValue: 3 days
-      description: Time of inactivity after which a PR is considered stale
+      description: Time of inactivity after which a PR is considered stale.
       name: stale_time
       required: true
-    - description: The label used to identify PRs of interest
+    - description: The label used to identify PRs of interest.
       name: label
-    description: Gets inactive pull requests
+    description: Gets inactive pull requests.
     name: GitHub-get-stale-prs
     outputs:
     - contextPath: GitHub.PR.URL
-      description: The html URL of the PR
+      description: The html URL of the PR.
       type: String
     - contextPath: GitHub.PR.Number
-      description: The GitHub pull request number
+      description: The GitHub pull request number.
       type: Number
     - contextPath: GitHub.PR.RequestedReviewer
-      description: A list of the PR's requested reviewers
+      description: A list of the PR's requested reviewers.
       type: Unknown
   - arguments:
-    - description: The name of the branch to retrieve
+    - description: The name of the branch to retrieve.
       name: branch_name
       required: true
-    description: Gets a branch
+    description: Gets a branch.
     name: GitHub-get-branch
     outputs:
     - contextPath: GitHub.Branch.Name
@@ -461,7 +461,7 @@ script:
       description: Whether the branch is protected.
       type: Boolean
   - arguments:
-    - description: The name for the new branch
+    - description: The name for the new branch.
       name: branch_name
       required: true
     - description: The SHA hash of the commit to reference. Try executing the 'GitHub-get-branch' command to find a commit SHA hash to reference.
@@ -473,7 +473,7 @@ script:
     - description: The ID number by which the team is identified. Try executing the 'GitHub-list-teams' command to find team IDs to reference.
       name: team_id
       required: true
-    - description: The login of the user whose membership you wish to check
+    - description: The login of the user whose membership you wish to check.
       name: user_name
       required: true
     description: Retrieves a user membership status with a team.
@@ -1483,7 +1483,7 @@ script:
       description: The type of the user assigned to the pull request.
       type: String
     - contextPath: GitHub.PR.Assignee.SiteAdmin
-      description: Whether the user assigned to the pull request is a site administrator. not
+      description: Whether the user assigned to the pull request is a site administrator. not.
       type: Boolean
     - contextPath: GitHub.PR.RequestedReviewer.Login
       description: The login of the user requested for review.
@@ -1834,7 +1834,7 @@ script:
     - description: The issue number of the pull request to check.
       name: pull_number
       required: true
-    description: 'Returns a merged pull request. If the pull request has been merged, the API returns ''Status: 204 No Content''. If the pull request has not been merged the API returns ''Status: 404 Not Found'''
+    description: 'Returns a merged pull request. If the pull request has been merged, the API returns ''Status: 204 No Content''. If the pull request has not been merged the API returns ''Status: 404 Not Found''.'
     name: GitHub-is-pr-merged
   - arguments:
     - description: The title of the pull request.
@@ -2366,36 +2366,36 @@ script:
       description: The GitHub action workflow usage on different OS.
       type: Unknown
   - arguments:
-    - description: Organization or Owner
+    - description: Organization or Owner.
       name: owner
       required: true
-    - description: Git Repository Name
+    - description: Git Repository Name.
       name: repository
       required: true
-    - description: Check Run ID
+    - description: Check Run ID.
       name: run_id
-    - description: Head Commit ID
+    - description: Head Commit ID.
       name: commit_id
-    description: Gets a check run details
+    description: Gets a check run details.
     name: Github-get-check-run
     outputs:
     - contextPath: GitHub.CheckRuns.CheckRunConclusion
-      description: Check Run Conculsion
+      description: Check Run Conculsion.
       type: String
     - contextPath: GitHub.CheckRuns.CheckRunAppName
-      description: Check Run App Name
+      description: Check Run App Name.
       type: String
     - contextPath: GitHub.CheckRuns.CheckExternalID
-      description: Check Run External ID
+      description: Check Run External ID.
       type: String
     - contextPath: GitHub.CheckRuns.CheckRunName
-      description: Check Run Name
+      description: Check Run Name.
       type: String
     - contextPath: GitHub.CheckRuns.CheckRunStatus
-      description: Check Run Status
+      description: Check Run Status.
       type: String
     - contextPath: GitHub.CheckRuns.CheckRunID
-      description: Check Run ID
+      description: Check Run ID.
       type: String
   - arguments:
     - default: true
@@ -2732,7 +2732,7 @@ script:
       description: The SHA hash of the commit that HEAD points to.
       type: String
     - contextPath: GitHub.PR.Head.User.Login
-      description: The login of the committer of the HEAD commit of the checked out. branch
+      description: The login of the committer of the HEAD commit of the checked out. branch.
       type: String
     - contextPath: GitHub.PR.Head.User.ID
       description: The ID of the committer of the HEAD commit of the checked out branch.
@@ -3262,7 +3262,7 @@ script:
       description: Lists of all issue numbers that are in this project board.
       type: Unknown
   - arguments:
-    - description: 'Column unique id '
+    - description: 'Column unique id.'
       name: column_id
       required: true
     - description: Issue unique ID.
@@ -3510,10 +3510,10 @@ script:
     description: Deletes a comment.
     name: GitHub-delete-comment
   - arguments:
-    - description: The number of PR/Issue to assign users to
+    - description: The number of PR/Issue to assign users to.
       name: pull_request_number
       required: true
-    - description: Users to assign, can be a list of users
+    - description: Users to assign, can be a list of users.
       isArray: true
       name: assignee
       required: true
@@ -3521,61 +3521,61 @@ script:
     name: GitHub-add-assignee
     outputs:
     - contextPath: GitHub.Assignees.assignees
-      description: Assignees to the issue
+      description: Assignees to the issue.
       type: String
     - contextPath: GitHub.Assignees.assignees.login
-      description: Login of assigned user
+      description: Login of assigned user.
       type: String
     - contextPath: GitHub.Assignees.assignees.gists_url
-      description: Gists URL for user
+      description: Gists URL for user.
       type: String
     - contextPath: GitHub.Assignees.assignees.following_url
-      description: Following URL for user
+      description: Following URL for user.
       type: String
     - contextPath: GitHub.Assignees.assignees.followers_url
-      description: Followers URL for user
+      description: Followers URL for user.
       type: String
     - contextPath: GitHub.Assignees.assignees.subscriptions_url
-      description: Subscriptions URL for user
+      description: Subscriptions URL for user.
       type: String
     - contextPath: GitHub.Assignees.assignees.received_events_url
-      description: Received events URL for user
+      description: Received events URL for user.
       type: String
     - contextPath: GitHub.Assignees.assignees.events_url
-      description: Events URL for user
+      description: Events URL for user.
       type: String
     - contextPath: GitHub.Assignees.assignees.avatar_url
-      description: Avatar URL for user
+      description: Avatar URL for user.
       type: String
     - contextPath: GitHub.Assignees.assignees.url
-      description: URL for user for user
+      description: URL for user for user.
       type: String
     - contextPath: GitHub.Assignees.assignees.starred_url
-      description: Starred URL for user
+      description: Starred URL for user.
       type: String
     - contextPath: GitHub.Assignees.assignees.organizations_url
-      description: Organizations URL for user
+      description: Organizations URL for user.
       type: String
     - contextPath: GitHub.Assignees.assignees.repos_url
-      description: Repos URL for user
+      description: Repos URL for user.
       type: String
     - contextPath: GitHub.Assignees.assignees.gravatar_id
-      description: Gravatar_id for user
+      description: Gravatar_id for user.
       type: String
     - contextPath: GitHub.Assignees.assignees.site_admin
-      description: Is user site admin
+      description: Is user site admin.
       type: String
     - contextPath: GitHub.Assignees.assignees.node_id
-      description: Node ID for user
+      description: Node ID for user.
       type: String
     - contextPath: GitHub.Assignees.assignees.type
-      description: Type of user
+      description: Type of user.
       type: String
     - contextPath: GitHub.Assignees.assignees.id
-      description: User ID
+      description: User ID.
       type: String
     - contextPath: GitHub.Assignees.assignees.html_url
-      description: HTML URL for user
+      description: HTML URL for user.
       type: String
   - arguments:
     - description: The GitHub owner (organization or username) of the repository.
@@ -3591,6 +3591,16 @@ script:
       name: inputs
     description: Triggers a GitHub workflow on a given repository and workflow.
     name: GitHub-trigger-workflow
+  - arguments:
+    - description: The GitHub owner (organization or username) of the repository.
+      name: owner
+    - description: The GitHub repository name.
+      name: repository
+    - description: The ID of the workflow to cancel.
+      name: workflow_id
+      required: true
+    description: Cancels a GitHub workflow.
+    name: GitHub-cancel-workflow
   - arguments:
     - description: The GitHub owner (organization or username) of the repository.
       name: owner
@@ -3652,7 +3662,7 @@ script:
     - contextPath: GitHub.Workflow.updated_at
       description: Datetime the GitHub workflow was updated at.
       type: Date
-  dockerimage: demisto/pyjwt3:1.0.0.66845
+  dockerimage: demisto/pyjwt3:1.0.0.75440
   isfetch: true
   runonce: false
   script: '-'
