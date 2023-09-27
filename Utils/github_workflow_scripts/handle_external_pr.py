@@ -226,7 +226,7 @@ def main():
 
     print('contributors section')
     print(f'pack path: {pr_files[0]}')
-    ver = get_pack_metadata(pr_files[0].get('currentVersion'))
+    ver = get_pack_metadata(pr_files[0]).get('currentVersion')
     print(f'version is: {ver}')
     print(f'the pr info is {pr}')
     contributors_body = f'Hi {pr},You have contributed to an XSOAR-supported pack. To get credit for your generous contribution' \
