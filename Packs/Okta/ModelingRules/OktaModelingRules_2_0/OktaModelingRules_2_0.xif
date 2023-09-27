@@ -61,6 +61,7 @@ filter
     debugContext_debugData_behaviors = json_extract(debugContext, "$.debugData.behaviors"),
     debugContext_debugData_threatSuspected = lowercase(to_string(json_extract(debugContext, "$.debugData.threatSuspected"))),
     debugContext_debugData_originalPrincipal_type = json_extract(debugContext, "$.debugData.originalPrincipal.type"),
+    securityContext_domain = json_extract_scalar(securityContext, "$.domain"),
     request_ipChain = request -> ipChain[]
 | alter
 	source_ipv4 = if(source_ip !~= ":", source_ip, null),
@@ -84,6 +85,7 @@ filter
     check_debugData_risk_reasons1 = if(debugContext_debugData_risk_reasons ~= "Anonymizing Proxy", to_boolean("TRUE"), to_boolean("FALSE")),
     check_debugData_risk_reasons2 = if(debugContext_debugData_risk_reasons ~= "Anonymizing Proxy", "anonymized_ip: TRUE", "anonymized_ip: FALSE"),
     check_ipChain_v4 = arraymap(request_ipChain, if("@element" -> ip !~= ":", "@element" -> ip, null)),
+    check_securityContext_domain = if(securityContext_domain = ".", null, securityContext_domain),
     check_ipChain_v6 = arraymap(request_ipChain, if("@element" -> ip ~= ":", "@element" -> ip, null))
 | alter
     xdm.event.log_level = if(severity = "DEBUG", XDM_CONST.LOG_LEVEL_DEBUG, severity = "INFO", XDM_CONST.LOG_LEVEL_INFORMATIONAL, severity = "WARN", XDM_CONST.LOG_LEVEL_WARNING, severity = "ERROR", XDM_CONST.LOG_LEVEL_ERROR, severity = null, null, to_string(severity)),
@@ -112,7 +114,7 @@ filter
     xdm.target.resource.name = if(target_type = "AppInstance", target_alternateId, null),
     xdm.source.asn.as_number = to_integer(json_extract_scalar(securityContext, "$.asNumber")),
     xdm.source.asn.isp = json_extract_scalar(securityContext, "$.isp"),
-    xdm.source.asn.domain = json_extract_scalar(securityContext, "$.domain"),
+    xdm.source.asn.domain = check_securityContext_domain, 
     xdm.source.asn.is_proxy = check_securityContext_isProxy,
     xdm.intermediate.is_proxy = check_debugData_risk_reasons1,
     xdm.event.tags = arraycreate(XDM_CONST.EVENT_TAG_AUTHENTICATION),
@@ -181,6 +183,7 @@ alter
     debugContext_debugData_behaviors = json_extract(debugContext, "$.debugData.behaviors"),
     debugContext_debugData_threatSuspected = lowercase(to_string(json_extract(debugContext, "$.debugData.threatSuspected"))),
     debugContext_debugData_originalPrincipal_type = json_extract(debugContext, "$.debugData.originalPrincipal.type"),
+    securityContext_domain = json_extract_scalar(securityContext, "$.domain"),
     request_ipChain = request -> ipChain[]
 | alter
 	source_ipv4 = if(source_ip !~= ":", source_ip, null),
@@ -204,6 +207,7 @@ alter
     check_debugData_risk_reasons1 = if(debugContext_debugData_risk_reasons ~= "Anonymizing Proxy", to_boolean("TRUE"), to_boolean("FALSE")),
     check_debugData_risk_reasons2 = if(debugContext_debugData_risk_reasons ~= "Anonymizing Proxy", "anonymized_ip: TRUE", "anonymized_ip: FALSE"),
     check_ipChain_v4 = arraymap(request_ipChain, if("@element" -> ip !~= ":", "@element" -> ip, null)),
+    check_securityContext_domain = if(securityContext_domain = ".", null, securityContext_domain),
     check_ipChain_v6 = arraymap(request_ipChain, if("@element" -> ip ~= ":", "@element" -> ip, null))
 | alter
     xdm.event.log_level = if(severity = "DEBUG", XDM_CONST.LOG_LEVEL_DEBUG, severity = "INFO", XDM_CONST.LOG_LEVEL_INFORMATIONAL, severity = "WARN", XDM_CONST.LOG_LEVEL_WARNING, severity = "ERROR", XDM_CONST.LOG_LEVEL_ERROR, severity = null, null, to_string(severity)),
@@ -232,7 +236,7 @@ xdm.event.operation = if(eventType ~= "authentication|oauth2|mfa", XDM_CONST.OPE
     xdm.target.resource.name = if(target_type = "AppInstance", target_alternateId, null),
     xdm.source.asn.as_number = to_integer(json_extract_scalar(securityContext, "$.asNumber")),
     xdm.source.asn.isp = json_extract_scalar(securityContext, "$.isp"),
-    xdm.source.asn.domain = json_extract_scalar(securityContext, "$.domain"),
+    xdm.source.asn.domain = check_securityContext_domain,
     xdm.source.asn.is_proxy = check_securityContext_isProxy,
     xdm.intermediate.is_proxy = check_debugData_risk_reasons1,
     xdm.event.tags = arraycreate(XDM_CONST.EVENT_TAG_AUTHENTICATION),
