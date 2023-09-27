@@ -2,7 +2,6 @@ import pytest
 import os
 import json
 from urllib.parse import unquote
-
 from _pytest.python_api import raises
 
 import demistomock as demisto
@@ -2930,7 +2929,7 @@ def test_upload_custom_ioc_command_successful(requests_mock):
         severity='high',
         platforms='mac,linux',
     )
-    assert '| 2020-10-01T09:09:04Z | Eicar file | 4f8c43311k1801ca4359fc07t319610482c2003mcde8934d5412b1781e841e9r |' \
+    assert '| 2020-10-01T09:09:04Z | Eicar file |  | 4f8c43311k1801ca4359fc07t319610482c2003mcde8934d5412b1781e841e9r |' \
            in results[0]["HumanReadable"]
     assert results[0]["EntryContext"]["CrowdStrike.IOC(val.ID === obj.ID)"][0]["Value"] == 'testmd5'
 
@@ -3019,6 +3018,69 @@ def test_upload_custom_ioc_command_duplicate(requests_mock, mocker):
     assert response['resources'][0]['message'] in str(error_info.value)
 
 
+def test_upload_custom_ioc_command_filename(requests_mock):
+    """
+    Test that providing a filename to custom ioc works as expected
+
+    Given:
+        - A filename attached to a custom IOC
+
+    When:
+        - The user tries to upload a custom IOC with a filename
+
+    Then:
+        - Make sure that the filename is included in the request to CrowdStrike
+    """
+    from CrowdStrikeFalcon import upload_custom_ioc_command
+    mock = requests_mock.post(
+        f'{SERVER_URL}/iocs/entities/indicators/v1',
+        status_code=200,
+        json={"result": "ok"}
+    )
+
+    upload_custom_ioc_command(
+        action='prevent',
+        severity='high',
+        platforms='mac,linux',
+        ioc_type="sha256",
+        value="testsha256",
+        file_name="test.txt"
+    )
+
+    body = mock.last_request.json()
+    assert body['indicators'][0]['metadata']['filename'] == "test.txt"
+
+
+def test_upload_custom_ioc_command_filename_nosha5(requests_mock):
+    """
+    Test that providing a filename to non-hash custom ioc being ignored
+
+    Given:
+        - A filename attached to a custom non hash IOC
+
+    When:
+        - The user tries to upload a custom non hash IOC with a filename
+
+    Then:
+        - Make sure that the filename is ignored in the request to CrowdStrike
+    """
+    from CrowdStrikeFalcon import upload_custom_ioc_command
+    mock = requests_mock.post(
+        f'{SERVER_URL}/iocs/entities/indicators/v1',
+        status_code=200,
+        json={"result": "ok"}
+    )
+    upload_custom_ioc_command(
+        action='prevent',
+        severity='high',
+        platforms='mac,linux',
+        ioc_type="ip",
+        value="someip",
+        file_name="test.txt"
+    )
+    assert 'metadata' not in mock.last_request.json()['indicators'][0]
+
+
 def test_update_custom_ioc_command(requests_mock):
     """
     Test cs-falcon-update-custom-ioc when an upload is successful
@@ -3068,6 +3130,36 @@ def test_update_custom_ioc_command(requests_mock):
     )
     assert 'Custom IOC was updated successfully' in results["HumanReadable"]
     assert results["EntryContext"]["CrowdStrike.IOC(val.ID === obj.ID)"][0]["Value"] == 'testmd5'
+
+
+def test_update_custom_ioc_command_filename(requests_mock):
+    """
+    Test that providing a filename to custom ioc works as expected
+
+    Given:
+        - A filename attached to a custom IOC
+
+    When:
+        - The user tries to update a custom IOC with a filename
+
+    Then:
+        - Make sure that the filename is included in the request to CrowdStrike
+    """
+    from CrowdStrikeFalcon import update_custom_ioc
+
+    mock = requests_mock.patch(
+        f'{SERVER_URL}/iocs/entities/indicators/v1',
+        status_code=200,
+        json={"result": "ok"}
+    )
+
+    update_custom_ioc(
+        ioc_id="3",
+        file_name="test.txt"
+    )
+
+    body = mock.last_request.json()
+    assert body['indicators'][0]['metadata']['filename'] == "test.txt"
 
 
 def test_delete_custom_ioc_command(requests_mock):

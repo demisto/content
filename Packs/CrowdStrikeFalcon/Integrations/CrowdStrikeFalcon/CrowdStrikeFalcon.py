@@ -670,7 +670,9 @@ def create_json_iocs_list(
         expiration: str | None = None,
         applied_globally: bool | None = None,
         host_groups: list[str] | None = None,
-        tags: list[str] | None = None) -> list[dict]:
+        tags: list[str] | None = None,
+        file_name: str | None = None,
+) -> list[dict]:
     """
     Get a list of iocs values and create a list of Json objects with the iocs data.
     This function is used for uploading multiple indicator with same arguments with different values.
@@ -685,7 +687,7 @@ def create_json_iocs_list(
     :param applied_globally: Whether the indicator is applied globally.
     :param host_groups: List of host group IDs that the indicator applies to.
     :param tags: List of tags to apply to the indicator.
-
+    :param file_name: Name of the file for file indicators.
     """
     iocs_list = []
     for ioc_value in iocs_value:
@@ -701,6 +703,7 @@ def create_json_iocs_list(
             applied_globally=applied_globally,
             host_groups=host_groups,
             tags=tags,
+            metadata=assign_params(filename=file_name) if ioc_type in {"sha256", "md5"} else None
         ))
 
     return iocs_list
@@ -1567,6 +1570,7 @@ def update_custom_ioc(
         source: str | None = None,
         description: str | None = None,
         expiration: str | None = None,
+        file_name: str | None = None,
 ) -> dict:
     """
     Update an IOC
@@ -1579,6 +1583,7 @@ def update_custom_ioc(
             source=source,
             description=description,
             expiration=expiration,
+            metadata=assign_params(filename=file_name)
         )]
     }
 
@@ -2825,6 +2830,7 @@ def upload_custom_ioc_command(
         applied_globally: bool | None = None,
         host_groups: list[str] | None = None,
         tags: list[str] | None = None,
+        file_name: str | None = None,
 ) -> list[dict]:
     """
     :param ioc_type: The type of the indicator.
@@ -2849,7 +2855,7 @@ def upload_custom_ioc_command(
     platforms_list = argToList(platforms)
 
     iocs_json_batch = create_json_iocs_list(ioc_type, values, action, platforms_list, severity, source, description,
-                                            expiration, applied_globally, host_groups, tags)
+                                            expiration, applied_globally, host_groups, tags, file_name)
     raw_res = upload_batch_custom_ioc(ioc_batch=iocs_json_batch)
     handle_response_errors(raw_res)
     iocs = raw_res.get('resources', [])
@@ -2857,6 +2863,7 @@ def upload_custom_ioc_command(
     entry_objects_list = []
     for ioc in iocs:
         ec = [get_trasnformed_dict(ioc, IOC_KEY_MAP)]
+        ec[0]["Filename"] = ioc.get("metadata", {}).get("filename")
         entry_objects_list.append(create_entry_object(
             contents=raw_res,
             ec={'CrowdStrike.IOC(val.ID === obj.ID)': ec},
@@ -2873,6 +2880,7 @@ def update_custom_ioc_command(
         source: str | None = None,
         description: str | None = None,
         expiration: str | None = None,
+        file_name: str | None = None,
 ) -> dict:
     """
     :param ioc_id: The ID of the indicator to update.
@@ -2882,6 +2890,7 @@ def update_custom_ioc_command(
     :param source: The source where this indicator originated.
     :param description: A meaningful description of the indicator.
     :param expiration: The date on which the indicator will become inactive.
+    :param file_name: The file name associated with the indicator.
     """
 
     raw_res = update_custom_ioc(
@@ -2892,10 +2901,12 @@ def update_custom_ioc_command(
         source,
         description,
         expiration,
+        file_name,
     )
     handle_response_errors(raw_res)
     iocs = raw_res.get('resources', [])
     ec = [get_trasnformed_dict(iocs[0], IOC_KEY_MAP)]
+    ec[0]["Filename"] = iocs[0].get("metadata", {}).get("filename")
     return create_entry_object(
         contents=raw_res,
         ec={'CrowdStrike.IOC(val.ID === obj.ID)': ec},
