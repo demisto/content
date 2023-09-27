@@ -3,7 +3,7 @@ sectionOrder:
 - Connect
 - Collect
 commonfields:
-  id: Azure Sentinel
+  id: Azure Sentinel_debug
   version: -1
 configuration:
 - defaultvalue: Worldwide
@@ -191,8 +191,8 @@ configuration:
   advanced: true
   required: false
 description: "Microsoft Sentinel is a scalable, cloud-native solution that provides: Security information and event management (SIEM) Security orchestration, automation, and response (SOAR)."
-display: Microsoft Sentinel
-name: Azure Sentinel
+display: Microsoft Sentinel_debug
+name: Azure Sentinel_debug
 script:
   commands:
   - arguments:
