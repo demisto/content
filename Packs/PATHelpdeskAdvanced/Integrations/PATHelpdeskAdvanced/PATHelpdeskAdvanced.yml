@@ -233,6 +233,44 @@ script:
       description: The update comment.
       type: String
 
+  - name: hda-list-users
+    description: List users.
+    arguments:
+    - name: user_id
+      type: String
+      description: The ID of the user to retrieve details for.
+    - name: page
+      type: Number
+      description: The page number.
+    - name: page_size
+      description: The number of users to return per page.
+      type: Number
+    - name: limit
+      defaultValue: 50
+      type: Number
+      description: The maximum number of users to return per page.
+
+    outputs: []
+
+  - name: hda-list-groups
+    description: List groups.
+    arguments:
+    - name: group_id
+      type: String
+      description: The ID of the group to retrieve details for.
+    - name: page
+      type: Number
+      description: The page number.
+    - name: page_size
+      description: The number of groups to return per page.
+      type: Number
+    - name: limit
+      defaultValue: 50
+      type: Number
+      description: The maximum number of groups to return per page.
+
+    outputs: []
+
   runonce: false
   script: "-"
   type: python

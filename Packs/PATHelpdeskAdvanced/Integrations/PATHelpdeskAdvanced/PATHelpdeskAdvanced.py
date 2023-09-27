@@ -4,6 +4,7 @@ from pathlib import Path
 from typing import Literal, NamedTuple
 from collections.abc import Sequence
 from collections.abc import Callable, Iterable
+import more_itertools
 from requests import Response
 
 # import curlify
@@ -140,10 +141,22 @@ class Filter(NamedTuple):
         return {"property": self.key, "op": self.operator, "value": self.value}
 
     @staticmethod
-    def dumps_list(filters: Union[Sequence["Filter"], "Filter"]) -> str:
-        if isinstance(filters, Filter):
-            filters = [filters]
-        return json.dumps([filter.dict for filter in filters])
+    def dumps_list(filters: Union[Iterable["Filter"], "Filter"]) -> str:
+        """
+        Dumps a Filter object or list of Filter objects to a JSON string, as list.
+
+        Args:
+            filters (Union[Iterable[Filter], Filter]): The Filter object(s) to dump.
+
+        Returns:
+            str: The JSON string representation of the filters list.
+        """
+        return json.dumps(
+            [
+                filter.dict
+                for filter in more_itertools.always_iterable(filters, base_type=Filter)
+            ]
+        )
 
 
 def safe_arg_to_number(argument: str | None, argument_name: str) -> int:
@@ -226,9 +239,9 @@ class Client(BaseClient):
             resp_type="response",
             **kwargs,
         )
-        # print(
-        #     f"Request: {method} {urljoin(self._base_url,url_suffix)}, {kwargs=}, {self._headers=}"
-        # )
+        print(
+            f"Request: {method} {urljoin(self._base_url,url_suffix)}, {kwargs=}, {self._headers=}"
+        )
         # for r in response.history:
         #     print(curlify.to_curl(r.request, compressed=True))
         # print(curlify.to_curl(response.request, compressed=True))
@@ -576,14 +589,16 @@ class Client(BaseClient):
         )
 
     def list_users(self, **kwargs):
-        columns = [
-            "ID",
-            "User.FirstName",
-            "User.LastName",
-            "User.EMail",
-            "User.Phone",
-            "User.Mobile",
-        ]
+        columns = str(
+            [
+                "ID",
+                "User.FirstName",
+                "User.LastName",
+                "User.EMail",
+                "User.Phone",
+                "User.Mobile",
+            ]
+        )
 
         params = {
             "entity": "Users",
@@ -606,7 +621,7 @@ class Client(BaseClient):
         )
 
     def list_groups(self, **kwargs):
-        columns = [column.hda_name for column in (ID, DESCRIPTION, OBJECT_TYPE_ID)]
+        columns = str([column.hda_name for column in (ID, DESCRIPTION, OBJECT_TYPE_ID)])
 
         params = {
             "entity": "UserGroup",
