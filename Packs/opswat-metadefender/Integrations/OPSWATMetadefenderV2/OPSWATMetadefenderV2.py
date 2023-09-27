@@ -2,10 +2,6 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import shutil
 
-import urllib3
-
-urllib3.disable_warnings()
-
 ''' GLOBAL VARS '''
 PARAMS = demisto.params()
 BASE_URL = PARAMS['url'] + '/' if PARAMS['url'][-1] != '/' else PARAMS['url']
