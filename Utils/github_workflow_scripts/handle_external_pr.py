@@ -225,10 +225,12 @@ def main():
         print(f'{t.cyan}Added "{label}" label to the PR{t.normal}')
 
     print('contributors section')
-    #pack_name = get_pack_name(pr_files[0])
     print(f'pack path: {pr_files[0]}')
-    ver = get_pack_metadata(pr_files[0])
+    ver = get_pack_metadata(pr_files[0].get('currentVersion'))
     print(f'version is: {ver}')
+    print(f'the pr info is {pr}')
+    contributors_body = f'Hi {pr},You have contributed to an XSOAR-supported pack. To get credit for your generous contribution' \
+                        f' follow this link: https://xsoar.pan.dev/docs/packs/packs-format#contributorsjson.'
     if 'contributors' not in pr_files and XSOAR_SUPPORT_LEVEL_LABEL in labels_to_add and ver != '1.0.0':
         pr.create_issue_comment("EDI TEST")
 
