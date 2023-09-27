@@ -21,6 +21,12 @@
     "testInterval": 20,
     "tests": [
         {
+            "playbookID": "Test Playbook - NGFW Scan",
+            "integrations": "VirusTotal (API v3)",
+            "instance_names": "virus_total_v3",
+            "timeout": 1600
+        },
+        {
             "playbookID": "Test Playbook - WildFire Malware",
             "integrations": "VirusTotal (API v3)",
             "instance_names": "virus_total_v3",
