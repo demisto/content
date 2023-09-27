@@ -10,9 +10,9 @@ This is the Hello World integration for getting started.
     | --- | --- | --- |
     | Source Reliability | Reliability of the source providing the intelligence data. | False |
     | Server URL (e.g. https://api.xsoar-example.com) |  | True |
-    | Fetch incidents |  | False |
-    | Incident type |  | False |
-    | Maximum number of incidents per fetch |  | False |
+    | Fetch alerts |  | False |
+    | Alert type |  | False |
+    | Maximum number of alerts per fetch |  | False |
     | API Key |  | True |
     | Score threshold for IP reputation command | Set this to determine the HelloWorld score that will determine if an IP is malicious \(0-100\) | False |
     | Severity of alerts to fetch |  | True |
@@ -61,58 +61,58 @@ Hello command - prints hello to anyone.
 
 >## Hello Hello Dbot
 
-### helloworld-incident-list
+### helloworld-alert-list
 
 ***
-Lists the example incidents as it would be fetched from the api.
+Lists the example alerts as it would be fetched from the api.
 
 #### Base Command
 
-`helloworld-incident-list`
+`helloworld-alert-list`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| incident_id | Filter by alert item ID. If not provided, all IDs will be retrieved. | Optional | 
+| alert_id | Filter by alert item ID. If not provided, all IDs will be retrieved. | Optional | 
 | limit | How many alerts to fetch. Default is 10. | Optional | 
-| severity | which severity to filter by the incidents. | Optional | 
+| severity | which severity to filter by the alerts. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| HelloWorld.Incident.id | Number | The id of the incident. | 
-| HelloWorld.Incident.name | String | The name of the incident. | 
-| HelloWorld.Incident.severity | String | The severity of the incident. | 
-| HelloWorld.Incident.date | Date | The date of the incident occurrence. | 
-| HelloWorld.Incident.status | String | The status of the incident. | 
+| HelloWorld.alert.id | Number | The id of the alert. | 
+| HelloWorld.alert.name | String | The name of the alert. | 
+| HelloWorld.alert.severity | String | The severity of the alert. | 
+| HelloWorld.alert.date | Date | The date of the alert occurrence. | 
+| HelloWorld.alert.status | String | The status of the alert. | 
 
 #### Command example
-```!helloworld-incident-list limit="3" severity="low"```
+```!helloworld-alert-list limit="3" severity="low"```
 #### Context Example
 ```json
 {
     "HelloWorld": {
-        "Item": [
+        "Alert": [
             {
                 "date": "2023-09-14T11:30:39.882955",
                 "id": 1,
-                "name": "XSOAR Test Item #1",
+                "name": "XSOAR Test Alert #1",
                 "severity": "low",
                 "status": "Testing"
             },
             {
                 "date": "2023-09-14T11:30:39.882955",
                 "id": 2,
-                "name": "XSOAR Test Item #2",
+                "name": "XSOAR Test Alert #2",
                 "severity": "low",
                 "status": "Testing"
             },
             {
                 "date": "2023-09-14T11:30:39.882955",
                 "id": 3,
-                "name": "XSOAR Test Item #3",
+                "name": "XSOAR Test Alert #3",
                 "severity": "low",
                 "status": "Testing"
             }
@@ -123,24 +123,24 @@ Lists the example incidents as it would be fetched from the api.
 
 #### Human Readable Output
 
->### Items List (Example Data)
+>### Items List (Sample Data)
 >|date|id|name|severity|status|
 >|---|---|---|---|---|
->| 2023-09-14T11:30:39.882955 | 1 | XSOAR Test Item #1 | low | Testing |
->| 2023-09-14T11:30:39.882955 | 2 | XSOAR Test Item #2 | low | Testing |
->| 2023-09-14T11:30:39.882955 | 3 | XSOAR Test Item #3 | low | Testing |
+>| 2023-09-14T11:30:39.882955 | 1 | XSOAR Test Alert #1 | low | Testing |
+>| 2023-09-14T11:30:39.882955 | 2 | XSOAR Test Alert #2 | low | Testing |
+>| 2023-09-14T11:30:39.882955 | 3 | XSOAR Test Alert #3 | low | Testing |
 
 
 #### Command example
-```!helloworld-incident-list incident_id=2```
+```!helloworld-alert-list alert_id=2```
 #### Context Example
 ```json
 {
     "HelloWorld": {
-        "Item": {
+        "Alert": {
             "date": "2023-09-14T11:30:39.882955",
             "id": 2,
-            "name": "XSOAR Test Item #2",
+            "name": "XSOAR Test Alert #2",
             "severity": "low",
             "status": "Testing"
         }
@@ -150,46 +150,46 @@ Lists the example incidents as it would be fetched from the api.
 
 #### Human Readable Output
 
->### Items List (Example Data)
+>### Items List (Sample Data)
 >|date|id|name|severity|status|
 >|---|---|---|---|---|
->| 2023-09-14T11:30:39.882955 | 2 | XSOAR Test Item #2 | low | Testing |
+>| 2023-09-14T11:30:39.882955 | 2 | XSOAR Test Alert #2 | low | Testing |
 
 
-### helloworld-incident-note-create
+### helloworld-alert-note-create
 
 ***
 Example of creating new item in the api.
 
 #### Base Command
 
-`helloworld-incident-note-create`
+`helloworld-alert-note-create`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| incident_id | The item's id to add note to. | Required | 
+| alert_id | The alert's id to add note to. | Required | 
 | note_text | The comment to add to note. | Required | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| HelloWorld.Incident.id | Number | The id of the incident. | 
-| HelloWorld.Incident.name | String | The name of the incident. | 
-| HelloWorld.Incident.severity | String | The severity of the incident. | 
-| HelloWorld.Incident.date | Date | The date of the incident occurrence. | 
-| HelloWorld.Incident.status | String | The status of the incident. | 
+| HelloWorld.alert.id | Number | The id of the alert. | 
+| HelloWorld.alert.name | String | The name of the alert. | 
+| HelloWorld.alert.severity | String | The severity of the alert. | 
+| HelloWorld.alert.date | Date | The date of the alert occurrence. | 
+| HelloWorld.alert.status | String | The status of the alert. | 
 
 #### Command example
-```!helloworld-incident-note-create incident_id=2 note_text=test```
+```!helloworld-alert-note-create alert_id=2 note_text=test```
 #### Context Example
 ```json
 {
     "HelloWorld": {
         "Note": {
-            "msg": "Note was created for incident #2 successfully with comment='test'",
+            "msg": "Note was created for alert #2 successfully with comment='test'",
             "status": "success"
         }
     }
@@ -274,7 +274,7 @@ Return IP information and reputation.
         "Reliability": "C - Fairly reliable",
         "Score": 3,
         "Type": "ip",
-        "Vendor": "HelloWorld"
+        "Vendor": "HelloWorld Dev"
     },
     "HelloWorld": {
         "IP": {
@@ -290,7 +290,7 @@ Return IP information and reputation.
         "Address": "8.8.8.8",
         "Malicious": {
             "Description": "Hello World returned reputation -4",
-            "Vendor": "HelloWorld"
+            "Vendor": "HelloWorld Dev"
         },
         "Relationships": [
             {

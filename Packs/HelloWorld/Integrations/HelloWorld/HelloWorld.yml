@@ -3,7 +3,7 @@ sectionOrder:
 - Connect
 - Collect
 commonfields:
-  id: HelloWorld Dev
+  id: HelloWorld
   version: -1
 configuration:
 - additionalinfo: Reliability of the source providing the intelligence data.
@@ -27,7 +27,7 @@ configuration:
   required: true
   type: 0
   section: Connect
-- display: Fetch alerts
+- display: Fetch incidents
   name: isFetch
   type: 8
   section: Collect
@@ -87,8 +87,8 @@ configuration:
   section: Connect
   advanced: true
 description: This is the Hello World integration for getting started.
-display: HelloWorld Dev
-name: HelloWorld Dev
+display: HelloWorld
+name: HelloWorld
 script:
   commands:
   - arguments:
