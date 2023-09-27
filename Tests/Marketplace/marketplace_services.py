@@ -30,6 +30,7 @@ from Tests.Marketplace.marketplace_constants import PackFolders, Metadata, GCPCo
     PackTags, PackIgnored, Changelog, BASE_PACK_DEPENDENCY_DICT, SIEM_RULES_OBJECTS, PackStatus, PACK_FOLDERS_TO_ID_SET_KEYS, \
     CONTENT_ROOT_PATH, XSOAR_MP, XSIAM_MP, XPANSE_MP, TAGS_BY_MP, CONTENT_ITEM_NAME_MAPPING, \
     ITEMS_NAMES_TO_DISPLAY_MAPPING, RN_HEADER_TO_ID_SET_KEYS
+from demisto_sdk.commands.common.constants import MarketplaceVersions, MarketplaceVersionToMarketplaceName
 from Utils.release_notes_generator import aggregate_release_notes_for_marketplace, merge_version_blocks, construct_entities_block
 from Tests.scripts.utils import logging_wrapper as logging
 
@@ -1134,7 +1135,10 @@ class Pack:
             task_status = True
             if pack_was_modified:
                 # Make sure the modification is not only of release notes files, if so count that as not modified
-                pack_was_modified = not all(self.RELEASE_NOTES in path for path in modified_rn_files_paths)
+                pack_was_modified = any(
+                    self.RELEASE_NOTES not in path
+                    for path in modified_rn_files_paths
+                )
                 # Filter modifications in release notes config JSON file - they will be handled later on.
                 modified_rn_files_paths = [path_ for path_ in modified_rn_files_paths if path_.endswith('.md')]
             return None
@@ -1222,14 +1226,13 @@ class Pack:
                 zip_to_upload_full_path = overridden_upload_path
             else:
                 version_pack_path = os.path.join(storage_base_path, self._pack_name, latest_version)
-                existing_files = [Path(f.name).name for f in storage_bucket.list_blobs(prefix=version_pack_path)]
 
                 if override_pack:
                     logging.warning(f"Uploading {self._pack_name} pack to storage and overriding the existing pack "
                                     f"files already in storage.")
 
-                elif existing_files:
-                    logging.warning(f"The following packs already exist in the storage: {', '.join(existing_files)}")
+                else:
+                    logging.warning(f"The following packs were not modified: {self._pack_name}")
                     logging.warning(f"Skipping step of uploading {self._pack_name}.zip to storage.")
                     return task_status, True, None
 
@@ -2515,6 +2518,9 @@ class Pack:
             self._eula_link = user_metadata.get(Metadata.EULA_LINK, Metadata.EULA_URL)
             self._marketplaces = user_metadata.get(Metadata.MARKETPLACES, ['xsoar', 'marketplacev2'])
             self._modules = user_metadata.get(Metadata.MODULES, [])
+
+            if 'xsoar' in self.marketplaces:
+                self.marketplaces.append('xsoar_saas')
 
             logging.info(f"Finished loading {self._pack_name} pack user metadata")
             task_status = True
@@ -3918,7 +3924,7 @@ def store_successful_and_failed_packs_in_ci_artifacts(packs_results_file_path: s
     if images_data:
         # adds a list with all the packs that were changed with images
         packs_results[stage].update({BucketUploadFlow.IMAGES: images_data})
-        logging.debug(f"Images data {images_data}")
+        logging.info(f"Images data {images_data}")
 
     if packs_results:
         if stage == BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING:
@@ -4274,7 +4280,7 @@ def underscore_file_name_to_dotted_version(file_name: str) -> str:
     return os.path.splitext(file_name)[0].replace('_', '.')
 
 
-def get_last_commit_from_index(service_account):
+def get_last_commit_from_index(service_account, marketplace=MarketplaceVersions.XSOAR):
     """ Downloading index.json from GCP and extract last upload commit.
 
     Args:
@@ -4283,8 +4289,9 @@ def get_last_commit_from_index(service_account):
     Returns: last upload commit.
 
     """
+    production_bucket_name = MarketplaceVersionToMarketplaceName.get(marketplace)
     storage_client = init_storage_client(service_account)
-    storage_bucket = storage_client.bucket(GCPConfig.PRODUCTION_BUCKET)
+    storage_bucket = storage_client.bucket(production_bucket_name)
     index_storage_path = os.path.join('content/packs/', f"{GCPConfig.INDEX_NAME}.json")
     index_blob = storage_bucket.blob(index_storage_path)
     index_string = index_blob.download_as_string()

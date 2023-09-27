@@ -3913,7 +3913,7 @@ def list_detection_summaries_command():
     else:
         detections_ids = demisto.get(get_fetch_detections(), 'resources')
     detections_response_data = get_detections_entities(detections_ids)
-    detections = list(detections_response_data.get('resources'))
+    detections = list(detections_response_data.get('resources')) if detections_response_data else []
     detections_human_readable = detections_to_human_readable(detections)
 
     return CommandResults(
