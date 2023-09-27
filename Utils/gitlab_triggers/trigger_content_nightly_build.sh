@@ -23,8 +23,6 @@ fi
 
 _branch="$(git branch  --show-current)"
 _slack_channel="dmst-build-test"
-_infra_env_type=${IFRA_ENV_TYPE:-Nightly} # todo check if need
-
 TEST_MODELING_RULE_JIRA_TICKETS="false"
 
 # Parsing the user inputs.
@@ -69,6 +67,6 @@ curl "$BUILD_TRIGGER_URL" --form "ref=${_branch}" --form "token=${_ci_token}" \
     --form "variables[OVERRIDE_SDK_REF]=${DEMISTO_SDK_NIGHTLY}" \
     --form "variables[NIGHTLY]=true" \
     --form "variables[IS_NIGHTLY]=true" \
-    --form "variables[IFRA_ENV_TYPE]=${_infra_env_type}" \
+    --form "variables[IFRA_ENV_TYPE]=Nightly" \
     --form "variables[TEST_MODELING_RULE_JIRA_TICKETS]=${TEST_MODELING_RULE_JIRA_TICKETS}" \
     --form "variables[SLACK_CHANNEL]=${_slack_channel}"  | jq
