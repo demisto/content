@@ -194,7 +194,7 @@ script:
       description: When the user was last seen in minutes (m), years (Y), month (M), days (d), etc.
       type: String
     - contextPath: Grafana.User.authLabels
-      description: User authentication labels
+      description: User authentication labels.
       type: Unknown
   - arguments:
     - description: ID of user for whom to get teams.
@@ -453,7 +453,7 @@ script:
       description: Dashboard URI.
       type: String
     - contextPath: Grafana.Dashboard.url
-      description: Dashboard URL
+      description: Dashboard URL.
       type: String
     - contextPath: Grafana.Dashboard.slug
       description: Dashboard slug.
@@ -654,7 +654,7 @@ script:
     - contextPath: Grafana.Organization.address
       description: Organization address.
       type: Unknown
-  dockerimage: demisto/python3:3.10.13.72123
+  dockerimage: demisto/python3:3.10.13.74666
   isfetch: true
   runonce: false
   script: '-'
