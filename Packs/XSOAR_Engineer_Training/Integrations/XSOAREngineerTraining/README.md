@@ -1,4 +1,4 @@
-The XSOAR Engineer Training (XET) integration provides sample data to fetch events into XSOAR, and commands to build playbooks around.
+The XSOAR Engineer Training (XET) integration provides sample data to fetch events into Cortex XSOAR, and commands to build playbooks around.
 
 Use for training purposes only. 
 
@@ -52,7 +52,7 @@ Retrieves detailed information about a user account. The user can be specified b
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| dn | The Distinguished Name of the user in which to return information. | Optional | 
+| dn | The Distinguished Name of the user for which to return information. | Optional | 
 | username | Queries users by the samAccountName attribute. | Optional | 
 | email | Queries by the user's email address. | Optional | 
 
@@ -60,7 +60,7 @@ Retrieves detailed information about a user account. The user can be specified b
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ActiveDirectory.Users.dn | unknown | The distinguished name of the user. | 
+| ActiveDirectory.Users.dn | unknown | The Distinguished Name of the user. | 
 | ActiveDirectory.Users.displayName | unknown | The display name of the user. | 
 | ActiveDirectory.Users.name | unknown | The common name of the user. | 
 | ActiveDirectory.Users.sAMAccountName | unknown | The sAMAccountName of the user. | 
@@ -71,7 +71,7 @@ Retrieves detailed information about a user account. The user can be specified b
 | Account.DisplayName | unknown | The display name of the user. | 
 | Account.Groups | unknown | Groups for which the user is a member. | 
 | Account.Manager | unknown | The manager of the user. | 
-| Account.ID | unknown | The distinguished name of the user. | 
+| Account.ID | unknown | The Distinguished Name of the user. | 
 | Account.Username | unknown | The samAccountName of the user. | 
 | Account.Email | unknown | The email address of the user. | 
 
@@ -128,7 +128,7 @@ Searches the simulated SIEM for events.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | query | The query to execute against the SIEM. | Required | 
-| result_type | Type of result to return for this siem integration. Possible values are: email, hosts. | Optional | 
+| result_type | Type of result to return for this SIEM integration. Possible values are: email, hosts. | Optional | 
 
 #### Context Output
 
@@ -139,7 +139,7 @@ Searches the simulated SIEM for events.
 ### xet-send-mail
 
 ***
-Send an email (doesn't actually send an email)
+Send an email. (Doesn't actually send an email.)
 
 #### Base Command
 

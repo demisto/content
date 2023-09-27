@@ -16,7 +16,7 @@ configuration:
   name: incidentFetchInterval
   required: false
   type: 19
-description: "The XSOAR Engineer Training (XET) integration provides sample data to fetch events into XSOAR, and commands to build playbooks around.\n\nUse for training purposes only."
+description: "The XSOAR Engineer Training (XET) integration provides sample data to fetch events into Cortex XSOAR, and commands to build playbooks around.\n\nUse for training purposes only."
 display: XSOAR Engineer Training
 name: XSOAR Engineer Training
 script:
@@ -36,7 +36,7 @@ script:
     name: xet-ad-get-user
     outputs:
     - contextPath: ActiveDirectory.Users.dn
-      description: The distinguished name of the user.
+      description: The Distinguished Name of the user.
     - contextPath: ActiveDirectory.Users.displayName
       description: The display name of the user.
     - contextPath: ActiveDirectory.Users.name
@@ -58,7 +58,7 @@ script:
     - contextPath: Account.Manager
       description: The manager of the user.
     - contextPath: Account.ID
-      description: The distinguished name of the user.
+      description: The Distinguished Name of the user.
     - contextPath: Account.Username
       description: The samAccountName of the user.
     - contextPath: Account.Email
@@ -83,7 +83,7 @@ script:
       name: query
       required: true
     - auto: PREDEFINED
-      description: Type of result to return for this siem integration.
+      description: Type of result to return for this SIEM integration.
       name: result_type
       predefined:
       - email
@@ -97,7 +97,7 @@ script:
     - description: Who to send the fake email to.
       name: to
       required: true
-    description: Send an email (doesn't actually send an email).
+    description: Send an email. (Doesn't actually send an email.)
     name: xet-send-mail
   dockerimage: demisto/python3:3.10.13.74666
   isfetch: true
