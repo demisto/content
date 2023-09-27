@@ -200,8 +200,8 @@ def simple_response_command(command):
     returns a text response for the Active Directory and send mail Commands
     """
     command_map = {
-        'xet-ad-expire-password': 'Expired password successfully',
-        'xet-ad-set-new-password': 'User password successfully set',
+        'xet-ad-expire-password': 'Expired password successfully',  # guardrails-disable-line
+        'xet-ad-set-new-password': 'User password successfully set',    # guardrails-disable-line
         'xet-send-mail': 'XSOAR Engineer Training: fake email notification not sent'
     }
     return CommandResults(readable_output=command_map[command], ignore_auto_extract=True)
