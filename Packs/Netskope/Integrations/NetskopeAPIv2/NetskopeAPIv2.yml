@@ -1,6 +1,6 @@
 category: Network Security
 commonfields:
-  id: netskope_(api_v2)
+  id: netskope_api_v2
   version: -1
 configuration:
 - defaultvalue: https://{environment}.goskope.com
@@ -57,12 +57,12 @@ configuration:
   - network
   required: false
   type: 16
-- additionalinfo: Free text query to filter the fetched alerts.
+- additionalinfo: 'Free text query to filter the fetched alerts. For more information, visit Netskope documentation (https://docs.netskope.com/en/get-alerts-data.html).'
   display: Alerts Query
   name: alerts_query
   required: false
   type: 0
-- additionalinfo: Free text query to filter the fetched events (if configured).
+- additionalinfo: 'Free text query to filter the fetched events (if configured). For more information, visit Netskope documentation (https://docs.netskope.com/en/get-alerts-data.html).'
   display: Events Query
   name: events_query
   type: 0
@@ -126,7 +126,7 @@ script:
       default: false
       description: Whether to retrieve acknowledged alerts or not.
       isArray: false
-      name: acked
+      name: retrieve_acknowledged
       predefined:
       - 'True'
       - 'False'
@@ -867,7 +867,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: false
-      description: Whether to deploy URL list changes or not. Default is False.
+      description: Whether to deploy URL list changes or not.
       isArray: false
       name: deploy
       predefined:
@@ -919,11 +919,11 @@ script:
       - applied
       - pending
       required: false
-    - description: 'Comma separated data values to return in response call (for example: name, id, data, modify_by, modify_time, modify_type, pending). Defaults to all values.'
+    - description: 'Comma-separated data values to return in response call (for example: name, id, data, modify_by, modify_time, modify_type, pending). Defaults to all values.'
       isArray: true
       name: field
       required: false
-    - description: 'Whether to retrieve all results or not. Defaults is false.'
+    - description: Whether to retrieve all results or not.
       isArray: false
       name: all_results
       required: false
@@ -938,7 +938,7 @@ script:
       name: limit
       required: false
     deprecated: false
-    description: Get all URL Lists or a specific by specifying the list ID.
+    description: Get all URL lists or a specific URL list by specifying the list ID.
     execution: false
     name: netskope-url-lists-list
     outputs:
@@ -971,7 +971,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: false
-      description: Whether to deploy URL list changes or not. Default is False.
+      description: Whether to deploy URL list changes or not.
       isArray: false
       name: deploy
       predefined:
