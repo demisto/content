@@ -353,7 +353,7 @@ def perform_long_running_loop(
             )
             is_first_fetch = False
 
-            set_integration_context(last_run_obj._asdict())
+            set_integration_context({"last_run": last_run_obj._asdict()})
             integration_context_for_debug = get_integration_context()
             demisto.debug(f"{integration_context_for_debug=}")
             try:
