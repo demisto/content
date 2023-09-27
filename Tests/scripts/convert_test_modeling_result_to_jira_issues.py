@@ -15,8 +15,8 @@ from Tests.scripts.utils.log_util import install_logging
 
 urllib3.disable_warnings()  # Disable insecure warnings
 JIRA_MAX_DAYS_TO_REOPEN_DEFAULT = 30
-JIRA_MAX_DAYS_TO_REOPEN = (os.environ.get("JIRA_MAX_DAYS_TO_REOPEN", JIRA_MAX_DAYS_TO_REOPEN_DEFAULT) or
-                           JIRA_MAX_DAYS_TO_REOPEN_DEFAULT)
+JIRA_MAX_DAYS_TO_REOPEN = (os.environ.get("JIRA_MAX_DAYS_TO_REOPEN", JIRA_MAX_DAYS_TO_REOPEN_DEFAULT)
+                           or JIRA_MAX_DAYS_TO_REOPEN_DEFAULT)
 
 
 def options_handler() -> argparse.Namespace:
