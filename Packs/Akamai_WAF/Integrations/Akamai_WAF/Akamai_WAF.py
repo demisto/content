@@ -7,6 +7,7 @@ from CommonServerPython import *  # noqa: F401
 """ IMPORTS """
 # Std imports
 import re
+from datetime import datetime
 import time
 # 3-rd party imports
 from typing import Dict, List, Optional, Tuple, Union
@@ -202,7 +203,7 @@ class Client(BaseClient):
                       certificate: str,
                       trust_chain: str,
                       allowed_input_type_param: str = "third-party-cert-and-trust-chain",
-                      keyAlgorithm: str = "RSA"
+                      key_algorithm: str = "RSA"
                       ) -> dict:
         """
             Update a change
@@ -213,17 +214,17 @@ class Client(BaseClient):
             changeId: Specify the ChangeID on which to operate or view.
             enrollmentId: Specify the enrollmentID on which to operate or view.
             allowed_input_type_param: Specify the contract on which to operate or view.
-            keyAlgorithm: RSA and ECDSA
+            key_algorithm: RSA and ECDSA
 
         Returns:
             Json response as dictionary
         """
-        if keyAlgorithm == "RSA":
+        if key_algorithm == "RSA":
             payload = '{\"certificatesAndTrustChains\":[{\"certificate\":\"' + certificate + '\",' \
                 ' \"keyAlgorithm\":\"RSA\",' \
                 '\"trustChain\":\"' + trust_chain + '\"}]}'
 
-        if keyAlgorithm == "ECDSA":
+        if key_algorithm == "ECDSA":
             payload = '{\"certificatesAndTrustChains\":[{\"certificate\":\"' + certificate + '\",' \
                 ' \"keyAlgorithm\":\"ECDSA\",' \
                 '\"trustChain\":\"' + trust_chain + '\"}]}'
@@ -2052,6 +2053,9 @@ class Client(BaseClient):
             The response provides the enrollment change path
 
         """
+        if enrollment_path == '':
+            if enrollment_id == change_id == '':
+                raise DemistoException(f'"enrollment_path" can not be blank while "enrollment_id" and "change_id" are both blank')
         method = "PUT"
         headers = {
             'Accept': 'application/vnd.akamai.cps.change-id.v1+json',
@@ -2086,6 +2090,9 @@ class Client(BaseClient):
             The response to provide the change status
 
         """
+        if enrollment_path == '':
+            if enrollment_id == change_id == '':
+                raise DemistoException(f'"enrollment_path" can not be blank while "enrollment_id" and "change_id" are both blank')
         headers = {"accept": "application/vnd.akamai.cps.change.v2+json"}
         method = "GET"
         if enrollment_path == "":
@@ -3288,7 +3295,7 @@ def get_change_command(client: Client, enrollment_path: str, allowed_input_type_
 def update_change_command(client: Client, change_path: str,
                           certificate: str, trust_chain: str,
                           allowed_input_type_param: str = "third-party-cert-and-trust-chain",
-                          keyAlgorithm: str = "RSA"
+                          key_algorithm: str = "RSA"
                           ) -> Tuple[object, dict, Union[List, Dict]]:
     """
         Update a change
@@ -3303,7 +3310,7 @@ def update_change_command(client: Client, change_path: str,
         Json response as dictionary
     """
     raw_response: Dict = client.update_change(change_path,
-                                              certificate, trust_chain, allowed_input_type_param, keyAlgorithm)
+                                              certificate, trust_chain, allowed_input_type_param, key_algorithm)
 
     if raw_response:
         human_readable = f'{INTEGRATION_NAME} - Update_change'
@@ -5598,6 +5605,7 @@ def get_cps_enrollment_deployment_command(client: Client,
     Args:
         client:
         enrollment_id: Unique Identifier of the Enrollment on which to perform the desired operation.
+            And it can be retrived via list_enrollments_command
         environment: Environment where the certificate is deployed: production or staging
 
     Returns:
@@ -5689,7 +5697,8 @@ def update_cps_enrollment_command(client: Client,
     Args:
         client:
         enrollmentId:
-            Enrollment ID on which to perform the desired operation.
+            Enrollment ID on which to perform the desired operation. 
+            And it can be retrived via list_enrollments_command.
         enrollment:
             Enrollment info in dict format. If provided, the script will not make another API call to get the enrollmont info.
             if not, another API call will be issued to retrieve the Enrollment info.
@@ -5726,6 +5735,8 @@ def update_cps_enrollment_command(client: Client,
     Returns:
         human readable (markdown format), entry context and raw response
     """
+    deploy_not_after =  datetime.strptime(deploy_not_after, '%Y-%m-%dT%H:%M:%SZ')
+    deploy_not_before = datetime.strptime(deploy_not_before, '%Y-%m-%dT%H:%M:%SZ')
     if enrollment == {}:
         enrollment = client.get_enrollment_byid(enrollment_id = enrollment_id, json_version = '11')
     # Remove the fields that are not supposed to be changed.
@@ -5777,11 +5788,14 @@ def update_cps_enrollment_schedule_command(client: Client,
     Args:
         client:
         enrollment_path:
-            Enrollment path found in the pending change location field.
+            Enrollment path found in the pending change location field. 
+            And it can be retrived via list_enrollments_command
         enrollment_id:
             Enrollment ID on which to perform the desired operation.
+            And it can be retrived via list_enrollments_command.
         change_id:
             Chnage ID on which to perform the desired operation.
+            And it can be retrived via list_enrollments_command.
         deploy_not_after:
             The time after when the change will no longer be in effect.
             This value is an ISO-8601 timestamp. (UTC)
@@ -5795,7 +5809,6 @@ def update_cps_enrollment_schedule_command(client: Client,
     Returns:
         human readable (markdown format), entry context and raw response
     """
-    enrollment_path
     if enrollment_path == enrollment_id == change_id == "":
         raise DemistoException('enrollment_path, enrollment_id, change_id can not all be blank.')
     raw_response: Dict = client.update_cps_enrollment_schedule(enrollment_path=enrollment_path,
@@ -5829,8 +5842,11 @@ def get_cps_change_status_command(client: Client,
     Args:
         client:
         enrollment_path: Enrollment path found in the pending change location field.
+            And it can be retrived via list_enrollments_command.
         enrollment_id: Unique Identifier of the Enrollment on which to perform the desired operation.
+            And it can be retrived via list_enrollments_command.
         change_id: The change for this enrollment on which to perform the desired operation.
+            And it can be retrived via list_enrollments_command.
 
     Returns:
         human readable (markdown format), entry context and raw response
