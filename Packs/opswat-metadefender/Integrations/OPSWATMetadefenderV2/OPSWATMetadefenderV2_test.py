@@ -155,3 +155,15 @@ def test_get_hash_info_command(mocker, hash, expected_md_results):
     get_hash_info_command()
     entry = demisto.results.call_args[0][0]
     assert entry.get('HumanReadable') == expected_md_results
+
+
+def test_get_sanitized_file_command_success(mocker):
+    from OPSWATMetadefenderV2 import get_sanitized_file_command
+    mocker.patch('OPSWATMetadefenderV2.get_scan_result',
+                 return_value={'process_info': {'post_processing': {'converted_destination': 'sanitized.pdf'}}})
+    mocker.patch('OPSWATMetadefenderV2.get_sanitized_file',
+                 return_value=b'sanitized file content')
+    mocker.patch('demisto.results')
+    get_sanitized_file_command()
+    assert demisto.results.call_args[0][0]['Filename'] == 'sanitized.pdf'
+    assert demisto.results.call_args[0][0]['File'] == 'sanitized file content'

@@ -56,7 +56,7 @@ script:
       required: true
       description: Entry id of a file in Demisto
     - name: scanRule
-      description: Name of the Rule to use for scanning (Optional)
+      description: Name of the Rule to use for scanning.
     outputs:
     - contextPath: OPSWAT.FileName
       description: OPSWAT file name to scan

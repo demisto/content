@@ -289,8 +289,7 @@ def main():  # pragma: no cover
             get_sanitized_file_command()
     except Exception as e:
         message = f'Unexpected error: {e}'
-        LOG(str(e))
-        LOG.print_log()
+        demisto.error(str(e))
         return_error(message)
 
 
