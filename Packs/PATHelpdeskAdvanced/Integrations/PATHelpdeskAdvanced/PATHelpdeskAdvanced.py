@@ -98,6 +98,11 @@ CONTENT_TYPE = Field("content_type")
 LAST_UPDATE = Field("last_update")
 OPERATION_TYPE_ID = Field("operation_type_id")
 HISTORY_ID = Field("history_id")
+OPERATION_DESCRIPTION = Field("operation_description")
+UPDATE_DATE = Field("update_date")
+FULL_NAME = Field("full_name")
+USER_NAME = Field("user_name")
+
 # Underscored fields are not real in HDA but used for the integration
 _PRIORITY = Field("priority")
 _TICKET_SOURCE = Field("ticket_source")
@@ -876,7 +881,15 @@ def get_ticket_history_command(client: Client, args: dict) -> CommandResults:
         readable_output=pat_table_to_markdown(
             title="PAT HelpdeskAdvanced Ticket History",
             output=response,
-            fields=None,
+            fields=(
+                UPDATE_DATE,
+                OPERATION_TYPE_ID,
+                OPERATION_DESCRIPTION,
+                FULL_NAME,
+                USER_NAME,
+                CONTACT_ID,
+                ACCOUNT_ID,
+            ),
             removeNull=True,
             is_auto_json_transform=True,
         ),
