@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: d3f60473-e4d1-4f3b-80b4-9b7e90b090b7
+    taskid: 7d472bd1-6811-4fdb-82f3-e5e7e2dcd11f
     type: start
     task:
-      id: d3f60473-e4d1-4f3b-80b4-9b7e90b090b7
+      id: 7d472bd1-6811-4fdb-82f3-e5e7e2dcd11f
       version: -1
       name: ""
       iscommand: false
@@ -36,10 +36,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: e896e93b-9881-4b84-836f-453cbab33a40
+    taskid: 966415f1-9310-4bd3-880e-c390f129dced
     type: playbook
     task:
-      id: e896e93b-9881-4b84-836f-453cbab33a40
+      id: 966415f1-9310-4bd3-880e-c390f129dced
       version: -1
       name: Rapid7 - Nexpose - Enrichment
       description: Given an IP address, this playbook searches Rapid7 Nexpose assets for an asset with the associated IP address to retrieve asset information and proceeds to return all associated tags with it.
@@ -77,10 +77,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 8bfca9e9-3000-40a3-878b-c3f1cf636580
+    taskid: abb4d008-90e1-4533-8efd-5257157007f9
     type: regular
     task:
-      id: 8bfca9e9-3000-40a3-878b-c3f1cf636580
+      id: abb4d008-90e1-4533-8efd-5257157007f9
       version: -1
       name: Set service owner grid field
       description: |-
@@ -97,7 +97,7 @@ tasks:
       gridfield:
         simple: asmserviceowner
       keys:
-        simple: Name,Email,Source,Timestamp
+        simple: name,email,source,timestamp
       val1:
         complex:
           root: Nexpose.AssetTag
@@ -143,10 +143,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 877f840e-ad5d-4378-8d48-0c60abc0b41e
+    taskid: f0736024-e9ae-4636-81f9-e236ee7711a9
     type: regular
     task:
-      id: 877f840e-ad5d-4378-8d48-0c60abc0b41e
+      id: f0736024-e9ae-4636-81f9-e236ee7711a9
       version: -1
       name: Get current time
       description: |
@@ -176,10 +176,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 046ffeb3-6a8f-4523-82c7-c1b2cd23cb77
+    taskid: a3d73bec-f111-4220-8cf6-3b07630eb820
     type: title
     task:
-      id: 046ffeb3-6a8f-4523-82c7-c1b2cd23cb77
+      id: a3d73bec-f111-4220-8cf6-3b07630eb820
       version: -1
       name: Service Owner
       type: title
@@ -207,10 +207,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: d0a96e7c-21bc-4d6e-81c9-bc8ad9466c26
+    taskid: 3e049cd1-cc09-4b82-82e8-4fe91e0ffc3e
     type: title
     task:
-      id: d0a96e7c-21bc-4d6e-81c9-bc8ad9466c26
+      id: 3e049cd1-cc09-4b82-82e8-4fe91e0ffc3e
       version: -1
       name: Set Field
       type: title
@@ -240,10 +240,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 8a48378c-6d8a-4754-88eb-56f3d0ecbae3
+    taskid: a726d380-5143-44c7-8b76-c6771e5d7dc1
     type: title
     task:
-      id: 8a48378c-6d8a-4754-88eb-56f3d0ecbae3
+      id: a726d380-5143-44c7-8b76-c6771e5d7dc1
       version: -1
       name: System IDs
       type: title
@@ -271,10 +271,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 3d8c8f7a-9a82-4e0f-8628-5e4353211a6f
+    taskid: 6b3821ad-893f-4ca6-802c-f23b8df096cc
     type: regular
     task:
-      id: 3d8c8f7a-9a82-4e0f-8628-5e4353211a6f
+      id: 6b3821ad-893f-4ca6-802c-f23b8df096cc
       version: -1
       name: Set system IDs grid field (OS)
       description: |-
@@ -291,9 +291,9 @@ tasks:
       gridfield:
         simple: asmsystemids
       keys:
-        simple: Type,ID,Link
+        simple: type,id,link
       val1:
-        simple: Rapid7-OS
+        simple: RAPID7-ASSET-OS
       val2:
         complex:
           root: Nexpose.Asset
@@ -318,10 +318,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 28f9bf1e-d2b4-48f6-8f3c-d222110d016b
+    taskid: 67352dd6-ef71-4a54-80cb-977f3558fae7
     type: title
     task:
-      id: 28f9bf1e-d2b4-48f6-8f3c-d222110d016b
+      id: 67352dd6-ef71-4a54-80cb-977f3558fae7
       version: -1
       name: Tags
       type: title
@@ -349,10 +349,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 49eb3bfe-47bc-4f3c-844f-e5b69afa1a6c
+    taskid: dcf271b7-2cab-47a4-847f-bc8b29e74d04
     type: condition
     task:
-      id: 49eb3bfe-47bc-4f3c-844f-e5b69afa1a6c
+      id: dcf271b7-2cab-47a4-847f-bc8b29e74d04
       version: -1
       name: Is Rapid7 Nexpose enabled?
       description: Determines if the "Rapid7 Nexpose" integration instance is enabled in order to find assets and asset tags.
@@ -410,12 +410,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: 894d7fd8-4932-4860-8433-c142152d13c9
+    taskid: 2d9ae398-2ba5-45a4-8156-e17fcfd57200
     type: regular
     task:
-      id: 894d7fd8-4932-4860-8433-c142152d13c9
+      id: 2d9ae398-2ba5-45a4-8156-e17fcfd57200
       version: -1
-      name: Set system IDs grid field (Asset Site)
+      name: Set system IDs grid field (asset site)
       description: |-
         Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
         `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
@@ -430,9 +430,9 @@ tasks:
       gridfield:
         simple: asmsystemids
       keys:
-        simple: Type,ID,Link
+        simple: type,id,link
       val1:
-        simple: Rapid7-Asset-Site
+        simple: RAPID7-ASSET-SITE
       val2:
         complex:
           root: Nexpose.Asset
@@ -457,12 +457,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: d48de3da-3da7-4dc7-8a8a-608adb6dbe86
+    taskid: 3975707a-25b0-4947-8e4b-2a24fdf03d0e
     type: regular
     task:
-      id: d48de3da-3da7-4dc7-8a8a-608adb6dbe86
+      id: 3975707a-25b0-4947-8e4b-2a24fdf03d0e
       version: -1
-      name: Set system IDs grid field (Asset Name)
+      name: Set system IDs grid field (asset name)
       description: |-
         Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
         `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
@@ -477,9 +477,9 @@ tasks:
       gridfield:
         simple: asmsystemids
       keys:
-        simple: Type,ID,Link
+        simple: type,id,link
       val1:
-        simple: Rapid7-Asset
+        simple: RAPID7-ASSET-NAME
       val2:
         complex:
           root: Nexpose.Asset
@@ -504,10 +504,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: 8f044991-ce48-4df1-8b3d-0b5e518c915d
+    taskid: 37207fdb-9cf1-4a8c-8bf5-40e362924e5e
     type: condition
     task:
-      id: 8f044991-ce48-4df1-8b3d-0b5e518c915d
+      id: 37207fdb-9cf1-4a8c-8bf5-40e362924e5e
       version: -1
       name: Was there an asset from Rapid7?
       description: Checks if the Nexpose Asset object exists.
@@ -549,10 +549,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: 83f279ca-8981-496c-8dd3-66f8c1ae096b
+    taskid: 28649c97-42fb-4b20-8b4c-986742b531ea
     type: condition
     task:
-      id: 83f279ca-8981-496c-8dd3-66f8c1ae096b
+      id: 28649c97-42fb-4b20-8b4c-986742b531ea
       version: -1
       name: Was there asset tags from Rapid7?
       description: Checks if the Nexpose AssetTag object exists.
@@ -602,10 +602,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: faed2aa9-b52a-4aab-8553-d98afe3fe0e1
+    taskid: 9f24e0b8-bacc-4149-84fc-fccf8007589c
     type: condition
     task:
-      id: faed2aa9-b52a-4aab-8553-d98afe3fe0e1
+      id: 9f24e0b8-bacc-4149-84fc-fccf8007589c
       version: -1
       name: Was there an owner asset tag from Rapid7?
       description: Checks if the Nexpose AssetTag object exists with an "owner" tag.
@@ -655,10 +655,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: a4176c6e-0159-435e-8b93-f6228072ac26
+    taskid: 34e400ea-f74f-4a56-8084-6a5a8a647470
     type: regular
     task:
-      id: a4176c6e-0159-435e-8b93-f6228072ac26
+      id: 34e400ea-f74f-4a56-8084-6a5a8a647470
       version: -1
       name: Set tags grid field
       description: |-
@@ -675,7 +675,7 @@ tasks:
       gridfield:
         simple: asmtags
       keys:
-        simple: Key,Value,Source
+        simple: key,value,source
       val1:
         complex:
           root: Nexpose.AssetTag
@@ -722,10 +722,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: fded4f3a-44e2-42a7-86b0-9c4dc0c387c9
+    taskid: 61dc46f3-0652-412f-80ab-f631160737b7
     type: condition
     task:
-      id: fded4f3a-44e2-42a7-86b0-9c4dc0c387c9
+      id: 61dc46f3-0652-412f-80ab-f631160737b7
       version: -1
       name: Is an OS value set for asset?
       description: Checks if the Operating Service is set in the Nexpose Asset object.
@@ -763,10 +763,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: 767f19ca-7e31-4ff5-8b27-82d2a8ca0961
+    taskid: 99503cae-a47f-4763-8394-b35694603cf6
     type: condition
     task:
-      id: 767f19ca-7e31-4ff5-8b27-82d2a8ca0961
+      id: 99503cae-a47f-4763-8394-b35694603cf6
       version: -1
       name: Is a name value set for asset?
       description: Checks if the Name is set in the Nexpose Asset object.
@@ -808,10 +808,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: 675a7e59-a15e-4a9c-83d6-305b87c2ba78
+    taskid: f7edd466-7baf-4d7a-883a-adfb4ef171ef
     type: condition
     task:
-      id: 675a7e59-a15e-4a9c-83d6-305b87c2ba78
+      id: f7edd466-7baf-4d7a-883a-adfb4ef171ef
       version: -1
       name: Is a site value set for asset?
       description: Checks if the Site is set in the Nexpose Asset object.
@@ -853,12 +853,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: ab2e86ed-b0b3-49a3-85d0-a4ee5db2762d
+    taskid: 1ab733c9-9298-4e95-8ad5-0aaa4b8aba6b
     type: regular
     task:
-      id: ab2e86ed-b0b3-49a3-85d0-a4ee5db2762d
+      id: 1ab733c9-9298-4e95-8ad5-0aaa4b8aba6b
       version: -1
-      name: Set system IDs grid field (Asset ID)
+      name: Set system IDs grid field (asset ID)
       description: |-
         Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
         `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
@@ -873,9 +873,9 @@ tasks:
       gridfield:
         simple: asmsystemids
       keys:
-        simple: Type,ID,Link
+        simple: type,id,link
       val1:
-        simple: Rapid7-Asset-ID
+        simple: RAPID7-ASSET-ID
       val2:
         complex:
           root: Nexpose.Asset
@@ -900,10 +900,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: aa00350f-8e6a-41e3-8a86-497b9e1b1818
+    taskid: 7269a845-38ca-4f84-889a-d01950e1ac62
     type: condition
     task:
-      id: aa00350f-8e6a-41e3-8a86-497b9e1b1818
+      id: 7269a845-38ca-4f84-889a-d01950e1ac62
       version: -1
       name: Is a ID value set for asset?
       description: Checks if the Site is set in the Nexpose Asset object.
@@ -944,10 +944,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: 4a03fd54-fbc2-4b53-8cf0-f1fe09408efa
+    taskid: 7674db05-9eeb-4549-8026-37be6155249b
     type: regular
     task:
-      id: 4a03fd54-fbc2-4b53-8cf0-f1fe09408efa
+      id: 7674db05-9eeb-4549-8026-37be6155249b
       version: -1
       name: Set flag for enrichment status to true
       description: Set a value in context under the key you entered.
@@ -983,10 +983,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: 0d08e830-7ffa-4984-8d4c-b9b0ae69b671
+    taskid: e04594f7-9909-41d4-865f-c6c4f90dba9c
     type: title
     task:
-      id: 0d08e830-7ffa-4984-8d4c-b9b0ae69b671
+      id: e04594f7-9909-41d4-865f-c6c4f90dba9c
       version: -1
       name: Closing Steps
       type: title
@@ -1014,10 +1014,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "34":
     id: "34"
-    taskid: 72c73b55-ccc7-4fce-8820-a34907d60bcd
+    taskid: e5f83d98-4b11-45c0-80e3-8e01cc8d24f9
     type: regular
     task:
-      id: 72c73b55-ccc7-4fce-8820-a34907d60bcd
+      id: e5f83d98-4b11-45c0-80e3-8e01cc8d24f9
       version: -1
       name: Set flag for enrichment status to false
       description: Set a value in context under the key you entered.
@@ -1053,10 +1053,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "35":
     id: "35"
-    taskid: ebe7e30f-f19d-47a1-8fba-12354c9c6898
+    taskid: 36c7532f-cad6-4e8c-88b6-bb9b90d4b84a
     type: title
     task:
-      id: ebe7e30f-f19d-47a1-8fba-12354c9c6898
+      id: 36c7532f-cad6-4e8c-88b6-bb9b90d4b84a
       version: -1
       name: Complete
       type: title
@@ -1081,10 +1081,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "36":
     id: "36"
-    taskid: 3de06241-60b7-4d77-87a5-9e8b5e2b2bdf
+    taskid: 15a36b89-e65b-475b-829d-64730f3087dc
     type: regular
     task:
-      id: 3de06241-60b7-4d77-87a5-9e8b5e2b2bdf
+      id: 15a36b89-e65b-475b-829d-64730f3087dc
       version: -1
       name: Set ASM enrichment status to true
       description: |-
@@ -1126,14 +1126,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "37":
     id: "37"
-    taskid: 120840ce-e3b2-42f6-8b22-fcbf95969453
+    taskid: 97673ffc-e9af-47df-8a21-d993d9051031
     type: condition
     task:
-      id: 120840ce-e3b2-42f6-8b22-fcbf95969453
+      id: 97673ffc-e9af-47df-8a21-d993d9051031
       version: -1
       name: Was enrichment performed?
-      type: condition
       description: Check if enrichment was performed by checking for a value of true in the relevant flag variable.
+      type: condition
       iscommand: false
       brand: ""
     nexttasks:
@@ -1171,10 +1171,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "38":
     id: "38"
-    taskid: 86bd1fe0-c494-4294-897d-c60496aa1be6
+    taskid: 797f1c9c-8bbc-494a-8fb8-998881c9aa99
     type: regular
     task:
-      id: 86bd1fe0-c494-4294-897d-c60496aa1be6
+      id: 797f1c9c-8bbc-494a-8fb8-998881c9aa99
       version: -1
       name: Set ASM enrichment status to false
       description: |-

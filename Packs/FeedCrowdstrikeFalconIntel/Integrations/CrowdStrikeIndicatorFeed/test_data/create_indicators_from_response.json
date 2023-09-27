@@ -129,7 +129,8 @@
       ],
       "reports": [],
       "stixkillchainphases": [
-        "C2"
+        "Command & Control",
+        "Delivery"
       ],
       "tags": [
         "Malware/Gootkit"
@@ -155,7 +156,7 @@
       "indicator": "abc1",
       "ip_address_types": [],
       "kill_chains": [
-        "C2"
+        "C2", "delivery"
       ],
       "labels": [
         {
@@ -229,7 +230,7 @@
       ],
       "reports": [],
       "stixkillchainphases": [
-        "C2"
+        "Command & Control"
       ],
       "tags": [
         "Malware/Gootkit"

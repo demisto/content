@@ -196,7 +196,7 @@ script:
     - description: Which field to sort by, For vulnerabilities data, Tenable recommends you sort by severity.
       name: sort_field
       defaultValue: severity
-    - description: When the source_type is "individual", a scan_results_id must be provided. cumulative — Analyzes cumulative vulnerabilities. patched — Analyzes mitigated vulnerabilities.
+    - description: When the source_type is "individual", a scan_results_id must be provided, otherwise "query_id" must be provided. cumulative — Analyzes cumulative vulnerabilities. patched — Analyzes mitigated vulnerabilities.
       name: source_type
       auto: PREDEFINED
       predefined:
@@ -1538,7 +1538,7 @@ script:
       required: true
     description: Delete a user by given user_id. This command can be executed with both roles (admin or security manager).
     name: tenable-sc-delete-user
-    outputs:
+    outputs: []
   - arguments:
     - description: The ID of the plugin to search. If given, other arguments will be ignored.
       name: plugin_id
@@ -2125,7 +2125,7 @@ script:
     polling: true
     description: Requires security manager role. Update an asset.
     name: tenable-sc-update-asset
-    outputs:
+    outputs: []
   - arguments:
     - description: The name of the policy to create.
       name: policy_name
@@ -2476,7 +2476,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.12.68714
 tests:
 - tenable-sc-test
 fromversion: 5.0.0

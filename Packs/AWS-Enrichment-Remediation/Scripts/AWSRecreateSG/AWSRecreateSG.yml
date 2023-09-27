@@ -15,6 +15,8 @@ args:
 - description: Public IP address of the EC2 instance.
   name: public_ip
   required: true
+- description: Name of an AWS role to assume (should be the same for all organizations).
+  name: assume_role
 comment: Automation to determine which interface on an EC2 instance has an over-permissive security group, determine which security groups have over-permissive rules, and replace them with a copy of the security group that has only the over-permissive portion removed.  Over-permissive is defined as sensitive ports (SSH, RDP, etc) being exposed to the internet via IPv4.
 commonfields:
   id: AWSRecreateSG
@@ -27,7 +29,7 @@ dependson:
   - AWS - EC2|||aws-ec2-authorize-security-group-egress-rule
   - AWS - EC2|||aws-ec2-revoke-security-group-ingress-rule
   - AWS - EC2|||aws-ec2-revoke-security-group-egress-rule
-dockerimage: demisto/python3:3.10.10.49934
+dockerimage: demisto/python3:3.10.13.73190
 enabled: true
 name: AWSRecreateSG
 runas: DBotWeakRole

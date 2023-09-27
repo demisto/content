@@ -3860,7 +3860,7 @@ There is no context output for this command.
 #### Human Readable Output
 
 >Indicator ID: 18 was successfully deleted
->
+
 ### microsoft-atp-sc-indicator-list
 
 ---
@@ -3870,6 +3870,9 @@ Lists all indicators by the ID that the system creates when the indicator is ing
 
 `Ti.ReadWrite`
 
+##### Note
+To ensure that the application is accessible to all indicators, the 'Ti.ReadWrite.All' permission must be granted. Without this permission, the application will only be accessible to the indicators it has created.
+
 #### Base Command
 
 `microsoft-atp-sc-indicator-list`
@@ -3878,7 +3881,11 @@ Lists all indicators by the ID that the system creates when the indicator is ing
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of indicators to return. Default is 50. | Optional | 
+| limit | The maximum number of indicators to return. Default is 50. | Optional |
+| skip | The number of indicators that are to be skipped and not included in the result. | Optional |
+| indicator_value | The value of the indicator to get. | Optional |
+| indicator_title | The title of the indicator to get. | Optional |
+| indicator_type | The type of the indicator to get. | Optional |
 
 
 #### Context Output

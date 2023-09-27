@@ -105,7 +105,7 @@ class IdSet(DictFileBased):
         self.id_to_integration: dict[str, IdSetItem] = self._parse_items('integrations')
         self.id_to_script: dict[str, IdSetItem] = self._parse_items('scripts')
         self.id_to_test_playbook: dict[str, IdSetItem] = self._parse_items('TestPlaybooks')
-        self.id_to_modeling_rule: dict[str, IdSetItem] = self._parse_items('ModelingRules')
+        self.path_to_modeling_rule: dict[str, IdSetItem] = self._parse_items('ModelingRules')
 
         self.implemented_scripts_to_tests: dict[str, list] = defaultdict(list)
         self.implemented_playbooks_to_tests: dict[str, list] = defaultdict(list)
@@ -139,7 +139,7 @@ class IdSet(DictFileBased):
 
     @property
     def modeling_rules(self) -> Iterable[IdSetItem]:
-        yield from self.id_to_modeling_rule.values()
+        yield from self.path_to_modeling_rule.values()
 
     def _parse_items(self, key: str) -> dict[str, IdSetItem]:
         result: dict[str, IdSetItem] = {}
@@ -189,8 +189,8 @@ class Graph:
             self.id_to_script = {script.object_id: IdSetItem.from_model(script) for script in scripts}
             self.id_to_test_playbook = {
                 test_playbook.object_id: IdSetItem.from_model(test_playbook) for test_playbook in test_playbooks}
-            self.id_to_modeling_rule = {
-                modeling_rule.object_id: IdSetItem.from_model(modeling_rule) for modeling_rule in modeling_rules
+            self.path_to_modeling_rule = {
+                modeling_rule.path: IdSetItem.from_model(modeling_rule) for modeling_rule in modeling_rules
             }
             self.implemented_playbooks_to_tests = {playbook.object_id: [IdSetItem.from_model(test) for test in playbook.tested_by]
                                                    for playbook in playbooks}
@@ -198,7 +198,7 @@ class Graph:
                                                  for script in scripts}
 
             self.test_playbooks = self.id_to_test_playbook.values()
-            self.modeling_rules = self.id_to_modeling_rule.values()
+            self.modeling_rules = self.path_to_modeling_rule.values()
 
     @property
     def artifact_iterator(self) -> Iterable[IdSetItem]:

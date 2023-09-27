@@ -151,6 +151,8 @@ https://exchange.xforce.ibmcloud.com/ip/8.8.8.8
 ***
 Check the given URL reputation
 
+Notice: Submitting indicators using this command might make the indicator data publicly available. See the vendor’s documentation for more details.
+
 
 ##### Base Command
 
@@ -328,6 +330,8 @@ https://exchange.xforce.ibmcloud.com/malware/f2b8d790dab6d2c6945f9a0bce441921
 ### domain
 ***
 Check domain reputation
+
+Notice: Submitting indicators using this command might make the indicator data publicly available. See the vendor’s documentation for more details.
 
 
 ##### Base Command
