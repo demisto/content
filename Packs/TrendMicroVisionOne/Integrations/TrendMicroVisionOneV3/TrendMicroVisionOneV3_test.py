@@ -47,7 +47,7 @@ def enable_user_account_mock_response(*args, **kwargs):
 
 def test_enable_user_account(mocker):
     """Test enable user account success response."""
-    client = Client("https://tv1-mock-dev.trendmicro.com", api_key, proxy, verify)
+    client = Client("https://tmv1-mock.trendmicro.com", api_key, proxy, verify)
     mocker.patch.object(
         TrendMicroVisionOneV3,
         "enable_or_disable_user_account",
@@ -79,7 +79,7 @@ def disable_user_account_mock_response(*args, **kwargs):
 
 def test_disable_user_account(mocker):
     """Test disable user account success response."""
-    client = Client("https://tv1-mock-dev.trendmicro.com", api_key, proxy, verify)
+    client = Client("https://tmv1-mock.trendmicro.com", api_key, proxy, verify)
     mocker.patch.object(
         TrendMicroVisionOneV3,
         "enable_or_disable_user_account",
@@ -111,7 +111,7 @@ def force_signout_mock_response(*args, **kwargs):
 
 def test_force_signout(mocker):
     """Test to force sign out user account with successful result."""
-    client = Client("https://tv1-mock-dev.trendmicro.com", api_key, proxy, verify)
+    client = Client("https://tmv1-mock.trendmicro.com", api_key, proxy, verify)
     mocker.patch.object(
         TrendMicroVisionOneV3, "force_sign_out", force_signout_mock_response
     )
@@ -140,7 +140,7 @@ def force_password_reset_mock_response(*args, **kwargs):
 
 def test_force_password_reset(mocker):
     """Test to force sign out user account with successful result."""
-    client = Client("https://tv1-mock-dev.trendmicro.com", api_key, proxy, verify)
+    client = Client("https://tmv1-mock.trendmicro.com", api_key, proxy, verify)
     mocker.patch.object(
         TrendMicroVisionOneV3,
         "force_password_reset",
@@ -171,7 +171,7 @@ def add_blocklist_mock_response(*args, **kwargs):
 # Test cases for add to block list
 def test_add_blocklist(mocker):
     """Test add to block list with positive scenario."""
-    client = Client("https://tv1-mock-dev.trendmicro.com", api_key, proxy, verify)
+    client = Client("https://tmv1-mock.trendmicro.com", api_key, proxy, verify)
     mocker.patch.object(
         TrendMicroVisionOneV3,
         "add_or_remove_from_block_list",
@@ -205,7 +205,7 @@ def remove_blocklist_mock_response(*args, **kwargs):
 # Test cases for remove from block list
 def test_remove_blocklist(mocker):
     """Test remove block list positive scenario."""
-    client = Client("https://tv1-mock-dev.trendmicro.com", api_key, proxy, verify)
+    client = Client("https://tmv1-mock.trendmicro.com", api_key, proxy, verify)
     mocker.patch.object(
         TrendMicroVisionOneV3,
         "add_or_remove_from_block_list",
@@ -239,7 +239,7 @@ def quarantine_email_mock_response(*args, **kwargs):
 # Test cases for quarantine email message
 def test_quarantine_email_message(mocker):
     """Test quarantine email message positive scenario."""
-    client = Client("https://tv1-mock-dev.trendmicro.com", api_key, proxy, verify)
+    client = Client("https://tmv1-mock.trendmicro.com", api_key, proxy, verify)
     mocker.patch.object(
         TrendMicroVisionOneV3,
         "quarantine_or_delete_email_message",
@@ -275,7 +275,7 @@ def delete_email_mock_response(*args, **kwargs):
 # Test cases for delete email message
 def test_delete_email_message(mocker):
     """Test delete email message with positive scenario."""
-    client = Client("https://tv1-mock-dev.trendmicro.com", api_key, proxy, verify)
+    client = Client("https://tmv1-mock.trendmicro.com", api_key, proxy, verify)
     mocker.patch.object(
         TrendMicroVisionOneV3,
         "quarantine_or_delete_email_message",
@@ -310,7 +310,7 @@ def restore_email_mock_response(*args, **kwargs):
 
 # Test case for restore email
 def test_restore_email_message(mocker):
-    client = Client("https://tv1-mock-dev.trendmicro.com", api_key, proxy, verify)
+    client = Client("https://tmv1-mock.trendmicro.com", api_key, proxy, verify)
     mocker.patch.object(
         TrendMicroVisionOneV3,
         "restore_email_message",
@@ -326,7 +326,7 @@ def test_restore_email_message(mocker):
     }
     result = restore_email_message(client, args)
     assert result.outputs[0]["status"] == 202
-    assert result.outputs[0]["task_id"] == "00000002"
+    assert result.outputs[0]["task_id"] == "00000003"
     assert result.outputs_prefix == "VisionOne.Email"
     assert result.outputs_key_field == "task_id"
 
@@ -341,7 +341,7 @@ def isolate_mock_response(*args, **kwargs):
 # Test cases for isolate endpoint
 def test_isolate_endpoint(mocker):
     """Test isolate endpoint positive scenario."""
-    client = Client("https://tv1-mock-dev.trendmicro.com", api_key, proxy, verify)
+    client = Client("https://tmv1-mock.trendmicro.com", api_key, proxy, verify)
     mocker.patch.object(
         TrendMicroVisionOneV3,
         "isolate_or_restore_connection",
@@ -374,7 +374,7 @@ def restore_endpoint_mock_response(*args, **kwargs):
 # Test cases for restore endpoint
 def test_restore_endpoint(mocker):
     """Test restore endpoint positive scenario."""
-    client = Client("https://tv1-mock-dev.trendmicro.com", api_key, proxy, verify)
+    client = Client("https://tmv1-mock.trendmicro.com", api_key, proxy, verify)
     mocker.patch.object(
         TrendMicroVisionOneV3,
         "isolate_or_restore_connection",
@@ -407,7 +407,7 @@ def terminate_process_mock_response(*args, **kwargs):
 # Test cases for terminate process endpoint
 def test_terminate_process(mocker):
     """Test terminate process positive scenario."""
-    client = Client("https://tv1-mock-dev.trendmicro.com", api_key, proxy, verify)
+    client = Client("https://tmv1-mock.trendmicro.com", api_key, proxy, verify)
     mocker.patch.object(
         TrendMicroVisionOneV3,
         "terminate_process",
@@ -440,7 +440,7 @@ def add_exception_mock_response(*args, **kwargs):
 # Test cases for add exception list.
 def test_add_object_to_exception_list(mocker):
     """Test add to exception list with positive scenario."""
-    client = Client("https://tv1-mock-dev.trendmicro.com", api_key, proxy, verify)
+    client = Client("https://tmv1-mock.trendmicro.com", api_key, proxy, verify)
     mocker.patch.object(
         TrendMicroVisionOneV3,
         "add_or_delete_from_exception_list",
@@ -474,7 +474,7 @@ def delete_exception_mock_response(*args, **kwargs):
 # Test cases for delete exception list.
 def test_delete_object_from_exception_list(mocker):
     """Test delete exception list positive scenario."""
-    client = Client("https://tv1-mock-dev.trendmicro.com", api_key, proxy, verify)
+    client = Client("https://tmv1-mock.trendmicro.com", api_key, proxy, verify)
     mocker.patch.object(
         TrendMicroVisionOneV3,
         "add_or_delete_from_exception_list",
@@ -508,7 +508,7 @@ def add_suspicious_mock_response(*args, **kwargs):
 # Test cases for add suspicious object list
 def test_add_object_to_suspicious_list(mocker):
     """Test add to suspicious list with poistive scenario."""
-    client = Client("https://tv1-mock-dev.trendmicro.com", api_key, proxy, verify)
+    client = Client("https://tmv1-mock.trendmicro.com", api_key, proxy, verify)
     mocker.patch.object(
         TrendMicroVisionOneV3,
         "add_to_suspicious_list",
@@ -543,7 +543,7 @@ def delete_suspicious_mock_response(*args, **kwargs):
 # Test cases for delete suspicious object list
 def test_delete_object_from_suspicious_list(mocker):
     """Test delete object from suspicious list."""
-    client = Client("https://tv1-mock-dev.trendmicro.com", api_key, proxy, verify)
+    client = Client("https://tmv1-mock.trendmicro.com", api_key, proxy, verify)
     mocker.patch.object(
         TrendMicroVisionOneV3,
         "add_to_suspicious_list",
@@ -575,7 +575,7 @@ def mock_file_analysis_status_response(*args, **kwargs):
 # Test Cases for Get file analysis status
 def test_get_file_analysis_status(mocker):
     """Test to get status of file"""
-    client = Client("https://tv1-mock-dev.trendmicro.com", api_key, proxy, verify)
+    client = Client("https://tmv1-mock.trendmicro.com", api_key, proxy, verify)
     mocker.patch.object(
         TrendMicroVisionOneV3,
         "get_file_analysis_status",
@@ -617,7 +617,7 @@ def mock_file_result_response(*args, **kwargs):
 # Test cases for get file analysis report
 def test_get_file_analysis_result(mocker):
     """Test get file analysis report data."""
-    client = Client("https://tv1-mock-dev.trendmicro.com", api_key, proxy, verify)
+    client = Client("https://tmv1-mock.trendmicro.com", api_key, proxy, verify)
     mocker.patch.object(
         TrendMicroVisionOneV3,
         "get_file_analysis_result",
@@ -660,7 +660,7 @@ def mock_collect_file_response(*args, **kwargs):
 # Test cases for collect forensic file.
 def test_collect_forensic_file(mocker):
     """Test collect file with positive scenario."""
-    client = Client("https://tv1-mock-dev.trendmicro.com", api_key, proxy, verify)
+    client = Client("https://tmv1-mock.trendmicro.com", api_key, proxy, verify)
     mocker.patch.object(
         TrendMicroVisionOneV3,
         "collect_file",
@@ -692,14 +692,14 @@ def mock_download_collected_file_info_response(*args, **kwargs):
 # Test Cases for Collected downloaded file information.
 def test_get_forensic_file_information(mocker):
     """Test endpoint to get collected file information based on task id"""
-    client = Client("https://tv1-mock-dev.trendmicro.com", api_key, proxy, verify)
+    client = Client("https://tmv1-mock.trendmicro.com", api_key, proxy, verify)
     mocker.patch.object(
         TrendMicroVisionOneV3,
         "download_information_collected_file",
         mock_download_collected_file_info_response,
     )
     args = {
-        "task_id": "00000003",
+        "task_id": "collect_file",
         "poll": "true",
         "poll_time_sec": 30,
     }
@@ -735,7 +735,7 @@ def test_download_analysis_report(mocker):
     to sandbox based on submission ID returned by get
     file analysis status.
     """
-    client = Client("https://tv1-mock-dev.trendmicro.com", api_key, proxy, verify)
+    client = Client("https://tmv1-mock.trendmicro.com", api_key, proxy, verify)
     mocker.patch.object(
         TrendMicroVisionOneV3,
         "download_analysis_report",
@@ -770,7 +770,7 @@ def test_download_investigation_package(mocker):
     submitted to sandbox based on submission ID returned
     by get file analysis status.
     """
-    client = Client("https://tv1-mock-dev.trendmicro.com", api_key, proxy, verify)
+    client = Client("https://tmv1-mock.trendmicro.com", api_key, proxy, verify)
     mocker.patch.object(
         TrendMicroVisionOneV3,
         "download_investigation_package",
@@ -804,7 +804,7 @@ def test_download_suspicious_object_list(mocker):
     High will be populated in the list. If no items
     exist, a 404 not found error will be returned.
     """
-    client = Client("https://tv1-mock-dev.trendmicro.com", api_key, proxy, verify)
+    client = Client("https://tmv1-mock.trendmicro.com", api_key, proxy, verify)
     mocker.patch.object(
         TrendMicroVisionOneV3,
         "download_suspicious_object_list",
@@ -883,7 +883,7 @@ def mocked_requests_post(*args, **kwargs):
 
 
 def test_submit_file_to_sandbox(mocker):
-    client = Client("https://tv1-mock-dev.trendmicro.com", api_key, proxy, verify)
+    client = Client("https://tmv1-mock.trendmicro.com", api_key, proxy, verify)
     mocker.patch.object(
         TrendMicroVisionOneV3,
         "submit_file_to_sandbox",
@@ -919,7 +919,7 @@ def test_submit_file_entry_to_sandbox(mocker):
         "document_password": "",
         "arguments": "",
     }
-    client = Client("https://tv1-mock-dev.trendmicro.com", api_key, proxy, verify)
+    client = Client("https://tmv1-mock.trendmicro.com", api_key, proxy, verify)
     result = submit_file_entry_to_sandbox(client, args)
     assert result.outputs["entry_id"] == "12@1221"
     assert isinstance(result.outputs["task_id"], str)
@@ -936,7 +936,7 @@ def mock_urls_to_sandbox(*args, **kwargs):
 
 # Test case for submit urls to sandbox
 def test_submit_urls_to_sandbox(mocker):
-    client = Client("https://tv1-mock-dev.trendmicro.com", api_key, proxy, verify)
+    client = Client("https://tmv1-mock.trendmicro.com", api_key, proxy, verify)
     mocker.patch.object(
         TrendMicroVisionOneV3,
         "submit_urls_to_sandbox",
@@ -944,15 +944,15 @@ def test_submit_urls_to_sandbox(mocker):
     )
     args = {
         "urls": [
-            "https://www.example.com/",
-            "https://www.example.com/#bird",
-            "https://www.example.com/bed",
+            "http://www.shadywebsite.com",
+            "http://www.virus2.com",
+            "https://testurl.com",
         ]
     }
     result = submit_urls_to_sandbox(client, args)
-    assert isinstance(result.outputs["url"], str)
-    assert isinstance(result.outputs["id"], str)
-    assert isinstance(result.outputs["digest"], dict)
+    assert isinstance(result.outputs[0]["url"], str)
+    assert isinstance(result.outputs[0]["id"], str)
+    assert isinstance(result.outputs[0]["digest"], dict)
     assert result.outputs_key_field == "id"
 
 
@@ -978,7 +978,7 @@ def test_sandbox_submission_polling(mocker):
     mocker.patch(
         "CommonServerPython.ScheduledCommand.raise_error_if_not_supported", lambda: None
     )
-    client = Client("https://tv1-mock-dev.trendmicro.com", api_key, proxy, verify)
+    client = Client("https://tmv1-mock.trendmicro.com", api_key, proxy, verify)
     args = {"task_id": "8559a7ce-2b85-451b-8742-4b943ad76a22"}
     result = get_sandbox_submission_status(args, client)
     assert result.outputs["report_id"] == "8559a7ce-2b85-451b-8742-4b943ad76a22"
@@ -1008,7 +1008,7 @@ def test_check_task_status(mocker):
     mocker.patch(
         "CommonServerPython.ScheduledCommand.raise_error_if_not_supported", lambda: None
     )
-    client = Client("https://tv1-mock-dev.trendmicro.com", api_key, proxy, verify)
+    client = Client("https://tmv1-mock.trendmicro.com", api_key, proxy, verify)
     args = {
         "task_id": "00000004",
         "poll": "true",
@@ -1038,7 +1038,7 @@ def test_get_endpoint_information(mocker):
         mock_get_endpoint_info_response,
     )
     args = {"endpoint": "hostname", "query_op": "or"}
-    client = Client("https://tv1-mock-dev.trendmicro.com", api_key, proxy, verify)
+    client = Client("https://tmv1-mock.trendmicro.com", api_key, proxy, verify)
     result = get_endpoint_info(client, args)
     assert isinstance(result.outputs[0]["agent_guid"], str)
     assert isinstance(result.outputs[0]["login_account"], dict)
@@ -1061,13 +1061,13 @@ def get_alert_details_mock_response(*args, **kwargs):
 
 # Test case for get alert details
 def test_get_alert_details(mocker):
-    mocker.patch(
-        "TrendMicroVisionOneV3.get_alert_details", get_alert_details_mock_response
+    mocker.patch.object(
+        TrendMicroVisionOneV3, "get_alert_details", get_alert_details_mock_response
     )
-    client = Client("https://tv1-mock-dev.trendmicro.com", api_key, proxy, verify)
+    client = Client("https://tmv1-mock.trendmicro.com", api_key, proxy, verify)
     args = {"workbench_id": "WB-14-20190709-00003"}
     result = get_alert_details(client, args)
-    assert result.outputs["etag"] == "d41d8cd98f00b204e9800998ecf8427e"
+    assert result.outputs["etag"] == "33a64df551425fcc55e4d42a148795d9f25f89d4"
     assert isinstance(result.outputs["alert"], dict)
     assert result.outputs_key_field == "etag"
 
@@ -1082,7 +1082,7 @@ def add_note_mock_response(*args, **kwargs):
 # Test case for add note
 def test_add_note(mocker):
     mocker.patch("TrendMicroVisionOneV3.add_note", add_note_mock_response)
-    client = Client("https://tv1-mock-dev.trendmicro.com", api_key, proxy, verify)
+    client = Client("https://tmv1-mock.trendmicro.com", api_key, proxy, verify)
     args = {"workbench_id": "WB-14-20190709-00003", "content": "This is a new note."}
     result = add_note(client, args)
     assert isinstance(result.outputs["message"], str)
@@ -1101,7 +1101,7 @@ def update_status_mock_response(*args, **kwargs):
 # Test case for update alert status
 def test_update_status(mocker):
     mocker.patch("TrendMicroVisionOneV3.update_status", update_status_mock_response)
-    client = Client("https://tv1-mock-dev.trendmicro.com", api_key, proxy, verify)
+    client = Client("https://tmv1-mock.trendmicro.com", api_key, proxy, verify)
     args = {
         "workbench_id": "WB-20837-20220418-00000",
         "if_match": "d41d8cd98f00b204e9800998ecf8427e",
