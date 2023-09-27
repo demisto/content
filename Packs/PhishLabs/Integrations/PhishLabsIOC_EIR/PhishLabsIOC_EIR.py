@@ -360,8 +360,8 @@ def fetch_incidents_command(
                                             direction='asc')
     # Gather incidents by demisto format
     incidents_report = []
+    demisto.debug(f'Got {len(incidents_raw)} incidents from the API.')
     if incidents_raw:
-        demisto.debug(f'Got {len(incidents_raw)} incidents from the API.')
         for incident_raw in incidents_raw:
             # Creates incident entry
             occurred = incident_raw.get('created')
