@@ -92,7 +92,7 @@ tasks:
         tooltip: Search for the Dashboards & Reports section in the navigation panel on the left. Remember - This is highly important for our CISO.
         readonly: false
       title: Practicing with Reports
-      description: "XSOAR reporting can be a powerful value proposition. \nReports can contain widgets and be customized. \nThey can be used for a variety of tasks, including things such as measurement of efficiency and teamwork. \n\nOur CISO demanded to get a status report on our activities. There is a flag hidden in one of the reports. Generate the right report and try to find it :sunglasses:\n\nReports are located in the same section as the Dashboards.\n\nMake sure to allow pop-ups for downloading the report. \n\n **Did you know?**\n\nIt is easy to create and schedule any report on XSOAR. You can save hours otherwise spent collecting and collating these from scratch.\nReports are built using widgets. They can be used for a variety of tasks. Besides reports distributed to stakeholders, you can also track SLAs for tasks and identify areas in your IR processes that are time sinks.\n[Click here to read more.](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Administrator-Guide/Reports-Customization)\n___\n![myfile](https://raw.githubusercontent.com/demisto/content/10b88c87c2954c3b97108b3c07596fcf3cf128b7/Packs/ctf01/doc_files/H.gif)\n___\n"
+      description: "XSOAR reporting can be a powerful value proposition. \nReports can contain widgets and be customized. \nThey can be used for a variety of tasks, including things such as measurement of efficiency and teamwork. \n\nOur CISO demanded to get a status report on our activities. There is a flag hidden in one of the reports. Generate the right report and try to find it :sunglasses:\n\nReports are located in the same section as the Dashboards.\n\nMake sure to allow pop-ups for downloading the report. \n\n **Did you know?**\n\nIt is easy to create and schedule any report on XSOAR. You can save hours otherwise spent collecting and collating these from scratch.\nReports are built using widgets. They can be used for a variety of tasks. Besides reports distributed to stakeholders, you can also track SLAs for tasks and identify areas in your IR processes that are time sinks.\n[Click here to read more.](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Administrator-Guide/Reports-Customization)\n___\n![myfile](https://raw.githubusercontent.com/demisto/content/10b88c87c2954c3b97108b3c07596fcf3cf128b7/Packs/ctf01/doc_files/D.gif)\n___\n"
       sender: Your SOC team
       expired: false
       totalanswers: 0
@@ -168,9 +168,6 @@ tasks:
         You can easily build playbooks through a visual drag-and-drop interface that features thousands of automatable actions across security products, conditional paths, manual tasks and human approval for sensitive automations.
         [Click here to read more.](https://xsoar.pan.dev/docs/playbooks/playbooks-overview)
 
-        ___
-        ![myfile](https://raw.githubusercontent.com/demisto/content/d5fc1ffdf4d70621570e5a60fabea1047df4a3c0/Packs/ctf01/doc_files/look-nobodys-following-the-playbook-gerard-butler.gif)
-        ___
       sender: Your SOC team
       expired: false
       totalanswers: 0
@@ -308,9 +305,6 @@ tasks:
         Incident Fields are used for accepting or populating incident data coming from incidents. You create fields for information you know will be coming from 3rd party integrations and in which you want to insert the information.
         [Click here to read more.](https://xsoar.pan.dev/docs/incidents/incident-fields)
 
-        ___
-        ![myfile](https://raw.githubusercontent.com/demisto/content/4643108281a0869f27c8daf9a9b965b58917beb4/Packs/ctf01/doc_files/custom-custom-game.gif)
-        ___
       sender: Your SOC team
       expired: false
       totalanswers: 0
@@ -419,7 +413,7 @@ tasks:
       id: 6fddb177-a562-424d-84a5-b5618e624a35
       version: -1
       name: Create a new incident using the CTF incident type
-      description: "Congrats! You finished with the first CTF! Well Done!!\n\n\nLet's continue with the next challenge :) \n\nIn order to proceed to the following challenge, please create a new incident with the following parameter:\n1. Incident name should be your\n`<name  / student_id> - CTF02  `\n2. incident type \"CTF02\"  \n___\n![myfile](https://raw.githubusercontent.com/demisto/content/806a73315034eb4319d58b51d5bfe0ff56e0c3f9/Packs/ctf01/doc_files/where-is-my-ctf.gif)\n___\n"
+      description: "Congrats! You finished with the first CTF! Well Done!!\n\n\nLet's continue with the next challenge :) \n\nIn order to proceed to the following challenge, please create a new incident with the following parameter:\n1. Incident name should be your\n`<name  / student_id> - CTF02  `\n2. incident type \"CTF02\""
       type: regular
       iscommand: false
       brand: ""

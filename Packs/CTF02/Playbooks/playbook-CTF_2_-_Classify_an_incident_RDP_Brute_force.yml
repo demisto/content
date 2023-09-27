@@ -357,7 +357,7 @@ tasks:
         tooltip: You can see the relationships numbers in the on the relevant indicator . Remember that existing indicators are highlighted  with link.
         readonly: false
       title: Check the various indicators that are extracted from the incident
-      description: "Indicators are our first way to determine if the incident is malicious or not even before we deep dive into the details. \nWe need you to analyze the indicators within the XDR RDP brute force incident and help us to make the right call!\n\n**Did you know?**\n\nIf you have a Cortex XSOAR Threat Intelligence Management (TIM) license, it is possible to create predefined relationships between indicators to describe how they relate to each other. This enables the SOC analyst to do a more efficient incident analysis based on the indicators associated to the incident.\n[Click here to read more.](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.12/Cortex-XSOAR-Threat-Intel-Management-Guide/Indicator-Relationships)\n___\n![myfile](https://raw.githubusercontent.com/demisto/content/806a73315034eb4319d58b51d5bfe0ff56e0c3f9/Packs/ctf01/doc_files/hmm-suspect.gif)\n___\n"
+      description: "Indicators are our first way to determine if the incident is malicious or not even before we deep dive into the details. \nWe need you to analyze the indicators within the XDR RDP brute force incident and help us to make the right call!\n\n**Did you know?**\n\nIf you have a Cortex XSOAR Threat Intelligence Management (TIM) license, it is possible to create predefined relationships between indicators to describe how they relate to each other. This enables the SOC analyst to do a more efficient incident analysis based on the indicators associated to the incident.\n[Click here to read more.](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.12/Cortex-XSOAR-Threat-Intel-Management-Guide/Indicator-Relationships)"
       sender: ""
       expired: false
       totalanswers: 0
@@ -533,9 +533,7 @@ tasks:
         Unit 42 Intel provides threat intelligence from multiple Palo Alto Networks services.
         Using Unit 42 Intel data, you can investigate indicators and their behaviors, and use that knowledge to better safeguard your network from malicious activity. [Check out the UNIT 42 Intel pack](https://cortex.marketplace.pan.dev/marketplace/details/Unit42Intel/).
         [Click here to read more.](https://cortex.marketplace.pan.dev/marketplace/details/Unit42Intel/)
-        ___
-        ![myfile](https://raw.githubusercontent.com/demisto/content/e89a247573e2d3927223be2ab2dc143cc1a40469/Packs/ctf01/doc_files/spinning-vortex.gif)
-        ___
+
       sender: ""
       expired: false
       totalanswers: 0
@@ -946,9 +944,7 @@ tasks:
         Now, we have classified the incident as true positive, we would like to verify that we blocked the malicious indicator. Let’s export this indicator to an External Dynamic List (EDL) using the Export Dynamic Lists integration.
 
         The EDL integration utilizes the TIM query to populate indicators to an external dynamic list. For example, a TIM query can use a dedicated tag for blocking (such as "Bad" or "BlockMe").
-        ___
-        ![myfile](https://raw.githubusercontent.com/demisto/content/d5fc1ffdf4d70621570e5a60fabea1047df4a3c0/Packs/ctf01/doc_files/did_someone_tag_me.gif)
-        ___
+
       sender: Your SOC team
       expired: false
       totalanswers: 0
