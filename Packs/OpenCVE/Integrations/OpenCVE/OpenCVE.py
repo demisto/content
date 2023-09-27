@@ -318,7 +318,7 @@ def cve_to_warroom(cve: dict) -> dict[str, str]:
     }
 
 
-def cve_to_indicator(cve: dict, ocve: OpenCVE) -> Common.CVE:
+def cve_to_indicator(cve: dict, ocve: OpenCVE, relationships: list) -> Common.CVE:
     """
     Converts a parsed_cve to a Common.CVE. This can be used in
         CommandResults() as the indicator argument.
@@ -333,9 +333,9 @@ def cve_to_indicator(cve: dict, ocve: OpenCVE) -> Common.CVE:
 
     indicator = Common.CVE(
         id=cve.get('value'),
-        cvss=fields.get('cvssscore'),
-        cvss_score=fields.get('cvssscore'),
-        description=fields.get('description'),
+        cvss=fields.get('cvssscore', ''),
+        cvss_score=fields.get('cvssscore', ''),
+        description=fields.get('description', ''),
         published=cve.get('timestamp', '').replace('Z', ''),
         modified=cve.get('modified', '').replace('Z', ''),
         cvss_version=fields.get('cvssversion', ''),
@@ -356,8 +356,8 @@ def cve_to_indicator(cve: dict, ocve: OpenCVE) -> Common.CVE:
     if fields.get('tags', []):
         indicator.tags = fields.get('tags')
 
-    if fields.get('relationships', []):
-        indicator.relationships = fields.get('relationships')
+    if relationships:
+        indicator.relationships = relationships
 
     if fields.get('cvsstable', []):
         indicator.cvss_table = fields.get('cvsstable')
@@ -380,12 +380,12 @@ def parse_tags(vendors: dict, cve_id: str, cwes: list) -> tuple[list[EntityRelat
         return cpe.replace('_', ' ').replace('\\', '').capitalize()
 
     tags = {clean_tag(vendor) for vendor in vendors}
-
-    relationships = [EntityRelationship(name="targets",
-                                        entity_a=cve_id,
-                                        entity_a_type="cve",
-                                        entity_b=vendor,
-                                        entity_b_type="identity") for vendor in tags]
+    relationships = []
+    relationships.extend([EntityRelationship(name="targets",
+                                             entity_a=cve_id,
+                                             entity_a_type="cve",
+                                             entity_b=vendor,
+                                             entity_b_type="identity") for vendor in tags])
 
     for vendor in vendors.values():
         products = {clean_tag(product) for product in vendor}
@@ -395,10 +395,11 @@ def parse_tags(vendors: dict, cve_id: str, cwes: list) -> tuple[list[EntityRelat
                                                  entity_a_type="cve",
                                                  entity_b=product,
                                                  entity_b_type="software") for product in products])
+
     return relationships, list(tags)
 
 
-def parse_cve(ocve: OpenCVE, cve: dict) -> dict:
+def parse_cve(ocve: OpenCVE, cve: dict):
     """
     This method parses the CVE information and creates a dict of the results
 
@@ -432,9 +433,9 @@ def parse_cve(ocve: OpenCVE, cve: dict) -> dict:
     cwes = cve.get('cwes', [])
     relationships, tags = parse_tags(vendors, parsed_cve.get('value', ''), cwes)
     parsed_cve['fields']['tags'] = tags
-    parsed_cve['fields']['relationships'] = relationships
+    parsed_cve['relationships'] = [relationship.to_entry() for relationship in relationships if relationship.to_entry()]
 
-    references = cve.get('raw_nvd_data', []).get('cve', []).get('references', []).get('reference_data', [])
+    references = cve.get('raw_nvd_data', {}).get('cve', {}).get('references', {}).get('reference_data', [])
     parsed_cve['fields']['publications'] = [{'title': reference.get('name', None),
                                              'source': reference.get('source', None),
                                              'link': reference.get('url', None)} for reference in references]
@@ -442,7 +443,7 @@ def parse_cve(ocve: OpenCVE, cve: dict) -> dict:
     cvssV2 = None
     cvssV3 = None
 
-    impact = cve.get('raw_nvd_data', '').get('impact', '')
+    impact = cve.get('raw_nvd_data', {}).get('impact', '')
     if impact:
         if cvss_version == 3:
             cvssV3 = cve['raw_nvd_data']['impact']['baseMetricV3']['cvssV3']
@@ -482,7 +483,7 @@ def parse_cve(ocve: OpenCVE, cve: dict) -> dict:
     parsed_cve['fields']['nodes'] = cve.get('raw_nvd_data', {}).get('configurations', {}).get('nodes', {})
     parsed_cve['fields']['cwes'] = cve.get('cwes', [])
 
-    return parsed_cve
+    return relationships, parsed_cve
 
 
 def valid_cve_format(cve_id: str) -> bool:
@@ -572,7 +573,7 @@ def cve_latest_command(client: Client, ocve: OpenCVE, args: dict) -> CommandResu
         for alert in alerts:
             cve_id = alert['cve']
             response = client.get_cve_request(cve_id)
-            parsed_cve = parse_cve(ocve, response)
+            _, parsed_cve = parse_cve(ocve, response)
             parsed_cves.append(parsed_cve)
 
     # Create the IOCs that have been gathered so far
@@ -611,19 +612,20 @@ def get_cve_command(client: Client, ocve: OpenCVE, args: dict) -> list[CommandRe
 
     for cve in cves:
         cve_info = client.get_cve_request(cve_id=cve)
-        parsed_cve = parse_cve(ocve, cve_info)
+        relationships, parsed_cve = parse_cve(ocve, cve_info)
 
         pretty_results = cve_to_warroom(parsed_cve)
 
         readable = tableToMarkdown(parsed_cve.get('value'), pretty_results)
-        cve_indicator = cve_to_indicator(parsed_cve, ocve)
+        cve_indicator = cve_to_indicator(parsed_cve, ocve, relationships)
 
         results.append(CommandResults(
             outputs_prefix='OpenCVE.CVE',
             outputs=pretty_results,
             readable_output=readable,
             raw_response=cve_info,
-            indicator=cve_indicator
+            indicator=cve_indicator,
+            relationships=relationships
         ))
 
     return results
@@ -726,7 +728,7 @@ def get_vendor_cves_command(client: Client, ocve: OpenCVE, args: dict) -> list[C
 
     for cve in cves:
         cve_info = client.get_cve_request(cve['id'])
-        parsed_cve = parse_cve(ocve, cve_info)
+        relationships, parsed_cve = parse_cve(ocve, cve_info)
 
         pretty_results = cve_to_warroom(parsed_cve)
         readable = tableToMarkdown(cve.get('value'), pretty_results)
@@ -735,7 +737,8 @@ def get_vendor_cves_command(client: Client, ocve: OpenCVE, args: dict) -> list[C
             outputs=parsed_cve,
             readable_output=readable,
             raw_response=parsed_cve,
-            indicator=cve_to_indicator(parsed_cve, ocve)
+            indicator=cve_to_indicator(parsed_cve, ocve, relationships),
+            relationships=relationships
         ))
 
     return results
@@ -802,13 +805,10 @@ def get_product_cves_command(client: Client, ocve: OpenCVE, args: dict) -> list[
         params['page'] = args.get('page', None)
 
     cves = client.get_cves_by_product_request(vendor, product, params=params)
-
     results = []
-
     for cve in cves:
         cve_info = client.get_cve_request(cve['id'])
-        parsed_cve = parse_cve(ocve, cve_info)
-
+        relationships, parsed_cve = parse_cve(ocve, cve_info)
         pretty_results = cve_to_warroom(parsed_cve)
         readable = tableToMarkdown(cve.get('value'), pretty_results)
         results.append(CommandResults(
@@ -816,7 +816,8 @@ def get_product_cves_command(client: Client, ocve: OpenCVE, args: dict) -> list[
             outputs=parsed_cve,
             readable_output=readable,
             raw_response=parsed_cve,
-            indicator=cve_to_indicator(parsed_cve, ocve)
+            indicator=cve_to_indicator(parsed_cve, ocve, relationships),
+            relationships=relationships
         ))
 
     return results
@@ -945,6 +946,7 @@ def main():  # pragma: no cover
             raise NotImplementedError(f'{command} is not an existing CVE Search command')
 
     except Exception as err:
+        demisto.debug(f'Exception {str(err)} ')
         return_error(f'Failed to execute {command} command. Error: {str(err)}')
 
 
