@@ -354,7 +354,7 @@ class TestReputationCommands:
             main()
 
         # validate
-        mocked_search.call_args[0][1]['status'] == exp_status_param
+        assert mocked_search.call_args[0][1]['status'] == exp_status_param
 
     def test_no_confidence_in_result_ioc(self, mocker):
         """
@@ -779,7 +779,7 @@ class TestGetCommands:
         get_model_description(mock_client(), model, '1')
 
         # validate
-        mocked_result.call_args[0][1] == b'test_description'
+        assert mocked_result.call_args[0][1] == b'test_description'
 
 
 class TestUpdateCommands:

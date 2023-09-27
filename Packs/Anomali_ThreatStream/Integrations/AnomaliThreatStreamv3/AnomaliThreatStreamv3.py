@@ -456,13 +456,13 @@ class Client(BaseClient):
         return self.http_request("POST", url_suffix,
                                  json={'ids': associated_entity_ids_list})
 
-    def add_indicator_tag_request(self, data_request: dict[str, object]):
+    def add_indicator_tag_request(self, data_request: dict[str, Any]):
         self.http_request(
             method="POST",
             url_suffix="v2/intelligence/bulk_tagging/",
             data=json.dumps(data_request))
 
-    def remove_indicator_tag_request(self, data_request: dict[str, object]):
+    def remove_indicator_tag_request(self, data_request: dict[str, Any]):
         self.http_request(
             method="PATCH",
             url_suffix="v2/intelligence/bulk_remove_tags/",
@@ -2652,7 +2652,6 @@ def main():
         'threatstream-approve-import-job': approve_import_job_command,
         'threatstream-search-threat-model': search_threat_model_command,
         'threatstream-add-threat-model-association': add_threat_model_association_command,
-
         'threatstream-add-indicator-tag': add_indicator_tag_command,
         'threatstream-remove-indicator-tag': remove_indicator_tag_command,
     }
