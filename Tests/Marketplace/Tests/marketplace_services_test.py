@@ -2007,7 +2007,7 @@ class TestImagesUpload:
         """
         dummy_build_bucket = mocker.MagicMock()
         dummy_prod_bucket = mocker.MagicMock()
-        blob_name = "content/packs/images/dark/Integration Id.svg"
+        blob_name = "content/images/dark/Integration Id.svg"
 
         images_data = {"TestPack": {BucketUploadFlow.DYNAMIC_DASHBOARD_IMAGES: [blob_name]}}
         task_status = dummy_pack.copy_dynamic_dashboard_images(dummy_prod_bucket, dummy_build_bucket, images_data,
