@@ -136,7 +136,9 @@ tasks:
       - "6"
     scriptarguments:
       ids:
-        simple: ${csfalconx.resource.submitted_id}
+        complex:
+          root: csfalconx.resource
+          accessor: submitted_id
     separatecontext: false
     view: |-
       {
@@ -378,7 +380,9 @@ tasks:
       - "6"
     scriptarguments:
       ids:
-        simple: ${csfalconx.resource.submitted_id}
+        complex:
+          root: csfalconx.resource
+          accessor: submitted_id
     separatecontext: false
     continueonerrortype: ""
     view: |-
