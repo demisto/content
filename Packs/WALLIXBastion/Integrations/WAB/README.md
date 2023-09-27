@@ -64,8 +64,8 @@ Add a password checkout account to a target group.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | group_id | The group id or name to edit. | Required | 
-| account_name | The account name. | Required | 
-| domain_name | The domain name. | Required | 
+| account | The account name. | Required | 
+| domain | The domain name. | Required | 
 | domain_type | The domain type: local or global. | Required | 
 | device | The device name (null for an application). | Optional | 
 | application | The application name (null for a device). | Optional | 

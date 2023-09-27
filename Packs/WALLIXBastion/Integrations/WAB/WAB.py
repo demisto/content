@@ -125,15 +125,15 @@ class Client(BaseClient):
 
     def add_password_target_to_target_group(self, args: Dict[str, Any]):
         group_id = str_arg(args, "group_id")
-        account_name = str_arg(args, "account_name")
-        domain_name = str_arg(args, "domain_name")
+        account = str_arg(args, "account")
+        domain = str_arg(args, "domain")
         domain_type = str_arg(args, "domain_type")
         device = str_arg(args, "device")
         application = str_arg(args, "application")
 
         data = assign_params(
-            account_name=account_name,
-            domain_name=domain_name,
+            account=account,
+            domain=domain,
             domain_type=domain_type,
             device=device,
             application=application,
