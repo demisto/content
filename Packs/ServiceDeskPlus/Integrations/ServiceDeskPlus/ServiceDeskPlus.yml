@@ -107,7 +107,7 @@ script:
       name: request_id
     - description: |-
         Use this to get a list of tasks starting from this index.
-        e.g: 6
+        e.g: 6.
       name: start_index
     - description: |-
         Use this to mention the number of requests that needs to be returned.
@@ -509,7 +509,7 @@ script:
       - Link
       - Unlink
       required: true
-    - description: A comma-separated list of request IDs to link or unlink from the given request. Multiple IDs can be passed, separated by a comma
+    - description: A comma-separated list of request IDs to link or unlink from the given request. Multiple IDs can be passed, separated by a comma.
       name: linked_requests_id
       required: true
     - description: The comment to add when linking requests (optional).
@@ -542,7 +542,7 @@ script:
       required: true
     description: Closes the specified request.
     name: service-desk-plus-request-close
-  dockerimage: demisto/python3:3.10.13.72123
+  dockerimage: demisto/python3:3.10.13.74666
   isfetch: true
   runonce: false
   script: '-'
