@@ -1,5 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+
+
 import emoji
 
 import traceback
@@ -1714,8 +1716,12 @@ def create_element_list(arguments_dict: dict) -> tuple[list, list]:
 def get_intelligence_information(client: Client, indicator, ioc_type, intelligence_type):
 
     value = indicator.get('value')
+    remote_api = demisto.params().get('remote_api')
     url = f"v1/{intelligence_type}/associated_with_intelligence/"
-    intelligences = client.http_request('GET', url, params={'value': value}).get('objects', [])
+    if remote_api:
+        intelligences = client.http_request('GET', url, params={'value': value, 'remote_api': 'true'}).get('objects', [])
+    else:
+        intelligences = client.http_request('GET', url, params={'value': value}).get('objects', [])
     relationships: List[EntityRelationship] = []
     entity_b_type = INTELLIGENCE_TYPE_TO_ENTITY_TYPE[intelligence_type]
 

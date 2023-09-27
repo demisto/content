@@ -1,7 +1,4 @@
 category: Data Enrichment & Threat Intelligence
-sectionOrder:
-- Connect
-- Collect
 commonfields:
   id: Anomali ThreatStream v3
   version: -1
@@ -93,8 +90,15 @@ configuration:
   section: Collect
   advanced: true
   required: false
-defaultclassifier: 'null'
-description: Use Anomali ThreatStream to query and submit threats.
+- defaultvalue: 'false'
+  display: ''
+  name: remote_api
+  options:
+  - 'true'
+  - 'false'
+  required: false
+  type: 15
+description: This integration has a variation in api where it adds remote_api=True param.
 display: Anomali ThreatStream v3
 name: Anomali ThreatStream v3
 script:
@@ -2486,6 +2490,7 @@ script:
       - medium
       - high
       - very-high
+      auto: PREDEFINED
     - description: 'A comma-separated list of tags applied to the imported observables. For example, tag1,tag2. Note: In cases where tags are specified at both the global and per observable level, tags specified per observable overwrite global tags.'
       name: tags
     - description: A comma-separated list of trusted circle IDs with which threat data should be shared.
@@ -2850,7 +2855,7 @@ script:
       - md5
       - string
       - url
-    - description: 'The value of the indicator. .'
+    - description: 'The value of the indicator. '
       name: indicator_value
     - description: The maximum number of results to return from ThreatStream. Default value is 20.
       name: limit
@@ -2913,7 +2918,7 @@ script:
       - tipreport
       - ttp
       - vulnerability
-    - description: 'A comma-separated list of tags applied to the specified threat model entities or observables. .'
+    - description: 'A comma-separated list of tags applied to the specified threat model entities or observables. '
       isArray: true
       name: tags
       required: true
@@ -3139,8 +3144,7 @@ script:
       isArray: true
       name: url
       required: true
-    - auto: PREDEFINED
-      description: If confidence is greater than the threshold the URL is considered malicious, otherwise it is considered good. This argument overrides the default URL threshold defined as a parameter.
+    - description: If confidence is greater than the threshold the URL is considered malicious, otherwise it is considered good. This argument overrides the default URL threshold defined as a parameter.
       name: threshold
     - auto: PREDEFINED
       description: Whether to include results with an inactive status.
@@ -3877,7 +3881,7 @@ script:
       name: threat_type
     - description: Whether the intelligence is public.
       name: is_public
-    - description: Query that overrides all other arguments. The filter operators used for the filter language query are the symbolic form (=, <, >, and so on) and not the descriptive form (exact, lt, gt, and so on). E.g., (confidence>=90+AND+(itype="apt_ip"+OR+itype="bot_ip"+OR+itype="c2_ip")).
+    - description: Query that overrides all other arguments. The filter operators used for the filter language query are the symbolic form (=, <, >, and so on) and not the descriptive form (exact, lt, gt, and so on). E.g., (confidence>=90+AND+(itype="apt_ip"+OR+itype="bot_ip"+OR+itype="c2_ip"))
       name: query
     - description: An incrementing numeric identifier associated with each update to intelligence on ThreatStream. If specified, then it is recommended to use order_by=update_id.
       name: update_id_gt
@@ -4002,7 +4006,7 @@ script:
       description: The subtype of the intelligence.
       type: String
     - contextPath: ThreatStream.Intelligence.resource_uri
-      description: The resource URI of the intelligence.
+      description: The resource URI of the intelligence
       type: String
     - contextPath: ThreatStream.Intelligence.severity
       description: The severity of the intelligence.
@@ -6089,7 +6093,7 @@ script:
     - description: A note that will be associated with all the indicator types that are provided in the command arguments.
       name: note
       required: true
-    description: "Modify contextual notes associated with existing whitelist entries."
+    description: "Modify contextual notes associated with existing whitelist entries"
     name: threatstream-update-whitelist-entry-note
   - arguments:
     - description: The ID of the entry you want to update. Use the threatstream-list-whitelist-entry command to get the entry ID.
@@ -6256,7 +6260,7 @@ script:
     - description: 'A comma-separated list of publication statuses. Supported values are: new, pending_review, review_requested, reviewed.'
       isArray: true
       name: publication_status
-    - description: 'A comma-separated list of signature types. Supported values are: Bro, Carbon Black Query, ClamAV, Custom, CybOX, OpenIOC, RSA NetWitness, Snort, Splunk Query, Suricata, YARA.'
+    - description: 'A comma-separated list of signature types. Supported values are: Bro, Carbon Black Query, ClamAV, Custom, CybOX, OpenIOC, RSA NetWitness, Snort, Splunk Query, Suricata, YARA'
       isArray: true
       name: signature_type
     - description: 'A comma-separated list of additional comments and context associated with the entity when it was imported from its original threat feed.'
@@ -6396,7 +6400,7 @@ script:
     name: threatstream-add-threat-model-association
   dockerimage: demisto/py3-tools:1.0.0.75615
   runonce: false
-  script: '-'
+  script: ''
   subtype: python3
   type: python
 tests:
