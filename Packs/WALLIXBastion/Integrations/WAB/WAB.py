@@ -254,7 +254,7 @@ class Client(BaseClient):
 
         response = self._http_request("delete", f"/accounts/{account_id}")
 
-        return CommandResults(outputs_prefix="WAB", outputs_key_field="", outputs=response, raw_response=response)
+        return CommandResults(readable_output="Success!", raw_response=response)
 
     def get_application_accounts(self, args: Dict[str, Any]):
         application_id = str_arg(args, "application_id")
@@ -294,7 +294,7 @@ class Client(BaseClient):
         )
         response = self._http_request("post", f"/applications/{application_id}/localdomains/{domain_id}/accounts", json_data=body)
 
-        return CommandResults(outputs_prefix="WAB", outputs_key_field="", outputs=response, raw_response=response)
+        return CommandResults(readable_output="Success!", raw_response=response)
 
     def get_application_account(self, args: Dict[str, Any]):
         application_id = str_arg(args, "application_id")
@@ -340,7 +340,7 @@ class Client(BaseClient):
             "put", f"/applications/{application_id}/localdomains/{domain_id}/accounts/{account_id}", params=params, json_data=body
         )
 
-        return CommandResults(outputs_prefix="WAB", outputs_key_field="", outputs=response, raw_response=response)
+        return CommandResults(readable_output="Success!", raw_response=response)
 
     def delete_account_from_local_domain_of_application(self, args: Dict[str, Any]):
         application_id = str_arg(args, "application_id")
@@ -349,7 +349,7 @@ class Client(BaseClient):
 
         response = self._http_request("delete", f"/applications/{application_id}/localdomains/{domain_id}/accounts/{account_id}")
 
-        return CommandResults(outputs_prefix="WAB", outputs_key_field="", outputs=response, raw_response=response)
+        return CommandResults(readable_output="Success!", raw_response=response)
 
     def get_applications(self, args: Dict[str, Any]):
         q = str_arg(args, "q")
@@ -393,14 +393,14 @@ class Client(BaseClient):
         )
         response = self._http_request("put", f"/applications/{application_id}", params=params, json_data=body)
 
-        return CommandResults(outputs_prefix="WAB", outputs_key_field="", outputs=response, raw_response=response)
+        return CommandResults(readable_output="Success!", raw_response=response)
 
     def delete_application(self, args: Dict[str, Any]):
         application_id = str_arg(args, "application_id")
 
         response = self._http_request("delete", f"/applications/{application_id}")
 
-        return CommandResults(outputs_prefix="WAB", outputs_key_field="", outputs=response, raw_response=response)
+        return CommandResults(readable_output="Success!", raw_response=response)
 
     def get_approvals(self, args: Dict[str, Any]):
         approval_id = str_arg(args, "approval_id")
@@ -443,7 +443,7 @@ class Client(BaseClient):
         )
         response = self._http_request("post", "/approvals/assignments", json_data=body)
 
-        return CommandResults(outputs_prefix="WAB", outputs_key_field="", outputs=response, raw_response=response)
+        return CommandResults(readable_output="Success!", raw_response=response)
 
     def get_approvals_for_approver(self, args: Dict[str, Any]):
         user_name = str_arg(args, "user_name")
@@ -465,7 +465,7 @@ class Client(BaseClient):
         body = assign_params(id=approval_assignment_cancel_post_id, comment=approval_assignment_cancel_post_comment)
         response = self._http_request("post", "/approvals/assignments/cancel", json_data=body)
 
-        return CommandResults(outputs_prefix="WAB", outputs_key_field="", outputs=response, raw_response=response)
+        return CommandResults(readable_output="Success!", raw_response=response)
 
     def get_approval_request_pending_for_user(self, args: Dict[str, Any]):
         user = str_arg(args, "user")
@@ -512,7 +512,7 @@ class Client(BaseClient):
         body = assign_params(id=approval_request_cancel_post_id)
         response = self._http_request("post", "/approvals/requests/cancel", json_data=body)
 
-        return CommandResults(outputs_prefix="WAB", outputs_key_field="", outputs=response, raw_response=response)
+        return CommandResults(readable_output="Success!", raw_response=response)
 
     def notify_approvers_linked_to_approval_request(self, args: Dict[str, Any]):
         approval_request_notify_post_id = str_arg(args, "approval_request_notify_post_id")
@@ -520,7 +520,7 @@ class Client(BaseClient):
         body = assign_params(id=approval_request_notify_post_id)
         response = self._http_request("post", "/approvals/requests/notify", json_data=body)
 
-        return CommandResults(outputs_prefix="WAB", outputs_key_field="", outputs=response, raw_response=response)
+        return CommandResults(readable_output="Success!", raw_response=response)
 
     def check_if_approval_is_required_for_target(self, args: Dict[str, Any]):
         target_name = str_arg(args, "target_name")
@@ -654,7 +654,7 @@ class Client(BaseClient):
         )
         response = self._http_request("post", "/authorizations", json_data=body)
 
-        return CommandResults(outputs_prefix="WAB", outputs_key_field="", outputs=response, raw_response=response)
+        return CommandResults(readable_output="Success!", raw_response=response)
 
     def get_authorization(self, args: Dict[str, Any]):
         authorization_id = str_arg(args, "authorization_id")
@@ -714,14 +714,14 @@ class Client(BaseClient):
         )
         response = self._http_request("put", f"/authorizations/{authorization_id}", params=params, json_data=body)
 
-        return CommandResults(outputs_prefix="WAB", outputs_key_field="", outputs=response, raw_response=response)
+        return CommandResults(readable_output="Success!", raw_response=response)
 
     def delete_authorization(self, args: Dict[str, Any]):
         authorization_id = str_arg(args, "authorization_id")
 
         response = self._http_request("delete", f"/authorizations/{authorization_id}")
 
-        return CommandResults(outputs_prefix="WAB", outputs_key_field="", outputs=response, raw_response=response)
+        return CommandResults(readable_output="Success!", raw_response=response)
 
     def get_checkout_policies(self, args: Dict[str, Any]):
         q = str_arg(args, "q")
@@ -767,7 +767,7 @@ class Client(BaseClient):
         )
         response = self._http_request("post", "/config/x509", json_data=body)
 
-        return CommandResults(outputs_prefix="WAB", outputs_key_field="", outputs=response, raw_response=response)
+        return CommandResults(readable_output="Success!", raw_response=response)
 
     def updatex509_configuration(self, args: Dict[str, Any]):
         config_x509_put_ca_certificate = str_arg(args, "config_x509_put_ca_certificate")
@@ -783,12 +783,12 @@ class Client(BaseClient):
         )
         response = self._http_request("put", "/config/x509", json_data=body)
 
-        return CommandResults(outputs_prefix="WAB", outputs_key_field="", outputs=response, raw_response=response)
+        return CommandResults(readable_output="Success!", raw_response=response)
 
     def resetx509_configuration(self, args: Dict[str, Any]):
         response = self._http_request("delete", "/config/x509")
 
-        return CommandResults(outputs_prefix="WAB", outputs_key_field="", outputs=response, raw_response=response)
+        return CommandResults(readable_output="Success!", raw_response=response)
 
     def get_current_serial_configuration_number_of_bastion(self, args: Dict[str, Any]):
         response = self._http_request("get", "/confignumber")
@@ -840,7 +840,7 @@ class Client(BaseClient):
         )
         response = self._http_request("post", f"/devices/{device_id}/localdomains/{domain_id}/accounts", json_data=body)
 
-        return CommandResults(outputs_prefix="WAB", outputs_key_field="", outputs=response, raw_response=response)
+        return CommandResults(readable_output="Success!", raw_response=response)
 
     def get_one_account_on_device_local_domain(self, args: Dict[str, Any]):
         device_id = str_arg(args, "device_id")
@@ -891,7 +891,7 @@ class Client(BaseClient):
             "put", f"/devices/{device_id}/localdomains/{domain_id}/accounts/{account_id}", params=params, json_data=body
         )
 
-        return CommandResults(outputs_prefix="WAB", outputs_key_field="", outputs=response, raw_response=response)
+        return CommandResults(readable_output="Success!", raw_response=response)
 
     def delete_account_from_local_domain_of_device(self, args: Dict[str, Any]):
         device_id = str_arg(args, "device_id")
@@ -900,7 +900,7 @@ class Client(BaseClient):
 
         response = self._http_request("delete", f"/devices/{device_id}/localdomains/{domain_id}/accounts/{account_id}")
 
-        return CommandResults(outputs_prefix="WAB", outputs_key_field="", outputs=response, raw_response=response)
+        return CommandResults(readable_output="Success!", raw_response=response)
 
     def get_certificates_on_device(self, args: Dict[str, Any]):
         device_id = str_arg(args, "device_id")
@@ -943,7 +943,7 @@ class Client(BaseClient):
 
         response = self._http_request("delete", f"/devices/{device_id}/certificates/{cert_type}/{address}/{port}")
 
-        return CommandResults(outputs_prefix="WAB", outputs_key_field="", outputs=response, raw_response=response)
+        return CommandResults(readable_output="Success!", raw_response=response)
 
     def get_services_of_device(self, args: Dict[str, Any]):
         device_id = str_arg(args, "device_id")
@@ -979,7 +979,7 @@ class Client(BaseClient):
         )
         response = self._http_request("post", f"/devices/{device_id}/services", json_data=body)
 
-        return CommandResults(outputs_prefix="WAB", outputs_key_field="", outputs=response, raw_response=response)
+        return CommandResults(readable_output="Success!", raw_response=response)
 
     def get_service_of_device(self, args: Dict[str, Any]):
         device_id = str_arg(args, "device_id")
@@ -1005,7 +1005,7 @@ class Client(BaseClient):
         )
         response = self._http_request("put", f"/devices/{device_id}/services/{service_id}", params=params, json_data=body)
 
-        return CommandResults(outputs_prefix="WAB", outputs_key_field="", outputs=response, raw_response=response)
+        return CommandResults(readable_output="Success!", raw_response=response)
 
     def delete_service_from_device(self, args: Dict[str, Any]):
         device_id = str_arg(args, "device_id")
@@ -1013,7 +1013,7 @@ class Client(BaseClient):
 
         response = self._http_request("delete", f"/devices/{device_id}/services/{service_id}")
 
-        return CommandResults(outputs_prefix="WAB", outputs_key_field="", outputs=response, raw_response=response)
+        return CommandResults(readable_output="Success!", raw_response=response)
 
     def get_devices(self, args: Dict[str, Any]):
         q = str_arg(args, "q")
@@ -1041,7 +1041,7 @@ class Client(BaseClient):
         )
         response = self._http_request("post", "/devices", json_data=body)
 
-        return CommandResults(outputs_prefix="WAB", outputs_key_field="", outputs=response, raw_response=response)
+        return CommandResults(readable_output="Success!", raw_response=response)
 
     def get_device(self, args: Dict[str, Any]):
         device_id = str_arg(args, "device_id")
@@ -1071,14 +1071,14 @@ class Client(BaseClient):
         )
         response = self._http_request("put", f"/devices/{device_id}", params=params, json_data=body)
 
-        return CommandResults(outputs_prefix="WAB", outputs_key_field="", outputs=response, raw_response=response)
+        return CommandResults(readable_output="Success!", raw_response=response)
 
     def delete_device(self, args: Dict[str, Any]):
         device_id = str_arg(args, "device_id")
 
         response = self._http_request("delete", f"/devices/{device_id}")
 
-        return CommandResults(outputs_prefix="WAB", outputs_key_field="", outputs=response, raw_response=response)
+        return CommandResults(readable_output="Success!", raw_response=response)
 
     def get_accounts_of_global_domain(self, args: Dict[str, Any]):
         domain_id = str_arg(args, "domain_id")
@@ -1119,7 +1119,7 @@ class Client(BaseClient):
         )
         response = self._http_request("post", f"/domains/{domain_id}/accounts", json_data=body)
 
-        return CommandResults(outputs_prefix="WAB", outputs_key_field="", outputs=response, raw_response=response)
+        return CommandResults(readable_output="Success!", raw_response=response)
 
     def get_account_of_global_domain(self, args: Dict[str, Any]):
         domain_id = str_arg(args, "domain_id")
@@ -1163,7 +1163,7 @@ class Client(BaseClient):
         )
         response = self._http_request("put", f"/domains/{domain_id}/accounts/{account_id}", params=params, json_data=body)
 
-        return CommandResults(outputs_prefix="WAB", outputs_key_field="", outputs=response, raw_response=response)
+        return CommandResults(readable_output="Success!", raw_response=response)
 
     def delete_account_from_global_domain(self, args: Dict[str, Any]):
         domain_id = str_arg(args, "domain_id")
@@ -1171,7 +1171,7 @@ class Client(BaseClient):
 
         response = self._http_request("delete", f"/domains/{domain_id}/accounts/{account_id}")
 
-        return CommandResults(outputs_prefix="WAB", outputs_key_field="", outputs=response, raw_response=response)
+        return CommandResults(readable_output="Success!", raw_response=response)
 
     def delete_resource_from_global_domain_account(self, args: Dict[str, Any]):
         domain_id = str_arg(args, "domain_id")
@@ -1180,7 +1180,7 @@ class Client(BaseClient):
 
         response = self._http_request("delete", f"/domains/{domain_id}/accounts/{account_id}/resource/{resource_name}")
 
-        return CommandResults(outputs_prefix="WAB", outputs_key_field="", outputs=response, raw_response=response)
+        return CommandResults(readable_output="Success!", raw_response=response)
 
     def get_global_domains(self, args: Dict[str, Any]):
         q = str_arg(args, "q")
@@ -1239,7 +1239,7 @@ class Client(BaseClient):
         body = assign_params(application=logsiem_post_application, message=logsiem_post_message)
         response = self._http_request("post", "/logsiem", json_data=body)
 
-        return CommandResults(outputs_prefix="WAB", outputs_key_field="", outputs=response, raw_response=response)
+        return CommandResults(readable_output="Success!", raw_response=response)
 
     def get_notifications(self, args: Dict[str, Any]):
         q = str_arg(args, "q")
@@ -1274,7 +1274,7 @@ class Client(BaseClient):
         )
         response = self._http_request("post", "/notifications", json_data=body)
 
-        return CommandResults(outputs_prefix="WAB", outputs_key_field="", outputs=response, raw_response=response)
+        return CommandResults(readable_output="Success!", raw_response=response)
 
     def get_notification(self, args: Dict[str, Any]):
         notification_id = str_arg(args, "notification_id")
@@ -1308,14 +1308,14 @@ class Client(BaseClient):
         )
         response = self._http_request("put", f"/notifications/{notification_id}", params=params, json_data=body)
 
-        return CommandResults(outputs_prefix="WAB", outputs_key_field="", outputs=response, raw_response=response)
+        return CommandResults(readable_output="Success!", raw_response=response)
 
     def delete_notification(self, args: Dict[str, Any]):
         notification_id = str_arg(args, "notification_id")
 
         response = self._http_request("delete", f"/notifications/{notification_id}")
 
-        return CommandResults(outputs_prefix="WAB", outputs_key_field="", outputs=response, raw_response=response)
+        return CommandResults(readable_output="Success!", raw_response=response)
 
     def get_object_to_onboard(self, args: Dict[str, Any]):
         object_type = str_arg(args, "object_type")
@@ -1374,7 +1374,7 @@ class Client(BaseClient):
         body = assign_params(scan_id=scanjob_post_scan_id)
         response = self._http_request("post", "/scanjobs", json_data=body)
 
-        return CommandResults(outputs_prefix="WAB", outputs_key_field="", outputs=response, raw_response=response)
+        return CommandResults(readable_output="Success!", raw_response=response)
 
     def get_scanjob(self, args: Dict[str, Any]):
         scanjob_id = str_arg(args, "scanjob_id")
@@ -1390,7 +1390,7 @@ class Client(BaseClient):
 
         response = self._http_request("put", f"/scanjobs/{scanjob_id}")
 
-        return CommandResults(outputs_prefix="WAB", outputs_key_field="", outputs=response, raw_response=response)
+        return CommandResults(readable_output="Success!", raw_response=response)
 
     def get_scans(self, args: Dict[str, Any]):
         q = str_arg(args, "q")
@@ -1479,7 +1479,7 @@ class Client(BaseClient):
         body = assign_params(description=session_put_edit_description)
         response = self._http_request("put", "/sessions", params=params, json_data=body)
 
-        return CommandResults(outputs_prefix="WAB", outputs_key_field="", outputs=response, raw_response=response)
+        return CommandResults(readable_output="Success!", raw_response=response)
 
     def get_session_metadata(self, args: Dict[str, Any]):
         session_ids = str_arg(args, "session_ids")
@@ -1510,21 +1510,21 @@ class Client(BaseClient):
         body = assign_params(session_id=session_request_post_session_id, mode=session_request_post_mode)
         response = self._http_request("post", "/sessions/requests", json_data=body)
 
-        return CommandResults(outputs_prefix="WAB", outputs_key_field="", outputs=response, raw_response=response)
+        return CommandResults(readable_output="Success!", raw_response=response)
 
     def delete_pending_or_live_session_request(self, args: Dict[str, Any]):
         request_id = str_arg(args, "request_id")
 
         response = self._http_request("delete", f"/sessions/requests/{request_id}")
 
-        return CommandResults(outputs_prefix="WAB", outputs_key_field="", outputs=response, raw_response=response)
+        return CommandResults(readable_output="Success!", raw_response=response)
 
     def get_latest_snapshot_of_running_session(self, args: Dict[str, Any]):
         session_id = str_arg(args, "session_id")
 
         response = self._http_request("get", f"/sessions/snapshots/{session_id}")
 
-        return CommandResults(outputs_prefix="WAB", outputs_key_field="", outputs=response, raw_response=response)
+        return CommandResults(readable_output="Success!", raw_response=response)
 
     def get_status_of_trace_generation(self, args: Dict[str, Any]):
         session_id = str_arg(args, "session_id")
@@ -1549,7 +1549,7 @@ class Client(BaseClient):
         )
         response = self._http_request("post", "/sessions/traces", json_data=body)
 
-        return CommandResults(outputs_prefix="WAB", outputs_key_field="", outputs=response, raw_response=response)
+        return CommandResults(readable_output="Success!", raw_response=response)
 
     def get_wallix_bastion_usage_statistics(self, args: Dict[str, Any]):
         from_date = str_arg(args, "from_date")
@@ -1586,7 +1586,7 @@ class Client(BaseClient):
         body = assign_params(group_name=targetgroups_post_group_name, description=targetgroups_post_description)
         response = self._http_request("post", "/targetgroups", json_data=body)
 
-        return CommandResults(outputs_prefix="WAB", outputs_key_field="", outputs=response, raw_response=response)
+        return CommandResults(readable_output="Success!", raw_response=response)
 
     def get_target_group(self, args: Dict[str, Any]):
         group_id = str_arg(args, "group_id")
@@ -1612,14 +1612,14 @@ class Client(BaseClient):
         body = assign_params(group_name=targetgroups_put_group_name, description=targetgroups_put_description)
         response = self._http_request("put", f"/targetgroups/{group_id}", params=params, json_data=body)
 
-        return CommandResults(outputs_prefix="WAB", outputs_key_field="", outputs=response, raw_response=response)
+        return CommandResults(readable_output="Success!", raw_response=response)
 
     def delete_target_group(self, args: Dict[str, Any]):
         group_id = str_arg(args, "group_id")
 
         response = self._http_request("delete", f"/targetgroups/{group_id}")
 
-        return CommandResults(outputs_prefix="WAB", outputs_key_field="", outputs=response, raw_response=response)
+        return CommandResults(readable_output="Success!", raw_response=response)
 
     def delete_target_from_group(self, args: Dict[str, Any]):
         group_id = str_arg(args, "group_id")
@@ -1628,7 +1628,7 @@ class Client(BaseClient):
 
         response = self._http_request("delete", f"/targetgroups/{group_id}/{target_type}/{target_id}")
 
-        return CommandResults(outputs_prefix="WAB", outputs_key_field="", outputs=response, raw_response=response)
+        return CommandResults(readable_output="Success!", raw_response=response)
 
     def get_user_groups(self, args: Dict[str, Any]):
         q = str_arg(args, "q")
@@ -1708,7 +1708,7 @@ class Client(BaseClient):
         )
         response = self._http_request("post", "/users", params=params, json_data=body)
 
-        return CommandResults(outputs_prefix="WAB", outputs_key_field="", outputs=response, raw_response=response)
+        return CommandResults(readable_output="Success!", raw_response=response)
 
     def get_user(self, args: Dict[str, Any]):
         name = str_arg(args, "name")
@@ -1741,7 +1741,7 @@ class Client(BaseClient):
         params = assign_params(authorization=authorization)
         response = self._http_request("get", f"/targetpasswords/extendcheckout/{account_name}", params=params)
 
-        return CommandResults(outputs_prefix="WAB", outputs_key_field="", outputs=response, raw_response=response)
+        return CommandResults(readable_output="Success!", raw_response=response)
 
     def release_passwords_for_target(self, args: Dict[str, Any]):
         account_name = str_arg(args, "account_name")
@@ -1752,7 +1752,7 @@ class Client(BaseClient):
         params = assign_params(authorization=authorization, force=force, comment=comment)
         response = self._http_request("get", f"/targetpasswords/checkin/{account_name}", params=params)
 
-        return CommandResults(outputs_prefix="WAB", outputs_key_field="", outputs=response, raw_response=response)
+        return CommandResults(readable_output="Success!", raw_response=response)
 
     def get_target_by_type(self, args: Dict[str, Any]):
         target_type = str_arg(args, "target_type")
