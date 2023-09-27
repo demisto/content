@@ -365,7 +365,7 @@ def test_fetch_incidents_no_first(mocker, requests_mock):
 
     client = Client(base_url='https://api.guardicoreexample.com/api/v3.0',
                     verify=False, proxy=False, username='test', password='test')
-    incidents, last_fetch = fetch_incidents(client, {})
+    incidents, last_fetch, _ = fetch_incidents(client, {})
     # Fetch first time, then change last fetch
     last_three = int(parse('3 days').replace(tzinfo=utc).timestamp()) * 1000
     assert last_fetch == last_three
@@ -399,7 +399,7 @@ def test_fetch_incidents(mocker, requests_mock):
 
     client = Client(base_url='https://api.guardicoreexample.com/api/v3.0',
                     verify=False, proxy=False, username='test', password='test')
-    incidents, last_fetch = fetch_incidents(client, {
+    incidents, last_fetch, _ = fetch_incidents(client, {
         'first_fetch': '40 years'})  # if xsoar is still here when this is a bug then we have a good problem on our hands :)
     # Fetch first time, then change last fetch
     assert last_fetch == 1611322222222
@@ -412,7 +412,7 @@ def test_fetch_incidents(mocker, requests_mock):
     requests_mock.get('https://api.guardicoreexample.com/api/v3.0/incidents',
                       json=incidents_data.get('second'))
 
-    incidents, last_fetch = fetch_incidents(client, {})
+    incidents, last_fetch, _ = fetch_incidents(client, {})
     # Now we should see the last fetch changed
     assert last_fetch == 1611322333333
     assert len(incidents) == 1
@@ -442,7 +442,7 @@ def test_fetch_incidents_does_not_add_new_incident(mocker, requests_mock):
 
     client = Client(base_url='https://api.guardicoreexample.com/api/v3.0',
                     verify=False, proxy=False, username='test', password='test')
-    incidents, last_fetch = fetch_incidents(client, {
+    incidents, last_fetch, _ = fetch_incidents(client, {
         'first_fetch': '40 years'})  # if xsoar is still here when this is a bug then we have a good problem on our hands :)
     # Fetch first time, then change last fetch
     assert last_fetch == 1611322333333
@@ -455,7 +455,7 @@ def test_fetch_incidents_does_not_add_new_incident(mocker, requests_mock):
     requests_mock.get('https://api.guardicoreexample.com/api/v3.0/incidents',
                       json=incidents_data.get('first'))
 
-    incidents, last_fetch = fetch_incidents(client, {})
+    incidents, last_fetch, _ = fetch_incidents(client, {})
     # Now we should see the last fetch didn't change.
     assert last_fetch == 1611322333333
     assert len(incidents) == 0
