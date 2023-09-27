@@ -5,13 +5,9 @@ from CommonServerPython import *  # noqa: F401
 
 from CommonServerUserPython import *  # noqa
 
-import requests
 import traceback
 from typing import Dict, Any, List, Tuple
 from requests_ntlm import HttpNtlmAuth
-
-# Disable insecure warnings
-requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 
 
 ''' CONSTANTS '''
