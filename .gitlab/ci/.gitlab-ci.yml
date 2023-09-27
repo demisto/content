@@ -64,6 +64,12 @@ variables:
   FF_USE_FASTZIP: "true"
   POETRY_VERSION: "1.6.1"
   INSTALL_POETRY: "true"
+  JIRA_ISSUE_UNRESOLVED_TRANSITION_NAME: "Backlog"
+  JIRA_PROJECT_ID: "CIAC"
+  JIRA_SERVER_URL: "https://jira-hq.paloaltonetworks.local"
+  JIRA_VERIFY_SSL: "False"
+  # Jira additional fields are a json string that will be parsed into a dictionary containing the name of the field as the key and the value as a dictionary containing the value of the field.
+  JIRA_ADDITIONAL_FIELDS: '{"customfield_17166":{"value": "IN"},"customfield_17167":{"value": "FALSE"},"customfield_17168":{"value": "Single"}}'
 
 include:
   - local: .gitlab/ci/.gitlab-ci.global.yml

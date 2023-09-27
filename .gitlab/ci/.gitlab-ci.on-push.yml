@@ -44,6 +44,26 @@ trigger-private-build:
   - ./Documentation/commonServerDocs.sh
   - section_end "Create Release Notes and Common Server Documentation"
 
+merge-dev-secrets:
+  tags:
+    - gke
+  extends:
+    - .default-job-settings
+  variables:
+    master_branch_name: master
+  rules:
+    - !reference [ .filter-non-nightly-docker-updates-rule, rules ]
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push)$/ && $CI_COMMIT_BRANCH == $master_branch_name'
+  stage: unittests-and-validations
+  script:
+    - section_start "Download content-test-conf and infra" --collapsed
+    - ./Tests/scripts/download_conf_repos.sh 2>&1 | tee --append "${ARTIFACTS_FOLDER}/logs/download_conf_repos.log"
+    - section_end "Download content-test-conf and infra"
+    - section_start "Merging and deleting dev secrets" --collapsed
+    - python3 ./Tests/scripts/merge_and_delete_dev_secrets.py -sa "$GSM_SERVICE_ACCOUNT" --gsm_project_id_dev "$GSM_PROJECT_ID_DEV" --gsm_project_id_prod "$GSM_PROJECT_ID" >> $ARTIFACTS_FOLDER/logs/merge_secrets.log
+    - section_end "Merging and deleting dev secrets"
+  allow_failure: true
+
 stop-running-pipelines:
   tags:
     - gke
@@ -295,6 +315,16 @@ xpanse-prepare-testing-bucket:
         echo "Failed to destroy instances, exit code"$?";
       fi
     - section_end "Destroy Instances"
+  artifacts:
+    when: always
+    expire_in: 30 days
+    reports:
+      junit:
+        - ${ARTIFACTS_FOLDER}/test_playbooks_report.xml
+    paths:
+      - ${ARTIFACTS_FOLDER}/test_playbooks_report.xml
+      - /builds/xsoar/content/artifacts/*  # restoring the default artifacts path from the job default settings
+      - /builds/xsoar/content/pipeline_jobs_folder/*  # restoring the default artifacts path from the job default settings
 
 tests_xsoar_server:
   extends:
@@ -329,7 +359,7 @@ fan-in-nightly:
 jobs-done-check-nightly:
   extends:
     - .jobs-done-check
-  needs: ['run-unittests-and-lint', 'run-validations', 'trigger-private-build', 'mpv2-prepare-testing-bucket', 'xpanse-prepare-testing-bucket', 'xsoar-prepare-testing-bucket', 'xsoar-saas-prepare-testing-bucket', 'xsiam_server_ga', 'tests_xsoar_server']
+  needs: ['run-unittests-and-lint', 'run-validations', 'trigger-private-build', 'mpv2-prepare-testing-bucket', 'xpanse-prepare-testing-bucket', 'xsoar-prepare-testing-bucket', 'xsoar-saas-prepare-testing-bucket', 'xsiam_server_ga', 'tests_xsoar_server', 'xsiam_server_ga-test_playbooks_results', 'tests_xsoar_server-test_playbooks_results']
   tags:
     - gke
   rules:
@@ -360,6 +390,10 @@ jobs-done-check-on-push:
     - job: tests_xsoar_server
       optional: true
     - job: xsoar_ng_server_ga
+      optional: true
+    - job: tests_xsoar_server-test_playbooks_results
+      optional: true
+    - job: xsiam_server_ga-test_playbooks_results
       optional: true
   tags:
     - gke
@@ -472,13 +506,7 @@ xsiam_server_ga:
     NON_REMOVABLE_PACKS: "Base"
     JIRA_COMPONENT: "Test Modeling Failure"
     JIRA_ISSUE_TYPE: "XSOAR Dev Bug"
-    JIRA_ISSUE_UNRESOLVED_TRANSITION_NAME: "Backlog"
-    JIRA_PROJECT_ID: "CIAC"
-    JIRA_SERVER_URL: "https://jira-hq.paloaltonetworks.local"
-    JIRA_VERIFY_SSL: "False"
     JIRA_LABELS: '["XSIAM"]'
-    # Jira additional fields are a json string that will be parsed into a dictionary containing the name of the field as the key and the value as a dictionary containing the value of the field.
-    JIRA_ADDITIONAL_FIELDS: '{"customfield_17166":{"value": "IN"},"customfield_17167":{"value": "FALSE"},"customfield_17168":{"value": "Single"}}'
   needs:
     - job: mpv2-prepare-testing-bucket
       optional: true
@@ -488,8 +516,10 @@ xsiam_server_ga:
     reports:
       junit:
         - ${ARTIFACTS_FOLDER}/modeling_rules_results.xml
+        - ${ARTIFACTS_FOLDER}/test_playbooks_report.xml
     paths:
       - ${ARTIFACTS_FOLDER}/modeling_rules_results.xml
+      - ${ARTIFACTS_FOLDER}/test_playbooks_report.xml
       - /builds/xsoar/content/artifacts/*  # restoring the default artifacts path from the job default settings
       - /builds/xsoar/content/pipeline_jobs_folder/*  # restoring the default artifacts path from the job default settings
 
@@ -518,7 +548,16 @@ xsoar_ng_server_ga:
   needs:
     - job: xsoar-prepare-testing-bucket
       optional: true
-
+  artifacts:
+    when: always
+    expire_in: 30 days
+    reports:
+      junit:
+        - ${ARTIFACTS_FOLDER}/test_playbooks_report.xml
+    paths:
+      - ${ARTIFACTS_FOLDER}/test_playbooks_report.xml
+      - /builds/xsoar/content/artifacts/*  # restoring the default artifacts path from the job default settings
+      - /builds/xsoar/content/pipeline_jobs_folder/*  # restoring the default artifacts path from the job default settings
 
 test-upload-flow:
   tags:
@@ -572,45 +611,47 @@ test-upload-flow:
 .server_test_playbooks_report:
   stage: test_playbooks_report
   rules:
-    - if: '$NIGHTLY'
+    - !reference [.filter-non-nightly-docker-updates-rule, rules]
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
   extends:
     - .default-job-settings
   script:
-    - python3 ./Tests/Marketplace/print_test_playbook_summary.py --failed_tests_path $ARTIFACTS_FOLDER/failed_tests.txt --succeeded_tests_path $ARTIFACTS_FOLDER/succeeded_tests.txt
-
-
-merge-dev-secrets:
-  tags:
-    - gke
-  extends:
-    - .default-job-settings
-  variables:
-    master_branch_name: master
-  rules:
-    - !reference [ .filter-non-nightly-docker-updates-rule, rules ]
-    - if: '$CI_PIPELINE_SOURCE =~ /^(push)$/ && $CI_COMMIT_BRANCH == $master_branch_name'
-  stage: unittests-and-validations
-  script:
-    - section_start "Download content-test-conf and infra" --collapsed
-    - ./Tests/scripts/download_conf_repos.sh 2>&1 | tee --append "${ARTIFACTS_FOLDER}/logs/download_conf_repos.log"
-    - section_end "Download content-test-conf and infra"
-    - section_start "Merging and deleting dev secrets" --collapsed
-    - python3 ./Tests/scripts/merge_and_delete_dev_secrets.py -sa "$GSM_SERVICE_ACCOUNT" --gsm_project_id_dev "$GSM_PROJECT_ID_DEV" --gsm_project_id_prod "$GSM_PROJECT_ID" >> $ARTIFACTS_FOLDER/logs/merge_secrets.log
-    - section_end "Merging and deleting dev secrets"
-  allow_failure: true
+    - ls -l ${ARTIFACTS_FOLDER}
+    - python3 ./Tests/scripts/convert_test_playbook_result_to_jira_issues.py --artifacts_path ${ARTIFACTS_FOLDER} || true
+    - job-done
+  artifacts:
+    when: always
+    expire_in: 30 days
+    reports:
+      junit:
+        - ${ARTIFACTS_FOLDER}/test_playbooks_report.xml
+    paths:
+      - ${ARTIFACTS_FOLDER}/test_playbooks_report.xml
+      - /builds/xsoar/content/artifacts/*  # restoring the default artifacts path from the job default settings
+      - /builds/xsoar/content/pipeline_jobs_folder/*  # restoring the default artifacts path from the job default settings
 
 tests_xsoar_server-test_playbooks_results:
   variables:
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
+    JIRA_ISSUE_TYPE: "XSOAR Dev Bug"
+    JIRA_COMPONENT: "Test Failure"
+    JIRA_LABELS: '["XSOAR"]'
   extends: .server_test_playbooks_report
-  needs: ["tests_xsoar_server: [Server Master]"]
+  needs:
+    - tests_xsoar_server
+    - xsoar_ng_server_ga
   dependencies:
-    - "tests_xsoar_server: [Server Master]"
+    - tests_xsoar_server
+    - xsoar_ng_server_ga
 
 xsiam_server_ga-test_playbooks_results:
   variables:
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_MPV2}"
+    JIRA_ISSUE_TYPE: "XSOAR Dev Bug"
+    JIRA_COMPONENT: "Test Failure"
+    JIRA_LABELS: '["XSIAM"]'
   extends: .server_test_playbooks_report
-  needs: ["xsiam_server_ga"]
-
-
+  needs:
+    - xsiam_server_ga
+  dependencies:
+    - xsiam_server_ga
