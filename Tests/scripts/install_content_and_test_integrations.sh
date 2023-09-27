@@ -34,7 +34,7 @@ else
 fi
 
 echo "Starting configure_and_test_integration_instances.sh script instance role:${INSTANCE_ROLE}, Server type:${SERVER_TYPE} nightly:${IS_NIGHTLY}"
-
+echo "$XDR_SUFFIX"
 if [[ "${INSTANCE_ROLE}" == "XSIAM" ]]; then
   if [ -n "${CLOUD_CHOSEN_MACHINE_IDS}" ]; then
     IFS=', ' read -r -a CLOUD_CHOSEN_MACHINE_ID_ARRAY <<< "${CLOUD_CHOSEN_MACHINE_IDS}"
