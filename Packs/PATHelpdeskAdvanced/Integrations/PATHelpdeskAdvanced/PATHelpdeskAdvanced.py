@@ -134,7 +134,9 @@ class Filter(NamedTuple):
 
     @staticmethod
     def parse_list(strings: Iterable[str] | str | None) -> List["Filter"]:
-        return [Filter._parse(string) for string in argToList(strings)]
+        return [
+            Filter._parse(string) for string in more_itertools.always_iterable(strings)
+        ]
 
     @property
     def dict(self):

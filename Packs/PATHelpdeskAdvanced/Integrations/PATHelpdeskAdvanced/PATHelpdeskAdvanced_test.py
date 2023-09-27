@@ -1,10 +1,12 @@
-from PATHelpdeskAdvanced import convert_response_dates, paginate, Field
 import pytest
 from datetime import datetime, timezone
 from PATHelpdeskAdvanced import (
     DATETIME_FORMAT,
     DemistoException,
-    parse_filter_conditions,
+    Filter,
+    Field,
+    convert_response_dates,
+    paginate,
     json,
 )
 
@@ -305,19 +307,20 @@ def test_list_tickets_success(mocked_client):
     assert result.outputs_prefix == "HelpdeskAdvanced.Ticket"
     assert result.outputs_key_field == "ID"
     assert result.raw_response == mocked_client.list_tickets.return_value
-    assert result.readable_output == (
-        "### Tickets\n"
-        "|Subject|Solution|Date|Service ID|Problem|Contact ID|Owner User ID|Account ID|\n"
-        "|---|---|---|---|---|---|---|---|\n| Support Request | Solution text redacted | 2005-03-18T01:58:31Z"
-        " | XXX | Problem description redacted | XXX | AA | XXX |\n| On-site Support | Ticket correctly created through template."
-        " | 2005-03-18T01:58:31Z | XXX | Problem description redacted | XXX | XXX | XXX |\n"
+    assert result.readable_output == "\n".join(
+        ("### Tickets",
+        "|Ticket ID|Subject|Solution|Date|Service ID|Problem|Contact ID|Owner User ID|Account ID|",
+        "|---|---|---|---|---|---|---|---|---|",
+        "| 10000002C | Support Request | Solution text redacted | 2005-03-18T01:58:31Z | XXX | Problem description redacted | XXX | AA | XXX |",
+        "| 10000003C | On-site Support | Ticket correctly created through template. | 2005-03-18T01:58:31Z | XXX | Problem description redacted | XXX | XXX | XXX |",
+        "",)
     )
 
 
-def test_parse_filter_conditions_valid():
+def test_parse_filter_valid():
     """
     Given a list of valid filter condition strings
-    When parse_filter_conditions is called with the list
+    When Filter.parse_list is called with the list
     Then it should return a list of parsed condition dicts
     """
     conditions = (
@@ -335,7 +338,7 @@ def test_parse_filter_conditions_valid():
         ]
     )
 
-    assert parse_filter_conditions(conditions) == expected
+    assert Filter.dumps_list(Filter.parse_list(conditions)) == expected
 
 
 def test_parse_filter_conditions_invalid():
@@ -346,4 +349,4 @@ def test_parse_filter_conditions_invalid():
     """
 
     with pytest.raises(DemistoException):
-        parse_filter_conditions(('"id" eq 123',))
+        Filter.parse_list('"id" eq 123')  # missing quotes around value
