@@ -1553,6 +1553,7 @@ def reset_auth() -> CommandResults:
     :return: Message about resetting the authorization process.
     """
     demisto.debug(f"Reset integration-context, before resetting {get_integration_context()=}")
+    demisto.debug("YAYYYY COLECTED TEST")
     set_integration_context({})
     return CommandResults(readable_output='Authorization was reset successfully. Please regenerate the credentials, '
                                           'and then click **Test** to validate the credentials and connection.')
