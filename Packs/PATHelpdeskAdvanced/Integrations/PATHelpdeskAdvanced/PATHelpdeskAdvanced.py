@@ -652,7 +652,7 @@ class PaginateArgs(NamedTuple):
 
 
 def paginate(**kwargs) -> PaginateArgs:
-    limit = kwargs["limit"]  # TODO required?
+    limit = safe_arg_to_number(kwargs["limit"], "limit")
 
     page = kwargs.get("page")
     page_size = kwargs.get("page_size")
