@@ -91,8 +91,8 @@ class MsGraphListenerClient(MsGraphMailBaseClient):
         demisto.debug(f"MicrosoftGraphMail - Number of incidents skipped: {len(fetched_emails)-len(incidents)}")
 
         """
-        The below pop is here to maintain parity between this (single-user) version of 
-        the graph mail integration and the application-permission version. It is output 
+        The below pop is here to maintain parity between this (single-user) version of
+        the graph mail integration and the application-permission version. It is output
         by the ApiModule but does not provide any functionaltiy and consideration should be given
         in the future to either removing it's
         addition in the Api module.
