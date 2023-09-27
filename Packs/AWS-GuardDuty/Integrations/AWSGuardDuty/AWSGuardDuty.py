@@ -433,16 +433,14 @@ def get_pagination_args(args: dict) -> Tuple[int, int, Optional[int]]:
     """
 
     # Automatic Pagination
-    limit = arg_to_number(args.get('limit', MAX_RESULTS_RESPONSE))
-    assert isinstance(limit, int)  # for mypy
+    limit = arg_to_number(args.get('limit')) or MAX_RESULTS_RESPONSE
 
     # Manual Pagination
     page = arg_to_number(args.get('page'))
     if page is not None and page <= 0:
         raise DemistoException('page argument must be greater than 0')
 
-    page_size = arg_to_number(args.get('page_size', MAX_RESULTS_RESPONSE))
-    assert isinstance(page_size, int)  # for mypy
+    page_size = arg_to_number(args.get('page_size')) or MAX_RESULTS_RESPONSE
     if not 0 < page_size <= MAX_RESULTS_RESPONSE:
         raise DemistoException(f'page_size argument must be between 1 to {MAX_RESULTS_RESPONSE}')
 
