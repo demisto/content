@@ -1600,8 +1600,8 @@ def get_file_analysis_result(
     # Make rest call
     resp = v1_client.get_sandbox_analysis_result(
         submit_id=report_id,
-        poll=poll,  # type: ignore
-        poll_time_sec=poll_time_sec,  # type: ignore
+        poll=poll,
+        poll_time_sec=poll_time_sec,
     )
     # Check if an error occurred during rest call
     if _is_pytmv1_error(resp.result_code):
