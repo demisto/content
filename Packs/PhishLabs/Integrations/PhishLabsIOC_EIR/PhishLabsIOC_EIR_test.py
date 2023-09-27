@@ -346,6 +346,7 @@ class TestHelperFunctions:
         result = raw_response_to_context(client=client, incidents=RAW_RESPONSE_TO_CONTEXT[0])
         assert result == RAW_RESPONSE_TO_CONTEXT[1]
 
+
 def test_fetch__last_run_not_none(mocker):
     """Tests the fetch-incidents command function.
 
@@ -360,9 +361,8 @@ def test_fetch__last_run_not_none(mocker):
         verify=False,
         reliability='A'
     )
-    
-    mocker.patch.object(Client, 'get_incidents', return_value={'metadata': {'count': 0}, 'incidents':[]})
 
+    mocker.patch.object(Client, 'get_incidents', return_value={'metadata': {'count': 0}, 'incidents': []})
 
     incident_report, last_run = fetch_incidents_command(
         client=client,
@@ -372,4 +372,3 @@ def test_fetch__last_run_not_none(mocker):
     )
 
     assert last_run == {'lastRun': '2023-09-20T03:44:55Z'}
-
