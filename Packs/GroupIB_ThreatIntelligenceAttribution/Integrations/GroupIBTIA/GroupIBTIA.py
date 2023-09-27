@@ -1246,7 +1246,7 @@ def local_search_command(client: Client, args: dict):
     return results
 
 
-def main():  # pragma: no cover
+def main():
     """
         PARSE AND VALIDATE INTEGRATION PARAMS
     """
