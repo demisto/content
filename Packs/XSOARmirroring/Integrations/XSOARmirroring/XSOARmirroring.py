@@ -3,8 +3,8 @@ from CommonServerPython import *
 import json
 import requests
 import dateparser
-from datetime import timedelta
-from typing import Any, Dict, Tuple, List, Optional, Set
+from datetime import timedelta, date
+from typing import Any, Dict, List, Optional, Set, cast
 import urllib3
 import itertools
 
@@ -316,7 +316,7 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict[str, Union[
     :rtype: ``Tuple[Dict[str, str], List[dict]]``
     """
     demisto.debug(f'last run is: {last_run}')
-    incidents_last_fetch_ids: List[str] = last_run.get('incidents_last_fetch_ids', [])
+    incidents_last_fetch_ids = last_run.get('incidents_last_fetch_ids', [])
     if not last_fetch:
         last_fetch = first_fetch_time  # type: ignore
     else:
@@ -822,7 +822,7 @@ def are_two_datetime_equal_by_second(x: datetime, y: datetime):
         and (x.hour == y.hour) and (x.minute == y.minute) and (x.second == y.second)
 
 
-def dedup_incidents(incidents: list[dict], incidents_last_fetch_ids: list[str]):
+def dedup_incidents(incidents: list[dict], incidents_last_fetch_ids):
     """ Dedup incidents response.
 
     Cases:
@@ -853,7 +853,7 @@ def dedup_incidents(incidents: list[dict], incidents_last_fetch_ids: list[str]):
         return [], incidents_last_fetch_ids
     new_incidents: list[dict] = [incident for incident in incidents if incident.get("id") not in incidents_last_fetch_ids]
     # sort the incidents by creation date.
-    incidents.sort(key=lambda item: dateparser.parse(item['created']))
+    incidents.sort(key=lambda item: cast(date,dateparser.parse(item['created'])))
     earliest_event_datetime = dateparser.parse(incidents[0]['created'])
     latest_event_datetime = dateparser.parse(incidents[-1]['created'])
 
@@ -869,7 +869,8 @@ def dedup_incidents(incidents: list[dict], incidents_last_fetch_ids: list[str]):
     else:
         # Note that the following timestamps comparison are made between strings and assume
         # the following timestamp format from the response: "YYYY-MM-DDTHH:MM:SS.fffff+Z"
-        demisto.debug('XSOAR Mirroring: Dedup case 3 - Most recent event has later timestamp then other incidents in the response.')
+        demisto.debug('XSOAR Mirroring: Dedup case 3 - Most recent event has later '
+                      'timestamp then other incidents in the response.')
 
         latest_event_timestamp = incidents[-1].get('created', '')
         # itertools.takewhile is used to iterate over the list of incidents (from latest time to earliest)

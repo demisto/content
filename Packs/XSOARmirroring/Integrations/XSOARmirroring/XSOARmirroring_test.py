@@ -257,7 +257,7 @@ case_all_incidents_with_same_time_and_were_not_fetched_milliseconds = ([
           'created': '2023-09-26T15:13:45.71965554Z'},
          {'id': '3',
          'version': 8,
-          'created': '2023-09-26T15:13:45.71965554Z'},], ['1', '2', '3']))
+          'created': '2023-09-26T15:13:45.71965554Z'}], ['1', '2', '3']))
 
 case_incidents_with_different_time_and_were_not_fetched_milliseconds = ([
     {'id': '1',
@@ -277,7 +277,7 @@ case_incidents_with_different_time_and_were_not_fetched_milliseconds = ([
           'created': '2023-09-26T15:14:45.71965554Z'},
          {'id': '3',
          'version': 8,
-          'created': '2023-09-26T15:15:45.71965554Z'},], ['3']))
+          'created': '2023-09-26T15:15:45.71965554Z'}], ['3']))
 
 case_incidents_with_different_time_and_were_fetched_milliseconds = ([
     {'id': '1',
@@ -297,7 +297,7 @@ case_incidents_with_different_time_and_were_fetched_milliseconds = ([
           'created': '2023-09-26T15:14:45.71965554Z'},
          {'id': '3',
          'version': 8,
-          'created': '2023-09-26T15:15:45.71965554Z'},], ['3']))
+          'created': '2023-09-26T15:15:45.71965554Z'}], ['3']))
 
 
 case_empty_event_list_milliseconds: tuple = ([], ['1', '2', '3'], ([], ['1', '2', '3']))
@@ -315,7 +315,7 @@ def test_dedup_incidents_with_milliseconds_timestamp(incidents, incidents_last_f
     Given:
         - Case 1: All incidents from the current fetch cycle have the same timestamp and were fetched.
         - Case 2: All incidents from the current fetch cycle have the same timestamp and were not fetched.
-        - Case 3: Most recent incident has later timestamp then other incidents in the response and the 
+        - Case 3: Most recent incident has later timestamp then other incidents in the response and the
                   incidents were not fetched.
         - Case 4: Most recent incident has later timestamp then other incidents in the response
                   and the incidents were fetched.
@@ -367,7 +367,7 @@ case_all_incidents_with_same_time_and_were_not_fetched = ([
           'created': '2023-09-26T15:13:45Z'},
          {'id': '3',
          'version': 8,
-          'created': '2023-09-26T15:13:45Z'},], ['1', '2', '3']))
+          'created': '2023-09-26T15:13:45Z'}], ['1', '2', '3']))
 
 case_incidents_with_different_time_and_were_not_fetched = ([
     {'id': '1',
@@ -387,7 +387,7 @@ case_incidents_with_different_time_and_were_not_fetched = ([
           'created': '2023-09-26T15:14:45Z'},
          {'id': '3',
          'version': 8,
-          'created': '2023-09-26T15:15:45Z'},], ['3']))
+          'created': '2023-09-26T15:15:45Z'}], ['3']))
 
 case_incidents_with_different_time_and_were_fetched = ([
     {'id': '1',
@@ -407,7 +407,7 @@ case_incidents_with_different_time_and_were_fetched = ([
           'created': '2023-09-26T15:14:45Z'},
          {'id': '3',
          'version': 8,
-          'created': '2023-09-26T15:15:45Z'},], ['3']))
+          'created': '2023-09-26T15:15:45Z'}], ['3']))
 
 
 case_empty_event_list: tuple = ([], ['1', '2', '3'], ([], ['1', '2', '3']))
