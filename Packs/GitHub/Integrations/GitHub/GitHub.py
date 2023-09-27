@@ -83,10 +83,13 @@ def get_installation_access_token(installation_id: str, jwt_token: str):
         return response.json()['token']
     elif response.status_code == 403:
         return_error('403 Forbidden - The credentials are incorrect')
+        return None
     elif response.status_code == 404:
         return_error('404 Not found - Installation wasn\'t found')
-    return_error(f'Encountered an error: {response.text}')
-    return None
+        return None
+    else:
+        return_error(f'Encountered an error: {response.text}')
+        return None
 
 
 def safe_get(obj_to_fetch_from: dict, what_to_fetch: str, default_val: dict | list | str) -> Any:
