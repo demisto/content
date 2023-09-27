@@ -33,7 +33,7 @@ configuration:
   section: Collect
   required: false
 - display: Alert type
-  name: alertType
+  name: incidentType
   type: 13
   section: Connect
   required: false
