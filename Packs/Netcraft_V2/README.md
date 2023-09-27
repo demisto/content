@@ -1,26 +1,16 @@
-# Netcraft Pack
+## Netcraft Pack
+Netcraft provides cybersecurity services to help protect organizations against threats like phishing, fraud, and malware. This pack integrates Netcraft's takedown service to quickly eliminate malicious sites and domains.
 
-This pack integrates with the Netcraft service to provide domain and IP reputation. 
-
-## Integrations
-The pack includes the following integrations:
-
-- **Netcraft** - Gets domain and IP reputation from Netcraft.
-
-## Playbooks
-The pack contains the following playbooks:
-
-- *Netcraft Domain Reputation Enrichment* - Enriches domain reputation using the Netcraft integration.
-- *Netcraft IP Reputation Enrichment* - Enriches IP reputation using the Netcraft integration.
+## What Does This Pack Do?
+- Allows reporting phishing sites, fraudulent domains, and other attacks to Netcraft for takedown.
+- Fetches Netcraft attacks (takedowns) to Cortex XSOAR incidents.
+- Provides visibility into takedown status and history.
+- Supports modification of existing takedowns. 
 
 ## Use Cases
-- Enrich domain and IP reputation in investigations
-- Block malicious domains and IPs based on Netcraft reputation
+- Quickly take down phishing sites impersonating your brand.
+- Block malicious domains targeting your users.
+- Share threat intel from Netcraft with other security tools.
 
-## Troubleshooting
-- Make sure the Netcraft API key is configured correctly in the integration instance settings.
-- Refer to the integration documentation for additional troubleshooting information.
-
-## Additional Information
-- [Netcraft Documentation](https://www.netcraft.com/documentation/)
-- [Netcraft API](https://www.netcraft.com/documentation/api/)
+## Pack Configurations  
+To get up and running with this pack, you must login and get an API key at the [Netcraft Client Portal](https://account.netcraft.com/security).
