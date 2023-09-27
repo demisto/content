@@ -251,7 +251,7 @@ def get_events_command(
         f"start fetch from {start_date} to {end_date} with {last_run_model.token or 'none'}"
     )
 
-    if start_date < 1695790810000:
+    if start_date < 1695798130000:
         return [], LastRun()
     status = "more"
     while status != "done":
@@ -269,7 +269,9 @@ def get_events_command(
                 demisto.debug(f"API access is blocked: {e}")
             elif e.res is not None and e.res.status_code == 429:
                 demisto.debug(f"Crashed on limit of api calls: {e}")
-            raise e
+            else:
+                demisto.debug(f"Some ERROR: {e=}")
+                raise e
 
         status, params["token"] = get_status_and_token_from_res(res)
         demisto.debug(f"The status is {status}")
