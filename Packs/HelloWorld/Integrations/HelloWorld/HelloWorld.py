@@ -916,7 +916,7 @@ def alert_note_create_command(client: Client, args: dict[str, Any]) -> CommandRe
 ''' MAIN FUNCTION '''
 
 
-def main() -> None:
+def main() -> None:  # pragma: no cover
     """
     main function, parses params and runs command functions
     """
