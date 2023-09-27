@@ -2044,7 +2044,7 @@ def test_update_incident_with_client_changed_etag(mocker):
     }
 
     # return newer version when requesting incident
-    http_request_mock = mocker.patch.object(client, 'http_request', return_value=[newer_incident_from_azure, True])
+    http_request_mock = mocker.patch.object(client, 'http_request', side_effect=[newer_incident_from_azure, True])
     update_incident_request(client, 'id-incident-1', old_incident_data_in_xsoar, delta_incident_changes, False)
 
     assert http_request_mock.call_count == 2
