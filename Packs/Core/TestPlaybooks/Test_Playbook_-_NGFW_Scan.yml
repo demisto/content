@@ -560,7 +560,7 @@ tasks:
       {
         "position": {
           "x": -20,
-          "y": 6330
+          "y": 6340
         }
       }
     note: false
@@ -2113,7 +2113,6 @@ tasks:
       - "72"
       - "74"
       - "76"
-      - "78"
       - "116"
       - "118"
       - "124"
@@ -2854,87 +2853,6 @@ tasks:
       {
         "position": {
           "x": 4900,
-          "y": 4400
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "78":
-    id: "78"
-    taskid: 5eba6c62-4ff8-4d32-832a-faec83048f9d
-    type: condition
-    task:
-      id: 5eba6c62-4ff8-4d32-832a-faec83048f9d
-      version: -1
-      name: Verify Tags
-      description: Verify that the ‘VirusTotal.IP.attributes.tags’ context key was extracted correctly.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "79"
-      Verified:
-      - "154"
-    separatecontext: false
-    conditions:
-    - label: Verified
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: VirusTotal.IP.attributes
-                accessor: tags
-            iscontext: true
-          right:
-            value: {}
-          ignorecase: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 5300,
-          "y": 4220
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "79":
-    id: "79"
-    taskid: 104f342c-48de-4299-80a8-c5db22d215fc
-    type: regular
-    task:
-      id: 104f342c-48de-4299-80a8-c5db22d215fc
-      version: -1
-      name: Verify Context Error - Tags
-      description: Prints an error entry with a given message
-      scriptName: PrintErrorEntry
-      type: regular
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      message:
-        simple: |-
-          The 'VirusTotal.IP.attributes.tags' context key was not extracted properly. This may indicate that the following change has been made to the 'NGFW Scan' playbook:
-          1- The 'ip' input configuration was changed for the 'ip' automation used in the 'Enrich scanner IP Address' task.
-          2- The 'ip' automation outputs have been modified and no longer contain the 'VirusTotal.IP.attributes.tags' context key.
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 5300,
           "y": 4400
         }
       }
@@ -4276,7 +4194,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 5700,
+          "x": 5290,
           "y": 4220
         }
       }
@@ -4311,7 +4229,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 5700,
+          "x": 5290,
           "y": 4400
         }
       }
@@ -4357,7 +4275,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 6090,
+          "x": 5680,
           "y": 4220
         }
       }
@@ -4392,7 +4310,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 6090,
+          "x": 5680,
           "y": 4400
         }
       }
@@ -4574,7 +4492,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 6490,
+          "x": 6080,
           "y": 4220
         }
       }
@@ -4609,7 +4527,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 6490,
+          "x": 6080,
           "y": 4400
         }
       }
@@ -4655,7 +4573,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 6880,
+          "x": 6470,
           "y": 4220
         }
       }
@@ -4690,7 +4608,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 6880,
+          "x": 6470,
           "y": 4400
         }
       }
@@ -5497,8 +5415,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 7280,
-          "y": 1670
+          "x": 6910,
+          "y": 1685
         }
       }
     note: false
@@ -5528,7 +5446,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 7290,
+          "x": 6910,
           "y": 2190
         }
       }
@@ -5559,8 +5477,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 7290,
-          "y": 2710
+          "x": 6910,
+          "y": 2720
         }
       }
     note: false
@@ -5590,8 +5508,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 7290,
-          "y": 3380
+          "x": 6870,
+          "y": 3395
         }
       }
     note: false
@@ -5621,7 +5539,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 7290,
+          "x": 6870,
           "y": 3890
         }
       }
@@ -5652,7 +5570,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 7290,
+          "x": 6870,
           "y": 4400
         }
       }
@@ -5683,8 +5601,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 7290,
-          "y": 4910
+          "x": 6870,
+          "y": 4925
         }
       }
     note: false
@@ -5714,7 +5632,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 7290,
+          "x": 6870,
           "y": 5400
         }
       }
@@ -5745,7 +5663,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 7300,
+          "x": 6870,
           "y": 5910
         }
       }
@@ -5776,8 +5694,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 7510,
-          "y": 6050
+          "x": 7080,
+          "y": 6060
         }
       }
     note: false
@@ -5807,8 +5725,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 7770,
-          "y": 6190
+          "x": 7290,
+          "y": 6200
         }
       }
     note: false
@@ -5866,7 +5784,6 @@ view: |-
       "72_154_Verified": 0.1,
       "74_154_Verified": 0.11,
       "76_154_Verified": 0.1,
-      "78_154_Verified": 0.1,
       "80_154_Verified": 0.1,
       "82_155_Verified": 0.1,
       "84_155_Verified": 0.12,
@@ -5879,8 +5796,8 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 6365,
-        "width": 8170,
+        "height": 6375,
+        "width": 7690,
         "x": -20,
         "y": 30
       }
