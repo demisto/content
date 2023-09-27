@@ -2,7 +2,6 @@ import contextlib
 from json import JSONDecodeError
 from pathlib import Path
 from typing import Literal, NamedTuple
-from collections.abc import Sequence
 from collections.abc import Callable, Iterable
 import more_itertools
 from requests import Response
@@ -241,15 +240,18 @@ class Client(BaseClient):
             resp_type="response",
             **kwargs,
         )
-        print(
-            f"Request: {method} {urljoin(self._base_url,url_suffix)}, {kwargs=}, {self._headers=}"
-        )
+        # print(
+        #     f"Request: {method} {urljoin(self._base_url,url_suffix)}, {kwargs=}, {self._headers=}"
+        # )
+
         # for r in response.history:
         #     print(curlify.to_curl(r.request, compressed=True))
+        #     print()
         # print(curlify.to_curl(response.request, compressed=True))
+        # print()
+        # print(f"Response: {pformat(response.text)}", end="\n")
         try:
             response_body = json.loads(response.text)
-            # print(f"Response: {pformat(response_body)}")
             if (require_success_true or ("success" in response_body)) and (
                 response_body["success"] is not True
             ):
@@ -441,7 +443,7 @@ class Client(BaseClient):
             params["filter"] = Filter.dumps_list(custom_filter)
 
         if ticket_id := kwargs.get(TICKET_ID.demisto_name):
-            if custom_filter:
+            if raw_filter:
                 raise DemistoException(
                     "The ticket_id and filter arguments cannot be used at the same time."
                 )
@@ -497,18 +499,20 @@ class Client(BaseClient):
         return self.http_request(
             url_suffix="WSC/Set",
             method="POST",
-            data={
+            params={
                 "entity": "TicketConversationItem",
-                "data": {
-                    TICKET_ID.hda_name: kwargs[TICKET_ID.demisto_name],
-                    TEXT.hda_name: kwargs["comment"],
-                    SITE_VISIBLE.hda_name: argToBoolean(
-                        kwargs[SITE_VISIBLE.demisto_name]
-                    ),
-                    OBJECT_TYPE_ID.hda_name: "90",  # hardcoded by design. 90 marks ObjectTypeIDField
-                },
+                "data": json.dumps(
+                    {
+                        TICKET_ID.hda_name: kwargs[TICKET_ID.demisto_name],
+                        TEXT.hda_name: kwargs["comment"],
+                        SITE_VISIBLE.hda_name: argToBoolean(
+                            kwargs[SITE_VISIBLE.demisto_name]
+                        ),
+                        OBJECT_TYPE_ID.hda_name: "90",  # hardcoded by design. 90 marks ObjectTypeIDField
+                    }
+                ),
             },
-            attempted_action="adding ticket command",
+            attempted_action="adding ticket comment",
         )
 
     def list_ticket_statuses(self, **kwargs) -> dict:
@@ -919,8 +923,11 @@ def list_users_command(client: Client, args: dict) -> CommandResults:
     response = client.list_users(**args)
     response = convert_response_dates(response)
 
+    if not (data := response["data"]):
+        return CommandResults(readable_output="No data returned")
+
     return CommandResults(
-        outputs=response["data"],
+        outputs=data,
         outputs_prefix=f"{VENDOR}.User",
         outputs_key_field=ID.hda_name,
         raw_response=response,  # TODO HR fields
@@ -931,8 +938,11 @@ def list_groups_command(client: Client, args: dict) -> CommandResults:
     response = client.list_groups(**args)
     response = convert_response_dates(response)
 
+    if not (data := response["data"]):
+        return CommandResults(readable_output="No data returned")
+
     return CommandResults(
-        outputs=response["data"],
+        outputs=data,
         outputs_prefix=f"{VENDOR}.Group",
         outputs_key_field=ID.hda_name,
         raw_response=response,  # TODO HR fields
