@@ -35,7 +35,7 @@ class MsGraphMailBaseClient(MicrosoftClient):
                  display_full_email_body: bool = False,
                  mark_fetched_read: bool = False,
                  look_back: int | None = 0,
-                 fetch_html_formatting = True,
+                 fetch_html_formatting=True,
                  **kwargs):
         super().__init__(retry_on_rate_limit=True, managed_identities_resource_uri=Resources.graph,
                          command_prefix="msgraph-mail",

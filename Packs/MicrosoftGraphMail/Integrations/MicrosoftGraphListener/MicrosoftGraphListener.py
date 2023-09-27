@@ -89,7 +89,7 @@ class MsGraphListenerClient(MsGraphMailBaseClient):
         demisto.debug(f"MicrosoftGraphMail - Number of incidents before filtering: {len(fetched_emails)}")
         demisto.debug(f"MicrosoftGraphMail - Number of incidents after filtering: {len(incidents)}")
         demisto.debug(f"MicrosoftGraphMail - Number of incidents skipped: {len(fetched_emails)-len(incidents)}")
-        
+
         """
         The below pop is here to maintain parity between this (single-user) version of 
         the graph mail integration and the application-permission version. It is output 
