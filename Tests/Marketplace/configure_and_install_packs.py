@@ -28,6 +28,7 @@ def options_handler():
     parser.add_argument('--cloud_servers_path', help='Path to the secret cloud server metadata file.')
     parser.add_argument('-pl', '--pack_ids_to_install', help='Path to the packs to install file.')
     parser.add_argument('--cloud_servers_api_keys', help='Path to the file with cloud Servers api keys.')
+    parser.add_argument('--xdr_suffix', help='Suffix for creating build bucket.')
     options = parser.parse_args()
     # disable-secrets-detection-end
 

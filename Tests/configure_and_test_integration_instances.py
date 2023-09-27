@@ -730,6 +730,7 @@ class XSOARBuild(Build):
     def set_marketplace_url(servers, branch_name, ci_build_number, marketplace_name=None, artifacts_folder=None,
                             marketplace_buckets=None,
                             xdr_suffix=""):
+        logging.info(f"xdr_suffix is {xdr_suffix}")
         url_suffix = f'{quote_plus(branch_name)}/{ci_build_number+xdr_suffix}/xsoar'
         config_path = 'marketplace.bootstrap.bypass.url'
         config = {config_path: f'https://storage.googleapis.com/marketplace-ci-build/content/builds/{url_suffix}'}
