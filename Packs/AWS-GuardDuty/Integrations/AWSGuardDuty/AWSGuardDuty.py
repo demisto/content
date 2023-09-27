@@ -10,6 +10,10 @@ from typing import TYPE_CHECKING, Tuple
 # It is not used at runtime, and not exist in the docker image.
 if TYPE_CHECKING:
     from mypy_boto3_guardduty import GuardDutyClient
+    from mypy_boto3_guardduty.type_defs import (
+        FindingTypeDef,
+        ConditionTypeDef
+    )
 
 
 ''' CONSTANTS '''
@@ -28,9 +32,9 @@ MAX_RESULTS_RESPONSE = 50
 
 class DatetimeEncoder(json.JSONEncoder):
     def default(self, obj: Any):  # pylint: disable=E0202
-        if isinstance(obj, datetime):  # type: ignore
+        if isinstance(obj, datetime):
             return obj.strftime('%Y-%m-%dT%H:%M:%S')
-        elif isinstance(obj, date):  # type: ignore  # pylint: disable=E0602
+        elif isinstance(obj, date):  # pylint: disable=E0602
             return obj.strftime('%Y-%m-%d')
         # Let the base class default method raise the TypeError
         return json.JSONEncoder.default(self, obj)
@@ -161,7 +165,7 @@ def list_detectors(client: "GuardDutyClient", args: dict) -> CommandResults:
 
 
 def create_ip_set(client: "GuardDutyClient", args: dict):
-    kwargs = {'DetectorId': args.get('detectorId')}
+    kwargs: dict[str, Any] = {'DetectorId': args.get('detectorId')}
     if args.get('activate') is not None:
         kwargs.update({'Activate': True if args.get('activate') == 'True' else False})
     if args.get('format') is not None:
@@ -171,7 +175,7 @@ def create_ip_set(client: "GuardDutyClient", args: dict):
     if args.get('name') is not None:
         kwargs.update({'Name': args.get('name')})
 
-    response = client.create_ip_set(**kwargs)  # type: ignore[arg-type]
+    response = client.create_ip_set(**kwargs)
 
     data = ({
         'DetectorId': args.get('detectorId'),
@@ -197,7 +201,7 @@ def delete_ip_set(client: "GuardDutyClient", args: dict):
 
 
 def update_ip_set(client: "GuardDutyClient", args: dict):
-    kwargs = {
+    kwargs: dict[str, Any] = {
         'DetectorId': args.get('detectorId'),
         'IpSetId': args.get('ipSetId')
     }
@@ -208,7 +212,7 @@ def update_ip_set(client: "GuardDutyClient", args: dict):
     if args.get('name'):
         kwargs.update({'Name': args.get('name')})
 
-    response = client.update_ip_set(**kwargs)  # type: ignore[arg-type]
+    response = client.update_ip_set(**kwargs)
 
     if response == dict() or response.get('ResponseMetadata', {}).get('HTTPStatusCode') == 200:
         return f"The IPSet {args.get('ipSetId')} has been Updated"
@@ -263,7 +267,7 @@ def list_ip_sets(client: "GuardDutyClient", args: dict) -> CommandResults:
 
 
 def create_threat_intel_set(client: "GuardDutyClient", args: dict):
-    kwargs = {'DetectorId': args.get('detectorId')}
+    kwargs: dict[str, Any] = {'DetectorId': args.get('detectorId')}
     if args.get('activate') is not None:
         kwargs.update({'Activate': True if args.get('activate') == 'True' else False})
     if args.get('format') is not None:
@@ -273,7 +277,7 @@ def create_threat_intel_set(client: "GuardDutyClient", args: dict):
     if args.get('name') is not None:
         kwargs.update({'Name': args.get('name')})
 
-    response = client.create_threat_intel_set(**kwargs)  # type: ignore[arg-type]
+    response = client.create_threat_intel_set(**kwargs)
 
     data = ({
         'DetectorId': args.get('detectorId'),
@@ -439,16 +443,16 @@ def get_pagination_args(args: dict) -> Tuple[int, int, Optional[int]]:
 
     page_size = arg_to_number(args.get('page_size', MAX_RESULTS_RESPONSE))
     assert isinstance(page_size, int)  # for mypy
-    if not 0 < page_size <= MAX_RESULTS_RESPONSE:  # type: ignore
+    if not 0 < page_size <= MAX_RESULTS_RESPONSE:
         raise DemistoException(f'page_size argument must be between 1 to {MAX_RESULTS_RESPONSE}')
 
     if page:
-        limit = page * page_size  # type: ignore
+        limit = page * page_size
 
     return limit, page_size, page
 
 
-def parse_finding(finding: dict) -> Dict:
+def parse_finding(finding: "FindingTypeDef") -> Dict[str, Any]:
     """
     Parse the finding data to output, context format
     :param finding: Contains information about the finding,
@@ -489,7 +493,7 @@ def get_findings(client: "GuardDutyClient", args: dict) -> dict:
 
     data = []
     for finding in response['Findings']:
-        data.append(parse_finding(finding))  # type: ignore[arg-type]
+        data.append(parse_finding(finding))
 
     output = json.dumps(response['Findings'], cls=DatetimeEncoder)
     raw = json.loads(output)
@@ -508,7 +512,7 @@ def get_findings(client: "GuardDutyClient", args: dict) -> dict:
     }
 
 
-def parse_incident_from_finding(finding: dict):
+def parse_incident_from_finding(finding: "FindingTypeDef") -> Dict[str, Any]:
     incident: dict = dict()
     incident['name'] = finding.get('Title')
     incident['details'] = finding.get('Description')
@@ -555,7 +559,8 @@ def fetch_incidents(client: "GuardDutyClient", aws_gd_severity: List[str], last_
 
     # Handle first time fetch
     if latest_created_time is None:
-        latest_created_time = dateparser.parse(dateparser.parse(first_fetch_time).strftime(DATE_FORMAT))  # type: ignore
+        latest_created_time = dateparser.parse(dateparser.parse(
+            first_fetch_time).strftime(DATE_FORMAT))  # type: ignore[union-attr]
     else:
         latest_created_time = dateparser.parse(latest_created_time)
 
@@ -565,7 +570,8 @@ def fetch_incidents(client: "GuardDutyClient", aws_gd_severity: List[str], last_
     created_time_to_ids = defaultdict(list)
     created_time_to_ids[latest_created_time] = last_incidents_ids
 
-    criterion_conditions = dict()  # Represents the criteria to be used in the filter for querying findings.
+    # Represents the criteria to be used in the filter for querying findings.
+    criterion_conditions: Dict[str, "ConditionTypeDef"] = {}
     criterion_conditions['severity'] = {'Gte': gd_severity_mapping(aws_gd_severity)}
     if is_archive:
         demisto.debug('Fetching Amazon GuardDuty with Archive')
@@ -584,7 +590,7 @@ def fetch_incidents(client: "GuardDutyClient", aws_gd_severity: List[str], last_
 
         list_findings_res = client.list_findings(
             DetectorId=detector[0],
-            FindingCriteria={'Criterion': criterion_conditions},  # type: ignore[typeddict-item]
+            FindingCriteria={'Criterion': criterion_conditions},
             SortCriteria={'AttributeName': 'createdAt', 'OrderBy': 'ASC'},
             MaxResults=max_results,
             NextToken=last_next_token
@@ -611,7 +617,7 @@ def fetch_incidents(client: "GuardDutyClient", aws_gd_severity: List[str], last_
                 latest_created_time = incident_created_time
                 created_time_to_ids[latest_created_time].append(incident_id)
 
-                incident = parse_incident_from_finding(finding)  # type: ignore[arg-type]
+                incident = parse_incident_from_finding(finding)
                 incidents.append(incident)
 
         if incidents and is_archive:
@@ -635,11 +641,11 @@ def fetch_incidents(client: "GuardDutyClient", aws_gd_severity: List[str], last_
 
 
 def create_sample_findings(client: "GuardDutyClient", args: dict):
-    kwargs = {'DetectorId': args.get('detectorId')}
+    kwargs: dict[str, Any] = {'DetectorId': args.get('detectorId')}
     if args.get('findingTypes') is not None:
         kwargs.update({'FindingTypes': argToList(args.get('findingTypes'))})
 
-    response = client.create_sample_findings(**kwargs)  # type: ignore[arg-type]
+    response = client.create_sample_findings(**kwargs)
 
     if response == dict() or response.get('ResponseMetadata', {}).get('HTTPStatusCode') == 200:
         return "Sample Findings were generated"
@@ -648,11 +654,11 @@ def create_sample_findings(client: "GuardDutyClient", args: dict):
 
 
 def archive_findings(client: "GuardDutyClient", args: dict):
-    kwargs = {'DetectorId': args.get('detectorId')}
+    kwargs: dict[str, Any] = {'DetectorId': args.get('detectorId')}
     if args.get('findingIds') is not None:
         kwargs.update({'FindingIds': argToList(args.get('findingIds'))})
 
-    response = client.archive_findings(**kwargs)  # type: ignore[arg-type]
+    response = client.archive_findings(**kwargs)
 
     if response == dict() or response.get('ResponseMetadata', {}).get('HTTPStatusCode') == 200:
         return "Findings were archived"
@@ -674,7 +680,7 @@ def unarchive_findings(client: "GuardDutyClient", args: dict):
 
 
 def update_findings_feedback(client: "GuardDutyClient", args: dict):
-    kwargs = {'DetectorId': args.get('detectorId')}
+    kwargs: dict[str, Any] = {'DetectorId': args.get('detectorId')}
     if args.get('findingIds') is not None:
         kwargs.update({'FindingIds': argToList(args.get('findingIds'))})
     if args.get('comments') is not None:
@@ -682,7 +688,7 @@ def update_findings_feedback(client: "GuardDutyClient", args: dict):
     if args.get('feedback') is not None:
         kwargs.update({'Feedback': argToList(args.get('feedback'))})
 
-    response = client.update_findings_feedback(**kwargs)  # type: ignore[arg-type]
+    response = client.update_findings_feedback(**kwargs)
     if response == dict() or response.get('ResponseMetadata', {}).get('HTTPStatusCode') == 200:
         return "Findings Feedback sent!"
     else:
@@ -854,7 +860,7 @@ def main():  # pragma: no cover
         elif demisto.command() == 'fetch-incidents':
             next_run, incidents = fetch_incidents(client=client, aws_gd_severity=aws_gd_severity,
                                                   last_run=demisto.getLastRun(),
-                                                  fetch_limit=fetch_limit,  # type: ignore
+                                                  fetch_limit=fetch_limit,  # type: ignore[arg-type]
                                                   first_fetch_time=first_fetch_time, is_archive=is_archive)
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
