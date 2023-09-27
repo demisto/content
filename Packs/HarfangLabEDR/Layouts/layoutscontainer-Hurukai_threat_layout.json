@@ -67,7 +67,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "toprules",
+                                "fieldId": "incident_toprules",
                                 "height": 22,
                                 "id": "846703b0-1263-11ee-81bc-75ad116ddc8c",
                                 "index": 5,
@@ -76,7 +76,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "topagents",
+                                "fieldId": "incident_topagents",
                                 "height": 22,
                                 "id": "7fd40e10-1263-11ee-81bc-75ad116ddc8c",
                                 "index": 6,
@@ -85,7 +85,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "topimpactedusers",
+                                "fieldId": "incident_topimpactedusers",
                                 "height": 22,
                                 "id": "82f1efe0-1263-11ee-81bc-75ad116ddc8c",
                                 "index": 7,
@@ -95,7 +95,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "totalsecurityeventcount",
+                                "fieldId": "incident_totalsecurityeventcount",
                                 "height": 22,
                                 "id": "b7015380-125d-11ee-81bc-75ad116ddc8c",
                                 "index": 8,
@@ -106,7 +106,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "criticalsecurityeventcount",
+                                "fieldId": "incident_criticalsecurityeventcount",
                                 "height": 22,
                                 "id": "bd19fec0-125d-11ee-81bc-75ad116ddc8c",
                                 "index": 9,
@@ -117,7 +117,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "highsecurityeventcount",
+                                "fieldId": "incident_highsecurityeventcount",
                                 "height": 22,
                                 "id": "bb024250-125d-11ee-81bc-75ad116ddc8c",
                                 "index": 10,
@@ -128,7 +128,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "mediumsecurityeventcount",
+                                "fieldId": "incident_mediumsecurityeventcount",
                                 "height": 22,
                                 "id": "bf092490-125d-11ee-81bc-75ad116ddc8c",
                                 "index": 11,
@@ -139,7 +139,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "lowsecurityeventcount",
+                                "fieldId": "incident_lowsecurityeventcount",
                                 "height": 22,
                                 "id": "c06c3700-125d-11ee-81bc-75ad116ddc8c",
                                 "index": 12,

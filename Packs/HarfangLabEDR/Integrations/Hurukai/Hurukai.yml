@@ -266,9 +266,9 @@ script:
       description: filehash to search (md5, sha1, sha256).
     - name: hostname
       description: Endpoint hostname.
-    - description: 'Start date (format: YYYY-MM-DDTHH:MM:SS)'.
+    - description: 'Start date (format: YYYY-MM-DDTHH:MM:SS).'
       name: from_date
-    - description: 'End date (format: YYYY-MM-DDTHH:MM:SS)'.
+    - description: 'End date (format: YYYY-MM-DDTHH:MM:SS).'
       name: to_date
     - name: limit
       description: Maximum number of elements to fetch.
@@ -283,10 +283,10 @@ script:
       description: An agent's identifier (DEPRECATED).
       type: string
     - contextPath: current_directory
-      description: 'DEPRECATED'.
+      description: 'DEPRECATED.'
       type: string
     - contextPath: hashes.sha256
-      description: 'DEPRECATED'.
+      description: 'DEPRECATED.'
       type: string
 
   - arguments:
@@ -295,10 +295,10 @@ script:
     - name: requested_name
       description: Requested domain name.
     - name: query_type
-      description: 'DNS type (A, AAAA, TXT...)'.
-    - description: 'Start date (format: YYYY-MM-DDTHH:MM:SS)'.
+      description: 'DNS type (A, AAAA, TXT...).'
+    - description: 'Start date (format: YYYY-MM-DDTHH:MM:SS).'
       name: from_date
-    - description: 'End date (format: YYYY-MM-DDTHH:MM:SS)'.
+    - description: 'End date (format: YYYY-MM-DDTHH:MM:SS).'
       name: to_date
     - name: limit
       description: Maximum number of elements to fetch.
@@ -313,9 +313,9 @@ script:
     - name: hostname
       description: Endpoint hostname.
       required: true
-    - description: 'Start date (format: YYYY-MM-DDTHH:MM:SS)'.
+    - description: 'Start date (format: YYYY-MM-DDTHH:MM:SS).'
       name: from_date
-    - description: 'End date (format: YYYY-MM-DDTHH:MM:SS)'.
+    - description: 'End date (format: YYYY-MM-DDTHH:MM:SS).'
       name: to_date
     - name: limit
       description: Fetch only the top N users who successfully authenticated on the host.
@@ -342,9 +342,9 @@ script:
       description: Logon title.
     - name: logon_type
       description: Logon type.
-    - description: 'Start date (format: YYYY-MM-DDTHH:MM:SS)'.
+    - description: 'Start date (format: YYYY-MM-DDTHH:MM:SS).'
       name: from_date
-    - description: 'End date (format: YYYY-MM-DDTHH:MM:SS)'.
+    - description: 'End date (format: YYYY-MM-DDTHH:MM:SS).'
       name: to_date
     - name: limit
       description: Maximum number of elements to fetch.
@@ -367,9 +367,9 @@ script:
       description: Source username.
     - name: target_username
       description: Target username.
-    - description: 'Start date (format: YYYY-MM-DDTHH:MM:SS)'.
+    - description: 'Start date (format: YYYY-MM-DDTHH:MM:SS).'
       name: from_date
-    - description: 'End date (format: YYYY-MM-DDTHH:MM:SS)'.
+    - description: 'End date (format: YYYY-MM-DDTHH:MM:SS).'
       name: to_date
     - name: limit
       description: Maximum number of elements to fetch.
@@ -392,9 +392,9 @@ script:
       description: Source username.
     - name: target_username
       description: Target username.
-    - description: 'Start date (format: YYYY-MM-DDTHH:MM:SS)'.
+    - description: 'Start date (format: YYYY-MM-DDTHH:MM:SS).'
       name: from_date
-    - description: 'End date (format: YYYY-MM-DDTHH:MM:SS)'.
+    - description: 'End date (format: YYYY-MM-DDTHH:MM:SS).'
       name: to_date
     - name: limit
       description: Maximum number of elements to fetch.
@@ -570,7 +570,7 @@ script:
       name: filesize
     - description: regex to search in registry (key or value).
       name: registry
-    - description: 'search a regex on a filepath '.
+    - description: 'search a regex on a filepath.'
       name: filepath_regex
     description: Start a job to search for IOCs on a host (Windows / Linux).
     name: harfanglab-job-ioc
@@ -691,9 +691,9 @@ script:
   - arguments:
     - name: hostname
       description: Endpoint hostname.
-    - description: 'Start date (format: YYYY-MM-DDTHH:MM:SS)'.
+    - description: 'Start date (format: YYYY-MM-DDTHH:MM:SS).'
       name: from_date
-    - description: 'End date (format: YYYY-MM-DDTHH:MM:SS)'.
+    - description: 'End date (format: YYYY-MM-DDTHH:MM:SS).'
       name: to_date
     - name: source_address
       description: Source IP address.
@@ -717,9 +717,9 @@ script:
       description: Endpoint hostname.
     - name: event_id
       description: Event id.
-    - description: 'Start date (format: YYYY-MM-DDTHH:MM:SS)'.
+    - description: 'Start date (format: YYYY-MM-DDTHH:MM:SS).'
       name: from_date
-    - description: 'End date (format: YYYY-MM-DDTHH:MM:SS)'.
+    - description: 'End date (format: YYYY-MM-DDTHH:MM:SS).'
       name: to_date
     - name: limit
       description: Maximum number of elements to fetch.
@@ -731,9 +731,9 @@ script:
     description: Search event logs.
     name: harfanglab-telemetry-eventlog
   - arguments:
-    - description: 'Start date (format: YYYY-MM-DDTHH:MM:SS)'.
+    - description: 'Start date (format: YYYY-MM-DDTHH:MM:SS).'
       name: from_date
-    - description: 'End date (format: YYYY-MM-DDTHH:MM:SS)'.
+    - description: 'End date (format: YYYY-MM-DDTHH:MM:SS).'
       name: to_date
     - name: hash
       description: filehash to search (md5, sha1, sha256).
