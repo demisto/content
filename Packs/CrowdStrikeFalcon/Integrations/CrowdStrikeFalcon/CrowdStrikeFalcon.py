@@ -529,7 +529,7 @@ def detection_to_incident(detection):
 
     incident = {
         'name': 'Detection ID: ' + str(detection.get('detection_id')),
-        'occurred': str(detection.get('first_behavior')),
+        'occurred': str(detection.get('created_timestamp')),
         'rawJSON': json.dumps(detection),
         'severity': severity_string_to_int(detection.get('max_severity_displayname'))
     }
@@ -1309,7 +1309,7 @@ def get_fetch_detections(last_created_timestamp=None, filter_arg=None, offset: i
     if filter_arg:
         params['filter'] = filter_arg
     elif last_created_timestamp:
-        params['filter'] = f"first_behavior:>'{last_created_timestamp}'"
+        params['filter'] = f"created_timestamp:>'{last_created_timestamp}'"
     elif last_updated_timestamp:
         params['filter'] = f"date_updated:>'{last_updated_timestamp}'"
 
@@ -2547,7 +2547,7 @@ def fetch_incidents():
         incident_type = 'detection'
         fetch_query = demisto.params().get('fetch_query')
         if fetch_query:
-            fetch_query = f"first_behavior:>'{start_fetch_time}'+{fetch_query}"
+            fetch_query = f"created_timestamp:>'{start_fetch_time}'+{fetch_query}"
             detections_ids = demisto.get(get_fetch_detections(filter_arg=fetch_query, limit=fetch_limit), 'resources')
         else:
             detections_ids = demisto.get(get_fetch_detections(last_created_timestamp=start_fetch_time, limit=fetch_limit),
@@ -2564,7 +2564,7 @@ def fetch_incidents():
                 detection['incident_type'] = incident_type
                 demisto.debug(
                     f"CrowdStrikeFalconMsg: Detection {detection['detection_id']} "
-                    f"was fetched which was created in {detection['first_behavior']}")
+                    f"was fetched which was created in {detection['created_timestamp']}")
                 incident = detection_to_incident(detection)
 
                 detections.append(incident)
