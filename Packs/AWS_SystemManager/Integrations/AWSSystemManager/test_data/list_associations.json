@@ -1,0 +1,81 @@
+{
+    "Associations": [
+        {
+            "Name": "AWS-GatherSoftwareInventory",
+            "AssociationId": "AssociationId_test",
+            "AssociationVersion": "1",
+            "Targets": [
+                {
+                    "Key": "InstanceIds",
+                    "Values": [
+                        "instanceId_test1",
+                        "instanceId_test2"
+                    ]
+                }
+            ],
+            "LastExecutionDate": "2023-07-25 18:51:28.607000+03:00",
+            "Overview": {
+                "Status": "Pending",
+                "DetailedStatus": "Associated"
+            },
+            "ScheduleExpression": "rate(30 minutes)",
+            "AssociationName": "test"
+        },
+        {
+            "Name": "AWSQuickSetup-CreateAndAttachIAMToInstance",
+            "AssociationId": "AssociationId_test",
+            "AssociationVersion": "1",
+            "Targets": [
+                {
+                    "Key": "ParameterValues",
+                    "Values": [
+                        "instanceId_test1"
+                    ]
+                }
+            ],
+            "LastExecutionDate": "2023-08-13 14:49:38+03:00",
+            "Overview": {
+                "Status": "Failed",
+                "DetailedStatus": "Failed",
+                "AssociationStatusAggregatedCount": {
+                    "Failed": 1
+                }
+            },
+            "ScheduleExpression": "rate(30 days)",
+            "AssociationName": "AWS-QuickSetup-SSMHost-AttachIAMToInstance"
+        },
+        {
+            "Name": "AWS-GatherSoftwareInventory",
+            "AssociationId": "AssociationId_test",
+            "AssociationVersion": "1",
+            "Targets": [
+                {
+                    "Key": "InstanceIds",
+                    "Values": [
+                        "*"
+                    ]
+                }
+            ],
+            "LastExecutionDate": "2023-07-25 18:54:37.936000+03:00",
+            "Overview": {
+                "Status": "Pending",
+                "DetailedStatus": "Associated"
+            },
+            "ScheduleExpression": "rate(30 minutes)",
+            "AssociationName": "Inventory-Association"
+        }
+    ],
+    "ResponseMetadata": {
+        "RequestId": "requestid_test",
+        "HTTPStatusCode": 200,
+        "HTTPHeaders": {
+            "server": "Server",
+            "date": "Mon, 14 Aug 2023 11:24:32 GMT",
+            "content-type": "application/x-amz-json-1.1",
+            "content-length": "1201",
+            "connection": "keep-alive",
+            "x-amzn-requestid": "requestid_test"
+        },
+        "RetryAttempts": 0
+    }
+}
