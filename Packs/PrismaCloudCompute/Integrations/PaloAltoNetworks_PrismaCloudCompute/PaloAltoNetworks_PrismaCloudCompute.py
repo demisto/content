@@ -265,7 +265,7 @@ class PrismaCloudComputeClient(BaseClient):
 
         total_count = int(response.headers.get("Total-Count", -1))
         response = response.json()
-        current_count = len(response)
+        current_count = len(response) if response else 0
         while current_count < total_count:
             try:
                 params["offset"] = current_count
@@ -2152,12 +2152,13 @@ def get_ci_scan_results_list(client: PrismaCloudComputeClient, args: dict) -> Co
     limit, offset = parse_limit_and_offset_values(
         limit=args.get("limit", "50"), offset=args.get("offset", "0")
     )
-    account_ids, resource_ids, region, job_name, search, scan_id, image_id = (
-        argToList(args.get("account_ids")), argToList(args.get("resource_ids")),
-        argToList(args.get("region")), argToList(args.get("job_name")), args.get("search"),
-        args.get("scan_id"), args.get("image_id")
-    )
-    _pass = args.get("pass", "true")
+    account_ids = argToList(args.get("account_ids"))
+    resource_ids = argToList(args.get("resource_ids"))
+    region = argToList(args.get("region"))
+    job_name = argToList(args.get("job_name"))
+    search = args.get("search")
+    scan_id = args.get("scan_id")
+    image_id = args.get("image_id")
     if to := args.get("scan_time_to"):
         to = parse_date_string_format(to, "%Y-%m-%dT%H:%M:%SZ")
 
@@ -2166,7 +2167,7 @@ def get_ci_scan_results_list(client: PrismaCloudComputeClient, args: dict) -> Co
         jobName=job_name, imageID=image_id, to=to
     )
     # add saved words to params
-    params["pass"] = _pass
+    params["pass"] = args.get("pass", "true")
     if _from := args.get("scan_time_from"):
         params["from"] = parse_date_string_format(_from, "%Y-%m-%dT%H:%M:%SZ")
 
@@ -2175,12 +2176,13 @@ def get_ci_scan_results_list(client: PrismaCloudComputeClient, args: dict) -> Co
             name="CI Scan Information",
             t=[
                 {
-                    "Image": scan.get("entityInfo", {}).get("instances", [{}])[0].get("image"),
-                    "ID": scan.get("entityInfo", {}).get("_id"),
-                    "OS Distribution": scan.get("entityInfo", {}).get("osDistro"),
-                    "OS Release": scan.get("entityInfo", {}).get("osDistroRelease"),
-                    "Scan Status": scan.get("pass"),
-                    "Scan Time": scan.get("time"),
+                    "Image": scan["entityInfo"].get("instances", [{}])[0].get("image")
+                    if scan["entityInfo"].get("instances") else None,
+                    "ID": scan["entityInfo"]["_id"],
+                    "OS Distribution": scan["entityInfo"]["osDistro"],
+                    "OS Release": scan["entityInfo"]["osDistroRelease"],
+                    "Scan Status": scan["pass"],
+                    "Scan Time": scan["time"],
                 } for scan in ci_scan_results
             ],
             headers=["Image", "ID", "OS Distribution", "OS Release", "Scan Status", "Scan Time"],
@@ -2215,11 +2217,11 @@ def get_trusted_images(client: PrismaCloudComputeClient) -> CommandResults:
                     name="Policy Rules Information",
                     t=[
                         {
-                            "Rule Name": policy_role.get("name"),
+                            "Rule Name": policy_role["name"],
                             "Allowed Groups": policy_role.get("allowedGroups"),
                             "Effect": policy_role.get("effect"),
-                            "Modified": policy_role.get("modified"),
-                            "Owner": policy_role.get("owner")
+                            "Modified": policy_role["modified"],
+                            "Owner": policy_role["owner"]
                         } for policy_role in trusted_images_results.get("policy", {}).get("rules", [])
                     ],
                     headers=["Rule Name", "Effect", "Owner", "Allowed Groups", "Modified"],
@@ -2228,10 +2230,10 @@ def get_trusted_images(client: PrismaCloudComputeClient) -> CommandResults:
                     name="Trust Groups Information",
                     t=[
                         {
-                            "Modified": group.get("modified"),
-                            "Owner": group.get("owner"),
+                            "Modified": group["modified"],
+                            "Owner": group["owner"],
                             "Group Name": group.get("name"),
-                            "ID": group.get("_id"),
+                            "ID": group["_id"],
                         } for group in trusted_images_results.get("groups", [])
                     ],
                     headers=["ID", "Group Name", "Owner", "Modified"],
@@ -2284,14 +2286,21 @@ def get_container_scan_results(client: PrismaCloudComputeClient, args: dict) -> 
     limit, offset = parse_limit_and_offset_values(
         limit=args.get("limit", "50"), offset=args.get("offset", "0")
     )
-    collections, account_ids, clusters, namespaces, resource_ids, region, container_ids, profile_id, image_name, image_id, \
-        hostname, compliance_ids, agentless, search = (
-            argToList(args.get("collections")), argToList(args.get("account_ids")), argToList(args.get("clusters")),
-            argToList(args.get("namespaces")), argToList(args.get("resource_ids")), argToList(args.get("region")),
-            argToList(args.get("container_ids")), argToList(args.get("profile_id")), argToList(args.get("image_name")),
-            argToList(args.get("image_id")), argToList(args.get("hostname")), argToList(args.get("compliance_ids")),
-            args.get("agentless"), args.get("search")
-        )
+    collections = argToList(args.get("collections"))
+    account_ids = argToList(args.get("account_ids"))
+    clusters = argToList(args.get("clusters"))
+    namespaces = argToList(args.get("namespaces"))
+    resource_ids = argToList(args.get("resource_ids"))
+    region = argToList(args.get("region"))
+    container_ids = argToList(args.get("container_ids"))
+    profile_id = argToList(args.get("profile_id"))
+    image_name = argToList(args.get("image_name"))
+    image_id = argToList(args.get("image_id"))
+    hostname = argToList(args.get("hostname"))
+    compliance_ids = argToList(args.get("compliance_ids"))
+    agentless = args.get("agentless")
+    search = args.get("search")
+
     params = assign_params(
         offset=offset, limit=limit, collections=collections, accountIDs=account_ids, clusters=clusters, namespaces=namespaces,
         resourceIDs=resource_ids, region=region, id=container_ids, profileId=profile_id, image=image_name, imageId=image_id,
@@ -2303,13 +2312,13 @@ def get_container_scan_results(client: PrismaCloudComputeClient, args: dict) -> 
             name="CI Scan Information",
             t=[
                 {
-                    "ID": container.get("_id"),
-                    "Hostname": container.get("hostname"),
-                    "Scan Time": container.get("scanTime"),
-                    "Image ID": container.get("info", {}).get("imageID"),
-                    "Image Name": container.get("info", {}).get("imageName"),
-                    "Name": container.get("info", {}).get("name"),
-                    "App": container.get("info", {}).get("app"),
+                    "ID": container["_id"],
+                    "Hostname": container["hostname"],
+                    "Scan Time": container["scanTime"],
+                    "Image ID": container["info"]["imageID"],
+                    "Image Name": container["info"]["imageName"],
+                    "Name": container["info"]["name"],
+                    "App": container["info"]["app"],
                 } for container in container_scan_results
             ],
             headers=["ID", "Hostname", "Scan Time", "Image ID", "Image Name", "Name", "App"],
@@ -2342,11 +2351,16 @@ def get_hosts_info(client: PrismaCloudComputeClient, args: dict) -> CommandResul
     limit, offset = parse_limit_and_offset_values(
         limit=args.get("limit", "50"), offset=args.get("offset", "0")
     )
-    collections, account_ids, clusters, resource_ids, region, hostname, compliance_ids, agentless, search = (
-        argToList(args.get("collections")), argToList(args.get("account_ids")), argToList(args.get("clusters")),
-        argToList(args.get("resource_ids")), argToList(args.get("region")), argToList(args.get("hostname")),
-        argToList(args.get("compliance_ids")), args.get("agentless"), args.get("search")
-    )
+    collections = argToList(args.get("collections"))
+    account_ids = argToList(args.get("account_ids"))
+    clusters = argToList(args.get("clusters"))
+    resource_ids = argToList(args.get("resource_ids"))
+    region = argToList(args.get("region"))
+    hostname = argToList(args.get("hostname"))
+    compliance_ids = argToList(args.get("compliance_ids"))
+    agentless = args.get("agentless")
+    search = args.get("search")
+
     params = assign_params(
         offset=offset, limit=limit, collections=collections, accountIDs=account_ids, clusters=clusters, resourceIDs=resource_ids,
         region=region, hostname=hostname, complianceIDs=compliance_ids, agentless=agentless, search=search
@@ -2357,10 +2371,10 @@ def get_hosts_info(client: PrismaCloudComputeClient, args: dict) -> CommandResul
             name="Hosts Information",
             t=[
                 {
-                    "ID": host.get("_id"),
-                    "Hostname": host.get("hostname"),
+                    "ID": host["_id"],
+                    "Hostname": host["hostname"],
                     "Scan Time": host.get("scanTime"),
-                    "Distro": host.get("distro"),
+                    "Distro": host["distro"],
                     "Distro Release": host.get("osDistroRelease"),
                     "Clusters": host.get("clusters"),
                 } for host in hosts_info
@@ -2395,15 +2409,25 @@ def get_runtime_container_audit_events(client: PrismaCloudComputeClient, args: d
     limit, offset = parse_limit_and_offset_values(
         limit=args.get("limit", "50"), offset=args.get("offset", "0")
     )
-    collections, account_ids, clusters, namespaces, resource_ids, region, audit_id, profile_id, image_name, container, \
-        container_id, _type, effect, user, _os, app, hostname, search = (
-            argToList(args.get("collections")), argToList(args.get("account_ids")), argToList(args.get("clusters")),
-            argToList(args.get("namespaces")), argToList(args.get("resource_ids")), argToList(args.get("region")),
-            argToList(args.get("audit_id")), argToList(args.get("profile_id")), argToList(args.get("image_name")),
-            argToList(args.get("container")), argToList(args.get("container_id")), argToList(args.get("type")),
-            argToList(args.get("effect")), argToList(args.get("user")), argToList(args.get("os")), argToList(args.get("app")),
-            argToList(args.get("hostname")), args.get("search")
-        )
+    collections = argToList(args.get("collections"))
+    account_ids = argToList(args.get("account_ids"))
+    clusters = argToList(args.get("clusters"))
+    namespaces = argToList(args.get("namespaces"))
+    resource_ids = argToList(args.get("resource_ids"))
+    region = argToList(args.get("region"))
+    audit_id = argToList(args.get("audit_id"))
+    profile_id = argToList(args.get("profile_id"))
+    image_name = argToList(args.get("image_name"))
+    container = argToList(args.get("container"))
+    container_id = argToList(args.get("container_id"))
+    _type = argToList(args.get("type"))
+    effect = argToList(args.get("effect"))
+    user = argToList(args.get("user"))
+    _os = argToList(args.get("os"))
+    app = argToList(args.get("app"))
+    hostname = argToList(args.get("hostname"))
+    search = args.get("search")
+
     params = assign_params(
         offset=offset, limit=limit, collections=collections, accountIDs=account_ids, clusters=clusters, namespaces=namespaces,
         resourceIDs=resource_ids, region=region, id=audit_id, profileID=profile_id, imageName=image_name,
@@ -2416,14 +2440,14 @@ def get_runtime_container_audit_events(client: PrismaCloudComputeClient, args: d
             name="Runtime Container Audit Events Information",
             t=[
                 {
-                    "ID": audit_events.get("_id"),
-                    "Hostname": audit_events.get("hostname"),
-                    "Container Name": audit_events.get("containerName"),
-                    "Image Name": audit_events.get("imageName"),
-                    "Effect": audit_events.get("effect"),
-                    "Type": audit_events.get("type"),
-                    "Attack Type": audit_events.get("attackType"),
-                    "Severity": audit_events.get("severity")
+                    "ID": audit_events["_id"],
+                    "Hostname": audit_events["hostname"],
+                    "Container Name": audit_events["containerName"],
+                    "Image Name": audit_events["imageName"],
+                    "Effect": audit_events["effect"],
+                    "Type": audit_events["type"],
+                    "Attack Type": audit_events["attackType"],
+                    "Severity": audit_events["severity"]
                 } for audit_events in runtime_container_audit_events
             ],
             headers=["ID", "Hostname", "Container Name", "Image Name", "Effect", "Type", "Attack Type", "Severity"],
