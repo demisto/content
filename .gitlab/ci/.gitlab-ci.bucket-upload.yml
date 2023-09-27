@@ -222,7 +222,7 @@ install-packs-in-server-master:
     - .bucket-upload-rule
     - .default-job-settings
   rules:
-    - if: '$TEST_UPLOAD'
+    - if: '$TEST_UPLOAD == "true"'
       when: always
       variables:
         CLOUD_MACHINES_TYPE: "build"
