@@ -243,7 +243,7 @@ urllib3.disable_warnings()
 _T = TypeVar("_T")
 
 
-def unwrap(val: _T | None) -> _T:
+def unwrap(val: Union[_T, None]) -> _T:
     if val is None:
         raise ValueError("Expected non-null value but received None.")
     return val
@@ -286,7 +286,7 @@ class Client(BaseClient):
         task_id = data.get(TASKID, EMPTY_STRING)
         poll = data.get(POLL, TRUE)
         poll_time_sec = data.get(POLL_TIME_SEC, 0)
-        message: dict[str, Any] = {}
+        message: Dict[str, Any] = {}
 
         # Initialize pytmv1 client
         v1_client = _get_client(APP_NAME, self.api_key, self.base_url)
@@ -450,7 +450,7 @@ class Client(BaseClient):
         formatted_start = str(start[: (start.index("."))]) + str(start[-1])
         formatted_end = str(end[: (start.index("."))]) + str(end[-1])
 
-        new_alerts: List[SaeAlert | TiAlert] = []
+        new_alerts: List[Union[SaeAlert, TiAlert]] = []
         try:
             v1_client.consume_alert_list(
                 lambda alert: new_alerts.append(alert),
@@ -1015,7 +1015,7 @@ def quarantine_or_delete_email_message(
     for email in args[EMAIL_IDENTIFIERS]:
         email_identifiers.append(email)
     message: List[Dict[str, Any]] = []
-    email_tasks: List[EmailMessageIdTask | EmailMessageUIdTask] = []
+    email_tasks: List[Union[EmailMessageIdTask, EmailMessageUIdTask]] = []
     # Initialize pytmv1 client
     v1_client = _get_client(APP_NAME, client.api_key, client.base_url)
 
@@ -1111,7 +1111,7 @@ def restore_email_message(
     for email in args[EMAIL_IDENTIFIERS]:
         email_identifiers.append(email)
     message: List[Dict[str, Any]] = []
-    email_tasks: List[EmailMessageIdTask | EmailMessageUIdTask] = []
+    email_tasks: List[Union[EmailMessageIdTask, EmailMessageUIdTask]] = []
     # Initialize pytmv1 client
     v1_client = _get_client(APP_NAME, client.api_key, client.base_url)
 
@@ -2224,7 +2224,7 @@ def main():  # pragma: no cover
         """GLOBAL VARS"""
         params = demisto.params()
 
-        base_url: str | None = params.get(URL)
+        base_url: Union[str, None] = params.get(URL)
         api_key = params.get(API_TOKEN).get("password")  # type: ignore
         proxy = params.get("proxy", False)
         verify = not params.get("insecure", False)
