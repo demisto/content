@@ -250,7 +250,7 @@ xpanse-prepare-testing-bucket:
     - .default-job-settings
     - .push-rule
   variables:
-    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
+    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}/instance_${INSTANCE_ROLE/ /_}"
     ENV_RESULTS_PATH: "${ARTIFACTS_FOLDER_XSOAR}/env_results.json"
     SERVER_TYPE: "XSOAR"
   stage: run-instances
@@ -539,7 +539,7 @@ xsoar_ng_server_ga:
     CLOUD_SERVERS_FILE: "xsoar_ng_servers_path"
     CLOUD_API_KEYS: $XSOAR_NG_API_KEYS
     GCS_SOURCE_BUCKET: "${GCS_PRODUCTION_BUCKET}"
-    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
+    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR_SAAS}"
     ENV_RESULTS_PATH: "${ARTIFACTS_FOLDER_XSOAR}/env_results.json"
     GCS_MACHINES_BUCKET: "marketplace-dist-dev/upload-flow/builds-xsoar-ng"
     SERVER_TYPE: "XSIAM"
