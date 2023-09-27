@@ -1,16 +1,16 @@
 id: Local Analysis alert Investigation - Test
 version: -1
 name: Local Analysis alert Investigation - Test
-description: |
-  This playbook tests the 'Local Analysis alert Investigation' playbook, which is part of the 'Core' pack. The playbook includes the following conducted tests:
+description: |-
+  This playbook tests the 'Local Analysis alert Investigation' playbook, which is part of the 'Core' pack. The playbook includes the following conducted tests:.
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: d581dda5-36b7-484a-8e16-f8e645d30f58
+    taskid: a8d7741f-828b-480e-881d-9fca26419369
     type: start
     task:
-      id: d581dda5-36b7-484a-8e16-f8e645d30f58
+      id: a8d7741f-828b-480e-881d-9fca26419369
       version: -1
       name: ""
       iscommand: false
@@ -25,7 +25,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": -640
+          "y": -400
         }
       }
     note: false
@@ -37,10 +37,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: ceea35d0-ad1d-4689-8152-3409bf3795d0
+    taskid: a1702a0d-c7c8-4499-86ce-16519ce6adfd
     type: playbook
     task:
-      id: ceea35d0-ad1d-4689-8152-3409bf3795d0
+      id: a1702a0d-c7c8-4499-86ce-16519ce6adfd
       version: -1
       name: Local Analysis alert Investigation
       description: |-
@@ -188,10 +188,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 2888e752-f245-448c-864a-873ca20608fe
+    taskid: abf130ed-e11f-4fd5-87a1-5da6d20e6463
     type: regular
     task:
-      id: 2888e752-f245-448c-864a-873ca20608fe
+      id: abf130ed-e11f-4fd5-87a1-5da6d20e6463
       version: -1
       name: Set alert data
       description: commands.local.cmd.set.incident
@@ -239,10 +239,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 93044495-d775-434c-8515-70c2168907bd
+    taskid: 2221c442-8475-4b23-8725-fa893ab08073
     type: condition
     task:
-      id: 93044495-d775-434c-8515-70c2168907bd
+      id: 2221c442-8475-4b23-8725-fa893ab08073
       version: -1
       name: Testing Enrichment for Verdict by DBotScore Exist
       type: condition
@@ -283,10 +283,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 55fac304-ec5a-4f0d-8f5d-8580499d4b45
+    taskid: 35b8eb5f-de74-456f-80a9-a580023fa9e0
     type: condition
     task:
-      id: 55fac304-ec5a-4f0d-8f5d-8580499d4b45
+      id: 35b8eb5f-de74-456f-80a9-a580023fa9e0
       version: -1
       name: Testing WildFire internal-wildfire-get-report by retrieved files Succeeded
       type: condition
@@ -336,10 +336,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 342da545-8dae-4c86-8dc6-bedb45c870a7
+    taskid: 4ee6bf31-0d22-44eb-8af9-351c94638de5
     type: regular
     task:
-      id: 342da545-8dae-4c86-8dc6-bedb45c870a7
+      id: 4ee6bf31-0d22-44eb-8af9-351c94638de5
       version: -1
       name: Get Endpoint ids
       description: Gets a list of endpoints, according to the passed filters. If there are no filters, all endpoints are returned. Filtering by multiple fields will be concatenated using AND condition (OR is not supported). Maximum result set size is 100. Offset is the zero-based number of endpoint from the start of the result set (start by counting from 0).
@@ -349,7 +349,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "17"
+      - "2"
     scriptarguments:
       alias_name:
         simple: TestPlaybook
@@ -361,7 +361,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": -70
+          "y": 170
         }
       }
     note: false
@@ -373,10 +373,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 7d3b0007-1988-47a7-864e-075a2ede3a23
+    taskid: 59f35d9e-d09a-41d7-87c2-d4f0a945fef4
     type: title
     task:
-      id: 7d3b0007-1988-47a7-864e-075a2ede3a23
+      id: 59f35d9e-d09a-41d7-87c2-d4f0a945fef4
       version: -1
       name: Test Benign Path
       type: title
@@ -392,7 +392,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": -450
+          "y": -210
         }
       }
     note: false
@@ -404,10 +404,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: ee89203f-e50f-4f9f-831c-c44d2a79539f
+    taskid: 1f0910ea-8384-4f2a-82c8-f66129ae5f1d
     type: regular
     task:
-      id: ee89203f-e50f-4f9f-831c-c44d2a79539f
+      id: 1f0910ea-8384-4f2a-82c8-f66129ae5f1d
       version: -1
       name: Delete all context
       description: |-
@@ -432,7 +432,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": -290
+          "y": -50
         }
       }
     note: false
@@ -444,10 +444,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 40f926f9-9fdb-4e23-8cf6-c0c441b7885b
+    taskid: 20a213a1-ff02-4833-8c25-52491f49d409
     type: title
     task:
-      id: 40f926f9-9fdb-4e23-8cf6-c0c441b7885b
+      id: 20a213a1-ff02-4833-8c25-52491f49d409
       version: -1
       name: Done
       type: title
@@ -472,10 +472,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: 6d2ffeb2-220b-4dac-87ac-d63113d413bf
+    taskid: ef11bf81-64c3-40cb-880e-02d3709a94e4
     type: regular
     task:
-      id: 6d2ffeb2-220b-4dac-87ac-d63113d413bf
+      id: ef11bf81-64c3-40cb-880e-02d3709a94e4
       version: -1
       name: Error Occured
       type: regular
@@ -497,51 +497,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "17":
-    id: "17"
-    taskid: d64e5d03-e6bf-47bb-83e6-a204070aadce
-    type: regular
-    task:
-      id: d64e5d03-e6bf-47bb-83e6-a204070aadce
-      version: -1
-      name: Check Test File Exist Before Testing
-      description: Initiates a new endpoint script execution to check if file exists.
-      script: '|||core-run-script-file-exists'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "2"
-    scriptarguments:
-      endpoint_ids:
-        complex:
-          root: Core.Endpoint
-          accessor: endpoint_id
-      file_path:
-        simple: c:\Windows\System32\calc.exe
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 130
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: e4789e4e-f72a-43b2-81d2-5a9816dd35df
+    taskid: fad71e65-49ee-4608-83f3-ab852a735942
     type: condition
     task:
-      id: e4789e4e-f72a-43b2-81d2-5a9816dd35df
+      id: fad71e65-49ee-4608-83f3-ab852a735942
       version: -1
       name: Test core-retrieve file from endpoint
       type: condition
@@ -586,10 +547,10 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2135,
+        "height": 1895,
         "width": 890,
         "x": -60,
-        "y": -640
+        "y": -400
       }
     }
   }
