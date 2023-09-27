@@ -251,10 +251,14 @@ def get_events_command(
         f"start fetch from {start_date} to {end_date} with {last_run_model.token or 'none'}"
     )
 
+    if start_date < 1695790810000:
+        return [], LastRun()
     status = "more"
     while status != "done":
         try:
+            demisto.debug("start fetching events - API")
             res = client.get_logs(params=params)
+            demisto.debug("end fetching events - API")
         except DemistoException as e:
             if e.res is not None and e.res.status_code == 410:
                 demisto.debug(f"The token has expired: {e}")
@@ -333,28 +337,32 @@ def perform_long_running_loop(
 ):
     last_run_obj: LastRun
     while True:
-        if is_first_fetch:
-            integration_context = get_integration_context().get("last_run")
-            last_run_obj = (
-                LastRun(**integration_context) if integration_context else LastRun()
-            )
-        else:
-            last_run_obj = last_run_obj
-
-        logs, last_run_obj = get_events_command(
-            client, args, last_run_obj, is_first_fetch=is_first_fetch
-        )
-        is_first_fetch = False
-
-        set_integration_context(last_run_obj._asdict())
         try:
-            if logs:
-                send_events_to_xsiam(logs[:10000], VENDOR, PRODUCT)
-        except Exception:
-            demisto.debug(
-                f"Failed to send events to XSOAR. Error: {traceback.format_exc()}"
-            )
+            if is_first_fetch:
+                integration_context = get_integration_context().get("last_run")
+                last_run_obj = (
+                    LastRun(**integration_context) if integration_context else LastRun()
+                )
+            else:
+                last_run_obj = last_run_obj
 
+            logs, last_run_obj = get_events_command(
+                client, args, last_run_obj, is_first_fetch=is_first_fetch
+            )
+            is_first_fetch = False
+
+            set_integration_context(last_run_obj._asdict())
+            integration_context_for_debug = get_integration_context()
+            demisto.debug(f"{integration_context_for_debug=}")
+            try:
+                if logs:
+                    send_events_to_xsiam(logs[:10000], VENDOR, PRODUCT)
+            except Exception:
+                demisto.debug(
+                    f"Failed to send events to XSOAR. Error: {traceback.format_exc()}"
+                )
+        except Exception as e:
+            demisto.debug(f"Failed to fetch logs from API. Error: {e}")
         time.sleep(FETCH_SLEEP)
 
 
@@ -393,6 +401,7 @@ def main() -> None:  # pragma: no cover
                 CommandResults(readable_output=tableToMarkdown("Events:", t))
             )
         if command == "long-running-execution":
+            demisto.debug("Starting long running execution")
             perform_long_running_loop(client, args, True)
         elif command == "fetch-events":
             should_push_events = False
