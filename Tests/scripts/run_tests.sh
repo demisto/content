@@ -19,17 +19,21 @@ CONF_PATH="./Tests/conf.json"
 echo "export GOOGLE_APPLICATION_CREDENTIALS=$GCS_ARTIFACTS_KEY" >> "${BASH_ENV}"
 source "${BASH_ENV}"
 
-echo "Running server tests on Instance role:${INSTANCE_ROLE}, nightly:${IS_NIGHTLY}, AMI run:${IS_AMI_RUN} mem check:${MEM_CHECK}"
+echo "Running server tests on Instance role:${INSTANCE_ROLE}, nightly:${IS_NIGHTLY}, AMI run:${IS_AMI_RUN} mem check:${MEM_CHECK} ARTIFACTS_FOLDER:${ARTIFACTS_FOLDER}"
 
 exit_code=0
 if [[ "${INSTANCE_ROLE}" == "XSIAM" ]]; then
   if [ -n "${CLOUD_CHOSEN_MACHINE_IDS}" ]; then
     IFS=', ' read -r -a CLOUD_CHOSEN_MACHINE_ID_ARRAY <<< "${CLOUD_CHOSEN_MACHINE_IDS}"
     for CLOUD_CHOSEN_MACHINE_ID in "${CLOUD_CHOSEN_MACHINE_ID_ARRAY[@]}"; do
-      demisto-sdk test-content -k "$DEMISTO_API_KEY" -c "$CONF_PATH" -e "$SECRET_CONF_PATH" -n $IS_NIGHTLY -t "$SLACK_TOKEN" -a "$CIRCLECI_TOKEN" -b "$CI_BUILD_ID" -g "$CI_COMMIT_BRANCH" -m "$MEM_CHECK" --is-ami $IS_AMI_RUN -d "${INSTANCE_ROLE}" --xsiam-machine "${CLOUD_CHOSEN_MACHINE_ID}" --xsiam-servers-path "$CLOUD_SERVERS_PATH" --server-type "$SERVER_TYPE" --use-retries --xsiam-servers-api-keys-path "cloud_api_keys.json"
-      if [ $? -ne 0 ]; then
+      demisto-sdk test-content -k "$DEMISTO_API_KEY" -c "$CONF_PATH" -e "$SECRET_CONF_PATH" -n "${IS_NIGHTLY}" -t "$SLACK_TOKEN" \
+        -a "$CIRCLECI_TOKEN" -b "$CI_BUILD_ID" -g "$CI_COMMIT_BRANCH" -m "${MEM_CHECK}" --is-ami "${IS_AMI_RUN}" -d "${INSTANCE_ROLE}" \
+        --xsiam-machine "${CLOUD_CHOSEN_MACHINE_ID}" --xsiam-servers-path "$CLOUD_SERVERS_PATH" --server-type "$SERVER_TYPE" \
+        --use-retries --xsiam-servers-api-keys-path "cloud_api_keys.json" --artifacts_path "${ARTIFACTS_FOLDER}"
+      command_exit_code=$?
+      if [ "${command_exit_code}" -ne 0 ]; then
         exit_code=1
-        echo "Failed to test content on cloud machine:${CLOUD_CHOSEN_MACHINE_ID}"
+        echo "Failed to run test content on cloud machine:${CLOUD_CHOSEN_MACHINE_ID} with exit code:${command_exit_code}"
       fi
     done
   else
@@ -37,8 +41,12 @@ if [[ "${INSTANCE_ROLE}" == "XSIAM" ]]; then
     exit_code=1
   fi
 else
-    demisto-sdk test-content -k "$DEMISTO_API_KEY" -c "$CONF_PATH" -e "$SECRET_CONF_PATH" -n $IS_NIGHTLY -t "$SLACK_TOKEN" -a "$CIRCLECI_TOKEN" -b "$CI_BUILD_ID" -g "$CI_COMMIT_BRANCH" -m "$MEM_CHECK" --is-ami $IS_AMI_RUN -d "${INSTANCE_ROLE}" --xsiam-machine "${CLOUD_CHOSEN_MACHINE_ID}" --xsiam-servers-path "$CLOUD_SERVERS_PATH" --server-type "$SERVER_TYPE" --use-retries --xsiam-servers-api-keys-path "cloud_api_keys.json"
+    demisto-sdk test-content -k "$DEMISTO_API_KEY" -c "$CONF_PATH" -e "$SECRET_CONF_PATH" -n "${IS_NIGHTLY}" -t "$SLACK_TOKEN" \
+      -a "$CIRCLECI_TOKEN" -b "$CI_BUILD_ID" -g "$CI_COMMIT_BRANCH" -m "${MEM_CHECK}" --is-ami "${IS_AMI_RUN}" -d "${INSTANCE_ROLE}" \
+      --xsiam-machine "${CLOUD_CHOSEN_MACHINE_ID}" --xsiam-servers-path "$CLOUD_SERVERS_PATH" --server-type "$SERVER_TYPE" \
+      --use-retries --xsiam-servers-api-keys-path "cloud_api_keys.json" --artifacts_path "${ARTIFACTS_FOLDER}"
     exit_code=$?
+    echo "Failed to run test content with exit code:${command_exit_code}"
 fi
 
 if [ "${exit_code}" -eq 0 ]; then
@@ -47,7 +55,7 @@ if [ "${exit_code}" -eq 0 ]; then
   echo "Build passed for role: ${INSTANCE_ROLE} writing it passed to artifacts folder in file: ${filepath}"
   touch "${filepath}"
 else
-  echo "Build failed for role: ${INSTANCE_ROLE}"
+  echo "Build failed for role: ${INSTANCE_ROLE} with exit code: ${exit_code}"
 fi
 
 if [[ "${IS_NIGHTLY}" == "true" ]]; then
