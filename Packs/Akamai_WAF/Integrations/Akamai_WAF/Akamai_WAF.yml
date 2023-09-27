@@ -492,7 +492,7 @@ script:
       type: textArea
     - auto: PREDEFINED
       description: RSA or ECDSA
-      name: keyAlgorithm
+      name: key_algorithm
       predefined:
       - RSA
       - ECDSA
@@ -1334,7 +1334,7 @@ script:
     - contextPath: Akamai.SiteShieldMaps
       description: Akamai SiteShield Maps
   - arguments:
-    - description: Unique Identifier of the Enrollment on which to perform the desired operation.
+    - description: Unique Identifier of the Enrollment on which to perform the desired operation. And it can be retrived via list_enrollments_command
       name: enrollment_id
       required: true
     - auto: PREDEFINED
@@ -1345,6 +1345,9 @@ script:
       - staging
     description: 'Returns the certification/Enarollment deployment status for specific a environtment: production or staging.'
     name: akamai-get-cps-enrollment-deployment
+    outputs:
+    - contextPath: Akamai.Cps.Enrollments.Deployment
+      description: Akamai Cps Enrollments Deployment
   - arguments:
     - auto: PREDEFINED
       description: Whether a CIDR block was added, updated, or removed from service. You can use this parameter as a sorting mechanism and return only CIDR blocks with a change status of add, update, or delete. Note that a status of delete means the CIDR block is no longer in service, and you can remove it from your firewall rules.
@@ -1364,7 +1367,7 @@ script:
     - contextPath: Akamai.CidrBlocks
       description: A List of CIDR Blocks
   - arguments:
-    - description: Enrollment on which to perform the desired operation.
+    - description: Enrollment on which to perform the desired operation. And it can be retrived via list_enrollments_command
       name: enrollment_id
       required: true
     - description: the modification(s) to the enrollment in the dict format.
@@ -1395,9 +1398,9 @@ script:
   - arguments:
     - description: Enrollment path found in the pending change location field.
       name: enrollment_path
-    - description: Enrollment ID on which to perform the desired operation.
+    - description: Enrollment ID on which to perform the desired operation. And it can be retrived via list_enrollments_command
       name: enrollment_id
-    - description: Chnage ID on which to perform the desired operation.
+    - description: Chnage ID on which to perform the desired operation. And it can be retrived via list_enrollments_command
       name: change_id
     - description: 'The time after when the change will no longer be in effect.             This value is an ISO-8601 timestamp. (UTC)             Sample: 2021-01-31T00:00:00.000Z'
       name: deploy_not_after
@@ -1411,12 +1414,14 @@ script:
   - arguments:
     - description: ' Enrollment path found in the pending change location field'
       name: enrollment_path
-    - description: The change for this enrollment on which to perform the desired operation.
+    - description: The enrollment ID on which to perform the desired operation. And it can be retrived via list_enrollments_command
       name: enrollment_id
-    - description: The change for this enrollment on which to perform the desired operation.
+    - description: The change for this enrollment on which to perform the desired operation.  And it can be retrived via list_enrollments_command
       name: change_id
     description: Gets the status of a pending change.
     name: akamai-get-cps-change-status
+    outputs:
+    - contextPath: Akamai.Enrollments.Change.Status
   dockerimage: demisto/akamai:1.0.0.73558
   script: ''
   subtype: python3
