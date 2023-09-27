@@ -2391,6 +2391,33 @@ script:
     - type: String
       contextPath: WAB.service_get.url
       description: The API URL to the resource.
+  - name: wab-add-service-in-device
+    description: Add a service in a device.
+    arguments:
+    - name: device_id
+      description: The device id or name.
+      required: true
+    - name: service_post_id
+      description: The service id. Usable in the "sort" parameter.
+    - name: service_post_service_name
+      description: The service name. Must start with a letter; only letters, digits and -_ are allowed. Usable in the "sort" parameter. / The service name. Must start with a letter; only letters, digits and -_ are allowed. Usable in the "q" parameter. Usable in the "sort" parameter.
+      required: true
+    - name: service_post_protocol
+      description: "The protocol. Usable in the \"sort\" parameter. / The protocol. Usable in the \"q\" parameter. Usable in the \"sort\" parameter."
+      required: true
+    - name: service_post_port
+      description: The port number. Usable in the "sort" parameter. / The port number. Usable in the "q" parameter. Usable in the "sort" parameter.
+      required: true
+    - name: service_post_subprotocols
+      description: The sub protocols.
+      required: true
+      isArray: true
+    - name: service_post_connection_policy
+      description: The connection policy name. Usable in the "q" parameter. Usable in the "sort" parameter.
+      required: true
+    - name: service_post_global_domains
+      description: The global domains names.
+      isArray: true
   - name: wab-get-service-of-device
     description: Get the service of a device.
     arguments:
@@ -2405,16 +2432,16 @@ script:
     outputs:
     - type: String
       contextPath: WAB.service_get.id
-      description: 'The service id. Usable in the "sort" parameter.'
+      description: The service id. Usable in the "sort" parameter.
     - type: String
       contextPath: WAB.service_get.service_name
       description: The service name. Must start with a letter; only letters, digits and -_ are allowed. Usable in the "sort" parameter. / The service name. Must start with a letter; only letters, digits and -_ are allowed. Usable in the "q" parameter. Usable in the "sort" parameter.
     - type: String
       contextPath: WAB.service_get.protocol
-      description: 'The protocol. Usable in the "sort" parameter. / The protocol. Usable in the "q" parameter. Usable in the "sort" parameter.'
+      description: The protocol. Usable in the "sort" parameter. / The protocol. Usable in the "q" parameter. Usable in the "sort" parameter.
     - type: Number
       contextPath: WAB.service_get.port
-      description: 'The port number. Usable in the "sort" parameter. / The port number. Usable in the "q" parameter. Usable in the "sort" parameter.'
+      description: The port number. Usable in the "sort" parameter. / The port number. Usable in the "q" parameter. Usable in the "sort" parameter.
     - type: String
       contextPath: WAB.service_get.connection_policy
       description: The connection policy name. Usable in the "q" parameter. Usable in the "sort" parameter.
@@ -2434,13 +2461,13 @@ script:
       description: The service id or name to edit.
       required: true
     - name: force
-      description: The default value is false. When it is set to true the values of the subprotocols, global_domains and additional_interfaces are replaced, otherwise the values are added to the existing ones.
+      description: 'The default value is false. When it is set to true the values of the subprotocols, global_domains and additional_interfaces are replaced, otherwise the values are added to the existing ones.'
     - name: service_put_port
       description: The port number.
     - name: service_put_connection_policy
-      description: The connection policy name.
+      description: "The connection policy name."
     - name: service_put_global_domains
-      description: 'The global domains names.'
+      description: The global domains names.
       isArray: true
   - name: wab-delete-service-from-device
     description: Delete a service from a device.
@@ -2449,7 +2476,7 @@ script:
       description: The device id or name.
       required: true
     - name: service_id
-      description: The service id or name.
+      description: 'The service id or name.'
       required: true
   - name: wab-get-devices
     description: Get the devices.
@@ -2605,7 +2632,7 @@ script:
       description: A device id or name. If specified, only this device is returned.
       required: true
     - name: fields
-      description: The list of fields to return (separated by commas). By default all fields are returned.
+      description: 'The list of fields to return (separated by commas). By default all fields are returned.'
     outputs:
     - type: String
       contextPath: WAB.device_get.id
@@ -2734,11 +2761,11 @@ script:
       description: The device id or name to edit.
       required: true
     - name: force
-      description: 'The default value is false. When it is set to true the values of the tags are replaced, otherwise the values are added to the existing ones.'
+      description: The default value is false. When it is set to true the values of the tags are replaced, otherwise the values are added to the existing ones.
     - name: device_put_device_name
       description: The device name. \ /:*?"<>|@ and space are forbidden.
     - name: device_put_description
-      description: "The device description."
+      description: The device description.
     - name: device_put_alias
       description: The device alias. \ /:*?"<>|@ and space are forbidden.
     - name: device_put_host
@@ -2753,163 +2780,6 @@ script:
       required: true
   - name: wab-get-accounts-of-global-domain
     description: Get the accounts of a global domain.
-    arguments:
-    - name: domain_id
-      description: The global domain id or name.
-      required: true
-    - name: q
-      description: 'Searches for a resource matching parameters.'
-    - name: offset
-      description: The index of first item to retrieve (starts and defaults to 0).
-    - name: limit
-      description: 'The number of items to retrieve (100 by default, -1 = no limit). Note: this default value of 100 can be changed in the REST API configuration option.'
-    - name: fields
-      description: The list of fields to return (separated by commas). By default all fields are returned.
-    outputs:
-    - type: String
-      contextPath: WAB.domain_account_get.id
-      description: 'The account id. Usable in the "q" parameter. Usable in the "sort" parameter.'
-    - type: String
-      contextPath: WAB.domain_account_get.account_name
-      description: 'The account name. /:*?"<>|@ and space are forbidden. Usable in the "q" parameter. Usable in the "sort" parameter.'
-    - type: String
-      contextPath: WAB.domain_account_get.account_login
-      description: The account login. Usable in the "q" parameter. Usable in the "sort" parameter.
-    - type: String
-      contextPath: WAB.domain_account_get.description
-      description: The account description. Usable in the "q" parameter. Usable in the "sort" parameter.
-    - type: String
-      contextPath: WAB.domain_account_get.credentials.id
-      description: 'The credential id.'
-    - type: String
-      contextPath: WAB.domain_account_get.credentials.type
-      description: The credential type.
-    - type: String
-      contextPath: WAB.domain_account_get.credentials.password
-      description: The account password.
-    - type: String
-      contextPath: WAB.domain_account_get.credentials.private_key
-      description: 'The account private key. Special values are allowed to automatically generate SSH key: "generate:RSA_1024", "generate:RSA_2048", "generate:RSA_4096", "generate:RSA_8192", "generate:DSA_1024", "generate:ECDSA_256", "generate:ECDSA_384", "generate:ECDSA_521", "generate:ED25519".'
-    - type: String
-      contextPath: WAB.domain_account_get.credentials.passphrase
-      description: The passphrase for the private key (only for an encrypted private key). If provided, it must be between 4 and 1024 characters long.
-    - type: String
-      contextPath: WAB.domain_account_get.credentials.public_key
-      description: The account public key.
-    - type: String
-      contextPath: WAB.domain_account_get.credentials.key_type
-      description: The key type.
-    - type: Number
-      contextPath: WAB.domain_account_get.credentials.key_len
-      description: The key length.
-    - type: String
-      contextPath: WAB.domain_account_get.credentials.key_id
-      description: 'The key identity: random value used for revocation.'
-    - type: String
-      contextPath: WAB.domain_account_get.credentials.certificate
-      description: The certificate.
-    - type: Boolean
-      contextPath: WAB.domain_account_get.domain_password_change
-      description: True if the password change is configured on the domain (change policy and plugin are set).
-    - type: Boolean
-      contextPath: WAB.domain_account_get.auto_change_password
-      description: Automatically change the password. It is enabled by default on a new account. Usable in the "q" parameter. Usable in the "sort" parameter.
-    - type: Boolean
-      contextPath: WAB.domain_account_get.auto_change_ssh_key
-      description: Automatically change the ssh key. It is enabled by default on a new account. Usable in the "q" parameter. Usable in the "sort" parameter.
-    - type: String
-      contextPath: WAB.domain_account_get.checkout_policy
-      description: The account checkout policy. Usable in the "q" parameter.
-    - type: String
-      contextPath: WAB.domain_account_get.certificate_validity
-      description: The validity duration of the signed ssh public key in the case a Certificate Authority is defined for the account's domain Usable in the "q" parameter. Usable in the "sort" parameter.
-    - type: Boolean
-      contextPath: WAB.domain_account_get.can_edit_certificate_validity
-      description: True if the field 'certificate_validity' can be edited based the availibility of CA certificate on the account's domain, false otherwise Usable in the "q" parameter. Usable in the "sort" parameter.
-    - type: String
-      contextPath: WAB.domain_account_get.onboard_status
-      description: Onboarding status of the account Usable in the "q" parameter. Usable in the "sort" parameter.
-    - type: String
-      contextPath: WAB.domain_account_get.first_seen.id
-      description: The scan job id.
-    - type: String
-      contextPath: WAB.domain_account_get.first_seen.type
-      description: Scan type.
-    - type: String
-      contextPath: WAB.domain_account_get.first_seen.error
-      description: Error message.
-    - type: String
-      contextPath: WAB.domain_account_get.first_seen.status
-      description: Scan job status.
-    - type: String
-      contextPath: WAB.domain_account_get.first_seen.start
-      description: Scan job start timestamp.
-    - type: String
-      contextPath: WAB.domain_account_get.first_seen.end
-      description: Scan job end timestamp.
-    - type: String
-      contextPath: WAB.domain_account_get.last_seen.id
-      description: The scan job id.
-    - type: String
-      contextPath: WAB.domain_account_get.last_seen.type
-      description: Scan type.
-    - type: String
-      contextPath: WAB.domain_account_get.last_seen.error
-      description: Error message.
-    - type: String
-      contextPath: WAB.domain_account_get.last_seen.status
-      description: Scan job status.
-    - type: String
-      contextPath: WAB.domain_account_get.last_seen.start
-      description: Scan job start timestamp.
-    - type: String
-      contextPath: WAB.domain_account_get.last_seen.end
-      description: Scan job end timestamp.
-    - type: String
-      contextPath: WAB.domain_account_get.url
-      description: The API URL to the resource.
-    - type: String
-      contextPath: WAB.domain_account_get.resources
-      description: The account resources.
-  - name: wab-add-account-in-global-domain
-    description: Add an account in a global domain.
-    arguments:
-    - name: domain_id
-      description: The global domain id or name.
-      required: true
-    - name: domain_account_post_account_name
-      description: The account name. /:*?"<>|@ and space are forbidden.
-      required: true
-    - name: domain_account_post_account_login
-      description: The account login.
-      required: true
-    - name: domain_account_post_description
-      description: The account description.
-    - name: domain_account_post_auto_change_password
-      description: Automatically change the password. It is enabled by default on a new account.
-    - name: domain_account_post_auto_change_ssh_key
-      description: Automatically change the ssh key. It is enabled by default on a new account.
-    - name: domain_account_post_checkout_policy
-      description: The account checkout policy.
-      required: true
-    - name: domain_account_post_certificate_validity
-      description: The validity duration of the signed ssh public key in the case a Certificate Authority is defined for the account's domain.
-    - name: domain_account_post_can_edit_certificate_validity
-      description: True if the field 'certificate_validity' can be edited based the availibility of CA certificate on the account's domain, false otherwise.
-    - name: domain_account_post_resources
-      description: The account resources.
-      isArray: true
-  - name: wab-get-account-of-global-domain
-    description: Get the account of a global domain.
-    arguments:
-    - name: domain_id
-      description: The global domain id or name.
-      required: true
-    - name: account_id
-      description: The account id or name.
-      required: true
-    - name: fields
-      description: The list of fields to return (separated by commas). By default all fields are returned.
     outputs:
     - type: String
       contextPath: WAB.domain_account_get.id
@@ -3016,6 +2886,163 @@ script:
     - type: String
       contextPath: WAB.domain_account_get.resources
       description: The account resources.
+    arguments:
+    - name: domain_id
+      description: The global domain id or name.
+      required: true
+    - name: q
+      description: Searches for a resource matching parameters.
+    - name: offset
+      description: The index of first item to retrieve (starts and defaults to 0).
+    - name: limit
+      description: 'The number of items to retrieve (100 by default, -1 = no limit). Note: this default value of 100 can be changed in the REST API configuration option.'
+    - name: fields
+      description: The list of fields to return (separated by commas). By default all fields are returned.
+  - name: wab-add-account-in-global-domain
+    description: Add an account in a global domain.
+    arguments:
+    - name: domain_id
+      description: The global domain id or name.
+      required: true
+    - name: domain_account_post_account_name
+      description: The account name. /:*?"<>|@ and space are forbidden.
+      required: true
+    - name: domain_account_post_account_login
+      description: The account login.
+      required: true
+    - name: domain_account_post_description
+      description: The account description.
+    - name: domain_account_post_auto_change_password
+      description: Automatically change the password. It is enabled by default on a new account.
+    - name: domain_account_post_auto_change_ssh_key
+      description: Automatically change the ssh key. It is enabled by default on a new account.
+    - name: domain_account_post_checkout_policy
+      description: The account checkout policy.
+      required: true
+    - name: domain_account_post_certificate_validity
+      description: The validity duration of the signed ssh public key in the case a Certificate Authority is defined for the account's domain.
+    - name: domain_account_post_can_edit_certificate_validity
+      description: True if the field 'certificate_validity' can be edited based the availibility of CA certificate on the account's domain, false otherwise.
+    - name: domain_account_post_resources
+      description: The account resources.
+      isArray: true
+  - name: wab-get-account-of-global-domain
+    description: Get the account of a global domain.
+    arguments:
+    - name: domain_id
+      description: The global domain id or name.
+      required: true
+    - name: account_id
+      description: The account id or name.
+      required: true
+    - name: fields
+      description: "The list of fields to return (separated by commas). By default all fields are returned."
+    outputs:
+    - type: String
+      contextPath: WAB.domain_account_get.id
+      description: The account id. Usable in the "q" parameter. Usable in the "sort" parameter.
+    - type: String
+      contextPath: WAB.domain_account_get.account_name
+      description: The account name. /:*?"<>|@ and space are forbidden. Usable in the "q" parameter. Usable in the "sort" parameter.
+    - type: String
+      contextPath: WAB.domain_account_get.account_login
+      description: The account login. Usable in the "q" parameter. Usable in the "sort" parameter.
+    - type: String
+      contextPath: WAB.domain_account_get.description
+      description: 'The account description. Usable in the "q" parameter. Usable in the "sort" parameter.'
+    - type: String
+      contextPath: WAB.domain_account_get.credentials.id
+      description: The credential id.
+    - type: String
+      contextPath: WAB.domain_account_get.credentials.type
+      description: The credential type.
+    - type: String
+      contextPath: WAB.domain_account_get.credentials.password
+      description: The account password.
+    - type: String
+      contextPath: WAB.domain_account_get.credentials.private_key
+      description: 'The account private key. Special values are allowed to automatically generate SSH key: "generate:RSA_1024", "generate:RSA_2048", "generate:RSA_4096", "generate:RSA_8192", "generate:DSA_1024", "generate:ECDSA_256", "generate:ECDSA_384", "generate:ECDSA_521", "generate:ED25519".'
+    - type: String
+      contextPath: WAB.domain_account_get.credentials.passphrase
+      description: The passphrase for the private key (only for an encrypted private key). If provided, it must be between 4 and 1024 characters long.
+    - type: String
+      contextPath: WAB.domain_account_get.credentials.public_key
+      description: The account public key.
+    - type: String
+      contextPath: WAB.domain_account_get.credentials.key_type
+      description: The key type.
+    - type: Number
+      contextPath: WAB.domain_account_get.credentials.key_len
+      description: The key length.
+    - type: String
+      contextPath: WAB.domain_account_get.credentials.key_id
+      description: 'The key identity: random value used for revocation.'
+    - type: String
+      contextPath: WAB.domain_account_get.credentials.certificate
+      description: The certificate.
+    - type: Boolean
+      contextPath: WAB.domain_account_get.domain_password_change
+      description: True if the password change is configured on the domain (change policy and plugin are set).
+    - type: Boolean
+      contextPath: WAB.domain_account_get.auto_change_password
+      description: Automatically change the password. It is enabled by default on a new account. Usable in the "q" parameter. Usable in the "sort" parameter.
+    - type: Boolean
+      contextPath: WAB.domain_account_get.auto_change_ssh_key
+      description: Automatically change the ssh key. It is enabled by default on a new account. Usable in the "q" parameter. Usable in the "sort" parameter.
+    - type: String
+      contextPath: WAB.domain_account_get.checkout_policy
+      description: The account checkout policy. Usable in the "q" parameter.
+    - type: String
+      contextPath: WAB.domain_account_get.certificate_validity
+      description: The validity duration of the signed ssh public key in the case a Certificate Authority is defined for the account's domain Usable in the "q" parameter. Usable in the "sort" parameter.
+    - type: Boolean
+      contextPath: WAB.domain_account_get.can_edit_certificate_validity
+      description: True if the field 'certificate_validity' can be edited based the availibility of CA certificate on the account's domain, false otherwise Usable in the "q" parameter. Usable in the "sort" parameter.
+    - type: String
+      contextPath: WAB.domain_account_get.onboard_status
+      description: Onboarding status of the account Usable in the "q" parameter. Usable in the "sort" parameter.
+    - type: String
+      contextPath: WAB.domain_account_get.first_seen.id
+      description: The scan job id.
+    - type: String
+      contextPath: WAB.domain_account_get.first_seen.type
+      description: Scan type.
+    - type: String
+      contextPath: WAB.domain_account_get.first_seen.error
+      description: Error message.
+    - type: String
+      contextPath: WAB.domain_account_get.first_seen.status
+      description: Scan job status.
+    - type: String
+      contextPath: WAB.domain_account_get.first_seen.start
+      description: Scan job start timestamp.
+    - type: String
+      contextPath: WAB.domain_account_get.first_seen.end
+      description: Scan job end timestamp.
+    - type: String
+      contextPath: WAB.domain_account_get.last_seen.id
+      description: The scan job id.
+    - type: String
+      contextPath: WAB.domain_account_get.last_seen.type
+      description: Scan type.
+    - type: String
+      contextPath: WAB.domain_account_get.last_seen.error
+      description: Error message.
+    - type: String
+      contextPath: WAB.domain_account_get.last_seen.status
+      description: Scan job status.
+    - type: String
+      contextPath: WAB.domain_account_get.last_seen.start
+      description: Scan job start timestamp.
+    - type: String
+      contextPath: WAB.domain_account_get.last_seen.end
+      description: Scan job end timestamp.
+    - type: String
+      contextPath: WAB.domain_account_get.url
+      description: The API URL to the resource.
+    - type: String
+      contextPath: WAB.domain_account_get.resources
+      description: The account resources.
   - name: wab-edit-account-in-global-domain
     description: Edit an account in a global domain.
     arguments:
@@ -3023,14 +3050,14 @@ script:
       description: The global domain id or name.
       required: true
     - name: account_id
-      description: The account id or name to edit.
+      description: "The account id or name to edit."
       required: true
     - name: force
-      description: "The default value is false. When it is set to true the values of the credentials and services, if they are supplied, are replaced, otherwise the values are added to the existing ones."
+      description: The default value is false. When it is set to true the values of the credentials and services, if they are supplied, are replaced, otherwise the values are added to the existing ones.
     - name: domain_account_put_account_name
       description: The account name. /:*?"<>|@ and space are forbidden.
     - name: domain_account_put_account_login
-      description: The account login.
+      description: "The account login."
     - name: domain_account_put_description
       description: The account description.
     - name: domain_account_put_auto_change_password
@@ -3055,7 +3082,7 @@ script:
       description: The global domain id or name.
       required: true
     - name: account_id
-      description: "The account id or name to delete."
+      description: The account id or name to delete.
       required: true
   - name: wab-delete-resource-from-global-domain-account
     description: delete a resource from the global domain account.
@@ -3135,10 +3162,10 @@ script:
     description: Get the global domain.
     arguments:
     - name: domain_id
-      description: A global domain id or name. If specified, only this domain is returned.
+      description: "A global domain id or name. If specified, only this domain is returned."
       required: true
     - name: fields
-      description: 'The list of fields to return (separated by commas). By default all fields are returned.'
+      description: "The list of fields to return (separated by commas). By default all fields are returned."
     outputs:
     - type: String
       contextPath: WAB.domain_get.id
@@ -3192,25 +3219,25 @@ script:
     description: Get the LDAP users of a given domain.
     arguments:
     - name: domain
-      description: "A LDAP domain name. All users in this domain are returned."
+      description: 'A LDAP domain name. All users in this domain are returned.'
       required: true
     - name: last_connection
       description: 'If set to true, the date of last connection is returned for each user returned. Be careful: this can slow down the request if a lot of users are returned.'
     - name: q
       description: Searches for a resource matching parameters.
     - name: offset
-      description: 'The index of first item to retrieve (starts and defaults to 0).'
+      description: The index of first item to retrieve (starts and defaults to 0).
     - name: limit
       description: 'The number of items to retrieve (100 by default, -1 = no limit). Note: this default value of 100 can be changed in the REST API configuration option.'
     - name: fields
-      description: "The list of fields to return (separated by commas). By default all fields are returned."
+      description: The list of fields to return (separated by commas). By default all fields are returned.
     outputs:
     - type: String
       contextPath: WAB.ldapuser_get.user_name
       description: The user name.
     - type: String
       contextPath: WAB.ldapuser_get.login
-      description: The user login.
+      description: 'The user login.'
     - type: String
       contextPath: WAB.ldapuser_get.display_name
       description: The displayed name. Usable in the "sort" parameter.
@@ -3237,15 +3264,15 @@ script:
       description: 'The last connection of this user (format: "yyyy-mm-dd hh:mm:ss", returned only if query string parameter "last_connection" is set to true).'
     - type: String
       contextPath: WAB.ldapuser_get.url
-      description: The API URL to the resource.
+      description: "The API URL to the resource."
   - name: wab-get-ldap-user-of-domain
     description: Get the LDAP user of a given domain.
     arguments:
     - name: domain
-      description: 'A LDAP domain name. All users in this domain are returned.'
+      description: A LDAP domain name. All users in this domain are returned.
       required: true
     - name: user_name
-      description: 'A user name. If specified, only this user is returned.'
+      description: A user name. If specified, only this user is returned.
       required: true
     - name: last_connection
       description: 'If set to true, the date of last connection is returned for each user returned. Be careful: this can slow down the request if a lot of users are returned.'
@@ -3284,7 +3311,7 @@ script:
       description: 'The last connection of this user (format: "yyyy-mm-dd hh:mm:ss", returned only if query string parameter "last_connection" is set to true).'
     - type: String
       contextPath: WAB.ldapuser_get.url
-      description: "The API URL to the resource."
+      description: The API URL to the resource.
   - name: wab-get-information-about-wallix-bastion-license
     description: Get information about the WALLIX Bastion license.
     outputs:
@@ -3293,10 +3320,10 @@ script:
       description: License is the default evaluation license.
     - type: Boolean
       contextPath: WAB.licenseinfo_get.revoked
-      description: 'Licenses are revoked.'
+      description: Licenses are revoked.
     - type: Boolean
       contextPath: WAB.licenseinfo_get.legacy
-      description: License is of legacy type.
+      description: 'License is of legacy type.'
     - type: String
       contextPath: WAB.licenseinfo_get.product_name
       description: Licensed product name.
@@ -3317,7 +3344,7 @@ script:
       description: Clustering 3+ nodes option is enabled.
     - type: Boolean
       contextPath: WAB.licenseinfo_get.data_leak_prevention
-      description: "Data leak prevention option is enabled."
+      description: Data leak prevention option is enabled.
     - type: Boolean
       contextPath: WAB.licenseinfo_get.itsm
       description: Information technology service management option is enabled.
@@ -3332,7 +3359,7 @@ script:
       description: Session manager is enabled.
     - type: Boolean
       contextPath: WAB.licenseinfo_get.siem_enabled
-      description: 'SIEM / Remote Syslog option is enabled.'
+      description: SIEM / Remote Syslog option is enabled.
     - type: Boolean
       contextPath: WAB.licenseinfo_get.externvault_enabled
       description: External Vaults option is enabled.
@@ -3397,7 +3424,7 @@ script:
       description: The application name.
       required: true
     - name: logsiem_post_message
-      description: The message to write.
+      description: 'The message to write.'
       required: true
   - name: wab-get-notifications
     description: Get the notifications.
@@ -3419,7 +3446,7 @@ script:
       description: The notification name. Usable in the "q" parameter. Usable in the "sort" parameter.
     - type: String
       contextPath: WAB.notification_get.description
-      description: 'The notification description. Usable in the "q" parameter. Usable in the "sort" parameter.'
+      description: The notification description. Usable in the "q" parameter. Usable in the "sort" parameter.
     - type: Boolean
       contextPath: WAB.notification_get.enabled
       description: Notification is enabled. Usable in the "q" parameter. Usable in the "sort" parameter.
@@ -3534,11 +3561,11 @@ script:
       description: 'The desired object status, one of: ''to_onboard'', ''hide''.'
       required: true
     - name: q
-      description: Searches for a resource matching parameters.
+      description: 'Searches for a resource matching parameters.'
     - name: sort
       description: 'Comma-separated list of fields used to sort results; a field starting "-" reverses the order. The default sort for this resource is: ''object name''.'
     - name: offset
-      description: The index of first item to retrieve (starts and defaults to 0).
+      description: "The index of first item to retrieve (starts and defaults to 0)."
     - name: limit
       description: 'The number of items to retrieve (100 by default, -1 = no limit). Note: this default value of 100 can be changed in the REST API configuration option.'
     - name: fields
@@ -3600,114 +3627,9 @@ script:
     - name: sort
       description: 'Comma-separated list of fields used to sort results; a field starting "-" reverses the order. The default sort for this resource is: ''profile_name''.'
     - name: offset
-      description: 'The index of first item to retrieve (starts and defaults to 0).'
+      description: The index of first item to retrieve (starts and defaults to 0).
     - name: limit
       description: 'The number of items to retrieve (100 by default, -1 = no limit). Note: this default value of 100 can be changed in the REST API configuration option.'
-    - name: fields
-      description: "The list of fields to return (separated by commas). By default all fields are returned."
-    outputs:
-    - type: String
-      contextPath: WAB.profile_get.id
-      description: The profile id. Usable in the "q" parameter. Usable in the "sort" parameter.
-    - type: String
-      contextPath: WAB.profile_get.profile_name
-      description: The profile name. Usable in the "q" parameter. Usable in the "sort" parameter.
-    - type: String
-      contextPath: WAB.profile_get.description
-      description: The target group description. Usable in the "q" parameter. Usable in the "sort" parameter.
-    - type: String
-      contextPath: WAB.profile_get.gui_features.wab_audit
-      description: wab audit.
-    - type: String
-      contextPath: WAB.profile_get.gui_features.system_audit
-      description: system audit.
-    - type: String
-      contextPath: WAB.profile_get.gui_features.users
-      description: users.
-    - type: String
-      contextPath: WAB.profile_get.gui_features.user_groups
-      description: user groups.
-    - type: String
-      contextPath: WAB.profile_get.gui_features.devices
-      description: devices.
-    - type: String
-      contextPath: WAB.profile_get.gui_features.target_groups
-      description: target groups.
-    - type: String
-      contextPath: WAB.profile_get.gui_features.dashboards
-      description: dashboards.
-    - type: String
-      contextPath: WAB.profile_get.gui_features.authorizations
-      description: authorizations.
-    - type: String
-      contextPath: WAB.profile_get.gui_features.profiles
-      description: profiles.
-    - type: String
-      contextPath: WAB.profile_get.gui_features.wab_settings
-      description: wab settings.
-    - type: String
-      contextPath: WAB.profile_get.gui_features.system_settings
-      description: system settings.
-    - type: String
-      contextPath: WAB.profile_get.gui_features.backup
-      description: backup.
-    - type: String
-      contextPath: WAB.profile_get.gui_features.approval
-      description: approval.
-    - type: String
-      contextPath: WAB.profile_get.gui_features.credential_recovery
-      description: credential recovery.
-    - type: String
-      contextPath: WAB.profile_get.gui_transmission.system_audit
-      description: system audit.
-    - type: String
-      contextPath: WAB.profile_get.gui_transmission.users
-      description: users.
-    - type: String
-      contextPath: WAB.profile_get.gui_transmission.user_groups
-      description: user groups.
-    - type: String
-      contextPath: WAB.profile_get.gui_transmission.devices
-      description: devices.
-    - type: String
-      contextPath: WAB.profile_get.gui_transmission.target_groups
-      description: target groups.
-    - type: String
-      contextPath: WAB.profile_get.gui_transmission.authorizations
-      description: authorizations.
-    - type: String
-      contextPath: WAB.profile_get.gui_transmission.profiles
-      description: profiles.
-    - type: String
-      contextPath: WAB.profile_get.gui_transmission.wab_settings
-      description: wab settings.
-    - type: String
-      contextPath: WAB.profile_get.gui_transmission.system_settings
-      description: system settings.
-    - type: String
-      contextPath: WAB.profile_get.gui_transmission.backup
-      description: backup.
-    - type: String
-      contextPath: WAB.profile_get.gui_transmission.approval
-      description: approval.
-    - type: String
-      contextPath: WAB.profile_get.gui_transmission.credential_recovery
-      description: credential recovery.
-    - type: String
-      contextPath: WAB.profile_get.ip_limitation
-      description: 'The profile ip limitation. Format is an IPv4 address, subnet or host name, for example: 192.168.1.10/24 Usable in the "q" parameter. Usable in the "sort" parameter.'
-    - type: Boolean
-      contextPath: WAB.profile_get.target_access
-      description: Target access.
-    - type: String
-      contextPath: WAB.profile_get.url
-      description: The API URL to the resource.
-  - name: wab-get-profile
-    description: Get the profile.
-    arguments:
-    - name: profile_id
-      description: A profile id or name. If specified, only this profile is returned.
-      required: true
     - name: fields
       description: The list of fields to return (separated by commas). By default all fields are returned.
     outputs:
@@ -3807,11 +3729,116 @@ script:
     - type: String
       contextPath: WAB.profile_get.url
       description: The API URL to the resource.
+  - name: wab-get-profile
+    description: Get the profile.
+    arguments:
+    - name: profile_id
+      description: "A profile id or name. If specified, only this profile is returned."
+      required: true
+    - name: fields
+      description: 'The list of fields to return (separated by commas). By default all fields are returned.'
+    outputs:
+    - type: String
+      contextPath: WAB.profile_get.id
+      description: The profile id. Usable in the "q" parameter. Usable in the "sort" parameter.
+    - type: String
+      contextPath: WAB.profile_get.profile_name
+      description: The profile name. Usable in the "q" parameter. Usable in the "sort" parameter.
+    - type: String
+      contextPath: WAB.profile_get.description
+      description: The target group description. Usable in the "q" parameter. Usable in the "sort" parameter.
+    - type: String
+      contextPath: WAB.profile_get.gui_features.wab_audit
+      description: wab audit.
+    - type: String
+      contextPath: WAB.profile_get.gui_features.system_audit
+      description: system audit.
+    - type: String
+      contextPath: WAB.profile_get.gui_features.users
+      description: users.
+    - type: String
+      contextPath: WAB.profile_get.gui_features.user_groups
+      description: user groups.
+    - type: String
+      contextPath: WAB.profile_get.gui_features.devices
+      description: devices.
+    - type: String
+      contextPath: WAB.profile_get.gui_features.target_groups
+      description: target groups.
+    - type: String
+      contextPath: WAB.profile_get.gui_features.dashboards
+      description: dashboards.
+    - type: String
+      contextPath: WAB.profile_get.gui_features.authorizations
+      description: authorizations.
+    - type: String
+      contextPath: WAB.profile_get.gui_features.profiles
+      description: profiles.
+    - type: String
+      contextPath: WAB.profile_get.gui_features.wab_settings
+      description: wab settings.
+    - type: String
+      contextPath: WAB.profile_get.gui_features.system_settings
+      description: system settings.
+    - type: String
+      contextPath: WAB.profile_get.gui_features.backup
+      description: backup.
+    - type: String
+      contextPath: WAB.profile_get.gui_features.approval
+      description: approval.
+    - type: String
+      contextPath: WAB.profile_get.gui_features.credential_recovery
+      description: credential recovery.
+    - type: String
+      contextPath: WAB.profile_get.gui_transmission.system_audit
+      description: system audit.
+    - type: String
+      contextPath: WAB.profile_get.gui_transmission.users
+      description: users.
+    - type: String
+      contextPath: WAB.profile_get.gui_transmission.user_groups
+      description: user groups.
+    - type: String
+      contextPath: WAB.profile_get.gui_transmission.devices
+      description: devices.
+    - type: String
+      contextPath: WAB.profile_get.gui_transmission.target_groups
+      description: target groups.
+    - type: String
+      contextPath: WAB.profile_get.gui_transmission.authorizations
+      description: authorizations.
+    - type: String
+      contextPath: WAB.profile_get.gui_transmission.profiles
+      description: profiles.
+    - type: String
+      contextPath: WAB.profile_get.gui_transmission.wab_settings
+      description: wab settings.
+    - type: String
+      contextPath: WAB.profile_get.gui_transmission.system_settings
+      description: system settings.
+    - type: String
+      contextPath: WAB.profile_get.gui_transmission.backup
+      description: backup.
+    - type: String
+      contextPath: WAB.profile_get.gui_transmission.approval
+      description: approval.
+    - type: String
+      contextPath: WAB.profile_get.gui_transmission.credential_recovery
+      description: credential recovery.
+    - type: String
+      contextPath: WAB.profile_get.ip_limitation
+      description: 'The profile ip limitation. Format is an IPv4 address, subnet or host name, for example: 192.168.1.10/24 Usable in the "q" parameter. Usable in the "sort" parameter.'
+    - type: Boolean
+      contextPath: WAB.profile_get.target_access
+      description: Target access.
+    - type: String
+      contextPath: WAB.profile_get.url
+      description: The API URL to the resource.
   - name: wab-get-scanjobs
     description: Get the scanjobs.
     arguments:
     - name: q
-      description: "Searches for a resource matching parameters."
+      description: Searches for a resource matching parameters.
     - name: sort
       description: 'Comma-separated list of fields used to sort results; a field starting "-" reverses the order. The default sort for this resource is: ''scan_name''.'
     - name: offset
@@ -3852,17 +3879,17 @@ script:
       description: A scan job id or name. If specified, only this scan job is returned.
       required: true
     - name: fields
-      description: The list of fields to return (separated by commas). By default all fields are returned.
+      description: 'The list of fields to return (separated by commas). By default all fields are returned.'
     outputs:
     - type: String
       contextPath: WAB.scanjob_get.id
-      description: The scan job id. Usable in the "sort" parameter.
+      description: 'The scan job id. Usable in the "sort" parameter.'
     - type: String
       contextPath: WAB.scanjob_get.type
       description: Scan type Usable in the "q" parameter. Usable in the "sort" parameter.
     - type: String
       contextPath: WAB.scanjob_get.error
-      description: 'Error message.'
+      description: Error message.
     - type: String
       contextPath: WAB.scanjob_get.status
       description: Scan job status Usable in the "q" parameter. Usable in the "sort" parameter.
@@ -3871,18 +3898,18 @@ script:
       description: Scan job start timestamp. Usable in the "q" parameter. Usable in the "sort" parameter.
     - type: String
       contextPath: WAB.scanjob_get.end
-      description: 'Scan job end timestamp Usable in the "q" parameter. Usable in the "sort" parameter.'
+      description: Scan job end timestamp Usable in the "q" parameter. Usable in the "sort" parameter.
   - name: wab-cancel-scan-job
     description: Cancel a scan job.
     arguments:
     - name: scanjob_id
-      description: The scan id or name to edit.
+      description: "The scan id or name to edit."
       required: true
   - name: wab-get-scans
     description: Get the scans.
     arguments:
     - name: q
-      description: "Searches for a resource matching parameters."
+      description: Searches for a resource matching parameters.
     - name: sort
       description: 'Comma-separated list of fields used to sort results; a field starting "-" reverses the order. The default sort for this resource is: ''scan_name''.'
     - name: offset
@@ -3890,7 +3917,7 @@ script:
     - name: limit
       description: 'The number of items to retrieve (100 by default, -1 = no limit). Note: this default value of 100 can be changed in the REST API configuration option.'
     - name: fields
-      description: 'The list of fields to return (separated by commas). By default all fields are returned.'
+      description: The list of fields to return (separated by commas). By default all fields are returned.
     outputs:
     - type: String
       contextPath: WAB.scan_get.id
@@ -4000,7 +4027,7 @@ script:
       description: The account description. Usable in the "sort" parameter.
     - type: String
       contextPath: WAB.sessionrights_get.domain
-      description: The domain name. Usable in the "sort" parameter.
+      description: 'The domain name. Usable in the "sort" parameter.'
     - type: String
       contextPath: WAB.sessionrights_get.domain_description
       description: The domain description. Usable in the "sort" parameter.
@@ -4009,7 +4036,7 @@ script:
       description: The service name. Usable in the "sort" parameter.
     - type: String
       contextPath: WAB.sessionrights_get.service_protocol
-      description: The protocol name. Usable in the "sort" parameter.
+      description: 'The protocol name. Usable in the "sort" parameter.'
     - type: Boolean
       contextPath: WAB.sessionrights_get.authorization_approval
       description: True if an approval workflow is defined in the authorization, otherwise False. Usable in the "sort" parameter.
@@ -4053,7 +4080,7 @@ script:
       description: The account description. Usable in the "sort" parameter.
     - type: String
       contextPath: WAB.sessionrights_get.domain
-      description: 'The domain name. Usable in the "sort" parameter.'
+      description: The domain name. Usable in the "sort" parameter.
     - type: String
       contextPath: WAB.sessionrights_get.domain_description
       description: The domain description. Usable in the "sort" parameter.
@@ -4062,7 +4089,7 @@ script:
       description: The service name. Usable in the "sort" parameter.
     - type: String
       contextPath: WAB.sessionrights_get.service_protocol
-      description: 'The protocol name. Usable in the "sort" parameter.'
+      description: The protocol name. Usable in the "sort" parameter.
     - type: Boolean
       contextPath: WAB.sessionrights_get.authorization_approval
       description: True if an approval workflow is defined in the authorization, otherwise False. Usable in the "sort" parameter.
@@ -4090,7 +4117,7 @@ script:
     - name: session_id
       description: A session id. If specified, only this session is returned.
     - name: otp
-      description: User's OTP (One Time Password) If specified, only the session initiated with the provided OTP is returned.
+      description: 'User''s OTP (One Time Password) If specified, only the session initiated with the provided OTP is returned.'
     - name: status
       description: 'Status of sessions to return: "closed" for closed sessions (default) or "current" for current sessions.'
     - name: from_date
@@ -4287,37 +4314,37 @@ script:
     - name: action
       description: 'The action on the session: ''edit'' to edit the session (default), ''kill'' to kill the session.'
     - name: session_put_edit_description
-      description: The new session description.
+      description: 'The new session description.'
       required: true
   - name: wab-get-session-metadata
     description: Get the metadata of one or multiple sessions.
     arguments:
     - name: session_ids
-      description: The session id, multiple IDs can be separated by commas.
+      description: 'The session id, multiple IDs can be separated by commas.'
       required: true
     - name: download
-      description: The default value is false. When it is set to true, the session metadata is sent as a file instead of JSON (recommended for large metadata). The download is possible only with a single session id.
+      description: 'The default value is false. When it is set to true, the session metadata is sent as a file instead of JSON (recommended for large metadata). The download is possible only with a single session id.'
     outputs:
     - type: String
       contextPath: WAB.session_metadata_get.session_id
-      description: The session id.
+      description: 'The session id.'
     - type: String
       contextPath: WAB.session_metadata_get.metadata
-      description: The session metadata content.
+      description: 'The session metadata content.'
   - name: wab-get-session-sharing-requests
-    description: Get session sharing requests.
+    description: 'Get session sharing requests.'
     arguments:
     - name: request_id
-      description: 'A request id. If specified, only this request is returned.'
+      description: A request id. If specified, only this request is returned.
     - name: session_id
       description: 'A session id. If specified, only the request linked to this session is returned.'
     outputs:
     - type: String
       contextPath: WAB.session_request_get.id
-      description: 'The request id. Usable in the "sort" parameter.'
+      description: The request id. Usable in the "sort" parameter.
     - type: String
       contextPath: WAB.session_request_get.session_id
-      description: 'The session id. Usable in the "sort" parameter.'
+      description: The session id. Usable in the "sort" parameter.
     - type: String
       contextPath: WAB.session_request_get.mode
       description: The session sharing mode.
@@ -4340,22 +4367,22 @@ script:
       contextPath: WAB.session_request_get.guest_id
       description: A Guest ID (random if unknown invited guest) or a username (if known Bastion user). Usable in the "sort" parameter.
   - name: wab-create-session-request
-    description: 'Create a session request.'
+    description: Create a session request.
     arguments:
     - name: session_request_post_session_id
-      description: The session id.
+      description: "The session id."
       required: true
     - name: session_request_post_mode
-      description: 'The session sharing mode.'
+      description: The session sharing mode.
       required: true
   - name: wab-delete-pending-or-live-session-request
-    description: Delete a pending or a live session request.
+    description: "Delete a pending or a live session request."
     arguments:
     - name: request_id
-      description: "The session sharing request to delete."
+      description: The session sharing request to delete.
       required: true
   - name: wab-get-latest-snapshot-of-running-session
-    description: "Get the latest snapshot of a running session."
+    description: Get the latest snapshot of a running session.
     arguments:
     - name: session_id
       description: The session id.

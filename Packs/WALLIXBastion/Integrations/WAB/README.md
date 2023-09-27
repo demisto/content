@@ -1759,6 +1759,32 @@ Get the services of a device.
 | WAB.service_get.global_domains | String | The global domains names. | 
 | WAB.service_get.url | String | The API URL to the resource. | 
 
+### wab-add-service-in-device
+
+***
+Add a service in a device.
+
+#### Base Command
+
+`wab-add-service-in-device`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| device_id | The device id or name. | Required | 
+| service_post_id | The service id. Usable in the "sort" parameter. | Optional | 
+| service_post_service_name | The service name. Must start with a letter; only letters, digits and -_ are allowed. Usable in the "sort" parameter. / The service name. Must start with a letter; only letters, digits and -_ are allowed. Usable in the "q" parameter. Usable in the "sort" parameter. | Required | 
+| service_post_protocol | The protocol. Usable in the "sort" parameter. / The protocol. Usable in the "q" parameter. Usable in the "sort" parameter. | Required | 
+| service_post_port | The port number. Usable in the "sort" parameter. / The port number. Usable in the "q" parameter. Usable in the "sort" parameter. | Required | 
+| service_post_subprotocols | The sub protocols. | Required | 
+| service_post_connection_policy | The connection policy name. Usable in the "q" parameter. Usable in the "sort" parameter. | Required | 
+| service_post_global_domains | The global domains names. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+
 ### wab-get-service-of-device
 
 ***

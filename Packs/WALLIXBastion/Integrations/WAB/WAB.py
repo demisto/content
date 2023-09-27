@@ -37,7 +37,7 @@ class Client(BaseClient):
 
     def _raise_client_exc(self, res: Response):
         if res.status_code == 401:
-            raise AuthError
+            raise AuthError()
         self.client_error_handler(res)
 
     def _http_request(self, *args, **kwargs):
@@ -958,6 +958,29 @@ class Client(BaseClient):
 
         return CommandResults(outputs_prefix="WAB.service_get", outputs_key_field="id", outputs=response, raw_response=response)
 
+    def add_service_in_device(self, args: Dict[str, Any]):
+        device_id = str_arg(args, "device_id")
+        service_post_id = str_arg(args, "service_post_id")
+        service_post_service_name = str_arg(args, "service_post_service_name")
+        service_post_protocol = str_arg(args, "service_post_protocol")
+        service_post_port = int_arg(args, "service_post_port")
+        service_post_subprotocols = list_arg(args, "service_post_subprotocols")
+        service_post_connection_policy = str_arg(args, "service_post_connection_policy")
+        service_post_global_domains = list_arg(args, "service_post_global_domains")
+
+        body = assign_params(
+            id=service_post_id,
+            service_name=service_post_service_name,
+            protocol=service_post_protocol,
+            port=service_post_port,
+            subprotocols=service_post_subprotocols,
+            connection_policy=service_post_connection_policy,
+            global_domains=service_post_global_domains,
+        )
+        response = self._http_request("post", f"/devices/{device_id}/services", json_data=body)
+
+        return CommandResults(outputs_prefix="WAB", outputs_key_field="", outputs=response, raw_response=response)
+
     def get_service_of_device(self, args: Dict[str, Any]):
         device_id = str_arg(args, "device_id")
         service_id = str_arg(args, "service_id")
@@ -1786,8 +1809,9 @@ def get_session_token():
     token = integration_context.get("session_token")
     last_request_at = integration_context.get("last_request_at")
     time_now = int(time.time())
-    if token and last_request_at and time_now - last_request_at < 100:
-        return token
+    if token and last_request_at:
+        if time_now - last_request_at < 100:
+            return token
     return None
 
 
@@ -1892,6 +1916,7 @@ def main() -> None:
             "wab-get-certificate-on-device": client.get_certificate_on_device,
             "wab-revoke-certificate-of-device": client.revoke_certificate_of_device,
             "wab-get-services-of-device": client.get_services_of_device,
+            "wab-add-service-in-device": client.add_service_in_device,
             "wab-get-service-of-device": client.get_service_of_device,
             "wab-edit-service-of-device": client.edit_service_of_device,
             "wab-delete-service-from-device": client.delete_service_from_device,

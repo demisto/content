@@ -219,5 +219,6 @@ command_names = {
     "wab-extend-duration-time-to-get-passwords-for-target",
     "wab-release-passwords-for-target",
     "wab-get-target-by-type",
-    "wab-get-password-for-target"
+    "wab-get-password-for-target",
+    "wab-add-service-in-device"
 }
