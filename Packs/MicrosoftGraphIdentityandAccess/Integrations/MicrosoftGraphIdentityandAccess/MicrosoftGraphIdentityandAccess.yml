@@ -222,7 +222,7 @@ script:
       description: Abollean that taled if the ip named location is a trusted source.
       type: String
     - contextPath: MSGraph.conditionalAccess.namedIpLocations.ip_ranges
-      description: List of ip ranges for the ip named location
+      description: List of ip ranges for the ip named location.
       type: Array
   - description: Retrieve all ip named locations.
     name: msgraph-identity-ip-named-locations-list
@@ -269,7 +269,7 @@ script:
       description: Abollean that taled if the ip named location is a trusted source.
       type: String
     - contextPath: MSGraph.conditionalAccess.namedIpLocations.ip_ranges
-      description: List of ip ranges for the ip named location
+      description: List of ip ranges for the ip named location.
       type: Array
   - description: update an ip named location by id.
     name: msgraph-identity-ip-named-locations-update
@@ -396,7 +396,7 @@ script:
       description: Indicates whether a user's risky state is being processed by the backend.
       type: Boolean
     - contextPath: MSGraph.identityProtection.risky-users.isDeleted
-      description: Indicates whether a user is delted
+      description: Indicates whether a user is delted.
       type: Boolean
     - contextPath: MSGraph.identityProtection.risky-users.id
       description: Unique ID of the risky user.
@@ -455,7 +455,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/crypto:1.0.0.66562
+  dockerimage: demisto/crypto:1.0.0.74979
 fromversion: 5.0.0
 defaultmapperin: Microsoft Graph Identity and Access Incoming Mapper
 defaultclassifier: Microsoft Graph Identity and Access Classifier
