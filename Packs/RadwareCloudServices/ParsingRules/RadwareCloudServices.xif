@@ -1,0 +1,2 @@
+[INGEST:vendor="radware", product="access_logs", target_dataset="radware_access_logs_raw", no_hit=keep]
+alter _time = parse_timestamp("%d/%b/%Y:%X %z", time);
