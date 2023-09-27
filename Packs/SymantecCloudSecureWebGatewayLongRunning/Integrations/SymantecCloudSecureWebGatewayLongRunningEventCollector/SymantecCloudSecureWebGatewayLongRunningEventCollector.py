@@ -260,17 +260,21 @@ def get_events_command(
             res = client.get_logs(params=params)
             demisto.debug("end fetching events - API")
         except DemistoException as e:
-            if e.res is not None and e.res.status_code == 410:
-                demisto.debug(f"The token has expired: {e}")
-                token_expired = True
-                params["token"] = "none"
-                continue
-            elif e.res is not None and e.res.status_code == 423:
-                demisto.debug(f"API access is blocked: {e}")
-            elif e.res is not None and e.res.status_code == 429:
-                demisto.debug(f"Crashed on limit of api calls: {e}")
-            else:
-                demisto.debug(f"Some ERROR: {e=}")
+            try:
+                if e.res is not None and e.res.status_code == 410:
+                    demisto.debug(f"The token has expired: {e}")
+                    token_expired = True
+                    params["token"] = "none"
+                    continue
+                elif e.res is not None and e.res.status_code == 423:
+                    demisto.debug(f"API access is blocked: {e}")
+                elif e.res is not None and e.res.status_code == 429:
+                    demisto.debug(f"Crashed on limit of api calls: {e}")
+                else:
+                    demisto.debug(f"Some ERROR: {e=}")
+                    raise e
+            except Exception as err:
+                demisto.debug(f"Some ERROR: {e=} after the error: {err}")
                 raise e
 
         status, params["token"] = get_status_and_token_from_res(res)
