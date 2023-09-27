@@ -37,7 +37,7 @@ def create_jira_issue(jira_server: JIRA,
     description = generate_description(build_id, properties, test_suite)
     summary = f"{properties['pack_id']} - {properties['file_name']} failed nightly"
     jql_query = generate_query(summary)
-    search_issues: ResultList[Issue] = jira_server.search_issues(jql_query, maxResults=1)
+    search_issues: ResultList[Issue] = jira_server.search_issues(jql_query, maxResults=1)  # type: ignore[assignment]
     jira_issue, link_to_issue, use_existing_issue = find_existing_jira_ticket(jira_server, now, options, search_issues)
 
     if jira_issue is not None:
