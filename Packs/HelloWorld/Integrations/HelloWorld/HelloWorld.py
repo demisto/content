@@ -390,7 +390,7 @@ class Client(BaseClient):
         return json.loads("{" + item + "}")
 
     def create_note(self, alert_id: int, comment: str) -> dict:
-        """ 
+        """
         This function calls the api to create a new note in an alert.
         For real API call see specific_api_endpoint_call_example method.
 
@@ -535,7 +535,7 @@ def test_module(client: Client, params: dict[str, Any]) -> str:
                 severity=severity
             )
         else:
-            client.get_item_list(limit=1, severity=params.get('severity'))
+            client.get_alert_list(limit=1, severity=params.get('severity'))
 
     except DemistoException as e:
         if 'Forbidden' in str(e):
@@ -591,9 +591,8 @@ def say_hello_command(client: Client, args: dict[str, Any]) -> CommandResults:
     )
 
 
-def fetch_incidents(client: Client, max_results: int, last_run: dict,
-                    first_fetch_time: str, severity: str = 'low', page_size: int = DEFAULT_PAGE_SIZE
-                    ) -> tuple[dict, list[dict]]:
+def fetch_incidents(client: Client, max_results: int, last_run: dict, first_fetch_time: str,
+                    severity: str = 'low', _page_size: int = DEFAULT_PAGE_SIZE) -> tuple[dict, list[dict]]:
     """
     This function retrieves new alerts every interval (default is 1 minute).
     It has to implement the logic of making sure that alerts are fetched only onces and no alerts are missed.
@@ -608,6 +607,8 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict,
         first_fetch_time(int): If last_run is None (first time we are fetching), it contains the timestamp in
             milliseconds on when to start fetching alerts.
         severity (str): severity of the alert to search for.
+        page_size (int): number of alerts to retrieve per page from the API. This should be standard when dealing with pagination.
+            It contains `_` here since we are not using in api call.
     Returns:
         dict: Next run dictionary containing the timestamp that will be used in ``last_run`` on the next fetch.
         list: List of alerts that will be created in XSOAR.
@@ -641,7 +642,8 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict,
     demisto.debug(f'Running API query with {last_fetch=}, {severity=}')
 
     # Calling the relevant client method. Note that sometimes pagination is in order.
-    # For pagination related information, see https://xsoar.pan.dev/docs/integrations/code-conventions#pagination-in-integration-commands.
+    # For pagination related information, see:
+    # https://xsoar.pan.dev/docs/integrations/code-conventions#pagination-in-integration-commands.
     alerts = client.get_alert_list_for_fetch(limit=max_results,
                                              start_time=dateparser.parse(last_fetch),  # type: ignore
                                              severity=severity,

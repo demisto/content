@@ -168,12 +168,12 @@ def test_api_key():
 def test_dedup_by_ids(alerts, ids_to_compare, expected):
     """
     Given:
-        - A list of alerts 
+        - A list of alerts
         - A list of IDs to compare against
-    
+
     When:
         - Running dedup_by_ids() with the alerts and ID list
-    
+
     Then:
         - Ensure the deduped alerts match the expected
         - Ensure number of duplicates matches expected
@@ -193,11 +193,11 @@ class TestIPCommand:
         """
         Given:
             - Args with a single IP
-            
+
         When:
             - Mock client returns reputation for the IP
             - Run ip_reputation_command with args
-            
+
         Then:
             - Validate expected number of results
             - Validate IP address in outputs
@@ -223,11 +223,11 @@ class TestIPCommand:
         """
         Given:
             - A list of IP addresses as input
-        
+
         When:
             - Mock client returns reputation scores for each IP
             - Run ip_reputation_command with multiple IPs
-        
+
         Then:
             - Ensure correct number of results returned
             - Validate indicator and score for each result
@@ -254,10 +254,10 @@ class TestIPCommand:
         """
         Given:
             - Args with an invalid IP address
-            
+
         When:
             - Running ip_reputation_command with the invalid IP
-            
+
         Then:
             - Should raise ValueError
         """
@@ -322,13 +322,13 @@ class TestAlertListCommand:
         """
         Given:
             - Args
-        
+
         When:
             - Calling alert_list_command with mocked client and args
-        
+
         Then:
             - Ensure mocked client method called correctly
-            - Validate returned command results contains data 
+            - Validate returned command results contains data
         """
         mocked_list_call = mocker.patch.object(self.mocked_client, 'get_alert_list',
                                                return_value=[{'id': 1, 'title': 'alert 1'},
@@ -446,4 +446,3 @@ class TestFetchAlerts:
         assert incidents[0]['occurred'] > last_run['last_fetch']
         assert len(incidents) == 3
         assert next_run['last_ids'] == [4, 5, 6]
-
