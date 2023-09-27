@@ -19,6 +19,8 @@ NIGHTLY_JOBS = [
     'tests_xsoar_server: [Server 6.11]',
     'tests_xsoar_server: [Server 6.12]',
     'tests_xsoar_server: [Server Master]',
+    'tests_xsoar_server-test_playbooks_results',
+    'xsiam_server_ga-test_playbooks_results',
 ]
 
 SDK_NIGHTLY_JOBS = [
@@ -59,12 +61,14 @@ PUSH_JOBS = [
     'xpanse-prepare-testing-bucket',
     'xsoar-prepare-testing-bucket',
     'xsiam_server_ga',
+    'xsoar_ng_server_ga',
     'tests_xsoar_server: [Server 6.9]',
     'tests_xsoar_server: [Server 6.10]',
     'tests_xsoar_server: [Server 6.11]',
     'tests_xsoar_server: [Server 6.12]',
     'tests_xsoar_server: [Server Master]',
-    'xsoar_ng_server_ga',
+    'tests_xsoar_server-test_playbooks_results',
+    'xsiam_server_ga-test_playbooks_results',
 ]
 JOBS_PER_BUILD_TYPE = {
     'NIGHTLY': NIGHTLY_JOBS,
