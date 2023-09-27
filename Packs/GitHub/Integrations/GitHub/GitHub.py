@@ -2070,7 +2070,7 @@ def github_cancel_workflow_command():
             workflow_id (str): The workflow id to cancel.
 
         Returns:
-            CommandResults object with informative printout if trigger the workflow succeeded or not.
+            CommandResults object with informative prints out if triggering the workflow succeeded or not.
     """
     args = demisto.args()
     owner = args.get('owner') or USER
