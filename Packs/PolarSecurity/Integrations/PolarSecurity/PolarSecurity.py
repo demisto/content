@@ -375,7 +375,6 @@ def polar_list_vendors_data_stores_command(polar_client, vendor_id, limit: int, 
 
     try:
         while has_next_page and limit > 0:
-            keep = 5
             if next_token is not None:
                 query_params['nextToken'] = next_token
             try:
