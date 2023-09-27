@@ -1,10 +1,9 @@
 This is the Hello World integration for getting started.
-This integration was integrated and tested with version xx of HelloWorld Dev.
 
-## Configure HelloWorld Dev on Cortex XSOAR
+## Configure HelloWorld on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for HelloWorld Dev.
+2. Search for HelloWorld.
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Description** | **Required** |
@@ -275,7 +274,7 @@ Return IP information and reputation.
         "Reliability": "C - Fairly reliable",
         "Score": 3,
         "Type": "ip",
-        "Vendor": "HelloWorld Dev"
+        "Vendor": "HelloWorld"
     },
     "HelloWorld": {
         "IP": {
@@ -291,7 +290,7 @@ Return IP information and reputation.
         "Address": "8.8.8.8",
         "Malicious": {
             "Description": "Hello World returned reputation -4",
-            "Vendor": "HelloWorld Dev"
+            "Vendor": "HelloWorld"
         },
         "Relationships": [
             {

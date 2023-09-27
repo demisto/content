@@ -54,32 +54,32 @@ https://xsoar.pan.dev/docs/integrations/unit-testing
 
 import json
 from CommonServerPython import DemistoException
-from HelloWorld import (Client, ip_reputation_command, item_list_command, validate_api_key,
-                        dedup_by_ids, incident_note_create_command)
+from HelloWorld import (Client, ip_reputation_command, alert_list_command, validate_api_key,
+                        dedup_by_ids, alert_note_create_command, fetch_incidents)
 import pytest
 
 
 EXAMPLE_RES_LIST = [{
     "id": 1,
-    "incident_id": 1000,
+    "alert_id": 1000,
     "kind": "Realtime",
     "date": "2021-05-20T12:40:55.662949Z",
 },
     {
     "id": 2,
-    "incident_id": 2000,
+    "alert_id": 2000,
     "kind": "Realtime",
     "date": "2021-05-20T12:40:56.662949Z"
 },
     {
     "id": 3,
-    "incident_id": 3000,
+    "alert_id": 3000,
     "kind": "Realtime",
     "date": "2021-05-20T12:40:57.662949Z"
 },
     {
     "id": 4,
-    "incident_id": 4000,
+    "alert_id": 4000,
     "kind": "Realtime",
     "date": "2021-05-20T12:40:58.662949Z"
 },
@@ -128,8 +128,6 @@ def test_say_hello():
 
 @ pytest.mark.parametrize('hello_world_severity, expected_xsoar_severity', [
     ('low', 1), ('medium', 2), ('high', 3), ('critical', 4), ('unknown', 0)
-
-
 ])
 def test_convert_to_demisto_severity(hello_world_severity, expected_xsoar_severity):
     """
@@ -168,6 +166,18 @@ def test_api_key():
     ([{"id": 4}, {"id": 5}], [2, 3], ([{"id": 4}, {"id": 5}], 0))
 ])
 def test_dedup_by_ids(alerts, ids_to_compare, expected):
+    """
+    Given:
+        - A list of alerts 
+        - A list of IDs to compare against
+    
+    When:
+        - Running dedup_by_ids() with the alerts and ID list
+    
+    Then:
+        - Ensure the deduped alerts match the expected
+        - Ensure number of duplicates matches expected
+    """
     deduped, dups = dedup_by_ids(alerts, ids_to_compare)
     assert deduped == expected[0]
     assert dups == expected[1]
@@ -180,6 +190,19 @@ class TestIPCommand:
         self.mocked_client = create_mock_client()
 
     def test_ip_reputation_command_single_ip(self, mocker):
+        """
+        Given:
+            - Args with a single IP
+            
+        When:
+            - Mock client returns reputation for the IP
+            - Run ip_reputation_command with args
+            
+        Then:
+            - Validate expected number of results
+            - Validate IP address in outputs
+            - Validate DBotScore outputs as expected
+        """
         args = {'ip': '8.8.8.8'}
         mocker.patch.object(self.mocked_client, 'get_ip_reputation', return_value={'attributes': {'reputation': 80}})
 
@@ -197,6 +220,18 @@ class TestIPCommand:
         assert dbot_output[0]['Score'] == 1
 
     def test_ip_reputation_command_multiple_ips(self, mocker):
+        """
+        Given:
+            - A list of IP addresses as input
+        
+        When:
+            - Mock client returns reputation scores for each IP
+            - Run ip_reputation_command with multiple IPs
+        
+        Then:
+            - Ensure correct number of results returned
+            - Validate indicator and score for each result
+        """
         args = {'ip': ['8.8.8.8', '1.1.1.1']}
         mocker.patch.object(self.mocked_client, 'get_ip_reputation', side_effect=[
             {'attributes': {'reputation': 80}},
@@ -216,13 +251,23 @@ class TestIPCommand:
         assert dbot_output_2[0]['Score'] == 3
 
     def test_ip_reputation_command_invalid_ip(self):
+        """
+        Given:
+            - Args with an invalid IP address
+            
+        When:
+            - Running ip_reputation_command with the invalid IP
+            
+        Then:
+            - Should raise ValueError
+        """
         args = {'ip': 'invalid'}
 
         with pytest.raises(ValueError):
             ip_reputation_command(self.mocked_client, args, default_threshold=60, reliability='A - Completely reliable')
 
 
-class TestItemListCommand:
+class TestAlertListCommand:
 
     @pytest.fixture(autouse=True)
     def setup(self):
@@ -238,25 +283,33 @@ class TestItemListCommand:
         'args, expected_limit, expected_severity',
         (
             pytest.param(
-                {"incident_id": 1}, 1, None,
+                {"alert_id": 1}, 1, 'low',
                 id="given id"),  # expecting one record
             pytest.param(
-                {"incident_id": 2, "severity": 'high'}, 1, 'high',
+                {"alert_id": 2, "severity": 'high'}, 1, 'high',
                 id="given id and wrong severity"),  # expecting one record ignoring severity
             pytest.param(
-                {"incident_id": 3, "limit": 5}, 1, None,
+                {"alert_id": 3, "limit": 5}, 1, 'low',
                 id="given id, no severity and limit")  # expecting one record ignoring limit
         ))
-    def test_incident_list_given_id(self, mocker, args, expected_limit, expected_severity):
-        single_id_call_mock = mocker.patch.object(self.mocked_client, 'get_incident',
-                                                  return_value={'id': 1, 'title': 'Incident 1'})
+    def test_alert_list_given_id(self, mocker, args, expected_limit, expected_severity):
+        """
+        Given:
+            - Args containing alert_id
+        When:
+            - Calling alert_list_command with mocked client
+        Then:
+            - The correct function is being called (single alert) correctly
+        """
+        single_id_call_mock = mocker.patch.object(self.mocked_client, 'get_alert',
+                                                  return_value={'id': 1, 'title': 'alert 1'})
 
-        result = item_list_command(self.mocked_client, args)
+        result = alert_list_command(self.mocked_client, args)
 
-        assert result.readable_output.startswith('### Items List (Example Data)')
+        assert result.readable_output.startswith('### Items List (Sample Data)')
         assert len(result.outputs) == expected_limit
         single_id_call_mock.assert_called()
-        single_id_call_mock.assert_called_once_with(args['incident_id'])
+        single_id_call_mock.assert_called_once_with(args['alert_id'])
 
     @pytest.mark.parametrize(
         'args, expected_limit, expected_severity',
@@ -264,77 +317,133 @@ class TestItemListCommand:
             pytest.param(
                 {"severity": 'high', "limit": 3}, 3, 'high',
                 id="given limit and severity"),
-            pytest.param(
-                {"limit": 3}, 3, None,
-                id="given only limit"),
-            pytest.param(
-                {}, 10, None,
-                id="given empty args"),
         ))
-    def test_incident_list(self, mocker, args, expected_limit, expected_severity):
-        mocked_list_call = mocker.patch.object(self.mocked_client, 'get_item_list',
-                                               return_value=[{'id': 1, 'title': 'Incident 1'},
-                                                             {'id': 2, 'title': 'Incident 2'},
-                                                             {'id': 3, 'title': 'Incident 3'}])
+    def test_alert_list(self, mocker, args, expected_limit, expected_severity):
+        """
+        Given:
+            - Args
+        
+        When:
+            - Calling alert_list_command with mocked client and args
+        
+        Then:
+            - Ensure mocked client method called correctly
+            - Validate returned command results contains data 
+        """
+        mocked_list_call = mocker.patch.object(self.mocked_client, 'get_alert_list',
+                                               return_value=[{'id': 1, 'title': 'alert 1'},
+                                                             {'id': 2, 'title': 'alert 2'},
+                                                             {'id': 3, 'title': 'alert 3'}])
 
-        result = item_list_command(self.mocked_client, args)
+        result = alert_list_command(self.mocked_client, args)
 
         mocked_list_call.assert_called()
         mocked_list_call.assert_called_once_with(limit=expected_limit, severity=expected_severity)
-        assert result.readable_output.startswith('### Items List (Example Data)')  # type: ignore
+        assert result.readable_output.startswith('### Items List (Sample Data)')  # type: ignore
+
+    @pytest.mark.parametrize(
+        'args',
+        (
+            pytest.param(
+                {"limit": 3},
+                id="given only limit"),
+            pytest.param(
+                {},
+                id="given empty args"),
+        ))
+    def test_alert_list_fail(self, mocker, args):
+        """
+        Given:
+            - Args without severity
+        When:
+            - Calling alert_list_command with mocked client and args
+        Then:
+            - Should raise DemistoException as severity is required
+        """
+        mocker.patch.object(self.mocked_client, 'get_alert_list',
+                            return_value=[{'id': 1, 'title': 'alert 1'},
+                                          {'id': 2, 'title': 'alert 2'},
+                                          {'id': 3, 'title': 'alert 3'}])
+
+        with pytest.raises(DemistoException):
+            alert_list_command(self.mocked_client, args)
 
 
-class TestIncidentNoteCreate:
+class TestAlertNoteCreate:
 
     @pytest.fixture(autouse=True)
     def init(self):
         self.client = create_mock_client()
 
     def test_success(self, mocker):
-        args = {'incident_id': 123, 'note_text': 'Test note'}
+        args = {'alert_id': 123, 'note_text': 'Test note'}
         mocker.patch.object(self.client, 'create_note', return_value={'status': 'success'})
 
-        result = incident_note_create_command(self.client, args)
+        result = alert_note_create_command(self.client, args)
 
         assert result.readable_output == 'Note was created successfully.'
         assert result.outputs['status'] == 'success'
 
 
-# class TestFetchIncidents:
-#
-#     EXAMPLE_ALERTS = [{'id': 1, 'title': 'Incident 1'},
-#                       {'id': 2, 'title': 'Incident 2'},
-#                       {'id': 3, 'title': 'Incident 3'}]
-#
-#     @pytest.fixture(autouse=True)
-#     def setup(self):
-#         self.client = create_mock_client()
-#
-#     def test_first_run(self, mocker):
-#         mocker.patch.object(self.client, 'get_incident_list_for_fetch', return_value=self.EXAMPLE_ALERTS)
-#
-#         last_run : dict = {}
-#         first_fetch = '2021-01-01T00:00:00Z'
-#
-#         next_run, incidents = fetch_incidents(
-#             self.client,
-#             max_results=50,
-#             last_run=last_run,
-#             first_fetch_time=first_fetch
-#         )
-#
-#         # Assertions
-#         assert len(incidents) == 3
-#         assert incidents[0]['name'] == 'test'
-#         # etc
-#
-#     def test_subsequent_run(self, mock_client):
-#         last_run = {'last_fetch': '2021-01-01T01:00:00Z'}
-#         first_fetch = '2021-01-01T00:00:00Z'
-#
-#         next_run, incidents = fetch_incidents(self.client,
-#                                               max_results=2, last_run=last_run, first_fetch_time=first_fetch)
-#
-#         # Assertions
-#         assert incidents[0]['date'] > last_run['last_fetch']
-#         # etc
+class TestFetchAlerts:
+
+    EXAMPLE_ALERTS = [{'id': 1, 'name': 'Incident 1'},
+                      {'id': 2, 'name': 'Incident 2'},
+                      {'id': 3}]
+
+    @pytest.fixture(autouse=True)
+    def setup(self):
+        self.client = create_mock_client()
+
+    def test_first_run(self, mocker):
+        """
+        Given:
+            - An empty last run
+            - A first fetch time
+        When:
+            - Running fetch_incidents for the first time
+            - Mocking the client's alert list response
+        Then:
+            - Returned incidents should match mocked alerts
+            - Next run should have the last alert IDs
+        """
+        last_run: dict = {}
+        first_fetch = '2021-01-01T00:00:00Z'
+        mocker.patch.object(self.client, 'get_alert_list', return_value=self.EXAMPLE_ALERTS)
+
+        next_run, incidents = fetch_incidents(
+            self.client,
+            max_results=3,
+            last_run=last_run,
+            first_fetch_time=first_fetch
+        )
+
+        # Assertions
+        assert incidents[0]['name'] == 'Incident 1'
+        assert incidents[1]['name'] == 'Incident 2'
+        assert incidents[2]['name'] == 'Hello World Alert'
+
+        assert next_run['last_ids'] == [1, 2, 3]
+
+    def test_subsequent_run(self):
+        """
+        Given:
+            - A last run with a last fetch time and list of last incident IDs
+        When:
+            - Fetch incidents is called with the last run
+            - First fetch time is provided
+        Then:
+            - Returned incidents should have occurred after last fetch
+            - Number of returned incidents should match max results
+            - Next run should have new updated last incident IDs
+        """
+        last_run = {'last_fetch': '2021-02-01T00:00:00Z', 'last_ids': [1, 2, 3]}
+        first_fetch = '2021-01-01T00:00:00Z'
+
+        next_run, incidents = fetch_incidents(self.client,
+                                              max_results=3, last_run=last_run, first_fetch_time=first_fetch)
+
+        assert incidents[0]['occurred'] > last_run['last_fetch']
+        assert len(incidents) == 3
+        assert next_run['last_ids'] == [4, 5, 6]
+

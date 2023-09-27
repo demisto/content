@@ -3,7 +3,7 @@ sectionOrder:
 - Connect
 - Collect
 commonfields:
-  id: HelloWorld
+  id: HelloWorld Dev
   version: -1
 configuration:
 - additionalinfo: Reliability of the source providing the intelligence data.
@@ -27,18 +27,18 @@ configuration:
   required: true
   type: 0
   section: Connect
-- display: Fetch incidents
+- display: Fetch alerts
   name: isFetch
   type: 8
   section: Collect
   required: false
-- display: Incident type
-  name: incidentType
+- display: Alert type
+  name: alertType
   type: 13
   section: Connect
   required: false
 - defaultvalue: '10'
-  display: Maximum number of incidents per fetch
+  display: Maximum number of alerts per fetch
   name: max_fetch
   type: 0
   section: Collect
@@ -87,8 +87,8 @@ configuration:
   section: Connect
   advanced: true
 description: This is the Hello World integration for getting started.
-display: HelloWorld
-name: HelloWorld
+display: HelloWorld Dev
+name: HelloWorld Dev
 script:
   commands:
   - arguments:
@@ -102,53 +102,53 @@ script:
       type: String
   - arguments:
     - description: Filter by alert item ID. If not provided, all IDs will be retrieved.
-      name: incident_id
+      name: alert_id
     - description: How many alerts to fetch. Default is 10.
       name: limit
-    - description: which severity to filter by the incidents.
+    - description: which severity to filter by the alerts.
       name: severity
-    description: Lists the example incidents as it would be fetched from the api.
-    name: helloworld-incident-list
+    description: Lists the example alerts as it would be fetched from the api.
+    name: helloworld-alert-list
     outputs:
-    - contextPath: HelloWorld.Incident.id
-      description: The id of the incident.
+    - contextPath: HelloWorld.alert.id
+      description: The id of the alert.
       type: Number
-    - contextPath: HelloWorld.Incident.name
-      description: The name of the incident.
+    - contextPath: HelloWorld.alert.name
+      description: The name of the alert.
       type: String
-    - contextPath: HelloWorld.Incident.severity
-      description: The severity of the incident.
+    - contextPath: HelloWorld.alert.severity
+      description: The severity of the alert.
       type: String
-    - contextPath: HelloWorld.Incident.date
-      description: The date of the incident occurrence.
+    - contextPath: HelloWorld.alert.date
+      description: The date of the alert occurrence.
       type: Date
-    - contextPath: HelloWorld.Incident.status
-      description: The status of the incident.
+    - contextPath: HelloWorld.alert.status
+      description: The status of the alert.
       type: String
   - arguments:
-    - description: The item's id to add note to.
-      name: incident_id
+    - description: The alert's id to add note to.
+      name: alert_id
       required: true
     - description: The comment to add to note.
       name: note_text
       required: true
     description: Example of creating new item in the api.
-    name: helloworld-incident-note-create
+    name: helloworld-alert-note-create
     outputs:
-    - contextPath: HelloWorld.Incident.id
-      description: The id of the incident.
+    - contextPath: HelloWorld.alert.id
+      description: The id of the alert.
       type: Number
-    - contextPath: HelloWorld.Incident.name
-      description: The name of the incident.
+    - contextPath: HelloWorld.alert.name
+      description: The name of the alert.
       type: String
-    - contextPath: HelloWorld.Incident.severity
-      description: The severity of the incident.
+    - contextPath: HelloWorld.alert.severity
+      description: The severity of the alert.
       type: String
-    - contextPath: HelloWorld.Incident.date
-      description: The date of the incident occurrence.
+    - contextPath: HelloWorld.alert.date
+      description: The date of the alert occurrence.
       type: Date
-    - contextPath: HelloWorld.Incident.status
-      description: The status of the incident.
+    - contextPath: HelloWorld.alert.status
+      description: The status of the alert.
       type: String
   - arguments:
     - description: List of IPs.

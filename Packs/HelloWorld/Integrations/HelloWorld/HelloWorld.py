@@ -30,8 +30,8 @@ reach out to your Cortex XSOAR contacts.
 This API has a few basic functions:
 - Alerts: the endpoint returns mocked alerts and allows you to search based on
 a number of parameters, such as state (ACTIVE or CLOSED), type, timestamp. It
-can also return a single alert by ID. This is used to create new Incidents in
-XSOAR by using the ``fetch-incidents`` command, which is by default invoked
+can also return a single alert by ID. This is used to create new alerts in
+XSOAR by using the ``fetch-alerts`` command, which is by default invoked
 every minute.
 There is also an endpoint that allows to retrieve additional details about a
 specific alert by ID, and one to change the alert status to "CLOSED" once
@@ -106,7 +106,7 @@ Constants
 
 Usually some constants that do not require user parameters or inputs, such
 as the default API entry point for your service, or the maximum numbers of
-incidents to fetch every time.
+alerts to fetch every time.
 
 
 Client Class
@@ -254,13 +254,13 @@ from CommonServerUserPython import *
 ''' CONSTANTS '''
 LOG_LINE = 'HelloWorldDebugLog: '  # Make sure to use a line easily to search and read in logs.
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
-MAX_INCIDENTS_TO_FETCH = 50
+MAX_ALERTS_TO_FETCH = 50
 DEFAULT_INDICATORS_THRESHOLD = 65
 HELLOWORLD_SEVERITIES = ['Low', 'Medium', 'High', 'Critical']
 LIMIT = 10
 DEFAULT_PAGE_SIZE = 5
 DUMMY_API_KEY = 'dummy-key'
-ITEM_TEMPLATE = '"id": {id}, "name": "XSOAR Test Item #{id}", "severity": "{severity}", "date": "{date}", "status": "{status}"'
+ITEM_TEMPLATE = '"id": {id}, "name": "XSOAR Test Alert #{id}", "severity": "{severity}", "date": "{date}", "status": "{status}"'
 ''' CLIENT CLASS '''
 
 
@@ -351,7 +351,7 @@ class Client(BaseClient):
 
         return f'Hello {name}'
 
-    def get_item_list(self, limit: int, severity: str = None) -> list[dict]:
+    def get_alert_list(self, limit: int, severity: str = None, last_id: int = 0) -> list[dict]:
         """For developing walkthrough purposes, this is a dummy response.
            For real API call see specific_api_endpoint_call_example method.
 
@@ -363,9 +363,9 @@ class Client(BaseClient):
             list[dict]: Dummy data of items as it would return from API.
         """
         mock_response: list[dict] = []
-        for i in range(1, limit + 1):
-            item = ITEM_TEMPLATE.format(id=i,
-                                        severity=severity if severity else 'null',
+        for i in range(limit):
+            item = ITEM_TEMPLATE.format(id=last_id + i + 1,
+                                        severity=severity if severity else '',
                                         date=datetime(2023, 9, 14, 11, 30, 39, 882955).isoformat(),
                                         status='Testing')
             dict_item = json.loads("{" + item + "}")
@@ -373,53 +373,53 @@ class Client(BaseClient):
 
         return mock_response
 
-    def get_incident(self, item_id: int) -> list[dict]:
+    def get_alert(self, alert_id: int) -> list[dict]:
         """For developing walkthrough purposes, this is a dummy response.
         For real API call see specific_api_endpoint_call_example method.
 
         Args:
-            item_id (int) : An item to retrieve.
+            alert_id (int) : An alert to retrieve.
 
         Returns:
-            dict: Dummy data of item as it would return from API.
+            dict: Dummy data of alert as it would return from API.
         """
-        item = ITEM_TEMPLATE.format(id=item_id,
+        item = ITEM_TEMPLATE.format(id=alert_id,
                                     severity='low',
                                     date=datetime(2023, 9, 14, 11, 30, 39, 882955).isoformat(),
                                     status='Testing')
         return json.loads("{" + item + "}")
 
-    def create_note(self, incident_id: int, comment: str) -> dict:
+    def create_note(self, alert_id: int, comment: str) -> dict:
         """ 
-        This function calls the api to create a new note in an incident.
+        This function calls the api to create a new note in an alert.
         For real API call see specific_api_endpoint_call_example method.
 
         Args:
-            incident_id (int): a number represent an incident.
-            comment (str): A text comment to add to the incident as a note.
+            alert_id (int): a number represent an alert.
+            comment (str): A text comment to add to the alert as a note.
 
         Returns:
             dict: The summary of the newly created note from the API response.
         """
 
         return {'status': 'success',
-                'msg': f'Note was created for incident #{incident_id} successfully with {comment=}'}
+                'msg': f'Note was created for alert #{alert_id} successfully with {comment=}'}
 
-    def get_incident_list_for_fetch(self, limit, last_id: int = 0,
-                                    start_time: str = None, severity: str = None) -> list[dict]:
+    def get_alert_list_for_fetch(self, limit, start_time: datetime, last_id: int = 0,
+                                 severity: str = 'low') -> list[dict]:
         """This function return dummy events for fetch.
 
         Args:
-            limit (int): The number of incident to fetch.
-            start_time (str, optional): The time to start fetch incidents from. Defaults to None.
-            severity (str, optional): The severity of the incidents fetched. Defaults to None.
+            limit (int): The number of alert to fetch.
+            start_time (str, optional): The time to start fetch alerts from. Defaults to None.
+            severity (str, optional): The severity of the alerts fetched. Defaults to None.
         """
         def mock_time(item):
             item['id'] = last_id + 1
-            item['date'] = datetime.strftime(datetime.now(), DATE_FORMAT)
+            item['date'] = datetime.strftime(start_time + timedelta(minutes=1), DATE_FORMAT)
 
-        incidents = self.get_item_list(limit=limit, severity=severity)
-        demisto.debug("Setting incidents time to now.")
+        incidents = self.get_alert_list(limit=limit, severity=severity, last_id=last_id)
+        demisto.debug("Setting alerts time to now.")
         for item in incidents:
             mock_time(item)
             last_id += 1
@@ -449,7 +449,7 @@ def validate_api_key(api_key: str) -> None:
 def convert_to_demisto_severity(severity: str) -> int:
     """
     Maps HelloWorld severity to Cortex XSOAR severity.
-    Converts the HelloWorld alert severity level ('Low', 'Medium', 'High', 'Critical') to Cortex XSOAR incident
+    Converts the HelloWorld alert severity level ('Low', 'Medium', 'High', 'Critical') to Cortex XSOAR alert
     severity (1 to 4).
 
     Args:
@@ -526,7 +526,7 @@ def test_module(client: Client, params: dict[str, Any]) -> str:
         time = dateparser.parse('1 minute')
         assert time
         severity = params.get('severity', None)
-        if params.get('isFetch'):  # Tests fetch incident:
+        if params.get('isFetch'):  # Tests fetch alert:
             fetch_incidents(
                 client=client,
                 max_results=1,
@@ -596,24 +596,24 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict,
                     ) -> tuple[dict, list[dict]]:
     """
     This function retrieves new alerts every interval (default is 1 minute).
-    It has to implement the logic of making sure that incidents are fetched only onces and no incidents are missed.
-    By default it's invoked by XSOAR every minute. It will use last_run to save the timestamp of the last incident it
+    It has to implement the logic of making sure that alerts are fetched only onces and no alerts are missed.
+    By default it's invoked by XSOAR every minute. It will use last_run to save the timestamp of the last alert it
     processed. If last_run is not provided, it should use the integration parameter first_fetch_time to determine when
     to start fetching the first time.
 
     Args:
         client (Client): HelloWorld client to use.
-        max_results (int): Maximum numbers of incidents per fetch.
-        last_run (dict): A dict with a key containing the latest incident created time we got from last fetch.
+        max_results (int): Maximum numbers of alerts per fetch.
+        last_run (dict): A dict with a key containing the latest alert created time we got from last fetch.
         first_fetch_time(int): If last_run is None (first time we are fetching), it contains the timestamp in
-            milliseconds on when to start fetching incidents.
+            milliseconds on when to start fetching alerts.
         severity (str): severity of the alert to search for.
     Returns:
         dict: Next run dictionary containing the timestamp that will be used in ``last_run`` on the next fetch.
-        list: List of incidents that will be created in XSOAR.
+        list: List of alerts that will be created in XSOAR.
     """
     # INTEGRATION DEVELOPER TIP
-    # You can use the last_run to save important information between fetches (For example, the last fetched incident's ids.
+    # You can use the last_run to save important information between fetches (For example, the last fetched alert's ids.
     # Note that the last_run can store only small amounts of data, abusing it might cause unexpected behavior.
 
     # INTEGRATION DEVELOPER TIP
@@ -635,52 +635,53 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict,
 
     assert last_fetch
 
-    # Initialize an empty list of incidents to return. Incidents are processed alerts.
+    # Initialize an empty list of alerts to return. Incidents are processed alerts.
     incidents: list[dict[str, Any]] = []
     last_dummy_id = max(last_ids) if last_ids else 0
     demisto.debug(f'Running API query with {last_fetch=}, {severity=}')
 
     # Calling the relevant client method. Note that sometimes pagination is in order.
     # For pagination related information, see https://xsoar.pan.dev/docs/integrations/code-conventions#pagination-in-integration-commands.
-    alerts = client.get_incident_list_for_fetch(limit=max_results, start_time=last_fetch,
-                                                severity=severity,
-                                                last_id=last_dummy_id)
+    alerts = client.get_alert_list_for_fetch(limit=max_results,
+                                             start_time=dateparser.parse(last_fetch),  # type: ignore
+                                             severity=severity,
+                                             last_id=last_dummy_id)
     demisto.debug(f'Received {len(alerts)} alerts from server.')
 
     # INTEGRATION DEVELOPER TIP
-    # Incidents might be duplicated in some cases:
+    # alerts might be duplicated in some cases:
     # 1. Pagination done without next page's token -
-    #   The exact time of the last incident is queried again so the same incident will be fetched again).
-    # 2. Limit is exceeded but there are more incident in the same time to fetch in the next run-
+    #   The exact time of the last alert is queried again so the same alert will be fetched again).
+    # 2. Limit is exceeded but there are more alert in the same time to fetch in the next run-
     #   (Mostly happens when API does not support milliseconds).
 
     alerts, number_of_dups = dedup_by_ids(alerts, last_ids)
-    demisto.debug(f'recieved {number_of_dups} duplicates incidents to skip.')
+    demisto.debug(f'recieved {number_of_dups} duplicates alerts to skip.')
 
     # Get the last alert time.
-    # We assume asc order so we can get all the incidents fetched with the exact same time and avoid it in the next run.
-    # If no results returned from API, we use the last incident fetched from last_run.
+    # We assume asc order so we can get all the alerts fetched with the exact same time and avoid it in the next run.
+    # If no results returned from API, we use the last alert fetched from last_run.
     last_fetched_time = alerts[-1]['date'] if alerts else last_fetch
     last_ids = []
     demisto.debug(f'{alerts=}')
     for alert in alerts:
-        # to prevent duplicates, we are only adding incidents with creation_time > last fetched incident.
-        # When we cannot assume incidents order in the response, we can use this code:
+        # to prevent duplicates, we are only adding alerts with creation_time > last_fetched.
+        # When we cannot assume alerts order in the response, we can use this code:
 
         # if last_fetch:
-        # if incident_created_time <= last_fetch:
+        # if alert_created_time <= last_fetch:
         #     continue
 
-        # Update last run and add incident if the incident is newer than last fetch
-        # if incident_created_time > latest_created_time:
-        #     latest_created_time = incident_created_time
+        # Update last run and add alert if the alert is newer than last fetch
+        # if alert_created_time > latest_created_time:
+        #     latest_created_time = alert_created_time
 
-        # Otherwise, we might need to add the incident id to the last_ids so it will be avoided in the next run.
+        # Otherwise, we might need to add the alert id to the last_ids so it will be avoided in the next run.
         if alert['date'] == last_fetched_time:
             last_ids.append(alert['id'])
 
-        # Formatting the incidents as needed (Adding fields, Removing sensitive ones, etc.)
-        alert['name'] = 'Hello World Alert'
+        # Formatting the alerts as needed (Adding fields, Removing sensitive ones, etc.)
+        alert['name'] = alert.get('name') or 'Hello World Alert'
 
         # INTEGRATION DEVELOPER TIP
         # The incident dict is initialized with a few mandatory fields:
@@ -701,7 +702,7 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict,
             # 'details': alert['name'],
             'occurred': alert['date'],
             'rawJSON': json.dumps(alert),
-            # 'type': 'Hello World Alert',  # Map to a specific XSOAR incident Type
+            # 'type': 'Hello World Alert',  # Map to a specific XSOAR alert Type
             'severity': convert_to_demisto_severity(alert.get('severity', 'low')),
             # 'CustomFields': {  # Map specific XSOAR Custom Fields
             #     'helloworldid': alert.get('id'),
@@ -713,7 +714,7 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict,
         incidents.append(incident)
 
     # Save the next_run as a dict with the last_fetch key to be stored.
-    # When we reached limit but there is still incidents to get from this run, The leftovers will return in the next run by time.
+    # When we reached limit but there is still alerts to get from this run, The leftovers will return in the next run by time.
     demisto.debug(f"setting next run- {last_fetched_time=}")
     next_run = {'last_fetch': last_fetched_time, 'last_ids': last_ids}
     return next_run, incidents
@@ -866,39 +867,41 @@ def ip_reputation_command(client: Client, args: dict[str, Any], default_threshol
     return command_results
 
 
-def item_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
+def alert_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
 
-    incident_id = arg_to_number(args.get("incident_id"))
+    alert_id = arg_to_number(args.get("alert_id"))
     severity = args.get("severity")
+    if not severity and not alert_id:
+        raise DemistoException("Severity is a required parameter.")
 
     # Pagination params. See https://xsoar.pan.dev/docs/integrations/code-conventions#pagination-in-integration-commands
     limit = arg_to_number(args.get("limit")) or LIMIT
 
-    if incident_id:  # If incident_id is provided, we only need one call to API and pagination is not needed.
-        full_res = client.get_incident(incident_id)
+    if alert_id:  # If alert_id is provided, we only need one call to API and pagination is not needed.
+        full_res = client.get_alert(alert_id)
         if isinstance(full_res, dict):
             full_res = [full_res]
 
     else:
-        full_res = client.get_item_list(limit=limit, severity=severity)
+        full_res = client.get_alert_list(limit=limit, severity=severity)
 
-    readable_output = tableToMarkdown('Items List (Example Data)', full_res)
+    readable_output = tableToMarkdown('Items List (Sample Data)', full_res)
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix='HelloWorld.Item',
+        outputs_prefix='HelloWorld.Alert',
         outputs_key_field='id',
         outputs=full_res
     )
 
 
-def incident_note_create_command(client: Client, args: dict[str, Any]) -> CommandResults:
-    incident_id = arg_to_number(args["incident_id"], required=True)
+def alert_note_create_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    alert_id = arg_to_number(args["alert_id"], required=True)
     note = args['note_text']
 
-    if not incident_id:
-        raise DemistoException("Please provide incident id.")
+    if not alert_id:
+        raise DemistoException("Please provide alert id.")
 
-    res_data = client.create_note(incident_id=incident_id, comment=note)
+    res_data = client.create_note(alert_id=alert_id, comment=note)
 
     return CommandResults(
         readable_output="Note was created successfully.",
@@ -932,7 +935,7 @@ def main() -> None:
     # Just pass ``verify_certificate`` to the Client constructor
     verify_certificate = not params.get('insecure', False)
 
-    # How much time before the first fetch to retrieve incidents
+    # How much time before the first fetch to retrieve alerts
     first_fetch_time = arg_to_datetime(
         arg=params.get('first_fetch', '3 days'),
         arg_name='First fetch time',
@@ -977,14 +980,14 @@ def main() -> None:
             # Set and define the fetch incidents command to run after activated via integration settings.
             severity = params.get('severity', 'low')
 
-            # Convert the argument to an int using helper function or set to MAX_INCIDENTS_TO_FETCH
+            # Convert the argument to an int using helper function or set to MAX_ALERTS_TO_FETCH
             max_results = arg_to_number(
                 arg=params.get('max_fetch'),
                 arg_name='max_fetch',
                 required=False
             )
-            if not max_results or max_results > MAX_INCIDENTS_TO_FETCH:
-                max_results = MAX_INCIDENTS_TO_FETCH
+            if not max_results or max_results > MAX_ALERTS_TO_FETCH:
+                max_results = MAX_ALERTS_TO_FETCH
 
             next_run, incidents = fetch_incidents(
                 client=client,
@@ -1000,11 +1003,11 @@ def main() -> None:
             # of incidents to create
             demisto.incidents(incidents)
 
-        elif command == 'helloworld-incident-list':
-            return_results(item_list_command(client, args))
+        elif command == 'helloworld-alert-list':
+            return_results(alert_list_command(client, args))
 
-        elif command == 'helloworld-incident-note-create':
-            return_results(incident_note_create_command(client, args))
+        elif command == 'helloworld-alert-note-create':
+            return_results(alert_note_create_command(client, args))
 
         elif command == 'helloworld-say-hello':
             return_results(say_hello_command(client, args))
