@@ -1,8 +1,8 @@
 import contextlib
-from dataclasses import dataclass
 from json import JSONDecodeError
 from pathlib import Path
-from typing import Literal, NamedTuple, Sequence
+from typing import Literal, NamedTuple
+from collections.abc import Sequence
 from collections.abc import Callable, Iterable
 from requests import Response
 
@@ -97,7 +97,7 @@ FILE_NAME = Field("file_name")
 CONTENT_TYPE = Field("content_type")
 LAST_UPDATE = Field("last_update")
 OPERATION_TYPE_ID = Field("operation_type_id")
-
+HISTORY_ID = Field("history_id")
 # Underscored fields are not real in HDA but used for the integration
 _PRIORITY = Field("priority")
 _TICKET_SOURCE = Field("ticket_source")
@@ -135,7 +135,7 @@ class Filter(NamedTuple):
         return {"property": self.key, "op": self.operator, "value": self.value}
 
     @staticmethod
-    def dumps_list(filters: Sequence["Filter"] | "Filter") -> str:
+    def dumps_list(filters: Union[Sequence["Filter"], "Filter"]) -> str:
         if isinstance(filters, Filter):
             filters = [filters]
         return json.dumps([filter.dict for filter in filters])
@@ -221,9 +221,9 @@ class Client(BaseClient):
             resp_type="response",
             **kwargs,
         )
-        print(
-            f"Request: {method} {urljoin(self._base_url,url_suffix)}, {kwargs=}, {self._headers=}"
-        )
+        # print(
+        #     f"Request: {method} {urljoin(self._base_url,url_suffix)}, {kwargs=}, {self._headers=}"
+        # )
         # for r in response.history:
         #     print(curlify.to_curl(r.request, compressed=True))
         # print(curlify.to_curl(response.request, compressed=True))
@@ -560,6 +560,9 @@ class Client(BaseClient):
         )
 
     def get_ticket_history(self, ticket_id: str) -> dict:
+        # Note: this endpoint has a different structure than the rest:
+        #   1. no `data` (resuluts are returned directly in the root).
+        #   2. the `success` field only returned on failure. (hence require_succes_true=False)
         return self.http_request(
             url_suffix=f"Ticket/History?{_OBJECT_ID.hda_name}={ticket_id}",
             method="GET",
@@ -587,7 +590,7 @@ class Client(BaseClient):
 
         if user_ids := argToList(kwargs.get("user_id")):
             params["filter"] = Filter.dumps_list(
-                Filter(ID.hda_name, "eq", id_) for id_ in user_ids
+                tuple(Filter(ID.hda_name, "eq", id_) for id_ in user_ids)
             )
 
         return self.http_request(
@@ -656,6 +659,7 @@ def pat_table_to_markdown(
     output: dict | list[dict],
     fields: tuple[Field, ...] | None,
     field_replacements: dict[Field, Field] | None = None,
+    **kwargs,
 ) -> str:
     def replace_fields(item: Any):
         string_key_replacements = {
@@ -697,6 +701,7 @@ def pat_table_to_markdown(
         t=output,
         headerTransform=pascalToSpace,
         sort_headers=False,
+        **kwargs,
     )
 
 
@@ -864,13 +869,16 @@ def get_ticket_history_command(client: Client, args: dict) -> CommandResults:
     response = client.get_ticket_history(args["ticket_id"])
     response = convert_response_dates(response)
     return CommandResults(
-        outputs=response["data"],
+        outputs=response,
         outputs_prefix=f"{VENDOR}.Ticket",
-        outputs_key_field=ID.hda_name,
+        outputs_key_field=HISTORY_ID.hda_name,
         raw_response=response,
-        readable_output=tableToMarkdown(
-            name="PAT HelpdeskAdvanced Ticket History",
-            t=response["data"],  # TODO check readable outputs
+        readable_output=pat_table_to_markdown(
+            title="PAT HelpdeskAdvanced Ticket History",
+            output=response,
+            fields=None,
+            removeNull=True,
+            is_auto_json_transform=True,
         ),
     )
 
@@ -946,7 +954,13 @@ def main() -> None:
 
     except Exception as e:
         return_error(
-            "\n".join((f"Failed to execute {demisto.command()}.", f"Error: {e!s}"))
+            "\n".join(
+                (
+                    f"Failed to execute {demisto.command()}.",
+                    f"Error: {e!s}",
+                    traceback.format_exc(),
+                )
+            )
         )
 
 

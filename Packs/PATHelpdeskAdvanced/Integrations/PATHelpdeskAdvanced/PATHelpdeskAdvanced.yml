@@ -3,241 +3,241 @@ commonfields:
   id: PATHelpdeskAdvanced
   version: -1
 configuration:
-  - display: PAT Helpdesk URL
-    name: base_url
-    required: true
-    type: 0
-    defaultvalue: "***REMOVED***/HDAPortal"
-  - name: credentials
-    display: User name
-    displaypassword: Password
-    required: true
-    hiddenusername: false
-    type: 9
-  - display: Trust any certificate (not secure)
-    name: insecure
-    type: 8
-    required: false
-  - display: Use system proxy settings
-    name: proxy
-    type: 8
-    required: false
+- display: PAT Helpdesk URL
+  name: base_url
+  required: true
+  type: 0
+  defaultvalue: "***REMOVED***/HDAPortal"
+- name: credentials
+  display: User name
+  displaypassword: Password
+  required: true
+  hiddenusername: false
+  type: 9
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
 description: Improve the effectiveness of your service provision and resources, and the quality of your IT department.
 display: "PATHelpdeskAdvanced"
 name: PATHelpdeskAdvanced
 script:
   commands:
-    - name: hda-create-ticket
-      description: Create a new ticket.
-      arguments:
-        - name: object_type_id
-          description: The object type ID for the ticket.
-          required: true
-        - name: ticket_status_id
-          description: The status ID for the ticket. Use hda-list-ticket-statuses to get a list of status IDs.
-          required: true
-        - name: ticket_priority_id
-          description: The priority ID for the ticket.
-          required: true
-        - name: object_description
-          description: The description of the object.
-        - name: ticket_classification_id
-          description: The classification ID for the ticket.
-        - name: ticket_type_id
-          description: The type ID for the ticket.
-        - name: contact_id
-          description: The contact ID for the ticket.
-        - name: subject
-          description: The subject for the ticket.
-        - name: problem
-          description: The problem description for the ticket.
-        - name: site
-          description: The site for the ticket.
-      outputs:
-        - contextPath: HelpdeskAdvanced.Ticket.HRField
-          description: The HR field for the ticket.
-          type: string
-        - contextPath: HelpdeskAdvanced.Ticket.ID
-          description: The ticket ID.
-          type: string
-        - contextPath: HelpdeskAdvanced.Ticket.ObjectDescription
-          description: The object description for the ticket.
-          type: string
-        - contextPath: HelpdeskAdvanced.Ticket.ObjectEntity
-          description: The object entity for the ticket.
-          type: string
-        - contextPath: HelpdeskAdvanced.Ticket.Solution
-          description: The solution for resolving the ticket.
-          type: string
-        - contextPath: HelpdeskAdvanced.Ticket.ClassificationID
-          description: The classification ID for the ticket.
-          type: string
-        - contextPath: HelpdeskAdvanced.Ticket.IsNew
-          description: Whether the ticket is new.
-          type: boolean
-        - contextPath: HelpdeskAdvanced.Ticket.ExpirationDate
-          description: The expiration date for the ticket.
-          type: string
-        - contextPath: HelpdeskAdvanced.Ticket.FirstUpdateUserID
-          description: The first user to update the ticket.
-          type: string
-        - contextPath: HelpdeskAdvanced.Ticket.OwnerUserID
-          description: The owner user ID for the ticket.
-          type: string
-        - contextPath: HelpdeskAdvanced.Ticket.Date
-          description: The date the ticket was created.
-          type: string
-        - contextPath: HelpdeskAdvanced.Ticket.AssignedUserID
-          description: The assigned user ID for the ticket.
-          type: string
-    - name: hda-list-tickets
-      description: List tickets.
-      arguments:
-        - name: ticket_id
-          description: The ID of the ticket to retrieve.
-        - name: filter
-          description: Filters to apply to the ticket list.
-        - name: page
-          description: The page number to retrieve.
-        - name: page_size
-          description: The number of tickets per page.
-        - name: limit
-          description: The maximum number of tickets to return.
-          defaultValue: "50"
-    - name: hda-add-ticket-attachment
-      description: Add an attachment to a ticket.
-      arguments:
-        - name: ticket_id
-          description: The ticket ID to retrieve details for.
-          required: true
-        - name: entry_id
-          description: The file entry ID to attach.
-          required: true
-      outputs: []
-    - name: hda-list-ticket-attachments
-      description: List attachments for a ticket.
-      arguments:
-        - name: ticket_id
-          description: The ticket ID to retrieve details for.
-          required: true
-        - name: limit
-          description: The maximum number of tickets to return.
-          required: false
-          defaultValue: "50"
-      outputs: []
-    - name: hda-add-ticket-comment
-      description: Add a comment to a ticket.
-      arguments:
-        - name: ticket_id
-          description: The ticket ID to retrieve details for.
-          required: true
-        - name: comment
-          description: The comment text.
-          required: true
-        - name: site_visible
-          description: Whether the ticket is visible to the customer site.
-          auto: PREDEFINED
-          defaultValue: "False"
-          predefined:
-            - "True"
-            - "False"
-          required: true
-    - name: hda-list-ticket-statuses
-      description: List ticket statuses.
-      arguments:
-        - name: limit
-          description: The maximum number of statuses to return.
-          required: false
-          defaultValue: "50"
-      outputs:
-        - contextPath: PATHelpdeskAdvanced.TicketStatus.ID
-          description: The status ID.
-          type: Number
-        - contextPath: PATHelpdeskAdvanced.TicketStatus.Name
-          description: The status name.
-          type: String
+  - name: hda-create-ticket
+    description: Create a new ticket.
+    arguments:
+    - name: object_type_id
+      description: The object type ID for the ticket.
+      required: true
+    - name: ticket_status_id
+      description: The status ID for the ticket. Use hda-list-ticket-statuses to get a list of status IDs.
+      required: true
+    - name: ticket_priority_id
+      description: The priority ID for the ticket.
+      required: true
+    - name: object_description
+      description: The description of the object.
+    - name: ticket_classification_id
+      description: The classification ID for the ticket.
+    - name: ticket_type_id
+      description: The type ID for the ticket.
+    - name: contact_id
+      description: The contact ID for the ticket.
+    - name: subject
+      description: The subject for the ticket.
+    - name: problem
+      description: The problem description for the ticket.
+    - name: site
+      description: The site for the ticket.
+    outputs:
+    - contextPath: HelpdeskAdvanced.Ticket.HRField
+      description: The HR field for the ticket.
+      type: string
+    - contextPath: HelpdeskAdvanced.Ticket.ID
+      description: The ticket ID.
+      type: string
+    - contextPath: HelpdeskAdvanced.Ticket.ObjectDescription
+      description: The object description for the ticket.
+      type: string
+    - contextPath: HelpdeskAdvanced.Ticket.ObjectEntity
+      description: The object entity for the ticket.
+      type: string
+    - contextPath: HelpdeskAdvanced.Ticket.Solution
+      description: The solution for resolving the ticket.
+      type: string
+    - contextPath: HelpdeskAdvanced.Ticket.ClassificationID
+      description: The classification ID for the ticket.
+      type: string
+    - contextPath: HelpdeskAdvanced.Ticket.IsNew
+      description: Whether the ticket is new.
+      type: boolean
+    - contextPath: HelpdeskAdvanced.Ticket.ExpirationDate
+      description: The expiration date for the ticket.
+      type: string
+    - contextPath: HelpdeskAdvanced.Ticket.FirstUpdateUserID
+      description: The first user to update the ticket.
+      type: string
+    - contextPath: HelpdeskAdvanced.Ticket.OwnerUserID
+      description: The owner user ID for the ticket.
+      type: string
+    - contextPath: HelpdeskAdvanced.Ticket.Date
+      description: The date the ticket was created.
+      type: string
+    - contextPath: HelpdeskAdvanced.Ticket.AssignedUserID
+      description: The assigned user ID for the ticket.
+      type: string
+  - name: hda-list-tickets
+    description: List tickets.
+    arguments:
+    - name: ticket_id
+      description: The ID of the ticket to retrieve.
+    - name: filter
+      description: Filters to apply to the ticket list.
+    - name: page
+      description: The page number to retrieve.
+    - name: page_size
+      description: The number of tickets per page.
+    - name: limit
+      description: The maximum number of tickets to return.
+      defaultValue: "50"
+  - name: hda-add-ticket-attachment
+    description: Add an attachment to a ticket.
+    arguments:
+    - name: ticket_id
+      description: The ticket ID to retrieve details for.
+      required: true
+    - name: entry_id
+      description: The file entry ID to attach.
+      required: true
+    outputs: []
+  - name: hda-list-ticket-attachments
+    description: List attachments for a ticket.
+    arguments:
+    - name: ticket_id
+      description: The ticket ID to retrieve details for.
+      required: true
+    - name: limit
+      description: The maximum number of tickets to return.
+      required: false
+      defaultValue: "50"
+    outputs: []
+  - name: hda-add-ticket-comment
+    description: Add a comment to a ticket.
+    arguments:
+    - name: ticket_id
+      description: The ticket ID to retrieve details for.
+      required: true
+    - name: comment
+      description: The comment text.
+      required: true
+    - name: site_visible
+      description: Whether the ticket is visible to the customer site.
+      auto: PREDEFINED
+      defaultValue: "False"
+      predefined:
+      - "True"
+      - "False"
+      required: true
+  - name: hda-list-ticket-statuses
+    description: List ticket statuses.
+    arguments:
+    - name: limit
+      description: The maximum number of statuses to return.
+      required: false
+      defaultValue: "50"
+    outputs:
+    - contextPath: PATHelpdeskAdvanced.TicketStatus.ID
+      description: The status ID.
+      type: Number
+    - contextPath: PATHelpdeskAdvanced.TicketStatus.Name
+      description: The status name.
+      type: String
 
-    - name: hda-change-ticket-status
-      description: Change the status of a ticket.
-      arguments:
-        - name: ticket_id
-          description: The ID of the ticket to change status for.
-          required: true
-        - name: status_id
-          description: The ID of the status to change the ticket to.
-          required: true
-        - name: note
-          description: An optional note to add with the status change.
-          required: false
-      outputs: []
+  - name: hda-change-ticket-status
+    description: Change the status of a ticket.
+    arguments:
+    - name: ticket_id
+      description: The ID of the ticket to change status for.
+      required: true
+    - name: status_id
+      description: The ID of the status to change the ticket to.
+      required: true
+    - name: note
+      description: An optional note to add with the status change.
+      required: false
+    outputs: []
 
-    - name: hda-list-ticket-priorities
-      description: List ticket priorities.
-      arguments:
-        - name: ticket_id
-          type: String
-          description: The ID of the ticket to change status for.
-          required: true
+  - name: hda-list-ticket-priorities
+    description: List ticket priorities.
+    arguments:
+    - name: ticket_id
+      type: String
+      description: The ID of the ticket to change status for.
+      required: true
 
-      outputs:
-        - contextPath: PATHelpdeskAdvanced.TicketPriority.ID
-          description: The priority ID.
-          type: Number
-        - contextPath: PATHelpdeskAdvanced.TicketPriority.Name
-          description: The priority name.
-          type: String
+    outputs:
+    - contextPath: PATHelpdeskAdvanced.TicketPriority.ID
+      description: The priority ID.
+      type: Number
+    - contextPath: PATHelpdeskAdvanced.TicketPriority.Name
+      description: The priority name.
+      type: String
 
-    - name: hda-get-ticket-history
-      description: Get ticket history.
-      arguments:
-        - name: ticket_id
-          type: String
-          description: The ID of the ticket to change status for.
-          required: true
+  - name: hda-get-ticket-history
+    description: Get ticket history.
+    arguments:
+    - name: ticket_id
+      type: String
+      description: The ID of the ticket to change status for.
+      required: true
 
-      outputs:
-        - contextPath: PATHelpdeskAdvanced.TicketHistory.OperationTypeID
-          description: The operation type ID.
-          type: Number
-        - contextPath: PATHelpdeskAdvanced.TicketHistory.OperationDescription
-          description: The operation description.
-          type: String
-        - contextPath: PATHelpdeskAdvanced.TicketHistory.UpdateDate
-          description: The update date.
-          type: Date
-        - contextPath: PATHelpdeskAdvanced.TicketHistory.FullName
-          description: The full name of the user who made the update.
-          type: String
-        - contextPath: PATHelpdeskAdvanced.TicketHistory.UserName
-          description: The username who made the update.
-          type: String
-        - contextPath: PATHelpdeskAdvanced.TicketHistory.ContactID
-          description: The contact ID.
-          type: String
-        - contextPath: PATHelpdeskAdvanced.TicketHistory.AccountID
-          description: The account ID.
-          type: String
-        - contextPath: PATHelpdeskAdvanced.TicketHistory.From
-          description: The old value before the update.
-          type: String
-        - contextPath: PATHelpdeskAdvanced.TicketHistory.To
-          description: The new value after the update.
-          type: String
-        - contextPath: PATHelpdeskAdvanced.TicketHistory.FromID
-          description: The old value ID before the update.
-          type: String
-        - contextPath: PATHelpdeskAdvanced.TicketHistory.ToID
-          description: The new value ID after the update.
-          type: String
-        - contextPath: PATHelpdeskAdvanced.TicketHistory.Comment
-          description: The update comment.
-          type: String
+    outputs:
+    - contextPath: PATHelpdeskAdvanced.TicketHistory.OperationTypeID
+      description: The operation type ID.
+      type: Number
+    - contextPath: PATHelpdeskAdvanced.TicketHistory.OperationDescription
+      description: The operation description.
+      type: String
+    - contextPath: PATHelpdeskAdvanced.TicketHistory.UpdateDate
+      description: The update date.
+      type: Date
+    - contextPath: PATHelpdeskAdvanced.TicketHistory.FullName
+      description: The full name of the user who made the update.
+      type: String
+    - contextPath: PATHelpdeskAdvanced.TicketHistory.UserName
+      description: The username who made the update.
+      type: String
+    - contextPath: PATHelpdeskAdvanced.TicketHistory.ContactID
+      description: The contact ID.
+      type: String
+    - contextPath: PATHelpdeskAdvanced.TicketHistory.AccountID
+      description: The account ID.
+      type: String
+    - contextPath: PATHelpdeskAdvanced.TicketHistory.From
+      description: The old value before the update.
+      type: String
+    - contextPath: PATHelpdeskAdvanced.TicketHistory.To
+      description: The new value after the update.
+      type: String
+    - contextPath: PATHelpdeskAdvanced.TicketHistory.FromID
+      description: The old value ID before the update.
+      type: String
+    - contextPath: PATHelpdeskAdvanced.TicketHistory.ToID
+      description: The new value ID after the update.
+      type: String
+    - contextPath: PATHelpdeskAdvanced.TicketHistory.Comment
+      description: The update comment.
+      type: String
 
   runonce: false
   script: "-"
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.13.73190
+  dockerimage: demisto/python3:3.10.13.74666
 fromversion: 6.9.0
 tests:
-  - No tests (auto formatted)
+- No tests (auto formatted)
