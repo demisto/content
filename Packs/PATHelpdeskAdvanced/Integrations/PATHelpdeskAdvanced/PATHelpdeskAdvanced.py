@@ -133,7 +133,7 @@ class Filter(NamedTuple):
         )
 
     @staticmethod
-    def parse_list(strings: Iterable[str] | str | None) -> List["Filter"]:
+    def parse_list(strings: Iterable[str] | str) -> List["Filter"]:
         return [
             Filter._parse(string) for string in more_itertools.always_iterable(strings)
         ]
@@ -435,7 +435,9 @@ class Client(BaseClient):
             "limit": safe_arg_to_number(kwargs["limit"], "limit"),
         }
 
-        if custom_filter := Filter.parse_list(kwargs.get("filter")):
+        if (raw_filter := kwargs.get("filter")) and (
+            custom_filter := Filter.parse_list(raw_filter)
+        ):
             params["filter"] = Filter.dumps_list(custom_filter)
 
         if ticket_id := kwargs.get(TICKET_ID.demisto_name):
@@ -529,9 +531,9 @@ class Client(BaseClient):
         ticket_id: str,
         note: str | None = None,
     ) -> dict:
-        allowed_id_values = map_id_to_description(
-            self.list_ticket_statuses(limit=1000)
-        ).keys()  # TODO 1000?
+        allowed_id_values = tuple(
+            item[DESCRIPTION.hda_name] for item in self.list_ticket_statuses(limit=1000)
+        )  # TODO 1000?
 
         if status_id not in allowed_id_values:
             raise DemistoException(
