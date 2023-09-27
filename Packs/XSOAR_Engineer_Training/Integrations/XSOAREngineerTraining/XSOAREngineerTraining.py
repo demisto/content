@@ -119,12 +119,12 @@ def lookup_ad_user(lookup, attribute):
     for u in USERS:
         if u[attribute] == lookup:
             found_user = True
-            return u
+            user: Dict | None = u
             break
 
     if not found_user:
-        return []
-    return None
+        user = None
+    return user
 
 
 def create_ad_user_output(user):
