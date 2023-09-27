@@ -2016,3 +2016,37 @@ def test_update_incident_command_table_to_markdown(mocker):
     result = update_incident_command(client, args)
     expected_output = '### Updated incidents 123 details\n**No entries.**'
     assert result.readable_output.strip() == expected_output
+
+
+def test_update_incident_with_client_changed_etag(mocker):
+    """
+    Given:
+        - An old incident to update with a delta from xsoar.
+        - A newer version is returned from the client.
+
+    When:
+        - Updating the incident.
+
+    Then:
+        - Ensure the most updated etag is sent on update to avoid conflicts.
+    """
+    client = mock_client()
+    old_incident_data_in_xsoar = {
+        'etag': 'tag-version1',
+        'properties': {'title': 'Title version 1', 'severity': 1, 'status': 2, 'classification': 'Undetermined'}
+    }
+    delta_incident_changes = {
+        'severity': 2
+    }
+    newer_incident_from_azure = {
+        'etag': 'tag-version2',
+        'properties': {'title': 'Title version 2', 'severity': 1, 'status': 2, 'classification': 'Undetermined'}
+    }
+
+    # return newer version when requesting incident
+    http_request_mock = mocker.patch.object(client, 'http_request', return_value=[newer_incident_from_azure, True])
+    update_incident_request(client, 'id-incident-1', old_incident_data_in_xsoar, delta_incident_changes, False)
+
+    assert http_request_mock.call_count == 2
+    assert http_request_mock.call_args[1].get('data', {}).get('etag') == newer_incident_from_azure.get('etag')
+
