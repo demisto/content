@@ -499,7 +499,7 @@ class Client(BaseClient):
         return self.http_request(
             url_suffix="WSC/Set",
             method="POST",
-            params={
+            data={
                 "entity": "TicketConversationItem",
                 "data": json.dumps(
                     {
