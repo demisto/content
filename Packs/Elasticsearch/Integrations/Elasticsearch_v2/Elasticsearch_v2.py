@@ -858,15 +858,15 @@ def index_document(args, proxies):
 def index_document_command(args, proxies):
     resp = index_document(args, proxies)
     index_context = {
-        '_id': resp.get('_id', ''),
-        '_index': resp.get('_index', ''),
-        '_version': resp.get('_version', ''),
+        'id': resp.get('_id', ''),
+        'index': resp.get('_index', ''),
+        'version': resp.get('_version', ''),
         'result': resp.get('result', '')
     }
     human_readable = {
-        'ID': index_context.get('_id'),
-        'Index name': index_context.get('_index'),
-        'Version': index_context.get('_version'),
+        'ID': index_context.get('id'),
+        'Index name': index_context.get('index'),
+        'Version': index_context.get('version'),
         'Result': index_context.get('result')
     }
     headers = [str(k) for k in human_readable]
@@ -881,7 +881,7 @@ def index_document_command(args, proxies):
         outputs_prefix='Elasticsearch.Index',
         outputs=index_context,
         raw_response=resp,
-        outputs_key_field='_id'
+        outputs_key_field='id'
     )
 
 

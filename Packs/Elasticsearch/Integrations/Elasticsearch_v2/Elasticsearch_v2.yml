@@ -366,13 +366,13 @@ script:
     - name: id
       description: The id of the indexed document (will be generated if empty).
     outputs:
-    - contextPath: Elasticsearch.Index._id
+    - contextPath: Elasticsearch.Index.id
       description: The ID of the indexed document.
       type: string
-    - contextPath: Elasticsearch.Index._index
+    - contextPath: Elasticsearch.Index.index
       description: The name of the index which the document was ingested to.
       type: string
-    - contextPath: Elasticsearch.Index._version
+    - contextPath: Elasticsearch.Index.version
       description: The version number of the indexed document.
       type: number
     - contextPath: Elasticsearch.Index.result

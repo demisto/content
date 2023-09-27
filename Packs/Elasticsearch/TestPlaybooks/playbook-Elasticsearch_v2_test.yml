@@ -507,7 +507,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: Elasticsearch.Index._id
+              simple: Elasticsearch.Index.id
             iscontext: true
           right:
             value:

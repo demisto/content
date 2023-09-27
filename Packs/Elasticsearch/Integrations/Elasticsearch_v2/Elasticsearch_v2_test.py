@@ -1044,9 +1044,9 @@ def test_index_document_command(mocker):
     mocker.patch.object(Elasticsearch_v2.Elasticsearch, '__init__', return_value=None)
     command_result = Elasticsearch_v2.index_document_command({'index_name': 'test-index', 'document': '{}', 'id': '1'}, '')
     expected_index_context = {
-        '_id': MOCK_INDEX_RESPONSE.get('_id', ''),
-        '_index': MOCK_INDEX_RESPONSE.get('_index', ''),
-        '_version': MOCK_INDEX_RESPONSE.get('_version', ''),
+        'id': MOCK_INDEX_RESPONSE.get('_id', ''),
+        'index': MOCK_INDEX_RESPONSE.get('_index', ''),
+        'version': MOCK_INDEX_RESPONSE.get('_version', ''),
         'result': MOCK_INDEX_RESPONSE.get('result', '')
     }
     expected_human_readable = "### Indexed document\n" \
@@ -1058,4 +1058,4 @@ def test_index_document_command(mocker):
     assert command_result.readable_output == expected_human_readable
     assert command_result.outputs_prefix == 'Elasticsearch.Index'
     assert command_result.raw_response == MOCK_INDEX_RESPONSE
-    assert command_result.outputs_key_field == '_id'
+    assert command_result.outputs_key_field == 'id'

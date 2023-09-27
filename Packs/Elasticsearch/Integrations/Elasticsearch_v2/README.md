@@ -202,9 +202,9 @@ Indexes a document into an Elasticsearch index.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Elasticsearch.Index._id | String | The ID of the indexed document. |
-| Elasticsearch.Index._index | String | The name of the index which the document was ingested to. |  
-| Elasticsearch.Index._version | Number | The version number of the indexed document. | 
+| Elasticsearch.Index.id | String | The ID of the indexed document. |
+| Elasticsearch.Index.index | String | The name of the index which the document was ingested to. |  
+| Elasticsearch.Index.version | Number | The version number of the indexed document. | 
 | Elasticsearch.Index.result | String | The result of the index operation. | 
 
 #### Command Example
@@ -215,9 +215,9 @@ Indexes a document into an Elasticsearch index.
 {
     "Elasticsearch": {
         "Index": {
-            "_id": "1234",
-            "_index": "test-xsoar",
-            "_version": 1,
+            "id": "1234",
+            "index": "test-xsoar",
+            "version": 1,
             "result": "created"
         }
     }
