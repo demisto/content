@@ -1,6 +1,62 @@
 {
-    "proofpoint_email_security_raw": {
-        "guid": {
+    "radware_access_logs_raw": {
+        "source_ip": {
+            "type": "string",
+            "is_array": false
+        },
+        "source_port": {
+            "type": "int",
+            "is_array": false
+        },
+        "destination_ip": {
+            "type": "string",
+            "is_array": false
+        },
+        "destination_port": {
+            "type": "int",
+            "is_array": false
+        },
+        "protocol": {
+            "type": "string",
+            "is_array": false
+        },
+        "http_method": {
+            "type": "string",
+            "is_array": false
+        },
+        "host": {
+            "type": "string",
+            "is_array": false
+        },
+        "request": {
+            "type": "string",
+            "is_array": false
+        },
+        "user_agent": {
+            "type": "string",
+            "is_array": false
+        },
+        "referrer": {
+           "type": "string",
+            "is_array": false
+        },
+        "request_time": {
+            "type": "string",
+            "is_array": false
+        },
+        "response_code": {
+            "type": "int",
+            "is_array": false
+        },
+        "country_code": {
+            "type": "string",
+            "is_array": false
+        },
+        "action": {
+            "type": "string",
+            "is_array": false
+        },
+        "application_name": {
             "type": "string",
             "is_array": false
         }
