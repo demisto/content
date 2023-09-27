@@ -3537,7 +3537,7 @@ Retrieves all scan reports for images scanned by the Jenkins plugin or twistcli.
 | PrismaCloudCompute.CIScan.entityInfo.firewallProtection | Unknown | Firewall protection data. | 
 | PrismaCloudCompute.CIScan.entityInfo.appEmbedded | Boolean | Whether app is embedded. | 
 | PrismaCloudCompute.CIScan.entityInfo.wildFireUsage | Unknown | WildFire usage data. | 
-| PrismaCloudCompute.CIScan.entityInfo.agentless | Boolean | Whether is is an agentless scan. | 
+| PrismaCloudCompute.CIScan.entityInfo.agentless | Boolean | Whether it is an agentless scan. | 
 | PrismaCloudCompute.CIScan.entityInfo.malwareAnalyzedTime | String | Malware analyzed time. | 
 
 #### Command example
@@ -3581,6 +3581,50 @@ Retrieves all scan reports for images scanned by the Jenkins plugin or twistcli.
                             "md5": "a2",
                             "name": "python.o",
                             "path": "/opt/az/lib/python3.10/config-3.10-x86_64-linux-gnu/python.o"
+                        }
+                    ],
+                    "cloudMetadata": {},
+                    "collections": [
+                        "All",
+                        "Access Group"
+                    ],
+                    "complianceDistribution": {
+                        "critical": 0,
+                        "high": 4,
+                        "low": 0,
+                        "medium": 1,
+                        "total": 5
+                    },
+                    "complianceIssues": [
+                        {
+                            "cause": "",
+                            "cri": false,
+                            "cve": "",
+                            "cvss": 0,
+                            "description": "It is a good practice to run the container as a non-root user, if possible.",
+                            "discovered": "0001-01-01T00:00:00Z",
+                            "exploit": "",
+                            "fixDate": 0,
+                            "functionLayer": "",
+                            "id": 41,
+                            "layerTime": 0,
+                            "link": "",
+                            "packageName": "",
+                            "packageVersion": "",
+                            "published": 0,
+                            "riskFactors": null,
+                            "secret": {},
+                            "severity": "high",
+                            "status": "",
+                            "templates": [
+                                "AAA"
+                            ],
+                            "text": "",
+                            "title": "Image should be created with a non-root user",
+                            "twistlock": false,
+                            "type": "image",
+                            "vecStr": "",
+                            "wildfireMalware": {}
                         }
                     ],
                     "complianceIssuesCount": 5,
@@ -3677,6 +3721,52 @@ Retrieves all scan reports for images scanned by the Jenkins plugin or twistcli.
                     "topLayer": "sha256:a6",
                     "trustStatus": "",
                     "type": "ciImage",
+                    "vulnerabilitiesCount": 81,
+                    "vulnerabilityDistribution": {
+                        "critical": 1,
+                        "high": 5,
+                        "low": 34,
+                        "medium": 41,
+                        "total": 81
+                    },
+                    "vulnerabilityRiskScore": 1054134,
+                    "wildFireUsage": null
+                },
+                "pass": true,
+                "time": "2023-09-20T12:53:37.229Z",
+                "version": "30.01.1"
+            },
+            {
+                "_id": "bbb",
+                "entityInfo": {
+                    "Secrets": [
+                        "/opt/aa/lib/python3.10/test/secret.pem"
+                    ],
+                    "_id": "sha256:f3",
+                    "agentless": false,
+                    "allCompliance": {},
+                    "appEmbedded": false,
+                    "applications": [
+                        {
+                            "installedFromPackage": true,
+                            "knownVulnerabilities": 115,
+                            "layerTime": 1695209203,
+                            "name": "ccc",
+                            "path": "/usr/bin/node",
+                            "version": "12.01.01"
+                        }
+                    ],
+                    "cloudMetadata": {},
+                    "collections": [
+                        "Access Group"
+                    ],
+                    "complianceDistribution": {
+                        "critical": 0,
+                        "high": 4,
+                        "low": 0,
+                        "medium": 1,
+                        "total": 5
+                    },
                     "complianceIssuesCount": 5,
                     "complianceRiskScore": 40100,
                     "creationTime": "2023-09-20T11:27:10.233Z",
@@ -3836,12 +3926,32 @@ There are no input arguments for this command.
         "TrustedImage": {
             "groups": [
                 {
+                    "_id": "Deny All",
+                    "images": [
+                        "*gg/*"
+                    ],
+                    "modified": "2022-04-27T17:30:02.803Z",
+                    "name": "",
+                    "owner": "test@paloaltonetworks.com",
+                    "previousName": ""
+                },
+                {
                     "_id": "TRUSTED IMAGES",
                     "images": [
                         "img/aa:*",
                         "img/bb:*"
                     ],
                     "modified": "2023-02-27T21:35:49.697Z",
+                    "name": "",
+                    "owner": "test@paloaltonetworks.com",
+                    "previousName": ""
+                },
+                {
+                    "_id": "test",
+                    "images": [
+                        "img/abc:*"
+                    ],
+                    "modified": "2023-02-28T19:53:44.491Z",
                     "name": "",
                     "owner": "test@paloaltonetworks.com",
                     "previousName": ""
@@ -4098,6 +4208,36 @@ Retrieves container scan reports. Maps to Monitor > Compliance > Images > Deploy
                         "total": 12
                     },
                     "complianceIssues": [
+                        {
+                            "cause": "",
+                            "cri": false,
+                            "cve": "",
+                            "cvss": 0,
+                            "description": "Process ID (PID) namespaces isolate the process ID number space",
+                            "discovered": "0001-01-01T00:00:00Z",
+                            "exploit": "",
+                            "fixDate": 0,
+                            "functionLayer": "",
+                            "id": 515,
+                            "layerTime": 0,
+                            "link": "",
+                            "packageName": "",
+                            "packageVersion": "",
+                            "published": 0,
+                            "riskFactors": null,
+                            "secret": {},
+                            "severity": "critical",
+                            "status": "",
+                            "templates": [
+                                "GGG"
+                            ],
+                            "text": "",
+                            "title": "Do not share the process namespace",
+                            "twistlock": false,
+                            "type": "container",
+                            "vecStr": "",
+                            "wildfireMalware": {}
+                        }
                     ],
                     "complianceIssuesCount": 12,
                     "complianceRiskScore": 7050000,
@@ -4162,6 +4302,36 @@ Retrieves container scan reports. Maps to Monitor > Compliance > Images > Deploy
                         "medium": 0,
                         "total": 12
                     },
+                    "complianceIssues": [
+                        {
+                            "cause": "",
+                            "cri": true,
+                            "cve": "",
+                            "cvss": 0,
+                            "description": "The main container's host has full access to its network interfaces",
+                            "discovered": "0001-01-01T00:00:00Z",
+                            "exploit": "",
+                            "fixDate": 0,
+                            "functionLayer": "",
+                            "id": 5059,
+                            "layerTime": 0,
+                            "link": "",
+                            "packageName": "",
+                            "packageVersion": "",
+                            "published": 0,
+                            "riskFactors": null,
+                            "secret": {},
+                            "severity": "critical",
+                            "status": "",
+                            "templates": null,
+                            "text": "",
+                            "title": "Do not share the host's network namespace",
+                            "twistlock": false,
+                            "type": "container",
+                            "vecStr": "",
+                            "wildfireMalware": {}
+                        }
+                    ],
                     "complianceIssuesCount": 12,
                     "complianceRiskScore": 7050000,
                     "id": "a5",
