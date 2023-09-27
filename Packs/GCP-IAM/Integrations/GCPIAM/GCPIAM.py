@@ -3,7 +3,7 @@ from CommonServerPython import *  # noqa: F401
 # type: ignore
 # pylint: disable=no-member
 import copy
-from typing import Callable
+from collections.abc import Callable
 from googleapiclient import discovery
 from oauth2client import service_account
 import httplib2
@@ -812,6 +812,31 @@ class Client:
 
         """
         request = self.iam_service.projects().serviceAccounts().keys().delete(name=key_name)
+        response = request.execute()
+
+        return response
+
+    def gcp_iam_service_account_generate_access_token_request(self, service_account_email: str, lifetime: str) -> dict:
+        """
+        Create a short-lived access token
+        Args:
+            service_account_email (str): E-Mail of the Service Account for wich the token should be generated
+
+            lifetime (str): Lifetime of the token in seconds. Like 3600
+
+        Returns:
+            dict: API response from GCP.
+
+        """
+        resource_name = f"projects/-/serviceAccounts/{service_account_email}"
+        body = {
+            "scope": [
+                "https://www.googleapis.com/auth/cloud-platform"
+            ],
+            "lifetime": f"{arg_to_number(lifetime, required=True)}s"
+        }
+
+        request = self.iam_credentials.projects().serviceAccounts().generateAccessToken(name=resource_name, body=body)
         response = request.execute()
 
         return response
@@ -2586,7 +2611,7 @@ def get_pagination_request_result(limit: int, page: int, max_page_size: int, cli
 
     steps = max_page_size if offset > max_page_size else offset
 
-    for i in range(0, offset, steps):
+    for _i in range(0, offset, steps):
         response = client_request(limit=steps, page_token=page_token, **kwargs)
 
         page_token = response.get('nextPageToken')
@@ -2919,6 +2944,38 @@ def gcp_iam_service_account_key_disable_command(client: Client, args: Dict[str, 
     return command_results_list
 
 
+def gcp_iam_service_account_generate_access_token_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Create a serivce account short-lived access token
+
+    Args:
+        client (Client): GCP API client.
+        args (dict): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+
+    """
+    service_account_email = args['service_account_email']
+    lifetime = args['lifetime']
+
+    response = client.gcp_iam_service_account_generate_access_token_request(service_account_email, lifetime)
+
+    readable_output = tableToMarkdown(f"Access token for {service_account_email}:",
+                                      response,
+                                      headers=["accessToken", "expireTime"],
+                                      headerTransform=pascalToSpace,
+                                      )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='GCPIAM.ServiceAccountAccessToken',
+        outputs_key_field='name',
+        outputs=response,
+        raw_response=response
+    )
+
+
 def gcp_iam_service_account_key_delete_command(client: Client, args: Dict[str, Any]) -> list:
     """
     Delete service account key.
@@ -3196,10 +3253,10 @@ def list_roles(client_request_method: Callable, args: Dict[str, Any],
     readable_message = get_pagination_readable_message(header=readable_header, limit=limit, page=page)
 
     if resource_identifier_key:
-        command_arguments = dict(parent=resource_identifier, include_permissions=include_permissions,
-                                 show_deleted=show_deleted)
+        command_arguments = {'parent': resource_identifier, 'include_permissions': include_permissions,
+                             'show_deleted': show_deleted}
     else:
-        command_arguments = dict(include_permissions=include_permissions, show_deleted=show_deleted)
+        command_arguments = {'include_permissions': include_permissions, 'show_deleted': show_deleted}
 
     if title_filter or permission_filter:
         response, outputs = list_filtered_role(client_request_method, command_arguments, limit, page, max_limit,
@@ -3660,7 +3717,7 @@ def gcp_iam_project_iam_policy_remove_command(client: Client, args: Dict[str, An
 
     iam_policy = client.gcp_iam_project_iam_policy_get_request(project_name).get("bindings", [])
 
-    updated_policies = [policy for policy in iam_policy if not policy.get("role") in role]
+    updated_policies = [policy for policy in iam_policy if policy.get('role') not in role]
 
     client.gcp_iam_project_iam_policy_set_request(project_name, updated_policies)
     command_results = CommandResults(
@@ -3685,7 +3742,7 @@ def gcp_iam_organization_iam_policy_remove_command(client: Client, args: Dict[st
 
     iam_policy = client.gcp_iam_organization_iam_policy_get_request(organization_name).get("bindings", [])
 
-    updated_policies = [policy for policy in iam_policy if not policy.get("role") in role]
+    updated_policies = [policy for policy in iam_policy if policy.get('role') not in role]
 
     client.gcp_iam_organization_iam_policy_set_request(organization_name, updated_policies)
     command_results = CommandResults(
@@ -3710,7 +3767,7 @@ def gcp_iam_folder_iam_policy_remove_command(client: Client, args: Dict[str, Any
 
     iam_policy = client.gcp_iam_folder_iam_policy_get_request(folder_name).get("bindings", [])
 
-    updated_policies = [policy for policy in iam_policy if not policy.get("role") in role]
+    updated_policies = [policy for policy in iam_policy if policy.get('role') not in role]
 
     client.gcp_iam_folder_iam_policy_set_request(folder_name, updated_policies)
     command_results = CommandResults(
@@ -3775,6 +3832,7 @@ def test_module(service_account_key: str) -> None:
         return return_results('Authorization Error: make sure API Service Account Key is valid.')
 
     return_results('ok')
+    return None
 
 
 def main() -> None:
@@ -3838,6 +3896,7 @@ def main() -> None:
             'gcp-iam-service-account-keys-get': gcp_iam_service_account_keys_get_command,
             'gcp-iam-service-account-key-enable': gcp_iam_service_account_key_enable_command,
             'gcp-iam-service-account-key-disable': gcp_iam_service_account_key_disable_command,
+            'gcp-iam-service-account-generate-access-token': gcp_iam_service_account_generate_access_token_command,
             'gcp-iam-service-account-key-delete': gcp_iam_service_account_key_delete_command,
             'gcp-iam-organization-role-create': gcp_iam_organization_role_create_command,
             'gcp-iam-organization-role-update': gcp_iam_organization_role_update_command,
