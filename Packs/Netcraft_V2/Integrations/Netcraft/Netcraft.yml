@@ -1492,7 +1492,7 @@ script:
       description: The file extension of the screenshot.
   script: '-'
   type: python
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.13.74666
   subtype: python3
   isfetch: true
   runonce: false
