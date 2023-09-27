@@ -2505,7 +2505,7 @@ def migrate_last_run(last_run: dict[str, str] | list[dict]) -> list[dict]:
         return [updated_last_run_detections, updated_last_run_incidents, {}]
 
 
-def sort_incidents_summaries_by_ids_order(ids_order, full_incidents, id_field):
+def sort_summaries_by_ids_order(ids_order, full_incidents, id_field):
     """ sort incidents or detections list by the order that ids_order list has
 
     Args:
