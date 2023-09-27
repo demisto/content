@@ -247,7 +247,7 @@ class takedown_list:
             "domain": "examp1eb4nk.com",
             "domain_attack": "yes",
             "domain_risk_rating": 10,
-            "escalated": False,
+            "escalated": "0",
             "escalation_source": "",
             "evidence_url": "https://incident.netcraft.com/1b24dexample/",
             "false_positive": "0",
@@ -872,7 +872,7 @@ class mail_screenshot_get:
             "ok_codes": (200, 404),
         },
     }
-    outputs = "mail_screenshot_submission_uuid.png"
+    outputs = "email_screenshot_submission_uuid.png"
 
 
 class mail_screenshot_get_404(mail_screenshot_get):
@@ -1361,7 +1361,7 @@ class attack_type_list:
     outputs = CommandResults(
         outputs=[
             {
-                "authorize": True,
+                "auto_authorize": True,
                 "auto_escalation": True,
                 "automated": True,
                 "base_type": "url",
@@ -1370,7 +1370,7 @@ class attack_type_list:
                 "name": "phishing_url",
             },
             {
-                "authorize": False,
+                "auto_authorize": False,
                 "auto_escalation": False,
                 "automated": True,
                 "base_type": "url2",
