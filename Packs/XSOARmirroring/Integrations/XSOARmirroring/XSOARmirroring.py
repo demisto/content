@@ -804,6 +804,7 @@ def update_remote_system_command(client: Client, args: Dict[str, Any], mirror_ta
 
     return new_incident_id
 
+
 def are_two_datetime_equal_by_second(x: datetime, y: datetime):
     """Calculate if two datetime objects are equal up to the seconds value.
         Even though the 'time' attribute of each event has milliseconds,
@@ -819,6 +820,7 @@ def are_two_datetime_equal_by_second(x: datetime, y: datetime):
     """
     return (x.year == y.year) and (x.month == y.month) and (x.day == y.day)\
         and (x.hour == y.hour) and (x.minute == y.minute) and (x.second == y.second)
+
 
 def dedup_incidents(incidents: list[dict], incidents_last_fetch_ids: list[str]):
     """ Dedup incidents response.

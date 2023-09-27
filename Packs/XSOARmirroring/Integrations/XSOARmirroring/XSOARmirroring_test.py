@@ -133,7 +133,8 @@ def test_fetch_incidents(mocker):
     first_fetch = dateparser.parse('3 days').strftime(XSOAR_DATE_FORMAT)
     client = Client("")
 
-    next_run, incidents_result = fetch_incidents(client=client, max_results=3, last_run={}, last_fetch=first_fetch, first_fetch_time=first_fetch,
+    next_run, incidents_result = fetch_incidents(client=client, max_results=3, last_run={}, last_fetch=first_fetch,
+                                                 first_fetch_time=first_fetch,
                                                  query='', mirror_direction='None', mirror_tag=[])
 
     assert len(incidents_result) == 3
@@ -424,7 +425,7 @@ def test_dedup_incidents_with_seconds_timestamp(incidents, incidents_last_fetch_
     Given:
         - Case 1: All incidents from the current fetch cycle have the same timestamp and were fetched.
         - Case 2: All incidents from the current fetch cycle have the same timestamp and were not fetched.
-        - Case 3: Most recent incident has later timestamp then other incidents in the response and the 
+        - Case 3: Most recent incident has later timestamp then other incidents in the response and the
                   incidents were not fetched.
         - Case 4: Most recent incident has later timestamp then other incidents in the response
                   and the incidents were fetched.
