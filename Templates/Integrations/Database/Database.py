@@ -70,7 +70,7 @@ def fetch_incidents_command(client: Client, last_run_dict: Optional[dict], first
     ]
     # Get last fetch from incidents
     if incidents:
-        incidents.sort(key=lambda row: row.get('occurred'))
+        incidents.sort(key=lambda row: row.get('occurred')) # type: ignore[arg-type, return-value]
         last_fetch = incidents[-1]['occurred']
     return {'last_run': last_fetch}, incidents
 
