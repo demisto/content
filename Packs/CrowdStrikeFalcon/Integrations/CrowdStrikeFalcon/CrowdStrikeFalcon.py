@@ -2505,7 +2505,7 @@ def migrate_last_run(last_run: dict[str, str] | list[dict]) -> list[dict]:
         return [updated_last_run_detections, updated_last_run_incidents, {}]
 
 
-def sort_incidents_summaries_by_ids_order(ids_order, full_incidents, id_field):
+def sort_summaries_by_ids_order(ids_order, full_incidents, id_field):
     """ sort incidents list by the order that ids_order list has
 
     Args:
@@ -2557,9 +2557,9 @@ def fetch_incidents():
 
         if raw_res is not None and "resources" in raw_res:
             full_detections = demisto.get(raw_res, "resources")
-            sorted_detections = sort_incidents_summaries_by_ids_order(ids_order=detections_ids,
-                                                                      full_incidents=full_detections,
-                                                                      id_field='detection_id')
+            sorted_detections = sort_summaries_by_ids_order(ids_order=detections_ids,
+                                                            full_incidents=full_detections,
+                                                            id_field='detection_id')
             for detection in sorted_detections:
                 detection['incident_type'] = incident_type
                 demisto.debug(
@@ -2608,9 +2608,9 @@ def fetch_incidents():
             raw_res = get_incidents_entities(incidents_ids)
             if raw_res is not None and "resources" in raw_res:
                 full_incidents = demisto.get(raw_res, "resources")
-                sorted_incidents = sort_incidents_summaries_by_ids_order(ids_order=incidents_ids,
-                                                                         full_incidents=full_incidents,
-                                                                         id_field='incident_id')
+                sorted_incidents = sort_summaries_by_ids_order(ids_order=incidents_ids,
+                                                               full_incidents=full_incidents,
+                                                               id_field='incident_id')
                 for incident in sorted_incidents:
                     incident['incident_type'] = incident_type
                     incident_to_context = incident_to_incident_context(incident)
@@ -2646,9 +2646,9 @@ def fetch_incidents():
             raw_res = get_idp_detection_entities(idp_detections_ids)
             if "resources" in raw_res:
                 full_detections = demisto.get(raw_res, "resources")
-                sorted_detections = sort_incidents_summaries_by_ids_order(ids_order=idp_detections_ids,
-                                                                          full_incidents=full_detections,
-                                                                          id_field='composite_id')
+                sorted_detections = sort_summaries_by_ids_order(ids_order=idp_detections_ids,
+                                                                full_incidents=full_detections,
+                                                                id_field='composite_id')
                 for idp_detection in sorted_detections:
                     idp_detection['incident_type'] = IDP_DETECTION
                     idp_detection_to_context = idp_detection_to_incident_context(idp_detection)

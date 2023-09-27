@@ -5617,11 +5617,11 @@ def test_sort_incidents_summaries_by_ids_order():
     Then:
      - The incidents returned in sorted order
     """
-    from CrowdStrikeFalcon import sort_incidents_summaries_by_ids_order
+    from CrowdStrikeFalcon import sort_summaries_by_ids_order
     full_incidents = [{"id": "2", "name": "test2"},
                       {"id": "3", "name": "test3"},
                       {"id": "1", "name": "test1"}]
-    res = sort_incidents_summaries_by_ids_order(ids_order=["1", "2", "3"], full_incidents=full_incidents, id_field="id")
+    res = sort_summaries_by_ids_order(ids_order=["1", "2", "3"], full_incidents=full_incidents, id_field="id")
     assert res == [{"id": "1", "name": "test1"}, {"id": "2", "name": "test2"},
                    {"id": "3", "name": "test3"},
                    ]
