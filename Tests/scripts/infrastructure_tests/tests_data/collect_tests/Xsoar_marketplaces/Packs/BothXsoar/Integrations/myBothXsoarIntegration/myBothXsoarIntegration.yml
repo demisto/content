@@ -1,6 +1,6 @@
-name: myIntegration
-tests:
-  - myOtherTestPlaybook
+name: myBothXsoarIntegration
+tests: 
+- No tests
 marketplaces:
 - xsoar
 subtype: python3

@@ -1,5 +1,5 @@
 {
-    "name": "myXSOAROnlyPack",
+    "name": "BothXsoar",
     "description": "a demo pack",
     "support": "xsoar",
     "currentVersion": "2.1.3",
@@ -16,6 +16,6 @@
     "useCases": [],
     "keywords": [],
     "marketplaces": [
-        "xsoar_saas"
+        "xsoar"
     ]
 }

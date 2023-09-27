@@ -88,6 +88,7 @@ class MockerCases:
     empty = CollectTestsMocker(TEST_DATA / 'empty')
     empty_xsiam = CollectTestsMocker(TEST_DATA / 'empty_xsiam')
     A_xsoar = CollectTestsMocker(TEST_DATA / 'A_xsoar')
+    A_xsoar_saas = CollectTestsMocker(TEST_DATA / 'A_xsoar_saas')
     A_xsiam = CollectTestsMocker(TEST_DATA / 'A_xsiam')
     B_xsoar = CollectTestsMocker(TEST_DATA / 'B_xsoar')
     B_xsiam = CollectTestsMocker(TEST_DATA / 'B_xsiam')
@@ -116,6 +117,7 @@ class MockerCases:
     MR1 = CollectTestsMocker(TEST_DATA / 'MR1')
     RN_CONFIG = CollectTestsMocker(TEST_DATA / 'release_notes_config')
     PR1 = CollectTestsMocker(TEST_DATA / 'PR1')
+    Xsoar_marketplaces = CollectTestsMocker(TEST_DATA / 'Xsoar_marketplaces')
 
 
 ALWAYS_INSTALLED_PACKS = ('Base', 'DeveloperTools')
@@ -256,6 +258,13 @@ NIGHTLY_TESTS: tuple = (
     # only parsing rule component exists, expect the pack to be collected for installation
     (MockerCases.PR1, XSIAMNightlyTestCollector, (), ('MyXSIAMPack', 'CoreAlertFields'), None,
      None, ()),
+
+    # collect xsoar_saas only tests.
+    (MockerCases.A_xsoar_saas, XSOARNightlyTestCollector, NIGHTLY_EXPECTED_TESTS, ('myXSOARSaaSOnlyPack',),
+     None, None, (MarketplaceVersions.XSOAR_SAAS,)),
+
+    # Validate that when collecting test for xsoar_saas xsoarNightly does not collect xsoar_saas only packs.
+    (MockerCases.A_xsoar_saas, XSOARNightlyTestCollector, {}, (), None, None, ())
 )
 
 
@@ -282,6 +291,7 @@ def test_nightly(monkeypatch, case_mocker: CollectTestsMocker, collector_class: 
 
 XSOAR_BRANCH_ARGS = ('master', MarketplaceVersions.XSOAR, None)
 XSIAM_BRANCH_ARGS = ('master', MarketplaceVersions.MarketplaceV2, None)
+XSOAR_SAAS_BRANCH_ARGS = ('master', MarketplaceVersions.XSOAR_SAAS, None)
 
 
 @pytest.mark.parametrize(
@@ -459,6 +469,22 @@ XSIAM_BRANCH_ARGS = ('master', MarketplaceVersions.MarketplaceV2, None)
         # (37) see PR1 definition at the top of this file - only parsing rules yml file was changed
         (MockerCases.PR1, (), ('MyXSIAMPack', 'CoreAlertFields',), None, None, XSIAM_BRANCH_ARGS,
          ('Packs/MyXSIAMPack/ParsingRules/MyParsingRules/MyParsingRules.yml',), (), ('MyXSIAMPack',)),
+
+        # (38) Case A_xsoar_saas, yml file changes, expect the test playbook testing the integration to be collected
+        (MockerCases.A_xsoar_saas, ('myOtherTestPlaybook',), ('myXSOARSaaSOnlyPack',), None, None, XSOAR_SAAS_BRANCH_ARGS,
+            ('Packs/myXSOARSaaSOnlyPack/Integrations/myIntegration/myIntegration.yml',), (), ('myXSOARSaaSOnlyPack',)),
+
+        # (39) Case A, yml file changes, expect the test playbook testing the integration to be collected
+        (MockerCases.A_xsoar, ('myOtherTestPlaybook',), ('myXSOAROnlyPack',), None, None, XSOAR_SAAS_BRANCH_ARGS,
+            ('Packs/myXSOAROnlyPack/Integrations/myIntegration/myIntegration.yml',), (), ('myXSOAROnlyPack',)),
+        
+        # (40) Xsoar Marketplace with all packs changed
+        (MockerCases.Xsoar_marketplaces, None, ('OnlyXsoarSaaS',), None, None, XSOAR_SAAS_BRANCH_ARGS,
+            ('Packs/OnlyXsoarSaaS/Integrations/myOnlyXsoarSaaSIntegration/myOnlyXsoarSaaSIntegration.yml',
+             'Packs/BothXsoar/Integrations/myBothXsoarIntegration/myBothXsoarIntegration.yml',
+             'Packs/OnlyXsoarOnPrem/Integrations/myOnlyXsoarOnPremIntegration/myOnlyXsoarOnPremIntegration.yml'), (),
+             ('OnlyXsoarSaaS',))
+
     )
 )
 def test_branch(

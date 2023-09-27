@@ -4,8 +4,8 @@
     {
       "myIntegration": {
         "name": "myIntegration",
-        "file_path": "Packs/myXSOAROnlyPack/Integrations/myIntegration/myIntegration.yml",
-        "pack": "myXSOAROnlyPack",
+        "file_path": "Packs/myXSOARSaaSOnlyPack/Integrations/myIntegration/myIntegration.yml",
+        "pack": "myXSOARSaaSOnlyPack",
         "tests": [
           "myOtherTestPlaybook"
         ]
@@ -16,16 +16,16 @@
     {
       "myTestPlaybook": {
         "name": "myTestPlaybook",
-        "file_path": "Packs/myXSOAROnlyPack/TestPlaybooks/myTestPlaybook.yml",
-        "pack": "myXSOAROnlyPack",
+        "file_path": "Packs/myXSOARSaaSOnlyPack/TestPlaybooks/myTestPlaybook.yml",
+        "pack": "myXSOARSaaSOnlyPack",
         "marketplaces": [
           "xsoar_saas"
         ]
       },
       "myOtherTestPlaybook": {
         "name": "myOtherTestPlaybook",
-        "file_path": "Packs/myXSOAROnlyPack/TestPlaybooks/myOtherTestPlaybook.yml",
-        "pack": "myXSOAROnlyPack",
+        "file_path": "Packs/myXSOARSaaSOnlyPack/TestPlaybooks/myOtherTestPlaybook.yml",
+        "pack": "myXSOARSaaSOnlyPack",
         "marketplaces": [
           "xsoar_saas"
         ]
