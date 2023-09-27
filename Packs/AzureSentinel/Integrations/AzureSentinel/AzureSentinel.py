@@ -252,8 +252,6 @@ def incident_data_to_xsoar_format(inc_data, is_fetch_incidents=False):
         'Etag': inc_data.get('etag'),
         'Deleted': False
     }
-    demisto.debug(inc_data.get('etag'))
-    demisto.info(inc_data.get('etag'))
     if is_fetch_incidents:
         formatted_data |= {
             'tags': [label.get('labelName') for label in properties.get('labels', [])],
@@ -302,6 +300,7 @@ def alert_data_to_xsoar_format(alert_data):
         'ID': properties.get('systemAlertId'),
         'Kind': alert_data.get('kind'),
         'Tactic': properties.get('tactics'),
+        'Technique': properties.get('additionalData', {}).get('MitreTechniques'),
         'DisplayName': properties.get('alertDisplayName'),
         'Description': properties.get('description'),
         'ConfidenceLevel': properties.get('confidenceLevel'),
@@ -373,8 +372,6 @@ def get_update_incident_request_data(client: AzureSentinelClient, args: Dict[str
     else:
         labels_formatted = [{"labelName": label, "labelType": "User"}
                             for label in argToList(labels) if label]  # labels can not be blank
-    demisto.debug(fetched_incident_data.get('etag'))
-    demisto.info(fetched_incident_data.get('etag'))
     incident_data = {
         'etag': fetched_incident_data.get('etag'),
         'properties': {
@@ -706,8 +703,6 @@ def update_incident_request(client: AzureSentinelClient, incident_id: str, data:
         'etag': delta.get('etag') or data.get('etag'),
         'properties': properties
     }
-    demisto.debug(delta.get('etag') or data.get('etag'))
-    demisto.info(delta.get('etag') or data.get('etag'))
     demisto.debug(f'Updating incident with remote ID {incident_id} with data: {data}')
     return client.http_request('PUT', f'incidents/{incident_id}', data=data)
 
@@ -1373,7 +1368,7 @@ def threat_indicators_data_to_xsoar_format(ind_data):
 
     properties = ind_data.get('properties', {})
     pattern = properties.get('parsedPattern', [])[0] if properties.get('parsedPattern', []) else {}
-    demisto.debug(ind_data.get('etag'))
+
     formatted_data = {
         'ID': ind_data.get('id'),
         'Name': ind_data.get('name'),
@@ -1916,8 +1911,7 @@ def create_data_for_alert_rule(args: Dict[str, Any]) -> Dict[str, Any]:
         'techniques': argToList(args.get('techniques'))
     }
     remove_nulls_from_dictionary(properties)
-    demisto.debug(args.get('etag'))
-    demisto.info(args.get('etag'))
+
     return {
         'kind': underscoreToCamelCase(args.get('kind')),
         'etag': args.get('etag'),
@@ -1942,8 +1936,6 @@ def create_and_update_alert_rule_command(client: AzureSentinelClient, args: Dict
         'Enabled': response.get('properties', {}).get('enabled'),
         'Etag': response.get('etag')
     }
-    demisto.debug(response.get('etag'))
-    demisto.info(response.get('etag'))
     readable_output = tableToMarkdown('Azure Sentinel Alert Rule successfully created/updated',
                                       readable_result,
                                       removeNull=True,
