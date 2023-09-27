@@ -250,7 +250,7 @@ xpanse-prepare-testing-bucket:
     - .default-job-settings
     - .push-rule
   variables:
-    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}/instance_${INSTANCE_ROLE/ /_}"
+    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}/instance_${INSTANCE_ROLE}"
     ENV_RESULTS_PATH: "${ARTIFACTS_FOLDER_XSOAR}/env_results.json"
     SERVER_TYPE: "XSOAR"
   stage: run-instances
@@ -267,6 +267,7 @@ xpanse-prepare-testing-bucket:
         job-done
         exit 0
       fi
+      echo "${INSTANCE_ROLE}" > "$ARTIFACTS_FOLDER/instance_role.txt"
     - section_end "Check if should run Server Master"
     - !reference [.download-demisto-conf]
     - !reference [.secrets-fetch]
