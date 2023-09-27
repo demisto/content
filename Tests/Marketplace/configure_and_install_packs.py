@@ -56,12 +56,13 @@ def install_packs_from_content_packs_to_install_path(servers, pack_ids, marketpl
             raise Exception('Failed to search and install packs and their dependencies.')
 
 
-def xsoar_configure_and_install_flow(options, branch_name: str, build_number: str):
+def xsoar_configure_and_install_flow(options, branch_name: str, build_number: str, xdr_suffix: str):
     """
     Args:
         options: script arguments.
         branch_name(str): name of the current branch.
         build_number(str): number of the current build flow
+        xdr_suffix(str): suffix for xdr build env
     """
     # Get the host by the ami env
     server_to_port_mapping, server_version = XSOARBuild.get_servers(ami_env=options.ami_env)
@@ -78,7 +79,8 @@ def xsoar_configure_and_install_flow(options, branch_name: str, build_number: st
         logging.info(f'Adding Marketplace configuration to {server_url}')
         error_msg: str = 'Failed to set marketplace configuration.'
         server.add_server_configuration(config_dict=MARKET_PLACE_CONFIGURATION, error_msg=error_msg)
-        XSOARBuild.set_marketplace_url(servers=[server], branch_name=branch_name, ci_build_number=build_number)
+        XSOARBuild.set_marketplace_url(servers=[server], branch_name=branch_name, ci_build_number=build_number,
+                                       xdr_suffix=xdr_suffix)
         servers.append(server)
 
     content_path = Build.content_path or ''
@@ -128,12 +130,13 @@ def batch(iterable, batch_size=1):
         not_batched = not_batched[batch_size:]
 
 
-def xsiam_configure_and_install_flow(options, branch_name: str, build_number: str):
+def xsiam_configure_and_install_flow(options, branch_name: str, build_number: str, xdr_suffix: str):
     """
     Args:
         options: script arguments.
         branch_name(str): name of the current branch.
         build_number(str): number of the current build flow
+        xdr_suffix(str): suffix for xdr build env
     """
     logging.info('Retrieving the credentials for Cortex XSIAM server')
     cloud_machine = options.cloud_machine
@@ -143,7 +146,7 @@ def xsiam_configure_and_install_flow(options, branch_name: str, build_number: st
         options.cloud_servers_api_keys)
     # Configure the Server
     server = CloudServer(api_key, server_numeric_version, base_url, xdr_auth_id, cloud_machine, build_number)
-    CloudBuild.set_marketplace_url(servers=[server], branch_name=branch_name, ci_build_number=build_number)
+    CloudBuild.set_marketplace_url(servers=[server], branch_name=branch_name, ci_build_number=build_number, xdr_suffix=xdr_suffix)
 
     # extract pack_ids from the content_packs_to_install.txt
     pack_ids = Build.fetch_pack_ids_to_install(options.pack_ids_to_install)
@@ -159,11 +162,12 @@ def main():
         options = options_handler()
         branch_name: str = options.branch
         build_number: str = options.build_number
+        xdr_suffix: str = options.xdr_suffix
 
         if options.ami_env == "XSIAM":
-            xsiam_configure_and_install_flow(options, branch_name, build_number)
+            xsiam_configure_and_install_flow(options, branch_name, build_number, xdr_suffix)
         else:
-            xsoar_configure_and_install_flow(options, branch_name, build_number)
+            xsoar_configure_and_install_flow(options, branch_name, build_number, xdr_suffix)
 
     except Exception as e:
         logging.error(f'Failed to configure and install packs: {e}')

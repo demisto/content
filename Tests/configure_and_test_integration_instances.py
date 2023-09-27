@@ -728,8 +728,10 @@ class XSOARBuild(Build):
 
     @staticmethod
     def set_marketplace_url(servers, branch_name, ci_build_number, marketplace_name=None, artifacts_folder=None,
-                            marketplace_buckets=None):
-        url_suffix = f'{quote_plus(branch_name)}/{ci_build_number}/xsoar'
+                            marketplace_buckets=None,
+                            xdr_suffix=""):
+        # TODO
+        url_suffix = f'{quote_plus(branch_name)}/{ci_build_number+xdr_suffix}/xsoar'
         config_path = 'marketplace.bootstrap.bypass.url'
         config = {config_path: f'https://storage.googleapis.com/marketplace-ci-build/content/builds/{url_suffix}'}
         for server in servers:
@@ -898,11 +900,12 @@ class CloudBuild(Build):
     @staticmethod
     def set_marketplace_url(servers, branch_name, ci_build_number, marketplace_name='marketplacev2',
                             artifacts_folder=ARTIFACTS_FOLDER_MPV2,
-                            marketplace_buckets=MARKETPLACE_XSIAM_BUCKETS):
+                            marketplace_buckets=MARKETPLACE_XSIAM_BUCKETS,
+                            xdr_suffix=""):
         from Tests.Marketplace.search_and_uninstall_pack import sync_marketplace
         logging.info('Copying custom build bucket to cloud_instance_bucket.')
         marketplace_name = marketplace_name
-        from_bucket = f'{MARKETPLACE_TEST_BUCKET}/{branch_name}/{ci_build_number}/{marketplace_name}/content'
+        from_bucket = f'{MARKETPLACE_TEST_BUCKET}/{branch_name}/{ci_build_number+xdr_suffix}/{marketplace_name}/content'
         output_file = f'{artifacts_folder}/Copy_custom_bucket_to_cloud_machine.log'
         success = True
         for server in servers:
