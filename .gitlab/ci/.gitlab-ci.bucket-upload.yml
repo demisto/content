@@ -210,17 +210,6 @@ install-packs-in-server-master:
       - /builds/xsoar/content/artifacts/*
       - /builds/xsoar/content/pipeline_jobs_folder/*
     when: always
-  rules:
-    - if: '$TEST_UPLOAD'
-      when: always
-      variables:
-        CLOUD_MACHINES_TYPE: "build"
-        GCS_LOCKS_PATH: "content-locks/locks-xsiam-ga"
-    - if: '$TEST_XDR_ENV'
-      when: always
-      variables:
-        CLOUD_MACHINES_TYPE: "testing"
-        GCS_LOCKS_PATH: "content-locks/locks-xsiam-ga-testing"
   variables:
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_MPV2}"
     ENV_RESULTS_PATH: "${ARTIFACTS_FOLDER_MPV2}/env_results.json"
@@ -232,6 +221,17 @@ install-packs-in-server-master:
   extends:
     - .bucket-upload-rule
     - .default-job-settings
+  rules:
+    - if: '$TEST_UPLOAD'
+      when: always
+      variables:
+        CLOUD_MACHINES_TYPE: "build"
+        GCS_LOCKS_PATH: "content-locks/locks-xsiam-ga"
+    - if: '$TEST_XDR_ENV'
+      when: always
+      variables:
+        CLOUD_MACHINES_TYPE: "testing"
+        GCS_LOCKS_PATH: "content-locks/locks-xsiam-ga-testing"
   script:
     - EXIT_CODE=0
     - section_start "Download content-test-conf and infra" --collapsed
