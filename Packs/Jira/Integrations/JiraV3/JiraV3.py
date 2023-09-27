@@ -2022,6 +2022,19 @@ def delete_issue_command(client: JiraBaseClient, args: Dict[str, str]) -> Comman
 
 
 def update_issue_assignee_command(client: JiraBaseClient, args: Dict[str, str]) -> CommandResults:
+    """This command is in charge of updating an assignee in the issue.
+
+    Args:
+        client (JiraBaseClient): The Jira client.
+        args (Dict[str, str]): The arguments supplied by the user.
+
+    Raises:
+        DemistoException: If neither an issue id nor a key was supplied.
+                          If neither an assignee nor an assignee id was supplied.
+
+    Returns:
+        CommandResults: CommandResults to return to XSOAR.
+    """
     body = None
     if args.get("assignee"):  # for jira server
         body = {"name": args["assignee"]}
