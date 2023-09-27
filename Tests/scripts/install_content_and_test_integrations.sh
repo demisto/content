@@ -2,7 +2,7 @@
 
 function exit_on_error {
     if [ "${1}" -ne 0 ]; then
-        echo "ERROR: ${2}, exiting with code ${1}"
+        echo "ERROR: ${2}, exiting with code ${1}" 1>&2
         exit "${1}"
     fi
 }
