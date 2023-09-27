@@ -10,7 +10,7 @@
 
 function exit_on_error {
     if [ "${1}" -ne 0 ]; then
-        echo "ERROR: ${2}"
+        echo "ERROR: ${2}, exiting with code ${1}" 1>&2
         exit "${1}"
     fi
 }
@@ -42,7 +42,7 @@ else
     if [ ! -e "${GIT_HOOKS_DIR}/pre-commit" ]; then
         echo "Installing 'pre-commit' hooks"
         ln -s "${HOOKS_DIR}/pre-commit" "${GIT_HOOKS_DIR}/pre-commit"
-        exit_on_error $? "Failed to install pre-commit hook, exiting with exit code $?"
+        exit_on_error $? "Failed to install pre-commit hook"
     else
         echo "Skipping install of pre-commit hook as it already exists."
         echo "If you want to re-install: 'rm ${GIT_HOOKS_DIR}/pre-commit' and then run this script again."
@@ -51,11 +51,37 @@ else
 fi
 
 echo "======================="
-
-if ! command -v poetry >/dev/null 2>&1; then
-    echo "ERROR: poetry is missing. Please run the following command to install poetry:
-           curl -sSL https://install.python-poetry.org | python3 -" 1>&2
-    exit 1
+if [ -z "${INSTALL_POETRY}" ]; then
+    if ! command -v poetry >/dev/null 2>&1; then
+        echo "ERROR: poetry is missing. Please run the following command to install poetry:
+               curl -sSL https://install.python-poetry.org | python3 -" 1>&2
+        exit 1
+    fi
+else
+    should_install_poetry="yes"
+    if command -v poetry >/dev/null 2>&1; then
+        if [[ "$(poetry --version)" == "Poetry (version ${POETRY_VERSION})" ]]; then
+            echo "Poetry already installed:$(poetry --version) with correct version"
+            should_install_poetry="no"
+        else
+            echo "Poetry installed with a different version:$(poetry --version) required:${POETRY_VERSION}"
+        fi
+    else
+        echo "Poetry isn't installed"
+    fi
+    if [[ "${should_install_poetry}" == "yes" ]]; then
+        echo "Installing Poetry version:${POETRY_VERSION}"
+        curl -sSL https://install.python-poetry.org | python3 - --version "${POETRY_VERSION}"
+        exit_on_error $? "Failed to install Poetry version:${POETRY_VERSION}"
+        if ! command -v poetry >/dev/null 2>&1; then
+            exit_on_error $? "Poetry isn't installed"
+        fi
+        if [[ "$(poetry --version)" == "Poetry (version ${POETRY_VERSION})" ]]; then
+          echo "Poetry version ${POETRY_VERSION} installed successfully"
+        else
+          exit_on_error 1 "Poetry version $(poetry --version) doesn't match the required version: ${POETRY_VERSION}"
+        fi
+    fi
 fi
 
 if [ -n "${CI}" ]; then

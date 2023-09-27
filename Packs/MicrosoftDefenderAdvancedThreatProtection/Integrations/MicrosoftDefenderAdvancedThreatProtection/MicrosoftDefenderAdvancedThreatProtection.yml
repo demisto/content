@@ -344,7 +344,7 @@ script:
       description: The machine ID on which the action was executed.
       type: String
     - contextPath: MicrosoftATP.MachineAction.ComputerDNSName
-      description: The machine DNS name on which the action was executed
+      description: The machine DNS name on which the action was executed.
       type: String
     - contextPath: MicrosoftATP.MachineAction.CreationDateTimeUtc
       description: The date and time when the action was created.
@@ -1719,7 +1719,7 @@ script:
       description: The last update time that triggered the alert on that machine.
       type: Date
     - contextPath: MicrosoftATP.DomainAlert.Alerts.ResolvedTime
-      description: The date and time the status of the alert was changed to 'Resolved'
+      description: The date and time the status of the alert was changed to 'Resolved'.
       type: Date
     - contextPath: MicrosoftATP.DomainAlert.Alerts.MachineID
       description: The machine ID associated with the alert.
@@ -1734,7 +1734,7 @@ script:
       description: The alert comment string.
       type: String
     - contextPath: MicrosoftATP.DomainAlert.Alerts.Comments.CreatedBy
-      description: The alert comment created by string
+      description: The alert comment created by string.
       type: String
     - contextPath: MicrosoftATP.DomainAlert.Alerts.Comments.CreatedTime
       description: The alert comment created time date.
@@ -2114,7 +2114,7 @@ script:
       description: The last update time that triggered the alert on that machine.
       type: Date
     - contextPath: MicrosoftATP.UserAlert.Alerts.ResolvedTime
-      description: The date and time the status of the alert was changed to 'Resolved'
+      description: The date and time the status of the alert was changed to 'Resolved'.
       type: Date
     - contextPath: MicrosoftATP.UserAlert.Alerts.MachineID
       description: The machine ID associated with the alert.
@@ -2319,16 +2319,16 @@ script:
       description: Domain name associated with this indicator. Should be in the format subdomain.domain.topleveldomain.
       type: String
     - contextPath: MicrosoftATP.Indicators.expirationDateTime
-      description: "DateTime string indicating when the indicator expires. To avoid stale indicators persisting in the system, all indicators must have an expiration date. The timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z'"
+      description: "DateTime string indicating when the indicator expires. To avoid stale indicators persisting in the system, all indicators must have an expiration date. The timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z'."
       type: Date
     - contextPath: MicrosoftATP.Indicators.externalId
       description: An identification number that ties the indicator back to the indicator provider’s system (e.g., a foreign key).
       type: String
     - contextPath: MicrosoftATP.Indicators.fileCompileDateTime
-      description: "DateTime the file was compiled. The timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z'"
+      description: "DateTime the file was compiled. The timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z'."
       type: Date
     - contextPath: MicrosoftATP.Indicators.fileCreatedDateTime
-      description: "DateTime the file was created. The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z'"
+      description: "DateTime the file was created. The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z'."
       type: Date
     - contextPath: MicrosoftATP.Indicators.fileHashType
       description: 'The type of hash stored in fileHashValue. Possible values: "unknown", "sha1", "sha256", "md5", "authenticodeHash256", "lsHash", and "ctph".'
@@ -2355,7 +2355,7 @@ script:
       description: Text description of the type of file. For example, “Word Document” or “Binary”.
       type: String
     - contextPath: MicrosoftATP.Indicators.ingestedDateTime
-      description: "Timestamp the indicator was ingested into the system. The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z'"
+      description: "Timestamp the indicator was ingested into the system. The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z'."
       type: Date
     - contextPath: MicrosoftATP.Indicators.isActive
       description: Used to deactivate indicators within the system. By default, any indicator submitted is set as active. However, providers may submit existing indicators with this set to ‘False’ to deactivate indicators in the system.
@@ -2364,7 +2364,7 @@ script:
       description: Scenarios in which the indicator may cause false positives. This should be human-readable text.
       type: String
     - contextPath: MicrosoftATP.Indicators.lastReportedDateTime
-      description: "The last time the indicator was seen. The timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z'"
+      description: "The last time the indicator was seen. The timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z'."
       type: Date
     - contextPath: MicrosoftATP.Indicators.networkCidrBlock
       description: CIDR Block notation representation of the network referenced in this indicator. Use only if the Source and Destination cannot be identified.
@@ -2506,16 +2506,16 @@ script:
       description: Domain name associated with this indicator. Should be in the format subdomain.domain.topleveldomain.
       type: String
     - contextPath: MicrosoftATP.Indicators.expirationDateTime
-      description: "DateTime string indicating when the indicator expires. To avoid stale indicators persisting in the system, all indicators must have an expiration date. The timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z'"
+      description: "DateTime string indicating when the indicator expires. To avoid stale indicators persisting in the system, all indicators must have an expiration date. The timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z'."
       type: Date
     - contextPath: MicrosoftATP.Indicators.externalId
       description: An identification number that ties the indicator back to the indicator provider’s system (e.g., a foreign key).
       type: String
     - contextPath: MicrosoftATP.Indicators.fileCompileDateTime
-      description: "DateTime the file was compiled. The timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z'"
+      description: "DateTime the file was compiled. The timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z'."
       type: Date
     - contextPath: MicrosoftATP.Indicators.fileCreatedDateTime
-      description: "DateTime the file was created. The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z'"
+      description: "DateTime the file was created. The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z'."
       type: Date
     - contextPath: MicrosoftATP.Indicators.fileHashType
       description: 'The type of hash stored in fileHashValue. Possible values: "unknown", "sha1", "sha256", "md5", "authenticodeHash256", "lsHash", and "ctph".'
@@ -2542,7 +2542,7 @@ script:
       description: Text description of the type of file. For example, “Word Document” or “Binary”.
       type: String
     - contextPath: MicrosoftATP.Indicators.ingestedDateTime
-      description: "Timestamp the indicator was ingested into the system. The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z'"
+      description: "Timestamp the indicator was ingested into the system. The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z'."
       type: Date
     - contextPath: MicrosoftATP.Indicators.isActive
       description: Used to deactivate indicators within the system. By default, any indicator submitted is set as active. However, providers may submit existing indicators with this set to ‘False’ to deactivate indicators in the system.
@@ -2551,7 +2551,7 @@ script:
       description: Scenarios in which the indicator may cause false positives. This should be human-readable text.
       type: String
     - contextPath: MicrosoftATP.Indicators.lastReportedDateTime
-      description: "The last time the indicator was seen. The timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z'"
+      description: "The last time the indicator was seen. The timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z'."
       type: Date
     - contextPath: MicrosoftATP.Indicators.networkCidrBlock
       description: CIDR Block notation representation of the network referenced in this indicator. Use only if the Source and Destination cannot be identified.
@@ -2710,9 +2710,9 @@ script:
       - High
     - description: A comma-separated list that stores arbitrary tags/keywords.
       name: tags
-    - description: "DateTime the file was compiled. The timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z'"
+    - description: "DateTime the file was compiled. The timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z'."
       name: file_compile_date_time
-    - description: "DateTime the file was created. The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z'"
+    - description: "DateTime the file was created. The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z'."
       name: file_created_date_time
     - auto: PREDEFINED
       description: The type of hash stored in fileHashValue.
@@ -2771,16 +2771,16 @@ script:
       description: Domain name associated with this indicator. Should be in the format subdomain.domain.topleveldomain.
       type: String
     - contextPath: MicrosoftATP.Indicators.expirationDateTime
-      description: "DateTime string indicating when the indicator expires. To avoid stale indicators persisting in the system, all indicators must have an expiration date. The timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z'"
+      description: "DateTime string indicating when the indicator expires. To avoid stale indicators persisting in the system, all indicators must have an expiration date. The timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z'."
       type: Date
     - contextPath: MicrosoftATP.Indicators.externalId
       description: An identification number that ties the indicator back to the indicator provider’s system (e.g., a foreign key).
       type: String
     - contextPath: MicrosoftATP.Indicators.fileCompileDateTime
-      description: "DateTime the file was compiled. The timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z'"
+      description: "DateTime the file was compiled. The timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z'."
       type: Date
     - contextPath: MicrosoftATP.Indicators.fileCreatedDateTime
-      description: "DateTime the file was created. The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z'"
+      description: "DateTime the file was created. The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z'."
       type: Date
     - contextPath: MicrosoftATP.Indicators.fileHashType
       description: 'The type of hash stored in fileHashValue. Possible values: "unknown", "sha1", "sha256", "md5", "authenticodeHash256", "lsHash", and "ctph".'
@@ -2807,7 +2807,7 @@ script:
       description: Text description of the type of file. For example, “Word Document” or “Binary”.
       type: String
     - contextPath: MicrosoftATP.Indicators.ingestedDateTime
-      description: "Timestamp the indicator was ingested into the system. The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z'"
+      description: "Timestamp the indicator was ingested into the system. The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z'."
       type: Date
     - contextPath: MicrosoftATP.Indicators.isActive
       description: Used to deactivate indicators within the system. By default, any indicator submitted is set as active. However, providers may submit existing indicators with this set to ‘False’ to deactivate indicators in the system.
@@ -2816,7 +2816,7 @@ script:
       description: Scenarios in which the indicator may cause false positives. This should be human-readable text.
       type: String
     - contextPath: MicrosoftATP.Indicators.lastReportedDateTime
-      description: "The last time the indicator was seen. The timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z'"
+      description: "The last time the indicator was seen. The timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z'."
       type: Date
     - contextPath: MicrosoftATP.Indicators.networkCidrBlock
       description: CIDR Block notation representation of the network referenced in this indicator. Use only if the Source and Destination cannot be identified.
@@ -2976,8 +2976,7 @@ script:
       name: network_destination_cidr_block
     - description: The IPv4 IP address destination.
       name: network_destination_ipv4
-    - description: |
-        The IPv6 IP address destination.
+    - description: The IPv6 IP address destination.
       name: network_destination_ipv6
     - description: The TCP port destination.
       name: network_destination_port
@@ -3035,16 +3034,16 @@ script:
       description: Domain name associated with this indicator. Should be in the format subdomain.domain.topleveldomain.
       type: String
     - contextPath: MicrosoftATP.Indicators.expirationDateTime
-      description: "DateTime string indicating when the indicator expires. To avoid stale indicators persisting in the system, all indicators must have an expiration date. The timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z'"
+      description: "DateTime string indicating when the indicator expires. To avoid stale indicators persisting in the system, all indicators must have an expiration date. The timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z'."
       type: Date
     - contextPath: MicrosoftATP.Indicators.externalId
       description: An identification number that ties the indicator back to the indicator provider’s system (e.g., a foreign key).
       type: String
     - contextPath: MicrosoftATP.Indicators.fileCompileDateTime
-      description: "DateTime the file was compiled. The timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z'"
+      description: "DateTime the file was compiled. The timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z'."
       type: Date
     - contextPath: MicrosoftATP.Indicators.fileCreatedDateTime
-      description: "DateTime the file was created. The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z'"
+      description: "DateTime the file was created. The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z'."
       type: Date
     - contextPath: MicrosoftATP.Indicators.fileHashType
       description: 'The type of hash stored in fileHashValue. Possible values: "unknown", "sha1", "sha256", "md5", "authenticodeHash256", "lsHash", and "ctph".'
@@ -3071,7 +3070,7 @@ script:
       description: Text description of the type of file. For example, “Word Document” or “Binary”.
       type: String
     - contextPath: MicrosoftATP.Indicators.ingestedDateTime
-      description: "Timestamp the indicator was ingested into the system. The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z'"
+      description: "Timestamp the indicator was ingested into the system. The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z'."
       type: Date
     - contextPath: MicrosoftATP.Indicators.isActive
       description: Used to deactivate indicators within the system. By default, any indicator submitted is set as active. However, providers may submit existing indicators with this set to ‘False’ to deactivate indicators in the system.
@@ -3080,7 +3079,7 @@ script:
       description: Scenarios in which the indicator may cause false positives. This should be human-readable text.
       type: String
     - contextPath: MicrosoftATP.Indicators.lastReportedDateTime
-      description: "The last time the indicator was seen. The timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z'"
+      description: "The last time the indicator was seen. The timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z'."
       type: Date
     - contextPath: MicrosoftATP.Indicators.networkCidrBlock
       description: The CIDR Block notation representation of the network referenced in this indicator. Use only if the Source and Destination cannot be identified.
@@ -3215,16 +3214,16 @@ script:
       description: Domain name associated with this indicator. Should be in the format subdomain.domain.topleveldomain.
       type: String
     - contextPath: MicrosoftATP.Indicators.expirationDateTime
-      description: "DateTime string indicating when the indicator expires. To avoid stale indicators persisting in the system, all indicators must have an expiration date. The timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z'"
+      description: "DateTime string indicating when the indicator expires. To avoid stale indicators persisting in the system, all indicators must have an expiration date. The timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z'."
       type: Date
     - contextPath: MicrosoftATP.Indicators.externalId
       description: An identification number that ties the indicator back to the indicator provider’s system (e.g., a foreign key).
       type: String
     - contextPath: MicrosoftATP.Indicators.fileCompileDateTime
-      description: "DateTime the file was compiled. The timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z'"
+      description: "DateTime the file was compiled. The timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z'."
       type: Date
     - contextPath: MicrosoftATP.Indicators.fileCreatedDateTime
-      description: "DateTime the file was created. The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z'"
+      description: "DateTime the file was created. The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z'."
       type: Date
     - contextPath: MicrosoftATP.Indicators.fileHashType
       description: 'The type of hash stored in fileHashValue. Possible values: "unknown", "sha1", "sha256", "md5", "authenticodeHash256", "lsHash", and "ctph".'
@@ -3251,7 +3250,7 @@ script:
       description: Text description of the type of file. For example, “Word Document” or “Binary”.
       type: String
     - contextPath: MicrosoftATP.Indicators.ingestedDateTime
-      description: "Timestamp the indicator was ingested into the system. The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z'"
+      description: "Timestamp the indicator was ingested into the system. The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z'."
       type: Date
     - contextPath: MicrosoftATP.Indicators.isActive
       description: Used to deactivate indicators within the system. By default, any indicator submitted is set as active. However, providers may submit existing indicators with this set to ‘False’ to deactivate indicators in the system.
@@ -3260,7 +3259,7 @@ script:
       description: Scenarios in which the indicator may cause false positives. This should be human-readable text.
       type: String
     - contextPath: MicrosoftATP.Indicators.lastReportedDateTime
-      description: "The last time the indicator was seen. The timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z'"
+      description: "The last time the indicator was seen. The timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z'."
       type: Date
     - contextPath: MicrosoftATP.Indicators.networkCidrBlock
       description: The CIDR Block notation representation of the network referenced in this indicator. Use only if the Source and Destination cannot be identified.
@@ -3443,7 +3442,7 @@ script:
       description: Brief description (100 characters or less) of the threat represented by the indicator.
       type: String
     - contextPath: MicrosoftATP.Indicators.expirationTime
-      description: "DateTime string indicating when the indicator expires. To avoid stale indicators persisting in the system, all indicators must have an expiration date. The timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z'"
+      description: "DateTime string indicating when the indicator expires. To avoid stale indicators persisting in the system, all indicators must have an expiration date. The timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z'."
       type: Date
     - contextPath: MicrosoftATP.Indicators.severity
       description: 'The severity of the malicious behavior identified by the data within the indicator. Possible values: "Informational", "Low", "Medium", and "High", where High is the most severe and Informational is not severe at all.'
@@ -3594,7 +3593,7 @@ script:
       description: Brief description (100 characters or less) of the threat represented by the indicator.
       type: String
     - contextPath: MicrosoftATP.Indicators.expirationTime
-      description: "DateTime string indicating when the indicator expires. To avoid stale indicators persisting in the system, all indicators must have an expiration date. The timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z'"
+      description: "DateTime string indicating when the indicator expires. To avoid stale indicators persisting in the system, all indicators must have an expiration date. The timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z'."
       type: Date
     - contextPath: MicrosoftATP.Indicators.severity
       description: 'The severity of the malicious behavior identified by the data within the indicator. Possible values: "Informational", "Low", "Medium", and "High", where High is the most severe and Informational is not severe at all.'
@@ -3692,6 +3691,23 @@ script:
     - defaultValue: '50'
       description: The maximum number of indicators to return.
       name: limit
+    - description: The number of indicators that are to be skipped and not included in the result.
+      name: skip
+    - description: The value of the indicator to get.
+      name: indicator_value
+    - description: The title of the indicator to get.
+      name: indicator_title
+    - auto: PREDEFINED
+      description: The type of the indicator to get.
+      name: indicator_type
+      predefined:
+      - FileSha1
+      - FileSha256
+      - FileMd5
+      - IpAddress
+      - DomainName
+      - Url
+      - CertificateThumbprint
     - deprecated: true
       description: Flag for the rate limit retry.
       name: ran_once_flag
@@ -3708,7 +3724,7 @@ script:
       description: Brief description (100 characters or less) of the threat represented by the indicator.
       type: String
     - contextPath: MicrosoftATP.Indicators.expirationTime
-      description: "DateTime string indicating when the indicator expires. To avoid stale indicators persisting in the system, all indicators must have an expiration date. The timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z'"
+      description: "DateTime string indicating when the indicator expires. To avoid stale indicators persisting in the system, all indicators must have an expiration date. The timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z'."
       type: Date
     - contextPath: MicrosoftATP.Indicators.severity
       description: 'The severity of the malicious behavior identified by the data within the indicator. Possible values: "Informational", "Low", "Medium", and "High", where High is the most severe and Informational is not severe at all.'
@@ -3813,7 +3829,7 @@ script:
       description: Brief description (100 characters or less) of the threat represented by the indicator.
       type: String
     - contextPath: MicrosoftATP.Indicators.expirationTime
-      description: "DateTime string indicating when the indicator expires. To avoid stale indicators persisting in the system, all indicators must have an expiration date. The timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z'"
+      description: "DateTime string indicating when the indicator expires. To avoid stale indicators persisting in the system, all indicators must have an expiration date. The timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z'."
       type: Date
     - contextPath: MicrosoftATP.Indicators.severity
       description: 'The severity of the malicious behavior identified by the data within the indicator. Possible values: "Informational", "Low", "Medium" and "High", where High is the most severe and Informational is not severe at all.'
@@ -3963,7 +3979,7 @@ script:
       description: Vulnerability description.
       type: String
     - contextPath: MicrosoftATP.SoftwareCVE.severity
-      description: 'Vulnerability severity. Possible values are: "Low", "Medium", "High", "Critical"'
+      description: 'Vulnerability severity. Possible values are: "Low", "Medium", "High", "Critical".'
       type: String
     - contextPath: MicrosoftATP.SoftwareCVE.cvssV3
       description: CVSS v3 score.
@@ -4404,7 +4420,7 @@ script:
     description: Updates a batch of indicators. If an indicator does not exist, a new indicator is created.
     arguments:
     - name: indicator_batch
-      description: 'A JSON object with a list of MS defender ATP indicators to update. The indicator_batch query should be a list of dictionaries. For example: [{"indicatorValue": "value1"}, {"indicatorValue": "value2"}]'
+      description: 'A JSON object with a list of MS defender ATP indicators to update. The indicator_batch query should be a list of dictionaries. For example: [{"indicatorValue": "value1"}, {"indicatorValue": "value2"}].'
       required: true
     - name: ran_once_flag
       description: Flag for the rate limit retry.
@@ -4834,7 +4850,7 @@ script:
       description: Device name to look for.
       defaultValue: ''
     - name: remote_ip_count
-      description: Threshold for network enumeration in smb_connection
+      description: Threshold for network enumeration in smb_connection.
       defaultValue: ''
     - name: file_name
       description: The file name to look for.
@@ -4890,7 +4906,7 @@ script:
       type: String
     polling: true
   - arguments:
-    - description: When you select a “query_purpose” argument, a designated query template is used. "scheduled_job" - Did the process create any scheduled jobs? "registry_entry" - Did it write to the registry? Requires also the process_cmd argument to be provided. "startup_folder_changes" - Was anything added to the startup folder? "new_service_created" - Was a new service created? "service_updated" - Was an existing service edited? "file_replaced" - Was a file replaced in program files? "new_user" - Was a new user created (on the local machine)? "new_group" - Was a new group created? "group_user_change" - Was a user added to a group (on the local machine)? "local_firewall_change" - Was there a change to the local FW rules? "host_file_change" - Was there a change to the hosts file?
+    - description: When you select a “query_purpose” argument, a designated query template is used. "scheduled_job" - Did the process create any scheduled jobs? "registry_entry" - Did it write to the registry? Requires also the process_cmd argument to be provided. "startup_folder_changes" - Was anything added to the startup folder? "new_service_created" - Was a new service created? "service_updated" - Was an existing service edited? "file_replaced" - Was a file replaced in program files? "new_user" - Was a new user created (on the local machine)? "new_group" - Was a new group created? "group_user_change" - Was a user added to a group (on the local machine)? "local_firewall_change" - Was there a change to the local FW rules? "host_file_change" - Whether there was a change to the hosts file or not.
       name: query_purpose
       required: true
       auto: PREDEFINED
@@ -5039,7 +5055,7 @@ script:
       type: String
     polling: true
   - arguments:
-    - description: When you select a “query_purpose” argument, a designated query template is used. "parent_process" - Parent process. "grandparent_process" - Grandparent process. "process_details" - Process hash, path, signature details. "beaconing_evidence" - Does the process appear to be beaconing? "powershell_execution_unsigned_files" - Has the file executed PowerShell? Query without specifying processes. No additional arguments are required. "process_excecution_powershell" - Has the file executed PowerShell?
+    - description: When you select a “query_purpose” argument, a designated query template is used. "parent_process" - Parent process. "grandparent_process" - Grandparent process. "process_details" - Process hash, path, signature details. "beaconing_evidence" - Does the process appear to be beaconing? "powershell_execution_unsigned_files" - Has the file executed PowerShell? Query without specifying processes. No additional arguments are required. "process_excecution_powershell" - Whether there the file executed PowerShell or not.
       name: query_purpose
       required: true
       auto: PREDEFINED
@@ -5260,7 +5276,7 @@ script:
     arguments:
     - name: query_purpose
       auto: PREDEFINED
-      description: When you select a “query_purpose” argument, a designated query template is used. "file_deleted" - Did the file delete itself? "event_log_cleared" - Was the event log cleared? Requires at least one of device arguments (device_name/device_id). "compromised_information" - Information on a compromised user and its activities. Requires only username argument. "connected_devices" - All connected devices by compromised user. Requires only username argument. "action_types" - All action types created by a user on each machine. Requires only username argument. "common_files" - Most common files associated with a user. Requires only username argument
+      description: When you select a “query_purpose” argument, a designated query template is used. "file_deleted" - Did the file delete itself? "event_log_cleared" - Was the event log cleared? Requires at least one of device arguments (device_name/device_id). "compromised_information" - Information on a compromised user and its activities. Requires only username argument. "connected_devices" - All connected devices by compromised user. Requires only username argument. "action_types" - All action types created by a user on each machine. Requires only username argument. "common_files" - Most common files associated with a user. Requires only username argument.
       required: true
       defaultValue: ''
       predefined:
@@ -5509,7 +5525,7 @@ script:
     execution: false
     name: microsoft-atp-auth-reset
     arguments: []
-  dockerimage: demisto/crypto:1.0.0.68914
+  dockerimage: demisto/crypto:1.0.0.74979
   isfetch: true
   runonce: false
   script: '-'
