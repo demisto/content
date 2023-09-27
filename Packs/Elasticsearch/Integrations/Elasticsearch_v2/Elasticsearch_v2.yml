@@ -362,9 +362,9 @@ script:
       description: The name of the index to ingest into.
     - name: document
       required: true
-      description: The document object (JSON format) to be indexed. See Elasticsearch documentation for further information about indexing documents.
+      description: The document object (JSON format) to be indexed. See Elasticsearch documentation (https://www.elastic.co/guide/en/elasticsearch/client/python-api/current/examples.html#ex-index) for further information about indexing documents. 
     - name: id
-      description: The id of the indexed document (will be generated if empty).
+      description: The ID of the indexed document (will be generated if empty).
     outputs:
     - contextPath: Elasticsearch.Index.id
       description: The ID of the indexed document.
