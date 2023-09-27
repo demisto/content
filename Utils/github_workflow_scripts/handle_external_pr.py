@@ -228,8 +228,9 @@ def main():
     print(f'pack path: {pr_files[0]}')
     ver = get_pack_metadata(pr_files[0]).get('currentVersion')
     print(f'version is: {ver}')
-    contributors_body = f'Hi {pr.user.login},You have contributed to an XSOAR-supported pack. To get credit for your generous ' \
-                        f'contribution follow this [link](https://xsoar.pan.dev/docs/packs/packs-format#contributorsjson)'
+    contributors_body = f'Hi {pr.user.login}, you have contributed to an XSOAR supported pack. To receive credit for your ' \
+                        f'generous contribution please follow this [link]' \
+                        f'(https://xsoar.pan.dev/docs/packs/packs-format#contributorsjson)'
     if 'contributors' not in pr_files and XSOAR_SUPPORT_LEVEL_LABEL in labels_to_add and ver != '1.0.0':
         pr.create_issue_comment(contributors_body)
 
