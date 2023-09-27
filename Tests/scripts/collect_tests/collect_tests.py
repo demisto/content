@@ -1072,7 +1072,7 @@ class BranchTestCollector(TestCollector):
 
         logger.debug(f'Getting changed files for {self.branch_name=}')
 
-        if os.getenv('IFRA_ENV_TYPE') == 'Bucket-Upload':
+        if os.getenv('IFRA_ENV_TYPE') == 'Bucket-Upload': # todo
             logger.info('bucket upload: getting last commit from index')
             previous_commit = get_last_commit_from_index(self.service_account, self.marketplace)
             if self.branch_name == 'master':
@@ -1407,7 +1407,7 @@ if __name__ == '__main__':
     if args.changed_pack_path:
         collector = BranchTestCollector('master', marketplace, service_account, args.changed_pack_path, graph=graph)
 
-    elif os.environ.get("IFRA_ENV_TYPE") == 'Bucket-Upload':
+    elif os.environ.get("IFRA_ENV_TYPE") == 'Bucket-Upload': # todo
         if args.override_all_packs:
             collector = UploadAllCollector(marketplace, graph)
         elif pack_to_upload:

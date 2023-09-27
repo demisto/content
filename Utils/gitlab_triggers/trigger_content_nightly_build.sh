@@ -23,7 +23,7 @@ fi
 
 _branch="$(git branch  --show-current)"
 _slack_channel="dmst-build-test"
-_infra_env_type=${IFRA_ENV_TYPE:-Nightly} #todo check if need
+_infra_env_type=${IFRA_ENV_TYPE:-Nightly} # todo check if need
 
 TEST_MODELING_RULE_JIRA_TICKETS="false"
 
