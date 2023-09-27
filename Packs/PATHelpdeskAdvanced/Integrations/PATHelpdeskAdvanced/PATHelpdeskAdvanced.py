@@ -1,10 +1,9 @@
 import contextlib
+from dataclasses import dataclass
 from json import JSONDecodeError
 from pathlib import Path
-from pprint import pformat
-from typing import Literal, NamedTuple
-from collections.abc import Callable
-from collections.abc import Sequence
+from typing import Literal, NamedTuple, Sequence
+from collections.abc import Callable, Iterable
 from requests import Response
 
 # import curlify
@@ -102,9 +101,44 @@ OPERATION_TYPE_ID = Field("operation_type_id")
 # Underscored fields are not real in HDA but used for the integration
 _PRIORITY = Field("priority")
 _TICKET_SOURCE = Field("ticket_source")
+_OBJECT_ID = Field("object_id")
+_TICKET = Field("ticket")
 _ATTACHMENT_ID = Field("attachment_id")
 
 ID_DESCRIPTION_COLUMN_NAMES = str([field.hda_name for field in (ID, DESCRIPTION)])
+
+
+class Filter(NamedTuple):
+    key: str
+    operator: str  # See OPERATORS
+    value: str | None  # none only when the value is null and without quotes
+
+    @staticmethod
+    def _parse(string: str) -> "Filter":
+        if not (match := FILTER_CONDITION_REGEX.match(string)):
+            raise DemistoException(
+                f"Cannot parse {string}. "
+                'Expected a phrase of the form ["key" operator "value"] or ["key" operator null]'
+            )
+        return Filter(
+            key=match["key"],
+            operator=match["op"],
+            value=None if ((value := match["value"]) == "null") else value.strip('"'),
+        )
+
+    @staticmethod
+    def parse_list(strings: Iterable[str] | str | None) -> List["Filter"]:
+        return [Filter._parse(string) for string in argToList(strings)]
+
+    @property
+    def dict(self):
+        return {"property": self.key, "op": self.operator, "value": self.value}
+
+    @staticmethod
+    def dumps_list(filters: Sequence["Filter"] | "Filter") -> str:
+        if isinstance(filters, Filter):
+            filters = [filters]
+        return json.dumps([filter.dict for filter in filters])
 
 
 def safe_arg_to_number(argument: str | None, argument_name: str) -> int:
@@ -115,38 +149,16 @@ def safe_arg_to_number(argument: str | None, argument_name: str) -> int:
     return result
 
 
-def parse_filter_conditions(strings: Sequence[str] | str) -> str:
-    def _parse_single_condition(string: str) -> dict:
-        if not (match := FILTER_CONDITION_REGEX.match(string)):
-            raise DemistoException(
-                f'Cannot parse {string}. Expected a phrase of the form "key" operator "value" or "key" operator null'
-            )
-        return {
-            "property": match["key"],
-            "op": match["op"],
-            "value": None
-            if ((value := match["value"]) == "null")
-            else value.strip('"'),
-        }
-
-    if isinstance(strings, str):
-        strings = argToList(strings)
-
-    return json.dumps([_parse_single_condition(string) for string in strings])
-
-
 def create_params_dict(
     required_fields: tuple[Field, ...] = (),
     optional_fields: tuple[Field, ...] = (),
     **kwargs,
 ) -> dict[str, Any]:
-    result = {field.hda_name: kwargs[field.demisto_name] for field in required_fields}
-
-    for field in optional_fields:
-        if field.demisto_name in kwargs:
-            result[field.hda_name] = kwargs[field.demisto_name]
-
-    return result
+    return {field.hda_name: kwargs[field.demisto_name] for field in required_fields} | {
+        field.hda_name: kwargs[field.demisto_name]
+        for field in optional_fields
+        if field.demisto_name in kwargs
+    }
 
 
 class RequestNotSuccessfulError(DemistoException):
@@ -200,6 +212,7 @@ class Client(BaseClient):
         url_suffix: str,
         method: Literal["GET", "POST"],
         attempted_action: str,
+        require_success_true: bool = True,
         **kwargs,
     ) -> dict:
         response = self._http_request(
@@ -208,14 +221,19 @@ class Client(BaseClient):
             resp_type="response",
             **kwargs,
         )
+        print(
+            f"Request: {method} {urljoin(self._base_url,url_suffix)}, {kwargs=}, {self._headers=}"
+        )
         # for r in response.history:
         #     print(curlify.to_curl(r.request, compressed=True))
         # print(curlify.to_curl(response.request, compressed=True))
         try:
             response_body = json.loads(response.text)
-            # print()
             # print(f"Response: {pformat(response_body)}")
-            if response_body["success"] is not True:  # request failed
+            if (require_success_true or ("success" in response_body)) and (
+                response_body["success"] is not True
+            ):
+                # Some endpoints only contain the `success` key on failure ¯\_(ツ)_/¯
                 raise RequestNotSuccessfulError(response, attempted_action)
             return response_body
 
@@ -397,8 +415,17 @@ class Client(BaseClient):
             "limit": safe_arg_to_number(kwargs["limit"], "limit"),
         }
 
-        if filter_params := parse_filter_conditions(kwargs.get("filter") or ()):
-            params["filter"] = filter_params
+        if custom_filter := Filter.parse_list(kwargs.get("filter")):
+            params["filter"] = Filter.dumps_list(custom_filter)
+
+        if ticket_id := kwargs.get(TICKET_ID.demisto_name):
+            if custom_filter:
+                raise DemistoException(
+                    "The ticket_id and filter arguments cannot be used at the same time."
+                )
+            # if only ticket_id is passed, use it to filter
+            params["filter"] = Filter.dumps_list(Filter(ID.hda_name, "eq", ticket_id))
+
         return self.http_request(
             url_suffix="WSC/Projection",
             method="POST",
@@ -429,10 +456,10 @@ class Client(BaseClient):
             "entity": "Attachments",
             "start": 0,  # TODO necessary?
             "limit": safe_arg_to_number(kwargs["limit"], "limit"),
-            "filter": parse_filter_conditions(
+            "filter": Filter.dumps_list(
                 (
-                    f'"{PARENT_OBJECT.hda_name}" eq "Ticket"',
-                    f'"{PARENT_OBJECT_ID.hda_name}" eq "{ticket_id}"',
+                    Filter(PARENT_OBJECT.hda_name, "eq", _TICKET.hda_name),
+                    Filter(PARENT_OBJECT_ID.hda_name, "eq", ticket_id),
                 )
             ),
         }
@@ -453,7 +480,9 @@ class Client(BaseClient):
                 "data": {
                     TICKET_ID.hda_name: kwargs[TICKET_ID.demisto_name],
                     TEXT.hda_name: kwargs["comment"],
-                    SITE_VISIBLE.hda_name: kwargs[SITE_VISIBLE.demisto_name],
+                    SITE_VISIBLE.hda_name: argToBoolean(
+                        kwargs[SITE_VISIBLE.demisto_name]
+                    ),
                     OBJECT_TYPE_ID.hda_name: "90",  # hardcoded by design. 90 marks ObjectTypeIDField
                 },
             },
@@ -475,18 +504,18 @@ class Client(BaseClient):
         )
 
     def change_ticket_status(
-        self, status: str, ticket_id: str, note: str | None
+        self,
+        status_id: str,
+        ticket_id: str,
+        note: str | None = None,
     ) -> dict:
-        statuses_to_id = map_id_to_description(
+        allowed_id_values = map_id_to_description(
             self.list_ticket_statuses(limit=1000)
-        )  # TODO 1000?
+        ).keys()  # TODO 1000?
 
-        # Find status ID matching the selected status
-        if (status_id := statuses_to_id.get(status)) is None:
-            demisto.debug(f"status to id mapping: {statuses_to_id}")
+        if status_id not in allowed_id_values:
             raise DemistoException(
-                f"Cannot find id for {status}."
-                f"See debug log for the {len(statuses_to_id)} status mapping options found."
+                f"Invalid {status_id=}. Possible values are {','.join(sorted(allowed_id_values))}"
             )
 
         params = {
@@ -532,9 +561,10 @@ class Client(BaseClient):
 
     def get_ticket_history(self, ticket_id: str) -> dict:
         return self.http_request(
-            url_suffix=f"Ticket/History?ObjectID={ticket_id}",
-            method="POST",
+            url_suffix=f"Ticket/History?{_OBJECT_ID.hda_name}={ticket_id}",
+            method="GET",
             attempted_action="getting ticket history",
+            require_success_true=False,
         )
 
     def list_users(self, **kwargs):
@@ -555,9 +585,9 @@ class Client(BaseClient):
             "limit": pagination.limit,
         }
 
-        if user_ids := argToList(kwargs["user_id"]):
-            params["filter"] = parse_filter_conditions(
-                tuple(f'{ID.hda_name} eq "{id_}"' for id_ in user_ids)
+        if user_ids := argToList(kwargs.get("user_id")):
+            params["filter"] = Filter.dumps_list(
+                Filter(ID.hda_name, "eq", id_) for id_ in user_ids
             )
 
         return self.http_request(
@@ -579,9 +609,7 @@ class Client(BaseClient):
         }
 
         if group_id := kwargs.get("group_id"):
-            params["filter"] = parse_filter_conditions(
-                (f'{ID.hda_name} eq "{group_id}"',)
-            )
+            params["filter"] = Filter.dumps_list(Filter(ID.hda_name, "eq", group_id))
 
         return self.http_request(
             url_suffix="WSC/Projection",
@@ -737,10 +765,12 @@ def list_tickets_command(client: Client, args: dict) -> CommandResults:
 
 def add_ticket_attachment_command(client: Client, args: dict) -> CommandResults:
     entry_ids = argToList(args.pop("entry_id", ()))
+    ticket_id = args["ticket_id"]
     response = client.add_ticket_attachment(entry_ids, **args)
-    print(response)
     return CommandResults(
-        readable_output=f"Added Attachment ID {response['data']['attachmentID']} to ticket ID {args['ticket_id']}",
+        readable_output=f"Added Attachment ID {response['data']['attachmentID']} to ticket ID {ticket_id}"
+        if len(entry_ids) == 1
+        else f"Added {len(entry_ids)} attachments to ticket ID {ticket_id}",  # API only returns the last attachment ID
         raw_response=response,
     )
 
@@ -794,7 +824,7 @@ def add_ticket_comment_command(client: Client, args: dict) -> CommandResults:
 def change_ticket_status_command(client: Client, args: dict) -> CommandResults:
     response = client.change_ticket_status(**args)
     return CommandResults(
-        readable_output=f"Changed status of ticket {args['ticket_id']} to {args['status']} successfully.",
+        readable_output=f"Changed status of ticket {args['ticket_id']} to {args['status_id']} successfully.",
         raw_response=response,
     )
 
