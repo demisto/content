@@ -334,7 +334,7 @@ def fetch_incidents(client: Client, args: Dict[str, Any]) -> \
         start_time = inc.get('start_time')
         severity = inc.get('severity')
         if not id or "-" not in id or not start_time:
-            demisto.debug(f"Skipped fetching incident because no start_time or id. {incident=}")
+            demisto.debug(f"Skipped fetching incident because no start_time or id. {inc=}")
             continue
         demisto.debug(f"Current incident: {id=}, {start_time=}")
         if id in last_ids:
