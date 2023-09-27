@@ -313,7 +313,7 @@ def paginate_with_token(
             limit: The total number of results to fetch.
             api_limit: The limit the API has per page/request.
 
-        Yields: 
+        Yields:
             int: The next page size to use, not exceeding the API limit.
         '''
         while limit > api_limit:
@@ -730,7 +730,7 @@ def attack_type_list_command(args: dict, client: Client) -> CommandResults:
     response = client.attack_type_list(
         sub_dict(args, 'auto_escalation', 'automated')
         | {
-            'auto_authorise': args.get('auto_authorize'), 
+            'auto_authorise': args.get('auto_authorize'),
             'region': args.get('region') or PARAMS['region']
         }
     )
