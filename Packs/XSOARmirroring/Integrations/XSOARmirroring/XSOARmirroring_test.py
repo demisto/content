@@ -133,11 +133,11 @@ def test_fetch_incidents(mocker):
     first_fetch = dateparser.parse('3 days').strftime(XSOAR_DATE_FORMAT)
     client = Client("")
 
-    next_run, incidents_result = fetch_incidents(client=client, max_results=3, last_run={}, first_fetch_time=first_fetch,
+    next_run, incidents_result = fetch_incidents(client=client, max_results=3, last_run={}, last_fetch=first_fetch, first_fetch_time=first_fetch,
                                                  query='', mirror_direction='None', mirror_tag=[])
 
     assert len(incidents_result) == 3
-    assert dateparser.parse(next_run['last_fetch']) == dateparser.parse(INCIDENTS[-1]['created']) + timedelta(milliseconds=1)
+    assert dateparser.parse(next_run['last_fetch']) == dateparser.parse(INCIDENTS[-1]['created'])
 
 
 @pytest.mark.parametrize('mirror_playbook_id', (True, False))
@@ -158,6 +158,7 @@ def test_fetch_incidents_mirror_playbook_id(mocker, mirror_playbook_id: bool):
     client = Client("dummy token")
 
     next_run, incidents_result = fetch_incidents(client=client, max_results=3, last_run={}, first_fetch_time=first_fetch,
+                                                 last_fetch="",
                                                  query='', mirror_direction='None', mirror_tag=[],
                                                  mirror_playbook_id=mirror_playbook_id)
 
@@ -221,3 +222,223 @@ def test_validate_and_prepare_basic_params(params, expected_url):
     else:
         _, _, full_base_url = validate_and_prepare_basic_params(params)
         assert full_base_url == expected_url
+
+
+# test_dedup_incidents parametrize arguments
+case_all_incidents_with_same_time_and_were_fetched_milliseconds = ([
+    {'id': '1',
+     'version': 8,
+     'created': '2023-09-26T15:13:45.71965554Z'},
+    {'id': '2',
+     'version': 8,
+     'created': '2023-09-26T15:13:45.71965554Z'},
+    {'id': '3',
+     'version': 8,
+     'created': '2023-09-26T15:13:45.71965554Z'},
+], ['1', '2', '3'], ([], ['1', '2', '3']))
+
+
+case_all_incidents_with_same_time_and_were_not_fetched_milliseconds = ([
+    {'id': '1',
+     'version': 8,
+     'created': '2023-09-26T15:13:45.71965554Z'},
+    {'id': '2',
+     'version': 8,
+     'created': '2023-09-26T15:13:45.71965554Z'},
+    {'id': '3',
+     'version': 8,
+     'created': '2023-09-26T15:13:45.71965554Z'},
+], [], ([{'id': '1',
+          'version': 8,
+          'created': '2023-09-26T15:13:45.71965554Z'},
+         {'id': '2',
+          'version': 8,
+          'created': '2023-09-26T15:13:45.71965554Z'},
+         {'id': '3',
+         'version': 8,
+          'created': '2023-09-26T15:13:45.71965554Z'},], ['1', '2', '3']))
+
+case_incidents_with_different_time_and_were_not_fetched_milliseconds = ([
+    {'id': '1',
+     'version': 8,
+     'created': '2023-09-26T15:13:45.71965554Z'},
+    {'id': '2',
+     'version': 8,
+     'created': '2023-09-26T15:14:45.71965554Z'},
+    {'id': '3',
+     'version': 8,
+     'created': '2023-09-26T15:15:45.71965554Z'},
+], [], ([{'id': '1',
+          'version': 8,
+          'created': '2023-09-26T15:13:45.71965554Z'},
+         {'id': '2',
+          'version': 8,
+          'created': '2023-09-26T15:14:45.71965554Z'},
+         {'id': '3',
+         'version': 8,
+          'created': '2023-09-26T15:15:45.71965554Z'},], ['3']))
+
+case_incidents_with_different_time_and_were_fetched_milliseconds = ([
+    {'id': '1',
+     'version': 8,
+     'created': '2023-09-26T15:13:45.71965554Z'},
+    {'id': '2',
+     'version': 8,
+     'created': '2023-09-26T15:14:45.71965554Z'},
+    {'id': '3',
+     'version': 8,
+     'created': '2023-09-26T15:15:45.71965554Z'},
+], [], ([{'id': '1',
+          'version': 8,
+          'created': '2023-09-26T15:13:45.71965554Z'},
+         {'id': '2',
+          'version': 8,
+          'created': '2023-09-26T15:14:45.71965554Z'},
+         {'id': '3',
+         'version': 8,
+          'created': '2023-09-26T15:15:45.71965554Z'},], ['3']))
+
+
+case_empty_event_list_milliseconds: tuple = ([], ['1', '2', '3'], ([], ['1', '2', '3']))
+
+
+@pytest.mark.parametrize('incidents, incidents_last_fetch_ids, expected_result', [
+    case_all_incidents_with_same_time_and_were_fetched_milliseconds,
+    case_all_incidents_with_same_time_and_were_not_fetched_milliseconds,
+    case_incidents_with_different_time_and_were_not_fetched_milliseconds,
+    case_incidents_with_different_time_and_were_fetched_milliseconds,
+    case_empty_event_list_milliseconds
+])
+def test_dedup_incidents_with_milliseconds_timestamp(incidents, incidents_last_fetch_ids, expected_result):
+    """
+    Given:
+        - Case 1: All incidents from the current fetch cycle have the same timestamp and were fetched.
+        - Case 2: All incidents from the current fetch cycle have the same timestamp and were not fetched.
+        - Case 3: Most recent incident has later timestamp then other incidents in the response and the 
+                  incidents were not fetched.
+        - Case 4: Most recent incident has later timestamp then other incidents in the response
+                  and the incidents were fetched.
+        - Case 5: Empty incidents list (no new incidents received from API response).
+    When:
+        - Using the dedup mechanism while fetching incidents.
+    Then:
+        - Case 1: Add the list of fetched incidents IDs to current 'incidents_last_fetch_ids' from last run,
+                  return a list of dedup incidents and updated list of 'incidents_last_fetch_ids' for next run.
+        - Case 2: Add the list of fetched incidents IDs to current 'incidents_last_fetch_ids' from last run,
+                  return list of dedup incidents and updated list of 'incidents_last_fetch_ids' for next run.
+        - Case 3: Return list of dedup incidents and new list of 'new_ids' for next run.
+        - Case 4: Return list of dedup incidents and new list of 'new_ids' for next run.
+        - Case 5: Return empty list and the unchanged list of 'incidents_last_fetch_ids' for next run.
+    """
+    from XSOARmirroring import dedup_incidents
+    assert dedup_incidents(incidents, incidents_last_fetch_ids) == expected_result
+
+
+# test_dedup_incidents parametrize arguments
+case_all_incidents_with_same_time_and_were_fetched = ([
+    {'id': '1',
+     'version': 8,
+     'created': '2023-09-26T15:13:45Z'},
+    {'id': '2',
+     'version': 8,
+     'created': '2023-09-26T15:13:45Z'},
+    {'id': '3',
+     'version': 8,
+     'created': '2023-09-26T15:13:45Z'},
+], ['1', '2', '3'], ([], ['1', '2', '3']))
+
+
+case_all_incidents_with_same_time_and_were_not_fetched = ([
+    {'id': '1',
+     'version': 8,
+     'created': '2023-09-26T15:13:45Z'},
+    {'id': '2',
+     'version': 8,
+     'created': '2023-09-26T15:13:45Z'},
+    {'id': '3',
+     'version': 8,
+     'created': '2023-09-26T15:13:45Z'},
+], [], ([{'id': '1',
+          'version': 8,
+          'created': '2023-09-26T15:13:45Z'},
+         {'id': '2',
+          'version': 8,
+          'created': '2023-09-26T15:13:45Z'},
+         {'id': '3',
+         'version': 8,
+          'created': '2023-09-26T15:13:45Z'},], ['1', '2', '3']))
+
+case_incidents_with_different_time_and_were_not_fetched = ([
+    {'id': '1',
+     'version': 8,
+     'created': '2023-09-26T15:13:45Z'},
+    {'id': '2',
+     'version': 8,
+     'created': '2023-09-26T15:14:45Z'},
+    {'id': '3',
+     'version': 8,
+     'created': '2023-09-26T15:15:45Z'},
+], [], ([{'id': '1',
+          'version': 8,
+          'created': '2023-09-26T15:13:45Z'},
+         {'id': '2',
+          'version': 8,
+          'created': '2023-09-26T15:14:45Z'},
+         {'id': '3',
+         'version': 8,
+          'created': '2023-09-26T15:15:45Z'},], ['3']))
+
+case_incidents_with_different_time_and_were_fetched = ([
+    {'id': '1',
+     'version': 8,
+     'created': '2023-09-26T15:13:45Z'},
+    {'id': '2',
+     'version': 8,
+     'created': '2023-09-26T15:14:45Z'},
+    {'id': '3',
+     'version': 8,
+     'created': '2023-09-26T15:15:45Z'},
+], [], ([{'id': '1',
+          'version': 8,
+          'created': '2023-09-26T15:13:45Z'},
+         {'id': '2',
+          'version': 8,
+          'created': '2023-09-26T15:14:45Z'},
+         {'id': '3',
+         'version': 8,
+          'created': '2023-09-26T15:15:45Z'},], ['3']))
+
+
+case_empty_event_list: tuple = ([], ['1', '2', '3'], ([], ['1', '2', '3']))
+
+
+@pytest.mark.parametrize('incidents, incidents_last_fetch_ids, expected_result', [
+    case_all_incidents_with_same_time_and_were_fetched,
+    case_all_incidents_with_same_time_and_were_not_fetched,
+    case_incidents_with_different_time_and_were_not_fetched,
+    case_incidents_with_different_time_and_were_fetched,
+    case_empty_event_list
+])
+def test_dedup_incidents_with_seconds_timestamp(incidents, incidents_last_fetch_ids, expected_result):
+    """
+    Given:
+        - Case 1: All incidents from the current fetch cycle have the same timestamp and were fetched.
+        - Case 2: All incidents from the current fetch cycle have the same timestamp and were not fetched.
+        - Case 3: Most recent incident has later timestamp then other incidents in the response and the 
+                  incidents were not fetched.
+        - Case 4: Most recent incident has later timestamp then other incidents in the response
+                  and the incidents were fetched.
+        - Case 5: Empty incidents list (no new incidents received from API response).
+    When:
+        - Using the dedup mechanism while fetching incidents.
+    Then:
+        - Case 1: Add the list of fetched incidents IDs to current 'incidents_last_fetch_ids' from last run,
+                  return a list of dedup incidents and updated list of 'incidents_last_fetch_ids' for next run.
+        - Case 2: Add the list of fetched incidents IDs to current 'incidents_last_fetch_ids' from last run,
+                  return list of dedup incidents and updated list of 'incidents_last_fetch_ids' for next run.
+        - Case 3: Return list of dedup incidents and new list of 'new_ids' for next run.
+        - Case 4: Return list of dedup incidents and new list of 'new_ids' for next run.
+        - Case 5: Return empty list and the unchanged list of 'incidents_last_fetch_ids' for next run.
+    """
+    from XSOARmirroring import dedup_incidents
+    assert dedup_incidents(incidents, incidents_last_fetch_ids) == expected_result
