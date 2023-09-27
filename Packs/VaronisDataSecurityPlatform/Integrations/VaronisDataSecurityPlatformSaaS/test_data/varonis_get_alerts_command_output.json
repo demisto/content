@@ -1,0 +1,74 @@
+{
+    "Alert": [
+        {
+            "ID": "4FDB86C2-D78F-47EC-A1B1-74C4268A8A60",
+            "Name": "DNS",
+            "Time": "2022-02-12T13:59:00",
+            "Severity": "High",
+            "Category": "Privilege Escalation",
+            "Country": "",
+            "State": "",
+            "Status": "Open",
+            "CloseReason": "",
+            "BlacklistLocation": false,
+            "AbnormalLocation": "",
+            "NumOfAlertedEvents": "1",
+            "UserName": "",
+            "By": {
+                "SamAccountName": "",
+                "PrivilegedAccountType": "",
+                "Department": "IT"
+            },
+            "On": {
+                "ContainsFlaggedData": false,
+                "ContainsSensitiveData": false,
+                "Platform": "DNS",
+                "Asset": "",
+                "FileServerOrDomain": "dns"
+            },
+            "Device": {
+                "Name": "ilhrzrodc01",
+                "ContainMaliciousExternalIP": false,
+                "IPThreatTypes": ""
+            },
+            "Url": "https://test.com/#/app/analytics/entity/Alert/4FDB86C2-D78F-47EC-A1B1-74C4268A8A60"
+        },
+        {
+            "ID": "D99AEA15-7F17-46FC-A249-942B974377D6",
+            "Name": "DNS - Copy(2)",
+            "Time": "2022-02-12T13:59:00",
+            "Severity": "High",
+            "Category": "Privilege Escalation",
+            "Country": "",
+            "State": "",
+            "Status": "Open",
+            "CloseReason": "",
+            "BlacklistLocation": false,
+            "AbnormalLocation": "",
+            "NumOfAlertedEvents": "1",
+            "UserName": "",
+            "By": {
+                "SamAccountName": "",
+                "PrivilegedAccountType": "",
+                "Department": "IT"
+            },
+            "On": {
+                "ContainsFlaggedData": false,
+                "ContainsSensitiveData": false,
+                "Platform": "DNS",
+                "Asset": "",
+                "FileServerOrDomain": "dns"
+            },
+            "Device": {
+                "Name": "ilhrzrodc01",
+                "ContainMaliciousExternalIP": false,
+                "IPThreatTypes": ""
+            },
+            "Url": "https://test.com/#/app/analytics/entity/Alert/D99AEA15-7F17-46FC-A249-942B974377D6"
+        }
+    ],
+    "Pagination": {
+        "Page": 1,
+        "PageSize": 2
+    }
+}
