@@ -1,0 +1,70 @@
+{
+    "value": [
+                {
+            "pullRequestThreadContext": "None",
+            "id": 66,
+            "publishedDate": "2023-07-23T20:08:57.74Z",
+            "lastUpdatedDate": "2023-07-24T07:02:36.89Z",
+            "comments": [
+                {
+                    "id": 1,
+                    "parentCommentId": 0,
+                    "author": {
+                        "displayName": "XXX",
+                        "url": "",
+                        "_links": {
+                            "avatar": {
+                                "href": ""
+                            }
+                        },
+                        "id": "",
+                        "uniqueName": "",
+                        "imageUrl": "",
+                        "descriptor": ""
+                    },
+                    "content": "123",
+                    "publishedDate": "2023-07-23T20:08:57.74Z",
+                    "lastUpdatedDate": "2023-07-23T20:08:57.74Z",
+                    "lastContentUpdatedDate": "2023-07-23T20:08:57.74Z",
+                    "commentType": "text",
+                    "usersLiked": [],
+                    "_links": {}
+                },
+                {
+                    "id": 2,
+                    "parentCommentId": 0,
+                    "author": {
+                        "displayName": "XXX",
+                        "url": "",
+                        "_links": {},
+                        "id": "",
+                        "uniqueName": "",
+                        "imageUrl": "",
+                        "descriptor": ""
+                    },
+                    "content": "111",
+                    "publishedDate": "2023-07-23T20:11:30.633Z",
+                    "lastUpdatedDate": "2023-07-23T20:11:30.633Z",
+                    "lastContentUpdatedDate": "2023-07-23T20:11:30.633Z",
+                    "commentType": "text",
+                    "usersLiked": [],
+                    "_links": {}
+                }
+            ],
+            "status": "active",
+            "threadContext": "None",
+            "properties": "None",
+            "identities": "None",
+            "isDeleted": "False",
+            "_links": {
+                "self": {
+                    "href": ""
+                },
+                "repository": {
+                    "href": ""
+                }
+            }
+        }
+            ],
+    "count": 1
+}

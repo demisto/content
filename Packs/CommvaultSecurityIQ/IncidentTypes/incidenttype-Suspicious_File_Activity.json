@@ -1,0 +1,34 @@
+{
+    "autorun": false,
+    "color": "#F8E7A5",
+    "days": 0,
+    "daysR": 0,
+    "default": false,
+    "detached": false,
+    "disabled": false,
+    "extractSettings": {
+        "fieldCliNameToExtractSettings": {
+            "alertname": {
+                "extractAsIsIndicatorTypeId": "",
+                "extractIndicatorTypesIDs": [],
+                "isExtractingAllIndicatorTypes": false
+            }
+        },
+        "mode": "All"
+    },
+    "hours": 0,
+    "hoursR": 0,
+    "id": "Commvault Suspicious File Activity",
+    "layout": "Commvault Suspicious File Activity Layout",
+    "locked": false,
+    "name": "Commvault Suspicious File Activity",
+    "onChangeRepAlg": 0,
+    "playbookId": "Commvault Suspicious File Activity Remediation",
+    "readonly": false,
+    "reputationCalc": 0,
+    "system": false,
+    "version": -1,
+    "weeks": 0,
+    "weeksR": 0,
+    "fromVersion": "6.8.0"
+}

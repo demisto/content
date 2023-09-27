@@ -11,7 +11,7 @@ import traceback
 from itertools import groupby
 import math
 
-STRING_DELIMITER = ' | '  # delimiter used for joining Source fields and any additional fields of type string
+STRING_DELIMITER = ' | '  # delimiter used for joining source fields and any additional fields of type string
 
 
 def score(owners: list[dict[str, Any]]) -> list[dict[str, Any]]:
@@ -19,13 +19,13 @@ def score(owners: list[dict[str, Any]]) -> list[dict[str, Any]]:
     Owner score is the number of observations on that owner divided by the max number of observations
     for any owner in the list
 
-    Expects `Count` key and replaces it with `Ranking Score`
+    Expects `Count` key and replaces it with `ranking_score`
     """
     if owners:
         max_count = max(owner.get('Count', 1) for owner in owners)
         for owner in owners:
             count = owner.pop('Count', 1)
-            owner['Ranking Score'] = count / max_count
+            owner['ranking_score'] = count / max_count
     return owners
 
 
@@ -36,16 +36,16 @@ def rank(owners: list[dict[str, Any]]) -> list[dict[str, Any]]:
 
     See _get_k for hyperparameters that can be used to adjust the target value of k
     """
-    k = _get_k(scores=(owner['Ranking Score'] for owner in owners))
-    return sorted(owners, key=lambda x: x['Ranking Score'], reverse=True)[:k]
+    k = _get_k(scores=(owner['ranking_score'] for owner in owners))
+    return sorted(owners, key=lambda x: x['ranking_score'], reverse=True)[:k]
 
 
 def justify(owners: list[dict[str, str]]) -> list[dict[str, str]]:
     """
-    For now, `Justification` is the same as `Source`; in the future, will sophisticate
+    For now, `justification` is the same as `source`; in the future, will sophisticate
     """
     for owner in owners:
-        owner['Justification'] = owner.get('Source', '')
+        owner['justification'] = owner.get('source', '')
     return owners
 
 
@@ -99,26 +99,26 @@ def aggregate(owners: list[dict[str, str]]) -> list[dict[str, Any]]:
     for key, group in groupby(sorted_owners, key=lambda owner: owner['Canonicalization']):
         duplicates = list(group)
         email = duplicates[0].get('email', '')
-        # the if condition in the list comprehension below defends against owners whose Name value is None (not sortable)
+        # the if condition in the list comprehension below defends against owners whose name value is None (not sortable)
         names = sorted(
             [owner.get('name', '') for owner in duplicates if owner.get('name')],
             key=lambda x: len(x), reverse=True
         )
         name = names[0] if names else ''
-        # aggregate Source by union
+        # aggregate source by union
         source = STRING_DELIMITER.join(sorted(
             {owner.get('source', '') for owner in duplicates if owner.get('source', '')}
         ))
-        # take max Timestamp if there's at least one; else empty string
+        # take max timestamp if there's at least one; else empty string
         timestamps = sorted(
             [owner.get('timestamp', '') for owner in duplicates if owner.get('timestamp', '')], reverse=True
         )
         timestamp = timestamps[0] if timestamps else ''
         owner = {
-            'Name': name,
-            'Email': email,
-            'Source': source,
-            'Timestamp': timestamp,
+            'name': name,
+            'email': email,
+            'source': source,
+            'timestamp': timestamp,
             'Count': len(duplicates)
         }
 

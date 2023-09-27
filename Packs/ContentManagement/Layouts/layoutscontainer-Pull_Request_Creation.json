@@ -372,7 +372,11 @@
                     {
                         "fieldId": "incident_cicdpullrequestcomment",
                         "isVisible": true
-                    }
+                    },
+                    {
+						"fieldId": "incident_cicdazuredevopstargetref",
+						"isVisible": true
+					}
                 ],
                 "isVisible": true,
                 "name": "Pull Request details",

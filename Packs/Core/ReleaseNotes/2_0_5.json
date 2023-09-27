@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "The *email* argument is now required when using the command ***core-report-incorrect-wildfire***"
+}
