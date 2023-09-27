@@ -2032,12 +2032,13 @@ def test_update_incident_with_client_changed_etag(mocker):
     """
     client = mock_client()
     old_incident_data_in_xsoar = {
-        'etag': 'tag-version1',
-        'properties': {'title': 'Title version 1', 'severity': 1, 'status': 2, 'classification': 'Undetermined'}
+        'etag': 'tag-version1', 'title': 'Title version 1', 'severity': 1, 'status': 2, 'classification': 'Undetermined'
     }
     delta_incident_changes = {
         'severity': 2
     }
+
+    # Changed etag and title.
     newer_incident_from_azure = {
         'etag': 'tag-version2',
         'properties': {'title': 'Title version 2', 'severity': 1, 'status': 2, 'classification': 'Undetermined'}
