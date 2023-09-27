@@ -470,7 +470,7 @@ def construct_config_args(context_dict, credentials):  # pragma: no cover
     return config_args
 
 
-def get_account_autodiscover(account_email, access_type=ACCESS_TYPE):  # pragma: no cover
+def get_account_autodiscover(account_email, access_type=ACCESS_TYPE, time_zone=None):  # pragma: no cover
     account = None
     original_exc = None  # type: ignore
     context_dict = demisto.getIntegrationContext()
@@ -480,7 +480,7 @@ def get_account_autodiscover(account_email, access_type=ACCESS_TYPE):  # pragma:
             config_args = construct_config_args(context_dict, credentials)
             account = Account(
                 primary_smtp_address=account_email, autodiscover=False, config=Configuration(**config_args),
-                access_type=access_type,
+                access_type=access_type, default_timezone=EWSTimeZone(time_zone)
             )
             account.root.effective_rights.read  # pylint: disable=E1101
             return account
@@ -505,10 +505,11 @@ def get_account_autodiscover(account_email, access_type=ACCESS_TYPE):  # pragma:
     return account
 
 
-def get_account(account_email, access_type=ACCESS_TYPE):  # pragma: no cover
+def get_account(account_email, access_type=ACCESS_TYPE, time_zone=None):  # pragma: no cover
     if not AUTO_DISCOVERY:
         return Account(
             primary_smtp_address=account_email, autodiscover=False, config=config, access_type=access_type,
+            default_timezone=EWSTimeZone(time_zone)
         )
     return get_account_autodiscover(account_email, access_type)
 
