@@ -66,7 +66,7 @@ jobs-done-check-upload-flow:
   extends:
     - .jobs-done-check
     - .bucket-upload-rule
-  needs: ['run-unittests-and-lint-upload-flow', 'run-validations-upload-flow', 'mpv2-prepare-testing-bucket-upload-flow', 'upload-id-set-bucket', 'xpanse-prepare-testing-bucket-upload-flow', 'xsoar-prepare-testing-bucket-upload-flow', 'xsoar-saas-prepare-testing-bucket-upload-flow', 'install-packs-in-server6_8', 'install-packs-in-server6_9', 'install-packs-in-server6_10', 'install-packs-in-server6_11', 'install-packs-in-server-master', 'install-packs-in-xsiam-ga', 'sync-buckets-between-projects', 'upload-packs-to-marketplace', 'upload-packs-to-marketplace-v2', 'upload-packs-to-xpanse-marketplace', 'upload-packs-to-xsoar-saas-marketplace']
+  needs: ['run-unittests-and-lint-upload-flow', 'run-validations-upload-flow', 'mpv2-prepare-testing-bucket-upload-flow', 'upload-id-set-bucket', 'xpanse-prepare-testing-bucket-upload-flow', 'xsoar-prepare-testing-bucket-upload-flow', 'xsoar-saas-prepare-testing-bucket-upload-flow', 'install-packs-in-server6_9', 'install-packs-in-server6_10', 'install-packs-in-server6_11', 'install-packs-in-server6_12', 'install-packs-in-server-master', 'install-packs-in-xsiam-ga', 'sync-buckets-between-projects', 'upload-packs-to-marketplace', 'upload-packs-to-marketplace-v2', 'upload-packs-to-xpanse-marketplace', 'upload-packs-to-xsoar-saas-marketplace']
   tags:
     - gke
 
@@ -151,7 +151,7 @@ xpanse-prepare-testing-bucket-upload-flow:
     - section_end "Download content-test-conf and infra"
     - section_start "Secrets Fetch" --collapsed
     - SECRET_CONF_PATH=$(cat secret_conf_path)
-    - python3 ./Tests/scripts/add_secrets_file_to_build.py -sa "$GSM_SERVICE_ACCOUNT" -sf "$SECRET_CONF_PATH" -u "$DEMISTO_USERNAME" -p "$DEMISTO_PASSWORD" -gpidd "$GSM_PROJECT_ID_DEV" -gpidp "$GSM_PROJECT_ID" >> $ARTIFACTS_FOLDER/logs/handle_secrets.log
+    - python3 ./Tests/scripts/add_secrets_file_to_build.py -sa "$GSM_SERVICE_ACCOUNT" -sf "$SECRET_CONF_PATH" -u "$DEMISTO_USERNAME" -p "$DEMISTO_PASSWORD" --gsm_project_id_dev "$GSM_PROJECT_ID_DEV" --gsm_project_id_prod "$GSM_PROJECT_ID" >> $ARTIFACTS_FOLDER/logs/handle_secrets.log
     - section_end "Secrets Fetch"
     - !reference [.ssh-config-setup]
     - section_start "Get Instance Variables"
@@ -173,11 +173,6 @@ xpanse-prepare-testing-bucket-upload-flow:
     - exit "$EXIT_CODE"
 
 
-install-packs-in-server6_8:
-  extends: .install_packs_in_xsoar_server
-  variables:
-    INSTANCE_ROLE: "Server 6.8"
-
 install-packs-in-server6_9:
   extends: .install_packs_in_xsoar_server
   variables:
@@ -192,6 +187,11 @@ install-packs-in-server6_11:
   extends: .install_packs_in_xsoar_server
   variables:
     INSTANCE_ROLE: "Server 6.11"
+
+install-packs-in-server6_12:
+  extends: .install_packs_in_xsoar_server
+  variables:
+    INSTANCE_ROLE: "Server 6.12"
 
 install-packs-in-server-master:
   extends: .install_packs_in_xsoar_server
@@ -217,6 +217,7 @@ install-packs-in-server-master:
     TIME_TO_LIVE: ""
     GCS_LOCKS_PATH: "content-locks/locks-xsiam-ga-upload"
     CLOUD_MACHINES_TYPE: "upload"
+    CLOUD_MACHINES_COUNT: 1
   extends:
     - .bucket-upload-rule
     - .default-job-settings
@@ -227,7 +228,7 @@ install-packs-in-server-master:
     - section_end "Download content-test-conf and infra"
     - section_start "Secrets Fetch" --collapsed
     - SECRET_CONF_PATH=$(cat secret_conf_path)
-    - python3 ./Tests/scripts/add_secrets_file_to_build.py -sa "$GSM_SERVICE_ACCOUNT" -sf "$SECRET_CONF_PATH" -u "$DEMISTO_USERNAME" -p "$DEMISTO_PASSWORD" -gpidd "$GSM_PROJECT_ID_DEV" -gpidp "$GSM_PROJECT_ID" >> $ARTIFACTS_FOLDER/logs/handle_secrets.log
+    - python3 ./Tests/scripts/add_secrets_file_to_build.py -sa "$GSM_SERVICE_ACCOUNT" -sf "$SECRET_CONF_PATH" -u "$DEMISTO_USERNAME" -p "$DEMISTO_PASSWORD" --gsm_project_id_dev "$GSM_PROJECT_ID_DEV" --gsm_project_id_prod "$GSM_PROJECT_ID" >> $ARTIFACTS_FOLDER/logs/handle_secrets.log
     - section_end "Secrets Fetch"
     - section_start "Lock Machine"
     - |
@@ -241,7 +242,7 @@ install-packs-in-server-master:
     - echo "Auth done successfully"
     - ./Tests/scripts/wait_in_line_for_cloud_env.sh "$CLOUD_MACHINES_TYPE"
     - source CloudEnvVariables
-    - echo "CLOUD chosen_machine_id is $CLOUD_CHOSEN_MACHINE_ID"
+    - echo "CLOUD Chosen machine ids are:${CLOUD_CHOSEN_MACHINE_IDS}"
     - section_end "Lock Machine"
 
     - CLOUD_SERVERS_PATH=$(cat $CLOUD_SERVERS_FILE)
@@ -251,13 +252,9 @@ install-packs-in-server-master:
     - ./Tests/scripts/uninstall_packs_and_reset_bucket_cloud.sh || EXIT_CODE=$?
     - section_end "Clean Machine"
 
-    - |
-      if [ "$INSTANCE_ROLE" == XSIAM ]; then
-        section_start "Run end to end sanity tests"
-
-        python3 -m pytest ./Tests/tests_end_to_end_xsiam -v --cloud_machine "$CLOUD_CHOSEN_MACHINE_ID" --cloud_servers_path "$CLOUD_SERVERS_PATH" --cloud_servers_api_keys "cloud_api_keys.json" --disable-warnings
-        section_end "Run end to end sanity tests"
-      fi
+    - section_start "Run end to end sanity tests"
+    - ./Tests/scripts/run_end_to_end_tests.sh || EXIT_CODE=$?
+    - section_end "Run end to end sanity tests"
 
     - section_start "Get Instance Variables"
     - echo INSTANCE_ROLE="$INSTANCE_ROLE"
@@ -271,11 +268,8 @@ install-packs-in-server-master:
     - job-done
     - exit "$EXIT_CODE"
   after_script:
-    - echo "Job finished, removing lock file"
-    - gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" > $ARTIFACTS_FOLDER/logs/gauth.out 2>$ARTIFACTS_FOLDER/logs/gauth.err
-    - gsutil rm "gs://xsoar-ci-artifacts/$GCS_LOCKS_PATH/machines_locks/*-lock-$CI_JOB_ID"
-    - echo "Finished removing lock file"
-
+    - source .gitlab/helper_functions.sh
+    - !reference [ .unlock-machine ]
 
 #install-packs-in-xsiam-dev:
 #  extends: .install-mpv2-packs-on-xsiam-instances
@@ -293,13 +287,13 @@ install-packs-in-xsiam-ga:
     GCS_MACHINES_BUCKET: "marketplace-v2-dist-dev/upload-flow/builds-xsiam"
     CLOUD_SERVERS_FILE: "xsiam_servers_path"
     CLOUD_API_KEYS: $XSIAM_API_KEYS
-    UNREMOVABLE_PACKS: "Base"
+    NON_REMOVABLE_PACKS: "Base"
 
 
 upload-packs-to-marketplace:
   tags:
     - gke
-  needs: ["run-validations-upload-flow", "install-packs-in-server6_8", "install-packs-in-server6_9", "install-packs-in-server6_10", "install-packs-in-server6_11", "install-packs-in-server-master", "run-unittests-and-lint-upload-flow"]
+  needs: ["run-validations-upload-flow", "install-packs-in-server6_9", "install-packs-in-server6_10", "install-packs-in-server6_11", "install-packs-in-server6_12", "install-packs-in-server-master", "run-unittests-and-lint-upload-flow"]
   stage: upload-to-marketplace
   artifacts:
     expire_in: 48 hrs
@@ -426,6 +420,13 @@ upload-packs-to-marketplace-v2:
 
     - section_start "Download packs from GCP"
     - |
+      if [[ $GCS_MARKET_V2_BUCKET == $GCS_PRODUCTION_V2_BUCKET ]] && [[ -z $STORAGE_BASE_PATH ]]; then
+        STORAGE_BASE_PATH="content"
+      fi
+      if [[ $GCS_MARKET_V2_BUCKET != $GCS_PRODUCTION_V2_BUCKET ]] && [[ -z $STORAGE_BASE_PATH ]]; then
+        STORAGE_BASE_PATH="upload-flow/builds/$CI_COMMIT_BRANCH/$CI_PIPELINE_ID/content"
+      fi
+      
       PACKS_SRC="gs://$GCS_MARKET_V2_BUCKET/$STORAGE_BASE_PATH/packs"
       ZIP_FOLDER=$(mktemp -d)
       gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" >> $ARTIFACTS_FOLDER/logs/auth.out
@@ -466,7 +467,7 @@ upload-packs-to-xpanse-marketplace:
     - *check_user_permissions_to_upload_packs
     - section_start "Upload Packs To Marketplace Storage"
     - |
-      if [[ "$CI_COMMIT_BRANCH" == "master" ]] || [[ "$CI_COMMIT_BRANCH" == "xpanse-marketplace" ]] || [[ "$GCS_MARKET_XPANSE_BUCKET" != "$GCS_PRODUCTION_XPANSE_BUCKET" ]]; then
+      if [[ "$CI_COMMIT_BRANCH" == "master" ]] || [[ "$GCS_MARKET_XPANSE_BUCKET" != "$GCS_PRODUCTION_XPANSE_BUCKET" ]]; then
         EXTRACT_FOLDER=$(mktemp -d)
         PACK_ARTIFACTS=$ARTIFACTS_FOLDER/content_packs.zip
         PACKS_DEPENDENCIES=$ARTIFACTS_FOLDER/packs_dependencies.json
@@ -489,6 +490,13 @@ upload-packs-to-xpanse-marketplace:
 
     - section_start "Download packs from GCP"
     - |
+      if [[ $GCS_MARKET_XPANSE_BUCKET == $GCS_PRODUCTION_XPANSE_BUCKET ]] && [[ -z $STORAGE_BASE_PATH ]]; then
+        STORAGE_BASE_PATH="content"
+      fi
+      if [[ $GCS_MARKET_XPANSE_BUCKET != $GCS_PRODUCTION_XPANSE_BUCKET ]] && [[ -z $STORAGE_BASE_PATH ]]; then
+        STORAGE_BASE_PATH="upload-flow/builds/$CI_COMMIT_BRANCH/$CI_PIPELINE_ID/content"
+      fi
+      
       PACKS_SRC="gs://$GCS_MARKET_XPANSE_BUCKET/$STORAGE_BASE_PATH/packs"
       ZIP_FOLDER=$(mktemp -d)
       gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" >> $ARTIFACTS_FOLDER/logs/auth.out
@@ -532,7 +540,7 @@ upload-packs-to-xsoar-saas-marketplace:
     - |
       echo "$GCS_MARKET_XSOAR_SAAS_BUCKET"
       echo "$GCS_PRODUCTION_XSOAR_SAAS_BUCKET"
-      if [[ "$CI_COMMIT_BRANCH" == "master" ]] || [[ "$CI_COMMIT_BRANCH" == "new_bucket_xsoar_saas" ]] ||  [[ "$GCS_MARKET_XSOAR_SAAS_BUCKET" != "$GCS_PRODUCTION_XSOAR_SAAS_BUCKET" ]]; then
+      if [[ "$CI_COMMIT_BRANCH" == "master" ]] ||  [[ "$GCS_MARKET_XSOAR_SAAS_BUCKET" != "$GCS_PRODUCTION_XSOAR_SAAS_BUCKET" ]]; then
         EXTRACT_FOLDER=$(mktemp -d)
         PACK_ARTIFACTS=$ARTIFACTS_FOLDER/content_packs.zip
         PACKS_DEPENDENCIES=$ARTIFACTS_FOLDER/packs_dependencies.json
@@ -552,6 +560,13 @@ upload-packs-to-xsoar-saas-marketplace:
 
     - section_start "Download packs from GCP"
     - |
+      if [[ $GCS_MARKET_XSOAR_SAAS_BUCKET == $GCS_PRODUCTION_XSOAR_SAAS_BUCKET ]] && [[ -z $STORAGE_BASE_PATH ]]; then
+        STORAGE_BASE_PATH="content"
+      fi
+      if [[ $GCS_MARKET_XSOAR_SAAS_BUCKET != $GCS_PRODUCTION_XSOAR_SAAS_BUCKET ]] && [[ -z $STORAGE_BASE_PATH ]]; then
+        STORAGE_BASE_PATH="upload-flow/builds/$CI_COMMIT_BRANCH/$CI_PIPELINE_ID/content"
+      fi
+      
       PACKS_SRC="gs://$GCS_MARKET_XSOAR_SAAS_BUCKET/$STORAGE_BASE_PATH/packs"
       ZIP_FOLDER=$(mktemp -d)
       gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" >> $ARTIFACTS_FOLDER/logs/auth.out
