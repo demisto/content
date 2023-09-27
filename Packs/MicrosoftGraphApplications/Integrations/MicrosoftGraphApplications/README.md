@@ -210,6 +210,14 @@ Removes an application from the directory.
 #### Context Output
 
 There is no context output for this command.
+
+#### Command Example
+```!msgraph-apps-service-principal-remove id=ID_TEST```
+
+#### Human Readable Output
+>Service ID_TEST was deleted.
+
+
 ### msgraph-apps-service-principal-get
 
 ***
