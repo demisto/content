@@ -110,7 +110,7 @@ _OBJECT_ID = Field("object_id")
 _TICKET = Field("ticket")
 _ATTACHMENT_ID = Field("attachment_id")
 _USER_ID = Field("user_id")
-
+_GROUP_ID = Field("group_id")
 ID_DESCRIPTION_COLUMN_NAMES = str([field.hda_name for field in (ID, DESCRIPTION)])
 
 
@@ -780,7 +780,7 @@ def list_tickets_command(client: Client, args: dict) -> CommandResults:
             title="Tickets",
             output=response["data"],
             fields=(
-                TICKET_ID, # Replaced from ID
+                TICKET_ID,  # Replaced from ID
                 SUBJECT,
                 SOLUTION,
                 DATE,
@@ -960,7 +960,23 @@ def list_groups_command(client: Client, args: dict) -> CommandResults:
         outputs=data,
         outputs_prefix=f"{VENDOR}.Group",
         outputs_key_field=ID.hda_name,
-        raw_response=response,  # TODO HR fields
+        raw_response=response,
+        readable_output=pat_table_to_markdown(
+            title="PAT HelpDeskAdvanced Groups",
+            output=data,
+            fields=(
+                _GROUP_ID,
+                SUBJECT,
+                SOLUTION,
+                DATE,
+                SERVICE_ID,
+                PROBLEM,
+                CONTACT_ID,
+                OWNER_USER_ID,
+                ACCOUNT_ID,
+            ),
+            field_replacements={ID: _GROUP_ID},
+        ),
     )
 
 
