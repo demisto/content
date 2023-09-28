@@ -109,6 +109,7 @@ _TICKET_SOURCE = Field("ticket_source")
 _OBJECT_ID = Field("object_id")
 _TICKET = Field("ticket")
 _ATTACHMENT_ID = Field("attachment_id")
+_USER_ID = Field("user_id")
 
 ID_DESCRIPTION_COLUMN_NAMES = str([field.hda_name for field in (ID, DESCRIPTION)])
 
@@ -261,9 +262,7 @@ class Client(BaseClient):
 
         except JSONDecodeError:
             if error_parts := parse_html_h_tags(response.text):
-                raise DemistoException(
-                    ". ".join(error_parts), res=response
-                )  # TODO decide
+                raise DemistoException(". ".join(error_parts), res=response)
             raise ValueError(f"could not parse json from {response.text}")
 
     def __init__(
@@ -343,7 +342,7 @@ class Client(BaseClient):
             integration_context
             | {
                 "refresh_token": self.refresh_token,
-                "request_token": self.request_token,  # TODO is it used?
+                "request_token": self.request_token,
                 "token_expiry_utc": str(self.token_expiry_utc),
             }
         )
@@ -478,7 +477,7 @@ class Client(BaseClient):
         ticket_id = kwargs["ticket_id"]
         params = {
             "entity": "Attachments",
-            "start": 0,  # TODO necessary?
+            "start": 0,
             "limit": safe_arg_to_number(kwargs["limit"], "limit"),
             "filter": Filter.dumps_list(
                 (
@@ -677,7 +676,7 @@ def paginate(**kwargs) -> PaginateArgs:
     page_size = safe_arg_to_number(page_size, "page_size")
 
     return PaginateArgs(
-        start=page * page_size,  # TODO 0 or 1 indexed?
+        start=page * page_size,
         limit=min(limit, page_size),
     )
 
@@ -776,12 +775,12 @@ def list_tickets_command(client: Client, args: dict) -> CommandResults:
         outputs=response["data"],
         raw_response=raw_response,
         outputs_prefix=f"{VENDOR}.Ticket",
-        outputs_key_field=ID.hda_name,  # TODO choose fields for HR?
+        outputs_key_field=ID.hda_name,
         readable_output=pat_table_to_markdown(
             title="Tickets",
             output=response["data"],
             fields=(
-                TICKET_ID,
+                TICKET_ID, # Replaced from ID
                 SUBJECT,
                 SOLUTION,
                 DATE,
@@ -930,7 +929,23 @@ def list_users_command(client: Client, args: dict) -> CommandResults:
         outputs=data,
         outputs_prefix=f"{VENDOR}.User",
         outputs_key_field=ID.hda_name,
-        raw_response=response,  # TODO HR fields
+        raw_response=response,
+        readable_output=pat_table_to_markdown(
+            title="PAT HelpDeskAdvanced Users",
+            output=data,
+            fields=(
+                ID,
+                SUBJECT,
+                SOLUTION,
+                DATE,
+                SERVICE_ID,
+                PROBLEM,
+                CONTACT_ID,
+                OWNER_USER_ID,
+                ACCOUNT_ID,
+            ),
+            field_replacements={ID: _USER_ID},
+        ),
     )
 
 
