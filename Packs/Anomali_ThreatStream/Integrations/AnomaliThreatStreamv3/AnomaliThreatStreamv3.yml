@@ -6395,7 +6395,7 @@ script:
     description: Creates associations between threat model entities on the ThreatStream platform.
     name: threatstream-add-threat-model-association
   - arguments:
-    - description: A comma-separated list of unique IDs of the indicator to which you are adding tags.
+    - description: A comma-separated list of unique IDs of the indicator to which you are adding tags (execute the command threatstream-get-indicators to get the list of indicators).
       name: indicator_ids
       required: true
       isArray: true
@@ -6406,7 +6406,7 @@ script:
     description: Add tags to the indicators.
     name: threatstream-add-indicator-tag
   - arguments:
-    - description: A comma-separated list of unique IDs of the indicator to which you are removing tags.
+    - description: A comma-separated list of unique IDs of the indicator to which you are removing tags (execute the command threatstream-get-indicators to get the list of indicators).
       name: indicator_ids
       required: true
       isArray: true

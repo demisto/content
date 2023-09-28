@@ -456,13 +456,22 @@ class Client(BaseClient):
         return self.http_request("POST", url_suffix,
                                  json={'ids': associated_entity_ids_list})
 
-    def add_indicator_tag_request(self, data_request: dict[str, Any]):
+    def add_indicator_tag_request(self, indicator_ids: list[str], tags: list[str]):
+        data_request = {
+            "ids": indicator_ids,
+            "tags": [{"name": tag, "tlp": "red"} for tag in tags],
+        }
         self.http_request(
             method="POST",
             url_suffix="v2/intelligence/bulk_tagging/",
             data=json.dumps(data_request))
 
-    def remove_indicator_tag_request(self, data_request: dict[str, Any]):
+    def remove_indicator_tag_request(self, indicator_ids: list[str], tags: list[str]):
+        data_request = {
+            "ids": indicator_ids,
+            "tags": [{"name": tags}],
+        }
+
         self.http_request(
             method="PATCH",
             url_suffix="v2/intelligence/bulk_remove_tags/",
@@ -2554,12 +2563,7 @@ def add_indicator_tag_command(client: Client, **kwargs) -> CommandResults:
     indicator_ids: list[str] = argToList(kwargs["indicator_ids"])
     tags: list[str] = argToList(kwargs["tags"])
 
-    data_request = {
-        "ids": indicator_ids,
-        "tags": [{"name": tag, "tlp": "red"} for tag in tags],
-    }
-
-    client.add_indicator_tag_request(data_request=data_request)
+    client.add_indicator_tag_request(indicator_ids, tags)
 
     return CommandResults(
         readable_output=f"The tags have been successfully added"
@@ -2571,12 +2575,7 @@ def remove_indicator_tag_command(client: Client, **kwargs) -> CommandResults:
     indicator_ids: list[str] = argToList(kwargs["indicator_ids"])
     tags: list[str] = argToList(kwargs["tags"])
 
-    data_request = {
-        "ids": indicator_ids,
-        "tags": [{"name": tags}],
-    }
-
-    client.remove_indicator_tag_request(data_request=data_request)
+    client.remove_indicator_tag_request(indicator_ids, tags)
 
     return CommandResults(
         readable_output=f"The tags were successfully deleted"
