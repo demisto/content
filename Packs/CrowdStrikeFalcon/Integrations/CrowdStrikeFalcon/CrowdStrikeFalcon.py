@@ -529,7 +529,7 @@ def detection_to_incident(detection):
 
     incident = {
         'name': 'Detection ID: ' + str(detection.get('detection_id')),
-        'occurred': str(detection.get('first_behavior')),
+        'occurred': str(detection.get('created_timestamp')),
         'rawJSON': json.dumps(detection),
         'severity': severity_string_to_int(detection.get('max_severity_displayname'))
     }
@@ -670,7 +670,9 @@ def create_json_iocs_list(
         expiration: str | None = None,
         applied_globally: bool | None = None,
         host_groups: list[str] | None = None,
-        tags: list[str] | None = None) -> list[dict]:
+        tags: list[str] | None = None,
+        file_name: str | None = None,
+) -> list[dict]:
     """
     Get a list of iocs values and create a list of Json objects with the iocs data.
     This function is used for uploading multiple indicator with same arguments with different values.
@@ -685,7 +687,7 @@ def create_json_iocs_list(
     :param applied_globally: Whether the indicator is applied globally.
     :param host_groups: List of host group IDs that the indicator applies to.
     :param tags: List of tags to apply to the indicator.
-
+    :param file_name: Name of the file for file indicators.
     """
     iocs_list = []
     for ioc_value in iocs_value:
@@ -701,6 +703,7 @@ def create_json_iocs_list(
             applied_globally=applied_globally,
             host_groups=host_groups,
             tags=tags,
+            metadata=assign_params(filename=file_name) if ioc_type in {"sha256", "md5"} else None
         ))
 
     return iocs_list
@@ -1306,7 +1309,7 @@ def get_fetch_detections(last_created_timestamp=None, filter_arg=None, offset: i
     if filter_arg:
         params['filter'] = filter_arg
     elif last_created_timestamp:
-        params['filter'] = f"first_behavior:>'{last_created_timestamp}'"
+        params['filter'] = f"created_timestamp:>'{last_created_timestamp}'"
     elif last_updated_timestamp:
         params['filter'] = f"date_updated:>'{last_updated_timestamp}'"
 
@@ -1369,7 +1372,7 @@ def get_idp_detections_ids(filter_arg=None, offset: int = 0, limit=INCIDENTS_PER
         :rtype ``dict``
     """
     params = {
-        'sort': 'start_time.asc',
+        'sort': 'created_timestamp.asc',
         'offset': offset,
         'filter': filter_arg
     }
@@ -1567,6 +1570,7 @@ def update_custom_ioc(
         source: str | None = None,
         description: str | None = None,
         expiration: str | None = None,
+        file_name: str | None = None,
 ) -> dict:
     """
     Update an IOC
@@ -1579,6 +1583,7 @@ def update_custom_ioc(
             source=source,
             description=description,
             expiration=expiration,
+            metadata=assign_params(filename=file_name)
         )]
     }
 
@@ -2500,21 +2505,6 @@ def migrate_last_run(last_run: dict[str, str] | list[dict]) -> list[dict]:
         return [updated_last_run_detections, updated_last_run_incidents, {}]
 
 
-def sort_incidents_summaries_by_ids_order(ids_order, full_incidents, id_field):
-    """ sort incidents list by the order that ids_order list has
-
-    Args:
-        ids_order: list of ids
-        full_incidents: list of incidents
-        id_field: name of the id field
-    Returns:
-        list[dict]: New last run object.
-    """
-    incidents_by_id = {i[id_field]: i for i in full_incidents}
-    incidents = [incidents_by_id[i] for i in ids_order]
-    return incidents
-
-
 def fetch_incidents():
     incidents: list = []
     detections: list = []
@@ -2542,7 +2532,7 @@ def fetch_incidents():
         incident_type = 'detection'
         fetch_query = demisto.params().get('fetch_query')
         if fetch_query:
-            fetch_query = f"first_behavior:>'{start_fetch_time}'+{fetch_query}"
+            fetch_query = f"created_timestamp:>'{start_fetch_time}'+{fetch_query}"
             detections_ids = demisto.get(get_fetch_detections(filter_arg=fetch_query, limit=fetch_limit), 'resources')
         else:
             detections_ids = demisto.get(get_fetch_detections(last_created_timestamp=start_fetch_time, limit=fetch_limit),
@@ -2551,22 +2541,18 @@ def fetch_incidents():
         raw_res = get_detections_entities(detections_ids)
 
         if raw_res is not None and "resources" in raw_res:
-            full_detections = demisto.get(raw_res, "resources")
-            sorted_detections = sort_incidents_summaries_by_ids_order(ids_order=detections_ids,
-                                                                      full_incidents=full_detections,
-                                                                      id_field='detection_id')
-            for detection in sorted_detections:
+            for detection in demisto.get(raw_res, "resources"):
                 detection['incident_type'] = incident_type
                 demisto.debug(
                     f"CrowdStrikeFalconMsg: Detection {detection['detection_id']} "
-                    f"was fetched which was created in {detection['first_behavior']}")
+                    f"was fetched which was created in {detection['created_timestamp']}")
                 incident = detection_to_incident(detection)
 
                 detections.append(incident)
 
         detections = filter_incidents_by_duplicates_and_limit(incidents_res=detections,
                                                               last_run=current_fetch_info_detections,
-                                                              fetch_limit=INCIDENTS_PER_FETCH, id_field='name')
+                                                              fetch_limit=fetch_limit, id_field='name')
 
         for detection in detections:
             occurred = dateparser.parse(detection["occurred"])
@@ -2602,17 +2588,13 @@ def fetch_incidents():
         if incidents_ids:
             raw_res = get_incidents_entities(incidents_ids)
             if raw_res is not None and "resources" in raw_res:
-                full_incidents = demisto.get(raw_res, "resources")
-                sorted_incidents = sort_incidents_summaries_by_ids_order(ids_order=incidents_ids,
-                                                                         full_incidents=full_incidents,
-                                                                         id_field='incident_id')
-                for incident in sorted_incidents:
+                for incident in demisto.get(raw_res, "resources"):
                     incident['incident_type'] = incident_type
                     incident_to_context = incident_to_incident_context(incident)
                     incidents.append(incident_to_context)
 
         incidents = filter_incidents_by_duplicates_and_limit(incidents_res=incidents, last_run=current_fetch_info_incidents,
-                                                             fetch_limit=INCIDENTS_PER_FETCH, id_field='name')
+                                                             fetch_limit=fetch_limit, id_field='name')
         for incident in incidents:
             occurred = dateparser.parse(incident["occurred"])
             if occurred:
@@ -2632,7 +2614,7 @@ def fetch_incidents():
                                                                     date_format=IDP_DATE_FORMAT)
         fetch_limit = current_fetch_info_idp_detections.get('limit') or INCIDENTS_PER_FETCH
         fetch_query = demisto.params().get('idp_detections_fetch_query', "")
-        filter = f"product:'idp'+start_time:>'{start_fetch_time}'"
+        filter = f"product:'idp'+created_timestamp:>'{start_fetch_time}'"
 
         if fetch_query:
             filter += f"+{fetch_query}"
@@ -2640,18 +2622,14 @@ def fetch_incidents():
         if idp_detections_ids:
             raw_res = get_idp_detection_entities(idp_detections_ids)
             if "resources" in raw_res:
-                full_detections = demisto.get(raw_res, "resources")
-                sorted_detections = sort_incidents_summaries_by_ids_order(ids_order=idp_detections_ids,
-                                                                          full_incidents=full_detections,
-                                                                          id_field='composite_id')
-                for idp_detection in sorted_detections:
+                for idp_detection in demisto.get(raw_res, "resources"):
                     idp_detection['incident_type'] = IDP_DETECTION
                     idp_detection_to_context = idp_detection_to_incident_context(idp_detection)
                     idp_detections.append(idp_detection_to_context)
 
             idp_detections = filter_incidents_by_duplicates_and_limit(incidents_res=idp_detections,
                                                                       last_run=current_fetch_info_idp_detections,
-                                                                      fetch_limit=INCIDENTS_PER_FETCH, id_field='name')
+                                                                      fetch_limit=fetch_limit, id_field='name')
             updated_last_run = update_last_run_object(last_run=current_fetch_info_idp_detections, incidents=idp_detections,
                                                       fetch_limit=fetch_limit,
                                                       start_fetch_time=start_fetch_time, end_fetch_time=end_fetch_time,
@@ -2852,6 +2830,7 @@ def upload_custom_ioc_command(
         applied_globally: bool | None = None,
         host_groups: list[str] | None = None,
         tags: list[str] | None = None,
+        file_name: str | None = None,
 ) -> list[dict]:
     """
     :param ioc_type: The type of the indicator.
@@ -2876,7 +2855,7 @@ def upload_custom_ioc_command(
     platforms_list = argToList(platforms)
 
     iocs_json_batch = create_json_iocs_list(ioc_type, values, action, platforms_list, severity, source, description,
-                                            expiration, applied_globally, host_groups, tags)
+                                            expiration, applied_globally, host_groups, tags, file_name)
     raw_res = upload_batch_custom_ioc(ioc_batch=iocs_json_batch)
     handle_response_errors(raw_res)
     iocs = raw_res.get('resources', [])
@@ -2884,6 +2863,7 @@ def upload_custom_ioc_command(
     entry_objects_list = []
     for ioc in iocs:
         ec = [get_trasnformed_dict(ioc, IOC_KEY_MAP)]
+        ec[0]["Filename"] = ioc.get("metadata", {}).get("filename")
         entry_objects_list.append(create_entry_object(
             contents=raw_res,
             ec={'CrowdStrike.IOC(val.ID === obj.ID)': ec},
@@ -2900,6 +2880,7 @@ def update_custom_ioc_command(
         source: str | None = None,
         description: str | None = None,
         expiration: str | None = None,
+        file_name: str | None = None,
 ) -> dict:
     """
     :param ioc_id: The ID of the indicator to update.
@@ -2909,6 +2890,7 @@ def update_custom_ioc_command(
     :param source: The source where this indicator originated.
     :param description: A meaningful description of the indicator.
     :param expiration: The date on which the indicator will become inactive.
+    :param file_name: The file name associated with the indicator.
     """
 
     raw_res = update_custom_ioc(
@@ -2919,10 +2901,12 @@ def update_custom_ioc_command(
         source,
         description,
         expiration,
+        file_name,
     )
     handle_response_errors(raw_res)
     iocs = raw_res.get('resources', [])
     ec = [get_trasnformed_dict(iocs[0], IOC_KEY_MAP)]
+    ec[0]["Filename"] = iocs[0].get("metadata", {}).get("filename")
     return create_entry_object(
         contents=raw_res,
         ec={'CrowdStrike.IOC(val.ID === obj.ID)': ec},

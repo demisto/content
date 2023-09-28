@@ -2,7 +2,6 @@ import pytest
 import os
 import json
 from urllib.parse import unquote
-
 from _pytest.python_api import raises
 
 import demistomock as demisto
@@ -2184,13 +2183,10 @@ class TestFetch:
         requests_mock.post(f'{SERVER_URL}/detects/entities/summaries/GET/v1',
                            json={'resources': [{'detection_id': 'ldt:1',
                                                 'created_timestamp': '2020-09-04T09:16:11Z',
-                                                'max_severity_displayname': 'Low',
-                                                'first_behavior': '2020-09-04T09:16:11Z'
-                                                },
+                                                'max_severity_displayname': 'Low'},
                                                {'detection_id': 'ldt:2',
                                                 'created_timestamp': '2020-09-04T09:20:11Z',
-                                                'max_severity_displayname': 'Low',
-                                                'first_behavior': '2020-09-04T09:16:11Z'}]})
+                                                'max_severity_displayname': 'Low'}]})
         requests_mock.get(f'{SERVER_URL}/incidents/queries/incidents/v1', json={})
         requests_mock.post(f'{SERVER_URL}/incidents/entities/incidents/GET/v1', json={})
 
@@ -2258,16 +2254,11 @@ class TestFetch:
         requests_mock.post(f'{SERVER_URL}/detects/entities/summaries/GET/v1',
                            json={'resources': [{'detection_id': 'ldt:1',
                                                 'created_timestamp': '2020-09-04T09:16:11Z',
-                                                'max_severity_displayname': 'Low', 'first_behavior': '2020-09-04T09:16:11Z'},
-                                               {'detection_id': 'ldt:2',
-                                                'created_timestamp': '2020-09-04T09:16:11Z',
-                                                'max_severity_displayname': 'Low', 'first_behavior': '2020-09-04T09:16:11Z'}
-                                               ]})
+                                                'max_severity_displayname': 'Low'}]})
         from CrowdStrikeFalcon import fetch_incidents
         fetch_incidents()
         assert demisto.setLastRun.mock_calls[0][1][0][0] == {
-            'time': '2020-09-04T09:16:11Z', 'limit': 2, "found_incident_ids": {'Detection ID: ldt:1': 1599210970,
-                                                                               'Detection ID: ldt:2': 1599210970}}
+            'time': '2020-09-04T09:16:11Z', 'limit': 2, "found_incident_ids": {'Detection ID: ldt:1': 1599210970}}
 
     def test_fetch_incident_type(self, set_up_mocks, mocker):
         """
@@ -2402,14 +2393,12 @@ class TestIncidentFetch:
                                                                       'offset': 2}, {}])
         # Override post to have 1 results so FETCH_LIMIT won't be reached
         requests_mock.post(f'{SERVER_URL}/incidents/entities/incidents/GET/v1',
-                           json={'resources': [{'incident_id': 'ldt:1', 'start': '2020-09-04T09:16:11Z'},
-                                               {'incident_id': 'ldt:2', 'start': '2020-09-04T09:16:11Z'}]})
+                           json={'resources': [{'incident_id': 'ldt:1', 'start': '2020-09-04T09:16:11Z'}]})
         from CrowdStrikeFalcon import fetch_incidents
         fetch_incidents()
         assert demisto.setLastRun.mock_calls[0][1][0][1] == {'time': '2020-09-04T09:16:11Z',
                                                              'limit': 2,
-                                                             'found_incident_ids': {'Incident ID: ldt:1': 1598462533,
-                                                                                    'Incident ID: ldt:2': 1598462533}}
+                                                             'found_incident_ids': {'Incident ID: ldt:1': 1598462533}}
 
     def test_incident_type_in_fetch(self, set_up_mocks, mocker):
         """Tests the addition of incident_type field to the context
@@ -2940,7 +2929,7 @@ def test_upload_custom_ioc_command_successful(requests_mock):
         severity='high',
         platforms='mac,linux',
     )
-    assert '| 2020-10-01T09:09:04Z | Eicar file | 4f8c43311k1801ca4359fc07t319610482c2003mcde8934d5412b1781e841e9r |' \
+    assert '| 2020-10-01T09:09:04Z | Eicar file |  | 4f8c43311k1801ca4359fc07t319610482c2003mcde8934d5412b1781e841e9r |' \
            in results[0]["HumanReadable"]
     assert results[0]["EntryContext"]["CrowdStrike.IOC(val.ID === obj.ID)"][0]["Value"] == 'testmd5'
 
@@ -3029,6 +3018,69 @@ def test_upload_custom_ioc_command_duplicate(requests_mock, mocker):
     assert response['resources'][0]['message'] in str(error_info.value)
 
 
+def test_upload_custom_ioc_command_filename(requests_mock):
+    """
+    Test that providing a filename to custom ioc works as expected
+
+    Given:
+        - A filename attached to a custom IOC
+
+    When:
+        - The user tries to upload a custom IOC with a filename
+
+    Then:
+        - Make sure that the filename is included in the request to CrowdStrike
+    """
+    from CrowdStrikeFalcon import upload_custom_ioc_command
+    mock = requests_mock.post(
+        f'{SERVER_URL}/iocs/entities/indicators/v1',
+        status_code=200,
+        json={"result": "ok"}
+    )
+
+    upload_custom_ioc_command(
+        action='prevent',
+        severity='high',
+        platforms='mac,linux',
+        ioc_type="sha256",
+        value="testsha256",
+        file_name="test.txt"
+    )
+
+    body = mock.last_request.json()
+    assert body['indicators'][0]['metadata']['filename'] == "test.txt"
+
+
+def test_upload_custom_ioc_command_filename_nosha5(requests_mock):
+    """
+    Test that providing a filename to non-hash custom ioc being ignored
+
+    Given:
+        - A filename attached to a custom non hash IOC
+
+    When:
+        - The user tries to upload a custom non hash IOC with a filename
+
+    Then:
+        - Make sure that the filename is ignored in the request to CrowdStrike
+    """
+    from CrowdStrikeFalcon import upload_custom_ioc_command
+    mock = requests_mock.post(
+        f'{SERVER_URL}/iocs/entities/indicators/v1',
+        status_code=200,
+        json={"result": "ok"}
+    )
+    upload_custom_ioc_command(
+        action='prevent',
+        severity='high',
+        platforms='mac,linux',
+        ioc_type="ip",
+        value="someip",
+        file_name="test.txt"
+    )
+    assert 'metadata' not in mock.last_request.json()['indicators'][0]
+
+
 def test_update_custom_ioc_command(requests_mock):
     """
     Test cs-falcon-update-custom-ioc when an upload is successful
@@ -3078,6 +3130,36 @@ def test_update_custom_ioc_command(requests_mock):
     )
     assert 'Custom IOC was updated successfully' in results["HumanReadable"]
     assert results["EntryContext"]["CrowdStrike.IOC(val.ID === obj.ID)"][0]["Value"] == 'testmd5'
+
+
+def test_update_custom_ioc_command_filename(requests_mock):
+    """
+    Test that providing a filename to custom ioc works as expected
+
+    Given:
+        - A filename attached to a custom IOC
+
+    When:
+        - The user tries to update a custom IOC with a filename
+
+    Then:
+        - Make sure that the filename is included in the request to CrowdStrike
+    """
+    from CrowdStrikeFalcon import update_custom_ioc
+
+    mock = requests_mock.patch(
+        f'{SERVER_URL}/iocs/entities/indicators/v1',
+        status_code=200,
+        json={"result": "ok"}
+    )
+
+    update_custom_ioc(
+        ioc_id="3",
+        file_name="test.txt"
+    )
+
+    body = mock.last_request.json()
+    assert body['indicators'][0]['metadata']['filename'] == "test.txt"
 
 
 def test_delete_custom_ioc_command(requests_mock):
@@ -5512,24 +5594,3 @@ def test_list_detection_summaries_command_no_results(mocker):
     mocker.patch('CrowdStrikeFalcon.http_request', return_value=response)
     res = list_detection_summaries_command()
     assert res.readable_output == '### CrowdStrike Detections\n**No entries.**\n'
-
-
-def test_sort_incidents_summaries_by_ids_order():
-    """
-    Test sort incidents in the order by incidents ids
-
-    Given:
-     - Full incidents response, sorted ids
-    When:
-     - Searching for detections using fetch_incidents()
-    Then:
-     - The incidents returned in sorted order
-    """
-    from CrowdStrikeFalcon import sort_incidents_summaries_by_ids_order
-    full_incidents = [{"id": "2", "name": "test2"},
-                      {"id": "3", "name": "test3"},
-                      {"id": "1", "name": "test1"}]
-    res = sort_incidents_summaries_by_ids_order(ids_order=["1", "2", "3"], full_incidents=full_incidents, id_field="id")
-    assert res == [{"id": "1", "name": "test1"}, {"id": "2", "name": "test2"},
-                   {"id": "3", "name": "test3"},
-                   ]
