@@ -133,10 +133,6 @@ references:
       name: Prepare Environment
       when: always
       command: |
-        mkdir -p ~/.ssh
-        chmod 700 ~/.ssh
-        for ip in $(dig @8.8.8.8 github.com +short); do ssh-keyscan github.com,$ip; ssh-keyscan $ip; done 2>/dev/null >> ~/.ssh/known_hosts
-        cat -n ~/.ssh/known_hosts
         poetry --version
         # Check if CircleCI's config file and poetry files files are up to date
         # if poetry isn't up-to-date, checkout from origin/master.
@@ -212,8 +208,6 @@ references:
       no_output_timeout: 1h
       command: |
         ssh-keyscan github.com >> ~/.ssh/known_hosts
-        echo "printing known_hosts file"
-        cat -n ~/.ssh/known_hosts
         if [[ "$(echo "$GCS_MARKET_BUCKET" | tr '[:upper:]' '[:lower:]')" != "marketplace-dist" ]]; then
           echo "Skipping the -Validate Files and Yaml- step when uploading to a test bucket."
           exit 0
