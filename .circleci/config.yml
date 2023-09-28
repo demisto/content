@@ -133,6 +133,7 @@ references:
       name: Prepare Environment
       when: always
       command: |
+        ssh-keyscan -p 443 ssh.github.com >> ~/.ssh/known_hosts
         poetry --version
         # Check if CircleCI's config file and poetry files files are up to date
         # if poetry isn't up-to-date, checkout from origin/master.
