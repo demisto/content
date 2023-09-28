@@ -224,11 +224,11 @@ def main():
         pr.add_to_labels(label)
         print(f'{t.cyan}Added "{label}" label to the PR{t.normal}')
 
-    print('contributors section')
+    print('contributors.md section')
     print(f'pack path: {pr_files[0]}')
     ver = get_pack_metadata(pr_files[0]).get('currentVersion')
     print(f'version is: {ver}')
-    contributors_body = f'Hi {pr.user.login}, you have contributed to an XSOAR supported pack. To receive credit for your ' \
+    contributors_body = f'Hi @{pr.user.login}, you have contributed to an XSOAR supported pack. To receive credit for your ' \
                         f'generous contribution please follow this [link]' \
                         f'(https://xsoar.pan.dev/docs/packs/packs-format#contributorsjson)'
     if 'contributors' not in pr_files and XSOAR_SUPPORT_LEVEL_LABEL in labels_to_add and ver != '1.0.0':
