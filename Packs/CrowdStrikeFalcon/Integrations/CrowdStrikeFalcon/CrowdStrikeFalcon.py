@@ -2813,6 +2813,7 @@ def get_iom_filter(iom_next_token: str | None, last_fetch_filter: str,
         last_fetch_filter (str): The last fetch filter that was used in the previous round.
         last_scan_time (str): The last scan time.
         first_fetch_timestamp (str): The first fetch timestamp.
+        configured_fetch_query (str): The fetched query configured by the user.
 
     Raises:
         DemistoException: If paginating and last filter is an empty string.
@@ -2951,8 +2952,8 @@ def ioa_events_pagination(ioa_fetch_query: str, api_limit: int, ioa_next_token: 
         demisto.debug(f'Doing IOA pagination with the arguments: {ioa_fetch_query=}, {api_limit=}, {ioa_new_next_token=},'
                       f'{fetch_limit=}')
         ioa_events, ioa_new_next_token = get_ioa_events(ioa_fetch_query=ioa_fetch_query,
-                                                                  ioa_next_token=ioa_new_next_token,
-                                                                  limit=min(api_limit, fetch_limit - total_incidents_count))
+                                                        ioa_next_token=ioa_new_next_token,
+                                                        limit=min(api_limit, fetch_limit - total_incidents_count))
         fetched_ioa_events.extend(ioa_events)
         total_incidents_count += len(ioa_events)
         demisto.debug(f'Results of IOA pagination: {total_incidents_count=}, {ioa_new_next_token=}')
@@ -2965,7 +2966,7 @@ def ioa_events_pagination(ioa_fetch_query: str, api_limit: int, ioa_next_token: 
 
 
 def get_ioa_events(ioa_fetch_query: str, ioa_next_token: str | None,
-                             limit: int = INCIDENTS_PER_FETCH) -> tuple[list[dict[str, Any]], str | None]:
+                   limit: int = INCIDENTS_PER_FETCH) -> tuple[list[dict[str, Any]], str | None]:
     """Do a single API call to receive IOA events.
 
     Args:
