@@ -536,7 +536,7 @@ class Client(BaseClient):
         note: str | None = None,
     ) -> dict:
         allowed_id_values = tuple(
-            item[DESCRIPTION.hda_name] for item in self.list_ticket_statuses(limit=1000)
+            item[ID.hda_name] for item in self.list_ticket_statuses(limit=1000)["data"]
         )  # TODO 1000?
 
         if status_id not in allowed_id_values:
