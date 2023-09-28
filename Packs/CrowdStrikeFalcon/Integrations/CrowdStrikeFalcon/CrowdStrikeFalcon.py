@@ -2674,8 +2674,8 @@ def fetch_incidents():
             fetched_data=get_iom_resources(iom_resource_ids=iom_resource_ids),
             last_date=last_scan_time,
             last_fetched_ids=last_resource_ids, date_key='scan_time',
-            id_key='id', date_format=IOM_DATE_FORMAT, new_next_token=iom_next_token,
-            next_token=iom_new_next_token, to_incident_context=iom_resource_to_incident,
+            id_key='id', date_format=IOM_DATE_FORMAT,
+            to_incident_context=iom_resource_to_incident,
             incident_type='iom_configurations')
 
         iom_last_run = {'iom_next_token': iom_new_next_token, 'last_scan_time': new_scan_time,
@@ -2708,8 +2708,8 @@ def fetch_incidents():
         ioa_incidents, ioa_event_ids, new_date_time_since = parse_ioa_iom_incidents(
             fetched_data=ioa_events, last_date=last_date_time_since,
             last_fetched_ids=last_fetch_event_ids, date_key='event_created',
-            id_key='event_id', date_format=DATE_FORMAT, new_next_token=ioa_new_next_token,
-            next_token=ioa_next_token, to_incident_context=ioa_event_to_incident, incident_type='ioa_events')
+            id_key='event_id', date_format=DATE_FORMAT, to_incident_context=ioa_event_to_incident,
+            incident_type='ioa_events')
 
         ioa_last_run = {'ioa_next_token': ioa_new_next_token, 'last_date_time_since': new_date_time_since,
                         'last_fetch_query': ioa_fetch_query, 'last_event_ids': ioa_event_ids or last_fetch_event_ids}
@@ -2720,8 +2720,7 @@ def fetch_incidents():
 
 def parse_ioa_iom_incidents(fetched_data: list[dict[str, Any]], last_date: str,
                             last_fetched_ids: list[str], date_key: str, id_key: str,
-                            date_format: str, new_next_token: str | None, next_token: str | None,
-                            to_incident_context: Callable[[dict[str, Any], str], dict[str, Any]],
+                            date_format: str, to_incident_context: Callable[[dict[str, Any], str], dict[str, Any]],
                             incident_type: str) -> tuple[list[dict[str, Any]], list[str], str]:
     """This function is in charge of parsing IOA, and IOM data from their respective API,
     to create incidents from them.
@@ -2733,8 +2732,6 @@ def parse_ioa_iom_incidents(fetched_data: list[dict[str, Any]], last_date: str,
         date_key (str): The key of the value that holds the date in the API.
         id_key (str): The key of the value that holds the ID in the API.
         date_format (str): The date format.
-        new_next_token (str | None): The next token that will be used in the next run.
-        next_token (str | None): The next token that was used in the current round.
         to_incident_context (Callable[[dict[str, Any], str], dict[str, Any]]): The function that is used to convert
         data from the API to an incident.
         incident_type (str): The incident type.
@@ -2800,8 +2797,8 @@ def get_current_fetch_data(last_run_object: dict[str, Any],
 
 
 def create_iom_filter(iom_next_token: str | None, last_fetch_filter: str,
-                   last_scan_time: str, first_fetch_timestamp: str,
-                   configured_fetch_query: str) -> str:
+                      last_scan_time: str, first_fetch_timestamp: str,
+                      configured_fetch_query: str) -> str:
     """Retrieve the IOM filter that will be used in the current fetch round.
 
     Args:
@@ -2864,7 +2861,7 @@ def add_seconds_to_date(date: str, seconds_to_add: int, date_format: str) -> str
 
 
 def create_ioa_query(ioa_next_token: str | None, last_fetch_query: str,
-                  configured_fetch_query: str, last_date_time_since: str) -> str:
+                     configured_fetch_query: str, last_date_time_since: str) -> str:
     """Retrieve the IOA query that will be used in the current fetch round.
 
     Args:
