@@ -39,10 +39,14 @@ GIT_HOOKS_DIR="${PWD}/.git/hooks"
 if [ -n "${NO_HOOKS}" ]; then
     echo "Skipping hooks setup as environment variable NO_HOOKS is set"
 else
+    if [ -e "${GIT_HOOKS_DIR}/pre-commit" ]; then
+        echo "Hooks are now pre-push hooks, and not pre-commit"
+        echo "If you want to uninstall pre-commit hooks: 'rm ${GIT_HOOKS_DIR}/pre-commit'"
+    fi
     if [ ! -e "${GIT_HOOKS_DIR}/pre-push" ]; then
         echo "Installing 'pre-push' hooks to validate each push"
         ln -s "${HOOKS_DIR}/pre-push" "${GIT_HOOKS_DIR}/pre-push"
-        exit_on_error $? "Failed to install pre-commit hook, exiting with exit code $?"
+        exit_on_error $? "Failed to install pre-push hook, exiting with exit code $?"
     else
         echo "Skipping install of pre-push hook as it already exists."
         echo "If you want to re-install: 'rm ${GIT_HOOKS_DIR}/pre-push' and then run this script again."

@@ -1,10 +1,5 @@
 #!/bin/bash
 
-if git rev-parse -q --verify MERGE_HEAD >/dev/null; then
-    echo "This is a merge commit, skipping pre-commit"
-    exit 0
-fi
-
 # poetry is installed in ~/.local/bin
 PATH=~/.local/bin:$PATH
 # check if poetry is installed
@@ -21,4 +16,4 @@ if ! poetry run demisto-sdk >/dev/null 2>&1; then
     exit 1
 fi
 
-poetry run demisto-sdk pre-commit --staged-only --no-validate
+poetry run demisto-sdk pre-commit --no-validate
