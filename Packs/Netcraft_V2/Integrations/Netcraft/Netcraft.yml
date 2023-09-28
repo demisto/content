@@ -862,7 +862,7 @@ script:
       description: The warning. This key appears only if the "submission_uuid" argument is provided.
       type: String
     - contextPath: Netcraft.SubmissionNextToken
-      description: The submission UUID to provide as the "next_token" argument in a subsequent request for pagination. This key appears only if the "submission_uuid" argument is *not* provided.
+      description: The submission UUID to provide as the "next_token" argument in a subsequent request for pagination. Will be null if the end of the submissions has been reached. This key appears only if the "submission_uuid" argument is *not* provided.
       type: String
   - name: netcraft-file-report-submit
     polling: true

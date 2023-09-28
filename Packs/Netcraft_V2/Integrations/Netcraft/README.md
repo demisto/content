@@ -1003,7 +1003,7 @@ Get basic information about a submissions.
 | Netcraft.Submission.urls | String | An API URL to get details about the URLs associated with this submission. This key appears only if the "submission_uuid" argument is provided. | 
 | Netcraft.Submission.warnings.link | String | A link to further information about the warning. This key appears only if the "submission_uuid" argument is provided. | 
 | Netcraft.Submission.warnings.warning | String | The warning. This key appears only if the "submission_uuid" argument is provided. | 
-| Netcraft.SubmissionNextToken | String | The submission UUID to provide as the "next_token" argument in a subsequent request for pagination. This key appears only if the "submission_uuid" argument is \*not\* provided. | 
+| Netcraft.SubmissionNextToken | String | The submission UUID to provide as the "next_token" argument in a subsequent request for pagination.  Will be null if the end of the submissions has been reached. This key appears only if the "submission_uuid" argument is \*not\* provided. | 
 
 #### Command example
 ```!netcraft-submission-list submission_uuid=RUxOzbo2OGfEAaq5G3vsAsdUqDh7wa70```
