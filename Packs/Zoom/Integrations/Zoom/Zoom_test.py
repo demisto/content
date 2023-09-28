@@ -1,6 +1,7 @@
 from fastapi import Request, status
 import json
 from unittest.mock import patch
+from fastapi.security import HTTPBasicCredentials
 from Zoom import Client
 import Zoom
 import pytest
@@ -2131,6 +2132,14 @@ async def test_handle_zoom_response(event_type, expected_status,
     mocker.patch('Zoom.check_and_handle_entitlement')
     mocker.patch('Zoom.process_entitlement_reply')
     mocker.patch('Zoom.handle_mirroring')
+    mocker.patch.object(demisto, 'params', return_value={'credentials': {'identifier': 'test', 'password': 'testpass'}})
+
+    # Create a mock HTTPBasicCredentials object
+    mock_credentials = HTTPBasicCredentials(
+        username="test",
+        password="testpass"
+    )
+
     Zoom.SECRET_TOKEN = 'token'
 
     from Zoom import handle_zoom_response
@@ -2151,7 +2160,7 @@ async def test_handle_zoom_response(event_type, expected_status,
         }
     }
 
-    response = await handle_zoom_response(mock_request)
+    response = await handle_zoom_response(mock_request, mock_credentials)
 
     assert response.status_code == expected_status
 

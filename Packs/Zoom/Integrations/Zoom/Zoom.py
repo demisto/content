@@ -4,8 +4,11 @@ import shutil
 from ZoomApiModule import *
 from traceback import format_exc
 from datetime import datetime
-from fastapi import FastAPI, Request, Response, status
+from fastapi import Depends, FastAPI, Request, Response, status
 from fastapi.responses import JSONResponse
+from fastapi.security import HTTPBasic, HTTPBasicCredentials
+from fastapi.security.api_key import APIKey, APIKeyHeader
+from secrets import compare_digest
 from fastapi_utils.tasks import repeat_every
 import uvicorn
 from uvicorn.logging import AccessFormatter
@@ -14,6 +17,10 @@ import hashlib
 import hmac
 
 app = FastAPI()
+
+basic_auth = HTTPBasic(auto_error=False)
+token_auth = APIKeyHeader(auto_error=False, name='Authorization')
+
 SYNC_CONTEXT = True
 OBJECTS_TO_KEYS = {
     'messages': 'entitlement',
@@ -479,7 +486,7 @@ def extract_entitlement(entitlement: str) -> tuple[str, str, str]:
 @app.on_event("startup")
 @repeat_every(seconds=60, wait_first=True)
 async def check_for_unanswered_messages():
-    demisto.debug('check for unanswered messages')
+    # demisto.debug('check for unanswered messages')
     integration_context = fetch_context()
     messages = integration_context.get('messages')
     if messages:
@@ -677,7 +684,8 @@ async def event_url_validation(payload):
 
 
 @app.post('/')
-async def handle_zoom_response(request: Request):
+async def handle_zoom_response(request: Request, credentials: HTTPBasicCredentials = Depends(basic_auth),
+                               token: APIKey = Depends(token_auth)):
     """handle any response that came from Zoom app
     Args:
         request : zoom request
@@ -685,7 +693,24 @@ async def handle_zoom_response(request: Request):
         JSONResponse:response to zoom
     """
     request = await request.json()
-    demisto.debug(f"{request=}")
+    demisto.debug(request)
+    credentials_param = demisto.params().get('credentials')
+    auth_failed = False
+    v_token = demisto.params().get('verification_token', {}).get('password')
+    if 'Basic' not in str(token) and v_token:
+        demisto.debug(v_token)
+        if token != v_token:
+            auth_failed = True
+
+    elif credentials and credentials_param and (username := credentials_param.get('identifier')):
+        password = credentials_param.get('password', '')
+        demisto.debug(username, password)
+        if not compare_digest(credentials.username, username) or not compare_digest(credentials.password, password):
+            auth_failed = True
+    if auth_failed:
+        demisto.debug('Authorization failed ')
+        return Response(status_code=status.HTTP_401_UNAUTHORIZED, content='Authorization failed.')
+
     event_type = request['event']
     payload = request['payload']
     try:
@@ -734,8 +759,7 @@ the zoom-bot following parameters:
 secret token,
 Bot JID,
 bot client id and secret id""")
-        if client.access_token:
-            client.zoom_list_users(page_size=1, url_suffix="users")
+        client.zoom_list_users(page_size=1, url_suffix="users")
         if client.bot_access_token:
             json_data = {
                 "robot_jid": client.bot_jid,
@@ -2389,7 +2413,6 @@ def main():  # pragma: no cover
     proxy = params.get('proxy', False)
     bot_jid = params.get('botJID', None)
     secret_token = params.get('secret_token', {}).get('password')
-
     global SECRET_TOKEN, LONG_RUNNING, MIRRORING_ENABLED, CACHE_EXPIRY, CACHED_INTEGRATION_CONTEXT
     SECRET_TOKEN = secret_token
     LONG_RUNNING = params.get('longRunning', False)

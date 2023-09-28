@@ -34,6 +34,12 @@ configuration:
   required: false
   displaypassword: Secret Token(Team Chat App)
   additionalinfo: You must provide this token for mirror-investigation.
+- name: verification_token
+  type: 9
+  hiddenusername: true
+  required: false
+  displaypassword: Verification Token(Team Chat App)
+  additionalinfo: Token to verify the messages from Zoom.
 - display: Long running instance
   name: longRunning
   section: Collect
@@ -1102,7 +1108,7 @@ script:
       description: The queried date value.
     - contextPath: Zoom.ChatMessage.from
       type: date-time
-      description: The queried from value. (Returned only if the from query parameter is used.) 
+      description: The queried from value. (Returned only if the from query parameter is used.)
     - contextPath: Zoom.ChatMessage.messages
       type: array of object
       description: Information about received messages and files.
