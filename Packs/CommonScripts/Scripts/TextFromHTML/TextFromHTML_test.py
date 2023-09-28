@@ -28,8 +28,8 @@ def test_text_from_html_success_english():
 </html>
 """
 
-    body = TextFromHTML.get_body(html, 'body')
-    res = TextFromHTML.get_plain_text(body, False, False)
+    body = TextFromHTML.get_body(html, html_tag='body')
+    res = TextFromHTML.get_plain_text(body, replace_line_breaks=False, trim_result=False)
 
     assert res == '\nThis is heading 1'
 
@@ -62,8 +62,8 @@ def test_text_from_html_success_hebrew():
 </html>
 """
 
-    body = TextFromHTML.get_body(html, 'body')
-    res = TextFromHTML.get_plain_text(body, False, False)
+    body = TextFromHTML.get_body(html, html_tag='body')
+    res = TextFromHTML.get_plain_text(body, replace_line_breaks=False, trim_result=False)
 
     assert res == '\nמשפט בעברית לבדיקה'
 
@@ -96,8 +96,8 @@ def test_text_from_html_success_spanish():
 </html>
 """
 
-    body = TextFromHTML.get_body(html, 'body')
-    res = TextFromHTML.get_plain_text(body, False, False)
+    body = TextFromHTML.get_body(html, html_tag='body')
+    res = TextFromHTML.get_plain_text(body, replace_line_breaks=False, trim_result=False)
 
     assert res == '\nFrase en español para revisión'
 
@@ -140,8 +140,8 @@ def test_extract_text_from_complex_html():
 </html>
 """
 
-    body = TextFromHTML.get_body(html, 'body')
-    res = TextFromHTML.get_plain_text(body, False, False)
+    body = TextFromHTML.get_body(html, html_tag='body')
+    res = TextFromHTML.get_plain_text(body, replace_line_breaks=False, trim_result=False)
 
     assert res == '\n\nHTML Links\nHTML links are defined with the a tag:\n\nThis is a link'
 
@@ -164,7 +164,7 @@ def test_extract_text_from_html_with_breaks():
     - extracting text from the html
 
     Then
-    - ensure we return "\nHTML Breaks\nHTML can contain break tags\n\nWhich should lead to a proper linebreak"
+    - ensure we return "\nHTML Breaks\nHTML can contain break tags\n\n\nWhich should lead to a proper linebreak"
     """
     import TextFromHTML
 
@@ -180,9 +180,47 @@ def test_extract_text_from_html_with_breaks():
 </html>
 """
 
-    body = TextFromHTML.get_body(html, 'body')
-    res = TextFromHTML.get_plain_text(body, True, False)
+    body = TextFromHTML.get_body(html, html_tag='body')
+    res = TextFromHTML.get_plain_text(body, replace_line_breaks=True, trim_result=False)
     assert res == '\nHTML Breaks\nHTML can contain break tags\n\n\nWhich should lead to a proper linebreak\n'
+
+
+def test_extract_text_from_html_with_breaks_trimed():
+    """
+    Given
+    - html string:
+        <!DOCTYPE html>
+        <html>
+        <body>
+        <h2>HTML Breaks</h2>
+        <p>HTML can contain break tags</p>
+        <br>
+        <p>Which should lead to a proper linebreak</p>
+        </body>
+        </html>
+
+    When
+    - extracting text from the html with replace_line_breaks and trim_result enabled
+
+    Then
+    - ensure we return "HTML Breaks\nHTML can contain break tags\n\nWhich should lead to a proper linebreak"
+    """
+    import TextFromHTML
+
+    html = """
+<!DOCTYPE html>
+<html>
+<body>
+<h2>HTML Breaks</h2>
+<p>HTML can contain break tags</p>
+<br>
+<p>Which should lead to a proper linebreak</p>
+</body>
+</html>
+"""
+    body = TextFromHTML.get_body(html, html_tag='body')
+    res = TextFromHTML.get_plain_text(body, replace_line_breaks=True, trim_result=False)
+    assert res == 'HTML Breaks\nHTML can contain break tags\n\n\nWhich should lead to a proper linebreak\n'
 
 
 def test_extract_text_from_specific_tag():
@@ -199,8 +237,8 @@ def test_extract_text_from_specific_tag():
 
     html = """<p>HTML links are defined with the a tag:</p>"""
 
-    body = TextFromHTML.get_body(html, 'p')
-    res = TextFromHTML.get_plain_text(body, False, False)
+    body = TextFromHTML.get_body(html, html_tag='p')
+    res = TextFromHTML.get_plain_text(body, replace_line_breaks=False, trim_result=False)
 
     assert res == 'HTML links are defined with the a tag:'
 
@@ -219,8 +257,8 @@ def test_extract_with_fallback():
 
     html = """<div>Some HTML does not have a body Tag</div>"""
 
-    body = TextFromHTML.get_body(html, 'body', True)
-    res = TextFromHTML.get_plain_text(body, False, False)
+    body = TextFromHTML.get_body(html, html_tag='body', allow_fallback=True)
+    res = TextFromHTML.get_plain_text(body, replace_line_breaks=False, trim_result=False)
 
     assert res == 'Some HTML does not have a body Tag'
 
@@ -239,7 +277,7 @@ def test_extract_without_fallback():
 
     html = """<div>Some HTML does not have a body Tag</div>"""
 
-    body = TextFromHTML.get_body(html, 'body', True)
-    res = TextFromHTML.get_plain_text(body, False, False)
+    body = TextFromHTML.get_body(html, html_tag='body', allow_fallback=True)
+    res = TextFromHTML.get_plain_text(body, replace_line_breaks=False, trim_result=False)
 
     assert res == ''
