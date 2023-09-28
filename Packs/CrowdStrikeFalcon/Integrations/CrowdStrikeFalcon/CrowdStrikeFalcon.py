@@ -2805,8 +2805,8 @@ def get_current_fetch_data(last_run_object: dict[str, Any],
 
 
 def create_iom_filter(iom_next_token: str | None, last_fetch_filter: str,
-                   last_scan_time: str, first_fetch_timestamp: str,
-                   configured_fetch_query: str) -> str:
+                      last_scan_time: str, first_fetch_timestamp: str,
+                      configured_fetch_query: str) -> str:
     """Retrieve the IOM filter that will be used in the current fetch round.
 
     Args:
@@ -2869,7 +2869,7 @@ def add_seconds_to_date(date: str, seconds_to_add: int, date_format: str) -> str
 
 
 def create_ioa_query(ioa_next_token: str | None, last_fetch_query: str,
-                  configured_fetch_query: str, last_date_time_since: str) -> str:
+                     configured_fetch_query: str, last_date_time_since: str) -> str:
     """Retrieve the IOA query that will be used in the current fetch round.
 
     Args:
