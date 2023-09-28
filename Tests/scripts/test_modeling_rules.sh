@@ -9,6 +9,20 @@ function write_empty_test_results_file() {
 EOF
 }
 
+# Parsing the user inputs.
+generate_empty_results_file="false"
+while [[ "$#" -gt 0 ]]; do
+  case $1 in
+    --generate-empty-result-file) generate_empty_results_file="true"
+      shift;;
+  esac
+done
+
+if [[ "${generate_empty_results_file,,}" == "true" ]]; then
+  write_empty_test_results_file
+  exit 0
+fi
+
 if [[ ! -s "${ARTIFACTS_FOLDER}/modeling_rules_to_test.txt" ]]; then
   echo "No modeling rules were marked for testing during test collection - writing empty junit file to ${MODELING_RULES_RESULTS_FILE_NAME}"
   write_empty_test_results_file
@@ -63,8 +77,9 @@ if [ -n "${CLOUD_CHOSEN_MACHINE_IDS}" ]; then
     demisto-sdk modeling-rules test --xsiam-url="${XSIAM_URL}" --auth-id="${AUTH_ID}" --api-key="${API_KEY}" \
       --xsiam-token="${XSIAM_TOKEN}" --non-interactive "${MODELING_RULES_RESULTS_ARG[@]}" \
       ${MODELING_RULES_TO_TEST}
-    if [ $? -ne 0 ]; then
-      echo "Failed testing Modeling Rules on machine ${CLOUD_CHOSEN_MACHINE_ID}"
+    command_exit_code=$?
+    if [ "${command_exit_code}" -ne 0 ]; then
+      echo "Failed testing Modeling Rules on machine ${CLOUD_CHOSEN_MACHINE_ID} with exit code:${command_exit_code}"
       exit_code=1
     fi
   done

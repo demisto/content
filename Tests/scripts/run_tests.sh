@@ -1,6 +1,28 @@
 #!/usr/bin/env bash
 
-INSTANCE_ROLE=$1
+MODELING_RULES_RESULTS_FILE_NAME="${ARTIFACTS_FOLDER_INSTANCE}/test_playbooks_report.xml"
+
+function write_empty_test_results_file() {
+  cat <<EOF > "${MODELING_RULES_RESULTS_FILE_NAME}"
+<?xml version='1.0' encoding='utf-8'?>
+<testsuites />
+EOF
+}
+
+# Parsing the user inputs.
+generate_empty_results_file="false"
+while [[ "$#" -gt 0 ]]; do
+  case $1 in
+    --generate-empty-result-file) generate_empty_results_file="true"
+      shift;;
+  esac
+done
+
+if [[ "${generate_empty_results_file,,}" == "true" ]]; then
+  write_empty_test_results_file
+  exit 0
+fi
+
 SECRET_CONF_PATH=$(cat secret_conf_path)
 if [ -n "${CLOUD_SERVERS_FILE}" ]; then
   CLOUD_SERVERS_PATH=$(cat "${CLOUD_SERVERS_FILE}")

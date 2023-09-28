@@ -443,6 +443,8 @@ slack-notify-nightly-build:
       if ! [[ -s "${ARTIFACTS_FOLDER}/content_packs_to_install.txt" || -s "${ARTIFACTS_FOLDER}/filter_file.txt" ]]; then
         # The files are empty.
         echo "Not running the instance flow, no tests to run were found."
+        ./Tests/scripts/run_tests.sh --generate-empty-result-file
+        ./Tests/scripts/test_modeling_rules.sh --generate-empty-result-file
         job-done
         exit $EXIT_CODE
       fi
@@ -458,7 +460,7 @@ slack-notify-nightly-build:
 
     - section_start "Run Tests"
     - cp -f "${ARTIFACTS_FOLDER}/conf.json" Tests/conf.json
-    - ./Tests/scripts/run_tests.sh "$INSTANCE_ROLE" || EXIT_CODE=$?
+    - ./Tests/scripts/run_tests.sh || EXIT_CODE=$?
     - section_end "Run Tests"
 
     - section_start "Test Modeling Rules"
