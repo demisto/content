@@ -863,7 +863,7 @@ def handle_incoming_closing_incident(incident_data):
             close_notes = f'Known Issue.\n{incident_data.get("closeNotes", "")}'
             return_entry['Contents']['closeNotes'] = close_notes
             incident_data['closeNotes'] = close_notes
-    else:
+    elif False: #change to else to reenable
         return_entry = {
             'Type': EntryType.NOTE,
             'Contents': {
@@ -949,6 +949,7 @@ def get_remote_data_command(client, args):
                     reformatted_entries.append(entry)
 
             incident_data['in_mirror_error'] = ''
+            demisto.warn(f'success response {incident_data=}')
 
             return GetRemoteDataResponse(
                 mirrored_object=incident_data,
@@ -960,7 +961,7 @@ def get_remote_data_command(client, args):
                 'id': remote_args.remote_incident_id,
                 'in_mirror_error': ""
             }
-
+            demisto.warn('no need to update response')
             return GetRemoteDataResponse(
                 mirrored_object=incident_data,
                 entries=[]
@@ -969,7 +970,7 @@ def get_remote_data_command(client, args):
     except Exception as e:
         demisto.debug(f"Error in XDR incoming mirror for incident {remote_args.remote_incident_id} \n"
                       f"Error message: {str(e)}")
-
+        demisto.warn(f'error {str(e)}')
         if "Rate limit exceeded" in str(e):
             return_error("API rate limit")
 
