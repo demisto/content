@@ -4,7 +4,7 @@ commonfields:
 name: AWS Sagemaker
 display: AWS Sagemaker
 category: Data Enrichment & Threat Intelligence
-description: AWS Sagemaker - Demisto Phishing Email Classifier
+description: AWS Sagemaker - Demisto Phishing Email Classifier.
 configuration:
 - display: AWS access key
   name: credentials
@@ -45,16 +45,16 @@ script:
   - name: predict-phishing
     arguments:
     - name: inputText
-      description: The input text (usually email subject + body)
+      description: The input text (usually email subject + body).
     outputs:
     - contextPath: DBotPhishingPrediction.Label
-      description: 'The predicated label: malicious \ other'
+      description: 'The predicated label: malicious \ other.'
       type: string
     - contextPath: DBotPhishingPrediction.Probability
-      description: The predication probability (range 0-1)
+      description: The predication probability (range 0-1).
       type: number
-    description: Classify input text (usually email content)
-  dockerimage: demisto/boto3py3:1.0.0.38849
+    description: Classify input text (usually email content).
+  dockerimage: demisto/boto3py3:1.0.0.75596
 tests:
 - Test Sagemaker
 fromversion: 5.0.0

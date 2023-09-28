@@ -17,14 +17,84 @@
     "system": false,
     "readonly": false,
     "default": false,
-    "autorun": true,
+    "autorun": false,
     "disabled": false,
     "reputationCalc": 0,
     "onChangeRepAlg": 0,
     "layout": "Dataminr Pulse Alert",
     "detached": false,
     "extractSettings": {
-        "mode": "All",
-        "fieldCliNameToExtractSettings": {}
+        "mode": "Specific",
+        "fieldCliNameToExtractSettings": {
+            "dataminrpulsemetadatacyberaddresses": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": [
+                    "domainRepUnified",
+                    "ipRep",
+                    "IPv6",
+                    "IPv6CIDR",
+                    "Onion Address",
+                    "urlRep"
+                ]
+            },
+            "dataminrpulsemetadatacyberasns": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": [
+                    "ASN"
+                ]
+            },
+            "dataminrpulsemetadatacyberasorgs": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": [
+                    "ASN"
+                ]
+            },
+            "dataminrpulsemetadatacyberhashes": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": [
+                    "unifiedFileRep"
+                ]
+            },
+            "dataminrpulsemetadatacyberhashvalues": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": [
+                    "unifiedFileRep"
+                ]
+            },
+            "dataminrpulsemetadatacybermalwares": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": true,
+                "extractIndicatorTypesIDs": []
+            },
+            "dataminrpulsemetadatacyberthreats": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": true,
+                "extractIndicatorTypesIDs": []
+            },
+            "dataminrpulsemetadatacyberurls": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": [
+                    "domainRepUnified",
+                    "ipRep",
+                    "IPv6",
+                    "IPv6CIDR",
+                    "Onion Address",
+                    "urlRep"
+                ]
+            },
+            "dataminrpulsemetadatacybervulnerabilities": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": [
+                    "cveRep"
+                ]
+            }
+        }
     }
 }
