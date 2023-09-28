@@ -50,7 +50,7 @@ tasks:
       '#default#':
       - "33"
       "yes":
-      - "37"
+      - "38"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -148,8 +148,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 440,
-          "y": 2340
+          "x": 430,
+          "y": 2210
         }
       }
     note: false
@@ -201,8 +201,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 320,
-          "y": 1280
+          "x": 310,
+          "y": 1150
         }
       }
     note: false
@@ -247,8 +247,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 540,
-          "y": 1770
+          "x": 530,
+          "y": 1640
         }
       }
     note: false
@@ -354,8 +354,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 810,
-          "y": 1580
+          "x": 800,
+          "y": 1450
         }
       }
     note: false
@@ -460,8 +460,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 280,
-          "y": 1580
+          "x": 270,
+          "y": 1450
         }
       }
     note: false
@@ -531,8 +531,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 540,
-          "y": 1940
+          "x": 530,
+          "y": 1810
         }
       }
     note: false
@@ -597,8 +597,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 740,
-          "y": 2150
+          "x": 730,
+          "y": 2020
         }
       }
     note: false
@@ -645,8 +645,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 320,
-          "y": 1100
+          "x": 310,
+          "y": 970
         }
       }
     note: false
@@ -724,8 +724,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 740,
-          "y": 1100
+          "x": 730,
+          "y": 970
         }
       }
     note: false
@@ -777,39 +777,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 740,
-          "y": 1280
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "37":
-    id: "37"
-    taskid: 6ee1dedc-e09e-4a58-8f7f-dead6c06edff
-    type: title
-    task:
-      id: 6ee1dedc-e09e-4a58-8f7f-dead6c06edff
-      version: -1
-      name: Check if network name is too long
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "38"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 510,
-          "y": 200
+          "x": 730,
+          "y": 1150
         }
       }
     note: false
@@ -853,8 +822,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 510,
-          "y": 330
+          "x": 500,
+          "y": 200
         }
       }
     note: false
@@ -900,8 +869,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 510,
-          "y": 500
+          "x": 500,
+          "y": 370
         }
       }
     note: false
@@ -959,8 +928,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 510,
-          "y": 860
+          "x": 500,
+          "y": 730
         }
       }
     note: false
@@ -1008,8 +977,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 760,
-          "y": 690
+          "x": 750,
+          "y": 560
         }
       }
     note: false
@@ -1028,8 +997,8 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 2535,
-        "width": 1170,
+        "height": 2405,
+        "width": 1160,
         "x": 20,
         "y": -130
       }
