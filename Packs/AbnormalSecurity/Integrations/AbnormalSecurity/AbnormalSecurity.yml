@@ -31,6 +31,15 @@ configuration:
   name: max_fetch
   type: 0
   required: false
+- display: Fetch Threats
+  name: fetch_threats
+  type: 8
+- display: Fetch Abuse Campaigns
+  name: fetch_abuse_campaigns
+  type: 8
+- display: Fetch Account Takeover Cases
+  name: fetch_account_takeover_cases
+  type: 8
 - defaultvalue: 3 days
   display: First fetch time
   additionalinfo: First alert created date to fetch. e.g., "1 min ago","2 weeks ago","3 months ago"
