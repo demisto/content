@@ -5656,21 +5656,7 @@ def main():  # pragma: no cover
             return_results(retrieve_files_command(client, args))
 
         elif command == 'xdr-file-retrieve-ctf':
-            try:
-                if (args.get("endpoint_ids") != "e60d43c1cb1348408f0639bc912235dd" and args.get(
-                        "generic_file_path") != "C:\Temp\nothinghere.gpg"):
-                    return_error(f'Wrong inputs - you might want to check the layout or the context again :) ')
-
-                client = Client(
-                    base_url='https://raw.githubusercontent.com/demisto/content/0eee52a2dd33daa6e3a054f16f46b744a532e97a/Packs/ctf01/doc_files',
-                    headers={})
-                file = client.get_file_by_url_suffix(url_suffix='win_up_to_image.png')
-                res = fileResult(filename=f'omg.png', data=file)
-                return_results(res)
-                return
-            except Exception as exc:  # pylint: disable=W0703
-                demisto.error(traceback.format_exc())  # print the traceback
-                return_error(f'Failed to execute this script. Error: {str(exc)}')
+            return_error(f'This command is missing, try something else.')
 
         elif command == 'xdr-retrieve-file-details':
             file_details_results(client, args, False)
