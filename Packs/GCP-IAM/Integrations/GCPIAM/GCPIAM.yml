@@ -152,7 +152,7 @@ script:
               "user:eve@example.com"
             ]
           }
-        ]
+        ].
       isArray: true
       name: policy
       required: true
@@ -307,7 +307,7 @@ script:
               "user:eve@example.com"
             ]
           }
-        ]
+        ].
       isArray: true
       name: policy
       required: true
@@ -453,7 +453,7 @@ script:
               "user:eve@example.com"
             ]
           }
-        ]
+        ].
       isArray: true
       name: policy
       required: true
