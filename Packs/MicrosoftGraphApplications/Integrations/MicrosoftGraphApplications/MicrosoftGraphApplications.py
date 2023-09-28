@@ -292,7 +292,7 @@ def get_service_principal_command(ms_client: Client, args: dict) -> CommandResul
         'id',
         outputs=results,
         readable_output=tableToMarkdown(
-            'Available service (application):',
+            'Service Principal (application):',
             results,
             headers=['id', 'appId', 'appDisplayName', 'accountEnabled', 'deletedDateTime'],
             removeNull=True
@@ -311,14 +311,9 @@ def update_service_principal_command(ms_client: Client, args: dict) -> CommandRe
         an informative message.
     """
     id_for_request, service_id = validate_service_principal_input(args=args)
-    fields_to_update = {"add_ins": "addIns", "alternative_names": "alternativeNames",
-                        "app_role_assignment_required": "appRoleAssignmentRequired", "app_roles": "appRoles",
-                        "custom_security_attributes": "customSecurityAttributes", "display_name": "displayName",
-                        "home_page": "homepage", "key_credentials": "keyCredentials", "logout_url": "logoutUrl",
-                        "oauth2_permission_scopes": "oauth2PermissionScopes",
-                        "preferred_single_sign_on_mode": "preferredSingleSignOnMode",
-                        "service_principal_names": "servicePrincipalNames", "tags": "tags",
-                        "token_encryption_key_id": "tokenEncryptionKeyId"}
+    fields_to_update = {"app_role_assignment_required": "appRoleAssignmentRequired", "display_name": "displayName",
+                        "preferred_single_sign_on_mode": "preferredSingleSignOnMode"
+                        }
     boolean_fields_to_update = {"account_enabled": "accountEnabled", "app_role_assignment_required": "appRoleAssignmentRequired"}
 
     data = {
@@ -375,6 +370,10 @@ def add_password_service_principal_command(ms_client: Client, args: dict) -> Com
         for field in fields_for_body_request
         if field in args
     }
+
+    # If the user didn't pass the expiration time, we set it to 1 hour when the API set it to +2 years.
+    if "endDateTime" not in data:
+        data["endDateTime"] = str(datetime.now() + timedelta(hours=1))
 
     results = ms_client.add_password_service_principal(id_for_request, data=data)
 

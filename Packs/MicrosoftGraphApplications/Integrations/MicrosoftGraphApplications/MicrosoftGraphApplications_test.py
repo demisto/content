@@ -3,6 +3,7 @@ import MicrosoftGraphApplications
 import demistomock as demisto
 import pytest
 from CommonServerPython import *
+from freezegun import freeze_time
 
 
 @pytest.fixture
@@ -222,7 +223,7 @@ def test_get_service_principal_command(requests_mock, mocked_client):
 
     assert results.outputs_prefix == "MSGraphApplication"
     assert results.outputs_key_field == "id"
-    assert results.readable_output == '### Available service (application):\n|id|appId|appDisplayName|accountEnabled|\n' \
+    assert results.readable_output == '### Service Principal (application):\n|id|appId|appDisplayName|accountEnabled|\n' \
                                       '|---|---|---|---|\n| XXXX | XXXX | Test | true |\n'
     assert results.outputs == GET_SERVICE_PRINCIPAL_RESPONSE
 
@@ -269,11 +270,12 @@ ADD_PASSWORD_RESPONSE = {
 @pytest.mark.parametrize('args, expected_id, expected_args',
                          [
                              ({'id': 'TEST', 'app_id': None, 'display_name': 'Password friendly name'}, "/TEST",
-                              {'data': {'displayName': 'Password friendly name'}}),
+                              {'data': {'displayName': 'Password friendly name', 'endDateTime': '2022-02-28 12:00:00'}}),
                              ({'id': None, 'app_id': 'TEST', 'display_name': 'NAME', 'end_date_time': 'end',
                                'start_date_time': 'start'}, "(appId='TEST')",
                               {'data': {'displayName': 'NAME', 'endDateTime': 'end', 'startDateTime': 'start'}})
                          ])
+@freeze_time("2022-02-28 11:00:00")
 def test_add_password_service_principal_command(mocker, requests_mock, mocked_client, args, expected_id, expected_args):
     """
         Given:
