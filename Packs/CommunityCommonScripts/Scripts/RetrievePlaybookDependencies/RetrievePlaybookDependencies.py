@@ -41,7 +41,7 @@ def get_tasks_list(tasks):
 def append_commands(commands, subplaybook_name, subplaybook_json):
     for t in get_tasks_list(subplaybook_json):
         # commands not using-brand
-        task = t.get('task, {})
+        task = t.get('task', {})
         if task.get('isCommand') and task.get('scriptId', '').startswith('|'):
             key = task.get('scriptId', '').replace('|||', '')
             # These are base commands and should be excluded from brandless list
