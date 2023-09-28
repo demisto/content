@@ -84,7 +84,6 @@ tasks:
       URL:
         complex:
           root: inputs.URL
-          accessor: Data
     separatecontext: true
     continueonerrortype: ""
     loop:
@@ -126,7 +125,6 @@ tasks:
       URL:
         complex:
           root: inputs.URL
-          accessor: Data
     separatecontext: true
     continueonerrortype: ""
     loop:
@@ -168,7 +166,6 @@ tasks:
       URL:
         complex:
           root: inputs.URL
-          accessor: Data
       interval:
         simple: "1"
       timeout:
@@ -214,7 +211,6 @@ tasks:
       URL:
         complex:
           root: inputs.URL
-          accessor: Data
     separatecontext: true
     continueonerrortype: ""
     loop:
@@ -260,7 +256,6 @@ tasks:
       url:
         complex:
           root: inputs.URL
-          accessor: Data
     separatecontext: true
     continueonerrortype: ""
     loop:
@@ -342,7 +337,6 @@ tasks:
       URL:
         complex:
           root: inputs.URL
-          accessor: Data
     separatecontext: true
     continueonerrortype: ""
     loop:
@@ -384,7 +378,6 @@ tasks:
       URL:
         complex:
           root: inputs.URL
-          accessor: Data
       interval:
         simple: "1"
       timeout:
@@ -434,7 +427,6 @@ tasks:
       URL:
         complex:
           root: inputs.URL
-          accessor: Data
     separatecontext: true
     continueonerrortype: ""
     loop:
@@ -597,7 +589,6 @@ tasks:
       URL:
         complex:
           root: inputs.URL
-          accessor: Data
     separatecontext: true
     continueonerrortype: ""
     loop:
