@@ -121,7 +121,7 @@ script:
     name: fortiwebvm-protected-hostname-member-create
     outputs:
     - contextPath: FortiwebVM.ProtectedHostnameMember.id
-      description: Protected host name member ID
+      description: Protected host name member ID.
       type: String
   - arguments:
     - description: Protected host name group name.
@@ -429,7 +429,7 @@ script:
       name: id
       required: true
     - auto: PREDEFINED
-      description: Status
+      description: Status.
       name: status
       predefined:
       - 'enable'
@@ -635,13 +635,13 @@ script:
       - Simple String
       - Regular Expression
     - auto: PREDEFINED
-      description: Enable to apply this rule only to HTTP requests for specific URLs. Supports
+      description: Enable to apply this rule only to HTTP requests for specific URLs. Supports.
       name: request_url_status
       predefined:
       - enable
       - disable
     - auto: PREDEFINED
-      description: Enable to apply this rule only to HTTP requests for specific domains. Supports
+      description: Enable to apply this rule only to HTTP requests for specific domains. Supports.
       name: domain_status
       predefined:
       - enable
@@ -2132,15 +2132,15 @@ script:
       - azure
     - description: Once you select the SDN collector that you have created, choose the filter for your VMs in your public cloud account. You should know the filter name (there is no helper command). For example (AWS filter) instance-id=i-12345678. Required when the server pool group server balance=Server Balance and server_type=External connector. Supports API version 2 only.
       name: filter
-    - description: 'The IP address of the web server to include in the pool. Required when: (server_type= ip)'
+    - description: 'The IP address of the web server to include in the pool. Required when: (server_type= ip).'
       name: ip
-    - description: 'The fully-qualified domain name of the web server to include in the pool, such as www.example.com. Required when: (server_type=domain)'
+    - description: 'The fully-qualified domain name of the web server to include in the pool, such as www.example.com. Required when: (server_type=domain).'
       name: domain
     - defaultValue: ' 80'
       description: The TCP port number where the pool member listens for connections. The valid range is 1–65,535.
       name: port
     - defaultValue: '0'
-      description: 'Connection limit. The maximum number of concurrent connections to the backend server. 0 for no connection limit. Size range: 0-1048576'
+      description: 'Connection limit. The maximum number of concurrent connections to the backend server. 0 for no connection limit. Size range: 0-1048576.'
       name: connection_limit
     - auto: PREDEFINED
       description: Enable to allow HTTP/2 communication between the FortiWeb and this back-end web server for HTTP/2 security inspections.
@@ -2157,16 +2157,16 @@ script:
     - description: 'The client certificate that FortiWeb uses to connect to this server pool member (dependencies - use fortiwebvm-local-certificate-list command to get all the local certificates). Relevant when: ssl=enable.'
       name: client_certificate_file
     - defaultValue: '0'
-      description: 'The number of seconds to postpone forwarding traffic after downtime when a health check indicates that this server has become available again. Size range: 0-86400'
+      description: 'The number of seconds to postpone forwarding traffic after downtime when a health check indicates that this server has become available again. Size range: 0-86400.'
       name: recover
     - defaultValue: '0'
-      description: 'Warm up, if the server cannot initially handle full connection load when it begins to respond to health checks. Size range: 0-86400'
+      description: 'Warm up, if the server cannot initially handle full connection load when it begins to respond to health checks. Size range: 0-86400.'
       name: warm_up
     - defaultValue: '10'
       description: 'The maximum connection rate per second while the server is starting up. Size range: 1-86400.'
       name: warm_rate
     - defaultValue: '1'
-      description: 'The assigned relative preference among members. Higher values are more preferred and are assigned with connections more frequently. Relevant when the server pool group server balance=Server Balance. Size range: 1-9999'
+      description: 'The assigned relative preference among members. Higher values are more preferred and are assigned with connections more frequently. Relevant when the server pool group server balance=Server Balance. Size range: 1-9999.'
       name: weight
     - auto: PREDEFINED
       description: Enable to use the health check specified by health in the server pool configuration. Disable to use the health check specified by health in this pool member configuration. Relevant when the server pool group server balance=Server Balance.
@@ -2224,13 +2224,13 @@ script:
       - azure
     - description: Once you select the SDN collector that you have created, choose the filter for your VMs in your public cloud account. You should know the filter name (there is no helper command). For example (AWS filter) instance-id=i-12345678. Required when the server pool group server balance=Server Balance and server_type=External connector. Supports API version 2 only.
       name: filter
-    - description: 'The IP address of the web server to include in the pool. Required when: (server_type= ip)'
+    - description: 'The IP address of the web server to include in the pool. Required when: (server_type= ip).'
       name: ip
-    - description: 'The fully-qualified domain name of the web server to include in the pool, such as www.example.com. Required when: (server_type=domain)'
+    - description: 'The fully-qualified domain name of the web server to include in the pool, such as www.example.com. Required when: (server_type=domain).'
       name: domain
     - description: The TCP port number where the pool member listens for connections. The valid range is 1–65,535.
       name: port
-    - description: 'The maximum number of concurrent connections to the backend server. 0 for no connection limit. Size range: 0-1048576'
+    - description: 'The maximum number of concurrent connections to the backend server. 0 for no connection limit. Size range: 0-1048576.'
       name: connection_limit
     - auto: PREDEFINED
       description: Enable to allow HTTP/2 communication between the FortiWeb and this back-end web server for HTTP/2 security inspections.
@@ -2246,13 +2246,13 @@ script:
       - disable
     - description: 'The client certificate that FortiWeb uses to connect to this server pool member (dependencies - use fortiwebvm-local-certificate-list command to get all the local certificates). Relevant when: ssl=enable.'
       name: client_certificate_file
-    - description: 'The number of seconds to postpone forwarding traffic after downtime when a health check indicates that this server has become available again. Size range: 0-86400'
+    - description: 'The number of seconds to postpone forwarding traffic after downtime when a health check indicates that this server has become available again. Size range: 0-86400.'
       name: recover
-    - description: 'Warm up, if the server cannot initially handle full connection load when it begins to respond to health checks. Size range: 0-86400'
+    - description: 'Warm up, if the server cannot initially handle full connection load when it begins to respond to health checks. Size range: 0-86400.'
       name: warm_up
     - description: 'The maximum connection rate per second while the server is starting up. Size range: 1-86400.'
       name: warm_rate
-    - description: 'The assigned relative preference among members. Higher values are more preferred and are assigned with connections more frequently. Relevant when the server pool group server balance=Server Balance. Size range: 1-9999'
+    - description: 'The assigned relative preference among members. Higher values are more preferred and are assigned with connections more frequently. Relevant when the server pool group server balance=Server Balance. Size range: 1-9999.'
       name: weight
     - auto: PREDEFINED
       description: Enable to use the health check specified by health in the server pool configuration. Disable to use the health check specified by health in this pool member configuration. Relevant when the server pool group server balance=Server Balance.
@@ -2642,16 +2642,16 @@ script:
       predefined:
       - IP
       - Domain
-    - description: 'The IP address of the web server to include in the pool. Required when: (server_type=IP)'
+    - description: 'The IP address of the web server to include in the pool. Required when: (server_type=IP).'
       name: ip
     - defaultValue: '21'
       description: The TCP port number where the pool member listens for connections. The valid range is 1–65,535.
       name: port
     - defaultValue: '0'
-      description: 'Connection limit. The maximum number of concurrent connections to the backend server. 0 for no connection limit. Size range: 0-1048576'
+      description: 'Connection limit. The maximum number of concurrent connections to the backend server. 0 for no connection limit. Size range: 0-1048576.'
       name: connection_limit
     - defaultValue: '1'
-      description: 'The assigned relative preference among members. Higher values are more preferred and are assigned with connections more frequently. Relevant when the server pool group server balance=Server Balance. Size range: 1-9999'
+      description: 'The assigned relative preference among members. Higher values are more preferred and are assigned with connections more frequently. Relevant when the server pool group server balance=Server Balance. Size range: 1-9999.'
       name: weight
     - auto: PREDEFINED
       description: Enable to use the health check specified by health in the server pool configuration. Disable to use the health check specified by health in this pool member configuration. Relevant when the server pool group server balance=Server Balance.
@@ -2682,15 +2682,15 @@ script:
       - enable
       - disable
     - defaultValue: '0'
-      description: 'The number of seconds to postpone forwarding traffic after downtime when a health check indicates that this server has become available again. Size range: 0-86400'
+      description: 'The number of seconds to postpone forwarding traffic after downtime when a health check indicates that this server has become available again. Size range: 0-86400.'
       name: recover
     - defaultValue: '0'
-      description: 'Warm up, if the server cannot initially handle full connection load when it begins to respond to health checks. Size range: 0-86400'
+      description: 'Warm up, if the server cannot initially handle full connection load when it begins to respond to health checks. Size range: 0-86400.'
       name: warm_up
     - defaultValue: '10'
       description: 'The maximum connection rate per second while the server is starting up. Size range: 1-86400.'
       name: warm_rate
-    - description: 'The fully-qualified domain name of the web server to include in the pool, such as www.example.com. Required when: (server_type=domain)'
+    - description: 'The fully-qualified domain name of the web server to include in the pool, such as www.example.com. Required when: (server_type=domain).'
       name: domain
     description: Create a rule for an FTP server pool group (server pool rule is a member of server pool group). Supports API version 2 only. Server pool rule advanced SSL settings are not supported in this command.
     name: fortiwebvm-server-pool-ftp-rule-create
@@ -2718,13 +2718,13 @@ script:
       predefined:
       - IP
       - Domain
-    - description: 'The IP address of the web server to include in the pool. Required when: (server_type=IP)'
+    - description: 'The IP address of the web server to include in the pool. Required when: (server_type=IP).'
       name: ip
     - description: The TCP port number where the pool member listens for connections. The valid range is 1–65,535.
       name: port
-    - description: 'Connection limit. The maximum number of concurrent connections to the backend server. 0 for no connection limit. Size range: 0-1048576'
+    - description: 'Connection limit. The maximum number of concurrent connections to the backend server. 0 for no connection limit. Size range: 0-1048576.'
       name: connection_limit
-    - description: 'The assigned relative preference among members. Higher values are more preferred and are assigned with connections more frequently. Relevant when the server pool group server balance=Server Balance. Size range: 1-9999'
+    - description: 'The assigned relative preference among members. Higher values are more preferred and are assigned with connections more frequently. Relevant when the server pool group server balance=Server Balance. Size range: 1-9999.'
       name: weight
     - auto: PREDEFINED
       description: Enable to use the health check specified by health in the server pool configuration. Disable to use the health check specified by health in this pool member configuration. Relevant when the server pool group server balance=Server Balance.
@@ -2752,13 +2752,13 @@ script:
       predefined:
       - enable
       - disable
-    - description: 'The number of seconds to postpone forwarding traffic after downtime when a health check indicates that this server has become available again. Size range: 0-86400'
+    - description: 'The number of seconds to postpone forwarding traffic after downtime when a health check indicates that this server has become available again. Size range: 0-86400.'
       name: recover
-    - description: 'Warm up, if the server cannot initially handle full connection load when it begins to respond to health checks. Size range: 0-86400'
+    - description: 'Warm up, if the server cannot initially handle full connection load when it begins to respond to health checks. Size range: 0-86400.'
       name: warm_up
     - description: 'The maximum connection rate per second while the server is starting up. Size range: 1-86400.'
       name: warm_rate
-    - description: 'The fully-qualified domain name of the web server to include in the pool, such as www.example.com. Required when: (server_type=domain)'
+    - description: 'The fully-qualified domain name of the web server to include in the pool, such as www.example.com. Required when: (server_type=domain).'
       name: domain
     description: Update a rule for an FTP server pool group (server pool rule is a member of server pool group). Supports API version 2 only.
     name: fortiwebvm-server-pool-ftp-rule-update
@@ -2781,7 +2781,7 @@ script:
       - IP
       - Domain
       required: true
-    - description: 'The IP address of the web server to include in the pool. Required when: (server_type=IP)'
+    - description: 'The IP address of the web server to include in the pool. Required when: (server_type=IP).'
       name: ip
     - description: The IP address of the web server to include in the pool.
       name: enable_ssl
@@ -2790,9 +2790,9 @@ script:
       name: port
       defaultValue: '443'
     - defaultValue: '0'
-      description: 'Connection limit. The maximum number of concurrent connections to the backend server. 0 for no connection limit. Size range: 0-1048576'
+      description: 'Connection limit. The maximum number of concurrent connections to the backend server. 0 for no connection limit. Size range: 0-1048576.'
       name: connection_limit
-    - description: Enable to use the health check specified by health in the server pool configuration. Disable to use the health check specified by health in this pool member configuration. Relevant when the server pool group server balance=Server Balance
+    - description: Enable to use the health check specified by health in the server pool configuration. Disable to use the health check specified by health in this pool member configuration. Relevant when the server pool group server balance=Server Balance.
       name: health_check_inherit
       predefined:
       - enable
@@ -2814,15 +2814,15 @@ script:
       name: client_certificate_file
       required: true
     - defaultValue: '0'
-      description: 'The number of seconds to postpone forwarding traffic after downtime when a health check indicates that this server has become available again. Size range: 0-86400'
+      description: 'The number of seconds to postpone forwarding traffic after downtime when a health check indicates that this server has become available again. Size range: 0-86400.'
       name: recover
     - defaultValue: '0'
-      description: 'Warm up, if the server cannot initially handle full connection load when it begins to respond to health checks. Size range: 0-86400'
+      description: 'Warm up, if the server cannot initially handle full connection load when it begins to respond to health checks. Size range: 0-86400.'
       name: warm_up
     - defaultValue: '10'
       description: 'The maximum connection rate per second while the server is starting up. Size range: 1-86400.'
       name: warm_rate
-    - description: 'The fully-qualified domain name of the web server to include in the pool, such as www.example.com. Required when: (server_type=domain)'
+    - description: 'The fully-qualified domain name of the web server to include in the pool, such as www.example.com. Required when: (server_type=domain).'
       name: domain
     description: Create a rule for an ADFS server pool group (server pool rule is a member of server pool group). Supports API version 2 only. Server pool rule advanced SSL settings are not supported in this command.
     name: fortiwebvm-server-pool-adfs-rule-create
@@ -2850,11 +2850,11 @@ script:
       predefined:
       - IP
       - Domain
-    - description: 'The IP address of the web server to include in the pool. Required when: (server_type=IP)'
+    - description: 'The IP address of the web server to include in the pool. Required when: (server_type=IP).'
       name: ip
     - description: The TCP port number where the pool member listens for connections. The valid range is 1–65,535.
       name: port
-    - description: 'Connection limit. The maximum number of concurrent connections to the backend server. 0 for no connection limit. Size range: 0-1048576'
+    - description: 'Connection limit. The maximum number of concurrent connections to the backend server. 0 for no connection limit. Size range: 0-1048576.'
       name: connection_limit
     - auto: PREDEFINED
       description: Enable to use the health check specified by health in the server pool configuration. Disable to use the health check specified by health in this pool member configuration. Relevant when the server pool group server balance=Server Balance.
@@ -2876,13 +2876,13 @@ script:
       name: registration_password
     - description: 'The client certificate that FortiWeb uses to connect to this server pool member (dependencies - use fortiwebvm-local-certificate-list command to list all the local certificates).'
       name: client_certificate_file
-    - description: 'The number of seconds to postpone forwarding traffic after downtime when a health check indicates that this server has become available again. Size range: 0-86400'
+    - description: 'The number of seconds to postpone forwarding traffic after downtime when a health check indicates that this server has become available again. Size range: 0-86400.'
       name: recover
-    - description: 'Warm up, if the server cannot initially handle full connection load when it begins to respond to health checks. Size range: 0-86400'
+    - description: 'Warm up, if the server cannot initially handle full connection load when it begins to respond to health checks. Size range: 0-86400.'
       name: warm_up
     - description: 'The maximum connection rate per second while the server is starting up. Size range: 1-86400.'
       name: warm_rate
-    - description: 'The fully-qualified domain name of the web server to include in the pool, such as www.example.com. Required when: (server_type=domain)'
+    - description: 'The fully-qualified domain name of the web server to include in the pool, such as www.example.com. Required when: (server_type=domain).'
       name: domain
     description: Update a rule for an ADFS server pool group (server pool rule is a member of server pool group). Supports API version 2 only. Server pool rule advanced SSL settings are not supported in this command.
     name: fortiwebvm-server-pool-adfs-rule-update
@@ -2938,7 +2938,7 @@ script:
       description: Server pool rule backup server.
       type: String
     - contextPath: FortiwebVM.ServerPoolGroup.Rule.connection_limit
-      description: The maximum number of concurrent connections to the backend server. 0 for no connection limit
+      description: The maximum number of concurrent connections to the backend server. 0 for no connection limit.
       type: String
     - contextPath: FortiwebVM.ServerPoolGroup.Rule.http2
       description: Whether to allow HTTP/2 communication between the FortiWeb and this back-end web server for HTTP/2 security inspections.
@@ -3571,7 +3571,7 @@ script:
     - contextPath: FortiwebVM.URLAccessRuleGroup.Condition.only_protocol
       description: Protocols that were checked. Supports API version 2 only.
       type: String
-  dockerimage: demisto/python3:3.10.13.72123
+  dockerimage: demisto/python3:3.10.13.74666
   runonce: false
   script: '-'
   subtype: python3
