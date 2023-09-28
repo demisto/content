@@ -27,6 +27,7 @@ HEADERS_BY_NAME = {
     'compliance': ['type', 'id', 'description']
 }
 MAX_API_LIMIT = 50
+INTEGRATION_NAME = 'PaloAltoNetworks_PrismaCloudCompute'
 
 ''' COMMANDS + REQUESTS FUNCTIONS '''
 
@@ -418,6 +419,32 @@ class PrismaCloudComputeClient(BaseClient):
         headers = self._headers
         return self._http_request('get', 'logs/defender/download', params=params, headers=headers, resp_type="content")
 
+    def get_file_integrity_events(self, limit, sort, hostname=None, event_id=None, from_date=None,
+                                  to_date=None, search_term=None):
+        """
+        Get runtime file integrity audit events
+
+        Args:
+            hostname (str): The hostname for which to get runtime file integrity events
+
+        Returns:
+            HTTP response
+        """
+        endpoint = "audits/runtime/file-integrity"
+
+        headers = self._headers
+        params = {
+            "hostname": hostname,
+            "id": event_id,
+            "limit": limit,
+            "from": from_date,
+            "to": to_date,
+            "search": search_term,
+            "sort": "time",
+            "reverse": sort == "desc"
+        }
+        return self._http_request('get', endpoint, params=params, headers=headers)
+
 
 def format_context(context):
     """
@@ -523,10 +550,11 @@ def is_command_is_fetch():
     :return: True if this is a fetch_incidents command, otherwise return false.
     :rtype: ``bool``
     """
-    if demisto.getLastRun():
+    ctx = demisto.getIntegrationContext()
+    if demisto.getLastRun() or ctx.get("unstuck", False):
         return True
     else:
-        return not demisto.getIntegrationContext().get('fetched_incidents_list', [])
+        return not ctx.get('fetched_incidents_list', [])
 
 
 def fetch_incidents(client):
@@ -604,6 +632,7 @@ def fetch_incidents(client):
 
         incidents_to_update = incidents or ctx.get('fetched_incidents_list')
         ctx.update({'fetched_incidents_list': incidents_to_update})
+        ctx["unstuck"] = False
         demisto.setIntegrationContext(ctx)
         demisto.debug(f"Integration Context after update = {ctx}")
 
@@ -1207,13 +1236,14 @@ def add_custom_malware_feeds(client: PrismaCloudComputeClient, args: dict) -> Co
     return CommandResults(readable_output="Successfully updated the custom md5 malware feeds")
 
 
-def get_cves(client: PrismaCloudComputeClient, args: dict) -> List[CommandResults]:
+def get_cves(client: PrismaCloudComputeClient, args: dict, reliability: str = "B - Usually reliable") -> List[CommandResults]:
     """
     Get cves information, implement the command 'cve'.
 
     Args:
         client (PrismaCloudComputeClient): prisma-cloud-compute client.
         args (dict): cve command arguments.
+        reliability (str): reliability of the source providing the intelligence data.
 
     Returns:
         CommandResults: command-results object.
@@ -1240,14 +1270,20 @@ def get_cves(client: PrismaCloudComputeClient, args: dict) -> List[CommandResult
                 cve_data = {
                     "ID": cve_id, "CVSS": cvss, "Modified": modified, "Description": description
                 }
-
+                dbot_score = Common.DBotScore(indicator=cve_id,
+                                              indicator_type=DBotScoreType.CVE,
+                                              integration_name=INTEGRATION_NAME,
+                                              score=Common.DBotScore.NONE,
+                                              malicious_description=description,
+                                              reliability=DBotScoreReliability.get_dbot_score_reliability_from_str(reliability))
                 results.append(
                     CommandResults(
                         outputs_prefix="CVE",
                         outputs_key_field=["ID"],
                         outputs=cve_data,
                         indicator=Common.CVE(
-                            id=cve_id, cvss=cvss, published="", modified=modified, description=description
+                            id=cve_id, cvss=cvss, published="", modified=modified, description=description,
+                            dbot_score=dbot_score
                         ),
                         raw_response=filtered_cves_information,
                         readable_output=tableToMarkdown(name=cve_id, t=cve_data)
@@ -1957,6 +1993,60 @@ def get_logs_defender_download_command(client: PrismaCloudComputeClient, args: d
     return fileResult(f"{hostname}-logs.tar.gz", response, entryTypes["entryInfoFile"])
 
 
+def get_file_integrity_events_command(client: PrismaCloudComputeClient, args: dict):
+    """
+    Get runtime file integrity audit events for the given hostname
+
+    Args:
+        client (PrismaCloudComputeClient): prisma-cloud-compute client.
+        args (dict): prisma-cloud-compute-get-file-integrity-events command arguments
+
+    Returns:
+        HTTP Response object
+    """
+    hostname = args.get('hostname')
+    event_id = args.get('event_id')
+    limit = args.get('limit')
+    from_date = args.get('from_date')
+    to_date = args.get('to_date')
+    search_term = args.get('search_term')
+    sort = args.get('sort')
+
+    response = client.get_file_integrity_events(
+        limit, sort, hostname=hostname, event_id=event_id,
+        from_date=from_date, to_date=to_date, search_term=search_term
+    )
+    if not response:
+        readable_output = "No results for the given search."
+    else:
+        readable_output = None
+    return CommandResults(
+        outputs_prefix='PrismaCloudCompute.FileIntegrity',
+        outputs_key_field='_id',
+        outputs=format_context(response),
+        raw_response=response,
+        readable_output=readable_output
+    )
+
+
+def unstuck_fetch_stream_command():
+    """
+    Adds a field to ensure that is_command_is_fetch will recognize the next fetch incidents run as fetch.
+    This command is for unstacking the fetch stream in case the fetch incidents yields duplications.
+
+    Returns:
+        CommandResults: command-results object.
+    """
+    ctx = demisto.getIntegrationContext()
+    demisto.debug(f"unstuck field before update = {ctx.get('unstuck', False)}")
+    ctx["unstuck"] = True
+    demisto.setIntegrationContext(ctx)
+    demisto.debug(f"unstuck field after update = {ctx.get('unstuck', False)}")
+    return CommandResults(
+        readable_output="The fetch stream was released successfully."
+    )
+
+
 def main():
     """
     PARSE AND VALIDATE INTEGRATION PARAMS
@@ -1969,6 +2059,7 @@ def main():
     verify_certificate = not params.get('insecure', False)
     cert = params.get('certificate')
     proxy = params.get('proxy', False)
+    reliability = params.get('integration_reliability', '')
 
     # If checked to verify and given a certificate, save the certificate as a temp file
     # and set the path to the requests client
@@ -1983,7 +2074,7 @@ def main():
 
     try:
         requested_command = demisto.command()
-        LOG(f'Command being called is {requested_command}')
+        demisto.info(f'Command being called is {requested_command}')
 
         # Init the client
         client = PrismaCloudComputeClient(
@@ -1997,8 +2088,7 @@ def main():
         if requested_command == 'test-module':
             # This is the call made when pressing the integration test button
             result = test_module(client)
-            demisto.results(result)
-
+            return_results(result)
         elif requested_command == 'fetch-incidents':
             # Fetch incidents from Prisma Cloud Compute
             # this method is called periodically when 'fetch incidents' is checked
@@ -2041,7 +2131,7 @@ def main():
         elif requested_command == 'prisma-cloud-compute-custom-feeds-malware-add':
             return_results(results=add_custom_malware_feeds(client=client, args=demisto.args()))
         elif requested_command == 'cve':
-            return_results(results=get_cves(client=client, args=demisto.args()))
+            return_results(results=get_cves(client=client, args=demisto.args(), reliability=reliability))
         elif requested_command == 'prisma-cloud-compute-defenders-list':
             return_results(results=get_defenders(client=client, args=demisto.args()))
         elif requested_command == 'prisma-cloud-compute-collections-list':
@@ -2070,6 +2160,10 @@ def main():
             return_results(results=get_backups_command(client=client, args=demisto.args()))
         elif requested_command == "prisma-cloud-compute-logs-defender-download":
             return_results(results=get_logs_defender_download_command(client=client, args=demisto.args()))
+        elif requested_command == "prisma-cloud-compute-unstuck-fetch-stream":
+            return_results(unstuck_fetch_stream_command())
+        elif requested_command == "prisma-cloud-compute-get-file-integrity-events":
+            return_results(results=get_file_integrity_events_command(client=client, args=demisto.args()))
     # Log exceptions
     except Exception as e:
         return_error(f'Failed to execute {requested_command} command. Error: {str(e)}')

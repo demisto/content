@@ -58,7 +58,7 @@ script:
     - description: The encrypted message with .p7 extension.
       name: encrypt_message
       required: true
-    - description: The encoding code to use when decode the message body, e.g 'ISO-8859-2''
+    - description: The encoding code to use when decode the message body, e.g 'ISO-8859-2''.
       name: encoding
     description: Decrypts the message body.
     name: smime-decrypt-email-body
@@ -76,7 +76,7 @@ script:
     - contextPath: SMIME.SignedAndEncrypted.Message
       description: The raw message to send.
       type: String
-  dockerimage: demisto/m2crypto:1.0.0.68951
+  dockerimage: demisto/m2crypto:1.0.0.75588
   runonce: false
   script: '-'
   type: python

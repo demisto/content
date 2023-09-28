@@ -453,7 +453,7 @@ script:
     - description: |-
         Name of the project. Supports comma separated values.
 
-        Format: "projects/[project-number]" or for multiple projects "projects/[first-project-number], projects/[second-project-number]"
+        Format: "projects/[project-number]" or for multiple projects "projects/[first-project-number], projects/[second-project-number]".
       name: projectName
       required: true
     - defaultValue: '2'
@@ -510,7 +510,7 @@ script:
 
         Format: organizations/{organization_id}/sources/{source_id}/finding/{findingId}
 
-        Example: organizations/595779152576/sources/14801394649435054450/findings/bc5a86da657611ebb979005056a5924e
+        Example: organizations/595779152576/sources/14801394649435054450/findings/bc5a86da657611ebb979005056a5924e.
       name: name
       required: true
     - auto: PREDEFINED
@@ -559,7 +559,7 @@ script:
     - contextPath: GoogleCloudSCC.Finding.securityMarks.marks
       description: Mutable user specified security marks belonging to the parent resource.
       type: String
-  dockerimage: demisto/google-api-py3:1.0.0.71892
+  dockerimage: demisto/google-api-py3:1.0.0.75672
   isfetch: true
   runonce: false
   script: '-'

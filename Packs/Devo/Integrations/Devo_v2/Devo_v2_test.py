@@ -118,6 +118,10 @@ MOCK_WRITER_ARGS = {
     "tableName": "whatever.table",
     "records": [{"foo": "hello"}, {"foo": "world"}, {"foo": "demisto"}],
 }
+MOCK_WRITE_TO_TABLE_RECORDS = {
+    "tableName": "whatever.table",
+    "records": ['{"foo": "hello"}', '{"foo": "world"}', '{"foo": "demisto"}'],
+}
 MOCK_LOOKUP_WRITER_ARGS = {
     "lookupTableName": "hello.world.lookup",
     "headers": ["foo", "bar", "baz"],
@@ -178,36 +182,33 @@ EXPECTED_LABELS = [
     {"type": "alertName", "value": "Sample Alert"},
     {"type": "alertDescription", "value": "This is a sample alert"},
 ]
-LAST_RUN_DATA = {"from_time": "1234567000.0", "last_fetch_events": []}
+LAST_RUN_DATA = {"from_time": 1691307869.0, "last_fetch_events": [{'123': 1691307869.0}]}
 
 MOCK_EVENTS = [
     {
         "alertId": "123",
         "extraData": {"key1": "value1", "key2": "value2"},
-        "eventdate": "1234567890.0",
+        "eventdate": 1691307869000,
         "context": "value1",
     },
     {
         "alertId": "456",
         "extraData": {"key1": "value3", "key2": "value4"},
-        "eventdate": "1234567891.0",
+        "eventdate": 1691394269000,
         "context": "value2",
     },
     {
         "alertId": "789",
         "extraData": {"key1": "value3", "key2": "value4"},
-        "eventdate": "1234567892.0",
+        "eventdate": 1691480669000,
         "context": "value3",
     },
 ]
 
-EXPECTED_LAST_RUN_DATA = {
-    "from_time": "1234567892.0",
-    "last_fetch_events": ["123", "456", "789"],
-}
+EXPECTED_LAST_RUN_DATA = {'from_time': 1691480669.0, 'last_fetch_events': [{'456': 1691394269.0}, {'789': 1691480669.0}]}
 
 
-class MOCK_LOOKUP(object):
+class MOCK_LOOKUP:
     def send_control(*args, **kw):
         pass
 
@@ -215,23 +216,24 @@ class MOCK_LOOKUP(object):
         pass
 
 
-class MOCK_SOCKET(object):
+class MOCK_SOCKET:
     def shutdown(*args, **kw):
         pass
 
 
-class MOCK_SENDER(object):
+class MOCK_SENDER:
     socket = MOCK_SOCKET()
 
     def flush_buffer(*args, **kw):
         pass
 
 
-class MOCK_READER(object):
+class MOCK_READER:
     pass
 
 
 def test_time_range():
+    tolerance: float = 0.001
     time_from = time.time() - 60
     time_to = time.time()
     time_from_string = "2020-01-10T01:30:30"
@@ -242,10 +244,10 @@ def test_time_range():
     assert get_time_range(time_from, time_to)[1] == time_to
     assert get_time_range(str(time_from), None)[0] == time_from
     assert get_time_range(str(time_from), str(time_to))[1] == time_to
-    assert get_time_range("1 minute", None)[0] >= time_from
+    assert get_time_range("1 minute", None)[0] - time_from < abs(tolerance)
     assert get_time_range("2 minute", None)[0] <= time_from
-    assert get_time_range(time_from_string, None)[0] == time_from_string_ts
-    assert get_time_range(time_from_string, time_to_string)[1] == time_to_string_ts
+    assert get_time_range(time_from_string, None)[0] - time_from_string_ts < abs(tolerance)
+    assert get_time_range(time_from_string, time_to_string)[1] - time_to_string_ts < abs(tolerance)
 
 
 @patch("Devo_v2.READER_ENDPOINT", MOCK_READER_ENDPOINT, create=True)
@@ -312,6 +314,7 @@ def test_run_query(mock_query_results, mock_args_results):
     mock_query_results.return_value = copy.deepcopy(MOCK_QUERY_RESULTS)
     mock_args_results.return_value = MOCK_QUERY_ARGS
     results = run_query_command(OFFSET, ITEMS_PER_PAGE)
+    assert (results[1]["HumanReadable"]).find("Devo Direct Link") != -1
     assert len(results) == 2
     assert results[0]["Contents"][0]["engine"] == "CPU_Usage_Alert"
 
@@ -348,7 +351,7 @@ def test_multi_query(
 @patch("Devo_v2.Sender")
 def test_write_devo(mock_load_results, mock_write_args):
     mock_load_results.return_value.load.return_value = MOCK_LINQ_RETURN
-    mock_write_args.return_value = MOCK_WRITER_ARGS
+    mock_write_args.return_value = MOCK_WRITE_TO_TABLE_RECORDS
     results = write_to_table_command()
     assert len(results[0]["EntryContext"]["Devo.RecordsWritten"]) == 3
     assert results[0]["EntryContext"]["Devo.LinqQuery"] == "from whatever.table"

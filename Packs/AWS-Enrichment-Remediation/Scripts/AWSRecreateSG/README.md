@@ -30,6 +30,7 @@ This script uses the following commands and scripts.
 | port | TCP/UDP Port to be restricted. |
 | protocol | Protocol of the port to be restricted. |
 | public_ip | Public IP address of the EC2 instance. |
+| assume_role | If assuming roles for AWS, this is the name of the role to assume (should be the same for all organizations). |
 
 ## Outputs
 
