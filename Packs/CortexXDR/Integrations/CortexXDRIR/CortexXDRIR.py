@@ -951,10 +951,10 @@ def get_remote_data_command(client, args):
             incident_data['in_mirror_error'] = ''
             demisto.warn(f'success response {incident_data=}')
 
-            return GetRemoteDataResponse(
-                mirrored_object=incident_data,
-                entries=reformatted_entries
-            )
+            response = GetRemoteDataResponse(mirrored_object=incident_data, entries=reformatted_entries)
+            demisto.warn(f'efl {response.extract_for_local()}')
+
+            return response
 
         else:  # no need to update this incident
             incident_data = {
