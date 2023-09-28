@@ -43,8 +43,8 @@ context to allow automated handling of indicators based on their reputation.
 More information: https://xsoar.pan.dev/docs/integrations/dbot
 
 - Create Note: to demonstrate how to run commands that are not returning instant data,
-the API provides a command simulates creating a new entity in the API. 
-This can be used for endpoints that take longer than a few seconds to complete with the 
+the API provides a command simulates creating a new entity in the API.
+This can be used for endpoints that take longer than a few seconds to complete with the
 GenericPolling mechanism to implement the job polling loop. The results
 can be returned in JSON or attachment file format.
 Info on GenericPolling: https://xsoar.pan.dev/docs/playbooks/generic-polling
@@ -458,7 +458,8 @@ def convert_to_demisto_severity(severity: str) -> int:
 
 
 def dedup_by_ids(alerts: list[dict], ids_to_compare: list[int]) -> tuple[list[dict], int]:
-    """ Gets a list of new IDs and a list of existing IDs, and returns a list with only alerts with id not found in ids_to_compare.
+    """ Gets a list of new IDs and a list of existing IDs,
+    and returns a list with only alerts with id not found in ids_to_compare.
     For example, if alerts=[{'a':2},{'b': 3}] and ids_to_compare=[1,2], [3] is returned.
 
     Args:
@@ -701,7 +702,8 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict, first_fetc
         incidents.append(incident)
 
     # Save the next_run as a dict with the last_fetch key to be stored.
-    # When we reached the limit but there are still alerts to get from this run, the leftovers will be returned in the next run by time.
+    # When we reached the limit but there are still alerts to get from this run,
+    # the leftovers will be returned in the next run by time.
     demisto.debug(f"setting next run- {last_fetched_time=}")
     next_run = {'last_fetch': last_fetched_time, 'last_ids': last_ids}
     return next_run, incidents
