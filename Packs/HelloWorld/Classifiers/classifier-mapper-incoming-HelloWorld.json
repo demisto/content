@@ -3,7 +3,7 @@
 	"name": "Hello World - Incoming Mapper",
 	"type": "mapping-incoming",
 	"description": "Maps incoming Hello World alert fields.",
-	"fromVersion": "6.0.0",
+	"fromVersion": "6.8.0",
 	"defaultIncidentType": "",
 	"mapping": {
 	  "Hello World Alert": {
