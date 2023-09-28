@@ -20,6 +20,9 @@ echo "export GOOGLE_APPLICATION_CREDENTIALS=$GCS_ARTIFACTS_KEY" >> "${BASH_ENV}"
 source "${BASH_ENV}"
 
 echo "Running server tests on Instance role:${INSTANCE_ROLE}, nightly:${IS_NIGHTLY}, AMI run:${IS_AMI_RUN} mem check:${MEM_CHECK} ARTIFACTS_FOLDER:${ARTIFACTS_FOLDER}"
+echo "${INSTANCE_ROLE}" > "${ARTIFACTS_FOLDER_INSTANCE}/instance_role.txt"
+echo "${INSTANCE_ROLE}" >> "${ARTIFACTS_FOLDER}/${SERVER_TYPE}_test_playbooks_roles.txt"
+echo "${ARTIFACTS_FOLDER_INSTANCE}" >> "${ARTIFACTS_FOLDER}/${SERVER_TYPE}_test_playbooks_artifacts_directories.txt"
 
 exit_code=0
 if [[ "${INSTANCE_ROLE}" == "XSIAM" ]]; then
@@ -29,7 +32,7 @@ if [[ "${INSTANCE_ROLE}" == "XSIAM" ]]; then
       demisto-sdk test-content -k "$DEMISTO_API_KEY" -c "$CONF_PATH" -e "$SECRET_CONF_PATH" -n "${IS_NIGHTLY}" -t "$SLACK_TOKEN" \
         -a "$CIRCLECI_TOKEN" -b "$CI_BUILD_ID" -g "$CI_COMMIT_BRANCH" -m "${MEM_CHECK}" --is-ami "${IS_AMI_RUN}" -d "${INSTANCE_ROLE}" \
         --xsiam-machine "${CLOUD_CHOSEN_MACHINE_ID}" --xsiam-servers-path "$CLOUD_SERVERS_PATH" --server-type "$SERVER_TYPE" \
-        --use-retries --xsiam-servers-api-keys-path "cloud_api_keys.json" --artifacts_path "${ARTIFACTS_FOLDER}"
+        --use-retries --xsiam-servers-api-keys-path "cloud_api_keys.json" --artifacts_path "${ARTIFACTS_FOLDER_INSTANCE}"
       command_exit_code=$?
       if [ "${command_exit_code}" -ne 0 ]; then
         exit_code=1
@@ -44,14 +47,14 @@ else
     demisto-sdk test-content -k "$DEMISTO_API_KEY" -c "$CONF_PATH" -e "$SECRET_CONF_PATH" -n "${IS_NIGHTLY}" -t "$SLACK_TOKEN" \
       -a "$CIRCLECI_TOKEN" -b "$CI_BUILD_ID" -g "$CI_COMMIT_BRANCH" -m "${MEM_CHECK}" --is-ami "${IS_AMI_RUN}" -d "${INSTANCE_ROLE}" \
       --xsiam-machine "${CLOUD_CHOSEN_MACHINE_ID}" --xsiam-servers-path "$CLOUD_SERVERS_PATH" --server-type "$SERVER_TYPE" \
-      --use-retries --xsiam-servers-api-keys-path "cloud_api_keys.json" --artifacts_path "${ARTIFACTS_FOLDER}"
+      --use-retries --xsiam-servers-api-keys-path "cloud_api_keys.json" --artifacts_path "${ARTIFACTS_FOLDER_INSTANCE}"
     exit_code=$?
     echo "Failed to run test content with exit code:${exit_code}"
 fi
 
 if [ "${exit_code}" -eq 0 ]; then
   role="$(echo -e "${INSTANCE_ROLE}" | tr -d '[:space:]')"
-  filepath="$ARTIFACTS_FOLDER/is_build_passed_${role}.txt"
+  filepath="${ARTIFACTS_FOLDER}/is_build_passed_${role}.txt"
   echo "Build passed for role: ${INSTANCE_ROLE} writing it passed to artifacts folder in file: ${filepath}"
   touch "${filepath}"
 else
