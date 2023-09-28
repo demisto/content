@@ -1428,7 +1428,6 @@ def test_uptycs_get_asset_groups(mocker, requests_mock):
                 "updatedAt": "2018-09-24T17:24:45.604Z",
                 "id": "106eef5e-c3a6-44eb-bb3d-1a2087cded3d",
                 "createdAt": "2018-09-24T17:24:45.604Z",
-                "updatedAt": "2018-09-24T17:24:45.604Z",
                 "objectType": "ASSET"
             }
         ]

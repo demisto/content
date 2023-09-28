@@ -370,7 +370,7 @@ def main():
                       f'https://GITLAB_PUSH_TOKEN:{args.gitlab_mirror_token}@'  # disable-secrets-detection
                       f'{GITLAB_SERVER_HOST}/{GITLAB_PROJECT_NAMESPACE}/content.git',  # disable-secrets-detection
                       branch, push_option="ci.skip")  # disable-secrets-detection
-        logging.info("Successfully pushing the branch to Gitlab content repo")
+        logging.info("Successfully pushed the branch to GitLab content repo")
 
     except GitCommandError as e:
         logging.error(e)

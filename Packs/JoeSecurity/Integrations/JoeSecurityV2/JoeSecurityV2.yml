@@ -1251,7 +1251,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/joe-security:1.0.0.73481
+  dockerimage: demisto/vendors-sdk:1.0.0.74116
 fromversion: 6.8.0
 tests:
 - testplaybook- JoeSecuirtyV2
