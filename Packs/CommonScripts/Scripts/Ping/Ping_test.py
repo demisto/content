@@ -33,4 +33,4 @@ def test_fail_ping(mocker):
     assert return_error_mock.call_count == 1
     # call_args last call with a tuple of args list and kwargs
     err_msg = return_error_mock.call_args[0][0]
-    assert 'Name does not resolve' in err_msg
+    assert 'Name does not resolve' in err_msg or 'Name or service not known' in err_msg
