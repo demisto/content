@@ -1,8 +1,7 @@
 import freezegun
 import pytest
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timezone
 
-import requests_mock
 from PATHelpdeskAdvanced import (
     DATETIME_FORMAT,
     DemistoException,
@@ -324,92 +323,69 @@ def test_list_tickets_command(mocked_client):
     )
 
 
-def test_filter_parse():
-    """
-    Tests parsing a list of filter condition strings into Filter objects.
+class TestFilter:
+    def test_filter_parse(self):
+        """
+        Tests parsing a list of filter condition strings into Filter objects.
 
-    Given A list of filter condition strings
-    When Filter.parse_list() is called on the conditions
-    Then The expected Filter objects are returned
-    """
+        Given A list of filter condition strings
+        When Filter.parse_list() is called on the conditions
+        Then The expected Filter objects are returned
+        """
 
-    assert Filter.parse_list(
-        (
-            '"id" eq "123"',
-            '"name" lt "john"',
-            '"nullvalue" ne null',
-            '"notanullvalue" ne "none"',  # quotes make it a string, not null
-        )
-    ) == [
-        Filter(key="id", operator="eq", value="123"),
-        Filter(key="name", operator="lt", value="john"),
-        Filter(key="nullvalue", operator="ne", value=None),
-        Filter(key="notanullvalue", operator="ne", value="none"),
-    ]
-
-
-def test_filter_dump():
-    """
-    Tests dumping a list of Filter objects to a JSON string.
-
-    Given:
-        A list of Filter objects with different key, operator and value.
-
-    When:
-        Filter.dumps_list() is called on the list of Filter objects.
-
-    Then:
-        The JSON string returned should match the expected format.
-    """
-
-    assert Filter.dumps_list(
-        (
+        assert Filter.parse_list(
+            (
+                '"id" eq "123"',
+                '"name" lt "john"',
+                '"nullvalue" ne null',
+                '"notanullvalue" ne "none"',  # quotes make it a string, not null
+            )
+        ) == [
             Filter(key="id", operator="eq", value="123"),
             Filter(key="name", operator="lt", value="john"),
             Filter(key="nullvalue", operator="ne", value=None),
             Filter(key="notanullvalue", operator="ne", value="none"),
-        )
-    ) == json.dumps(
-        [
-            {"property": "id", "op": "eq", "value": "123"},
-            {"property": "name", "op": "lt", "value": "john"},
-            {"property": "nullvalue", "op": "ne", "value": None},
-            {"property": "notanullvalue", "op": "ne", "value": "none"},
         ]
-    )
 
+    def test_dumps(self):
+        """
+        Tests dumping a list of Filter objects to a JSON string.
 
-def test_filter_parse_invalid():
-    """
-    Given an invalid filter condition string
-    When parse_filter_conditions is called with a list containing the invalid string
-    Then it should raise a DemistoException
-    """
+        Given:
+            A list of Filter objects with different key, operator and value.
 
-    with pytest.raises(DemistoException):
-        Filter.parse_list('"id" eq 123')  # missing quotes around value
+        When:
+            Filter.dumps_list() is called on the list of Filter objects.
 
+        Then:
+            The JSON string returned should match the expected format.
+        """
 
-def test_reuse_token(mocker):
-    """
-    Given a valid refresh token in integration context
-    When _reuse_or_create_token is called
-    Then it should reuse the refresh token to generate a new request token
-    """
-    mocker.patch.object(
-        demisto,
-        "getIntegrationContext",
-        return_value={
-            "refresh_token": "refresh123",
-            "token_expiry_utc": (datetime.utcnow() + timedelta(minutes=10)).isoformat(),
-        },
-    )
-    client = dummy_client()
+        assert Filter.dumps_list(
+            (
+                Filter(key="id", operator="eq", value="123"),
+                Filter(key="name", operator="lt", value="john"),
+                Filter(key="nullvalue", operator="ne", value=None),
+                Filter(key="notanullvalue", operator="ne", value="none"),
+            )
+        ) == json.dumps(
+            [
+                {"property": "id", "op": "eq", "value": "123"},
+                {"property": "name", "op": "lt", "value": "john"},
+                {"property": "nullvalue", "op": "ne", "value": None},
+                {"property": "notanullvalue", "op": "ne", "value": "none"},
+            ]
+        )
 
-    # Assert refresh token was reused
-    assert (
-        client.http_request.call_args[1]["url_suffix"] == "Authentication/RefreshToken"
-    )
+    def test_parse_invalid(self):
+        """
+        Given an invalid filter condition string
+        When parse_filter_conditions is called with a list containing the invalid string
+        Then it should raise a DemistoException
+        """
+
+        with pytest.raises(DemistoException):
+            Filter.parse_list('"id" eq 123')  # missing quotes around value
 
 
 class TestClient:
