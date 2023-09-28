@@ -1275,8 +1275,6 @@ def get_endpoints_by_status_command(client: Client, args: Dict) -> CommandResult
 
 def file_details_results(client: Client, args: Dict, add_to_context: bool) -> None:
     return_entry, file_results = retrieve_file_details_command(client, args, add_to_context)
-    print(return_entry)
-    print(file_results)
     demisto.results(return_entry)
     if file_results:
         demisto.results(file_results)

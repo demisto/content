@@ -112,3 +112,20 @@ Someone messed with the integarion  maybe its related to something?
 
 # Flag: <Which animal is in the picture?>
 '''
+def test_module(client):
+    """
+    Returning 'ok' indicates that the integration works like it suppose to. Connection to the service is successful.
+
+    Args:
+        client: HelloWorld client
+
+    Returns:
+        'ok' if test passed, anything else will fail the test
+    """
+    return 'ok'
+
+def main():
+    if demisto.command() == 'test-module':
+        # This is the call made when pressing the integration Test button.
+        result = test_module(client)
+        return_results(result)
