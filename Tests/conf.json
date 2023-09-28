@@ -33,6 +33,18 @@
             "timeout": 1600
         },
         {
+            "playbookID": "Test Playbook - NGFW Scan",
+            "integrations": "VirusTotal (API v3)",
+            "instance_names": "virus_total_v3",
+            "timeout": 1600
+        },
+        {
+            "playbookID": "Test Playbook - WildFire Malware",
+            "integrations": "VirusTotal (API v3)",
+            "instance_names": "virus_total_v3",
+            "timeout": 1600
+        },
+        {
             "playbookID": "T1036 - Masquerading - Test",
             "integrations": "VirusTotal (API v3)",
             "instance_names": "virus_total_v3",
@@ -5884,8 +5896,7 @@
         "ThreatGridv2": "No instance - developed by Qmasters",
         "SentinelOne V2": "No instance - developed by partner",
         "CheckPhish": "Issue CRTX-86562",
-        "SecurityAndComplianceV2": "Can only be authenticated via MFA and requires user interaction to configure.",
-        "ThreatExchange v2": "No instance"
+        "SecurityAndComplianceV2": "Can only be authenticated via MFA and requires user interaction to configure."
     },
     "nightly_packs": [
         "CommonScripts",
