@@ -46,7 +46,7 @@ else
       --xsiam-machine "${CLOUD_CHOSEN_MACHINE_ID}" --xsiam-servers-path "$CLOUD_SERVERS_PATH" --server-type "$SERVER_TYPE" \
       --use-retries --xsiam-servers-api-keys-path "cloud_api_keys.json" --artifacts_path "${ARTIFACTS_FOLDER}" --instance-role "${INSTANCE_ROLE}"
     exit_code=$?
-    echo "Failed to run test content with exit code:${command_exit_code}"
+    echo "Failed to run test content with exit code:${exit_code}"
 fi
 
 if [ "${exit_code}" -eq 0 ]; then
