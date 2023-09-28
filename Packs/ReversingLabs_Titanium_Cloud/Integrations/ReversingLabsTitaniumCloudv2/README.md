@@ -10102,9 +10102,9 @@ Retrieve dynamic analysis results.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| File.MD5 | Unknown | MD5 hash. | 
-| File.SHA1 | Unknown | SHA1 hash. | 
-| File.SHA256 | Unknown | SHA256 hash. | 
+| File.MD5 | String | MD5 hash. | 
+| File.SHA1 | String | SHA1 hash. | 
+| File.SHA256 | String | SHA256 hash. | 
 | DBotScore.Score | Number | The actual score. | 
 | DBotScore.Type | String | The indicator type. | 
 | DBotScore.Indicator | String | The indicator that was tested. | 
