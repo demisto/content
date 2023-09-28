@@ -6019,13 +6019,8 @@ class TestIOAFetch:
         When
             - Saving the fetched event ids.
         Then
-            - Validate that we add the newly fetched event ids to the previous ones, and not override them, when we are
-            doing pagination.
+            - Validate that we add the newly fetched event ids to the last run object.
         """
-        # Make sure that we save all the events that have been fetched throught the whole pagination process,
-        # which can span on many fetches. We will have ids in last_event_ids (['1']), and configure that we are
-        # doing pagination, and that we fetched event '2', and in the new returned last run, the key last_event_ids
-        # has a value of ['1', '2']
         from CrowdStrikeFalcon import fetch_incidents
         last_run_object: list[dict[str, Any]] = [{}, {}, {}, {},
                                                  {'last_event_ids': ['1']}]
@@ -6034,39 +6029,12 @@ class TestIOAFetch:
                                           'ioa_fetch_query': 'cloud_provider=aws'})
         mocker.patch.object(demisto, 'getLastRun', return_value=last_run_object)
         mocker.patch('CrowdStrikeFalcon.ioa_events_pagination',
-                     return_value=([{'event_id': '2', 'event_created': '2023-01-01T00:00:00Z'}], 'next_token'))
+                     return_value=([{'event_id': '2', 'event_created': '2023-01-01T00:00:00Z'},
+                                    {'event_id': '3', 'event_created': '2023-02-01T00:00:00Z'}], 'next_token'))
         mocker.patch('CrowdStrikeFalcon.reformat_timestamp', return_value='2023-01-01T00:00:00Z')
         set_last_run_mocker = mocker.patch.object(demisto, 'setLastRun', side_effect=demisto.setLastRun)
         fetch_incidents()
-        assert set_last_run_mocker.call_args_list[0][0][0][4].get('last_event_ids') == ['2', '1']
-
-    def test_save_fetched_events_when_starting_pagination(self, mocker: MockerFixture):
-        """
-        Given:
-            - The event ids of the last fetch run.
-        When
-            - Saving the fetched event ids.
-        Then
-            - Validate that we add the newly fetched event ids to the previous ones, and not override them, when we are
-            going to start pagination in the next fetch run.
-        """
-        # Make sure that we save all the events that have been fetched before when starting the pagination process.
-        # We will have ids in last_event_ids (['1']), and configure that we are, doing pagination, and that we fetched event '2',
-        # and in the new returned last run, the key last_event_ids has a value of ['1', '2']
-        from CrowdStrikeFalcon import fetch_incidents
-        last_run_object: list[dict[str, Any]] = [{}, {}, {}, {},
-                                                 {'last_event_ids': ['1'], 'ioa_next_token': 'next_token',
-                                                  'last_fetch_query': 'cloud_provider=aws'}]
-        mocker.patch.object(demisto, 'params',
-                            return_value={'fetch_incidents_or_detections': 'Indicator of Attack',
-                                          'ioa_fetch_query': 'cloud_provider=aws'})
-        mocker.patch.object(demisto, 'getLastRun', return_value=last_run_object)
-        mocker.patch('CrowdStrikeFalcon.ioa_events_pagination',
-                     return_value=([{'event_id': '2', 'event_created': '2023-01-01T00:00:00Z'}], None))
-        mocker.patch('CrowdStrikeFalcon.reformat_timestamp', return_value='2023-01-01T00:00:00Z')
-        set_last_run_mocker = mocker.patch.object(demisto, 'setLastRun', side_effect=demisto.setLastRun)
-        fetch_incidents()
-        assert set_last_run_mocker.call_args_list[0][0][0][4].get('last_event_ids') == ['2', '1']
+        assert set_last_run_mocker.call_args_list[0][0][0][4].get('last_event_ids') == ['2', '3']
 
     def test_fetch_ioa_events(self, mocker: MockerFixture):
         """
@@ -6099,7 +6067,7 @@ class TestIOAFetch:
         assert set_last_run_mocker.call_args_list[0][0][0][4] == {'ioa_next_token': 'new_next_token',
                                                                   'last_date_time_since': '2024-01-01T00:00:00Z',
                                                                   'last_fetch_query': 'last_dummy_query',
-                                                                  'last_event_ids': ['3', '2', '1']}
+                                                                  'last_event_ids': ['3', '2']}
         assert len(fetched_incidents) == 2
 
 
@@ -6326,8 +6294,7 @@ class TestIOMFetch:
         When
             - Saving the fetched resource ids.
         Then
-            - Validate that we add the newly fetched resource ids to the previous ones, and not override them, when we are
-            doing pagination.
+            - Validate that we add the newly fetched resource ids to the last run object.
         """
         # Make sure that we save all the resources that have been fetched throught the whole pagination process,
         # which can span on many fetches. We will have ids in last_resource_ids (['1']), and configure that we are
@@ -6343,41 +6310,12 @@ class TestIOMFetch:
         mocker.patch.object(demisto, 'getLastRun', return_value=last_run_object)
         mocker.patch('CrowdStrikeFalcon.iom_ids_pagination', return_value=(['2'], 'next_token'))
         mocker.patch('CrowdStrikeFalcon.get_iom_resources',
-                     return_value=[{'id': '2', 'scan_time': '2023-01-01T00:00:00.00Z'}])
+                     return_value=[{'id': '2', 'scan_time': '2023-01-01T00:00:00.00Z'},
+                                   {'id': '3', 'scan_time': '2023-02-01T00:00:00.00Z'}])
         mocker.patch('CrowdStrikeFalcon.reformat_timestamp', return_value='2023-01-01T00:00:00.00Z')
         set_last_run_mocker = mocker.patch.object(demisto, 'setLastRun', side_effect=demisto.setLastRun)
         fetch_incidents()
-        assert set_last_run_mocker.call_args_list[0][0][0][3].get('last_resource_ids') == ['2', '1']
-
-    def test_save_fetched_resources_when_starting_pagination(self, mocker: MockerFixture):
-        """
-        Given:
-            - The resource ids of the last fetch run.
-        When
-            - Saving the fetched resource ids.
-        Then
-            - Validate that we add the newly fetched resource ids to the previous ones, and not override them, when we are
-            going to start pagination in the next fetch run.
-        """
-        # Make sure that we save all the resources that have been fetched before when starting the pagination process.
-        # We will have ids in last_resource_ids (['1']), and configure that we are, doing pagination, and that we fetched
-        # resource '2', and in the new returned last run, the key last_resource_ids has a value of ['1', '2']
-        from CrowdStrikeFalcon import fetch_incidents
-        last_run_object: list[dict[str, Any]] = [{}, {}, {},
-                                                 {'last_resource_ids': ['1'], 'iom_next_token': 'next_token',
-                                                  'last_fetch_filter': 'previous_filter'},
-                                                 {}]
-        mocker.patch.object(demisto, 'params',
-                            return_value={'fetch_incidents_or_detections': 'Indicator of Misconfiguration',
-                                          'iom_fetch_query': "cloud_provider: 'aws'"})
-        mocker.patch.object(demisto, 'getLastRun', return_value=last_run_object)
-        mocker.patch('CrowdStrikeFalcon.iom_ids_pagination', return_value=(['2'], None))
-        mocker.patch('CrowdStrikeFalcon.get_iom_resources',
-                     return_value=[{'id': '2', 'scan_time': '2023-01-01T00:00:00.00Z'}])
-        mocker.patch('CrowdStrikeFalcon.reformat_timestamp', return_value='2023-01-01T00:00:00.00Z')
-        set_last_run_mocker = mocker.patch.object(demisto, 'setLastRun', side_effect=demisto.setLastRun)
-        fetch_incidents()
-        assert set_last_run_mocker.call_args_list[0][0][0][3].get('last_resource_ids') == ['2', '1']
+        assert set_last_run_mocker.call_args_list[0][0][0][3].get('last_resource_ids') == ['2', '3']
 
     def test_fetch_iom_events(self, mocker: MockerFixture):
         """
@@ -6413,7 +6351,7 @@ class TestIOMFetch:
         assert set_last_run_mocker.call_args_list[0][0][0][3] == {'iom_next_token': 'new_next_token',
                                                                   'last_scan_time': '2024-01-01T00:00:00.000000Z',
                                                                   'last_fetch_filter': 'last_dummy_filter',
-                                                                  'last_resource_ids': ['3', '2', '1']}
+                                                                  'last_resource_ids': ['3', '2']}
         assert len(fetched_incidents) == 2
 
 
