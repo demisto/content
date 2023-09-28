@@ -12,7 +12,7 @@ from AnomaliThreatStreamv3 import main, get_indicators, \
     create_investigation_command, update_investigation_command, delete_investigation_command, add_investigation_element_command, \
     approve_import_job_command, search_threat_model_command, create_element_list, \
     add_threat_model_association_command, validate_values_search_threat_model, validate_investigation_action, \
-    return_params_of_pagination_or_limit, create_indicators_list
+    return_params_of_pagination_or_limit, create_indicators_list, add_indicator_tag_command, remove_indicator_tag_command
 from CommonServerPython import *
 import pytest
 
@@ -354,7 +354,7 @@ class TestReputationCommands:
             main()
 
         # validate
-        mocked_search.call_args[0][1]['status'] == exp_status_param
+        assert mocked_search.call_args[0][1]['status'] == exp_status_param
 
     def test_no_confidence_in_result_ioc(self, mocker):
         """
@@ -779,7 +779,7 @@ class TestGetCommands:
         get_model_description(mock_client(), model, '1')
 
         # validate
-        mocked_result.call_args[0][1] == b'test_description'
+        assert mocked_result.call_args[0][1] == b'test_description'
 
 
 class TestUpdateCommands:
@@ -1783,3 +1783,77 @@ def test_create_indicators_list(names_and_indicators_list, notes, expected_resul
     """
     result = create_indicators_list(names_and_indicators_list, notes)
     assert result == expected_result
+
+
+@pytest.mark.parametrize(
+    "args, expected_data, expected_output",
+    [
+        (
+            {"indicator_ids": "123,456", "tags": "tag1,tag2"},
+            json.dumps({
+                "ids": ["123", "456"],
+                "tags": [{"name": "tag1", "tlp": "red"}, {"name": "tag2", "tlp": "red"}],
+            }),
+            "The tags have been successfully added for the following ids:\n `123, 456`",
+        )
+    ],
+)
+def test_add_indicator_tag_success(
+    mocker, args: dict[str, str], expected_data: dict[str, str], expected_output: str
+):
+    """
+    Given:
+        - A list of indicator IDs and tags
+    When:
+        - `add_indicator_tag_command` is called with valid arguments
+    Then:
+        - A POST request should be made to add the tags
+          and it should return a successful CommandResults
+    """
+    # Arrange
+    client = mock_client()
+    mock_http_request = mocker.patch.object(client, "http_request", return_value={})
+
+    # Act
+    result = add_indicator_tag_command(client, **args)
+
+    # Assert
+    assert expected_output == result.readable_output
+    mock_http_request.assert_called_with(
+        method="POST", url_suffix="v2/intelligence/bulk_tagging/", data=expected_data
+    )
+
+
+@pytest.mark.parametrize(
+    "args, expected_output",
+    [
+        (
+            {"indicator_ids": "1,2", "tags": "tag1,tag2"},
+            "The tags were successfully deleted for the following ids:\n `1, 2`",
+        )
+    ],
+)
+def test_remove_indicator_tag_command_success(
+    mocker, args: dict[str, str], expected_output: str
+):
+    """
+    Given:
+        - A list of indicator IDs and tags
+    When:
+        - `remove_indicator_tag_command` is called with valid arguments
+    Then:
+        - A PATCH request should be made to remove the tags
+          and it should return a successful CommandResults
+    """
+    client = mock_client()
+    # Mock API response
+    mocker.patch.object(client, "remove_indicator_tag", json={})
+
+    # Call function
+    result = remove_indicator_tag_command(
+        client=client,
+        **args,
+    )
+
+    # Verify result
+    assert result.readable_output == expected_output
