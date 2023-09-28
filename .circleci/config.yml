@@ -210,8 +210,6 @@ references:
         [ ! -d ~/.ssh ] && mkdir -p ~/.ssh
         chmod 700 ~/.ssh
         ssh-keyscan github.com >> ~/.ssh/known_hosts
-        echo "printing known_hosts file"
-        cat -n ~/.ssh/known_hosts
         if [[ "$(echo "$GCS_MARKET_BUCKET" | tr '[:upper:]' '[:lower:]')" != "marketplace-dist" ]]; then
           echo "Skipping the -Validate Files and Yaml- step when uploading to a test bucket."
           exit 0
