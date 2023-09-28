@@ -1847,7 +1847,7 @@ def test_remove_indicator_tag_command_success(
     """
     client = mock_client()
     # Mock API response
-    mocker.patch.object(client, "remove_indicator_tag_request", json={})
+    mocker.patch.object(client, "remove_indicator_tag", json={})
 
     # Call function
     result = remove_indicator_tag_command(
