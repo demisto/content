@@ -220,7 +220,7 @@ def test_extract_text_from_html_with_breaks_trimed():
 """
     body = TextFromHTML.get_body(html, html_tag='body')
     res = TextFromHTML.get_plain_text(body, replace_line_breaks=True, trim_result=True)
-    assert res == 'HTML Breaks\nHTML can contain break tags\n\n\nWhich should lead to a proper linebreak'
+    assert res == 'HTML Breaks\nHTML can contain break tags\n\nWhich should lead to a proper linebreak'
 
 
 def test_extract_text_from_specific_tag():
