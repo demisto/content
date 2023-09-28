@@ -1511,7 +1511,7 @@ def gcp_iam_projects_get_command(client: Client, args: Dict[str, Any]) -> list:
         show_deleted = argToBoolean(args.get('show_deleted', False))
 
         if not parent:
-            raise Exception('One of the arguments: ''parent'' or ''project_name'' must be provided.')
+            raise Exception("One of the arguments: 'parent' or 'project_name' must be provided.")
         limit = arg_to_number(args.get('limit') or '50')
         page = arg_to_number(args.get('page') or '1')
         max_limit = 100
@@ -1801,7 +1801,7 @@ def gcp_iam_folders_get_command(client: Client, args: Dict[str, Any]) -> list:
         show_deleted = argToBoolean(args.get('show_deleted', False))
 
         if not parent:
-            raise Exception('One of the arguments: ''parent'' or ''folder_name'' must be provided.')
+            raise Exception("One of the arguments: 'parent' or 'folder_name' must be provided.")
 
         limit = arg_to_number(args.get('limit') or '50')
         page = arg_to_number(args.get('page') or '1')
@@ -2653,7 +2653,7 @@ def gcp_iam_service_accounts_get_command(client: Client, args: Dict[str, Any]) -
         project_name = args.get('project_name')
 
         if not project_name:
-            raise Exception('One of the arguments: ''service_account_name'' or ''project_name'' must be provided.')
+            raise Exception("One of the arguments: 'service_account_name' or 'project_name' must be provided.")
 
         limit = arg_to_number(args.get('limit') or '50')
         page = arg_to_number(args.get('page') or '1')
@@ -2846,7 +2846,7 @@ def gcp_iam_service_account_keys_get_command(client: Client, args: Dict[str, Any
 
         service_account_name = args.get('service_account_name')
         if not service_account_name:
-            raise Exception('One of the arguments: ''service_account_name'' or ''key_name'' must be provided.')
+            raise Exception("One of the arguments: 'service_account_name' or 'key_name' must be provided.")
 
         limit = arg_to_number(args.get('limit') or '50')
         page = arg_to_number(args.get('page') or '1')
@@ -3791,7 +3791,7 @@ def gcp_iam_tagbindings_list_command(client: Client, args: Dict[str, Any]) -> Co
     parent = args.get('parent')
 
     if not parent:
-        raise Exception('One of the arguments: ''parent'' must be provided.')
+        raise Exception("Argument 'parent' must be provided.")
     max_limit = 100
 
     res_binding = client.gcp_iam_tagbindings_list_request(parent=parent, limit=max_limit)
@@ -3801,8 +3801,8 @@ def gcp_iam_tagbindings_list_command(client: Client, args: Dict[str, Any]) -> Co
         return "No tag bindingds found"
     val_list = []
     for value in res_binding.get('tagBindings'):
-        res_value = client.gcp_iam_tagvalues_get_request(name=value.get('tagValue'))
-        res_key = client.gcp_iam_tagkeys_get_request(name=res_value.get('parent'))
+        res_value = client.gcp_iam_tagvalues_get_request(name=value['tagValue'])
+        res_key = client.gcp_iam_tagkeys_get_request(name=res_value['parent'])
         kv = {'key': res_key['shortName'], 'value': res_value['shortName']}
         val_list.append(kv)
 
@@ -3846,7 +3846,6 @@ def main() -> None:
     demisto.debug(f'Command being called is {command}')
 
     try:
-        requests.packages.urllib3.disable_warnings()
         if command == 'test-module':
             return test_module(service_account_key)
 
