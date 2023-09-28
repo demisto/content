@@ -23,44 +23,31 @@ HelloWorld API
 --------------
 
 The HelloWorld API is a simple API that shows a realistic use case for an XSOAR
-integration. It's actually a real API that is available to the following URL:
-https://soar.mastersofhack.com - if you need an API Key to test it out please
-reach out to your Cortex XSOAR contacts.
+integration.
 
 This API has a few basic functions:
 - Alerts: the endpoint returns mocked alerts and allows you to search based on
-a number of parameters, such as state (ACTIVE or CLOSED), type, timestamp. It
+a number of parameters, such as severity. It
 can also return a single alert by ID. This is used to create new alerts in
-XSOAR by using the ``fetch-alerts`` command, which is by default invoked
+XSOAR by using the ``fetch-incidents`` command, which is by default invoked
 every minute.
-There is also an endpoint that allows to retrieve additional details about a
-specific alert by ID, and one to change the alert status to "CLOSED" once
-it has been resolved.
 
-- Reputation (ip and domain): these endpoints return, for an IP and
-domain respectively, a WHOIS lookup of the entity as well as a reputation score
+- Reputation (ip): this endpoint return a WHOIS lookup of the ip given as well as a reputation score
 (from 0 to 100) that is used to determine whether the entity is malicious. This
-endpoint is called by XSOAR reputation commands ``ip`` and ``domain`` that
-are run automatically every time an indicator is extracted in XSOAR. As a best
+endpoint is called by XSOAR reputation command ``ip`` that
+is run automatically every time an indicator is extracted in XSOAR. As a best
 practice of design, it is important to map and document the mapping between
 a score in the original API format (0 to 100 in this case) to a score in XSOAR
 format (0 to 3). This score is called ``DBotScore``, and is returned in the
 context to allow automated handling of indicators based on their reputation.
 More information: https://xsoar.pan.dev/docs/integrations/dbot
 
-
-- Scan: to demonstrate how to run commands that are not returning instant data,
-the API provides a scan endpoint that simulates scanning a host and generating
-a report after the scan is completed. The API has endpoints to start a scan,
-which returns a job ID, poll for the scan status and, if the scan is completed,
-retrieved the job results.
-This function is used in conjunction of the HelloWorld Scan playbook that uses
-the GenericPolling mechanism to implement the job polling loop. The results
+- Create Note: to demonstrate how to run commands that are not returning instant data,
+the API provides a command simulates creating a new entity in the API. 
+This can be used for endpoints that take longer than a few seconds to complete with the 
+GenericPolling mechanism to implement the job polling loop. The results
 can be returned in JSON or attachment file format.
 Info on GenericPolling: https://xsoar.pan.dev/docs/playbooks/generic-polling
-
-Please check the HelloWorld Design Document referenced above for details about
-the raw API responsens as well as the design details for this integration.
 
 This integration also has a ``say-hello`` command for backward compatibility,
 that doesn't connect to an API and just returns a ``Hello {name}`` string,
@@ -169,9 +156,7 @@ You should never use ``demisto.results()`` directly.
 
 Sometimes you will need to return values in a format that is not compatible
 with ``CommandResults`` (for example files): in that case you must return a
-data structure that is then pass passed to ``return.results()``. (i.e.
-check the ``scan_results_command`` function in this file that has the option
-to return a file to Cortex XSOAR).
+data structure that is then pass passed to ``return.results()``.
 
 In any case you should never call ``return_results()`` directly from the
 command functions.
@@ -434,7 +419,7 @@ def validate_api_key(api_key: str) -> None:
     This is a validation that the api-key is valid. It is not needed when dealing with real API-
     But we wanted to give you a full experience.
     Some API handle invalid credential with invalid status code with nasty message, which user will not understand.
-    It can be handled in the commands or in the main when the status code implies wrong credentials.
+    It can be handled in the commands or in the main function when the status code implies incorrect credentials.
 
     Args:
         api_key (str): api to connect to the API.
@@ -473,15 +458,15 @@ def convert_to_demisto_severity(severity: str) -> int:
 
 
 def dedup_by_ids(alerts: list[dict], ids_to_compare: list[int]) -> tuple[list[dict], int]:
-    """ Gets A list of new ids and a list of existing, and return a united list with only new values.
-    For example, if new_ids=[1,2] and ids_to_compare=[2,3], [1] is returned.
+    """ Gets A list of new ids and a list of existing, and return a list with only alerts with id not found in ids_to_compare.
+    For example, if alerts=[{'a':2},{'b': 3}] and ids_to_compare=[1,2], [3] is returned.
 
     Args:
         new_ids (list[dict]): A list of alerts to compare. Assuming the existence of "id" key.
         ids_to_compare (list[str]): A list of existing strings
 
     Returns:
-        list[dict]: A united list of only new unique alerts.
+        list[dict]: A list of only new unique alerts.
         int: The number of duplicates found.
     """
     dups = []

@@ -151,7 +151,7 @@ script:
       description: The status of the alert.
       type: String
   - arguments:
-    - description: List of IPs.
+    - description: A comma-separated list of IPs.
       name: ip
       default: true
       isArray: true
