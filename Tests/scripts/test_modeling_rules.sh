@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-MODELING_RULES_RESULTS_FILE_NAME="${ARTIFACTS_FOLDER}/modeling_rules_results.xml"
+MODELING_RULES_RESULTS_FILE_NAME="${ARTIFACTS_FOLDER_INSTANCE}/modeling_rules_results.xml"
 
 function write_empty_test_results_file() {
   cat <<EOF > "${MODELING_RULES_RESULTS_FILE_NAME}"
@@ -14,6 +14,8 @@ generate_empty_results_file="false"
 while [[ "$#" -gt 0 ]]; do
   case $1 in
     --generate-empty-result-file) generate_empty_results_file="true"
+      shift;;
+    *)  # unknown option.
       shift;;
   esac
 done
@@ -50,7 +52,7 @@ if [[ -z "${MODELING_RULES_TO_TEST}" ]]; then
     exit 1
 fi
 
-MODELING_RULES_RESULTS_FILE_NAME="${ARTIFACTS_FOLDER}/modeling_rules_results.xml"
+MODELING_RULES_RESULTS_FILE_NAME="${ARTIFACTS_FOLDER_INSTANCE}/modeling_rules_results.xml"
 if DEMISTO_SDK_SKIP_VERSION_CHECK=True demisto-sdk modeling-rules test --help 2>&1 | grep -q 'junit-path'; then
   MODELING_RULES_RESULTS_ARG=(--junit-path="${MODELING_RULES_RESULTS_FILE_NAME}")
   echo "Testing Modeling Rules - Results will be saved to ${MODELING_RULES_RESULTS_FILE_NAME}"

@@ -17,6 +17,7 @@ DEMISTO_GREY_ICON = 'https://3xqz5p387rui1hjtdv1up7lw-wpengine.netdna-ssl.com/wp
 ROOT_ARTIFACTS_FOLDER = os.getenv('ARTIFACTS_FOLDER', './artifacts')
 ARTIFACTS_FOLDER_XSOAR = os.getenv('ARTIFACTS_FOLDER_XSOAR', './artifacts/xsoar')
 ARTIFACTS_FOLDER_MPV2 = os.getenv('ARTIFACTS_FOLDER_MPV2', './artifacts/marketplacev2')
+ARTIFACTS_FOLDER_MPV2_INSTANCE = os.getenv('ARTIFACTS_FOLDER_INSTANCE', './artifacts/marketplacev2/instance_xsiam')
 CONTENT_CHANNEL = 'dmst-build-test'
 ARTIFACTS_FOLDER_XPANSE = os.getenv('ARTIFACTS_FOLDER_XPANSE', './artifacts/xpanse')
 GITLAB_PROJECT_ID = os.getenv('CI_PROJECT_ID') or 2596  # the default is the id of the content repo in code.pan.run

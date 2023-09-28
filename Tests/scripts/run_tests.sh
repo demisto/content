@@ -15,6 +15,8 @@ while [[ "$#" -gt 0 ]]; do
   case $1 in
     --generate-empty-result-file) generate_empty_results_file="true"
       shift;;
+    *)  # unknown option.
+      shift;;
   esac
 done
 
