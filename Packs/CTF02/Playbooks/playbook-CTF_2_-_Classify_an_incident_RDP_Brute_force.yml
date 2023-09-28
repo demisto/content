@@ -181,6 +181,7 @@ tasks:
       id: 49eda76d-b816-4f0c-873f-3c0dfbe81248
       version: -1
       name: Are any errors in the playbook?
+      description: Are any errors in the playbook?
       type: collection
       iscommand: false
       brand: ""
@@ -291,6 +292,7 @@ tasks:
       id: 5b28b492-d786-4788-8eaa-91e61aa9b023
       version: -1
       name: Analyze the Incident Indicators
+      description: Analyze the Incident Indicators
       type: collection
       iscommand: false
       brand: ""
@@ -457,6 +459,7 @@ tasks:
       id: 30d26ae3-a2a2-4744-860b-8b797754b206
       version: -1
       name: Check if the indicator is associated with a campaign
+      description: Check if the indicator is associated with a campaign
       type: collection
       iscommand: false
       brand: ""
@@ -685,6 +688,7 @@ tasks:
       id: 06b6424a-932d-4103-802e-da444608984d
       version: -1
       name: Classify this incident!
+      description: Classify this incident!
       type: collection
       iscommand: false
       brand: ""
@@ -887,6 +891,7 @@ tasks:
       id: f1962682-823e-4c9c-8de5-9664e9689ac6
       version: -1
       name: Check the tag associated with the malicious indicator
+      description: Check the tag associated with the malicious indicator
       type: collection
       iscommand: false
       brand: ""
@@ -1047,5 +1052,5 @@ inputs: []
 outputs: []
 tests:
 - No tests (auto formatted)
-fromversion: 6.9.0
+fromversion: 8.0.0
 description: ''

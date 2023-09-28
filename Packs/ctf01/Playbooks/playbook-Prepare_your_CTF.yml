@@ -1,7 +1,7 @@
-id: 87a85659-fd20-4a3d-88ee-9a7867c39c0a
-version: 30
-vcShouldKeepItemLegacyProdMachine: false
+id: Prepare your CTF
+version: -1
 name: Prepare your CTF
+description: "This playbook aims to assit in configuring you env for the Capture The Flag (CTF) game."
 starttaskid: "0"
 tasks:
   "0":
@@ -14,6 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "2"
@@ -44,6 +45,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "3"
@@ -75,6 +77,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "24"
@@ -105,6 +108,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "25"
@@ -174,6 +178,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "16"
@@ -204,6 +209,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "14"
@@ -235,6 +241,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "32"
@@ -265,6 +272,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "33"
@@ -330,6 +338,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -354,8 +363,7 @@ tasks:
       id: e7cf50eb-9424-42cf-8bf5-cda996bb21cd
       version: -1
       name: Check if VirusTotal (API v3) Enabled
-      description: Returns 'yes' if integration brand is available. Otherwise returns
-        'no'
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -394,8 +402,7 @@ tasks:
       id: c8859380-e985-4012-85b2-7053faa2e753
       version: -1
       name: Check if Unit42v2 Feed Enabled
-      description: Returns 'yes' if integration brand is available. Otherwise returns
-        'no'
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -434,6 +441,7 @@ tasks:
       id: 042475d3-3657-4bea-8aed-7beec2e77a4a
       version: -1
       name: Please configure an instance of VirusTotal
+      description: Please configure an instance of VirusTotal
       type: regular
       iscommand: false
       brand: ""
@@ -464,6 +472,7 @@ tasks:
       id: 3aac8842-34d5-414a-8152-ed0a6fd57bfd
       version: -1
       name: Please configure an instance of Unit42 Atom feed
+      description: Please configure an instance of Unit42 Atom feed
       type: regular
       iscommand: false
       brand: ""
@@ -494,8 +503,7 @@ tasks:
       id: 5d9ed6b7-401c-48a1-876d-6985070224d6
       version: -1
       name: Check if Cortex XDR - IR CTF Enabled
-      description: Returns 'yes' if integration brand is available. Otherwise returns
-        'no'
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -534,8 +542,7 @@ tasks:
       id: 78b846ef-5777-4968-86e5-63471af8eddd
       version: -1
       name: Check if custom "OHMYVT_CTF" integration Enabled
-      description: Returns 'yes' if integration brand is available. Otherwise returns
-        'no'
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -574,6 +581,7 @@ tasks:
       id: d9b3e830-acd5-459e-8b03-08d6a3c5de3d
       version: -1
       name: Please configure an instance of Cortex XDR - IR CTF
+      description: Please configure an instance of Cortex XDR - IR CTF
       type: regular
       iscommand: false
       brand: ""
@@ -603,7 +611,8 @@ tasks:
     task:
       id: 18012360-ac62-4678-8e93-cc2bc2cad881
       version: -1
-      name: Please configure an instance of OHMYVT
+      name: Please configure an instance of OHMYVT_CTF
+      description: Please configure an instance of OHMYVT_CTF
       type: regular
       iscommand: false
       brand: ""
@@ -674,6 +683,7 @@ tasks:
       id: 3969212c-f8cb-42c4-849d-5261a544dee3
       version: -1
       name: Validate that indicators exist
+      description: "Validate that indicators exist in your tenant.Required the following indicators -> value:\"137.184.208.116\" or value:\"IcedID Infection leads to DarkVNC\" "
       type: condition
       iscommand: false
       brand: ""
@@ -726,11 +736,7 @@ tasks:
       id: c8b9920d-3b91-499d-87f5-742d67f2a2eb
       version: -1
       name: 'Verify that the indicators have relationships '
-      description: This automation outputs the indicator relationships to context
-        according to the provided query, using the entities, entityTypes, and relationships
-        arguments. All arguments will use the AND operator. For example, using the
-        following arguments entities=8.8.8.8 entities_types=Domain will provide only
-        relationships that the 8.8.8.8 indicator has with indicators of type domain.
+      description: This automation outputs the indicator relationships to context according to the provided query, using the entities, entityTypes, and relationships arguments. All arguments will use the AND operator. For example, using the following arguments entities=8.8.8.8 entities_types=Domain will provide only relationships that the 8.8.8.8 indicator has with indicators of type domain.
       scriptName: SearchIndicatorRelationships
       type: regular
       iscommand: false
@@ -774,8 +780,7 @@ tasks:
       brand: ""
     scriptarguments:
       message:
-        simple: Something went wrong with the Indicators extraction - Please check
-          that you configured all the previous steps.
+        simple: Something went wrong with the Indicators extraction - Please check that you configured all the previous steps.
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -800,6 +805,7 @@ tasks:
       id: b3468f89-7f7d-41df-84a1-f8424deb1761
       version: -1
       name: Validate that there are relationships associated with the indicators above.
+      description: "Validate that there are relationships associated with the indicators above --> \"137.184.208.116\" and \"IcedID Infection leads to DarkVNC\""
       type: condition
       iscommand: false
       brand: ""
@@ -847,8 +853,7 @@ tasks:
       brand: ""
     scriptarguments:
       message:
-        simple: Something went wrong with the Indicators extraction - Please check
-          that you configured all the previous steps.
+        simple: Something went wrong with the Indicators extraction - Please check that you configured all the previous steps.
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -873,8 +878,7 @@ tasks:
       id: 82f45955-b04a-42a6-8d38-2039f3948bd1
       version: -1
       name: Your are all set!
-      description: "To strat the CTF -> create a new incident with the playbook ->
-        \n`CTF 1 - Get to know XSOAR`"
+      description: "To strat the CTF -> create a new incident with the playbook -> \n`CTF 1 - Get to know XSOAR`"
       type: regular
       iscommand: false
       brand: ""
@@ -911,3 +915,6 @@ view: |-
   }
 inputs: []
 outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 8.0.0

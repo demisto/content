@@ -43,6 +43,7 @@ tasks:
       id: f51a478c-fc25-408d-808b-c2c06b4147b3
       version: -1
       name: Check out the Reports
+      description: Check out the Reports
       type: collection
       iscommand: false
       brand: ""
@@ -183,6 +184,7 @@ tasks:
       id: f21cb82e-2b13-4d2b-8d2c-3238e4a07f56
       version: -1
       name: Check Integrations Settings
+      description: Check Integrations Settings
       type: collection
       iscommand: false
       brand: ""
@@ -248,6 +250,7 @@ tasks:
       id: 68669bef-c69c-452b-806b-63f718239b89
       version: -1
       name: Incident fields
+      desciption: Incident fields
       type: collection
       iscommand: false
       brand: ""
@@ -320,6 +323,7 @@ tasks:
       id: bb16e5a0-583a-4878-8b4e-099c1a42a4df
       version: -1
       name: Check out the Marketplace
+      description: Check out the Marketplace
       type: collection
       iscommand: false
       brand: ""
@@ -814,5 +818,5 @@ inputs: []
 outputs: []
 tests:
 - No tests (auto formatted)
-fromversion: 6.9.0
-description: ''
+fromversion: 8.0.0
+description: 'Get to know XSOAR 8 - Run this playbook and follow the questions.'
