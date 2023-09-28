@@ -111,6 +111,27 @@ script:
     - contextPath: LIS.GetByValue.Vulnerabilities
       description: Vulnerabilities
       type: String
+  - name: gw-lis-leaked-email-by-domain
+    description: Allows you to search for leaked emails via a domain in Gatewatcher's CTI database.
+      If the data is found, a list of emails is returned. otherwise, nothing is returned.
+    arguments:
+    - name: Domain
+      description: domain to be searched
+      required: true
+    - name: After
+      description: "Only return emails that have leaked after this date (date format: 2023-01-15T10:00:00)"
+      required: false
+
+  - name: gw-lis-is-email-leaked
+    description: Allows you to search if a specific email was leaked in Gatewatcher's CTI database.
+      If the data is found, the email is returned. otherwise, nothing is returned.
+    arguments:
+    - name: Email
+      description: email to be searched
+      required: true
+    - name: After
+      description: "Only return a value if the email has leaked after this date (date format: 2023-01-15T10:00:00)"
+      required: false
   dockerimage: demisto/python3:3.10.13.74666
   feed: false
   isfetch: false

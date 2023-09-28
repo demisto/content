@@ -230,8 +230,70 @@ class GwClient(GwRequests):
             return response.json()
         else:
             raise GwAPIException(
-                "Get search ioc: [FAILED]",
-                response.text, response.status_code, response.reason
+                "Get by ioc by value: [FAILED]",
+                response.text,
+                response.status_code,
+                response.reason,
+            )
+
+    def get_leaked_email_by_domain(self, domain, after: str) -> dict:
+        """Allows you to search for leaked email by domain in Gatewatcher's CTI database.
+
+        Args:
+            domain: Domain to be searched
+
+        Returns:
+            Value data
+
+        Raises:
+            GwAPIException: If status_code != 200.
+        """
+        url = f"/lis/leaked_emails/get_by_domain/{domain}?api_key={self.token}&headers=false"
+        url += f"&added_after={after}" if after else ""
+
+        response = self._get(
+            endpoint=url,
+            json_data=assign_params(value=domain),
+        )
+        if response.status_code == 200:
+            demisto.info("Get search leaked email: [OK]")
+            return response.json()
+        else:
+            raise GwAPIException(
+                "Get leaked email: [FAILED]",
+                response.text,
+                response.status_code,
+                response.reason,
+            )
+
+    def get_is_email_leaked(self, email, after: str) -> dict:
+        """Allows you to search if an email has leaked in Gatewatcher's CTI database.
+
+        Args:
+            email: Email to be searched
+
+        Returns:
+            Value data
+
+        Raises:
+            GwAPIException: If status_code != 200.
+        """
+        url = f"/lis/leaked_emails/get_by_email/{email}?api_key={self.token}&headers=false"
+        url += f"&added_after={after}" if after else ""
+
+        response = self._get(
+            endpoint=url,
+            json_data=assign_params(value=email),
+        )
+        if response.status_code == 200:
+            demisto.info("Get search leaked email: [OK]")
+            return response.json()
+        else:
+            raise GwAPIException(
+                "Get is email leaked: [FAILED]",
+                response.text,
+                response.status_code,
+                response.reason,
             )
 
 
@@ -260,7 +322,9 @@ def get_dbot_score(risk: str) -> int:
     return Common.DBotScore.NONE
 
 
-def generic_reputation_command(client: GwClient, args: dict, cmd_type: str, reliability: str) -> List[CommandResults]:
+def generic_reputation_command(
+    client: GwClient, args: dict, cmd_type: str, reliability: str
+) -> List[CommandResults]:
     """Checks the reputation of a file, domain or url
 
     Args:
@@ -287,13 +351,19 @@ def generic_reputation_command(client: GwClient, args: dict, cmd_type: str, reli
             "Type": ioc["Type"],
             "TLP": ioc["TLP"],
             "UsageMode": ioc["UsageMode"],
-            "Vulnerabilities": ioc["Vulnerabilities"]
+            "Vulnerabilities": ioc["Vulnerabilities"],
         }
 
         readable_result = tableToMarkdown("Get IoC corresponding to the value", result)
         score = get_dbot_score(ioc["Risk"])
-        dbot = Common.DBotScore(indicator=arg, integration_name=INTEGRATION_NAME, indicator_type=indicator_type,
-                                score=score, reliability=reliability, malicious_description="Match found in LastInfoSec")
+        dbot = Common.DBotScore(
+            indicator=arg,
+            integration_name=INTEGRATION_NAME,
+            indicator_type=indicator_type,
+            score=score,
+            reliability=reliability,
+            malicious_description="Match found in LastInfoSec",
+        )
         indicator = get_dbot_indicator(output_prefix, dbot, arg)
 
         results.append(
@@ -303,7 +373,7 @@ def generic_reputation_command(client: GwClient, args: dict, cmd_type: str, reli
                 outputs_prefix=output_prefix,
                 outputs_key_field=cmd_type,
                 outputs=result,
-                raw_response=response
+                raw_response=result,
             )
         )
     return results
@@ -408,6 +478,67 @@ def lis_get_by_value(client: GwClient, args: Dict[Any, Any]) -> CommandResults: 
     )
 
 
+def lis_get_leaked_email_by_domain(
+    client: GwClient, args: Dict[Any, Any]
+) -> CommandResults:
+    """Allows you to search for leaked email by domain in Gatewatcher's CTI database.
+
+    Args:
+        client: Client to interact with the LIS API.
+        args: Command arguments,
+            Domain: domain to search for.
+            After: date to do not return results before this date.
+
+
+    Returns:
+        CommandResults object with the "LIS.leakedEmail.GetByDomain" prefix.
+    """
+    domain = args.get("Domain", None)
+    after = args.get("After", None)
+
+    response = client.get_leaked_email_by_domain(domain, after)
+
+    emails = [res["Value"] for res in response]
+    result = emails if len(emails) > 0 else None
+    readable_result = tableToMarkdown("Leaked email", {"emails": result}) if len(emails) > 0 else None
+
+    return CommandResults(
+        readable_output=readable_result,
+        outputs_prefix="LIS.LeakedEmail.GetByDomain",
+        outputs=result,
+        raw_response=result,
+    )
+
+
+def lis_get_is_email_leaked(client: GwClient, args: Dict[Any, Any]) -> CommandResults:
+    """Allows you to search if an email has leaked in Gatewatcher's CTI database.
+
+    Args:
+        client: Client to interact with the LIS API.
+        args: Command arguments,
+            Email: email to search for.
+            After: date to do not return results before this date.
+
+
+    Returns:
+        CommandResults object with the "LIS.leakedEmail.getByEmail" prefix.
+    """
+    email = args.get("Email", None)
+    after = args.get("After", None)
+    response = client.get_is_email_leaked(email, after)
+
+    result = {"Value": email} if len(response) > 0 else None
+    readable_result = tableToMarkdown("Is email leaked", result)
+
+    return CommandResults(
+        readable_output=readable_result,
+        outputs_prefix="LIS.LeakedEmail.GetByEmail",
+        outputs_key_field="Value",
+        outputs=result,
+        raw_response=result,
+    )
+
+
 def main() -> None:
     params = demisto.params()
     command = demisto.command()
@@ -450,6 +581,14 @@ def main() -> None:
         elif command == "gw-lis-get-by-value":
             return_results(
                 lis_get_by_value(client=client, args=args)
+            )
+        elif command == "gw-lis-leaked-email-by-domain":
+            return_results(
+                lis_get_leaked_email_by_domain(client=client, args=args)
+            )
+        elif command == "gw-lis-is-email-leaked":
+            return_results(
+                lis_get_is_email_leaked(client=client, args=args)
             )
         else:
             raise NotImplementedError(f'{command} command is not implemented.')
