@@ -22,7 +22,7 @@ configuration:
     allows you to indicate if an attribute should be actionable or not
 - display: ORG names to use for reputation checks
   name: allowed_orgs
-  type: 0
+  type: 12
   required: false
   additionalinfo: Comma-separated list of allowed TI providers (orgc in MISP events). 
     When pulling data from MISP you may have data coming from a reliable source.
@@ -2609,7 +2609,7 @@ script:
     - contextPath: MISP.Role.role_name
       description: MISP role name.
       type: string
-  dockerimage: demisto/pymisp2:1.0.0.68977
+  dockerimage: demisto/pymisp2:1.0.0.72313
   runonce: false
   script: ''
   subtype: python3
