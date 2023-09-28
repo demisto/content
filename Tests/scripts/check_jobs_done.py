@@ -64,6 +64,7 @@ PUSH_JOBS = [
     'tests_xsoar_server: [Server 6.11]',
     'tests_xsoar_server: [Server 6.12]',
     'tests_xsoar_server: [Server Master]',
+    'xsoar_ng_server_ga',
 ]
 JOBS_PER_BUILD_TYPE = {
     'NIGHTLY': NIGHTLY_JOBS,
