@@ -634,7 +634,7 @@ script:
       name: member
     - description: A comment about the address group.
       name: comment
-    description: Create a new address group.
+    description: Modify existing address group.
     name: fortimanager-address-group-update
   - arguments:
     - description: The ADOM from which to delete the address group. Leave empty to use the default integration ADOM.
