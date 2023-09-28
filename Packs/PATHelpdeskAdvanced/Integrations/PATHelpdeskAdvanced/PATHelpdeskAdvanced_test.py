@@ -1,5 +1,8 @@
+import freezegun
 import pytest
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
+
+import requests_mock
 from PATHelpdeskAdvanced import (
     DATETIME_FORMAT,
     DemistoException,
@@ -8,6 +11,8 @@ from PATHelpdeskAdvanced import (
     convert_response_dates,
     paginate,
     json,
+    demisto,
+    Client,
 )
 
 
@@ -142,7 +147,7 @@ def test_create_ticket_success(mocked_client):
     )
 
 
-def test_list_tickets_success(mocked_client):
+def test_list_tickets_command(mocked_client):
     """
     Given a client instance
     When list_tickets_command is called
@@ -319,7 +324,15 @@ def test_list_tickets_success(mocked_client):
     )
 
 
-def test_parse_filter():
+def test_filter_parse():
+    """
+    Tests parsing a list of filter condition strings into Filter objects.
+
+    Given A list of filter condition strings
+    When Filter.parse_list() is called on the conditions
+    Then The expected Filter objects are returned
+    """
+
     assert Filter.parse_list(
         (
             '"id" eq "123"',
@@ -335,7 +348,20 @@ def test_parse_filter():
     ]
 
 
-def test_dump_filter_valid():
+def test_filter_dump():
+    """
+    Tests dumping a list of Filter objects to a JSON string.
+
+    Given:
+        A list of Filter objects with different key, operator and value.
+
+    When:
+        Filter.dumps_list() is called on the list of Filter objects.
+
+    Then:
+        The JSON string returned should match the expected format.
+    """
+
     assert Filter.dumps_list(
         (
             Filter(key="id", operator="eq", value="123"),
@@ -353,7 +379,7 @@ def test_dump_filter_valid():
     )
 
 
-def test_parse_filter_conditions_invalid():
+def test_filter_parse_invalid():
     """
     Given an invalid filter condition string
     When parse_filter_conditions is called with a list containing the invalid string
@@ -362,3 +388,119 @@ def test_parse_filter_conditions_invalid():
 
     with pytest.raises(DemistoException):
         Filter.parse_list('"id" eq 123')  # missing quotes around value
+
+
+def test_reuse_token(mocker):
+    """
+    Given a valid refresh token in integration context
+    When _reuse_or_create_token is called
+    Then it should reuse the refresh token to generate a new request token
+    """
+    mocker.patch.object(
+        demisto,
+        "getIntegrationContext",
+        return_value={
+            "refresh_token": "refresh123",
+            "token_expiry_utc": (datetime.utcnow() + timedelta(minutes=10)).isoformat(),
+        },
+    )
+    client = dummy_client()
+
+    # Assert refresh token was reused
+    assert (
+        client.http_request.call_args[1]["url_suffix"] == "Authentication/RefreshToken"
+    )
+
+
+class TestClient:
+    def dummy_client():
+        return Client(
+            base_url="https://example.com",
+            username="test",
+            password="test",
+            verify=False,
+            proxy=False,
+        )
+
+    def test_client_login(self, mocker, requests_mock) -> None:
+        """
+        Given an expired refresh token in integration context
+        When _reuse_or_create_token is called
+        Then it should log in using username/password to get a new token
+        """
+        # Mock expired token
+        requests_mock.post(
+            "https://example.com/Authentication/LoginEx?username=test&password=test",
+            json={
+                "refreshToken": "refresh_token",
+                "requestToken": "request_token",
+                "expiresIn": 3300,
+                "success": True,
+            },
+        )
+
+        mocker.patch.object(
+            demisto,
+            "getIntegrationContext",
+            return_value={},
+        )
+        client = TestClient.dummy_client()
+        assert client.refresh_token == "refresh_token"
+
+    def test_expired_token(self, mocker, requests_mock) -> None:
+        """
+        Given an expired refresh token in integration context
+        When _reuse_or_create_token is called
+        Then it should log in using username/password to get a new token
+        """
+        # Mock expired token
+        requests_mock.post(
+            "https://example.com/Authentication/LoginEx?username=test&password=test",
+            json={
+                "refreshToken": "new_refresh_token",
+                "requestToken": "new_request_token",
+                "expiresIn": 3300,
+                "success": True,
+            },
+        )
+
+        mocker.patch.object(
+            demisto,
+            "getIntegrationContext",
+            return_value={},
+        )
+        client = TestClient.dummy_client()
+        assert client.refresh_token == "new_refresh_token"
+
+    @freezegun.freeze_time("2023-01-01 12:00:00")
+    def test_reuse_valid_token(self, mocker, requests_mock):
+        """
+        Given a valid refresh token in integration context
+        When _reuse_or_create_token is called
+        Then it should reuse the existing valid token
+        """
+
+        # Mock valid token
+        mocker.patch.object(
+            demisto,
+            "getIntegrationContext",
+            return_value={
+                "refresh_token": "previous_refresh_token",
+                "expires_in": 3600,
+                "token_expiry_utc": datetime(2023, 1, 1, 12, 30).isoformat(),
+            },
+        )
+        requests_mock.post(
+            "https://example.com/Authentication/RefreshToken?token=previous_refresh_token",
+            json={
+                "refreshToken": "new_refresh_token",
+                "requestToken": "new_request_token",
+                "expiresIn": 3300,
+                "success": True,
+            },
+        )
+        client = TestClient.dummy_client()
+
+        # Assert valid token reused
+        assert client.refresh_token == "new_refresh_token"
+        assert client.request_token == "new_request_token"
