@@ -1439,7 +1439,9 @@ def is_unique_msg(msg, previous_msg_ids, previous_run_time):
     if message_dict:
         msg_id = message_dict.get("messageId")
         msg_pub_time = message_dict.get("publishTime", "")
-        return msg_id not in previous_msg_ids and msg_pub_time > previous_run_time
+        is_unique = msg_id not in previous_msg_ids and msg_pub_time > previous_run_time
+        demisto.debug(f"{msg_id=}\n{msg_pub_time=}\n{is_unique=}")
+        return is_unique
     return False
 
 
