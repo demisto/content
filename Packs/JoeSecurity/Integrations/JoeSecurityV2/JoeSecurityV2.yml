@@ -319,7 +319,7 @@ script:
       description: The filename.
       type: string
     - contextPath: InfoFile.EntryID
-      description: The entry ID of the report..
+      description: The entry ID of the report.
       type: string
     - contextPath: InfoFile.Size
       description: File size.
