@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 
-MODELING_RULES_RESULTS_FILE_NAME="${ARTIFACTS_FOLDER_INSTANCE}/test_playbooks_report.xml"
+TEST_PLAYBOOKS_RESULTS_FILE_NAME="${ARTIFACTS_FOLDER_INSTANCE}/test_playbooks_report.xml"
 
 function write_empty_test_results_file() {
-  cat <<EOF > "${MODELING_RULES_RESULTS_FILE_NAME}"
+  cat <<EOF > "${TEST_PLAYBOOKS_RESULTS_FILE_NAME}"
 <?xml version='1.0' encoding='utf-8'?>
 <testsuites />
 EOF
@@ -48,6 +48,15 @@ echo "${INSTANCE_ROLE}" > "${ARTIFACTS_FOLDER_INSTANCE}/instance_role.txt"
 echo "${INSTANCE_ROLE}" >> "${ARTIFACTS_FOLDER}/${SERVER_TYPE}_test_playbooks_roles.txt"
 echo "${ARTIFACTS_FOLDER_INSTANCE}" >> "${ARTIFACTS_FOLDER}/${SERVER_TYPE}_test_playbooks_artifacts_directories.txt"
 
+if DEMISTO_SDK_SKIP_VERSION_CHECK=True demisto-sdk test-content --help 2>&1 | grep -q 'artifacts_path'; then
+  TEST_PLAYBOOKS_RESULTS_ARG=(--artifacts_path="${ARTIFACTS_FOLDER_INSTANCE}")
+  echo "Test Playbooks - Results will be saved to artifacts folder:${ARTIFACTS_FOLDER_INSTANCE}"
+else
+  echo "Test Playbooks - demisto-sdk version is too old, creating empty JUnit file to artifacts folder:${ARTIFACTS_FOLDER_INSTANCE}"
+  TEST_PLAYBOOKS_RESULTS_ARG=()
+  write_empty_test_results_file
+fi
+
 exit_code=0
 if [[ "${INSTANCE_ROLE}" == "XSIAM" ]]; then
   if [ -n "${CLOUD_CHOSEN_MACHINE_IDS}" ]; then
@@ -56,7 +65,7 @@ if [[ "${INSTANCE_ROLE}" == "XSIAM" ]]; then
       demisto-sdk test-content -k "$DEMISTO_API_KEY" -c "$CONF_PATH" -e "$SECRET_CONF_PATH" -n "${IS_NIGHTLY}" -t "$SLACK_TOKEN" \
         -a "$CIRCLECI_TOKEN" -b "$CI_BUILD_ID" -g "$CI_COMMIT_BRANCH" -m "${MEM_CHECK}" --is-ami "${IS_AMI_RUN}" -d "${INSTANCE_ROLE}" \
         --xsiam-machine "${CLOUD_CHOSEN_MACHINE_ID}" --xsiam-servers-path "$CLOUD_SERVERS_PATH" --server-type "$SERVER_TYPE" \
-        --use-retries --xsiam-servers-api-keys-path "cloud_api_keys.json" --artifacts_path "${ARTIFACTS_FOLDER_INSTANCE}"
+        --use-retries --xsiam-servers-api-keys-path "cloud_api_keys.json" "${TEST_PLAYBOOKS_RESULTS_ARG[@]}"
       command_exit_code=$?
       if [ "${command_exit_code}" -ne 0 ]; then
         exit_code=1
@@ -71,7 +80,7 @@ else
     demisto-sdk test-content -k "$DEMISTO_API_KEY" -c "$CONF_PATH" -e "$SECRET_CONF_PATH" -n "${IS_NIGHTLY}" -t "$SLACK_TOKEN" \
       -a "$CIRCLECI_TOKEN" -b "$CI_BUILD_ID" -g "$CI_COMMIT_BRANCH" -m "${MEM_CHECK}" --is-ami "${IS_AMI_RUN}" -d "${INSTANCE_ROLE}" \
       --xsiam-machine "${CLOUD_CHOSEN_MACHINE_ID}" --xsiam-servers-path "$CLOUD_SERVERS_PATH" --server-type "$SERVER_TYPE" \
-      --use-retries --xsiam-servers-api-keys-path "cloud_api_keys.json" --artifacts_path "${ARTIFACTS_FOLDER_INSTANCE}"
+      --use-retries --xsiam-servers-api-keys-path "cloud_api_keys.json" "${TEST_PLAYBOOKS_RESULTS_ARG[@]}"
     exit_code=$?
     echo "Failed to run test content with exit code:${exit_code}"
 fi
