@@ -260,6 +260,10 @@ xpanse-prepare-testing-bucket:
       optional: true
   script:
     - EXIT_CODE=0
+    - section_start "Create Artifacts instance directory" --collapsed
+    - |
+      [ -d "${ARTIFACTS_FOLDER_INSTANCE}" ] || mkdir -p "${ARTIFACTS_FOLDER_INSTANCE}"
+    - section_end "Create Artifacts instance directory"
     - section_start "Check if should run Server Master"
     - |
       echo "Instance role:${INSTANCE_ROLE}"
@@ -313,7 +317,7 @@ xpanse-prepare-testing-bucket:
     - section_start "Destroy Instances"
     - python3 ./Tests/scripts/destroy_instances.py --artifacts-dir "${ARTIFACTS_FOLDER}" --env-file "${ARTIFACTS_FOLDER}/env_results.json" --instance-role "$INSTANCE_ROLE"
     - if [ $? -ne 0 ]; then
-        echo "Failed to destroy instances, exit code"$?";
+        echo "Failed to destroy instances, exit code $?"
       fi
     - section_end "Destroy Instances"
   artifacts:
@@ -428,6 +432,10 @@ slack-notify-nightly-build:
   stage: run-instances
   script:
     - EXIT_CODE=0
+    - section_start "Create Artifacts instance directory" --collapsed
+    - |
+      [ -d "${ARTIFACTS_FOLDER_INSTANCE}" ] || mkdir -p "${ARTIFACTS_FOLDER_INSTANCE}"
+    - section_end "Create Artifacts instance directory"
     - !reference [.download-demisto-conf]
     - !reference [.secrets-fetch]
     - section_start "Are there tests to run?" --collapsed
@@ -556,9 +564,9 @@ xsoar_ng_server_ga:
     expire_in: 30 days
     reports:
       junit:
-        - "${ARTIFACTS_FOLDER}/test_playbooks_report.xml"
+        - "${ARTIFACTS_FOLDER_INSTANCE}/test_playbooks_report.xml"
     paths:
-      - "${ARTIFACTS_FOLDER}/test_playbooks_report.xml"
+      - "${ARTIFACTS_FOLDER_INSTANCE}/test_playbooks_report.xml"
       - /builds/xsoar/content/artifacts/*  # restoring the default artifacts path from the job default settings
       - /builds/xsoar/content/pipeline_jobs_folder/*  # restoring the default artifacts path from the job default settings
 
