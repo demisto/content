@@ -1,0 +1,221 @@
+id: Cortex ASM - On Prem Remediation
+version: -1
+name: Cortex ASM - On Prem Remediation
+description: |-
+  This playbook adds new block rule(s) to on-prem firewall vendors in order to block internet access for internet exposures.
+
+  Conditions:
+  This is currently limited to stand-alone firewalls for PAN-OS.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: d31ed4f9-0882-4ce6-86d4-a68c1e4eec34
+    type: start
+    task:
+      id: d31ed4f9-0882-4ce6-86d4-a68c1e4eec34
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": -140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: d2aa5e89-700a-42fb-88a9-40f887476577
+    type: regular
+    task:
+      id: d2aa5e89-700a-42fb-88a9-40f887476577
+      version: -1
+      name: pan-os-list-rules
+      description: Returns a list of predefined Security Rules. (When passing a query, all other arguments are overridden. Make sure the query includes all the filters you want).
+      script: Panorama|||pan-os-list-rules
+      type: regular
+      iscommand: true
+      brand: Panorama
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      rulename:
+        complex:
+          root: inputs.RuleName
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 10
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 712db883-230a-4a69-83db-53391b6b80f2
+    type: playbook
+    task:
+      id: 712db883-230a-4a69-83db-53391b6b80f2
+      version: -1
+      name: PAN-OS - Block Destination Service
+      description: This playbook blocks a destination IP and service (TCP or UDP port) by creating a rule for a specific device group on PAN-OS.
+      playbookName: PAN-OS - Block Destination Service
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      AutoCommit:
+        simple: "True"
+      DestinationZone:
+        complex:
+          root: Panorama.SecurityRule
+          accessor: To
+      IP:
+        complex:
+          root: inputs.RemoteIP
+      LogForwarding:
+        complex:
+          root: Panorama.SecurityRule
+          accessor: LogForwardingProfile
+      ObjectNamePrefix:
+        simple: xpanse-ar-object-
+      Port:
+        complex:
+          root: inputs.RemotePort
+          transformers:
+          - operator: Stringify
+      Protocol:
+        complex:
+          root: inputs.RemoteProtocol
+      RuleNamePrefix:
+        simple: xpanse-ar-rule
+      ServiceNamePrefix:
+        simple: xpanse-ar-service-
+      SourceZone:
+        complex:
+          root: Panorama.SecurityRule
+          accessor: From
+      WhereRule:
+        simple: top
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 933a2a81-89cf-47c9-8901-07fb3ab8bbb8
+    type: title
+    task:
+      id: 933a2a81-89cf-47c9-8901-07fb3ab8bbb8
+      version: -1
+      name: Complete
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 565,
+        "width": 380,
+        "x": 460,
+        "y": -140
+      }
+    }
+  }
+inputs:
+- key: RuleName
+  value: {}
+  required: true
+  description: Firewall rule name to look up in the company configuration setting for block rule.
+  playbookInputQuery:
+- key: RemoteIP
+  value:
+    complex:
+      root: alert
+      accessor: remoteip
+  required: true
+  description: IP address of the service.
+  playbookInputQuery:
+- key: RemoteProtocol
+  value:
+    complex:
+      root: alert
+      accessor: appid
+  required: true
+  description: Protocol of the service.
+  playbookInputQuery:
+- key: RemotePort
+  value:
+    complex:
+      root: alert
+      accessor: remoteport
+  required: true
+  description: Port number of the service.
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.8.0

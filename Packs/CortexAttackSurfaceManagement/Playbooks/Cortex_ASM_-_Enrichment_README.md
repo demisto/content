@@ -9,6 +9,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 * Cortex ASM - AWS Enrichment
 * Cortex ASM - Azure Enrichment
 * Cortex ASM - GCP Enrichment
+* Cortex ASM - On Prem Enrichment
 * Cortex ASM - Prisma Cloud Enrichment
 * Cortex ASM - Qualys Enrichment
 * Cortex ASM - Rapid7 Enrichment
@@ -23,7 +24,10 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Scripts
 
+* GridFieldSetup
+* GetTime
 * InferWhetherServiceIsDev
+* Sleep
 
 ### Commands
 
@@ -49,4 +53,5 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 ## Playbook Image
 
 ---
+
 ![Cortex ASM - Enrichment](../doc_files/Cortex_ASM_-_Enrichment.png)

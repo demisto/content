@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 5e71ab69-e5f2-4dd6-82b9-e4ec135fb721
+    taskid: b02b1b95-560a-4328-827a-67908105f2ff
     type: start
     task:
-      id: 5e71ab69-e5f2-4dd6-82b9-e4ec135fb721
+      id: b02b1b95-560a-4328-827a-67908105f2ff
       version: -1
       name: ""
       iscommand: false
@@ -24,7 +24,7 @@ tasks:
       {
         "position": {
           "x": 550,
-          "y": -140
+          "y": -180
         }
       }
     note: false
@@ -36,10 +36,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 6da58f7c-4b47-4fce-8c26-5873f9e85370
+    taskid: 0101180e-58c9-4fc5-801b-5e24e0903e90
     type: regular
     task:
-      id: 6da58f7c-4b47-4fce-8c26-5873f9e85370
+      id: 0101180e-58c9-4fc5-801b-5e24e0903e90
       version: -1
       name: Set remediation objectives grid field
       description: |-
@@ -79,10 +79,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: e80da9ea-6af2-4ca7-838a-17dc42a8b08d
+    taskid: 90679395-ae09-4e26-89fa-790ae126f877
     type: title
     task:
-      id: e80da9ea-6af2-4ca7-838a-17dc42a8b08d
+      id: 90679395-ae09-4e26-89fa-790ae126f877
       version: -1
       name: Complete
       type: title
@@ -95,7 +95,7 @@ tasks:
       {
         "position": {
           "x": 550,
-          "y": 550
+          "y": 680
         }
       }
     note: false
@@ -107,10 +107,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 5908b3f7-22b5-453b-8c85-b81a67fa418c
+    taskid: 1323ca4c-ad8b-477b-87b2-d0ed1d838b4d
     type: regular
     task:
-      id: 5908b3f7-22b5-453b-8c85-b81a67fa418c
+      id: 1323ca4c-ad8b-477b-87b2-d0ed1d838b4d
       version: -1
       name: Set remediation objectives grid field
       description: |-
@@ -161,7 +161,7 @@ tasks:
       {
         "position": {
           "x": -50,
-          "y": 350
+          "y": 340
         }
       }
     note: false
@@ -173,10 +173,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 452404ec-dd79-4d97-843d-56c7ca5d9cd2
+    taskid: b0b1e051-a749-4f33-8360-14def6fe0db1
     type: regular
     task:
-      id: 452404ec-dd79-4d97-843d-56c7ca5d9cd2
+      id: b0b1e051-a749-4f33-8360-14def6fe0db1
       version: -1
       name: Set remediation objectives grid field
       description: |-
@@ -239,10 +239,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: 28f3db2f-131c-4f1e-882f-a5a75259f4c3
+    taskid: 2269fdad-af2d-4bba-8647-eab3ee06775d
     type: regular
     task:
-      id: 28f3db2f-131c-4f1e-882f-a5a75259f4c3
+      id: 2269fdad-af2d-4bba-8647-eab3ee06775d
       version: -1
       name: Set remediation objectives grid field
       description: |-
@@ -333,10 +333,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: bffc5438-be2d-433c-8d4b-dbc4a5206dbc
+    taskid: 82286133-aca4-4269-828b-c25707d897ed
     type: condition
     task:
-      id: bffc5438-be2d-433c-8d4b-dbc4a5206dbc
+      id: 82286133-aca4-4269-828b-c25707d897ed
       version: -1
       name: What provider is this service?
       description: Determines which cloud provider the service is in order to direct to the correct enrichment.
@@ -352,6 +352,8 @@ tasks:
       - "20"
       Unclaimed S3 Bucket:
       - "17"
+      On Prem:
+      - "28"
     separatecontext: false
     conditions:
     - label: AWS
@@ -390,6 +392,18 @@ tasks:
           right:
             value:
               simple: Azure
+    - label: On Prem
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: alert.asmcloud
+                accessor: provider
+            iscontext: true
+          right:
+            value:
+              simple: On Prem
     - label: Unclaimed S3 Bucket
       condition:
       - - operator: isEqualString
@@ -413,7 +427,7 @@ tasks:
       {
         "position": {
           "x": 550,
-          "y": -5
+          "y": -45
         }
       }
     note: false
@@ -425,10 +439,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: 8d1e0dde-9220-4bd7-8635-a976beeed1a9
+    taskid: e757b72c-8c18-468d-8e5a-7c4c7f2a03c8
     type: regular
     task:
-      id: 8d1e0dde-9220-4bd7-8635-a976beeed1a9
+      id: e757b72c-8c18-468d-8e5a-7c4c7f2a03c8
       version: -1
       name: Set temp context
       description: Set a value in context under the key you entered.
@@ -473,10 +487,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: a1f3d867-73c0-4242-8838-9beaa7767bea
+    taskid: b333f88a-aadb-4aa0-8c23-d7a0d1d34206
     type: regular
     task:
-      id: a1f3d867-73c0-4242-8838-9beaa7767bea
+      id: b333f88a-aadb-4aa0-8c23-d7a0d1d34206
       version: -1
       name: Set temp context
       description: Set a value in context under the key you entered.
@@ -528,10 +542,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: 9a88c585-3d52-4a65-8720-08d2cbe38b2c
+    taskid: 270cac81-412f-41b5-8ee1-40fd19b2c057
     type: regular
     task:
-      id: 9a88c585-3d52-4a65-8720-08d2cbe38b2c
+      id: 270cac81-412f-41b5-8ee1-40fd19b2c057
       version: -1
       name: Set temp context
       description: Set a value in context under the key you entered.
@@ -571,7 +585,183 @@ tasks:
       {
         "position": {
           "x": -50,
-          "y": 180
+          "y": 170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 8f67b79e-432e-4b3a-8342-8d70a3da06e4
+    type: regular
+    task:
+      id: 8f67b79e-432e-4b3a-8342-8d70a3da06e4
+      version: -1
+      name: Set temp context
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      key:
+        simple: IPString
+      value:
+        complex:
+          root: alert
+          accessor: remoteip
+          transformers:
+          - operator: Stringify
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1570,
+          "y": 315
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: eb00076c-f148-4edb-8977-f5a5aec32244
+    type: regular
+    task:
+      id: eb00076c-f148-4edb-8977-f5a5aec32244
+      version: -1
+      name: Set remediation objectives grid field
+      description: |-
+        Automation used to more easily populate a grid field.  This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Instead of a value you can enter `TIMESTAMP` to get the current timestamp in ISO format. For example:
+        `!GridFieldSetup keys=ip,src,timestamp val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" val3="TIMESTAMP" gridfiled="gridfield"`
+      scriptName: GridFieldSetup
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      gridfield:
+        simple: asmremediationobjectives
+      keys:
+        simple: option,statement
+      val1:
+        simple: Automated remediation by blocking open ports
+      val2:
+        complex:
+          root: alert
+          accessor: id
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'In this case, automated remediation will create a new firewall rule on the top of the ruleset called "xpanse-ar-rule - '
+              suffix:
+                value:
+                  simple: '".  This rule will block internet traffic to the IP address of '
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ${IPString}
+                iscontext: true
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ' for port '
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ${PortAndProtocol}
+                iscontext: true
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: .
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1570,
+          "y": 475
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: d32f297f-771c-4db2-8fd5-8d5bd37161fc
+    type: regular
+    task:
+      id: d32f297f-771c-4db2-8fd5-8d5bd37161fc
+      version: -1
+      name: Set temp context
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      key:
+        simple: PortAndProtocol
+      value:
+        complex:
+          root: alert
+          accessor: remoteport
+          transformers:
+          - operator: Stringify
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: '-'
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: alert.protocol
+                iscontext: true
+          - operator: toLowerCase
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1570,
+          "y": 155
         }
       }
     note: false
@@ -586,10 +776,10 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 755,
-        "width": 1580,
+        "height": 925,
+        "width": 2000,
         "x": -50,
-        "y": -140
+        "y": -180
       }
     }
   }
