@@ -5,6 +5,90 @@ import OTRS
 import demistomock as demisto
 
 
+OTRS_TICKET_MIRROR = {
+    "Age": 238078,
+    "ArchiveFlag": "n",
+    "Article": [
+        {
+            "ArticleID": 9999,
+            "ArticleNumber": 1,
+            "ArticlePlain": None,
+            "Bcc": "",
+            "Body": "test123",
+            "Cc": "",
+            "ChangedBy": 18,
+            "ChangeTime": "2023-09-26 11:33:28",
+            "Charset": "utf8",
+            "CommunicationsChannelID": 3,
+            "ContentType": "text/plain; charset=utf8",
+            "ContentCharset": "utf8",
+            "CreateBy": 18,
+            "CreateTime": "2023-09-26 11:33:28",
+            "From": "demistobot",
+            "InReplyTo": "",
+            "IncomingTime": 1695720808,
+            "IsVisibleForCustomer": 1,
+            "MessageID": "",
+            "MimeType": "text/plain",
+            "References": "",
+            "ReplyTo": "",
+            "SenderType": "agent",
+            "SenderTypeID": "1",
+            "Subject": "test",
+            "TicketID": 1234,
+            "TimeUnit": 0,
+            "To": "IncidentResponse"
+        }
+    ],
+    "ChangedBy": 1,
+    "Changed": "2023-09-26 11:33:29",
+    "CreatedBy": 18,
+    "CustomerID": "",
+    "CustomerUserID": "test@mail.com",
+    "DynamicField": [
+        {
+            "Name": "IncidentDescription",
+            "Value": None
+        },
+        {
+            "Name": "TLP",
+            "Value": None
+        }
+    ],
+    "EscalationResponseTime": 0,
+    "EscalationSolutionTime": 0,
+    "EscalationTime": 0,
+    "EscalationUpdateTime": 0,
+    "GroupID": 6,
+    "Lock": "unlock",
+    "LockID": 1,
+    "Owner": "demistobot",
+    "OwnerID": 22,
+    "Priority": "Severity normal",
+    "PriorityBackgroundColor": "#cdcdcd",
+    "PriorityForgroundColor": "#ffffff",
+    "PriorityID": 3,
+    "Queue": "Incident Response",
+    "QueueID": 12,
+    "RealTillTimeNotUsed": 0,
+    "Responsible": "root@localhost",
+    "ResponsibleID": 1,
+    "SLAID": "",
+    "ServiceID": "",
+    "State": "new",
+    "StateID": 1,
+    "StateType": "new",
+    "TicketID": 1234,
+    "TicketNumber": "1911325",
+    "TimeUnit": 0,
+    "Title": "Demisto Test",
+    "Type": "Unclassified",
+    "TypeID": 1,
+    "UnlockTimeout": 1695720808,
+    "UntilTime": 0
+}
+
+
 @pytest.mark.parametrize(argnames='queue, expected_time_arg', argvalues=[
     ('Any', '2000-01-02 00:00:01'),
     ('queue_1,queue_2', '2000-01-01 00:00:01'),
@@ -78,3 +162,28 @@ def test_fetch_incidents__queue_specified(mocker,
     # validate
     demisto.setLastRun.assert_called_with(expected_last_run)
     assert expected_queue_arg == otrs_client.search_ticket.call_args[1]['queue']
+
+
+def test_get_remote_data(mocker):
+    """
+    Given:
+        -  arguments: id and LastUpdate(set to lower then the modification time).
+        -  OTRS ticket
+    When
+        - running get_remote_data_command.
+    Then
+        - The ticket was updated with the entries.
+    """
+
+    args = {'id': '1234', 'lastUpdate': 0}
+
+    mocker.patch.object(demisto, 'getIntegrationContext', return_value={"SessionID": "1234"})
+    mocker.patch.object(OTRS.OTRSClient, 'get_ticket', return_value=OTRS_TICKET_MIRROR)
+
+    otrs_client = OTRS.OTRSClient("base_url", "username", "password", https_verify=False, use_legacy_sessions=False)
+
+    res = OTRS.get_remote_data_command(otrs_client, args)
+
+    assert res[1]['Tags'] == ['FromOTRS']
+    assert res[1]['Contents'] == 'ID: 9999\nTo: IncidentResponse\nCC: \nSubject: test\nCreateTime: 2023-09-26 11:33:28' \
+                                 '\nFrom: demistobot\nContentType: text/plain; charset=utf8\nBody:\n\ntest123'

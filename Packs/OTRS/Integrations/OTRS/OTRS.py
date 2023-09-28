@@ -4,7 +4,8 @@ from CommonServerPython import *
 import urllib3
 from pyotrs import Article, Attachment, Client, DynamicField, Ticket
 from urllib.parse import unquote
-from typing import Any, Callable
+from typing import Any
+from collections.abc import Callable
 
 
 # disable insecure warnings
@@ -264,7 +265,7 @@ def get_ticket_command(client: Client, args: dict[str, str]):
                         'Size': file_size,
                         'ContentType': content_type
                     }
-                    attachments_str += 'Name: {0}, Size: {1}, ContentType: {2}'.format(file_name, file_size, content_type)
+                    attachments_str += f'Name: {file_name}, Size: {file_size}, ContentType: {content_type}'
                     attachments_str += '\n\n'
                     attachments_list.append(fileResult(file_name, base64.b64decode(attachment['Content'])))
                     attachments_output.append(current_attachment)
@@ -289,7 +290,7 @@ def get_ticket_command(client: Client, args: dict[str, str]):
         )
     )
 
-    return_results(attachments_list)
+    return attachments_list
 
 
 def search_ticket_command(client: Client, args: dict[str, str]):
@@ -338,17 +339,15 @@ def search_ticket_command(client: Client, args: dict[str, str]):
         title = 'OTRS Search Results'
         headers = ['ID', 'Number', 'Title', 'Type', 'State', 'Priority', 'Queue', 'Created', 'Owner']
 
-        return_results(
-            CommandResults(
-                outputs=output,
-                outputs_prefix="OTRS.Ticket",
-                outputs_key_field=["ID"],
-                readable_output=tableToMarkdown(title, output, headers),
-                raw_response=raw_output
-            )
+        return CommandResults(
+            outputs=output,
+            outputs_prefix="OTRS.Ticket",
+            outputs_key_field=["ID"],
+            readable_output=tableToMarkdown(title, output, headers),
+            raw_response=raw_output
         )
     else:
-        return_results('No results found')
+        return 'No results found'
 
 
 def create_ticket_command(client: Client, args: dict[str, str]):
@@ -417,14 +416,12 @@ def create_ticket_command(client: Client, args: dict[str, str]):
 
     output = 'Created ticket {} successfully'.format(ticket['TicketID'])
 
-    return_results(
-        CommandResults(
-            outputs=context,
-            outputs_prefix="OTRS.Ticket",
-            outputs_key_field=["ID"],
-            readable_output=output,
-            raw_response=context
-        )
+    return CommandResults(
+        outputs=context,
+        outputs_prefix="OTRS.Ticket",
+        outputs_key_field=["ID"],
+        readable_output=output,
+        raw_response=context
     )
 
 
@@ -498,14 +495,12 @@ def update_ticket_command(client: Client, args: dict[str, str]):
         context['Type'] = ticket_type
     output = 'Updated ticket {} successfully'.format(ticket['TicketID'])
 
-    return_results(
-        CommandResults(
-            outputs=context,
-            outputs_prefix="OTRS.Ticket",
-            outputs_key_field=["ID"],
-            readable_output=output,
-            raw_response=context
-        )
+    return CommandResults(
+        outputs=context,
+        outputs_prefix="OTRS.Ticket",
+        outputs_key_field=["ID"],
+        readable_output=output,
+        raw_response=context
     )
 
 
@@ -532,14 +527,12 @@ def close_ticket_command(client: Client, args: dict[str, str]):
     }
     output = 'Closed ticket {} successfully'.format(ticket['TicketID'])
 
-    return_results(
-        CommandResults(
-            outputs=context,
-            outputs_prefix="OTRS.Ticket",
-            outputs_key_field=["ID"],
-            readable_output=output,
-            raw_response=context
-        )
+    return CommandResults(
+        outputs=context,
+        outputs_prefix="OTRS.Ticket",
+        outputs_key_field=["ID"],
+        readable_output=output,
+        raw_response=context
     )
 
 
@@ -617,13 +610,13 @@ def get_remote_data_command(client: Client, args: dict[str, str]):
         else:
             break
     ticket_last_update = ticket["UnlockTimeout"]
+    entries = []
 
     if last_update > ticket_last_update:
         demisto.debug(f"Nothing new in the ticket since {last_update}")
         ticket = {}
     else:
         demisto.debug(f"ticket is updated: {ticket}")
-        entries = []
         # get latest comments and files
         articles = ticket.get("Article")
         if articles:
@@ -639,11 +632,10 @@ def get_remote_data_command(client: Client, args: dict[str, str]):
                         'Type': EntryType.NOTE,
                         'Contents': description,
                         'ContentsFormat': EntryFormat.TEXT,
-                        'Tags': [],  # the list of tags to add to the entry
+                        'Tags': ["FromOTRS"],  # the list of tags to add to the entry
                         'Note': False  # boolean, True for Note, False otherwise
                     })
-
-        return_results(GetRemoteDataResponse(mirrored_object=ticket, entries=entries))
+    return [ticket] + entries
 
 
 def update_remote_system_command(client: Client, args: dict[str, str]):
@@ -680,7 +672,7 @@ def update_remote_system_command(client: Client, args: dict[str, str]):
         article = Article(article_object)
         client.update_ticket(ticket_id, article=article)
 
-    return_results(ticket_id)
+    return ticket_id
 
 
 def get_modified_remote_data_command(client: Client, args: dict[str, str]):
@@ -690,7 +682,7 @@ def get_modified_remote_data_command(client: Client, args: dict[str, str]):
 
     demisto.debug(f"raw tickets: {raw_incidents}")
 
-    return_results(GetModifiedRemoteDataResponse(raw_incidents))
+    return GetModifiedRemoteDataResponse(raw_incidents)
 
 
 def main():
@@ -712,7 +704,18 @@ def main():
 
     args = demisto.args()
 
-    LOG('command is %s' % (demisto.command(), ))
+    LOG(f'command is {demisto.command()}')
+
+    commands = {
+        'otrs-get-ticket': get_ticket_command,
+        'otrs-search-ticket': search_ticket_command,
+        'otrs-create-ticket': create_ticket_command,
+        'otrs-update-ticket': update_ticket_command,
+        'otrs-close-ticket': close_ticket_command,
+        'get-remote-data': get_remote_data_command,
+        'update-remote-system': update_remote_system_command,
+        'get-modified-remote-data': get_modified_remote_data_command
+    }
 
     try:
         if demisto.command() == 'test-module':
@@ -722,29 +725,8 @@ def main():
         elif demisto.command() == 'fetch-incidents':
             fetch_incidents(otrs_client, fetch_queue, fetch_priority, fetch_time, look_back_days)
 
-        elif demisto.command() == 'otrs-get-ticket':
-            get_ticket_command(otrs_client, args)
-
-        elif demisto.command() == 'otrs-search-ticket':
-            search_ticket_command(otrs_client, args)
-
-        elif demisto.command() == 'otrs-create-ticket':
-            create_ticket_command(otrs_client, args)
-
-        elif demisto.command() == 'otrs-update-ticket':
-            update_ticket_command(otrs_client, args)
-
-        elif demisto.command() == 'otrs-close-ticket':
-            close_ticket_command(otrs_client, args)
-
-        elif demisto.command() == "get-remote-data":
-            get_remote_data_command(otrs_client, args)
-
-        elif demisto.command() == "update-remote-system":
-            update_remote_system_command(otrs_client, args)
-
-        elif demisto.command() == 'get-modified-remote-data':
-            get_modified_remote_data_command(otrs_client, args)
+        elif demisto.command() in commands:
+            return_results(commands[demisto.command()](otrs_client, args))
 
         else:
             raise NotImplementedError(f'Command not implemented: {demisto.command()}')
