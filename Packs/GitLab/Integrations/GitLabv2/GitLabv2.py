@@ -328,6 +328,19 @@ class Client(BaseClient):
         suffix = f'projects/{project_id}/trigger/pipeline'
         return self._http_request('POST', suffix, data=data)
 
+    def gitlab_cancel_pipeline(self, project_id: str, pipeline_id: str) -> dict:
+        """Cancel a pipeline on GitLab.
+
+        Args:
+            project_id: Project ID on which to cancel the pipeline.
+            pipeline_id: Pipeline ID to cancel.
+
+        Returns:
+            dict: The response in JSON format.
+        """
+        suffix = f'/projects/{project_id}/pipelines/{pipeline_id}/cancel'
+        return self._http_request('POST', suffix)
+
 
 ''' HELPER FUNCTIONS '''
 
@@ -1745,6 +1758,36 @@ def gitlab_trigger_pipeline_command(client: Client, args: dict[str, str]) -> Com
     )
 
 
+def gitlab_cancel_pipeline_command(client: Client, args: dict[str, str]) -> CommandResults:
+    """
+    Cancels a GitLab pipeline.
+    Args:
+        client (Client): Client to perform calls to GitLab services.
+        args (dict) XSOAR arguments:
+            - 'project_id': Project ID on which to cancel the pipeline.
+            - 'pipeline_id': The pipline ID to cancel.
+
+    Returns:
+        (CommandResults).
+    """
+    project_id = args.get('project_id') or client.project_id
+    if not (pipeline_id := args.get('pipeline_id', '')):
+        return_error("The pipline id is required in order to cancel it")
+
+    response = client.gitlab_cancel_pipeline(project_id, pipeline_id)
+
+    outputs = {k: v for k, v in response.items() if k in PIPELINE_FIELDS_TO_EXTRACT}
+    human_readable = tableToMarkdown('GitLab Pipeline', outputs, removeNull=True)
+
+    return CommandResults(
+        outputs_prefix='GitLab.Pipeline',
+        outputs_key_field='id',
+        outputs=outputs,
+        raw_response=response,
+        readable_output=human_readable
+    )
+
+
 def check_for_html_in_error(e: str):
     """
     Args:
@@ -1807,6 +1850,7 @@ def main() -> None:  # pragma: no cover
                 'gitlab-jobs-list': gitlab_jobs_list_command,
                 'gitlab-artifact-get': gitlab_artifact_get_command,
                 'gitlab-trigger-pipeline': gitlab_trigger_pipeline_command,
+                'gitlab-cancel-pipeline': gitlab_cancel_pipeline_command,
                 }
 
     try:
