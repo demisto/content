@@ -10,7 +10,7 @@ def get_plain_text(html: str, replace_line_breaks: bool, trim_result: bool):
     if html:
         data = re.sub(r'<\/?br\s?\/?>', '\n', html, flags=re.I) if replace_line_breaks else html
 
-        data = re.sub(r'<.*?>', '', data, flags=re.I)
+        data = re.sub(r'<.*?>', '', data)
         entities = {'quot': '"', 'amp': '&', 'apos': "'", 'lt': '<', 'gt': '>', 'nbsp': ' ',
                     'copy': '(C)', 'reg': '(R)', 'tilde': '~', 'ldquo': '"', 'rdquo': '"', 'hellip': '...'}
         for e in entities:
