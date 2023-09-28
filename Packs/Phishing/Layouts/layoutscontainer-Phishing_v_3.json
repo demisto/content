@@ -243,14 +243,10 @@
                         "moved": false,
                         "name": "Email HTML Image",
                         "query": {
-							"categories": [
-								"tags"
-							],
-							"preDefinedFilters": true,
-							"tags": [
-								"email_html_image"
-							]
-						},
+                            "tags": [
+                                "email_html_image"
+                            ]
+                        },
                         "queryType": "warRoomFilter",
                         "readOnly": true,
                         "static": false,
