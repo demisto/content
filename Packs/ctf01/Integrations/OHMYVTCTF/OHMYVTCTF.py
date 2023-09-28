@@ -112,7 +112,7 @@ Someone messed with the integarion  maybe its related to something?
 
 # Flag: <Which animal is in the picture?>
 '''
-def test_module(client):
+def test_module():
     """
     Returning 'ok' indicates that the integration works like it suppose to. Connection to the service is successful.
 
@@ -127,5 +127,5 @@ def test_module(client):
 def main():
     if demisto.command() == 'test-module':
         # This is the call made when pressing the integration Test button.
-        result = test_module(client)
+        result = test_module()
         return_results(result)
