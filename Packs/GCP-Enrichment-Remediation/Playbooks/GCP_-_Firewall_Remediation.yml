@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: a4f3ee9a-3da0-4443-861e-0f4fd4dfd88a
+    taskid: e7f04be3-9925-4568-88d2-0f5a83040fcf
     type: start
     task:
-      id: a4f3ee9a-3da0-4443-861e-0f4fd4dfd88a
+      id: e7f04be3-9925-4568-88d2-0f5a83040fcf
       version: -1
       name: ""
       iscommand: false
@@ -23,8 +23,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 160
+          "x": 500,
+          "y": -130
         }
       }
     note: false
@@ -36,10 +36,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: b6dc6c62-5a65-4394-8380-6c9fad1591b5
+    taskid: 35c1ac08-f01e-437f-8605-c284d24aff40
     type: condition
     task:
-      id: b6dc6c62-5a65-4394-8380-6c9fad1591b5
+      id: 35c1ac08-f01e-437f-8605-c284d24aff40
       version: -1
       name: Is Google Cloud Compute enabled and are Input values defined?
       description: Determines if the AWS - EC2 integration instance is configured and Input values are defined to pull enrichment data.
@@ -50,8 +50,7 @@ tasks:
       '#default#':
       - "33"
       "yes":
-      - "32"
-      - "34"
+      - "37"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -121,8 +120,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 290
+          "x": 500,
+          "y": 0
         }
       }
     note: false
@@ -134,10 +133,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 48b75aa1-8d8c-4cfd-8926-1860fb296a12
+    taskid: d85cd175-1f8e-4993-8dee-723248d0648d
     type: title
     task:
-      id: 48b75aa1-8d8c-4cfd-8926-1860fb296a12
+      id: d85cd175-1f8e-4993-8dee-723248d0648d
       version: -1
       name: Done
       type: title
@@ -149,8 +148,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 360,
-          "y": 1955
+          "x": 440,
+          "y": 2340
         }
       }
     note: false
@@ -162,10 +161,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: ae55e415-827a-4703-8ea8-524c0bc62c24
+    taskid: 3d0d2868-a83a-4a99-8f9f-b72b6449b7e3
     type: condition
     task:
-      id: ae55e415-827a-4703-8ea8-524c0bc62c24
+      id: 3d0d2868-a83a-4a99-8f9f-b72b6449b7e3
       version: -1
       name: Does the remediation allow rule exist?
       description: Check whether the last command returned remediation allow rule or not.
@@ -202,8 +201,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 290,
-          "y": 760
+          "x": 320,
+          "y": 1280
         }
       }
     note: false
@@ -215,10 +214,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: bb5838b5-d766-4f31-8343-cc5bae31dbdc
+    taskid: c2dceda0-28b9-4c30-81e8-66e0fad21c34
     type: regular
     task:
-      id: bb5838b5-d766-4f31-8343-cc5bae31dbdc
+      id: c2dceda0-28b9-4c30-81e8-66e0fad21c34
       version: -1
       name: Get network tags information.
       description: Returns the tags of instance.
@@ -248,8 +247,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 460,
-          "y": 1330
+          "x": 540,
+          "y": 1770
         }
       }
     note: false
@@ -261,10 +260,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: 361485dd-c1c9-420a-85a6-753cf74edc76
+    taskid: 93a9e098-459a-40b1-88c2-73661f69d459
     type: regular
     task:
-      id: 361485dd-c1c9-420a-85a6-753cf74edc76
+      id: 93a9e098-459a-40b1-88c2-73661f69d459
       version: -1
       name: Add block everything firewall rule
       description: Creates a firewall rule in the specified project using the data included in the request.
@@ -305,25 +304,14 @@ tasks:
         simple: INGRESS
       name:
         complex:
-          root: inputs.RemotePort
+          root: RuleSuffix
           transformers:
           - operator: concat
             args:
               prefix:
                 value:
-                  simple: remediation-block-port-
-              suffix:
-                value:
-                  simple: '-'
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: inputs.RemoteProtocol
-                iscontext: true
-          - operator: toLowerCase
-          - operator: uniq
+                  simple: remediation-block-
+              suffix: {}
       network:
         complex:
           root: inputs.GcpNetwork
@@ -366,8 +354,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 780,
-          "y": 1050
+          "x": 810,
+          "y": 1580
         }
       }
     note: false
@@ -379,10 +367,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: dbfbd0eb-ce64-4b52-8f23-fca7bde794a2
+    taskid: 6629ca82-de72-4b88-8795-4253ed4e09b5
     type: regular
     task:
-      id: dbfbd0eb-ce64-4b52-8f23-fca7bde794a2
+      id: 6629ca82-de72-4b88-8795-4253ed4e09b5
       version: -1
       name: Add allow rule
       description: Creates a firewall rule in the specified project using the data included in the request.
@@ -422,25 +410,14 @@ tasks:
         simple: INGRESS
       name:
         complex:
-          root: inputs.RemotePort
+          root: RuleSuffix
           transformers:
           - operator: concat
             args:
               prefix:
                 value:
-                  simple: remediation-allow-port-
-              suffix:
-                value:
-                  simple: '-'
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: inputs.RemoteProtocol
-                iscontext: true
-          - operator: toLowerCase
-          - operator: uniq
+                  simple: remediation-allow-
+              suffix: {}
       network:
         complex:
           root: inputs.GcpNetwork
@@ -483,8 +460,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 240,
-          "y": 1060
+          "x": 280,
+          "y": 1580
         }
       }
     note: false
@@ -496,10 +473,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: 04c4da2b-2bd5-46cb-82dd-053e1b1a0281
+    taskid: 1a746900-ba67-40c2-827b-55ff558115ed
     type: condition
     task:
-      id: 04c4da2b-2bd5-46cb-82dd-053e1b1a0281
+      id: 1a746900-ba67-40c2-827b-55ff558115ed
       version: -1
       name: Does the network tags already exist on the instance?
       description: |+
@@ -554,8 +531,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 460,
-          "y": 1500
+          "x": 540,
+          "y": 1940
         }
       }
     note: false
@@ -567,10 +544,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "30":
     id: "30"
-    taskid: 147aa1b0-785f-47cb-861c-1a1fdc7c3e95
+    taskid: aeb304d4-17fc-437c-8a80-91079bf85bb1
     type: regular
     task:
-      id: 147aa1b0-785f-47cb-861c-1a1fdc7c3e95
+      id: aeb304d4-17fc-437c-8a80-91079bf85bb1
       version: -1
       name: Add and set network tags
       description: Add network tag for the specified instance.
@@ -620,8 +597,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 660,
-          "y": 1710
+          "x": 740,
+          "y": 2150
         }
       }
     note: false
@@ -633,10 +610,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: 1b58f2b4-bf3c-49e8-8fb0-4767d4116045
+    taskid: c5fd3ee9-0b61-48ac-867c-bf6d38017e18
     type: regular
     task:
-      id: 1b58f2b4-bf3c-49e8-8fb0-4767d4116045
+      id: c5fd3ee9-0b61-48ac-867c-bf6d38017e18
       version: -1
       name: Lookup firewall remediation allow rule
       description: Retrieves the list of firewall rules available to the specified project. If these don't exist, the allow and block rules are created of the format remediation-[allow|block]-port-{port#}-{protocol}.
@@ -650,30 +627,16 @@ tasks:
     scriptarguments:
       filters:
         complex:
-          root: inputs.RemotePort
+          root: RuleSuffix
           transformers:
           - operator: concat
             args:
               prefix:
                 value:
-                  simple: name="remediation-allow-port-
-              suffix:
-                value:
-                  simple: '-'
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: inputs.RemoteProtocol
-                iscontext: true
-          - operator: concat
-            args:
-              prefix: {}
+                  simple: name="remediation-allow-
               suffix:
                 value:
                   simple: '"'
-          - operator: toLowerCase
       project_id:
         complex:
           root: inputs.GcpProject
@@ -682,8 +645,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 290,
-          "y": 580
+          "x": 320,
+          "y": 1100
         }
       }
     note: false
@@ -695,10 +658,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "33":
     id: "33"
-    taskid: 8a254820-413a-4853-8b91-11ebe5c2fbdd
+    taskid: 9d5e997a-d984-4dfc-8b4b-83f0cb14cb47
     type: title
     task:
-      id: 8a254820-413a-4853-8b91-11ebe5c2fbdd
+      id: 9d5e997a-d984-4dfc-8b4b-83f0cb14cb47
       version: -1
       name: continue
       type: title
@@ -713,8 +676,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -200,
-          "y": 510
+          "x": 20,
+          "y": 200
         }
       }
     note: false
@@ -726,10 +689,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "34":
     id: "34"
-    taskid: 8598730b-100f-498b-8492-de505ca3d98b
+    taskid: 9228e88b-d8ad-4a81-87db-974ca7ae2a32
     type: regular
     task:
-      id: 8598730b-100f-498b-8492-de505ca3d98b
+      id: 9228e88b-d8ad-4a81-87db-974ca7ae2a32
       version: -1
       name: Lookup firewall remediation block rule
       description: Retrieves the list of firewall rules available to the specified project. If these don't exist, the allow and block rules are created of the format remediation-[allow|block]-port-{port#}-{protocol}.
@@ -743,30 +706,16 @@ tasks:
     scriptarguments:
       filters:
         complex:
-          root: inputs.RemotePort
+          root: RuleSuffix
           transformers:
           - operator: concat
             args:
               prefix:
                 value:
-                  simple: name="remediation-block-port-
-              suffix:
-                value:
-                  simple: '-'
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: inputs.RemoteProtocol
-                iscontext: true
-          - operator: concat
-            args:
-              prefix: {}
+                  simple: name="remediation-block-
               suffix:
                 value:
                   simple: '"'
-          - operator: toLowerCase
       project_id:
         complex:
           root: inputs.GcpProject
@@ -775,8 +724,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 710,
-          "y": 580
+          "x": 740,
+          "y": 1100
         }
       }
     note: false
@@ -788,10 +737,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "35":
     id: "35"
-    taskid: 669ade1d-e05e-4532-8634-40eba22fc59e
+    taskid: 198b8f9f-2e80-428b-8304-49ece70c4184
     type: condition
     task:
-      id: 669ade1d-e05e-4532-8634-40eba22fc59e
+      id: 198b8f9f-2e80-428b-8304-49ece70c4184
       version: -1
       name: Does the remediation block rule exist?
       description: Check whether the last command returned remediation block rule or not.
@@ -828,8 +777,239 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 710,
-          "y": 760
+          "x": 740,
+          "y": 1280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: 6ee1dedc-e09e-4a58-8f7f-dead6c06edff
+    type: title
+    task:
+      id: 6ee1dedc-e09e-4a58-8f7f-dead6c06edff
+      version: -1
+      name: Check if network name is too long
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "38"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: c1e67727-ab17-48d8-88c4-173519b80cf6
+    type: regular
+    task:
+      id: c1e67727-ab17-48d8-88c4-173519b80cf6
+      version: -1
+      name: Set VPCNetwork temporary context
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "39"
+    scriptarguments:
+      key:
+        simple: VPCNetwork
+      value:
+        complex:
+          root: inputs.GcpNetwork
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: networks/
+          - operator: LastArrayElement
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: 4e1d843f-79ba-45c6-8506-f383c844da8e
+    type: condition
+    task:
+      id: 4e1d843f-79ba-45c6-8506-f383c844da8e
+      version: -1
+      name: Is VPC network name short enough?
+      description: Check whether the VPC name is more than 30 characters, because if it is that means the rule firewall rule name will be too long.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "43"
+      "yes":
+      - "40"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: lessThanOrEqual
+          left:
+            value:
+              complex:
+                root: VPCNetwork
+                transformers:
+                - operator: strLength
+            iscontext: true
+          right:
+            value:
+              simple: "30"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "40":
+    id: "40"
+    taskid: 5324ca5b-ea62-41f7-86ad-d94f09df30b7
+    type: regular
+    task:
+      id: 5324ca5b-ea62-41f7-86ad-d94f09df30b7
+      version: -1
+      name: Set RuleSuffix temporary context
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "32"
+      - "34"
+    scriptarguments:
+      key:
+        simple: RuleSuffix
+      value:
+        complex:
+          root: inputs.RemotePort
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: -port-
+              suffix:
+                value:
+                  simple: '-'
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: VPCNetwork
+                iscontext: true
+              suffix:
+                value:
+                  simple: inputs.RemoteProtocol
+                iscontext: true
+          - operator: toLowerCase
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "43":
+    id: "43"
+    taskid: 60012ee4-4dbd-457f-8725-3f2001f2c114
+    type: regular
+    task:
+      id: 60012ee4-4dbd-457f-8725-3f2001f2c114
+      version: -1
+      name: Set VPCNetwork temporary context (truncated)
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "40"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: VPCNetwork
+      value:
+        complex:
+          root: VPCNetwork
+          transformers:
+          - operator: substring
+            args:
+              from:
+                value:
+                  simple: "0"
+              to:
+                value:
+                  simple: "29"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 760,
+          "y": 690
         }
       }
     note: false
@@ -843,14 +1023,15 @@ view: |-
   {
     "linkLabelsPosition": {
       "16_18_yes": 0.32,
-      "35_18_yes": 0.36
+      "35_18_yes": 0.36,
+      "39_40_yes": 0.49
     },
     "paper": {
       "dimensions": {
-        "height": 1860,
-        "width": 1360,
-        "x": -200,
-        "y": 160
+        "height": 2535,
+        "width": 1170,
+        "x": 20,
+        "y": -130
       }
     }
   }
@@ -897,5 +1078,3 @@ outputs: []
 tests:
 - No tests (auto formatted)
 fromversion: 6.5.0
-contentitemexportablefields:
-  contentitemfields: {}
