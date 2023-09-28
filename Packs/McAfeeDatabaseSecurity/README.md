@@ -11,6 +11,8 @@ You need to configure McAfee Database Security to forward Syslog messages.
 5. Select the transport protocol.
 6. Set the syslog format to CEF (default).
 
+Make sure to make the needed changes to the CEF format, as described [here](https://docs.trellix.com/bundle/database-security-4.8.x-product-guide/page/GUID-AB0748F3-CFA0-4688-9496-29DF34BA0428.html), in order that the mapping will work as expected.
+
 ## Collect Events from Vendor
 In order to use the collector, use the [Broker VM](#broker-vm) option.
 
