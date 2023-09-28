@@ -172,7 +172,7 @@ script:
     name: rf-feed-get-indicators
   - arguments:
     - auto: PREDEFINED
-      description: The indicator type
+      description: The indicator type.
       name: indicator_type
       predefined:
       - ip
@@ -195,7 +195,7 @@ script:
     - contextPath: RecordedFutureFeed.RiskRule.Criticality
       description: The risk rule criticality.
       type: String
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.13.74666
   feed: true
   runonce: false
   script: '-'

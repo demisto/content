@@ -36,7 +36,7 @@ script:
       name: billing_account_name
     - description: 'A comma-separated list of folders names of parent resources from which to retrieve log entries. A maximum of 100 resources may be specified.'
       name: folder_name
-    - description: When specified, the results returned are limited to log entries that match the filter. Referencing a parent resource that is not listed in resourceNames will cause the filter to return no results. The maximum length of a filter is 20,000 characters. E.g., "protoPayload.requestMetadata.callerIp:1.1.1.1 AND protoPayload.serviceName:name"
+    - description: When specified, the results returned are limited to log entries that match the filter. Referencing a parent resource that is not listed in resourceNames will cause the filter to return no results. The maximum length of a filter is 20,000 characters. E.g., "protoPayload.requestMetadata.callerIp:1.1.1.1 AND protoPayload.serviceName:name".
       name: filter
     - auto: PREDEFINED
       defaultValue: timestamp asc
@@ -187,7 +187,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/google-api-py3:1.0.0.71892
+  dockerimage: demisto/google-api-py3:1.0.0.75672
 fromversion: 6.8.0
 tests:
 - No tests (auto formatted)
