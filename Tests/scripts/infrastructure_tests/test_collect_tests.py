@@ -217,7 +217,8 @@ NIGHTLY_TESTS: tuple = (
 
     (MockerCases.C, XSOARNightlyTestCollector,
      {'myXSOAROnlyTestPlaybook', 'myTestPlaybook', 'Sanity Test - Playbook with Unmockable Whois Integration'},
-     {'bothMarketplacesPack', 'bothMarketplacesPackOnlyXSIAMIntegration', 'myXSOAROnlyPack', 'Whois'}, None, None, (MarketplaceVersions.XSOAR_SAAS,)),
+     {'bothMarketplacesPack', 'bothMarketplacesPackOnlyXSIAMIntegration', 'myXSOAROnlyPack', 'Whois'},
+     None, None, (MarketplaceVersions.XSOAR_SAAS,)),
 
     (MockerCases.C, XSIAMNightlyTestCollector,
      {'myXSIAMOnlyTestPlaybook', 'Sanity Test - Playbook with Unmockable Whois Integration'},
@@ -477,13 +478,20 @@ XSOAR_SAAS_BRANCH_ARGS = ('master', MarketplaceVersions.XSOAR_SAAS, None)
         # (39) Case A, yml file changes, expect the test playbook testing the integration to be collected
         (MockerCases.A_xsoar, ('myOtherTestPlaybook',), ('myXSOAROnlyPack',), None, None, XSOAR_SAAS_BRANCH_ARGS,
             ('Packs/myXSOAROnlyPack/Integrations/myIntegration/myIntegration.yml',), (), ('myXSOAROnlyPack',)),
-        
-        # (40) Xsoar Marketplace with all packs changed
-        (MockerCases.Xsoar_marketplaces, None, ('OnlyXsoarSaaS',), None, None, XSOAR_SAAS_BRANCH_ARGS,
+
+        # (40) All kind of xsoar packs changed, running with xsoar_saas collector validate that only relevant packs are collected
+        (MockerCases.Xsoar_marketplaces, None, ('OnlyXsoarSaaS', 'BothXsoar',), None, None, XSOAR_SAAS_BRANCH_ARGS,
             ('Packs/OnlyXsoarSaaS/Integrations/myOnlyXsoarSaaSIntegration/myOnlyXsoarSaaSIntegration.yml',
              'Packs/BothXsoar/Integrations/myBothXsoarIntegration/myBothXsoarIntegration.yml',
              'Packs/OnlyXsoarOnPrem/Integrations/myOnlyXsoarOnPremIntegration/myOnlyXsoarOnPremIntegration.yml'), (),
-             ('OnlyXsoarSaaS',))
+         ('OnlyXsoarSaaS', 'BothXsoar',)),
+
+        # (41) All kind of xsoar packs changed, running with xsoar collector validate that only relevant packs are collected
+        (MockerCases.Xsoar_marketplaces, None, ('OnlyXsoarOnPrem', 'BothXsoar',), None, None, XSOAR_BRANCH_ARGS,
+            ('Packs/OnlyXsoarSaaS/Integrations/myOnlyXsoarSaaSIntegration/myOnlyXsoarSaaSIntegration.yml',
+             'Packs/BothXsoar/Integrations/myBothXsoarIntegration/myBothXsoarIntegration.yml',
+             'Packs/OnlyXsoarOnPrem/Integrations/myOnlyXsoarOnPremIntegration/myOnlyXsoarOnPremIntegration.yml'), (),
+         ('OnlyXsoarOnPrem', 'BothXsoar',))
 
     )
 )
