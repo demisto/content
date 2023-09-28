@@ -16,8 +16,8 @@ The CrowdStrike Falcon OAuth 2 API integration (formerly Falcon Firehose API), e
     | Endpoint Detections fetch query |  | False |
     | Endpoint Incidents fetch query |  | False |
     | IDP Detections fetch query |  | False |
-    | IOM fetch query | Use the Falcon Query Language. For more information, refer to the documentation. | False |
-    | IOA fetch query | In the format: cloud_provider=aws&aws_account_id=1234. The query must have the argument 'cloud_provider' configured. For more information, refer to the documentation. | False |
+    | IOM fetch query | Use the Falcon Query Language. For more information, refer to the integration docs. | False |
+    | IOA fetch query | In the format: cloud_provider=aws&aws_account_id=1234. The query must have the argument 'cloud_provider' configured. For more information, refer to the integration docs. | False |
     | Fetch incidents |  | False |
     | Incident type |  | False |
     | Mirroring Direction | Choose the direction to mirror the detection: Incoming \(from CrowdStrike Falcon to XSOAR\), Outgoing \(from XSOAR to CrowdStrike Falcon\), or Incoming and Outgoing \(to/from CrowdStrike Falcon and XSOAR\). | False |

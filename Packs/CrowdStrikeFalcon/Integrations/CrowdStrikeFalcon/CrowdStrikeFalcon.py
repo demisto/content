@@ -2671,7 +2671,7 @@ def fetch_incidents():
                                                                   api_limit=500)
         demisto.debug(f'Fetched the following IOM resource IDS: {", ".join(iom_resource_ids)}')
         iom_config_incidents, fetched_resource_ids, new_scan_time = extract_incidents(
-            fetched_data=get_iom_resources_for_fetch(iom_resource_ids=iom_resource_ids),
+            fetched_data=get_iom_resources(iom_resource_ids=iom_resource_ids),
             last_date=last_scan_time,
             last_fetched_ids=last_resource_ids, date_key='scan_time',
             id_key='id', date_format=IOM_DATE_FORMAT, new_next_token=iom_next_token,
@@ -2950,7 +2950,7 @@ def ioa_events_pagination(ioa_fetch_query: str, api_limit: int, ioa_next_token: 
     while continue_pagination:
         demisto.debug(f'Doing IOA pagination with the arguments: {ioa_fetch_query=}, {api_limit=}, {ioa_new_next_token=},'
                       f'{fetch_limit=}')
-        ioa_events, ioa_new_next_token = get_ioa_events_for_fetch(ioa_fetch_query=ioa_fetch_query,
+        ioa_events, ioa_new_next_token = get_ioa_events(ioa_fetch_query=ioa_fetch_query,
                                                                   ioa_next_token=ioa_new_next_token,
                                                                   limit=min(api_limit, fetch_limit - total_incidents_count))
         fetched_ioa_events.extend(ioa_events)
@@ -2964,7 +2964,7 @@ def ioa_events_pagination(ioa_fetch_query: str, api_limit: int, ioa_next_token: 
     return fetched_ioa_events, ioa_new_next_token
 
 
-def get_ioa_events_for_fetch(ioa_fetch_query: str, ioa_next_token: str | None,
+def get_ioa_events(ioa_fetch_query: str, ioa_next_token: str | None,
                              limit: int = INCIDENTS_PER_FETCH) -> tuple[list[dict[str, Any]], str | None]:
     """Do a single API call to receive IOA events.
 
@@ -3142,7 +3142,7 @@ def get_iom_ids_for_fetch(filter: str, iom_next_token: str | None = None,
         return resource_ids, None
 
 
-def get_iom_resources_for_fetch(iom_resource_ids: list[str]) -> list[dict[str, Any]]:
+def get_iom_resources(iom_resource_ids: list[str]) -> list[dict[str, Any]]:
     """Get the IOM entities/details that were fetched.
 
     Args:

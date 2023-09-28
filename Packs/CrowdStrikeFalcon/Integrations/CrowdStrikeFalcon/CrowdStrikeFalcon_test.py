@@ -5928,7 +5928,7 @@ class TestIOAFetch:
         Then
             - Validate that we extract the events and next token from the raw response, if they exist.
         """
-        from CrowdStrikeFalcon import get_ioa_events_for_fetch
+        from CrowdStrikeFalcon import get_ioa_events
         exepcted_events = ['event_1', 'event_2']
         raw_response = {'meta':
                         {
@@ -5937,7 +5937,7 @@ class TestIOAFetch:
                         'resources': {'events': exepcted_events}
                         }
         mocker.patch('CrowdStrikeFalcon.http_request', return_value=raw_response)
-        events, next_token = get_ioa_events_for_fetch(ioa_fetch_query='some_query', ioa_next_token='not_important')
+        events, next_token = get_ioa_events(ioa_fetch_query='some_query', ioa_next_token='not_important')
         assert exepcted_events == events
         assert expected_next_token == next_token
 
@@ -5955,14 +5955,14 @@ class TestIOAFetch:
         """
         # We saved two responses, where both of them return a next token. We have that the api_limit=2,
         # and the fetch_limit=3, that way, we would need to do a request twice, and on the second request,
-        # we would make it while having a limit of 1. We will check the arguments of the method get_ioa_events_for_fetch,
+        # we would make it while having a limit of 1. We will check the arguments of the method get_ioa_events,
         # and the return values of ioa_events_pagination.
-        from CrowdStrikeFalcon import ioa_events_pagination, get_ioa_events_for_fetch
+        from CrowdStrikeFalcon import ioa_events_pagination, get_ioa_events
         page_1_raw_response = load_json('test_data/ioa_fetch_incidents.json/ioa_events_page_1_raw_response.json')
         page_2_raw_response = load_json('test_data/ioa_fetch_incidents.json/ioa_events_page_2_raw_response.json')
         mocker.patch('CrowdStrikeFalcon.http_request', side_effect=[page_1_raw_response, page_2_raw_response])
         get_events_for_fetch_mocker = mocker.patch(
-            'CrowdStrikeFalcon.get_ioa_events_for_fetch', side_effect=get_ioa_events_for_fetch)
+            'CrowdStrikeFalcon.get_ioa_events', side_effect=get_ioa_events)
         events, next_token = ioa_events_pagination(ioa_fetch_query='dummy_fetch_query',
                                                    ioa_next_token='dummy_token',
                                                    fetch_limit=3,
@@ -6309,7 +6309,7 @@ class TestIOMFetch:
         # The function iom_ids_pagination returns the ids of the fetched events, and the
         # next token (for the sake of testing, it is None)
         mocker.patch('CrowdStrikeFalcon.iom_ids_pagination', return_value=(['2', '3'], None))
-        mocker.patch('CrowdStrikeFalcon.get_iom_resources_for_fetch',
+        mocker.patch('CrowdStrikeFalcon.get_iom_resources',
                      return_value=[{'id': '2', 'scan_time': '2023-01-01T00:00:00.00Z'},
                                    {'id': '3', 'scan_time': '2023-01-01T00:00:00.00Z'}])
         mocker.patch('CrowdStrikeFalcon.reformat_timestamp', return_value='2023-01-01T00:00:00.00Z')
@@ -6342,7 +6342,7 @@ class TestIOMFetch:
                                           'iom_fetch_query': "cloud_provider: 'aws'"})
         mocker.patch.object(demisto, 'getLastRun', return_value=last_run_object)
         mocker.patch('CrowdStrikeFalcon.iom_ids_pagination', return_value=(['2'], 'next_token'))
-        mocker.patch('CrowdStrikeFalcon.get_iom_resources_for_fetch',
+        mocker.patch('CrowdStrikeFalcon.get_iom_resources',
                      return_value=[{'id': '2', 'scan_time': '2023-01-01T00:00:00.00Z'}])
         mocker.patch('CrowdStrikeFalcon.reformat_timestamp', return_value='2023-01-01T00:00:00.00Z')
         set_last_run_mocker = mocker.patch.object(demisto, 'setLastRun', side_effect=demisto.setLastRun)
@@ -6372,7 +6372,7 @@ class TestIOMFetch:
                                           'iom_fetch_query': "cloud_provider: 'aws'"})
         mocker.patch.object(demisto, 'getLastRun', return_value=last_run_object)
         mocker.patch('CrowdStrikeFalcon.iom_ids_pagination', return_value=(['2'], None))
-        mocker.patch('CrowdStrikeFalcon.get_iom_resources_for_fetch',
+        mocker.patch('CrowdStrikeFalcon.get_iom_resources',
                      return_value=[{'id': '2', 'scan_time': '2023-01-01T00:00:00.00Z'}])
         mocker.patch('CrowdStrikeFalcon.reformat_timestamp', return_value='2023-01-01T00:00:00.00Z')
         set_last_run_mocker = mocker.patch.object(demisto, 'setLastRun', side_effect=demisto.setLastRun)
@@ -6405,7 +6405,7 @@ class TestIOMFetch:
         mocker.patch.object(demisto, 'getLastRun', return_value=last_run_object)
 
         mocker.patch('CrowdStrikeFalcon.iom_ids_pagination', return_value=(['3', '2'], 'new_next_token'))
-        mocker.patch('CrowdStrikeFalcon.get_iom_resources_for_fetch',
+        mocker.patch('CrowdStrikeFalcon.get_iom_resources',
                      return_value=[{'id': '3', 'scan_time': '2024-01-01T00:00:00.00Z'},
                                    {'id': '2', 'scan_time': '2023-01-01T00:00:00.00Z'}])
         set_last_run_mocker = mocker.patch.object(demisto, 'setLastRun', side_effect=demisto.setLastRun)
