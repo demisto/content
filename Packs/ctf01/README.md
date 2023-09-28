@@ -3,9 +3,6 @@ Welcome to XSOAR’s Capture the Flag pack.
 This pack was prepared with small challenges which enables you to get familiar with XSOAR8. 
 To play this game, follow the instructions located within the "Prepare your CTF" playbook, that is part of this pack.
 
-![Prepare Your CTF](https://github.com/demisto/content/raw/5dbcb964209b0bab7d4cb7e416d95b8e50600ac6/Packs/ctf01/doc_files/playbook-Prepare_your_CTF.png)
-![Malware Investigation & Response Incident layout](https://github.com/demisto/content/raw/515f1705ecd1f769fe0ae63e4fcb8066db4d267b/Packs/MalwareInvestigationAndResponse/doc_files/Malware_Investigation_%26_Response_layout.png)
-![Let's Investigate](https://raw.githubusercontent.com/demisto/content/2c0f31f58ddf1a8ae57300145d9ea2f677a764ba/Packs/ctf01/doc_files/A.gif)
 
 ### Overall notes:   
 
@@ -13,7 +10,4 @@ To play this game, follow the instructions located within the "Prepare your CTF"
 - The playbooks will guide  you throughout the game, follow the instructions and use the hints using the question mark located near each question.
 
 ![Prepare Your CTF](https://github.com/demisto/content/raw/5dbcb964209b0bab7d4cb7e416d95b8e50600ac6/Packs/ctf01/doc_files/playbook-Prepare_your_CTF.png)
-![Malware Investigation & Response Incident layout](https://github.com/demisto/content/raw/515f1705ecd1f769fe0ae63e4fcb8066db4d267b/Packs/MalwareInvestigationAndResponse/doc_files/Malware_Investigation_%26_Response_layout.png)
 ![Let's Investigate](https://raw.githubusercontent.com/demisto/content/2c0f31f58ddf1a8ae57300145d9ea2f677a764ba/Packs/ctf01/doc_files/A.gif)
-
-For more information visit xsoar.pan.dev

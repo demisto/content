@@ -1,6 +1,5 @@
 Welcome to XSOAR’s Capture the Flag pack.
 
-
 ###
  ### **Note**
 
@@ -16,9 +15,4 @@ To play this game, follow the instructions located within the "Prepare your CTF"
 - The playbooks will guide  you throughout the game, follow the instructions and use the hints using the question mark located near each question.
 
 ![Prepare Your CTF](https://github.com/demisto/content/raw/5dbcb964209b0bab7d4cb7e416d95b8e50600ac6/Packs/ctf01/doc_files/playbook-Prepare_your_CTF.png)
-![Cortex XDR incident handling v3](https://raw.githubusercontent.com/demisto/content/master/Packs/CortexXDR/doc_files/Cortex_XDR_incident_handling_v3.png)
-
-For more information visit xsoar.pan.dev
-
-
-
+![Let's Investigate](https://raw.githubusercontent.com/demisto/content/2c0f31f58ddf1a8ae57300145d9ea2f677a764ba/Packs/ctf01/doc_files/A.gif)
