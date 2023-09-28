@@ -22,7 +22,7 @@ configuration:
   section: Connect
 - display: QRadar API Version
   defaultvalue: 17.0
-  additionalinfo: API version of QRadar (e.g., '12.0'). Minimum API version is 10.1.
+  additionalinfo: API version of QRadar (e.g., '12.0'). Minimum API version is 10.1. Since QRadar API v19, The timestamp fields should be provided as milliseconds epoch format instead of seconds.
   name: api_version
   type: 0
   required: true
