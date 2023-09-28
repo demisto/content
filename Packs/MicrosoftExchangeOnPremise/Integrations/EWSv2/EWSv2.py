@@ -509,9 +509,9 @@ def get_account(account_email, access_type=ACCESS_TYPE, time_zone=None):  # prag
     if not AUTO_DISCOVERY:
         return Account(
             primary_smtp_address=account_email, autodiscover=False, config=config, access_type=access_type,
-            default_timezone=EWSTimeZone(time_zone)
+            default_timezone=time_zone
         )
-    return get_account_autodiscover(account_email, access_type)
+    return get_account_autodiscover(account_email, access_type, time_zone)
 
 
 # LOGGING
@@ -2230,7 +2230,10 @@ def get_none_empty_addresses(addresses_ls):
 
 
 def send_email(args):
-    account = get_account(ACCOUNT_EMAIL)
+    time_zone = demisto.callingContext.get('context', {}).get('User', {}).get('timeZone', None)
+    if time_zone:
+        time_zone = EWSTimeZone(time_zone)
+    account = get_account(account_email=ACCOUNT_EMAIL, time_zone=time_zone)
     bcc = get_none_empty_addresses(argToList(args.get('bcc')))
     cc = get_none_empty_addresses(argToList(args.get('cc')))
     to = get_none_empty_addresses(argToList(args.get('to')))
@@ -2272,7 +2275,11 @@ def send_email(args):
 
 
 def reply_email(args):  # pragma: no cover
-    account = get_account(ACCOUNT_EMAIL)
+
+    time_zone = demisto.callingContext.get('context', {}).get('User', {}).get('timeZone', None)
+    if time_zone:
+        time_zone = EWSTimeZone(time_zone)
+    account = get_account(account_email=ACCOUNT_EMAIL, time_zone=time_zone)
     bcc = args.get('bcc').split(",") if args.get('bcc') else None
     cc = args.get('cc').split(",") if args.get('cc') else None
     to = args.get('to').split(",") if args.get('to') else None
