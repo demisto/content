@@ -934,16 +934,17 @@ class BranchTestCollector(TestCollector):
 
     def _collect_integrations_using_apimodule(self, api_module_id) -> CollectionResult | None:
         integrations_using_apimodule = self.id_set.api_modules_to_integrations.get(api_module_id, [])
-        collection_result_of_apimodule = []
+        result = []
         for integration in integrations_using_apimodule:
             try:
-                integration_collected = self._collect_yml(integration.path)
-                collection_result_of_apimodule.append(integration_collected)
+                integration_collected: CollectionResult = self._collect_single(integration.path)
+
+                result.append(integration_collected)
             except (NothingToCollectException, NonXsoarSupportedPackException) as e:
                 logger.info(str(e))
                 continue
-        logger.debug(f"collection_result_of_apimodule = {collection_result_of_apimodule}")
-        return CollectionResult.union(collection_result_of_apimodule)
+        logger.debug(f"collection_result_of_apimodule = {result}")
+        return CollectionResult.union(result)
 
     def _collect_xsiam_and_modeling_pack(self,
                                          file_type: FileType | None,

@@ -201,7 +201,7 @@ class Graph:
             self.test_playbooks = self.id_to_test_playbook.values()
             self.modeling_rules = self.path_to_modeling_rule.values()
             self.api_modules_to_integrations = {
-                script.object_id: script.imported_by for script in scripts if "ApiModule" in script.object_id}
+                script.object_id: script.imported_by for script in scripts if script.object_id.endswith("ApiModule")}
 
     @property
     def artifact_iterator(self) -> Iterable[IdSetItem]:
