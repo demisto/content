@@ -3,7 +3,7 @@ from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-impor
 from CommonServerUserPython import *  # noqa
 from datetime import datetime
 import urllib3
-from typing import Any, Dict, Tuple, List, Optional
+from typing import Any
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -42,8 +42,8 @@ class Client(BaseClient):
 
 
 def search_events(client: Client, limit: int,
-                  body: Optional[Dict[str, Any]] = None
-                  ) -> Tuple[List[Dict[str, Any]], CommandResults]:
+                  body: dict[str, Any] | None = None
+                  ) -> tuple[list[dict[str, Any]], CommandResults, str | None]:
     """
     Searches for T alerts.
     Args:
@@ -53,28 +53,28 @@ def search_events(client: Client, limit: int,
     Returns:
         list: A list containing the events
     """
-    results: List[Dict] = []
-    token_next_page = None
+    results: list[dict] = []
+    last_run_continuation_token = None
     next_page = True
+    body = body or {}
     if limit <= 0:
         raise DemistoException('the limit argument cannot be negative or zero.')
     while next_page:
         response = client.get_events(body=body)
         demisto.debug(f'http response:\n {response}')
         results += response.get('AuditEvents', [])
-        next_page = response.get('ContinuationToken')
-        if token_next_page := response.get('ContinuationToken'):
-            if not body:
-                body = {}
-            body['ContinuationToken'] = token_next_page
+        if next_page := response.get('ContinuationToken'):
+            if len(results) >= limit:
+                last_run_continuation_token = next_page
+                break
+            body['ContinuationToken'] = next_page
         else:
             next_page = False
+            body['ContinuationToken'] = None
             demisto.debug('finished fetching http response')
-    events: List[Dict[str, Any]] = sorted(results, key=lambda x: x['Timestamp'])
-    if limit < len(events):
-        events = events[-limit:]
+    events: list[dict[str, Any]] = sorted(results, key=lambda x: x['Timestamp'])
     hr = tableToMarkdown(name='Events', t=events) if events else 'No events found.'
-    return events, CommandResults(readable_output=hr)
+    return events, CommandResults(readable_output=hr), last_run_continuation_token
 
 
 ''' COMMAND FUNCTIONS '''
@@ -105,8 +105,8 @@ def test_module(client: Client, first_fetch_time: datetime) -> str:
 
 
 def fetch_events_command(
-    client: Client, max_fetch: int, last_run: Dict[str, Any], first_fetch_time: datetime
-) -> Tuple[Dict[str, Any], List[Dict[str, Any]]]:
+    client: Client, max_fetch: int, last_run: dict[str, Any], first_fetch_time: datetime
+) -> tuple[dict[str, Any], list[dict[str, Any]]]:
     """
     Args:
         client (Client): TeamViewer client to use.
@@ -122,16 +122,22 @@ def fetch_events_command(
     demisto.debug(f'last fetch :\n {last_fetch}')
     body = {
         'StartDate': (last_fetch + timedelta(seconds=1)).strftime(DATE_FORMAT),
-        'EndDate': datetime.utcnow().strftime(DATE_FORMAT)
+        'EndDate': datetime.utcnow().strftime(DATE_FORMAT),
+        'ContinuationToken': last_run.get('last_continuation_token')
     }
     demisto.debug(f'TeamViewer starting fetch events with time params:\n {body}')
-    events, _ = search_events(client=client, limit=max_fetch, body=body)
-    next_run = {'last_fetch': events[-1].get('Timestamp')} if events else last_run
+    events, _, continuation_token = search_events(client=client, limit=max_fetch, body=body)
+    if events:
+        event_last_time = events[-1].get('Timestamp') or last_run.get('last_fetch')
+        next_event_fetch_time = max(datetime.strptime(str(event_last_time), DATE_FORMAT), last_fetch).strftime(DATE_FORMAT)
+        next_run = {'last_fetch': next_event_fetch_time, 'last_continuation_token': continuation_token}
+    else:
+        next_run = last_run
     demisto.debug(f"TeamViewer Returning {len(events)} events in total")
     return next_run, events
 
 
-def add_time_key_to_events(events: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+def add_time_key_to_events(events: list[dict[str, Any]]) -> list[dict[str, Any]]:
     """
     Adds the _time key to the events.
     Args:
@@ -178,7 +184,7 @@ def main() -> None:
         elif command in ('teamviewer-get-events', 'fetch-events'):
             if command == 'teamviewer-get-events':
                 should_push_events = argToBoolean(args.get('should_push_events'))
-                events, results = search_events(
+                events, results, _ = search_events(
                     client=client,
                     limit=arg_to_number(args.get('limit')) or DEFAULT_LIMIT,
                     body={
