@@ -195,9 +195,11 @@ def list_tokens_command():
     context = createContext(new_tokens, removeNull=True)
 
     contents = res_json
-    human_readable = tableToMarkdown('Canary Tools Tokens', new_tokens, headers=headers)
+    for token in new_tokens:
+        token.pop('TokenURL', None)
+    human_readable = tableToMarkdown('Canary Tools Tokens', new_tokens, headers=headers, removeNull=True)
     outputs = {'CanaryTools.Token(val.CanaryToken && val.CanaryToken === obj.CanaryToken)': context}
-    return_outputs(readable_output=human_readable, outputs=outputs, raw_response=contents)
+    return_outputs(readable_output=human_readable, outputs=outputs, raw_response=contents, ignore_auto_extract=True)
 
 
 def get_token_command():
@@ -226,9 +228,11 @@ def get_token_command():
         token_file = fileResult(name, content)
         demisto.results(token_file)
     else:
-        human_readable = tableToMarkdown('Canary Tools Tokens', res.get('token'))
+        token_data = res.get('token', [])
+        token_data.pop('url', None)
+        human_readable = tableToMarkdown('Canary Tools Tokens', token_data)
 
-    return_outputs(readable_output=human_readable, outputs=outputs, raw_response=contents)
+    return_outputs(readable_output=human_readable, outputs=outputs, raw_response=contents, ignore_auto_extract=True)
 
 
 def check_whitelist(ip, port):
@@ -266,9 +270,9 @@ def check_whitelist_command():
     outputs = {'CanaryTools.IP(val.Address && val.Address===obj.Address && val.Port && val.Port===obj.Port)': context}
 
     if res.get('is_ip_ignored'):
-        human_readable = 'The IP address {}:{} is Whitelisted'.format(ip, port)
+        human_readable = f'The IP address {ip}:{port} is Whitelisted'
     else:
-        human_readable = 'The IP address {}:{} is not Whitelisted'.format(ip, port)
+        human_readable = f'The IP address {ip}:{port} is not Whitelisted'
 
     return_outputs(readable_output=human_readable, outputs=outputs, raw_response=contents)
 
@@ -307,7 +311,7 @@ def whitelist_ip_command():
         }
         context = createContext(context, removeNull=True)
         contents = res
-        human_readable = 'The IP address {}:{} was added to the Whitelist'.format(ip, port)
+        human_readable = f'The IP address {ip}:{port} was added to the Whitelist'
         outputs = {
             'CanaryTools.IP(val.Address && val.Address===obj.Address && val.Port && val.Port===obj.Port)': context}
         return_outputs(readable_output=human_readable, outputs=outputs, raw_response=contents)
@@ -338,7 +342,7 @@ def alert_status_command():
         res = http_request('POST', SERVER + 'incident/acknowledge', params=params)
         if res.get('action') == 'acknowledged':
             contents = res
-            human_readable = 'The Alert {} was '.format(alert) + res.get('action')
+            human_readable = f'The Alert {alert} was ' + res.get('action')
             outputs = {'CanaryTools.Alert(val.ID && val.ID === obj.ID)': context}
             return_outputs(readable_output=human_readable, outputs=outputs, raw_response=contents)
 
@@ -346,7 +350,7 @@ def alert_status_command():
         res = http_request('POST', SERVER + 'incident/unacknowledge', params=params)
         if res.get('action') == 'unacknowledged':
             contents = res
-            human_readable = 'The Alert {} was '.format(alert) + res.get('action')
+            human_readable = f'The Alert {alert} was ' + res.get('action')
             outputs = {'CanaryTools.Alert(val.ID && val.ID === obj.ID)': context}
             return_outputs(readable_output=human_readable, outputs=outputs, raw_response=contents)
         else:
@@ -397,4 +401,4 @@ try:
     elif demisto.command() == 'fetch-incidents':
         fetch_incidents_command()
 except Exception as e:
-    return_error('Unable to perform command : {}, Reason: {}'.format(demisto.command, e))
+    return_error(f'Unable to perform command : {demisto.command}, Reason: {e}')
