@@ -1,5 +1,4 @@
-Searches for CVE information using OpenCVE.
-This integration was integrated and tested with version xx of OpenCVE.
+Ingests CVEs from an instance of OpenCVE.
 
 ## Configure OpenCVE on Cortex XSOAR
 
