@@ -24,6 +24,10 @@ XSOAR_SEVERITY_BY_AMP_SEVERITY = {
 
 ISO_8601_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 
+class FetchIncidentsError(Exception):
+    """Raised when there's an error in fetching incidents."""
+    pass
+
 
 class Client(BaseClient):
     def __init__(self, server_url, verify, proxy, headers, auth):
@@ -768,48 +772,36 @@ def fetch_incidents(
     - Tuple[Dict[str, str], List[Dict]]: Tuple containing a dictionary with the `last_fetch` time and a list of fetched incidents.
     """
 
-    last_fetch = last_run.get("last_fetch", first_fetch_time)
-    last_fetch_datetime = datetime.fromisoformat(last_fetch[:-1]).astimezone(timezone.utc)
-    last_fetch = last_fetch_datetime.strftime("%Y-%m-%dT%H:%M:%SZ")
+    try:
+        last_fetch = last_run.get("last_fetch", first_fetch_time)
+        last_fetch_datetime = datetime.fromisoformat(last_fetch[:-1]).astimezone(timezone.utc)
+        last_fetch = last_fetch_datetime.strftime("%Y-%m-%dT%H:%M:%SZ")
 
-    current_datetime = datetime.utcnow().astimezone(timezone.utc)
-    current_iso_format_time = current_datetime.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
-    all_incidents = []
-    # Fetching threats
-    threats_filter = f"receivedTime gte {last_fetch}"
-    if fetch_threats:
-        try:
+        current_datetime = datetime.utcnow().astimezone(timezone.utc)
+        current_iso_format_time = current_datetime.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
+        all_incidents = []
+
+        if fetch_threats:
+            threats_filter = f"receivedTime gte {last_fetch}"
             threats_response = client.get_a_list_of_threats_request(filter_=threats_filter)
-        except Exception as e:
-            logging.error(f"Failed to fetch threats: {e}")
-            threats_response = {"threats": []}
-        all_incidents += generate_threat_incidents(threats_response.get('threats', []), current_iso_format_time)
+            all_incidents += generate_threat_incidents(threats_response.get('threats', []), current_iso_format_time)
 
-    # Fetching abuse campaigns
-    if fetch_abuse_campaigns:
-        demisto.results('tried abuse campaigns')
-        abuse_campaigns_filter = f"lastReportedTime gte {last_fetch}"
-        try:
+        if fetch_abuse_campaigns:
+            abuse_campaigns_filter = f"lastReportedTime gte {last_fetch}"
             abuse_campaigns_response = client.get_a_list_of_campaigns_submitted_to_abuse_mailbox_request(
                 filter_=abuse_campaigns_filter)
-        except Exception as e:
-            logging.error(f"Failed to fetch abuse campaigns : {e}")
-            abuse_campaigns_response = {"campaigns": []}
-        all_incidents += generate_abuse_campaign_incidents(
-            abuse_campaigns_response.get('campaigns', []), current_iso_format_time)
+            all_incidents += generate_abuse_campaign_incidents(abuse_campaigns_response.get('campaigns', []), current_iso_format_time)
 
-    # Fetching account_takeover_cases
-    if fetch_account_takeover_cases:
-        demisto.results('tried takeover cases')
-        account_takeover_cases_filter = f"lastModifiedTime gte {last_fetch}"
-        try:
+        if fetch_account_takeover_cases:
+            account_takeover_cases_filter = f"lastModifiedTime gte {last_fetch}"
             account_takeover_cases_response = client.get_a_list_of_abnormal_cases_identified_by_abnormal_security_request(
                 filter_=account_takeover_cases_filter)
-        except Exception as e:
-            logging.error(f"Failed to fetch account takeover cases: {e}")
-            account_takeover_cases_response = {"cases": []}
-        all_incidents += generate_account_takeover_cases_incidents(
-            account_takeover_cases_response.get('cases', []), current_iso_format_time)
+            all_incidents += generate_account_takeover_cases_incidents(
+                account_takeover_cases_response.get('cases', []), current_iso_format_time)
+
+    except Exception as e:
+        logging.error(f"Failed fetching incidents: {e}")
+        raise FetchIncidentsError(f"Error while fetching incidents: {e}")
 
     next_run = {
         "last_fetch": current_iso_format_time
