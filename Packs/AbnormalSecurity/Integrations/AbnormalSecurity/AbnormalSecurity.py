@@ -858,7 +858,10 @@ def fetch_incidents(
         client: Client,
         last_run: Dict[str, Any],
         first_fetch_time: str,
-        max_incidents_to_fetch: Optional[int] = FETCH_LIMIT,
+        fetch_threats: bool,
+        fetch_abuse_campaigns: bool,
+        fetch_account_takeover_cases: bool,
+        max_incidents_to_fetch: Optional[int] = FETCH_LIMIT
 ):
     """
     Fetch incidents from various sources (threats, abuse campaigns, and account takeovers).
@@ -879,39 +882,42 @@ def fetch_incidents(
 
     current_datetime = datetime.utcnow().astimezone(timezone.utc)
     current_iso_format_time = current_datetime.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
-
+    all_incidents = []
     # Fetching threats
     threats_filter = f"receivedTime gte {last_fetch}"
-    try:
-        threats_response = client.get_a_list_of_threats_request(filter_=threats_filter)
-    except Exception as e:
-        logging.error(f"Failed to fetch threats: {e}")
-        threats_response = {"threats": []}
-    threat_incidents = generate_threat_incidents(threats_response.get('threats', []), current_iso_format_time)
+    if fetch_threats:
+        try:
+            threats_response = client.get_a_list_of_threats_request(filter_=threats_filter)
+        except Exception as e:
+            logging.error(f"Failed to fetch threats: {e}")
+            threats_response = {"threats": []}
+        all_incidents += generate_threat_incidents(threats_response.get('threats', []), current_iso_format_time)
 
     # Fetching abuse campaigns
-    abuse_campaigns_filter = f"lastReportedTime gte {last_fetch}"
-    try:
-        abuse_campaigns_response = client.get_a_list_of_campaigns_submitted_to_abuse_mailbox_request(
-            filter_=abuse_campaigns_filter)
-    except Exception as e:
-        logging.error(f"Failed to fetch abuse campaigns : {e}")
-        abuse_campaigns_response = {"campaigns": []}
-    abuse_campaigns_incidents = generate_abuse_campaign_incidents(abuse_campaigns_response.get('campaigns', []),
-                                                                  current_iso_format_time)
+    if fetch_abuse_campaigns:
+        demisto.results('tried abuse campaigns')
+        abuse_campaigns_filter = f"lastReportedTime gte {last_fetch}"
+        try:
+            abuse_campaigns_response = client.get_a_list_of_campaigns_submitted_to_abuse_mailbox_request(
+                filter_=abuse_campaigns_filter)
+        except Exception as e:
+            logging.error(f"Failed to fetch abuse campaigns : {e}")
+            abuse_campaigns_response = {"campaigns": []}
+        all_incidents += generate_abuse_campaign_incidents(
+            abuse_campaigns_response.get('campaigns', []), current_iso_format_time)
 
     # Fetching account_takeover_cases
-    account_takeover_cases_filter = f"lastModifiedTime gte {last_fetch}"
-    try:
-        account_takeover_cases_response = client.get_a_list_of_abnormal_cases_identified_by_abnormal_security_request(
-            filter_=account_takeover_cases_filter)
-    except Exception as e:
-        logging.error(f"Failed to fetch account takeover cases: {e}")
-        account_takeover_cases_response = {"cases": []}
-    account_takeover_cases_incidents = generate_account_takeover_cases_incidents(account_takeover_cases_response.get('cases', []),
-                                                                                 current_iso_format_time)
-
-    all_incidents = threat_incidents + abuse_campaigns_incidents + account_takeover_cases_incidents
+    if fetch_account_takeover_cases:
+        demisto.results('tried takeover cases')
+        account_takeover_cases_filter = f"lastModifiedTime gte {last_fetch}"
+        try:
+            account_takeover_cases_response = client.get_a_list_of_abnormal_cases_identified_by_abnormal_security_request(
+                filter_=account_takeover_cases_filter)
+        except Exception as e:
+            logging.error(f"Failed to fetch account takeover cases: {e}")
+            account_takeover_cases_response = {"cases": []}
+        all_incidents += generate_account_takeover_cases_incidents(
+            account_takeover_cases_response.get('cases', []), current_iso_format_time)
 
     next_run = {
         "last_fetch": current_iso_format_time
@@ -1014,6 +1020,9 @@ def main():  # pragma: nocover
             test_module(test_client)
         elif command == 'fetch-incidents' and is_fetch:
             max_incidents_to_fetch = arg_to_number(params.get("max_fetch", FETCH_LIMIT))
+            fetch_threats = params.get("fetch_threats", False)
+            fetch_abuse_campaigns = params.get("fetch_abuse_campaigns", False)
+            fetch_account_takeover_cases = params.get("fetch_account_takeover_cases", False)
             first_fetch_datetime = arg_to_datetime(arg=params.get("first_fetch"), arg_name="First fetch time", required=True)
             if first_fetch_datetime:
                 first_fetch_time = first_fetch_datetime.strftime(ISO_8601_FORMAT)
@@ -1024,6 +1033,9 @@ def main():  # pragma: nocover
                 last_run=demisto.getLastRun(),
                 first_fetch_time=first_fetch_time,
                 max_incidents_to_fetch=max_incidents_to_fetch,
+                fetch_threats=fetch_threats,
+                fetch_abuse_campaigns=fetch_abuse_campaigns,
+                fetch_account_takeover_cases=fetch_account_takeover_cases
             )
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
