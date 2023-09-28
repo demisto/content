@@ -408,7 +408,8 @@ def polar_list_vendors_data_stores_command(polar_client, vendor_id, limit: int, 
             command_results.append(CommandResults(
                 outputs=found_items,
                 readable_output=readable_output,
-                outputs_prefix=f'PolarSecurity.Vendors'
+                outputs_prefix=f'PolarSecurity.Vendors',
+                outputs_key_field='vendorId'
             ))
             human_readable = f'\nCompleted listing data stores for vendor {vendor_id}'
             command_results.append(CommandResults(
@@ -473,7 +474,7 @@ def polar_list_vendor_accessible_data_stores(polar_client):
         outputs=stores_list,
         readable_output=readable_output,
         outputs_prefix=f'PolarSecurity.DataStores.Stores',
-        outputs_key_field='vendorId'
+        outputs_key_field='dataStoreId'
     )
     return results
 
@@ -494,7 +495,9 @@ def polar_apply_label_command(polar_client, store_id, mylabel):
         )
     except ValueError as exception:
         raise DemistoException(exception)
-    return
+    readable_output = 'Label Successfully Applied'
+    results = CommandResults(readable_output=readable_output)
+    return results
 
 
 def main():
