@@ -5871,6 +5871,29 @@ class TestIOAFetch:
         assert last_fetch_query in http_request_mocker.call_args_list[0][1].get('url_suffix')
         assert f'next_token={ioa_next_token}' in http_request_mocker.call_args_list[0][1].get('url_suffix')
 
+    def test_fetch_query_with_paginating_empty_last_filter_error(self, mocker: MockerFixture):
+        """
+        Given:
+            - An empty query as the last fetch query, and the next token.
+        When
+            - Performing pagination and receiving the next token from the previous run.
+        Then
+            - Validate that an error is thrown if the last fetch filter is an empty string.
+        """
+        from CrowdStrikeFalcon import fetch_incidents
+        last_run_object: list[dict[str, Any]] = [{}, {}, {}, {},
+                                                 {'ioa_next_token': 'dummy_token',
+                                                  'last_fetch_query': '',
+                                                  'last_date_time_since': '2023-01-01T00:00:00Z'}]
+        mocker.patch.object(demisto, 'params',
+                            return_value={'fetch_incidents_or_detections': 'Indicator of Attack',
+                                          'ioa_fetch_query': 'cloud_provider=aws'})
+        mocker.patch.object(demisto, 'getLastRun', return_value=last_run_object)
+        mocker.patch('CrowdStrikeFalcon.http_request')
+        with pytest.raises(DemistoException) as e:
+            fetch_incidents()
+        assert 'Last fetch query must not be empty when doing pagination' in str(e)
+
     def test_fetch_query_without_pagination(self, mocker: MockerFixture):
         """
         Given:
@@ -6032,7 +6055,8 @@ class TestIOAFetch:
         # and in the new returned last run, the key last_event_ids has a value of ['1', '2']
         from CrowdStrikeFalcon import fetch_incidents
         last_run_object: list[dict[str, Any]] = [{}, {}, {}, {},
-                                                 {'last_event_ids': ['1'], 'ioa_next_token': 'next_token'}]
+                                                 {'last_event_ids': ['1'], 'ioa_next_token': 'next_token',
+                                                  'last_fetch_query': 'cloud_provider=aws'}]
         mocker.patch.object(demisto, 'params',
                             return_value={'fetch_incidents_or_detections': 'Indicator of Attack',
                                           'ioa_fetch_query': 'cloud_provider=aws'})

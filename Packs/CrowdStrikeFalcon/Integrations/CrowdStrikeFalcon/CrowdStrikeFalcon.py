@@ -2525,8 +2525,8 @@ def fetch_incidents():
     current_fetch_info_detections: dict = last_run[0]
     current_fetch_info_incidents: dict = last_run[1]
     current_fetch_info_idp_detections: dict = {} if len(last_run) < 3 else last_run[2]
-    current_fetch_info_iom_configs: dict = {} if len(last_run) < 4 else last_run[3]
-    current_fetch_info_ioa_events: dict = {} if len(last_run) < 5 else last_run[4]
+    iom_last_run: dict = {} if len(last_run) < 4 else last_run[3]
+    ioa_last_run: dict = {} if len(last_run) < 5 else last_run[4]
     fetch_incidents_or_detections = demisto.params().get('fetch_incidents_or_detections', "")
     look_back = int(demisto.params().get('look_back', 0))
     fetch_limit = INCIDENTS_PER_FETCH
@@ -2650,123 +2650,162 @@ def fetch_incidents():
 
     if 'Indicator of Misconfiguration' in fetch_incidents_or_detections:
         demisto.debug('Fetching Indicator of Misconfiguration incidents')
-        demisto.debug(f'{current_fetch_info_iom_configs=}')
-        first_fetch_timestamp = reformat_timestamp(
-            time=FETCH_TIME,
-            date_format=IOM_DATE_FORMAT,
-            dateparser_settings={'TIMEZONE': 'UTC', 'RETURN_AS_TIMEZONE_AWARE': True})
-        new_scan_time = last_scan_time = current_fetch_info_iom_configs.get('last_scan_time', first_fetch_timestamp)
-        # Paginating using offset until all results are returned from the API
-        iom_next_token = current_fetch_info_iom_configs.get('iom_next_token')
-        # In order to ignore duplicates, we compare fetched ids with resource ids of the last run
-        last_resource_ids: list[str] = current_fetch_info_iom_configs.get('last_resource_ids', [])
-        filter = get_iom_filter(iom_next_token=iom_next_token,
-                                last_fetch_filter=current_fetch_info_iom_configs.get('last_fetch_filter', ''),
-                                last_scan_time=last_scan_time, first_fetch_timestamp=first_fetch_timestamp)
-        fetch_limit = current_fetch_info_detections.get('limit') or INCIDENTS_PER_FETCH
-        # Default filter for first fetch
-        fetch_query = demisto.params().get('iom_fetch_query')
+        demisto.debug(f'{iom_last_run=}')
+        fetch_query = demisto.params().get('iom_fetch_query', '')
         validate_iom_fetch_query(iom_fetch_query=fetch_query)
-        if fetch_query and not iom_next_token:
-            # If the user entered a fetch query, then append it to the filter
-            filter = f"{filter}+{fetch_query}"
+
+        last_resource_ids, iom_next_token, last_scan_time, first_fetch_timestamp = get_current_fetch_data(
+            last_run_object=iom_last_run, date_format=IOM_DATE_FORMAT,
+            last_date_key='last_scan_time', next_token_key='iom_next_token',
+            last_fetched_ids_key='last_resource_ids'
+        )
+        filter = get_iom_filter(
+            iom_next_token=iom_next_token,
+            last_fetch_filter=iom_last_run.get('last_fetch_filter', ''),
+            last_scan_time=last_scan_time, first_fetch_timestamp=first_fetch_timestamp,
+            configured_fetch_query=fetch_query)
         demisto.debug(f'IOM {filter=}')
         iom_resource_ids, iom_new_next_token = iom_ids_pagination(filter=filter,
                                                                   iom_next_token=iom_next_token,
-                                                                  fetch_limit=fetch_limit,
+                                                                  fetch_limit=INCIDENTS_PER_FETCH,
                                                                   api_limit=500)
         demisto.debug(f'Fetched the following IOM resource IDS: {", ".join(iom_resource_ids)}')
-        # Hold the scan time of all fetched incidents, to acquire the largest date
-        scan_time_list: list[datetime] = [datetime.strptime(new_scan_time, IOM_DATE_FORMAT)]
-        # Since the first API call is only in charge of retrieving the IDs of the iom resources, we need
-        # another API call to actually get the entity/detail of each resource.
-        for iom_resource in get_iom_resources_for_fetch(iom_resource_ids=iom_resource_ids):
-            resource_id = iom_resource.get('id', '')
-            if resource_id not in last_resource_ids:
-                demisto.debug(f'Creating an incident for CrowdStrike IOM with ID: {resource_id}')
-                iom_resource['incident_type'] = 'iom_configurations'
-                iom_resource_to_context = iom_resource_to_incident(iom_resource=iom_resource)
-                iom_config_incidents.append(iom_resource_to_context)
-                # The time_scan date returned from the API contains nanoseconds, which is yet to be
-                # supported when using datetime.strptime(some_time, format), therefore, we need to convert the
-                # date to the supported format (IOM_DATE_FORMAT).
-                scan_time = reformat_timestamp(iom_resource.get('scan_time', ''), IOM_DATE_FORMAT)
-                scan_time_list.append(datetime.strptime(scan_time, IOM_DATE_FORMAT))
-            else:
-                demisto.debug(f'Ignoring incident with {resource_id=} - was already fetched in the previous run')
-        new_scan_time = max(scan_time_list).strftime(IOM_DATE_FORMAT)
-        if iom_new_next_token or iom_next_token:
-            # If the next run will do pagination, or the current run did pagination, we should keep the ids from the last fetch
-            # until progress is made, so we exclude them in the next fetch.
-            iom_resource_ids.extend(last_resource_ids)
-        current_fetch_info_iom_configs = {'iom_next_token': iom_new_next_token, 'last_scan_time': new_scan_time,
-                                          'last_fetch_filter': filter,
-                                          'last_resource_ids': iom_resource_ids or last_resource_ids}
+        iom_config_incidents, fetched_resource_ids, new_scan_time = extract_incidents(
+            fetched_data=get_iom_resources_for_fetch(iom_resource_ids=iom_resource_ids),
+            last_date=last_scan_time,
+            last_fetched_ids=last_resource_ids, date_key='scan_time',
+            id_key='id', date_format=IOM_DATE_FORMAT, new_next_token=iom_next_token,
+            next_token=iom_new_next_token, to_incident_context=iom_resource_to_incident,
+            incident_type='iom_configurations')
+
+        iom_last_run = {'iom_next_token': iom_new_next_token, 'last_scan_time': new_scan_time,
+                        'last_fetch_filter': filter,
+                        'last_resource_ids': fetched_resource_ids or last_resource_ids}
 
     if 'Indicator of Attack' in fetch_incidents_or_detections:
         demisto.debug('Fetching Indicator of Attack incidents')
-        demisto.debug(f'{current_fetch_info_ioa_events=}')
-        fetch_query = demisto.params().get('ioa_fetch_query')
+        demisto.debug(f'{ioa_last_run=}')
+        fetch_query = demisto.params().get('ioa_fetch_query', '')
         validate_ioa_fetch_query(ioa_fetch_query=fetch_query)
-        first_fetch_timestamp = reformat_timestamp(
-            time=FETCH_TIME,
-            date_format=DATE_FORMAT,
-            dateparser_settings={'TIMEZONE': 'UTC', 'RETURN_AS_TIMEZONE_AWARE': True})
-        new_date_time_since = last_date_time_since = current_fetch_info_ioa_events.get(
-            'last_date_time_since', first_fetch_timestamp)
-        # The next token is used when not all the results have been returned from the API, therefore,
-        # we would need to do pagination using the next token query parameter
-        ioa_next_token = current_fetch_info_ioa_events.get('ioa_next_token')
-        # In order to deal with duplicates, we retrieve the last resource ids of the last run, so we can
-        # compare them with the newly fetched ids, and ignore any duplicates
-        last_fetch_event_ids: list[str] = current_fetch_info_ioa_events.get('last_event_ids', [])
-        fetch_limit = current_fetch_info_detections.get('limit') or INCIDENTS_PER_FETCH
-        if ioa_next_token:
-            # If entered here, that means we are currently doing pagination, and we need to use the
-            # same fetch query as the previous round
-            fetch_query = current_fetch_info_ioa_events.get('last_fetch_query', '')
-        else:
-            # If entered here, that means we aren't doing pagination, and we need to use the latest
-            # date_time_since time
-            fetch_query = f'{fetch_query}&date_time_since={last_date_time_since}'
-        ioa_events, ioa_new_next_token = ioa_events_pagination(ioa_fetch_query=fetch_query,
+
+        last_fetch_event_ids, ioa_next_token, last_date_time_since, _ = get_current_fetch_data(
+            last_run_object=ioa_last_run, date_format=DATE_FORMAT,
+            last_date_key='last_date_time_since', next_token_key='ioa_next_token',
+            last_fetched_ids_key='last_event_ids'
+        )
+        ioa_fetch_query = get_ioa_query(
+            ioa_next_token=ioa_next_token,
+            configured_fetch_query=fetch_query,
+            last_fetch_query=ioa_last_run.get('last_fetch_query', ''),
+            last_date_time_since=last_date_time_since)
+        demisto.debug(f'IOA {ioa_fetch_query=}')
+        ioa_events, ioa_new_next_token = ioa_events_pagination(ioa_fetch_query=ioa_fetch_query,
                                                                ioa_next_token=ioa_next_token,
-                                                               fetch_limit=fetch_limit,
+                                                               fetch_limit=INCIDENTS_PER_FETCH,
                                                                api_limit=1000)
-        ioa_event_ids: list[str] = []
-        # Hold the date_time_since of all fetched incidents, to acquire the largest date
-        date_time_since_list: list[datetime] = [datetime.strptime(new_date_time_since, DATE_FORMAT)]
         demisto.debug(f'Fetched the following IOA event IDs: {[event.get("event_id") for event in ioa_events]}')
-        for ioa_event in ioa_events:
-            event_id = ioa_event.get('event_id', '')
-            if event_id not in last_fetch_event_ids:
-                demisto.debug(f'Creating an incident for CrowdStrike IOA with ID: {event_id}')
-                ioa_event_ids.append(event_id)
-                ioa_event['incident_type'] = 'ioa_events'
-                ioa_event_to_context = ioa_event_to_incident(ioa_event=ioa_event)
-                ioa_event_incidents.append(ioa_event_to_context)
-                event_created = reformat_timestamp(ioa_event.get('event_created', ''), DATE_FORMAT)
-                # When observing the response from the API, we can see that the events are sorted in descending order
-                # with respect to the event_created field, therefore, we need to save the latest time an event
-                # has been created, so we can continue the fetching mechanism from that point after we are done
-                # with our pagination
-                date_time_since_list.append(datetime.strptime(event_created, DATE_FORMAT))
-            else:
-                demisto.debug(f'Ignoring incident with {event_id=} - was already fetched in the previous run')
-        new_date_time_since = max(date_time_since_list).strftime(DATE_FORMAT)
-        if ioa_new_next_token or ioa_next_token:
-            # If the next run will do pagination, or the current run did pagination, we should keep the ids from the last fetch
-            # until progress is made, so we exclude them in the next fetch.
-            ioa_event_ids.extend(last_fetch_event_ids)
-        current_fetch_info_ioa_events = {'ioa_next_token': ioa_new_next_token, 'last_date_time_since': new_date_time_since,
-                                         'last_fetch_query': fetch_query, 'last_event_ids': ioa_event_ids or last_fetch_event_ids}
+
+        ioa_event_incidents, ioa_event_ids, new_date_time_since = extract_incidents(
+            fetched_data=ioa_events, last_date=last_date_time_since,
+            last_fetched_ids=last_fetch_event_ids, date_key='event_created',
+            id_key='event_id', date_format=DATE_FORMAT, new_next_token=ioa_new_next_token,
+            next_token=ioa_next_token, to_incident_context=ioa_event_to_incident, incident_type='ioa_events')
+
+        ioa_last_run = {'ioa_next_token': ioa_new_next_token, 'last_date_time_since': new_date_time_since,
+                        'last_fetch_query': ioa_fetch_query, 'last_event_ids': ioa_event_ids or last_fetch_event_ids}
     demisto.setLastRun([current_fetch_info_detections, current_fetch_info_incidents, current_fetch_info_idp_detections,
-                        current_fetch_info_iom_configs, current_fetch_info_ioa_events])
+                        iom_last_run, ioa_last_run])
     return incidents + detections + idp_detections + iom_config_incidents + ioa_event_incidents
 
 
-def get_iom_filter(iom_next_token: Any | None, last_fetch_filter: str,
-                   last_scan_time: str, first_fetch_timestamp: str) -> str:
+def extract_incidents(fetched_data: list[dict[str, Any]], last_date: str,
+                      last_fetched_ids: list[str], date_key: str, id_key: str,
+                      date_format: str, new_next_token: str | None, next_token: str | None,
+                      to_incident_context: Callable[[dict[str, Any], str], dict[str, Any]],
+                      incident_type: str) -> tuple[list[dict[str, Any]], list[str], str]:
+    """This function is in charge of extracting the data from the API, to create incidents from them.
+
+    Args:
+        fetched_data (list[dict[str, Any]]): The fetched data.
+        last_date (str): The last date saved in the last run object.
+        last_fetched_ids (list[str]): The last fetched IDs.
+        date_key (str): The key of the value that holds the date in the API.
+        id_key (str): The key of the value that holds the ID in the API.
+        date_format (str): The date format.
+        new_next_token (str | None): The next token that will be used in the next run.
+        next_token (str | None): The next token that was used in the current round.
+        to_incident_context (Callable[[dict[str, Any], str], dict[str, Any]]): The function that is used to convert
+        data from the API to an incident.
+        incident_type (str): The incident type.
+
+    Returns:
+        tuple[list[dict[str, Any]], list[str], str]: The fetched incidents, the fetched ids, the largest date
+        found withing the fetched incidents.
+    """
+    incidents: list[dict[str, Any]] = []
+    fetched_ids: list[str] = []
+    # Hold the date_time_since of all fetched incidents, to acquire the largest date
+    fetched_dates: list[datetime] = [datetime.strptime(last_date, date_format)]
+    for data in fetched_data:
+        data_id = data.get(id_key, '')
+        if data_id not in last_fetched_ids:
+            demisto.debug(f'Creating an incident for CrowdStrike CSPM ID: {data_id}')
+            fetched_ids.append(data_id)
+            incident_context = to_incident_context(data, incident_type)
+            incidents.append(incident_context)
+            event_created = reformat_timestamp(data.get(date_key, ''), date_format)
+            fetched_dates.append(datetime.strptime(event_created, date_format))
+        else:
+            demisto.debug(f'Ignoring CSPM incident with {data_id=} - was already fetched in the previous run')
+    new_last_date = max(fetched_dates).strftime(date_format)
+    if new_next_token or next_token:
+        demisto.debug('Current run did pagination, or next one will, keeping IDs from last fetch')
+        # If the next run will do pagination, or the current run did pagination, we should keep the ids from the last fetch
+        # until progress is made, so we exclude them in the next fetch.
+        fetched_ids.extend(last_fetched_ids)
+    return incidents, fetched_ids, new_last_date
+
+
+def get_current_fetch_data(last_run_object: dict[str, Any],
+                           date_format: str,
+                           last_date_key: str,
+                           next_token_key: str,
+                           last_fetched_ids_key: str,
+                           ) -> tuple[list[str], str | None, str, str]:
+    """Returns the last fetched ids, next token that will be used in current round, last date
+    found in the last run object, and the first fetch timestamp.
+
+    Args:
+        last_run_object (dict[str, Any]): The last run object.
+        date_format (str): The date format.
+        last_date_key (str): The key of the value that holds the date in the last run object.
+        next_token_key (str): The key of the value that holds the next token in the last run object.
+        last_fetched_ids_key (str): The key of the value that holds the last fetched ids in the
+        last run object.
+
+    Returns:
+        tuple[list[str], str | None, str, str]: The last fetched IDs, the next token that will be used
+        in the current fetch round, the last date saved in the last run object, and the first
+        fetch timestamp.
+    """
+    first_fetch_timestamp = reformat_timestamp(
+        time=FETCH_TIME,
+        date_format=date_format,
+        dateparser_settings={'TIMEZONE': 'UTC', 'RETURN_AS_TIMEZONE_AWARE': True})
+    last_date = last_run_object.get(
+        last_date_key, first_fetch_timestamp)
+    # The next token is used when not all the results have been returned from the API, therefore,
+    # we would need to do pagination using the next token query parameter
+    next_token = last_run_object.get(next_token_key)
+    # In order to deal with duplicates, we retrieve the last resource ids of the last run, so we can
+    # compare them with the newly fetched ids, and ignore any duplicates
+    last_fetched_ids: list[str] = last_run_object.get(last_fetched_ids_key, [])
+    return last_fetched_ids, next_token, last_date, first_fetch_timestamp
+
+
+def get_iom_filter(iom_next_token: str | None, last_fetch_filter: str,
+                   last_scan_time: str, first_fetch_timestamp: str,
+                   configured_fetch_query: str) -> str:
     """Retrieve the IOM filter that will be used in the current fetch round.
 
     Args:
@@ -2774,6 +2813,9 @@ def get_iom_filter(iom_next_token: Any | None, last_fetch_filter: str,
         last_fetch_filter (str): The last fetch filter that was used in the previous round.
         last_scan_time (str): The last scan time.
         first_fetch_timestamp (str): The first fetch timestamp.
+
+    Raises:
+        DemistoException: If paginating and last filter is an empty string.
 
     Returns:
         str: The IOM filter that will be used in the current fetch.
@@ -2797,6 +2839,10 @@ def get_iom_filter(iom_next_token: Any | None, last_fetch_filter: str,
             # GREATER than the last configured scan time, to prevent duplicates.
             filter = f"{filter} >'{last_scan_time}'"
             demisto.debug(f'Not first fetch, only looking for scan time > {last_scan_time=}. Filter is {filter}')
+    if configured_fetch_query and not iom_next_token:
+        # If the user entered a fetch query, then append it to the filter
+        demisto.debug('User entered fetch query, appending to filter')
+        filter = f"{filter}+{configured_fetch_query}"
     return filter
 
 
@@ -2820,19 +2866,48 @@ def add_seconds_to_date(date: str, seconds_to_add: int, date_format: str) -> str
     return added_datetime.strftime(date_format)
 
 
-def ioa_event_to_incident(ioa_event: dict[str, Any]) -> dict[str, Any]:
+def get_ioa_query(ioa_next_token: str | None, last_fetch_query: str,
+                  configured_fetch_query: str, last_date_time_since: str) -> str:
+    """Retrieve the IOA query that will be used in the current fetch round.
+
+    Args:
+        ioa_next_token (str | None): If paginating, this will hold the next token.
+        last_fetch_query (str): The last fetch query that was used in the previous round.
+        configured_fetch_query (str): The fetched query configured by the user.
+        last_date_time_since (str): The last date time since.
+
+    Raises:
+        DemistoException: If paginating and last fetch query is an empty string.
+
+    Returns:
+        str: The IOA query that will be used in the current fetch.
+    """
+    fetch_query = configured_fetch_query
+    if ioa_next_token:
+        # If entered here, that means we are currently doing pagination, and we need to use the
+        # same fetch query as the previous round
+        fetch_query = last_fetch_query
+        if not fetch_query:
+            raise DemistoException('Last fetch query must not be empty when doing pagination')
+        demisto.debug(f'Doing pagination, using the same query as the previous round. Query is {fetch_query}')
+    else:
+        # If entered here, that means we aren't doing pagination, and we need to use the latest
+        # date_time_since time
+        fetch_query = f'{fetch_query}&date_time_since={last_date_time_since}'
+        demisto.debug(f'Not doing pagination. Query is {fetch_query}')
+    return fetch_query
+
+
+def ioa_event_to_incident(ioa_event: dict[str, Any], incident_type: str) -> dict[str, Any]:
     """Create an incident from an IOA event.
 
     Args:
         ioa_event (dict[str, Any]): An IOA event.
+        incident_type (str): The incident type.
 
     Returns:
         dict[str, Any]: An incident from an IOA event.
     """
-    # ioa_event['mirror_direction'] = MIRROR_DIRECTION
-    # ioa_event['mirror_instance'] = INTEGRATION_INSTANCE
-    # ioa_event['extracted_account_id'] = demisto.get(ioa_event, 'cloud_account_id.aws_account_id') or \
-    #     demisto.get(ioa_event, 'cloud_account_id.azure_account_id')
     resource = demisto.get(ioa_event, 'aggregate.resource', {})
     id = resource.get('id', [])
     uuid = resource.get('uuid', [])
@@ -2842,10 +2917,9 @@ def ioa_event_to_incident(ioa_event: dict[str, Any]) -> dict[str, Any]:
         extracted_account_id=demisto.get(ioa_event, 'cloud_account_id.aws_account_id')
         or demisto.get(ioa_event, 'cloud_account_id.azure_account_id'),
         extracted_uuid=uuid[0] if uuid else None,
-        extracted_resource_id=id[0] if id else None
+        extracted_resource_id=id[0] if id else None,
+        incident_type=incident_type
     )
-    # ioa_event['extracted_uuid'] = uuid[0] if uuid else None
-    # ioa_event['extracted_resource_id'] = id[0] if id else None
     incident_context = {
         'name': f'IOA Event ID: {ioa_event.get("event_id")}',
         'rawJSON': json.dumps(ioa_event | incident_metadata)
@@ -2977,21 +3051,25 @@ def reformat_timestamp(time: str, date_format: str, dateparser_settings: Any | N
         raise DemistoException(f'{time=} is not a proper date string')
 
 
-def iom_resource_to_incident(iom_resource: dict[str, Any]) -> dict[str, Any]:
+def iom_resource_to_incident(iom_resource: dict[str, Any], incident_type: str) -> dict[str, Any]:
     """Create an incident from an IOM entity.
 
     Args:
         iom_resource (dict[str, Any]): An IOM entity.
+        incident_type (str): The incident type.
 
     Returns:
         dict[str, Any]: An incident from an IOM entity.
     """
-    iom_resource['mirror_direction'] = MIRROR_DIRECTION
-    iom_resource['mirror_instance'] = INTEGRATION_INSTANCE
+    incident_metadata = assign_params(
+        mirror_direction=MIRROR_DIRECTION,
+        mirror_instance=INTEGRATION_INSTANCE,
+        incident_type=incident_type
+    )
 
     incident_context = {
         'name': f'IOM Event ID: {iom_resource.get("id")}',
-        'rawJSON': json.dumps(iom_resource)
+        'rawJSON': json.dumps(iom_resource | incident_metadata)
     }
     return incident_context
 
