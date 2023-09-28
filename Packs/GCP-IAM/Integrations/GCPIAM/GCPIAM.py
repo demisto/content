@@ -3,7 +3,7 @@ from CommonServerPython import *  # noqa: F401
 # type: ignore
 # pylint: disable=no-member
 import copy
-from typing import Callable
+from collections.abc import Callable
 from googleapiclient import discovery
 from oauth2client import service_account
 import httplib2
@@ -1187,7 +1187,7 @@ def update_time_format(data: Union[dict, list], keys: list) -> list:
     for item in data:
         for key in keys:
             if key in item:
-                item[key] = arg_to_datetime(item[key]).isoformat()
+                item[key] = arg_to_datetime(item[key]).isoformat()  # type: ignore[union-attr]
 
     return data
 
@@ -1213,7 +1213,7 @@ def generate_iam_policy_command_output(response: dict, resource_name: str = None
     outputs = copy.deepcopy(response)
     outputs['name'] = resource_name
 
-    if limit:
+    if limit and page:
         start = (page - 1) * limit
         end = start + limit
 
@@ -1238,7 +1238,7 @@ def generate_iam_policy_command_output(response: dict, resource_name: str = None
     return command_results
 
 
-def generate_group_membership_readable_output(outputs: list, readable_header: str) -> tableToMarkdown:
+def generate_group_membership_readable_output(outputs: list, readable_header: str) -> str:
     """
     Generate command readable output for group membership commands.
     Args:
@@ -1487,8 +1487,8 @@ def gcp_iam_projects_get_command(client: Client, args: Dict[str, Any]) -> list:
 
         if not parent:
             raise Exception('One of the arguments: ''parent'' or ''project_name'' must be provided.')
-        limit = arg_to_number(args.get('limit') or '50')
-        page = arg_to_number(args.get('page') or '1')
+        limit = arg_to_number(args.get('limit')) or 50
+        page = arg_to_number(args.get('page')) or 1
         max_limit = 100
 
         validate_pagination_arguments(limit, page)
@@ -1525,9 +1525,9 @@ def gcp_iam_project_iam_policy_get_command(client: Client, args: Dict[str, Any])
         CommandResults: outputs, readable outputs and raw response for XSOAR.
 
     """
-    project_name = args.get('project_name')
-    limit = arg_to_number(args.get('limit') or '50')
-    page = arg_to_number(args.get('page') or '1')
+    project_name = args.get('project_name', '')
+    limit = arg_to_number(args.get('limit')) or 50
+    page = arg_to_number(args.get('page')) or 1
     validate_pagination_arguments(limit, page)
 
     readable_message = get_pagination_readable_message(header=f'Project {project_name} IAM Policy List:',
@@ -1580,7 +1580,7 @@ def gcp_iam_project_iam_test_permission_command(client: Client, args: Dict[str, 
         CommandResults: outputs, readable outputs and raw response for XSOAR.
 
     """
-    project_name = args.get('project_name')
+    project_name = args.get('project_name', '')
     permissions = argToList(args.get('permissions'))
 
     response = client.gcp_iam_project_iam_test_permission_request(project_name, permissions)
@@ -1599,8 +1599,8 @@ def gcp_iam_project_iam_member_add_command(client: Client, args: Dict[str, Any])
         CommandResults: outputs, readable outputs and raw response for XSOAR.
 
     """
-    project_name = args.get('project_name')
-    role = args.get('role')
+    project_name = args.get('project_name', '')
+    role = args.get('role', '')
     members = argToList(args.get('members'))
 
     iam_policy = client.gcp_iam_project_iam_policy_get_request(project_name).get("bindings", [])
@@ -1626,8 +1626,8 @@ def gcp_iam_project_iam_member_remove_command(client: Client, args: Dict[str, An
         CommandResults: outputs, readable outputs and raw response for XSOAR.
 
     """
-    project_name = args.get('project_name')
-    role = args.get('role')
+    project_name = args.get('project_name', '')
+    role = args.get('role', '')
     members = argToList(args.get('members'))
 
     iam_policy = client.gcp_iam_project_iam_policy_get_request(project_name).get("bindings", [])
@@ -1653,7 +1653,7 @@ def gcp_iam_project_iam_policy_set_command(client: Client, args: Dict[str, Any])
         CommandResults: outputs, readable outputs and raw response for XSOAR.
 
     """
-    project_name = args.get('project_name')
+    project_name = args.get('project_name', '')
     policy = args.get('policy')
     if isinstance(policy, str):
         policy = policy.replace("\'", "\"")
@@ -1678,7 +1678,7 @@ def gcp_iam_project_iam_policy_add_command(client: Client, args: Dict[str, Any])
         CommandResults: outputs, readable outputs and raw response for XSOAR.
 
     """
-    project_name = args.get('project_name')
+    project_name = args.get('project_name', '')
     role = args.get('role')
     members = argToList(args.get('members'))
 
@@ -1778,8 +1778,8 @@ def gcp_iam_folders_get_command(client: Client, args: Dict[str, Any]) -> list:
         if not parent:
             raise Exception('One of the arguments: ''parent'' or ''folder_name'' must be provided.')
 
-        limit = arg_to_number(args.get('limit') or '50')
-        page = arg_to_number(args.get('page') or '1')
+        limit = arg_to_number(args.get('limit')) or 50
+        page = arg_to_number(args.get('page')) or 1
         max_limit = 100
 
         validate_pagination_arguments(limit, page)
@@ -1816,9 +1816,9 @@ def gcp_iam_folder_iam_policy_get_command(client: Client, args: Dict[str, Any]) 
         CommandResults: outputs, readable outputs and raw response for XSOAR.
 
     """
-    folder_name = args.get('folder_name')
-    limit = arg_to_number(args.get('limit') or '50')
-    page = arg_to_number(args.get('page') or '1')
+    folder_name = args.get('folder_name', '')
+    limit = arg_to_number(args.get('limit')) or 50
+    page = arg_to_number(args.get('page')) or 1
     validate_pagination_arguments(limit, page)
 
     readable_message = get_pagination_readable_message(header=f'Folder {folder_name} IAM Policy List:',
@@ -1840,7 +1840,7 @@ def gcp_iam_folder_iam_test_permission_command(client: Client, args: Dict[str, A
         CommandResults: outputs, readable outputs and raw response for XSOAR.
 
     """
-    folder_name = args.get('folder_name')
+    folder_name = args.get('folder_name', '')
     permissions = argToList(args.get('permissions'))
 
     response = client.gcp_iam_folder_iam_test_permission_request(folder_name, permissions)
@@ -1858,8 +1858,8 @@ def gcp_iam_folder_iam_member_add_command(client: Client, args: Dict[str, Any]) 
         CommandResults: outputs, readable outputs and raw response for XSOAR.
 
     """
-    folder_name = args.get('folder_name')
-    role = args.get('role')
+    folder_name = args.get('folder_name', '')
+    role = args.get('role', '')
     members = argToList(args.get('members'))
 
     iam_policy = client.gcp_iam_folder_iam_policy_get_request(folder_name).get("bindings", [])
@@ -1885,8 +1885,8 @@ def gcp_iam_folder_iam_member_remove_command(client: Client, args: Dict[str, Any
         CommandResults: outputs, readable outputs and raw response for XSOAR.
 
     """
-    folder_name = args.get('folder_name')
-    role = args.get('role')
+    folder_name = args.get('folder_name', '')
+    role = args.get('role', '')
     members = argToList(args.get('members'))
 
     iam_policy = client.gcp_iam_folder_iam_policy_get_request(folder_name).get("bindings", [])
@@ -1912,7 +1912,7 @@ def gcp_iam_folder_iam_policy_set_command(client: Client, args: Dict[str, Any]) 
         CommandResults: outputs, readable outputs and raw response for XSOAR.
 
     """
-    folder_name = args.get('folder_name')
+    folder_name = args.get('folder_name', '')
     policy = args.get('policy')
     if isinstance(policy, str):
         policy = policy.replace("\'", "\"")
@@ -1937,7 +1937,7 @@ def gcp_iam_folder_iam_policy_add_command(client: Client, args: Dict[str, Any]) 
         CommandResults: outputs, readable outputs and raw response for XSOAR.
 
     """
-    folder_name = args.get('folder_name')
+    folder_name = args.get('folder_name', '')
     role = args.get('role')
     members = argToList(args.get('members'))
 
@@ -2029,8 +2029,8 @@ def gcp_iam_organizations_get_command(client: Client, args: Dict[str, Any]) -> l
                 command_results_list.append(error)
 
     else:  # List organization resources that are visible to the caller.
-        limit = arg_to_number(args.get('limit') or '50')
-        page = arg_to_number(args.get('page') or '1')
+        limit = arg_to_number(args.get('limit')) or 50
+        page = arg_to_number(args.get('page')) or 1
         max_limit = 50
 
         validate_pagination_arguments(limit, page)
@@ -2065,9 +2065,9 @@ def gcp_iam_organization_iam_policy_get_command(client: Client, args: Dict[str, 
         CommandResults: outputs, readable outputs and raw response for XSOAR.
 
     """
-    organization_name = args.get('organization_name')
-    limit = arg_to_number(args.get('limit') or '50')
-    page = arg_to_number(args.get('page') or '1')
+    organization_name = args.get('organization_name', '')
+    limit = arg_to_number(args.get('limit')) or 50
+    page = arg_to_number(args.get('page')) or 1
     validate_pagination_arguments(limit, page)
 
     readable_message = get_pagination_readable_message(header=f'Organization {organization_name} IAM Policy List:',
@@ -2090,7 +2090,7 @@ def gcp_iam_organization_iam_test_permission_command(client: Client, args: Dict[
         CommandResults: outputs, readable outputs and raw response for XSOAR.
 
     """
-    organization_name = args.get('organization_name')
+    organization_name = args.get('organization_name', '')
     permissions = argToList(args.get('permissions'))
 
     response = client.gcp_iam_organization_iam_test_permission_request(organization_name, permissions)
@@ -2110,8 +2110,8 @@ def gcp_iam_organization_iam_member_add_command(client: Client, args: Dict[str, 
         CommandResults: outputs, readable outputs and raw response for XSOAR.
 
     """
-    organization_name = args.get('organization_name')
-    role = args.get('role')
+    organization_name = args.get('organization_name', '')
+    role = args.get('role', '')
     members = argToList(args.get('members'))
 
     iam_policy = client.gcp_iam_organization_iam_policy_get_request(organization_name).get("bindings", [])
@@ -2137,8 +2137,8 @@ def gcp_iam_organization_iam_member_remove_command(client: Client, args: Dict[st
         CommandResults: outputs, readable outputs and raw response for XSOAR.
 
     """
-    organization_name = args.get('organization_name')
-    role = args.get('role')
+    organization_name = args.get('organization_name', '')
+    role = args.get('role', '')
     members = argToList(args.get('members'))
 
     iam_policy = client.gcp_iam_organization_iam_policy_get_request(organization_name).get("bindings", [])
@@ -2164,7 +2164,7 @@ def gcp_iam_organization_iam_policy_set_command(client: Client, args: Dict[str, 
         CommandResults: outputs, readable outputs and raw response for XSOAR.
 
     """
-    organization_name = args.get('organization_name')
+    organization_name = args.get('organization_name', '')
     policy = args.get('policy')
     if isinstance(policy, str):
         policy = policy.replace("\'", "\"")
@@ -2189,7 +2189,7 @@ def gcp_iam_organization_iam_policy_add_command(client: Client, args: Dict[str, 
         CommandResults: outputs, readable outputs and raw response for XSOAR.
 
     """
-    organization_name = args.get('organization_name')
+    organization_name = args.get('organization_name', '')
     role = args.get('role')
     members = argToList(args.get('members'))
 
@@ -2219,10 +2219,10 @@ def gcp_iam_group_create_command(client: Client, args: Dict[str, Any]) -> Comman
         CommandResults: outputs, readable outputs and raw response for XSOAR.
 
     """
-    parent = args.get('parent')
-    description = args.get('description')
-    display_name = args.get('display_name')
-    group_email_address = args.get('group_email_address')
+    parent = args.get('parent', '')
+    description = args.get('description', '')
+    display_name = args.get('display_name', '')
+    group_email_address = args.get('group_email_address', '')
 
     response = client.gcp_iam_group_create_request(parent, display_name, group_email_address, description)
 
@@ -2259,9 +2259,9 @@ def gcp_iam_group_list_command(client: Client, args: Dict[str, Any]) -> CommandR
         CommandResults: outputs, readable outputs and raw response for XSOAR.
 
     """
-    parent = args.get('parent')
-    limit = arg_to_number(args.get('limit') or '50')
-    page = arg_to_number(args.get('page') or '1')
+    parent = args.get('parent', '')
+    limit = arg_to_number(args.get('limit')) or 50
+    page = arg_to_number(args.get('page')) or 1
 
     page_token = None
     readable_message = get_pagination_readable_message(header='Groups List:', limit=limit, page=page)
@@ -2312,7 +2312,7 @@ def gcp_iam_group_get_command(client: Client, args: Dict[str, Any]) -> CommandRe
         CommandResults: outputs, readable outputs and raw response for XSOAR.
 
     """
-    group_name = args.get('group_name')
+    group_name = args.get('group_name', '')
 
     response = client.gcp_iam_group_get_request(group_name)
     outputs = copy.deepcopy(response)
@@ -2347,7 +2347,7 @@ def gcp_iam_group_delete_command(client: Client, args: Dict[str, Any]) -> Comman
         CommandResults: outputs, readable outputs and raw response for XSOAR.
 
     """
-    group_name = args.get('group_name')
+    group_name = args.get('group_name', '')
 
     result = client.gcp_iam_group_delete_request(group_name)
 
@@ -2374,7 +2374,7 @@ def gcp_iam_group_membership_create_command(client: Client, args: Dict[str, Any]
     """
 
     groups_name = argToList(args.get('groups_name'))
-    member_email = args.get('member_email')
+    member_email = args.get('member_email', '')
     role = argToList(args.get('role'))
 
     command_results_list: List[CommandResults] = []
@@ -2403,9 +2403,9 @@ def gcp_iam_group_membership_list_command(client: Client, args: Dict[str, Any]) 
         CommandResults: outputs, readable outputs and raw response for XSOAR.
 
     """
-    group_name = args.get('group_name')
-    limit = arg_to_number(args.get('limit') or '50')
-    page = arg_to_number(args.get('page') or '1')
+    group_name = args.get('group_name', '')
+    limit = arg_to_number(args.get('limit')) or 50
+    page = arg_to_number(args.get('page')) or 1
     page_token = None
     readable_message = get_pagination_readable_message(header='Membership List:', limit=limit, page=page)
 
@@ -2441,7 +2441,7 @@ def gcp_iam_group_membership_get_command(client: Client, args: Dict[str, Any]) -
         CommandResults: outputs, readable outputs and raw response for XSOAR.
 
     """
-    membership_name = args.get('membership_name')
+    membership_name = args.get('membership_name', '')
 
     response = client.gcp_iam_group_membership_get_request(membership_name)
     return generate_group_membership_command_output(response)
@@ -2458,7 +2458,7 @@ def gcp_iam_group_membership_role_add_command(client: Client, args: Dict[str, An
         CommandResults: outputs, readable outputs and raw response for XSOAR.
 
     """
-    membership_name = args.get('membership_name')
+    membership_name = args.get('membership_name', '')
     role = argToList(args.get('role'))
 
     client.gcp_iam_group_membership_role_add_request(membership_name, role)
@@ -2479,7 +2479,7 @@ def gcp_iam_group_membership_role_remove_command(client: Client, args: Dict[str,
         CommandResults: outputs, readable outputs and raw response for XSOAR.
 
     """
-    membership_name = args.get('membership_name')
+    membership_name = args.get('membership_name', '')
     role = argToList(args.get('role'))
 
     client.gcp_iam_group_membership_role_remove_request(membership_name, role)
@@ -2530,10 +2530,10 @@ def gcp_iam_service_account_create_command(client: Client, args: Dict[str, Any])
         CommandResults: outputs, readable outputs and raw response for XSOAR.
 
     """
-    project_name = args.get('project_name')
-    service_account_id = args.get('service_account_id')
-    display_name = args.get('display_name')
-    description = args.get('description')
+    project_name = args.get('project_name', '')
+    service_account_id = args.get('service_account_id', '')
+    display_name = args.get('display_name', '')
+    description = args.get('description', '')
 
     if not 6 <= len(service_account_id) <= 30:
         raise Exception('Service account ID length has to be between 6-30 characters.')
@@ -2555,10 +2555,10 @@ def gcp_iam_service_account_update_command(client: Client, args: Dict[str, Any])
         CommandResults: outputs, readable outputs and raw response for XSOAR.
 
     """
-    service_account_name = args.get('service_account_name')
-    display_name = args.get('display_name')
-    description = args.get('description')
-    fields_to_update = args.get('fields_to_update')
+    service_account_name = args.get('service_account_name', '')
+    display_name = args.get('display_name', '')
+    description = args.get('description', '')
+    fields_to_update = args.get('fields_to_update', '')
 
     client.gcp_iam_service_account_update_request(service_account_name, fields_to_update, display_name, description)
     command_results = CommandResults(
@@ -2586,7 +2586,7 @@ def get_pagination_request_result(limit: int, page: int, max_page_size: int, cli
 
     steps = max_page_size if offset > max_page_size else offset
 
-    for i in range(0, offset, steps):
+    for _i in range(0, offset, steps):
         response = client_request(limit=steps, page_token=page_token, **kwargs)
 
         page_token = response.get('nextPageToken')
@@ -2630,8 +2630,8 @@ def gcp_iam_service_accounts_get_command(client: Client, args: Dict[str, Any]) -
         if not project_name:
             raise Exception('One of the arguments: ''service_account_name'' or ''project_name'' must be provided.')
 
-        limit = arg_to_number(args.get('limit') or '50')
-        page = arg_to_number(args.get('page') or '1')
+        limit = arg_to_number(args.get('limit')) or 50
+        page = arg_to_number(args.get('page')) or 1
         max_limit = 100
 
         validate_pagination_arguments(limit, page)
@@ -2710,7 +2710,7 @@ def gcp_iam_service_account_disable_command(client: Client, args: Dict[str, Any]
     return command_results_list
 
 
-def gcp_iam_service_account_delete_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def gcp_iam_service_account_delete_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
     """
     Delete service account key.
     Args:
@@ -2793,8 +2793,8 @@ def gcp_iam_service_account_key_create_command(client: Client, args: Dict[str, A
         CommandResults: outputs, readable outputs and raw response for XSOAR.
 
     """
-    service_account_name = args.get('service_account_name')
-    key_algorithm = args.get('key_algorithm')
+    service_account_name = args.get('service_account_name', '')
+    key_algorithm = args.get('key_algorithm', '')
 
     response = client.gcp_iam_service_account_key_create_request(service_account_name, key_algorithm)
     return generate_service_account_key_command_output(response)
@@ -2823,8 +2823,8 @@ def gcp_iam_service_account_keys_get_command(client: Client, args: Dict[str, Any
         if not service_account_name:
             raise Exception('One of the arguments: ''service_account_name'' or ''key_name'' must be provided.')
 
-        limit = arg_to_number(args.get('limit') or '50')
-        page = arg_to_number(args.get('page') or '1')
+        limit = arg_to_number(args.get('limit')) or 50
+        page = arg_to_number(args.get('page')) or 1
         validate_pagination_arguments(limit, page)
         response = client.gcp_iam_service_account_key_list_request(service_account_name)
 
@@ -2834,9 +2834,10 @@ def gcp_iam_service_account_keys_get_command(client: Client, args: Dict[str, Any
 
         outputs = []
 
-        if response.get('keys') and len(response.get('keys')) >= start:
-            min_index = min(len(response.get('keys')), end)
-            for key in response.get('keys')[start:min_index]:
+        keys = response.get('keys', [])
+        if keys and len(keys) >= start:
+            min_index = min(len(keys), end)
+            for key in keys[start:min_index]:
                 outputs.append(dict(key))
 
         for output in outputs:
@@ -2967,7 +2968,7 @@ def generate_role_command_output(response: dict, output_key: str = None,
         if output_key:
             outputs = copy.deepcopy(response.get(output_key, []))
         else:
-            outputs = copy.deepcopy(response)
+            outputs = [copy.deepcopy(response)]
 
     if not isinstance(outputs, list):
         outputs = [outputs]
@@ -3180,8 +3181,8 @@ def list_roles(client_request_method: Callable, args: Dict[str, Any],
     if resource_identifier_key:
         resource_identifier = args.get(resource_identifier_key)
     include_permissions = argToBoolean(args.get('include_permissions', True))
-    limit = arg_to_number(args.get('limit') or '50')
-    page = arg_to_number(args.get('page') or '1')
+    limit = arg_to_number(args.get('limit')) or 50
+    page = arg_to_number(args.get('page')) or 1
     show_deleted = argToBoolean(args.get('show_deleted', False))
 
     title_filter = args.get('title_filter')
@@ -3196,10 +3197,10 @@ def list_roles(client_request_method: Callable, args: Dict[str, Any],
     readable_message = get_pagination_readable_message(header=readable_header, limit=limit, page=page)
 
     if resource_identifier_key:
-        command_arguments = dict(parent=resource_identifier, include_permissions=include_permissions,
-                                 show_deleted=show_deleted)
+        command_arguments = {'parent': resource_identifier, 'include_permissions': include_permissions,
+                             'show_deleted': show_deleted}
     else:
-        command_arguments = dict(include_permissions=include_permissions, show_deleted=show_deleted)
+        command_arguments = {'include_permissions': include_permissions, 'show_deleted': show_deleted}
 
     if title_filter or permission_filter:
         response, outputs = list_filtered_role(client_request_method, command_arguments, limit, page, max_limit,
@@ -3544,8 +3545,8 @@ def gcp_iam_testable_permission_list_command(client: Client, args: Dict[str, Any
 
     """
     resource_name = args.get('resource_name')
-    limit = arg_to_number(args.get('limit') or '50')
-    page = arg_to_number(args.get('page') or '1')
+    limit = arg_to_number(args.get('limit')) or 50
+    page = arg_to_number(args.get('page')) or 1
     full_resource_name = f'//cloudresourcemanager.googleapis.com/{resource_name}'
     page_token = None
     readable_message = get_pagination_readable_message(header=f'{resource_name} testable permissions list:',
@@ -3599,8 +3600,8 @@ def gcp_iam_grantable_role_list_command(client: Client, args: Dict[str, Any]) ->
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
     resource_name = args.get('resource_name')
-    limit = arg_to_number(args.get('limit') or '50')
-    page = arg_to_number(args.get('page') or '1')
+    limit = arg_to_number(args.get('limit')) or 50
+    page = arg_to_number(args.get('page')) or 1
     full_resource_name = f'//cloudresourcemanager.googleapis.com/{resource_name}'
     page_token = None
     readable_message = get_pagination_readable_message(header=f'{resource_name} grantable roles list:',
@@ -3655,12 +3656,12 @@ def gcp_iam_project_iam_policy_remove_command(client: Client, args: Dict[str, An
         CommandResults: outputs, readable outputs and raw response for XSOAR.
 
     """
-    project_name = args.get('project_name')
+    project_name = args.get('project_name', '')
     role = argToList(args.get('role'))
 
     iam_policy = client.gcp_iam_project_iam_policy_get_request(project_name).get("bindings", [])
 
-    updated_policies = [policy for policy in iam_policy if not policy.get("role") in role]
+    updated_policies = [policy for policy in iam_policy if policy.get('role') not in role]
 
     client.gcp_iam_project_iam_policy_set_request(project_name, updated_policies)
     command_results = CommandResults(
@@ -3680,12 +3681,12 @@ def gcp_iam_organization_iam_policy_remove_command(client: Client, args: Dict[st
         CommandResults: outputs, readable outputs and raw response for XSOAR.
 
     """
-    organization_name = args.get('organization_name')
+    organization_name = args.get('organization_name', '')
     role = argToList(args.get('role'))
 
     iam_policy = client.gcp_iam_organization_iam_policy_get_request(organization_name).get("bindings", [])
 
-    updated_policies = [policy for policy in iam_policy if not policy.get("role") in role]
+    updated_policies = [policy for policy in iam_policy if policy.get('role') not in role]
 
     client.gcp_iam_organization_iam_policy_set_request(organization_name, updated_policies)
     command_results = CommandResults(
@@ -3705,12 +3706,12 @@ def gcp_iam_folder_iam_policy_remove_command(client: Client, args: Dict[str, Any
         CommandResults: outputs, readable outputs and raw response for XSOAR.
 
     """
-    folder_name = args.get('folder_name')
+    folder_name = args.get('folder_name', '')
     role = argToList(args.get('role'))
 
     iam_policy = client.gcp_iam_folder_iam_policy_get_request(folder_name).get("bindings", [])
 
-    updated_policies = [policy for policy in iam_policy if not policy.get("role") in role]
+    updated_policies = [policy for policy in iam_policy if policy.get('role') not in role]
 
     client.gcp_iam_folder_iam_policy_set_request(folder_name, updated_policies)
     command_results = CommandResults(
@@ -3719,7 +3720,7 @@ def gcp_iam_folder_iam_policy_remove_command(client: Client, args: Dict[str, Any
     return command_results
 
 
-def gcp_iam_tagbindings_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def gcp_iam_tagbindings_list_command(client: Client, args: Dict[str, Any]) -> Union[CommandResults, str]:
     """
     List tag bindings (key value pair) applied to a project/folder/organization object.
     Args:
@@ -3740,12 +3741,12 @@ def gcp_iam_tagbindings_list_command(client: Client, args: Dict[str, Any]) -> Co
     res_binding = client.gcp_iam_tagbindings_list_request(parent=parent, limit=max_limit)
     if not res_binding:
         return "No tag bindingds found"
-    if not res_binding.get('tagBindings')[0].get('tagValue'):
+    if not res_binding.get('tagBindings', [{}])[0].get('tagValue'):
         return "No tag bindingds found"
     val_list = []
-    for value in res_binding.get('tagBindings'):
+    for value in res_binding.get('tagBindings', {}):
         res_value = client.gcp_iam_tagvalues_get_request(name=value.get('tagValue'))
-        res_key = client.gcp_iam_tagkeys_get_request(name=res_value.get('parent'))
+        res_key = client.gcp_iam_tagkeys_get_request(name=res_value.get('parent', ''))
         kv = {'key': res_key['shortName'], 'value': res_value['shortName']}
         val_list.append(kv)
 
@@ -3775,6 +3776,7 @@ def test_module(service_account_key: str) -> None:
         return return_results('Authorization Error: make sure API Service Account Key is valid.')
 
     return_results('ok')
+    return None
 
 
 def main() -> None:
@@ -3788,7 +3790,6 @@ def main() -> None:
     demisto.debug(f'Command being called is {command}')
 
     try:
-        requests.packages.urllib3.disable_warnings()
         if command == 'test-module':
             return test_module(service_account_key)
 

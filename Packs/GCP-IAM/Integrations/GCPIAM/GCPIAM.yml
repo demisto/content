@@ -152,7 +152,7 @@ script:
               "user:eve@example.com"
             ]
           }
-        ]
+        ].
       isArray: true
       name: policy
       required: true
@@ -307,7 +307,7 @@ script:
               "user:eve@example.com"
             ]
           }
-        ]
+        ].
       isArray: true
       name: policy
       required: true
@@ -453,7 +453,7 @@ script:
               "user:eve@example.com"
             ]
           }
-        ]
+        ].
       isArray: true
       name: policy
       required: true
@@ -512,7 +512,7 @@ script:
       description: Group creation time.
       type: Date
     - contextPath: GCPIAM.Group.displayName
-      description: The display name of the group
+      description: The display name of the group.
       type: String
     - contextPath: GCPIAM.Group.groupKey.id
       description: The ID of the group.
@@ -559,7 +559,7 @@ script:
       description: Group creation time.
       type: Date
     - contextPath: GCPIAM.Group.displayName
-      description: The display name of the group
+      description: The display name of the group.
       type: String
     - contextPath: GCPIAM.Group.groupKey.id
       description: The ID of the group.
@@ -771,14 +771,14 @@ script:
       description: Indicates whether the service account is disabled.
       type: Boolean
   - arguments:
-    - description: 'A comma-separated list of names of service accounts to enable. Every resource name should be in the following format: projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}'
+    - description: 'A comma-separated list of names of service accounts to enable. Every resource name should be in the following format: projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}.'
       isArray: true
       name: service_account_name
       required: true
     description: Enables a project service account.
     name: gcp-iam-service-account-enable
   - arguments:
-    - description: 'A comma-separated list of names of service accounts to disable. Every resource name should be in the following format: projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}'
+    - description: 'A comma-separated list of names of service accounts to disable. Every resource name should be in the following format: projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}.'
       isArray: true
       name: service_account_name
       required: true
@@ -861,21 +861,21 @@ script:
       description: Indicates whether the service account key is disabled.
       type: Boolean
   - arguments:
-    - description: 'A comma-separated list of names of resource name of the service account key to enable. Every resource name should be in the following format: projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}/keys/{key}'
+    - description: 'A comma-separated list of names of resource name of the service account key to enable. Every resource name should be in the following format: projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}/keys/{key}.'
       isArray: true
       name: key_name
       required: true
     description: Enables a service account key.
     name: gcp-iam-service-account-key-enable
   - arguments:
-    - description: 'A comma-separated list of names of resource name of the service account key to disable. Every resource name should be in the following format: projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}/keys/{key}'
+    - description: 'A comma-separated list of names of resource name of the service account key to disable. Every resource name should be in the following format: projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}/keys/{key}.'
       isArray: true
       name: key_name
       required: true
     description: Disables a service account key.
     name: gcp-iam-service-account-key-disable
   - arguments:
-    - description: 'A comma-separated list of names of resource name of the service account key to delete. Every resource name should be in the following format: projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}/keys/{key}'
+    - description: 'A comma-separated list of names of resource name of the service account key to delete. Every resource name should be in the following format: projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}/keys/{key}.'
       isArray: true
       name: key_name
       required: true
@@ -912,7 +912,7 @@ script:
       description: The name of the role.
       type: String
   - arguments:
-    - description: The name of the role to update. Must be in the format of organizations/{ORGANIZATION_ID}/roles/{CUSTOM_ROLE_ID}
+    - description: The name of the role to update. Must be in the format of organizations/{ORGANIZATION_ID}/roles/{CUSTOM_ROLE_ID}.
       name: role_name
       required: true
     - description: The updated description of the role.
@@ -945,7 +945,7 @@ script:
     execution: true
     name: gcp-iam-organization-role-update
   - arguments:
-    - description: The resource name of the role. Must be in the format of organizations/{ORGANIZATION_ID}/roles/{CUSTOM_ROLE_ID}
+    - description: The resource name of the role. Must be in the format of organizations/{ORGANIZATION_ID}/roles/{CUSTOM_ROLE_ID}.
       name: role_name
       required: true
     - description: A comma-separated list of names of the permissions to add to the role.
@@ -955,7 +955,7 @@ script:
     description: Adds permissions to a custom organization role.
     name: gcp-iam-organization-role-permission-add
   - arguments:
-    - description: The resource name of the role. Must be in the format of organizations/{ORGANIZATION_ID}/roles/{CUSTOM_ROLE_ID}
+    - description: The resource name of the role. Must be in the format of organizations/{ORGANIZATION_ID}/roles/{CUSTOM_ROLE_ID}.
       name: role_name
       required: true
     - description: A comma-separated list of names of the permissions to remove from the role.
@@ -999,7 +999,7 @@ script:
       description: The resource name of the role.
       type: String
   - arguments:
-    - description: 'A comma-separated list of organization roles to retrieve. Every role name should be in the following format: organizations/{ORGANIZATION_ID}/roles/{CUSTOM_ROLE_ID}'
+    - description: 'A comma-separated list of organization roles to retrieve. Every role name should be in the following format: organizations/{ORGANIZATION_ID}/roles/{CUSTOM_ROLE_ID}.'
       isArray: true
       name: role_name
       required: true
@@ -1010,7 +1010,7 @@ script:
       description: The resource name of the role.
       type: String
   - arguments:
-    - description: 'A comma-separated list of organization roles to delete. Every role name should be in the following format: organizations/{ORGANIZATION_ID}/roles/{CUSTOM_ROLE_ID}'
+    - description: 'A comma-separated list of organization roles to delete. Every role name should be in the following format: organizations/{ORGANIZATION_ID}/roles/{CUSTOM_ROLE_ID}.'
       isArray: true
       name: role_name
       required: true
@@ -1133,7 +1133,7 @@ script:
       description: The resource name of the role.
       type: String
   - arguments:
-    - description: 'A comma-separated list of project roles to retrieve. Every role name should be in the following format: projects/{PROJECT_ID}/roles/{CUSTOM_ROLE_ID}'
+    - description: 'A comma-separated list of project roles to retrieve. Every role name should be in the following format: projects/{PROJECT_ID}/roles/{CUSTOM_ROLE_ID}.'
       isArray: true
       name: role_name
       required: true
@@ -1144,7 +1144,7 @@ script:
       description: The name of the role.
       type: String
   - arguments:
-    - description: 'A comma-separated list of project roles to delete. Every role name should be in the following format: projects/{PROJECT_ID}/roles/{CUSTOM_ROLE_ID}'
+    - description: 'A comma-separated list of project roles to delete. Every role name should be in the following format: projects/{PROJECT_ID}/roles/{CUSTOM_ROLE_ID}.'
       isArray: true
       name: role_name
       required: true
@@ -1167,7 +1167,7 @@ script:
       description: The name of the permissions.
       type: String
     - contextPath: GCPIAM.Permission.stage
-      description: The current launch stage of the permission
+      description: The current launch stage of the permission.
       type: String
   - arguments:
     - description: 'A comma-separated list of names of service accounts to delete. Every resource name should be in the following format: projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}.'
@@ -1193,7 +1193,7 @@ script:
       description: The name of the role.
       type: String
   - arguments:
-    - description: 'A comma-separated list of GCP IAM predefined roles to retrieve. Every role name should be in the following format: roles/{ROLE_NAME}'
+    - description: 'A comma-separated list of GCP IAM predefined roles to retrieve. Every role name should be in the following format: roles/{ROLE_NAME}.'
       isArray: true
       name: role_name
       required: true
@@ -1235,7 +1235,7 @@ script:
     - contextPath: GCPIAM.Role.name
       description: The resource name of the role.
       type: String
-  dockerimage: demisto/google-api-py3:1.0.0.55175
+  dockerimage: demisto/google-api-py3:1.0.0.75672
   runonce: false
   script: '-'
   subtype: python3
