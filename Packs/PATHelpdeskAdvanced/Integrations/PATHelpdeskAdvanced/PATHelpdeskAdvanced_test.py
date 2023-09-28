@@ -308,28 +308,42 @@ def test_list_tickets_success(mocked_client):
     assert result.outputs_key_field == "ID"
     assert result.raw_response == mocked_client.list_tickets.return_value
     assert result.readable_output == "\n".join(
-        ("### Tickets",
-        "|Ticket ID|Subject|Solution|Date|Service ID|Problem|Contact ID|Owner User ID|Account ID|",
-        "|---|---|---|---|---|---|---|---|---|",
-        "| 10000002C | Support Request | Solution text redacted | 2005-03-18T01:58:31Z | XXX | Problem description redacted | XXX | AA | XXX |",
-        "| 10000003C | On-site Support | Ticket correctly created through template. | 2005-03-18T01:58:31Z | XXX | Problem description redacted | XXX | XXX | XXX |",
-        "",)
+        (
+            "### Tickets",
+            "|Ticket ID|Subject|Solution|Date|Service ID|Problem|Contact ID|Owner User ID|Account ID|",
+            "|---|---|---|---|---|---|---|---|---|",
+            "| 10000002C | Support Request | Solution text redacted | 2005-03-18T01:58:31Z | XXX | Problem description redacted | XXX | AA | XXX |",
+            "| 10000003C | On-site Support | Ticket correctly created through template. | 2005-03-18T01:58:31Z | XXX | Problem description redacted | XXX | XXX | XXX |",
+            "",
+        )
     )
 
 
-def test_parse_filter_valid():
-    """
-    Given a list of valid filter condition strings
-    When Filter.parse_list is called with the list
-    Then it should return a list of parsed condition dicts
-    """
-    conditions = (
-        '"id" eq "123"',
-        '"name" lt "john"',
-        '"nullvalue" ne null',
-        '"notanullvalue" ne "none"',  # quotes make it a string, not null
-    )
-    expected = json.dumps(
+def test_parse_filter():
+    assert Filter.parse_list(
+        (
+            '"id" eq "123"',
+            '"name" lt "john"',
+            '"nullvalue" ne null',
+            '"notanullvalue" ne "none"',  # quotes make it a string, not null
+        )
+    ) == [
+        Filter(key="id", operator="eq", value="123"),
+        Filter(key="name", operator="lt", value="john"),
+        Filter(key="nullvalue", operator="ne", value=None),
+        Filter(key="notanullvalue", operator="ne", value="none"),
+    ]
+
+
+def test_dump_filter_valid():
+    assert Filter.dumps_list(
+        (
+            Filter(key="id", operator="eq", value="123"),
+            Filter(key="name", operator="lt", value="john"),
+            Filter(key="nullvalue", operator="ne", value=None),
+            Filter(key="notanullvalue", operator="ne", value="none"),
+        )
+    ) == json.dumps(
         [
             {"property": "id", "op": "eq", "value": "123"},
             {"property": "name", "op": "lt", "value": "john"},
@@ -337,8 +351,6 @@ def test_parse_filter_valid():
             {"property": "notanullvalue", "op": "ne", "value": "none"},
         ]
     )
-
-    assert Filter.dumps_list(Filter.parse_list(conditions)) == expected
 
 
 def test_parse_filter_conditions_invalid():
