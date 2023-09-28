@@ -74,6 +74,10 @@
         "Tenable_io": {
             "mandatory": false,
             "display_name": "Tenable.io"
+        },
+        "GCP-IAM": {
+            "mandatory": false,
+            "display_name": "GCP-IAM"
         }
     },
     "marketplaces": [
