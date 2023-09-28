@@ -699,12 +699,13 @@ Note: Only one oneOnOne chat can exist between two members. If a oneOnOne chat a
 `microsoft-teams-chat-create`
 
 ##### Required Permissions
-`Chat.Create` - Delegated, Application
-`Chat.ReadWrite` - Delegated
-`TeamsAppInstallation.ReadWriteForChat` - Delegated
-`TeamsAppInstallation.ReadWriteSelfForChat` - Delegated
-`TeamsAppInstallation.ReadWriteSelfForChat.All` - Application               
-`TeamsAppInstallation.ReadWriteForChat.All` - Application
+`Chat.Create` - Delegated, Application<br>
+`Chat.ReadWrite` - Delegated<br>
+`TeamsAppInstallation.ReadWriteForChat` - Delegated<br>
+`TeamsAppInstallation.ReadWriteSelfForChat` - Delegated<br>
+`TeamsAppInstallation.ReadWriteSelfForChat.All` - Application<br>           
+`TeamsAppInstallation.ReadWriteForChat.All` - Application<br>
+`AppCatalog.Read.All` - Application<br>
 
 ##### Input
 
@@ -748,12 +749,13 @@ Sends a new chat message in the specified chat.
 `microsoft-teams-message-send-to-chat`
 
 ##### Required Permissions
-`ChatMessage.Send` - Delegated
-`Chat.ReadWrite` - Delegated
-`TeamsAppInstallation.ReadWriteForChat` - Delegated
-`TeamsAppInstallation.ReadWriteSelfForChat` - Delegated
-`TeamsAppInstallation.ReadWriteSelfForChat.All` - Application               
-`TeamsAppInstallation.ReadWriteForChat.All` - Application
+`ChatMessage.Send` - Delegated<br>
+`Chat.ReadWrite` - Delegated<br>
+`TeamsAppInstallation.ReadWriteForChat` - Delegated<br>
+`TeamsAppInstallation.ReadWriteSelfForChat` - Delegated<br>
+`TeamsAppInstallation.ReadWriteSelfForChat.All` - Application<br>               
+`TeamsAppInstallation.ReadWriteForChat.All` - Application<br>
+`AppCatalog.Read.All` - Application
 
 ##### Input
 
