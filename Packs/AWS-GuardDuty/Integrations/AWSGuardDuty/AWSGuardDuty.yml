@@ -125,7 +125,7 @@ configuration:
   section: Connect
   advanced: true
   required: false
-description: Amazon Web Services Guard Duty Service (gd)
+description: Amazon Web Services Guard Duty Service (gd).
 display: AWS - GuardDuty
 name: AWS - GuardDuty
 script:
@@ -315,7 +315,7 @@ script:
       - PROOF_POINT
       - FIRE_EYE
       required: true
-    - description: The URI of the file that contains the IPSet. For example (https://s3.us-west-2.amazonaws.com/my-bucket/my-object-key)
+    - description: The URI of the file that contains the IPSet. For example (https://s3.us-west-2.amazonaws.com/my-bucket/my-object-key).
       name: location
     - description: The user friendly name to identify the IPSet. This name is displayed in all findings that are triggered by activity that involves IP addresses included in this IPSet.
       name: name
@@ -457,7 +457,7 @@ script:
     name: aws-gd-list-ip-sets
     outputs:
     - contextPath: AWS.GuardDuty.Detectors.IPSet.IpSetId
-      description: The unique identifier for an IP Set
+      description: The unique identifier for an IP Set.
       type: Unknown
   - arguments:
     - auto: PREDEFINED
@@ -576,7 +576,7 @@ script:
     name: aws-gd-list-threatintel-sets
     outputs:
     - contextPath: AWS.GuardDuty.Detectors.ThreatIntelSet.ThreatIntelSetId
-      description: The unique identifier for an threat intel set
+      description: The unique identifier for an threat intel set.
       type: string
   - arguments:
     - description: The detectorID that specifies the GuardDuty service whose ThreatIntelSet you want to update.
@@ -628,7 +628,7 @@ script:
     name: aws-gd-list-findings
     outputs:
     - contextPath: AWS.GuardDuty.Findings.FindingId
-      description: The unique identifier for the Finding
+      description: The unique identifier for the Finding.
       type: string
   - arguments:
     - description: The ID of the detector that specifies the GuardDuty service whose findings you want to retrieve.
@@ -871,7 +871,7 @@ script:
     - contextPath: AWS.GuardDuty.Members.UpdatedAt
       description: The time a member was last updated.
       type: string
-  dockerimage: demisto/boto3py3:1.0.0.71685
+  dockerimage: demisto/boto3py3:1.0.0.75596
   isfetch: true
   runonce: false
   script: '-'
