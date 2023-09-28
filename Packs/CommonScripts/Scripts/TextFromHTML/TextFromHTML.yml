@@ -13,7 +13,7 @@ args:
 - name: html
   required: true
   default: true
-  description: The HTML to strip tags from
+  description: The HTML to strip tags from.
 - name: html_tag
   default: true
   defaultValue: body
