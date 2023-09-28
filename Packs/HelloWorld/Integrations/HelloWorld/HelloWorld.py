@@ -264,12 +264,12 @@ class Client(BaseClient):
         # INTEGRATION DEVELOPER TIP
         # 1. The assign_params function (Found in CommonServerPython) can easily create a None-free dictionary.
         #   Use it to send the ``json_data`` argument to ``self._http_request`` method (request body).
-        #   When request body is complex, best practice is to build the dictionary outside (pass as argument).
+        #   When the request body is complex, best practice is to build the dictionary outside (pass as argument).
         # 2. It's possible to get the whole response and not just the data part, using the ``resp_type`` argument.
-        # 3. It's possible to get responses for statuses other then 200 by using the ``ok_codes`` argument-
+        # 3. It's possible to get responses for statuses other than 200 by using the ``ok_codes`` argument-
         #   otherwise, the ``self._http_request method`` will fail when parsing it.
-        # 4. If the url parameters are complex (filters, etc) -
-        #   it is possible to pass it using the ``params`` argument.
+        # 4. If the URL parameters are complex (filters, etc.) -
+        #   it is possible to pass them using the ``params`` argument.
 
         url = f'/api/endpoint/{param1}/{param2}'
         response = self._http_request(
@@ -281,7 +281,7 @@ class Client(BaseClient):
 
     def get_ip_reputation(self, ip: str) -> dict[str, Any]:
         """For developing walkthrough purposes, this is a dummy response.
-        For real API call see specific_api_endpoint_call_example method.
+        For real API calls, see the specific_api_endpoint_call_example method.
 
         Args:
             ip (str): IP address to get the reputation for.
@@ -338,7 +338,7 @@ class Client(BaseClient):
 
     def get_alert_list(self, limit: int, severity: str = None, last_id: int = 0) -> list[dict]:
         """For developing walkthrough purposes, this is a dummy response.
-           For real API call see specific_api_endpoint_call_example method.
+           For real API calls, see the specific_api_endpoint_call_example method.
 
         Args:
             limit (int): The number of item to generate.
@@ -360,7 +360,7 @@ class Client(BaseClient):
 
     def get_alert(self, alert_id: int) -> list[dict]:
         """For developing walkthrough purposes, this is a dummy response.
-        For real API call see specific_api_endpoint_call_example method.
+        For real API calls, see the specific_api_endpoint_call_example method.
 
         Args:
             alert_id (int) : An alert to retrieve.
@@ -376,8 +376,8 @@ class Client(BaseClient):
 
     def create_note(self, alert_id: int, comment: str) -> dict:
         """
-        This function calls the api to create a new note in an alert.
-        For real API call see specific_api_endpoint_call_example method.
+        This function calls the API to create a new note in an alert.
+        For real API calls, see the specific_api_endpoint_call_example method.
 
         Args:
             alert_id (int): a number represent an alert.
@@ -416,9 +416,9 @@ class Client(BaseClient):
 
 def validate_api_key(api_key: str) -> None:
     """
-    This is a validation that the api-key is valid. It is not needed when dealing with real API-
+    This is a validation that the api-key is valid. It is not needed when dealing with a real API.
     But we wanted to give you a full experience.
-    Some API handle invalid credential with invalid status code with nasty message, which user will not understand.
+    Some APIs handle invalid credentials with an invalid status code with an unclear message, which users will not understand.
     It can be handled in the commands or in the main function when the status code implies incorrect credentials.
 
     Args:
@@ -458,7 +458,7 @@ def convert_to_demisto_severity(severity: str) -> int:
 
 
 def dedup_by_ids(alerts: list[dict], ids_to_compare: list[int]) -> tuple[list[dict], int]:
-    """ Gets A list of new ids and a list of existing, and return a list with only alerts with id not found in ids_to_compare.
+    """ Gets a list of new IDs and a list of existing IDs, and returns a list with only alerts with id not found in ids_to_compare.
     For example, if alerts=[{'a':2},{'b': 3}] and ids_to_compare=[1,2], [3] is returned.
 
     Args:
@@ -580,8 +580,8 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict, first_fetc
                     severity: str = 'low', _page_size: int = DEFAULT_PAGE_SIZE) -> tuple[dict, list[dict]]:
     """
     This function retrieves new alerts every interval (default is 1 minute).
-    It has to implement the logic of making sure that alerts are fetched only onces and no alerts are missed.
-    By default it's invoked by XSOAR every minute. It will use last_run to save the timestamp of the last alert it
+    It has to implement the logic of making sure that alerts are fetched only once and no alerts are missed.
+    By default it's invoked by Cortex XSOAR every minute. It will use last_run to save the timestamp of the last alert it
     processed. If last_run is not provided, it should use the integration parameter first_fetch_time to determine when
     to start fetching the first time.
 
@@ -593,17 +593,17 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict, first_fetc
             milliseconds on when to start fetching alerts.
         severity (str): severity of the alert to search for.
         page_size (int): number of alerts to retrieve per page from the API. This should be standard when dealing with pagination.
-            It contains `_` here since we are not using in api call.
+            It contains `_` here since we are not using it in an API call.
     Returns:
         dict: Next run dictionary containing the timestamp that will be used in ``last_run`` on the next fetch.
-        list: List of alerts that will be created in XSOAR.
+        list: List of alerts that will be created in Cortex XSOAR.
     """
     # INTEGRATION DEVELOPER TIP
-    # You can use the last_run to save important information between fetches (For example, the last fetched alert's ids.
+    # You can use the last_run to save important information between fetches (For example, the last fetched alert's IDs).
     # Note that the last_run can store only small amounts of data, abusing it might cause unexpected behavior.
 
     # INTEGRATION DEVELOPER TIP
-    # The fetch-incident function is usually *very* hard to debug in client's environment.
+    # The fetch-incident function is usually *very* hard to debug in a client's environment.
     # Logging the steps correctly can save a lot of time and effort.
     # Make sure to use demisto.debug() to avoid flooding the general log.
 
@@ -638,7 +638,7 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict, first_fetc
     # INTEGRATION DEVELOPER TIP
     # alerts might be duplicated in some cases:
     # 1. Pagination done without next page's token -
-    #   The exact time of the last alert is queried again so the same alert will be fetched again).
+    #   The exact time of the last alert is queried again so the same alert will be fetched again.
     # 2. Limit is exceeded but there are more alert in the same time to fetch in the next run-
     #   (Mostly happens when API does not support milliseconds).
 
@@ -652,7 +652,7 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict, first_fetc
     last_ids = []
     demisto.debug(f'{alerts=}')
     for alert in alerts:
-        # to prevent duplicates, we are only adding alerts with creation_time > last_fetched.
+        # To prevent duplicates, we are only adding alerts with creation_time > last_fetched.
         # When we cannot assume alerts order in the response, we can use this code:
 
         # if last_fetch:
@@ -663,7 +663,7 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict, first_fetc
         # if alert_created_time > latest_created_time:
         #     latest_created_time = alert_created_time
 
-        # Otherwise, we might need to add the alert id to the last_ids so it will be avoided in the next run.
+        # Otherwise, we might need to add the alert ID to the last_ids so it will be avoided in the next run.
         if alert['date'] == last_fetched_time:
             last_ids.append(alert['id'])
 
@@ -673,10 +673,10 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict, first_fetc
         # INTEGRATION DEVELOPER TIP
         # The incident dict is initialized with a few mandatory fields:
         # name: the incident name
-        # occurred: the time on when the incident occurred, in ISO8601 format, Which match the API response in this case.
+        # occurred: the time on when the incident occurred, in ISO8601 format, which matches the API response in this case.
         # we can use timestamp_to_datestring() from CommonServerPython.py to handle the conversion when dealing with timestamps.
         # rawJSON: everything else is packed in a string via json.dumps() and is included in rawJSON.
-        # It will be used later for classification and mapping inside XSOAR.
+        # It will be used later for classification and mapping inside Cortex XSOAR.
         # severity: it's not mandatory, but is recommended. It must be
         # converted to XSOAR specific severity (int 1 to 4)
         # Note that there are other fields commented out here. You can do some
@@ -701,7 +701,7 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict, first_fetc
         incidents.append(incident)
 
     # Save the next_run as a dict with the last_fetch key to be stored.
-    # When we reached limit but there is still alerts to get from this run, The leftovers will return in the next run by time.
+    # When we reached the limit but there are still alerts to get from this run, the leftovers will be returned in the next run by time.
     demisto.debug(f"setting next run- {last_fetched_time=}")
     next_run = {'last_fetch': last_fetched_time, 'last_ids': last_ids}
     return next_run, incidents
@@ -727,7 +727,7 @@ def ip_reputation_command(client: Client, args: dict[str, Any], default_threshol
 
     # INTEGRATION DEVELOPER TIP
     # Reputation commands usually support multiple inputs (i.e. arrays), so
-    # they can be invoked once in XSOAR. In case the API supports a single
+    # they can be invoked once in Cortex XSOAR. In case the API supports a single
     # IP at a time, we will cycle this for all the members of the array.
     # We use argToList(), implemented in CommonServerPython.py to automatically
     # return a list of a single element even if the provided input is a scalar.
@@ -918,7 +918,7 @@ def main() -> None:  # pragma: no cover
     # get the service API url
     base_url = params.get('url')
 
-    # if your Client class inherits from BaseClient, SSL verification is handled out of the box by it.
+    # If your Client class inherits from BaseClient, SSL verification is handled out-of-the-box by it.
     # Just pass ``verify_certificate`` to the Client constructor
     verify_certificate = not params.get('insecure', False)
 

@@ -132,13 +132,13 @@ def test_say_hello():
 def test_convert_to_demisto_severity(hello_world_severity, expected_xsoar_severity):
     """
         Given:
-            - A string represent an HelloWorld severity.
+            - A string represents a HelloWorld severity.
 
         When:
             - Running the 'convert_to_demisto_severity' function.
 
         Then:
-            - Verify that the severity was translated to an XSOAR severity correctly.
+            - Verify that the severity was correctly translated to a Cortex XSOAR severity.
     """
     from HelloWorld import convert_to_demisto_severity
 
@@ -146,13 +146,13 @@ def test_convert_to_demisto_severity(hello_world_severity, expected_xsoar_severi
 
 
 def test_api_key():
-    """Validates an API key. Since this is tutorial, there is a dummy API key.
+    """Validates an API key. Since this is a tutorial, there is a dummy API key.
 
     When:
         - An API key is provided as a string argument
     Then:
         - The key is checked against known valid keys
-        - If invalid, an exception is raised with clear message.
+        - If invalid, an exception is raised with a clear message.
     """
     api_key = "some_api_key"
 
@@ -176,7 +176,7 @@ def test_dedup_by_ids(alerts, ids_to_compare, expected):
 
     Then:
         - Ensure the deduped alerts match the expected
-        - Ensure number of duplicates matches expected
+        - Ensure the number of duplicates match the expected
     """
     deduped, dups = dedup_by_ids(alerts, ids_to_compare)
     assert deduped == expected[0]
@@ -277,7 +277,7 @@ class TestAlertListCommand:
     # Using the parametrize fixture helps you generate many test cases on the same function,
     # to make sure you are fully covered.
     # Make sure to check all edge-cases such as empty responses, wrong inputs, etc.
-    # When using parametrize its optional to add id, which will make test failure much more easy to debug.
+    # When using parametrize it's optional to add an ID, which will make test failure easier to debug.
 
     @pytest.mark.parametrize(
         'args, expected_limit, expected_severity',
@@ -328,7 +328,7 @@ class TestAlertListCommand:
 
         Then:
             - Ensure mocked client method called correctly
-            - Validate returned command results contains data
+            - Validate returned command results contain data
         """
         mocked_list_call = mocker.patch.object(self.mocked_client, 'get_alert_list',
                                                return_value=[{'id': 1, 'title': 'alert 1'},

@@ -9,7 +9,7 @@ This is the Hello World integration for getting started.
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
     | Source Reliability | Reliability of the source providing the intelligence data. | False |
-    | Server URL (e.g. https://api.xsoar-example.com) |  | True |
+    | Server URL (e.g., https://api.xsoar-example.com) |  | True |
     | Fetch alerts |  | False |
     | Alert type |  | False |
     | Maximum number of alerts per fetch |  | False |
@@ -64,7 +64,7 @@ Hello command - prints hello to anyone.
 ### helloworld-alert-list
 
 ***
-Lists the example alerts as it would be fetched from the api.
+Lists the example alerts as it would be fetched from the API.
 
 #### Base Command
 
@@ -76,13 +76,13 @@ Lists the example alerts as it would be fetched from the api.
 | --- | --- | --- |
 | alert_id | Filter by alert item ID. If not provided, all IDs will be retrieved. | Optional | 
 | limit | How many alerts to fetch. Default is 10. | Optional | 
-| severity | which severity to filter by the alerts. | Optional | 
+| severity | The severity  by which to filter the alerts. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| HelloWorld.alert.id | Number | The id of the alert. | 
+| HelloWorld.alert.id | Number | The ID of the alert. | 
 | HelloWorld.alert.name | String | The name of the alert. | 
 | HelloWorld.alert.severity | String | The severity of the alert. | 
 | HelloWorld.alert.date | Date | The date of the alert occurrence. | 
@@ -159,7 +159,7 @@ Lists the example alerts as it would be fetched from the api.
 ### helloworld-alert-note-create
 
 ***
-Example of creating new item in the api.
+Example of creating a new item in the API.
 
 #### Base Command
 
@@ -169,14 +169,14 @@ Example of creating new item in the api.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| alert_id | The alert's id to add note to. | Required | 
-| note_text | The comment to add to note. | Required | 
+| alert_id | The alert's ID to add the note to. | Required | 
+| note_text | The comment to add to the note. | Required | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| HelloWorld.alert.id | Number | The id of the alert. | 
+| HelloWorld.alert.id | Number | The ID of the alert. | 
 | HelloWorld.alert.name | String | The name of the alert. | 
 | HelloWorld.alert.severity | String | The severity of the alert. | 
 | HelloWorld.alert.date | Date | The date of the alert occurrence. | 
@@ -214,7 +214,7 @@ Return IP information and reputation.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | ip | List of IPs. | Optional | 
-| threshold | If the IP has reputation above the threshold then the IP defined as malicious. If threshold not set, then threshold from instance configuration is used. Default is 65. | Optional | 
+| threshold | If the IP has a reputation above the threshold, then the IP is defined as malicious. If threshold is not set, then the threshold from the instance configuration is used. Default is 65. | Optional | 
 
 #### Context Output
 

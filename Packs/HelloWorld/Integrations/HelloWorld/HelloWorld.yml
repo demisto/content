@@ -22,7 +22,7 @@ configuration:
   section: Collect
   required: false
 - defaultvalue: https://api.xsoar-example.com
-  display: Server URL (e.g. https://api.xsoar-example.com)
+  display: Server URL (e.g., https://api.xsoar-example.com)
   name: url
   required: true
   type: 0
@@ -105,13 +105,13 @@ script:
       name: alert_id
     - description: How many alerts to fetch. Default is 10.
       name: limit
-    - description: which severity to filter by the alerts.
+    - description: The severity by which to filter the alerts.
       name: severity
-    description: Lists the example alerts as it would be fetched from the api.
+    description: Lists the example alerts as it would be fetched from the API.
     name: helloworld-alert-list
     outputs:
     - contextPath: HelloWorld.alert.id
-      description: The id of the alert.
+      description: The ID of the alert.
       type: Number
     - contextPath: HelloWorld.alert.name
       description: The name of the alert.
@@ -126,17 +126,17 @@ script:
       description: The status of the alert.
       type: String
   - arguments:
-    - description: The alert's id to add note to.
+    - description: The alert's ID to add the note to.
       name: alert_id
       required: true
-    - description: The comment to add to note.
+    - description: The comment to add to the note.
       name: note_text
       required: true
-    description: Example of creating new item in the api.
+    description: Example of creating a new item in the API.
     name: helloworld-alert-note-create
     outputs:
     - contextPath: HelloWorld.alert.id
-      description: The id of the alert.
+      description: The ID of the alert.
       type: Number
     - contextPath: HelloWorld.alert.name
       description: The name of the alert.
@@ -155,7 +155,7 @@ script:
       name: ip
       default: true
       isArray: true
-    - description: If the IP has reputation above the threshold then the IP defined as malicious. If threshold not set, then threshold from instance configuration is used.
+    - description: If the IP has a reputation above the threshold, then the IP is defined as malicious. If a threshold not set, then threshold from the instance configuration is used.
       name: threshold
       defaultValue: 65
     description: Return IP information and reputation.
