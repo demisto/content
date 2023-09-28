@@ -18,6 +18,7 @@ To play this game, follow the instructions located within the "Prepare your CTF"
 ![Prepare Your CTF](https://github.com/demisto/content/raw/5dbcb964209b0bab7d4cb7e416d95b8e50600ac6/Packs/ctf01/doc_files/playbook-Prepare_your_CTF.png)
 ![Cortex XDR incident handling v3](https://raw.githubusercontent.com/demisto/content/master/Packs/CortexXDR/doc_files/Cortex_XDR_incident_handling_v3.png)
 
+For more information visit xsoar.pan.dev
 
 
 
