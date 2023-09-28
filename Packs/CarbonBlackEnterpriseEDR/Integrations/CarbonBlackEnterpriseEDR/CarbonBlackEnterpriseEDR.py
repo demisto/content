@@ -1172,7 +1172,7 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_limit: str, last_run:
     latest_alert_id = last_fetched_alert_id
 
     incidents = []
-
+    demisto.debug(f'Sending request to search alerts with start time: {last_fetched_alert_create_time}')
     response = client.search_alerts_request(
         sort_field='first_event_time',
         sort_order='ASC',
@@ -1188,6 +1188,7 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_limit: str, last_run:
         alert_id = alert.get('id')
         if alert_id == last_fetched_alert_id:
             # got an alert we already fetched, skipping it
+            demisto.debug(f'Alert with ID: {alert_id} was already fetched, skipping the addition of this alert.')
             continue
 
         alert_create_date = alert.get('create_time')
@@ -1202,6 +1203,7 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_limit: str, last_run:
         latest_alert_create_date = datetime.strftime(parsed_date + timedelta(seconds=1),
                                                      '%Y-%m-%dT%H:%M:%S.000Z')
         latest_alert_id = alert_id
+    demisto.debug(f'Setting the last_fetched_alert_create_time to: {latest_alert_create_date}')
 
     res = {'last_fetched_alert_create_time': latest_alert_create_date, 'last_fetched_alert_id': latest_alert_id}
     return incidents, res
