@@ -3,7 +3,7 @@ import traceback
 import sys
 import os
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any
 
 from junitparser import JUnitXml, TestSuite
 from tabulate import tabulate
@@ -63,27 +63,32 @@ def print_test_summary(failed_tests_path: str, succeeded_tests_path: str) -> Non
 
 
 def new_print_test_summary(artifacts_path: str, server_type: str) -> bool:
-    test_playbooks_result_files_list = Path(artifacts_path) / f"{server_type}_test_playbooks_result_files_list.txt"
-    playbooks_results: Dict[str, Dict[str, Any]] = {}
+    test_playbooks_result_files_list_file_name = Path(artifacts_path) / f"{server_type}_test_playbooks_result_files_list.txt"
+    playbooks_results: dict[str, dict[str, Any]] = {}
     server_versions = set()
-    if not test_playbooks_result_files_list.exists():
+    xml = JUnitXml()
+
+    if not test_playbooks_result_files_list_file_name.exists():
         return False
 
-    with open(test_playbooks_result_files_list) as f:
-        test_playbooks_result_files_list = f.read().splitlines()
+    with open(test_playbooks_result_files_list_file_name.as_posix()) as f:
+        test_playbooks_result_files_list: list[str] = f.read().splitlines()
         for test_playbook_result_file in test_playbooks_result_files_list:
             if not Path(test_playbook_result_file).exists():
                 logging.error(f"{test_playbook_result_file} does not exist.")
                 return False
             xml = JUnitXml.fromfile(test_playbook_result_file)
-            for test_suite in xml.iterchildren(TestSuite):
-                properties = {prop.name: prop.value for prop in test_suite.properties()}
+            for test_suite_item in xml.iterchildren(TestSuite):
+                properties = {prop.name: prop.value for prop in test_suite_item.properties()}
 
             playbooks_result = playbooks_results.setdefault(properties["playbook_id"], {})
             server_numeric_version = properties["server_numeric_version"]
             server_versions.add(server_numeric_version)
-            playbooks_result[server_numeric_version] = test_suite
+            playbooks_result[server_numeric_version] = test_suite_item
+            xml.add_testsuite(test_suite_item)
 
+    test_playbooks_report = Path(artifacts_path) / "test_playbooks_report.xml"
+    xml.write(test_playbooks_report.as_posix(), pretty=True)
     statuses = ["Failed", "Skipped", "Passed", "Total"]
     tabulate_data = []
     headers = ["Playbook ID"]
