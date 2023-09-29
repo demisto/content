@@ -277,9 +277,9 @@ class PrismaCloudComputeClient(BaseClient):
                     raise
                 if de.res.status_code == 429:
                     # The API rate limit of 30 requests per minute was exceeded for this endpoint
-                    demisto.info(f"Rate limit exceeded, waiting 60 seconds before continuing.\n"
+                    demisto.info(f"Rate limit exceeded, waiting 2 seconds before continuing.\n"
                                  f"Current count: {current_count}, total count: {total_count}.")
-                    time.sleep(60)  # pylint: disable=E9003
+                    time.sleep(2)  # pylint: disable=E9003
 
         return response
 
@@ -2176,11 +2176,10 @@ def get_ci_scan_results_list(client: PrismaCloudComputeClient, args: dict) -> Co
             name="CI Scan Information",
             t=[
                 {
-                    "Image": scan["entityInfo"].get("instances", [{}])[0].get("image")
-                    if scan["entityInfo"].get("instances") else None,
+                    "Image": (scan["entityInfo"].get("instances") or [{}])[0].get("image"),
                     "ID": scan["entityInfo"]["_id"],
-                    "OS Distribution": scan["entityInfo"]["osDistro"],
-                    "OS Release": scan["entityInfo"]["osDistroRelease"],
+                    "OS Distribution": scan["entityInfo"].get("osDistro"),
+                    "OS Release": scan["entityInfo"].get("osDistroRelease"),
                     "Scan Status": scan["pass"],
                     "Scan Time": scan["time"],
                 } for scan in ci_scan_results
