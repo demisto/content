@@ -39,10 +39,10 @@ def main():
         args = demisto.args()
         html = args['html']
         html_tag = args.get('html_tag', 'body')
-        allow_fallback = str(args.get('allow_body_fallback', 'false')).lower() == 'true'
-        replace_line_breaks = str(args.get('replace_line_breaks', 'false')).lower() == 'true'
-        trim_result = str(args.get('trim_result', 'false')).lower() == 'true'
-        context_path = str(demisto.args().get('output_to_context', 'false')).lower() == 'true'
+        allow_fallback = argToBoolean(args.get('allow_body_fallback', 'false'))
+        replace_line_breaks = argToBoolean(args.get('replace_line_breaks', 'false'))
+        trim_result = argToBoolean(args.get('trim_result', 'false'))
+        context_path = argToBoolean(demisto.args().get('output_to_context', 'false'))
 
         body = get_body(html, html_tag, allow_fallback)
         text = get_plain_text(body, replace_line_breaks, trim_result)
