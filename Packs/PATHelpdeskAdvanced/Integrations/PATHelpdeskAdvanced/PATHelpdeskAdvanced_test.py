@@ -502,6 +502,11 @@ class TestClient:
 
     @classmethod
     def test_add_ticket_attachment(cls, mocker, requests_mock):
+        """
+        Given a client
+        When calling add_ticket_attachment with two files
+        Then make sure they are properly sent in the request
+        """
         from PATHelpdeskAdvanced import Path
 
         client = cls.logged_in_client(requests_mock)
@@ -510,10 +515,12 @@ class TestClient:
         mocked_request = requests_mock.post(
             "https://example.com/Ticket/UploadNewAttachment", json={"success": True}
         )
-        result = client.add_ticket_attachment(["1"], ticket_id="ticket_id")
+        client.add_ticket_attachment(["1", "2"], ticket_id="ticket_id")
 
         assert mocked_request.called_once
-        assert (
-            'name="TicketAttachment_1"; filename="TicketAttachment_1"\\r\\n\\r\\nmock file contents'
-            in str(mocked_request.request_history[0]._request.body)
-        )
+        stringified_request = str(mocked_request.request_history[0]._request.body)
+        for i in (1, 2):
+            assert (
+                f'name="TicketAttachment_{i}"; filename="TicketAttachment_{i}"\\r\\n\\r\\nmock file contents'
+                in stringified_request
+            )
