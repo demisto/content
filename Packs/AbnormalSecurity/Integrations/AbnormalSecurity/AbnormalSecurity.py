@@ -204,6 +204,8 @@ class Client(BaseClient):
 
         response = self._http_request("get", "vendors", params=params, headers=headers)
 
+        response = self._remove_keys_from_response(response, ["pageNumber"])
+
         return response
 
     def get_the_details_of_a_specific_vendor_request(self, vendorDomain):
@@ -227,6 +229,8 @@ class Client(BaseClient):
 
         response = self._http_request("get", "vendor-cases", params=params, headers=headers)
 
+        response = self._remove_keys_from_response(response, ["pageNumber"])
+
         return response
 
     def get_the_details_of_a_vendor_case_request(self, caseId):
@@ -244,6 +248,13 @@ class Client(BaseClient):
         response = self._http_request("get", "abuse_mailbox/not_analyzed", params=params, headers=headers)
 
         return response
+
+    def _remove_keys_from_response(self, response, keys_to_remove):
+        """Removes specified keys from the response."""
+        for key in keys_to_remove:
+            response.pop(key, None)
+        return response
+
 
 
 def check_the_status_of_an_action_requested_on_a_case_command(client, args):
