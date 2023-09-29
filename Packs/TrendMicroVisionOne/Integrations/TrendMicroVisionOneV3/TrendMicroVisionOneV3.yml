@@ -644,7 +644,7 @@ script:
   - arguments:
     - description: polling the task for 30 seconds interval.
       name: polling
-      default: 
+      default: true
       defaultValue: 'true'
     - description: task_id from the trendmicro-visionone-submit-file-to-sandbox or trendmicro-visionone-submit-file-entry-to-sandbox command output.
       name: task_id
