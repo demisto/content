@@ -898,7 +898,8 @@ def fetch_incidents(
             abuse_campaigns_filter = f"lastReportedTime gte {last_fetch}"
             abuse_campaigns_response = client.get_a_list_of_campaigns_submitted_to_abuse_mailbox_request(
                 filter_=abuse_campaigns_filter, page_size=100)
-            all_incidents += generate_abuse_campaign_incidents(abuse_campaigns_response.get('campaigns', []), current_iso_format_time)
+            all_incidents += generate_abuse_campaign_incidents(abuse_campaigns_response.get('campaigns', []),
+                                                               current_iso_format_time)
 
         if fetch_account_takeover_cases:
             account_takeover_cases_filter = f"lastModifiedTime gte {last_fetch}"
