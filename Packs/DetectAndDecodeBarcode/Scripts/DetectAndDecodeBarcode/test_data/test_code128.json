@@ -4,12 +4,12 @@
       "Name": "test_code128.png",
       "Barcode": [
         {
-          "Type": "CODE128",
-          "Data": "Foramenifera"
+          "Type": "Code128",
+          "Data": "Rana temporaria"
         },
         {
-          "Type": "CODE128",
-          "Data": "Rana temporaria"
+          "Type": "Code128",
+          "Data": "Foramenifera"
         }
       ],
       "Image": true

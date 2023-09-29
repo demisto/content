@@ -4,8 +4,8 @@
       "Name": "test_code128_null_character.png",
       "Barcode": [
         {
-          "Type": "CODE128",
-          "Data": "Hello\u0000Goodbye"
+          "Type": "Code128",
+          "Data": "Hello<NUL>Goodbye"
         }
       ],
       "Image": true

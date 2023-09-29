@@ -4,16 +4,16 @@
       "Name": "test_triple_qrcode.png",
       "Barcode": [
         {
-          "Type": "QRCODE",
-          "Data": "Bottom left corner"
-        },
-        {
-          "Type": "QRCODE",
+          "Type": "QRCode",
           "Data": "Top left corner"
         },
         {
-          "Type": "QRCODE",
+          "Type": "QRCode",
           "Data": "Top right corner"
+        },
+        {
+          "Type": "QRCode",
+          "Data": "Bottom left corner"
         }
       ],
       "Image": true

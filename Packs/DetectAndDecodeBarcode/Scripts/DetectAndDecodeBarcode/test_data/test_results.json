@@ -4,8 +4,8 @@
       "Name": "test_code128_null_character.png",
       "Barcode": [
         {
-          "Type": "CODE128",
-          "Data": "Hello\u0000Goodbye"
+          "Type": "Code128",
+          "Data": "Hello<NUL>Goodbye"
         }
       ],
       "Image": true
@@ -14,12 +14,12 @@
       "Name": "test_code128.png",
       "Barcode": [
         {
-          "Type": "CODE128",
-          "Data": "Foramenifera"
+          "Type": "Code128",
+          "Data": "Rana temporaria"
         },
         {
-          "Type": "CODE128",
-          "Data": "Rana temporaria"
+          "Type": "Code128",
+          "Data": "Foramenifera"
         }
       ],
       "Image": true
@@ -28,12 +28,12 @@
       "Name": "test_double_qrcode.png",
       "Barcode": [
         {
-          "Type": "QRCODE",
-          "Data": "Small QR Code"
+          "Type": "QRCode",
+          "Data": "Big QR Code"
         },
         {
-          "Type": "QRCODE",
-          "Data": "Big QR Code"
+          "Type": "QRCode",
+          "Data": "Small QR Code"
         }
       ],
       "Image": true
@@ -52,7 +52,7 @@
       "Name": "test_rotated_qrcode_color_background.png",
       "Barcode": [
         {
-          "Type": "QRCODE",
+          "Type": "QRCode",
           "Data": "Rotation 0, Error correction H\r\nThe PDF File Writer C# class library PdfFileWriter allows you to create PDF files directly from your .net application. The library shields you from the details of the PDF file structure. To use the library, you need to add a reference to the attached PdfFileWriter.dll class library file, add a using PdfFileWriter statement in every source file that uses the library and include the PdfFileWriter.dll with your distribution. For more details go to 2.23 Installation. Alternatively, you can include the source code of the library with your application and avoid the need to distribute a separate data link library file. The minimum development requirement is .NET Framework 4.0 (Visual Studio 2013)."
         }
       ],
@@ -62,11 +62,11 @@
       "Name": "test_rotated_qrcode.png",
       "Barcode": [
         {
-          "Type": "QRCODE",
+          "Type": "QRCode",
           "Data": "Thalassiodracon"
         },
         {
-          "Type": "QRCODE",
+          "Type": "QRCode",
           "Data": "Thalassiodracon"
         }
       ],
@@ -76,8 +76,8 @@
       "Name": "test_standard_qrcode.png",
       "Barcode": [
         {
-          "Type": "QRCODE",
-          "Data": "QRCodeEncoderDemo - Ver 3.0.0 - 2022-03-01 \u7a62 2018-2022 Uzi Granot. All rights reserved.\r\nThe QR Code libraries allows your program to create (encode) QR Code image or, read (decode) an\r\nimage containing one or more QR Codes. The attached source code is made of two solutions, a\r\nQR Code encoder solution and a QR Code decoder solution. The software was upgraded to VS 2022\r\n.NET 6.0 The source code is written in C#. It is an open-source code."
+          "Type": "QRCode",
+          "Data": "QRCodeEncoderDemo - Ver 3.0.0 - 2022-03-01 \u00a9 2018-2022 Uzi Granot. All rights reserved.\r\nThe QR Code libraries allows your program to create (encode) QR Code image or, read (decode) an\r\nimage containing one or more QR Codes. The attached source code is made of two solutions, a\r\nQR Code encoder solution and a QR Code decoder solution. The software was upgraded to VS 2022\r\n.NET 6.0 The source code is written in C#. It is an open-source code."
         }
       ],
       "Image": true
@@ -86,16 +86,16 @@
       "Name": "test_triple_qrcode.png",
       "Barcode": [
         {
-          "Type": "QRCODE",
-          "Data": "Bottom left corner"
-        },
-        {
-          "Type": "QRCODE",
+          "Type": "QRCode",
           "Data": "Top left corner"
         },
         {
-          "Type": "QRCODE",
+          "Type": "QRCode",
           "Data": "Top right corner"
+        },
+        {
+          "Type": "QRCode",
+          "Data": "Bottom left corner"
         }
       ],
       "Image": true
@@ -104,7 +104,7 @@
       "Name": "test_url_qrcode.png",
       "Barcode": [
         {
-          "Type": "QRCODE",
+          "Type": "QRCode",
           "Data": "http://meetheed.com"
         }
       ],
@@ -114,7 +114,7 @@
       "Name": "test_video_capture.png",
       "Barcode": [
         {
-          "Type": "QRCODE",
+          "Type": "QRCode",
           "Data": "QR Code video decode example\r\nQRCodeDecoder - Ver 3.0.0 - 2022-03-01"
         }
       ],

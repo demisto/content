@@ -4,7 +4,7 @@ from CommonServerPython import *
 from glob import glob
 from os.path import abspath, basename
 
-from pyzbar.pyzbar import decode
+from zxingcpp import read_barcodes
 from PIL import Image, UnidentifiedImageError
 
 
@@ -17,9 +17,12 @@ def detect_and_decode_barcode(path: str) -> Dict[str, Any]:
             "Image": False,
         }  # type: Dict[str, Any]
         try:
-            for barcode in decode(Image.open(abspath(file))):
+            for barcode in read_barcodes(Image.open(abspath(file))):
                 image_dict["Barcode"].append(
-                    {"Type": barcode.type, "Data": barcode.data.decode()}
+                    {
+                        "Type": f"{barcode.format}".split(".")[1],
+                        "Data": f"{barcode.text}",
+                    }
                 )
             image_dict["Image"] = True
         except UnidentifiedImageError:

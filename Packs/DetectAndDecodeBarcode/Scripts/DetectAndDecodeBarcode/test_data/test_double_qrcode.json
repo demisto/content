@@ -4,12 +4,12 @@
       "Name": "test_double_qrcode.png",
       "Barcode": [
         {
-          "Type": "QRCODE",
-          "Data": "Small QR Code"
+          "Type": "QRCode",
+          "Data": "Big QR Code"
         },
         {
-          "Type": "QRCODE",
-          "Data": "Big QR Code"
+          "Type": "QRCode",
+          "Data": "Small QR Code"
         }
       ],
       "Image": true

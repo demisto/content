@@ -4,11 +4,11 @@
       "Name": "test_rotated_qrcode.png",
       "Barcode": [
         {
-          "Type": "QRCODE",
+          "Type": "QRCode",
           "Data": "Thalassiodracon"
         },
         {
-          "Type": "QRCODE",
+          "Type": "QRCode",
           "Data": "Thalassiodracon"
         }
       ],

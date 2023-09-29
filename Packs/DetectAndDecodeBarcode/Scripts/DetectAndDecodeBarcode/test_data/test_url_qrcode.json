@@ -4,7 +4,7 @@
       "Name": "test_url_qrcode.png",
       "Barcode": [
         {
-          "Type": "QRCODE",
+          "Type": "QRCode",
           "Data": "http://meetheed.com"
         }
       ],
