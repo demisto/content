@@ -22,7 +22,10 @@ args:
   defaultValue: '24 hours'
 scripttarget: 0
 subtype: python3
-dependson: {}
+dependson:
+  must:
+  - '|||prisma-cloud-compute-images-scan-list'
+  - '|||prisma-cloud-compute-ci-scan-results-list'
 runonce: false
 dockerimage: demisto/python3:3.10.13.75921
 runas: DBotWeakRole
