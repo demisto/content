@@ -34,7 +34,7 @@ def get_body(html: str, html_tag: str, allow_fallback: bool = False):
     return ''
 
 
-def main():
+def main():  # pragme: no cover
     try:
         args = demisto.args()
         html = args['html']
