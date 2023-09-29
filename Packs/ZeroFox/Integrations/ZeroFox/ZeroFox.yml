@@ -12,7 +12,7 @@ configuration:
   name: credentials
   required: true
   type: 9
-- display: Escalated Alerts Only
+- display: Fetch only escalated alerts
   name: only_escalated
   type: 8
   required: false
