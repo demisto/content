@@ -281,3 +281,68 @@ def test_extract_without_fallback():
     res = TextFromHTML.get_plain_text(body, replace_line_breaks=False, trim_result=False)
 
     assert res == ''
+
+
+def test_get_body():
+    """
+    Given
+    - html string:
+        <!DOCTYPE html>
+<html>
+<body>
+<h1>This is heading 1</h1>
+</body>
+</html>
+    When
+    - extracting body from html
+    Then
+    - ensure we return "<body>\n<h1>This is heading 1</h1>\n</body>"
+    """
+    import TextFromHTML
+    html = """
+<!DOCTYPE html>
+<html>
+<body>
+<h1>This is heading 1</h1>
+</body>
+</html>
+"""
+    body = TextFromHTML.get_body(html, html_tag='body', allow_fallback=False)
+
+    assert body == '<body>\n<h1>This is heading 1</h1>\n</body>'
+
+
+def test_get_body_without_fallback():
+    """
+    Given
+    - html string:
+        <div>Some HTML does not have a body Tag</div>
+    When
+    - extracting body from html
+    Then
+    - ensure we return ""
+    """
+    import TextFromHTML
+
+    html = """<div>Some HTML does not have a body Tag</div>"""
+    body = TextFromHTML.get_body(html, html_tag='body', allow_fallback=False)
+
+    assert body == ''
+
+
+def test_get_body_with_fallback():
+    """
+    Given
+    - html string:
+        <div>Some HTML does not have a body Tag</div>
+    When
+    - extracting body from html
+    Then
+    - ensure we return ""
+    """
+    import TextFromHTML
+
+    html = """<div>Some HTML does not have a body Tag</div>"""
+    body = TextFromHTML.get_body(html, html_tag='body', allow_fallback=True)
+
+    assert body == '<div>Some HTML does not have a body Tag</div>'
