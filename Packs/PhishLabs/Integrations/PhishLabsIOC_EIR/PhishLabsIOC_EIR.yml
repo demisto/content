@@ -52,7 +52,7 @@ configuration:
   name: proxy
   type: 8
   required: false
-description: Get Email Incident Reports from PhishLabs
+description: Get Email Incident Reports from PhishLabs.
 display: PhishLabs IOC EIR
 name: PhishLabs IOC EIR
 script:
@@ -98,7 +98,7 @@ script:
     - defaultValue: '0'
       description: Offset from last incident.
       name: offset
-    - description: The time range for which to return incidents (<number> <time unit>, e.g., 12 hours, 7 days)
+    - description: The time range for which to return incidents (<number> <time unit>, e.g., 12 hours, 7 days).
       name: period
     description: Returns EIR incidents from PhishLabs-IOC EIR service. The default number of incidents returned is 25.
     name: phishlabs-ioc-eir-get-incidents
@@ -240,7 +240,7 @@ script:
       description: Detailed classification..
       type: String
     - contextPath: PhishLabsIOC.EIR.Severity
-      description: Incident severity
+      description: Incident severity.
       type: String
     - contextPath: PhishLabsIOC.EIR.SubmissionMethod
       description: Email submission method.
@@ -350,7 +350,7 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score.
       type: String
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.13.74666
   isfetch: true
   runonce: false
   script: '-'
