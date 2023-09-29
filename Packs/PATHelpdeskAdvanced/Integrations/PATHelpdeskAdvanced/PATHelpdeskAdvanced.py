@@ -145,13 +145,13 @@ class Filter(NamedTuple):
     @staticmethod
     def dumps_list(filters: Union[Iterable["Filter"], "Filter"]) -> str:
         """
-        Dumps a Filter object or list of Filter objects to a JSON string, as list.
+        Dumps a one or more Filter objects to a JSON string, as list (per API requirements).
 
         Args:
             filters (Union[Iterable[Filter], Filter]): The Filter object(s) to dump.
 
         Returns:
-            str: The JSON string representation of the filters list.
+            str: The JSON string representation of the filters, as list.
         """
         return json.dumps(
             [
@@ -457,6 +457,17 @@ class Client(BaseClient):
         )
 
     def add_ticket_attachment(self, entry_ids: list[str], **kwargs) -> dict:
+        # files = []
+        # for i, entry_id in enumerate(entry_ids):
+        #     file_entry: dict[str, str] =
+        #     path = Path(file_entry["path"])
+        #     files.append(
+        #         (
+        #             f"TicketAttachment_{i+1}",
+        #             (file_entry["name"], path.open()),
+        #         )
+        #     )
+
         return self.http_request(
             url_suffix="Ticket/UploadNewAttachment",
             method="POST",
@@ -465,18 +476,22 @@ class Client(BaseClient):
                 "entity": "Ticket",
                 "entityID": kwargs["ticket_id"],
             },
-            files={
-                f"TicketAttachment_{i+1}": Path(
-                    demisto.getFilePath(entry_id)["path"]
-                ).open()
+            files=[
+                (
+                    f"TicketAttachment_{i+1}",
+                    (
+                        (file_entry := demisto.getFilePath(entry_id))["name"],
+                        Path(file_entry["path"]).open(),
+                    ),
+                )
                 for i, entry_id in enumerate(entry_ids)
-            },
+            ],
         )
 
     def list_ticket_attachments(self, **kwargs) -> dict:
         ticket_id = kwargs["ticket_id"]
         params = {
-            "entity": "Attachments",
+            "entity": f"Ticket Attachment: {ticket_id}",
             "start": 0,
             "limit": safe_arg_to_number(kwargs["limit"], "limit"),
             "filter": Filter.dumps_list(
