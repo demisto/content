@@ -4627,20 +4627,23 @@ files = [
 
 [[package]]
 name = "pygithub"
-version = "1.59.0"
+version = "2.1.0.post0"
 description = "Use the full Github API v3"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "PyGithub-1.59.0-py3-none-any.whl", hash = "sha256:126bdbae72087d8d038b113aab6b059b4553cb59348e3024bb1a1cae406ace9e"},
-    {file = "PyGithub-1.59.0.tar.gz", hash = "sha256:6e05ff49bac3caa7d1d6177a10c6e55a3e20c85b92424cc198571fd0cf786690"},
+    {file = "PyGithub-2.1.0.post0-py3-none-any.whl", hash = "sha256:ff71016073f124ecb3fc2a756f0365180f88f40ff1c753107b0e115e94bd0493"},
+    {file = "PyGithub-2.1.0.post0.tar.gz", hash = "sha256:51dbe852cb553a0b96a62ca270613f64d55de2e8ff2670bb9e3838951ae67822"},
 ]
 
 [package.dependencies]
-deprecated = "*"
+Deprecated = "*"
 pyjwt = {version = ">=2.4.0", extras = ["crypto"]}
 pynacl = ">=1.4.0"
+python-dateutil = "*"
 requests = ">=2.14.0"
+typing-extensions = ">=4.0.0"
+urllib3 = "*"
 
 [[package]]
 name = "pygments"
@@ -7161,4 +7164,4 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8,<3.11"
-content-hash = "aba1739ce1d410d7b5015b400d10d64d4f5dbf052229341a54587b06d7ccd1bb"
+content-hash = "40eff86103dc64b8bd47fe7d84d5f09a8adb7a21a2e1231bec62394419be1d53"
