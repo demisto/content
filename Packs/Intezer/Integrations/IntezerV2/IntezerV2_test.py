@@ -1,8 +1,14 @@
 import tempfile
 import uuid
 from http import HTTPStatus
+from unittest.mock import patch
 
+import intezer_sdk.errors
 import pytest
+from intezer_sdk.alerts import Alert
+from intezer_sdk.analysis import FileAnalysis
+from intezer_sdk.analysis import UrlAnalysis
+from intezer_sdk.consts import AlertStatusCode
 
 from CommonServerPython import *
 
@@ -20,9 +26,12 @@ from IntezerV2 import get_file_analysis_result_command
 from IntezerV2 import get_endpoint_analysis_result_command
 from IntezerV2 import get_url_analysis_result_command
 from IntezerV2 import check_is_available
+from IntezerV2 import submit_alert_command
+from IntezerV2 import submit_suspected_phishing_email_command
+from IntezerV2 import get_alert_result_command
+from IntezerV2 import enrich_dbot_and_display_alert_results
 from intezer_sdk import consts
 from intezer_sdk.api import IntezerApi
-
 
 fake_api_key = str(uuid.uuid4())
 intezer_api = IntezerApi(consts.API_VERSION, fake_api_key, consts.BASE_URL)
@@ -31,7 +40,7 @@ full_url = f'{consts.BASE_URL}{consts.API_VERSION}'
 
 
 def _setup_access_token(requests_mock):
-    requests_mock.post(f'{full_url}/get-access-token', json=dict(result='access-token'))
+    requests_mock.post(f'{full_url}/get-access-token', json={"result": 'access-token'})
 
 
 # region analyze_by_hash_command
@@ -43,10 +52,10 @@ def test_analyze_by_hash_command_success(requests_mock):
     requests_mock.post(
         f'{full_url}/analyze-by-hash',
         status_code=HTTPStatus.CREATED,
-        json=dict(result_url=f'/analyses/{analysis_id}')
+        json={"result_url": f'/analyses/{analysis_id}'}
     )
 
-    args = dict(file_hash='123test')
+    args = {"file_hash": '123test'}
 
     # Act
     command_results = analyze_by_hash_command(args, intezer_api)
@@ -65,7 +74,7 @@ def test_analyze_by_hash_command_success_polling_true(requests_mock, mocker):
     requests_mock.post(
         f'{full_url}/analyze-by-hash',
         status_code=HTTPStatus.CREATED,
-        json=dict(result_url=f'/analyses/{analysis_id}')
+        json={"result_url": f'/analyses/{analysis_id}'}
     )
 
     requests_mock.get(
@@ -78,7 +87,7 @@ def test_analyze_by_hash_command_success_polling_true(requests_mock, mocker):
         }
     )
 
-    args = dict(file_hash='123test', wait_for_result=True)
+    args = {"file_hash": '123test', "wait_for_result": True}
 
     # Act
     command_results = analyze_by_hash_command(args, intezer_api)
@@ -97,7 +106,7 @@ def test_analyze_by_hash_command_missing_hash(requests_mock):
     )
 
     file_hash = '123test'
-    args = dict(file_hash=file_hash)
+    args = {"file_hash": file_hash}
 
     # Act
     command_results = analyze_by_hash_command(args, intezer_api)
@@ -116,7 +125,7 @@ def test_analyze_by_hash_command_already_running(requests_mock):
     )
 
     file_hash = '123test'
-    args = dict(file_hash=file_hash)
+    args = {"file_hash": file_hash}
 
     # Act
     command_results = analyze_by_hash_command(args, intezer_api)
@@ -172,7 +181,7 @@ def test_get_latest_result_command_success(requests_mock):
         }
     )
 
-    args = dict(file_hash=sha256)
+    args = {"file_hash": sha256}
 
     # Act
     command_results = get_latest_result_command(args, intezer_api)
@@ -193,7 +202,7 @@ def test_get_latest_result_command_file_missing(requests_mock):
         status_code=HTTPStatus.NOT_FOUND
     )
 
-    args = dict(file_hash=sha256)
+    args = {"file_hash": sha256}
 
     # Act
     command_results = get_latest_result_command(args, intezer_api)
@@ -214,15 +223,15 @@ def test_analyze_by_uploaded_file_command_success(requests_mock, mocker):
     requests_mock.post(
         f'{full_url}/analyze',
         status_code=HTTPStatus.CREATED,
-        json=dict(result_url=f'/analyses/{analysis_id}')
+        json={"result_url": f'/analyses/{analysis_id}'}
     )
 
-    args = dict(file_entry_id='123@123')
+    args = {"file_entry_id": '123@123'}
 
     # Act
     with tempfile.NamedTemporaryFile() as file:
         file_path_patch = mocker.patch('demistomock.getFilePath')
-        file_path_patch.return_value = dict(path=file.name, name=file.name)
+        file_path_patch.return_value = {"path": file.name, "name": file.name}
         command_results = analyze_by_uploaded_file_command(args, intezer_api)
 
     # Assert
@@ -241,7 +250,7 @@ def test_analyze_by_uploaded_file_command_polling_true(requests_mock, mocker):
     requests_mock.post(
         f'{full_url}/analyze',
         status_code=HTTPStatus.CREATED,
-        json=dict(result_url=f'/analyses/{analysis_id}')
+        json={"result_url": f'/analyses/{analysis_id}'}
     )
 
     requests_mock.get(
@@ -254,12 +263,12 @@ def test_analyze_by_uploaded_file_command_polling_true(requests_mock, mocker):
         }
     )
 
-    args = dict(file_entry_id='123@123', wait_for_result=True)
+    args = {"file_entry_id": '123@123', "wait_for_result": True}
 
     # Act
     with tempfile.NamedTemporaryFile() as file:
         file_path_patch = mocker.patch('demistomock.getFilePath')
-        file_path_patch.return_value = dict(path=file.name, name=file.name)
+        file_path_patch.return_value = {"path": file.name, "name": file.name}
         command_results = analyze_by_uploaded_file_command(args, intezer_api)
 
     # Assert
@@ -277,12 +286,12 @@ def test_analyze_by_uploaded_file_command_analysis_already_running(requests_mock
         status_code=HTTPStatus.CONFLICT
     )
 
-    args = dict(file_entry_id='123@123')
+    args = {"file_entry_id": '123@123'}
 
     # Act
     with tempfile.NamedTemporaryFile() as file:
         file_path_patch = mocker.patch('demistomock.getFilePath')
-        file_path_patch.return_value = dict(path=file.name, name=file.name)
+        file_path_patch.return_value = {"path": file.name, "name": file.name}
         command_results = analyze_by_uploaded_file_command(args, intezer_api)
 
     # Assert
@@ -337,7 +346,7 @@ def test_check_analysis_status_and_get_results_command_single_success(requests_m
         }
     )
 
-    args = dict(analysis_id=analysis_id)
+    args = {"analysis_id": analysis_id}
 
     # Act
     command_results_list = check_analysis_status_and_get_results_command(args, intezer_api)
@@ -457,7 +466,7 @@ def test_check_analysis_status_and_get_results_url_command_single_success(reques
         }
     )
 
-    args = dict(analysis_id=analysis_id, analysis_type='Url')
+    args = {"analysis_id": analysis_id, "analysis_type": 'Url'}
 
     # Act
     command_results_list = check_analysis_status_and_get_results_command(args, intezer_api)
@@ -492,7 +501,7 @@ def test_check_analysis_status_and_get_results_command_single_success_endpoint(r
         }
     )
 
-    args = dict(analysis_id=analysis_id, analysis_type='Endpoint')
+    args = {"analysis_id": analysis_id, "analysis_type": 'Endpoint'}
 
     # Act
     command_results_list = check_analysis_status_and_get_results_command(args, intezer_api)
@@ -514,7 +523,7 @@ def test_get_endpoint_analysis_missing(requests_mock):
         status_code=HTTPStatus.NOT_FOUND
     )
 
-    args = dict(analysis_id=analysis_id, analysis_type='Endpoint')
+    args = {"analysis_id": analysis_id, "analysis_type": 'Endpoint'}
 
     # Act
     command_results = check_analysis_status_and_get_results_command(args, intezer_api)
@@ -610,7 +619,7 @@ def test_check_analysis_status_and_get_results_command_multiple_analyses(request
         }
     )
 
-    args = dict(analysis_id=f'{analysis_id_1},{analysis_id_2}')
+    args = {"analysis_id": f'{analysis_id_1},{analysis_id_2}'}
 
     # Act
     command_results_list = check_analysis_status_and_get_results_command(args, intezer_api)
@@ -678,7 +687,7 @@ def test_check_analysis_status_and_get_results_command_multiple_analyses_one_fai
         status_code=HTTPStatus.NOT_FOUND,
     )
 
-    args = dict(analysis_id=f'{analysis_id_1},{analysis_id_2}')
+    args = {"analysis_id": f'{analysis_id_1},{analysis_id_2}'}
 
     # Act
     command_results_list = check_analysis_status_and_get_results_command(args, intezer_api)
@@ -729,7 +738,7 @@ def test_get_analysis_sub_analyses_command_success(requests_mock):
         }
     )
 
-    args = dict(analysis_id=analysis_id)
+    args = {"analysis_id": analysis_id}
 
     # Act
     command_results = get_analysis_sub_analyses_command(args, intezer_api)
@@ -747,7 +756,7 @@ def test_get_analysis_sub_analyses_command_analysis_doesnt_exist(requests_mock):
         status_code=HTTPStatus.NOT_FOUND
     )
 
-    args = dict(analysis_id=analysis_id)
+    args = {"analysis_id": analysis_id}
 
     # Act
     command_results = get_analysis_sub_analyses_command(args, intezer_api)
@@ -805,7 +814,7 @@ def test_get_file_analysis_result_command_success(requests_mock, mocker):
         }
     )
 
-    args = dict(analysis_id=analysis_id, wait_for_result=True)
+    args = {"analysis_id": analysis_id, "wait_for_result": True}
 
     # Act
     command_result = get_file_analysis_result_command(args, intezer_api)
@@ -831,7 +840,7 @@ def test_get_url_analysis_still_running_polling(requests_mock, mocker):
         }
     )
 
-    args = dict(analysis_id=analysis_id, wait_for_result=True)
+    args = {"analysis_id": analysis_id, "wait_for_result": True}
 
     # Act
     command_result = get_url_analysis_result_command(args, intezer_api)
@@ -853,7 +862,7 @@ def test_get_url_analysis_result_command_analysis_failed(requests_mock, mocker):
         status_code=HTTPStatus.NOT_FOUND,
     )
 
-    args = dict(analysis_id=analysis_id, wait_for_result=True)
+    args = {"analysis_id": analysis_id, "wait_for_result": True}
 
     # Act
     command_result = get_url_analysis_result_command(args, intezer_api)
@@ -861,8 +870,8 @@ def test_get_url_analysis_result_command_analysis_failed(requests_mock, mocker):
     # Assert
     assert command_result.readable_output == f'The Analysis {analysis_id} was not found on Intezer Analyze'
 
-# endregion
 
+# endregion
 
 # region get_endpoint_analysis_result_command
 def test_get_endpoint_analysis_still_running_polling(requests_mock, mocker):
@@ -881,7 +890,7 @@ def test_get_endpoint_analysis_still_running_polling(requests_mock, mocker):
         }
     )
 
-    args = dict(analysis_id=analysis_id, wait_for_result=True)
+    args = {"analysis_id": analysis_id, "wait_for_result": True}
 
     # Act
     command_result = get_endpoint_analysis_result_command(args, intezer_api)
@@ -908,7 +917,7 @@ def test_get_endpoint_analysis_queued_polling(requests_mock, mocker):
         }
     )
 
-    args = dict(analysis_id=analysis_id, wait_for_result=True)
+    args = {"analysis_id": analysis_id, "wait_for_result": True}
 
     # Act
     command_result = get_endpoint_analysis_result_command(args, intezer_api)
@@ -930,7 +939,7 @@ def test_get_endpoint_analysis_polling_false(requests_mock, mocker):
         status_code=HTTPStatus.CONFLICT
     )
 
-    args = dict(analysis_id=analysis_id, wait_for_result=False)
+    args = {"analysis_id": analysis_id, "wait_for_result": False}
 
     # Act
     command_result = get_endpoint_analysis_result_command(args, intezer_api)
@@ -952,7 +961,7 @@ def test_get_endpoint_analysis_result_command_analysis_missing(requests_mock, mo
     )
 
     # Act
-    args = dict(analysis_id=analysis_id, wait_for_result=True)
+    args = {"analysis_id": analysis_id, "wait_for_result": True}
     command_result = get_endpoint_analysis_result_command(args, intezer_api)
 
     # Assert
@@ -971,7 +980,7 @@ def test_get_endpoint_analysis_result_command_polling_true(requests_mock, mocker
         status_code=HTTPStatus.CONFLICT,
     )
 
-    args = dict(analysis_id=analysis_id, wait_for_result=True)
+    args = {"analysis_id": analysis_id, "wait_for_result": True}
 
     # Act
     command_result = get_endpoint_analysis_result_command(args, intezer_api)
@@ -1003,7 +1012,7 @@ def test_get_endpoint_analysis_result_success(requests_mock, mocker):
         }
     )
 
-    args = dict(analysis_id=analysis_id, wait_for_result=True)
+    args = {"analysis_id": analysis_id, "wait_for_result": True}
 
     # Act
     command_results = get_endpoint_analysis_result_command(args, intezer_api)
@@ -1022,7 +1031,7 @@ def test_get_endpoint_analysis_result_http_error(requests_mock):
         status_code=HTTPStatus.BAD_REQUEST
     )
 
-    args = dict(analysis_id=analysis_id, wait_for_result=True)
+    args = {"analysis_id": analysis_id, "wait_for_result": True}
 
     # Act + Assert
     with pytest.raises(Exception):
@@ -1030,7 +1039,6 @@ def test_get_endpoint_analysis_result_http_error(requests_mock):
 
 
 # endregion
-
 
 # region get_url_analysis_result_command
 def test_get_url_analysis_result_command_success(requests_mock, mocker):
@@ -1144,7 +1152,7 @@ def test_get_url_analysis_result_command_success(requests_mock, mocker):
         }
     )
 
-    args = dict(analysis_id=analysis_id, wait_for_result=True)
+    args = {"analysis_id": analysis_id, "wait_for_result": True}
 
     # Act
     command_result = get_url_analysis_result_command(args, intezer_api)
@@ -1169,7 +1177,7 @@ def test_get_url_analysis_result_command_failed(requests_mock, mocker):
         status_code=HTTPStatus.NOT_FOUND,
     )
 
-    args = dict(analysis_id=analysis_id, wait_for_result=True)
+    args = {"analysis_id": analysis_id, "wait_for_result": True}
 
     # Act
     command_result = get_url_analysis_result_command(args, intezer_api)
@@ -1190,7 +1198,7 @@ def test_get_url_analysis_result_command_polling(requests_mock, mocker):
         status_code=HTTPStatus.CONFLICT,
     )
 
-    args = dict(analysis_id=analysis_id, wait_for_result=True)
+    args = {"analysis_id": analysis_id, "wait_for_result": True}
 
     # Act
     command_result = get_url_analysis_result_command(args, intezer_api)
@@ -1211,7 +1219,7 @@ def test_get_file_analysis_polling_false(requests_mock, mocker):
         status_code=HTTPStatus.CONFLICT
     )
 
-    args = dict(analysis_id=analysis_id, wait_for_result=False)
+    args = {"analysis_id": analysis_id, "wait_for_result": False}
 
     # Act
     command_result = get_file_analysis_result_command(args, intezer_api)
@@ -1233,7 +1241,7 @@ def test_get_file_analysis_result_command_analysis_failed(requests_mock, mocker)
         status_code=HTTPStatus.NOT_FOUND,
     )
 
-    args = dict(analysis_id=analysis_id, wait_for_result=True)
+    args = {"analysis_id": analysis_id, "wait_for_result": True}
 
     # Act
     command_result = get_file_analysis_result_command(args, intezer_api)
@@ -1251,7 +1259,7 @@ def test_get_file_analysis_result_http_error(requests_mock):
         status_code=HTTPStatus.BAD_REQUEST
     )
 
-    args = dict(analysis_id=analysis_id, wait_for_result=True)
+    args = {"analysis_id": analysis_id, "wait_for_result": True}
 
     # Act + Assert
     with pytest.raises(Exception):
@@ -1274,7 +1282,7 @@ def test_get_file_analysis_still_running_polling(requests_mock, mocker):
         }
     )
 
-    args = dict(analysis_id=analysis_id, wait_for_result=True)
+    args = {"analysis_id": analysis_id, "wait_for_result": True}
 
     # Act
     command_result = get_file_analysis_result_command(args, intezer_api)
@@ -1297,7 +1305,7 @@ def test_get_file_analysis_result_command_polling(requests_mock, mocker):
         status_code=HTTPStatus.CONFLICT,
     )
 
-    args = dict(analysis_id=analysis_id, wait_for_result=True)
+    args = {"analysis_id": analysis_id, "wait_for_result": True}
 
     # Act
     command_result = get_file_analysis_result_command(args, intezer_api)
@@ -1305,6 +1313,7 @@ def test_get_file_analysis_result_command_polling(requests_mock, mocker):
     # Assert
     assert command_result.scheduled_command._args['analysis_id'] == analysis_id
     assert command_result.scheduled_command._args['hide_polling_output']
+
 
 # endregion
 
@@ -1329,7 +1338,7 @@ def test_get_analysis_code_reuse_command_success_root(requests_mock):
         }
     )
 
-    args = dict(analysis_id=analysis_id)
+    args = {"analysis_id": analysis_id}
 
     # Act
     command_results = get_analysis_code_reuse_command(args, intezer_api)
@@ -1360,7 +1369,7 @@ def test_get_analysis_code_reuse_command_success(requests_mock):
         }
     )
 
-    args = dict(analysis_id=analysis_id, sub_analysis_id=sub_analysis_id)
+    args = {"analysis_id": analysis_id, "sub_analysis_id": sub_analysis_id}
 
     # Act
     command_results = get_analysis_code_reuse_command(args, intezer_api)
@@ -1383,7 +1392,7 @@ def test_get_analysis_code_reuse_command_analysis_doesnt_exist(requests_mock):
         status_code=HTTPStatus.NOT_FOUND
     )
 
-    args = dict(analysis_id=analysis_id, sub_analysis_id=sub_analysis_id)
+    args = {"analysis_id": analysis_id, "sub_analysis_id": sub_analysis_id}
 
     # Act
     command_results = get_analysis_code_reuse_command(args, intezer_api)
@@ -1402,7 +1411,7 @@ def test_get_analysis_code_reuse_command_no_code_reuse(requests_mock):
         status_code=HTTPStatus.CONFLICT
     )
 
-    args = dict(analysis_id=analysis_id, sub_analysis_id=sub_analysis_id)
+    args = {"analysis_id": analysis_id, "sub_analysis_id": sub_analysis_id}
 
     # Act
     command_results = get_analysis_code_reuse_command(args, intezer_api)
@@ -1427,7 +1436,7 @@ def test_get_analysis_metadata_command_success_root(requests_mock):
         }
     )
 
-    args = dict(analysis_id=analysis_id)
+    args = {"analysis_id": analysis_id}
 
     # Act
     command_results = get_analysis_metadata_command(args, intezer_api)
@@ -1451,7 +1460,7 @@ def test_get_analysis_metadata_command_success(requests_mock):
         }
     )
 
-    args = dict(analysis_id=analysis_id, sub_analysis_id=sub_analysis_id)
+    args = {"analysis_id": analysis_id, "sub_analysis_id": sub_analysis_id}
 
     # Act
     command_results = get_analysis_metadata_command(args, intezer_api)
@@ -1473,7 +1482,7 @@ def test_get_analysis_metadata_command_analysis_doesnt_exist(requests_mock):
         status_code=HTTPStatus.NOT_FOUND
     )
 
-    args = dict(analysis_id=analysis_id, sub_analysis_id=sub_analysis_id)
+    args = {"analysis_id": analysis_id, "sub_analysis_id": sub_analysis_id}
 
     # Act
     command_results = get_analysis_metadata_command(args, intezer_api)
@@ -1536,7 +1545,7 @@ def test_get_analysis_iocs_command_success(requests_mock):
         }
     )
 
-    args = dict(analysis_id=analysis_id)
+    args = {"analysis_id": analysis_id}
 
     # Act
     command_results = get_analysis_iocs_command(args, intezer_api)
@@ -1569,7 +1578,7 @@ def test_get_analysis_iocs_command_no_iocs(requests_mock):
         status_code=HTTPStatus.NOT_FOUND
     )
 
-    args = dict(analysis_id=analysis_id)
+    args = {"analysis_id": analysis_id}
 
     # Act
     command_results = get_analysis_iocs_command(args, intezer_api)
@@ -1591,7 +1600,7 @@ def test_get_analysis_iocs_command_analysis_doesnt_exist(requests_mock):
         status_code=HTTPStatus.NOT_FOUND
     )
 
-    args = dict(analysis_id=analysis_id)
+    args = {"analysis_id": analysis_id}
 
     # Act
     command_results = get_analysis_iocs_command(args, intezer_api)
@@ -1620,7 +1629,7 @@ def test_get_family_info_command_success(requests_mock):
         }
     )
 
-    args = dict(family_id=family_id)
+    args = {"family_id": family_id}
 
     # Act
     command_results = get_family_info_command(args, intezer_api)
@@ -1639,7 +1648,7 @@ def test_get_family_info_command_analysis_doesnt_exist(requests_mock):
         status_code=HTTPStatus.NOT_FOUND
     )
 
-    args = dict(family_id=family_id)
+    args = {"family_id": family_id}
 
     # Act
     command_results = get_family_info_command(args, intezer_api)
@@ -1679,8 +1688,9 @@ def test_check_is_available_http_error(requests_mock):
 
     response = check_is_available({}, intezer_api)
     assert 'Error occurred when reaching Intezer Analyze. Please check Analyze Base URL.' in response
-# endregion
 
+
+# endregion
 
 # region analyze_url_command
 def test_analyze_url_command_success(requests_mock):
@@ -1691,10 +1701,10 @@ def test_analyze_url_command_success(requests_mock):
     requests_mock.post(
         f'{full_url}/url',
         status_code=HTTPStatus.CREATED,
-        json=dict(result_url=f'/url/{analysis_id}')
+        json={"result_url": f'/url/{analysis_id}'}
     )
 
-    args = dict(url='https://intezer.com')
+    args = {"url": 'https://intezer.com'}
 
     # Act
     command_results = analyze_url_command(args, intezer_api)
@@ -1713,7 +1723,7 @@ def test_analyze_url_command_success_polling_true(requests_mock, mocker):
     requests_mock.post(
         f'{full_url}/url',
         status_code=HTTPStatus.CREATED,
-        json=dict(result_url=f'/url/{analysis_id}')
+        json={"result_url": f'/url/{analysis_id}'}
     )
 
     requests_mock.get(
@@ -1726,7 +1736,7 @@ def test_analyze_url_command_success_polling_true(requests_mock, mocker):
         }
     )
 
-    args = dict(url='https://intezer.com', wait_for_result=True)
+    args = {"url": 'https://intezer.com', "wait_for_result": True}
 
     # Act
     command_results = analyze_url_command(args, intezer_api)
@@ -1742,11 +1752,11 @@ def test_analyze_url_command_missing_url(requests_mock):
     requests_mock.post(
         f'{full_url}/url',
         status_code=HTTPStatus.BAD_REQUEST,
-        json=dict(error='Bad url')
+        json={"error": 'Bad url'}
     )
 
     url = '123test'
-    args = dict(url=url, analysis_type='Url')
+    args = {"url": url, "analysis_type": 'Url'}
 
     # Act
     command_results = analyze_url_command(args, intezer_api)
@@ -1762,13 +1772,307 @@ def test_analyze_url_command_url_not_found(requests_mock):
     requests_mock.post(
         f'{full_url}/url',
         status_code=HTTPStatus.BAD_REQUEST,
-        json=dict(error='Bad url')
+        json={"error": 'Bad url'}
     )
 
-    args = dict(analysis_type='Url')
+    args = {"analysis_type": 'Url'}
 
     # Act
     with pytest.raises(ValueError):
         analyze_url_command(args, intezer_api)
 
+
 # endregion
+
+# region submit_alert_command
+
+def test_submit_alert_command_success(requests_mock):
+    # Arrange
+    _setup_access_token(requests_mock)
+    alert_id = '112233'
+    requests_mock.post(
+        f'{full_url}/alerts/ingest',
+        status_code=HTTPStatus.OK,
+        json={"alert_id": alert_id, "result": True}
+    )
+
+    mapping = {'test': 'mapping'}
+
+    args = {"raw_alert": {'id': 123}, "mapping": json.dumps(mapping), "source": 'cs'}
+
+    # Act
+    command_results = submit_alert_command(args, intezer_api)
+
+    # Assert
+    assert command_results.outputs['ID'] == alert_id
+    assert command_results.outputs['Status'] == 'Created'
+    assert command_results.readable_output == f'Alert created successfully: {alert_id}'
+
+
+def test_submit_alert_command_invalid_mapping_file(requests_mock):
+    # Arrange
+    _setup_access_token(requests_mock)
+    alert_id = '112233'
+    requests_mock.post(
+        f'{full_url}/alerts/ingest',
+        status_code=HTTPStatus.BAD_REQUEST,
+        json={"alert_id": alert_id, "result": True}
+    )
+
+    mapping = {'test': 'mapping'}
+
+    args = {"raw_alert": {'id': 123}, "mapping": json.dumps(mapping), "source": 'cs'}
+
+    # Act + Assert
+    with pytest.raises(intezer_sdk.errors.InvalidAlertMappingError):
+        submit_alert_command(args, intezer_api)
+
+
+# endregion
+
+# region submit_suspected_phishing_email_command
+
+def test_submit_suspected_phishing_email_command_success(requests_mock, mocker):
+    # Arrange
+    _setup_access_token(requests_mock)
+    alert_id = '112233'
+    requests_mock.post(
+        f'{full_url}/alerts/ingest/binary',
+        status_code=HTTPStatus.OK,
+        json={"alert_id": alert_id, "result": True}
+    )
+
+    args = {"email_file_entry_id": '123@123'}
+
+    # Act
+    with tempfile.NamedTemporaryFile() as file:
+        file.write(b'123')
+        file.seek(0)
+        file_path_patch = mocker.patch('demistomock.getFilePath')
+        file_path_patch.return_value = {"path": file.name, "name": file.name}
+        command_results = submit_suspected_phishing_email_command(args, intezer_api)
+
+    # Assert
+    assert command_results.outputs['ID'] == alert_id
+    assert command_results.outputs['Status'] == 'Created'
+    assert command_results.readable_output == f'Suspected email was sent successfully, alert_id: {alert_id}'
+
+
+# endregion
+
+
+# region get_alert_response_command
+
+def test_get_alert_response_command_alert_not_found(requests_mock, mocker):
+    # Arrange
+    _setup_access_token(requests_mock)
+    mocker.patch.object(ScheduledCommand, 'raise_error_if_not_supported', return_value=None)
+
+    requests_mock.get(
+        f'{full_url}/alerts/get-by-id',
+        status_code=HTTPStatus.NOT_FOUND,
+        json={"alert_id": '123'}
+    )
+
+    args = {"alert_id": '123', "wait_for_result": True}
+
+    # Act
+    command_result = get_alert_result_command(args, intezer_api)
+
+    # Assert
+    command_result.readable_output = 'Could not find alert with the alert_id of 123'
+
+
+def test_get_alert_response_command_alert_in_progress(requests_mock, mocker):
+    # Arrange
+    _setup_access_token(requests_mock)
+    mocker.patch.object(ScheduledCommand, 'raise_error_if_not_supported', return_value=None)
+
+    requests_mock.get(
+        f'{full_url}/alerts/get-by-id',
+        status_code=HTTPStatus.OK,
+        json={"result": {'123': '123'}, "status": 'in_progress'}
+    )
+
+    args = {"alert_id": '123', "wait_for_result": True}
+
+    # Act
+    command_result = get_alert_result_command(args, intezer_api)
+
+    # Assert
+    assert command_result.readable_output == 'Fetching Intezer alert. Please wait...'
+
+
+def test_get_alert_response_command_alert_success(requests_mock, mocker):
+    # Arrange
+    _setup_access_token(requests_mock)
+
+    mocker.patch.object(ScheduledCommand, 'raise_error_if_not_supported', return_value=None)
+    mocker.patch('IntezerV2.enrich_dbot_and_display_alert_results', return_value=CommandResults(readable_output='test'))
+
+    requests_mock.get(
+        f'{full_url}/alerts/get-by-id',
+        status_code=HTTPStatus.OK,
+        json={"result": {'123': '123'}, "status": 'succeeded'}
+    )
+
+    args = {"alert_id": '123', "wait_for_result": True}
+
+    # Act
+    command_result = get_alert_result_command(args, intezer_api)
+
+    # Assert
+    assert command_result.readable_output == 'test'
+
+
+def test_enrich_dbot_and_display_alert_results_no_scans(requests_mock, mocker):
+    # Arrange
+    _setup_access_token(requests_mock)
+    alert_id = '123'
+    alert = Alert(alert_id, api=intezer_api)
+    alert.scans = []
+    alert.status = AlertStatusCode.FINISHED
+    alert.intezer_alert_url = 'some_url'
+    alert.family_name = None
+    mocker.patch.object(Alert, 'result', return_value={'scans': [],
+                                                       'triage_result': {'alert_verdict_display': 'dangerous',
+                                                                         'risk_category_display': 'malicious'}})
+
+    # Act
+    with patch('IntezerV2.return_results') as results_mock:
+        enrich_dbot_and_display_alert_results(alert, intezer_api)
+
+    # Assert
+    assert results_mock.call_count == 1
+
+
+def test_enrich_dbot_and_display_alert_results_artifact_analyses(requests_mock, mocker):
+    # Arrange
+    _setup_access_token(requests_mock)
+    alert_id = '123'
+    alert = Alert(alert_id, api=intezer_api)
+    alert.scans = []
+    alert.status = AlertStatusCode.FINISHED
+    alert.intezer_alert_url = 'some_url'
+    alert.family_name = None
+    malicious_ip = 'some_ip'
+    mocker.patch.object(Alert, 'result', return_value={'scans': [{'artifact_analysis': {'artifact_type': 'ip',
+                                                                                        'artifact_value': malicious_ip,
+                                                                                        'family_name': 'Vobfus',
+                                                                                        'verdict': 'malicious'},
+                                                                  'collection_status': 'collected', 'scan_type': 'artifact'}],
+                                                       'triage_result': {'alert_verdict_display': 'dangerous',
+                                                                         'risk_category_display': 'malicious'}})
+
+    # Act
+    with patch('IntezerV2.return_results') as results_mock:
+        enrich_dbot_and_display_alert_results(alert, intezer_api)
+
+    # Assert
+    first_result: CommandResults = results_mock.call_args.args[0][0]
+    assert len(results_mock.call_args.args[0]) == 2
+    assert first_result.indicator.dbot_score.indicator_type == 'ip'
+    assert first_result.indicator.dbot_score.indicator == malicious_ip
+    assert first_result.indicator.dbot_score.score == Common.DBotScore.BAD
+
+
+def test_enrich_dbot_and_display_alert_results_file_analysis(requests_mock, mocker):
+    # Arrange
+    _setup_access_token(requests_mock)
+    alert_id = '123'
+    alert = Alert(alert_id, api=intezer_api)
+    alert.status = AlertStatusCode.FINISHED
+    alert.intezer_alert_url = 'some_url'
+    alert.family_name = None
+
+    analysis_id = '123'
+    root_sub_analysis = '456'
+    analysis = FileAnalysis(api=intezer_api)
+    analysis.analysis_id = analysis_id
+    analysis.analysis_type = 'file'
+    sha256 = 'a' * 64
+    md5 = 'b' * 32
+    sha1 = 'c' * 40
+    analysis._report = {'analysis_id': analysis_id, 'analysis_time': 'Mon, 24 Jul 2023 15:45:58 GMT',
+                        'analysis_url': f'https://analyze.intezer.com/analyses/{analysis_id}',
+                        'file_name': 'body-html.html', 'is_private': True,
+                        'sha256': sha256,
+                        'sub_verdict': 'inconclusive', 'verdict': 'unknown'}
+
+    alert.scans = [analysis]
+
+    requests_mock.get(
+        f'{full_url}/analyses/{analysis_id}/sub-analyses',
+        json={'sub_analyses': [{
+            'sha256': sha256,
+            'source': 'root',
+            'sub_analysis_id': root_sub_analysis
+        }]
+        }
+    )
+
+    requests_mock.get(
+        f'{full_url}/analyses/{analysis_id}/sub-analyses/{root_sub_analysis}/metadata',
+        json={
+            'file_type': 'non executable',
+            'md5': md5,
+            'sha1': sha1,
+            'sha256': sha256,
+            'size_in_bytes': 838,
+            'ssdeep': '12:dfhfgjh:sdfghfgjfgh'
+        }
+    )
+
+    mocker.patch.object(Alert, 'result', return_value={'scans': [{'scan_type': 'file', 'file_analysis': analysis.result()}],
+                                                       'triage_result': {'alert_verdict_display': 'dangerous',
+                                                                         'risk_category_display': 'malicious'}})
+
+    # Act
+    with patch('IntezerV2.return_results') as results_mock:
+        enrich_dbot_and_display_alert_results(alert, intezer_api)
+
+    # Assert
+    first_result: CommandResults = results_mock.call_args.args[0][0]
+    assert len(results_mock.call_args.args[0]) == 2
+    assert first_result.indicator.dbot_score.indicator_type == 'file'
+    assert first_result.indicator.dbot_score.indicator == sha256
+    assert first_result.indicator.dbot_score.score == Common.DBotScore.NONE
+    assert first_result.indicator.md5 == md5
+    assert first_result.indicator.sha1 == sha1
+    assert first_result.indicator.sha256 == sha256
+
+
+def test_enrich_dbot_and_display_alert_results_url_analysis(requests_mock, mocker):
+    # Arrange
+    _setup_access_token(requests_mock)
+    alert_id = '123'
+    alert = Alert(alert_id, api=intezer_api)
+    alert.status = AlertStatusCode.FINISHED
+    alert.intezer_alert_url = 'some_url'
+    alert.family_name = None
+
+    analysis_id = '123'
+    analysis = UrlAnalysis(api=intezer_api)
+    analysis.analysis_id = analysis_id
+    url = 'https://www.google.com'
+    analysis._report = {'analysis_id': analysis_id, 'analysis_time': 'Mon, 24 Jul 2023 15:45:58 GMT',
+                        'analysis_url': f'https://analyze.intezer.com/analyses/{analysis_id}',
+                        'scanned_url': url, 'submitted_url': url,
+                        'summary': {'verdict_type': 'malicious'}}
+
+    alert.scans = [analysis]
+
+    mocker.patch.object(Alert, 'result', return_value={'scans': [{'scan_type': 'file', 'file_analysis': analysis.result()}],
+                                                       'triage_result': {'alert_verdict_display': 'dangerous',
+                                                                         'risk_category_display': 'malicious'}})
+
+    # Act
+    with patch('IntezerV2.return_results') as results_mock:
+        enrich_dbot_and_display_alert_results(alert, intezer_api)
+
+    # Assert
+    first_result: CommandResults = results_mock.call_args.args[0][0]
+    assert len(results_mock.call_args.args[0]) == 2
+    assert first_result.indicator.dbot_score.indicator_type == 'url'
+    assert first_result.indicator.dbot_score.indicator == url
+    assert first_result.indicator.dbot_score.score == Common.DBotScore.BAD

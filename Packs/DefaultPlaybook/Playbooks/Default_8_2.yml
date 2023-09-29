@@ -360,38 +360,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "26":
-    id: "26"
-    taskid: b41d16a4-e30a-4d0a-8612-105362a8a14d
-    type: playbook
-    task:
-      id: b41d16a4-e30a-4d0a-8612-105362a8a14d
-      version: -1
-      name: Detonate URL - Generic
-      playbookName: Detonate URL - Generic
-      type: playbook
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "65"
-    separatecontext: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 290,
-          "y": 2270
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "27":
     id: "27"
     taskid: 3ea2e218-bc35-484e-8856-77525cff6ddd
@@ -406,8 +374,8 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "26"
       - "23"
+      - "70"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1093,6 +1061,38 @@ tasks:
         "position": {
           "x": 52.5,
           "y": 950
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "70":
+    id: "70"
+    taskid: f2dc11c0-1587-4d62-8c8a-6616dc910ac0
+    type: playbook
+    task:
+      id: f2dc11c0-1587-4d62-8c8a-6616dc910ac0
+      version: -1
+      name: Detonate URL - Generic v1.5
+      playbookName: Detonate URL - Generic v1.5
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "65"
+    separatecontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 280,
+          "y": 2270
         }
       }
     note: false

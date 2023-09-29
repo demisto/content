@@ -87,6 +87,8 @@ Return IP information and reputation
 ***
 Returns Domain information and reputation.
 
+Notice: Submitting indicators using this command might make the indicator data publicly available. See the vendor’s documentation for more details.
+
 
 #### Base Command
 
@@ -146,6 +148,8 @@ Returns Domain information and reputation.
 ### url
 ***
 Returns URL information and reputation.
+
+Notice: Submitting indicators using this command might make the indicator data publicly available. See the vendor’s documentation for more details.
 
 
 #### Base Command

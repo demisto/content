@@ -1,0 +1,59 @@
+{
+    "Actor": [
+        {
+            "ID": "someone@somecompany.onmicrosoft.com",
+            "Type": 5
+        },
+        {
+            "ID": "User",
+            "Type": 2
+        }
+    ],
+    "ActorContextId": "a1aa1a1a1a1a1a1a1a1",
+    "AzureActiveDirectoryEventType": 1,
+    "CreationTime": "2023-07-06T10:23:26",
+    "ExtendedProperties": [
+        {
+            "Name": "additionalDetails",
+            "Value": "some_value"
+        },
+        {
+            "Name": "extendedAuditEventCategory",
+            "Value": "Group"
+        }
+    ],
+    "Id": "a1aa1a1a1a1a1a1a1a1",
+    "InterSystemsId": "a1aa1a1a1a1a1a1a1a1",
+    "IntraSystemId": "a1aa1a1a1a1a1a1a1a1",
+    "ModifiedProperties": [],
+    "ObjectId": "Group_dda1aa1a1a1a1a1a1a1a1",
+    "Operation": "Delete group.",
+    "OrganizationId": "a1aa1a1a1a1a1a1a1a1",
+    "RecordType": 8,
+    "ResultStatus": "Success",
+    "SupportTicketId": "",
+    "Target": [
+        {
+            "ID": "Group_dda1aa1a1a1a1a1a1a1a1",
+            "Type": 2
+        },
+        {
+            "ID": "a1aa1a1a1a1a1a1a1a1",
+            "Type": 2
+        },
+        {
+            "ID": "Group",
+            "Type": 2
+        },
+        {
+            "ID": "TestTeama1aa1a1a1a1a1a1a1a1",
+            "Type": 1
+        }
+    ],
+    "TargetContextId": "a1aa1a1a1a1a1a1a1a1",
+    "UserId": "someone@somecompany.onmicrosoft.com",
+    "UserKey": "100300009ABC2878@somecompany.onmicrosoft.com",
+    "UserType": 0,
+    "Version": 1,
+    "Workload": "AzureActiveDirectory"
+}

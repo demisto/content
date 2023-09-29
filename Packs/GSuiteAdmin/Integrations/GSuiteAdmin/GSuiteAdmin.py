@@ -65,6 +65,7 @@ HR_MESSAGES: Dict[str, str] = {
     'MOBILE_DEVICES_LIST_SUCCESS': 'Google Workspace Admin - Mobile Devices List',
     'CHROMEOS_DEVICES_LIST_SUCCESS': 'Google Workspace Admin - ChromeOS Devices List',
     'CHROMEOS_DEVICE_ACTION_SUCCESS': 'ChromeOS device with resource id - {} updated.',
+    'USER_SIGNOUT_SESSIONS': 'Signs a {} out of all web and device sessions and reset their sign-in cookies.',
 }
 
 URL_SUFFIX: Dict[str, str] = {
@@ -83,6 +84,7 @@ URL_SUFFIX: Dict[str, str] = {
     'MOBILE_DEVICES_LIST': 'admin/directory/v1/customer/{}/devices/mobile',
     'CHROMEOS_DEVICE_ACTION': 'admin/directory/v1/customer/{}/devices/chromeos/{}/action',
     'CHROMEOS_DEVICES_LIST': 'admin/directory/v1/customer/{}/devices/chromeos',
+    'USER_SIGN_OUT': 'admin/directory/v1/users/{}/signOut',
 
 }
 SCOPES: Dict[str, List[str]] = {
@@ -862,6 +864,25 @@ def token_revoke_command(client: Client, args: Dict[str, str]) -> CommandResults
 
 
 @logger
+def user_signout_command(client: Client, args: Dict[str, str]) -> CommandResults:
+    """
+    Signs a user out of all web and device sessions and reset their sign-in cookies.
+
+    :param client: Client object.
+    :param args: Command arguments.
+
+    :return: CommandResults.
+    """
+
+    client.set_authorized_http(scopes=SCOPES['USER_SECURITY'])
+
+    user_key = urllib.parse.quote(args.get('user_key', ''))
+    client.http_request(url_suffix=URL_SUFFIX['USER_SIGN_OUT'].format(user_key), method='POST')
+
+    return CommandResults(readable_output=HR_MESSAGES['USER_SIGNOUT_SESSIONS'].format(args.get('user_key', '')))
+
+
+@logger
 def datatransfer_list_command(client: Client, args: Dict[str, str]) -> CommandResults:
     """
     Lists the transfers for a customer by source user, destination user, or status.
@@ -1488,8 +1509,8 @@ def main() -> None:
         'gsuite-user-update': user_update_command,
         'gsuite-mobiledevice-list': gsuite_mobile_device_list_command,
         'gsuite-chromeosdevice-action': gsuite_chromeos_device_action_command,
-        'gsuite-chromeosdevice-list': gsuite_chromeos_device_list_command
-
+        'gsuite-chromeosdevice-list': gsuite_chromeos_device_list_command,
+        'gsuite-user-signout': user_signout_command
     }
     command = demisto.command()
     demisto.info(f'Command being called is {command}')

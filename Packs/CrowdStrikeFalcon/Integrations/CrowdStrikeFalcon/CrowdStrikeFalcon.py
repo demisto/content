@@ -41,6 +41,7 @@ TOKEN_LIFE_TIME = 28
 INCIDENTS_PER_FETCH = int(demisto.params().get('incidents_per_fetch', 15))
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 IDP_DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
+DEFAULT_TIMEOUT = 30
 # Remove proxy if not set to true in params
 handle_proxy()
 
@@ -669,7 +670,9 @@ def create_json_iocs_list(
         expiration: str | None = None,
         applied_globally: bool | None = None,
         host_groups: list[str] | None = None,
-        tags: list[str] | None = None) -> list[dict]:
+        tags: list[str] | None = None,
+        file_name: str | None = None,
+) -> list[dict]:
     """
     Get a list of iocs values and create a list of Json objects with the iocs data.
     This function is used for uploading multiple indicator with same arguments with different values.
@@ -684,7 +687,7 @@ def create_json_iocs_list(
     :param applied_globally: Whether the indicator is applied globally.
     :param host_groups: List of host group IDs that the indicator applies to.
     :param tags: List of tags to apply to the indicator.
-
+    :param file_name: Name of the file for file indicators.
     """
     iocs_list = []
     for ioc_value in iocs_value:
@@ -700,6 +703,7 @@ def create_json_iocs_list(
             applied_globally=applied_globally,
             host_groups=host_groups,
             tags=tags,
+            metadata=assign_params(filename=file_name) if ioc_type in {"sha256", "md5"} else None
         ))
 
     return iocs_list
@@ -798,7 +802,7 @@ def run_batch_read_cmd(batch_id: str, command_type: str, full_command: str, time
 
 
 def run_batch_write_cmd(batch_id: str, command_type: str, full_command: str, optional_hosts: list | None = None,
-                        timeout: int = 30) -> dict:
+                        timeout: int = DEFAULT_TIMEOUT) -> dict:
     """
         Sends RTR command scope with write access
         :param batch_id:  Batch ID to execute the command on.
@@ -816,7 +820,7 @@ def run_batch_write_cmd(batch_id: str, command_type: str, full_command: str, opt
         'command_string': full_command
     }
     params = {
-        'timeout': timeout
+        'timeout': timeout if timeout else DEFAULT_TIMEOUT
     }
     if optional_hosts:
         default_body['optional_hosts'] = optional_hosts  # type:ignore
@@ -1123,7 +1127,7 @@ def list_scripts() -> dict:
     return response
 
 
-def get_extracted_file(host_id: str, sha256: str, filename: str | None = None):
+def get_extracted_file(host_id: str, sha256: str, filename: str | None = None, timeout=None):
     """
         Get RTR extracted file contents for specified session and sha256.
         :param host_id: The host agent ID to initialize the RTR session on.
@@ -1139,7 +1143,7 @@ def get_extracted_file(host_id: str, sha256: str, filename: str | None = None):
     if filename:
         params['filename'] = filename
 
-    response = http_request('GET', endpoint_url, params=params, no_json=True)
+    response = http_request('GET', endpoint_url, params=params, no_json=True, timeout=timeout)
     return response
 
 
@@ -1566,6 +1570,7 @@ def update_custom_ioc(
         source: str | None = None,
         description: str | None = None,
         expiration: str | None = None,
+        file_name: str | None = None,
 ) -> dict:
     """
     Update an IOC
@@ -1578,6 +1583,7 @@ def update_custom_ioc(
             source=source,
             description=description,
             expiration=expiration,
+            metadata=assign_params(filename=file_name)
         )]
     }
 
@@ -2579,13 +2585,13 @@ def fetch_incidents():
         else:
             incidents_ids = demisto.get(get_incidents_ids(last_created_timestamp=start_fetch_time, limit=fetch_limit),
                                         'resources')
-
-        raw_res = get_incidents_entities(incidents_ids)
-        if raw_res is not None and "resources" in raw_res:
-            for incident in demisto.get(raw_res, "resources"):
-                incident['incident_type'] = incident_type
-                incident_to_context = incident_to_incident_context(incident)
-                incidents.append(incident_to_context)
+        if incidents_ids:
+            raw_res = get_incidents_entities(incidents_ids)
+            if raw_res is not None and "resources" in raw_res:
+                for incident in demisto.get(raw_res, "resources"):
+                    incident['incident_type'] = incident_type
+                    incident_to_context = incident_to_incident_context(incident)
+                    incidents.append(incident_to_context)
 
         incidents = filter_incidents_by_duplicates_and_limit(incidents_res=incidents, last_run=current_fetch_info_incidents,
                                                              fetch_limit=fetch_limit, id_field='name')
@@ -2824,6 +2830,7 @@ def upload_custom_ioc_command(
         applied_globally: bool | None = None,
         host_groups: list[str] | None = None,
         tags: list[str] | None = None,
+        file_name: str | None = None,
 ) -> list[dict]:
     """
     :param ioc_type: The type of the indicator.
@@ -2848,7 +2855,7 @@ def upload_custom_ioc_command(
     platforms_list = argToList(platforms)
 
     iocs_json_batch = create_json_iocs_list(ioc_type, values, action, platforms_list, severity, source, description,
-                                            expiration, applied_globally, host_groups, tags)
+                                            expiration, applied_globally, host_groups, tags, file_name)
     raw_res = upload_batch_custom_ioc(ioc_batch=iocs_json_batch)
     handle_response_errors(raw_res)
     iocs = raw_res.get('resources', [])
@@ -2856,6 +2863,7 @@ def upload_custom_ioc_command(
     entry_objects_list = []
     for ioc in iocs:
         ec = [get_trasnformed_dict(ioc, IOC_KEY_MAP)]
+        ec[0]["Filename"] = ioc.get("metadata", {}).get("filename")
         entry_objects_list.append(create_entry_object(
             contents=raw_res,
             ec={'CrowdStrike.IOC(val.ID === obj.ID)': ec},
@@ -2872,6 +2880,7 @@ def update_custom_ioc_command(
         source: str | None = None,
         description: str | None = None,
         expiration: str | None = None,
+        file_name: str | None = None,
 ) -> dict:
     """
     :param ioc_id: The ID of the indicator to update.
@@ -2881,6 +2890,7 @@ def update_custom_ioc_command(
     :param source: The source where this indicator originated.
     :param description: A meaningful description of the indicator.
     :param expiration: The date on which the indicator will become inactive.
+    :param file_name: The file name associated with the indicator.
     """
 
     raw_res = update_custom_ioc(
@@ -2891,10 +2901,12 @@ def update_custom_ioc_command(
         source,
         description,
         expiration,
+        file_name,
     )
     handle_response_errors(raw_res)
     iocs = raw_res.get('resources', [])
     ec = [get_trasnformed_dict(iocs[0], IOC_KEY_MAP)]
+    ec[0]["Filename"] = iocs[0].get("metadata", {}).get("filename")
     return create_entry_object(
         contents=raw_res,
         ec={'CrowdStrike.IOC(val.ID === obj.ID)': ec},
@@ -3912,7 +3924,7 @@ def list_detection_summaries_command():
     else:
         detections_ids = demisto.get(get_fetch_detections(), 'resources')
     detections_response_data = get_detections_entities(detections_ids)
-    detections = list(detections_response_data.get('resources'))
+    detections = list(detections_response_data.get('resources')) if detections_response_data else []
     detections_human_readable = detections_to_human_readable(detections)
 
     return CommandResults(
@@ -4117,11 +4129,12 @@ def rtr_kill_process_command(args: dict) -> CommandResults:
     host_ids = [host_id]
     offline = argToBoolean(args.get('queue_offline', False))
     batch_id = init_rtr_batch_session(host_ids, offline)
+    timeout = arg_to_number(args.get('timeout'))
     outputs = []
 
     for process_id in process_ids:
         full_command = f"{command_type} {process_id}"
-        response = execute_run_batch_write_cmd_with_timer(batch_id, command_type, full_command)
+        response = execute_run_batch_write_cmd_with_timer(batch_id, command_type, full_command, timeout=timeout)
         outputs.extend(parse_rtr_command_response(response, host_ids, process_id=process_id))
         raw_response.append(response)
 
@@ -4185,11 +4198,12 @@ def rtr_remove_file_command(args: dict) -> CommandResults:
     host_ids = remove_duplicates_from_list_arg(args, 'host_ids')
     offline = argToBoolean(args.get('queue_offline', False))
     operating_system = args.get('os')
+    timeout = arg_to_number(args.get('timeout'))
     full_command = match_remove_command_for_os(operating_system, file_path)
     command_type = "rm"
 
     batch_id = init_rtr_batch_session(host_ids, offline)
-    response = execute_run_batch_write_cmd_with_timer(batch_id, command_type, full_command, host_ids)
+    response = execute_run_batch_write_cmd_with_timer(batch_id, command_type, full_command, host_ids, timeout)
     outputs = parse_rtr_command_response(response, host_ids)
     human_readable = tableToMarkdown(
         f'{INTEGRATION_NAME} {command_type} over the file: {file_path}', outputs, headers=["HostID", "Error"])
@@ -4198,7 +4212,7 @@ def rtr_remove_file_command(args: dict) -> CommandResults:
                           outputs_prefix="CrowdStrike.Command.rm", outputs_key_field="HostID")
 
 
-def execute_run_batch_write_cmd_with_timer(batch_id, command_type, full_command, host_ids=None):
+def execute_run_batch_write_cmd_with_timer(batch_id, command_type, full_command, host_ids=None, timeout=None):
     """
     Executes a timer for keeping the session refreshed
     """
@@ -4206,32 +4220,32 @@ def execute_run_batch_write_cmd_with_timer(batch_id, command_type, full_command,
     timer.start()
     try:
         response = run_batch_write_cmd(batch_id, command_type=command_type, full_command=full_command,
-                                       optional_hosts=host_ids)
+                                       optional_hosts=host_ids, timeout=timeout)
     finally:
         timer.cancel()
     return response
 
 
-def execute_run_batch_admin_cmd_with_timer(batch_id, command_type, full_command, host_ids=None):
+def execute_run_batch_admin_cmd_with_timer(batch_id, command_type, full_command, host_ids=None, timeout=None):
     timer = Timer(300, batch_refresh_session, kwargs={'batch_id': batch_id})
     timer.start()
     try:
         response = run_batch_admin_cmd(batch_id, command_type=command_type, full_command=full_command,
-                                       optional_hosts=host_ids)
+                                       optional_hosts=host_ids, timeout=timeout)
     finally:
         timer.cancel()
     return response
 
 
 def rtr_general_command_on_hosts(host_ids: list, command: str, full_command: str, get_session_function: Callable,
-                                 write_to_context=True, offline=False) -> \
+                                 write_to_context=True, offline=False, timeout=None) -> \
         list[CommandResults | dict]:  # type:ignore
     """
     General function to run RTR commands depending on the given command.
     """
     batch_id = init_rtr_batch_session(host_ids, offline)
     response = get_session_function(batch_id, command_type=command, full_command=full_command,
-                                    host_ids=host_ids)  # type:ignore
+                                    host_ids=host_ids, timeout=timeout)  # type:ignore
     output, file, not_found_hosts = parse_rtr_stdout_response(host_ids, response, command)
 
     human_readable = tableToMarkdown(
@@ -4276,6 +4290,7 @@ def rtr_read_registry_keys_command(args: dict):
     host_ids = remove_duplicates_from_list_arg(args, 'host_ids')
     offline = argToBoolean(args.get('queue_offline', False))
     registry_keys = remove_duplicates_from_list_arg(args, 'registry_keys')
+    timeout = arg_to_number(args.get('timeout'))
     command_type = "reg"
     raw_response = []
     batch_id = init_rtr_batch_session(host_ids, offline)
@@ -4285,7 +4300,8 @@ def rtr_read_registry_keys_command(args: dict):
 
     for registry_key in registry_keys:
         full_command = f"{command_type} query {registry_key}"
-        response = execute_run_batch_write_cmd_with_timer(batch_id, command_type, full_command, host_ids=host_ids)
+        response = execute_run_batch_write_cmd_with_timer(batch_id, command_type, full_command, host_ids=host_ids,
+                                                          timeout=timeout)
         output, file, not_found_host = parse_rtr_stdout_response(host_ids, response, command_type,
                                                                  file_name_suffix=registry_key)
         not_found_hosts.update(not_found_host)
@@ -5645,15 +5661,18 @@ def main():
         elif command == 'cs-falcon-rtr-list-processes':
             host_id = args.get('host_id')
             offline = argToBoolean(args.get('queue_offline', False))
+            timeout = arg_to_number(args.get('timeout'))
             return_results(
-                rtr_general_command_on_hosts([host_id], "ps", "ps", execute_run_batch_write_cmd_with_timer, True, offline))
+                rtr_general_command_on_hosts([host_id], "ps", "ps", execute_run_batch_write_cmd_with_timer, True, offline,
+                                             timeout=timeout))
 
         elif command == 'cs-falcon-rtr-list-network-stats':
             host_id = args.get('host_id')
             offline = argToBoolean(args.get('queue_offline', False))
+            timeout = arg_to_number(args.get('timeout'))
             return_results(
                 rtr_general_command_on_hosts([host_id], "netstat", "netstat", execute_run_batch_write_cmd_with_timer,
-                                             True, offline))
+                                             True, offline, timeout=timeout))
 
         elif command == 'cs-falcon-rtr-read-registry':
             return_results(rtr_read_registry_keys_command(args))
@@ -5662,8 +5681,9 @@ def main():
             full_command = f'runscript -Raw=```schtasks /query /fo LIST /v```'  # noqa: F541
             host_ids = argToList(args.get('host_ids'))
             offline = argToBoolean(args.get('queue_offline', False))
+            timeout = arg_to_number(args.get('timeout'))
             return_results(rtr_general_command_on_hosts(host_ids, "runscript", full_command,
-                                                        execute_run_batch_admin_cmd_with_timer, offline))
+                                                        execute_run_batch_admin_cmd_with_timer, offline, timeout=timeout))
         elif command == 'cs-falcon-rtr-retrieve-file':
             return_results(rtr_polling_retrieve_file_command(args))
         elif command == 'cs-falcon-get-detections-for-incident':

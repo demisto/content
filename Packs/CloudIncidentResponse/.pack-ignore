@@ -16,9 +16,6 @@ ignore=BA124
 [file:XCloudRelatedAlertsWidget.yml]
 ignore=BA124
 
-[file:Trigger_-_Cloud_Token_Theft_Response.json]
-ignore=GR101
-
 [file:README.md]
 ignore=RM108
 

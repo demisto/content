@@ -1,14 +1,13 @@
-import tempfile
 import glob
+import tempfile
 import zipfile
 from io import StringIO
+
 import demisto_client
 
 from Tests.configure_and_test_integration_instances import XSOARBuild
 from Tests.private_build.configure_and_test_integration_instances_private import \
-    find_needed_test_playbook_paths, install_private_testing_pack, write_test_pack_zip,\
-    install_packs_private
-import Tests.Marketplace.search_and_install_packs as script
+    find_needed_test_playbook_paths, install_private_testing_pack, write_test_pack_zip, install_packs_private
 
 
 class ServerMock:
@@ -138,8 +137,7 @@ def test_create_install_private_testing_pack(mocker):
     mock_build.id_set = {}
     mock_build.test_pack_path = ''
     mock_build.pack_ids_to_install = []
-    install_private_testing_pack(mock_build, 'testing/path/to/test_pack.zip')
-    assert script.SUCCESS_FLAG
+    assert install_private_testing_pack(mock_build, 'testing/path/to/test_pack.zip')
 
 
 def test_write_test_pack_zip(tmpdir):
@@ -157,23 +155,22 @@ def test_write_test_pack_zip(tmpdir):
     private_content_test_zip = write_test_pack_zip(path_to_content='.', zip_destination_dir=tmpdir,
                                                    tests_file_paths=set_of_test_paths)
     #  Opening created pack
-    with tempfile.TemporaryDirectory() as extract_dir:
-        with zipfile.ZipFile(private_content_test_zip, "r") as zip_ref:
-            zip_ref.extractall(extract_dir)
-            #  Check that metadata is present
-            dir_containing_metadata = glob.glob(extract_dir + '/test_pack/*')
-            expected_metadata_file_path = extract_dir + '/test_pack/metadata.json'
-            assert expected_metadata_file_path in dir_containing_metadata
+    with tempfile.TemporaryDirectory() as extract_dir, zipfile.ZipFile(private_content_test_zip, "r") as zip_ref:
+        zip_ref.extractall(extract_dir)
+        #  Check that metadata is present
+        dir_containing_metadata = glob.glob(extract_dir + '/test_pack/*')
+        expected_metadata_file_path = extract_dir + '/test_pack/metadata.json'
+        assert expected_metadata_file_path in dir_containing_metadata
 
-            #  Check that file from DeveloperTools is present
-            dir_containing_test_script = glob.glob(extract_dir + '/test_pack/*/*')
-            expected_test_script_file_path = extract_dir + '/test_pack/TestPlaybooks/script-' \
-                                                           'TestCreateIncidentsFile.yml'
-            assert expected_test_script_file_path in dir_containing_test_script
-            #  Check that item collected in needed_test_playbook_paths is present.
-            expected_hello_world_test_file_path = extract_dir + '/test_pack/TestPlaybooks/' \
-                                                                'playbook-HelloWorld_Scan-Test.yml'
-            assert expected_hello_world_test_file_path in dir_containing_test_script
+        #  Check that file from DeveloperTools is present
+        dir_containing_test_script = glob.glob(extract_dir + '/test_pack/*/*')
+        expected_test_script_file_path = extract_dir + '/test_pack/TestPlaybooks/script-' \
+            'TestCreateIncidentsFile.yml'
+        assert expected_test_script_file_path in dir_containing_test_script
+        #  Check that item collected in needed_test_playbook_paths is present.
+        expected_hello_world_test_file_path = extract_dir + '/test_pack/TestPlaybooks/' \
+            'playbook-HelloWorld_Scan-Test.yml'
+        assert expected_hello_world_test_file_path in dir_containing_test_script
 
 
 def test_install_packs_private(mocker):
@@ -203,5 +200,5 @@ def test_install_packs_private(mocker):
     mock_build = BuildMock()
     mock_build.test_pack_path = 'content/artifacts/packs'
     mock_build.pack_ids_to_install = ['TestPack']
-    test_results = install_packs_private(build=mock_build, pack_ids=['TEST'])
+    test_results = install_packs_private(build=mock_build, pack_ids=['TEST'])  # type: ignore[arg-type]
     assert test_results is True

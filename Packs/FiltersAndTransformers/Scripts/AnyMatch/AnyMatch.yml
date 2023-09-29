@@ -1,0 +1,28 @@
+commonfields:
+  id: AnyMatch
+  version: -1
+name: AnyMatch
+script: ""
+type: python
+subtype: python3
+tags:
+  - filter
+  - general
+comment: |-
+  Returns all elements from the left side that have a substring that is equal to an element from the right side. Note: This filter is case-insensitive.
+  E.g -AnyMatch left=baby right=A will return baby. For more examples see the filter's Readme.
+enabled: true
+args:
+  - name: left
+    required: true
+    isArray: true
+    description: Value to check if it has a substring that is equal to an element in the right side. Can be a single value or a comma-separated list.
+  - name: right
+    required: true
+    isArray: true
+    description: Value to check if it is equal to an element or to a substring of an element from the left. Can be a single value or a comma-separated list.
+scripttarget: 0
+fromversion: 6.9.0
+tests:
+- AnyMatch_Test
+dockerimage: demisto/python3:3.10.12.66339

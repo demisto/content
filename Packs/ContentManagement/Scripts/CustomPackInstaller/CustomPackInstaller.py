@@ -1,12 +1,11 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-from typing import Tuple
 
 
 SCRIPT_NAME = 'CustomPackInstaller'
 
 
-def install_custom_pack(pack_id: str, skip_verify: bool, skip_validation: bool, instance_name: str = '') -> Tuple[bool, str]:
+def install_custom_pack(pack_id: str, skip_verify: bool, skip_validation: bool, instance_name: str = '') -> tuple[bool, str]:
     """Installs a custom pack in the machine.
 
     Args:
@@ -43,7 +42,7 @@ def install_custom_pack(pack_id: str, skip_verify: bool, skip_validation: bool, 
             args['using'] = instance_name
 
         status, res = execute_command(
-            'demisto-api-install-packs',
+            'core-api-install-packs',
             args,
             fail_on_error=False,
         )

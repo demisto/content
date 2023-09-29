@@ -11,7 +11,8 @@ def util_load_json(path):
 
 @pytest.mark.parametrize('context_data, expected_result', [
     (util_load_json('test_data/context_data1.json'), util_load_json('test_data/expected_results1.json')),
-    (util_load_json('test_data/context_data2.json'), util_load_json('test_data/expected_results2.json'))
+    (util_load_json('test_data/context_data2.json'), util_load_json('test_data/expected_results2.json')),
+    (util_load_json('test_data/context_data3.json'), util_load_json('test_data/expected_results3.json'))
 ])
 def test_additional_info(mocker, context_data, expected_result):
     mocker.patch.object(demisto, 'context', return_value=context_data)

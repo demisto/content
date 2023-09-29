@@ -1,8 +1,10 @@
-[file:playbook-Microsoft_Graph_DeviceManagement_Test.yml]
-ignore=auto-test
-
 [file:MicrosoftGraphDeviceManagement.yml]
 ignore=DS107
 
 [known_words]
 Intune
+GCC
+GCC-High
+DoD
+Germany
+China
