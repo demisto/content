@@ -22,7 +22,7 @@ configuration:
   type: 8
   required: false
 description: Improve the effectiveness of your service provision and resources, and the quality of your IT department.
-display: "PATHelpdeskAdvanced"
+display: PATHelpdeskAdvanced
 name: PATHelpdeskAdvanced
 script:
   commands:
@@ -33,7 +33,8 @@ script:
       description: The object type ID for the ticket.
       required: true
     - name: ticket_status_id
-      description: The status ID for the ticket. Use hda-list-ticket-statuses to get a list of status IDs.
+      description: The status ID for the ticket. Use hda-list-ticket-statuses to get
+        a list of status IDs.
       required: true
     - name: ticket_priority_id
       description: The priority ID for the ticket.
@@ -53,526 +54,157 @@ script:
     - name: site
       description: The site for the ticket.
     outputs:
-    - contextPath: HelpdeskAdvanced.Ticket.data.AccountID
+    - contextPath: HelpdeskAdvanced.Ticket.AccountID
       description: The account ID of the ticket.
       type: string
-    - contextPath: HelpdeskAdvanced.Ticket.data.AssetCategoryID
+    - contextPath: HelpdeskAdvanced.Ticket.AssetCategoryID
       description: The asset category ID of the ticket.
       type: string
-    - contextPath: HelpdeskAdvanced.Ticket.data.AssetID
+    - contextPath: HelpdeskAdvanced.Ticket.AssetID
       description: The asset ID of the ticket.
       type: string
-    - contextPath: HelpdeskAdvanced.Ticket.data.AssignedUserGroupID
+    - contextPath: HelpdeskAdvanced.Ticket.AssignedUserGroupID
       description: The assigned user group ID of the ticket.
       type: string
-    - contextPath: HelpdeskAdvanced.Ticket.data.AssignedUserID
+    - contextPath: HelpdeskAdvanced.Ticket.AssignedUserID
       description: The assigned user ID of the ticket.
       type: string
-    - contextPath: HelpdeskAdvanced.Ticket.data.AssignedUserOrGroupID
+    - contextPath: HelpdeskAdvanced.Ticket.AssignedUserOrGroupID
       description: The assigned user or group ID of the ticket.
       type: string
-    - contextPath: HelpdeskAdvanced.Ticket.data.BilledTokens
+    - contextPath: HelpdeskAdvanced.Ticket.BilledTokens
       description: The billed tokens of the ticket.
       type: string
-    - contextPath: HelpdeskAdvanced.Ticket.data.BusinessFunctionID
+    - contextPath: HelpdeskAdvanced.Ticket.BusinessFunctionID
       description: The business function ID of the ticket.
       type: string
-    - contextPath: HelpdeskAdvanced.Ticket.data.C12
+    - contextPath: HelpdeskAdvanced.Ticket.C12
       description: The C12 field of the ticket.
       type: string
-    - contextPath: HelpdeskAdvanced.Ticket.data.C13
+    - contextPath: HelpdeskAdvanced.Ticket.C13
       description: The C13 field of the ticket.
       type: string
-    - contextPath: HelpdeskAdvanced.Ticket.data.C134C
+    - contextPath: HelpdeskAdvanced.Ticket.C134C
       description: The C134C field of the ticket.
       type: string
-    - contextPath: HelpdeskAdvanced.Ticket.data.C14
+    - contextPath: HelpdeskAdvanced.Ticket.C14
       description: The C14 field of the ticket.
       type: string
-    - contextPath: HelpdeskAdvanced.Ticket.data.C15
+    - contextPath: HelpdeskAdvanced.Ticket.C15
       description: The C15 field of the ticket.
       type: string
-    - contextPath: HelpdeskAdvanced.Ticket.data.CalendarID
+    - contextPath: HelpdeskAdvanced.Ticket.CalendarID
       description: The calendar ID of the ticket.
       type: string
-    - contextPath: HelpdeskAdvanced.Ticket.data.ClosedByUserID
+    - contextPath: HelpdeskAdvanced.Ticket.ClosedByUserID
       description: The ID of the user who closed the ticket.
       type: string
-    - contextPath: HelpdeskAdvanced.Ticket.data.ClosureDate
+    - contextPath: HelpdeskAdvanced.Ticket.ClosureDate
       description: The closure date of the ticket.
       type: string
-    - contextPath: HelpdeskAdvanced.Ticket.data.ContactID
+    - contextPath: HelpdeskAdvanced.Ticket.ContactID
       description: The contact ID of the ticket.
       type: string
-    - contextPath: HelpdeskAdvanced.Ticket.data.CostCenterID
+    - contextPath: HelpdeskAdvanced.Ticket.CostCenterID
       description: The cost center ID of the ticket.
       type: string
-    - contextPath: HelpdeskAdvanced.Ticket.data.CustomerContractID
+    - contextPath: HelpdeskAdvanced.Ticket.CustomerContractID
       description: The customer contract ID of the ticket.
       type: string
-    - contextPath: HelpdeskAdvanced.Ticket.data.Date
+    - contextPath: HelpdeskAdvanced.Ticket.Date
       description: The date of the ticket.
       type: date
-    - contextPath: HelpdeskAdvanced.Ticket.data.DefaultSolutionID
+    - contextPath: HelpdeskAdvanced.Ticket.DefaultSolutionID
       description: The default solution ID of the ticket.
       type: string
-    - contextPath: HelpdeskAdvanced.Ticket.data.EstimatedTaskDuration
+    - contextPath: HelpdeskAdvanced.Ticket.EstimatedTaskDuration
       description: The estimated task duration of the ticket.
       type: string
-    - contextPath: HelpdeskAdvanced.Ticket.data.EstimatedTaskStartDate
+    - contextPath: HelpdeskAdvanced.Ticket.EstimatedTaskStartDate
       description: The estimated task start date of the ticket.
       type: string
-    - contextPath: HelpdeskAdvanced.Ticket.data.ExpirationDate
+    - contextPath: HelpdeskAdvanced.Ticket.ExpirationDate
       description: The expiration date of the ticket.
       type: date
-    - contextPath: HelpdeskAdvanced.Ticket.data.FirstUpdateUserID
+    - contextPath: HelpdeskAdvanced.Ticket.FirstUpdateUserID
       description: The ID of the user who first updated the ticket.
       type: string
-    - contextPath: HelpdeskAdvanced.Ticket.data.FullText
+    - contextPath: HelpdeskAdvanced.Ticket.FullText
       description: The full text of the ticket.
       type: string
-    - contextPath: HelpdeskAdvanced.Ticket.data.ID
+    - contextPath: HelpdeskAdvanced.Ticket.ID
       description: The ID of the ticket.
       type: string
-    - contextPath: HelpdeskAdvanced.Ticket.data.ImpactID
+    - contextPath: HelpdeskAdvanced.Ticket.ImpactID
       description: The impact ID of the ticket.
       type: string
-    - contextPath: HelpdeskAdvanced.Ticket.data.IsNew
+    - contextPath: HelpdeskAdvanced.Ticket.IsNew
       description: Whether the ticket is new or not.
       type: boolean
-    - contextPath: HelpdeskAdvanced.Ticket.data.KnownIssue
+    - contextPath: HelpdeskAdvanced.Ticket.KnownIssue
       description: The known issue field of the ticket.
       type: string
-    - contextPath: HelpdeskAdvanced.Ticket.data.LanguageID
+    - contextPath: HelpdeskAdvanced.Ticket.LanguageID
       description: The language ID of the ticket.
       type: string
-    - contextPath: HelpdeskAdvanced.Ticket.data.LastExpirationDate
+    - contextPath: HelpdeskAdvanced.Ticket.LastExpirationDate
       description: The last expiration date of the ticket.
       type: date
-    - contextPath: HelpdeskAdvanced.Ticket.data.LastExpirationID
+    - contextPath: HelpdeskAdvanced.Ticket.LastExpirationID
       description: The last expiration ID of the ticket.
       type: string
-    - contextPath: HelpdeskAdvanced.Ticket.data.LocationID
+    - contextPath: HelpdeskAdvanced.Ticket.LocationID
       description: The location ID of the ticket.
       type: string
-    - contextPath: HelpdeskAdvanced.Ticket.data.MailBoxID
+    - contextPath: HelpdeskAdvanced.Ticket.MailBoxID
       description: The mailbox ID of the ticket.
       type: string
-    - contextPath: HelpdeskAdvanced.Ticket.data.NextExpirationDate
+    - contextPath: HelpdeskAdvanced.Ticket.NextExpirationDate
       description: The next expiration date of the ticket.
       type: string
-    - contextPath: HelpdeskAdvanced.Ticket.data.NextExpirationID
+    - contextPath: HelpdeskAdvanced.Ticket.NextExpirationID
       description: The next expiration ID of the ticket.
       type: string
-    - contextPath: HelpdeskAdvanced.Ticket.data.ObjectDescription
+    - contextPath: HelpdeskAdvanced.Ticket.ObjectDescription
       description: The object description of the ticket.
       type: string
-    - contextPath: HelpdeskAdvanced.Ticket.data.ObjectEntity
+    - contextPath: HelpdeskAdvanced.Ticket.ObjectEntity
       description: The object entity of the ticket.
       type: string
-    - contextPath: HelpdeskAdvanced.Ticket.data.ObjectTypeID
+    - contextPath: HelpdeskAdvanced.Ticket.ObjectTypeID
       description: The object type ID of the ticket.
       type: string
-    - contextPath: HelpdeskAdvanced.Ticket.data.OwnerUserGroupID
+    - contextPath: HelpdeskAdvanced.Ticket.OwnerUserGroupID
       description: The owner user group ID of the ticket.
       type: string
-    - contextPath: HelpdeskAdvanced.Ticket.data.OwnerUserID
+    - contextPath: HelpdeskAdvanced.Ticket.OwnerUserID
       description: The owner user ID of the ticket.
       type: string
-    - contextPath: HelpdeskAdvanced.Ticket.data.ParentRecurringTicketID
+    - contextPath: HelpdeskAdvanced.Ticket.ParentRecurringTicketID
       description: The parent recurring ticket ID of the ticket.
       type: string
-    - contextPath: HelpdeskAdvanced.Ticket.data.ParentTicketID
+    - contextPath: HelpdeskAdvanced.Ticket.ParentTicketID
       description: The parent ticket ID of the ticket.
       type: string
-    - contextPath: HelpdeskAdvanced.Ticket.data.Problem
+    - contextPath: HelpdeskAdvanced.Ticket.Problem
       description: The problem field of the ticket.
       type: string
-    - contextPath: HelpdeskAdvanced.Ticket.data.ProblemHTML
+    - contextPath: HelpdeskAdvanced.Ticket.ProblemHTML
       description: The problem field in HTML format of the ticket.
       type: string
-    - contextPath: HelpdeskAdvanced.Ticket.data.RemoteID
+    - contextPath: HelpdeskAdvanced.Ticket.RemoteID
       description: The remote ID of the ticket.
       type: string
-    - contextPath: HelpdeskAdvanced.Ticket.data.Score
+    - contextPath: HelpdeskAdvanced.Ticket.Score
       description: The score of the ticket.
       type: string
-    - contextPath: HelpdeskAdvanced.Ticket.data.ServiceID
+    - contextPath: HelpdeskAdvanced.Ticket.ServiceID
       description: The service ID of the ticket.
       type: string
-    - contextPath: HelpdeskAdvanced.Ticket.data.Site
+    - contextPath: HelpdeskAdvanced.Ticket.Site
       description: The site of the ticket.
       type: string
-    - contextPath: HelpdeskAdvanced.Ticket.data.SiteUnRead
+    - contextPath: HelpdeskAdvanced.Ticket.SiteUnRead
       description: Whether the ticket is unread for the site.
       type: string
-    - contextPath: HelpdeskAdvanced.Ticket.data.Solicits
-      description: Whether the ticket solicits feedback.
-      type: string
-    - contextPath: HelpdeskAdvanced.Ticket.data.SolutionHTML
-      description: The solution in HTML format of the ticket.
-      type: string
-    - contextPath: HelpdeskAdvanced.Ticket.data.SourceMailBoxID
-      description: The source mailbox ID of the ticket.
-      type: string
-    - contextPath: HelpdeskAdvanced.Ticket.data.Subject
-      description: The subject of the ticket.
-      type: string
-    - contextPath: HelpdeskAdvanced.Ticket.data.SupplierID
-      description: The supplier ID of the ticket.
-      type: string
-    - contextPath: HelpdeskAdvanced.Ticket.data.Tag
-      description: The tag of the ticket.
-      type: string
-    - contextPath: HelpdeskAdvanced.Ticket.data.TaskEffort
-      description: The task effort of the ticket.
-      type: string
-    - contextPath: HelpdeskAdvanced.Ticket.data.TemplateTicketID
-      description: The template ticket ID of the ticket.
-      type: string
-    - contextPath: HelpdeskAdvanced.Ticket.data.TicketClassificationID
-      description: The ticket classification ID of the ticket.
-      type: string
-    - contextPath: HelpdeskAdvanced.Ticket.data.TicketCode
-      description: The ticket code of the ticket.
-      type: string
-    - contextPath: HelpdeskAdvanced.Ticket.data.TicketPriorityID
-      description: The ticket priority ID of the ticket.
-      type: string
-    - contextPath: HelpdeskAdvanced.Ticket.data.TicketSolutionID
-      description: The ticket solution ID of the ticket.
-      type: string
-    - contextPath: HelpdeskAdvanced.Ticket.data.TicketSourceID
-      description: The ticket source ID of the ticket.
-      type: string
-    - contextPath: HelpdeskAdvanced.Ticket.data.TicketStatusID
-      description: The ticket status ID of the ticket.
-      type: string
-    - contextPath: HelpdeskAdvanced.Ticket.data.TicketTypeID
-      description: The ticket type ID of the ticket.
-      type: string
-    - contextPath: HelpdeskAdvanced.Ticket.data.UnRead
-      description: Whether the ticket is unread.
-      type: string
-    - contextPath: HelpdeskAdvanced.Ticket.data.UrgencyID
-      description: The urgency ID of the ticket.
-      type: string
-    - contextPath: HelpdeskAdvanced.Ticket.data.UserID
-      description: The user ID of the ticket.
-      type: string
-    - contextPath: HelpdeskAdvanced.Ticket.requestToken
-      description: The request token of the ticket.
-      type: string
-    - contextPath: HelpdeskAdvanced.Ticket.result.code
-      description: The result code of the ticket.
-      type: string
-    - contextPath: HelpdeskAdvanced.Ticket.result.desc
-      description: The result description of the ticket.
-      type: string
-    - contextPath: HelpdeskAdvanced.Ticket.result.parameters
-      description: The result parameters of the ticket.
-      type: string
-    - contextPath: HelpdeskAdvanced.Ticket.result.subcode
-      description: The result subcode of the ticket.
-      type: string
-    - contextPath: HelpdeskAdvanced.Ticket.success
-      description: Indicates whether the ticket was created successfully.
-      type: string
-    - contextPath: HelpdeskAdvanced.Ticket.total
-      description: The total number of tickets returned.
-      type: string
-  - name: hda-list-tickets
-    description: List tickets.
-    arguments:
-    - name: ticket_id
-      description: The ID of the ticket to retrieve.
-    - name: filter
-      description: Filters to apply to the ticket list.
-    - name: page
-      description: The page number to retrieve.
-    - name: page_size
-      description: The number of tickets per page.
-    - name: limit
-      description: The maximum number of tickets to return.
-      defaultValue: "50"
-    outputs:
-    - contextPath: HelpdeskAdvanced.Ticket.AccountID
-      description:
-      type: string
-    - contextPath: HelpdeskAdvanced.Ticket.AssetID
-      description:
-      type: string
-    - contextPath: HelpdeskAdvanced.Ticket.BilledTokens
-      description:
-      type: string
-    - contextPath: HelpdeskAdvanced.Ticket.CalendarID
-      description:
-      type: string
-    - contextPath: HelpdeskAdvanced.Ticket.ClosureDate
-      description:
-      type: string
-    - contextPath: HelpdeskAdvanced.Ticket.ContactID
-      description:
-      type: string
-    - contextPath: HelpdeskAdvanced.Ticket.CustomerContractID
-      description:
-      type: string
-    - contextPath: HelpdeskAdvanced.Ticket.Date
-      description:
-      type: string
-    - contextPath: HelpdeskAdvanced.Ticket.EstimatedTaskDuration
-      description:
-      type: string
-    - contextPath: HelpdeskAdvanced.Ticket.EstimatedTaskStartDate
-      description:
-      type: string
-    - contextPath: HelpdeskAdvanced.Ticket.ExpirationDate
-      description:
-      type: string
-    - contextPath: HelpdeskAdvanced.Ticket.FirstUpdateUserID
-      description:
-      type: string
-    - contextPath: HelpdeskAdvanced.Ticket.ID
-      description:
-      type: string
-    - contextPath: HelpdeskAdvanced.Ticket.KnownIssue
-      description:
-      type: string
-    - contextPath: HelpdeskAdvanced.Ticket.LanguageID
-      description:
-      type: string
-    - contextPath: HelpdeskAdvanced.Ticket.LastExpirationDate
-      description:
-      type: string
-    - contextPath: HelpdeskAdvanced.Ticket.LocationID
-      description:
-      type: string
-    - contextPath: HelpdeskAdvanced.Ticket.MailBoxID
-      description:
-      type: string
-    - contextPath: HelpdeskAdvanced.Ticket.NextExpirationDate
-      description:
-      type: string
-    - contextPath: HelpdeskAdvanced.Ticket.NextExpirationID
-      description:
-      type: string
-    - contextPath: HelpdeskAdvanced.Ticket.OwnerUserID
-      description:
-      type: string
-    - contextPath: HelpdeskAdvanced.Ticket.Problem
-      description:
-      type: string
-    - contextPath: HelpdeskAdvanced.Ticket.ProblemHTML
-      description:
-      type: string
-    - contextPath: HelpdeskAdvanced.Ticket.Score
-      description:
-      type: string
-    - contextPath: HelpdeskAdvanced.Ticket.ServiceID
-      description:
-      type: string
-    - contextPath: HelpdeskAdvanced.Ticket.SiteUnRead
-      description:
-      type: string
-    - contextPath: HelpdeskAdvanced.Ticket.Solicits
-      description:
-      type: string
-    - contextPath: HelpdeskAdvanced.Ticket.Solution
-      description:
-      type: string
-    - contextPath: HelpdeskAdvanced.Ticket.SolutionHTML
-      description:
-      type: string
-    - contextPath: HelpdeskAdvanced.Ticket.Subject
-      description:
-      type: string
-    - contextPath: HelpdeskAdvanced.Ticket.SupplierID
-      description:
-      type: string
-    - contextPath: HelpdeskAdvanced.Ticket.TaskEffort
-      description:
-      type: string
-    - contextPath: HelpdeskAdvanced.Ticket.TicketClassificationID
-      description:
-      type: string
-    - contextPath: HelpdeskAdvanced.Ticket.TicketTypeID
-      description:
-      type: string
-    - contextPath: HelpdeskAdvanced.Ticket.UrgencyID
-      description:
-      type: string
-  - name: hda-add-ticket-attachment
-    description: Add an attachment to a ticket.
-    arguments:
-    - name: ticket_id
-      description: The ticket ID to retrieve details for.
-      required: true
-    - name: entry_id
-      description: The file entry ID to attach.
-      required: true
-    outputs: []
-  - name: hda-list-ticket-attachments
-    description: List attachments for a ticket.
-    arguments:
-    - name: ticket_id
-      description: The ticket ID to retrieve details for.
-      required: true
-    - name: limit
-      description: The maximum number of tickets to return.
-      required: false
-      defaultValue: "50"
-    outputs: []
-  - name: hda-add-ticket-comment
-    description: Add a comment to a ticket.
-    arguments:
-    - name: ticket_id
-      description: The ticket ID to retrieve details for.
-      required: true
-    - name: comment
-      description: The comment text.
-      required: true
-    - name: site_visible
-      description: Whether the ticket is visible to the customer site.
-      auto: PREDEFINED
-      defaultValue: "False"
-      predefined:
-      - "True"
-      - "False"
-      required: true
-  - name: hda-list-ticket-statuses
-    description: List ticket statuses.
-    arguments:
-    - name: limit
-      description: The maximum number of statuses to return.
-      required: false
-      defaultValue: "50"
-    outputs:
-    - contextPath: PATHelpdeskAdvanced.TicketStatus.ID
-      description: The status ID.
-      type: Number
-    - contextPath: PATHelpdeskAdvanced.TicketStatus.Name
-      description: The status name.
-      type: String
-
-  - name: hda-change-ticket-status
-    description: Change the status of a ticket.
-    arguments:
-    - name: ticket_id
-      description: The ID of the ticket to change status for.
-      required: true
-    - name: status_id
-      description: The ID of the status to change the ticket to.
-      required: true
-    - name: note
-      description: An optional note to add with the status change.
-      required: false
-    outputs: []
-
-  - name: hda-list-ticket-priorities
-    description: List ticket priorities.
-    arguments:
-    - name: ticket_id
-      type: String
-      description: The ID of the ticket to change status for.
-      required: true
-
-    outputs:
-    - contextPath: PATHelpdeskAdvanced.TicketPriority.ID
-      description: The priority ID.
-      type: Number
-    - contextPath: PATHelpdeskAdvanced.TicketPriority.Name
-      description: The priority name.
-      type: String
-
-  - name: hda-get-ticket-history
-    description: Get ticket history.
-    arguments:
-    - name: ticket_id
-      type: String
-      description: The ID of the ticket to change status for.
-      required: true
-
-    outputs:
-    - contextPath: PATHelpdeskAdvanced.TicketHistory.OperationTypeID
-      description: The operation type ID.
-      type: Number
-    - contextPath: PATHelpdeskAdvanced.TicketHistory.OperationDescription
-      description: The operation description.
-      type: String
-    - contextPath: PATHelpdeskAdvanced.TicketHistory.UpdateDate
-      description: The update date.
-      type: Date
-    - contextPath: PATHelpdeskAdvanced.TicketHistory.FullName
-      description: The full name of the user who made the update.
-      type: String
-    - contextPath: PATHelpdeskAdvanced.TicketHistory.UserName
-      description: The username who made the update.
-      type: String
-    - contextPath: PATHelpdeskAdvanced.TicketHistory.ContactID
-      description: The contact ID.
-      type: String
-    - contextPath: PATHelpdeskAdvanced.TicketHistory.AccountID
-      description: The account ID.
-      type: String
-    - contextPath: PATHelpdeskAdvanced.TicketHistory.From
-      description: The old value before the update.
-      type: String
-    - contextPath: PATHelpdeskAdvanced.TicketHistory.To
-      description: The new value after the update.
-      type: String
-    - contextPath: PATHelpdeskAdvanced.TicketHistory.FromID
-      description: The old value ID before the update.
-      type: String
-    - contextPath: PATHelpdeskAdvanced.TicketHistory.ToID
-      description: The new value ID after the update.
-      type: String
-    - contextPath: PATHelpdeskAdvanced.TicketHistory.Comment
-      description: The update comment.
-      type: String
-
-  - name: hda-list-users
-    description: List users.
-    arguments:
-    - name: user_id
-      type: String
-      description: The ID of the user to retrieve details for.
-    - name: page
-      type: Number
-      description: The page number.
-    - name: page_size
-      description: The number of users to return per page.
-      type: Number
-    - name: limit
-      defaultValue: 50
-      type: Number
-      description: The maximum number of users to return per page.
-
-    outputs: []
-
-  - name: hda-list-groups
-    description: List groups.
-    arguments:
-    - name: group_id
-      type: String
-      description: The ID of the group to retrieve details for.
-    - name: page
-      type: Number
-      description: The page number.
-    - name: page_size
-      description: The number of groups to return per page.
-      type: Number
-    - name: limit
-      defaultValue: 50
-      type: Number
-      description: The maximum number of groups to return per page.
-
-    outputs: []
-
-  runonce: false
-  script: "-"
-  type: python
-  subtype: python3
-  dockerimage: demisto/python3:3.10.13.74666
-fromversion: 6.9.0
-tests:
-- No tests (auto formatted)
+    - 
