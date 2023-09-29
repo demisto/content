@@ -781,12 +781,20 @@ def get_endpoint_info(client, args):
 def api_call(client, args):
     api_method = args.get('api_method', 'GET').upper()
     api_endpoint = args.get('api_endpoint', '/api/version')
-    params = args.get('parameters', {})
+    params = args.get('parameters', None)
     json_data = args.get('data')
     if json_data:
         json_data = json.loads(json_data)
 
-    result = client.api_call(api_method, api_endpoint, params, json_data)
+    parameters = {}
+    if params:
+        tokens = params.split('&')
+        for tok in tokens:
+            res = tok.split('=')
+            if len(res) == 2:
+                parameters[res[0]] = urllib.parse.quote_plus(res[1])
+
+    result = client.api_call(api_method, api_endpoint, parameters, json_data)
 
     return CommandResults(
         outputs_prefix='Harfanglab.API',

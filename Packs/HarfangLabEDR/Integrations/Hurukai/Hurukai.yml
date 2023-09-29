@@ -16,10 +16,6 @@ configuration:
   name: incidentType
   type: 13
   required: false
-- name: credentials
-  type: 9
-  displaypassword: API Key
-  hiddenusername: true
 - display: API Key
   name: apikey
   required: false
