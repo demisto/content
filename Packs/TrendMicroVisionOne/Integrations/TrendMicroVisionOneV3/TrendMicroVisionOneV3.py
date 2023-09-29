@@ -360,7 +360,7 @@ class Client(BaseClient):
                 "status": task_status,
                 "report_id": unwrap(analysis_resp.response).id,
                 "type": unwrap(analysis_resp.response).type,
-                "digest": unwrap(analysis_resp.response).digest.dict(),  # type: ignore
+                "digest": unwrap(unwrap(analysis_resp.response).digest).dict(),
                 "arguments": unwrap(analysis_resp.response).arguments,
                 "analysis_completion_time": unwrap(
                     analysis_resp.response
@@ -1551,17 +1551,6 @@ def get_file_analysis_status(
     if _is_pytmv1_error(resp.result_code):
         return_error(message=f"{unwrap(resp.error).message}", error=str(resp.error))
     # Add results to message to be sent to the War Room
-    # message = {
-    #     "id": unwrap(resp.response).id,
-    #     "status": unwrap(resp.response).status,
-    #     "action": unwrap(resp.response).action,
-    #     "digest": unwrap(resp.response).digest,
-    #     "isCached": unwrap(resp.response).is_cached,
-    #     "arguments": unwrap(resp.response).arguments,
-    #     "createdDateTime": unwrap(resp.response).created_date_time,
-    #     "resourceLocation": unwrap(resp.response).resource_location,
-    #     "lastActionDateTime": unwrap(resp.response).last_action_date_time,
-    # }
     message = unwrap(resp.response).dict()
 
     return CommandResults(
@@ -1629,7 +1618,7 @@ def get_file_analysis_result(
         "status": resp.result_code,
         "id": unwrap(resp.response).id,
         "type": unwrap(resp.response).type,
-        "digest": unwrap(resp.response).digest.dict(),  # type: ignore
+        "digest": unwrap(unwrap(resp.response).digest).dict(),
         "arguments": unwrap(resp.response).arguments,
         "risk_level": unwrap(resp.response).risk_level,
         "threat_types": unwrap(resp.response).threat_types,
