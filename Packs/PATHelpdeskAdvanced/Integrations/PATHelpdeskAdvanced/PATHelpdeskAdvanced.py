@@ -514,18 +514,25 @@ class Client(BaseClient):
             attempted_action="adding ticket comment",
         )
 
-    def list_ticket_statuses(self, **kwargs) -> dict:
+    def list_ticket_statuses(self, limit: int | None) -> dict:
+        data = {
+            "entity": TICKET_STATUS.hda_name,
+            "start": 0,
+            "columnNames": ID_DESCRIPTION_COLUMN_NAMES,
+            "columnExpressions": ID_DESCRIPTION_COLUMN_NAMES,
+        }
+
+        if limit is not None:
+            # Sending without a limit _seems_ to return all records (was only able to test with 20)
+            # XSOAR automatically adds this argument to the *command*, to not spam context with a long list of values.
+            # However, this method is called internally in change_ticket_status, for which we *do* want all statuses.
+            data["limit"] = limit
+
         return self.http_request(
             url_suffix="WSC/Projection",
             method="POST",
             attempted_action="listing ticket statuses",
-            data={
-                "entity": TICKET_STATUS.hda_name,
-                "start": 0,
-                "limit": safe_arg_to_number(kwargs["limit"], "limit"),
-                "columnNames": ID_DESCRIPTION_COLUMN_NAMES,
-                "columnExpressions": ID_DESCRIPTION_COLUMN_NAMES,
-            },
+            data=data,
         )
 
     def change_ticket_status(
@@ -535,8 +542,8 @@ class Client(BaseClient):
         note: str | None = None,
     ) -> dict:
         allowed_id_values = tuple(
-            item[ID.hda_name] for item in self.list_ticket_statuses(limit=1000)["data"]
-        )  # TODO 1000?
+            item[ID.hda_name] for item in self.list_ticket_statuses(limit=None)["data"]
+        )
 
         if status_id not in allowed_id_values:
             raise DemistoException(
@@ -836,7 +843,9 @@ def list_ticket_attachments_command(client: Client, args: dict) -> CommandResult
 
 
 def list_ticket_statuses_command(client: Client, args: dict) -> CommandResults:
-    response = client.list_ticket_statuses(**args)
+    response = client.list_ticket_statuses(
+        limit=safe_arg_to_number(args["limit"], "limit")
+    )
     response = convert_response_dates(response)
 
     return CommandResults(

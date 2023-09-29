@@ -318,8 +318,10 @@ class TestCommands:
                 "### Tickets",
                 "|Ticket ID|Subject|Solution|Date|Service ID|Problem|Contact ID|Owner User ID|Account ID|",
                 "|---|---|---|---|---|---|---|---|---|",
-                "| 10000002C | Support Request | Solution text redacted | 2005-03-18T01:58:31Z | XXX | Problem description redacted | XXX | AA | XXX |",
-                "| 10000003C | On-site Support | Ticket correctly created through template. | 2005-03-18T01:58:31Z | XXX | Problem description redacted | XXX | XXX | XXX |",
+                "| 10000002C | Support Request | Solution text redacted | 2005-03-18T01:58:31Z | XXX |"  # continued next line
+                " Problem description redacted | XXX | AA | XXX |",
+                "| 10000003C | On-site Support | Ticket correctly created through template."  # continued next line
+                " | 2005-03-18T01:58:31Z | XXX | Problem description redacted | XXX | XXX | XXX |",
                 "",
             )
         )
@@ -393,6 +395,7 @@ class TestFilter:
 class TestClient:
     base_url = "https://example.com"
 
+    @staticmethod
     def dummy_client() -> Client:
         return Client(
             base_url=TestClient.base_url,
@@ -427,7 +430,7 @@ class TestClient:
         Then it should log in using username/password to get a new token
         """
         # Mock expired token
-        cls.mock_login_response()
+        cls.mock_login_response(requests_mock)
 
         mocker.patch.object(
             demisto,
