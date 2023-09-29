@@ -10,18 +10,25 @@ Extract regular text from the given HTML
 | Tags | Utility |
 | Cortex XSOAR Version | 5.0.0 |
 
+## Used In
+
+---
+This script is used in the following playbooks and scripts.
+
+* TextFromHTML_test_playbook
+
 ## Inputs
 
 ---
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| html | The HTML to strip tags from |
+| html | The HTML to strip tags from. |
 | html_tag | Specify HTML tag to extract the text from within. |
-| allow_body_fallback | Allow using the input HTML as a fallback for the Body, if no body-tag is found \(default: false\). This only applies, if html_tag is set to body. |
-| replace_line_breaks | Replace \`br\` in \`html\` with linebreaks in the output  \(default: false\). |
-| trim_result | Trim the extracted result \(default: false\). When set to true, leading and trailing whitespaces are removed and blocks of more than 3 consecutive whitespaces are collapsed to two. |
-| output_to_context | Store the converted Text in the Context. |
+| allow_body_fallback | Allow using the input HTML as a fallback for the Body, if no body-tag is found. This only applies, if html_tag is set to body. |
+| replace_line_breaks | Replace \`br\` in \`html\` with linebreaks in the output. |
+| trim_result | Trim the extracted result. When set to true, leading and trailing whitespaces are removed and blocks of more than 3 consecutive whitespaces are collapsed to two. |
+| output_to_context | Store the extracted text in context. |
 
 ## Outputs
 
