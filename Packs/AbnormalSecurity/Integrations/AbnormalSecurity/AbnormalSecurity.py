@@ -776,6 +776,7 @@ def fetch_incidents(
         last_fetch = last_run.get("last_fetch", first_fetch_time)
         last_fetch_datetime = datetime.fromisoformat(last_fetch[:-1]).astimezone(timezone.utc)
         last_fetch = last_fetch_datetime.strftime("%Y-%m-%dT%H:%M:%SZ")
+        last_fetch = "2023-01-11T01:01:01Z"
 
         current_datetime = datetime.utcnow().astimezone(timezone.utc)
         current_iso_format_time = current_datetime.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
@@ -783,19 +784,19 @@ def fetch_incidents(
 
         if fetch_threats:
             threats_filter = f"receivedTime gte {last_fetch}"
-            threats_response = client.get_a_list_of_threats_request(filter_=threats_filter)
+            threats_response = client.get_a_list_of_threats_request(filter_=threats_filter, page_size=100)
             all_incidents += generate_threat_incidents(threats_response.get('threats', []), current_iso_format_time)
 
         if fetch_abuse_campaigns:
             abuse_campaigns_filter = f"lastReportedTime gte {last_fetch}"
             abuse_campaigns_response = client.get_a_list_of_campaigns_submitted_to_abuse_mailbox_request(
-                filter_=abuse_campaigns_filter)
+                filter_=abuse_campaigns_filter, page_size=100)
             all_incidents += generate_abuse_campaign_incidents(abuse_campaigns_response.get('campaigns', []), current_iso_format_time)
 
         if fetch_account_takeover_cases:
             account_takeover_cases_filter = f"lastModifiedTime gte {last_fetch}"
             account_takeover_cases_response = client.get_a_list_of_abnormal_cases_identified_by_abnormal_security_request(
-                filter_=account_takeover_cases_filter)
+                filter_=account_takeover_cases_filter, page_size=100)
             all_incidents += generate_account_takeover_cases_incidents(
                 account_takeover_cases_response.get('cases', []), current_iso_format_time)
 
