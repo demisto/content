@@ -1,7 +1,4 @@
 category: Authentication & Identity Management
-sectionOrder:
-- Connect
-- Collect
 commonfields:
   id: CyberArkPAS
   version: -1
@@ -10,53 +7,46 @@ configuration:
   name: url
   required: true
   type: 0
-  section: Connect
 - display: Username
   name: credentials
   required: true
   type: 9
-  section: Connect
 - display: Fetch incidents
   name: isFetch
   type: 8
-  section: Collect
   required: false
 - defaultvalue: '50'
   display: Max fetch
   name: max_fetch
   type: 0
-  section: Collect
   required: false
 - defaultvalue: 7 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year)
   name: fetch_time
   type: 0
-  section: Collect
   required: false
 - defaultvalue: '0'
   display: CyberArk PAS score (0.0-100.0)
   name: score
   type: 0
-  section: Collect
-  advanced: true
   required: false
 - display: Incident type
   name: incidentType
   type: 13
-  section: Connect
   required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
-  section: Connect
-  advanced: true
   required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
-  section: Connect
-  advanced: true
   required: false
+- defaultvalue: '1'
+  display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  required: false
+  type: 19
 description: Use the CyberArk Privileged Access Security (PAS) solution to manage users, safes, vaults, and accounts from Cortex XSOAR.
 display: CyberArk PAS
 name: CyberArkPAS
@@ -346,6 +336,7 @@ script:
     - contextPath: CyberArkPAS.Safes.OLACEnabled
       description: Whether or not to enable Object Level Access Control (OLAC) for the safes.
       type: Boolean
+    arguments: []
   - arguments:
     - description: The name of the safe about which information is returned.
       name: safe_name
@@ -932,10 +923,15 @@ script:
     - contextPath: CyberArkPAS.SecurityEvents.type
       description: The type of the security events.
       type: String
-  dockerimage: demisto/python3:3.10.12.63474
+  - arguments:
+    - name: account_id
+      required: true
+    description: Unlocks the account id to force the account to be checked in.
+    name: cyberark-pas-unlock-account
+  dockerimage: demisto/python3:3.10.13.74666
   isfetch: true
   runonce: false
-  script: '-'
+  script: ''
   subtype: python3
   type: python
 tests:

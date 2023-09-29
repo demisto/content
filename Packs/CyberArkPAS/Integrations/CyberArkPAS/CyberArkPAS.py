@@ -1,8 +1,9 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+
+
 from typing import Tuple
 
-from CommonServerUserPython import *
 
 import urllib3
 import traceback
@@ -466,6 +467,12 @@ class Client(BaseClient):
                                   ):
         url_suffix = f"/PasswordVault/api/Accounts/{account_id}/Activities"
         return self._http_request("GET", url_suffix)
+
+    def unlock_account(self,
+                       account_id: str,
+                       ):
+        url_suffix = f"/PasswordVault/api/Accounts/{account_id}/Unlock"
+        return self._http_request("POST", url_suffix, resp_type='text')
 
     def get_account_details(self,
                             account_id: str,
@@ -1126,6 +1133,19 @@ def get_list_account_activity_command(
     return results
 
 
+def unlock_account_command(
+        client: Client,
+        account_id: str = "",
+) -> CommandResults:
+    """Returns the activities of a specific account that is identified by its account id.
+    :param client: The client object with an access token
+    :param account_id: The id of the account whose activities will be retrieved.
+    :return: CommandResults
+    """
+    response = client.unlock_account(account_id)
+    return "Account " + account_id + " was unlocked. " + response
+
+
 def get_account_details_command(
         client: Client,
         account_id: str = "",
@@ -1363,6 +1383,8 @@ def main():
         'cyberark-pas-credentials-reconcile': reconcile_credentials_command,
 
         'cyberark-pas-security-events-get': get_security_events_command,
+
+        'cyberark-pas-unlock-account': unlock_account_command
     }
 
     try:
@@ -1395,3 +1417,5 @@ def main():
 
 if __name__ in ['__main__', 'builtin', 'builtins']:
     main()
+
+register_module_line('CyberArkPAS', 'end', __line__())
