@@ -974,6 +974,7 @@ def options_handler(args=None):
                               "For more information go to: "
                               "https://googleapis.dev/python/google-api-core/latest/auth.html"),
                         required=False)
+    parser.add_argument('--xdr_suffix', help='Suffix for creating build bucket.')
     # disable-secrets-detection-end
     options = parser.parse_args(args)
 
