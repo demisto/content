@@ -136,7 +136,7 @@ def main():
     try:
         install_logging('print_test_playbook_summary.log', logger=logging)
         options = options_handler()
-        logging.info(f"Printing test summary for {options.server_type} server type, artifacts path: {options.artifacts_path}")
+        logging.info(f"Printing test summary - artifacts path: {options.artifacts_path}")
         if not print_test_summary(artifacts_path=options.artifacts_path):
             old_print_test_summary(artifacts_path=options.artifacts_path)
         logging.info("Finished printing test summary")
