@@ -76,12 +76,10 @@ def calculate_test_summary(test_playbooks_result_files_list_file_name: str) -> T
             xml = JUnitXml.fromfile(test_playbook_result_file)
             for test_suite_item in xml.iterchildren(TestSuite):
                 properties = {prop.name: prop.value for prop in test_suite_item.properties()}
-
-            playbooks_result = playbooks_results.setdefault(properties["playbook_id"], {})
-            server_numeric_version = properties["server_numeric_version"]
-            server_versions.add(server_numeric_version)
-            playbooks_result[server_numeric_version] = test_suite_item
-            xml.add_testsuite(test_suite_item)
+                playbooks_result = playbooks_results.setdefault(properties["playbook_id"], {})
+                server_numeric_version = properties["server_numeric_version"]
+                server_versions.add(server_numeric_version)
+                playbooks_result[server_numeric_version] = test_suite_item
     return playbooks_results, server_versions
 
 
