@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import Any, Tuple
 
 from junitparser import JUnitXml, TestSuite
-from tabulate import tabulate, SEPARATING_LINE
+from tabulate import tabulate
 
 from Tests.scripts.utils.log_util import install_logging
 from Tests.scripts.utils import logging_wrapper as logging
@@ -67,19 +67,17 @@ def old_print_test_summary(artifacts_path: str) -> None:
         sys.exit(1)
 
 
-def calculate_test_summary(test_playbooks_result_files_list_file_name: str) -> Tuple[dict[str, dict[str, Any]], set[str]]:
+def calculate_test_summary(test_playbooks_result_files_list: list[Path]) -> Tuple[dict[str, dict[str, Any]], set[str]]:
     playbooks_results: dict[str, dict[str, Any]] = {}
     server_versions = set()
-    with open(test_playbooks_result_files_list_file_name) as f:
-        test_playbooks_result_files_list: list[str] = f.read().splitlines()
-        for test_playbook_result_file in test_playbooks_result_files_list:
-            xml = JUnitXml.fromfile(test_playbook_result_file)
-            for test_suite_item in xml.iterchildren(TestSuite):
-                properties = {prop.name: prop.value for prop in test_suite_item.properties()}
-                playbooks_result = playbooks_results.setdefault(properties["playbook_id"], {})
-                server_numeric_version = properties["server_numeric_version"]
-                server_versions.add(server_numeric_version)
-                playbooks_result[server_numeric_version] = test_suite_item
+    for test_playbook_result_file in test_playbooks_result_files_list:
+        xml = JUnitXml.fromfile(test_playbook_result_file.as_posix())
+        for test_suite_item in xml.iterchildren(TestSuite):
+            properties = {prop.name: prop.value for prop in test_suite_item.properties()}
+            playbooks_result = playbooks_results.setdefault(properties["playbook_id"], {})
+            server_version = properties["server_version"]
+            server_versions.add(server_version)
+            playbooks_result[server_version] = test_suite_item
     return playbooks_results, server_versions
 
 
@@ -88,25 +86,35 @@ def print_test_summary(artifacts_path: str, server_type: str) -> bool:
     test_playbooks_report = Path(artifacts_path) / "test_playbooks_report.xml"
     xml = JUnitXml()
 
-    if not test_playbooks_result_files_list_file_name.exists():
+    # iterate over the artifacts path and find all the test playbook result files
+    test_playbooks_result_files_list: list[Path] = []
+    for directory in Path(artifacts_path).iterdir():
+        if directory.is_dir() and directory.name.startswith("instance_"):
+            logging.info(f"Found instance directory: {directory}")
+            has_test_playbooks_result_files_list = Path(artifacts_path) / directory / "has_test_playbooks_result_files_list.txt"
+            if has_test_playbooks_result_files_list.exists():
+                logging.info(f"Found test playbook result files list file: {has_test_playbooks_result_files_list}")
+                test_playbooks_result_files_list.append(Path(artifacts_path) / directory / "test_playbooks_report.xml")
+
+    if not test_playbooks_result_files_list:
         xml.write(test_playbooks_report.as_posix(), pretty=True)
-        logging.error(f"{test_playbooks_result_files_list_file_name} does not exist.")
+        logging.error(f"Could not find any test playbook result files in {artifacts_path}")
         return False
 
-    playbooks_results, server_versions = calculate_test_summary(test_playbooks_result_files_list_file_name.as_posix())
+    playbooks_results, server_versions = calculate_test_summary(test_playbooks_result_files_list)
 
     xml.write(test_playbooks_report.as_posix(), pretty=True)
     server_versions_list: list[str] = sorted(server_versions)
     headers = ["Playbook ID"]
-    for server_numeric_version in server_versions_list:
+    for server_version in server_versions_list:
         for status in TEST_SUITE_STATUSES:
-            headers.append(f"{status} ({server_numeric_version})")
+            headers.append(f"{status} ({server_version})")
     tabulate_data = []
     total_row: list[Any] = ["Total"] + [0] * (len(server_versions_list) * len(TEST_SUITE_STATUSES))
     for playbook_id, playbook_results in sorted(playbooks_results.items()):
         row = [playbook_id]
-        for i, server_numeric_version in enumerate(server_versions_list):
-            test_suite: TestSuite = playbook_results.get(server_numeric_version)
+        for i, server_version in enumerate(server_versions_list):
+            test_suite: TestSuite = playbook_results.get(server_version)
             if test_suite:
                 row.append(test_suite.failures)
                 row.append(test_suite.skipped)
@@ -120,7 +128,7 @@ def print_test_summary(artifacts_path: str, server_type: str) -> bool:
             if cell != NOT_AVAILABLE:
                 total_row[i] += cell
 
-    tabulate_data.extend([SEPARATING_LINE, total_row])
+    tabulate_data.extend(total_row)
     table = tabulate(tabulate_data, headers, tablefmt="fancy_grid")
     logging.info(f"Test Playbook Results:\n{table}")
     return True

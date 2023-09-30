@@ -7,7 +7,7 @@ function exit_on_error {
     fi
 }
 
-python3 ./Tests/Marketplace/print_test_playbook_summary.py --artifacts-path "${ARTIFACTS_FOLDER}" --server-type "${SERVER_TYPE}"
+python3 ./Tests/scripts/print_test_playbook_summary.py --artifacts-path "${ARTIFACTS_FOLDER}" --server-type "${SERVER_TYPE}"
 summary_exit_code=$?
 
 if [ -n "${NIGHTLY}" ]; then

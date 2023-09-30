@@ -45,12 +45,11 @@ source "${BASH_ENV}"
 
 echo "Running server tests on Instance role:${INSTANCE_ROLE}, nightly:${IS_NIGHTLY}, AMI run:${IS_AMI_RUN} mem check:${MEM_CHECK} ARTIFACTS_FOLDER:${ARTIFACTS_FOLDER}"
 echo "${INSTANCE_ROLE}" > "${ARTIFACTS_FOLDER_INSTANCE}/instance_role.txt"
-echo "${INSTANCE_ROLE}" >> "${ARTIFACTS_FOLDER}/${SERVER_TYPE}_test_playbooks_roles.txt"
-echo "${TEST_PLAYBOOKS_RESULTS_FILE_NAME}" >> "${ARTIFACTS_FOLDER}/${SERVER_TYPE}_test_playbooks_result_files_list.txt"
 
 if DEMISTO_SDK_SKIP_VERSION_CHECK=True demisto-sdk test-content --help 2>&1 | grep -q 'artifacts_path'; then
   TEST_PLAYBOOKS_RESULTS_ARG=(--artifacts_path="${ARTIFACTS_FOLDER_INSTANCE}")
   echo "Test Playbooks - Results will be saved to artifacts folder:${ARTIFACTS_FOLDER_INSTANCE}"
+echo "${TEST_PLAYBOOKS_RESULTS_FILE_NAME}" >> "${ARTIFACTS_FOLDER_INSTANCE}/has_test_playbooks_result_files_list.txt"
 else
   echo "Test Playbooks - demisto-sdk version is too old, creating empty JUnit file to artifacts folder:${ARTIFACTS_FOLDER_INSTANCE}"
   TEST_PLAYBOOKS_RESULTS_ARG=()
