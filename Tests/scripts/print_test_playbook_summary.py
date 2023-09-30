@@ -7,6 +7,7 @@ from typing import Any, Tuple
 
 from junitparser import JUnitXml, TestSuite
 from tabulate import tabulate
+from tqdm import tqdm
 
 from Tests.scripts.utils.log_util import install_logging
 from Tests.scripts.utils import logging_wrapper as logging
@@ -101,7 +102,6 @@ def print_test_summary(artifacts_path: str) -> bool:
 
     playbooks_results, server_versions = calculate_test_summary(test_playbooks_result_files_list)
 
-    xml.write(test_playbooks_report.as_posix(), pretty=True)
     server_versions_list: list[str] = sorted(server_versions)
     headers = ["Playbook ID"]
     for server_version in server_versions_list:
@@ -109,11 +109,13 @@ def print_test_summary(artifacts_path: str) -> bool:
             headers.append(f"{status} ({server_version})")
     tabulate_data = []
     total_row: list[Any] = ["Total"] + [0] * (len(server_versions_list) * len(TEST_SUITE_STATUSES))
-    for playbook_id, playbook_results in sorted(playbooks_results.items()):
+    for playbook_id, playbook_results in tqdm(sorted(playbooks_results.items()), desc="Generating test summary", unit="playbook",
+                                              leave=True, colour='green', miniters=10, mininterval=5.0):
         row = [playbook_id]
         for i, server_version in enumerate(server_versions_list):
             test_suite: TestSuite = playbook_results.get(server_version)
             if test_suite:
+                xml.add_testsuite(test_suite)
                 row.append(test_suite.failures)
                 row.append(test_suite.skipped)
                 row.append(test_suite.tests - test_suite.failures - test_suite.skipped)
@@ -126,7 +128,8 @@ def print_test_summary(artifacts_path: str) -> bool:
             if cell != NOT_AVAILABLE:
                 total_row[i] += cell
 
-    tabulate_data.extend(total_row)
+    xml.write(test_playbooks_report.as_posix(), pretty=True)
+    tabulate_data.append(total_row)
     table = tabulate(tabulate_data, headers, tablefmt="fancy_grid")
     logging.info(f"Test Playbook Results:\n{table}")
     return True
