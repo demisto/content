@@ -18,7 +18,6 @@ NOT_AVAILABLE = "N/A"
 def options_handler():
     parser = argparse.ArgumentParser(description='Utility for printing the test playbooks summary')
     parser.add_argument('--artifacts-path', help='Path to the artifacts directory', required=True)
-    parser.add_argument('--server-type', help='The server type', required=True)
     return parser.parse_args()
 
 
@@ -81,8 +80,7 @@ def calculate_test_summary(test_playbooks_result_files_list: list[Path]) -> Tupl
     return playbooks_results, server_versions
 
 
-def print_test_summary(artifacts_path: str, server_type: str) -> bool:
-    test_playbooks_result_files_list_file_name = Path(artifacts_path) / f"{server_type}_test_playbooks_result_files_list.txt"
+def print_test_summary(artifacts_path: str) -> bool:
     test_playbooks_report = Path(artifacts_path) / "test_playbooks_report.xml"
     xml = JUnitXml()
 
@@ -139,7 +137,7 @@ def main():
         install_logging('print_test_playbook_summary.log', logger=logging)
         options = options_handler()
         logging.info(f"Printing test summary for {options.server_type} server type, artifacts path: {options.artifacts_path}")
-        if not print_test_summary(artifacts_path=options.artifacts_path, server_type=options.server_type):
+        if not print_test_summary(artifacts_path=options.artifacts_path):
             old_print_test_summary(artifacts_path=options.artifacts_path)
         logging.info("Finished printing test summary")
     except Exception as e:
