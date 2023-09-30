@@ -1,5 +1,6 @@
-Amazon Web Services IAM Identity Center.
-This integration was integrated and tested with version xx of AWS - IAM Identity Center.
+Amazon Web Services Identity and Access Management Identity Center(IAM)
+
+For detailed instructions about setting up authentication, see: [AWS Integrations - Authentication](https://xsoar.pan.dev/docs/reference/articles/aws-integrations---authentication).
 
 ## Configure AWS - IAM Identity Center on Cortex XSOAR
 
