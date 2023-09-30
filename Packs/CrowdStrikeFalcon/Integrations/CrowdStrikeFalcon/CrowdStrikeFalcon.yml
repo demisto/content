@@ -79,22 +79,22 @@ configuration:
   advanced: true
 - display: IOM fetch query
   name: iom_fetch_query
-  required: false
   type: 0
   section: Collect
+  required: false
   advanced: true
   additionalinfo: "Use the Falcon Query Language. For more information, refer to the integration docs."
 - display: IOA fetch query
   name: ioa_fetch_query
-  required: false
   type: 0
   section: Collect
+  required: false
   advanced: true
   additionalinfo: "In the format: cloud_provider=aws&aws_account_id=1234. The query must have the argument 'cloud_provider' configured. For more information, refer to the integration docs."
-- defaultvalue: 'true'
-  display: Fetch incidents
+- display: Fetch incidents
   name: isFetch
   type: 8
+  defaultvalue: 'true'
   section: Collect
   required: false
 - display: Incident type
@@ -105,6 +105,8 @@ configuration:
 - display: Mirroring Direction
   name: mirror_direction
   type: 15
+  section: Collect
+  required: false
   additionalinfo: 'Choose the direction to mirror the detection: Incoming (from CrowdStrike Falcon to Cortex XSOAR), Outgoing (from Cortex XSOAR to CrowdStrike Falcon), or Incoming and Outgoing (to/from CrowdStrike Falcon and Cortex XSOAR).'
   defaultvalue: None
   options:
@@ -112,8 +114,6 @@ configuration:
   - Incoming
   - Outgoing
   - Incoming And Outgoing
-  section: Collect
-  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -128,34 +128,34 @@ configuration:
   required: false
 - additionalinfo: When selected, closes the CrowdStrike Falcon incident or detection, which is mirrored in the Cortex XSOAR incident.
   defaultvalue: 'false'
-  display: Close Mirrored XSOAR Incident
+  display: 'Close Mirrored XSOAR Incident'
   name: close_incident
   type: 8
   section: Collect
   advanced: true
   required: false
 - defaultvalue: 'false'
-  display: Close Mirrored CrowdStrike Falcon Incident or Detection
+  display: 'Close Mirrored CrowdStrike Falcon Incident or Detection'
   name: close_in_cs_falcon
   type: 8
-  additionalinfo: When selected, closes the Cortex XSOAR incident, which is mirrored in the CrowdStrike Falcon incident or detection, according to the types that were chosen to be fetched and mirrored.
   section: Collect
   advanced: true
   required: false
+  additionalinfo: When selected, closes the Cortex XSOAR incident, which is mirrored in the CrowdStrike Falcon incident or detection, according to the types that were chosen to be fetched and mirrored.
 - additionalinfo: Choose what to fetch - incidents, detections, IDP detections. You can choose any combination.
   defaultvalue: 'Endpoint Detection'
   display: 'Fetch types'
   name: fetch_incidents_or_detections
   type: 16
+  section: Collect
+  advanced: true
+  required: false
   options:
   - IDP Detection
   - Endpoint Incident
   - Endpoint Detection
   - Indicator of Misconfiguration
   - Indicator of Attack
-  section: Collect
-  advanced: true
-  required: false
 - defaultvalue: '1'
   display: 'Incidents Fetch Interval'
   name: incidentFetchInterval
@@ -4696,7 +4696,7 @@ script:
       auto: PREDEFINED
     description: Perform actions on alerts.
     name: cs-falcon-resolve-identity-detection
-  dockerimage: demisto/py3-tools:1.0.0.75615
+  dockerimage: demisto/py3-tools:1.0.0.76090
   isfetch: true
   ismappable: true
   isremotesyncin: true
