@@ -646,6 +646,7 @@ test-upload-flow:
 
 tests_xsoar_server-test_playbooks_results:
   variables:
+    SERVER_TYPE: "XSOAR"
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
     JIRA_ISSUE_TYPE: "XSOAR Dev Bug"
     JIRA_COMPONENT: "Test Failure"
@@ -660,6 +661,7 @@ tests_xsoar_server-test_playbooks_results:
 
 xsiam_server_ga-test_playbooks_results:
   variables:
+    SERVER_TYPE: "XSIAM"
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_MPV2}"
     JIRA_ISSUE_TYPE: "XSOAR Dev Bug"
     JIRA_COMPONENT: "Test Failure"
