@@ -134,7 +134,8 @@ class TestPrepareSection:
 
     class TestMachRules:
 
-        def setup(self):
+        @classmethod
+        def setup_method(self):
             self._args = {
                 '_additional_values': 'test_val',
                 '_additional_fields': 'test_field'
