@@ -1,6 +1,6 @@
 category: Database
 commonfields:
-  id: Generic SQL - dev
+  id: Generic SQL
   version: -1
 configuration:
 - defaultvalue: MySQL
@@ -104,8 +104,8 @@ configuration:
   type: 13
   required: false
 description: 'Use the Generic SQL integration to run SQL queries on the following databases: MySQL, PostgreSQL, Microsoft SQL Server, and Oracle.'
-display: Generic SQL - dev
-name: Generic SQL - dev
+display: Generic SQL
+name: Generic SQL
 script:
   commands:
   - arguments:

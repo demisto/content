@@ -335,7 +335,7 @@ def test_module(client: Client, *_) -> tuple[str, dict[Any, Any], list[Any]]:
     return msg if msg else 'ok', {}, []
 
 
-def pre_process_result_query(client: Client, result: dict, headers: list[str]) -> list[dict]:
+def pre_process_result_query(client: Client, result: list[dict], headers: list[str]) -> list[dict]:
     """
     This function pre-processes the query's result to a list of dictionaries.
     """
@@ -352,7 +352,6 @@ def pre_process_result_query(client: Client, result: dict, headers: list[str]) -
     return table
 
 
-def sql_query_execute(client: Client, args: dict, *_) -> tuple[str, dict[str, Any], list[dict[str, Any]]]:
 def sql_query_execute(client: Client, args: dict, *_) -> tuple[str, dict[str, Any], list[dict[str, Any]]]:
     """
     Executes the sql query with the connection that was configured in the client
