@@ -13,6 +13,8 @@ from typing import Tuple, Optional, List, Dict
 # Disable insecure warnings
 urllib3.disable_warnings()
 BATCH_SIZE = 2000
+CHUNK_SIZE = 8192
+
 INTEGRATION_NAME = 'Recorded Future'
 
 # taken from recorded future docs
@@ -161,13 +163,14 @@ class Client(BaseClient):
                     .format(self.SOURCE_NAME, response.status_code, response.content))  # type: ignore
 
         if service == 'connectApi':
-            response_content = gzip.decompress(response.content)
-            response_content = response_content.decode('utf-8')
             with open("response.txt", "w") as f:
-                f.write(response_content)
+                for chunk in response.iter_content(CHUNK_SIZE):
+                    response_content = gzip.decompress(chunk).decode('utf-8')
+                    f.write(response_content)
         else:
             with open("response.txt", "w") as f:
-                f.write(response.text)
+                for chunk in response.iter_content(CHUNK_SIZE, decode_unicode=True):
+                    f.write(chunk)
         demisto.info('done build_iterator')
 
     def get_batches_from_file(self, limit):
