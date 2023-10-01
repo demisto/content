@@ -21,9 +21,11 @@ build-machines-cleanup:
     - !reference [.lock-machine]
     - !reference [.uninstall-packs-and-reset-bucket-cloud]
     - !reference [.cloud-machine-information]
-    - !reference [.unlock-machine]
     - job-done
     - exit "${EXIT_CODE}"
+  after_script:
+    - source .gitlab/helper_functions.sh
+    - !reference [ .unlock-machine ]
   variables:
     CLOUD_MACHINES_TYPE: "nightly"
     CLOUD_MACHINES_COUNT: "all"
