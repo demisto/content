@@ -8,37 +8,37 @@ import sys
 import uuid
 import zipfile
 from abc import abstractmethod, ABC
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime
-from packaging.version import Version
 from enum import IntEnum
 from pprint import pformat
-from threading import Thread
+from tempfile import mkdtemp
 from time import sleep
-
+from typing import Any
 from urllib.parse import quote_plus
-import demisto_client
 
+import demisto_client
 from demisto_sdk.commands.common.constants import FileType
-from demisto_sdk.commands.common.tools import run_threads_list, run_command, get_yaml, \
+from demisto_sdk.commands.common.tools import run_command, get_yaml, \
     str2bool, format_version, find_type, listdir_fullpath
+from demisto_sdk.commands.test_content.TestContentClasses import BuildContext
 from demisto_sdk.commands.test_content.constants import SSH_USER
 from demisto_sdk.commands.test_content.mock_server import MITMProxy, run_with_mock, RESULT
 from demisto_sdk.commands.test_content.tools import update_server_configuration, is_redhat_instance
-from demisto_sdk.commands.test_content.TestContentClasses import BuildContext
 from demisto_sdk.commands.validate.validate_manager import ValidateManager
+from packaging.version import Version
 from ruamel import yaml
 
+from Tests.Marketplace.marketplace_constants import Metadata
 from Tests.Marketplace.search_and_install_packs import search_and_install_packs_and_their_dependencies, \
     upload_zipped_packs, install_all_content_packs_for_nightly
-from Tests.Marketplace.marketplace_constants import Metadata
-from Tests.scripts.utils.log_util import install_logging
+from Tests.private_build.upload_packs_private import extract_packs_artifacts
 from Tests.scripts.utils import logging_wrapper as logging
+from Tests.scripts.utils.log_util import install_logging
 from Tests.test_content import get_server_numeric_version
 from Tests.test_integration import __get_integration_config, test_integration_instance, disable_all_integrations
 from Tests.tools import run_with_proxy_configured
 from Tests.update_content_data import update_content
-from Tests.private_build.upload_packs_private import extract_packs_artifacts
-from tempfile import mkdtemp
 
 MARKET_PLACE_MACHINES = ('master',)
 SKIPPED_PACKS = ['NonSupported', 'ApiModules']
@@ -269,8 +269,8 @@ class Build(ABC):
         pass
 
     @abstractmethod
-    def install_nightly_pack(self):
-        pass
+    def install_nightly_pack(self) -> bool:
+        raise NotImplementedError
 
     @abstractmethod
     def test_integrations_post_update(self, new_module_instances: list,
@@ -329,8 +329,8 @@ class Build(ABC):
         return update_integration_lists(new_integrations_names, packs_not_to_install, modified_integrations_names)
 
     @abstractmethod
-    def concurrently_run_function_on_servers(self, function=None, pack_path=None, service_account=None):
-        pass
+    def concurrently_run_function_on_servers(self, function=None, pack_path=None, service_account=None) -> tuple[bool, list[Any]]:
+        raise NotImplementedError
 
     def install_packs(self, pack_ids: list | None = None, multithreading=True, production_bucket: bool = True) -> bool:
         """
@@ -623,7 +623,7 @@ class XSOARBuild(Build):
             logging.info('Done restarting servers. Sleeping for 1 minute')
             sleep(60)
 
-    def install_nightly_pack(self):
+    def install_nightly_pack(self) -> bool:
         """
         Installs all existing packs in master
         Collects all existing test playbooks, saves them to test_pack.zip
@@ -632,16 +632,24 @@ class XSOARBuild(Build):
             self: A build object
         """
         # Install all existing packs with latest version
-        self.concurrently_run_function_on_servers(function=install_all_content_packs_for_nightly,
-                                                  service_account=self.service_account)
+        success, results = self.concurrently_run_function_on_servers(function=install_all_content_packs_for_nightly,
+                                                                     service_account=self.service_account)
+        success &= all(results)
         # creates zip file test_pack.zip witch contains all existing TestPlaybooks
         create_test_pack()
         # uploads test_pack.zip to all servers
-        self.concurrently_run_function_on_servers(function=upload_zipped_packs,
-                                                  pack_path=f'{Build.test_pack_target}/test_pack.zip')
+        upload_success, upload_results = self.concurrently_run_function_on_servers(function=upload_zipped_packs,
+                                                                                   pack_path=f'{Build.test_pack_target}'
+                                                                                             '/test_pack.zip')
+        success &= upload_success and all(upload_results)
 
         logging.info('Sleeping for 45 seconds while installing nightly packs')
         sleep(45)
+        if success:
+            logging.success("Finished installing nightly packs")
+        else:
+            logging.error("Failed to install nightly packs")
+        return success
 
     @run_with_proxy_configured
     def test_integrations_post_update(self, new_module_instances: list,
@@ -741,21 +749,37 @@ class XSOARBuild(Build):
             server_numeric_version = Build.DEFAULT_SERVER_VERSION
         return servers, server_numeric_version
 
-    def concurrently_run_function_on_servers(self, function=None, pack_path=None, service_account=None):
-        threads_list = []
-
+    def concurrently_run_function_on_servers(self, function=None, pack_path=None, service_account=None) -> tuple[bool, list[Any]]:
         if not function:
             raise Exception('Install method was not provided.')
 
-        # For each server url we install pack/ packs
-        for server in self.servers:
-            kwargs = {'client': server.client, 'host': server.internal_ip}
+        with ThreadPoolExecutor(max_workers=len(self.servers)) as executor:
+            kwargs = {}
             if service_account:
                 kwargs['service_account'] = service_account
             if pack_path:
                 kwargs['pack_path'] = pack_path
-            threads_list.append(Thread(target=function, kwargs=kwargs))
-        run_threads_list(threads_list)
+
+            futures = [
+                executor.submit(
+                    function,
+                    client=server.client,
+                    host=server.internal_ip,
+                    **kwargs
+                )
+                for server in self.servers
+            ]
+
+            # Wait for all tasks to complete
+            results: list[Any] = []
+            success = True
+            for future in as_completed(futures):
+                try:
+                    results.append(future.result())
+                except Exception as e:
+                    logging.exception(f'Failed to run function with error: {str(e)}')
+                    success = False
+            return success, results
 
 
 class CloudBuild(Build):
@@ -797,7 +821,7 @@ class CloudBuild(Build):
         # No need of this step in CLOUD.
         pass
 
-    def install_nightly_pack(self):
+    def install_nightly_pack(self) -> bool:
         """
         Installs packs from content_packs_to_install.txt file
         Collects all existing test playbooks, saves them to test_pack.zip
@@ -805,18 +829,27 @@ class CloudBuild(Build):
         """
         success = self.install_packs(multithreading=False, production_bucket=True)
         if not success:
-            logging.error('Failed to install content packs, aborting.')
-            sys.exit(1)
+            logging.error("Failed to install nightly packs")
+
         # creates zip file test_pack.zip witch contains all existing TestPlaybooks
         create_test_pack()
         # uploads test_pack.zip to all servers (we have only one cloud server)
+        upload_success = True
         for server in self.servers:
-            upload_zipped_packs(client=server.client,
-                                host=server.name,
-                                pack_path=f'{Build.test_pack_target}/test_pack.zip')
+            upload_success &= upload_zipped_packs(client=server.client,
+                                                  host=server.name,
+                                                  pack_path=f'{Build.test_pack_target}/test_pack.zip')
+        if not upload_success:
+            logging.error("Failed to upload test pack to cloud servers")
+        success &= upload_success
 
         logging.info('Sleeping for 45 seconds while installing nightly packs')
         sleep(45)
+        if success:
+            logging.success("Finished installing nightly packs")
+        else:
+            logging.error("Failed to install nightly packs")
+        return success
 
     def test_integrations_post_update(self, new_module_instances: list,
                                       modified_module_instances: list) -> tuple:
@@ -894,7 +927,7 @@ class CloudBuild(Build):
         sleep(sleep_time)
         return success
 
-    def concurrently_run_function_on_servers(self, function=None, pack_path=None, service_account=None):
+    def concurrently_run_function_on_servers(self, function=None, pack_path=None, service_account=None) -> tuple[bool, list[Any]]:
         # no need to run this concurrently since we have only one server
         pass
 
@@ -1906,7 +1939,7 @@ def main():
     build.disable_instances()
 
     if build.is_nightly:
-        build.install_nightly_pack()
+        success = build.install_nightly_pack()
     else:
         packs_to_install_in_pre_update, packs_to_install_in_post_update = get_packs_to_install(build)
         logging.info("Installing packs in pre-update step")
@@ -1917,16 +1950,19 @@ def main():
                                                                                             modified_integrations_names)
         modified_module_instances, new_module_instances, failed_tests_pre, successful_tests_pre = pre_update_configuration_results
         logging.info("Installing packs in post-update step")
-        installed_content_packs_successfully = build.update_content_on_servers()
+        success = build.update_content_on_servers()
         successful_tests_post, failed_tests_post = build.test_integrations_post_update(new_module_instances,
                                                                                        modified_module_instances)
         if not os.getenv('BUCKET_UPLOAD'):  # Don't need to upload test playbooks in upload flow
             build.create_and_upload_test_pack(packs_to_install=build.pack_ids_to_install)
-        success = report_tests_status(failed_tests_pre, failed_tests_post, successful_tests_pre, successful_tests_post,
-                                      new_integrations_names, build)
-        if not success or not installed_content_packs_successfully:
-            logging.exception('Failed to configure and test integration instances.')
-            sys.exit(2)
+        success &= report_tests_status(failed_tests_pre, failed_tests_post, successful_tests_pre, successful_tests_post,
+                                       new_integrations_names, build)
+
+    if not success:
+        logging.error('Failed to configure and test integration instances.')
+        sys.exit(2)
+
+    logging.success('Finished configuring and testing integration instances.')
 
 
 if __name__ == '__main__':

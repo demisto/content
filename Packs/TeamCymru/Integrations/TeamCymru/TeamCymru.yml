@@ -101,7 +101,7 @@ script:
     - defaultValue: ','
       description: |-
         Delimiter by which the content of the file is separated.
-        Eg:  " , " , " : ", " ; "
+        Eg:  " , " , " : ", " ; ".
       name: delimiter
     description: |-
       Checks the reputation of a CSV list of IPv4 addresses within a file. 
@@ -157,7 +157,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/cymruwhois:1.0.0.68916
+  dockerimage: demisto/vendors-sdk:1.0.0.74116
 fromversion: 6.5.0
 tests:
 - TeamCymruTest

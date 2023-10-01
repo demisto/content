@@ -1,0 +1,55 @@
+commonfields:
+  id: Proofpoint Email Security Event Collector
+  version: -1
+name: Proofpoint Email Security Event Collector
+display: Proofpoint Email Security Event Collector
+category: Analytics & SIEM
+description: Collects events for Proofpoint Email Security using the streaming API.
+configuration:
+- display: Server URL
+  name: host
+  type: 0
+  defaultvalue: wss://logstream.proofpoint.com:443
+  required: true
+  section: Connect
+- display: Cluster ID
+  name: cluster_id
+  type: 0
+  required: true
+  additionalinfo: The user group ID.
+  section: Connect
+- displaypassword: API key
+  name: api_key
+  hiddenusername: true
+  type: 9
+  required: true
+  section: Connect
+- display: Fetch interval in seconds
+  name: fetch_interval
+  type: 0
+  defaultvalue: 60
+  required: true
+  section: Collect
+- defaultvalue: 'true'
+  display: Long Running Instance
+  hidden: true
+  name: longRunning
+  type: 8
+  section: Connect
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+  section: Collect
+script:
+  script: ""
+  type: python
+  commands: []
+  dockerimage: demisto/websockets:11.0.3.73691
+  longRunning: true
+  subtype: python3
+marketplaces:
+- marketplacev2
+fromversion: 6.9.0
+tests:
+- No tests

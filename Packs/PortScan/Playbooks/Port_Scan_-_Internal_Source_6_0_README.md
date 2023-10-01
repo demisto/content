@@ -1,30 +1,36 @@
 Remediates port scans originating within the network.
 
 ## Dependencies
+
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
+
 * PANW - Hunting and threat detection by indicator type V2
-* Block File - Generic v2
-* Isolate Endpoint - Generic
+* Account Enrichment - Generic v2.1
 * Active Directory - Get User Manager Details
-* Splunk Indicator Hunting
 * Calculate Severity - Generic v2
 * Block IP - Generic v3
-* Account Enrichment - Generic v2.1
+* Splunk Indicator Hunting
+* Block File - Generic v2
 * QRadar Indicator Hunting V2
+* Isolate Endpoint - Generic V2
 
 ### Integrations
+
 This playbook does not use any integrations.
 
 ### Scripts
+
 * SetAndHandleEmpty
 
 ### Commands
+
 * xdr-get-endpoints
 * setIncident
 
 ## Playbook Inputs
+
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
@@ -43,9 +49,12 @@ This playbook does not use any integrations.
 | DBotScore | All the DBotScores that were calculated either automatically by auto-reputation, or using specific tasks, when the incident was ingested. This is used to calculate the incident severity at a later stage. | DBotScore | Optional |
 
 ## Playbook Outputs
+
 ---
 There are no outputs for this playbook.
 
 ## Playbook Image
+
 ---
+
 ![Port Scan - Internal Source](../doc_files/Port_Scan_-_Internal_Source.png)

@@ -4,7 +4,7 @@ commonfields:
 name: GLPI
 display: GLPI
 category: Case Management
-description: GLPI open source ITSM solution
+description: GLPI open source ITSM solution.
 defaultclassifier: GLPI - Classifier
 defaultmapperin: GLPI - Incoming Mapper
 defaultmapperout: GLPI - Outgoing Mapper
@@ -109,116 +109,116 @@ script:
     arguments:
     - name: name
       required: true
-      description: Login
+      description: Login.
     - name: firstname
-      description: Firstname
+      description: Firstname.
     - name: lastname
-      description: Lastname
+      description: Lastname.
     - name: email
-      description: Email address
+      description: Email address.
     - name: password
       required: true
-      description: Password
+      description: Password.
     - name: profile
-      description: Profile name
+      description: Profile name.
     - name: additional_fields
-      description: 'Additional fields in the format: fieldname1=value;fieldname2=value;'
+      description: 'Additional fields in the format: fieldname1=value;fieldname2=value;.'
     outputs:
     - contextPath: GLPI.User.id
-      description: Created user ID
+      description: Created user ID.
     - contextPath: GLPI.User.message
-      description: User creation message
-    description: Create a new GLPI user
+      description: User creation message.
+    description: Create a new GLPI user.
   - name: glpi-delete-user
     arguments:
     - name: name
       required: true
-      description: Username
+      description: Username.
     - name: purge
       default: true
       auto: PREDEFINED
       predefined:
       - 'True'
       - 'False'
-      description: 'Default : False, will use the trash, use True to definitively remove the user from the system'
+      description: 'Default : False, will use the trash, use True to definitively remove the user from the system.'
       defaultValue: 'False'
-    description: Delete GLPI user
+    description: Delete GLPI user.
     outputs: []
   - name: glpi-disable-user
     arguments:
     - name: name
       required: true
-      description: Username
-    description: Disable GLPI user
+      description: Username.
+    description: Disable GLPI user.
     outputs: []
   - name: glpi-enable-user
     arguments:
     - name: name
       required: true
-      description: Username
-    description: Enable GLPI user
+      description: Username.
+    description: Enable GLPI user.
     outputs: []
   - name: get-mapping-fields
     arguments: []
-    description: Return the list of fields for an incident type
+    description: Return the list of fields for an incident type.
     outputs: []
   - name: get-modified-remote-data
     arguments:
     - name: lastUpdate
-      description: lastUpdate parameter
+      description: lastUpdate parameter.
       defaultValue: ''
       predefined:
       - ''
-    description: Mirroring feature, use only for debug
+    description: Mirroring feature, use only for debug.
     outputs: []
   - name: glpi-get-username
     arguments:
     - name: id
       required: true
-      description: User ID
+      description: User ID.
     outputs:
     - contextPath: GLPI.User
-      description: GLPI User details
+      description: GLPI User details.
       type: Unknown
     - contextPath: GLPI.User.id
-      description: User id
+      description: User id.
     - contextPath: GLPI.User.username
-      description: Username
-    description: Get username by user ID
+      description: Username.
+    description: Get username by user ID.
   - name: glpi-get-userid
     arguments:
     - name: name
       required: true
-      description: Username
+      description: Username.
     outputs:
     - contextPath: GLPI.User
-      description: GLPI User details
+      description: GLPI User details.
       type: Unknown
     - contextPath: GLPI.User.id
-      description: User id
+      description: User id.
     - contextPath: GLPI.User.username
-      description: Username
-    description: Get GLPI User ID by Username
+      description: Username.
+    description: Get GLPI User ID by Username.
   - name: glpi-delete-ticket
     arguments:
     - name: ticket_id
       required: true
-      description: Ticket ID
+      description: Ticket ID.
     - name: purge
       default: true
       auto: PREDEFINED
       predefined:
       - 'False'
       - 'True'
-      description: 'Default : False, will use the trash, use True to definitively remove the ticket from the system'
+      description: 'Default : False, will use the trash, use True to definitively remove the ticket from the system.'
       defaultValue: 'False'
-    description: Delete GLPI ticket
+    description: Delete GLPI ticket.
     outputs: []
   - name: glpi-get-ticket
     arguments:
     - name: ticket_id
       required: true
-      description: The Ticket ID
+      description: The Ticket ID.
     - name: get_attachments
       default: true
       auto: PREDEFINED
@@ -229,130 +229,130 @@ script:
       defaultValue: 'False'
     outputs:
     - contextPath: GLPI.Ticket.actiontime
-      description: Ticket action time
+      description: Ticket action time.
       type: Unknown
     - contextPath: GLPI.Ticket.begin_waiting_date
-      description: Ticket begin waiting date
+      description: Ticket begin waiting date.
       type: Unknown
     - contextPath: GLPI.Ticket.close_delay_stat
-      description: Ticket close delay stat
+      description: Ticket close delay stat.
       type: Unknown
     - contextPath: GLPI.Ticket.closedate
-      description: Tocket closed date
+      description: Tocket closed date.
       type: Unknown
     - contextPath: GLPI.Ticket.content
-      description: Ticket content
+      description: Ticket content.
       type: Unknown
     - contextPath: GLPI.Ticket.date
-      description: Ticket date
+      description: Ticket date.
       type: Unknown
     - contextPath: GLPI.Ticket.date_creation
-      description: Ticket date creation
+      description: Ticket date creation.
       type: Unknown
     - contextPath: GLPI.Ticket.date_mod
-      description: Ticket date modification
+      description: Ticket date modification.
       type: Unknown
     - contextPath: GLPI.Ticket.entities_id
-      description: Ticket entities ids
+      description: Ticket entities ids.
       type: Unknown
     - contextPath: GLPI.Ticket.global_validation
-      description: Ticket global validation
+      description: Ticket global validation.
       type: Unknown
     - contextPath: GLPI.Ticket.id
-      description: Ticket ID
+      description: Ticket ID.
       type: Unknown
     - contextPath: GLPI.Ticket.impact
-      description: Ticket Impact
+      description: Ticket Impact.
       type: Unknown
     - contextPath: GLPI.Ticket.internal_time_to_own
-      description: Ticket internal time to own
+      description: Ticket internal time to own.
       type: Unknown
     - contextPath: GLPI.Ticket.internal_time_to_resolve
-      description: Ticket internal time to resolve
+      description: Ticket internal time to resolve.
       type: Unknown
     - contextPath: GLPI.Ticket.is_deleted
-      description: Ticket is_deleted?
+      description: Ticket is_deleted?.
       type: Unknown
     - contextPath: GLPI.Ticket.itilcategories_id
-      description: Ticket ITIL categories id
+      description: Ticket ITIL categories id.
       type: Unknown
     - contextPath: GLPI.Ticket.links
-      description: Ticket links
+      description: Ticket links.
       type: Unknown
     - contextPath: GLPI.Ticket.locations_id
-      description: Tickets locations id
+      description: Tickets locations id.
       type: Unknown
     - contextPath: GLPI.Ticket.name
-      description: Ticket name
+      description: Ticket name.
       type: Unknown
     - contextPath: GLPI.Ticket.ola_ttr_begin_date
-      description: Ticket ola ttr begin date
+      description: Ticket ola ttr begin date.
       type: Unknown
     - contextPath: GLPI.Ticket.ola_waiting_duration
-      description: Ticket ola waiting duration
+      description: Ticket ola waiting duration.
       type: Unknown
     - contextPath: GLPI.Ticket.olalevels_id_ttr
-      description: Ticket ola levels id ttr
+      description: Ticket ola levels id ttr.
       type: Unknown
     - contextPath: GLPI.Ticket.olas_id_tto
-      description: Ticket olas id tto
+      description: Ticket olas id tto.
       type: Unknown
     - contextPath: GLPI.Ticket.olas_id_ttr
-      description: Ticket olas id ttr
+      description: Ticket olas id ttr.
       type: Unknown
     - contextPath: GLPI.Ticket.priority
-      description: Ticket priority
+      description: Ticket priority.
       type: Unknown
     - contextPath: GLPI.Ticket.requesttypes_id
-      description: Ticket request types id
+      description: Ticket request types id.
       type: Unknown
     - contextPath: GLPI.Ticket.sla_waiting_duration
-      description: Ticket sla waiting duration
+      description: Ticket sla waiting duration.
       type: Unknown
     - contextPath: GLPI.Ticket.slalevels_id_ttr
-      description: Ticket slale levels id ttr
+      description: Ticket slale levels id ttr.
       type: Unknown
     - contextPath: GLPI.Ticket.slas_id_tto
-      description: Ticket slas id tto
+      description: Ticket slas id tto.
       type: Unknown
     - contextPath: GLPI.Ticket.slas_id_ttr
-      description: Ticket stats id ttr
+      description: Ticket stats id ttr.
       type: Unknown
     - contextPath: GLPI.Ticket.solve_delay_stat
-      description: Ticket solve delay stat
+      description: Ticket solve delay stat.
       type: Unknown
     - contextPath: GLPI.Ticket.solvedate
-      description: Ticket solve date
+      description: Ticket solve date.
       type: Unknown
     - contextPath: GLPI.Ticket.status
-      description: Ticket status
+      description: Ticket status.
       type: Unknown
     - contextPath: GLPI.Ticket.takeintoaccount_delay_stat
-      description: Ticket take into account delay stat
+      description: Ticket take into account delay stat.
       type: Unknown
     - contextPath: GLPI.Ticket.time_to_own
-      description: Ticket time to own
+      description: Ticket time to own.
       type: Unknown
     - contextPath: GLPI.Ticket.time_to_resolve
-      description: Ticket time to resolve
+      description: Ticket time to resolve.
       type: Unknown
     - contextPath: GLPI.Ticket.type
-      description: Ticket type
+      description: Ticket type.
       type: Unknown
     - contextPath: GLPI.Ticket.urgency
-      description: Ticket urgency
+      description: Ticket urgency.
       type: Unknown
     - contextPath: GLPI.Ticket.users_id_lastupdater
-      description: Ticket users id last updater
+      description: Ticket users id last updater.
       type: Unknown
     - contextPath: GLPI.Ticket.users_id_recipient
-      description: Ticket users id recipient
+      description: Ticket users id recipient.
       type: Unknown
     - contextPath: GLPI.Ticket.validation_percent
-      description: Ticket validation percent
+      description: Ticket validation percent.
       type: Unknown
     - contextPath: GLPI.Ticket.waiting_duration
-      description: Ticket waiting duration
+      description: Ticket waiting duration.
       type: Unknown
     - contextPath: File.Info
       description: Attachment file info.
@@ -377,22 +377,22 @@ script:
     - contextPath: File.MD5
       description: Attachment file MD5 hash.
       type: string
-    description: Get ticket details by ticket ID
+    description: Get ticket details by ticket ID.
   - name: glpi-create-ticket
     arguments:
     - name: name
       required: true
-      description: Ticket name
+      description: Ticket name.
     - name: content
       required: true
-      description: Ticket description
+      description: Ticket description.
     - name: type
       required: true
       auto: PREDEFINED
       predefined:
       - Incident
       - Request
-      description: Ticket type
+      description: Ticket type.
     - name: status
       auto: PREDEFINED
       predefined:
@@ -402,7 +402,7 @@ script:
       - Pending
       - Solved
       - Closed
-      description: Ticket status
+      description: Ticket status.
     - name: urgency
       auto: PREDEFINED
       predefined:
@@ -411,7 +411,7 @@ script:
       - Medium
       - Low
       - Verylow
-      description: Ticket urgency
+      description: Ticket urgency.
     - name: impact
       auto: PREDEFINED
       predefined:
@@ -420,7 +420,7 @@ script:
       - Medium
       - Low
       - Verylow
-      description: Ticket impact
+      description: Ticket impact.
     - name: priority
       auto: PREDEFINED
       predefined:
@@ -430,24 +430,24 @@ script:
       - Medium
       - Low
       - Verylow
-      description: Ticket priority
+      description: Ticket priority.
     - name: entryid
-      description: File EntryID to upload , multiple files supported
+      description: File EntryID to upload , multiple files supported.
       isArray: true
     - name: entities_id
-      description: Ticket entities ID
+      description: Ticket entities ID.
     - name: locations_id
-      description: Ticket locations ID
+      description: Ticket locations ID.
     - name: itilcategories_id
-      description: Ticket ITIL categories ID
+      description: Ticket ITIL categories ID.
     - name: time_to_resolve
-      description: 'Ticket time to resolve, in the format: YYYY-MM-DD HH:MM:SS'
+      description: 'Ticket time to resolve, in the format: YYYY-MM-DD HH:MM:SS.'
     - name: time_to_own
-      description: 'Ticket time to own, in the format: YYYY-MM-DD HH:MM:SS'
+      description: 'Ticket time to own, in the format: YYYY-MM-DD HH:MM:SS.'
     - name: internal_time_to_resolve
-      description: 'Ticket internal time to resolve, in the format: YYYY-MM-DD HH:MM:SS'
+      description: 'Ticket internal time to resolve, in the format: YYYY-MM-DD HH:MM:SS.'
     - name: internal_time_to_own
-      description: 'Ticket internal time to own, in the format: YYYY-MM-DD HH:MM:SS'
+      description: 'Ticket internal time to own, in the format: YYYY-MM-DD HH:MM:SS.'
     - name: requesttypes_id
       auto: PREDEFINED
       predefined:
@@ -457,124 +457,124 @@ script:
       - Other
       - Phone
       - Written
-      description: Ticket Request source
+      description: Ticket Request source.
     - name: additional_fields
-      description: 'Additional fields in the format: fieldname1=value;fieldname2=value;'
+      description: 'Additional fields in the format: fieldname1=value;fieldname2=value;.'
     outputs:
     - contextPath: GLPI.Ticket.id
-      description: The created ticket ID
+      description: The created ticket ID.
     - contextPath: GLPI.Ticket.message
-      description: Result message from ticket creation
-    description: Create a GLPI ticket
+      description: Result message from ticket creation.
+    description: Create a GLPI ticket.
   - name: glpi-search
     arguments:
     - name: item_type
       required: true
-      description: 'Item type to search (ex : Ticket)'
+      description: 'Item type to search (ex : Ticket).'
     - name: query
       description: The search query, please visit https://github.com/glpi-project/glpi/blob/master/apirest.md#search-items
     - name: forcedisplay
-      description: Coma separated additional fields to display
+      description: Coma separated additional fields to display.
     - name: srange
-      description: 'Search range limit (ex : 0-50)'
+      description: 'Search range limit (ex : 0-50).'
     outputs:
     - contextPath: GLPI.Search
-      description: Search results
+      description: Search results.
     - contextPath: GLPI.Search.item_type
-      description: This varies depending on the input item_type (case sensitive)
-    description: Search GLPI items
+      description: This varies depending on the input item_type (case sensitive).
+    description: Search GLPI items.
   - name: glpi-add-comment
     arguments:
     - name: ticket_id
       required: true
-      description: The ticket ID
+      description: The ticket ID.
     - name: comment
-      description: ticket comment
+      description: ticket comment.
       required: true
       defaultValue: ''
       predefined:
       - ''
     outputs:
     - contextPath: GLPI.Comment.id
-      description: 'Created comment ID '
+      description: 'Created comment ID .'
     - contextPath: GLPI.Comment.message
-      description: GLPI message
-    description: Add comment to ticket ID
+      description: GLPI message.
+    description: Add comment to ticket ID.
   - name: glpi-upload-file
     arguments:
     - name: entryid
-      description: File EntryID
+      description: File EntryID.
       required: true
       defaultValue: ''
       predefined:
       - ''
     - name: filename
-      description: Filename
+      description: Filename.
       defaultValue: ''
       predefined:
       - ''
     - name: doc_name
-      description: Doc name
+      description: Doc name.
       defaultValue: ''
       predefined:
       - ''
     outputs:
     - contextPath: GLPI.Document
-      description: Document
+      description: Document.
       type: Unknown
     - contextPath: GLPI.Document.id
-      description: Created document ID
+      description: Created document ID.
     - contextPath: GLPI.Document.message
-      description: GLPI upload message
+      description: GLPI upload message.
     - contextPath: GLPI.Document.upload_result.filename.size
-      description: Uploaded file size
+      description: Uploaded file size.
     - contextPath: GLPI.Document.upload_result.filename.display
-      description: File display name
+      description: File display name.
     - contextPath: GLPI.Document.upload_result.filename.deleteUrl
-      description: Document deleteURL
+      description: Document deleteURL.
       type: Unknown
     - contextPath: GLPI.Document.upload_result.filename.deleteType
-      description: Document deleteType
+      description: Document deleteType.
       type: Unknown
     - contextPath: GLPI.Document.upload_result.filename.name
-      description: system file name
+      description: system file name.
     - contextPath: GLPI.Document.upload_result.filename.url
-      description: Document URL
+      description: Document URL.
     - contextPath: GLPI.Document.upload_result.filename.id
-      description: Document filename id
+      description: Document filename id.
       type: Unknown
-    description: Upload document
+    description: Upload document.
   - name: glpi-get-item
     arguments:
     - name: item_type
-      description: Item type
+      description: Item type.
       required: true
       defaultValue: ''
       predefined:
       - ''
     - name: item_id
-      description: Item ID
+      description: Item ID.
       required: true
       defaultValue: ''
       predefined:
       - ''
     outputs:
     - contextPath: GLPI.item_type
-      description: This varies depending on the input item_type (case sensitive)
-    description: Get item details by item type and item ID
+      description: This varies depending on the input item_type (case sensitive).
+    description: Get item details by item type and item ID.
   - name: glpi-update-ticket
     arguments:
     - name: id
       required: true
-      description: Ticket id
+      description: Ticket id.
     - name: description
-      description: Ticket description
+      description: Ticket description.
     - name: type
       auto: PREDEFINED
       predefined:
       - Incident
       - Request
-      description: Ticket type
+      description: Ticket type.
     - name: status
       auto: PREDEFINED
       predefined:
@@ -584,7 +584,7 @@ script:
       - Pending
       - Solved
       - Closed
-      description: Ticket status
+      description: Ticket status.
     - name: urgency
       auto: PREDEFINED
       predefined:
@@ -593,7 +593,7 @@ script:
       - Medium
       - Low
       - Verylow
-      description: Ticket urgency
+      description: Ticket urgency.
     - name: impact
       auto: PREDEFINED
       predefined:
@@ -602,7 +602,7 @@ script:
       - Medium
       - Low
       - Verylow
-      description: Ticket impact
+      description: Ticket impact.
     - name: priority
       auto: PREDEFINED
       predefined:
@@ -612,49 +612,49 @@ script:
       - Medium
       - Low
       - Verylow
-      description: Ticket priority
+      description: Ticket priority.
     - name: entryid
-      description: File EntryID to upload , multiple files supported
+      description: File EntryID to upload , multiple files supported.
       isArray: true
     - name: entities_id
-      description: Ticket entities ID
+      description: Ticket entities ID.
     - name: locations_id
-      description: Ticket locations ID
+      description: Ticket locations ID.
     - name: itilcategories_id
-      description: Ticket ITIL categories ID
+      description: Ticket ITIL categories ID.
     - name: name
-      description: Ticket title
+      description: Ticket title.
     - name: global_validation
-      description: Global validation
+      description: Global validation.
       defaultValue: ''
       predefined:
       - ''
     - name: time_to_resolve
-      description: 'Ticket time to resolve, in the format: YYYY-MM-DD HH:MM:SS'
+      description: 'Ticket time to resolve, in the format: YYYY-MM-DD HH:MM:SS.'
     - name: time_to_own
-      description: 'Ticket time to own, in the format: YYYY-MM-DD HH:MM:SS'
+      description: 'Ticket time to own, in the format: YYYY-MM-DD HH:MM:SS.'
     - name: internal_time_to_resolve
-      description: 'Ticket internal time to resolve, in the format: YYYY-MM-DD HH:MM:SS'
+      description: 'Ticket internal time to resolve, in the format: YYYY-MM-DD HH:MM:SS.'
     - name: internal_time_to_own
-      description: 'Ticket internal time to own, in the format: YYYY-MM-DD HH:MM:SS'
+      description: 'Ticket internal time to own, in the format: YYYY-MM-DD HH:MM:SS.'
     - name: additional_fields
-      description: 'Additional fields in the format: fieldname1=value;fieldname2=value;'
+      description: 'Additional fields in the format: fieldname1=value;fieldname2=value;.'
     outputs:
     - contextPath: GLPI.Ticket.id
-      description: The updated ticket ID
+      description: The updated ticket ID.
     - contextPath: GLPI.Ticket.message
-      description: Result message from ticket update
-    description: Update a GLPI ticket
+      description: Result message from ticket update.
+    description: Update a GLPI ticket.
   - name: get-remote-data
-    description: get remote data command
+    description: get remote data command.
     arguments:
     - name: id
-      description: ticket id
+      description: ticket id.
       defaultValue: ''
       predefined:
       - ''
     - name: lastUpdate
-      description: last update parameter
+      description: last update parameter.
       defaultValue: ''
       predefined:
       - ''
@@ -663,10 +663,10 @@ script:
     arguments:
     - name: ticket_ID_1
       required: true
-      description: First ticket ID
+      description: First ticket ID.
     - name: ticket_ID_2
       required: true
-      description: Second ticket ID
+      description: Second ticket ID.
     - name: link
       required: true
       auto: PREDEFINED
@@ -675,31 +675,31 @@ script:
       - Duplicate
       - Child
       - Parent
-      description: Relation between tickets
-    description: Link tickets
+      description: Relation between tickets.
+    description: Link tickets.
     outputs: []
   - name: glpi-update-user
-    description: Update a user
+    description: Update a user.
     arguments:
     - name: id
       required: true
-      description: User ID
+      description: User ID.
     - name: name
-      description: Login
+      description: Login.
     - name: firstname
-      description: Firstname
+      description: Firstname.
     - name: lastname
-      description: Lastname
+      description: Lastname.
     - name: email
-      description: Email address
+      description: Email address.
     - name: password
-      description: Password
+      description: Password.
     - name: profile
-      description: Profile name
+      description: Profile name.
     - name: update_fields
-      description: 'Additional fields in the format: fieldname1=value;fieldname2=value;'
+      description: 'Additional fields in the format: fieldname1=value;fieldname2=value;.'
     outputs: []
-  dockerimage: demisto/glpi:1.0.0.69459
+  dockerimage: demisto/glpi:1.0.0.73471
   isfetch: true
   longRunning: true
   subtype: python3

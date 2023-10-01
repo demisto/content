@@ -7,7 +7,8 @@ import copy
 from CommonServerUserPython import *  # noqa
 
 from abc import ABC
-from typing import Any, Callable, Optional
+from typing import Any
+from collections.abc import Callable
 
 from enum import Enum
 from pydantic import BaseConfig, BaseModel, AnyUrl, validator  # type: ignore[E0611, E0611, E0611]
@@ -44,7 +45,7 @@ class Method(str, Enum):
 
 
 def load_json(v: Any) -> dict:
-    if not isinstance(v, (dict, str)):
+    if not isinstance(v, dict | str):
         raise ValueError('headers are not dict or a valid json')
     if isinstance(v, str):
         try:
@@ -55,6 +56,7 @@ def load_json(v: Any) -> dict:
             raise ValueError('headers are not valid Json object') from exc
     if isinstance(v, dict):
         return v
+    return None
 
 
 class IntegrationHTTPRequest(BaseModel):
@@ -62,7 +64,7 @@ class IntegrationHTTPRequest(BaseModel):
     url: AnyUrl
     verify: bool = True
     headers: dict = {}  # type: ignore[type-arg]
-    auth: Optional[HTTPBasicAuth]
+    auth: HTTPBasicAuth | None
     data: Any = None
 
     class Config(BaseConfig):
@@ -74,7 +76,7 @@ class IntegrationHTTPRequest(BaseModel):
 
 
 class Credentials(BaseModel):
-    identifier: Optional[str]
+    identifier: str | None
     password: str
 
 
@@ -211,7 +213,8 @@ class DefenderAuthenticator(BaseModel):
                     enc_key=self.credentials.get('password'),
                     scope=urljoin(self.scope_url, "/windowsatpservice/.default"),
                     verify=self.verify,
-                    self_deployed=True
+                    self_deployed=True,
+                    command_prefix="microsoft-365-defender",
                 )
 
             token = self.ms_client.get_access_token()
@@ -382,6 +385,9 @@ def main(command: str, params: dict):
 
             demisto.setLastRun(get_events.get_last_run(events))
             demisto.debug(f'Last run set to {demisto.getLastRun()}')
+
+        elif command == 'microsoft-365-defender-auth-reset':
+            return_results(reset_auth())
 
     # Log exceptions and return errors
     except Exception as e:

@@ -30,7 +30,7 @@ configuration:
   required: false
 - display: Client certificate key (.key)
   name: client_cert_key
-  type: 12
+  type: 14
   required: false
 - displaypassword: Client certificate key password (if required)
   hiddenusername: true
@@ -148,7 +148,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/confluent-kafka:1.0.0.68910
+  dockerimage: demisto/vendors-sdk:1.0.0.74116
 fromversion: 6.1.0
 tests:
 - KafkaV3 Test
