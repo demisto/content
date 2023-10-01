@@ -3730,8 +3730,8 @@ class Pack:
             build_bucket_image_blob = build_bucket.blob(build_bucket_image_path)
 
             if not build_bucket_image_blob.exists():
-                logging.error(f"There is a mismatch in the uploaded images result in artifacts because "
-                              f"the image in path '{build_bucket_image_path}' does not exist in build bucket")
+                logging.error(f"Found changed/added dynamic dashboard image in content repo but "
+                              f"'{build_bucket_image_path}' does not exist in build bucket")
                 task_status = False
             else:
                 logging.info(f"Copying {self._pack_name} pack dynamic dashboard image: {build_bucket_image_path}")
