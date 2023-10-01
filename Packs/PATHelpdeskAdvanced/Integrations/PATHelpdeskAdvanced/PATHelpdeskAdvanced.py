@@ -927,6 +927,11 @@ def list_users_command(client: Client, args: dict) -> CommandResults:
     if not (data := response["data"]):
         return CommandResults(readable_output="No data returned")
 
+    data = [
+        # removing the User. prefix - both for visual and context path (avoiding duplication in HelpdeskAdvanced.User.User.EMail)
+        {key.removeprefix("User."): value for key, value in user.items()}
+        for user in data
+    ]
     return CommandResults(
         outputs=data,
         outputs_prefix=f"{VENDOR}.User",
@@ -934,10 +939,7 @@ def list_users_command(client: Client, args: dict) -> CommandResults:
         raw_response=response,
         readable_output=pat_table_to_markdown(
             title="PAT HelpDeskAdvanced Users",
-            output=[
-                {key.removeprefix("User."): value for key, value in user.items()}
-                for user in data
-            ],
+            output=data,
             fields=None,
         ),
     )

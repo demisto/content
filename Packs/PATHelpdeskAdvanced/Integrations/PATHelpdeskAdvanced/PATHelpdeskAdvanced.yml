@@ -614,6 +614,22 @@ script:
       defaultValue: 50
       type: Number
       description: The maximum number of users to return per page.
+    outputs:
+      - contextPath: HelpdeskAdvanced.User.ID
+        description: The user ID
+        type: string
+      - contextPath: HelpdeskAdvanced.User.Email
+        description: The user's email address
+        type: string
+      - contextPath: HelpdeskAdvanced.User.FirstName
+        description: The user's first name
+        type: string
+      - contextPath: HelpdeskAdvanced.User.LastName
+        description: The user's last name
+        type: string
+      - contextPath: HelpdeskAdvanced.User.Phone
+        description: The user's phone number
+        type: string
 
   - name: hda-list-groups
     description: List groups.
@@ -632,7 +648,17 @@ script:
       type: Number
       description: The maximum number of groups to return per page.
 
-    outputs: []
+    outputs:
+      - contextPath: HelpdeskAdvanced.Group.ID
+        description: The group ID
+        type: string
+      - contextPath: HelpdeskAdvanced.Group.ObjectTypeID
+        description: The object type ID of the group
+        type: string
+      - contextPath: HelpdeskAdvanced.Group.Description
+        description: The group description
+        type: string
+
   runonce: false
   script: '-'
   type: python
