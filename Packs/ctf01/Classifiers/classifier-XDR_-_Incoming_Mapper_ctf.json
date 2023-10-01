@@ -663,10 +663,6 @@
                 }
             }
         },
-        "CortextXDRIncident": {
-            "dontMapEventToLabels": false,
-            "internalMapping": {}
-        },
         "Malware Investigation and Response": {
             "dontMapEventToLabels": true,
             "internalMapping": {

@@ -2,7 +2,7 @@
 ignore=PB105
 
 [file:CortexXDRIRCTF.py]
-ignore=IN126,IN131
+ignore=IN126,IN131,IN130
 
 [file:incidentfield-CTF01.json]
 ignore=IF113
