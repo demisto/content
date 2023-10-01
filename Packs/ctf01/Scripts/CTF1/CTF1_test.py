@@ -1,16 +1,16 @@
 import pytest
-import CTF2BF
+import CTF1
 from CommonServerPython import DemistoException
 import demistomock as demisto
 
 
 @pytest.mark.parametrize("question_id, secret, expected", [
-    ("01", "correct_secret", "no"),
-    ("01", "incorrect_secret", "yes"),  # Error MSG
-    ("04", "correct_secret", 2017),
-    ("04", "incorrect_secret", 1990),
-    ("07", "correct_secret", "blocked"),
-    ("07", "incorrect_secret", "blocked"),
+    ("01", "correct_secret", 5),
+    ("01", "wrong_secret", 3),  # Error MSG
+    ("04", "correct_secret", "reportsarecool"),
+    ("04", "incorrect_secret", "none"),
+    ("05", "correct_secret", "monkey"),
+    ("05", "incorrect_secret", "elephant"),
 ])
 def test_main(mocker, question_id, secret, expected):
     args = {
@@ -22,6 +22,5 @@ def test_main(mocker, question_id, secret, expected):
     mocker.patch.object(demisto, 'args', return_value=args)
     mocker.patch.object(demisto, 'executeCommand', return_value={'total': 'correct_secret'})
 
-    CTF2BF.main()
+    CTF1.main()
     assert m.call_args[0][0]['Type'] == expected
-
