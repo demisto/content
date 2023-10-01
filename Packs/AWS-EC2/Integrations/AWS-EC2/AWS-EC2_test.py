@@ -57,7 +57,7 @@ def validate_kwargs(*args, **kwargs):
     ippermsfull_kwargs = {'GroupId': 'sg-0566450bb5ae17c7d', 'IpPermissions':
                           [{'IpProtocol': '-1', 'IpRanges': [{'CidrIp': '0.0.0.0/0'}],
                            'Ipv6Ranges': [], 'PrefixListIds': [], 'UserIdGroupPairs': []}]}
-    if kwargs == normal_kwargs or kwargs == ippermsfull_kwargs:
+    if kwargs in (normal_kwargs, ippermsfull_kwargs):
         return {'ResponseMetadata': {'HTTPStatusCode': 200}, 'Return': "some_return_value"}
     else:
         return {'ResponseMetadata': {'HTTPStatusCode': 404}, 'Return': "some_return_value"}
@@ -137,7 +137,8 @@ def test_aws_ec2_authorize_security_group_egress_rule(mocker, args, expected_res
 
 
 @pytest.mark.parametrize('filter, expected_results', [
-    ("Name=iam-instance-profile.arn,Values=arn:aws:iam::664798938958:instance-profile/AmazonEKSNodeRole", [{'Name': 'iam-instance-profile.arn', 'Values': ['arn:aws:iam::664798938958:instance-profile/AmazonEKSNodeRole']}])
+    ("Name=iam-instance-profile.arn,Values=arn:aws:iam::664798938958:instance-profile/AmazonEKSNodeRole",
+     [{'Name': 'iam-instance-profile.arn', 'Values': ['arn:aws:iam::664798938958:instance-profile/AmazonEKSNodeRole']}])
 ])
 def test_parse_filter_field(filter, expected_results):
     """
