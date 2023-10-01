@@ -21,7 +21,6 @@ The collections are defined by a JSON object in the following format:
 
 (For Cortex XSOAR 8 or Cortex XSIAM) `https://ext-<tenant>.crtx.<region>.paloaltonetworks.com/xsoar/instance/execute/<instance-name>`
   When running on an engine: http://xsoar_address:listen_port/{taxii2_api_endpoint}/
-http://xsiam_address:listen_port/{taxii2_api_endpoint}/
 
 
 
