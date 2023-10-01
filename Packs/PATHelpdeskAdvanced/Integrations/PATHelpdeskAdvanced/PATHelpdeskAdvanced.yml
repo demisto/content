@@ -382,6 +382,7 @@ script:
     - contextPath: HelpdeskAdvanced.Ticket.UrgencyID
       description: The urgency ID of the ticket.
       type: string
+  
   - name: hda-add-ticket-attachment
     description: Add an attachment to a ticket.
     arguments:
@@ -391,7 +392,7 @@ script:
     - name: entry_id
       description: The file entry ID to attach.
       required: true
-    outputs: []
+    
   - name: hda-list-ticket-attachments
     description: List attachments for a ticket.
     arguments:
@@ -404,73 +405,73 @@ script:
       defaultValue: '50'
     outputs:
     - contextPath: HelpdeskAdvanced.Ticket.Attachment.BlobID
-      description:
+      description: The blob ID of the attachment.
       type: string
     - contextPath: HelpdeskAdvanced.Ticket.Attachment.ContentType
-      description:
+      description: The content type of the attachment.
       type: string
     - contextPath: HelpdeskAdvanced.Ticket.Attachment.Description
-      description:
+      description: The description of the attachment.
       type: string
     - contextPath: HelpdeskAdvanced.Ticket.Attachment.EmailID
-      description:
+      description: The email ID of the attachment.
       type: string
     - contextPath: HelpdeskAdvanced.Ticket.Attachment.FileName
-      description:
+      description: The file name of the attachment.
       type: string
     - contextPath: HelpdeskAdvanced.Ticket.Attachment.FirstUpdate
-      description:
+      description: The date and time when the attachment was first updated.
       type: string
     - contextPath: HelpdeskAdvanced.Ticket.Attachment.FirstUpdateUserID
-      description:
+      description: The ID of the user who first uploaded the attachment.
       type: string
     - contextPath: HelpdeskAdvanced.Ticket.Attachment.ID
-      description:
+      description: The ID of the attachment.
       type: string
     - contextPath: HelpdeskAdvanced.Ticket.Attachment.IsNew
-      description:
+      description: Indicates whether the attachment is new.
       type: string
     - contextPath: HelpdeskAdvanced.Ticket.Attachment.KBSize
-      description:
+      description: The size of the attachment in KB.
       type: string
     - contextPath: HelpdeskAdvanced.Ticket.Attachment.LastUpdate
-      description:
+      description: The date and time when the attachment was last updated.
       type: string
     - contextPath: HelpdeskAdvanced.Ticket.Attachment.LastUpdateUserID
-      description:
+      description: The ID of the user who last updated the attachment.
       type: string
     - contextPath: HelpdeskAdvanced.Ticket.Attachment.Note
-      description:
+      description: Any additional notes about the attachment.
       type: string
     - contextPath: HelpdeskAdvanced.Ticket.Attachment.ObjectDescription
-      description:
+      description: The description of the object the attachment is associated with.
       type: string
     - contextPath: HelpdeskAdvanced.Ticket.Attachment.ObjectEntity
-      description:
+      description: The object entity of the attachment.
       type: string
     - contextPath: HelpdeskAdvanced.Ticket.Attachment.ObjectTypeID
-      description:
+      description: The object type ID of the attachment.
       type: string
     - contextPath: HelpdeskAdvanced.Ticket.Attachment.OwnerUserID
-      description:
+      description: The owner user ID of the attachment.
       type: string
     - contextPath: HelpdeskAdvanced.Ticket.Attachment.ParentObject
-      description:
+      description: The parent object the attachment is associated with.
       type: string
     - contextPath: HelpdeskAdvanced.Ticket.Attachment.ParentObjectID
-      description:
+      description: The ID of the parent object the attachment is associated with.
       type: string
     - contextPath: HelpdeskAdvanced.Ticket.Attachment.RemoteID
-      description:
+      description: The remote ID of the attachment.
       type: string
     - contextPath: HelpdeskAdvanced.Ticket.Attachment.Site
-      description:
+      description: The site ID the attachment is associated with.
       type: string
     - contextPath: HelpdeskAdvanced.Ticket.Attachment.TicketID
-      description:
+      description: The ticket ID the attachment is associated with.
       type: string
     - contextPath: HelpdeskAdvanced.Ticket.Attachment.UniqueID
-      description:
+      description: A unique ID for the attachment.
       type: string
   - name: hda-add-ticket-comment
     description: Add a comment to a ticket.
@@ -515,7 +516,7 @@ script:
     - name: note
       description: An optional note to add with the status change.
       required: false
-    outputs: []
+
   - name: hda-list-ticket-priorities
     description: List ticket priorities.
     arguments:
@@ -538,7 +539,6 @@ script:
       type: String
       description: The ID of the ticket to change status for.
       required: true
-
     outputs:
     - contextPath: HelpdeskAdvanced.Ticket.AccountID
       description: The account ID of the ticket.
@@ -615,7 +615,6 @@ script:
       type: Number
       description: The maximum number of users to return per page.
 
-    outputs: []
   - name: hda-list-groups
     description: List groups.
     arguments:
