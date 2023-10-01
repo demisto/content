@@ -2660,7 +2660,7 @@ def fetch_incidents():
             last_fetched_ids_key='last_resource_ids'
         )
         filter = create_iom_filter(
-            iom_next_token=iom_next_token,
+            is_paginating=bool(iom_next_token),
             last_fetch_filter=iom_last_run.get('last_fetch_filter', ''),
             last_scan_time=last_scan_time, first_fetch_timestamp=first_fetch_timestamp,
             configured_fetch_query=fetch_query)
@@ -2674,8 +2674,8 @@ def fetch_incidents():
             fetched_data=get_iom_resources(iom_resource_ids=iom_resource_ids),
             last_date=last_scan_time,
             last_fetched_ids=last_resource_ids, date_key='scan_time',
-            id_key='id', date_format=IOM_DATE_FORMAT, new_next_token=iom_new_next_token,
-            next_token=iom_next_token, to_incident_context=iom_resource_to_incident,
+            id_key='id', date_format=IOM_DATE_FORMAT, is_paginating=bool(iom_new_next_token or iom_next_token),
+            to_incident_context=iom_resource_to_incident,
             incident_type='iom_configurations')
 
         iom_last_run = {'iom_next_token': iom_new_next_token, 'last_scan_time': new_scan_time,
@@ -2694,7 +2694,7 @@ def fetch_incidents():
             last_fetched_ids_key='last_event_ids'
         )
         ioa_fetch_query = create_ioa_query(
-            ioa_next_token=ioa_next_token,
+            is_paginating=bool(ioa_next_token),
             configured_fetch_query=fetch_query,
             last_fetch_query=ioa_last_run.get('last_fetch_query', ''),
             last_date_time_since=last_date_time_since)
@@ -2708,8 +2708,9 @@ def fetch_incidents():
         ioa_incidents, ioa_event_ids, new_date_time_since = parse_ioa_iom_incidents(
             fetched_data=ioa_events, last_date=last_date_time_since,
             last_fetched_ids=last_fetch_event_ids, date_key='event_created',
-            id_key='event_id', date_format=DATE_FORMAT, new_next_token=ioa_new_next_token,
-            next_token=ioa_next_token, to_incident_context=ioa_event_to_incident, incident_type='ioa_events')
+            id_key='event_id', date_format=DATE_FORMAT,
+            is_paginating=bool(ioa_new_next_token or ioa_next_token),
+            to_incident_context=ioa_event_to_incident, incident_type='ioa_events')
 
         ioa_last_run = {'ioa_next_token': ioa_new_next_token, 'last_date_time_since': new_date_time_since,
                         'last_fetch_query': ioa_fetch_query, 'last_event_ids': ioa_event_ids or last_fetch_event_ids}
@@ -2720,7 +2721,7 @@ def fetch_incidents():
 
 def parse_ioa_iom_incidents(fetched_data: list[dict[str, Any]], last_date: str,
                             last_fetched_ids: list[str], date_key: str, id_key: str,
-                            date_format: str, new_next_token: str | None, next_token: str | None,
+                            date_format: str, is_paginating: bool,
                             to_incident_context: Callable[[dict[str, Any], str], dict[str, Any]],
                             incident_type: str) -> tuple[list[dict[str, Any]], list[str], str]:
     """This function is in charge of parsing IOA, and IOM data from their respective API,
@@ -2733,6 +2734,8 @@ def parse_ioa_iom_incidents(fetched_data: list[dict[str, Any]], last_date: str,
         date_key (str): The key of the value that holds the date in the API.
         id_key (str): The key of the value that holds the ID in the API.
         date_format (str): The date format.
+        is_paginating (bool): Whether we are doing pagination or not. When false, the previously fetched IDs
+        will NOT be considered for duplicates removal.
         new_next_token (str | None): The next token that will be used in the next run.
         next_token (str | None): The next token that was used in the current round.
         to_incident_context (Callable[[dict[str, Any], str], dict[str, Any]]): The function that is used to convert
@@ -2759,8 +2762,8 @@ def parse_ioa_iom_incidents(fetched_data: list[dict[str, Any]], last_date: str,
         else:
             demisto.debug(f'Ignoring CSPM incident with {data_id=} - was already fetched in the previous run')
     new_last_date = max(fetched_dates).strftime(date_format)
-    if new_next_token or next_token:
-        demisto.debug('Current run did pagination, or next one will, keeping IDs from last fetch')
+    if is_paginating:
+        demisto.debug(f'Current run did pagination, or next one will, keeping {len(last_fetched_ids)} IDs from last fetch')
         # If the next run will do pagination, or the current run did pagination, we should keep the ids from the last fetch
         # until progress is made, so we exclude them in the next fetch.
         fetched_ids.extend(last_fetched_ids)
@@ -2804,13 +2807,13 @@ def get_current_fetch_data(last_run_object: dict[str, Any],
     return last_fetched_ids, next_token, last_date, first_fetch_timestamp
 
 
-def create_iom_filter(iom_next_token: str | None, last_fetch_filter: str,
+def create_iom_filter(is_paginating: bool, last_fetch_filter: str,
                       last_scan_time: str, first_fetch_timestamp: str,
                       configured_fetch_query: str) -> str:
     """Retrieve the IOM filter that will be used in the current fetch round.
 
     Args:
-        iom_next_token (Any | None): If paginating, this will hold the next token.
+        is_paginating (bool): Whether we are doing pagination or not.
         last_fetch_filter (str): The last fetch filter that was used in the previous round.
         last_scan_time (str): The last scan time.
         first_fetch_timestamp (str): The first fetch timestamp.
@@ -2823,7 +2826,7 @@ def create_iom_filter(iom_next_token: str | None, last_fetch_filter: str,
         str: The IOM filter that will be used in the current fetch.
     """
     filter = 'scan_time:'
-    if iom_next_token:
+    if is_paginating:
         if not last_fetch_filter:
             raise DemistoException('Last fetch filter must not be empty when doing pagination')
         # Doing pagination, we need to use the same fetch query as the previous round
@@ -2868,12 +2871,12 @@ def add_seconds_to_date(date: str, seconds_to_add: int, date_format: str) -> str
     return added_datetime.strftime(date_format)
 
 
-def create_ioa_query(ioa_next_token: str | None, last_fetch_query: str,
+def create_ioa_query(is_paginating: bool, last_fetch_query: str,
                      configured_fetch_query: str, last_date_time_since: str) -> str:
     """Retrieve the IOA query that will be used in the current fetch round.
 
     Args:
-        ioa_next_token (str | None): If paginating, this will hold the next token.
+        is_paginating (bool): Whether we are doing pagination or not.
         last_fetch_query (str): The last fetch query that was used in the previous round.
         configured_fetch_query (str): The fetched query configured by the user.
         last_date_time_since (str): The last date time since.
@@ -2885,7 +2888,7 @@ def create_ioa_query(ioa_next_token: str | None, last_fetch_query: str,
         str: The IOA query that will be used in the current fetch.
     """
     fetch_query = configured_fetch_query
-    if ioa_next_token:
+    if is_paginating:
         # If entered here, that means we are currently doing pagination, and we need to use the
         # same fetch query as the previous round
         fetch_query = last_fetch_query
