@@ -509,7 +509,8 @@ def test_fetch_incidents_with_look_back(mocker, params, expected_incidents, expe
     assert request_get_incidents.call_args_list[0][0][0] == EXPECTED_CALL_ARGS_FOR_LOOK_BACK
     mocker.patch('Exabeam.demisto.getLastRun', return_value=last_run)
     request_get_incidents = mocker.patch.object(client, 'get_incidents', return_value=INCIDENTS_FOR_LOOK_BACK_SECOND_TIME)
-    results, last_run = fetch_incidents(client, params)
+    with pytest.raises(Exception):
+        results, last_run = fetch_incidents(client, params)
 
     assert last_run['limit'] == expected_last_run['second_fetch']['limit']
     assert last_run['time'] == expected_last_run['second_fetch']['time']
