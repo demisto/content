@@ -803,7 +803,7 @@ def update_remote_system_command(client: Client, args: Dict[str, Any], mirror_ta
 
 def get_and_dedup_incidents(client: Client, incidents_last_fetch_ids: list[dict],
                             query: str, max_results: int, last_fetch: Union[str, int]) -> tuple[list[dict], list[dict]]:
-    """ get incidents and dedup  the incidents response.
+    """ get incidents and dedup the incidents response.
 
     Cases:
     1.  Empty incidents list (no new incidents received from API response).
@@ -830,39 +830,35 @@ def get_and_dedup_incidents(client: Client, incidents_last_fetch_ids: list[dict]
     """
     last_fatched_incident = (dateparser.parse(incidents_last_fetch_ids[-1]["created"])
                              if incidents_last_fetch_ids else None)
-    incidents = client.search_incidents(
+
+    new_incidents: list = []
+    page = 0
+    while len(new_incidents) < max_results:
+        incidents = client.search_incidents(
         query=query,
         max_results=max_results,
         start_time=last_fetch,
         field="created",
-    )
-    new_incidents: list = []
-    page = 1
-    # Case 1: Empty response len(incidents) == 0
-    while len(incidents) > 0 and len(new_incidents) < max_results:
+        page=page,
+        )
+        # Case 1: Empty response len(incidents) == 0
+        if len(incidents) == 0:
+            break
         for incident in incidents:
             if len(new_incidents) >= max_results:
                 break
             incident_dict = {"id": incident["id"], "created": incident["created"]}
-            if incident_dict not in incidents_last_fetch_ids and \
-                    len(new_incidents) < max_results:
-                # Case 2: The last fetched incident with the same timestamp as the previous incident.
-                if last_fatched_incident and last_fatched_incident == dateparser.parse(incident["created"]):
-
-                    incidents_last_fetch_ids.append(incident_dict)
+            incident_creation_time = dateparser.parse(incident["created"])
+            if incident_dict not in incidents_last_fetch_ids:
                 # Case 3: The last fetched incident with the different timestamp then the previous incident.
-                else:
+                if last_fatched_incident and incident_creation_time and last_fatched_incident < incident_creation_time:
                     incidents_last_fetch_ids = [incident_dict]
+                # Case 2: The last fetched incident with the same timestamp as the previous incident.
+                else:
+                    incidents_last_fetch_ids.append(incident_dict)
                 new_incidents.append(incident)
-                last_fatched_incident = dateparser.parse(incident["created"])
-        if len(new_incidents) < max_results:
-            incidents = client.search_incidents(
-                query=query,
-                max_results=max_results,
-                start_time=last_fetch,
-                page=page
-            )
-            page += 1
+                last_fatched_incident = incident_creation_time
+        page += 1
     return new_incidents, incidents_last_fetch_ids
 
 
