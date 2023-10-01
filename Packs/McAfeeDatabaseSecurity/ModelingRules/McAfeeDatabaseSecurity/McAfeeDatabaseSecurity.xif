@@ -1,1 +1,17 @@
 [MODEL: dataset = mcafee_database_security_raw]
+alter
+        xdm.observer.action = act,
+        xdm.source.ipv4 = if(src ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", src, null),
+        xdm.source.ipv6 = if(src ~= "[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}", src, null),
+        xdm.source.agent.identifier = dst,
+        xdm.target.process.name = dproc,
+        xdm.target.user.username = duser,
+        xdm.source.host.hostname = shost,
+        xdm.source.user.username = suser,
+        xdm.event.type = cefDeviceEventClassId,
+        xdm.event.id = externalId,
+        xdm.event.description = cefName,
+        xdm.alert.severity = cefSeverity,
+        xdm.database.name = if(cs1Label = "DBMS", cs1, null),
+        xdm.database.statement = if(cs2Label = "SqlStatement", cs2, null),
+        xdm.target.resource.name = if(cs3Label contains "AccessedObjects", cs3, null);

@@ -1,8 +1,68 @@
 {
   "mcafee_database_security_raw": {
-    "_raw_log": {
-        "type": "string",
-        "is_array": false
-    }
+      "act": {
+          "type": "string",
+          "is_array": false
+      },
+      "src": {
+          "type": "string",
+          "is_array": false
+      },
+      "dst": {
+          "type": "string",
+          "is_array": false
+      },
+      "dproc": {
+          "type": "string",
+          "is_array": false
+      },
+      "duser": {
+          "type": "string",
+          "is_array": false
+      },
+      "shost": {
+          "type": "string",
+          "is_array": false
+      },
+      "cefDeviceEventClassId": {
+          "type": "string",
+          "is_array": false
+      },
+      "externalId": {
+          "type": "string",
+          "is_array": false
+      },
+      "cefName": {
+          "type": "string",
+          "is_array": false
+      },
+      "cefSeverity": {
+          "type": "string",
+          "is_array": false
+      },
+      "cs1Label": {
+          "type": "string",
+          "is_array": false
+      },
+      "cs1": {
+          "type": "string",
+          "is_array": false
+      },
+      "cs2Label": {
+          "type": "string",
+          "is_array": false
+      },
+      "cs2": {
+          "type": "string",
+          "is_array": false
+      },
+      "cs3Label": {
+          "type": "string",
+          "is_array": false
+      },
+      "cs3": {
+          "type": "string",
+          "is_array": false
+      }
   }
 }
