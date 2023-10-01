@@ -13,7 +13,7 @@ urllib3.disable_warnings()
 
 def parse_filter_field(filter_str):
     filters = []
-    regex = re.compile(r'name=([\w\d_:.-]+),values=([ /\w\d@_,.*-]+)', flags=re.I)
+    regex = re.compile(r'name=([\w\d_:.-]+),values=([ /\w\d@_,.*-:]+)', flags=re.I)
     for f in filter_str.split(';'):
         match = regex.match(f)
         if match is None:

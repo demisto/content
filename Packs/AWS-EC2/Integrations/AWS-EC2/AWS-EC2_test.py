@@ -134,3 +134,21 @@ def test_aws_ec2_authorize_security_group_egress_rule(mocker, args, expected_res
     else:
         results = demisto.results.call_args[0][0]
         assert results == expected_results
+
+
+@pytest.mark.parametrize('filter, expected_results', [
+    ("Name=iam-instance-profile.arn,Values=arn:aws:iam::664798938958:instance-profile/AmazonEKSNodeRole", [{'Name': 'iam-instance-profile.arn', 'Values': ['arn:aws:iam::664798938958:instance-profile/AmazonEKSNodeRole']}])
+])
+def test_parse_filter_field(filter, expected_results):
+    """
+    Given
+    - A filter string.
+    - Case 1: a filter string including ':' in the value.
+    When
+    - Running parse_filter_field method.
+    Then
+    - Ensure that the filter was parsed correctly.
+    - Case 1: Should ensure that the filter value include the whole value (including the part after the ':').
+    """
+    res = AWS_EC2.parse_filter_field(filter)
+    assert res == expected_results
