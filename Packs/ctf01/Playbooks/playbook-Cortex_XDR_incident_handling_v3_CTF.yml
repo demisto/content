@@ -1,12 +1,5 @@
 contentitemexportablefields:
-  contentitemfields:
-    definitionid: ""
-    fromServerVersion: 6.5.0
-    itemVersion: 4.10.41
-    packID: ""
-    packName: Cortex XDR by Palo Alto Networks
-    prevname: ""
-    toServerVersion: ""
+  contentitemfields: {}
 description: |-
   This playbook is triggered by fetching a Palo Alto Networks Cortex XDR incident.
   The playbook syncs and updates new XDR alerts that construct the incident and triggers a sub-playbook to handle each alert by type.
@@ -116,7 +109,6 @@ inputs:
     simple: "False"
 name: Cortex XDR incident handling v3 CTF
 outputs: []
-sourceplaybookid: Cortex XDR incident handling v3
 starttaskid: "0"
 tasks:
   "0":
@@ -138,6 +130,7 @@ tasks:
       iscommand: false
       name: ""
       version: -1
+      description: ''
     taskid: 2dd4904d-513e-4071-8b3e-25aeba751b52
     timertriggers: []
     type: start
@@ -168,6 +161,7 @@ tasks:
       name: Remediation
       type: title
       version: -1
+      description: ''
     taskid: 9874d520-0f8d-472a-808b-097b78689707
     timertriggers: []
     type: title
@@ -195,6 +189,7 @@ tasks:
       name: Done
       type: title
       version: -1
+      description: ''
     taskid: b425ff10-7bf0-40d0-80c6-407e5d96801a
     timertriggers: []
     type: title
@@ -225,6 +220,7 @@ tasks:
       name: Investigation
       type: title
       version: -1
+      description: ''
     taskid: 0675441f-146a-4754-881e-ec0f72f281fe
     timertriggers: []
     type: title
@@ -592,6 +588,7 @@ tasks:
       name: False Positive
       type: title
       version: -1
+      description: ''
     taskid: 0851326d-ff23-4700-84b5-bed51e0b0903
     timertriggers: []
     type: title
@@ -831,6 +828,7 @@ tasks:
       playbookId: Block Indicators - Generic v3
       type: playbook
       version: -1
+      description: ''
     taskid: 4cb35aa9-c323-4ebd-8152-9fce74e5be19
     timertriggers: []
     type: playbook
@@ -876,6 +874,7 @@ tasks:
       playbookId: Cortex XDR Alerts Handling CTF
       type: playbook
       version: -1
+      description: ''
     taskid: e17721d5-0e3c-4430-858f-98baa27610ee
     timertriggers: []
     type: playbook
@@ -904,3 +903,6 @@ view: |-
       }
     }
   }
+tests:
+- No tests (auto formatted)
+fromversion: 6.9.0

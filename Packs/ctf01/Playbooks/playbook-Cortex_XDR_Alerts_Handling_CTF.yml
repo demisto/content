@@ -1,6 +1,6 @@
 contentitemexportablefields:
   contentitemfields: {}
-description: "This playbook is used to loop over every alert in a Cortex XDR incident. \nSupported alert categories:\n- Malware\n- Port Scan"
+description: "This playbook is used to loop over every alert in a Cortex XDR incident. \nSupported alert categories:\n- Malware\n- Port Scan."
 id: Cortex XDR Alerts Handling CTF
 inputs:
 - description: Incident ID.
@@ -62,7 +62,7 @@ outputs:
 - contextPath: PaloAltoNetworksXDR.Incident.network_artifacts.network_domain
   description: The domain related to the artifact.
 - contextPath: PaloAltoNetworksXDR.Incident.network_artifacts.network_country
-  description: The country related to the artifact
+  description: The country related to the artifact.
 - contextPath: PaloAltoNetworksXDR.Incident.network_artifacts.network_remote_ip
   description: The remote IP related to the artifact.
 - contextPath: PaloAltoNetworksXDR.Incident.file_artifacts.file_signature_status
@@ -345,7 +345,6 @@ tasks:
         complex:
           root: inputs.incident_id
     separatecontext: false
-    reputationCalc: 2
     skipunavailable: false
     task:
       brand: ""
@@ -947,4 +946,4 @@ view: |-
   }
 tests:
 - No tests (auto formatted)
-fromversion: 6.8.0
+fromversion: 6.9.0
