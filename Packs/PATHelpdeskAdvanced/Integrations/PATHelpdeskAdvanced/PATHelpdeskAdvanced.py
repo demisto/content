@@ -250,7 +250,7 @@ class Client(BaseClient):
             return response_body
 
         except JSONDecodeError:
-            if error_parts := parse_html_h_tags(response.text):
+            if error_parts := HTML_H_TAG_REGEX.findall(response.text):
                 raise DemistoException(". ".join(error_parts), res=response)
             raise ValueError(f"could not parse json from {response.text}")
 
@@ -964,10 +964,6 @@ def list_groups_command(client: Client, args: dict) -> CommandResults:
             field_replacements={ID: _GROUP_ID},
         ),
     )
-
-
-def parse_html_h_tags(html_text: str) -> list[str]:
-    return HTML_H_TAG_REGEX.findall(html_text)
 
 
 commands: dict[str, Callable] = {
