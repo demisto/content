@@ -32,9 +32,9 @@ class Client(BaseClient):
     """Client class to interact with Cisco SMA API."""
 
     def __init__(
-        self, server_url: str, username: str, password: str, verify: bool, proxy: bool
+        self, server_url: str, username: str, password: str, verify: bool, proxy: bool, timeout: None | int = 60
     ):
-        super().__init__(base_url=server_url, headers={}, verify=verify, proxy=proxy)
+        super().__init__(base_url=server_url, headers={}, verify=verify, proxy=proxy, timeout=timeout)
         self.username = username
         self.password = password
         self.handle_request_headers()
@@ -73,7 +73,7 @@ class Client(BaseClient):
             return dict_safe_get(response, ["data", "jwtToken"])
 
         except DemistoException as e:
-            if e.res.status_code == 401:
+            if hasattr(e.res, 'status_code') and e.res.status_code == 401:
                 raise Exception(
                     "Authorization Error: make sure username and password are set correctly."
                 )
@@ -1851,7 +1851,7 @@ def main() -> None:
     filter_value = params.get("filter_value")
     recipient_filter_operator = params.get("recipient_filter_operator")
     recipient_filter_value = params.get("recipient_filter_value")
-
+    timeout = arg_to_number(params.get("timeout"))
     verify_certificate: bool = not params.get("insecure", False)
     proxy = params.get("proxy", False)
 
@@ -1880,6 +1880,7 @@ def main() -> None:
             password,
             verify_certificate,
             proxy,
+            timeout=timeout
         )
 
         if command == "test-module":
