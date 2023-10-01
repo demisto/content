@@ -1,6 +1,6 @@
-This playbook performs CVE enrichment using the following integrations:
+This playbook performs CVE Enrichment using the following integrations:
 - VulnDB
-- CVE Search
+- CIRCL CVE Search
 - IBM X-Force Exchange
 
 ## Dependencies
@@ -14,7 +14,6 @@ This playbook does not use any sub-playbooks.
 ### Integrations
 
 * VulnDB
-* CVE Search
 
 ### Scripts
 
@@ -22,9 +21,9 @@ This playbook does not use any scripts.
 
 ### Commands
 
-* cve-search
 * vulndb-get-vuln-by-cve-id
 * cve
+* cve-search
 
 ## Playbook Inputs
 
@@ -40,23 +39,60 @@ This playbook does not use any scripts.
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| CVE | The CVE object. | unknown |
-| CVE.ID | The ID of the CVE. | string |
-| CVE.CVSS | The CVSS score of the CVE. | number |
-| CVE.Published | The date this was published. | date |
-| CVE.Modified | When the CVE was last modified. | date |
+| CVE | The CVE object | string |
+| CVE.ID | The ID of the CVE | string |
+| CVE.CVSS | The CVSS score of the CVE | number |
+| CVE.Published | The date this was published | date |
+| CVE.Modified | When CVE was last modified | date |
 | CVE.Description | The CVE description | string |
-| VulnDB.Vulnerability.ID | Vulnerability ID. | unknown |
-| VulnDB.Vulnerability.Title | Vulnerability title \(human readable\). | unknown |
-| VulnDB.Vulnerability.Description | Vulnerability description \(human readable\). | unknown |
-| VulnDB.Vulnerability.Solution | Vulnerability solution \(human readable\). | unknown |
-| VulnDB.CvssMetrics.Id | CVSS reference value. | unknown |
-| VulnDB.CvssMetrics.ConfidentialityImpact | CVSS confidentiality impact. | unknown |
-| VulnDB.CvssMetrics.AvailabilityImpact | CVSS availability impact. | unknown |
-| VulnDB.CvssMetrics.Score | CVSS score. | unknown |
-| VulnDB.cvssMetrics.integrity_impact | CVSS integrity impact. | unknown |
-| VulnDB.Vendors.Id | Vendor ID. | unknown |
-| VulnDB.Products.Id | Product IDs. | unknown |
+| DBotScore.Vendor | The vendor used to calculate the score. | string |
+| DBotScore.Score | The actual score. | string |
+| DBotScore.Type | The indicator type. | string |
+| DBotScore.Indicator | The indicator that was tested. | string |
+| XFE.CVE.Xfdbid | The XFBID of the CVE. | string |
+| XFE.CVE.RiskLevel | The risk level of the CVE. | string |
+| XFE.CVE.Reported | The reported date of the CVE. | string |
+| XFE.CVE.Cvss | The CVSS information of the CVE. | string |
+| XFE.CVE.Stdcode | The CVE stdcodes. | string |
+| XFE.CVE.Title | The title of the CVE. | string |
+| XFE.CVE.Description | The description of the CVE. | string |
+| XFE.CVE.PlatformsAffected | The affetcted platforms due to the CVE. | string |
+| XFE.CVE.Exploitability | The exploitability of the CVE. | string |
+| VulnDB.Vulnerability | The Vulnerability object | string |
+| VulnDB.Vulnerability.ID | Vulnerability ID. | string |
+| VulnDB.Vulnerability.Title | Vulnerability title \(human readable\). | string |
+| VulnDB.Vulnerability.Keywords | Vulnerability keywords. | string |
+| VulnDB.Vulnerability.Solution | Vulnerability solution \(human readable\). | string |
+| VulnDB.Vulnerability.PublishedDate | Vulnerability published date. | date |
+| VulnDB.Vulnerability.TDescription | Vulnerability description \(human readable\). | string |
+| VulnDB.Vulnerability.SolutionDate | Vulnerability solution date. | date |
+| VulnDB.Vulnerability.DiscoveryDate | Vulnerability discovery date. | date |
+| VulnDB.Vulnerability.ExploitPublishDate | Exploit publish date. | date |
+| VulnDB.CVE-ExtReferences | The Vulnerability References Objects | string |
+| VulnDB.CVE-ExtReferences.Value | CVE \(constant string\). | string |
+| VulnDB.CvssMetrics | The Common Vulnerability Scoring Metrics | string |
+| VulnDB.CvssMetrics.Id | CVSS reference value. | string |
+| VulnDB.CvssMetrics.AccessVector | CVSS access vector. | string |
+| VulnDB.CvssMetrics.AccessComplexity | CVSS access complexity. | string |
+| VulnDB.CvssMetrics.Authentication | CVSS metric authentication. | string |
+| VulnDB.CvssMetrics.ConfidentialityImpact | CVSS confidentiality impact. | string |
+| VulnDB.CvssMetrics.AvailabilityImpact | CVSS availability impact. | string |
+| VulnDB.CvssMetrics.Generated_on | CVSS metric date. | date |
+| VulnDB.CvssMetrics.Score | CVSS score. | string |
+| VulnDB.cvssMetrics.integrity_impact | CVSS integrity impact. | string |
+| VulnDB.Vendors | Vendors Object | string |
+| VulnDB.Vendors.Id | Vendor ID. | string |
+| VulnDB.Vendor | Vendor Objects | string |
+| VulnDB.Vendor.Name | Vendor name. | string |
+| VulnDB.Products | Products Object | string |
+| VulnDB.Products.Id | Product IDs. | string |
+| VulnDB.Products.Name | Product names. | string |
+| VulnDB.Products.Versions | Products version | string |
+| VulnDB.Products.Versions.Id | Product version IDs. | string |
+| VulnDB.Products.Versions.Name | Product version names. | string |
+| VulnDB.Classification | Classification Object | string |
+| VulnDB.Classification.Longname | Classification name \(long\). | string |
+| VulnDB.Classification.Description | Classification description \(human readable\). | string |
 
 ## Playbook Image
 

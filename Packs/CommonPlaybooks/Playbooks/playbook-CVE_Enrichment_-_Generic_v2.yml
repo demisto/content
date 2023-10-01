@@ -5,7 +5,7 @@ name: CVE Enrichment - Generic v2
 description: |-
   This playbook performs CVE Enrichment using the following integrations:
   - VulnDB
-  - CVE Search
+  - CIRCL CVE Search
   - IBM X-Force Exchange
 starttaskid: '0'
 tasks:
@@ -36,6 +36,9 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "1":
     id: "1"
     taskid: 4cfa2898-da16-4d61-839a-cc66e5492541
@@ -44,8 +47,7 @@ tasks:
       id: 4cfa2898-da16-4d61-839a-cc66e5492541
       version: -1
       name: Is there a CVE to enrich?
-      description: Verify that the playbook input includes at least one CVE ID to
-        enrich.
+      description: Verify that the playbook input includes at least one CVE ID to enrich.
       type: condition
       iscommand: false
       brand: ''
@@ -74,6 +76,11 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   '2':
     id: '2'
     taskid: 1c1df4a5-6a12-4724-8cf5-586f7743fc57
@@ -97,15 +104,20 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   '4':
     id: '4'
-    taskid: 842e273c-40ee-46c1-837d-f7e09bcefef0
+    taskid: 585da989-e6b4-4bef-825d-0ec6633468f6
     type: condition
     task:
-      id: 842e273c-40ee-46c1-837d-f7e09bcefef0
+      id: 585da989-e6b4-4bef-825d-0ec6633468f6
       version: -1
       name: Is IBM X-Force Exchange integration enabled?
-      description: Verify that there's a valid instance of XFE enabled.
+      description: Verify that there's a valid instance of "IBM X-Force Exchange" enabled.
       type: condition
       iscommand: false
       brand: ''
@@ -131,16 +143,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: XFE
-                    ignorecase: true
-                  - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: XFE_v2
+                        simple: IBM X-Force Exchange v2
                     ignorecase: true
                 - - operator: isEqualString
                     left:
@@ -172,13 +175,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 8f3572d2-dbfc-4c4b-82af-94d06b99e727
+    taskid: e2170ae3-622d-45d9-882b-b1ee14f1e1b3
     type: condition
     task:
-      id: 8f3572d2-dbfc-4c4b-82af-94d06b99e727
+      id: e2170ae3-622d-45d9-882b-b1ee14f1e1b3
       version: -1
-      name: Is "CVE Search" integration enabled?
-      description: Verify that there's a valid instance of "CVE Search" enabled.
+      name: Is CIRCL CVE Search integration enabled?
+      description: Verify that there's a valid instance of "CIRCL CVE Search" enabled.
       type: condition
       iscommand: false
       brand: ''
@@ -197,14 +200,14 @@ tasks:
               complex:
                 root: modules
                 filters:
-                - - operator: containsGeneral
+                - - operator: isEqualString
                     left:
                       value:
                         simple: modules.brand
                       iscontext: true
                     right:
                       value:
-                        simple: CVE Search
+                        simple: CIRCL CVE Search
                     ignorecase: true
                 - - operator: isEqualString
                     left:
@@ -217,6 +220,8 @@ tasks:
                     ignorecase: true
                 accessor: brand
             iscontext: true
+          right:
+            value: {}
     view: |-
       {
         "position": {
@@ -229,27 +234,29 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: c08adb3a-b8c3-4a9b-8290-2f6dcda45d88
+    taskid: 3b681d80-2eda-45c7-8b93-6ff90dfe7d0b
     type: regular
     task:
-      id: c08adb3a-b8c3-4a9b-8290-2f6dcda45d88
+      id: 3b681d80-2eda-45c7-8b93-6ff90dfe7d0b
       version: -1
-      name: Get CVE info from "CVE Search"
+      name: Get CVE info from CIRCL CVE Search
       description: Returns CVE information by CVE ID.
       script: '|||cve'
       type: regular
       iscommand: true
-      brand: CVE Search
+      brand: ""
     nexttasks:
       '#none#':
       - '2'
     scriptarguments:
-      cve_id:
+      cve:
         complex:
           root: inputs.cve_id
-    continueonerror: true
     separatecontext: false
     view: |-
       {
@@ -261,12 +268,17 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   '7':
     id: '7'
-    taskid: d2ff276a-dd81-4805-80c3-ee44976b4020
+    taskid: a550af06-a091-4269-8f10-4b470ceb27c2
     type: regular
     task:
-      id: d2ff276a-dd81-4805-80c3-ee44976b4020
+      id: a550af06-a091-4269-8f10-4b470ceb27c2
       version: -1
       name: Get CVE information from XFE
       description: Search for details about the given CVE.
@@ -282,7 +294,6 @@ tasks:
         complex:
           root: inputs.cve_id
     separatecontext: false
-    continueonerror: true
     continueonerrortype: ""
     view: |-
       {
@@ -328,12 +339,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: bee9dcb2-a07f-4362-8e17-df1458d42051
+    taskid: 4a780829-b489-471b-8efe-06074536ff63
     type: regular
     task:
-      id: bee9dcb2-a07f-4362-8e17-df1458d42051
+      id: 4a780829-b489-471b-8efe-06074536ff63
       version: -1
       name: VulnDB - Get vulnerability details by CVE
       description: Returns full details about vulnerabilities, by CVE ID.
@@ -348,7 +362,6 @@ tasks:
       cve_id:
         complex:
           root: inputs.cve_id
-      max_size: {}
     separatecontext: false
     view: |-
       {
@@ -360,6 +373,11 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   '13':
     id: '13'
     taskid: 2c6008cc-e42b-4976-86c8-92123558d6b6
@@ -386,14 +404,19 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   '14':
     id: '14'
-    taskid: da54676a-2737-437d-8f74-cf90095e20b0
+    taskid: 18b9102f-d968-40d5-8cc3-0e4a1c634e2e
     type: title
     task:
-      id: da54676a-2737-437d-8f74-cf90095e20b0
+      id: 18b9102f-d968-40d5-8cc3-0e4a1c634e2e
       version: -1
-      name: CVE Search
+      name: CIRCL CVE Search
       type: title
       iscommand: false
       brand: ''
@@ -412,6 +435,11 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   '26':
     id: '26'
     taskid: 85a2fa30-ef67-4272-8867-18116129def3
@@ -438,15 +466,20 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   '27':
     id: '27'
-    taskid: 3b7877c8-6321-4a1c-8444-d2bd91aae191
+    taskid: e55035e4-334c-404d-8d69-6e861966f1cb
     type: condition
     task:
-      id: 3b7877c8-6321-4a1c-8444-d2bd91aae191
+      id: e55035e4-334c-404d-8d69-6e861966f1cb
       version: -1
       name: Is VulnDB integration enabled?
-      description: Verify that there's a valid instance of XFE enabled.
+      description: Verify that there's a valid instance of "VulnDB" enabled.
       type: condition
       iscommand: false
       brand: ''
@@ -485,6 +518,8 @@ tasks:
                     ignorecase: true
                 accessor: brand
             iscontext: true
+          right:
+            value: {}
     view: |-
       {
         "position": {
@@ -495,6 +530,11 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -522,10 +562,11 @@ inputs:
       accessor: ID
   required: false
   description: The CVE ID to enrich.
+  playbookInputQuery:
 outputs:
 - contextPath: CVE
   description: The CVE object
-  type: unknown
+  type: string
 - contextPath: CVE.ID
   description: The ID of the CVE
   type: string
@@ -541,31 +582,154 @@ outputs:
 - contextPath: CVE.Description
   description: The CVE description
   type: string
+- contextPath: DBotScore.Vendor
+  description: The vendor used to calculate the score.
+  type: string
+- contextPath: DBotScore.Score
+  description: The actual score.
+  type: string
+- contextPath: DBotScore.Type
+  description: The indicator type.
+  type: string
+- contextPath: DBotScore.Indicator
+  description: The indicator that was tested.
+  type: string
+- contextPath: XFE.CVE.Xfdbid
+  description: The XFBID of the CVE.
+  type: string
+- contextPath: XFE.CVE.RiskLevel
+  description: The risk level of the CVE.
+  type: string
+- contextPath: XFE.CVE.Reported
+  description: The reported date of the CVE.
+  type: string
+- contextPath: XFE.CVE.Cvss
+  description: The CVSS information of the CVE.
+  type: string
+- contextPath: XFE.CVE.Stdcode
+  description: The CVE stdcodes.
+  type: string
+- contextPath: XFE.CVE.Title
+  description: The title of the CVE.
+  type: string
+- contextPath: XFE.CVE.Description
+  description: The description of the CVE.
+  type: string
+- contextPath: XFE.CVE.PlatformsAffected
+  description: The affetcted platforms due to the CVE.
+  type: string
+- contextPath: XFE.CVE.Exploitability
+  description: The exploitability of the CVE.
+  type: string
+- contextPath: VulnDB.Vulnerability
+  description: The Vulnerability object
+  type: string
 - contextPath: VulnDB.Vulnerability.ID
   description: Vulnerability ID.
+  type: string
 - contextPath: VulnDB.Vulnerability.Title
   description: Vulnerability title (human readable).
-- contextPath: VulnDB.Vulnerability.Description
-  description: Vulnerability description (human readable).
+  type: string
+- contextPath: VulnDB.Vulnerability.Keywords
+  description: Vulnerability keywords.
+  type: string
 - contextPath: VulnDB.Vulnerability.Solution
   description: Vulnerability solution (human readable).
+  type: string
+- contextPath: VulnDB.Vulnerability.PublishedDate
+  description: Vulnerability published date.
+  type: date
+- contextPath: VulnDB.Vulnerability.TDescription
+  description: Vulnerability description (human readable).
+  type: string
+- contextPath: VulnDB.Vulnerability.SolutionDate
+  description: Vulnerability solution date.
+  type: date
+- contextPath: VulnDB.Vulnerability.DiscoveryDate
+  description: Vulnerability discovery date.
+  type: date
+- contextPath: VulnDB.Vulnerability.ExploitPublishDate
+  description: Exploit publish date.
+  type: date
+- contextPath: VulnDB.CVE-ExtReferences
+  description: The Vulnerability References Objects
+  type: string
+- contextPath: VulnDB.CVE-ExtReferences.Value
+  description: CVE (constant string).
+  type: string
+- contextPath: VulnDB.CvssMetrics
+  description: The Common Vulnerability Scoring Metrics
+  type: string
 - contextPath: VulnDB.CvssMetrics.Id
   description: CVSS reference value.
+  type: string
+- contextPath: VulnDB.CvssMetrics.AccessVector
+  description: CVSS access vector.
+  type: string
+- contextPath: VulnDB.CvssMetrics.AccessComplexity
+  description: CVSS access complexity.
+  type: string
+- contextPath: VulnDB.CvssMetrics.Authentication
+  description: CVSS metric authentication.
+  type: string
 - contextPath: VulnDB.CvssMetrics.ConfidentialityImpact
   description: CVSS confidentiality impact.
+  type: string
 - contextPath: VulnDB.CvssMetrics.AvailabilityImpact
   description: CVSS availability impact.
+  type: string
+- contextPath: VulnDB.CvssMetrics.Generated_on
+  description: CVSS metric date.
+  type: date
 - contextPath: VulnDB.CvssMetrics.Score
   description: CVSS score.
+  type: string
 - contextPath: VulnDB.cvssMetrics.integrity_impact
   description: CVSS integrity impact.
+  type: string
+- contextPath: VulnDB.Vendors
+  description: Vendors Object
+  type: string
 - contextPath: VulnDB.Vendors.Id
   description: Vendor ID.
+  type: string
+- contextPath: VulnDB.Vendor
+  description: Vendor Objects
+  type: string
+- contextPath: VulnDB.Vendor.Name
+  description: Vendor name.
+  type: string
+- contextPath: VulnDB.Products
+  description: Products Object
+  type: string
 - contextPath: VulnDB.Products.Id
   description: Product IDs.
-sourceplaybookid: cve_enrichment_-_generic
+  type: string
+- contextPath: VulnDB.Products.Name
+  description: Product names.
+  type: string
+- contextPath: VulnDB.Products.Versions
+  description: Products version
+  type: string
+- contextPath: VulnDB.Products.Versions.Id
+  description: Product version IDs.
+  type: string
+- contextPath: VulnDB.Products.Versions.Name
+  description: Product version names.
+  type: string
+- contextPath: VulnDB.Classification
+  description: Classification Object
+  type: string
+- contextPath: VulnDB.Classification.Longname
+  description: Classification name (long).
+  type: string
+- contextPath: VulnDB.Classification.Description
+  description: Classification description (human readable).
+  type: string
 tests:
 - No test
 marketplaces:
   - xsoar
   - marketplacev2
+contentitemexportablefields:
+  contentitemfields: {}
