@@ -14,7 +14,7 @@ alter /* extract alert data (schema docs: https://pan.dev/prisma-cloud/api/cspm/
     policy_mitre_compliance_metadata = arrayfilter(policy -> complianceMetadata[], "@element" -> sectionLabel = "MITRE ATT&CK"),
     resource_account = resource -> account, 
     resource_accountId = resource -> accountId, 
-    resource_cloudaccountgroups = resource -> cloudAccountGroups[],
+    resource_cloudaccountgroups = arraymap(resource -> cloudAccountGroups[], trim("@element", "\"")),
     resource_cloudaccountowners = trim(arraystring(resource -> cloudAccountOwners[], ","), "\""),
     resource_cloudType = resource -> cloudType, 
     resource_cloudServiceName = resource -> cloudServiceName,
