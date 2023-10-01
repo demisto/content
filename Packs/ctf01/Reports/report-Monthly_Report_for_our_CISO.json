@@ -1,7 +1,7 @@
 {
     "cronView": false,
-    "createdBy": "XSOAR",
-    "tags": "",
+    "createdBy": "Dbot",
+     "tags": [],
     "dashboard": {
         "fromDate": "0001-01-01T00:00:00Z",
         "fromDateLicense": "0001-01-01T00:00:00Z",
