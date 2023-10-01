@@ -2844,7 +2844,7 @@ def create_iom_filter(is_paginating: bool, last_fetch_filter: str,
             # GREATER than the last configured scan time, to prevent duplicates.
             filter = f"{filter} >'{last_scan_time}'"
             demisto.debug(f'Not first fetch, only looking for scan time > {last_scan_time=}. Filter is {filter}')
-    if configured_fetch_query and not iom_next_token:
+    if configured_fetch_query and not is_paginating:
         # If the user entered a fetch query, then append it to the filter
         demisto.debug('User entered fetch query, appending to filter')
         filter = f"{filter}+{configured_fetch_query}"
