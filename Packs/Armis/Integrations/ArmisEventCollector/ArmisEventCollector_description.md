@@ -1,4 +1,3 @@
-**Important:** This integration is supported by Palo Alto Networks.
 
 ## Armis Event Collector
 

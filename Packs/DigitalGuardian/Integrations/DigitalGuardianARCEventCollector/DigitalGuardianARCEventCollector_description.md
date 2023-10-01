@@ -1,8 +1,5 @@
 ## Digital Guardian ARC Event Collector Help
 
-**Important:** 
-This integration is supported by Palo Alto Networks. 
-
 ### Configuration
 The integration fetch interval should be set to a minimum of "1 hour". If set to less, a quota error might be received.
 
