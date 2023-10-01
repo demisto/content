@@ -18,7 +18,7 @@ The collections are defined by a JSON object in the following format:
 - `https://*demisto_address*/ins Use one of the following options:tance/execute/*instance_name/taxii-discovery-service`
 - `http://*demisto_address*:*listen_port*/taxii-discovery-service`
 
-(For Cortex XSOAR 8 and Cortex XSIAM) Use one of the following options:
+(For Cortex XSOAR 8 or Cortex XSIAM):
 - `https://ext-<cortex-xsiam-address>/xsoar/instance/execute/<instance-name>/{taxii2_api_endpoint}/`
 - `http://demisto_address:listen_port/{taxii2_api_endpoint}/`
 
