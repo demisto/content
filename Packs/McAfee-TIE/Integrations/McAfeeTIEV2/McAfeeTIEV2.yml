@@ -59,7 +59,7 @@ script:
   commands:
   - arguments:
     - default: true
-      description: Hashes of the files to query. Supports "MD5", "SHA1", and "SHA256"
+      description: Hashes of the files to query. Supports "MD5", "SHA1", and "SHA256".
       isArray: true
       name: file
       required: true
@@ -272,7 +272,7 @@ script:
     - contextPath: McAfee.TIE.FilesReferences.Hash
       description: The value of the hash.
       type: String
-  dockerimage: demisto/dxl:1.0.0.72124
+  dockerimage: demisto/dxl:1.0.0.73187
   runonce: false
   script: "-"
   subtype: python3
