@@ -22,11 +22,12 @@ HTML_H_TAG_REGEX = re.compile(r"<h\d>(.*?)<\/h\d>", flags=re.S)
 
 
 class Field:
+    _special_cases = {"unread": "UnRead", "id": "ID", "html": "HTML"}
+
     def __init__(self, demisto_name: str) -> None:
         title_parts = []
-        special_cases = {"unread": "UnRead", "id": "ID", "html": "HTML"}
         for part in demisto_name.split("_"):
-            if edge_case := special_cases.get(part):
+            if edge_case := Field._special_cases.get(part):
                 title_parts.append(edge_case)
             else:
                 title_parts.append(part.title())
