@@ -1,16 +1,17 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+
 """AddKeyToList
 Adds/Updates a Key to a JSON-backed List
 """
 
-from CommonServerUserPython import *  # noqa
 
 from typing import Dict, Any
 import traceback
 
 
 ''' STANDALONE FUNCTION '''
+# test!!!!
 
 
 def add_key_to_list(list_name: str, key_name: str, value: str, append: bool = False, allow_dups: bool = False) -> str:
