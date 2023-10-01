@@ -12,6 +12,7 @@ from PATHelpdeskAdvanced import (
     PaginateArgs,
     convert_response_dates,
     list_groups_command,
+    list_ticket_attachments_command,
     list_users_command,
     paginate,
     json,
@@ -632,6 +633,98 @@ class TestClient:
                 "FirstName": "HDA",
                 "LastName": "Cortex XSOAR",
                 "EMail": None,
+            }
+        ]
+
+    @classmethod
+    def test_list_ticket_attachments(cls, requests_mock):
+        """
+        Given   a client and a mocked response
+        When    calling the list_users_command provided arguments
+        Then    test that the request is properly made, and the resuilt is properly returned
+        """
+        mocked_request = requests_mock.post(
+            f"{cls.base_url}/WSC/List",
+            json={
+                "data": [
+                    {
+                        "ObjectDescription": "Untitled document.pdf",
+                        "ObjectEntity": "Attachment",
+                        "LastUpdateUserID": "",
+                        "IsNew": False,
+                        "KBSize": 0.76,
+                        "ObjectTypeID": "DEFAULT",
+                        "ID": "A12345C",
+                        "UniqueID": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaaaaaa",
+                        "Note": "",
+                        "FileName": "Untitled document.pdf",
+                        "FirstUpdate": None,
+                        "TicketID": "1234567C",
+                        "ContentType": "application/pdf",
+                        "OwnerUserID": "",
+                        "ParentObject": "Incident",
+                        "ParentObjectID": "1234567C",
+                        "Site": None,
+                        "EmailID": "",
+                        "BlobID": "A12345C",
+                        "FirstUpdateUserID": "S44444C",
+                        "RemoteID": "",
+                        "LastUpdate": "2023-08-02T00:00:00Z",
+                        "Description": "Untitled document.pdf",
+                    }
+                ],
+                "total": 5,
+                "result": {
+                    "code": "0",
+                    "subcode": None,
+                    "parameters": None,
+                    "desc": "",
+                },
+                "success": True,
+                "requestToken": "token",
+            },
+        )
+
+        result = list_ticket_attachments_command(
+            client=cls.logged_in_client(requests_mock),
+            args={"ticket_id": "A12345C", "limit": "1"},
+        )
+
+        assert mocked_request.called_once
+        assert unquote(mocked_request.request_history[0].query) == (
+            'entity=attachments&start=0&limit=1&filter=[{"property":+"parentobject",+"op":+"eq",+"value":+"ticket"},'
+            '+{"property":+"parentobjectid",+"op":+"eq",+"value":+"a12345c"}]'
+        )
+        assert result.readable_output == (
+            "### Attachments of A12345C\n|File Name|Ticket ID|Last Update|Description|Object Description|First Update User ID|Object Entity"
+            "|Content Type|\n|---|---|---|---|---|---|---|---|\n| Untitled document.pdf | 1234567C | 2023-08-02T00:00:00Z | "
+            "Untitled document.pdf | Untitled document.pdf | S44444C | Attachment | application/pdf |\n"
+        )
+        assert result.outputs == [
+            {
+                "ObjectDescription": "Untitled document.pdf",
+                "ObjectEntity": "Attachment",
+                "LastUpdateUserID": "",
+                "IsNew": False,
+                "KBSize": 0.76,
+                "ObjectTypeID": "DEFAULT",
+                "ID": "A12345C",
+                "UniqueID": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaaaaaa",
+                "Note": "",
+                "FileName": "Untitled document.pdf",
+                "FirstUpdate": None,
+                "TicketID": "1234567C",
+                "ContentType": "application/pdf",
+                "OwnerUserID": "",
+                "ParentObject": "Incident",
+                "ParentObjectID": "1234567C",
+                "Site": None,
+                "EmailID": "",
+                "BlobID": "A12345C",
+                "FirstUpdateUserID": "S44444C",
+                "RemoteID": "",
+                "LastUpdate": "2023-08-02T00:00:00Z",
+                "Description": "Untitled document.pdf",
             }
         ]
 
