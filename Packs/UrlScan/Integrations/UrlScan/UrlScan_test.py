@@ -58,10 +58,14 @@ def test_endless_loop_on_failed_response(requests_mock, mocker):
     with open('./test_data/capitalne.json', 'r') as f:
         response_data = json.loads(f.read())
     requests_mock.get(RESULT_URL + 'uuid', status_code=200, json=response_data)
-    thread = Thread(target=format_results, args=(client, 'uuid', ))
-    thread.start()
-    time.sleep(10)
-    assert not thread.is_alive(), 'format_results method have probably entered an endless loop'
+    try:
+        thread = Thread(target=format_results, args=(client, 'uuid', ))
+        thread.start()
+        time.sleep(10)
+    except Exception:
+        pass
+    finally:
+        assert not thread.is_alive(), 'format_results method have probably entered an endless loop'
 
 
 def test_urlscan_submit_url(requests_mock, mocker):
