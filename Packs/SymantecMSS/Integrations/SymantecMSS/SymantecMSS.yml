@@ -40,52 +40,52 @@ configuration:
   type: 0
 
   required: false
-description: Leverage the power of Symantec Managed Security Services for continual threat monitoring and customized guidance 24x7
+description: Leverage the power of Symantec Managed Security Services for continual threat monitoring and customized guidance 24x7.
 display: Symantec Managed Security Services
 name: Symantec MSS
 script:
   commands:
   - arguments:
     - default: true
-      description: The incident number in the SOC
+      description: The incident number in the SOC.
       name: number
       required: true
-    - description: To change the incident status
+    - description: To change the incident status.
       name: status
-    - description: To change the incident status resolution
+    - description: To change the incident status resolution.
       name: resolution
-    - description: Update reference comments
+    - description: Update reference comments.
       name: reference
-    - description: To change the incident severity
+    - description: To change the incident severity.
       name: severity
-    - description: 'To change incident assignment to organization (Note: assign to an organization OR a person is required)'
+    - description: 'To change incident assignment to organization (Note: assign to an organization OR a person is required).'
       name: assignOrganization
-    - description: 'To change incident assignment to person. (Note: assign to an organization OR a person is required)'
+    - description: 'To change incident assignment to person. (Note: assign to an organization OR a person is required).'
       name: assignPerson
-    - description: Incident update comment
+    - description: Incident update comment.
       name: comments
-    description: Updates an incident's workflow by incident number
+    description: Updates an incident's workflow by incident number.
     name: symantec-mss-update-incident
   - arguments:
     - default: true
-      description: The incident number in the SOC
+      description: The incident number in the SOC.
       name: number
       required: true
-    description: Query an incident by number
+    description: Query an incident by number.
     name: symantec-mss-get-incident
   - arguments:
     - default: true
-      description: Incidents created since the specified date (i.e. 2014-09-11T18:57:36.707Z). If not supplied, defaults to the last 24 hours
+      description: Incidents created since the specified date (i.e. 2014-09-11T18:57:36.707Z). If not supplied, defaults to the last 24 hours.
       name: time
-    - description: Comma-delimited list of valid Security Incident severities set by MSS. If not supplied, all severities are returned
+    - description: Comma-delimited list of valid Security Incident severities set by MSS. If not supplied, all severities are returned.
       name: severities
-    - description: Comma-delimited list of valid Source IP Addresses. If not supplied, all addresses are returned
+    - description: Comma-delimited list of valid Source IP Addresses. If not supplied, all addresses are returned.
       name: sourceIp
-    - description: The maximum number of incidents to return. If not supplied,  all incidents are returned
+    - description: The maximum number of incidents to return. If not supplied,  all incidents are returned.
       name: max
-    description: Get a list of incidents
+    description: Get a list of incidents.
     name: symantec-mss-incidents-list
-  dockerimage: demisto/crypto:1.0.0.63672
+  dockerimage: demisto/crypto:1.0.0.74979
   isfetch: true
   runonce: false
   script: '-'

@@ -15,3 +15,4 @@
 !prisma-cloud-compute-images-scan-list id=image123 limit_stats=2 compact=false
 !prisma-cloud-compute-hosts-scan-list hostname=host123 compact=false
 !prisma-cloud-compute-vulnerabilities-impacted-resources-list cve=CVE-2021-31535,CVE-2018-14600
+!prisma-cloud-compute-get-file-integrity-events hostname=host123 limit=3
