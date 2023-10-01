@@ -24,4 +24,3 @@ def test_main(mocker, question_id, secret, expected):
 
     CTF2BF.main()
     assert m.call_args[0][0]['Type'] == expected
-

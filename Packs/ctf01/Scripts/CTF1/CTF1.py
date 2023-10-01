@@ -82,7 +82,6 @@ def main():
         if not args.get(secret, "") or not question_id:
             raise DemistoException('Please specify Secret and Question ID to proceed with the challenge')
 
-
         if (args.get("secret").lower() in answers[args.get("question_ID")]):
             return_results({
                 'ContentsFormat': EntryFormat.HTML,
@@ -101,4 +100,3 @@ def main():
     except Exception as exc:  # pylint: disable=W0703
         demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute this script. Error: {str(exc)}')
-
