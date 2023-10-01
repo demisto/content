@@ -2529,3 +2529,19 @@ List tag bindings (key value pair) applied to a project/folder/organization obje
 >|key|value|
 >|---|---|
 >| environment | non-production |
+
+### gcp-iam-service-account-generate-access-token
+
+***
+Create a short-lived access token for a service account. The generated token will be exposed to the context menu and War Room, and can potentially be logged.
+
+#### Base Command
+
+`gcp-iam-service-account-generate-access-token`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| service_account_email | The email address of the privilege-bearing service account for which the short-lived token is created. | Required | 
+| lifetime | Lifetime of the Access Token in seconds. Default is 3600. | Required | 
