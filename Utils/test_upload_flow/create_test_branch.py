@@ -292,8 +292,8 @@ def do_changes_on_branch(packs_path: Path):
     # Case 4: Verify new version - ZeroFox
     enhance_release_notes(packs_path / 'ZeroFox')
 
-    # Case 5: Verify modified existing release notes - Box
-    update_existing_release_notes(packs_path / 'Box')
+    # Case 5: Verify modified existing release notes - BPA
+    update_existing_release_notes(packs_path / 'BPA')
 
     # Case 6: Verify pack is set to hidden - Microsoft365Defender
     set_pack_hidden(packs_path / 'Microsoft365Defender')

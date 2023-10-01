@@ -39,7 +39,7 @@ script:
       required: true
     - description: Email ID of the G Suite domain admin who acts on behalf of an end-user.
       name: admin_email
-    - description: Whether to show all metadata fields, or only the basic metadata fields (e.g., deviceId, model, type, and status). Default is FULL
+    - description: Whether to show all metadata fields, or only the basic metadata fields (e.g., deviceId, model, type, and status). Default is FULL.
       name: projection
       auto: PREDEFINED
       predefined:
@@ -1101,7 +1101,7 @@ script:
     - description: Display name for the schema.
       name: schema_display_name
       required: true
-    - description: |
+    - description: |-
         Raw JSON containing fields of the schema. Acceptable values for
         fieldType are BOOL, DATE, DOUBLE, EMAIL, INT64, PHONE, and STRING. Acceptable
         values for readAccessType are ADMINS_AND_SELF- Only administrators and
@@ -1123,9 +1123,9 @@ script:
               }
             }
           ]
-        }
+        }.
       name: field_raw_json
-    - description: |
+    - description: |-
         JSON file entry ID containing fields of the schema. Acceptable values for
         fieldType are BOOL, DATE, DOUBLE, EMAIL, INT64, PHONE, and STRING. Acceptable
         values for readAccessType are ADMINS_AND_SELF- Only administrators and
@@ -1147,7 +1147,7 @@ script:
               }
             }
           ]
-        }
+        }.
       name: field_json_entry_id
     description: "Creates a custom user schema to add custom fields to user profiles.\nNote: field_raw_json has higher precedence when both field_raw_json and field_json_entry_id are provided."
     name: gsuite-custom-user-schema-create
@@ -1212,7 +1212,7 @@ script:
       name: schema_id
     - description: Display name for the schema.
       name: schema_display_name
-    - description: |
+    - description: |-
         Raw JSON containing fields of the schema. Acceptable values for
         fieldType are BOOL, DATE, DOUBLE, EMAIL, INT64, PHONE, and STRING. Acceptable
         values for readAccessType are ADMINS_AND_SELF- Only administrators and
@@ -1234,9 +1234,9 @@ script:
               }
             }
           ]
-        }
+        }.
       name: field_raw_json
-    - description: |
+    - description: |-
         JSON file entry ID containing fields of the schema. Acceptable values for
         fieldType are BOOL, DATE, DOUBLE, EMAIL, INT64, PHONE, and STRING. Acceptable
         values for readAccessType are ADMINS_AND_SELF- Only administrators and
@@ -1258,7 +1258,7 @@ script:
               }
             }
           ]
-        }
+        }.
       name: field_json_entry_id
     description: "Updates a custom user schema.\nNote: field_raw_json has higher precedence when both field_raw_json and field_json_entry_id are provided."
     name: gsuite-custom-user-schema-update
@@ -1322,9 +1322,9 @@ script:
       required: true
     - description: The application's ID.
       name: application_id
-    - description: Key and value pair of application data transfer parameters. Key and value must be delimited by (:) colon. Multiple values must be delimited by (,) comma. Multiple key-value pairs must be delimited by (;) semi-colon. E.g. key1:val;key2:val1,val2
+    - description: Key and value pair of application data transfer parameters. Key and value must be delimited by (:) colon. Multiple values must be delimited by (,) comma. Multiple key-value pairs must be delimited by (;) semi-colon. E.g. key1:val;key2:val1,val2.
       name: application_transfer_params
-    - description: |
+    - description: |-
         Raw JSON containing the whole body of the application data transfers.
         E.g.
         {
@@ -1341,9 +1341,9 @@ script:
               ]
             }
           ]
-        }
+        }.
       name: applications_raw_json
-    - description: |
+    - description: |-
         JSON file Entry ID containing the whole body of the application data transfers.
         E.g.
         {
@@ -1360,7 +1360,7 @@ script:
               ]
             }
           ]
-        }
+        }.
       name: applications_raw_json_entry_id
     description: |-
       Inserts a data transfer request.
@@ -1862,7 +1862,7 @@ script:
     - description: 'One of the following: user email address, alias email address, or the unique user ID.'
       name: user
       required: true
-    description: Retrieve a user's details given a user key
+    description: Retrieve a user's details given a user key.
     name: gsuite-user-get
     outputs:
     - contextPath: GSuite.User.id
@@ -2229,7 +2229,7 @@ script:
     - contextPath: GSuite.Group.nonEditableAliases
       description: List of the group's non-editable alias email addresses that are outside of the account's primary domain or subdomains.
       type: String
-  dockerimage: demisto/googleapi-python3:1.0.0.72462
+  dockerimage: demisto/googleapi-python3:1.0.0.74508
   runonce: false
   script: '-'
   subtype: python3

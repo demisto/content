@@ -92,7 +92,7 @@ script:
     deprecated: true
     description: Gets indicators from the feed.
     name: gcp-whitelist-get-indicators
-  dockerimage: demisto/dnspython:1.0.0.24037
+  dockerimage: demisto/netutils:1.0.0.74582
   feed: true
   runonce: false
   script: '-'
