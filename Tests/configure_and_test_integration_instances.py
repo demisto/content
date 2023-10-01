@@ -226,6 +226,7 @@ class Build(ABC):
         self.marketplace_tag_name = None
         self.artifacts_folder = None
         self.marketplace_buckets = None
+        self.xdr_suffix = options.xdr_suffix
 
     @property
     @abstractmethod
