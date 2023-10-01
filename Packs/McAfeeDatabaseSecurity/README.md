@@ -6,7 +6,7 @@ You need to configure McAfee Database Security to forward Syslog messages.
 
 1. Login to the Database Security console.
 2. Navigate to **System** > **Interfaces** > **Syslog**.
-3. Click on the **Use syslog** checkbox.
+3. Click the **Use syslog** checkbox.
 4. Configure the correct syslog host/port.
 5. Select the transport protocol.
 6. Set the syslog format to CEF (default).
