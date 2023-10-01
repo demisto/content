@@ -317,7 +317,7 @@ tuple[Dict[str, Union[List[Dict[Any, Any]], str, Any]], List[Dict[str, Any]]]:
     :rtype: ``Tuple[Dict[str, str], List[dict]]``
     """
     demisto.debug(f'last run is: {last_run}')
-    incidents_last_fetch_ids: list = last_run.get('incidents_last_fetch_ids', [])  # type: ignore
+    last_fetched_incidents: list = last_run.get('last_fetched_incidents', [])  # type: ignore
     if not last_fetch:
         last_fetch = first_fetch_time  # type: ignore
     else:
@@ -338,7 +338,7 @@ tuple[Dict[str, Union[List[Dict[Any, Any]], str, Any]], List[Dict[str, Any]]]:
 
     demisto.debug(f'XSOAR Mirroring: Fetching incidents since last fetch: {last_fetch}')
 
-    incidents, incidents_last_fetch_ids = get_and_dedup_incidents(client,incidents_last_fetch_ids,
+    incidents, last_fetched_incidents = get_and_dedup_incidents(client,last_fetched_incidents,
                                                                   query, max_results, last_fetch)
     if fetch_incident_history:
         integration_context = get_integration_context()
@@ -402,7 +402,7 @@ tuple[Dict[str, Union[List[Dict[Any, Any]], str, Any]], List[Dict[str, Any]]]:
     # Save the next_run as a dict with the last_fetch key to be stored
     next_run = {'last_fetch': (latest_created_time)  # type: ignore[operator]
                 .strftime(XSOAR_DATE_FORMAT),  # type: ignore[union-attr,operator]
-                'incidents_last_fetch_ids': incidents_last_fetch_ids}
+                'last_fetched_incidents': last_fetched_incidents}
     demisto.debug(f'XSOAR Mirroring: Setting next run to: {next_run}')
     return next_run, incidents_result
 
@@ -801,20 +801,20 @@ def update_remote_system_command(client: Client, args: Dict[str, Any], mirror_ta
     return new_incident_id
 
 
-def get_and_dedup_incidents(client: Client, incidents_last_fetch_ids: list[dict],
+def get_and_dedup_incidents(client: Client, last_fetched_incidents: list[dict],
                             query: str, max_results: int, last_fetch: Union[str, int]) -> tuple[list[dict], list[dict]]:
     """ get incidents and dedup the incidents response.
 
     Cases:
     1.  Empty incidents list (no new incidents received from API response).
         Meaning: Usually means there are not any more incidents to fetch at the moment.
-        Handle: Return empty list of incidents and the unchanged list of 'incidents_last_fetch_ids' for next run.
+        Handle: Return empty list of incidents and the unchanged list of 'last_fetched_incidents' for next run.
 
     2.  The response include incidents from the previous fetch cycle.
         Meaning: There are potentially more incidents with the same timestamp.
         Handle: Get more incidents util the number of the incident equal to the requested max fetch_limit.
-        Add the list of fetched incidents IDs to current 'incidents_last_fetch_ids' from last run,
-        return list of new incidents and updated list of 'incidents_last_fetch_ids' for next run.
+        Add the list of fetched incidents IDs to current 'last_fetched_incidents' from last run,
+        return list of new incidents and updated list of 'last_fetched_incidents' for next run.
 
     3.  Most recent incident has later timestamp then other incidents in the response.
         Meaning: This is the normal case where incidents in the response have different timestamps.
@@ -823,13 +823,13 @@ def get_and_dedup_incidents(client: Client, incidents_last_fetch_ids: list[dict]
 
     Args:
         incidents (list[dict]): List of incidents from the current fetch response.
-        incidents_last_fetch_ids (list[dict]): List of IDs of incidents from last fetch cycle.
+        last_fetched_incidents (list[dict]): List of IDs of incidents from last fetch cycle.
 
     Returns:
         tuple[list[dict], list[str]: The list of dedup incidents and ID list of incidents of current fetch.
     """
-    last_fatched_incident = (dateparser.parse(incidents_last_fetch_ids[-1]["created"])
-                             if incidents_last_fetch_ids else None)
+    last_fatched_incident = (dateparser.parse(last_fetched_incidents[-1]["created"])
+                             if last_fetched_incidents else None)
 
     new_incidents: list = []
     page = 0
@@ -849,17 +849,17 @@ def get_and_dedup_incidents(client: Client, incidents_last_fetch_ids: list[dict]
                 break
             incident_dict = {"id": incident["id"], "created": incident["created"]}
             incident_creation_time = dateparser.parse(incident["created"])
-            if incident_dict not in incidents_last_fetch_ids:
+            if incident_dict not in last_fetched_incidents:
                 # Case 3: The last fetched incident with the different timestamp then the previous incident.
                 if last_fatched_incident and incident_creation_time and last_fatched_incident < incident_creation_time:
-                    incidents_last_fetch_ids = [incident_dict]
+                    last_fetched_incidents = [incident_dict]
                 # Case 2: The last fetched incident with the same timestamp as the previous incident.
                 else:
-                    incidents_last_fetch_ids.append(incident_dict)
+                    last_fetched_incidents.append(incident_dict)
                 new_incidents.append(incident)
                 last_fatched_incident = incident_creation_time
         page += 1
-    return new_incidents, incidents_last_fetch_ids
+    return new_incidents, last_fetched_incidents
 
 
 def main() -> None:  # pragma: no cover
