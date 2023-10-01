@@ -776,6 +776,8 @@ def return_outputs_similar_incidents(show_actual_incident: bool, current_inciden
     similar_incidents = similar_incidents.replace(np.nan, '', regex=True)
     current_incident = current_incident.replace(np.nan, '', regex=True)
 
+    similar_incidents = similar_incidents.drop_duplicates()
+    current_incident = current_incident.drop_duplicates()
     similar_incidents_json = similar_incidents.to_dict(orient='records')
     incident_json = current_incident.to_dict(orient='records')
 
