@@ -2242,26 +2242,26 @@ script:
     - description: |-
         A description for the security group rule that references this IPv4 address range.
 
-        Constraints: Up to 255 characters in length. Allowed characters are a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=;{}!$*.
+        Constraints: Up to 255 characters in length. Allowed characters are a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=;{}$*!
       name: IpRangesDesc
     - description: The IPv6 CIDR range. You can either specify a CIDR range or a source security group, not both. To specify a single IPv6 address, use the /128 prefix length.
       name: Ipv6RangesCidrIp
     - description: |-
         A description for the security group rule that references this IPv6 address range.
 
-        Constraints: Up to 255 characters in length. Allowed characters are a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=;{}!$*.
+        Constraints: Up to 255 characters in length. Allowed characters are a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=;{}$*!
       name: Ipv6RangesDesc
     - description: The ID of the prefix.
       name: PrefixListId
     - description: |-
         A description for the security group rule that references this prefix list ID.
 
-        Constraints: Up to 255 characters in length. Allowed characters are a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=;{}!$*.
+        Constraints: Up to 255 characters in length. Allowed characters are a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=;{}$*!
       name: PrefixListIdDesc
     - description: |-
         A description for the security group rule that references this user ID group pair.
 
-        Constraints: Up to 255 characters in length. Allowed characters are a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=;{}!$*.
+        Constraints: Up to 255 characters in length. Allowed characters are a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=;{}$*!
       name: UserIdGroupPairsDescription
     - description: The ID of the security group.
       name: UserIdGroupPairsGroupId
@@ -2303,26 +2303,26 @@ script:
     - description: |-
         A description for the security group rule that references this IPv4 address range.
 
-        Constraints: Up to 255 characters in length. Allowed characters are a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=;{}!$*.
+        Constraints: Up to 255 characters in length. Allowed characters are a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=;{}$*!
       name: IpRangesDesc
     - description: The IPv6 CIDR range. You can either specify a CIDR range or a source security group, not both. To specify a single IPv6 address, use the /128 prefix length.
       name: Ipv6RangesCidrIp
     - description: |-
         A description for the security group rule that references this IPv6 address range.
 
-        Constraints: Up to 255 characters in length. Allowed characters are a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=;{}!$*.
+        Constraints: Up to 255 characters in length. Allowed characters are a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=;{}$*!
       name: Ipv6RangesDesc
     - description: The ID of the prefix.
       name: PrefixListId
     - description: |-
         A description for the security group rule that references this prefix list ID.
 
-        Constraints: Up to 255 characters in length. Allowed characters are a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=;{}!$*.
+        Constraints: Up to 255 characters in length. Allowed characters are a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=;{}$*!
       name: PrefixListIdDesc
     - description: |-
         A description for the security group rule that references this user ID group pair.
 
-        Constraints: Up to 255 characters in length. Allowed characters are a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=;{}!$*.
+        Constraints: Up to 255 characters in length. Allowed characters are a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=;{}$*!
       name: UserIdGroupPairsDescription
     - description: The ID of the security group.
       name: UserIdGroupPairsGroupId
@@ -3712,7 +3712,7 @@ script:
       name: IpPermissionsIpProtocol
     - description: The IPv4 CIDR range. You can either specify a CIDR range or a source security group, not both. To specify a single IPv4 address, use the /32 prefix length.
       name: IpRangesCidrIp
-    - description: 'A description for the security group rule that references this IPv4 address range.Constraints: Up to 255 characters in length. Allowed characters are a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=;{}!$*.'
+    - description: 'A description for the security group rule that references this IPv4 address range.Constraints: Up to 255 characters in length. Allowed characters are a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=;{}$*!'
       name: IpRangesDescription
     - description: The IPv6 CIDR range. You can either specify a CIDR range or a source security group, not both. To specify a single IPv6 address, use the /128 prefix length.
       name: Ipv6RangesCidrIp
@@ -3720,9 +3720,9 @@ script:
       name: Ipv6RangesDescription
     - description: The ID of the prefix.
       name: PrefixListId
-    - description: 'A description for the security group rule that references this prefix list ID. Constraints: Up to 255 characters in length. Allowed characters are a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=;{}!$*.'
+    - description: 'A description for the security group rule that references this prefix list ID. Constraints: Up to 255 characters in length. Allowed characters are a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=;{}$*!'
       name: PrefixListIdDescription
-    - description: 'A description for the security group rule that references this user ID group pair. Constraints: Up to 255 characters in length. Allowed characters are a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=;{}!$*.'
+    - description: 'A description for the security group rule that references this user ID group pair. Constraints: Up to 255 characters in length. Allowed characters are a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=;{}$*!'
       name: UserIdGroupPairsDescription
     - description: The ID of the security group.
       name: UserIdGroupPairsGroupId
