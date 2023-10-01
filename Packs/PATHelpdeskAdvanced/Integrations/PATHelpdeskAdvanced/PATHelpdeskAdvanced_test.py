@@ -1,4 +1,5 @@
 from pathlib import Path
+from urllib.parse import unquote, urlencode
 import freezegun
 import pytest
 from datetime import datetime, timezone
@@ -10,12 +11,15 @@ from PATHelpdeskAdvanced import (
     Field,
     PaginateArgs,
     convert_response_dates,
+    list_groups_command,
+    list_users_command,
     paginate,
     json,
     demisto,
     Client,
     pat_table_to_markdown,
 )
+from Packs.Mimecast.Integrations.MimecastV2.MimecastV2 import url_decode
 
 
 @pytest.mark.parametrize(
@@ -409,8 +413,8 @@ class TestClient:
         )
 
     @classmethod
-    def logged_in_client(cls, requests_mock):
-        cls.mock_login_response(requests_mock)
+    def logged_in_client(cls, requests_mock_object):
+        cls.mock_login_response(requests_mock_object)
         return cls.dummy_client()
 
     @staticmethod
@@ -518,6 +522,8 @@ class TestClient:
         Given a client
         When calling add_ticket_attachment with two files
         Then make sure they are properly sent in the request
+
+        NOTE: This tests the method, not the _command, as the method has non-trivial logic.
         """
         from PATHelpdeskAdvanced import Path
 
@@ -540,6 +546,94 @@ class TestClient:
                 f'name="TicketAttachment_{i}"; filename="test.txt"\\r\\n\\r\\nmock file contents'
                 in stringified_request
             )
+
+    @classmethod
+    def test_list_groups(cls, requests_mock):
+        """
+        Given   a client and a mocked response
+        When    calling the list_groups_command with provided arguments
+        Then    test that the request is properly made, and the resuilt is properly returned
+        """
+        mocked_request = requests_mock.post(
+            f"{cls.base_url}/WSC/Projection",
+            json={
+                "data": [
+                    {
+                        "Description": "dummy group 1",
+                        "ID": "G001",
+                        "ObjectTypeID": "65",
+                    },
+                ],
+                "success": True,
+            },
+        )
+
+        result = list_groups_command(
+            client=cls.logged_in_client(requests_mock),
+            args={"group_id": "G001", "limit": "1", "page": "3", "page_size": "2"},
+        )
+
+        assert mocked_request.called_once
+        assert unquote(mocked_request.request_history[0].query) == (
+            "entity=usergroup&columnexpressions=['id',+'description',+'objecttypeid']&"
+            "columnnames=['id',+'description',+'objecttypeid']&start=6&limit=1&"
+            'filter=[{"property":+"id",+"op":+"eq",+"value":+"g001"}]'
+        )
+        assert result.readable_output == (
+            "### PAT HelpDeskAdvanced Groups\n|Group ID|Description|Object Type ID|"
+            "\n|---|---|---|\n| G001 | dummy group 1 | 65 |\n"
+        )
+        assert result.outputs == [
+            {"ID": "G001", "Description": "dummy group 1", "ObjectTypeID": "65"}
+        ]
+
+    @classmethod
+    def test_list_users(cls, requests_mock):
+        """
+        Given   a client and a mocked response
+        When    calling the list_users_command provided arguments
+        Then    test that the request is properly made, and the resuilt is properly returned
+        """
+        mocked_request = requests_mock.post(
+            f"{cls.base_url}/WSC/Projection",
+            json={
+                "data": [
+                    {
+                        "User.Phone": None,
+                        "ID": "U001",
+                        "User.FirstName": "HDA",
+                        "User.LastName": "Cortex XSOAR",
+                        "User.EMail": None,
+                    }
+                ],
+                "success": True,
+            },
+        )
+
+        result = list_users_command(
+            client=cls.logged_in_client(requests_mock),
+            args={"user_id": "U001", "limit": "1", "page": "3", "page_size": "2"},
+        )
+
+        assert mocked_request.called_once
+        assert unquote(mocked_request.request_history[0].query) == (
+            "entity=users&columnexpressions=['id',+'user.firstname',+'user.lastname',+'user.email',"
+            "+'user.phone',+'user.mobile']&columnnames=['id',+'user.firstname',+'user.lastname',+'user.email',"
+            '+\'user.phone\',+\'user.mobile\']&start=6&limit=1&filter=[{"property":+"id",+"op":+"eq",+"value":+"u001"}]'
+        )
+        assert result.readable_output == (
+            "### PAT HelpDeskAdvanced Users\n|Phone|ID|First Name|Last Name|E Mail|"
+            "\n|---|---|---|---|---|\n|  | U001 | HDA | Cortex XSOAR |  |\n"
+        )
+        assert result.outputs == [
+            {
+                "Phone": None,
+                "ID": "U001",
+                "FirstName": "HDA",
+                "LastName": "Cortex XSOAR",
+                "EMail": None,
+            }
+        ]
 
     @classmethod
     def test_non_json_response(cls, requests_mock):
