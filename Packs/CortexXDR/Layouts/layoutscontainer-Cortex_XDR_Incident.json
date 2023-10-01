@@ -674,11 +674,11 @@
                                     "simple": "xdralertname"
                                 }
                             },
-                            "operator": "notContainsGeneral",
+                            "operator": "notContainsString",
                             "right": {
                                 "isContext": false,
                                 "value": {
-                                    "simple": "token"
+                                    "simple": "Suspicious usage of AWS Lambda’s token"
                                 }
                             },
                             "type": "multiSelect"
@@ -690,14 +690,109 @@
                             "left": {
                                 "isContext": true,
                                 "value": {
-                                    "simple": "mitretacticname"
+                                    "simple": "xdralertname"
                                 }
                             },
-                            "operator": "notContainsGeneral",
+                            "operator": "notContainsString",
                             "right": {
                                 "isContext": false,
                                 "value": {
-                                    "simple": "Credential Access"
+                                    "simple": "Suspicious usage of AWS Lambda’s role"
+                                }
+                            },
+                            "type": "multiSelect"
+                        }
+                    ],
+                    [
+                        {
+                            "ignoreCase": false,
+                            "left": {
+                                "isContext": true,
+                                "value": {
+                                    "simple": "xdralertname"
+                                }
+                            },
+                            "operator": "notContainsString",
+                            "right": {
+                                "isContext": false,
+                                "value": {
+                                    "simple": "Suspicious usage of EC2 token"
+                                }
+                            },
+                            "type": "multiSelect"
+                        }
+                    ],
+                    [
+                        {
+                            "ignoreCase": false,
+                            "left": {
+                                "isContext": true,
+                                "value": {
+                                    "simple": "xdralertname"
+                                }
+                            },
+                            "operator": "notContainsString",
+                            "right": {
+                                "isContext": false,
+                                "value": {
+                                    "simple": "Remote usage of an AWS service token"
+                                }
+                            },
+                            "type": "multiSelect"
+                        }
+                    ],
+                    [
+                        {
+                            "ignoreCase": false,
+                            "left": {
+                                "isContext": true,
+                                "value": {
+                                    "simple": "xdralertname"
+                                }
+                            },
+                            "operator": "notContainsString",
+                            "right": {
+                                "isContext": false,
+                                "value": {
+                                    "simple": "Remote usage of an AWS EKS token"
+                                }
+                            },
+                            "type": "multiSelect"
+                        }
+                    ],
+                    [
+                        {
+                            "ignoreCase": false,
+                            "left": {
+                                "isContext": true,
+                                "value": {
+                                    "simple": "xdralertname"
+                                }
+                            },
+                            "operator": "notContainsString",
+                            "right": {
+                                "isContext": false,
+                                "value": {
+                                    "simple": "Suspicious usage of an AWS EKS token"
+                                }
+                            },
+                            "type": "multiSelect"
+                        }
+                    ],
+                    [
+                        {
+                            "ignoreCase": false,
+                            "left": {
+                                "isContext": true,
+                                "value": {
+                                    "simple": "xdralertname"
+                                }
+                            },
+                            "operator": "notContainsString",
+                            "right": {
+                                "isContext": false,
+                                "value": {
+                                    "simple": "Suspicious usage of an AWS ECS token"
                                 }
                             },
                             "type": "multiSelect"
