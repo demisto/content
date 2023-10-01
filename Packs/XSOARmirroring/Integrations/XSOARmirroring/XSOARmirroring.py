@@ -3,10 +3,9 @@ from CommonServerPython import *
 import json
 import requests
 import dateparser
-from datetime import timedelta, date
-from typing import Any, Dict, List, Optional, Set, cast
+from datetime import timedelta
+from typing import Any, Dict, List, Optional, Set
 import urllib3
-import itertools
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -36,18 +35,19 @@ MIRROR_RESET = 'XSOARMirror_mirror_reset'
 
 class Client(BaseClient):
     def search_incidents(self, query: Optional[str], max_results: Optional[int],
-                         start_time: Union[str, int]) -> List[Dict[str, Any]]:
-        data = {
+                         start_time: Union[str, int], page: int = None, field: str = "id") -> List[Dict[str, Any]]:
+        data = remove_empty_elements({
             "filter": {
                 "query": query,
                 "size": max_results or 10,
+                "page": page,
                 "fromDate": start_time,
                 "sort": [{
-                    "field": "id",
+                    "field": field,
                     "asc": True
                 }]
             }
-        }
+        })
         return self._http_request(
             method='POST',
             url_suffix='/incidents/search',
@@ -266,7 +266,8 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict[str, Union[
                     last_fetch: Union[str, int],
                     first_fetch_time: Union[int, str], query: str | None, mirror_direction: str,
                     mirror_tag: list[str], mirror_playbook_id: bool = False,
-                    fetch_incident_history: bool = False) -> tuple[dict[str, str], list[dict]]:
+                    fetch_incident_history: bool = False) -> \
+tuple[Dict[str, Union[List[Dict[Any, Any]], str, Any]], List[Dict[str, Any]]]:
     """This function retrieves new incidents every interval (default is 1 minute).
 
     :type client: ``Client``
@@ -316,7 +317,7 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict[str, Union[
     :rtype: ``Tuple[Dict[str, str], List[dict]]``
     """
     demisto.debug(f'last run is: {last_run}')
-    incidents_last_fetch_ids = last_run.get('incidents_last_fetch_ids', [])
+    incidents_last_fetch_ids: list = last_run.get('incidents_last_fetch_ids', [])  # type: ignore
     if not last_fetch:
         last_fetch = first_fetch_time  # type: ignore
     else:
@@ -336,14 +337,9 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict[str, Union[
         query = f'created:>="{last_fetch}"'
 
     demisto.debug(f'XSOAR Mirroring: Fetching incidents since last fetch: {last_fetch}')
-    incidents = client.search_incidents(
-        query=query,
-        max_results=max_results,
-        start_time=last_fetch
-    )
-    demisto.debug(f'XSOAR Mirroring: Got {len(incidents)} incidents before filtering')
-    incidents, incidents_last_fetch_ids = dedup_incidents(incidents, incidents_last_fetch_ids)
-    demisto.debug(f'XSOAR Mirroring: Got {len(incidents)} incidents after filtering')
+
+    incidents, incidents_last_fetch_ids = get_and_dedup_incidents(client,incidents_last_fetch_ids,
+                                                                  query, max_results, last_fetch)
     if fetch_incident_history:
         integration_context = get_integration_context()
         incident_mirror_reset: dict = {incident['id']: True for incident in incidents}
@@ -805,80 +801,69 @@ def update_remote_system_command(client: Client, args: Dict[str, Any], mirror_ta
     return new_incident_id
 
 
-def are_two_datetime_equal_by_second(x: datetime, y: datetime):
-    """Calculate if two datetime objects are equal up to the seconds value.
-        Even though the 'time' attribute of each event has milliseconds,
-        the API request supports time filtering of only up to seconds.
-        There for, all events with the same time up to a seconds are considered to have the same time.
-
-    Args:
-        x (datetime): First datetime.
-        y (datetime): Second datetime.
-
-    Returns:
-        Boolean: True if both datetime objects have the same time up to seconds, False otherwise.
-    """
-    return (x.year == y.year) and (x.month == y.month) and (x.day == y.day)\
-        and (x.hour == y.hour) and (x.minute == y.minute) and (x.second == y.second)
-
-
-def dedup_incidents(incidents: list[dict], incidents_last_fetch_ids):
-    """ Dedup incidents response.
+def get_and_dedup_incidents(client: Client, incidents_last_fetch_ids: list[dict],
+                            query: str, max_results: int, last_fetch: Union[str, int]) -> tuple[list[dict], list[dict]]:
+    """ get incidents and dedup  the incidents response.
 
     Cases:
-    1.  Empty event list (no new incidents received from API response).
+    1.  Empty incidents list (no new incidents received from API response).
         Meaning: Usually means there are not any more incidents to fetch at the moment.
         Handle: Return empty list of incidents and the unchanged list of 'incidents_last_fetch_ids' for next run.
 
-    2.  All incidents from the current fetch cycle have the same timestamp.
-        Meaning: There are potentially more incidents with the same timestamp in the next fetch.
-        Handle: Add the list of fetched incidents IDs to current 'incidents_last_fetch_ids' from last run,
-                return list of new incidents and updated list of 'incidents_last_fetch_ids' for next run.
+    2.  The response include incidents from the previous fetch cycle.
+        Meaning: There are potentially more incidents with the same timestamp.
+        Handle: Get more incidents util the number of the incident equal to the requested max fetch_limit.
+        Add the list of fetched incidents IDs to current 'incidents_last_fetch_ids' from last run,
+        return list of new incidents and updated list of 'incidents_last_fetch_ids' for next run.
 
-    3.  Most recent event has later timestamp then other incidents in the response.
+    3.  Most recent incident has later timestamp then other incidents in the response.
         Meaning: This is the normal case where incidents in the response have different timestamps.
         Handle: Return list of new incidents and a list of 'new_ids' containing only IDs of
-                incidents with identical latest time (up to second) for next run.
+                incidents with identical latest time for next run.
 
     Args:
         incidents (list[dict]): List of incidents from the current fetch response.
-        incidents_last_fetch_ids (list[str]): List of IDs of incidents from last fetch cycle.
+        incidents_last_fetch_ids (list[dict]): List of IDs of incidents from last fetch cycle.
 
     Returns:
         tuple[list[dict], list[str]: The list of dedup incidents and ID list of incidents of current fetch.
     """
-    # case 1
-    if not incidents:
-        demisto.debug('XSOAR Mirroring: Dedup case 1 - Empty event list (no new incidents received from API response).')
-        return [], incidents_last_fetch_ids
-    new_incidents: list[dict] = [incident for incident in incidents if incident.get("id") not in incidents_last_fetch_ids]
-    # sort the incidents by creation date.
-    incidents.sort(key=lambda item: cast(date,dateparser.parse(item['created'])))
-    earliest_event_datetime = dateparser.parse(incidents[0]['created'])
-    latest_event_datetime = dateparser.parse(incidents[-1]['created'])
+    last_fatched_incident = (dateparser.parse(incidents_last_fetch_ids[-1]["created"])
+                             if incidents_last_fetch_ids else None)
+    incidents = client.search_incidents(
+        query=query,
+        max_results=max_results,
+        start_time=last_fetch,
+        field="created",
+    )
+    new_incidents: list = []
+    page = 1
+    # Case 1: Empty response len(incidents) == 0
+    while len(incidents) > 0 and len(new_incidents) < max_results:
+        for incident in incidents:
+            if len(new_incidents) >= max_results:
+                break
+            incident_dict = {"id": incident["id"], "created": incident["created"]}
+            if incident_dict not in incidents_last_fetch_ids and \
+                    len(new_incidents) < max_results:
+                # Case 2: The last fetched incident with the same timestamp as the previous incident.
+                if last_fatched_incident and last_fatched_incident == dateparser.parse(incident["created"]):
 
-    # case 2
-    if earliest_event_datetime and latest_event_datetime and\
-            are_two_datetime_equal_by_second(latest_event_datetime, earliest_event_datetime):
-        demisto.debug('XSOAR Mirroring: Dedup case 2 - All incidents from the current fetch cycle have the same timestamp.')
-        new_ids = [incident.get('id', '') for incident in new_incidents]
-        incidents_last_fetch_ids.extend(new_ids)
-        return new_incidents, incidents_last_fetch_ids
-
-    # case 3
-    else:
-        # Note that the following timestamps comparison are made between strings and assume
-        # the following timestamp format from the response: "YYYY-MM-DDTHH:MM:SS.fffff+Z"
-        demisto.debug('XSOAR Mirroring: Dedup case 3 - Most recent event has later '
-                      'timestamp then other incidents in the response.')
-
-        latest_event_timestamp = incidents[-1].get('created', '')
-        # itertools.takewhile is used to iterate over the list of incidents (from latest time to earliest)
-        # and take only the incidents with identical latest time
-        incidents_with_identical_latest_time = list(
-            itertools.takewhile(lambda x: x.get('created', '') == latest_event_timestamp, reversed(incidents)))
-        new_ids = [incident.get('id', '') for incident in incidents_with_identical_latest_time]
-        return new_incidents, new_ids
+                    incidents_last_fetch_ids.append(incident_dict)
+                # Case 3: The last fetched incident with the different timestamp then the previous incident.
+                else:
+                    incidents_last_fetch_ids = [incident_dict]
+                new_incidents.append(incident)
+                last_fatched_incident = dateparser.parse(incident["created"])
+        if len(new_incidents) < max_results:
+            incidents = client.search_incidents(
+                query=query,
+                max_results=max_results,
+                start_time=last_fetch,
+                page=page
+            )
+            page += 1
+    return new_incidents, incidents_last_fetch_ids
 
 
 def main() -> None:  # pragma: no cover
