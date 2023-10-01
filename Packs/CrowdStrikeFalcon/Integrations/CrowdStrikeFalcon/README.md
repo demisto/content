@@ -13,8 +13,11 @@ The CrowdStrike Falcon OAuth 2 API integration (formerly Falcon Firehose API), e
     | Secret |  | True |
     | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
     | Max incidents per fetch |  | False |
-    | Detections fetch query |  | False |
-    | Incidents fetch query |  | False |
+    | Endpoint Detections fetch query |  | False |
+    | Endpoint Incidents fetch query |  | False |
+    | IDP Detections fetch query |  | False |
+    | IOM fetch query | Use the Falcon Query Language. For more information, refer to the integration docs. | False |
+    | IOA fetch query | In the format: cloud_provider=aws&aws_account_id=1234. The query must have the argument 'cloud_provider' configured. For more information, refer to the integration docs. | False |
     | Fetch incidents |  | False |
     | Incident type |  | False |
     | Mirroring Direction | Choose the direction to mirror the detection: Incoming \(from CrowdStrike Falcon to XSOAR\), Outgoing \(from XSOAR to CrowdStrike Falcon\), or Incoming and Outgoing \(to/from CrowdStrike Falcon and XSOAR\). | False |
@@ -82,6 +85,52 @@ Newly fetched incidents or detections will be mirrored in the chosen direction. 
   - In case the *look-back* parameter is initialized with a certain value and during a time that incidents were fetched, if changing 
    the lookback to a number that is greater than the previous value, then in the initial incident fetching there will be incidents duplications.
    If the integration was already set with lookback > 0, and the lookback is not being increased at any point of time, then those incident duplications would not occur.
+
+
+### Fetch Incidents
+
+#### IOM Incidents
+
+The [FQL](https://falconpy.io/Usage/Falcon-Query-Language.html) filter expression is used to configure the IOM fetch query.
+Available filter:
+
+- use_current_scan_ids (use this to get records for latest scans)
+- account_name
+- account_id
+- agent_id
+- attack_types
+- azure_subscription_id
+- cloud_provider
+- cloud_service_keyword
+- custom_policy_id
+- is_managed
+- policy_id
+- policy_type
+- resource_id
+- region
+- status
+- severity
+- severity_string
+
+Exmample: `cloud_provider: 'aws'+account_id: 'my_id'`
+
+#### IOA Incidents
+
+The IOA fetch query uses the following format:
+**param1=val1&param2=val2**
+Available parameters:
+
+- cloud_provider (required in every query)
+- account_id
+- aws_account_id
+- azure_subscription_id
+- azure_tenant_id
+- severity
+- region
+- service
+- state
+
+Exmample: `cloud_provider=aws&region=eu-west-2`
 
 ### 1. Search for a device
 
@@ -6183,3 +6232,436 @@ List identity entities.
 | CrowdStrike.IDPEntity.RiskScoreSeverity | String | The identity entity risk score severity. | 
 | CrowdStrike.IDPEntity.SecondaryDisplayName | String | The identity entity secondary display name. | 
 | CrowdStrike.IDPEntity.EmailAddresses | String | The identity entity email address. | 
+
+#### Base Command
+
+`cs-falcon-cspm-list-policy-details`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| policy_ids | Comma-separated list of policy IDs to look for. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CrowdStrike.CSPMPolicy.ID | Integer | The policy ID. | 
+| CrowdStrike.CSPMPolicy.CreatedAt | Date | The creation date. | 
+| CrowdStrike.CSPMPolicy.UpdatedAt | Date | The update date. | 
+| CrowdStrike.CSPMPolicy.DeletedAt | Date | The deletion date. | 
+| CrowdStrike.CSPMPolicy.description | String | The policy description. | 
+| CrowdStrike.CSPMPolicy.policy_statement | String | The policy statement. | 
+| CrowdStrike.CSPMPolicy.policy_remediation | String | The policy remediation. | 
+| CrowdStrike.CSPMPolicy.cloud_service_subtype | String | The cloud service subtype. | 
+| CrowdStrike.CSPMPolicy.cloud_document | String | The cloud document. | 
+| CrowdStrike.CSPMPolicy.mitre_attack_cloud_matrix | String | URL to the MITRE attack tactics. | 
+| CrowdStrike.CSPMPolicy.mitre_attack_cloud_subtype | String | URL to the MITRE attack techniques. | 
+| CrowdStrike.CSPMPolicy.alert_logic | String | The alert logic. | 
+| CrowdStrike.CSPMPolicy.api_command | String | The API command. | 
+| CrowdStrike.CSPMPolicy.cli_command | String | The CLI command. | 
+| CrowdStrike.CSPMPolicy.cloud_platform_type | String | The cloud platform type. | 
+| CrowdStrike.CSPMPolicy.cloud_service_type | String | The cloud service type. | 
+| CrowdStrike.CSPMPolicy.default_severity | String | The default severity. | 
+| CrowdStrike.CSPMPolicy.cis_benchmark_ids | Array | The CIS benchmark IDs. | 
+| CrowdStrike.CSPMPolicy.nist_benchmark_ids | Array | The NIST benchmark IDs. | 
+| CrowdStrike.CSPMPolicy.pci_benchmark_ids | Array | The pci benchmark IDs. | 
+| CrowdStrike.CSPMPolicy.policy_type | String | The policy type. | 
+| CrowdStrike.CSPMPolicy.tactic_url | String | The tactic URL. | 
+| CrowdStrike.CSPMPolicy.technique_url | String | The technique URL. | 
+| CrowdStrike.CSPMPolicy.tactic | String | The tactic used. | 
+| CrowdStrike.CSPMPolicy.technique | String | The technique used. | 
+| CrowdStrike.CSPMPolicy.tactic_id | String | The tactic ID. | 
+| CrowdStrike.CSPMPolicy.technique_id | String | The technique ID. | 
+| CrowdStrike.CSPMPolicy.attack_types | Array | The attack types. | 
+| CrowdStrike.CSPMPolicy.asset_type_id | Integer | The asset type ID. | 
+| CrowdStrike.CSPMPolicy.cloud_asset_type | String | The cloud asset type. | 
+| CrowdStrike.CSPMPolicy.is_remediable | Boolean | Whether the policy is remediable or not. | 
+| CrowdStrike.CSPMPolicy.is_enabled | Boolean | Whether the policy is enabled or not. | 
+| CrowdStrike.CSPMPolicy.account_scope | String | The account scope. | 
+
+#### Command example
+```!cs-falcon-cspm-list-policy-details policy_ids=1,2```
+#### Context Example
+```json
+{
+    "CrowdStrike": {
+        "CSPMPolicy": [
+            {
+                "CreatedAt": "2020-08-18T08:30:21.760579Z",
+                "DeletedAt": null,
+                "ID": 1,
+                "UpdatedAt": "2023-06-21T18:47:44.371539Z",
+                "account_scope": "",
+                "alert_logic": "1. List all IAM users.|\n2. Filter on users with active access keys.|\n3. Filter on access keys that have not been rotated in 90 days.|\n4. Alert on each user.",
+                "api_command": "ListUsers, ListAccessKeys",
+                "asset_type_id": 8,
+                "attack_types": [
+                    "Credential policy violation"
+                ],
+                "cis_benchmark_ids": [
+                    108,
+                    641,
+                    740
+                ],
+                "cli_command": "aws2 iam list-users, aws2 iam list-access-keys",
+                "cloud_asset_type": "user",
+                "cloud_document": "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html",
+                "cloud_platform_type": "aws",
+                "cloud_service_subtype": "Access Keys",
+                "cloud_service_type": "IAM",
+                "default_severity": "informational",
+                "description": "Because IAM access keys are long-term credentials, as time goes on, the risk of these keys being exposed is increased.\n\nKeys are often left on old servers, accidentally published through Git, or stolen from developer machines. The longer the keys are valid, the more likely they are to be discovered in one of these places. By ensuring keys are rotated at least every 90 days, you can be confident that if those keys are discovered, they cannot be abused.",
+                "is_enabled": true,
+                "is_remediable": false,
+                "mitre_attack_cloud_matrix": "https://attack.mitre.org/tactics/TA0006/",
+                "mitre_attack_cloud_subtype": "https://attack.mitre.org/techniques/T1528/",
+                "nist_benchmark_ids": [
+                    2,
+                    3,
+                    281,
+                    941
+                ],
+                "pci_benchmark_ids": [
+                    120
+                ],
+                "policy_remediation": "Step 1. From the AWS Console, navigate to the IAM page.|\nStep 2. Locate and click on the offending IAM User.|\nStep 3. Click on the Security Credentials tab.|\nStep 4. Navigate to the Access Keys section and choose between making the access key inactive, deleting the key, or rotating the key.",
+                "policy_statement": "IAM user access key active longer than 90 days",
+                "policy_type": "Configuration",
+                "tactic": "Credential Access",
+                "tactic_id": "TA0006",
+                "tactic_url": "https://attack.mitre.org/tactics/TA0006/",
+                "technique": "Steal Application Access Token",
+                "technique_id": "T1528",
+                "technique_url": "https://attack.mitre.org/techniques/T1528/"
+            },
+            {
+                "CreatedAt": "2022-10-19T15:00:00Z",
+                "DeletedAt": null,
+                "ID": 2,
+                "UpdatedAt": "2023-07-20T19:14:47.972998Z",
+                "account_scope": "",
+                "alert_logic": "1. List Launch Configurations.|\n2. Decode Base64-encoded User Data field.|\n3. Search for strings indicating credentials are present.|\n4. Alert on each instance.",
+                "api_command": "DescribeLaunchConfigurations",
+                "asset_type_id": 81,
+                "cis_benchmark_ids": [
+                    714
+                ],
+                "cisa_benchmark_ids": [
+                    16
+                ],
+                "cli_command": "aws autoscaling describe-launch-configurations",
+                "cloud_asset_type": "launchconfig",
+                "cloud_document": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/user-data.html",
+                "cloud_platform_type": "aws",
+                "cloud_service_type": "Auto Scaling",
+                "default_severity": "informational",
+                "description": "EC2 instance data is used to pass start up information into the EC2 instance. This User Data must not contain any sort of credentials. Instead, use an IAM Instance Profile assigned to the instance to grant access to other AWS Services.",
+                "is_enabled": true,
+                "is_remediable": false,
+                "iso_benchmark_ids": [
+                    10,
+                    15,
+                    62,
+                    63
+                ],
+                "mitre_attack_cloud_matrix": "https://attack.mitre.org/tactics/TA0006/",
+                "mitre_attack_cloud_subtype": "https://attack.mitre.org/techniques/T1552/005/",
+                "nist_benchmark_ids": [
+                    16,
+                    65,
+                    66,
+                    531
+                ],
+                "policy_remediation": "Step 1. From the console navigate to the EC2 page.|\nStep 2. From the sub-menu, click on 'Launch Configurations' under 'Auto Scaling'.|\nStep 3. Select the offending launch configuration.|\nStep 4. Scroll down to the 'Details' section and click 'View user data'.|\nStep 5. Validate whether or not any credentials are present.|\nStep 6. If credentials are present, re-create the launch configuration without exposing any credentials in the user data field.",
+                "policy_statement": "Auto Scaling group launch configuration User Data with potential credentials exposed",
+                "policy_type": "Configuration",
+                "soc2_benchmark_ids": [
+                    15,
+                    17
+                ],
+                "tactic": "Credential Access",
+                "tactic_id": "TA0006",
+                "tactic_url": "https://attack.mitre.org/tactics/TA0006/",
+                "technique": "Unsecured Credentials: Cloud Instance Metadata API",
+                "technique_id": "T1552.005",
+                "technique_url": "https://attack.mitre.org/techniques/T1552/005/"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### CSPM Policy Details:
+>|Id|Description|Policy Statement|Policy Remediation|Cloud Service Subtype|Cloud Platform Type|Cloud Service Type|Default Severity|Policy Type|Tactic|Technique|
+>|---|---|---|---|---|---|---|---|---|---|---|
+>| 1 | Because IAM access keys are long-term credentials, as time goes on, the risk of these keys being exposed is increased.<br/><br/>Keys are often left on old servers, accidentally published through Git, or stolen from developer machines. The longer the keys are valid, the more likely they are to be discovered in one of these places. By ensuring keys are rotated at least every 90 days, you can be confident that if those keys are discovered, they cannot be abused. | IAM user access key active longer than 90 days | Step 1. From the AWS Console, navigate to the IAM page.\|<br/>Step 2. Locate and click on the offending IAM User.\|<br/>Step 3. Click on the Security Credentials tab.\|<br/>Step 4. Navigate to the Access Keys section and choose between making the access key inactive, deleting the key, or rotating the key. | Access Keys | aws | IAM | informational | Configuration | Credential Access | Steal Application Access Token |
+>| 2 | EC2 instance data is used to pass start up information into the EC2 instance. This User Data must not contain any sort of credentials. Instead, use an IAM Instance Profile assigned to the instance to grant access to other AWS Services. | Auto Scaling group launch configuration User Data with potential credentials exposed | Step 1. From the console navigate to the EC2 page.\|<br/>Step 2. From the sub-menu, click on 'Launch Configurations' under 'Auto Scaling'.\|<br/>Step 3. Select the offending launch configuration.\|<br/>Step 4. Scroll down to the 'Details' section and click 'View user data'.\|<br/>Step 5. Validate whether or not any credentials are present.\|<br/>Step 6. If credentials are present, re-create the launch configuration without exposing any credentials in the user data field. |  | aws | Auto Scaling | informational | Configuration | Credential Access | Unsecured Credentials: Cloud Instance Metadata API |
+
+
+### cs-falcon-cspm-list-service-policy-settings
+
+***
+Returns information about current policy settings.
+
+#### Base Command
+
+`cs-falcon-cspm-list-service-policy-settings`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| policy_id | The policy ID to look for its settings. | Optional | 
+| cloud_platform | The cloud provider. Possible values are: aws, gcp, azure. Default is aws. | Optional | 
+| service | Service type to filter by. | Optional | 
+| limit | The maximum number of entities to list. Default is 50. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CrowdStrike.CSPMPolicySetting.is_remediable | Boolean | Whether the policy setting is remediable or not. | 
+| CrowdStrike.CSPMPolicySetting.created_at | String | The creation date. | 
+| CrowdStrike.CSPMPolicySetting.updated_at | String | The update date. | 
+| CrowdStrike.CSPMPolicySetting.policy_id | Integer | The policy ID. | 
+| CrowdStrike.CSPMPolicySetting.name | String | The policy setting name. | 
+| CrowdStrike.CSPMPolicySetting.policy_type | String | The policy type | 
+| CrowdStrike.CSPMPolicySetting.cloud_service_subtype | String | The cloud service subtype. | 
+| CrowdStrike.CSPMPolicySetting.cloud_service | String | The cloud service. | 
+| CrowdStrike.CSPMPolicySetting.cloud_service_friendly | String | The cloud friendly service. | 
+| CrowdStrike.CSPMPolicySetting.cloud_asset_type | String | The cloud asset type. | 
+| CrowdStrike.CSPMPolicySetting.cloud_asset_type_id | Integer | The cloud asset type ID. | 
+| CrowdStrike.CSPMPolicySetting.cloud_provider | String | The cloud provider. | 
+| CrowdStrike.CSPMPolicySetting.default_severity | String | The default severity. | 
+| CrowdStrike.CSPMPolicySetting.policy_timestamp | Date | The policy timestamp. | 
+| CrowdStrike.CSPMPolicySetting.policy_settings | Array | An array that holds policy settings. | 
+| CrowdStrike.CSPMPolicySetting.policy_settings.account_id | String | The account ID correlated to the policy. | 
+| CrowdStrike.CSPMPolicySetting.policy_settings.regions | Array | The regions in which the policy is configured at. | 
+| CrowdStrike.CSPMPolicySetting.policy_settings.severity | String | The severity of the policy. | 
+| CrowdStrike.CSPMPolicySetting.policy_settings.enabled | Boolean | Whether the policy settings are enabled or not. | 
+| CrowdStrike.CSPMPolicySetting.policy_settings.tag_excluded | Boolean | Whether the tag is excluded or not. | 
+| CrowdStrike.CSPMPolicySetting.cis_benchmark | Array | An array of CIS benchmark details. | 
+| CrowdStrike.CSPMPolicySetting.cis_benchmark.id | Integer | The CIS benchmark ID. | 
+| CrowdStrike.CSPMPolicySetting.cis_benchmark.benchmark_short | String | The CIS benchmark shortname. | 
+| CrowdStrike.CSPMPolicySetting.cis_benchmark.recommendation_number | String | The CIS benchmark recommendation number. | 
+| CrowdStrike.CSPMPolicySetting.pci_benchmark | Array | An array of PCI benchmark details. | 
+| CrowdStrike.CSPMPolicySetting.pci_benchmark.id | Integer | The PCI benchmark ID. | 
+| CrowdStrike.CSPMPolicySetting.pci_benchmark.benchmark_short | String | The PCI benchmark shortname. | 
+| CrowdStrike.CSPMPolicySetting.pci_benchmark.recommendation_number | String | The PCI benchmark recommendation number. | 
+| CrowdStrike.CSPMPolicySetting.nist_benchmark | Array | An array of NIST benchmark details. | 
+| CrowdStrike.CSPMPolicySetting.nist_benchmark.id | Integer | The NIST benchmark ID. | 
+| CrowdStrike.CSPMPolicySetting.nist_benchmark.benchmark_short | String | The NIST benchmark shortname. | 
+| CrowdStrike.CSPMPolicySetting.nist_benchmark.recommendation_number | String | The NIST benchmark recommendation number. | 
+| CrowdStrike.CSPMPolicySetting.attack_types | Array | The attack types. | 
+
+#### Command example
+```!cs-falcon-cspm-list-service-policy-settings limit=2```
+#### Context Example
+```json
+{
+    "CrowdStrike": {
+        "CSPMPolicySetting": [
+            {
+                "cis_benchmark": [
+                    {
+                        "benchmark_short": "CIS Controls v8",
+                        "id": 722,
+                        "recommendation_number": "3.11"
+                    }
+                ],
+                "cloud_asset_type": "filesystem",
+                "cloud_asset_type_id": 107,
+                "cloud_provider": "aws",
+                "cloud_service": "efs",
+                "cloud_service_friendly": "EFS",
+                "cloud_service_subtype": "N/A",
+                "created_at": "2022-08-02T22:17:56.53081Z",
+                "default_severity": "informational",
+                "fql_policy": "aws_encrypted:['true']+aws_kms_key_id:['']",
+                "is_remediable": false,
+                "name": "EFS File System is encrypted without CMK",
+                "nist_benchmark": [
+                    {
+                        "benchmark_short": "NIST 800-53 REV 5",
+                        "id": 932,
+                        "recommendation_number": "SC-8(1)"
+                    },
+                    {
+                        "benchmark_short": "NIST 800-53 REV 5",
+                        "id": 989,
+                        "recommendation_number": "SC-28(1)"
+                    }
+                ],
+                "pci_benchmark": [
+                    {
+                        "benchmark_short": "PCI DSS v3.2.1",
+                        "id": 41,
+                        "recommendation_number": "3.4"
+                    }
+                ],
+                "policy_id": 1,
+                "policy_settings": [
+                    {
+                        "account_id": "537409938058",
+                        "enabled": true,
+                        "regions": [
+                            "af-south-1",
+                            "ap-east-1",
+                            "ap-northeast-1",
+                            "ap-northeast-2",
+                            "ap-northeast-3"
+                        ],
+                        "severity": "informational",
+                        "tag_excluded": false
+                    }
+                ],
+                "policy_timestamp": "0001-01-01T00:00:00Z",
+                "policy_type": "Configuration",
+                "updated_at": "2023-07-19T17:31:45.372476Z"
+            },
+            {
+                "cis_benchmark": [
+                    {
+                        "benchmark_short": "CIS 1.4.0 AWS Foundations",
+                        "id": 143,
+                        "recommendation_number": "4.13"
+                    }
+                ],
+                "cloud_asset_type": "awsaccount",
+                "cloud_asset_type_id": 116,
+                "cloud_provider": "aws",
+                "cloud_service": "awsaccount",
+                "cloud_service_friendly": "CloudWatch",
+                "cloud_service_subtype": "Route Table",
+                "created_at": "2023-01-04T19:57:23.897865Z",
+                "default_severity": "informational",
+                "is_remediable": false,
+                "iso_benchmark": [
+                    {
+                        "benchmark_short": "ISO",
+                        "id": 25,
+                        "recommendation_number": "5.25"
+                    }
+                ],
+                "name": "CloudWatch log metric filter and alarm missing for changes to route tables",
+                "nist_benchmark": [
+                    {
+                        "benchmark_short": "NIST 800-53 REV 5",
+                        "id": 184,
+                        "recommendation_number": "AU-6(1)"
+                    },
+                    {
+                        "benchmark_short": "NIST 800-53 REV 5",
+                        "id": 183,
+                        "recommendation_number": "AU-6"
+                    }
+                ],
+                "pci_benchmark": [
+                    {
+                        "benchmark_short": "PCI DSS v4.0",
+                        "id": 428,
+                        "recommendation_number": "10.4.1"
+                    }
+                ],
+                "policy_id": 2,
+                "policy_settings": [
+                    {
+                        "account_id": "537409938058",
+                        "enabled": true,
+                        "regions": [
+                            "af-south-1",
+                            "ap-east-1"
+                        ],
+                        "severity": "informational",
+                        "tag_excluded": false
+                    }
+                ],
+                "policy_timestamp": "0001-01-01T00:00:00Z",
+                "policy_type": "Configuration",
+                "soc2_benchmark": [
+                    {
+                        "benchmark_short": "TSC 2017 rev 2020",
+                        "id": 27,
+                        "recommendation_number": "CC7.3"
+                    }
+                ],
+                "updated_at": "2023-09-18T16:11:58.369644Z"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### CSPM Policy Settings:
+>|Policy Id|Is Remediable|Remediation Summary|Name|Policy Type|Cloud Service Subtype|Cloud Service|Default Severity|
+>|---|---|---|---|---|---|---|---|
+>| 1 | false |  | EFS File System is encrypted without CMK | Configuration | N/A | efs | informational |
+>| 2 | false |  | CloudWatch log metric filter and alarm missing for changes to route tables | Configuration | Route Table | awsaccount | informational |
+
+
+### cs-falcon-cspm-update-policy_settings
+
+***
+Updates a policy setting - can be used to override policy severity or to disable a policy entirely.
+
+#### Base Command
+
+`cs-falcon-cspm-update-policy_settings`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| policy_id | Policy ID to be updated. | Required | 
+| account_id | Cloud Account ID to impact. | Optional | 
+| enabled | Flag indicating if this policy is enabled. Possible values are: false, true. Default is true. | Optional | 
+| regions | List of regions where this policy is enforced. | Optional | 
+| severity | Policy severity value. Possible values are: critical, high, medium, informational. | Optional | 
+| tag_excluded | Tag exclusion flag. Possible values are: false, true. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!cs-falcon-cspm-update-policy_settings policy_id=1 enabled=true regions="eu-central-1,eu-central-2" severity=high tag_excluded=false```
+#### Human Readable Output
+
+>Policy 1 was updated successfully
+
+### cs-falcon-resolve-identity-detection
+
+***
+Perform actions on alerts.
+
+#### Base Command
+
+`cs-falcon-resolve-identity-detection`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| ids | IDs of the alerts to update. | Required | 
+| assign_to_name | Assign the specified detections to a user based on their username. | Optional | 
+| assign_to_uuid | Assign the specified detections to a user based on their UUID. | Optional | 
+| append_comment | Appends a new comment to any existing comments for the specified detections. | Optional | 
+| add_tag | Add a tag to the specified detections. | Optional | 
+| remove_tag | Remove a tag from the specified detections. | Optional | 
+| update_status | Update status of the alert to the specified value. Possible values are: new, in_progress, closed, reopened. | Optional | 
+| unassign | Whether to unassign any assigned users to the specified detections. Possible values are: false, true. | Optional | 
+| show_in_ui | If true, displays the detection in the UI. Possible values are: false, true. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!cs-falcon-resolve-identity-detection ids="id_1,id_2" add_tag="Demo tag" append_comment="Demo comment" assign_to_name="morganf" show_in_ui=true update_status=in_progress```
+#### Human Readable Output
+
+>IDP Detection(s) id_1, id_2 were successfully updated
