@@ -104,7 +104,7 @@ def main():
 
         question_id = args.get("question_ID")
         secret = args.get("secret", "").lower()
-        if not args.get("secret", "") or not question_id:
+        if not args.get(secret, "") or not question_id:
             raise DemistoException('Please specify Secret and Question ID to proceed with the challenge')
 
         # __Validate Quesion number 03__

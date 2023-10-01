@@ -77,8 +77,11 @@ def main():
     try:
         args = demisto.args()
         # __Error handeling when there is an empty secret or question id__
-        if (args.get("secret") == None or args.get("question_ID") == None):
-            return_error(f'Please specify Secret and Question ID to proceed with the challange')
+        question_id = args.get("question_ID")
+        secret = args.get("secret", "").lower()
+        if not args.get(secret, "") or not question_id:
+            raise DemistoException('Please specify Secret and Question ID to proceed with the challenge')
+
 
         if (args.get("secret").lower() in answers[args.get("question_ID")]):
             return_results({
@@ -86,16 +89,14 @@ def main():
                 'Type': EntryType.NOTE,
                 'Contents': HTML_MESSAGE_1,
             })
+
         # General Error handeling
         else:
-            if (args.get("question_ID") == "03"):
-                return_error(f'In case the playbook is in "Quiet Mode", no output will be displayed in the war-room.\n\nYou can skip this task if you want or re-run it with <none>. To re-run this task -> Click on "Complete Task" -> fill out the Secret Value -> click on the \'Run script now\' :). ')
-            else:
-                demisto.results({
-                    'Type': entryTypes['error'],
-                    'ContentsFormat': formats['html'],
-                    'Contents': HTML_MESSAGE_BAD,
-                })
+            return_results({
+                'Type': EntryType.ERROR,
+                'ContentsFormat': formats['html'],
+                'Contents': HTML_MESSAGE_BAD,
+            })
 
     except Exception as exc:  # pylint: disable=W0703
         demisto.error(traceback.format_exc())  # print the traceback
