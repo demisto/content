@@ -25,7 +25,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 50
+          "y": 40
         }
       }
     note: false
@@ -85,7 +85,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 195
+          "y": 175
         }
       }
     note: false
@@ -110,7 +110,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1245
+          "y": 1395
         }
       }
     note: false
@@ -125,7 +125,7 @@ tasks:
     task:
       id: 9ab16bf8-de8e-4201-8561-992345b51280
       version: -1
-      name: CrowdStrike Falcon Intelligence Sandbox Get Report
+      name: CrowdStrike Falcon Intelligence Sandbox Get Full Report
       description: Get a full version of a sandbox report.
       script: CrowdStrike Falcon X|||cs-fx-get-full-report
       type: regular
@@ -136,13 +136,15 @@ tasks:
       - "6"
     scriptarguments:
       ids:
-        simple: ${csfalconx.resource.submitted_id}
+        complex:
+          root: csfalconx.resource
+          accessor: submitted_id
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1070
+          "x": 310,
+          "y": 1220
         }
       }
     note: false
@@ -167,15 +169,8 @@ tasks:
       '#none#':
       - "17"
     scriptarguments:
-      action_script: {}
-      command_line: {}
-      document_password: {}
-      enable_tor: {}
       environment_id:
         simple: '160: Windows 10'
-      submit_name: {}
-      system_date: {}
-      system_time: {}
       url:
         complex:
           root: inputs.URL
@@ -183,7 +178,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 540,
           "y": 545
         }
       }
@@ -221,7 +216,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 260,
           "y": 370
         }
       }
@@ -252,10 +247,8 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "8"
+      - "18"
     scriptarguments:
-      AdditionalPollingCommandArgNames: {}
-      AdditionalPollingCommandArgValues: {}
       Ids:
         complex:
           root: csfalconx
@@ -281,8 +274,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 895
+          "x": 540,
+          "y": 875
         }
       }
     note: false
@@ -313,8 +306,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 720
+          "x": 540,
+          "y": 710
         }
       }
     note: false
@@ -322,15 +315,103 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: df587308-bb0c-44ff-8729-c096af003e12
+    type: condition
+    task:
+      id: df587308-bb0c-44ff-8729-c096af003e12
+      version: -1
+      name: Full Report or Report Summary?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "19"
+      Full:
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: Full
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.Full Report
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 540,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: d8b4e7e6-c3d7-4303-8b63-35dee9bd508a
+    type: regular
+    task:
+      id: d8b4e7e6-c3d7-4303-8b63-35dee9bd508a
+      version: -1
+      name: CrowdStrike Falcon Intelligence Sandbox Get Report Summary
+      description: Gets a short summary version of a sandbox report.
+      script: '|||cs-fx-get-report-summary'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      ids:
+        complex:
+          root: csfalconx.resource
+          accessor: submitted_id
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 780,
+          "y": 1220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
 view: |-
   {
-    "linkLabelsPosition": {},
+    "linkLabelsPosition": {
+      "14_6_#default#": 0.16,
+      "5_6_#default#": 0.26
+    },
     "paper": {
       "dimensions": {
-        "height": 1260,
-        "width": 492.5,
+        "height": 1420,
+        "width": 1110,
         "x": 50,
-        "y": 50
+        "y": 40
       }
     }
   }
@@ -354,6 +435,14 @@ inputs:
     simple: "30"
   required: false
   description: How much time to wait before a timeout occurs  (minutes)
+  playbookInputQuery:
+- key: Full Report
+  value:
+    simple: "True"
+  required: false
+  description: |-
+    Whether to get a full report or report summary from Falcon X.
+    Set to "False" to get report summary.
   playbookInputQuery:
 outputs:
     - contextPath: csfalconx.resource.id
