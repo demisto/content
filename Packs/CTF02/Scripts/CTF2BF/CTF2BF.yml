@@ -9,7 +9,7 @@ comment: This should provide answers to the CTF_2 ( RDP BruteForce).
 enabled: true
 args:
 - name: secret
-  description: Enter the needed secret
+  description: Enter the needed secret.
 - name: question_ID
   description: The question id e.g. 01/02/03...
   auto: PREDEFINED

@@ -3,6 +3,8 @@ from CommonServerPython import *  # noqa: F401
 import traceback
 import random
 
+from Packs.Base.Scripts.CommonServerPython.CommonServerPython import DemistoException
+
 '''
            *//////
          ,////////*.                   ..,..              ,,,.
@@ -101,7 +103,7 @@ def main():
         # __Error handeling when there is an empty secret or question id__
 
         if (args.get("secret") == None or args.get("question_ID") == None):
-            return_error(f'Please specify Secret and Question ID to proceed with the challange')
+            raise DemistoException(f'Please specify Secret and Question ID to proceed with the challange')
 
         # __Validate Quesion number 03__
         if (args.get("question_ID") == "03"):
@@ -123,10 +125,6 @@ def main():
         # General Error handeling
         else:
             error_msg()
-
-    except Exception as exc:  # pylint: disable=W0703
-        demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f'Failed to execute this script. Error: {str(exc)}')
 
     except Exception as exc:  # pylint: disable=W0703
         demisto.error(traceback.format_exc())  # print the traceback
