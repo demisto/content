@@ -53,6 +53,7 @@ class Client(BaseClient):
         body = body if body is not None else {}
         params = params if params is not None else {}
         url = f'{self._server_url}{path}'
+        res = {}
 
         max_retries = 3
         num_of_tries = 0
@@ -100,6 +101,7 @@ def get_access_token(server_url, username, password):
     else, generate a new access token from
     the client id, client secret and refresh token.
     """
+    res = {}
     previous_token = get_integration_context()
     # Check if there is an existing valid access token
     if previous_token.get('access_token') and previous_token.get(
@@ -143,6 +145,7 @@ def polar_login(server_url, username, password):
     Generate a refresh token using the given client credentials and save
     it in the integration context.
     """
+    res = {}
     url = f'{server_url}/auth'
     data = {
         'username': username,
@@ -153,8 +156,7 @@ def polar_login(server_url, username, password):
             res = requests.post(url, data)
         except ValueError as exception:
             raise DemistoException(
-                'Failed to parse json object from response: {}'.format(
-                    res.content),
+                f'Failed to parse json object from response: {res.content}',
                 exception)
         if res.json()['idToken']:
             return res
@@ -192,6 +194,7 @@ def polar_list_data_stores_command(polar_client, limit: int, page_size: int, nex
     has_next_page = True
     found_items = []
     query_params = {'pageSize': page_size}
+    res = {}
 
     try:
         while has_next_page and limit > 0:
@@ -216,7 +219,7 @@ def polar_list_data_stores_command(polar_client, limit: int, page_size: int, nex
         if found_items is not None:
             outputs = found_items
             readable_output = tableToMarkdown(
-                f'Data Stores Observed by Polar Security',
+                'Data Stores Observed by Polar Security',
                 outputs,
                 headers=['dataStoreId', 'dataStoreType', 'dataStoreName',
                          'vpcId', 'country', 'cloudRegion'])
@@ -251,6 +254,7 @@ def polar_get_data_store_command(polar_client, store_id):
     """
     # URLencode the ID to make it safe to pass as a parameter
     safe_store_id = quote(store_id, safe='')
+    res = {}
     try:
         try:
             res = polar_client.send_request(
@@ -294,7 +298,7 @@ def polar_data_stores_summary_command(polar_client):
             'classificationStatuses': 'CLASSIFIED,IN_PROGRESS',
             'encryptionStatuses': 'UNAVAILABLE_CUSTOM,AVAILABLE_CUSTOM'
         }
-
+        res = {}
         try:
             res = polar_client.send_request(
                 method='GET',
@@ -308,7 +312,7 @@ def polar_data_stores_summary_command(polar_client):
         if res.json() is not None:
             outputs = res.json()
             readable_output = tableToMarkdown(
-                f'Summary of Linked Data Stores',
+                'Summary of Linked Data Stores',
                 outputs,
                 headers=['totalStores', 'totalSensitivities', 'totalPotentialFlows',
                          'totalActualFlows', 'totalSensitiveStores', 'serviceProviders'])
@@ -330,6 +334,7 @@ def polar_list_linked_vendors_command(polar_client):
     Get a list of all 3rd party vendors connected to your cloud workloads (relevant
     for cloud workloads connected to Polar Security only).
     """
+    res = {}
     try:
         try:
             res = polar_client.send_request(
@@ -346,7 +351,7 @@ def polar_list_linked_vendors_command(polar_client):
             for item in res.json():
                 outputs.append(item['vendor'])
             readable_output = tableToMarkdown(
-                f'Linked Vendors Observed by Polar Security',
+                'Linked Vendors Observed by Polar Security',
                 outputs,
                 headers=['vendorId', 'vendorName', 'vendorUrl',
                          'description', 'accounts'])
@@ -372,7 +377,7 @@ def polar_list_vendors_data_stores_command(polar_client, vendor_id, limit: int, 
     query_params = {'pageSize': page_size}
     has_next_page = True
     found_items: dict = {'dataStores': []}
-
+    res = {}
     try:
         while has_next_page and limit > 0:
             if next_token is not None:
@@ -408,7 +413,7 @@ def polar_list_vendors_data_stores_command(polar_client, vendor_id, limit: int, 
             command_results.append(CommandResults(
                 outputs=found_items,
                 readable_output=readable_output,
-                outputs_prefix=f'PolarSecurity.Vendors',
+                outputs_prefix='PolarSecurity.Vendors',
                 outputs_key_field='vendorId'
             ))
             human_readable = f'\nCompleted listing data stores for vendor {vendor_id}'
@@ -466,14 +471,14 @@ def polar_list_vendor_accessible_data_stores(polar_client):
                             store['3rdParties'].append(vendor)
 
     readable_output = tableToMarkdown(
-        f'DataStores Accessible by all Vendors',
+        'DataStores Accessible by all Vendors',
         stores_list,
         headers=['cloudProvider', 'cloudRegion', 'dataStoreId', 'dataStoreName',
                  'dataStoreType', 'sensitivitiesSummary', '3rdParties'])
     results = CommandResults(
         outputs=stores_list,
         readable_output=readable_output,
-        outputs_prefix=f'PolarSecurity.DataStores.Stores',
+        outputs_prefix='PolarSecurity.DataStores.Stores',
         outputs_key_field='dataStoreId'
     )
     return results
@@ -487,7 +492,7 @@ def polar_apply_label_command(polar_client, store_id, mylabel):
     # URLencode the ID to make it safe to pass as a parameter
     safe_store_id = quote(store_id, safe='')
     try:
-        res = polar_client.send_request(
+        polar_client.send_request(
             method='PUT',
             path=f'/dataStores/{safe_store_id}/labels',
             params={},

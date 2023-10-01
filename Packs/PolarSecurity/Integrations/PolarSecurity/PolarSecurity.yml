@@ -105,6 +105,7 @@ script:
       type: boolean
     - contextPath: PolarSecurity.DataStores.Stores.managed
       type: boolean
+      description: 
     - contextPath: PolarSecurity.DataStores.Stores.stats
       description: Array of statistics
   - arguments: []
@@ -204,6 +205,7 @@ script:
       description: Array of statistics
     - contextPath: PolarSecurity.DataStores.Stores.managed
       type: boolean
+      description:
     - contextPath: PolarSecurity.DataStores.Stores.cloudTags
       description: Array of tags assigned to store
     - contextPath: PolarSecurity.DataStores.Stores.cloudAccountDetails.cloudAccountId
