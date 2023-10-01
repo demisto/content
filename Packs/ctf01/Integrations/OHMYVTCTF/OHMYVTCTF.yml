@@ -5,13 +5,19 @@ name: OHMYVT_CTF
 display: OHMYVT_CTF
 category: Data Enrichment & Threat Intelligence
 description: Analyzes suspicious hashes, URLs, domains, and IP addresses.
+configuration:
+- display: Fetch incidents
+  name: isFetch
+  defaultvalue: "false"
+  type: 8
+  required: false
 script:
   script: ''
   type: python
   dockerimage: demisto/python3:3.10.13.75921
   runonce: false
   subtype: python3
+  isfetch: true
 tests:
 - No tests (auto formatted)
-configuration: []
 fromversion: 6.9.0
