@@ -1,6 +1,8 @@
 from GetDockerImageLatestTag import main, find_latest_tag_by_date, lexical_find_latest_tag
 import demistomock as demisto
 import pytest
+import urllib3
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 RETURN_ERROR_TARGET = 'GetDockerImageLatestTag.return_error'
 

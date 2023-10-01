@@ -2,6 +2,8 @@ from CheckDockerImageAvailable import docker_auth, main, docker_min_layer, parse
 import demistomock as demisto
 import json
 import pytest
+import urllib3
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 
 RETURN_ERROR_TARGET = 'CheckDockerImageAvailable.return_error'
