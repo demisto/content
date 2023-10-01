@@ -24,11 +24,13 @@ class Client:
             self.cloud_identity_service = discovery.build('cloudidentity', 'v1', http=http_client)
             self.cloud_resource_manager_service = discovery.build('cloudresourcemanager', 'v3', http=http_client)
             self.iam_service = discovery.build('iam', 'v1', http=http_client)
+            self.iam_credentials = discovery.build('iamcredentials', 'v1', http=http_client)
 
         else:
             self.cloud_identity_service = discovery.build('cloudidentity', 'v1', credentials=credentials)
             self.cloud_resource_manager_service = discovery.build('cloudresourcemanager', 'v3', credentials=credentials)
             self.iam_service = discovery.build('iam', 'v1', credentials=credentials)
+            self.iam_credentials = discovery.build('iamcredentials', 'v1', credentials=credentials)
 
     def get_http_client_with_proxy(self, proxies: dict, proxy: bool = False, verify_certificate: bool = False):
         proxy_info = None
