@@ -1,3 +1,0 @@
-!hda-create-ticket object_type_id=T2 ticket_priority_id=P4 ticket_status_id=S3
-!hda-list-ticket-attachments ticket_id=10286044C
-!hda-add-ticket-attachment entry_id=757@aed26086-5d1d-4ec9-8bea-9bf43e93713e,824@aed26086-5d1d-4ec9-8bea-9bf43e93713e ticket_id=10286044C debug-mode=true
