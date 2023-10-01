@@ -469,7 +469,7 @@ class Client(BaseClient):
     def list_ticket_attachments(self, **kwargs) -> dict:
         ticket_id = kwargs["ticket_id"]
         params = {
-            "entity": f"Ticket Attachment: {ticket_id}",
+            "entity": "Attachments",
             "start": 0,
             "limit": safe_arg_to_number(kwargs["limit"], "limit"),
             "filter": Filter.dumps_list(
@@ -816,7 +816,7 @@ def list_ticket_attachments_command(client: Client, args: dict) -> CommandResult
         outputs_prefix=f"{VENDOR}.Ticket.Attachment",
         outputs_key_field=ID.hda_name,
         readable_output=pat_table_to_markdown(
-            title="Attachments",
+            title=f"Attachments of {args['ticket_id']}",
             output=response["data"],
             fields=(
                 ID,
