@@ -64,7 +64,7 @@ variables:
   FF_USE_FASTZIP: "true"
   POETRY_VERSION: "1.6.1"
   INSTALL_POETRY: "true"
-  XDR_SUFFIX: "TESTTEST"
+  XDR_SUFFIX: "TESTTEST" // TODO for testing - delete before merge
 
 include:
   - local: .gitlab/ci/.gitlab-ci.global.yml

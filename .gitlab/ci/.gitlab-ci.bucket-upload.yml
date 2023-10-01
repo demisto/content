@@ -334,7 +334,7 @@ upload-packs-to-marketplace:
         if [[ -z $PACKS_TO_UPLOAD ]]; then
           PACKS_TO_UPLOAD="All"
         fi
-        python3 ./Tests/Marketplace/copy_and_upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -pb "$GCS_MARKET_BUCKET" -bb "$GCS_BUILD_BUCKET" -s $GCS_MARKET_KEY -n $CI_PIPELINE_ID -c $CI_COMMIT_BRANCH -p "${PACKS_TO_UPLOAD}" -pbp "$STORAGE_BASE_PATH/packs" --marketplace xsoar
+        python3 ./Tests/Marketplace/copy_and_upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -pb "$GCS_MARKET_BUCKET" -bb "$GCS_BUILD_BUCKET" -s $GCS_MARKET_KEY -n $CI_PIPELINE_ID -c $CI_COMMIT_BRANCH --xdr_suffix "$XDR_SUFFIX" -p "${PACKS_TO_UPLOAD}" -pbp "$STORAGE_BASE_PATH/packs" --marketplace xsoar //todo - what will happen in upload
       fi
     - section_end "Upload Packs To Marketplace Storage"
 
