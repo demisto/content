@@ -370,6 +370,15 @@
                                 "index": 5,
                                 "sectionItemType": "field",
                                 "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "recordedfutureaiinsights",
+                                "height": 22,
+                                "id": "incident_recordedfutureaiinsights",
+                                "index": 6,
+                                "sectionItemType": "field",
+                                "startCol": 0
                             }
                         ],
                         "maxW": 3,
