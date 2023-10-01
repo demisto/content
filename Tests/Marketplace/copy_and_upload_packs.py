@@ -390,7 +390,6 @@ def main():
     target_packs = options.pack_names
     marketplace = options.marketplace
 
-
     # Google cloud storage client initialized
     storage_client = init_storage_client(service_account)
     production_bucket = storage_client.bucket(production_bucket_name)
