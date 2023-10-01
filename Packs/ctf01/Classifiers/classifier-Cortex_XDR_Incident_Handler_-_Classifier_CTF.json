@@ -4,7 +4,6 @@
     "id": "Cortex XDR Incident Handler - Classifier CTF",
     "keyTypeMap": {
         "FirstSSOAccess": "Cortex XDR Incident",
-        "Image": "Cortex XDR - Image Spooned Suspicious Activity - CTF",
         "Malware": "Malware Investigation and Response",
         "PortScan": "Cortex XDR Port Scan",
         "RDPBruteForce": "Cortex XDR Incident - CTF",
