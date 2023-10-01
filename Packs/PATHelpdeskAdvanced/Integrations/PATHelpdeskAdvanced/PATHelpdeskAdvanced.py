@@ -960,17 +960,7 @@ def list_groups_command(client: Client, args: dict) -> CommandResults:
         readable_output=pat_table_to_markdown(
             title="PAT HelpDeskAdvanced Groups",
             output=data,
-            fields=(
-                _GROUP_ID,
-                SUBJECT,
-                SOLUTION,
-                DATE,
-                SERVICE_ID,
-                PROBLEM,
-                CONTACT_ID,
-                OWNER_USER_ID,
-                ACCOUNT_ID,
-            ),
+            fields=(_GROUP_ID, DESCRIPTION, OBJECT_TYPE_ID),
             field_replacements={ID: _GROUP_ID},
         ),
     )
