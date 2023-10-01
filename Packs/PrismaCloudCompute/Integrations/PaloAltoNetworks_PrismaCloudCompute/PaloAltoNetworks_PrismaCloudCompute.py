@@ -504,7 +504,7 @@ class PrismaCloudComputeClient(BaseClient):
         """
         Sends a request to update trusted images information.
         """
-        return self._http_request(method="PUT", url_suffix="trust/data", json_data=data)
+        return self._http_request(method="PUT", url_suffix="trust/data", data=data, resp_type="response", ok_codes=(200,))
 
     def get_container_scan_results(self, params: Optional[dict] = None) -> List[dict]:
         """
@@ -2139,6 +2139,31 @@ def unstuck_fetch_stream_command():
     )
 
 
+def reduce_ci_scan_results(ci_scan_results):
+    """
+    Reduces the CI scan results by removing unnecessary fields so the results will be shoerter to context data.
+    """
+    return [{'entityInfo': {'_id': scan['entityInfo'].get('_id'),
+                            'type': scan['entityInfo'].get('type'),
+                            'hostname': scan['entityInfo'].get('hostname'),
+                            'scanTime': scan['entityInfo'].get('scanTime'),
+                            'distro': scan['entityInfo'].get('distro'),
+                            'image': scan['entityInfo'].get('image'),
+                            'repoTag': scan['entityInfo'].get('repoTag'),
+                            'tags': scan['entityInfo'].get('tags'),
+                            'creationTime': scan['entityInfo'].get('creationTime'),
+                            'vulnerabilitiesCount': scan['entityInfo'].get('vulnerabilitiesCount'),
+                            'complianceIssuesCount': scan['entityInfo'].get('complianceIssuesCount'),
+                            'vulnerabilityDistribution': scan['entityInfo'].get('vulnerabilityDistribution'),
+                            'complianceDistribution': scan['entityInfo'].get('complianceDistribution'),
+                            'labels': scan['entityInfo'].get('labels'),
+                            'scanVersion': scan['entityInfo'].get('scanVersion'),
+                            'scanID': scan['entityInfo'].get('scanID')
+                            },
+             'pass': scan['pass']}
+            for scan in ci_scan_results]
+
+
 def get_ci_scan_results_list(client: PrismaCloudComputeClient, args: dict) -> CommandResults:
     """
     Retrieve a list of ci scan results and their information.
@@ -2155,6 +2180,7 @@ def get_ci_scan_results_list(client: PrismaCloudComputeClient, args: dict) -> Co
         limit=args.get("limit", "50"), offset=args.get("offset", "0")
     )
     all_results = argToBoolean(args.get("all_results", "false"))
+    verbose = argToBoolean(args.get("verbose", "false"))
     account_ids = argToList(args.get("account_ids"))
     resource_ids = argToList(args.get("resource_ids"))
     region = argToList(args.get("region"))
@@ -2175,21 +2201,27 @@ def get_ci_scan_results_list(client: PrismaCloudComputeClient, args: dict) -> Co
         params["from"] = parse_date_string_format(_from, "%Y-%m-%dT%H:%M:%SZ")
 
     if ci_scan_results := client.get_ci_scan_results(all_results=all_results, params=params):
-        table = tableToMarkdown(
-            name="CI Scan Information",
-            t=[
-                {
-                    "Image": (scan["entityInfo"].get("instances") or [{}])[0].get("image"),
-                    "ID": scan["entityInfo"]["_id"],
-                    "OS Distribution": scan["entityInfo"].get("osDistro"),
-                    "OS Release": scan["entityInfo"].get("osDistroRelease"),
-                    "Scan Status": scan["pass"],
-                    "Scan Time": scan["time"],
-                } for scan in ci_scan_results
-            ],
-            headers=["Image", "ID", "OS Distribution", "OS Release", "Scan Status", "Scan Time"],
-            removeNull=True,
-        )
+        if not verbose:
+            ci_scan_results = reduce_ci_scan_results(ci_scan_results)
+            if all_results:
+                table = f'### CI Scan Information\nRetrieved {len(ci_scan_results)} results to context data.'
+
+        if verbose or not all_results:
+            table = tableToMarkdown(
+                name="CI Scan Information",
+                t=[
+                    {
+                        "Image": (scan["entityInfo"].get("instances") or [{}])[0].get("image"),
+                        "ID": scan["entityInfo"]["_id"],
+                        "OS Distribution": scan["entityInfo"].get("osDistro"),
+                        "OS Release": scan["entityInfo"].get("osDistroRelease"),
+                        "Scan Status": scan["pass"],
+                        "Scan Time": scan.get("time"),
+                    } for scan in ci_scan_results
+                ],
+                headers=["Image", "ID", "OS Distribution", "OS Release", "Scan Status", "Scan Time"],
+                removeNull=True,
+            )
     else:
         table = "No results found."
 
@@ -2265,7 +2297,7 @@ def update_trusted_images(client: PrismaCloudComputeClient, args: dict) -> Comma
     Returns:
         CommandResults: command-results object.
     """
-    images_list_json = args.get("images_list_json", {})
+    images_list_json = args.get("images_list_json")
 
     client.update_trusted_images(data=images_list_json)
     return CommandResults(
@@ -2311,7 +2343,7 @@ def get_container_scan_results(client: PrismaCloudComputeClient, args: dict) -> 
 
     if container_scan_results := client.get_container_scan_results(params=params):
         table = tableToMarkdown(
-            name="CI Scan Information",
+            name="Container Scan Information",
             t=[
                 {
                     "ID": container["_id"],

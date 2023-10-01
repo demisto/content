@@ -2084,7 +2084,13 @@ script:
       description: The offset by which to begin listing CI scan results.
       defaultValue: "0"
     - name: all_results
-      description: Whether to retrieve all results. The "limit" argument will be ignored. Might slow down the command run time.
+      description: Whether to retrieve all results. The "limit" argument will be ignored. Might slow down the command run time. Using this argument may return a lot of results and is not recommended to be used often.
+      defaultValue: "false"
+      predefined:
+      - "true"
+      - "false"
+    - name: verbose
+      description: Whether to retrieve all fields of each scan result. When used with the "all_results" argument, it may return a lot of results in a file.
       defaultValue: "false"
       predefined:
       - "true"
@@ -2328,7 +2334,7 @@ script:
       description: The images in the trusted image group.
       type: Unknown
   - name: prisma-cloud-compute-trusted-images-update
-    description: Updates a trusted image to the system. Specify trusted images using either the image name or layers properties. This is a potentially harmful command which overwrites the existing list, so use with caution.
+    description: Updates a trusted image to the system. Specify trusted images using either the image name or layers properties. This is a potentially harmful command which overwrites the existing list, so use with caution. We recommend that is only be used in a playbook by a script that uses it.
     execution: true
     arguments:
     - name: images_list_json
