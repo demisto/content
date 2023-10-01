@@ -687,7 +687,8 @@ class Client(BaseClient):
         if not headers:
             headers = {
                 'Accept': 'application/json',
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'ping_timeout': 'None',
             }
         # The attachments table does not support v2 api version
         if get_attachments:
