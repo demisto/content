@@ -1,5 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+
+
 import hashlib
 import io
 import json
@@ -2651,6 +2653,7 @@ def main():  # pragma: no cover
     command = demisto.command()
     params = demisto.params()
     args = demisto.args()
+    print("test")
 
     if command == 'splunk-parse-raw':
         splunk_parse_raw_command(args)

@@ -2,9 +2,6 @@ category: Analytics & SIEM
 commonfields:
   id: SplunkPy
   version: -1
-sectionOrder:
-- Connect
-- Collect
 configuration:
 - display: Host - IP (x.x.x.x)
   name: host
@@ -173,6 +170,7 @@ configuration:
   displaypassword: HEC Token (HTTP Event Collector)
   hiddenusername: true
   required: false
+  display: ''
 - display: 'HEC Token (HTTP Event Collector)'
   name: hec_token
   type: 4
@@ -482,7 +480,8 @@ script:
     - description: 'The data to add to the KV store collection, according to the collection JSON format, e.g., [{"name": "Splunk HQ", "id": 456, "address": { "street": "340 Brannan Street", "city": "San Francisco", "state": "CA", "zip": "121212"}}, {"name": "Splunk HQ", "id": 123, "address": { "street": "250 Brannan Street", "city": "San Francisco", "state": "CA", "zip": "94107"}}]'
       name: kv_store_data
       required: true
-    - description: The name of the KV store collection.
+    - description: |-
+        The name of the KV store collection.
       name: kv_store_collection_name
       required: true
     - description: The path to the indicator value in kv_store_data.
@@ -495,11 +494,11 @@ script:
     description: Adds objects to a KV store utilizing the batch-save API.
     name: splunk-kv-store-collection-add-entries
   - arguments:
-    - default: true
-      defaultValue: search
-      description: The name of the Splunk application in which to create the KV store. The default is "search".
+    - description: 'The name of the Splunk application in which to create the KV store. The default is "search".'
       name: app_name
       required: true
+      default: true
+      defaultValue: search
     description: Lists all collections for the specified application.
     name: splunk-kv-store-collections-list
     outputs:
@@ -583,7 +582,7 @@ script:
       name: indicator_path
     - description: The key name to search in the store. If the query argument is used, this argument will be ignored.
       name: key
-    - description: The value to search in the store. If the query argument is used, this argument will be ignored.
+    - description: 'The value to search in the store. If the query argument is used, this argument will be ignored.'
       name: value
     - description: |-
         Complex query to search in the store with operators such as "and", "or", "not", etc.
@@ -591,34 +590,34 @@ script:
       name: query
     description: Deletes the specified object in store. The search can be a basic key-value pair or a full query.
     name: splunk-kv-store-collection-delete-entry
-  - description: Query Splunk to retrieve a list of sample alerts by alert type. Used for mapping fetched incidents through the Get Schema option.
+  - arguments: []
+    description: Query Splunk to retrieve a list of sample alerts by alert type. Used for mapping fetched incidents through the Get Schema option.
     name: get-mapping-fields
-    arguments: []
-  - arguments:
+  - description: Gets data from a notable event. This method does not update the current incident, and should be used for debugging purposes.
+    name: get-remote-data
+    arguments:
     - description: The remote event ID.
       name: id
       required: true
     - defaultValue: '0'
       description: ISO format date with timezone, e.g., 2021-02-09T16:41:30.589575+02:00. The incident is only updated if it was modified after the last update time.
       name: lastUpdate
-    description: Gets data from a notable event. This method does not update the current incident, and should be used for debugging purposes.
-    name: get-remote-data
   - arguments:
     - description: ISO format date with timezone, e.g., 2021-02-09T16:41:30.589575+02:00. The incident is only returned if it was modified after the last update time.
       name: lastUpdate
     description: Gets the list of notable events that were modified since the last update. This command should be used for debugging purposes, and is available from Cortex XSOAR version 6.1.
     name: get-modified-remote-data
-  - description: Resets the enrichment mechanism of fetched notables.
+  - arguments: []
+    description: Resets the enrichment mechanism of fetched notables.
     name: splunk-reset-enriching-fetch-mechanism
-    arguments: []
-  - arguments:
+  - description: Returns the Splunk's username matching the given Cortex XSOAR's username.
+    name: splunk-get-username-by-xsoar-user
+    arguments:
     - default: true
       description: Cortex XSOAR username to match in Splunk's usernames records.
       isArray: true
       name: xsoar_username
       required: true
-    description: Returns the Splunk's username matching the given Cortex XSOAR's username.
-    name: splunk-get-username-by-xsoar-user
     outputs:
     - contextPath: Splunk.UserMapping.XsoarUser
       description: Cortex XSOAR user mapping.
@@ -626,7 +625,7 @@ script:
     - contextPath: Splunk.UserMapping.SplunkUser
       description: Splunk user mapping.
       type: String
-  dockerimage: demisto/splunksdk-py3:1.0.0.66149
+  dockerimage: demisto/splunksdk-py3:1.0.0.76115
   isfetch: true
   ismappable: true
   isremotesyncin: true
@@ -634,6 +633,7 @@ script:
   script: ''
   subtype: python3
   type: python
+  runonce: false
 tests:
 - SplunkPySearch_Test_default_handler
 - SplunkPy-Test-V2_default_handler
