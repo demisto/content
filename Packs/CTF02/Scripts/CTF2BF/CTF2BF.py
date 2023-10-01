@@ -87,8 +87,8 @@ def good_msg():
 
 
 def error_msg():
-    demisto.results({
-        'Type': entryTypes['error'],
+    return_results({
+        'Type': EntryType.ERROR,
         'ContentsFormat': formats['html'],
         'Contents': HTML_MESSAGE_BAD,
     })
@@ -102,29 +102,27 @@ def main():
         args = demisto.args()
         # __Error handeling when there is an empty secret or question id__
 
-        if (args.get("secret") == None or args.get("question_ID") == None):
-            raise DemistoException(f'Please specify Secret and Question ID to proceed with the challange')
+        question_id = args.get("question_ID")
+        secret = args.get("secret", "").lower()
+        if not args.get("secret", "") or not question_id:
+            raise DemistoException('Please specify Secret and Question ID to proceed with the challenge')
 
         # __Validate Quesion number 03__
-        if (args.get("question_ID") == "03"):
-            total_rel = str(
-                demisto.executeCommand("searchRelationships", {"filter": {"entities": ["137.184.208.116"]}}).get('total'))
-            if (total_rel == args.get("secret").lower()):
-                good_msg()
-            else:
-                error_msg()
-        elif (args.get("question_ID") == "05"):
-            total_rel = str(demisto.executeCommand("searchRelationships",
-                                                   {"filter": {"entities": ["IcedID Infection leads to DarkVNC"]}}).get('total'))
-            if (total_rel == args.get("secret").lower()):
-                good_msg()
-            else:
-                error_msg()
-        elif (args.get("secret").lower() in answers[args.get("question_ID")]):
-            good_msg()
-        # General Error handeling
-        else:
-            error_msg()
+        match question_id:
+            case "03":
+
+                total_rel = str(
+                    demisto.executeCommand("searchRelationships", {"filter": {"entities": ["137.184.208.116"]}}).get('total'))
+                good_msg() if secret.lower() == total_rel else error_msg()
+
+            case "05":
+                total_rel = str(demisto.executeCommand("searchRelationships",
+                                                       {"filter": {
+                                                           "entities": ["IcedID Infection leads to DarkVNC"]}}).get('total'))
+                good_msg() if secret.lower() == total_rel else error_msg()
+
+            case _:
+                good_msg() if secret.lower() in answers[question_id] else error_msg()
 
     except Exception as exc:  # pylint: disable=W0703
         demisto.error(traceback.format_exc())  # print the traceback
