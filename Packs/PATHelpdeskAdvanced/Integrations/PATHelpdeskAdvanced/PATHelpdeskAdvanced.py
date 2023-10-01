@@ -24,11 +24,10 @@ HTML_H_TAG_REGEX = re.compile(r"<h\d>(.*?)<\/h\d>", flags=re.S)
 class Field:
     def __init__(self, demisto_name: str) -> None:
         title_parts = []
+        special_cases = {"unread": "UnRead", "id": "ID", "html": "HTML"}
         for part in demisto_name.split("_"):
-            if edge_case := {"unread": "UnRead", "email": "EMail"}.get(part):
+            if edge_case := special_cases.get(part):
                 title_parts.append(edge_case)
-            elif part in {"id", "html"}:
-                title_parts.append(part.upper())
             else:
                 title_parts.append(part.title())
 
@@ -252,7 +251,7 @@ class Client(BaseClient):
         except JSONDecodeError:
             if error_parts := HTML_H_TAG_REGEX.findall(response.text):
                 raise DemistoException(". ".join(error_parts), res=response)
-            raise ValueError(f"could not parse json from {response.text}")
+            raise ValueError(f"API returned non-JSON response: {response.text}")
 
     def __init__(
         self,

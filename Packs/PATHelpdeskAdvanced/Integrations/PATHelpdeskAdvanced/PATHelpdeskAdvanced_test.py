@@ -1,3 +1,4 @@
+from pathlib import Path
 import freezegun
 import pytest
 from datetime import datetime, timezone
@@ -411,9 +412,18 @@ class TestClient:
         return cls.dummy_client()
 
     @staticmethod
-    def mock_login_response(requests_mock):
-        requests_mock.post(
+    def mock_login_response(requests_mock_object):
+        requests_mock_object.post(
             "https://example.com/Authentication/LoginEx?username=test&password=test",
+            json={
+                "refreshToken": "refresh_token",
+                "requestToken": "request_token",
+                "expiresIn": 3300,
+                "success": True,
+            },
+        )
+        requests_mock_object.post(
+            "https://example.com/Authentication/RefreshToken?token=refresh_token",
             json={
                 "refreshToken": "refresh_token",
                 "requestToken": "request_token",
@@ -510,7 +520,11 @@ class TestClient:
         from PATHelpdeskAdvanced import Path
 
         client = cls.logged_in_client(requests_mock)
-        mocker.patch.object(demisto, "getFilePath", return_value={"path": "test.txt"})
+        mocker.patch.object(
+            demisto,
+            "getFilePath",
+            return_value={"path": "test.txt", "name": "test.txt"},
+        )
         mocker.patch.object(Path, "open", return_value="mock file contents")
         mocked_request = requests_mock.post(
             "https://example.com/Ticket/UploadNewAttachment", json={"success": True}
@@ -521,6 +535,51 @@ class TestClient:
         stringified_request = str(mocked_request.request_history[0]._request.body)
         for i in (1, 2):
             assert (
-                f'name="TicketAttachment_{i}"; filename="TicketAttachment_{i}"\\r\\n\\r\\nmock file contents'
+                f'name="TicketAttachment_{i}"; filename="test.txt"\\r\\n\\r\\nmock file contents'
                 in stringified_request
             )
+
+    @classmethod
+    def test_non_json_response(cls, requests_mock):
+        client = cls.logged_in_client(requests_mock)
+        requests_mock.post(
+            "https://example.com/WSC/Projection?entity=UserGroup&columnExpressions=%5B%27ID%27%2C+%27Description%27%2C+%27ObjectTypeID%27%5D&columnNames=%5B%27ID%27%2C+%27Description%27%2C+%27ObjectTypeID%27%5D&start=0&limit=1",
+            text="surprise",
+        )
+        with pytest.raises(
+            ValueError, match="API returned non-JSON response: surprise"
+        ):
+            client.list_groups(limit=1)
+
+    @classmethod
+    @pytest.mark.parametrize(
+        "response_file,expected_error_message",
+        (
+            pytest.param(
+                "response_401.html",
+                "Server Error. 401 - Unauthorized: Access is denied due to invalid credentials",
+                id="401",
+            ),
+            pytest.param(
+                "response_invalid_request.html",
+                "A server error has occurred. Please, contact portal administrator.",
+                id="invalid response",
+            ),
+        ),
+    )
+    def test_error_response(
+        cls, requests_mock, response_file: str, expected_error_message: str
+    ):
+        """
+        Given   a client and an invalid response
+        When    calling a method that simulates these responses
+        Then    make sure the response is parsed well
+        """
+        client = cls.logged_in_client(requests_mock)
+
+        requests_mock.post(
+            "https://example.com/WSC/Projection?entity=UserGroup&columnExpressions=%5B%27ID%27%2C+%27Description%27%2C+%27ObjectTypeID%27%5D&columnNames=%5B%27ID%27%2C+%27Description%27%2C+%27ObjectTypeID%27%5D&start=0&limit=1",
+            text=Path(f"test_data/{response_file}").read_text(),
+        )
+        with pytest.raises(DemistoException, match=expected_error_message):
+            client.list_groups(limit=1)
