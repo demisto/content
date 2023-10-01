@@ -934,7 +934,11 @@ def list_users_command(client: Client, args: dict) -> CommandResults:
         raw_response=response,
         readable_output=pat_table_to_markdown(
             title="PAT HelpDeskAdvanced Users",
-            output=data,
+            output=[
+                {key.removeprefix("User."): value for key, value in user.items()}
+                for user in data
+            ],
+            fields=None,
         ),
     )
 
