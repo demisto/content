@@ -1224,7 +1224,7 @@ def local_search_command(client: Client, args: Dict):
     return results
 
 
-def main():
+def main():  # pragma: no cover
     """
         PARSE AND VALIDATE INTEGRATION PARAMS
     """
