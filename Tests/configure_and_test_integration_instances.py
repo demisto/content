@@ -287,7 +287,7 @@ class Build(ABC):
 
     @staticmethod
     def set_marketplace_url(servers, branch_name, ci_build_number, marketplace_name=None, artifacts_folder=None,
-                            marketplace_buckets=None) -> bool:
+                            marketplace_buckets=None, xdr_suffix="") -> bool:
         raise NotImplementedError
 
     def check_if_new_to_marketplace(self, diff: str) -> bool:
@@ -553,7 +553,7 @@ class Build(ABC):
         """
         installed_content_packs_successfully = self.set_marketplace_url(self.servers, self.branch_name, self.ci_build_number,
                                                                         self.marketplace_tag_name, self.artifacts_folder,
-                                                                        self.marketplace_buckets)
+                                                                        self.marketplace_buckets, self.xdr_suffix)
         installed_content_packs_successfully &= self.install_packs(production_bucket=False)
         return installed_content_packs_successfully
 

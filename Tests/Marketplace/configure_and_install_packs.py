@@ -164,6 +164,7 @@ def main():
         branch_name: str = options.branch
         build_number: str = options.build_number
         xdr_suffix: str = options.xdr_suffix
+        logging.info(f"xdr_suffix is {xdr_suffix}")
 
         if options.ami_env == "XSIAM":
             xsiam_configure_and_install_flow(options, branch_name, build_number, xdr_suffix)
