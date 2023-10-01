@@ -334,6 +334,23 @@ case_with_an_incident_that_was_fetched = (
         [{'id': '3', 'created': '2023-09-26T15:13:43Z'}]))
 
 
+case_with_an_incident_that_was_fetched_and_there_are_more_with_the_same_time = (
+    # responses from search_incidents
+    [[{'id': '1', 'version': 8, 'created': '2023-09-26T15:13:41Z'},
+      {'id': '2', 'version': 8, 'created': '2023-09-26T15:13:41Z'},
+      {'id': '3', 'version': 8, 'created': '2023-09-26T15:13:41Z'}],
+     []], 5    # max fetch
+    , [{'id': '1', 'created': '2023-09-26T15:13:41Z'}],  # incidents_last_fetch_ids
+    (
+        # expected incident result
+        [{'id': '2', 'version': 8, 'created': '2023-09-26T15:13:41Z'},
+         {'id': '3', 'version': 8, 'created': '2023-09-26T15:13:41Z'}],
+        # expected incidents_last_fetch_ids result
+     [{'id': '1', 'created': '2023-09-26T15:13:41Z'},
+      {'id': '2', 'created': '2023-09-26T15:13:41Z'},
+      {'id': '3', 'created': '2023-09-26T15:13:41Z'}]))
+
+
 @pytest.mark.parametrize('incident_to_return , max_fetch, incidents_last_fetch_ids, expected_result', [
     case_incidents_with_different_times,
     case_incidents_with_the_same_times,
@@ -341,6 +358,7 @@ case_with_an_incident_that_was_fetched = (
     case_with_empty_response_without_incidents_last_fetch_ids,
     case_with_more_then_one_API_call_with_incidents_last_fetch_ids,
     case_with_an_incident_that_was_fetched,
+    case_with_an_incident_that_was_fetched_and_there_are_more_with_the_same_time,
 ])
 def test_dedup_incidents_with_seconds_timestamp(mocker, incident_to_return, max_fetch,
                                                 incidents_last_fetch_ids, expected_result):
@@ -351,7 +369,8 @@ def test_dedup_incidents_with_seconds_timestamp(mocker, incident_to_return, max_
         - Case 3: All incidents from the previous fetch cycle were fetched. No new incidents received from API response.
         - Case 4: Empty response without incidents_last_fetch_ids provided.
         - Case 5: More than one API call received with incidents_last_fetch_ids provided.
-        - Cas 6: An incident that was already fetched in the previous run is received again.
+        - Case 6: An incident that was already fetched in the previous run is received again.
+        - Case 7: Incidents with equal time stamp to an incident that was already fetched were received.
     When:
         - Using the dedup mechanism while fetching incidents.
     Then:
