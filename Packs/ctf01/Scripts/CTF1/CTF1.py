@@ -101,9 +101,3 @@ def main():
         demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute this script. Error: {str(exc)}')
 
-
-# ENTRY POINT #
-
-
-if __name__ in ('__main__', '__builtin__', 'builtins'):
-    main()

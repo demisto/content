@@ -11,6 +11,7 @@ args:
 - name: secret
   description: Enter the needed secret
 - name: question_ID
+  description: The question id e.g. 01/02/03...
   auto: PREDEFINED
   predefined:
   - "01"
@@ -25,7 +26,7 @@ args:
 scripttarget: 0
 subtype: python3
 runonce: false
-dockerimage: demisto/python3:3.10.9.42476
+dockerimage: demisto/python3:3.10.13.75921
 runas: DBotWeakRole
 engineinfo: {}
 fromversion: 6.9.0

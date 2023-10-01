@@ -8,7 +8,7 @@ description: Analyzes suspicious hashes, URLs, domains, and IP addresses.
 script:
   script: ''
   type: python
-  dockerimage: demisto/python3:3.10.9.45313
+  dockerimage: demisto/python3:3.10.13.75921
   runonce: false
   subtype: python3
 tests:

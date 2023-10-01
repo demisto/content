@@ -250,7 +250,7 @@ tasks:
       id: 68669bef-c69c-452b-806b-63f718239b89
       version: -1
       name: Incident fields
-      desciption: Incident fields
+      description: Incident fields
       type: collection
       iscommand: false
       brand: ""
