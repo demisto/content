@@ -1040,7 +1040,7 @@ script:
       description: The offset by which to begin listing image scan results.
       defaultValue: "0"
     - name: all_results
-      description: Whether to retrieve all results. The "limit_record" and "limit_stats" arguments will be ignored. More than 1,500 results will slow down the process.
+      description: Whether to retrieve all results. The "limit_record" and "limit_stats" arguments will be ignored. Might slow down the command run time.
       defaultValue: "false"
       predefined:
       - "true"
@@ -1265,7 +1265,7 @@ script:
       description: The offset by which to begin listing host scan results.
       defaultValue: "0"
     - name: all_results
-      description: Whether to retrieve all results. The "limit_record" and "limit_stats" arguments will be ignored. More than 1,500 results will slow down the process.
+      description: Whether to retrieve all results. The "limit_record" and "limit_stats" arguments will be ignored. Might slow down the command run time.
       defaultValue: "false"
       predefined:
       - "true"
@@ -2083,6 +2083,12 @@ script:
     - name: offset
       description: The offset by which to begin listing CI scan results.
       defaultValue: "0"
+    - name: all_results
+      description: Whether to retrieve all results. The "limit" argument will be ignored. Might slow down the command run time.
+      defaultValue: "false"
+      predefined:
+      - "true"
+      - "false"
     outputs:
     - contextPath: PrismaCloudCompute.CIScan._id
       description: The scan ID.

@@ -480,13 +480,15 @@ class PrismaCloudComputeClient(BaseClient):
         }
         return self._http_request('get', endpoint, params=params, headers=headers)
 
-    def get_ci_scan_results(self, params: Optional[dict] = None) -> List[dict]:
+    def get_ci_scan_results(self, all_results: bool = False, params: Optional[dict] = None) -> List[dict]:
         """
         Sends a request to get CI scan results information.
 
         Returns:
             list[dict]: CI scan results information.
         """
+        if all_results:
+            return self._get_all_results(url_suffix="/scans", params=params)
         return self._http_request(method="GET", url_suffix="scans", params=params)
 
     def get_trusted_images(self) -> dict:
@@ -2152,6 +2154,7 @@ def get_ci_scan_results_list(client: PrismaCloudComputeClient, args: dict) -> Co
     limit, offset = parse_limit_and_offset_values(
         limit=args.get("limit", "50"), offset=args.get("offset", "0")
     )
+    all_results = argToBoolean(args.get("all_results", "false"))
     account_ids = argToList(args.get("account_ids"))
     resource_ids = argToList(args.get("resource_ids"))
     region = argToList(args.get("region"))
@@ -2171,7 +2174,7 @@ def get_ci_scan_results_list(client: PrismaCloudComputeClient, args: dict) -> Co
     if _from := args.get("scan_time_from"):
         params["from"] = parse_date_string_format(_from, "%Y-%m-%dT%H:%M:%SZ")
 
-    if ci_scan_results := client.get_ci_scan_results(params=params):
+    if ci_scan_results := client.get_ci_scan_results(all_results=all_results, params=params):
         table = tableToMarkdown(
             name="CI Scan Information",
             t=[
