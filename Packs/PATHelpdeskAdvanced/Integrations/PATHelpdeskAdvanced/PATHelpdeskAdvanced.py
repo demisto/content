@@ -459,7 +459,7 @@ class Client(BaseClient):
                     f"TicketAttachment_{i+1}",
                     (
                         (file_entry := demisto.getFilePath(entry_id))["name"],
-                        Path(file_entry["path"]).open(),
+                        Path(file_entry["path"]).open("rb"),
                     ),
                 )
                 for i, entry_id in enumerate(entry_ids)
