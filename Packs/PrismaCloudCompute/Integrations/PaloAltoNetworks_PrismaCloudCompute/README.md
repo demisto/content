@@ -3883,14 +3883,14 @@ Retrieves all scan reports for images scanned by the Jenkins plugin or twistcli.
 >| pythonserver.azurecr.io/pythonserver:a1 | sha256:a5 | ubuntu | jammy | true | 2023-09-20T11:27:51.087Z |
 
 
-### prisma-cloud-compute-trusted-images-get
+### prisma-cloud-compute-trusted-images-list
 
 ***
 Returns the trusted registries, repositories, and images. Maps to the image table in Defend > Compliance > Trusted Images in the Console UI.
 
 #### Base Command
 
-`prisma-cloud-compute-trusted-images-get`
+`prisma-cloud-compute-trusted-images-list`
 
 #### Input
 
@@ -3918,7 +3918,7 @@ There are no input arguments for this command.
 | PrismaCloudCompute.TrustedImage.groups.images | Unknown | The images in the trusted image group. | 
 
 #### Command example
-```!prisma-cloud-compute-trusted-images-get```
+```!prisma-cloud-compute-trusted-images-list```
 #### Context Example
 ```json
 {
@@ -4098,19 +4098,19 @@ Updates a trusted image to the system. Specify trusted images using either the i
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| images_list_json | JSON containing the list of trusted images to update. In order to view the structure, use ***prisma-cloud-compute-trusted-images-get*** to retrieve the current state of the list. | Required | 
+| images_list_json | JSON containing the list of trusted images to update. In order to view the structure, use ***prisma-cloud-compute-trusted-images-list*** to retrieve the current state of the list. | Required | 
 
 #### Context Output
 
 There is no context output for this command.
-### prisma-cloud-compute-container-scan-results
+### prisma-cloud-compute-container-scan-results-list
 
 ***
 Retrieves container scan reports. Maps to Monitor > Compliance > Images > Deployed in the Console UI.
 
 #### Base Command
 
-`prisma-cloud-compute-container-scan-results`
+`prisma-cloud-compute-container-scan-results-list`
 
 #### Input
 
@@ -4168,7 +4168,7 @@ Retrieves container scan reports. Maps to Monitor > Compliance > Images > Deploy
 | PrismaCloudCompute.ContainersScanResults.info.startTime | Date | Container start time. | 
 
 #### Command example
-```!prisma-cloud-compute-container-scan-results limit=2```
+```!prisma-cloud-compute-container-scan-results-list limit=2```
 #### Context Example
 ```json
 {
@@ -4370,14 +4370,14 @@ Retrieves container scan reports. Maps to Monitor > Compliance > Images > Deploy
 >| a5 | hostname | 2023-09-26T00:20:45.054Z | a9 | a7 | a9 | test |
 
 
-### prisma-cloud-compute-hosts-info
+### prisma-cloud-compute-hosts-list
 
 ***
 Returns minimal information that includes hostname, distro, distro-release, collections, clusters, and agentless about all deployed hosts.
 
 #### Base Command
 
-`prisma-cloud-compute-hosts-info`
+`prisma-cloud-compute-hosts-list`
 
 #### Input
 
@@ -4418,7 +4418,7 @@ Returns minimal information that includes hostname, distro, distro-release, coll
 | PrismaCloudCompute.Hosts.agentless | Boolean | Whether the host was scanned agentlessly. | 
 
 #### Command example
-```!prisma-cloud-compute-hosts-info limit=2```
+```!prisma-cloud-compute-hosts-list limit=2```
 #### Context Example
 ```json
 {
@@ -4582,14 +4582,14 @@ Returns minimal information that includes hostname, distro, distro-release, coll
 >| a4 | hostname1 | 0001-01-01T00:00:00Z | Ubuntu 20.04.4 LTS | focal |
 
 
-### prisma-cloud-compute-runtime-container-audit-events-get
+### prisma-cloud-compute-runtime-container-audit-events-list
 
 ***
 Retrieves all container audit events when a runtime sensor such as process, network, file system, or system call detects an activity that deviates from the predictive model.
 
 #### Base Command
 
-`prisma-cloud-compute-runtime-container-audit-events-get`
+`prisma-cloud-compute-runtime-container-audit-events-list`
 
 #### Input
 
@@ -4652,7 +4652,7 @@ Retrieves all container audit events when a runtime sensor such as process, netw
 | PrismaCloudCompute.RuntimeContainerAuditEvents.provider | String | The provider of the container. | 
 
 #### Command example
-```!prisma-cloud-compute-runtime-container-audit-events-get limit=2```
+```!prisma-cloud-compute-runtime-container-audit-events-list limit=2```
 #### Context Example
 ```json
 {

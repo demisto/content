@@ -2276,7 +2276,7 @@ script:
     - contextPath: PrismaCloudCompute.CIScan.entityInfo.malwareAnalyzedTime
       description: Malware analyzed time.
       type: String
-  - name: prisma-cloud-compute-trusted-images-get
+  - name: prisma-cloud-compute-trusted-images-list
     description: Returns the trusted registries, repositories, and images. Maps to the image table in Defend > Compliance > Trusted Images in the Console UI.
     outputs:
     - contextPath: PrismaCloudCompute.TrustedImage.policy.enabled
@@ -2328,13 +2328,13 @@ script:
       description: The images in the trusted image group.
       type: Unknown
   - name: prisma-cloud-compute-trusted-images-update
-    description: Updates a trusted image to the system. Specify trusted images using either the image name or layers properties. This is a potentially harmful command, so use with caution.
+    description: Updates a trusted image to the system. Specify trusted images using either the image name or layers properties. This is a potentially harmful command which overwrites the existing list, so use with caution.
     execution: true
     arguments:
     - name: images_list_json
-      description: JSON containing the list of trusted images to update. In order to view the structure, use ***prisma-cloud-compute-trusted-images-get*** to retrieve the current state of the list.
+      description: JSON containing the list of trusted images to update. In order to view the structure, use ***prisma-cloud-compute-trusted-images-list*** to retrieve the current state of the list.
       required: true
-  - name: prisma-cloud-compute-container-scan-results
+  - name: prisma-cloud-compute-container-scan-results-list
     description: Retrieves container scan reports. Maps to Monitor > Compliance > Images > Deployed in the Console UI.
     arguments:
     - name: collections
@@ -2474,7 +2474,7 @@ script:
     - contextPath: PrismaCloudCompute.ContainersScanResults.info.startTime
       description: Container start time.
       type: Date
-  - name: prisma-cloud-compute-hosts-info
+  - name: prisma-cloud-compute-hosts-list
     description: Returns minimal information that includes hostname, distro, distro-release, collections, clusters, and agentless about all deployed hosts.
     arguments:
     - name: collections
@@ -2563,7 +2563,7 @@ script:
     - contextPath: PrismaCloudCompute.Hosts.agentless
       description: Whether the host was scanned agentlessly.
       type: Boolean
-  - name: prisma-cloud-compute-runtime-container-audit-events-get
+  - name: prisma-cloud-compute-runtime-container-audit-events-list
     description: Retrieves all container audit events when a runtime sensor such as process, network, file system, or system call detects an activity that deviates from the predictive model.
     arguments:
     - name: collections

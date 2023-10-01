@@ -1657,7 +1657,7 @@ def test_get_trusted_images_command(requests_mock):
         - An app client object
         - Relevant arguments
     When:
-        - Calling 'prisma-cloud-compute-trusted-images-get' command
+        - Calling 'prisma-cloud-compute-trusted-images-list' command
     Then:
         - Ensure the outputs of requesting trusted images equals the raw_response object which is mocked
     """
@@ -1704,7 +1704,7 @@ def test_get_container_scan_results_command(requests_mock):
         - An app client object
         - Relevant arguments
     When:
-        - Calling 'prisma-cloud-compute-container-scan-results' command
+        - Calling 'prisma-cloud-compute-container-scan-results-list' command
     Then:
         - Ensure the outputs of requesting container scan results equals the raw_response object which is mocked
     """
@@ -1728,7 +1728,7 @@ def test_get_hosts_info_command(requests_mock):
         - An app client object
         - Relevant arguments
     When:
-        - Calling 'prisma-cloud-compute-hosts-info' command
+        - Calling 'prisma-cloud-compute-hosts-list' command
     Then:
         - Ensure the outputs of requesting host info equals the raw_response object which is mocked
     """
@@ -1752,7 +1752,7 @@ def test_get_runtime_container_audit_events_command(requests_mock):
         - An app client object
         - Relevant arguments
     When:
-        - Calling 'prisma-cloud-compute-runtime-container-audit-events-get' command
+        - Calling 'prisma-cloud-compute-runtime-container-audit-events-list' command
     Then:
         - Ensure the outputs of requesting runtime container audit events equals the raw_response object which is mocked
     """

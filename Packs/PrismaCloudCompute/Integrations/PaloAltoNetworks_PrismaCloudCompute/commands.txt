@@ -17,8 +17,8 @@
 !prisma-cloud-compute-vulnerabilities-impacted-resources-list cve=CVE-2021-31535,CVE-2018-14600
 !prisma-cloud-compute-get-file-integrity-events hostname=host123 limit=3
 !prisma-cloud-compute-ci-scan-results-list limit=2
-!prisma-cloud-compute-trusted-images-get
+!prisma-cloud-compute-trusted-images-list
 !prisma-cloud-compute-trusted-images-update images_list_json={}
-!prisma-cloud-compute-container-scan-results limit=2
-!prisma-cloud-compute-hosts-info limit=2
-!prisma-cloud-compute-runtime-container-audit-events-get limit=2
+!prisma-cloud-compute-container-scan-results-list limit=2
+!prisma-cloud-compute-hosts-list limit=2
+!prisma-cloud-compute-runtime-container-audit-events-list limit=2

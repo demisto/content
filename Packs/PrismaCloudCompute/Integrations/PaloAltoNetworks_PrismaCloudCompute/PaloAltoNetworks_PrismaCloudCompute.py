@@ -2205,7 +2205,7 @@ def get_ci_scan_results_list(client: PrismaCloudComputeClient, args: dict) -> Co
 def get_trusted_images(client: PrismaCloudComputeClient) -> CommandResults:
     """
     Retrieve a list of trusted images rules and groups and their information.
-    Implement the command 'prisma-cloud-compute-trusted-images-get'.
+    Implement the command 'prisma-cloud-compute-trusted-images-list'.
 
     Args:
         client (PrismaCloudComputeClient): prisma-cloud-compute client.
@@ -2276,11 +2276,11 @@ def update_trusted_images(client: PrismaCloudComputeClient, args: dict) -> Comma
 def get_container_scan_results(client: PrismaCloudComputeClient, args: dict) -> CommandResults:
     """
     Retrieve a list of container scan reports and their information.
-    Implement the command 'prisma-cloud-compute-container-scan-results'.
+    Implement the command 'prisma-cloud-compute-container-scan-results-list'.
 
     Args:
         client (PrismaCloudComputeClient): prisma-cloud-compute client.
-        args (dict): prisma-cloud-compute-container-scan-results command arguments.
+        args (dict): prisma-cloud-compute-container-scan-results-list command arguments.
 
     Returns:
         CommandResults: command-results object.
@@ -2341,11 +2341,11 @@ def get_container_scan_results(client: PrismaCloudComputeClient, args: dict) -> 
 def get_hosts_info(client: PrismaCloudComputeClient, args: dict) -> CommandResults:
     """
     Retrieve a list of hosts information.
-    Implement the command 'prisma-cloud-compute-hosts-info'.
+    Implement the command 'prisma-cloud-compute-hosts-list'.
 
     Args:
         client (PrismaCloudComputeClient): prisma-cloud-compute client.
-        args (dict): prisma-cloud-compute-hosts-info command arguments.
+        args (dict): prisma-cloud-compute-hosts-list command arguments.
 
     Returns:
         CommandResults: command-results object.
@@ -2399,11 +2399,11 @@ def get_hosts_info(client: PrismaCloudComputeClient, args: dict) -> CommandResul
 def get_runtime_container_audit_events(client: PrismaCloudComputeClient, args: dict) -> CommandResults:
     """
     Retrieve a list of runtime container audit events information.
-    Implement the command 'prisma-cloud-compute-runtime-container-audit-events-get'.
+    Implement the command 'prisma-cloud-compute-runtime-container-audit-events-list'.
 
     Args:
         client (PrismaCloudComputeClient): prisma-cloud-compute client.
-        args (dict):prisma-cloud-compute-runtime-container-audit-events-get command arguments.
+        args (dict):prisma-cloud-compute-runtime-container-audit-events-list command arguments.
 
     Returns:
         CommandResults: command-results object.
@@ -2586,15 +2586,15 @@ def main():
             return_results(results=get_file_integrity_events_command(client=client, args=demisto.args()))
         elif requested_command == "prisma-cloud-compute-ci-scan-results-list":
             return_results(results=get_ci_scan_results_list(client=client, args=demisto.args()))
-        elif requested_command == "prisma-cloud-compute-trusted-images-get":
+        elif requested_command == "prisma-cloud-compute-trusted-images-list":
             return_results(results=get_trusted_images(client=client))
         elif requested_command == "prisma-cloud-compute-trusted-images-update":
             return_results(results=update_trusted_images(client=client, args=demisto.args()))
-        elif requested_command == "prisma-cloud-compute-container-scan-results":
+        elif requested_command == "prisma-cloud-compute-container-scan-results-list":
             return_results(results=get_container_scan_results(client=client, args=demisto.args()))
-        elif requested_command == "prisma-cloud-compute-hosts-info":
+        elif requested_command == "prisma-cloud-compute-hosts-list":
             return_results(results=get_hosts_info(client=client, args=demisto.args()))
-        elif requested_command == "prisma-cloud-compute-runtime-container-audit-events-get":
+        elif requested_command == "prisma-cloud-compute-runtime-container-audit-events-list":
             return_results(results=get_runtime_container_audit_events(client=client, args=demisto.args()))
     # Log exceptions
     except Exception as e:
