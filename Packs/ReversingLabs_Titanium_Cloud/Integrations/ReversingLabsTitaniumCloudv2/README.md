@@ -10102,8 +10102,14 @@ Retrieve dynamic analysis results.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| File.SHA1 | Unknown | The SHA1 hash of the file. | 
-| ReversingLabs.dynamic_analysis_results | Unknown |  | 
+| File.MD5 | String | MD5 hash. | 
+| File.SHA1 | String | SHA1 hash. | 
+| File.SHA256 | String | SHA256 hash. | 
+| DBotScore.Score | Number | The actual score. | 
+| DBotScore.Type | String | The indicator type. | 
+| DBotScore.Indicator | String | The indicator that was tested. | 
+| DBotScore.Vendor | String | The vendor used to calculate the score. |  
+| ReversingLabs.dynamic_analysis_results | Unknown | The dynamic analysis results. | 
 
 #### Command example
 ```!reversinglabs-titaniumcloud-get-dynamic-analysis-results sha1=21841b32c6165b27dddbd4d6eb3a672defe54271```
