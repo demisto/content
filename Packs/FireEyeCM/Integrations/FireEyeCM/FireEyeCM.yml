@@ -58,7 +58,7 @@ configuration:
   section: Connect
   advanced: true
   required: false
-description: "FireEye Central Management (CM Series) is the FireEye threat intelligence hub. It services the FireEye ecosystem, ensuring that FireEye products share the latest intelligence and correlate across attack vectors to detect and prevent cyber attacks"
+description: "FireEye Central Management (CM Series) is the FireEye threat intelligence hub. It services the FireEye ecosystem, ensuring that FireEye products share the latest intelligence and correlate across attack vectors to detect and prevent cyber attacks."
 display: FireEye Central Management
 name: FireEye Central Management
 script:
@@ -498,7 +498,7 @@ script:
       name: report_type
       required: true
     - defaultValue: '1 week'
-      description: "The start time of the search. This filter is optional. Syntax: start_time=YYYY-MM-DDTHH:mm:ss.sss-OH:om or '1 day/month/year'"
+      description: "The start time of the search. This filter is optional. Syntax: start_time=YYYY-MM-DDTHH:mm:ss.sss-OH:om or '1 day/month/year'."
       name: start_time
     - description: "Specifies the end time of the search. Default is now. Syntax: end_time=YYYY-MM-DDTHH:mm:ss.sss-OH:om or '1 day/month/year'."
       name: end_time
@@ -553,7 +553,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.13.74666
 fromversion: 5.5.0
 tests:
 - FireEye Central Management - Test

@@ -8,14 +8,15 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 531c820b-c43d-42b4-8651-6221f950b859
+    taskid: d7878720-0650-4ee9-8382-a9be1bed4d06
     type: start
     task:
-      id: 531c820b-c43d-42b4-8651-6221f950b859
+      id: d7878720-0650-4ee9-8382-a9be1bed4d06
       version: -1
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -34,12 +35,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "1":
     id: "1"
-    taskid: 070c2eba-86bb-4f36-846f-51095cec1b2b
+    taskid: effae3dd-fcf7-4fc4-8c03-0f506dbc5660
     type: regular
     task:
-      id: 070c2eba-86bb-4f36-846f-51095cec1b2b
+      id: effae3dd-fcf7-4fc4-8c03-0f506dbc5660
       version: -1
       name: DeleteContext
       script: DeleteContext
@@ -67,12 +69,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "20":
     id: "20"
-    taskid: eef6dce2-83b1-4c0d-8c81-9350f0050591
+    taskid: f05510b8-b41a-401c-812f-497dd505833c
     type: regular
     task:
-      id: eef6dce2-83b1-4c0d-8c81-9350f0050591
+      id: f05510b8-b41a-401c-812f-497dd505833c
       version: -1
       name: gsuite-user-create
       script: '|||gsuite-user-create'
@@ -108,12 +111,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "21":
     id: "21"
-    taskid: 1f1c69ed-2ecc-4313-81dd-e2169779e308
+    taskid: de160fcc-787a-4c6e-894f-e5443e15fbf7
     type: condition
     task:
-      id: 1f1c69ed-2ecc-4313-81dd-e2169779e308
+      id: de160fcc-787a-4c6e-894f-e5443e15fbf7
       version: -1
       name: Verify Outputs
       type: condition
@@ -170,12 +174,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "25":
     id: "25"
-    taskid: 4a1ff324-1b83-4a38-8a3d-b12530f69b3f
+    taskid: 1500c8c6-2d4b-4ad5-8777-a7aa08ab2003
     type: condition
     task:
-      id: 4a1ff324-1b83-4a38-8a3d-b12530f69b3f
+      id: 1500c8c6-2d4b-4ad5-8777-a7aa08ab2003
       version: -1
       name: Verify Outputs
       type: condition
@@ -212,12 +217,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "26":
     id: "26"
-    taskid: ac77ad91-b1b2-4bc9-83a0-238b7d66ff96
+    taskid: f9a3af45-e935-4389-8f4b-71cd5df065bd
     type: regular
     task:
-      id: ac77ad91-b1b2-4bc9-83a0-238b7d66ff96
+      id: f9a3af45-e935-4389-8f4b-71cd5df065bd
       version: -1
       name: gsuite-role-assignment-list
       script: '|||gsuite-role-assignment-list'
@@ -247,12 +253,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "27":
     id: "27"
-    taskid: 2026bb93-9f09-414e-8612-63d2f637ad8d
+    taskid: 62dce289-f9c8-432d-84a2-d2da417e627a
     type: condition
     task:
-      id: 2026bb93-9f09-414e-8612-63d2f637ad8d
+      id: 62dce289-f9c8-432d-84a2-d2da417e627a
       version: -1
       name: Verify Outputs
       type: condition
@@ -289,12 +296,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "28":
     id: "28"
-    taskid: 7adfdc60-9177-491f-8d80-ddae400ac8dc
+    taskid: 7c2eb1f6-2719-436c-8402-f4edf7254125
     type: regular
     task:
-      id: 7adfdc60-9177-491f-8d80-ddae400ac8dc
+      id: 7c2eb1f6-2719-436c-8402-f4edf7254125
       version: -1
       name: gsuite-role-assignment-create
       script: '|||gsuite-role-assignment-create'
@@ -334,12 +342,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "29":
     id: "29"
-    taskid: 5dee4504-eb18-4a8e-84c3-38500d2cc90c
+    taskid: 7913421a-5abc-46fb-80bc-ed0ef21c7288
     type: condition
     task:
-      id: 5dee4504-eb18-4a8e-84c3-38500d2cc90c
+      id: 7913421a-5abc-46fb-80bc-ed0ef21c7288
       version: -1
       name: Verify Outputs
       type: condition
@@ -347,7 +356,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "50"
+      - "56"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -381,23 +390,25 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "47":
     id: "47"
-    taskid: d9db92a1-5cbe-4e4d-8f04-8fc87f161828
+    taskid: b4f7cc4a-34d0-4623-8a62-9dd0672fb2be
     type: title
     task:
-      id: d9db92a1-5cbe-4e4d-8f04-8fc87f161828
+      id: b4f7cc4a-34d0-4623-8a62-9dd0672fb2be
       version: -1
       name: Test Done
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 2295
+          "x": 40,
+          "y": 2635
         }
       }
     note: false
@@ -407,12 +418,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "50":
     id: "50"
-    taskid: 194a349a-529c-42d5-8ea6-1068a0e6345b
+    taskid: 678444d7-a27c-4193-8dd1-7c9bc4919a21
     type: regular
     task:
-      id: 194a349a-529c-42d5-8ea6-1068a0e6345b
+      id: 678444d7-a27c-4193-8dd1-7c9bc4919a21
       version: -1
       name: gsuite-user-delete
       description: Deletes a user.
@@ -444,12 +456,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "51":
     id: "51"
-    taskid: b8e96b64-e657-454b-8df0-3cf084db672e
+    taskid: c5157957-a79c-4c2a-843c-0d809daf0ad0
     type: regular
     task:
-      id: b8e96b64-e657-454b-8df0-3cf084db672e
+      id: c5157957-a79c-4c2a-843c-0d809daf0ad0
       version: -1
       name: gsuite-user-update
       description: Updates a user.
@@ -484,12 +497,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "52":
     id: "52"
-    taskid: e0b88bb8-d321-4428-887f-48813bf01450
+    taskid: 9e65bdf7-5cb7-4a7e-8e41-3d1b6d4da9fe
     type: regular
     task:
-      id: e0b88bb8-d321-4428-887f-48813bf01450
+      id: 9e65bdf7-5cb7-4a7e-8e41-3d1b6d4da9fe
       version: -1
       name: sleep 10
       description: Sleep for X seconds
@@ -508,7 +522,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2120
+          "y": 2190
         }
       }
     note: false
@@ -518,12 +532,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "55":
     id: "55"
-    taskid: 4150c4ed-a8f5-456d-888f-07d1931c7358
+    taskid: c95b3b0d-d28e-4432-8fce-3d53e0f99be8
     type: regular
     task:
-      id: 4150c4ed-a8f5-456d-888f-07d1931c7358
+      id: c95b3b0d-d28e-4432-8fce-3d53e0f99be8
       version: -1
       name: gsuite-user-delete
       description: Deletes a user.
@@ -555,13 +570,49 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "56":
+    id: "56"
+    taskid: d526e266-ce59-43ec-888b-d8b4ebb38072
+    type: regular
+    task:
+      id: d526e266-ce59-43ec-888b-d8b4ebb38072
+      version: -1
+      name: gsuite-user-signout
+      description: Signs a user out of all web and device sessions and reset their sign-in cookies.
+      script: '|||gsuite-user-signout'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "50"
+    scriptarguments:
+      user_key:
+        simple: xsoar11@demistodev.com
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 570,
+          "y": 1840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2310,
-        "width": 390,
+        "height": 2650,
+        "width": 910,
         "x": 40,
         "y": 50
       }

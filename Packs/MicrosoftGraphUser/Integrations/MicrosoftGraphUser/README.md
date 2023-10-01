@@ -677,3 +677,18 @@ You will be automatically redirected to a link with the following structure:
 ```REDIRECT_URI?code=AUTH_CODE&session_state=SESSION_STATE```
 >2. Copy the `AUTH_CODE` (without the `code=` prefix, and the `session_state` parameter)
 and paste it in your instance configuration under the **Authorization code** parameter.
+
+
+### msgraph-user-auth-reset
+***
+Run this command if for some reason you need to rerun the authentication process.
+
+#### Base Command
+
+`msgraph-user-auth-reset`
+#### Input
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.

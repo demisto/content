@@ -9,7 +9,6 @@ from CommonServerPython import *
 
 def oproxy_client():
     refresh_token = "dummy_refresh_token"
-    refresh_token_param = "dummy_refresh_token_param"
     auth_id = "dummy_auth_id"
     enc_key = "dummy_enc_key"
     token_retrieval_url = "url_to_retrieval"
@@ -29,7 +28,7 @@ def oproxy_client():
                                  ok_codes=ok_codes, refresh_token=refresh_token, mailbox_to_fetch=mailbox_to_fetch,
                                  folder_to_fetch=folder_to_fetch, first_fetch_interval=first_fetch_interval,
                                  emails_fetch_limit=emails_fetch_limit, auth_code=auth_code, redirect_uri=redirect_uri,
-                                 refresh_token_param=refresh_token_param)
+                                 )
 
 
 def self_deployed_client():
