@@ -19,7 +19,7 @@ The collections are defined by a JSON object in the following format:
 - `http://*demisto_address*:*listen_port*/taxii-discovery-service`
 
 (For Cortex XSOAR 8 or Cortex XSIAM):
-- `https://ext-<cortex-xsiam-address>/xsoar/instance/execute/<instance-name>/{taxii2_api_endpoint}/`
+- `https://ext-<tenant>.crtx.<region>.paloaltonetworks.com/xsoar/instance/execute/<instance-name>/{taxii2_api_endpoint}/`
 - `http://demisto_address:listen_port/{taxii2_api_endpoint}/`
 
 
