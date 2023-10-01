@@ -886,7 +886,7 @@ class BranchTestCollector(TestCollector):
             case FileType.SCRIPT | FileType.PLAYBOOK:
                 try:
 
-                    if "ApiModule" in yml.id_:
+                    if yml.id_.endswith("ApiModule"):
                         logger.debug(f"Found changes in ApiModule = {yml.id_}, starting collecting related integrations")
                         return self._collect_integrations_using_apimodule(yml.id_)
 
