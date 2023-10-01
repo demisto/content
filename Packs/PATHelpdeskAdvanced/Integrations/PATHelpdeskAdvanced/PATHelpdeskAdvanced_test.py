@@ -8,6 +8,7 @@ from PATHelpdeskAdvanced import (
     DemistoException,
     Filter,
     Field,
+    PaginateArgs,
     convert_response_dates,
     paginate,
     json,
@@ -583,3 +584,46 @@ class TestClient:
         )
         with pytest.raises(DemistoException, match=expected_error_message):
             client.list_groups(limit=1)
+
+
+class TestPaginate:
+    @staticmethod
+    def test_paginate_with_limit_only():
+        """
+        Given limit is provided
+        When paginate is called with only limit
+        Then it returns start as 0 and provided limit
+        """
+        assert paginate(limit=10) == PaginateArgs(start=0, limit=10)
+
+    @staticmethod
+    def test_paginate_with_page_and_page_size():
+        """
+        Given limit is provided
+        When paginate is called with paging arguments
+        Then it returns start as 0 and provided limit
+        """
+        assert paginate(page=2, page_size=3, limit=3) == PaginateArgs(start=6, limit=3)
+
+    @staticmethod
+    def test_paginate_with_invalid_args():
+        """
+        Given only one of page or page_size is provided
+        When paginate is called with invalid args
+        Then it raises an appropriate error
+        """
+        with pytest.raises(ValueError):
+            paginate(page=1, limit="None")
+
+        with pytest.raises(KeyError):
+            paginate(page_size=10)
+
+    @staticmethod
+    def test_paginate_with_non_int_args():
+        """
+        Given page and page_size are non-integer values
+        When paginate is called with non-int args
+        Then it raises a DemistoException
+        """
+        with pytest.raises(ValueError):
+            paginate(page="a", page_size="b", limit=3)
