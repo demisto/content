@@ -6,7 +6,6 @@ from collections.abc import Callable, Iterable
 import more_itertools
 from requests import Response
 
-# import curlify
 
 import demistomock as demisto
 from CommonServerPython import *  # noqa: F401
@@ -26,8 +25,8 @@ class Field:
     def __init__(self, demisto_name: str) -> None:
         title_parts = []
         for part in demisto_name.split("_"):
-            if part == "unread":
-                title_parts.append("UnRead")
+            if edge_case := {"unread": "UnRead", "email": "EMail"}.get(part):
+                title_parts.append(edge_case)
             elif part in {"id", "html"}:
                 title_parts.append(part.upper())
             else:
@@ -241,16 +240,6 @@ class Client(BaseClient):
             resp_type="response",
             **kwargs,
         )
-        # print(
-        #     f"Request: {method} {urljoin(self._base_url,url_suffix)}, {kwargs=}, {self._headers=}"
-        # )
-
-        # for r in response.history:
-        #     print(curlify.to_curl(r.request, compressed=True))
-        #     print()
-        # print(curlify.to_curl(response.request, compressed=True))
-        # print()
-        # print(f"Response: {pformat(response.text)}", end="\n")
         try:
             response_body = json.loads(response.text)
             if (require_success_true or ("success" in response_body)) and (
@@ -457,17 +446,6 @@ class Client(BaseClient):
         )
 
     def add_ticket_attachment(self, entry_ids: list[str], **kwargs) -> dict:
-        # files = []
-        # for i, entry_id in enumerate(entry_ids):
-        #     file_entry: dict[str, str] =
-        #     path = Path(file_entry["path"])
-        #     files.append(
-        #         (
-        #             f"TicketAttachment_{i+1}",
-        #             (file_entry["name"], path.open()),
-        #         )
-        #     )
-
         return self.http_request(
             url_suffix="Ticket/UploadNewAttachment",
             method="POST",
@@ -957,18 +935,6 @@ def list_users_command(client: Client, args: dict) -> CommandResults:
         readable_output=pat_table_to_markdown(
             title="PAT HelpDeskAdvanced Users",
             output=data,
-            fields=(
-                ID,
-                SUBJECT,
-                SOLUTION,
-                DATE,
-                SERVICE_ID,
-                PROBLEM,
-                CONTACT_ID,
-                OWNER_USER_ID,
-                ACCOUNT_ID,
-            ),
-            field_replacements={ID: _USER_ID},
         ),
     )
 
