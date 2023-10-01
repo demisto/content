@@ -745,8 +745,6 @@ class Client(BaseClient):
         return 'ok'
 
 
-
-
 ''' HELPER FUNCTIONS '''
 
 
