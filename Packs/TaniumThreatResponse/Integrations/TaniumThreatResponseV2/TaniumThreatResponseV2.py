@@ -900,7 +900,7 @@ def delete_intel_doc(client, data_args):
     # with a "Not Found" message.
     except requests.HTTPError as e:
         if 'not found' in str(e):
-            raise DemistoException(f'Check the intel doc ID and try again.\n({str(e)})')
+            raise DemistoException(f'Could not find the intel doc ID.\n({str(e)})')
         raise
 
     return 'Intel doc deleted', {}, str(raw_response)
