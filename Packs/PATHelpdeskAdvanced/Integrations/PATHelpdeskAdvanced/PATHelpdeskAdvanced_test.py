@@ -14,6 +14,7 @@ from PATHelpdeskAdvanced import (
     json,
     demisto,
     Client,
+    pat_table_to_markdown,
 )
 
 
@@ -627,3 +628,55 @@ class TestPaginate:
         """
         with pytest.raises(ValueError):
             paginate(page="a", page_size="b", limit=3)
+
+
+class TestPatToMarkdown:
+    @staticmethod
+    def test_pat_table_to_markdown_with_no_fields():
+        """
+        Given a title, output dict, and no fields
+        When pat_table_to_markdown is called
+        Then it returns markdown string of the full output
+        """
+        title = "Test Title"
+        output = {"key1": "value1", "key2": "value2"}
+        assert (
+            pat_table_to_markdown(title, output, None)
+            == "### Test Title\n|Key 1|Key 2|\n|---|---|\n| value1 | value2 |\n"
+        )
+
+    @staticmethod
+    def test_pat_table_to_markdown_with_fields():
+        """
+        Given title, output, and specified fields
+        When pat_table_to_markdown is called
+        Then it returns markdown string of filtered outputs
+        """
+        title = "Test Title"
+        output = {"Field1": "1", "Field2": "2", "Field3": "3"}
+        fields = (Field("field1"), Field("field2"))
+
+        assert (
+            pat_table_to_markdown(title, output, fields)
+            == "### Test Title\n|Field 1|Field 2|\n|---|---|\n| 1 | 2 |\n"
+        )
+
+    @staticmethod
+    def test_pat_table_to_markdown_with_field_replacements():
+        """
+        Given title, output dict, fields, and field replacements
+        When pat_table_to_markdown is called with field_replacements
+        Then it returns markdown string with replaced field names
+        """
+        title = "Test Title"
+        replace_me = Field("replace_me")
+        untouched = Field("untouched")
+        replaced = Field("replaced")
+        output = {replace_me.hda_name: "1", untouched.hda_name: "2"}
+
+        assert (
+            pat_table_to_markdown(
+                title, output, fields=None, field_replacements={replace_me: replaced}
+            )
+            == "### Test Title\n|Replaced|Untouched|\n|---|---|\n| 1 | 2 |\n"
+        )
