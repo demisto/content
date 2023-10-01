@@ -4,7 +4,7 @@ from CommonServerPython import *  # noqa: F401
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 
 
-def get_list_if_exist(list_name: str) -> Union[tuple[bool, dict]]:
+def get_list_if_exist(list_name: str) -> tuple[bool, dict]:
     """
     Gets a list from XSOAR if it exists.
     """
@@ -23,6 +23,8 @@ def update_dict_from_images(current_dict: Dict[str, str], deployed_images: list,
     now = (datetime.now()).strftime(DATE_FORMAT)
 
     for image in deployed_images + passed_ci_scan_images:
+        if not image.get('repoTag'):
+            continue
         registry = image['repoTag'].get('registry')
         repo = image['repoTag']['repo']
         image_name = f'{(registry + "/") if registry else ""}{repo}:*'
@@ -32,7 +34,7 @@ def update_dict_from_images(current_dict: Dict[str, str], deployed_images: list,
     return current_dict
 
 
-def remove_expired_images(current_dict: Dict[str, str], time_frame: datetime.datetime):
+def remove_expired_images(current_dict: Dict[str, str], time_frame: datetime):
     """
     Return only images that haven't expired from the trusted images dict.
     """
@@ -55,7 +57,7 @@ def create_update_list(list_name: str, list_content: Dict[str, str], is_list_exi
         raise get_error(res)
 
     response = res[0]['Contents']
-    readable_output = f'List {"Updated" if is_list_exist else "Created"} Successfully.\n{response}'
+    readable_output = f'List {list_name} {"Updated" if is_list_exist else "Created"} Successfully.'
 
     return CommandResults(readable_output=readable_output)
 
@@ -91,8 +93,6 @@ def main():
     except Exception as e:
         return_error(f'Failed to execute PrismaCloudLocalTrustedImagesListUpdate. Error: {str(e)}')
 
-
-''' ENTRY POINT '''
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
