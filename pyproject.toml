@@ -514,6 +514,19 @@ max_line_length = 130
 [tool.pytest]
 junit_family = "xunit1"
 
+[tool.pytest.ini_options]
+markers = [
+    "helper: set metadata on your test functions",
+    "commands: ",
+    "fetch: ",
+    "client: ",
+    "get_cases: ",
+    "get_cases_limit: ",
+    "get_cases_begin_date: ",
+    "get_cases_end_date: ",
+    "get_cases_combined: ",
+]
+
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
