@@ -694,7 +694,7 @@ class Client(BaseClient):
         if get_attachments:
             url = url.replace('/v2', '/v1')
 
-        max_retries = 10
+        max_retries = 3
         num_of_tries = 0
         while num_of_tries < max_retries:
             if file:
