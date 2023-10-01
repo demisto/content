@@ -1,7 +1,0 @@
-fromversion: 8.2.0
-id: Palo_Alto_Prisma_Cloud_1_5_ModelingRule
-name: Palo Alto Prisma Cloud 1.5 Modeling Rule
-rules: ''
-schema: ''
-tags: ''
-toversion: 8.3.0
