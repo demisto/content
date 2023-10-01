@@ -2,9 +2,9 @@ commonfields:
   id: TruSTAR v2
   version: -1
 name: TruSTAR v2
-display: TruSTAR v2
+display: TruSTAR v2 (Deprecated)
 category: Data Enrichment & Threat Intelligence
-description: TruSTAR is an Intelligence Management Platform that helps you operationalize data across tools and teams, helping you prioritize investigations and accelerate incident response.
+description: Deprecated. Not supported since TrueSTAR was acquired by Splunk, No available replacement.
 configuration:
 - display: Server URL (e.g. https://api.trustar.co)
   name: server
@@ -37,16 +37,16 @@ script:
   - name: trustar-search-indicators
     arguments:
     - name: search_term
-      description: The term to search for (e.g. covid-19)
+      description: The term to search for (e.g. covid-19).
     - name: enclave_ids
-      description: Comma-separated list of enclave ids; (i.e. <enclave1>,<enclave2>,<enclave3>). Only indicators found in reports from these enclaves will be returned (defaults to all of user’s enclaves). Defaults is all enclaves the user has READ access to. You can get a list of your enclave IDs executing the command '!trustar-get-enclaves'
+      description: Comma-separated list of enclave ids; (i.e. <enclave1>,<enclave2>,<enclave3>). Only indicators found in reports from these enclaves will be returned (defaults to all of user’s enclaves). Defaults is all enclaves the user has READ access to. You can get a list of your enclave IDs executing the command '!trustar-get-enclaves'.
       isArray: true
     - name: from_time
       description: Start of time window (format can be absolute like YYYY-MM-DD HH:MM:SS, i.e. 2018-01-01 10:30:00; OR relative, i.e. '10 minutes ago', '5 days ago', etc). Based on updated time, and not created time. Default is 1 day ago.
     - name: to_time
       description: End of time window (format can be absolute like YYYY-MM-DD HH:MM:SS, i.e. 2018-01-01 10:30:00; OR relative, i.e. '10 minutes ago', '5 days ago', etc). Based on updated time, and not created time. Default is 1 day ago.
     - name: indicator_types
-      description: comma-separated indicator types to filter by. e.g. "URL, IP"
+      description: comma-separated indicator types to filter by. e.g. "URL, IP".
       isArray: true
     - name: tags
       description: Name (or list of names) of tag(s) to filter indicators by. (i.e. <tag1>,<tag2>,<tag3>). Only indicators containing ALL of these tags will be returned.
@@ -59,10 +59,10 @@ script:
       defaultValue: "25"
     outputs:
     - contextPath: TruSTAR.Indicators.indicatorType
-      description: Indicator type
+      description: Indicator type.
       type: string
     - contextPath: TruSTAR.Indicators.value
-      description: Indicator value
+      description: Indicator value.
       type: string
     - contextPath: File.Name
       description: The full file name (including file extension).
@@ -77,19 +77,19 @@ script:
       description: The SHA1 hash of the file.
       type: String
     - contextPath: IP.Address
-      description: IP address
+      description: IP address.
       type: String
     - contextPath: URL.Data
-      description: The URL
+      description: The URL.
       type: String
     - contextPath: CVE.ID
-      description: 'The ID of the CVE, for example: CVE-2015-1653'
+      description: 'The ID of the CVE, for example: CVE-2015-1653.'
       type: String
     - contextPath: Account.Email.Address
       description: The email address of the account.
       type: String
     - contextPath: RegistryKey.Path
-      description: The path to the registry key
+      description: The path to the registry key.
       type: String
     - contextPath: Domain.Name
       description: 'The domain name, for example: "google.com".'
@@ -111,22 +111,22 @@ script:
     arguments: []
     outputs:
     - contextPath: TruSTAR.Enclaves.id
-      description: Enclave type
+      description: Enclave type.
       type: string
     - contextPath: TruSTAR.Enclaves.name
-      description: Enclave name
+      description: Enclave name.
       type: string
     - contextPath: TruSTAR.Enclaves.type
-      description: Enclave type
+      description: Enclave type.
       type: string
     - contextPath: TruSTAR.Enclaves.create
-      description: True if I have create permissions on enclave
+      description: True if I have create permissions on enclave.
       type: Bool
     - contextPath: TruSTAR.Enclaves.update
-      description: True if I have update permissions on enclave
+      description: True if I have update permissions on enclave.
       type: Bool
     - contextPath: TruSTAR.Enclaves.read
-      description: True if I have read permissions on enclave
+      description: True if I have read permissions on enclave.
       type: Bool
     description: Returns the list of all enclaves that the user has access to, as well as whether they can read, create, and update reports in that enclave.
   - name: trustar-related-indicators
@@ -138,16 +138,16 @@ script:
       description: Comma separated indicator values. Values can be any of the following types; i.e. an IP address, email address, URL, MD5, SHA1, SHA256, Registry Key, Malware name, etc.
     - name: enclave_ids
       isArray: true
-      description: Comma-separated list of enclave IDs; (i.e. <enclave1>,<enclave2>,<enclave3>). Only indicators found in reports from these enclaves will be returned (defaults to all of user’s enclaves). Defaults is all enclaves the user has READ access to. You can get a list of your enclave IDs executing the command '!trustar-get-enclaves'
+      description: Comma-separated list of enclave IDs; (i.e. <enclave1>,<enclave2>,<enclave3>). Only indicators found in reports from these enclaves will be returned (defaults to all of user’s enclaves). Defaults is all enclaves the user has READ access to. You can get a list of your enclave IDs executing the command '!trustar-get-enclaves'.
     - name: limit
       description: Limit of results to return. Max value possible is 1000.
       defaultValue: "25"
     outputs:
     - contextPath: TruSTAR.Indicators.indicatorType
-      description: Indicator type
+      description: Indicator type.
       type: string
     - contextPath: TruSTAR.Indicators.value
-      description: Indicator value
+      description: Indicator value.
       type: string
     - contextPath: File.Name
       description: The full file name (including file extension).
@@ -162,19 +162,19 @@ script:
       description: The SHA1 hash of the file.
       type: String
     - contextPath: IP.Address
-      description: IP address
+      description: IP address.
       type: String
     - contextPath: URL.Data
-      description: The URL
+      description: The URL.
       type: String
     - contextPath: CVE.ID
-      description: 'The ID of the CVE, for example: CVE-2015-1653'
+      description: 'The ID of the CVE, for example: CVE-2015-1653.'
       type: String
     - contextPath: Account.Email.Address
       description: The email address of the account.
       type: String
     - contextPath: RegistryKey.Path
-      description: The path to the registry key
+      description: The path to the registry key.
       type: String
     - contextPath: Domain.Name
       description: 'The domain name, for example: "google.com".'
@@ -207,13 +207,13 @@ script:
       defaultValue: "3"
     outputs:
     - contextPath: TruSTAR.Indicators.correlationCount
-      description: Indicator correlation count
+      description: Indicator correlation count.
       type: Number
     - contextPath: TruSTAR.Indicators.indicatorType
-      description: Indicator type
+      description: Indicator type.
       type: string
     - contextPath: TruSTAR.Indicators.value
-      description: Indicator value
+      description: Indicator value.
       type: string
     - contextPath: File.Name
       description: The full file name (including file extension).
@@ -228,19 +228,19 @@ script:
       description: The SHA1 hash of the file.
       type: String
     - contextPath: IP.Address
-      description: IP address
+      description: IP address.
       type: String
     - contextPath: URL.Data
-      description: The URL
+      description: The URL.
       type: String
     - contextPath: CVE.ID
-      description: 'The ID of the CVE, for example: CVE-2015-1653'
+      description: 'The ID of the CVE, for example: CVE-2015-1653.'
       type: String
     - contextPath: Account.Email.Address
       description: The email address of the account.
       type: String
     - contextPath: RegistryKey.Path
-      description: The path to the registry key
+      description: The path to the registry key.
       type: String
     - contextPath: Domain.Name
       description: 'The domain name, for example: "google.com".'
@@ -267,31 +267,31 @@ script:
       description: Comma separated indicator values. Values can be any of the following types; i.e. an IP address, email address, URL, MD5, SHA1, SHA256, Registry Key, Malware name, etc.
     - name: enclave_ids
       isArray: true
-      description: CSV of enclave IDs to restrict to. (i.e. <enclave1>,<enclave2>,<enclave3>). By default, uses all of the user’s enclaves. You can get a list of your enclave IDs executing the command '!trustar-get-enclaves'
+      description: CSV of enclave IDs to restrict to. (i.e. <enclave1>,<enclave2>,<enclave3>). By default, uses all of the user’s enclaves. You can get a list of your enclave IDs executing the command '!trustar-get-enclaves'.
     outputs:
     - contextPath: TruSTAR.IndicatorsMetadata.notes
-      description: Indicator notes
+      description: Indicator notes.
       type: string
     - contextPath: TruSTAR.IndicatorsMetadata.indicatorType
-      description: Indicator type
+      description: Indicator type.
       type: string
     - contextPath: TruSTAR.IndicatorsMetadata.firstSeen
-      description: Indicator first seen value
+      description: Indicator first seen value.
       type: Date
     - contextPath: TruSTAR.IndicatorsMetadata.correlationCount
-      description: Indicator correlation count
+      description: Indicator correlation count.
       type: Number
     - contextPath: TruSTAR.IndicatorsMetadata.value
-      description: Indicator value
+      description: Indicator value.
       type: string
     - contextPath: TruSTAR.IndicatorsMetadata.lastSeen
-      description: Indicator last seen value
+      description: Indicator last seen value.
       type: Date
     - contextPath: TruSTAR.IndicatorsMetadata.tags
-      description: Indicator tags
+      description: Indicator tags.
       type: string
     - contextPath: TruSTAR.IndicatorsMetadata.enclaveIds
-      description: Enclave IDs where indicator is present
+      description: Enclave IDs where indicator is present.
       type: string
     - contextPath: File.Name
       description: The full file name (including file extension).
@@ -306,19 +306,19 @@ script:
       description: The SHA1 hash of the file.
       type: String
     - contextPath: IP.Address
-      description: IP address
+      description: IP address.
       type: String
     - contextPath: URL.Data
-      description: The URL
+      description: The URL.
       type: String
     - contextPath: CVE.ID
-      description: 'The ID of the CVE, for example: CVE-2015-1653'
+      description: 'The ID of the CVE, for example: CVE-2015-1653.'
       type: String
     - contextPath: Account.Email.Address
       description: The email address of the account.
       type: String
     - contextPath: RegistryKey.Path
-      description: The path to the registry key
+      description: The path to the registry key.
       type: String
     - contextPath: Domain.Name
       description: 'The domain name, for example: "google.com".'
@@ -345,43 +345,43 @@ script:
       description: Comma separated indicator values. Values can be any of the following types; i.e. an IP address, email address, URL, MD5, SHA1, SHA256, Registry Key, Malware name, etc.
     - name: enclave_ids
       isArray: true
-      description: CSV of enclaves to search for indicator summaries in. (i.e. <enclave1>,<enclave2>,<enclave3>). These should be enclaves containing data from sources on the TruSTAR Marketplace. You can get a list of your enclave IDs executing the command '!trustar-get-enclaves'
+      description: CSV of enclaves to search for indicator summaries in. (i.e. <enclave1>,<enclave2>,<enclave3>). These should be enclaves containing data from sources on the TruSTAR Marketplace. You can get a list of your enclave IDs executing the command '!trustar-get-enclaves'.
     - name: limit
       description: Limit of results to return. Max value possible is 1000.
       defaultValue: "25"
     outputs:
     - contextPath: TruSTAR.IndicatorSummaries.severityLevel
-      description: Indicator severity level
+      description: Indicator severity level.
       type: string
     - contextPath: TruSTAR.IndicatorSummaries.reportId
-      description: Indicator report ID
+      description: Indicator report ID.
       type: string
     - contextPath: TruSTAR.IndicatorSummaries.value
-      description: Indicator value
+      description: Indicator value.
       type: string
     - contextPath: TruSTAR.IndicatorSummaries.score.name
-      description: Indicator score name
+      description: Indicator score name.
       type: string
     - contextPath: TruSTAR.IndicatorSummaries.score.value
-      description: Indicator score value
+      description: Indicator score value.
       type: string
     - contextPath: TruSTAR.IndicatorSummaries.attributes
-      description: Indicator attributes
+      description: Indicator attributes.
       type: String
     - contextPath: TruSTAR.IndicatorSummaries.enclaveId
-      description: Indicator enclave ID
+      description: Indicator enclave ID.
       type: string
     - contextPath: TruSTAR.IndicatorSummaries.type
-      description: Indicator type
+      description: Indicator type.
       type: string
     - contextPath: TruSTAR.IndicatorSummaries.source.key
-      description: Indicator source key
+      description: Indicator source key.
       type: string
     - contextPath: TruSTAR.IndicatorSummaries.source.name
-      description: Indicator source name
+      description: Indicator source name.
       type: string
     - contextPath: TruSTAR.IndicatorSummaries.updated
-      description: Indicator last update value
+      description: Indicator last update value.
       type: string
     - contextPath: File.Name
       description: The full file name (including file extension).
@@ -396,19 +396,19 @@ script:
       description: The SHA1 hash of the file.
       type: String
     - contextPath: IP.Address
-      description: IP address
+      description: IP address.
       type: String
     - contextPath: URL.Data
-      description: The URL
+      description: The URL.
       type: String
     - contextPath: CVE.ID
-      description: 'The ID of the CVE, for example: CVE-2015-1653'
+      description: 'The ID of the CVE, for example: CVE-2015-1653.'
       type: String
     - contextPath: Account.Email.Address
       description: The email address of the account.
       type: String
     - contextPath: RegistryKey.Path
-      description: The path to the registry key
+      description: The path to the registry key.
       type: String
     - contextPath: Domain.Name
       description: 'The domain name, for example: "google.com".'
@@ -433,10 +433,10 @@ script:
       defaultValue: "25"
     outputs:
     - contextPath: TruSTAR.WhitelistedIndicators.indicatorType
-      description: File MD5
+      description: File MD5.
       type: string
     - contextPath: TruSTAR.WhitelistedIndicators.value
-      description: File SHA1
+      description: File SHA1.
       type: string
     - contextPath: File.Name
       description: The full file name (including file extension).
@@ -451,19 +451,19 @@ script:
       description: The SHA1 hash of the file.
       type: String
     - contextPath: IP.Address
-      description: IP address
+      description: IP address.
       type: String
     - contextPath: URL.Data
-      description: The URL
+      description: The URL.
       type: String
     - contextPath: CVE.ID
-      description: 'The ID of the CVE, for example: CVE-2015-1653'
+      description: 'The ID of the CVE, for example: CVE-2015-1653.'
       type: String
     - contextPath: Account.Email.Address
       description: The email address of the account.
       type: String
     - contextPath: RegistryKey.Path
-      description: The path to the registry key
+      description: The path to the registry key.
       type: String
     - contextPath: Domain.Name
       description: 'The domain name, for example: "google.com".'
@@ -492,11 +492,11 @@ script:
       predefined:
       - ENCLAVE
       - COMMUNITY
-      description: Whether to search for reports in the community, or only in enclaves
+      description: Whether to search for reports in the community, or only in enclaves.
       defaultValue: ENCLAVE
     - name: enclave_ids
       isArray: true
-      description: Comma separated list of enclave ids to search for reports in. (i.e. <enclave1>,<enclave2>,<enclave3>). Even if distributionType is COMMUNITY, these enclaves will still be searched as well. Default is All enclaves the user has READ access to. You can get a list of your enclave IDs executing the command '!trustar-get-enclaves'
+      description: Comma separated list of enclave ids to search for reports in. (i.e. <enclave1>,<enclave2>,<enclave3>). Even if distributionType is COMMUNITY, these enclaves will still be searched as well. Default is All enclaves the user has READ access to. You can get a list of your enclave IDs executing the command '!trustar-get-enclaves'.
     - name: tags
       description: a list of names of tags to filter by; only reports containing ALL of these tags will be returned. i.e. <tag1>,<tag2>,<tag3>).
       isArray: true
@@ -505,29 +505,29 @@ script:
       isArray: true
     outputs:
     - contextPath: TruSTAR.Report.title
-      description: Title of the report
+      description: Title of the report.
       type: string
     - contextPath: TruSTAR.Report.reportBody
-      description: Body of the report
+      description: Body of the report.
       type: string
     - contextPath: TruSTAR.Report.id
-      description: ID of the report
+      description: ID of the report.
       type: string
     description: 'Returns incident reports matching the specified filters. All parameters are optional: if nothing is specified, the latest 25 reports accessible by the user will be returned (matching the view the user would have by logging into Station).'
   - name: trustar-get-indicators-for-report
     arguments:
     - name: report_id
       required: true
-      description: the ID of the report to get the indicators from
+      description: the ID of the report to get the indicators from.
     - name: limit
       description: Limit of results to return. Max value possible is 1000.
       defaultValue: '25'
     outputs:
     - contextPath: TruSTAR.Indicators.type
-      description: Indicator type
+      description: Indicator type.
       type: string
     - contextPath: TruSTAR.Indicators.value
-      description: Indicator value
+      description: Indicator value.
       type: string
     - contextPath: File.Name
       description: The full file name (including file extension).
@@ -542,19 +542,19 @@ script:
       description: The SHA1 hash of the file.
       type: String
     - contextPath: IP.Address
-      description: IP address
+      description: IP address.
       type: String
     - contextPath: URL.Data
-      description: The URL
+      description: The URL.
       type: String
     - contextPath: CVE.ID
-      description: 'The ID of the CVE, for example: CVE-2015-1653'
+      description: 'The ID of the CVE, for example: CVE-2015-1653.'
       type: String
     - contextPath: Account.Email.Address
       description: The email address of the account.
       type: String
     - contextPath: RegistryKey.Path
-      description: The path to the registry key
+      description: The path to the registry key.
       type: String
     - contextPath: Domain.Name
       description: 'The domain name, for example: "google.com".'
@@ -575,38 +575,38 @@ script:
   - name: trustar-move-report
     arguments:
     - name: report_id
-      description: the ID of the report you want to move
+      description: the ID of the report you want to move.
       required: true
     - name: dest-enclave-id
-      description: the ID of the destination enclave
+      description: the ID of the destination enclave.
       required: true
     description: Move a report from one enclave to another.
   - name: trustar-copy-report
     arguments:
     - name: report_id
-      description: the ID of the report you want to move
+      description: the ID of the report you want to move.
       required: true
     - name: dest_enclave_id
-      description: the ID of the destination enclave
+      description: the ID of the destination enclave.
       required: true
     description: Copies a report from one enclave to another.
   - name: trustar-submit-report
     arguments:
     - name: title
       required: true
-      description: Title of the report
+      description: Title of the report.
     - name: report_body
       required: true
-      description: Text content of report
+      description: Text content of report.
     - name: enclave_ids
       isArray: true
-      description: CSV of TruSTAR-generated enclave ids. (i.e. <enclave1>,<enclave2>,<enclave3>). Use the enclave ID, NOT the enclave name. Mandatory if the distribution type is ENCLAVE. You can get a list of your enclave IDs executing the command '!trustar-get-enclaves'
+      description: CSV of TruSTAR-generated enclave ids. (i.e. <enclave1>,<enclave2>,<enclave3>). Use the enclave ID, NOT the enclave name. Mandatory if the distribution type is ENCLAVE. You can get a list of your enclave IDs executing the command '!trustar-get-enclaves'.
     - name: distribution_type
       auto: PREDEFINED
       predefined:
       - COMMUNITY
       - ENCLAVE
-      description: Distribution type of the report
+      description: Distribution type of the report.
       defaultValue: ENCLAVE
     - name: external_url
       description: URL for the external report that this originated from, if one exists. Limit 500 alphanumeric characters. Must be unique across all reports for a given company.
@@ -621,13 +621,13 @@ script:
       defaultValue: "NO"
     outputs:
     - contextPath: TruSTAR.Report.title
-      description: Title of the report
+      description: Title of the report.
       type: string
     - contextPath: TruSTAR.Report.reportBody
-      description: Body of the report
+      description: Body of the report.
       type: string
     - contextPath: TruSTAR.Report.id
-      description: ID of the report
+      description: ID of the report.
       type: string
     description: Submit a new incident report, and receive the ID it has been assigned in TruSTAR’s system.
   - name: trustar-delete-report
@@ -640,7 +640,7 @@ script:
       predefined:
       - internal
       - external
-      description: Type of report ID
+      description: Type of report ID.
       defaultValue: internal
     description: Deletes a report as specified by given id (id can be TruSTAR report id or external id).
   - name: trustar-correlated-reports
@@ -651,7 +651,7 @@ script:
       description: Comma separated indicator values. Values can be any of the following types; i.e. an IP address, email address, URL, MD5, SHA1, SHA256, Registry Key, Malware name, etc.
     - name: enclave-ids
       isArray: true
-      description: Comma-separated list of enclave ids; (i.e. <enclave1>,<enclave2>,<enclave3>). Only indicators found in reports from these enclaves will be returned (defaults to all of user’s enclaves). Defaults is all enclaves the user has READ access to. You can get a list of your enclave IDs executing the command '!trustar-get-enclaves'
+      description: Comma-separated list of enclave ids; (i.e. <enclave1>,<enclave2>,<enclave3>). Only indicators found in reports from these enclaves will be returned (defaults to all of user’s enclaves). Defaults is all enclaves the user has READ access to. You can get a list of your enclave IDs executing the command '!trustar-get-enclaves'.
     - name: limit
       description: Limit of results to return. Max value possible is 1000.
       defaultValue: "25"
@@ -660,7 +660,7 @@ script:
       predefined:
       - COMMUNITY
       - ENCLAVE
-      description: Distribution type of the report
+      description: Distribution type of the report.
       defaultValue: ENCLAVE
     description: Returns a list of all reports that contain any of the provided indicator values.
   - name: trustar-report-details
@@ -673,17 +673,17 @@ script:
       predefined:
       - internal
       - external
-      description: Type of report ID
+      description: Type of report ID.
       defaultValue: internal
     outputs:
     - contextPath: TruSTAR.Report.title
-      description: Title of the report
+      description: Title of the report.
       type: string
     - contextPath: TruSTAR.Report.reportBody
-      description: Body of the report
+      description: Body of the report.
       type: string
     - contextPath: TruSTAR.Report.id
-      description: ID of the report
+      description: ID of the report.
       type: string
     description: Finds a report by its ID and returns the report details.
   - name: trustar-update-report
@@ -692,12 +692,12 @@ script:
       required: true
       description: TruSTAR report id or external tracking id.
     - name: title
-      description: Title of the report
+      description: Title of the report.
     - name: report-body
-      description: Text content of report
+      description: Text content of report.
     - name: enclave_ids
       isArray: true
-      description: CSV of TruSTAR-generated enclave ids. (i.e. <enclave1>,<enclave2>,<enclave3>). Use the enclave ID, NOT the enclave name. Mandatory if the distribution type is ENCLAVE. You can get a list of your enclave IDs executing the command '!trustar-get-enclaves'
+      description: CSV of TruSTAR-generated enclave ids. (i.e. <enclave1>,<enclave2>,<enclave3>). Use the enclave ID, NOT the enclave name. Mandatory if the distribution type is ENCLAVE. You can get a list of your enclave IDs executing the command '!trustar-get-enclaves'.
     - name: external_url
       description: URL for the external report that this originated from, if one exists. Limit 500 alphanumeric characters. Must be unique across all reports for a given company.
     - name: distribution_type
@@ -705,19 +705,19 @@ script:
       predefined:
       - COMMUNITY
       - ENCLAVE
-      description: Distribution type of the report
+      description: Distribution type of the report.
       defaultValue: ENCLAVE
     - name: time_began
       description: ISO-8601 formatted incident time with timezone, e.g. 2016-09-22T11:38:35+00:00. Default is current time.
     outputs:
     - contextPath: TruSTAR.Report.title
-      description: Title of the report
+      description: Title of the report.
       type: string
     - contextPath: TruSTAR.Report.reportBody
-      description: Body of the report
+      description: Body of the report.
       type: string
     - contextPath: TruSTAR.Report.id
-      description: ID of the report
+      description: ID of the report.
       type: string
     description: Update the report with the specified ID. Either the internal TruSTAR report ID or an external tracking ID can be used. Only the fields passed will be updated. All others will be left unchanged.
   - name: trustar-search-reports
@@ -726,7 +726,7 @@ script:
       default: true
       description: The term to search for (e.g. covid-19) If empty, no search term will be applied. Otherwise, must be at least 3 characters.
     - name: enclave_ids
-      description: Comma-separated list of enclave ids (i.e. <enclave1>,<enclave2>,<enclave3>). Only indicators found in reports from these enclaves will be returned (defaults to all of user’s enclaves). You can get a list of your enclave IDs executing the command '!trustar-get-enclaves'
+      description: Comma-separated list of enclave ids (i.e. <enclave1>,<enclave2>,<enclave3>). Only indicators found in reports from these enclaves will be returned (defaults to all of user’s enclaves). You can get a list of your enclave IDs executing the command '!trustar-get-enclaves'.
       isArray: true
     - name: from_time
       description: Start of time window (format can be absolute like YYYY-MM-DD HH:MM:SS, i.e. 2018-01-01 10:30:00; OR relative, i.e. '10 minutes ago', '5 days ago', etc). Based on updated time, and not created time. Default is 1 day ago.
@@ -743,10 +743,10 @@ script:
       defaultValue: "25"
     outputs:
     - contextPath: TruSTAR.Report.id
-      description: ID of the report
+      description: ID of the report.
       type: string
     - contextPath: TruSTAR.Report.title
-      description: Report Title
+      description: Report Title.
       type: string
     description: Searches for all reports that contain the given search term.
   - name: trustar-add-to-whitelist
@@ -755,7 +755,7 @@ script:
       required: true
       default: true
       isArray: true
-      description: CSV of indicators to add to allow list, i.e. evil.com,101.43.52.224
+      description: CSV of indicators to add to allow list, i.e. evil.com,101.43.52.224.
     description: Add to allow list a list of indicator values for the user’s company.
   - name: trustar-remove-from-whitelist
     arguments:
@@ -782,7 +782,7 @@ script:
   - name: trustar-get-phishing-submissions
     arguments:
     - name: priority_event_score
-      description: List of email submissions scores to restrict the query. Possible values are -1, 0, 1, 2, 3. (i.e. -1,0,2)
+      description: List of email submissions scores to restrict the query. Possible values are -1, 0, 1, 2, 3. (i.e. -1,0,2).
       isArray: true
       defaultValue: -1,0,1,2,3
     - name: from_time
@@ -795,7 +795,7 @@ script:
       - UNRESOLVED
       - CONFIRMED
       - IGNORED
-      description: A list of triage statuses for submissions (UNRESOLVED,CONFIRMED,IGNORED); only email submissions marked with at least one of these statuses will be returned
+      description: A list of triage statuses for submissions (UNRESOLVED,CONFIRMED,IGNORED); only email submissions marked with at least one of these statuses will be returned.
       isArray: true
       defaultValue: UNRESOLVED
     - name: limit
@@ -803,51 +803,51 @@ script:
       defaultValue: 25
     outputs:
     - contextPath: TruSTAR.PhishingSubmission.submissionId
-      description: The submission ID
+      description: The submission ID.
       type: string
     - contextPath: TruSTAR.PhishingSubmission.title
-      description: Submission title
+      description: Submission title.
       type: string
     - contextPath: TruSTAR.PhishingSubmission.normalizedTriageScore
-      description: Submission triage score
+      description: Submission triage score.
       type: number
     - contextPath: TruSTAR.PhishingSubmission.context.indicatorType
-      description: Indicator type
+      description: Indicator type.
       type: string
     - contextPath: TruSTAR.PhishingSubmission.context.sourceKey
-      description: Indicator source
+      description: Indicator source.
       type: string
     - contextPath: TruSTAR.PhishingSubmission.context.normalizedSourceScore
-      description: Indicator score
+      description: Indicator score.
       type: number
     - contextPath: TruSTAR.PhishingSubmission.context.originalIndicatorScore.name
-      description: Original Indicator score name
+      description: Original Indicator score name.
       type: string
     - contextPath: TruSTAR.PhishingSubmission.context.originalIndicatorScore.value
-      description: Original Indicator score value
+      description: Original Indicator score value.
       type: string
-    description: Fetches all phishing submissions that fit the given criteria
+    description: Fetches all phishing submissions that fit the given criteria.
   - name: trustar-set-triage-status
     arguments:
     - name: submission_id
       required: true
-      description: ID of the email submission
+      description: ID of the email submission.
     - name: status
       required: true
       auto: PREDEFINED
       predefined:
       - CONFIRMED
       - IGNORED
-      description: Submission status
-    description: Marks a phishing email submission with one of the phishing namespace tags
+      description: Submission status.
+    description: Marks a phishing email submission with one of the phishing namespace tags.
   - name: trustar-get-phishing-indicators
     arguments:
     - name: normalized_indicator_score
-      description: List of Intel scores to restrict the query. Possible values are -1, 0, 1, 2, 3. (i.e. 0,2,3),
+      description: List of Intel scores to restrict the query. Possible values are -1, 0, 1, 2, 3. (i.e. 0,2,3),.
       isArray: true
       defaultValue: -1,0,1,2,3
     - name: priority_event_score
-      description: List of email submissions scores to restrict the query. Possible values are -1, 0, 1, 2, 3. (i.e. 0,2,3),
+      description: List of email submissions scores to restrict the query. Possible values are -1, 0, 1, 2, 3. (i.e. 0,2,3),.
       isArray: true
       defaultValue: -1,0,1,2,3
     - name: from_time
@@ -860,7 +860,7 @@ script:
       - UNRESOLVED
       - CONFIRMED
       - IGNORED
-      description: A list of triage statuses for submissions; only email submissions marked with at least one of these statuses will be returned. Options are 'UNRESOLVED', 'CONFIRMED', 'IGNORED'
+      description: A list of triage statuses for submissions; only email submissions marked with at least one of these statuses will be returned. Options are 'UNRESOLVED', 'CONFIRMED', 'IGNORED'.
       isArray: true
       defaultValue: UNRESOLVED,CONFIRMED,IGNORED
     - name: limit
@@ -868,22 +868,22 @@ script:
       defaultValue: 25
     outputs:
     - contextPath: TruSTAR.PhishingIndicator.indicatorType
-      description: Indicator Type
+      description: Indicator Type.
       type: string
     - contextPath: TruSTAR.PhishingIndicator.normalizedIndicatorScore
-      description: Indicator normalized score
+      description: Indicator normalized score.
       type: number
     - contextPath: TruSTAR.PhishingIndicator.originalIndicatorScore.name
-      description: Indicator original score name
+      description: Indicator original score name.
       type: string
     - contextPath: TruSTAR.PhishingIndicator.originalIndicatorScore.value
-      description: Indicator original score value
+      description: Indicator original score value.
       type: string
     - contextPath: TruSTAR.PhishingIndicator.sourceKey
-      description: Indicator source key
+      description: Indicator source key.
       type: string
     - contextPath: TruSTAR.PhishingIndicator.value
-      description: Indicator value
+      description: Indicator value.
       type: string
     - contextPath: File.Name
       description: The full file name (including file extension).
@@ -898,19 +898,19 @@ script:
       description: The SHA1 hash of the file.
       type: String
     - contextPath: IP.Address
-      description: IP address
+      description: IP address.
       type: String
     - contextPath: URL.Data
-      description: The URL
+      description: The URL.
       type: String
     - contextPath: CVE.ID
-      description: 'The ID of the CVE, for example: CVE-2015-1653'
+      description: 'The ID of the CVE, for example: CVE-2015-1653.'
       type: String
     - contextPath: Account.Email.Address
       description: The email address of the account.
       type: String
     - contextPath: RegistryKey.Path
-      description: The path to the registry key
+      description: The path to the registry key.
       type: String
     - contextPath: Domain.Name
       description: 'The domain name, for example: "google.com".'
@@ -936,3 +936,4 @@ script:
 fromversion: 5.0.0
 tests:
 - TruSTAR v2-Test
+deprecated: true
