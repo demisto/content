@@ -372,7 +372,6 @@ def options_handler():
     parser.add_argument('-pbp', '--production_base_path', help="Production base path of the directory to upload to.",
                         required=False)
     parser.add_argument('-mp', '--marketplace', help='marketplace version.', default='xsoar')
-    parser.add_argument('--xdr_suffix', help='Suffix for creating build bucket.')
     # disable-secrets-detection-end
     return parser.parse_args()
 
@@ -390,8 +389,7 @@ def main():
     production_base_path = options.production_base_path
     target_packs = options.pack_names
     marketplace = options.marketplace
-    xdr_suffix = options.xdr_suffix
-    logging.info(f"xdr_suffix is {xdr_suffix}")
+
 
     # Google cloud storage client initialized
     storage_client = init_storage_client(service_account)
