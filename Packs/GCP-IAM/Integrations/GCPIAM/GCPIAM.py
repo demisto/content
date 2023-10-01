@@ -24,11 +24,13 @@ class Client:
             self.cloud_identity_service = discovery.build('cloudidentity', 'v1', http=http_client)
             self.cloud_resource_manager_service = discovery.build('cloudresourcemanager', 'v3', http=http_client)
             self.iam_service = discovery.build('iam', 'v1', http=http_client)
+            self.iam_credentials = discovery.build('iamcredentials', 'v1', http=http_client)
 
         else:
             self.cloud_identity_service = discovery.build('cloudidentity', 'v1', credentials=credentials)
             self.cloud_resource_manager_service = discovery.build('cloudresourcemanager', 'v3', credentials=credentials)
             self.iam_service = discovery.build('iam', 'v1', credentials=credentials)
+            self.iam_credentials = discovery.build('iamcredentials', 'v1', credentials=credentials)
 
     def get_http_client_with_proxy(self, proxies: dict, proxy: bool = False, verify_certificate: bool = False):
         proxy_info = None
@@ -816,6 +818,31 @@ class Client:
 
         return response
 
+    def gcp_iam_service_account_generate_access_token_request(self, service_account_email: str, lifetime: str) -> dict:
+        """
+        Create a short-lived access token
+        Args:
+            service_account_email (str): E-Mail of the Service Account for wich the token should be generated
+
+            lifetime (str): Lifetime of the token in seconds. Like 3600
+
+        Returns:
+            dict: API response from GCP.
+
+        """
+        resource_name = f"projects/-/serviceAccounts/{service_account_email}"
+        body = {
+            "scope": [
+                "https://www.googleapis.com/auth/cloud-platform"
+            ],
+            "lifetime": f"{arg_to_number(lifetime, required=True)}s"
+        }
+
+        request = self.iam_credentials.projects().serviceAccounts().generateAccessToken(name=resource_name, body=body)
+        response = request.execute()
+
+        return response
+
     def gcp_iam_organization_role_create_request(self, organization_name: str, role_id: str, stage: str = None,
                                                  description: str = None, title: str = None,
                                                  permissions: list = None) -> dict:
@@ -1486,7 +1513,7 @@ def gcp_iam_projects_get_command(client: Client, args: Dict[str, Any]) -> list:
         show_deleted = argToBoolean(args.get('show_deleted', False))
 
         if not parent:
-            raise Exception('One of the arguments: ''parent'' or ''project_name'' must be provided.')
+            raise Exception("One of the arguments: 'parent' or 'project_name' must be provided.")
         limit = arg_to_number(args.get('limit')) or 50
         page = arg_to_number(args.get('page')) or 1
         max_limit = 100
@@ -1776,7 +1803,7 @@ def gcp_iam_folders_get_command(client: Client, args: Dict[str, Any]) -> list:
         show_deleted = argToBoolean(args.get('show_deleted', False))
 
         if not parent:
-            raise Exception('One of the arguments: ''parent'' or ''folder_name'' must be provided.')
+            raise Exception("One of the arguments: 'parent' or 'folder_name' must be provided.")
 
         limit = arg_to_number(args.get('limit')) or 50
         page = arg_to_number(args.get('page')) or 1
@@ -2628,7 +2655,7 @@ def gcp_iam_service_accounts_get_command(client: Client, args: Dict[str, Any]) -
         project_name = args.get('project_name')
 
         if not project_name:
-            raise Exception('One of the arguments: ''service_account_name'' or ''project_name'' must be provided.')
+            raise Exception("One of the arguments: 'service_account_name' or 'project_name' must be provided.")
 
         limit = arg_to_number(args.get('limit')) or 50
         page = arg_to_number(args.get('page')) or 1
@@ -2821,7 +2848,7 @@ def gcp_iam_service_account_keys_get_command(client: Client, args: Dict[str, Any
 
         service_account_name = args.get('service_account_name')
         if not service_account_name:
-            raise Exception('One of the arguments: ''service_account_name'' or ''key_name'' must be provided.')
+            raise Exception("One of the arguments: 'service_account_name' or 'key_name' must be provided.")
 
         limit = arg_to_number(args.get('limit')) or 50
         page = arg_to_number(args.get('page')) or 1
@@ -2918,6 +2945,38 @@ def gcp_iam_service_account_key_disable_command(client: Client, args: Dict[str, 
             command_results_list.append(error)
 
     return command_results_list
+
+
+def gcp_iam_service_account_generate_access_token_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Create a serivce account short-lived access token
+
+    Args:
+        client (Client): GCP API client.
+        args (dict): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+
+    """
+    service_account_email = args['service_account_email']
+    lifetime = args['lifetime']
+
+    response = client.gcp_iam_service_account_generate_access_token_request(service_account_email, lifetime)
+
+    readable_output = tableToMarkdown(f"Access token for {service_account_email}:",
+                                      response,
+                                      headers=["accessToken", "expireTime"],
+                                      headerTransform=pascalToSpace,
+                                      )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='GCPIAM.ServiceAccountAccessToken',
+        outputs_key_field='name',
+        outputs=response,
+        raw_response=response
+    )
 
 
 def gcp_iam_service_account_key_delete_command(client: Client, args: Dict[str, Any]) -> list:
@@ -3735,7 +3794,7 @@ def gcp_iam_tagbindings_list_command(client: Client, args: Dict[str, Any]) -> Un
     parent = args.get('parent')
 
     if not parent:
-        raise Exception('One of the arguments: ''parent'' must be provided.')
+        raise Exception("Argument 'parent' must be provided.")
     max_limit = 100
 
     res_binding = client.gcp_iam_tagbindings_list_request(parent=parent, limit=max_limit)
@@ -3839,6 +3898,7 @@ def main() -> None:
             'gcp-iam-service-account-keys-get': gcp_iam_service_account_keys_get_command,
             'gcp-iam-service-account-key-enable': gcp_iam_service_account_key_enable_command,
             'gcp-iam-service-account-key-disable': gcp_iam_service_account_key_disable_command,
+            'gcp-iam-service-account-generate-access-token': gcp_iam_service_account_generate_access_token_command,
             'gcp-iam-service-account-key-delete': gcp_iam_service_account_key_delete_command,
             'gcp-iam-organization-role-create': gcp_iam_organization_role_create_command,
             'gcp-iam-organization-role-update': gcp_iam_organization_role_update_command,
