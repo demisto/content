@@ -2674,8 +2674,8 @@ def fetch_incidents():
             fetched_data=get_iom_resources(iom_resource_ids=iom_resource_ids),
             last_date=last_scan_time,
             last_fetched_ids=last_resource_ids, date_key='scan_time',
-            id_key='id', date_format=IOM_DATE_FORMAT, new_next_token=iom_next_token,
-            next_token=iom_new_next_token, to_incident_context=iom_resource_to_incident,
+            id_key='id', date_format=IOM_DATE_FORMAT, new_next_token=iom_new_next_token,
+            next_token=iom_next_token, to_incident_context=iom_resource_to_incident,
             incident_type='iom_configurations')
 
         iom_last_run = {'iom_next_token': iom_new_next_token, 'last_scan_time': new_scan_time,
