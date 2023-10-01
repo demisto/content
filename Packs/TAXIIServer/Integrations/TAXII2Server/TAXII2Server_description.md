@@ -25,13 +25,9 @@ You can add a collection description as is doen in `collection1_name`, or enter 
 - **https://*xsoar_address*/instance/execute/*instance_name/{taxii2_api_endpoint}/**
 - **http://*xsoar_address*:*listen_port/{taxii2_api_endpoint}/**
 
-(For Cortex XSOAR 8) Use one of the following options: 
-- `https://ext-<XSOAR-tenant>.crtx.<region>.paloaltonetworks.com/xsoar/instance/execute/<instance-name>/<taxii2_api_endpoint>/`
-- `http://<xsoar_address>:<listen_port>/<taxii2_api_endpoint>/`
-
-(For Cortex XSIAM) Use one of the following options: 
-- `https://ext-<XSIAM-tenant>.crtx.<region>.paloaltonetworks.com/xsiam/instance/execute/<instance-name>/<taxii2_api_endpoint>/`
-- `http://<xsoar_address>:<listen_port>/<taxii2_api_endpoint>/`
+(For Cortex XSOAR 8 or Cortex XSIAM):
+- `https://ext-<tenant>.crtx.<region>.paloaltonetworks.com/xsoar/instance/execute/<instance-name>/<taxii2_api_endpoint>/`
+  When running on an engine:  `http://<xsoar_address>:<listen_port>/<taxii2_api_endpoint>/`
   
 
 ## Access the TAXII Service by Instance Name
