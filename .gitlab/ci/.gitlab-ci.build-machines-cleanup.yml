@@ -26,6 +26,7 @@ build-machines-cleanup:
   after_script:
     - source .gitlab/helper_functions.sh
     - !reference [ .unlock-machine ]
+  timeout: 4 hours
   variables:
     CLOUD_MACHINES_TYPE: "nightly"
     CLOUD_MACHINES_COUNT: "all"
