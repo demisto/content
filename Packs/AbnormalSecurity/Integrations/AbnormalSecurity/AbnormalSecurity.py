@@ -84,6 +84,8 @@ class Client(BaseClient):
 
         response = self._http_request('get', 'threats', params=params, headers=headers)
 
+        response = self._remove_keys_from_response(response, ["pageNumber"])
+
         return response
 
     def get_details_of_a_threat_request(self, threat_id, subtenant):
@@ -895,6 +897,7 @@ def fetch_incidents(
         last_fetch = last_run.get("last_fetch", first_fetch_time)
         last_fetch_datetime = datetime.fromisoformat(last_fetch[:-1]).astimezone(timezone.utc)
         last_fetch = last_fetch_datetime.strftime("%Y-%m-%dT%H:%M:%SZ")
+        last_fetch = "2023-01-11T01:01:01Z"
 
         current_datetime = datetime.utcnow().astimezone(timezone.utc)
         current_iso_format_time = current_datetime.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
