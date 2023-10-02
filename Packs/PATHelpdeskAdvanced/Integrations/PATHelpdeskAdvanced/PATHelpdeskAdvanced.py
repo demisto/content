@@ -1,7 +1,7 @@
 import contextlib
 from json import JSONDecodeError
 from pathlib import Path
-from typing import Literal, NamedTuple
+from typing import Any, Literal, NamedTuple
 from collections.abc import Callable, Iterable
 import more_itertools
 from requests import Response
@@ -225,6 +225,29 @@ def convert_response_dates(response: dict) -> dict:
 
 
 class Client(BaseClient):
+    class Token(NamedTuple):
+        refresh_token: str
+        request_token: str
+        expiry_utc: datetime
+
+        @staticmethod
+        def from_response(response: dict):
+            return Client.Token(
+                refresh_token=response["refreshToken"],
+                request_token=response["requestToken"],
+                expiry_utc=datetime.utcnow() + timedelta(seconds=response["expiresIn"]),
+            )
+
+        def write_to_integration_context(self) -> None:
+            demisto.setIntegrationContext(
+                demisto.getIntegrationContext()
+                | {
+                    "refresh_token": self.refresh_token,
+                    "request_token": self.request_token,
+                    "token_expiry_utc": str(self.expiry_utc),
+                }
+            )
+
     def http_request(
         self,
         url_suffix: str,
@@ -262,79 +285,63 @@ class Client(BaseClient):
         password: str,
     ):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy)
-        self._username = username
-        self._password = password
+        self.token: Client.Token = self._reuse_or_create_token(username, password)
+        self._headers = {"Authorization": f"Bearer {self.token.request_token}"}
 
-        self.request_token: str | None = None
-        self.token_expiry_utc: datetime | None = None
-
-        self._reuse_or_create_token()
-
-    def _reuse_or_create_token(self) -> None:
+    def _reuse_or_create_token(self, username: str, password: str) -> "Client.Token":
         # should only be called from __init__
-        def generate_new_token() -> dict:
-            return self.http_request(
-                method="POST",
-                url_suffix="Authentication/LoginEx",
-                attempted_action="logging in using username and password",
-                params={"username": self._username, "password": self._password},
-                headers={"Content-Type": "multipart/form-data"},
+        def generate_new_refresh_token() -> Client.Token:
+            return Client.Token.from_response(
+                self.http_request(
+                    method="POST",
+                    url_suffix="Authentication/LoginEx",
+                    attempted_action="logging in using username and password",
+                    params={"username": username, "password": password},
+                    headers={"Content-Type": "multipart/form-data"},
+                )
             )
 
-        def generate_request_token(refresh_token: str) -> dict:
-            return self.http_request(
-                method="POST",
-                url_suffix="Authentication/RefreshToken",
-                params={"token": refresh_token},
-                attempted_action="generating request token using refresh token",
-                headers={"Content-Type": "multipart/form-data"},
+        def generate_using_refresh_token(refresh_token: str) -> Client.Token:
+            return Client.Token.from_response(
+                self.http_request(
+                    method="POST",
+                    url_suffix="Authentication/RefreshToken",
+                    params={"token": refresh_token},
+                    attempted_action="generating request token using refresh token",
+                    headers={"Content-Type": "multipart/form-data"},
+                )
             )
 
         # Check integration context
         integration_context = demisto.getIntegrationContext()
-        refresh_token = integration_context.get("refresh_token")
-        raw_token_expiry_utc: str | None = integration_context.get("token_expiry_utc")
+        previous_refresh_token = integration_context.get("refresh_token")
+        raw_previous_expiry_utc: str | None = integration_context.get(
+            "token_expiry_utc"
+        )
 
         # Do we need to log in again, or can we just refresh?
         if (
-            raw_token_expiry_utc
-            and (token_expiry_utc := dateparser.parse(raw_token_expiry_utc))
+            raw_previous_expiry_utc
+            and (token_expiry_utc := dateparser.parse(raw_previous_expiry_utc))
             and token_expiry_utc > (datetime.utcnow() + timedelta(seconds=5))
         ):
             try:
                 demisto.debug(
                     "refresh token is valid, using it to generate a request token"
                 )
-                response = generate_request_token(refresh_token)
+                return generate_using_refresh_token(previous_refresh_token)
 
             except RequestNotSuccessfulError:
                 demisto.debug(
                     "failed using refresh token, getting a new one using username and password"
                 )
-                response = generate_new_token()
+                return generate_new_refresh_token()
 
         else:
             demisto.debug(
-                "refresh token expired or missing, logging in with username and password"
+                "refresh token expired or missing, logging in with username and password. {token.expiry_utc=}"
             )
-            response = generate_new_token()
-
-        self.request_token = response["requestToken"]
-        self.refresh_token = response["refreshToken"]
-        self.token_expiry_utc = datetime.utcnow() + timedelta(
-            seconds=response["expiresIn"]
-        )
-
-        self._headers = {"Authorization": f"Bearer {self.request_token}"}
-        demisto.setIntegrationContext(
-            integration_context
-            | {
-                "refresh_token": self.refresh_token,
-                "request_token": self.request_token,
-                "token_expiry_utc": str(self.token_expiry_utc),
-            }
-        )
-        demisto.debug(f"login complete. {self.token_expiry_utc=}")
+            return generate_new_refresh_token()
 
     def create_ticket(self, **kwargs) -> dict:
         data = create_params_dict(
@@ -606,11 +613,12 @@ class Client(BaseClient):
             ]
         )
 
+        pagination = paginate(**kwargs)
         params = {
             "entity": "Users",
             "columnExpressions": columns,
             "columnNames": columns,
-            "start": (pagination := paginate(**kwargs)).start,
+            "start": pagination.start,
             "limit": pagination.limit,
         }
 
@@ -626,7 +634,7 @@ class Client(BaseClient):
             params=params,
         )
 
-    def list_groups(self, **kwargs):
+    def list_groups(self, **kwargs) -> dict:
         columns = str([column.hda_name for column in (ID, DESCRIPTION, OBJECT_TYPE_ID)])
 
         params = {
