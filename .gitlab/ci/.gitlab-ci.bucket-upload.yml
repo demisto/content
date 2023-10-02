@@ -328,6 +328,7 @@ upload-packs-to-marketplace:
         fi
 
         if [[ $GCS_MARKET_BUCKET != $GCS_PRODUCTION_BUCKET ]] && [[ -z $STORAGE_BASE_PATH ]]; then
+         echo "$XDR_SUFFIX"
          STORAGE_BASE_PATH="upload-flow/builds/$CI_COMMIT_BRANCH/$CI_PIPELINE_ID$XDR_SUFFIX/content"
         fi
 
