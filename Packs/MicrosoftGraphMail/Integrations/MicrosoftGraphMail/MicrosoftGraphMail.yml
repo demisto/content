@@ -202,14 +202,14 @@ script:
     - description: 'The term for which to search. This argument cannot contain reserved characters such as !, $, #, @, etc. For further information, see https://tools.ietf.org/html/rfc3986#section-2.2'
       name: search
     - defaultValue: 20
-      description: Limit emails to fetch in one request
+      description: Limit emails to fetch in one request.
       name: page_size
     - default: true
       defaultValue: '1'
       description: The number of pages of emails to return (maximum is 10 emails per page).
       name: pages_to_pull
     - deprecated: true
-      description: flag for rate limit retry
+      description: flag for rate limit retry.
       name: ran_once_flag
     description: Gets the properties of returned emails. Typically shows partial results, use the "page_size" and "pages_to_pull" arguments to get all results.
     name: msgraph-mail-list-emails
@@ -254,7 +254,7 @@ script:
       description: The name of the user in the 'from' field of the email.
       type: String
     - contextPath: MSGraphMail.From.Address
-      description: The email address of the user in the 'from' field of the email
+      description: The email address of the user in the 'from' field of the email.
       type: String
     - contextPath: MSGraphMail.CCRecipients.Name
       description: The names of the CC recipients.
@@ -281,7 +281,7 @@ script:
       description: The ID of the conversation.
       type: String
     - contextPath: MSGraphMail.InternetMessageID
-      description: Internet Message ID of the message
+      description: Internet Message ID of the message.
       type: String
     - contextPath: MSGraphMail.Recipients.Name
       description: The name of the user in the 'toRecipients' field of the email.
@@ -311,7 +311,7 @@ script:
       - 'true'
       - 'false'
     - deprecated: true
-      description: flag for rate limit retry
+      description: flag for rate limit retry.
       name: ran_once_flag
     description: Returns the properties of an email.
     name: msgraph-mail-get-email
@@ -383,7 +383,7 @@ script:
       description: The ID of the conversation.
       type: String
     - contextPath: MSGraphMail.InternetMessageID
-      description: Internet Message ID of the message
+      description: Internet Message ID of the message.
       type: String
     - contextPath: MSGraphMail.Recipients.Name
       description: The name of the user in the 'toRecipients' field of the email.
@@ -402,7 +402,7 @@ script:
     - description: A comma-separated list of folder IDs. For example, mailFolders,childFolders,childFolders.
       name: folder_id
     - deprecated: true
-      description: flag for rate limit retry
+      description: flag for rate limit retry.
       name: ran_once_flag
     description: Deletes an email.
     name: msgraph-mail-delete-email
@@ -417,9 +417,9 @@ script:
     - description: ' A comma-separated list of folder IDs, in the format: (mail_box,child_mail_box,child_mail_box). '
       name: folder_id
     - deprecated: true
-      description: flag for rate limit retry
+      description: flag for rate limit retry.
       name: ran_once_flag
-    description: Lists all of the attachments of given email
+    description: Lists all of the attachments of given email.
     name: msgraph-mail-list-attachments
     outputs:
     - contextPath: MSGraphMailAttachment.ID
@@ -450,7 +450,7 @@ script:
     - description: The ID of the attachment. In case not supplied, the command will return all the attachments.
       name: attachment_id
     - deprecated: true
-      description: flag for rate limit retry
+      description: flag for rate limit retry.
       name: ran_once_flag
     description: Gets an attachment from the email.
     name: msgraph-mail-get-attachment
@@ -494,7 +494,7 @@ script:
       description: The maximum number of mail folder lists to return. Default is 20.
       name: limit
     - deprecated: true
-      description: flag for rate limit retry
+      description: flag for rate limit retry.
       name: ran_once_flag
     description: Returns the mail folder list directly under the root folder.
     name: msgraph-mail-list-folders
@@ -529,7 +529,7 @@ script:
       description: The maximum number of mail folder lists to return. Default is 20.
       name: limit
     - deprecated: true
-      description: flag for rate limit retry
+      description: flag for rate limit retry.
       name: ran_once_flag
     description: Returns the folder list under the specified folder.
     name: msgraph-mail-list-child-folders
@@ -563,7 +563,7 @@ script:
     - description: The ID of the parent folder under which to create a new folder.
       name: parent_folder_id
     - deprecated: true
-      description: flag for rate limit retry
+      description: flag for rate limit retry.
       name: ran_once_flag
     description: Creates a new folder under the specified folder (parent).
     name: msgraph-mail-create-folder
@@ -598,7 +598,7 @@ script:
       name: new_display_name
       required: true
     - deprecated: true
-      description: flag for rate limit retry
+      description: flag for rate limit retry.
       name: ran_once_flag
     description: Updates the properties of the specified folder.
     name: msgraph-mail-update-folder
@@ -630,7 +630,7 @@ script:
       name: folder_id
       required: true
     - deprecated: true
-      description: flag for rate limit retry
+      description: flag for rate limit retry.
       name: ran_once_flag
     description: Deletes the specified mail folder.
     name: msgraph-mail-delete-folder
@@ -646,7 +646,7 @@ script:
       name: user_id
       required: true
     - deprecated: true
-      description: flag for rate limit retry
+      description: flag for rate limit retry.
       name: ran_once_flag
     description: Moves a message to a different folder.
     name: msgraph-mail-move-email
@@ -669,7 +669,7 @@ script:
       name: message_id
       required: true
     - deprecated: true
-      description: flag for rate limit retry
+      description: flag for rate limit retry.
       name: ran_once_flag
     description: Retrieves an email message by message ID and uploads the content as an EML file.
     name: msgraph-mail-get-email-as-eml
@@ -740,7 +740,7 @@ script:
       - flagged
     - auto: PREDEFINED
       defaultValue: Low
-      description: 'The importance of the draft. Can be: "Low", "Normal", or "High". The default is Normal'
+      description: 'The importance of the draft. Can be: "Low", "Normal", or "High". The default is Normal.'
       name: importance
       predefined:
       - Low
@@ -762,7 +762,7 @@ script:
       name: from
       required: true
     - deprecated: true
-      description: flag for rate limit retry
+      description: flag for rate limit retry.
       name: ran_once_flag
     description: Creates a draft message in the specified user's mailbox.
     name: msgraph-mail-create-draft
@@ -856,7 +856,7 @@ script:
       - flagged
     - auto: PREDEFINED
       defaultValue: Low
-      description: 'The importance of the email. Can be: "Low", "Normal", or "High". The default is Normal'
+      description: 'The importance of the email. Can be: "Low", "Normal", or "High". The default is Normal.'
       name: importance
       predefined:
       - Low
@@ -878,7 +878,7 @@ script:
       name: from
     - description: The content (body) of the email (in HTML format).
       name: htmlBody
-    - description: Indicates whether to render the email body
+    - description: Indicates whether to render the email body.
       name: renderBody
       auto: PREDEFINED
       predefined:
@@ -888,7 +888,7 @@ script:
       isArray: true
       name: replyTo
     - deprecated: true
-      description: flag for rate limit retry
+      description: flag for rate limit retry.
       name: ran_once_flag
     description: Sends an email using Microsoft Graph.
     name: send-mail
@@ -948,7 +948,7 @@ script:
       isArray: true
       name: attachCIDs
     - deprecated: true
-      description: flag for rate limit retry
+      description: flag for rate limit retry.
       name: ran_once_flag
     description: The replies to the recipients of a message.
     name: msgraph-mail-reply-to
@@ -961,7 +961,7 @@ script:
       name: from
       required: true
     - deprecated: true
-      description: flag for rate limit retry
+      description: flag for rate limit retry.
       name: ran_once_flag
     description: Sends a draft email using Microsoft Graph.
     name: msgraph-mail-send-draft
@@ -1002,7 +1002,7 @@ script:
       isArray: true
       name: replyTo
     - deprecated: true
-      description: flag for rate limit retry
+      description: flag for rate limit retry.
       name: ran_once_flag
     description: Replies to an email using Graph Mail.
     name: reply-mail
@@ -1054,7 +1054,7 @@ script:
   - description: Run this command if for some reason you need to rerun the authentication process.
     name: msgraph-mail-auth-reset
     arguments: []
-  dockerimage: demisto/crypto:1.0.0.66562
+  dockerimage: demisto/crypto:1.0.0.76022
   isfetch: true
   runonce: false
   script: '-'
