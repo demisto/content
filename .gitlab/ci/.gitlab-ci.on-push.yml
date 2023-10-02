@@ -241,14 +241,15 @@ add-dep-changes-in-pr-comment:
   extends:
     - .default-job-settings
   needs: ['mpv2-prepare-testing-bucket', 'xpanse-prepare-testing-bucket', 'xsoar-prepare-testing-bucket']
-  rules:
-    - if: '$CI_COMMIT_BRANCH != "master"'
-      when: always
+  when: always
   except:
   - triggers
   - schedules
   script:
-    - python3 ./Tests/scripts/update_pack_dependencies_changes_in_pr.py --github-token $GITHUB_TOKEN --current-sha $CI_COMMIT_SHA --current-branch $CI_COMMIT_BRANCH --artifacts-folder $ARTIFACTS_FOLDER --mandatory-only true
+    - |
+      if [[ $CI_COMMIT_BRANCH != "master" ]]; then
+        python3 ./Tests/scripts/update_pack_dependencies_changes_in_pr.py --github-token $GITHUB_TOKEN --current-sha $CI_COMMIT_SHA --current-branch $CI_COMMIT_BRANCH --artifacts-folder $ARTIFACTS_FOLDER --mandatory-only true
+      fi
 
 .test_content_on_xsoar_server_instances_base:
   tags:
