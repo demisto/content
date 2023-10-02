@@ -776,8 +776,8 @@ def return_outputs_similar_incidents(show_actual_incident: bool, current_inciden
     similar_incidents = similar_incidents.replace(np.nan, '', regex=True)
     current_incident = current_incident.replace(np.nan, '', regex=True)
 
-    similar_incidents = similar_incidents.drop_duplicates()
-    current_incident = current_incident.drop_duplicates()
+    similar_incidents = pd.DataFrame(similar_incidents, errors='ignore')
+    current_incident = pd.DataFrame(current_incident, errors='ignore')
     similar_incidents_json = similar_incidents.to_dict(orient='records')
     incident_json = current_incident.to_dict(orient='records')
 
@@ -859,7 +859,7 @@ def prepare_current_incident(incident_df: pd.DataFrame, display_fields: List[str
                              similar_json_field: List[str], similar_categorical_field: List[str],
                              exact_match_fields: List[str]) -> pd.DataFrame:
     """
-    Prepare current incident for vizualisation
+    Prepare current incident for visualization
     :param incident_df: incident_df
     :param display_fields: display_fields
     :param similar_text_field: similar_text_field
@@ -868,6 +868,8 @@ def prepare_current_incident(incident_df: pd.DataFrame, display_fields: List[str
     :param exact_match_fields: exact_match_fields
     :return:
     """
+    
+    incident_filter = incident_df.copy()
     incident_filter = incident_df[[x for x in
                                    display_fields + similar_text_field + similar_categorical_field
                                    + exact_match_fields if x in incident_df.columns]]
