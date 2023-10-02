@@ -1986,7 +1986,7 @@ class TestImagesUpload:
             - Ensure the pack was uploaded to the right path in the bucket.
         """
         mocker.patch.object(os.path, "isdir", return_value=True)
-        mocker.patch.object(glob, "glob", side_effect=[["Packs/TestPack/Integrations/IntegrationId/IntegrationId_image.svg"],
+        mocker.patch.object(glob, "glob", side_effect=[["Packs/TestPack/Integrations/IntegrationId/IntegrationId_dark.svg"],
                                                        ["Packs/TestPack/Integrations/IntegrationId/IntegrationId.yml"]])
         mocker.patch("builtins.open", mock_open(read_data='{"commonfields": {"id": "Integration Id"}}'))
 
@@ -1994,7 +1994,7 @@ class TestImagesUpload:
         task_status = dummy_pack.upload_dynamic_dashboard_images(dummy_storage_bucket, GCPConfig.CONTENT_PACKS_PATH)
 
         assert task_status
-        assert dummy_pack._uploaded_dynamic_dashboard_images == ['content/images/Integration Id.svg']
+        assert dummy_pack._uploaded_dynamic_dashboard_images == ['content/images/dark/Integration Id.svg']
 
     def test_copy_dynamic_dashboard_images(self, mocker, dummy_pack: Pack):
         """
@@ -2007,11 +2007,11 @@ class TestImagesUpload:
         """
         dummy_build_bucket = mocker.MagicMock()
         dummy_prod_bucket = mocker.MagicMock()
-        blob_name = "content/images/Integration Id.svg"
+        blob_name = "content/images/dark/Integration Id.svg"
 
         images_data = {"TestPack": {BucketUploadFlow.DYNAMIC_DASHBOARD_IMAGES: [blob_name]}}
         task_status = dummy_pack.copy_dynamic_dashboard_images(dummy_prod_bucket, dummy_build_bucket, images_data,
-                                                               GCPConfig.CONTENT_PACKS_PATH, GCPConfig.BUILD_BASE_PATH)
+                                                               GCPConfig.CONTENT_PACKS_PATH)
         assert task_status
 
     def test_copy_author_image(self, mocker, dummy_pack):
