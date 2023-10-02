@@ -84,8 +84,6 @@ class Client(BaseClient):
 
         response = self._http_request('get', 'threats', params=params, headers=headers)
 
-        response = self._remove_keys_from_response(response, ["pageNumber"])
-
         return response
 
     def get_details_of_a_threat_request(self, threat_id, subtenant):
@@ -730,108 +728,6 @@ def get_a_list_of_unanalyzed_abuse_mailbox_campaigns_command(client, args):
     response = client.get_a_list_of_unanalyzed_abuse_mailbox_campaigns_request(start, end)
     markdown = '### Unanalyzed Abuse Mailbox Campaigns\n'
     markdown += tableToMarkdown('', response.get('results', []), removeNull=True)
-
-    command_results = CommandResults(
-        readable_output=markdown,
-        outputs_prefix='AbnormalSecurity.UnanalyzedAbuseCampaigns',
-        outputs_key_field='abx_message_id',
-        outputs=response,
-        raw_response=response
-    )
-
-    return command_results
-
-
-def get_a_list_of_vendors_command(client, args):
-    page_size = arg_to_number(args.get("page_size", 100))
-    page_number = arg_to_number(args.get("page_number", None))
-    response = client.get_a_list_of_vendors_request(page_size, page_number)
-    markdown = tableToMarkdown('Vendor Domains', response.get('vendors'), headers=['vendorDomain'], removeNull=True)
-    command_results = CommandResults(
-        readable_output=markdown,
-        outputs_prefix='AbnormalSecurity.VendorsList',
-        outputs_key_field='vendorDomain',
-        outputs=response,
-        raw_response=response,
-    )
-
-    return command_results
-
-
-def get_the_details_of_a_specific_vendor_command(client, args):
-    vendor_domain: str = args['vendor_domain']
-
-    response = client.get_the_details_of_a_specific_vendor_request(vendor_domain)
-    markdown = tableToMarkdown('Vendor Domain Details', response, removeNull=True)
-    command_results = CommandResults(
-        readable_output=markdown,
-        outputs_prefix='AbnormalSecurity.VendorDetails',
-        outputs_key_field='vendorDomain',
-        outputs=response,
-        raw_response=response,
-    )
-
-    return command_results
-
-
-def get_the_activity_of_a_specific_vendor_command(client, args):
-    vendor_domain: str = args['vendor_domain']
-
-    response = client.get_the_activity_of_a_specific_vendor_request(vendor_domain)
-    markdown = tableToMarkdown('Vendor Activity', response.get('eventTimeline'), removeNull=True)
-    command_results = CommandResults(
-        readable_output=markdown,
-        outputs_prefix='AbnormalSecurity.VendorActivity',
-        outputs_key_field="",
-        outputs=response,
-        raw_response=response,
-    )
-
-    return command_results
-
-
-def get_a_list_of_vendor_cases_command(client, args):
-    filter_ = str(args.get('filter', ''))
-    page_size = arg_to_number(args.get("page_size", 100))
-    page_number = arg_to_number(args.get("page_number", None))
-
-    response = client.get_a_list_of_vendor_cases_request(filter_, page_size, page_number)
-    markdown = tableToMarkdown('Vendor Case IDs', response.get('vendorCases'), removeNull=True)
-
-    command_results = CommandResults(
-        readable_output=markdown,
-        outputs_prefix='AbnormalSecurity.VendorCases',
-        outputs_key_field="vendorCaseId",
-        outputs=response,
-        raw_response=response
-    )
-
-    return command_results
-
-
-def get_the_details_of_a_vendor_case_command(client, args):
-    case_id: str = args['case_id']
-
-    response = client.get_the_details_of_a_vendor_case_request(case_id)
-
-    markdown = tableToMarkdown('Case Details', response, removeNull=True)
-    command_results = CommandResults(
-        readable_output=markdown,
-        outputs_prefix='AbnormalSecurity.VendorCaseDetails',
-        outputs_key_field='vendorCaseId',
-        outputs=response,
-        raw_response=response,
-    )
-
-    return command_results
-
-
-def get_a_list_of_unanalyzed_abuse_mailbox_campaigns_command(client, args):
-    start = str(args.get('start', ''))
-    end = str(args.get('end', ''))
-
-    response = client.get_a_list_of_unanalyzed_abuse_mailbox_campaigns_request(start, end)
-    markdown = tableToMarkdown('Unanalyzed Abuse Mailbox Campaigns', response.get('results', []), removeNull=True)
 
     command_results = CommandResults(
         readable_output=markdown,
