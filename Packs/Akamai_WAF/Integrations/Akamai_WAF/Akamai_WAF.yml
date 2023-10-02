@@ -1333,6 +1333,7 @@ script:
     outputs:
     - contextPath: Akamai.SiteShieldMaps
       description: Akamai SiteShield Maps
+      type: list
   - arguments:
     - description: Unique Identifier of the Enrollment on which to perform the desired operation. And it can be retrived via list_enrollments_command
       name: enrollment_id
@@ -1348,6 +1349,7 @@ script:
     outputs:
     - contextPath: Akamai.Cps.Enrollments.Deployment
       description: Akamai Cps Enrollments Deployment
+      type: dictionary
   - arguments:
     - auto: PREDEFINED
       description: Whether a CIDR block was added, updated, or removed from service. You can use this parameter as a sorting mechanism and return only CIDR blocks with a change status of add, update, or delete. Note that a status of delete means the CIDR block is no longer in service, and you can remove it from your firewall rules.
@@ -1366,6 +1368,7 @@ script:
     outputs:
     - contextPath: Akamai.CidrBlocks
       description: A List of CIDR Blocks
+      type: list
   - arguments:
     - description: Enrollment on which to perform the desired operation. And it can be retrived via list_enrollments_command
       name: enrollment_id
@@ -1420,6 +1423,8 @@ script:
     name: akamai-update-cps-enrollment
     outputs:
     - contextPath: Akamai.Enrollment.Changes
+    - description: Akamai Enrollment Changes
+    - type: dictionary
   - arguments:
     - description: Enrollment path found in the pending change location field.
       name: enrollment_path
@@ -1436,6 +1441,8 @@ script:
     name: akamai-update-cps-enrollment-schedule
     outputs:
     - contextPath: Akamai.Enrollment.Changes
+    - description: Akamai Enrollment Changes
+    - type: dictionary
   - arguments:
     - description: ' Enrollment path found in the pending change location field'
       name: enrollment_path
@@ -1447,6 +1454,8 @@ script:
     name: akamai-get-cps-change-status
     outputs:
     - contextPath: Akamai.Enrollments.Change.Status
+    - description: Akamai Enrollments Change Status
+    - type: dictionary
   dockerimage: demisto/akamai:1.0.0.73558
   script: ''
   subtype: python3
