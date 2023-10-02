@@ -821,7 +821,6 @@ def list_ticket_attachments_command(client: Client, args: dict) -> CommandResult
             fields=(
                 ID,
                 FILE_NAME,
-                TICKET_ID,
                 LAST_UPDATE,
                 DESCRIPTION,
                 OBJECT_DESCTIPTION,
