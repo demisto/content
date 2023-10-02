@@ -2,14 +2,21 @@
     "name": "Devo",
     "description": "Use the Devo integration to query Devo for alerts, lookup tables, and to write to lookup tables.",
     "support": "partner",
-    "currentVersion": "1.2.9",
+    "currentVersion": "1.2.8",
     "author": "Devo",
     "url": "https://www.devo.com",
     "email": "support@devo.com",
     "created": "2020-04-14T00:00:00Z",
-    "categories": ["Analytics & SIEM"],
+    "categories": [
+        "Analytics & SIEM"
+    ],
     "tags": [],
     "useCases": [],
-    "keywords": ["Devo"],
-    "marketplaces": ["xsoar", "marketplacev2"]
+    "keywords": [
+        "Devo"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }
