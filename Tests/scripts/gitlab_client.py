@@ -1,5 +1,6 @@
 import enum
 import json
+import os
 from tempfile import mkdtemp
 import zipfile
 from pathlib import Path
@@ -8,8 +9,9 @@ from typing import Any
 import requests
 
 
-API_BASE_URL = "https://code.pan.run/api/v4"  # disable-secrets-detection
-PROJECT_ID = "2596"
+GITLAB_SERVER_URL = os.getenv("CI_SERVER_URL", "https://code.pan.run")  # disable-secrets-detection
+API_BASE_URL = f"{GITLAB_SERVER_URL}/api/v4"
+PROJECT_ID = os.getenv("CI_PROJECT_ID", "2596")
 
 
 class GetArtifactErrors(str, enum.Enum):
