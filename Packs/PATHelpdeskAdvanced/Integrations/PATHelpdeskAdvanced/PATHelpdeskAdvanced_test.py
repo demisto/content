@@ -20,7 +20,6 @@ from PATHelpdeskAdvanced import (
     Client,
     pat_table_to_markdown,
 )
-from Packs.Mimecast.Integrations.MimecastV2.MimecastV2 import url_decode
 
 
 @pytest.mark.parametrize(
@@ -696,7 +695,8 @@ class TestClient:
             '+{"property":+"parentobjectid",+"op":+"eq",+"value":+"a12345c"}]'
         )
         assert result.readable_output == (
-            "### Attachments of A12345C\n|File Name|Ticket ID|Last Update|Description|Object Description|First Update User ID|Object Entity"
+            "### Attachments of A12345C\n|File Name|Ticket ID|Last Update|Description|Object Description|"
+            "First Update User ID|Object Entity"
             "|Content Type|\n|---|---|---|---|---|---|---|---|\n| Untitled document.pdf | 1234567C | 2023-08-02T00:00:00Z | "
             "Untitled document.pdf | Untitled document.pdf | S44444C | Attachment | application/pdf |\n"
         )
@@ -732,7 +732,8 @@ class TestClient:
     def test_non_json_response(cls, requests_mock):
         client = cls.logged_in_client(requests_mock)
         requests_mock.post(
-            "https://example.com/WSC/Projection?entity=UserGroup&columnExpressions=%5B%27ID%27%2C+%27Description%27%2C+%27ObjectTypeID%27%5D&columnNames=%5B%27ID%27%2C+%27Description%27%2C+%27ObjectTypeID%27%5D&start=0&limit=1",
+            "https://example.com/WSC/Projection?entity=UserGroup&columnExpressions=%5B%27ID%27%2C+%27Description%27%2C+%27ObjectTypeID"
+            "%27%5D&columnNames=%5B%27ID%27%2C+%27Description%27%2C+%27ObjectTypeID%27%5D&start=0&limit=1",
             text="surprise",
         )
         with pytest.raises(
@@ -767,7 +768,8 @@ class TestClient:
         client = cls.logged_in_client(requests_mock)
 
         requests_mock.post(
-            "https://example.com/WSC/Projection?entity=UserGroup&columnExpressions=%5B%27ID%27%2C+%27Description%27%2C+%27ObjectTypeID%27%5D&columnNames=%5B%27ID%27%2C+%27Description%27%2C+%27ObjectTypeID%27%5D&start=0&limit=1",
+            "https://example.com/WSC/Projection?entity=UserGroup&columnExpressions=%5B%27ID%27%2C+%27Description%27%2C+%"
+            "27ObjectTypeID%27%5D&columnNames=%5B%27ID%27%2C+%27Description%27%2C+%27ObjectTypeID%27%5D&start=0&limit=1",
             text=Path(f"test_data/{response_file}").read_text(),
         )
         with pytest.raises(DemistoException, match=expected_error_message):
