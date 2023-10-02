@@ -1370,7 +1370,7 @@ script:
     - description: Enrollment on which to perform the desired operation. And it can be retrived via list_enrollments_command
       name: enrollment_id
       required: true
-    - description: the modification(s) to the enrollment in the dict format.
+    - description: the modification(s) to the enrollment in the dict format. The possible modifications are: ra, validationType, certificateType, networkConfiguration, changeManagement, csr, org, adminContact, techContact, thirdParty, enableMultiStackedCertificates.
       isArray: true
       name: updates
       required: true
