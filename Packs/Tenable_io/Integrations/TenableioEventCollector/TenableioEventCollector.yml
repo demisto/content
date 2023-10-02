@@ -3,7 +3,7 @@ sectionOrder:
 - Connect
 - Collect
 commonfields:
-  id: Tenable.io Event Collector
+  id: Tenable.io Event Collector Test
   version: -1
 configuration:
 - additionalinfo: This is the API endpoint for the Tenable.io API.
@@ -83,8 +83,8 @@ configuration:
   type: 0
   section: Collect
 description: Use Tenable.io Event Collector integration to get Audit and Endpoint logs, assets and their vulnerabilities from Tenable.
-display: Tenable.io Event Collector
-name: Tenable.io Event Collector
+display: Tenable.io Event Collector Test
+name: Tenable.io Event Collector Test
 script:
   commands:
   - arguments:
@@ -157,7 +157,7 @@ script:
   isfetch: false
   runonce: false
   script: '-'
-  isfetchassets: true
+  isfetcheventsandassets: true
   type: python
   subtype: python3
   dockerimage: demisto/python3:3.10.12.63474
