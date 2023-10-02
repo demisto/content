@@ -519,7 +519,7 @@ class OwnerFeaturizationPipeline():
         """
         Return a list of sources.
         """
-        return owner.get("source", "").split(" | ")
+        return owner.get("source", "").split(STRING_DELIMITER)
 
     def get_num_reasons(self, owner: dict[str, Any]) -> int:
         """
