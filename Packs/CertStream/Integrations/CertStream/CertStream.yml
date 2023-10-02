@@ -1,0 +1,43 @@
+commonfields:
+  id: Kali Dog Security CertStream
+  version: -1
+name: Kali Dog Security CertStream
+display: Kali Dog Security CertStream
+category: Data Enrichment & Threat Intelligence
+description: Collects newly created X.509 certificates.
+configuration:
+- display: Server URL
+  name: url
+  type: 0
+  defaultvalue: wss://certstream.calidog.io/
+  required: true
+  section: Connect
+- defaultvalue: 'true'
+  display: Long Running Instance
+  hidden: true
+  name: longRunning
+  type: 8
+  section: Connect
+- display: The list name from which to grab the input.
+  name: list_name
+  type: 0
+  required: true
+  section: Collect
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+  section: Collect
+script:
+  script: ""
+  type: python
+  commands: []
+  dockerimage: devdemisto/certstream:1.0.0.75648
+  longRunning: true
+  subtype: python3
+marketplaces:
+- marketplacev2
+- xsoar
+fromversion: 6.9.0
+tests:
+- No tests
