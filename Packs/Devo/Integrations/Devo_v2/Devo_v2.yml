@@ -35,17 +35,17 @@ configuration:
 - display: Fetch incidents
   name: isFetch
   type: 8
-  defaultvalue: "true"
   required: false
+  defaultvalue: "true"
 - display: Incident type
   name: incidentType
   type: 13
   required: false
-- display: Custom Alert Table name(If not provided, 'siem.logtrust.alert.info' will be used.)
+- display: Custom Alert Table name(if not provided, 'siem.logtrust.alert.info' will be used)
   name: table_name
   type: 0
   required: false
-- display: Custom Alert Table prefix (Provide prefix if custom table name provided.)
+- display: Custom Alert Table prefix (provide prefix if custom table name provided)
   name: prefix
   type: 0
   required: false
@@ -56,23 +56,23 @@ configuration:
 - display: Deduplication parameters JSON if required
   name: fetch_incidents_deduplication
   type: 0
-  hidden: true
   required: false
-- display: Fetch Incident Limit(Should be between 10 and 100. Advisable 50 for better performance.)
+  hidden: true
+- display: Fetch Incident Limit(must be between 10 and 100; advisable 50 for better performance.)
   name: fetch_incidents_limit
   type: 0
-  defaultvalue: "50"
   required: false
+  defaultvalue: "50"
 - display: Incidents Fetch Interval
   name: incidentFetchInterval
   type: 19
-  defaultvalue: "1"
   required: false
+  defaultvalue: "1"
 - display: Global query default timeout in seconds
   name: timeout
   type: 0
-  defaultvalue: "60"
   required: false
+  defaultvalue: "60"
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -80,6 +80,15 @@ configuration:
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
+- display: Fetch Incidents Lookback Time (in seconds). Must be between 3600 (1 hour; default) to 86400 (24 hours).
+  name: fetch_incidents_lookback_seconds
+  type: 0
+  required: false
+  defaultvalue: "3600"
+- display: Fetch Incident Time Frame (in seconds)
+  name: fetch_incidents_window
+  type: 0
   required: false
 script:
   script: ""
@@ -155,7 +164,7 @@ script:
       description: A string to search for in the specified tables (in any column).
     - name: from
       required: true
-      description: Start datetime for the specified query. This argument supports natural language (e.g., 2 day, 3 week), Unix timestamps, Python datetime objects, and string datetimes
+      description: Start datetime for the specified query. This argument supports natural language (e.g., 2 day, 3 week), Unix timestamps, Python datetime objects, and string datetimes.
     - name: to
       description: End datetime for specified query. If provided must be in same format as "from" argument. This argument is ignored in a date range.
     - name: limit
@@ -214,7 +223,7 @@ script:
       type: unknown
     description: Writes lookup table entry records to a specified Devo table.
     execution: true
-  dockerimage: demisto/devo:1.0.0.67166
+  dockerimage: demisto/devo:1.0.0.75518
   isfetch: true
   subtype: python3
 tests:

@@ -55,15 +55,19 @@ tasks:
       AdditionalPollingCommandArgNames: {}
       AdditionalPollingCommandArgValues: {}
       Ids:
-        simple: ${VMRay.Submission.SubmissionID}
+        complex:
+          root: VMRay.Submission
+          accessor: SubmissionID
       Interval:
-        simple: ${inputs.interval}
+        complex:
+          root: inputs.interval
       PollingCommandArgName:
         simple: submission_id
       PollingCommandName:
         simple: vmray-get-submission
       Timeout:
-        simple: ${inputs.timeout}
+        complex:
+          root: inputs.timeout
       dt:
         simple: VMRay.Submission(val.IsFinished == false).SubmissionID
     separatecontext: true
@@ -378,7 +382,7 @@ tasks:
     type: regular
     task:
       version: -1
-      name: Get Thread Indicators
+      name: Get Threat Indicators
       description: Retrieves threat indicators (VTI).
       script: '|||vmray-get-threat-indicators'
       type: regular
@@ -415,8 +419,7 @@ tasks:
       id: bbcdb264-06cf-43f6-88c4-c816ee1c29dd
       version: -1
       name: Is there an active VMRay instance?
-      description: Returns 'yes' if integration brand is available. Otherwise returns
-        'no'
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -521,8 +524,7 @@ outputs:
   description: Description of the Verdict Reason.
   type: String
 - contextPath: VMRay.Submission.Severity
-  description: Severity of the sample (Malicious, Suspicious, Good, Blacklisted, Whitelisted,
-    Unknown). Deprecated.
+  description: Severity of the sample (Malicious, Suspicious, Good, Blacklisted, Whitelisted, Unknown). Deprecated.
   type: string
 - contextPath: VMRay.Submission.SSDeep
   description: The SSDeep hash of the sample in submission.
@@ -552,8 +554,7 @@ outputs:
   description: Description of the Verdict Reason.
   type: String
 - contextPath: VMRay.Sample.Severity
-  description: Severity of the sample (Malicious, Suspicious, Good, Blacklisted, Whitelisted,
-    Unknown). Deprecated.
+  description: Severity of the sample (Malicious, Suspicious, Good, Blacklisted, Whitelisted, Unknown). Deprecated.
   type: string
 - contextPath: VMRay.Sample.Type
   description: The file type.

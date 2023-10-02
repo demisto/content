@@ -1,5 +1,13 @@
 {
   "onelogin_iam_raw": {
+    "policy_name": {
+      "type": "string",
+      "is_array": false
+    },
+    "actor_user_name": {
+      "type": "string",
+      "is_array": false
+    },
     "id": {
       "type": "int",
       "is_array": false
@@ -8,8 +16,8 @@
       "type": "string",
       "is_array": false
     },
-    "event_type_name": {
-      "type": "string",
+    "event_type_id": {
+      "type": "int",
       "is_array": false
     },
     "user_id": {

@@ -1,5 +1,14 @@
 # Authentication
 You can authenticate either by Azure Active Directory applications or by Azure Managed Identities.
+### Important
+1. eDiscovery commands only support the `Delegated (work or school account)` (Authorization Code Flow) permission type.
+2. When using Authorization Code Flow, the connection should be tested using the `!msg-auth-test` command.
+
+## Authentication Using the Authorization Code Flow(recommended)
+
+For instructions on how to do this, see [here](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#authorize-on-behalf-of-a-user).
+
+
 ### Authentication Based on Azure Active Directory Applications
 
 Microsoft integrations (Graph and Azure) in Cortex XSOAR use Azure Active Directory applications to authenticate with Microsoft APIs. These integrations use OAuth 2.0 and OpenID Connect standard compliant authentication services, which use an application to sign in or delegate authentication. For more information, see the Microsoft identity platform overview.
@@ -11,7 +20,7 @@ There are two application authentication methods available:
 
 Depending on the authentication method that you use, the integration parameters might change.
 
-To allow us access to Microsoft Graph Security, an admin has to approve our app using an admin consent flow, by clicking this [link](https://oproxy.demisto.ninja/ms-graph-security).
+To allow us to access to Microsoft Graph Security, an admin has to approve our app using an admin consent flow, by clicking this [link](https://oproxy.demisto.ninja/ms-graph-security).
 After authorizing the Cortex XSOAR app, you will get an ID, Token, and Key which should be inserted in the integration instance settings fields.
 If you previously had an API V1 configured based on the credentials obtained from this method, refer to the link above to gain new credentials with the relevant permissions.
 

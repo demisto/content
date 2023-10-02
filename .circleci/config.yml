@@ -57,8 +57,9 @@ parameters:
 references:
   environment: &environment
     environment:
-      # A flag for the demisto_client to not cache it's last response in order to avoid memory leaks
+      # A flag for the demisto_client to not cache its last response in order to avoid memory leaks.
       DONT_CACHE_LAST_RESPONSE: "true"
+      DEMISTO_SDK_LOG_FILE_SIZE: 1073741824  # 1GB
       ARTIFACT_BUILD_NUM: << pipeline.parameters.artifact_build_num >>
       CONTRIB_BRANCH: << pipeline.parameters.contrib_branch >>
       CONTRIB_PACK_NAME: << pipeline.parameters.contrib_pack_name >>
@@ -206,6 +207,9 @@ references:
       when: always
       no_output_timeout: 1h
       command: |
+        [ ! -d ~/.ssh ] && mkdir -p ~/.ssh
+        chmod 700 ~/.ssh
+        ssh-keyscan github.com >> ~/.ssh/known_hosts
         if [[ "$(echo "$GCS_MARKET_BUCKET" | tr '[:upper:]' '[:lower:]')" != "marketplace-dist" ]]; then
           echo "Skipping the -Validate Files and Yaml- step when uploading to a test bucket."
           exit 0
@@ -243,7 +247,7 @@ references:
         # poll for neo4j status until available
         while ! curl --fail http://127.0.0.1:7474 &> /dev/null; do sleep 1; done
 
-        demisto-sdk lint -p 8 -g -vvv --test-xml ./unit-tests --log-path ./artifacts --failure-report ./artifacts --coverage-report $ARTIFACTS_FOLDER/coverage_report --docker-image << parameters.dockerimageflag >> --check-dependent-api-module
+        demisto-sdk lint -p 8 -g --test-xml ./unit-tests --log-path ./artifacts --failure-report ./artifacts --coverage-report $ARTIFACTS_FOLDER/coverage_report --docker-image << parameters.dockerimageflag >> --check-dependent-api-module
 
   generate_coverage_reports: &generate_coverage_reports
     run:

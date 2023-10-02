@@ -164,8 +164,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1555,
-          "y": 2645
+          "x": 1605,
+          "y": 2785
         }
       }
     note: false
@@ -193,7 +193,7 @@ tasks:
       - "6"
     scriptarguments:
       filters:
-        simple: alert.status=open,policy.remediable=true,cloud.type=gcp,policy.type=config
+        simple: alert.status=open,policy.remediable=true
       limit:
         simple: "1"
     separatecontext: false
@@ -201,7 +201,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
+          "x": 1120,
           "y": 375
         }
       }
@@ -226,7 +226,6 @@ tasks:
     nexttasks:
       "yes":
       - "7"
-      - "16"
       - "26"
     separatecontext: false
     conditions:
@@ -251,7 +250,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
+          "x": 1120,
           "y": 545
         }
       }
@@ -286,7 +285,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 910,
           "y": 720
         }
       }
@@ -328,7 +327,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 910,
           "y": 895
         }
       }
@@ -367,7 +366,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 910,
           "y": 1075
         }
       }
@@ -402,7 +401,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 910,
           "y": 1245
         }
       }
@@ -451,7 +450,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 910,
           "y": 1420
         }
       }
@@ -486,7 +485,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 910,
           "y": 1595
         }
       }
@@ -521,7 +520,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 910,
           "y": 1770
         }
       }
@@ -570,83 +569,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 910,
           "y": 1945
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "16":
-    id: "16"
-    taskid: e7c6a9bb-1352-4d50-802e-68222a227c81
-    type: regular
-    task:
-      id: e7c6a9bb-1352-4d50-802e-68222a227c81
-      version: -1
-      name: prisma-cloud-remediation-command-list
-      description: Gets remediation command list details for the given alerts or policy. Either policy ID or alert IDs must be provided. When no absolute time nor relative time arguments are provided, default time range is all times.
-      script: '|||prisma-cloud-remediation-command-list'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "19"
-    scriptarguments:
-      limit:
-        simple: "5"
-      policy_id:
-        simple: ${PrismaCloud.Alert.policy.policyId}
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 910,
-          "y": 720
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "19":
-    id: "19"
-    taskid: 95cbbef1-80c3-477d-8d28-2c22ecfbbd6b
-    type: condition
-    task:
-      id: 95cbbef1-80c3-477d-8d28-2c22ecfbbd6b
-      version: -1
-      name: Verify Outputs
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "4"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: PrismaCloud.AlertRemediation.[0].alertId
-            iscontext: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 910,
-          "y": 895
         }
       }
     note: false
@@ -789,7 +713,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "24"
+      - "36"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -813,89 +737,6 @@ tasks:
         "position": {
           "x": 1770,
           "y": 900
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "24":
-    id: "24"
-    taskid: 0919d52b-ec3a-4f97-8a7b-1cddb6a4aa68
-    type: regular
-    task:
-      id: 0919d52b-ec3a-4f97-8a7b-1cddb6a4aa68
-      version: -1
-      name: prisma-cloud-network-search
-      description: 'Search networks inventory on the Prisma Cloud platform using RQL language. Use this command for all queries that start with "networks". When no absolute time nor relative time arguments are provided, default time range is all times. In order to limit the results returning, use "limit search records to" at the end of the RQL query, followed by a value from one of these options: 1, 10, 100, 1000, and 10,000.'
-      script: '|||prisma-cloud-network-search'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "25"
-    scriptarguments:
-      query:
-        simple: network from vpc.flow_record where bytes > 100000 limit search records to 1000
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1770,
-          "y": 1075
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "25":
-    id: "25"
-    taskid: db080dc5-185b-4c7c-879a-34023bff57f3
-    type: condition
-    task:
-      id: db080dc5-185b-4c7c-879a-34023bff57f3
-      version: -1
-      name: Verify Outputs
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "36"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: PrismaCloud.Network.Node.[0].id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: PrismaCloud.Network.Connection.[0].from
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: PrismaCloud.Network.Connection.[0].to
-            iscontext: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1770,
-          "y": 1250
         }
       }
     note: false
@@ -953,7 +794,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "4"
+      - "41"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -1229,7 +1070,7 @@ tasks:
       limit:
         simple: "5"
       repository:
-        simple: prashmp/iac-samples
+        simple: kyle9021/testing-iac
       source_types:
         simple: Github
     separatecontext: false
@@ -1313,7 +1154,7 @@ tasks:
       {
         "position": {
           "x": 1770,
-          "y": 1425
+          "y": 1075
         }
       }
     note: false
@@ -1367,7 +1208,7 @@ tasks:
       {
         "position": {
           "x": 1770,
-          "y": 1600
+          "y": 1250
         }
       }
     note: false
@@ -1407,7 +1248,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 910,
           "y": 2120
         }
       }
@@ -1442,7 +1283,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 910,
           "y": 2295
         }
       }
@@ -1466,7 +1307,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "4"
+      - "47"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -1491,7 +1332,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 910,
           "y": 2470
         }
       }
@@ -1502,14 +1343,271 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "41":
+    id: "41"
+    taskid: 8adc879e-d9fb-44f9-8692-812c5a0015b4
+    type: regular
+    task:
+      id: 8adc879e-d9fb-44f9-8692-812c5a0015b4
+      version: -1
+      name: prisma-cloud-resource-list
+      description: Get resource lists.
+      script: '|||prisma-cloud-resource-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "42"
+    scriptarguments:
+      limit:
+        simple: "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 1075
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "42":
+    id: "42"
+    taskid: 09bb0f17-4cb2-48cb-865b-373f12eff343
+    type: condition
+    task:
+      id: 09bb0f17-4cb2-48cb-865b-373f12eff343
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "43"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaCloud.ResourceList.id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 1250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "43":
+    id: "43"
+    taskid: 44785614-f007-471b-80bf-3c2a007d4a51
+    type: regular
+    task:
+      id: 44785614-f007-471b-80bf-3c2a007d4a51
+      version: -1
+      name: prisma-cloud-user-roles-list
+      description: Get user roles lists.
+      script: '|||prisma-cloud-user-roles-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "44"
+    scriptarguments:
+      limit:
+        simple: "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "44":
+    id: "44"
+    taskid: 477954cf-2769-489b-8307-bddd009e5594
+    type: condition
+    task:
+      id: 477954cf-2769-489b-8307-bddd009e5594
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "46"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaCloud.UserRoles.id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 1600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "45":
+    id: "45"
+    taskid: c57d8c19-07a8-4cfa-8ce7-299cbbd34065
+    type: condition
+    task:
+      id: c57d8c19-07a8-4cfa-8ce7-299cbbd34065
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaCloud.Users.username
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "46":
+    id: "46"
+    taskid: 057249e6-4085-4a7e-860a-fe5074568355
+    type: regular
+    task:
+      id: 057249e6-4085-4a7e-860a-fe5074568355
+      version: -1
+      name: prisma-cloud-users-list
+      description: Get users lists.
+      script: '|||prisma-cloud-users-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "45"
+    scriptarguments:
+      limit:
+        simple: "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "47":
+    id: "47"
+    taskid: 31743d61-29ef-4669-84e3-03ff8043e11a
+    type: regular
+    task:
+      id: 31743d61-29ef-4669-84e3-03ff8043e11a
+      version: -1
+      name: Reopen snoozed alert (for next playbook run)
+      description: Re-open the alerts matching the given filter. Either policy IDs
+        or alert IDs must be provided. When no absolute time nor relative time arguments
+        are provided, default time range is all times.
+      script: '|||prisma-cloud-alert-reopen'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      alert_ids:
+        simple: ${PrismaCloud.Alert.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 2645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2660,
-        "width": 3010,
-        "x": 480,
+        "height": 2800,
+        "width": 2580,
+        "x": 910,
         "y": 50
       }
     }

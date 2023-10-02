@@ -195,6 +195,8 @@ class Deduplicate:
             return False
         if self.generate_id_for_event(event) not in self.last_event_ids_suspected:
             return False
+
+        demisto.debug(f"Encountered an event object that was fetched before, id={self.generate_id_for_event(event)}")
         return True
 
 
@@ -239,6 +241,9 @@ def calculate_last_run(
 
 
 def remove_sensitive_from_events(event: dict) -> dict:
+    """
+    removes file names and subject that could be sensitive data
+    """
     if event.get("subject", None):
         event["subject"] = "hidden data"
 
@@ -343,12 +348,14 @@ def fetch_by_event_type(
     return events_res, deduplicate_management
 
 
-def set_start_time(start_time: str = None) -> str:
+def parse_start_time(start_time: str = None) -> str:
     """
     set the start time of the first time of the fetch
     """
     if first_fetch := arg_to_datetime(start_time or "1 hours"):
         return first_fetch.strftime(DATE_FORMAT_EVENT)
+
+    # this will not happen because a default value is supplied, here just to keep mypy silent
     raise ValueError("Failed to convert `str` to `datetime` object")
 
 
@@ -364,15 +371,15 @@ def test_module(client: Client):
             EventType.POLICY_LOGS,
             {
                 "limit": 1,
-                "start": set_start_time("6 hours"),
+                "start": parse_start_time("6 hours"),
                 "end": datetime.now().strftime(DATE_FORMAT_EVENT),
             },
         )
-        demisto.debug("Log returned")
+        demisto.debug("test module: got logs")
     except NoContentException:
         # This type of error is raised when events are not returned, but the API call was successful,
         # therefore `ok` will be returned
-        demisto.debug("No logs returned")
+        demisto.debug("test module: got no logs, but connection is successful")
         pass
 
     return "ok"
@@ -441,7 +448,7 @@ def main() -> None:  # pragma: no cover
     api_key = params["credentials"]["password"]
     verify = not params.get("insecure", False)
     proxy = params.get("proxy", False)
-    first_fetch = set_start_time()
+    first_fetch = parse_start_time()
 
     should_push_events = argToBoolean(args.get("should_push_events", False))
 
@@ -460,7 +467,7 @@ def main() -> None:  # pragma: no cover
 
         elif command == "trend-micro-get-events":
             should_update_last_run = False
-            since = set_start_time(args.get("since") or "1 days")
+            since = parse_start_time(args.get("since") or "1 days")
             events, _ = fetch_events_command(client, args, since, last_run={})
 
             # By default return as an md table

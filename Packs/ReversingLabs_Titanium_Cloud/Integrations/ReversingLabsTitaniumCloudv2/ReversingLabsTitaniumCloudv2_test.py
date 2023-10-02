@@ -4,7 +4,8 @@ from ReversingLabsTitaniumCloudv2 import file_reputation_output, av_scanners_out
     analyze_url_output, detonate_sample_output, yara_matches_feed_output, yara_retro_matches_feed_output, \
     functional_similarity_output, uri_index_output, advanced_search_output, expression_search_output, \
     dynamic_analysis_results_output, certificate_analytics_output, reanalyze_sample_output, url_downloaded_files_output, \
-    url_latest_analyses_feed_output, url_analyses_feed_from_date_output, yara_ruleset_output, yara_retro_actions_output
+    url_latest_analyses_feed_output, url_analyses_feed_from_date_output, yara_ruleset_output, yara_retro_actions_output, \
+    format_proxy
 import demistomock as demisto
 import pytest
 
@@ -238,3 +239,15 @@ def test_yara_retro_output_status():
     result = yara_retro_actions_output("check_yara_retro_status", test_report)
 
     assert result.to_context() == test_context
+
+
+def test_format_proxy():
+    formatted_correctly = format_proxy(
+        addr="https://proxy-address.com",
+        username="user1",
+        password="pass1"
+    )
+
+    correct_expected = "https://user1:pass1@proxy-address.com"
+
+    assert formatted_correctly == correct_expected
