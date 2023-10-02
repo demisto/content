@@ -132,8 +132,8 @@ xpanse-prepare-testing-bucket-upload-flow:
   artifacts:
     expire_in: 48 hrs
     paths:
-      - ${CI_PROJECT_DIR}/artifacts/*
-      - ${CI_PROJECT_DIR}/pipeline_jobs_folder/*
+      - /builds/xsoar/content/artifacts/*
+      - /builds/xsoar/content/pipeline_jobs_folder/*
     when: always
   variables:
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
@@ -207,8 +207,8 @@ install-packs-in-server-master:
   artifacts:
     expire_in: 48 hrs
     paths:
-      - ${CI_PROJECT_DIR}/artifacts/*
-      - ${CI_PROJECT_DIR}/pipeline_jobs_folder/*
+      - /builds/xsoar/content/artifacts/*
+      - /builds/xsoar/content/pipeline_jobs_folder/*
     when: always
   variables:
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_MPV2}"
@@ -298,8 +298,8 @@ upload-packs-to-marketplace:
   artifacts:
     expire_in: 48 hrs
     paths:
-      - ${CI_PROJECT_DIR}/artifacts/*
-      - ${CI_PROJECT_DIR}/pipeline_jobs_folder/*
+      - /builds/xsoar/content/artifacts/*
+      - /builds/xsoar/content/pipeline_jobs_folder/*
     when: always
   variables:
     MARKETPLACE_VERSION: "xsoar"
@@ -380,8 +380,8 @@ upload-packs-to-marketplace-v2:
   artifacts:
     expire_in: 48 hrs
     paths:
-      - ${CI_PROJECT_DIR}/artifacts/*
-      - ${CI_PROJECT_DIR}/pipeline_jobs_folder/*
+      - /builds/xsoar/content/artifacts/*
+      - /builds/xsoar/content/pipeline_jobs_folder/*
     when: always
   variables:
     MARKETPLACE_VERSION: "marketplacev2"
@@ -450,8 +450,8 @@ upload-packs-to-xpanse-marketplace:
   artifacts:
     expire_in: 48 hrs
     paths:
-      - ${CI_PROJECT_DIR}/artifacts/*
-      - ${CI_PROJECT_DIR}/pipeline_jobs_folder/*
+      - /builds/xsoar/content/artifacts/*
+      - /builds/xsoar/content/pipeline_jobs_folder/*
     when: always
   variables:
     MARKETPLACE_VERSION: "xpanse"
@@ -521,8 +521,8 @@ upload-packs-to-xsoar-saas-marketplace:
   artifacts:
     expire_in: 48 hrs
     paths:
-      - ${CI_PROJECT_DIR}/artifacts/*
-      - ${CI_PROJECT_DIR}/pipeline_jobs_folder/*
+      - /builds/xsoar/content/artifacts/*
+      - /builds/xsoar/content/pipeline_jobs_folder/*
     when: always
   variables:
     MARKETPLACE_VERSION: "xsoar_saas"
