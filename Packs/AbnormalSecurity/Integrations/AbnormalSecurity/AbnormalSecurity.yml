@@ -33,13 +33,13 @@ script:
       name: page_size
     - description: 1-indexed page number to get a particular page of threats. Has no effect if filter is not specified.
       name: page_number
-    - description: Returns test data if set to `True`
+    - description: Returns test data if set to `True`.
       name: mock-data
     - description: Filters threats based on the source of detection.
       name: source
-    - description: Subtenant of the user (if applicable)
+    - description: Subtenant of the user (if applicable).
       name: subtenant
-    description: Get a list of threats
+    description: Get a list of threats.
     name: abnormal-security-list-threats
     outputs:
     - contextPath: AbnormalSecurity.inline_response_200.threats.threatId
@@ -49,18 +49,18 @@ script:
       description: The current page number. Will not be be in the response if no filter query  meter is passed in via the request.
       type: Number
     - contextPath: AbnormalSecurity.inline_response_200.nextpageNumber
-      description: The next page number. Will not be included in the response if there are no more pages of data or if no filter query meter is passed in via the request
+      description: The next page number. Will not be included in the response if there are no more pages of data or if no filter query meter is passed in via the request.
       type: Number
 
   - arguments:
-    - description: A UUID representing a threat campaign. Full list of threat IDs can be obtained by first running the command to list a threat
+    - description: A UUID representing a threat campaign. Full list of threat IDs can be obtained by first running the command to list a threat.
       name: threat_id
       required: true
-    - description: Returns test data if set to `True`
+    - description: Returns test data if set to `True`.
       name: mock-data
-    - description: Subtenant of the user (if applicable)
+    - description: Subtenant of the user (if applicable).
       name: subtenant
-    description: Get details of a threat
+    description: Get details of a threat.
     name: abnormal-security-get-threat
     outputs:
     - contextPath: AbnormalSecurity.ThreatDetails.threatId
@@ -97,7 +97,7 @@ script:
       description: The timestamp at which this message was sent.
       type: String
     - contextPath: AbnormalSecurity.ThreatDetails.messages.internetMessageId
-      description: The internet message ID, per RFC 822
+      description: The internet message ID, per RFC 822.
       type: String
     - contextPath: AbnormalSecurity.ThreatDetails.messages.autoRemediated
       description: Abnormal has automatically detected and remediated this message from the user's mailbox.
@@ -109,10 +109,10 @@ script:
       description: The type of threat the message represents.
       type: String
     - contextPath: AbnormalSecurity.ThreatDetails.messages.attackStrategy
-      description: The attack strategy identified to be used by a threat campaign
+      description: The attack strategy identified to be used by a threat campaign.
       type: String
     - contextPath: AbnormalSecurity.ThreatDetails.messages.returnPath
-      description: The potential path where information is returned to the attacker
+      description: The potential path where information is returned to the attacker.
       type: String
     - contextPath: AbnormalSecurity.ThreatDetails.messages.senderIpAddress
       description: IP address of sender.
@@ -127,61 +127,61 @@ script:
       description: The timestamp at which this message was remediated, or empty if it has not been remediated.
       type: String
     - contextPath: AbnormalSecurity.ThreatDetails.messages.isRead
-      description: Whether an email has been read
+      description: Whether an email has been read.
       type: Boolean
     - contextPath: AbnormalSecurity.ThreatDetails.messages.attackedParty
       description: The party that was targeted by an attack.
       type: String
 
   - arguments:
-    - description: A UUID representing a threat campaign. Full list of threat IDs can be obtained by first running the command to list a threat
+    - description: A UUID representing a threat campaign. Full list of threat IDs can be obtained by first running the command to list a threat.
       name: threat_id
       required: true
-    - description: Action to perform on threat
+    - description: Action to perform on threat.
       name: action
       required: true
-    - description: Returns test data if set to `True`
+    - description: Returns test data if set to `True`.
       name: mock-data
-    description: Manage a Threat identified by Abnormal Security
+    description: Manage a Threat identified by Abnormal Security.
     name: abnormal-security-manage-threat
     outputs:
     - contextPath: AbnormalSecurity.ThreatManageResults.action_id
-      description: ID of the action taken
+      description: ID of the action taken.
       type: String
     - contextPath: AbnormalSecurity.ThreatManageResults.status_url
-      description: URL of the status of the action
+      description: URL of the status of the action.
       type: String
 
   - arguments:
-    - description: A UUID representing a threat campaign. Full list of threat IDs can be obtained by first running the command to list a threat
+    - description: A UUID representing a threat campaign. Full list of threat IDs can be obtained by first running the command to list a threat.
       name: threat_id
       required: true
-    - description: A UUID representing the action id for a threat. Can be obtained from payload after performing an action on the threat
+    - description: A UUID representing the action id for a threat. Can be obtained from payload after performing an action on the threat.
       name: action_id
       required: true
-    - description: Returns test data if set to `True`
+    - description: Returns test data if set to `True`.
       name: mock-data
-    - description: Subtenant of the user (if applicable)
+    - description: Subtenant of the user (if applicable).
       name: subtenant
     description: Check the status of an action requested on a threat.
     name: abnormal-security-check-threat-action-status
     outputs:
     - contextPath: AbnormalSecurity.ActionStatus.status
-      description: The status of a threat after performing an action on it
+      description: The status of a threat after performing an action on it.
       type: String
     - contextPath: AbnormalSecurity.ActionStatus.description
-      description: The description of the status
+      description: The description of the status.
       type: String
   - arguments:
-    - description: Filter the results based on a filter key. Value must be of the format `filter={FILTER KEY} gte YYYY-MM-DDTHH:MM:SSZ lte YYYY-MM-DDTHH:MM:SSZ`. Supported keys - [`receivedTime`]
+    - description: Filter the results based on a filter key. Value must be of the format `filter={FILTER KEY} gte YYYY-MM-DDTHH:MM:SSZ lte YYYY-MM-DDTHH:MM:SSZ`. Supported keys - [`receivedTime`].
       name: filter
-    - description: Returns test data if set to `True`
+    - description: Returns test data if set to `True`.
       name: mock-data
     - description: Filters threats based on the source of detection.
       name: source
-    - description: Subtenant of the user (if applicable)
+    - description: Subtenant of the user (if applicable).
       name: subtenant
-    description: Download data from Threat Log in .csv format
+    description: Download data from Threat Log in .csv format.
     name: abnormal-security-download-threat-log-csv
   - arguments:
     - description: Value must be of the format `filter={FILTER KEY} gte YYYY-MM-DDTHH:MM:SSZ lte YYYY-MM-DDTHH:MM:SSZ`. A `{FILTER KEY}` must be specified, and currently the only key that is supported for `/cases` is `lastModifiedTime`. At least 1 of `gte`/`lte` must be specified, with a datetime string following the `YYYY-MM-DDTHH:MM:SSZ` format.
@@ -190,11 +190,11 @@ script:
       name: page_size
     - description: 1-indexed page number to get a particular page of cases. Has no effect if filter is not specified.
       name: page_number
-    - description: Returns test data if set to `True`
+    - description: Returns test data if set to `True`.
       name: mock-data
-    - description: Subtenant of the user (if applicable)
+    - description: Subtenant of the user (if applicable).
       name: subtenant
-    description: Get a list of Abnormal cases identified by Abnormal Security
+    description: Get a list of Abnormal cases identified by Abnormal Security.
     name: abnormal-security-list-abnormal-cases
     outputs:
     - contextPath: AbnormalSecurity.inline_response_200_1.cases.caseId
@@ -207,18 +207,18 @@ script:
       description: The current page number. Will not be be in the response if no filter query meter is passed in via the request.
       type: Number
     - contextPath: AbnormalSecurity.inline_response_200_1.nextpageNumber
-      description: The next page number. Will not be included in the response if there are no more pages of data or if no filter query meter is passed in via the request
+      description: The next page number. Will not be included in the response if there are no more pages of data or if no filter query meter is passed in via the request.
       type: Number
 
   - arguments:
-    - description: A string representing the email case. Can be retrieved by first running command to list cases
+    - description: A string representing the email case. Can be retrieved by first running command to list cases.
       name: case_id
       required: true
-    - description: Returns test data if set to `True`
+    - description: Returns test data if set to `True`.
       name: mock-data
-    - description: Subtenant of the user (if applicable)
+    - description: Subtenant of the user (if applicable).
       name: subtenant
-    description: Get details of an Abnormal case
+    description: Get details of an Abnormal case.
     name: abnormal-security-get-abnormal-case
     outputs:
     - contextPath: AbnormalSecurity.AbnormalCaseDetails.caseId
@@ -234,74 +234,74 @@ script:
       description: First time suspicious behavior was observed.
       type: String
   - arguments:
-    - description: A string representing the email case. Can be retrieved by first running command to list cases
+    - description: A string representing the email case. Can be retrieved by first running command to list cases.
       name: case_id
       required: true
-    - description: Action to perform on case
+    - description: Action to perform on case.
       name: action
       required: true
-    - description: Returns test data if set to `True`
+    - description: Returns test data if set to `True`.
       name: mock-data
     description: Manage an Abnormal Case.
     name: abnormal-security-manage-abnormal-case
     outputs:
     - contextPath: AbnormalSecurity.CaseManageResults.action_id
-      description: ID of the action taken
+      description: ID of the action taken.
       type: String
     - contextPath: AbnormalSecurity.CaseManageResults.status_url
-      description: URL of the status of the action
+      description: URL of the status of the action.
       type: String
   - arguments:
-    - description: A string representing the email case. Can be retrieved by first running command to list cases
+    - description: A string representing the email case. Can be retrieved by first running command to list cases.
       name: case_id
       required: true
-    - description: A string representing the email case. Can be retrieved from payload after performing an action on a case
+    - description: A string representing the email case. Can be retrieved from payload after performing an action on a case.
       name: action_id
       required: true
-    - description: Returns test data if set to `True`
+    - description: Returns test data if set to `True`.
       name: mock-data
-    - description: Subtenant of the user (if applicable)
+    - description: Subtenant of the user (if applicable).
       name: subtenant
     description: Check the status of an action requested on a case.
     name: abnormal-security-check-case-action-status
     outputs:
     - contextPath: AbnormalSecurity.ActionStatus.status
-      description: Status of the case after an action is performed
+      description: Status of the case after an action is performed.
       type: String
     - contextPath: AbnormalSecurity.ActionStatus.description
-      description: Detailed description of the status
+      description: Detailed description of the status.
       type: String
   - arguments:
-    - description: A string representing the email case. Can be retrieved by first running command to list cases
+    - description: A string representing the email case. Can be retrieved by first running command to list cases.
       name: case_id
       required: true
-    - description: Returns test data if set to `True`
+    - description: Returns test data if set to `True`.
       name: mock-data
-    - description: Subtenant of the user (if applicable)
+    - description: Subtenant of the user (if applicable).
       name: subtenant
-    description: Provides the analysis and timeline details of a case
+    description: Provides the analysis and timeline details of a case.
     name: abnormal-security-get-case-analysis-and-timeline
     outputs:
     - contextPath: AbnormalSecurity.CaseAnalysis.insights.signal
-      description: Insight signal or highlight of a case
+      description: Insight signal or highlight of a case.
       type: String
     - contextPath: AbnormalSecurity.CaseAnalysis.insights.description
-      description: Description of insight signal or highlight
+      description: Description of insight signal or highlight.
       type: String
     - contextPath: AbnormalSecurity.CaseAnalysis.eventTimeline.event_timestamp
-      description: Time when event occurred
+      description: Time when event occurred.
       type: String
     - contextPath: AbnormalSecurity.CaseAnalysis.eventTimeline.category
-      description: Type of event
+      description: Type of event.
       type: String
     - contextPath: AbnormalSecurity.CaseAnalysis.eventTimeline.title
-      description: Title of the event
+      description: Title of the event.
       type: String
     - contextPath: AbnormalSecurity.CaseAnalysis.eventTimeline.ip_address
-      description: IP Address where user accessed mail from
+      description: IP Address where user accessed mail from.
       type: String
     - contextPath: AbnormalSecurity.CaseAnalysis.eventTimeline.field_labels
-      description: Analysis labels associated with the fields in the timeline event
+      description: Analysis labels associated with the fields in the timeline event.
       type: Unknown
   - arguments:
     - description: Value must be of the format `filter={FILTER KEY} gte YYYY-MM-DDTHH:MM:SSZ lte YYYY-MM-DDTHH:MM:SSZ`. A `{FILTER KEY}` must be specified, and currently only the key `lastReportedTime` is supported for `/abusecampaigns`. At least one of `gte`/`lte` must be specified, with a datetime string following the `YYYY-MM-DDTHH:MM:SSZ` format. Do note that provided filter time is in UTC.
@@ -310,11 +310,11 @@ script:
       name: page_size
     - description: 1-indexed page number to get a particular page of threats. Has no effect if filter is not specified.
       name: page_number
-    - description: Returns test data if set to `True`
+    - description: Returns test data if set to `True`.
       name: mock-data
-    - description: Subtenant of the user (if applicable)
+    - description: Subtenant of the user (if applicable).
       name: subtenant
-    description: Get a list of campaigns submitted to Abuse Mailbox
+    description: Get a list of campaigns submitted to Abuse Mailbox.
     name: abnormal-security-list-abuse-mailbox-campaigns
     outputs:
     - contextPath: AbnormalSecurity.AbuseCampaign.campaigns.campaignId
@@ -327,14 +327,14 @@ script:
       description: The next page number.
       type: Number
   - arguments:
-    - description: A UUID representing the abuse campaign id. Can be Can be retrieved by first running command to list abuse mailbox campaigns
+    - description: A UUID representing the abuse campaign id. Can be Can be retrieved by first running command to list abuse mailbox campaigns.
       name: campaign_id
       required: true
-    - description: Returns test data if set to `True`
+    - description: Returns test data if set to `True`.
       name: mock-data
-    - description: Subtenant of the user (if applicable)
+    - description: Subtenant of the user (if applicable).
       name: subtenant
-    description: Get details of an Abuse Mailbox campaign
+    description: Get details of an Abuse Mailbox campaign.
     name: abnormal-security-get-abuse-mailbox-campaign
     outputs:
     - contextPath: AbnormalSecurity.AbuseCampaign.campaignId
@@ -376,43 +376,43 @@ script:
 
   # Employee commands
   - arguments:
-    - description: Email address of the employee you want to retrieve data for
+    - description: Email address of the employee you want to retrieve data for.
       name: email_address
       required: true
-    - description: Returns test data if set to `True`
+    - description: Returns test data if set to `True`.
       name: mock-data
-    description: Get employee identity analysis (Genome) data
+    description: Get employee identity analysis (Genome) data.
     name: abnormal-security-get-employee-identity-analysis
     outputs:
     - contextPath: AbnormalSecurity.Employee.email
-      description: Employee email
+      description: Employee email.
       type: String
     - contextPath: AbnormalSecurity.Employee.histograms.key
-      description: Genome key name
+      description: Genome key name.
       type: String
     - contextPath: AbnormalSecurity.Employee.histograms.name
-      description: Genome title
+      description: Genome title.
       type: String
     - contextPath: AbnormalSecurity.Employee.histograms.description
-      description: Description of genome object
+      description: Description of genome object.
       type: String
     - contextPath: AbnormalSecurity.Employee.histograms.values.value
-      description: Category value
+      description: Category value.
       type: String
     - contextPath: AbnormalSecurity.Employee.histograms.values.percentage
-      description: Ratio of this category relative to others
+      description: Ratio of this category relative to others.
       type: Number
     - contextPath: AbnormalSecurity.Employee.histograms.values.total_count
-      description: Number of occurences for this category
+      description: Number of occurences for this category.
       type: Number
 
   - arguments:
-    - description: Email address of the employee you want to retrieve data for
+    - description: Email address of the employee you want to retrieve data for.
       name: email_address
       required: true
-    - description: Returns test data if set to `True`
+    - description: Returns test data if set to `True`.
       name: mock-data
-    description: Get employee information
+    description: Get employee information.
     name: abnormal-security-get-employee-information
     outputs:
     - contextPath: AbnormalSecurity.Employee.name
@@ -425,60 +425,60 @@ script:
       description: Job title of the employee.
       type: String
     - contextPath: AbnormalSecurity.Employee.manager
-      description: Email address of the employee's manager
+      description: Email address of the employee's manager.
       type: String
 
   - arguments:
-    - description: Email address of the employee you want to retrieve data for
+    - description: Email address of the employee you want to retrieve data for.
       name: email_address
       required: true
-    - description: Returns test data if set to `True`
+    - description: Returns test data if set to `True`.
       name: mock-data
-    description: Get employee login information for last 30 days in csv format
+    description: Get employee login information for last 30 days in csv format.
     name: abnormal-security-get-employee-last-30-days-login-csv
   - arguments:
-    - description: Returns test data if set to `True`
+    - description: Returns test data if set to `True`.
       name: mock-data
-    - description: Email of the reporter
+    - description: Email of the reporter.
       name: reporter
       required: true
-    - description: Type of misjudgement reported
+    - description: Type of misjudgement reported.
       name: report_type
       required: true
-    description: Submit an Inquiry to request a report on misjudgement by Abnormal Security
+    description: Submit an Inquiry to request a report on misjudgement by Abnormal Security.
     name: abnormal-security-submit-inquiry-to-request-a-report-on-misjudgement
     outputs:
     - contextPath: AbnormalSecurity.SubmitInquiry.detail
-      description: Confirmation of inquiry sent
+      description: Confirmation of inquiry sent.
       type: String
 
   - arguments:
-    - description: Email address of the sender
+    - description: Email address of the sender.
       name: sender_email
       required: true
-    - description: Email address of the recipient
+    - description: Email address of the recipient.
       name: recipient_email
       required: true
-    - description: Subject of email
+    - description: Subject of email.
       name: subject
       required: true
-    description: Submit a False Negative Report
+    description: Submit a False Negative Report.
     name: abnormal-security-submit-false-negative-report
 
   - arguments:
-    - description: URL link of threat log in abnormal security portal
+    - description: URL link of threat log in abnormal security portal.
       name: portal_link
       required: true
-    description: Submit a False Positive Report
+    description: Submit a False Positive Report.
     name: abnormal-security-submit-false-positive-report
 
   - arguments:
-    - description: Returns test data if set to `True`
+    - description: Returns test data if set to `True`.
       name: mock-data
     description: Get the latest threat intel feed.
     name: abnormal-security-get-latest-threat-intel-feed
     deprecated: true
-  dockerimage: demisto/python3:3.10.12.68714
+  dockerimage: demisto/python3:3.10.13.74666
   script: ''
   subtype: python3
   type: python

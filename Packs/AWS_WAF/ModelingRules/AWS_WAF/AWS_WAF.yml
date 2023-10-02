@@ -1,0 +1,6 @@
+fromversion: 8.2.0
+id: AWS_WAF_ModelingRule
+name: AWS WAF Modeling Rule
+rules: ''
+schema: ''
+tags: AWS_WAF

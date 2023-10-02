@@ -7,6 +7,7 @@ from datetime import datetime
 from typing import Any
 from collections.abc import Generator, Iterable
 from pathlib import Path
+from demisto_sdk.commands.common.tools import get_pack_metadata
 
 from git import Repo
 
@@ -205,6 +206,25 @@ def get_content_reviewers(content_roles: dict[str, Any]) -> tuple[list[str], str
     except KeyError as ke:
         print(f"Error parsing reviewers: {str(ke)}.")  # noqa: T201
         sys.exit(1)
+
+
+def get_support_level(pack_dirs: set[str]) -> set[str]:
+    """
+    Get the pack support levels from the pack metadata.
+
+    Args:
+        pack_dirs (set): paths to the packs that were changed
+    """
+    packs_support_levels = set()
+
+    for pack_dir in pack_dirs:
+        if pack_support_level := get_pack_metadata(pack_dir).get('support'):
+            print(f'Pack support level for pack {pack_dir} is {pack_support_level}')
+            packs_support_levels.add(pack_support_level)
+        else:
+            print(f'Could not find pack support level for pack {pack_dir}')
+
+    return packs_support_levels
 
 
 def get_doc_reviewer(content_roles: dict[str, Any]) -> str:
