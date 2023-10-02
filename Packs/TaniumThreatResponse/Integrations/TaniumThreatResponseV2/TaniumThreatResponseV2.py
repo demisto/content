@@ -891,19 +891,11 @@ def delete_intel_doc(client, data_args):
     params = {
         'id': data_args.get('intel_doc_id')
     }
-    try:
-        raw_response = client.do_request('DELETE', '/plugin/products/'
-                                                   f'{client.get_threat_response_endpoint()}'
-                                                   f'/api/v1/intels/', params=params)
+    raw_response = client.do_request('DELETE', '/plugin/products/'
+                                               f'{client.get_threat_response_endpoint()}'
+                                               f'/api/v1/intels/', params=params)
 
-    # If the user provided a intel doc ID which does not exist, the do_request will throw HTTPError exception
-    # with a "Not Found" message.
-    except requests.HTTPError as e:
-        if 'not found' in str(e):
-            raise DemistoException(f'Could not find the intel doc ID.\n({str(e)})')
-        raise
-
-    return 'Intel doc deleted', {}, str(raw_response)
+    return 'Intel Doc deleted', {}, raw_response
 
 
 def start_quick_scan(client, data_args):

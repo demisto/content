@@ -25,8 +25,7 @@ build-machines-cleanup:
     - exit "${EXIT_CODE}"
   after_script:
     - source .gitlab/helper_functions.sh
-    - !reference [ .unlock-machine ]
-  timeout: 4 hours
+    - !reference [.unlock-machine]
   variables:
     CLOUD_MACHINES_TYPE: "nightly"
     CLOUD_MACHINES_COUNT: "all"
@@ -56,13 +55,12 @@ fan-in-build-machines-cleanup:
 slack-notify-build-machines-cleanup:
   variables:
     PIPELINE_TO_QUERY: $CI_PIPELINE_ID
-    WORKFLOW: 'Build Machines Cleanup'
-    JOB_NAME: 'fan-in-build-machines-cleanup'
+    WORKFLOW: "Build Machines Cleanup"
+    JOB_NAME: "fan-in-build-machines-cleanup"
     # Passes the environment variable from the parent pipeline to the child which can be useful for cases
     # when triggering pipeline with alternate env variable value passed in the API call
     SLACK_CHANNEL: $SLACK_CHANNEL
-    SLACK_JOB: 'true'
+    SLACK_JOB: "true"
   extends:
     - .trigger-slack-notification
     - .build-machines-cleanup-rule-always
-
