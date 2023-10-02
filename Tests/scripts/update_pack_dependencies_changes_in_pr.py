@@ -23,6 +23,7 @@ CHANGE_TYPE_TO_TEMPLATE: dict[str, Template] = {
 }
 MP_VERSION_TO_DISPLAY: dict = {
     MarketplaceVersions.XSOAR: "XSOAR",
+    MarketplaceVersions.XSOAR_SAAS: "XSOAR SAAS",
     MarketplaceVersions.MarketplaceV2: "XSIAM",
     MarketplaceVersions.XPANSE: "XPANSE",
 }
@@ -151,7 +152,8 @@ def format_summaries_to_single_comment(summaries: dict, mandatory_only: bool) ->
     s = CHANGES_MSG_TITLE
     for marketplace, summary in summaries.items():
         if summary:
-            s += f"### {MP_VERSION_TO_DISPLAY[marketplace]}\n{summary}\n"
+            title = MP_VERSION_TO_DISPLAY.get(marketplace) or str(marketplace).upper()
+            s += f"### {title}\n{summary}\n"
     return s
 
 

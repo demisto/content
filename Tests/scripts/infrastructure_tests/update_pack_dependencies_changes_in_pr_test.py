@@ -89,7 +89,14 @@ def test_aggregate_summaries(mocker) -> None:
 
 @pytest.mark.parametrize('summaries, mandatory_only, expected_str', [
     pytest.param(
-        {mp: "data" for mp in (script_module.MarketplaceVersions)},
+        {
+            mp: "data"
+            for mp in [
+                script_module.MarketplaceVersions.XSOAR,
+                script_module.MarketplaceVersions.MarketplaceV2,
+                script_module.MarketplaceVersions.XPANSE,
+            ]
+        },
         False,
         f"{script_module.CHANGES_MSG_TITLE}### XSOAR\ndata\n### XSIAM\ndata\n### XPANSE\ndata\n",
         id="Summaries exist for all marketplaces",
