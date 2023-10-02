@@ -437,6 +437,7 @@ def fetch_assets_command(client: Client, assets_last_run, max_fetch):   # todo: 
         elif status in ['CANCELLED', 'ERROR'] and last_fetch:
             export_uuid = client.export_assets_request(chunk_size=2, fetch_from=last_fetch)
             assets_last_run.update({'export_uuid': export_uuid})
+            # demisto.setLastRun({"nextTrigger": "60", "type": 1})
 
     demisto.info(f'Done fetching {len(assets)} assets, {assets_last_run=}.')
     return assets, assets_last_run
@@ -596,19 +597,21 @@ def main() -> None:  # pragma: no cover
 
             demisto.debug(f'Setting new last_run to {new_last_run}')
             demisto.setLastRun(new_last_run)
+
         elif command == 'fetch-assets':
-            assets_last_run = demisto.getAssetsLastRun()    # todo: make sure its implemented on the BE side
+            assets_last_run = demisto.getAssetsLastRun()
 
             # starting new fetch for assets, not polling from prev call
             if not assets_last_run.get('export_uuid'):
                 generate_assets_export_uuid(client, first_assets_fetch, assets_last_run)
 
             assets, new_assets_last_run = fetch_assets_command(client, assets_last_run, max_fetch)
-            # todo: check if to move fetch vulnerabilities to here instead of fetch events.
             # send assets as events for now
             send_events_to_xsiam(vendor=VENDOR, product=PRODUCT, events=assets)
-            # send_assets_to_xsiam(assets=assets) # todo: to be implemented in CSP once we have the api endpoint from server
+            # todo: to be implemented in CSP once we have the api endpoint from server
+            # send_assets_to_xsiam(assets=assets)
             demisto.setAssetsLastRun(new_assets_last_run)
+
         elif command == 'tenable-export-assets':
             results = get_assets_command(client, args)
             return_results(results)
