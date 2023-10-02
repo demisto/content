@@ -1,5 +1,5 @@
 Netskope API v2 provides a powerful interface for managing and monitoring Netskope deployments. It enables users to retrieve alerts and events, manage URL lists, and control clients. With Netskope API v2, organizations can proactively respond to security threats, enforce web access policies, and efficiently administer their Netskope environment.
-This integration was integrated and tested with version 2 of netskope_(api_v2)
+This integration was integrated and tested with version 2 of the Netskope API.
 
 ## Configure Netskope (API v2) on Cortex XSOAR
 
