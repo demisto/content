@@ -93,6 +93,9 @@ script:
   script: ''
   type: python
   commands:
+  - description: "Gets mapping fields from remote incident. Note: This method will not update the current incident, it's here for debugging purposes."
+    name: get-mapping-fields
+    arguments: []
   - name: xdr-get-incident-extra-data-ctf
     arguments:
     - name: incident_id
