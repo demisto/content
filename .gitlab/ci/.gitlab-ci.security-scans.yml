@@ -18,7 +18,7 @@ auto secure cicd:
     include:
       - file: "/.gitlab/ci/security-scans.yml"
         ref: master
-        project: "${CI_PROJECT_NAMESPACE}/infra"
+        project: "xsoar/infra"
     strategy: depend
   extends:
     .auto-secure-cicd-rule
