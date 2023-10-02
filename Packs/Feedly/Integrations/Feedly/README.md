@@ -1,5 +1,4 @@
 Ingest articles with indicators, entities and relationships from Feedly into XSOAR
-This integration was integrated and tested with version xx of Feedly
 
 ## Configure Feedly on Cortex XSOAR
 
