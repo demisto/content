@@ -26,6 +26,17 @@ TEST_SUITE_STATUSES = ["Failures", "Errors", "Skipped", "Total"]
 NOT_AVAILABLE = "N/A"
 TEST_SUITE_JIRA_HEADERS = ["Jira Ticket", "Jira Ticket Resolution"]
 TEST_SUITE_FIXED_HEADERS = ["Playbook ID"] + TEST_SUITE_JIRA_HEADERS
+NO_COLOR_ESCAPE_CHAR = "\033[0m"
+RED_COLOR = "\033[91m"
+GREEN_COLOR = "\033[92m"
+
+
+def green_text(text: str) -> str:
+    return f"{GREEN_COLOR}{text}{NO_COLOR_ESCAPE_CHAR}"
+
+
+def red_text(text: str) -> str:
+    return f"{RED_COLOR}{text}{NO_COLOR_ESCAPE_CHAR}"
 
 
 def options_handler():
@@ -90,7 +101,6 @@ def calculate_test_summary(test_playbooks_result_files_list: list[Path]) -> tupl
             server_version = properties["server_version"]
             server_versions.add(server_version)
             playbooks_result[server_version] = test_suite_item
-            #
             # # FIXME!!
             # if len(playbooks_results) > 100:
             #     return playbooks_results, server_versions
@@ -168,11 +178,12 @@ def print_test_summary(artifacts_path: str) -> bool:
         for status in TEST_SUITE_STATUSES:
             headers.append(f"{status} ({server_version})")
     tabulate_data = []
-    total_row: list[Any] = (["Total"] + [""] * len(TEST_SUITE_JIRA_HEADERS)
+    total_row: list[Any] = ([""] * len(TEST_SUITE_FIXED_HEADERS)
                             + [0] * (len(server_versions_list) * len(TEST_SUITE_STATUSES)))
+    total_errors = 0
     for playbook_id, playbook_results in tqdm(playbooks_results.items(), desc="Generating test summary", unit="playbook",
                                               leave=True, colour='green', miniters=10, mininterval=5.0):
-        row = [playbook_id]
+        row = []
         jira_ticket = jira_tickets_for_playbooks.get(playbook_id)
         if jira_ticket:
             row.append(jira_ticket.key)
@@ -181,6 +192,7 @@ def print_test_summary(artifacts_path: str) -> bool:
             row.extend([NOT_AVAILABLE] * len(TEST_SUITE_JIRA_HEADERS))
 
         skipped_count = 0
+        errors_count = 0
         for server_version in server_versions_list:
             test_suite: TestSuite = playbook_results.get(server_version)
             if test_suite:
@@ -189,13 +201,16 @@ def print_test_summary(artifacts_path: str) -> bool:
                 row.append(test_suite.errors)
                 row.append(test_suite.skipped)
                 row.append(test_suite.tests)
+                errors_count += test_suite.errors + test_suite.failures
                 if test_suite.skipped and test_suite.failures == 0 and test_suite.errors == 0:
                     skipped_count += 1
             else:
                 row.extend([NOT_AVAILABLE] * len(TEST_SUITE_STATUSES))
 
+        total_errors += errors_count
         # If all the test suites were skipped, don't add the row to the table.
         if skipped_count != len(server_versions_list):
+            row.insert(0, red_text(playbook_id) if errors_count else green_text(playbook_id))
             tabulate_data.append(row)
 
             # Offset the total row by the number of fixed headers
@@ -207,8 +222,9 @@ def print_test_summary(artifacts_path: str) -> bool:
 
     logging.info(f"Writing test playbook report to {test_playbooks_report}")
     xml.write(test_playbooks_report.as_posix(), pretty=True)
+    total_row[0] = green_text("Total") if total_errors == 0 else red_text("Total")
     tabulate_data.append(total_row)
-    table = tabulate(tabulate_data, headers, tablefmt="pretty", stralign="left")
+    table = tabulate(tabulate_data, headers, tablefmt="pretty", stralign="left", numalign="center")
     logging.info(f"Test Playbook Results:\n{table}")
     return True
 
