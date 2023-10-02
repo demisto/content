@@ -2091,7 +2091,7 @@ class Client(BaseClient):
 
         """
         if enrollment_path == '':
-            if enrollment_id == change_id == '':
+            if not all(s != '' for s in [enrollment_id, change_id]):
                 raise DemistoException(f'"enrollment_path" can not be blank while "enrollment_id" and "change_id" are both blank')
         headers = {"accept": "application/vnd.akamai.cps.change.v2+json"}
         method = "GET"
