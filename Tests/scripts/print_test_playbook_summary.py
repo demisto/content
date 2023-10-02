@@ -16,7 +16,7 @@ from tabulate import tabulate
 from tqdm import tqdm
 
 from Tests.scripts.jira_issues import JIRA_SERVER_URL, JIRA_VERIFY_SSL, JIRA_API_KEY, \
-    generate_ticket_summary, generate_query, JIRA_PROJECT_ID, JIRA_ISSUE_TYPE, JIRA_COMPONENT, JIRA_LABELS
+    generate_ticket_summary, generate_query, JIRA_PROJECT_ID, JIRA_ISSUE_TYPE, JIRA_COMPONENT
 from Tests.scripts.utils import logging_wrapper as logging
 from Tests.scripts.utils.log_util import install_logging
 
@@ -107,8 +107,14 @@ def calculate_test_summary(test_playbooks_result_files_list: list[Path]) -> tupl
 def search_ticket_in_jira(jira_server: JIRA, playbook_id: str) -> Issue | None:
     jira_ticket_summary = generate_ticket_summary(playbook_id)
     jql_query = generate_query(jira_ticket_summary)
-    search_issues: ResultList[Issue] = jira_server.search_issues(jql_query, maxResults=1)  # type: ignore[assignment]
-    return search_issues[0] if len(search_issues) == 1 else None  # type: ignore[index]
+    search_issues: ResultList[Issue] = jira_server.search_issues(jql_query)  # type: ignore[assignment]
+    if search_issues:
+        playbook_id_lower = playbook_id.lower()
+        for issue in search_issues:
+            if playbook_id_lower in issue.get_field("summary").lower():
+                return issue
+        logging.debug(f"Failed to find a jira ticket for playbook id: {playbook_id}")
+    return None
 
 
 def get_jira_tickets_for_playbooks(playbook_ids: list[str],
@@ -126,7 +132,7 @@ def get_jira_tickets_for_playbooks(playbook_ids: list[str],
                 if jira_ticket := future.result():
                     playbook_ids_to_jira_tickets[futures[future]] = jira_ticket
             except Exception:
-                logging.error(f'Failed to search for a jira ticket for playbook id:"{futures[future]}')
+                logging.error(f'Failed to search for a jira ticket for playbook id:"{futures[future]}"')
 
     return playbook_ids_to_jira_tickets
 
@@ -151,8 +157,7 @@ def print_test_summary(artifacts_path: str) -> bool:
                  f'Jira verify SSL: {JIRA_VERIFY_SSL}\n'
                  f'Jira project id: {JIRA_PROJECT_ID}\n'
                  f'Jira issue type: {JIRA_ISSUE_TYPE}\n'
-                 f'Jira component: {JIRA_COMPONENT}\n'
-                 f'Jira labels: {JIRA_LABELS}\n')
+                 f'Jira component: {JIRA_COMPONENT}\n')
 
     jira_tickets_for_playbooks = get_jira_tickets_for_playbooks(list(playbooks_results.keys()))
     logging.info(f"Found {len(jira_tickets_for_playbooks)} Jira tickets out of {len(playbooks_results)} playbooks")
