@@ -179,7 +179,6 @@ configuration:
   - marketplacev2
   required: false
 - additionalinfo: 'Define how to close the mirrored tickets in Cortex XSOAR with a custom state. Enter here a comma-separated list of custom closure state codes and their labels (acceptable format example: “10=Design,11=Development,12=Testing”) to override the default closure method. Note that a matching user-defined list of custom close reasons must be configured as a "Server configuration" in Cortex XSOAR. Not following this format will result in closing the incident with a default close reason.'
-  defaultvalue: ''
   display: Mirrored XSOAR Ticket custom close state code
   name: server_close_custom_state
   type: 0
@@ -223,7 +222,7 @@ configuration:
   name: incidentFetchInterval
   type: 19
   required: false
-- defaultvalue: 0
+- defaultvalue: '0'
   display: 'Advanced: Minutes to look back when fetching'
   additionalinfo: Use this parameter to determine how long backward to look in the search for incidents that were created before the last run time and did not match the query when they were created.
   name: look_back
@@ -1598,7 +1597,7 @@ script:
     - contextPath: ServiceNow.Generic.Response
       description: Generic response to servicenow api.
       type: string
-  dockerimage: demisto/python3:3.10.13.74666
+  dockerimage: demisto/python3:3.10.13.75921
   isfetch: true
   ismappable: true
   isremotesyncin: true
@@ -1606,6 +1605,7 @@ script:
   script: ''
   subtype: python3
   type: python
+  runonce: false
 fromversion: 5.0.0
 tests:
 - servicenow_test_v2

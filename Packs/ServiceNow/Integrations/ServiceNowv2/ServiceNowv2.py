@@ -1,14 +1,16 @@
+import urllib3
+import mimetypes
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+
+
 import re
 import shutil
 from typing import Callable, Dict, Iterable, List, Tuple
 
-
-import mimetypes
+print("test")
 
 # disable insecure warnings
-import urllib3
 urllib3.disable_warnings()
 
 INCIDENT = 'incident'
