@@ -3304,7 +3304,7 @@ def update_change_command(client: Client, change_path: str,
         certificate :certificate,
         trust_chain: trust_chain,
         allowed_input_type_param: Specify the contract on which to operate or view.
-        keyAlgorithm: RSA or ECDSA
+        key_algorithm: RSA or ECDSA
 
     Returns:
         Json response as dictionary
