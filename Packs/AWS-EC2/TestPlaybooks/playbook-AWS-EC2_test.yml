@@ -144,7 +144,7 @@ tasks:
       id: 03d1bf5f-41a0-4b3c-8c73-576c91f88640
       version: -1
       name: aws-ec2-describe-addresses
-      description: Describes one or more of your Elastic IP addresses.
+      description: Describes one or more of your Elastic IP addresses. yayyy
       script: AWS - EC2|||aws-ec2-describe-addresses
       type: regular
       iscommand: true
