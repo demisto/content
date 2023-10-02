@@ -8,7 +8,7 @@ configuration:
   required: true
   type: 0
 - name: credentials
-  display: User name
+  display: Username
   displaypassword: Password
   required: true
   hiddenusername: false
@@ -22,7 +22,7 @@ configuration:
   type: 8
   required: false
 description: Improve the effectiveness of your service provision and resources, and the quality of your IT department.
-display: PATHelpdeskAdvanced
+display: PAT HelpdeskAdvanced
 name: PATHelpdeskAdvanced
 script:
   commands:
