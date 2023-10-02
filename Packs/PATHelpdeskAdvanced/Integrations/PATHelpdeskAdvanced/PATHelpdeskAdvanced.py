@@ -108,7 +108,6 @@ _TICKET_SOURCE = Field("ticket_source")
 _OBJECT_ID = Field("object_id")
 _TICKET = Field("ticket")
 _ATTACHMENT_ID = Field("attachment_id")
-_USER_ID = Field("user_id")
 _GROUP_ID = Field("group_id")
 ID_DESCRIPTION_COLUMN_NAMES = str([field.hda_name for field in (ID, DESCRIPTION)])
 
