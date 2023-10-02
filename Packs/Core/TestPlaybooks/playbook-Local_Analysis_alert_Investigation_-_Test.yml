@@ -99,7 +99,7 @@ tasks:
       CommentToAdd:
         simple: '${alert.name}. Alert ID: ${alert.id}'
       FileRemediation:
-        simple: Quarantine
+        simple: False
       GraywareAsMalware:
         simple: "False"
       Path:
