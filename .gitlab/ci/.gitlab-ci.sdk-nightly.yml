@@ -161,7 +161,7 @@ demisto-sdk-nightly:run-commands-against-instance:
     - .default-job-settings
     - .sdk-nightly-schedule-rule-always
   services: # needed for running lint
-    - name: docker.art.code.pan.run/build-tools--image-dind:20.10.12-dind
+    - name: ${DOCKER_IO}/library/docker:20.10.12-dind
       alias: docker
   variables:
     DOCKER_HOST: tcp://docker:2375
@@ -219,7 +219,7 @@ demisto-sdk-nightly:run-end-to-end-tests:
     - .default-job-settings
     - .sdk-nightly-schedule-rule-always
   services: # needed for running e2e tests for docker
-    - name: docker.art.code.pan.run/build-tools--image-dind:20.10.12-dind
+    - name: ${DOCKER_IO}/library/docker:20.10.12-dind
       alias: docker
   variables:
     DOCKER_HOST: tcp://docker:2375
