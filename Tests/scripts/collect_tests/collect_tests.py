@@ -937,8 +937,7 @@ class BranchTestCollector(TestCollector):
         result = []
         for integration in integrations_using_apimodule:
             try:
-                integration_collected: CollectionResult = self._collect_single(integration.path)
-
+                integration_collected = self._collect_single(integration.path)
                 result.append(integration_collected)
             except (NothingToCollectException, NonXsoarSupportedPackException) as e:
                 logger.info(str(e))
