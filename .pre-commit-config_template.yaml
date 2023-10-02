@@ -30,6 +30,7 @@ repos:
   rev: v2.1.2
   hooks:
   - id: pycln
+    args: [--all]
 
 - repo: https://github.com/charliermarsh/ruff-pre-commit
   rev: "v0.0.272"
@@ -91,7 +92,7 @@ repos:
   hooks:
   - id: mypy
     args: [--ignore-missing-imports, --check-untyped-defs, --show-error-codes, --follow-imports=silent, --allow-redefinition]
-    exclude: "test_data|tests_data|.venv|.*_test.py$|infrastructure_tests"
+    exclude: "test_data|tests_data|.venv|.*_test.py$|infrastructure_tests|.vulture_whitelist.py"
 
     additional_dependencies:
     - astor==0.8.1 ; python_version >= "3.8" and python_version < "3.11"
