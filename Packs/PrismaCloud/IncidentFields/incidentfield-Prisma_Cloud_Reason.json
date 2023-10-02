@@ -26,7 +26,7 @@
 	"group": 0,
 	"hidden": false,
 	"id": "incident_prismacloudreason",
-	"isReadOnly": false,
+	"isReadOnly": true,
 	"locked": false,
 	"name": "Prisma Cloud Reason",
 	"neverSetAsRequired": false,

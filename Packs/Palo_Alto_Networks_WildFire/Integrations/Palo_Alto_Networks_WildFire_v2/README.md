@@ -24,7 +24,7 @@ Use the Palo Alto Networks Wildfire integration to automatically identify unknow
     | --- | --- | --- |
     | Server base URL (e.g., https://192.168.0.1/publicapi) |  | True |
     | API Key |  | True |
-    | API Key Source | API Key product name | False |
+    | API Key Type | API Key product name | False |
     | Source Reliability | Reliability of the source providing the intelligence data. | True |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
@@ -488,6 +488,8 @@ Returns a verdict regarding multiple hashes, stored in a TXT file or given as li
 ***
 Uploads a URL of a webpage to WildFire for analysis.
 
+Notice: Submitting indicators using this command might make the indicator data publicly available. See the vendor’s documentation for more details.
+
 
 #### Base Command
 
@@ -620,6 +622,8 @@ There is no human-readable output for this command.
 ### wildfire-get-url-webartifacts
 ***
 Get web artifacts for a URL webpage. An empty tgz will be returned, no matter what the verdict, or even if the URL is malformed.
+
+Notice: Submitting indicators using this command might make the indicator data publicly available. See the vendor’s documentation for more details.
 
 
 #### Base Command

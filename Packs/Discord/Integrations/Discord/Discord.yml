@@ -6,8 +6,14 @@ configuration:
 - additionalinfo: You'll find your api key in BOT section -> Reset Token
   display: Api Key
   name: api_key
-  required: true
+  required: false
   type: 4
+  hidden: true
+- name: credentials
+  required: false
+  type: 9
+  displaypassword: API key
+  hiddenusername: true
 - additionalinfo: You'll find your channel id by click on your channle then "Copy Channel ID"
   display: Channel ID
   name: channel_id
@@ -48,7 +54,7 @@ script:
       description: Message Author ID
     - contextPath: Discord.Details.author.username
       description: Message Author User Name
-  dockerimage: demisto/python3:3.10.12.66339
+  dockerimage: demisto/python3:3.10.12.68714
   runonce: false
   script: ''
   subtype: python3

@@ -114,7 +114,7 @@ script:
     - contextPath: PhishUp.Evaluation
       description: returns "Phish" if any response has "Phish" result
       type: String
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.12.67728
   runonce: false
   script: '-'
   subtype: python3

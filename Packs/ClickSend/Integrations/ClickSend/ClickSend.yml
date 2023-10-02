@@ -54,7 +54,7 @@ script:
     outputs:
     - contextPath: Voice.History
       description: Your Calls History
-  dockerimage: demisto/python3:3.10.12.66339
+  dockerimage: demisto/python3:3.10.12.68714
   runonce: false
   script: ''
   subtype: python3

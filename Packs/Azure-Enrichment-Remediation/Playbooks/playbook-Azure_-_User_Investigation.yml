@@ -1,0 +1,1387 @@
+id: Azure - User Investigation
+version: -1
+name: Azure - User Investigation
+description: |-
+  This playbook performs an investigation on a specific user in Azure environments, using queries and logs from Azure Log Analytics to locate the following activities performed by the user:
+  - Script-based user agent usage
+  - Administrative user activities
+  - Security rules and policies changes
+  - Failed login attempt
+  - MFA failed login attempt
+  - Login attempt from an uncommon country
+  - Anomalies activities
+  - Risky users
+  - Uncommon high volume of actions
+  - Action uncommonly performed by the user
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 5aee39e8-c3e3-4825-8b99-253c7d8ddabc
+    type: start
+    task:
+      id: 5aee39e8-c3e3-4825-8b99-253c7d8ddabc
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 270,
+          "y": 70
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 4286364d-bd10-43b7-8838-3d2f13d1eb87
+    type: condition
+    task:
+      id: 4286364d-bd10-43b7-8838-3d2f13d1eb87
+      version: -1
+      name: Is Azure Log Analytics enabled and the user name is defined?
+      description: Checks if the Azure Log Analytics integration is enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "22"
+      "yes":
+      - "6"
+      - "4"
+      - "5"
+      - "9"
+      - "8"
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Azure Log Analytics
+                    ignorecase: true
+                accessor: state
+            iscontext: true
+          right:
+            value:
+              simple: active
+          ignorecase: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.Username
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 270,
+          "y": 210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: c793822a-6a73-4cef-87b4-cf6363c0b4ac
+    type: regular
+    task:
+      id: c793822a-6a73-4cef-87b4-cf6363c0b4ac
+      version: -1
+      name: 'Logon attempt from uncommon country'
+      description: Executes an Analytics query for data.
+      script: Azure Log Analytics|||azure-log-analytics-execute-query
+      type: regular
+      iscommand: true
+      brand: Azure Log Analytics
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      extend-context:
+        simple: AzureUncommonCountryLogon=
+      query:
+        simple: "BehaviorAnalytics\n| where ActivityInsights.FirstTimeUserConnectedFromCountry == \"True\"\n| where UserPrincipalName == \"${inputs.Username}\" \n| where TimeGenerated > ${inputs.AzureSearchTime}\n| summarize Count = count(), Events = make_list(ActionType)"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -810,
+          "y": 580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: e3afb9b9-75b2-40da-8154-347de63aaedb
+    type: title
+    task:
+      id: e3afb9b9-75b2-40da-8154-347de63aaedb
+      version: -1
+      name: BehaviorAnalytics (Sentinel)
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -810,
+          "y": 430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 251ebe3b-f61c-4a7f-8173-6b3207bb53b5
+    type: title
+    task:
+      id: 251ebe3b-f61c-4a7f-8173-6b3207bb53b5
+      version: -1
+      name: IdentityInfo (Sentinel)
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "12"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -390,
+          "y": 430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 5a31e359-3437-4f0c-8580-2940c2532994
+    type: title
+    task:
+      id: 5a31e359-3437-4f0c-8580-2940c2532994
+      version: -1
+      name: Anomalies (Sentinel)
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "13"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 30,
+          "y": 430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 4b3731b9-77c7-4702-8cad-a6e33593e1ed
+    type: title
+    task:
+      id: 4b3731b9-77c7-4702-8cad-a6e33593e1ed
+      version: -1
+      name: SigninLogs
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "14"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: b1c902eb-61da-4b74-8ac4-e37f117a93d2
+    type: title
+    task:
+      id: b1c902eb-61da-4b74-8ac4-e37f117a93d2
+      version: -1
+      name: AzureActivity
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "18"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": 430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 72248260-9922-4787-8a99-52eab98184e5
+    type: title
+    task:
+      id: 72248260-9922-4787-8a99-52eab98184e5
+      version: -1
+      name: AuditLogs
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "15"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1350,
+          "y": 430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: a1fb3fb9-345e-4457-86bc-68967d850bf8
+    type: regular
+    task:
+      id: a1fb3fb9-345e-4457-86bc-68967d850bf8
+      version: -1
+      name: Uncommon high volume of actions
+      description: Executes an Analytics query for data.
+      script: Azure Log Analytics|||azure-log-analytics-execute-query
+      type: regular
+      iscommand: true
+      brand: Azure Log Analytics
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      extend-context:
+        simple: AzureUncommonVolume=
+      query:
+        simple: "BehaviorAnalytics\n| where ActivityInsights.UncommonHighVolumeOfActions == \"True\"\n| where UserPrincipalName == \"${inputs.Username}\" \n| where TimeGenerated > ${inputs.AzureSearchTime}\n| summarize Count = count(), Events = make_list(ActionType)"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -810,
+          "y": 940
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 003261b4-1cbb-4e46-86db-7ddc89bd98ef
+    type: regular
+    task:
+      id: 003261b4-1cbb-4e46-86db-7ddc89bd98ef
+      version: -1
+      name: Action uncommonly performed by user
+      description: Executes an Analytics query for data.
+      script: Azure Log Analytics|||azure-log-analytics-execute-query
+      type: regular
+      iscommand: true
+      brand: Azure Log Analytics
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      extend-context:
+        simple: AzureUncommonActivities=
+      query:
+        simple: |-
+          BehaviorAnalytics
+          | where ActivityInsights.ActionUncommonlyPerformedByUser == "True"
+          | where UserPrincipalName == "${inputs.Username}"
+          | where TimeGenerated > ${inputs.AzureSearchTime}
+          | summarize Count = count(), Events = make_list(ActionType)
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -810,
+          "y": 1300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: fdbda8a8-0c68-41ff-8383-b234f5796ebe
+    type: regular
+    task:
+      id: fdbda8a8-0c68-41ff-8383-b234f5796ebe
+      version: -1
+      name: Check if the user is defined as a risky user
+      description: Executes an Analytics query for data.
+      script: Azure Log Analytics|||azure-log-analytics-execute-query
+      type: regular
+      iscommand: true
+      brand: Azure Log Analytics
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      extend-context:
+        simple: AzureRiskyUser=
+      query:
+        simple: |-
+          IdentityInfo
+          | where RiskState contains "Risk"
+          | where RiskLevel == "High"
+          | where AccountUPN == "${inputs.Username}"
+          | where TimeGenerated >  ${inputs.AzureSearchTime}
+          | summarize Count = count()
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -390,
+          "y": 580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 5f98b4bb-04f8-4322-8552-6811832e17a4
+    type: regular
+    task:
+      id: 5f98b4bb-04f8-4322-8552-6811832e17a4
+      version: -1
+      name: Anomalies for the user
+      description: Executes an Analytics query for data.
+      script: Azure Log Analytics|||azure-log-analytics-execute-query
+      type: regular
+      iscommand: true
+      brand: Azure Log Analytics
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      extend-context:
+        simple: AzureAnomalies=
+      query:
+        simple: "Anomalies \n| where UserPrincipalName ==  \"${inputs.Username}\"\n| where TimeGenerated >  ${inputs.AzureSearchTime}\n| summarize Count = count(), Events = make_list(AnomalyDetails)"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 30,
+          "y": 580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: c9c89daa-d7bf-48cc-8efd-16ce1ac02113
+    type: regular
+    task:
+      id: c9c89daa-d7bf-48cc-8efd-16ce1ac02113
+      version: -1
+      name: Failed login attempts by the user
+      description: Executes an Analytics query for data.
+      script: Azure Log Analytics|||azure-log-analytics-execute-query
+      type: regular
+      iscommand: true
+      brand: Azure Log Analytics
+    nexttasks:
+      '#none#':
+      - "33"
+    scriptarguments:
+      extend-context:
+        simple: AzureNumOfFailLogin=
+      query:
+        simple: "SigninLogs \n| where parse_json(Status) contains \"fail\"\n| where UserPrincipalName == \"${inputs.Username}\"\n| where TimeGenerated > ${inputs.AzureSearchTime}\n| summarize ActionCount = count() by UserPrincipalName\n| where ActionCount > ${inputs.failedLogonThreshold}\n| summarize Count = count()"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 3f60ee79-cdd8-4732-8bf0-1eb7494a072f
+    type: regular
+    task:
+      id: 3f60ee79-cdd8-4732-8bf0-1eb7494a072f
+      version: -1
+      name: Check for script-based user agent
+      description: Executes an Analytics query for data.
+      script: Azure Log Analytics|||azure-log-analytics-execute-query
+      type: regular
+      iscommand: true
+      brand: Azure Log Analytics
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      extend-context:
+        simple: AzureScriptBasedUserAgent=
+      ignore-outputs:
+        simple: "false"
+      query:
+        simple: "AuditLogs \n| where parse_json(tostring(InitiatedBy.user)).userPrincipalName == \"${inputs.Username}\" \n| where AdditionalDetails[0].value contains \"python\" or AdditionalDetails[0].value contains \"curl\" or AdditionalDetails[0].value contains \"axios\" or AdditionalDetails[0].value contains \"httpie\" or AdditionalDetails[0].value contains \"wget\"\n| where TimeGenerated > ${inputs.AzureSearchTime}\n| summarize Count = count(), Events = make_list(AdditionalDetails)"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1350,
+          "y": 580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 231a71b4-5b1f-4b2b-8a38-864e0c704167
+    type: regular
+    task:
+      id: 231a71b4-5b1f-4b2b-8a38-864e0c704167
+      version: -1
+      name: Security rules were changed successfully
+      description: Executes an Analytics query for data.
+      script: Azure Log Analytics|||azure-log-analytics-execute-query
+      type: regular
+      iscommand: true
+      brand: Azure Log Analytics
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      extend-context:
+        simple: AzureSuccessSecurityRulesChange=
+      query:
+        simple: "AzureActivity\n| where OperationName in (\"Delete Security Rule\",\"Create or Update Security Rule\",\"Update Alert Rules\",\"Delete Alert Rules\",\"Delete Watchlists\",\"Update Watchlists\",\"Microsoft.SecurityInsights/watchlists/watchlistItems/delete\",\"Create or Update Application Gateway WAF Policy\",\"Delete Application Gateway WAF Policy\",\"Update database threat detection policy\")\n| where ActivityStatus == \"Succeeded\"\n| where Caller ==  \"${inputs.Username}\" \n| where TimeGenerated > ${inputs.AzureSearchTime}\n| summarize Count = count(), Events = make_list(OperationName)"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": 580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 2c78c73a-079c-4c66-884d-c30be565c963
+    type: regular
+    task:
+      id: 2c78c73a-079c-4c66-884d-c30be565c963
+      version: -1
+      name: An unsuccessful attempt to change security rules
+      description: Executes an Analytics query for data.
+      script: Azure Log Analytics|||azure-log-analytics-execute-query
+      type: regular
+      iscommand: true
+      brand: Azure Log Analytics
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      extend-context:
+        simple: AzureUnsuccessSecurityRulesChange=
+      query:
+        simple: "AzureActivity\n| where OperationName in (\"Delete Security Rule\",\"Create or Update Security Rule\",\"Update Alert Rules\",\"Delete Alert Rules\",\"Delete Watchlists\",\"Update Watchlists\",\"Microsoft.SecurityInsights/watchlists/watchlistItems/delete\",\"Create or Update Application Gateway WAF Policy\",\"Delete Application Gateway WAF Policy\",\"Update database threat detection policy\")\n| where ActivityStatus != \"Succeeded\"\n| where Caller ==  \"${inputs.Username}\" \n| where TimeGenerated > ${inputs.AzureSearchTime}\n| summarize Count = count(), Events = make_list(OperationName)"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": 940
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: a4968328-3479-4eef-80f1-f42aab2c6fe4
+    type: regular
+    task:
+      id: a4968328-3479-4eef-80f1-f42aab2c6fe4
+      version: -1
+      name: Search for administrative user activities
+      description: Executes an Analytics query for data.
+      script: Azure Log Analytics|||azure-log-analytics-execute-query
+      type: regular
+      iscommand: true
+      brand: Azure Log Analytics
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      extend-context:
+        simple: AzureAdminActivities=
+      ignore-outputs:
+        simple: "false"
+      query:
+        simple: "AuditLogs\n| where parse_json(tostring(InitiatedBy.user)).userPrincipalName ==  \"${inputs.Username}\" \n| where Category in (\"ApplicationManagement\", \"UserManagement\", \"PolicyManagement\", \"GroupManagement\")| where Result == \"success\"\n| where TimeGenerated > ${inputs.AzureSearchTime}\n| summarize Count = count(), Events = make_list(OperationName)"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1350,
+          "y": 940
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 2a2bf514-43ab-4e9b-8e9f-c76ba315d16a
+    type: regular
+    task:
+      id: 2a2bf514-43ab-4e9b-8e9f-c76ba315d16a
+      version: -1
+      name: Set events count
+      description: Set multiple keys/values to the context.
+      scriptName: SetMultipleValues
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "32"
+    scriptarguments:
+      keys:
+        simple: AzureScriptBasedUserAgentCount,AzureAdminActivitiesCount,AzureSecurityRulesChangeCount,AzureUnsuccessSecurityRulesChangeCount,AzureAnomaliesCount,AzureUncommonCountryLogonCount,AzureUncommonVolumeCount,AzureUncommonActivitiesCount
+      parent:
+        simple: CountAzureEvents
+      values:
+        simple: ${AzureScriptBasedUserAgent.tables.rows.[0].[0]},${AzureAdminActivities.tables.rows.[0].[0]},${AzureSuccessSecurityRulesChange.tables.rows.[0].[0]},${AzureUnsuccessSecurityRulesChange.tables.rows.[0].[0]},${AzureAnomalies.tables.rows.[0].[0]},${AzureUncommonCountryLogon.tables.rows.[0].[0]},${AzureUncommonVolume.tables.rows.[0].[0]},${AzureUncommonActivities.tables.rows.[0].[0]}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 270,
+          "y": 1670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 87060e96-667d-49a4-8b5a-3072fd4553a1
+    type: regular
+    task:
+      id: 87060e96-667d-49a4-8b5a-3072fd4553a1
+      version: -1
+      name: The user did not pass the MFA challenge
+      description: Executes an Analytics query for data.
+      script: Azure Log Analytics|||azure-log-analytics-execute-query
+      type: regular
+      iscommand: true
+      brand: Azure Log Analytics
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      extend-context:
+        simple: AzureNumOfFailMFA=
+      query:
+        simple: "SigninLogs \n| where ResultType =~ \"50074\"\n| where UserPrincipalName == \"${inputs.Username}\"\n| where TimeGenerated > ${inputs.AzureSearchTime}\n| summarize ActionCount = count() by UserPrincipalName\n| where ActionCount > ${inputs.MfaAttemptThreshold}"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 940
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: e54197e5-9cf6-4f4f-8875-7e43bdef9808
+    type: regular
+    task:
+      id: e54197e5-9cf6-4f4f-8875-7e43bdef9808
+      version: -1
+      name: Set script-based user agent events
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.11/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      key:
+        simple: AzureScriptBasedUserAgentEvents
+      value:
+        complex:
+          root: AzureScriptBasedUserAgent.tables.rows.[0]
+          accessor: '[1]'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1350,
+          "y": 760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 69fa497d-ca2e-4891-8b51-842262dc8cfe
+    type: regular
+    task:
+      id: 69fa497d-ca2e-4891-8b51-842262dc8cfe
+      version: -1
+      name: Set administrative events
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.11/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      key:
+        simple: AzureAdminActivitiesEvents
+      value:
+        complex:
+          root: AzureAdminActivities.tables.rows.[0]
+          accessor: '[1]'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1350,
+          "y": 1120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: 632abf51-3069-4d39-8307-d88729788b94
+    type: regular
+    task:
+      id: 632abf51-3069-4d39-8307-d88729788b94
+      version: -1
+      name: Set security rules changed events
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.11/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      key:
+        simple: AzureSecurityRulesChangeEvents
+      value:
+        complex:
+          root: AzureSuccessSecurityRulesChange.tables.rows.[0]
+          accessor: '[1]'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": 760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: 47fae1fd-4922-4eab-8b29-8577018f047a
+    type: regular
+    task:
+      id: 47fae1fd-4922-4eab-8b29-8577018f047a
+      version: -1
+      name: Set attempt to change security rules events
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.11/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      key:
+        simple: AzureUnsuccessSecurityRulesChangeEvents
+      value:
+        complex:
+          root: AzureUnsuccessSecurityRulesChange.tables.rows.[0]
+          accessor: '[1]'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": 1120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: 7f8e214d-c0df-4d8b-8867-3fd95e597d66
+    type: regular
+    task:
+      id: 7f8e214d-c0df-4d8b-8867-3fd95e597d66
+      version: -1
+      name: Set anomalies events
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.11/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      key:
+        simple: AzureAnomaliesEvents
+      value:
+        complex:
+          root: AzureAnomalies.tables.rows.[0]
+          accessor: '[1]'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 30,
+          "y": 760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: ad023e29-8a0d-4c84-87cf-bec720378b87
+    type: regular
+    task:
+      id: ad023e29-8a0d-4c84-87cf-bec720378b87
+      version: -1
+      name: Set event of logon attempt from uncommon country
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.11/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      key:
+        simple: AzureUncommonCountryLogonEvents
+      value:
+        complex:
+          root: AzureUncommonCountryLogon.tables.rows.[0]
+          accessor: '[1]'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -810,
+          "y": 760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: 532d2390-6293-4c2c-8873-cbe620c21414
+    type: regular
+    task:
+      id: 532d2390-6293-4c2c-8873-cbe620c21414
+      version: -1
+      name: Set events of uncommon high volume of actions
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.11/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      key:
+        simple: AzureUncommonVolumeEvents
+      value:
+        complex:
+          root: AzureUncommonVolume.tables.rows.[0]
+          accessor: '[1]'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -810,
+          "y": 1120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: 2add1b66-34d3-4c95-8697-2403d56660a7
+    type: regular
+    task:
+      id: 2add1b66-34d3-4c95-8697-2403d56660a7
+      version: -1
+      name: Set events of action uncommonly performed by the user
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.11/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      key:
+        simple: AzureUncommonActivitiesEvents
+      value:
+        complex:
+          root: AzureUncommonActivities.tables.rows.[0]
+          accessor: '[1]'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -810,
+          "y": 1490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: b8af36fa-0211-4310-866b-cb9f58e16115
+    type: title
+    task:
+      id: b8af36fa-0211-4310-866b-cb9f58e16115
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 270,
+          "y": 1850
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: 982caec5-ce0d-46e0-81d4-54f83b6378d7
+    type: regular
+    task:
+      id: 982caec5-ce0d-46e0-81d4-54f83b6378d7
+      version: -1
+      name: Set the number of failed login attempts by the user
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.11/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      key:
+        simple: AzureFailLoginCount
+      value:
+        complex:
+          root: AzureNumOfFailLogin.tables.rows.[0]
+          accessor: '[0]'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: 881466ef-da2a-461a-8ee3-81c1d7504eb8
+    type: regular
+    task:
+      id: 881466ef-da2a-461a-8ee3-81c1d7504eb8
+      version: -1
+      name: Set the number of failed login MFA by the user
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.11/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      key:
+        simple: AzureFailLoginMFACount
+      value:
+        complex:
+          root: AzureNumOfFailMFA.tables.rows.[0]
+          accessor: '[0]'
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: "0"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 1120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: 752b0d29-0d1f-4985-814f-72d96252984b
+    type: regular
+    task:
+      id: 752b0d29-0d1f-4985-814f-72d96252984b
+      version: -1
+      name: Set the number that the user was defined as a risky user
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.11/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      key:
+        simple: AzureRiskyUserCount
+      value:
+        complex:
+          root: AzureRiskyUser.tables.rows.[0]
+          accessor: '[0]'
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: "0"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -390,
+          "y": 760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "1_22_#default#": 0.1
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1845,
+        "width": 2540,
+        "x": -810,
+        "y": 70
+      }
+    }
+  }
+inputs:
+- key: Username
+  value: {}
+  required: false
+  description: The username to investigate.
+  playbookInputQuery:
+- key: AzureSearchTime
+  value:
+    simple: ago(7d)
+  required: false
+  description: 'The Search Time for the Azure Log Analytics search query. Default value: ago(1d)'
+  playbookInputQuery:
+- key: failedLogonThreshold
+  value:
+    simple: "20"
+  required: false
+  description: The threshold number of failed logons by the user. Required to determine how many failed logon events count as suspicious events.
+  playbookInputQuery:
+- key: MfaAttemptThreshold
+  value:
+    simple: "10"
+  required: false
+  description: The threshold number of MFA failed logons by the user. Required to determine how many MFA failed logon events count as suspicious events.
+  playbookInputQuery:
+outputs:
+- contextPath: AzureScriptBasedUserAgentEvents
+  description: Script-based user agent events used by the user in the Azure environment.
+  type: unknown
+- contextPath: CountAzureEvents.AzureScriptBasedUserAgentCount
+  description: The number of script-based user agent usages by the user in the Azure environment.
+  type: unknown
+- contextPath: AzureAdminActivitiesEvents
+  description: Administrative activities performed by the user in the Azure environment.
+  type: unknown
+- contextPath: CountAzureEvents.AzureAdminActivitiesCount
+  description: The number of administrative activities performed by the user in the Azure environment.
+  type: unknown
+- contextPath: AzureSecurityRulesChangeEvents
+  description: Security rules that were changed by the user in the Azure environment.
+  type: unknown
+- contextPath: CountAzureEvents.AzureSecurityRulesChangeCount
+  description: The number of security rules that were changed by the user in the Azure environment.
+  type: unknown
+- contextPath: AzureUnsuccessSecurityRulesChangeEvents
+  description: Unsuccessful attempts to change security rules by the user in the Azure environment.
+  type: unknown
+- contextPath: CountAzureEvents.AzureUnsuccessSecurityRulesChangeCount
+  description: The number of unsuccessful attempts to change security rules by the user in the Azure environment.
+  type: unknown
+- contextPath: AzureFailLoginCount
+  description: The number of failed logins by the user in the Azure environment.
+  type: unknown
+- contextPath: AzureFailLoginMFACount
+  description: The number of failed logins by the user using MFA in the Azure environment.
+  type: unknown
+- contextPath: AzureAnomaliesEvents
+  description: Anomaly events on the user in the Azure environment.
+  type: unknown
+- contextPath: CountAzureEvents.AzureAnomaliesCount
+  description: The number of anomaly events on the user in the Azure environment.
+  type: unknown
+- contextPath: AzureRiskyUserCount
+  description: The number of events where the user was defined as a risky user in the Azure environment.
+  type: unknown
+- contextPath: AzureUncommonCountryLogonEvents
+  description: Uncommon country logon events by the user in the Azure environment.
+  type: unknown
+- contextPath: CountAzureEvents.AzureUncommonCountryLogonCount
+  description: The number of uncommon country logon events by the user in the Azure environment.
+  type: unknown
+- contextPath: AzureUncommonVolumeEvents
+  description: Uncommon volume events by the user in the Azure environment.
+  type: unknown
+- contextPath: CountAzureEvents.AzureUncommonVolumeCount
+  description: The number of uncommon volume events by the user in the Azure environment.
+  type: unknown
+- contextPath: AzureUncommonActivitiesEvents
+  description: Uncommon activity events by the user in the Azure environment.
+  type: unknown
+- contextPath: CountAzureEvents.AzureUncommonActivitiesCount
+  description: The number of uncommon activity events by the user in the Azure environment.
+  type: unknown
+tests:
+- No tests (auto formatted)
+fromversion: 6.9.0

@@ -24,3 +24,8 @@ Determined by the blacklist spamhaus_dbl/surbl of the Domain.
 
 Score is Malicious.
 
+
+Notice: Submitting indicators using the following commands of this integration might make the indicator data publicly available.
+- ***url***
+- ***domain***
+See the vendor’s documentation for more details.

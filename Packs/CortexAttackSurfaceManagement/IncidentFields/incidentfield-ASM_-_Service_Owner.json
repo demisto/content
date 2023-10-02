@@ -15,7 +15,8 @@
             "script": "",
             "selectValues": null,
             "type": "shortText",
-            "width": 150
+            "width": 150,
+            "_comment": "Optional: Name of service owner. Either name or email will be present."
         },
         {
             "displayName": "Email",
@@ -28,7 +29,8 @@
             "script": "",
             "selectValues": null,
             "type": "shortText",
-            "width": 150
+            "width": 150,
+            "_comment": "Optional: Email address of service owner. Either name or email will be present."
         },
         {
             "displayName": "Source",
@@ -41,7 +43,8 @@
             "script": "",
             "selectValues": null,
             "type": "shortText",
-            "width": 150
+            "width": 150,
+            "_comment": "Mandatory: Where this service owner was found from based on data from integrations."
         },
         {
             "displayName": "Timestamp",
@@ -54,7 +57,8 @@
             "script": "",
             "selectValues": null,
             "type": "shortText",
-            "width": 150
+            "width": 150,
+            "_comment": "Mandatory: Current timestamp the user was found by the playbook."
         },
         {
             "displayName": "Ranking Score",
@@ -67,7 +71,8 @@
             "script": "",
             "selectValues": null,
             "type": "shortText",
-            "width": 150
+            "width": 150,
+            "_comment": "Mandatory: Score for how likely a the user is a service owner."
         },
         {
             "displayName": "Justification",
@@ -80,7 +85,8 @@
             "script": "",
             "selectValues": null,
             "type": "shortText",
-            "width": 150
+            "width": 150,
+            "_comment": "Mandatory: Same as source, subject to change in the future."
         }
     ],
     "content": true,
