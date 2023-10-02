@@ -36,7 +36,7 @@ script:
       description: The status ID for the ticket. Use hda-list-ticket-statuses to get a list of status IDs.
       required: true
     - name: ticket_priority_id
-      description: The priority ID for the ticket.
+      description: The priority ID for the ticket. Use hda-list-ticket-priorities to get a list of priority IDs.
       required: true
     - name: object_description
       description: The description of the object.
