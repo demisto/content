@@ -14,6 +14,7 @@ disable_warnings()
 VENDOR = "symantec_long_running"
 PRODUCT = "swg"
 FETCH_SLEEP = 20
+FETCH_SLEEP_UNTIL_BEGINNING_NEXT_HOUR = 180
 REGEX_FOR_STATUS = re.compile(r"X-sync-status: (?P<status>.*?)(?=\\r\\n|$)")
 REGEX_FOR_TOKEN = re.compile(r"X-sync-token: (?P<token>.*?)(?=\\r\\n|$)")
 
@@ -23,6 +24,7 @@ class LastRun(NamedTuple):
     token: str | None = None
     time_of_last_fetched_event: str | None = None
     events_suspected_duplicates: list[str] | None = None
+    last_fetch: int | None = None
 
 
 class Client(BaseClient):
@@ -42,6 +44,24 @@ class Client(BaseClient):
 
 
 """ HELPER FUNCTIONS """
+
+
+def get_current_time_as_timestamp() -> int:
+    now = datetime.now().astimezone(pytz.utc)
+    return date_to_timestamp(now)
+
+
+def is_more_than_half_an_hour_since_last_fetch(last_fetch: int, current_time: int):
+    time_difference = datetime.fromtimestamp(current_time) - datetime.fromtimestamp(
+        last_fetch
+    )
+    return time_difference > timedelta(minutes=30)
+
+
+def is_it_first_10_minutes_of_hour():
+    # Get current time in UTC
+    now = get_current_time_as_timestamp() / 1000
+    return datetime.fromtimestamp(now).minute < 10
 
 
 def get_start_and_ent_date(
@@ -110,45 +130,44 @@ def extract_logs_from_response(response: Response) -> list[bytes]:
     """
     logs: list[bytes] = []
     demisto.debug(f"size of the zip file: {len(response.content) / (1024 ** 2):.2f} MB")
+    try:
+        # extract the ZIP file
+        with ZipFile(BytesIO(response.content)) as outer_zip:
+            # iterate all gzip files
+            for file in outer_zip.infolist():
+                # check if the file is gzip
+                if file.filename.lower().endswith(".gz"):
+                    try:
+                        with outer_zip.open(file) as nested_zip_file, gzip.open(
+                            nested_zip_file, "rb"
+                        ) as f:
+                            logs.extend(f.readlines())
+                    except Exception as e:
+                        demisto.debug(
+                            f"Crashed at the open the internal file {file.filename} file, Error: {e}"
+                        )
+                else:  # the file is not gzip
+                    demisto.debug(
+                        f"The {file.filename} file is not of gzip type"
+                    )
+    except BadZipFile as e:
+        try:
+            # checks whether no events returned
+            if response.content.decode().startswith("X-sync"):
+                demisto.debug("No events returned from the api")
+            else:
+                demisto.debug(
+                    f"The external file type is not of type ZIP, Error: {e},"
+                    "the response.content is {}".format(response.content)
+                )
+        except Exception:
+            demisto.debug(
+                f"The external file type is not of type ZIP, Error: {e},"
+                "the response.content is {}".format(response.content)
+            )
+    except Exception as e:
+        raise ValueError(f"There is no specific error for the crash, Error: {e}")
     return logs
-    # try:
-    #     # extract the ZIP file
-    #     with ZipFile(BytesIO(response.content)) as outer_zip:
-    #         # iterate all gzip files
-    #         for file in outer_zip.infolist():
-    #             # check if the file is gzip
-    #             if file.filename.lower().endswith(".gz"):
-    #                 try:
-    #                     with outer_zip.open(file) as nested_zip_file, gzip.open(
-    #                         nested_zip_file, "rb"
-    #                     ) as f:
-    #                         logs.extend(f.readlines())
-    #                 except Exception as e:
-    #                     demisto.debug(
-    #                         f"Crashed at the open the internal file {file.filename} file, Error: {e}"
-    #                     )
-    #             else:  # the file is not gzip
-    #                 demisto.debug(
-    #                     f"The {file.filename} file is not of gzip type"
-    #                 )
-    # except BadZipFile as e:
-    #     try:
-    #         # checks whether no events returned
-    #         if response.content.decode().startswith("X-sync"):
-    #             demisto.debug("No events returned from the api")
-    #         else:
-    #             demisto.debug(
-    #                 f"The external file type is not of type ZIP, Error: {e},"
-    #                 "the response.content is {}".format(response.content)
-    #             )
-    #     except Exception:
-    #         demisto.debug(
-    #             f"The external file type is not of type ZIP, Error: {e},"
-    #             "the response.content is {}".format(response.content)
-    #         )
-    # except Exception as e:
-    #     raise ValueError(f"There is no specific error for the crash, Error: {e}")
-    # return logs
 
 
 def is_first_fetch(last_run: dict[str, str | list[str]], args: dict[str, str]) -> bool:
@@ -193,9 +212,9 @@ def organize_of_events(
     time_of_last_fetched_event: str,
     events_suspected_duplicates: list[str],
 ) -> tuple[list[str], str, list[str]]:
-    events: list[str] = []
+    # events: list[str] = []
     max_time = time_of_last_fetched_event
-    max_values = events_suspected_duplicates
+    # max_values = events_suspected_duplicates
 
     demisto.debug(f"The len of the events before filter {len(logs)}")
     for log in logs:
@@ -203,27 +222,27 @@ def organize_of_events(
         if event.startswith("#"):
             continue
         parts = event.split(" ")
-        id_ = parts[-1]
+        # id_ = parts[-1]
         cur_time = f"{parts[1]} {parts[2]}"
 
-        if token_expired and (
-            is_duplicate(
-                id_,
-                cur_time,
-                time_of_last_fetched_event,
-                events_suspected_duplicates,
-            )
-        ):
-            continue
+        # if token_expired and (
+        #     is_duplicate(
+        #         id_,
+        #         cur_time,
+        #         time_of_last_fetched_event,
+        #         events_suspected_duplicates,
+        #     )
+        # ):
+        #     continue
         if cur_time > max_time:
             max_time = cur_time
-            max_values = [id_]
-        elif cur_time == max_time:
-            max_values.append(id_)
-        events.append(event)
+            # max_values = [id_]
+        # elif cur_time == max_time:
+        #     max_values.append(id_)
+        # events.append(event)
 
-    demisto.debug(f"The len of the events after filter {len(events)}")
-    return events, max_time, max_values
+    # demisto.debug(f"The len of the events after filter {len(events)}")
+    return [], max_time, []
 
 
 """ FETCH EVENTS """
@@ -301,37 +320,46 @@ def get_events_command(
             continue
         logs.extend(extract_logs_from_response(res))
 
-    # (
-    #     events,
-    #     time_of_last_fetched_event,
-    #     events_suspected_duplicates,
-    # ) = organize_of_events(
-    #     logs,
-    #     token_expired,
-    #     last_run_model.time_of_last_fetched_event or "",
-    #     last_run_model.events_suspected_duplicates or [],
-    # )
+    (
+        # events,
+        _,
+        time_of_last_fetched_event,
+        _
+        # events_suspected_duplicates,
+    ) = organize_of_events(
+        logs,
+        token_expired,
+        last_run_model.time_of_last_fetched_event or "",
+        last_run_model.events_suspected_duplicates or [],
+    )
 
-    # if time_of_last_fetched_event:
-    #     start_date_for_next_fetch = date_to_timestamp(
-    #         date_str_or_dt=time_of_last_fetched_event, date_format="%Y-%m-%d %H:%M:%S"
-    #     )
-    # else:
-    #     start_date_for_next_fetch = start_date
+    demisto.debug(f"{time_of_last_fetched_event=}")
+    if time_of_last_fetched_event:
+        start_date_for_next_fetch = date_to_timestamp(
+            date_str_or_dt=time_of_last_fetched_event, date_format="%Y-%m-%d %H:%M:%S"
+        )
+    else:
+        start_date_for_next_fetch = start_date
 
-    # new_last_run_model = LastRun(
-    #     start_date=str(start_date_for_next_fetch),
-    #     token=str(params["token"]),
-    #     time_of_last_fetched_event=time_of_last_fetched_event,
-    #     events_suspected_duplicates=events_suspected_duplicates,
-    # )
+    new_last_run_model = LastRun(
+        start_date=str(start_date_for_next_fetch),
+        token=str(params["token"]),
+        time_of_last_fetched_event=time_of_last_fetched_event,
+        events_suspected_duplicates=None,  # events_suspected_duplicates,
+        last_fetch=int(get_current_time_as_timestamp() / 1000)
+    )
 
     # demisto.debug(
     #     f"End fetch from {start_date} to {end_date} with {len(events)} events,"
     #     f"{time_of_last_fetched_event=} and {events_suspected_duplicates=}"
     # )
     # return events, new_last_run_model
-    return [], LastRun(start_date=str(start_date), token=str(params["token"]))
+    # return [], LastRun(
+    #     start_date=str(start_date),
+    #     token=str(params["token"]),
+    #     last_fetch=int(get_current_time_as_timestamp() / 1000),
+    # )
+    return [], new_last_run_model
 
 
 def test_module(client: Client):
@@ -351,6 +379,22 @@ def perform_long_running_loop(
                 )
             else:
                 last_run_obj = last_run_obj
+
+            if last_run_obj.last_fetch and is_more_than_half_an_hour_since_last_fetch(
+                last_run_obj.last_fetch, int(get_current_time_as_timestamp() / 1000)
+            ):
+                demisto.debug(
+                    "Restarting of the context integration due to fetch lasting more than half an hour"
+                )
+                last_run_obj = LastRun()
+
+            if (
+                (not last_run_obj.token) or (last_run_obj.token == "none")
+            ) and not is_it_first_10_minutes_of_hour():
+                set_integration_context({"last_run": last_run_obj._asdict()})
+                demisto.debug("Sleeping until the beginning of the next hour")
+                time.sleep(FETCH_SLEEP_UNTIL_BEGINNING_NEXT_HOUR)
+                continue
 
             logs, last_run_obj = get_events_command(
                 client, args, last_run_obj, is_first_fetch=is_first_fetch
