@@ -21,6 +21,6 @@ Enter an API token and your Server URL.
 
 Note that the API token is generated with permissions to the specified endpoints.
 
-#### Found your Server URL:
+#### Find your Server URL:
 The server URL consists of the Netskope account name and region.
-For example, if your company account name in Netskope is 'xsoar', and your account provided region is 'de', then the Server URL configuration parameter you would enter would be 'https://xsoar.de.goskope.com'.
+For example, if your company account name in Netskope is `xsoar`, and your account provided region is `de`, then the Server URL configuration parameter would be `https://xsoar.de.goskope.com`.
