@@ -1554,5 +1554,5 @@ def reset_auth() -> CommandResults:
     """
     demisto.debug(f"Reset integration-context, before resetting {get_integration_context()=}")
     set_integration_context({})
-    return CommandResults(readable_output='Authorization was reset successfully. Please regenerate the credentials, '
-                                          'and then click **Test** to validate the credentials and connection.')
+    return CommandResults(readable_output='Authorization was reset successfully. Click **Test** to validate the credentials '
+                                          'and connection.')
