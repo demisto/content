@@ -149,15 +149,13 @@ validate-content-conf:
     - cp "./Tests/conf.json" "$ARTIFACTS_FOLDER/conf.json"
     - section_end "Create Content Artifacts and Update Conf"
 
-    - section_start "Find dependencies changes"
+    - section_start "Find dependencies changes" --collapsed
     - |
-      echo "TEST_UPLOAD = $TEST_UPLOAD"
-      if [[ $TEST_UPLOAD == "false" ]]; then
+      echo "TEST_UPLOAD = $TEST_UPLOAD | BUCKET_UPLOAD = $BUCKET_UPLOAD "
+      if [[ $TEST_UPLOAD == "false" || $BUCKET_UPLOAD == "false" ]]; then
         source ./Tests/scripts/get_previous_master_sha.sh --fail
         echo "Finding pack dependencies diff against $PREVIOUS_MASTER_SHA"
         python Tests/scripts/find_pack_dependencies_changes.py --gitlab-token $GITLAB_API_TOKEN --master-sha $PREVIOUS_MASTER_SHA --job-name $CI_JOB_NAME --artifacts-folder $ARTIFACTS_FOLDER
-      else
-        echo "test"
       fi
     - section_end "Find dependencies changes"
 
