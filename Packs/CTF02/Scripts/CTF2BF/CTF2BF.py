@@ -3,7 +3,6 @@ from CommonServerPython import *  # noqa: F401
 import traceback
 import random
 
-from Packs.Base.Scripts.CommonServerPython.CommonServerPython import DemistoException
 
 '''
            *//////
