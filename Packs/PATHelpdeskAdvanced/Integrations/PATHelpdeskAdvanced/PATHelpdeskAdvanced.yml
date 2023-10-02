@@ -647,7 +647,6 @@ script:
       defaultValue: 50
       type: Number
       description: The maximum number of groups to return per page.
-
     outputs:
     - contextPath: HelpdeskAdvanced.Group.ID
       description: The group ID.
@@ -663,7 +662,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.13.75921
+  dockerimage: demisto/python3:3.10.13.74666
 fromversion: 6.9.0
 tests:
 - No tests (auto formatted)
