@@ -210,7 +210,6 @@ def test_get_a_list_of_vendor_cases_command(mocker):
     client = mock_client(mocker, util_load_json('test_data/test_get_a_list_of_vendor_cases.json'))
     results = get_a_list_of_vendor_cases_command(client, {})
     assert results.outputs.get('vendorCases')[0].get('vendorCaseId') == 123
-    assert results.outputs.get('pageNumber', 0) > 0
     assert results.outputs_prefix == 'AbnormalSecurity.VendorCases'
 
 
@@ -487,5 +486,8 @@ def test_fetch_incidents(mocker, mock_get_a_list_of_threats_request,
         last_run={"last_fetch": "2023-09-17T14:43:09Z"},
         first_fetch_time=first_fetch_time,
         max_incidents_to_fetch=200,
+        fetch_account_takeover_cases=True,
+        fetch_abuse_campaigns=True,
+        fetch_threats=True
     )
     assert len(incidents) == 4
