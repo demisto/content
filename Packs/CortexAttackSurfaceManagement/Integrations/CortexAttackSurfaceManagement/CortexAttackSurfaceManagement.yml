@@ -8,7 +8,7 @@ configuration:
   name: url
   required: true
   type: 0
-- additionalinfo: For more information please see https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-api/cortex-xdr-api-overview/get-started-with-cortex-xdr-apis.
+- additionalinfo: For more information please see https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-api/cortex-xdr-api-overview/get-started-with-cortex-xdr-apis.  Only standard API key type is supported.
   display: API Key ID
   displaypassword: API Key
   name: credentials
@@ -418,7 +418,7 @@ script:
     - contextPath: ASM.RemediationScan.result
       description: Result of the Remediation Confirmation Scan.
       type: string
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.13.75921
   script: ''
   subtype: python3
   type: python
