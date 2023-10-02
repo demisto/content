@@ -118,13 +118,9 @@ script:
       - "True"
       - "False"
     description: >-
-      Creates a new Team Drive. The name argument specifies the name of the
-      Team Drive. The specified user will be the first organizer.
-
-      This shared drive/team drive feature is available only with G Suite Enterprise,
-      Enterprise for Education, G Suite Essentials, Business, Education, and Nonprofits
-      edition.
+      Deprecated. Use the 'google-drive-drive-create' command instead.
     name: google-drive-create
+    deprecated: true
     outputs:
     - contextPath: GoogleDrive.Drive.kind
       description: Identifies what kind of resource this is.
@@ -138,6 +134,39 @@ script:
     - contextPath: GoogleDrive.Drive.hidden
       description: Whether the shared drive is hidden from the default view.
       type: Boolean
+  - arguments:
+      - description: The user's primary email address.
+        name: user_id
+      - description: The name of this shared drive.
+        name: name
+        required: true
+      - auto: PREDEFINED
+        description: 'Whether the shared drive is hidden from the default view. Possible values: "True" and "False".'
+        name: hidden
+        predefined:
+          - "True"
+          - "False"
+    description: >-
+      Creates a new Team Drive. The name argument specifies the name of the
+      Team Drive. The specified user will be the first organizer.
+
+      This shared drive/team drive feature is available only with G Suite Enterprise,
+      Enterprise for Education, G Suite Essentials, Business, Education, and Nonprofits
+      edition.
+    name: google-drive-drive-create
+    outputs:
+      - contextPath: GoogleDrive.Drive.kind
+        description: Identifies what kind of resource this is.
+        type: String
+      - contextPath: GoogleDrive.Drive.id
+        description: The ID of the shared drive which is also the ID of the top level folder of the shared drive.
+        type: String
+      - contextPath: GoogleDrive.Drive.name
+        description: The name of the shared drive.
+        type: String
+      - contextPath: GoogleDrive.Drive.hidden
+        description: Whether the shared drive is hidden from the default view.
+        type: Boolean
   - arguments:
     - description: The token for continuing a previous list request on the next page.
       name: page_token
@@ -745,7 +774,7 @@ script:
       description: Whether the current user can download files in this shared drive.
       type: Boolean
     - contextPath: GoogleDrive.DriveChange.drive.capabilities.canEdit
-      description: Whether the current user can edit files in this shared drive
+      description: Whether the current user can edit files in this shared drive.
       type: Boolean
     - contextPath: GoogleDrive.DriveChange.drive.capabilities.canListChildren
       description: Whether the current user can list the children of folders in this shared drive.
@@ -794,16 +823,12 @@ script:
     - description: Return activities for this drive item. The format is "items/ITEM_ID".
       name: item_name
     - description: >-
-        The filtering for items returned from this query request. The format
-        of the filter string is a sequence of expressions, joined by an
-        optional "AND", where each expression is of the form "field operator
-        value".
+        The filtering for items returned from this query request. The format of the filter string is a sequence of expressions, joined by an optional "AND", where each expression is of the form "field operator value".
 
 
         Supported fields:
 
-        time - Uses numerical operators on date values either in terms of milliseconds
-        since Jan 1, 1970 or in RFC 3339 format.
+        time - Uses numerical operators on date values either in terms of milliseconds since Jan 1, 1970 or in RFC 3339 format.
 
         Examples:
 
@@ -812,8 +837,7 @@ script:
         time >= "2016-01-10T01:02:03-05:00"
 
 
-        detail.action_detail_case - Uses the "has" operator (:) and either a singular
-        value or a list of allowed action types enclosed in parentheses.
+        detail.action_detail_case - Uses the "has" operator (:) and either a singular value or a list of allowed action types enclosed in parentheses.
 
         Examples:
 
@@ -821,20 +845,20 @@ script:
 
         detail.action_detail_case:(CREATE EDIT)
 
-        -detail.action_detail_case:MOVE"
+        -detail.action_detail_case:MOVE".
       name: filter
     - description: >-
         The time range to consider for getting drive activity. Use the
-        format "<number> <time unit>". 
+        format "<number> <time unit>".
 
         Example: 12 hours, 7 days, 3 months, 1 year. This argument will override if
         the filter argument is given.
       name: time_range
     - description: >-
         A singular value or a list of allowed action types enclosed in
-        parentheses. The filters are based on given actions. For example: 
+        parentheses. The filters are based on given actions. For example:
 
-        RENAME 
+        RENAME
 
         (CREATE EDIT)
 
@@ -844,7 +868,7 @@ script:
         A singular value or a list of allowed action types enclosed in
         parentheses. The filters are based on given actions. For example:
 
-        RENAME 
+        RENAME
 
         (CREATE EDIT)
 
@@ -1638,7 +1662,7 @@ script:
       description: Whether the current user can download files in this shared drive.
       type: Boolean
     - contextPath: GoogleDrive.Drive.Drive.capabilities.canEdit
-      description: Whether the current user can edit files in this shared drive
+      description: Whether the current user can edit files in this shared drive.
       type: Boolean
     - contextPath: GoogleDrive.Drive.Drive.capabilities.canListChildren
       description: Whether the current user can list the children of folders in this shared drive.
@@ -1778,6 +1802,28 @@ script:
     - contextPath: GoogleDrive.Drive.Drive.restrictions.driveMembersOnly
       description: Whether access to items inside this shared drive is restricted to its members.
       type: Boolean
+  - name: google-drive-drive-delete
+    description: Deletes a shared drive.
+    arguments:
+      - auto: PREDEFINED
+        defaultValue: "false"
+        name: use_domain_admin_access
+        description: If set to true, then the requester will be granted access if they are an administrator of the domain to which the shared drive belongs.
+        predefined:
+          - "true"
+          - "false"
+      - auto: PREDEFINED
+        defaultValue: "false"
+        name: allow_item_deletion
+        description: "Whether any items inside the shared drive should also be deleted. This option is only supported when use_domain_admin_access argument is set to true."
+        predefined:
+          - "true"
+          - "false"
+      - name: user_id
+        description: The user's primary email address.
+      - name: drive_id
+        required: true
+        description: The ID of the shared drive to delete. Can be retrieved using the `google-drive-drives-list` command.
   - name: google-drive-files-list
     description: Lists the user's shared drives.
     arguments:
@@ -1807,6 +1853,17 @@ script:
       predefined:
       - "True"
       - "False"
+    - auto: PREDEFINED
+      description: Files or documents to which the query applies. Prefer 'User' or 'Drive' to 'All Drives' for efficiency. By default, corpora is set to 'User'. However, this can change depending on the filter set through the 'query' argument.
+      name: corpora
+      defaultValue: "User"
+      predefined:
+      - "User"
+      - "Domain"
+      - "Drive"
+      - "All Drives"
+    - name: drive_id
+      description: ID of the shared drive to search. Can be retrieved using the `google-drive-drives-list` command. When a drive ID is specified the value of the corpora argument is automatically set to 'Drive' regardless of its selected value.
     outputs:
     - contextPath: GoogleDrive.File.File.id
       description: The ID of the file.
@@ -1837,6 +1894,13 @@ script:
     - name: fields
       description: The fields you want included in the response.
       defaultValue: kind, id, name, mimeType, description, starred, trashed, explicitlyTrashed, trashingUser, trashedTime, parents, properties, appProperties, spaces, version, webContentLink, webViewLink, iconLink, hasThumbnail, thumbnailLink, thumbnailVersion, viewedByMe, viewedByMeTime, createdTime, modifiedTime, modifiedByMeTime, modifiedByMe, sharedWithMeTime, sharingUser, owners, teamDriveId, driveId, lastModifyingUser, shared, ownedByMe, capabilities, viewersCanCopyContent, copyRequiresWriterPermission, writersCanShare, permissions, permissionIds, hasAugmentedPermissions, folderColorRgb, originalFilename, fullFileExtension, fileExtension, md5Checksum, size, quotaBytesUsed, headRevisionId, contentHints, isAppAuthorized, exportLinks, shortcutDetails, contentRestrictions, resourceKey, linkShareMetadata
+    - auto: PREDEFINED
+      description: Whether the requesting application supports both My Drives and shared drives.
+      name: supports_all_drives
+      defaultValue: "False"
+      predefined:
+      - "True"
+      - "False"
     outputs:
     - contextPath: GoogleDrive.File.File.capabilities.canAddChildren
       description: Whether the current user can add children to this folder. This is always false when the item is not a folder.
@@ -2707,13 +2771,13 @@ script:
     - name: file_id
       description: ID of the requested file. Can be retrieved using the `google-drive-files-list` command.
     - name: user_id
-      description: The user's primary email address
+      description: The user's primary email address.
     - name: label_id
-      description: The label id to set for the file
+      description: The label id to set for the file.
     - name: field_id
-      description: the field id of the label to set
+      description: the field id of the label to set.
     - name: selection_label_id
-      description: the label id to set for the field
+      description: the label id to set for the field.
     - auto: PREDEFINED
       defaultValue: "false"
       description: 'Whether the requesting application supports both My Drives and shared drives. Possible values: "true" and "false".'
@@ -2723,13 +2787,13 @@ script:
       - "false"
     outputs:
     - contextPath: GoogleDrive.Labels.kind
-      description: 'The type of resource. This is always drive#modifyLabelsResponse'
+      description: 'The type of resource. This is always drive#modifyLabelsResponse.'
       type: String
     - contextPath: GoogleDrive.Labels.modifiedLabels.fields.id
-      description: 'The ID of the label field selected'
+      description: 'The ID of the label field selected.'
       type: String
     - contextPath: GoogleDrive.Labels.modifiedLabels.fields.kind
-      description: 'Kind of resource this is, in this case drive#labelField'
+      description: 'Kind of resource this is, in this case drive#labelField.'
       type: String
     - contextPath: GoogleDrive.Labels.modifiedLabels.fields.selection
       description: 'Selected label.'
@@ -2738,10 +2802,10 @@ script:
       description: 'The type of data this label is representing.'
       type: String
     - contextPath: GoogleDrive.Labels.modifiedLabels.id
-      description: 'The label id of the label to set'
+      description: 'The label id of the label to set.'
       type: String
     - contextPath: GoogleDrive.Labels.modifiedLabels.kind
-      description: 'The type of resource. This is always drive#label'
+      description: 'The type of resource. This is always drive#label.'
       type: String
     - contextPath: GoogleDrive.Labels.modifiedLabels.revisionId
       description: ''
@@ -2750,7 +2814,7 @@ script:
     description: Google Drive get labels.
     arguments:
     - name: user_id
-      description: The user's primary email address
+      description: The user's primary email address.
     outputs:
     - contextPath: GoogleDrive.Labels.labels.appliedCapabilities.canApply
       description: 'Is able to apply this label to files.'
@@ -2953,19 +3017,19 @@ script:
     - name: file_id
       description: ID of the requested file. Can be retrieved using the `google-drive-files-list` command.
     - name: user_id
-      description: The user's primary email address
+      description: The user's primary email address.
     outputs:
     - contextPath: GoogleDrive.File.File.id
       description: 'The ID of the file.'
       type: String
     - contextPath: GoogleDrive.Labels.kind
-      description: 'The type of resource. This is always drive#labelList'
+      description: 'The type of resource. This is always drive#labelList.'
       type: String
     - contextPath: GoogleDrive.Labels.labels.fields.id
-      description: 'The ID of the label field selected'
+      description: 'The ID of the label field selected.'
       type: String
     - contextPath: GoogleDrive.Labels.labels.fields.kind
-      description: 'The kind of this field. This is always drive#labelField'
+      description: 'The kind of this field. This is always drive#labelField.'
       type: String
     - contextPath: GoogleDrive.Labels.labels.fields.selection
       description: 'The label field selected.'
@@ -2974,15 +3038,15 @@ script:
       description: 'The type of data this label is representing.'
       type: String
     - contextPath: GoogleDrive.Labels.labels.id
-      description: 'The label id of the label to set'
+      description: 'The label id of the label to set.'
       type: String
     - contextPath: GoogleDrive.Labels.labels.kind
-      description: 'The type of resource. This is always drive#label'
+      description: 'The type of resource. This is always drive#label.'
       type: String
     - contextPath: GoogleDrive.Labels.labels.revisionId
-      description: 'The revision id of the label'
+      description: 'The revision id of the label.'
       type: String
-  dockerimage: demisto/googleapi-python3:1.0.0.71902
+  dockerimage: demisto/googleapi-python3:1.0.0.75697
   isfetch: true
   runonce: false
   script: "-"

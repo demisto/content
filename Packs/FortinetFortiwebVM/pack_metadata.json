@@ -2,7 +2,7 @@
     "name": "Fortinet Fortiweb VM",
     "description": "Fortiweb VM integration allows to manage WAF policies and block cookies, URLs, and hostnames.",
     "support": "xsoar",
-    "currentVersion": "2.0.3",
+    "currentVersion": "2.0.4",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -14,5 +14,9 @@
     "useCases": [],
     "keywords": [],
     "githubUser": [],
-    "certification": "certified"
+    "certification": "certified",
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

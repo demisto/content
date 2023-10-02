@@ -1,6 +1,7 @@
 # This is a template, used and modified by the demisto-sdk pre-commit command.
 
 exclude: .devcontainer/|.vscode|Pipfile.lock|.gitlab/ci/|.circleci/|docs
+files: ''
 
 repos:
 - repo: https://github.com/pre-commit/pre-commit-hooks
@@ -29,6 +30,7 @@ repos:
   rev: v2.1.2
   hooks:
   - id: pycln
+    args: [--all]
 
 - repo: https://github.com/charliermarsh/ruff-pre-commit
   rev: "v0.0.272"
@@ -44,14 +46,14 @@ repos:
   - id: is-circle-changed
     name: is-circle-changed
     description: Checks if circle files are changed, and checkout to current if it is.
-    entry: ./Tests/scripts/is_file_up_to_date.sh .circleci/config.yml "" true
+    entry: ./Tests/scripts/is_file_up_to_date.sh .circleci/config.yml "" false
     language: script
     pass_filenames: false
 
   - id: is-gitlab-changed
     name: is-gitlab-changed
     description: Checks if gitlab files are changed, and checkout to current if it is.
-    entry: ./Tests/scripts/is_file_up_to_date.sh .gitlab "" true
+    entry: ./Tests/scripts/is_file_up_to_date.sh .gitlab "" false
     language: script
     pass_filenames: false
 
@@ -66,10 +68,10 @@ repos:
 
   - id: format
           # update docker image to the latest version, assume no
-    args: ["-ud", "-n", "--no-validate", "-g"]
+    args: ["-ud", "-n", "--no-validate"]
 
   - id: validate
-    args: ["-g", "--skip-pack-dependencies"]
+    args: ["--skip-pack-dependencies"]
 
   - id: secrets
     args: ["--ignore-entropy"]
@@ -82,15 +84,15 @@ repos:
   rev: "v1.6.0"
   hooks:
   - id: sourcery
-    args: [--no-summary, --fix, --diff, "git diff HEAD"]
+    args: [--no-summary, --diff, "git diff HEAD"]
     skip: true
 
 - repo: https://github.com/pre-commit/mirrors-mypy
   rev: v0.982
   hooks:
   - id: mypy
-    args: [--ignore-missing-imports, --check-untyped-defs, --show-error-codes, --follow-imports=silent, --allow-redefinition, --python-version=3.10]
-    exclude: "test_data|tests_data|.venv|.*_test.py$|infrastructure_tests"
+    args: [--ignore-missing-imports, --check-untyped-defs, --show-error-codes, --follow-imports=silent, --allow-redefinition]
+    exclude: "test_data|tests_data|.venv|.*_test.py$|infrastructure_tests|.vulture_whitelist.py"
 
     additional_dependencies:
     - astor==0.8.1 ; python_version >= "3.8" and python_version < "3.11"

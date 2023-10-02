@@ -1,0 +1,1 @@
+{"breakingChanges":true,"breakingChangesNotes":"Changed the result object returned from **splunk-search** command. the result will now be returned as a list of CommandResults."}
