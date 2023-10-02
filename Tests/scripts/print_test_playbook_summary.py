@@ -131,6 +131,8 @@ def get_jira_tickets_for_playbooks(playbook_ids: list[str],
                                    max_workers: int = 5) -> dict[str, Issue]:
     playbook_ids_to_jira_tickets: dict[str, Issue] = {}
     jira_server = JIRA(JIRA_SERVER_URL, token_auth=JIRA_API_KEY, options={'verify': JIRA_VERIFY_SSL})
+    logging.info(f"Searching for Jira tickets for {len(playbook_ids)} playbooks, using {max_workers} workers,"
+                 f" Jira server information: {jira_server.server_info()}")
     with ThreadPoolExecutor(max_workers=max_workers, thread_name_prefix='jira-search') as executor:
         futures = {
             executor.submit(search_ticket_in_jira, jira_server, playbook_id): playbook_id
@@ -141,7 +143,7 @@ def get_jira_tickets_for_playbooks(playbook_ids: list[str],
             try:
                 if jira_ticket := future.result():
                     playbook_ids_to_jira_tickets[futures[future]] = jira_ticket
-            except Exception:
+            except Exception:  # noqa
                 logging.error(f'Failed to search for a jira ticket for playbook id:"{futures[future]}"')
 
     return playbook_ids_to_jira_tickets
