@@ -562,62 +562,65 @@ def get_incident_extra_data_command(client, args):
                                  'mitre_techniques_ids_and_names': ['T1110.001 - Brute Force: Password Guessing'],
                                  'alert_categories': ['Credential Access'], 'original_tags': ['DS:PANW/XDR Agent'],
                                  'tags': ['DS:PANW/XDR Agent']}, 'alerts': {'total_count': 1, 'data': [
-        {'external_id': '2a6a3f42-9d2d-4226-922f-28e4c2a3147f', 'severity': 'low', 'matching_status': 'MATCHED',
-         'end_match_attempt_ts': None, 'local_insert_ts': 1671731192490, 'last_modified_ts': None, 'bioc_indicator': None,
-         'matching_service_rule_id': 'fd879de7-fb74-44f0-b699-805d0b08b1fd', 'attempt_counter': None,
-         'bioc_category_enum_key': None, 'case_id': 413, 'is_whitelisted': False, 'starred': False, 'deduplicate_tokens': None,
-         'filter_rule_id': None, 'mitre_technique_id_and_name': 'T1110.001 - Brute Force: Password Guessing',
-         'mitre_tactic_id_and_name': 'TA0006 - Credential Access', 'agent_version': '7.9.0.18674', 'agent_ip_addresses_v6': None,
-         'agent_device_domain': None, 'agent_fqdn': None, 'agent_os_type': 'Windows',
-         'agent_os_sub_type': 'Windows 10 [10.0 (Build 19044)]', 'agent_data_collection_status': None, 'mac': None,
-         'agent_is_vdi': None, 'agent_install_type': 'STANDARD', 'agent_host_boot_time': 1671032983204, 'event_sub_type': 1,
-         'module_id': None, 'association_strength': 50, 'dst_association_strength': 0, 'story_id': 'ODczNjk1Mzc1MTMwMzI1NjA1Nw==',
-         'event_id': 'ODczNjk1Mzc1MTMwMzI1NjA1Nw==', 'event_type': 'Login', 'event_timestamp': 1671730625375,
-         'actor_process_instance_id': 'AdkP08aY7RwAAAL0AAAAAA==', 'actor_process_image_path': 'C:\\Windows\\System32\\lsass.exe',
-         'actor_process_image_name': 'lsass.exe', 'actor_process_command_line': 'C:\\WINDOWS\\system32\\lsass.exe',
-         'actor_process_signature_status': 'Signed', 'actor_process_signature_vendor': 'Microsoft Corporation',
-         'actor_process_image_sha256': '0777fd312394ae1afeed0ad48ae2d7b5ed6e577117a4f40305eaeb4129233650',
-         'actor_process_image_md5': '289d6a47b7692510e2fd3b51979a9fed', 'actor_process_causality_id': 'AdkP08aY7RwAAAL0AAAAAA==',
-         'actor_causality_id': 'AdkP08aY7RwAAAL0AAAAAA==', 'actor_process_os_pid': 756, 'actor_thread_thread_id': 4020,
-         'causality_actor_process_image_name': 'lsass.exe',
-         'causality_actor_process_command_line': 'C:\\WINDOWS\\system32\\lsass.exe',
-         'causality_actor_process_image_path': 'C:\\Windows\\System32\\lsass.exe',
-         'causality_actor_process_signature_vendor': 'Microsoft Corporation',
-         'causality_actor_process_signature_status': 'Signed', 'causality_actor_causality_id': 'AdkP08aY7RwAAAL0AAAAAA==',
-         'causality_actor_process_execution_time': 1671033022857,
-         'causality_actor_process_image_md5': '289d6a47b7692510e2fd3b51979a9fed',
-         'causality_actor_process_image_sha256': '0777fd312394ae1afeed0ad48ae2d7b5ed6e577117a4f40305eaeb4129233650',
-         'action_file_path': None, 'action_file_name': None,
-         'action_file_md5': None, 'action_file_sha256': None, 'action_file_macro_sha256': None, 'action_registry_data': None,
-         'action_registry_key_name': None, 'action_registry_value_name': None, 'action_registry_full_key': None,
-         'action_local_ip': 'None', 'action_local_ip_v6': None, 'action_local_port': 0, 'action_remote_ip': '137.184.208.116',
-         'action_remote_ip_v6': None, 'action_remote_port': 0, 'action_external_hostname': 'kali', 'action_country': 'UNKNOWN',
-         'action_process_instance_id': None, 'action_process_causality_id': None, 'action_process_image_name': None,
-         'action_process_image_sha256': None, 'action_process_image_command_line': None, 'action_process_signature_status': 'N/A',
-         'action_process_signature_vendor': None, 'os_actor_effective_username': None,
-         'os_actor_process_instance_id': 'AdkP08aY7RwAAAL0AAAAAA==',
-         'os_actor_process_image_path': 'C:\\Windows\\System32\\lsass.exe', 'os_actor_process_image_name': 'lsass.exe',
-         'os_actor_process_command_line': 'C:\\WINDOWS\\system32\\lsass.exe', 'os_actor_process_signature_status': 'Signed',
-         'os_actor_process_signature_vendor': 'Microsoft Corporation',
-         'os_actor_process_image_sha256': '0777fd312394ae1afeed0ad48ae2d7b5ed6e577117a4f40305eaeb4129233650',
-         'os_actor_process_causality_id': 'AdkP08aY7RwAAAL0AAAAAA==', 'os_actor_causality_id': None,
-         'os_actor_process_os_pid': 756, 'os_actor_thread_thread_id': 4020, 'fw_app_id': '', 'fw_interface_from': '',
-         'fw_interface_to': '', 'fw_rule': '', 'fw_rule_id': None, 'fw_device_name': '', 'fw_serial_number': '',
-         'fw_url_domain': None, 'fw_email_subject': None, 'fw_email_sender': None, 'fw_email_recipient': None,
-         'fw_app_subcategory': None, 'fw_app_category': None, 'fw_app_technology': None, 'fw_vsys': None, 'fw_xff': None,
-         'fw_misc': None, 'fw_is_phishing': 'N/A', 'dst_agent_id': '', 'dst_causality_actor_process_execution_time': None,
-         'dns_query_name': None, 'dst_action_external_hostname': None, 'dst_action_country': '-',
-         'dst_action_external_port': None, 'is_pcap': False, 'contains_featured_host': 'NO', 'contains_featured_user': 'NO',
-         'contains_featured_ip': 'NO', 'image_name': None, 'container_id': None, 'cluster_name': None,
-         'referenced_resource': None, 'operation_name': None, 'identity_sub_type': None, 'identity_type': None, 'project': None,
-         'cloud_provider': None, 'resource_type': None, 'resource_sub_type': None, 'user_agent': None,
-         'alert_type': 'Unclassified', 'resolution_status': 'STATUS_010_NEW', 'resolution_comment': None, 'dynamic_fields': None,
-         'tags': 'DS:PANW/XDR Agent', 'events_length': 1, 'alert_id': '150807', 'detection_timestamp': 1671730626096,
-         'name': 'Possible external RDP Brute-Force', 'category': 'Credential Access',
-         'endpoint_id': 'f6ba1a18c35d416c8e27a319cc2fea09',
-         'description': "DC1ENV12APC05 successfully accessed administrator by systematically guessing the user's password 22 times over an hour with 2 successful logons and 20 failed attempts. The user did not log in successfully from 137.184.208.116 during the last 30 days. Over the past 30 days, DC1ENV12APC05 has had an average of 0 failed login attempts with the user administrator from 137.184.208.116 per day",
-         'host_ip': '172.16.12.40', 'host_name': 'DC1ENV12APC05', 'source': 'XDR Analytics', 'action': 'DETECTED',
-         'action_pretty': 'Detected', 'user_name': 'administrator', 'original_tags': 'DS:PANW/XDR Agent'}]},
+                                     {'external_id': '2a6a3f42-9d2d-4226-922f-28e4c2a3147f', 'severity': 'low', 'matching_status': 'MATCHED',
+                                      'end_match_attempt_ts': None, 'local_insert_ts': 1671731192490, 'last_modified_ts': None, 'bioc_indicator': None,
+                                      'matching_service_rule_id': 'fd879de7-fb74-44f0-b699-805d0b08b1fd', 'attempt_counter': None,
+                                      'bioc_category_enum_key': None, 'case_id': 413, 'is_whitelisted': False, 'starred': False, 'deduplicate_tokens': None,
+                                      'filter_rule_id': None, 'mitre_technique_id_and_name': 'T1110.001 - Brute Force: Password Guessing',
+                                      'mitre_tactic_id_and_name': 'TA0006 - Credential Access', 'agent_version': '7.9.0.18674', 'agent_ip_addresses_v6': None,
+                                      'agent_device_domain': None, 'agent_fqdn': None, 'agent_os_type': 'Windows',
+                                      'agent_os_sub_type': 'Windows 10 [10.0 (Build 19044)]', 'agent_data_collection_status': None, 'mac': None,
+                                      'agent_is_vdi': None, 'agent_install_type': 'STANDARD', 'agent_host_boot_time': 1671032983204, 'event_sub_type': 1,
+                                      'module_id': None, 'association_strength': 50, 'dst_association_strength': 0, 'story_id': 'ODczNjk1Mzc1MTMwMzI1NjA1Nw==',
+                                      'event_id': 'ODczNjk1Mzc1MTMwMzI1NjA1Nw==', 'event_type': 'Login', 'event_timestamp': 1671730625375,
+                                      'actor_process_instance_id': 'AdkP08aY7RwAAAL0AAAAAA==', 'actor_process_image_path': 'C:\\Windows\\System32\\lsass.exe',
+                                      'actor_process_image_name': 'lsass.exe', 'actor_process_command_line': 'C:\\WINDOWS\\system32\\lsass.exe',
+                                      'actor_process_signature_status': 'Signed', 'actor_process_signature_vendor': 'Microsoft Corporation',
+                                      'actor_process_image_sha256': '0777fd312394ae1afeed0ad48ae2d7b5ed6e577117a4f40305eaeb4129233650',
+                                      'actor_process_image_md5': '289d6a47b7692510e2fd3b51979a9fed', 'actor_process_causality_id': 'AdkP08aY7RwAAAL0AAAAAA==',
+                                      'actor_causality_id': 'AdkP08aY7RwAAAL0AAAAAA==', 'actor_process_os_pid': 756, 'actor_thread_thread_id': 4020,
+                                      'causality_actor_process_image_name': 'lsass.exe',
+                                      'causality_actor_process_command_line': 'C:\\WINDOWS\\system32\\lsass.exe',
+                                      'causality_actor_process_image_path': 'C:\\Windows\\System32\\lsass.exe',
+                                      'causality_actor_process_signature_vendor': 'Microsoft Corporation',
+                                      'causality_actor_process_signature_status': 'Signed', 'causality_actor_causality_id': 'AdkP08aY7RwAAAL0AAAAAA==',
+                                      'causality_actor_process_execution_time': 1671033022857,
+                                      'causality_actor_process_image_md5': '289d6a47b7692510e2fd3b51979a9fed',
+                                      'causality_actor_process_image_sha256': '0777fd312394ae1afeed0ad48ae2d7b5ed6e577117a4f40305eaeb4129233650',
+                                      'action_file_path': None, 'action_file_name': None,
+                                      'action_file_md5': None, 'action_file_sha256': None, 'action_file_macro_sha256': None, 'action_registry_data': None,
+                                      'action_registry_key_name': None, 'action_registry_value_name': None, 'action_registry_full_key': None,
+                                      'action_local_ip': 'None', 'action_local_ip_v6': None, 'action_local_port': 0, 'action_remote_ip': '137.184.208.116',
+                                      'action_remote_ip_v6': None, 'action_remote_port': 0, 'action_external_hostname': 'kali', 'action_country': 'UNKNOWN',
+                                      'action_process_instance_id': None, 'action_process_causality_id': None, 'action_process_image_name': None,
+                                      'action_process_image_sha256': None, 'action_process_image_command_line': None, 'action_process_signature_status': 'N/A',
+                                      'action_process_signature_vendor': None, 'os_actor_effective_username': None,
+                                      'os_actor_process_instance_id': 'AdkP08aY7RwAAAL0AAAAAA==',
+                                      'os_actor_process_image_path': 'C:\\Windows\\System32\\lsass.exe', 'os_actor_process_image_name': 'lsass.exe',
+                                      'os_actor_process_command_line': 'C:\\WINDOWS\\system32\\lsass.exe', 'os_actor_process_signature_status': 'Signed',
+                                      'os_actor_process_signature_vendor': 'Microsoft Corporation',
+                                      'os_actor_process_image_sha256': '0777fd312394ae1afeed0ad48ae2d7b5ed6e577117a4f40305eaeb4129233650',
+                                      'os_actor_process_causality_id': 'AdkP08aY7RwAAAL0AAAAAA==', 'os_actor_causality_id': None,
+                                      'os_actor_process_os_pid': 756, 'os_actor_thread_thread_id': 4020, 'fw_app_id': '', 'fw_interface_from': '',
+                                      'fw_interface_to': '', 'fw_rule': '', 'fw_rule_id': None, 'fw_device_name': '', 'fw_serial_number': '',
+                                      'fw_url_domain': None, 'fw_email_subject': None, 'fw_email_sender': None, 'fw_email_recipient': None,
+                                      'fw_app_subcategory': None, 'fw_app_category': None, 'fw_app_technology': None, 'fw_vsys': None, 'fw_xff': None,
+                                      'fw_misc': None, 'fw_is_phishing': 'N/A', 'dst_agent_id': '', 'dst_causality_actor_process_execution_time': None,
+                                      'dns_query_name': None, 'dst_action_external_hostname': None, 'dst_action_country': '-',
+                                      'dst_action_external_port': None, 'is_pcap': False, 'contains_featured_host': 'NO', 'contains_featured_user': 'NO',
+                                      'contains_featured_ip': 'NO', 'image_name': None, 'container_id': None, 'cluster_name': None,
+                                      'referenced_resource': None, 'operation_name': None, 'identity_sub_type': None, 'identity_type': None, 'project': None,
+                                      'cloud_provider': None, 'resource_type': None, 'resource_sub_type': None, 'user_agent': None,
+                                      'alert_type': 'Unclassified', 'resolution_status': 'STATUS_010_NEW', 'resolution_comment': None, 'dynamic_fields': None,
+                                      'tags': 'DS:PANW/XDR Agent', 'events_length': 1, 'alert_id': '150807', 'detection_timestamp': 1671730626096,
+                                      'name': 'Possible external RDP Brute-Force', 'category': 'Credential Access',
+                                      'endpoint_id': 'f6ba1a18c35d416c8e27a319cc2fea09',
+                                      'description': "DC1ENV12APC05 successfully accessed administrator by systematically guessing the user's password"
+                                      " 22 times over an hour with 2 successful logons and 20 failed attempts. The user did not log in"
+                                      " successfully from 137.184.208.116 during the last 30 days. Over the past 30 days, DC1ENV12APC05 has "
+                                      "had an average of 0 failed login attempts with the user administrator from 137.184.208.116 per day",
+                                      'host_ip': '172.16.12.40', 'host_name': 'DC1ENV12APC05', 'source': 'XDR Analytics', 'action': 'DETECTED',
+                                      'action_pretty': 'Detected', 'user_name': 'administrator', 'original_tags': 'DS:PANW/XDR Agent'}]},
                     'network_artifacts': {'total_count': 1, 'data': [
                         {'type': 'DOMAIN', 'alert_count': 1, 'is_manual': False, 'network_domain': 'kali',
                          'network_remote_ip': None, 'network_remote_port': 0, 'network_country': 'UNKNOWN'}]},
@@ -630,13 +633,13 @@ def get_incident_extra_data_command(client, args):
     # client.get_incident_extra_data(incident_id, alerts_limit)
 
     incident = raw_incident.get('incident')
-    incident_id = incident.get('incident_id')
-    raw_alerts = raw_incident.get('alerts').get('data')
+    incident_id = incident.get('incident_id')   # type:ignore[union-attr]
+    raw_alerts = raw_incident.get('alerts', {}).get('data')
     context_alerts = clear_trailing_whitespace(raw_alerts)
     for alert in context_alerts:
         alert['host_ip_list'] = alert.get('host_ip').split(',') if alert.get('host_ip') else []
-    file_artifacts = raw_incident.get('file_artifacts').get('data')
-    network_artifacts = raw_incident.get('network_artifacts').get('data')
+    file_artifacts = raw_incident.get('file_artifacts', {}).get('data')
+    network_artifacts = raw_incident.get('network_artifacts', {}).get('data')
 
     readable_output = [tableToMarkdown(f'Incident {incident_id}', incident)]
 
@@ -646,27 +649,27 @@ def get_incident_extra_data_command(client, args):
     else:
         readable_output.append(tableToMarkdown('Alerts', []))
 
-    if len(network_artifacts) > 0:
+    if len(network_artifacts) > 0:  # type: ignore[arg-type]
         readable_output.append(tableToMarkdown('Network Artifacts', network_artifacts))
     else:
         readable_output.append(tableToMarkdown('Network Artifacts', []))
 
-    if len(file_artifacts) > 0:
+    if len(file_artifacts) > 0:    # type: ignore[arg-type]
         readable_output.append(tableToMarkdown('File Artifacts', file_artifacts))
     else:
         readable_output.append(tableToMarkdown('File Artifacts', []))
 
-    incident.update({
+    incident.update({  # type:ignore[union-attr]
         'alerts': context_alerts,
         'file_artifacts': file_artifacts,
         'network_artifacts': network_artifacts
     })
     account_context_output = assign_params(**{
-        'Username': incident.get('users', '')
+        'Username': incident.get('users', '')  # type:ignore[union-attr]
     })
     endpoint_context_output = []
 
-    for alert in incident.get('alerts') or []:
+    for alert in incident.get('alerts') or []:  # type:ignore[union-attr]
         alert_context = {}
         if hostname := alert.get('host_name'):
             alert_context['Hostname'] = hostname
@@ -679,7 +682,7 @@ def get_incident_extra_data_command(client, args):
     if account_context_output:
         context_output['Account(val.Username==obj.Username)'] = account_context_output
     if endpoint_context_output:
-        context_output['Endpoint(val.Hostname==obj.Hostname)'] = endpoint_context_output
+        context_output['Endpoint(val.Hostname==obj.Hostname)'] = endpoint_context_output  # type:ignore[assignment]
 
     file_context, process_context, domain_context, ip_context = get_indicators_context(incident)
 
@@ -986,7 +989,11 @@ def createIncidentsListCTF3(max_fetch):
         "alert_count": 1,
         "alerts": [
             {
-                "description": "DC1ENV12APC05 successfully accessed administrator by systematically guessing the user's password 22 times over an hour with 2 successful logons and 20 failed attempts. The user did not log in successfully from 137.184.208.116 during the last 30 days. Over the past 30 days, DC1ENV12APC05 has had an average of 0 failed login attempts with the user administrator from 137.184.208.116 per day",
+                "description": "DC1ENV12APC05 successfully accessed administrator by systematically guessing the user's "
+                               "password 22 times over an hour with 2 successful logons and 20 failed attempts. "
+                               "The user did not log in successfully from 137.184.208.116 during the last 30 days. "
+                               "Over the past 30 days, DC1ENV12APC05 has had an average of 0 failed login attempts with "
+                               "the user administrator from 137.184.208.116 per day",
                 "action": "DETECTED",
                 "action_country": "UNKNOWN",
                 "action_external_hostname": "kali",
@@ -1225,7 +1232,8 @@ def createIncidentsListCTF3(max_fetch):
 
     # for i in range(1, max_fetch):
     #    new_data = rawJson
-    #    new_data["description"] = f"<{i}>'Image File Execution Options Registry key injection by scripting engine' generated by XDR BIOC detected on host dc1env12apc02 involving user dc1env12apc02\\win10-regression"
+    #    new_data["description"] = f"<{i}>'Image File Execution Options Registry key injection by scripting engine'
+    #    generated by XDR BIOC detected on host dc1env12apc02 involving user dc1env12apc02\\win10-regression"
     #    incidents.append(dict(new_data))
 
     return incidents
@@ -1388,8 +1396,10 @@ def xdr_generate_ctf3_command(client: Client, args: Dict):
                 "action_process_signature_status": "N/A",
                 "action_process_signature_vendor": None,
                 "action_registry_data": "C:\\Windows\\regedit.exe",
-                "action_registry_full_key": "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Image File Execution Options\\sethc.exe\\Debugger",
-                "action_registry_key_name": "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Image File Execution Options\\sethc.exe",
+                "action_registry_full_key": "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Image"
+                                            " File Execution Options\\sethc.exe\\Debugger",
+                "action_registry_key_name": "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Image "
+                                            "File Execution Options\\sethc.exe",
                 "action_registry_value_name": "Debugger",
                 "action_remote_ip": None,
                 "action_remote_ip_v6": None,
@@ -1421,7 +1431,72 @@ def xdr_generate_ctf3_command(client: Client, args: Dict):
                 "association_strength": 50,
                 "attempt_counter": None,
                 "bioc_category_enum_key": "PRIVILEGE_ESCALATION",
-                "bioc_indicator": "[{\"pretty_name\":\"Registry\",\"data_type\":None,\"render_type\":\"entity\",\"entity_map\":None,\"dml_ui\":False},{\"pretty_name\":\"registry data\",\"data_type\":\"TEXT\",\"render_type\":\"attribute\",\"entity_map\":\"attributes\",\"dml_type\":None},{\"pretty_name\":\"!=\",\"data_type\":None,\"render_type\":\"operator\",\"entity_map\":\"attributes\"},{\"pretty_name\":\"*:\\\\Users\\\\Public\\\\PSAppDeployToolkit*\",\"data_type\":None,\"render_type\":\"value\",\"entity_map\":\"attributes\"},{\"pretty_name\":\"AND\",\"data_type\":None,\"render_type\":\"connector\",\"entity_map\":None},{\"pretty_name\":\"registry key name\",\"data_type\":\"TEXT\",\"render_type\":\"attribute\",\"entity_map\":\"attributes\",\"dml_type\":None},{\"pretty_name\":\"=\",\"data_type\":None,\"render_type\":\"operator\",\"entity_map\":\"attributes\"},{\"pretty_name\":\"HKEY_LOCAL_MACHINE\\\\SOFTWARE\\\\Microsoft\\\\Windows NT\\\\CurrentVersion\\\\Image File Execution Options*\",\"data_type\":None,\"render_type\":\"value\",\"entity_map\":\"attributes\"},{\"pretty_name\":\"AND\",\"data_type\":None,\"render_type\":\"connector\",\"entity_map\":None},{\"pretty_name\":\"registry value name\",\"data_type\":\"TEXT\",\"render_type\":\"attribute\",\"entity_map\":\"attributes\",\"dml_type\":None},{\"pretty_name\":\"=\",\"data_type\":None,\"render_type\":\"operator\",\"entity_map\":\"attributes\"},{\"pretty_name\":\"Debugger\",\"data_type\":None,\"render_type\":\"value\",\"entity_map\":\"attributes\"},{\"pretty_name\":\"AND\",\"data_type\":None,\"render_type\":\"connector\",\"entity_map\":None},{\"pretty_name\":\"action type\",\"data_type\":\"ENUM\",\"render_type\":\"attribute\",\"entity_map\":\"action\",\"dml_type\":None},{\"pretty_name\":\"=\",\"data_type\":None,\"render_type\":\"operator\",\"entity_map\":\"action\"},{\"pretty_name\":\"set_registry_value\",\"data_type\":None,\"render_type\":\"value\",\"entity_map\":\"action\"},{\"pretty_name\":\"Process\",\"data_type\":None,\"render_type\":\"entity\",\"entity_map\":None,\"dml_ui\":False},{\"pretty_name\":\"initiated by\",\"data_type\":\"TEXT\",\"render_type\":\"attribute\",\"entity_map\":\"xdr_actor\",\"dml_type\":None},{\"pretty_name\":\"=\",\"data_type\":None,\"render_type\":\"operator\",\"entity_map\":\"xdr_actor\"},{\"pretty_name\":\"cmd.exe\",\"data_type\":None,\"render_type\":\"value\",\"entity_map\":\"xdr_actor\"},{\"pretty_name\":\",\",\"data_type\":None,\"render_type\":\"connector\",\"entity_map\":None},{\"pretty_name\":\"powershell.exe\",\"data_type\":None,\"render_type\":\"value\",\"entity_map\":\"xdr_actor\"},{\"pretty_name\":\",\",\"data_type\":None,\"render_type\":\"connector\",\"entity_map\":None},{\"pretty_name\":\"wscript.exe\",\"data_type\":None,\"render_type\":\"value\",\"entity_map\":\"xdr_actor\"},{\"pretty_name\":\",\",\"data_type\":None,\"render_type\":\"connector\",\"entity_map\":None},{\"pretty_name\":\"cscript.exe\",\"data_type\":None,\"render_type\":\"value\",\"entity_map\":\"xdr_actor\"},{\"pretty_name\":\",\",\"data_type\":None,\"render_type\":\"connector\",\"entity_map\":None},{\"pretty_name\":\"mshta.exe\",\"data_type\":None,\"render_type\":\"value\",\"entity_map\":\"xdr_actor\"},{\"pretty_name\":\",\",\"data_type\":None,\"render_type\":\"connector\",\"entity_map\":None},{\"pretty_name\":\"rundll32.exe\",\"data_type\":None,\"render_type\":\"value\",\"entity_map\":\"xdr_actor\"},{\"pretty_name\":\",\",\"data_type\":None,\"render_type\":\"connector\",\"entity_map\":None},{\"pretty_name\":\"cgo name\",\"data_type\":\"TEXT\",\"render_type\":\"attribute\",\"entity_map\":\"xdr_causality_actor\",\"dml_type\":None},{\"pretty_name\":\"=\",\"data_type\":None,\"render_type\":\"operator\",\"entity_map\":\"xdr_causality_actor\"},{\"pretty_name\":\"cmd.exe\",\"data_type\":None,\"render_type\":\"value\",\"entity_map\":\"xdr_causality_actor\"},{\"pretty_name\":\",\",\"data_type\":None,\"render_type\":\"connector\",\"entity_map\":None},{\"pretty_name\":\"powershell.exe\",\"data_type\":None,\"render_type\":\"value\",\"entity_map\":\"xdr_causality_actor\"},{\"pretty_name\":\",\",\"data_type\":None,\"render_type\":\"connector\",\"entity_map\":None},{\"pretty_name\":\"wscript.exe\",\"data_type\":None,\"render_type\":\"value\",\"entity_map\":\"xdr_causality_actor\"},{\"pretty_name\":\",\",\"data_type\":None,\"render_type\":\"connector\",\"entity_map\":None},{\"pretty_name\":\"cscript.exe\",\"data_type\":None,\"render_type\":\"value\",\"entity_map\":\"xdr_causality_actor\"},{\"pretty_name\":\",\",\"data_type\":None,\"render_type\":\"connector\",\"entity_map\":None},{\"pretty_name\":\"mshta.exe\",\"data_type\":None,\"render_type\":\"value\",\"entity_map\":\"xdr_causality_actor\"},{\"pretty_name\":\",\",\"data_type\":None,\"render_type\":\"connector\",\"entity_map\":None},{\"pretty_name\":\"rundll32.exe\",\"data_type\":None,\"render_type\":\"value\",\"entity_map\":\"xdr_causality_actor\"},{\"pretty_name\":\"Host\",\"data_type\":None,\"render_type\":\"entity\",\"entity_map\":None,\"dml_ui\":False},{\"pretty_name\":\"host os\",\"data_type\":\"ENUM\",\"render_type\":\"attribute\",\"entity_map\":\"xdr_agent\",\"dml_type\":None},{\"pretty_name\":\"=\",\"data_type\":None,\"render_type\":\"operator\",\"entity_map\":\"xdr_agent\"},{\"pretty_name\":\"windows\",\"data_type\":None,\"render_type\":\"value\",\"entity_map\":\"xdr_agent\"}]",
+                "bioc_indicator": "[{\"pretty_name\":\"Registry\",\"data_type\":None,\"render_type\":\"entity\","
+                                  "\"entity_map\":None,\"dml_ui\":False},{\"pretty_name\":\"registry data\",\"data_type\":"
+                                  "\"TEXT\",\"render_type\":\"attribute\",\"entity_map\":\"attributes\",\"dml_type\":None},"
+                                  "{\"pretty_name\":\"!=\",\"data_type\":None,\"render_type\":\"operator\",\"entity_map\":"
+                                  "\"attributes\"},{\"pretty_name\":\"*:\\\\Users\\\\Public\\\\PSAppDeployToolkit*\","
+                                  "\"data_type\":None,\"render_type\":\"value\",\"entity_map\":\"attributes\"},"
+                                  "{\"pretty_name\":\"AND\",\"data_type\":None,\"render_type\":\"connector\",\"entity_map\""
+                                  ":None},{\"pretty_name\":\"registry key name\",\"data_type\":\"TEXT\","
+                                  "\"render_type\":\"attribute\",\"entity_map\":\"attributes\",\"dml_type\":None}"
+                                  ",{\"pretty_name\":\"=\",\"data_type\":None,\"render_type\":\"operator\",\"entity_map\""
+                                  ":\"attributes\"},{\"pretty_name\":\"HKEY_LOCAL_MACHINE\\\\SOFTWARE\\\\Microsoft\\\\Windows"
+                                  " NT\\\\CurrentVersion\\\\Image File Execution Options*\",\"data_type\":None,\"render_type\""
+                                  ":\"value\",\"entity_map\":\"attributes\"},{\"pretty_name\":\"AND\",\"data_type\":None,\""
+                                  "render_type\":\"connector\",\"entity_map\":None},{\"pretty_name\":\"registry value name\""
+                                  ",\"data_type\":\"TEXT\",\"render_type\":\"attribute\",\"entity_map\":\"attributes\","
+                                  "\"dml_type\":None},{\"pretty_name\":\"=\",\"data_type\":None,\"render_type\":\"operator\","
+                                  "\"entity_map\":\"attributes\"},{\"pretty_name\":\"Debugger\",\"data_type\":None,\"render_type"
+                                  "\":\"value\",\"entity_map\":\"attributes\"},{\"pretty_name\":\"AND\",\"data_type\":None,\""
+                                  "render_type\":\"connector\",\"entity_map\":None},{\"pretty_name\":\"action type\",\"data_type"
+                                  "\":\"ENUM\",\"render_type\":\"attribute\",\"entity_map\":\"action\",\"dml_type\":None},"
+                                  "{\"pretty_name\":\"=\",\"data_type\":None,\"render_type\":\"operator\","
+                                  "\"entity_map\":\"action\"},{\"pretty_name\":\"set_registry_value\",\"data_type\":None,"
+                                  "\"render_type\":\"value\",\"entity_map\":\"action\"},{\"pretty_name\":\"Process\","
+                                  "\"data_type\":None,\"render_type\":\"entity\",\"entity_map\":None,\"dml_ui\":False},"
+                                  "{\"pretty_name\":\"initiated by\",\"data_type\":\"TEXT\",\"render_type\":\"attribute\","
+                                  "\"entity_map\":\"xdr_actor\",\"dml_type\":None},{\"pretty_name\":\"=\",\"data_type\":None,"
+                                  "\"render_type\":\"operator\",\"entity_map\":\"xdr_actor\"},{\"pretty_name\":\"cmd.exe\","
+                                  "\"data_type\":None,\"render_type\":\"value\",\"entity_map\":\"xdr_actor\"},"
+                                  "{\"pretty_name\":\",\",\"data_type\":None,\"render_type\":\"connector\","
+                                  "\"entity_map\":None},{\"pretty_name\":\"powershell.exe\",\"data_type\":None,"
+                                  "\"render_type\":\"value\",\"entity_map\":\"xdr_actor\"},{\"pretty_name\":\",\","
+                                  "\"data_type\":None,\"render_type\":\"connector\",\"entity_map\":None},"
+                                  "{\"pretty_name\":\"wscript.exe\",\"data_type\":None,\"render_type\":\"value\","
+                                  "\"entity_map\":\"xdr_actor\"},{\"pretty_name\":\",\",\"data_type\":None,"
+                                  "\"render_type\":\"connector\",\"entity_map\":None},{\"pretty_name\":\"cscript.exe\","
+                                  "\"data_type\":None,\"render_type\":\"value\",\"entity_map\":\"xdr_actor\"},"
+                                  "{\"pretty_name\":\",\",\"data_type\":None,\"render_type\":\"connector\","
+                                  "\"entity_map\":None},{\"pretty_name\":\"mshta.exe\",\"data_type\":None,"
+                                  "\"render_type\":\"value\",\"entity_map\":\"xdr_actor\"},{\"pretty_name\":\",\","
+                                  "\"data_type\":None,\"render_type\":\"connector\",\"entity_map\":None},"
+                                  "{\"pretty_name\":\"rundll32.exe\",\"data_type\":None,\"render_type\":\"value\","
+                                  "\"entity_map\":\"xdr_actor\"},{\"pretty_name\":\",\",\"data_type\":None,"
+                                  "\"render_type\":\"connector\",\"entity_map\":None},{\"pretty_name\":\"cgo name\","
+                                  "\"data_type\":\"TEXT\",\"render_type\":\"attribute\",\"entity_map\":\"xdr_causality_actor\","
+                                  "\"dml_type\":None},{\"pretty_name\":\"=\",\"data_type\":None,\"render_type\":\"operator\","
+                                  "\"entity_map\":\"xdr_causality_actor\"},{\"pretty_name\":\"cmd.exe\",\"data_type\":None,"
+                                  "\"render_type\":\"value\",\"entity_map\":\"xdr_causality_actor\"},{\"pretty_name\":\",\","
+                                  "\"data_type\":None,\"render_type\":\"connector\",\"entity_map\":None},"
+                                  "{\"pretty_name\":\"powershell.exe\",\"data_type\":None,\"render_type\":\"value\","
+                                  "\"entity_map\":\"xdr_causality_actor\"},{\"pretty_name\":\",\",\"data_type\":None,"
+                                  "\"render_type\":\"connector\",\"entity_map\":None},{\"pretty_name\":\"wscript.exe\","
+                                  "\"data_type\":None,\"render_type\":\"value\",\"entity_map\":\"xdr_causality_actor\"},"
+                                  "{\"pretty_name\":\",\",\"data_type\":None,\"render_type\":\"connector\","
+                                  "\"entity_map\":None},{\"pretty_name\":\"cscript.exe\",\"data_type\":None,"
+                                  "\"render_type\":\"value\",\"entity_map\":\"xdr_causality_actor\"},{\"pretty_name\":\",\","
+                                  "\"data_type\":None,\"render_type\":\"connector\",\"entity_map\":None},"
+                                  "{\"pretty_name\":\"mshta.exe\",\"data_type\":None,\"render_type\":\"value\","
+                                  "\"entity_map\":\"xdr_causality_actor\"},{\"pretty_name\":\",\",\"data_type\":None,"
+                                  "\"render_type\":\"connector\",\"entity_map\":None},{\"pretty_name\":\"rundll32.exe\","
+                                  "\"data_type\":None,\"render_type\":\"value\",\"entity_map\":\"xdr_causality_actor\"},"
+                                  "{\"pretty_name\":\"Host\",\"data_type\":None,\"render_type\":\"entity\",\"entity_map\":None,"
+                                  "\"dml_ui\":False},{\"pretty_name\":\"host os\",\"data_type\":\"ENUM\","
+                                  "\"render_type\":\"attribute\",\"entity_map\":\"xdr_agent\",\"dml_type\":None},"
+                                  "{\"pretty_name\":\"=\",\"data_type\":None,\"render_type\":\"operator\","
+                                  "\"entity_map\":\"xdr_agent\"},{\"pretty_name\":\"windows\",\"data_type\":None,"
+                                  "\"render_type\":\"value\",\"entity_map\":\"xdr_agent\"}]",
                 "case_id": 425,
                 "category": "Privilege Escalation",
                 "causality_actor_causality_id": "AdklBdr5uVIAABZIAAAAAA==",
@@ -1440,7 +1515,12 @@ def xdr_generate_ctf3_command(client: Client, args: Dict):
                 "contains_featured_ip": "NO",
                 "contains_featured_user": "NO",
                 "deduplicate_tokens": None,
-                "description": "Registry registry data != *:\\Users\\Public\\PSAppDeployToolkit* AND registry key name = HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Image File Execution Options* AND registry value name = Debugger AND action type = set_registry_value Process initiated by = cmd.exe, powershell.exe, wscript.exe, cscript.exe, mshta.exe, rundll32.exe, cgo name = cmd.exe, powershell.exe, wscript.exe, cscript.exe, mshta.exe, rundll32.exe Host host os = windows",
+                "description": "Registry registry data != *:\\Users\\Public\\PSAppDeployToolkit* AND registry key name = "
+                               "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Image "
+                               "File Execution Options* AND registry value name = Debugger AND action type = "
+                               "set_registry_value Process initiated by = cmd.exe, powershell.exe, wscript.exe, "
+                               "cscript.exe, mshta.exe, rundll32.exe, cgo name = cmd.exe, powershell.exe, wscript.exe, "
+                               "cscript.exe, mshta.exe, rundll32.exe Host host os = windows",
                 "detection_timestamp": 1673363529207,
                 "dns_query_name": None,
                 "dst_action_country": None,
@@ -1530,7 +1610,8 @@ def xdr_generate_ctf3_command(client: Client, args: Dict):
         "assigned_user_pretty_name": None,
         "creation_time": 1673363555141,
         "critical_severity_alert_count": 0,
-        "description": "'Image File Execution Options Registry key injection by scripting engine' generated by XDR BIOC detected on host dc1env12apc02 involving user dc1env12apc02\\win10-regression",
+        "description": "'Image File Execution Options Registry key injection by scripting engine' generated by XDR BIOC "
+                       "detected on host dc1env12apc02 involving user dc1env12apc02\\win10-regression",
         "detection_time": None,
         "file_artifacts": [
             {
@@ -1621,7 +1702,7 @@ def xdr_generate_ctf3_command(client: Client, args: Dict):
     return incident
 
 
-def get_alerts_by_filter_command(client: CoreClient, args: Dict) -> CommandResults:
+def get_alerts_by_filter_command(client: CoreClient, args: Dict) -> CommandResults:  # type:ignore[no-redef]
     prefix = "PaloAltoNetworksXDR"
     # filter_data['filter'] = filter_res
     # demisto.debug(f'sending the following request data: {request_data}')
@@ -3512,7 +3593,8 @@ def get_alerts_by_filter_command(client: CoreClient, args: Dict) -> CommandResul
                     ],
                     "actor_process_causality_id": None,
                     "actor_process_command_line": [
-                        "\"C:\\Users\\administrator.ENV4\\Downloads\\8872362056\\000001e7a228b2a7abdfa4b3c8522df32b725e86907dde32176bccbbbb27.exe\" "
+                        "\"C:\\Users\\administrator.ENV4\\Downloads\\8872362056\\"
+                        "000001e7a228b2a7abdfa4b3c8522df32b725e86907dde32176bccbbbb27.exe\" "
                     ],
                     "actor_process_execution_time": None,
                     "actor_process_image_md5": [
@@ -3522,7 +3604,8 @@ def get_alerts_by_filter_command(client: CoreClient, args: Dict) -> CommandResul
                         "000001e7a228b2a7abdf7f7e40313324332b725e86907dde32176bccbbbb27.exe"
                     ],
                     "actor_process_image_path": [
-                        "C:\\Users\\administrator.ENV4\\Downloads\\8872362056\\000001e7a228b2a7abdf7f7e40313324332b725e86907dde32176bccbbbb27.exe"
+                        "C:\\Users\\administrator.ENV4\\Downloads\\8872362056\\"
+                        "000001e7a228b2a7abdf7f7e40313324332b725e86907dde32176bccbbbb27.exe"
                     ],
                     "actor_process_image_sha256": [
                         "000001e7a228b2a7abdf7f7e40313324332b725e86907dde32176bccbbbb27"
@@ -5387,7 +5470,7 @@ def get_alerts_by_filter_command(client: CoreClient, args: Dict) -> CommandResul
     }
 
     context = []
-    for alert in raw_response.get('alerts', []):
+    for alert in raw_response.get('alerts', []):  # type:ignore[attr-defined]
         alert = alert.get('alert_fields')
         if 'alert_action_status' in alert:
             # convert the status, if failed take the original status
@@ -5559,7 +5642,7 @@ def main():  # pragma: no cover
 
         # !!!!!New Command for CTF3!!!!!
         elif command == 'xdr-generate-ctf3':
-            incident = xdr_generate_ctf3_command(client, args)
+            incident = xdr_generate_ctf3_command(client, args)  # type:ignore[arg-type]
             demisto.createIncidents(incident)
         elif command == 'xdr-get-incidents':
             return_outputs(*get_incidents_command(client, args))
@@ -5568,13 +5651,13 @@ def main():  # pragma: no cover
             return_outputs(*get_incident_extra_data_command(client, args))
 
         elif command == 'xdr-update-incident':
-            return_outputs(*update_incident_command(client, args))
+            return_outputs(*update_incident_command(client, args))  # type:ignore[name-defined]
 
         elif command == 'xdr-get-endpoints':
             return_results(get_endpoints_command(client, args))
 
         elif command == 'xdr-endpoint-alias-change':
-            return_results(endpoint_alias_change_command(client, **args))
+            return_results(endpoint_alias_change_command(client, **args))  # type:ignore[arg-type]
 
         elif command == 'xdr-insert-parsed-alert':
             return_outputs(*insert_parsed_alert_command(client, args))
@@ -5583,14 +5666,14 @@ def main():  # pragma: no cover
             return_outputs(*insert_cef_alerts_command(client, args))
 
         elif command == 'xdr-isolate-endpoint':
-            return_results(isolate_endpoint_command(client, args))
+            return_results(isolate_endpoint_command(client, args))  # type:ignore[arg-type]
 
         elif command == 'xdr-endpoint-isolate-ctf':
             polling_args = {
                 **args,
                 "endpoint_id_list": args.get('endpoint_id')
             }
-            return_results(run_polling_command(client=client,
+            return_results(run_polling_command(client=client,  # type:ignore[arg-type]
                                                args=polling_args,
                                                cmd="xdr-endpoint-isolate",
                                                command_function=isolate_endpoint_command,
@@ -5608,7 +5691,7 @@ def main():  # pragma: no cover
                 **args,
                 "endpoint_id_list": args.get('endpoint_id')
             }
-            return_results(run_polling_command(client=client,
+            return_results(run_polling_command(client=client,  # type:ignore[arg-type]
                                                args=polling_args,
                                                cmd="xdr-endpoint-unisolate",
                                                command_function=unisolate_endpoint_command,
@@ -5648,7 +5731,7 @@ def main():  # pragma: no cover
             return_results(quarantine_files_command(client, args))
 
         elif command == 'xdr-file-quarantine':
-            return_results(run_polling_command(client=client,
+            return_results(run_polling_command(client=client,  # type:ignore[arg-type]
                                                args=args,
                                                cmd="xdr-file-quarantine",
                                                command_function=quarantine_files_command,
@@ -5664,7 +5747,7 @@ def main():  # pragma: no cover
                 **args,
                 "endpoint_id": argToList(args.get("endpoint_id_list"))[0]
             }
-            return_results(run_polling_command(client=client,
+            return_results(run_polling_command(client=client,  # type:ignore[arg-type]
                                                args=polling_args,
                                                cmd="core-quarantine-files",
                                                command_function=quarantine_files_command,
@@ -5682,7 +5765,7 @@ def main():  # pragma: no cover
             return_results(restore_file_command(client, args))
 
         elif command == 'xdr-file-restore':
-            return_results(run_polling_command(client=client,
+            return_results(run_polling_command(client=client,  # type:ignore[arg-type]
                                                args=args,
                                                cmd="xdr-file-restore",
                                                command_function=restore_file_command,
@@ -5694,10 +5777,10 @@ def main():  # pragma: no cover
                                                               "PENDING_ABORT"]))
 
         elif command == 'xdr-endpoint-scan':
-            return_results(endpoint_scan_command(client, args))
+            return_results(endpoint_scan_command(client, args))  # type:ignore[arg-type]
 
         elif command == 'xdr-endpoint-scan-execute':
-            return_results(run_polling_command(client=client,
+            return_results(run_polling_command(client=client,  # type:ignore[arg-type]
                                                args=args,
                                                cmd="xdr-endpoint-scan-execute",
                                                command_function=endpoint_scan_command,
@@ -5718,37 +5801,37 @@ def main():  # pragma: no cover
             return_results(get_remote_data_command(client, args))
 
         elif command == 'update-remote-system':
-            return_results(update_remote_system_command(client, args))
+            return_results(update_remote_system_command(client, args))  # type:ignore[name-defined]
 
         elif command == 'xdr-delete-endpoints':
-            return_outputs(*delete_endpoints_command(client, args))
+            return_outputs(*delete_endpoints_command(client, args))  # type:ignore[arg-type]
 
         elif command == 'xdr-get-policy':
-            return_outputs(*get_policy_command(client, args))
+            return_outputs(*get_policy_command(client, args))  # type:ignore[arg-type]
 
         elif command == 'xdr-get-endpoint-device-control-violations':
-            return_outputs(*get_endpoint_device_control_violations_command(client, args))
+            return_outputs(*get_endpoint_device_control_violations_command(client, args))  # type:ignore[arg-type]
 
         elif command == 'xdr-retrieve-files':
-            return_results(retrieve_files_command(client, args))
+            return_results(retrieve_files_command(client, args))  # type:ignore[arg-type]
 
         elif command == 'xdr-file-retrieve-ctf':
             return_error('This command is missing, try something else.')
 
         elif command == 'xdr-retrieve-file-details':
-            file_details_results(client, args, False)
+            file_details_results(client, args, False)  # type:ignore[arg-type]
 
         elif command == 'xdr-get-scripts':
-            return_outputs(*get_scripts_command(client, args))
+            return_outputs(*get_scripts_command(client, args))  # type:ignore[arg-type]
 
         elif command == 'xdr-get-script-metadata':
-            return_outputs(*get_script_metadata_command(client, args))
+            return_outputs(*get_script_metadata_command(client, args))  # type:ignore[arg-type]
 
         elif command == 'xdr-get-script-code':
-            return_outputs(*get_script_code_command(client, args))
+            return_outputs(*get_script_code_command(client, args))  # type:ignore[arg-type]
 
         elif command == 'xdr-action-status-get':
-            return_results(action_status_get_command(client, args))
+            return_results(action_status_get_command(client, args))  # type:ignore[arg-type]
 
         elif command == 'get-modified-remote-data':
             return_results(get_modified_remote_data_command(client, demisto.args()))
@@ -5757,13 +5840,13 @@ def main():  # pragma: no cover
             return_results(script_run_polling_command(args, client))
 
         elif command == 'xdr-run-script':
-            return_results(run_script_command(client, args))
+            return_results(run_script_command(client, args))  # type:ignore[arg-type]
 
         elif command == 'xdr-run-snippet-code-script':
-            return_results(run_snippet_code_script_command(client, args))
+            return_results(run_snippet_code_script_command(client, args))  # type:ignore[arg-type]
 
         elif command == 'xdr-snippet-code-script-execute':
-            return_results(run_polling_command(client=client,
+            return_results(run_polling_command(client=client,  # type:ignore[arg-type]
                                                args=args,
                                                cmd="xdr-snippet-code-script-execute",
                                                command_function=run_snippet_code_script_command,
@@ -5775,25 +5858,25 @@ def main():  # pragma: no cover
                                                               "PENDING_ABORT"]))
 
         elif command == 'xdr-get-script-execution-status':
-            return_results(get_script_execution_status_command(client, args))
+            return_results(get_script_execution_status_command(client, args))  # type:ignore[arg-type]
 
         elif command == 'xdr-get-script-execution-results':
-            return_results(get_script_execution_results_command(client, args))
+            return_results(get_script_execution_results_command(client, args))  # type:ignore[arg-type]
 
         elif command == 'xdr-get-script-execution-result-files':
-            return_results(get_script_execution_result_files_command(client, args))
+            return_results(get_script_execution_result_files_command(client, args))  # type:ignore[arg-type]
 
         elif command == 'xdr-get-cloud-original-alerts':
-            return_results(get_original_alerts_command(client, args))
+            return_results(get_original_alerts_command(client, args))   # type:ignore[arg-type]
 
         elif command == 'xdr-get-alerts-ctf':
-            return_results(get_alerts_by_filter_command(client, args))
+            return_results(get_alerts_by_filter_command(client, args))   # type:ignore[arg-type]
 
         elif command == 'xdr-run-script-execute-commands':
-            return_results(run_script_execute_commands_command(client, args))
+            return_results(run_script_execute_commands_command(client, args))  # type:ignore[arg-type]
 
         elif command == 'xdr-script-commands-execute':
-            return_results(run_polling_command(client=client,
+            return_results(run_polling_command(client=client,  # type:ignore[arg-type]
                                                args=args,
                                                cmd="xdr-script-commands-execute",
                                                command_function=run_script_execute_commands_command,
@@ -5805,10 +5888,10 @@ def main():  # pragma: no cover
                                                               "PENDING_ABORT"]))
 
         elif command == 'xdr-run-script-delete-file':
-            return_results(run_script_delete_file_command(client, args))
+            return_results(run_script_delete_file_command(client, args))  # type:ignore[arg-type]
 
         elif command == 'xdr-file-delete-script-execute':
-            return_results(run_polling_command(client=client,
+            return_results(run_polling_command(client=client,  # type:ignore[arg-type]
                                                args=args,
                                                cmd="xdr-file-delete-script-execute",
                                                command_function=run_script_delete_file_command,
@@ -5820,10 +5903,10 @@ def main():  # pragma: no cover
                                                               "PENDING_ABORT"]))
 
         elif command == 'xdr-run-script-file-exists':
-            return_results(run_script_file_exists_command(client, args))
+            return_results(run_script_file_exists_command(client, args))  # type:ignore[arg-type]
 
         elif command == 'xdr-file-exist-script-execute':
-            return_results(run_polling_command(client=client,
+            return_results(run_polling_command(client=client,  # type:ignore[arg-type]
                                                args=args,
                                                cmd="xdr-file-exist-script-execute",
                                                command_function=run_script_file_exists_command,
@@ -5838,7 +5921,7 @@ def main():  # pragma: no cover
             return_results((client, args))
 
         elif command == 'xdr-kill-process-script-execute':
-            return_results(run_polling_command(client=client,
+            return_results(run_polling_command(client=client,  # type:ignore[arg-type]
                                                args=args,
                                                cmd="xdr-kill-process-script-execute",
                                                command_function=run_script_kill_process_command,
@@ -5853,7 +5936,7 @@ def main():  # pragma: no cover
             return_results(endpoint_command(client, args))
 
         elif command == 'xdr-get-endpoints-by-status':
-            return_results(get_endpoints_by_status_command(client, args))
+            return_results(get_endpoints_by_status_command(client, args))  # type:ignore[arg-type]
 
         elif command == 'xdr-blocklist-files':
             return_results(blocklist_files_command(client, args))
@@ -5870,25 +5953,25 @@ def main():  # pragma: no cover
             return_results(allowlist_files_command(client, args))
 
         elif command == 'xdr-remove-blocklist-files':
-            return_results(remove_blocklist_files_command(client, args))
+            return_results(remove_blocklist_files_command(client, args))  # type:ignore[arg-type]
 
         elif command == 'xdr-remove-allowlist-files':
             return_results(remove_allowlist_files_command(client, args))
 
         elif command == 'xdr-get-contributing-event':
-            return_results(get_contributing_event_command(client, args))
+            return_results(get_contributing_event_command(client, args))  # type:ignore[arg-type]
 
         elif command == 'xdr-replace-featured-field':
-            return_results(replace_featured_field_command(client, args))
+            return_results(replace_featured_field_command(client, args))  # type:ignore[arg-type]
 
         elif command == 'xdr-endpoint-tag-add':
-            return_results(add_tag_to_endpoints_command(client, args))
+            return_results(add_tag_to_endpoints_command(client, args))  # type:ignore[arg-type]
 
         elif command == 'xdr-endpoint-tag-remove':
-            return_results(remove_tag_from_endpoints_command(client, args))
+            return_results(remove_tag_from_endpoints_command(client, args))  # type:ignore[arg-type]
 
         elif command == 'xdr-get-tenant-info':
-            return_results(get_tenant_info_command(client))
+            return_results(get_tenant_info_command(client))  # type:ignore[arg-type]
 
     except Exception as err:
         return_error(str(err))
