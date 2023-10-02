@@ -240,7 +240,12 @@ add-dep-changes-in-pr-comment:
   stage: prepare-testing-bucket
   extends:
     - .default-job-settings
-  needs: ['mpv2-prepare-testing-bucket', 'xpanse-prepare-testing-bucket', 'xsoar-prepare-testing-bucket']
+  needs: [
+    'mpv2-prepare-testing-bucket',
+    'xpanse-prepare-testing-bucket',
+    'xsoar-prepare-testing-bucket',
+    'xsoar-saas-prepare-testing-bucket',
+  ]
   when: always
   except:
   - triggers
