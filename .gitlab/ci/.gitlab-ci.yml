@@ -63,7 +63,6 @@ variables:
   CONTENT_GITLAB_CI: "true"
   POETRY_VIRTUALENVS_OPTIONS_ALWAYS_COPY: "true"
   FF_USE_FASTZIP: "true"
-  DOCKER_IO: docker-io.art.code.pan.run
   POETRY_VERSION: "1.6.1"
   INSTALL_POETRY: "true"
   DOCKER_IO: docker-io.art.code.pan.run
