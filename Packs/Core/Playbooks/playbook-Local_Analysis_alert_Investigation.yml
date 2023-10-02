@@ -1009,7 +1009,7 @@ tasks:
         simple: 'True'
       FileHash:
         complex:
-          root: inputs.ShouldManualReviewFP
+          root: inputs.SHA256
       FilePath:
         complex:
           root: inputs.Path
