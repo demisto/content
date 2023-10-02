@@ -887,7 +887,7 @@ class BranchTestCollector(TestCollector):
                 try:
 
                     if yml.id_.endswith("ApiModule"):
-                        logger.debug(f"Found changes in ApiModule = {yml.id_}, starting collecting related integrations")
+                        logger.info(f"Found changes in ApiModule = {yml.id_}, starting collecting related integrations")
                         return self._collect_integrations_using_apimodule(yml.id_)
 
                     tests = tuple(yml.tests)  # raises NoTestsConfiguredException if 'no tests' in the tests field
@@ -932,17 +932,16 @@ class BranchTestCollector(TestCollector):
                 allow_incompatible_marketplace=override_support_level_compatibility,
             )
 
-    def _collect_integrations_using_apimodule(self, api_module_id) -> CollectionResult | None:
+    def _collect_integrations_using_apimodule(self, api_module_id: str) -> CollectionResult | None:
         integrations_using_apimodule = self.id_set.api_modules_to_integrations.get(api_module_id, [])
         result = []
         for integration in integrations_using_apimodule:
             try:
-                integration_collected = self._collect_single(integration.path)
-                result.append(integration_collected)
+                result.append(self._collect_single(integration.path))
             except (NothingToCollectException, NonXsoarSupportedPackException) as e:
                 logger.info(str(e))
                 continue
-        logger.debug(f"collection_result_of_apimodule = {result}")
+        logger.debug(f"Collected for {api_module_id}: {result}")
         return CollectionResult.union(result)
 
     def _collect_xsiam_and_modeling_pack(self,
