@@ -1,5 +1,5 @@
 from pathlib import Path
-from urllib.parse import unquote, urlencode
+from urllib.parse import unquote
 import freezegun
 import pytest
 from datetime import datetime, timezone
