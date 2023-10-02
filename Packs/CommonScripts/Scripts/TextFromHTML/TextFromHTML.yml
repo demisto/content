@@ -24,7 +24,7 @@ args:
   predefined:
   - "true"
   - "false"
-  description: 'Allow using the input HTML as a fallback for the Body, if no body-tag is found. This only applies, if html_tag is set to body.'
+  description: 'Allow using the input HTML as a fallback for the body, if no body tag is found. This only applies, if html_tag is set to body.'
   defaultValue: "false"
 - name: replace_line_breaks
   default: true
