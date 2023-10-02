@@ -183,8 +183,8 @@ def add_evidence_to_investigation_command(client: Client, env: str, args=None):
     variables: dict = {
         "input": {
             "investigationId": args.get("id"),
-            "alerts": split_and_trim(args.get("alerts", [])),
-            "events": split_and_trim(args.get("events", [])),
+            "alerts": argToList(args.get("alerts")),
+            "events": argToList(args.get("events")),
             "alertsSearchQuery": args.get("alert_query", ""),
         }
     }
@@ -283,11 +283,11 @@ def create_investigation_command(client: Client, env: str, args=None):
             "title": args.get("title"),
             "priority": arg_to_number(args.get("priority")) or 3,
             "status": args.get("status", "OPEN"),
-            "alerts": split_and_trim(args.get("alerts", [])),
+            "alerts": argToList(args.get("alerts")),
             "keyFindings": args.get("key_findings", ""),
             "type": args.get("type", "SECURITY_INVESTIGATION"),
             "assigneeId": args.get("assignee_id", "@secureworks"),
-            "tags": split_and_trim(args.get("tags", [])),
+            "tags": argToList(args.get("tags")),
         }
     }
 
@@ -520,7 +520,7 @@ def fetch_alerts_command(client: Client, env: str, args=None):
         }
         """ % (fields)
 
-        variables["ids"] = split_and_trim(variables["ids"])
+        variables["ids"] = argToList(variables["ids"])
     else:
         field = "alertsServiceSearch"
         query = """
@@ -1571,7 +1571,7 @@ def update_investigation_command(client: Client, env: str, args=None):
                 f"Supported Type Values: {INVESTIGATION_TYPES}")
 
         if field == "tags":
-            variables["input"]["tags"] = split_and_trim(args["tags"])
+            variables["input"]["tags"] = argToList(args["tags"])
         else:
             variables["input"][field] = args.get(field)
 
@@ -1710,12 +1710,6 @@ def test_module(client: Client) -> str:
 
 
 """ UTILITIES """
-
-
-def split_and_trim(element):
-    if type(element) == str:
-        element = element.split(",")  # alerts://id1,alerts://id2
-    return [x.strip() for x in element]  # Ensure no whitespace
 
 
 def generate_id_url(env: str, endpoint: str, element_id: str):
