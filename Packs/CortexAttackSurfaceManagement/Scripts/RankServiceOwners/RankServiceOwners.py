@@ -22,7 +22,7 @@ from typing import Any
 from collections.abc import Iterable, Callable
 
 
-STRING_DELIMITER = ' | '  # delimiter used for joining Source fields and any additional fields of type string
+STRING_DELIMITER = ' | '  # delimiter used for joining source fields and any additional fields of type string
 
 # Normalize owner scores to be within the following bounds.
 # We want to use a standard scale (e.g. between 0 and 1) for interpretability.
@@ -149,14 +149,14 @@ def justify(owners: list[dict[str, str]]) -> list[dict[str, str]]:
     """
     For now, `justification` is the same as `source`; in the future, will sophisticate
 
-    Strip "Chain: " from both Source and Justification fields as post-processing step.
+    Strip "Chain: " from both `source` and `justification` fields as post-processing step.
 
     The "Chain: " prefix in the source indicates that the attribution of this owner
     is multi-step: e.g. first we recovered the service account, then we recovered the
     project owner for that service account.
 
     Future work may further unroll this chain, for instance: recover the manager
-    of the project owner of the service account, which we would denote using the Source of:
+    of the project owner of the service account, which we would denote using a `source` value of:
     "Chain: Chain: Manager of GCP project owner of service account".
 
     The model takes the length of the chain into the account, with longer chains carrying less weight
@@ -517,9 +517,9 @@ class OwnerFeaturizationPipeline():
     @staticmethod
     def _get_sources(owner: dict[str, Any]) -> list[str]:
         """
-        Return a list of Sources.
+        Return a list of sources.
         """
-        return owner.get("Source", "").split(" | ")
+        return owner.get("source", "").split(" | ")
 
     def get_num_reasons(self, owner: dict[str, Any]) -> int:
         """
@@ -533,7 +533,7 @@ class OwnerFeaturizationPipeline():
         """
         distinct_sources = set()
         for src in self.SOURCES:
-            if src.lower() in owner.get("Source", "").lower():
+            if src.lower() in owner.get("source", "").lower():
                 distinct_sources.add(src.lower())
         return len(distinct_sources)
 
