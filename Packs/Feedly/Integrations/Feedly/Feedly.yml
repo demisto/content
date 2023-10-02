@@ -97,6 +97,10 @@ configuration:
   name: feedIncremental
   required: false
   type: 8
+- display: Tags
+  type: 0
+  additionalinfo: Supports CSV values.
+  name: feedTags
 display: Feedly
 name: Feedly
 script:
@@ -113,7 +117,7 @@ script:
     description: Gets indicators from the feed.
     execution: false
     name: feedly-get-indicators
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.10.13.74666
   feed: true
   isfetch: false
   longRunning: false
@@ -123,7 +127,7 @@ script:
   subtype: python3
   type: python
 fromversion: 6.1.0
-description: 'Ingest articles with indicators, entities and relationships from Feedly into XSOAR'
+description: 'Ingest articles with indicators, entities and relationships from Feedly into XSOAR.'
 marketplaces:
 - xsoar
 - marketplacev2
