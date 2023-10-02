@@ -50,7 +50,7 @@ configuration:
 - display: Issue index to start fetching incidents from
   additionalinfo: This parameter is dismissed if "id" is not chosen in "Issue Field to Fetch by". This will only fetch Jira issues that are part of the same project as the issue that is configured in this parameter. If this value is 0, then the fetch mechanism will automatically start the fetch from the smallest ID with respect to the fetch query.
   name: id_offset
-  defaultvalue: 0
+  defaultvalue: '0'
   type: 0
   required: false
 - defaultvalue: 3 days
@@ -136,6 +136,11 @@ configuration:
   additionalinfo: "The maximum allowed value is dictated by the Jira property 'jira.search.views.default.max'. If you specify a value that is higher than this number, your search results will be truncated. Default value is 50"
   type: 0
   required: false
+- defaultvalue: '1'
+  display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  required: false
+  type: 19
 script:
   commands:
   - arguments:
@@ -599,6 +604,7 @@ script:
       - 'true'
       - 'false'
       hidden: true
+      auto: PREDEFINED
     - auto: PREDEFINED
       defaultValue: 'false'
       description: If "true", expands the issue links (the linked issues and subtasks).
@@ -612,6 +618,7 @@ script:
       - 'true'
       - 'false'
       hidden: true
+      auto: PREDEFINED
     description: Fetches an issue from Jira.
     name: jira-get-issue
     outputs:
@@ -733,8 +740,10 @@ script:
     name: jira-oauth-complete
   - description: "Use this command to start the authorization process. In order to authorize the instance, first run the command, and complete the process in the URL that is returned. You will then be redirected to the callback URL where you will copy the authorization code found in the query parameter `code`, and paste that value in the command `!jira-ouath-complete` as an argument to finish the process."
     name: jira-oauth-start
+    arguments: []
   - description: Use this command to test the connectivity of the Jira instance.
     name: jira-oauth-test
+    arguments: []
   - arguments:
     - description: The comment ID.
       name: comment_id
@@ -1366,6 +1375,7 @@ script:
     - contextPath: Jira.IssueLinkType.self
       description: The URL of the issue link type.
       type: String
+    arguments: []
   - arguments:
     - description: The key of the outward issue.
       name: outward_issue
@@ -1391,6 +1401,7 @@ script:
     name: get-remote-data
   - description: Returns the list of fields to map in outgoing mirroring. This command is only used for debugging purposes.
     name: get-mapping-fields
+    arguments: []
   - arguments:
     - description: Date string representing the local time. The incident is only returned if it was modified after the last update time.
       name: lastUpdate
@@ -1398,17 +1409,16 @@ script:
     name: get-modified-remote-data
   - description: Updates the remote incident with local incident changes. This method is only used for debugging purposes and will not update the current incident.
     name: update-remote-system
-  dockerimage: demisto/btfl-soup:1.0.1.72793
+    arguments: []
+  dockerimage: demisto/btfl-soup:1.0.1.76010
   isfetch: true
   ismappable: true
   isremotesyncin: true
   isremotesyncout: true
   runonce: false
-  script: '-'
+  script: ''
   subtype: python3
   type: python
 tests:
 - JiraV3 Test
-defaultmapperin: classifier-mapper-incoming-JiraV3
-defaultmapperout: JiraV3 Outgoing Mapper
 fromversion: 6.8.0
