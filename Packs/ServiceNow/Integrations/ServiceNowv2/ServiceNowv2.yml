@@ -65,7 +65,7 @@ configuration:
   name: get_attachments
   type: 8
   required: false
-- additionalinfo: 'Choose the direction to mirror the incident: Incoming (from ServiceNow to Cortex XSOAR), Outgoing (from Cortex XSOAR to ServiceNow), or Incoming and Outgoing (from/to Cortex XSOAR and ServiceNow).'
+- additionalinfo: 'Choose the direction to mirror the incident: Incoming (from ServiceNow to XSOAR), Outgoing (from XSOAR to ServiceNow), or Incoming and Outgoing (from/to XSOAR and ServiceNow).'
   defaultvalue: None
   display: Incident Mirroring Direction
   name: mirror_direction
@@ -78,55 +78,22 @@ configuration:
   hidden:
   - marketplacev2
   required: false
-- additionalinfo: Select this checkbox to retrieve comments and work notes without accessing the `sys_field_journal` table.
-  display: Use Display Value
-  name: use_display_value
-  type: 8
-  required: false
-- additionalinfo: 'Select the date format of your ServiceNow instance. Mandatory when using the `Use Display Value` option. More details under the troubleshooting section in the documentation of the integration.'
-  defaultvalue: None
-  display: Instance Date Format
-  name: display_date_format
-  options:
-  - MM-dd-yyyy
-  - dd/MM/yyyy
-  - dd-MM-yyyy
-  - dd.MM.yyyy
-  - yyyy-MM-dd
-  type: 15
-  required: false
 - additionalinfo: Choose the tag to add to an entry to mirror it as a comment in ServiceNow.
-  defaultvalue: comments
-  display: Comment Entry Tag To ServiceNow
+  display: Comment Entry Tag
   name: comment_tag
   type: 0
+  required: false
+  defaultvalue: comments
   hidden:
   - marketplacev2
-  required: false
-- additionalinfo: Choose the tag to add to an entry to mirror it as a comment from ServiceNow.
-  defaultvalue: CommentFromServiceNow
-  display: Comment Entry Tag From ServiceNow
-  name: comment_tag_from_servicenow
-  type: 0
-  hidden:
-  - marketplacev2
-  required: false
-- additionalinfo: Choose the tag to add to an entry to mirror it as a work note in ServiceNow.
+- additionalinfo: 'Choose the tag to add to an entry to mirror it as a work note in ServiceNow.'
   defaultvalue: work_notes
-  display: Work Note Entry Tag To ServiceNow
+  display: Work Note Entry Tag
   name: work_notes_tag
   type: 0
+  required: false
   hidden:
   - marketplacev2
-  required: false
-- additionalinfo: Choose the tag to add to an entry to mirror it as a work note from ServiceNow.
-  defaultvalue: WorkNoteFromServiceNow
-  display: Work Note Entry Tag From ServiceNow
-  name: work_notes_tag_from_servicenow
-  type: 0
-  hidden:
-  - marketplacev2
-  required: false
 - additionalinfo: Choose the tag to add to an entry to mirror it as a file in ServiceNow.
   defaultvalue: ForServiceNow
   display: File Entry Tag To ServiceNow
@@ -136,20 +103,20 @@ configuration:
   - marketplacev2
   required: false
 - additionalinfo: Choose the tag to add to an entry to mirror it as a file from ServiceNow.
-  defaultvalue: 'FromServiceNow'
+  defaultvalue: FromServiceNow
   display: File Entry Tag From ServiceNow
   name: file_tag_from_service_now
   type: 0
   hidden:
   - marketplacev2
   required: false
-- additionalinfo: "According to the timestamp in this field, records will be queried to check for updates."
+- additionalinfo: According to the timestamp in this field, records will be queried to check for updates.
+  defaultvalue: sys_updated_on
   display: Timestamp field to query for updates as part of the mirroring flow
   name: update_timestamp_field
   type: 0
   hidden:
   - marketplacev2
-  defaultvalue: sys_updated_on
   required: false
 - additionalinfo: If a greater number of incidents than the limit were modified, then they won't be mirrored in.
   defaultvalue: '100'
@@ -167,65 +134,48 @@ configuration:
   - marketplacev2
   required: false
 - additionalinfo: When selected, closing the ServiceNow ticket is mirrored in Cortex XSOAR.
-  defaultvalue: 'None'
-  display: Mirrored XSOAR Ticket closure method
+  defaultvalue: 'false'
+  display: Close Mirrored XSOAR Incident
   name: close_incident
-  type: 15
-  options:
-  - None
-  - closed
-  - resolved
+  type: 8
   hidden:
   - marketplacev2
   required: false
-- additionalinfo: 'Define how to close the mirrored tickets in Cortex XSOAR with a custom state. Enter here a comma-separated list of custom closure state codes and their labels (acceptable format example: “10=Design,11=Development,12=Testing”) to override the default closure method. Note that a matching user-defined list of custom close reasons must be configured as a "Server configuration" in Cortex XSOAR. Not following this format will result in closing the incident with a default close reason.'
-  defaultvalue: ''
-  display: Mirrored XSOAR Ticket custom close state code
-  name: server_close_custom_state
-  type: 0
-  required: false
-- additionalinfo: Define how to close the mirrored tickets in ServiceNow. Choose 'resolved' to enable reopening from the UI. Otherwise, choose 'closed'.
-  defaultvalue: 'None'
+- additionalinfo: "Define how to close the mirrored tickets, choose 'resolved' to enable reopening from the UI. Otherwise, choose 'closed'."
   display: Mirrored ServiceNow Ticket closure method
   name: close_ticket_multiple_options
   type: 15
+  defaultvalue: None
+  required: false
   options:
   - None
   - closed
   - resolved
-  required: false
-- display: Mirrored ServiceNow Ticket custom close state code
-  name: close_custom_state
-  type: 0
-  additionalinfo: Define how to close the mirrored tickets in ServiceNow with a custom state. Enter here the custom closure state code (should be an integer) to override the default closure method. If the closure code does not exist, the default code will be used instead.
-  hidden:
-  - marketplacev2
-  required: false
-- defaultvalue: 'false'
+- additionalinfo: When selected, closing the XSOAR incident is mirrored in ServiceNow.
+  defaultvalue: 'false'
   display: Close Mirrored ServiceNow Ticket
   name: close_ticket
   type: 8
-  additionalinfo: When selected, closing the XSOAR incident is mirrored in ServiceNow.
   hidden: true
   required: false
-- defaultvalue: 'false'
-  display: 'Use system proxy settings'
+- display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  defaultvalue: 'false'
 - defaultvalue: 'false'
-  display: 'Trust any certificate (not secure)'
+  display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
 - defaultvalue: '1'
-  display: 'Incidents Fetch Interval'
+  display: Incidents Fetch Interval
   name: incidentFetchInterval
   type: 19
   required: false
-- defaultvalue: 0
+- additionalinfo: Use this parameter to determine how long backward to look in the search for incidents that were created before the last run time and did not match the query when they were created.
+  defaultvalue: '0'
   display: 'Advanced: Minutes to look back when fetching'
-  additionalinfo: Use this parameter to determine how long backward to look in the search for incidents that were created before the last run time and did not match the query when they were created.
   name: look_back
   type: 0
   required: false
@@ -254,7 +204,7 @@ script:
       name: number
     - auto: PREDEFINED
       defaultValue: 'false'
-      description: If "true" will retrieve ticket attachments.Note this option will always use the v1 API version, as it is not supported in v2. Default is "false".
+      description: If "true" will retrieve ticket attachments. Default is "false".
       name: get_attachments
       predefined:
       - 'true'
@@ -544,7 +494,7 @@ script:
       description: The delimiter character to use as a separator for a list of fields in an argument for this command. Default is ';'.
       name: fields_delimiter
     - auto: PREDEFINED
-      description: Business criticality of the ticket.
+      description: Business criticallity of the ticket.
       name: business_criticality
       predefined:
       - 3 - Non-Critical
@@ -807,7 +757,7 @@ script:
       isArray: true
       name: clear_fields
     - auto: PREDEFINED
-      description: Business criticality of the ticket.
+      description: Business criticallity of the ticket.
       name: business_criticality
       predefined:
       - 3 - Non-Critical
@@ -913,7 +863,6 @@ script:
       - change_request
       - sc_request
       - sc_task
-      - sc_req_item
       - sn_si_incident
     - description: The actual link to publish in ServiceNow ticket, in a valid URL format, for example, http://www.demisto.com.
       name: link
@@ -938,7 +887,6 @@ script:
       - change_request
       - sc_request
       - sc_task
-      - sc_req_item
       - sn_si_incident
     - description: Comment to add.
       name: comment
@@ -966,7 +914,6 @@ script:
       - change_request
       - sc_request
       - sc_task
-      - sc_req_item
       - sn_si_incident
     - description: War Room entry ID that includes the file.
       name: file_id
@@ -1292,25 +1239,7 @@ script:
     - defaultValue: '0'
       description: Offset of the ticket notes.
       name: offset
-    - auto: PREDEFINED
-      description: Whether to use `sysparm_display_value` to retrieve comments and work notes. Overrides the value set in the instance configuration.
-      name: use_display_value
-      predefined:
-      - 'true'
-      - 'false'
-    - auto: PREDEFINED
-      defaultValue: incident
-      description: Ticket type. Can be "incident", "problem", "change_request", "sc_request", "sc_task", "sc_req_item" or "sn_si_incident". Default is "incident".
-      name: ticket_type
-      predefined:
-      - incident
-      - problem
-      - change_request
-      - sc_request
-      - sc_task
-      - sc_req_item
-      - sn_si_incident
-    description: Gets notes from the specified ServiceNow ticket. Notes can be retrieved either by granting "Read permissions" for the sys_journal_field table, or by setting the `use_display_value` parameter to true.
+    description: Gets notes from the specified ServiceNow ticket. "Read permissions" are required for the sys_journal_field table.
     name: servicenow-get-ticket-notes
     outputs:
     - contextPath: ServiceNow.Ticket.ID
@@ -1574,7 +1503,7 @@ script:
     - description: the API path starting with forward slash (/).
       name: path
       required: true
-    - description: data to send in body, can be json.
+    - description: json to send in body.
       name: body
     - description: json of headers to add.
       name: headers
@@ -1598,7 +1527,7 @@ script:
     - contextPath: ServiceNow.Generic.Response
       description: Generic response to servicenow api.
       type: string
-  dockerimage: demisto/python3:3.10.13.74666
+  dockerimage: demisto/python3:3.10.13.75921
   isfetch: true
   ismappable: true
   isremotesyncin: true
@@ -1606,6 +1535,7 @@ script:
   script: ''
   subtype: python3
   type: python
+  runonce: false
 fromversion: 5.0.0
 tests:
 - servicenow_test_v2
