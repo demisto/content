@@ -1377,17 +1377,17 @@ script:
     - description: Enrollment info in dict format. If provided, the script will not make another API call to get the enrollmont info.             if not, another API call will be issued to retrieve the Enrollment info.
       isArray: true
       name: enrollment
-    - auto: PREDEFINED
-      defaultValue: 'true'
-      description: All pending changes to be cancelled when updating an enrollment.
+    - description: All pending changes to be cancelled when updating an enrollment.
       name: allow_cancel_pending_changes
+      auto: PREDEFINED
+      defaultValue: 'true'      
       predefined:
       - 'true'
       - 'false'
-    - auto: PREDEFINED
-      defaultValue: 'true'
-      description: Bypass staging and push meta_data updates directly to production network. Current change will also be updated with the same changes.
+    - description: Bypass staging and push meta_data updates directly to production network. Current change will also be updated with the same changes.
       name: allow_staging_bypass
+      auto: PREDEFINED
+      defaultValue: 'true'
       predefined:
       - 'true'
       - 'false'
@@ -1395,24 +1395,24 @@ script:
       name: deploy_not_after
     - description: "Don't deploy before this date (UTC). Sample: 2021-01-31T00:00:00.000Z"
       name: deploy_not_before
-    - auto: PREDEFINED
-      defaultValue: 'false'
-      description: Force certificate renewal for Enrollment
+    - description: Force certificate renewal for Enrollment
       name: force_renewal
-      predefined:
-      - 'true'
-      - 'false'
-    - auto: PREDEFINED
-      defaultValue: 'true'
-      description: CPS will automatically start a Change to renew certificates in time before they expire.
-      name: renewal_date_check_override
-      predefined:
-      - 'true'
-      - 'false'
-    - auto: PREDEFINED
+      auto: PREDEFINED
       defaultValue: 'false'
-      description: Applicable for Third Party Dual Stack Enrollments, allows to update missing certificate. Option supported from v10.
+      predefined:
+      - 'true'
+      - 'false'
+    - description: CPS will automatically start a Change to renew certificates in time before they expire.
+      name: renewal_date_check_override
+      auto: PREDEFINED
+      defaultValue: 'true'
+      predefined:
+      - 'true'
+      - 'false'
+    - description: Applicable for Third Party Dual Stack Enrollments, allows to update missing certificate. Option supported from v10.
       name: allow_missing_certificate_addition
+      auto: PREDEFINED
+      defaultValue: 'false'
       predefined:
       - 'true'
       - 'false'
