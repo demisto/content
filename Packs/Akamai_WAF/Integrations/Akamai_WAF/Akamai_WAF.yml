@@ -1423,8 +1423,8 @@ script:
     name: akamai-update-cps-enrollment
     outputs:
     - contextPath: Akamai.Enrollment.Changes
-    - description: Akamai Enrollment Changes
-    - type: dictionary
+      description: Akamai Enrollment Changes
+      type: dictionary
   - arguments:
     - description: Enrollment path found in the pending change location field.
       name: enrollment_path
@@ -1441,8 +1441,8 @@ script:
     name: akamai-update-cps-enrollment-schedule
     outputs:
     - contextPath: Akamai.Enrollment.Changes
-    - description: Akamai Enrollment Changes
-    - type: dictionary
+      description: Akamai Enrollment Changes
+      type: dictionary
   - arguments:
     - description: ' Enrollment path found in the pending change location field'
       name: enrollment_path
@@ -1454,8 +1454,8 @@ script:
     name: akamai-get-cps-change-status
     outputs:
     - contextPath: Akamai.Enrollments.Change.Status
-    - description: Akamai Enrollments Change Status
-    - type: dictionary
+      description: Akamai Enrollments Change Status
+      type: dictionary
   dockerimage: demisto/akamai:1.0.0.73558
   script: ''
   subtype: python3
