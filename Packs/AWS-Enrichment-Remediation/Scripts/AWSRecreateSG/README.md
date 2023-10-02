@@ -19,7 +19,6 @@ This script uses the following commands and scripts.
 * aws-ec2-authorize-security-group-egress-rule
 * aws-ec2-describe-instances
 * aws-ec2-revoke-security-group-ingress-rule
-* AWS - EC2
 * aws-ec2-create-security-group
 
 ## Used In
