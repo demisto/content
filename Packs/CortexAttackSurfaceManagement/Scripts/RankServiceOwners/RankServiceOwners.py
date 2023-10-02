@@ -92,7 +92,7 @@ def normalize_scores(
     if lower_bound > upper_bound:
         raise ValueError("Lower bound must be greater than or equal to upper bound")
 
-    if not scores:
+    if not len(scores):
         return scores
     max_val = max(scores)
     min_val = min(scores)
