@@ -35,7 +35,7 @@ def create_jira_issue(jira_server: JIRA,
     properties = {prop.name: prop.value for prop in test_suite.properties()}
     build_id = properties.get("ci_pipeline_id", "")
     description = generate_description(build_id, properties, test_suite)
-    summary = f"{properties['pack_id']} - {properties['file_name']} failed nightly"
+    summary = generate_ticket_summary(f"{properties['pack_id']} - {properties['file_name']}")
     jql_query = generate_query(summary)
     search_issues: ResultList[Issue] = jira_server.search_issues(jql_query, maxResults=1)  # type: ignore[assignment]
     jira_issue, link_to_issue, use_existing_issue = find_existing_jira_ticket(jira_server, now, options, search_issues)
@@ -72,13 +72,21 @@ def create_jira_issue(jira_server: JIRA,
     return jira_issue
 
 
-def generate_query(summary):
+def generate_ticket_summary(prefix: str) -> str:
+    summary = f"{prefix} failed nightly"
+    return summary
+
+
+def generate_query(summary: str) -> str:
     jql_query = (f"project = \"{JIRA_PROJECT_ID}\" AND issuetype = \"{JIRA_ISSUE_TYPE}\" "
                  f"AND component = \"{JIRA_COMPONENT}\" AND summary ~ \"{summary}\" ORDER BY created DESC")
     return jql_query
 
 
-def find_existing_jira_ticket(jira_server, now, options, search_issues):
+def find_existing_jira_ticket(jira_server: JIRA,
+                              now: datetime,
+                              options: argparse.Namespace,
+                              search_issues: ResultList[Issue]) -> tuple[Issue | None, Issue | None, bool]:
     link_to_issue = None
     jira_issue = None
     if use_existing_issue := (len(search_issues) == 1):
