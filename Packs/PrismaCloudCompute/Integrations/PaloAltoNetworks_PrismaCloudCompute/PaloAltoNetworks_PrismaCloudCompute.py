@@ -2158,7 +2158,8 @@ def reduce_ci_scan_results(ci_scan_results):
                             'complianceDistribution': scan['entityInfo'].get('complianceDistribution'),
                             'labels': scan['entityInfo'].get('labels'),
                             'scanVersion': scan['entityInfo'].get('scanVersion'),
-                            'scanID': scan['entityInfo'].get('scanID')
+                            'scanID': scan['entityInfo'].get('scanID'),
+                            'instances': [{'image': (scan["entityInfo"].get("instances") or [{}])[0].get("image")}]
                             },
              'pass': scan['pass']}
             for scan in ci_scan_results]
@@ -2213,13 +2214,12 @@ def get_ci_scan_results_list(client: PrismaCloudComputeClient, args: dict) -> Co
                     {
                         "Image": (scan["entityInfo"].get("instances") or [{}])[0].get("image"),
                         "ID": scan["entityInfo"]["_id"],
-                        "OS Distribution": scan["entityInfo"].get("osDistro"),
-                        "OS Release": scan["entityInfo"].get("osDistroRelease"),
+                        "Distribution": scan["entityInfo"].get("distro"),
                         "Scan Status": scan["pass"],
                         "Scan Time": scan.get("time"),
                     } for scan in ci_scan_results
                 ],
-                headers=["Image", "ID", "OS Distribution", "OS Release", "Scan Status", "Scan Time"],
+                headers=["Image", "ID", "Distribution", "Scan Status", "Scan Time"],
                 removeNull=True,
             )
     else:

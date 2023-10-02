@@ -1646,7 +1646,7 @@ def test_get_ci_scan_results_list_command(requests_mock):
 
     requests_mock.get(url=BASE_URL + '/scans', json=response)
     client = PrismaCloudComputeClient(base_url=BASE_URL, verify='False', project='', auth=('test', 'test'))
-    args = {}
+    args = {'verbose': 'true'}
 
     assert get_ci_scan_results_list(client, args).raw_response == response
 
@@ -1695,7 +1695,8 @@ def test_update_trusted_images_command(mocker):
     args = {"images_list_json": images_list_json}
 
     update_trusted_images(client, args)
-    http_request.assert_called_with(method='PUT', url_suffix='trust/data', json_data=images_list_json)
+    http_request.assert_called_with(method='PUT', url_suffix='trust/data',
+                                    data=images_list_json, resp_type='response', ok_codes=(200,))
 
 
 def test_get_container_scan_results_command(requests_mock):
