@@ -8,7 +8,7 @@ configuration:
   name: url
   required: true
   type: 0
-- additionalinfo: For more information, see https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-api/cortex-xdr-api-overview/get-started-with-cortex-xdr-apis.
+- additionalinfo: For more information, see https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-api/cortex-xdr-api-overview/get-started-with-cortex-xdr-apis.  Only standard API key type is supported.
   display: API Key ID
   displaypassword: API Key
   name: credentials
@@ -680,7 +680,7 @@ script:
     - contextPath: ASM.UpdatedAlerts
       description: IDs of the updated alerts.
     description: Updates the state of one or more alerts.
-  dockerimage: demisto/python3:3.10.13.72123
+  dockerimage: demisto/python3:3.10.13.75921
   isFetchSamples: true
   isfetch: true
   script: ''
