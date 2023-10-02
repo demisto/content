@@ -79,7 +79,7 @@ def main():
         # __Error handeling when there is an empty secret or question id__
         question_id = args.get("question_ID")
         secret = args.get("secret", "").lower()
-        if not args.get(secret, "") or not question_id:
+        if not secret or not question_id:
             raise DemistoException('Please specify Secret and Question ID to proceed with the challenge')
 
         if (args.get("secret").lower() in answers[args.get("question_ID")]):
