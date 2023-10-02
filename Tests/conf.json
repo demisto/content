@@ -4972,14 +4972,6 @@
             "fromversion": "5.0.0"
         },
         {
-            "playbookID": "TruSTAR v2-Test",
-            "fromversion": "5.0.0",
-            "integrations": [
-                "TruSTAR v2",
-                "TruSTAR"
-            ]
-        },
-        {
             "playbookID": "Relationships scripts - Test",
             "fromversion": "6.2.0"
         },
