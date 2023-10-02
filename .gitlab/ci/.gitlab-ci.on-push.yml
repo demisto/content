@@ -241,7 +241,9 @@ add-dep-changes-in-pr-comment:
   extends:
     - .default-job-settings
   needs: ['mpv2-prepare-testing-bucket', 'xpanse-prepare-testing-bucket', 'xsoar-prepare-testing-bucket']
-  when: always
+  rules:
+    - if: '$CI_COMMIT_BRANCH != "master"'
+      when: always
   except:
   - triggers
   - schedules
