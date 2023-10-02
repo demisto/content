@@ -1,6 +1,5 @@
 import pytest
 import CTF1
-from CommonServerPython import DemistoException
 import demistomock as demisto
 
 
@@ -18,7 +17,7 @@ def test_main(mocker, question_id, secret, expected):
         "secret": secret
     }
 
-    m = mocker.patch.object(CTF2BF, 'return_results')
+    m = mocker.patch.object(CTF1, 'return_results')
     mocker.patch.object(demisto, 'args', return_value=args)
     mocker.patch.object(demisto, 'executeCommand', return_value={'total': 'correct_secret'})
 

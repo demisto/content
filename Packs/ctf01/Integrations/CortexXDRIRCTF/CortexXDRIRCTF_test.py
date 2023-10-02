@@ -1,6 +1,4 @@
 import pytest
-from CommonServerPython import DemistoException
-import demistomock as demisto
 
 
 @pytest.mark.parametrize("question_id, secret, expected", [

@@ -1,6 +1,5 @@
 import pytest
 import CTF2BF
-from CommonServerPython import DemistoException
 import demistomock as demisto
 
 

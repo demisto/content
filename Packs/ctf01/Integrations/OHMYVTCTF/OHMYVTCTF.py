@@ -1,3 +1,6 @@
+import demistomock as demisto
+from CommonServerPython import *
+
 """
 An integration module for the Virus Total v3 API.
 API Documentation:
