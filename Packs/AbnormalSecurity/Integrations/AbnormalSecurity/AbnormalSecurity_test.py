@@ -242,7 +242,6 @@ def test_get_a_list_of_unanalyzed_abuse_mailbox_campaigns_command(mocker):
     assert results.outputs.get('results')[0].get('recipient').get('email') == 'john.doe@some-domain.com'
     assert results.outputs_prefix == 'AbnormalSecurity.UnanalyzedAbuseCampaigns'
 
-    assert results.outputs_prefix == 'AbnormalSecurity.VendorsList'
 
 def test_get_details_of_an_abnormal_case_command(mocker):
     """
