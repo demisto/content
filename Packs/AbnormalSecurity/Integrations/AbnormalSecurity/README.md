@@ -1520,11 +1520,16 @@ Get a list of unanalyzed Abuse Mailbox campaigns
 
 #### Context Output
 
-| **Path**                                                         | **Type** | **Description**                        |
-| ---------------------------------------------------------------- | -------- | -------------------------------------- |
-| AbnormalSecurity.UnanalyzedAbuseCampaigns.results.abx_message_id | Number   | An id which maps to an abuse campaign. |
-| AbnormalSecurity.UnanalyzedAbuseCampaigns.results.recipient.name | Number   | The name of the recipient.             |
-| AbnormalSecurity.AbuseCampaign.nextPageNumber                    | Number   | The next page number.                  |
+| **Path**                                                              | **Type** | **Description**                          |
+| --------------------------------------------------------------------- | -------- | ---------------------------------------- |
+| AbnormalSecurity.UnanalyzedAbuseCampaigns.results.abx_message_id      | Number   | An id which maps to an abuse campaign.   |
+| AbnormalSecurity.UnanalyzedAbuseCampaigns.results.recipient.name      | String   | The name of the recipient.               |
+| AbnormalSecurity.UnanalyzedAbuseCampaigns.results.recipient.email     | String   | The email address of the recipient.      |
+| AbnormalSecurity.UnanalyzedAbuseCampaigns.results.reported_datetime   | String   | The datetime the report was made.        |
+| AbnormalSecurity.UnanalyzedAbuseCampaigns.results.reporter.email      | String   | The email address of the reporter.       |
+| AbnormalSecurity.UnanalyzedAbuseCampaigns.results.reporter.name       | String   | The name of the reporter.                |
+| AbnormalSecurity.UnanalyzedAbuseCampaigns.results.subject             | String   | The subject of the message.              |
+| AbnormalSecurity.UnanalyzedAbuseCampaigns.results.not_analyzed_reason | String   | The reason the message was not analyzed. |
 
 #### Command Example
 
