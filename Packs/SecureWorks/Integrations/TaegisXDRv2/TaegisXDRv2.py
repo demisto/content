@@ -281,7 +281,7 @@ def create_investigation_command(client: Client, env: str, args=None):
     variables = {
         "input": {
             "title": args.get("title"),
-            "priority": arg_to_number(args.get("priority")) or 3,
+            "priority": arg_to_number(args.get("priority", 3)),
             "status": args.get("status", "OPEN"),
             "alerts": argToList(args.get("alerts")),
             "keyFindings": args.get("key_findings", ""),
@@ -444,8 +444,8 @@ def fetch_alerts_command(client: Client, env: str, args=None):
     """
     variables: dict = {
         "cql_query": args.get("cql_query", "from alert severity >= 0.4 and status='OPEN'"),
-        "limit": args.get("limit", 10),
-        "offset": args.get("offset", 0),
+        "limit": arg_to_number(args.get("limit", 10)),
+        "offset": arg_to_number(args.get("offset", 0)),
         "ids": args.get("ids", []),  # ["alert://id1", "alert://id2"]
     }
     fields: str = args.get("fields") or """
@@ -560,14 +560,14 @@ def fetch_alerts_command(client: Client, env: str, args=None):
 
 
 def fetch_assets_command(client: Client, env: str, args=None):
-    page = arg_to_number(args.get("page")) or 0
-    page_size = arg_to_number(args.get("page_size")) or 10
+    page = arg_to_number(args.get("page", 0))
+    page_size = arg_to_number(args.get("page_size", 10))
 
     variables: dict[str, Any] = {
         "input": {},
         "pagination_input": {
             "limit": page_size,
-            "offset": page_size * page,
+            "offset": page_size * page,  # type: ignore
         }
     }
 
@@ -723,8 +723,8 @@ def fetch_comments_command(client: Client, env: str, args=None):
     variables = {
         "arguments": {
             "investigationId": args.get("id"),
-            "page": arg_to_number(args.get("page")) or 0,
-            "perPage": arg_to_number(args.get("page_size")) or 10,
+            "page": arg_to_number(args.get("page", 0)),
+            "perPage": arg_to_number(args.get("page_size", 10)),
             "orderBy": args.get("order_direction", "DESCENDING")
         }
     }
@@ -901,7 +901,7 @@ def fetch_incidents(
         """
 
         variables = {
-            "limit": max_fetch,
+            "limit": arg_to_number(max_fetch),
             # We only support Medium, High, Critical
             "cql_query": f"from alert where severity >=0.4 AND earliest = '{start_time}'",
         }
@@ -1037,8 +1037,8 @@ def fetch_incidents(
 
 def fetch_investigation_alerts_command(client: Client, env: str, args=None):
     investigation_id = args.get("id")
-    page = arg_to_number(args.get("page")) or 0
-    page_size = arg_to_number(args.get("page_size")) or 10
+    page = arg_to_number(args.get("page", 0))
+    page_size = arg_to_number(args.get("page_size", 10))
     if not investigation_id:
         raise ValueError("Cannot fetch investigation, missing investigation_id")
 
@@ -1242,8 +1242,8 @@ def fetch_investigation_command(client: Client, env: str, args=None):
         }
         """ % (fields)
         variables = {
-            "page": arg_to_number(args.get("page")) or 0,
-            "perPage": arg_to_number(args.get("page_size")) or 10,
+            "page": arg_to_number(args.get("page", 0)),
+            "perPage": arg_to_number(args.get("page_size", 10)),
             "query": args.get("query", "deleted_at is null"),
             "orderByField": args.get("order_by", "created_at"),
             "orderDirection": args.get("order_direction", "desc")
@@ -1333,14 +1333,14 @@ def fetch_playbook_execution_command(client: Client, env: str, args=None):
 
 
 def fetch_users_command(client: Client, env: str, args=None):
-    page = arg_to_number(args.get("page")) or 0
-    page_size = arg_to_number(args.get("page_size")) or 10
+    page = arg_to_number(args.get("page", 0))
+    page_size = arg_to_number(args.get("page_size", 10))
 
     variables: dict[str, Any] = {
         "filters": {
             "status": args.get("status", ""),
             "perPage": page_size,
-            "pageOffset": page_size * page,
+            "pageOffset": page_size * page,  # type: ignore
         }
     }
     fields: str = args.get("fields") or "user_id email family_name given_name status"
