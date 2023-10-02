@@ -21,8 +21,7 @@ configuration:
   name: proxy
   type: 8
   required: false
-description: Improve the effectiveness of your service provision and resources, and
-  the quality of your IT department.
+description: Improve the effectiveness of your service provision and resources, and the quality of your IT department.
 display: PATHelpdeskAdvanced
 name: PATHelpdeskAdvanced
 script:
@@ -34,8 +33,7 @@ script:
       description: The object type ID for the ticket.
       required: true
     - name: ticket_status_id
-      description: The status ID for the ticket. Use hda-list-ticket-statuses to get
-        a list of status IDs.
+      description: The status ID for the ticket. Use hda-list-ticket-statuses to get a list of status IDs.
       required: true
     - name: ticket_priority_id
       description: The priority ID for the ticket.
@@ -382,7 +380,7 @@ script:
     - contextPath: HelpdeskAdvanced.Ticket.UrgencyID
       description: The urgency ID of the ticket.
       type: string
-  
+
   - name: hda-add-ticket-attachment
     description: Add an attachment to a ticket.
     arguments:
@@ -392,7 +390,7 @@ script:
     - name: entry_id
       description: The file entry ID to attach.
       required: true
-    
+
   - name: hda-list-ticket-attachments
     description: List attachments for a ticket.
     arguments:
@@ -473,6 +471,7 @@ script:
     - contextPath: HelpdeskAdvanced.Ticket.Attachment.UniqueID
       description: A unique ID for the attachment.
       type: string
+
   - name: hda-add-ticket-comment
     description: Add a comment to a ticket.
     arguments:
@@ -489,7 +488,8 @@ script:
       predefined:
       - 'True'
       - 'False'
-    required: true
+      required: true
+
   - name: hda-list-ticket-statuses
     description: List ticket statuses.
     arguments:
@@ -615,21 +615,21 @@ script:
       type: Number
       description: The maximum number of users to return per page.
     outputs:
-      - contextPath: HelpdeskAdvanced.User.ID
-        description: The user ID
-        type: string
-      - contextPath: HelpdeskAdvanced.User.Email
-        description: The user's email address
-        type: string
-      - contextPath: HelpdeskAdvanced.User.FirstName
-        description: The user's first name
-        type: string
-      - contextPath: HelpdeskAdvanced.User.LastName
-        description: The user's last name
-        type: string
-      - contextPath: HelpdeskAdvanced.User.Phone
-        description: The user's phone number
-        type: string
+    - contextPath: HelpdeskAdvanced.User.ID
+      description: The user ID.
+      type: string
+    - contextPath: HelpdeskAdvanced.User.Email
+      description: The user's email address.
+      type: string
+    - contextPath: HelpdeskAdvanced.User.FirstName
+      description: The user's first name.
+      type: string
+    - contextPath: HelpdeskAdvanced.User.LastName
+      description: The user's last name.
+      type: string
+    - contextPath: HelpdeskAdvanced.User.Phone
+      description: The user's phone number.
+      type: string
 
   - name: hda-list-groups
     description: List groups.
@@ -649,21 +649,21 @@ script:
       description: The maximum number of groups to return per page.
 
     outputs:
-      - contextPath: HelpdeskAdvanced.Group.ID
-        description: The group ID
-        type: string
-      - contextPath: HelpdeskAdvanced.Group.ObjectTypeID
-        description: The object type ID of the group
-        type: string
-      - contextPath: HelpdeskAdvanced.Group.Description
-        description: The group description
-        type: string
+    - contextPath: HelpdeskAdvanced.Group.ID
+      description: The group ID.
+      type: string
+    - contextPath: HelpdeskAdvanced.Group.ObjectTypeID
+      description: The object type ID of the group.
+      type: string
+    - contextPath: HelpdeskAdvanced.Group.Description
+      description: The group description.
+      type: string
 
   runonce: false
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.13.74666
+  dockerimage: demisto/python3:3.10.13.75921
 fromversion: 6.9.0
 tests:
 - No tests (auto formatted)
