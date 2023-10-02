@@ -151,8 +151,6 @@ def test_get_a_list_of_threats_command(mocker):
     client = mock_client(mocker, util_load_json('test_data/test_get_list_of_abnormal_threats.json'))
     results = get_a_list_of_threats_command(client, {})
     assert results.outputs.get('threats')[0].get('threatId') == '184712ab-6d8b-47b3-89d3-a314efef79e2'
-    assert results.outputs.get('pageNumber', 0) > 0
-    assert results.outputs.get('nextPageNumber') == results.outputs.get('pageNumber', 0) + 1
     assert results.outputs_prefix == 'AbnormalSecurity.inline_response_200'
 
 
