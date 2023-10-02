@@ -1,5 +1,5 @@
 Improve the effectiveness of your service provision and resources, and the quality of your IT department.
-This integration was integrated and tested with version xx of PATHelpdeskAdvanced.
+This integration was integrated and tested with version 11.0.44 of PAT HelpdeskAdvanced.
 
 ## Configure PAT HelpdeskAdvanced on Cortex XSOAR
 
