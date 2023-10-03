@@ -5664,6 +5664,7 @@ def list_cidr_blocks_command(client: Client,
         t=human_readable_ec,
         removeNull=True,
     )
+    demisto.debug(f'{human_readable=} , {context_entry=} , {raw_response}')
     return human_readable, context_entry, raw_response
 
 
