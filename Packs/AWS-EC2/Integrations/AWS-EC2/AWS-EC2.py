@@ -13,7 +13,7 @@ urllib3.disable_warnings()
 
 def parse_filter_field(filter_str):
     filters = []
-    regex = re.compile(r'name=([\w\d_:.-]+),values=([ /\w\d@_,.*-]+)', flags=re.I)
+    regex = re.compile(r'name=([\w\d_:.-]+),values=([ /\w\d@_,.*-:]+)', flags=re.I)
     for f in filter_str.split(';'):
         match = regex.match(f)
         if match is None:
@@ -605,7 +605,7 @@ def describe_subnets_command(args, aws_client):
         data.append({
             'AvailabilityZone': subnet['AvailabilityZone'],
             'AvailableIpAddressCount': subnet['AvailableIpAddressCount'],
-            'CidrBlock': subnet['CidrBlock'],
+            'CidrBlock': subnet.get('CidrBlock', ""),
             'DefaultForAz': subnet['DefaultForAz'],
             'State': subnet['State'],
             'SubnetId': subnet['SubnetId'],
@@ -2489,7 +2489,7 @@ def create_launch_template_command(args, aws_client):
 
     NetworkInterfaces = {}  # type: dict
     if args.get('AssociatePublicIpAddress') is not None:
-        NetworkInterfaces.update({'AssociatePublicIpAddress': args.get('AssociatePublicIpAddress')})
+        NetworkInterfaces.update({'AssociatePublicIpAddress': argToBoolean(args.get('AssociatePublicIpAddress'))})
     if args.get('NetworkInterfacesDeleteOnTermination') is not None:
         NetworkInterfaces.update({'DeleteOnTermination': args.get('NetworkInterfacesDeleteOnTermination')})
     if args.get('NetworkInterfacesDescription') is not None:
