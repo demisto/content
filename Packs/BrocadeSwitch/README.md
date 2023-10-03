@@ -45,7 +45,7 @@ You can configure the specific vendor and product for this instance.
    | Parameter     | Value    
    | :---          | :---                    
    | `Protocol`    | Select **UDP** for the default forwarding, or **Secure TCP** if the syslog forwarding on the Brocade switch appliance was defined with the **-secure** option (see [SyslogAdmin](https://techdocs.broadcom.com/us/en/fibre-channel-networking/fabric-os/fabric-os-commands/9-2-x/Fabric-OS-Commands/syslogAdmin.html) command reference).  
-   | `Port`        | Enter the syslog service port that Cortex XSIAM Broker VM should listen on for receiving forwarded events from Brocade Fabric OS switch appliances (This should be aligned with the *-port* operand used on the switch appliance when running the [SyslogAdmin](https://techdocs.broadcom.com/us/en/fibre-channel-networking/fabric-os/fabric-os-commands/9-2-x/Fabric-OS-Commands/syslogAdmin.html) command as described in the [Syslog Forwarding Configuration](#syslog-forwarding-configuration) section).   
+   | `Port`        | Enter the syslog service port that Cortex XSIAM Broker VM should listen on for receiving forwarded events from Brocade Fabric OS switch appliances. (This should be aligned with the *-port* operand used on the switch appliance when running the [SyslogAdmin](https://techdocs.broadcom.com/us/en/fibre-channel-networking/fabric-os/fabric-os-commands/9-2-x/Fabric-OS-Commands/syslogAdmin.html) command as described in the [Syslog Forwarding Configuration](#syslog-forwarding-configuration) section).   
    | `Vendor`      | Enter **Brocade**. 
    | `Product`     | Enter **Switch**. 
 
