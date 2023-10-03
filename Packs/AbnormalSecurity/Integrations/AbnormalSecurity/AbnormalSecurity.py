@@ -638,7 +638,7 @@ def get_a_list_of_vendors_command(client, args):
     page_size = str(args.get('page_size', ''))
     page_number = str(args.get('page_number', ''))
     response = client.get_a_list_of_vendors_request(page_size, page_number)
-    markdown = tableToMarkdown('Vendor Domains', response.get('vendors'), headers=['vendorDomain'], removeNull=True)
+    markdown = tableToMarkdown('Vendor Domains', response, headers=['vendorDomain'], removeNull=True)
     command_results = CommandResults(
         readable_output=markdown,
         outputs_prefix='AbnormalSecurity.VendorsList',
