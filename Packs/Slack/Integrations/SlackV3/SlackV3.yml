@@ -96,6 +96,7 @@ configuration:
   section: Connect
   required: false
   advanced: true
+  additionalinfo: Trust any certificate (not secure). Make sure to mark this parameter if you want the SlackBlockBuilder script to send a response back to the incident context.
 - defaultvalue: 'true'
   display: Enable Incident Mirroring
   name: mirroring
@@ -486,7 +487,7 @@ script:
       description: Set this argument to specify how many results to return.
     description: Retrieves replies to specific messages, regardless of whether it's from a public or private channel, direct message, or otherwise.
     name: slack-get-conversation-replies
-  dockerimage: demisto/slackv3:1.0.0.73686
+  dockerimage: demisto/slackv3:1.0.0.73990
   longRunning: true
   runonce: false
   script: '-'

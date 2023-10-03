@@ -163,10 +163,20 @@ configuration:
   section: Collect
   advanced: true
   required: false
+- additionalinfo: When set to true and the certificate and private key are provided, the HSTS header is added to all requests.
+  display: "Add HSTS header"
+  name: hsts_header
+  type: 8
+  required: false
+  defaultvalue: 'false'
 - additionalinfo: For use with McAfee Web Gateway format - set the indicator list type.
   defaultvalue: string
   display: "McAfee Gateway: Indicator List Type"
   name: mwg_type
+  type: 15
+  section: Collect
+  advanced: true
+  required: false
   options:
   - string
   - applcontrol
@@ -176,18 +186,14 @@ configuration:
   - mediatype
   - number
   - regex
-  type: 15
-  section: Collect
-  advanced: true
-  required: false
 - additionalinfo: For use with Symantec ProxySG format - set the default category for the output.
-  defaultvalue: bc_category
   display: "Symantec ProxySG: Default Category"
   name: category_default
   type: 0
   section: Collect
   advanced: true
   required: false
+  defaultvalue: bc_category
 - additionalinfo: For use with Symantec ProxySG format - set the categories that should be listed in the output (comma separated list). If not set, lists all existing categories.
   display: "Symantec ProxySG: Listed Categories"
   name: category_attribute
@@ -202,21 +208,21 @@ configuration:
   section: Collect
   advanced: true
   required: false
-- additionalinfo: Internal page size used when querying Cortex XSOAR for the indicators. Value can be up to 10,000 due to performance limitations.
-  defaultvalue: '10000'
+- defaultvalue: '10000'
   display: XSOAR Indicator Page Size
   name: page_size
   type: 0
   section: Collect
-  advanced: true
   required: false
-- defaultvalue: 'true'
-  display: Long Running Instance
-  hidden: true
+  additionalinfo: Internal page size used when querying Cortex XSOAR for the indicators. Value can be up to 10,000 due to performance limitations.
+  advanced: true
+- display: Long Running Instance
   name: longRunning
   type: 8
   section: Connect
   required: false
+  defaultvalue: 'true'
+  hidden: true
 - additionalinfo: 'NGINX global directives to be passed on the command line using the -g option. Each directive should end with `;`. For example: `worker_processes 4; timer_resolution 100ms;`. Advanced configuration to be used only if instructed by Cortex XSOAR Support.'
   display: NGINX Global Directives
   name: nginx_global_directives
@@ -231,8 +237,8 @@ configuration:
   section: Connect
   advanced: true
   required: false
-- additionalinfo: NGNIX read timeout in seconds.
-  display: NGINX Read Timeout
+- additionalinfo: 'NGNIX read timeout in seconds.'
+  display: 'NGINX Read Timeout'
   name: timeout
   type: 0
   section: Connect
@@ -252,7 +258,7 @@ script:
   commands:
   - name: edl-update
     arguments:
-    - description: The query to run to update the indicators list. To view expected results, run the following command from the Cortex XSOAR CLI `!findIndicators query=<your query>`
+    - description: The query to run to update the indicators list. To view expected results, run the following command from the Cortex XSOAR CLI `!findIndicators query=<your query>`.
       name: query
     - auto: PREDEFINED
       defaultValue: PAN-OS (text)
@@ -415,7 +421,7 @@ script:
       - 'False'
       - 'True'
     description: Updates values stored in the List (only available On-Demand).
-  dockerimage: demisto/flask-nginx:1.0.0.69390
+  dockerimage: demisto/flask-nginx:1.0.0.74096
   longRunning: true
   longRunningPort: true
   script: '-'

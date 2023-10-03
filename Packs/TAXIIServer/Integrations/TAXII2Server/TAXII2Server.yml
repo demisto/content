@@ -72,8 +72,14 @@ configuration:
   section: Connect
   advanced: true
   required: false
-- display: TAXII2 Service URL Address
-  additionalinfo: Full URL address to set in the TAXII2 service response. If not set, the integration will try to auto-detect the URL.
+- display: Add HSTS header
+  additionalinfo: When set to true and certificate & private key are provided will add the HSTS header to all requests.
+  name: hsts_header
+  type: 8
+  required: false
+  defaultvalue: 'false'
+- additionalinfo: "Full URL address to set in the TAXII2 service response. If not set, the integration will try to auto-detect the URL."
+  display: TAXII2 Service URL Address
   name: service_address
   type: 0
   section: Connect
@@ -85,10 +91,10 @@ configuration:
   section: Connect
   advanced: true
   required: false
-- additionalinfo: "NGINX server configuration. To be used instead of the default NGINX_SERVER_CONF used in the integration code. Advanced configuration to be used only if instructed by Cortex XSOAR Support."
-  display: NGINX Server Conf
+- display: NGINX Server Conf
   name: nginx_server_conf
   type: 12
+  additionalinfo: "NGINX server configuration. To be used instead of the default NGINX_SERVER_CONF used in the integration code. Advanced configuration to be used only if instructed by Cortex XSOAR Support."
   section: Connect
   advanced: true
   required: false
@@ -143,7 +149,7 @@ script:
     - contextPath: TAXIIServer.ServerInfo.description
       description: The server description.
       type: String
-  dockerimage: demisto/flask-nginx:1.0.0.72369
+  dockerimage: demisto/flask-nginx:1.0.0.74096
   longRunning: true
   longRunningPort: true
   script: '-'

@@ -46,7 +46,7 @@ script:
       description: List of cryptocurrency addresses.
       isArray: true
     - name: address_type
-      description: The cryptocurrency address type, if known. e.g. 'bitcoin'
+      description: The cryptocurrency address type, if known. e.g. 'bitcoin'.
       auto: PREDEFINED
       predefined:
       - bitcoin
@@ -70,7 +70,7 @@ script:
       description: The cryptocurrency type. e.g. 'bitcoin'.
       type: string
     description: Return Cryptocurrency reputation.
-  dockerimage: demisto/python3:3.10.13.72123
+  dockerimage: demisto/python3:3.10.13.73190
   runonce: false
   script: '-'
   subtype: python3

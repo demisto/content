@@ -1,0 +1,5812 @@
+id: Test Playbook - NGFW Scan
+version: -1
+name: Test Playbook - NGFW Scan
+description: |-
+  This playbook tests the ‘NGFW Scan’ playbook which is part of the ‘Core - Investigation and Response’ pack.
+
+  The following tests are conducted in the playbook:
+  1- Confirm that the parent incident fields are populated.
+  2- Ensure that context data is correctly extracted.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 1906ae93-d78f-49ac-8336-a45189828484
+    type: start
+    task:
+      id: 1906ae93-d78f-49ac-8336-a45189828484
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -20,
+          "y": 30
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: b57186ee-d705-4640-8fd4-f7319f3b6cf9
+    type: regular
+    task:
+      id: b57186ee-d705-4640-8fd4-f7319f3b6cf9
+      version: -1
+      name: Delete Context
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -20,
+          "y": 160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: f9469a45-4e52-4db0-806a-361837f7f17e
+    type: regular
+    task:
+      id: f9469a45-4e52-4db0-806a-361837f7f17e
+      version: -1
+      name: Get Endpoints
+      description: Gets a list of endpoints, according to the passed filters. If there are no filters, all endpoints are returned. Filtering by multiple fields will be concatenated using AND condition (OR is not supported). Maximum result set size is 100. Offset is the zero-based number of endpoint from the start of the result set (start by counting from 0).
+      script: Cortex Core - IR|||core-get-endpoints
+      type: regular
+      iscommand: true
+      brand: Cortex Core - IR
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      alias_name:
+        simple: TestPlaybook
+      status:
+        simple: connected
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -20,
+          "y": 320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: db14ae22-11a6-42a6-8150-b94ecca40fae
+    type: condition
+    task:
+      id: db14ae22-11a6-42a6-8150-b94ecca40fae
+      version: -1
+      name: Is the EndpointID defined?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Core.Endpoint
+                accessor: endpoint_id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -20,
+          "y": 480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 174c8aae-0996-4cfa-8bdc-a11cdfc83f7e
+    type: regular
+    task:
+      id: 174c8aae-0996-4cfa-8bdc-a11cdfc83f7e
+      version: -1
+      name: Get Endpoints Error - No Available Endpoint
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: "No available connected endpoints were found. \nThis may indicate that the following changes were made to this test playbook.\n1- The 'alias_name' input configuration was changed for the 'core-get-endpoints' automation used in the 'Get Endpoints' task. The 'alias_name' input value should be 'TestPlaybook'."
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 360,
+          "y": 650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: cbec8bdb-fff9-4307-8c7c-a66fb15806de
+    type: regular
+    task:
+      id: cbec8bdb-fff9-4307-8c7c-a66fb15806de
+      version: -1
+      name: Set Alert Fields
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setAlert
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      agentid:
+        complex:
+          root: Core.Endpoint
+          accessor: endpoint_id
+          transformers:
+          - operator: FirstArrayElement
+      hostip:
+        complex:
+          root: Endpoint
+          accessor: IPAddress
+          transformers:
+          - operator: FirstArrayElement
+      localip:
+        simple: 80.66.75.36
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -20,
+          "y": 760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 9d9810a7-b1b7-4092-83fb-7cf1fd3b809e
+    type: title
+    task:
+      id: 9d9810a7-b1b7-4092-83fb-7cf1fd3b809e
+      version: -1
+      name: Start Tests
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "13"
+      - "11"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -20,
+          "y": 1080
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: d95fae12-67c7-4c6e-8659-191bd42ec28b
+    type: title
+    task:
+      id: d95fae12-67c7-4c6e-8659-191bd42ec28b
+      version: -1
+      name: Check Parent Incident Fields
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "14"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -20,
+          "y": 1220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 019493c2-13ec-4792-811f-667a91f8b33e
+    type: title
+    task:
+      id: 019493c2-13ec-4792-811f-667a91f8b33e
+      version: -1
+      name: Check Context Data
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "144"
+      - "48"
+      - "24"
+      - "120"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 9928ff6a-f5c5-4c20-8767-2c83d73bc5ae
+    type: condition
+    task:
+      id: 9928ff6a-f5c5-4c20-8767-2c83d73bc5ae
+      version: -1
+      name: Verify Manual Severity
+      description: Verify that the ‘manual_severity’ parent incident field was filled out correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "15"
+      Verified:
+      - "148"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: parentIncidentFields
+                accessor: manual_severity
+            iscontext: true
+          right:
+            value:
+              simple: high
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -20,
+          "y": 1360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: f66f90fc-cbe0-4dc1-84e4-7aa74a1ad10f
+    type: regular
+    task:
+      id: f66f90fc-cbe0-4dc1-84e4-7aa74a1ad10f
+      version: -1
+      name: Verify Parent Incident Field Error - Manual Severity
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'manual_severity' parent incident field was not set correctly. This may indicate that the following change has been made to the 'NGFW Scan' playbook:
+          1- The 'manual_severity' input configuration was changed for the 'setParentIncidentFields' automation used in the 'Set Alert Severity to High' task.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 200,
+          "y": 1530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 54abe039-18ea-41d7-8c4a-b2be98c26b5d
+    type: condition
+    task:
+      id: 54abe039-18ea-41d7-8c4a-b2be98c26b5d
+      version: -1
+      name: Verify ASN
+      description: Verify that the ‘IP.ASN’ context key was extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "17"
+      Verified:
+      - "151"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: IP
+                accessor: ASN
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 5380,
+          "y": 2530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 5a0849bb-4380-42b4-8635-479cd4a2b289
+    type: regular
+    task:
+      id: 5a0849bb-4380-42b4-8635-479cd4a2b289
+      version: -1
+      name: Verify Context Error - ASN
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'IP.ASN' context key was not extracted properly. This may indicate that the following change has been made to the 'NGFW Scan' playbook:
+          1- The 'ip' input configuration was changed for the 'ip' automation used in the 'Enrich scanner IP Address' task.
+          2- The 'ip' automation outputs have been modified and no longer contain the 'IP.ASN' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 5380,
+          "y": 2720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 355e7147-959a-4dbb-8f2e-0c2dd68ea957
+    type: condition
+    task:
+      id: 355e7147-959a-4dbb-8f2e-0c2dd68ea957
+      version: -1
+      name: Verify AS Owner
+      description: Verify that the ‘IP.ASOwner’ context key was extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "25"
+      Verified:
+      - "151"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: IP
+                accessor: ASOwner
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 4980,
+          "y": 2535
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 5ba7e393-97de-48ad-813d-acb3665d5f12
+    type: title
+    task:
+      id: 5ba7e393-97de-48ad-813d-acb3665d5f12
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -20,
+          "y": 6340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 3e8138fc-4ef8-47ed-8346-2123b3446775
+    type: playbook
+    task:
+      id: 3e8138fc-4ef8-47ed-8346-2123b3446775
+      version: -1
+      name: NGFW Scan
+      description: |-
+        This playbook handles external and internal scanning alerts.
+
+        **Attacker's Goals:**
+
+        Adversaries may attempt to get a listing of services running on remote hosts, including those that may be vulnerable to remote software exploitation. Methods to acquire this information include port scans and vulnerability scans using tools that are brought onto a system.
+
+        **Investigative Actions:**
+
+        Investigate the scanner IP address using:
+
+        * IP enrichment:
+        * NGFW Internal Scan playbook
+        * Endpoint Investigation Plan playbook
+        * Entity enrichment
+
+        **Response Actions**
+
+        The playbook's response actions are based on the initial data provided within the alert. In that phase, the playbook will execute:
+
+        * Automatically block IP address
+        * Report IP address (If configured as true in the playbook inputs)
+
+        When the playbook executes, it checks for additional activity using the Endpoint Investigation Plan playbook, and another phase, which includes the Containment Plan playbook, is executed.
+        This phase will execute the following containment actions:
+
+        * Automatically isolate involved endpoint
+        * Manual block indicators
+        * Manual file quarantine
+        * Manual disable user
+
+        **External resources:**
+
+        [Mitre technique T1046 - Network Service Scanning](https://attack.mitre.org/techniques/T1046/)
+
+        [Port Scan](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Analytics-Alert-Reference/Port-Scan)
+      playbookName: NGFW Scan
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      AutoCloseAlert:
+        simple: "false"
+      AutoContainment:
+        simple: "false"
+      AutoRecovery:
+        simple: "false"
+      CommentToAdd:
+        simple: '${alert.name}. Alert ID: ${alert.id}'
+      HostAutoContainment:
+        simple: "false"
+      ShouldOpenTicket:
+        simple: "False"
+      UserVerification:
+        simple: "False"
+      ZendeskSubject:
+        simple: XSIAM Incident ID - ${parentIncidentFields.incident_id}
+      addCommentPerEndpoint:
+        simple: "True"
+      blockKnownScanner:
+        simple: "true"
+      description:
+        simple: ${parentIncidentFields.description}. ${parentIncidentFields.xdr_url}
+      reportIPAddress:
+        simple: "false"
+      scannerIP:
+        complex:
+          root: alert
+          accessor: localip
+      serviceNowShortDescription:
+        simple: XSIAM Incident ID - ${parentIncidentFields.incident_id}
+    separatecontext: false
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": -20,
+          "y": 920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 56ca3e9e-097f-4bee-84c0-9c4da79f93ab
+    type: title
+    task:
+      id: 56ca3e9e-097f-4bee-84c0-9c4da79f93ab
+      version: -1
+      name: '''IP'' Context Data'
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "16"
+      - "18"
+      - "26"
+      - "28"
+      - "30"
+      - "32"
+      - "34"
+      - "36"
+      - "38"
+      - "40"
+      - "42"
+      - "44"
+      - "46"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 2390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 60b43e81-c919-4357-899f-596be835ed3e
+    type: regular
+    task:
+      id: 60b43e81-c919-4357-899f-596be835ed3e
+      version: -1
+      name: Verify Context Error - ASOwner
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'IP.ASOwner' context key was not extracted properly. This may indicate that the following change has been made to the 'NGFW Scan' playbook:
+          1- The 'ip' input configuration was changed for the 'ip' automation used in the 'Enrich scanner IP Address' task.
+          2- The 'ip' automation outputs have been modified and no longer contain the 'IP.ASOwner' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 4980,
+          "y": 2720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: 42fb5423-d551-4906-8e4c-f365dee0d940
+    type: condition
+    task:
+      id: 42fb5423-d551-4906-8e4c-f365dee0d940
+      version: -1
+      name: Verify IP Address
+      description: Verify that the ‘IP.Address’ context key was extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "27"
+      Verified:
+      - "151"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: IP
+                accessor: Address
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: alert
+                accessor: localip
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 4590,
+          "y": 2530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: 943e1b36-eb97-4016-8fab-9b6147d93070
+    type: regular
+    task:
+      id: 943e1b36-eb97-4016-8fab-9b6147d93070
+      version: -1
+      name: Verify Context Error - IP Address
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'IP.Address' context key was not extracted properly. This may indicate that the following change has been made to the 'NGFW Scan' playbook:
+          1- The 'ip' input configuration was changed for the 'ip' automation used in the 'Enrich scanner IP Address' task.
+          2- The 'ip' automation outputs have been modified and no longer contain the 'IP.Address' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 4590,
+          "y": 2720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: fcfc3863-54b6-4956-8f9c-5b75665a7db0
+    type: condition
+    task:
+      id: fcfc3863-54b6-4956-8f9c-5b75665a7db0
+      version: -1
+      name: Verify Detection Engines
+      description: Verify that the ‘IP.DetectionEngines’ context key was extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "29"
+      Verified:
+      - "151"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: IP
+                accessor: DetectionEngines
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 4200,
+          "y": 2535
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: 6a6c0a27-cfcc-411c-8d3c-7fc152484da9
+    type: regular
+    task:
+      id: 6a6c0a27-cfcc-411c-8d3c-7fc152484da9
+      version: -1
+      name: Verify Context Error - DetectionEngines
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'IP.DetectionEngines' context key was not extracted properly. This may indicate that the following change has been made to the 'NGFW Scan' playbook:
+          1- The 'ip' input configuration was changed for the 'ip' automation used in the 'Enrich scanner IP Address' task.
+          2- The 'ip' automation outputs have been modified and no longer contain the 'IP.DetectionEngines' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 4200,
+          "y": 2720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: 628cf7e1-eba7-4655-8853-133ec10a1681
+    type: condition
+    task:
+      id: 628cf7e1-eba7-4655-8853-133ec10a1681
+      version: -1
+      name: Verify Positive Detections
+      description: Verify that the ‘IP.PositiveDetections’ context key was extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "31"
+      Verified:
+      - "151"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: IP
+                accessor: PositiveDetections
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3810,
+          "y": 2535
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: 728c8b62-bf91-4954-8c06-50fed94d11b8
+    type: regular
+    task:
+      id: 728c8b62-bf91-4954-8c06-50fed94d11b8
+      version: -1
+      name: Verify Context Error - Positive Detections
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'IP.PositiveDetections' context key was not extracted properly. This may indicate that the following change has been made to the 'NGFW Scan' playbook:
+          1- The 'ip' input configuration was changed for the 'ip' automation used in the 'Enrich scanner IP Address' task.
+          2- The 'ip' automation outputs have been modified and no longer contain the 'IP.PositiveDetections' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3810,
+          "y": 2720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: 277542c5-ac0a-4957-848c-3aad6c1fe5e4
+    type: condition
+    task:
+      id: 277542c5-ac0a-4957-848c-3aad6c1fe5e4
+      version: -1
+      name: Verify Geo Country
+      description: Verify that the ‘IP.Geo.Country’ context key was extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "33"
+      Verified:
+      - "151"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: IP.Geo
+                accessor: Country
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3420,
+          "y": 2535
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: cd591b2a-bf41-4c1d-890e-277069d5f860
+    type: regular
+    task:
+      id: cd591b2a-bf41-4c1d-890e-277069d5f860
+      version: -1
+      name: Verify Context Error - Geo Country
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'IP.Geo.Country' context key was not extracted properly. This may indicate that the following change has been made to the 'NGFW Scan' playbook:
+          1- The 'ip' input configuration was changed for the 'ip' automation used in the 'Enrich scanner IP Address' task.
+          2- The 'ip' automation outputs have been modified and no longer contain the 'IP.Geo.Country' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3420,
+          "y": 2720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: de911867-4866-4b32-829c-5064cbff6260
+    type: condition
+    task:
+      id: de911867-4866-4b32-829c-5064cbff6260
+      version: -1
+      name: Verify Malicious Description
+      description: Verify that the ‘IP.Malicious.Description’ context key was extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "35"
+      Verified:
+      - "151"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: IP.Malicious
+                accessor: Description
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3030,
+          "y": 2535
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: 69101eb0-de19-4306-873d-2c9d1ddc25d9
+    type: regular
+    task:
+      id: 69101eb0-de19-4306-873d-2c9d1ddc25d9
+      version: -1
+      name: Verify Context Error - Malicious Description
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'IP.Malicious.Description' context key was not extracted properly. This may indicate that the following change has been made to the 'NGFW Scan' playbook:
+          1- The 'ip' input configuration was changed for the 'ip' automation used in the 'Enrich scanner IP Address' task.
+          2- The 'ip' automation outputs have been modified and no longer contain the 'IP.Malicious.Description' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3030,
+          "y": 2720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: 621701d6-eb6c-4fd9-852b-5d3f451bd028
+    type: condition
+    task:
+      id: 621701d6-eb6c-4fd9-852b-5d3f451bd028
+      version: -1
+      name: Verify Malicious Vendor
+      description: Verify that the ‘IP.Malicious.Vendor’ context key was extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "37"
+      Verified:
+      - "151"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: IP.Malicious
+                accessor: Vendor
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2640,
+          "y": 2535
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: 404a9cf1-35dc-480e-83a8-f13a2d65c691
+    type: regular
+    task:
+      id: 404a9cf1-35dc-480e-83a8-f13a2d65c691
+      version: -1
+      name: Verify Context Error - Malicious Vendor
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'IP.Malicious.Vendor' context key was not extracted properly. This may indicate that the following change has been made to the 'NGFW Scan' playbook:
+          1- The 'ip' input configuration was changed for the 'ip' automation used in the 'Enrich scanner IP Address' task.
+          2- The 'ip' automation outputs have been modified and no longer contain the 'IP.Malicious.Vendor' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2640,
+          "y": 2720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: 4291a915-2669-40df-81f8-ddd4bb0916d0
+    type: condition
+    task:
+      id: 4291a915-2669-40df-81f8-ddd4bb0916d0
+      version: -1
+      name: Verify Relationships Entity A
+      description: Verify that the ‘IP.Relationships.EntityA’ context key was extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "39"
+      Verified:
+      - "151"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: IP.Relationships
+                accessor: EntityA
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2250,
+          "y": 2535
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: ae082755-02c9-4340-8cf4-4b1b616aa240
+    type: regular
+    task:
+      id: ae082755-02c9-4340-8cf4-4b1b616aa240
+      version: -1
+      name: Verify Context Error - Relationships Entity A
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'IP.Relationships.EntityA' context key was not extracted properly. This may indicate that the following change has been made to the 'NGFW Scan' playbook:
+          1- The 'ip' input configuration was changed for the 'ip' automation used in the 'Enrich scanner IP Address' task.
+          2- The 'ip' automation outputs have been modified and no longer contain the 'IP.Relationships.EntityA' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2250,
+          "y": 2720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "40":
+    id: "40"
+    taskid: 2347974e-8e1f-4384-81ad-107e966979dd
+    type: condition
+    task:
+      id: 2347974e-8e1f-4384-81ad-107e966979dd
+      version: -1
+      name: Verify Relationships Entity A Type
+      description: Verify that the ‘IP.Relationships.EntityAType’ context key was extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "41"
+      Verified:
+      - "151"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: IP.Relationships
+                accessor: EntityAType
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1860,
+          "y": 2535
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "41":
+    id: "41"
+    taskid: 1124d821-9fc8-4789-8381-37d9110843f2
+    type: regular
+    task:
+      id: 1124d821-9fc8-4789-8381-37d9110843f2
+      version: -1
+      name: Verify Context Error - Relationships Entity A Type
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'IP.Relationships.EntityAType' context key was not extracted properly. This may indicate that the following change has been made to the 'NGFW Scan' playbook:
+          1- The 'ip' input configuration was changed for the 'ip' automation used in the 'Enrich scanner IP Address' task.
+          2- The 'ip' automation outputs have been modified and no longer contain the 'IP.Relationships.EntityAType' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1860,
+          "y": 2720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "42":
+    id: "42"
+    taskid: c1d2fe9a-804b-40ad-8aca-04e2114d866a
+    type: condition
+    task:
+      id: c1d2fe9a-804b-40ad-8aca-04e2114d866a
+      version: -1
+      name: Verify Relationships Entity B
+      description: Verify that the ‘IP.Relationships.EntityB’ context key was extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "43"
+      Verified:
+      - "151"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: IP.Relationships
+                accessor: EntityB
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1470,
+          "y": 2535
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "43":
+    id: "43"
+    taskid: f711068a-5e2d-4c0e-869b-3cf68eee6bf6
+    type: regular
+    task:
+      id: f711068a-5e2d-4c0e-869b-3cf68eee6bf6
+      version: -1
+      name: Verify Context Error - Relationships Entity B
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'IP.Relationships.EntityB' context key was not extracted properly. This may indicate that the following change has been made to the 'NGFW Scan' playbook:
+          1- The 'ip' input configuration was changed for the 'ip' automation used in the 'Enrich scanner IP Address' task.
+          2- The 'ip' automation outputs have been modified and no longer contain the 'IP.Relationships.EntityB' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1470,
+          "y": 2720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "44":
+    id: "44"
+    taskid: 7dbd37d6-47af-4d03-8178-9efcf871fdcd
+    type: condition
+    task:
+      id: 7dbd37d6-47af-4d03-8178-9efcf871fdcd
+      version: -1
+      name: Verify Relationships Entity B Type
+      description: Verify that the ‘IP.Relationships.EntityBType’ context key was extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "45"
+      Verified:
+      - "151"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: IP.Relationships
+                accessor: EntityBType
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1070,
+          "y": 2535
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "45":
+    id: "45"
+    taskid: c24b7cbb-57d1-4f51-85a6-31b56a034176
+    type: regular
+    task:
+      id: c24b7cbb-57d1-4f51-85a6-31b56a034176
+      version: -1
+      name: Verify Context Error - Relationships Entity B Type
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'IP.Relationships.EntityBType' context key was not extracted properly. This may indicate that the following change has been made to the 'NGFW Scan' playbook:
+          1- The 'ip' input configuration was changed for the 'ip' automation used in the 'Enrich scanner IP Address' task.
+          2- The 'ip' automation outputs have been modified and no longer contain the 'IP.Relationships.EntityBType' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1070,
+          "y": 2720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "46":
+    id: "46"
+    taskid: e3d3ffa0-d05b-40d0-870c-1bb21268cc1f
+    type: condition
+    task:
+      id: e3d3ffa0-d05b-40d0-870c-1bb21268cc1f
+      version: -1
+      name: Verify Relationship
+      description: Verify that the ‘IP.Relationships.Relationship’ context key was extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "47"
+      Verified:
+      - "151"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: IP.Relationships
+                accessor: Relationship
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 2535
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "47":
+    id: "47"
+    taskid: ad7c5270-7239-4351-848a-f83ea77ef18d
+    type: regular
+    task:
+      id: ad7c5270-7239-4351-848a-f83ea77ef18d
+      version: -1
+      name: Verify Context Error - Relationships
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'IP.Relationships.Relationship' context key was not extracted properly. This may indicate that the following change has been made to the 'NGFW Scan' playbook:
+          1- The 'ip' input configuration was changed for the 'ip' automation used in the 'Enrich scanner IP Address' task.
+          2- The 'ip' automation outputs have been modified and no longer contain the 'IP.Relationships.Relationship' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 2720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "48":
+    id: "48"
+    taskid: 684b2ed9-db7b-4b5d-8e10-ef5935de61de
+    type: title
+    task:
+      id: 684b2ed9-db7b-4b5d-8e10-ef5935de61de
+      version: -1
+      name: '''DBotScore'' Context Data'
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "49"
+      - "55"
+      - "51"
+      - "53"
+      - "57"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 1870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "49":
+    id: "49"
+    taskid: fb9861d9-d919-48a5-8793-dd0b8c037188
+    type: condition
+    task:
+      id: fb9861d9-d919-48a5-8793-dd0b8c037188
+      version: -1
+      name: Verify Reliability
+      description: Verify that the ‘DBotScore.Reliability’ context key was extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "50"
+      Verified:
+      - "150"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: DBotScore
+                accessor: Reliability
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1070,
+          "y": 2010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "50":
+    id: "50"
+    taskid: b170a809-f8f3-4a7b-882b-f47fb1599359
+    type: regular
+    task:
+      id: b170a809-f8f3-4a7b-882b-f47fb1599359
+      version: -1
+      name: Verify Context Error - Reliability
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'DBotScore.Reliability' context key was not extracted properly. This may indicate that the following change has been made to the 'NGFW Scan' playbook:
+          1- The 'ip' input configuration was changed for the 'ip' automation used in the 'Enrich scanner IP Address' task.
+          2- The 'ip' automation outputs have been modified and no longer contain the 'DBotScore.Reliability' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1070,
+          "y": 2190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "51":
+    id: "51"
+    taskid: 7a21ba88-b058-4c86-8f7c-91888485df6f
+    type: condition
+    task:
+      id: 7a21ba88-b058-4c86-8f7c-91888485df6f
+      version: -1
+      name: Verify Score
+      description: Verify that the ‘DBotScore.Score’ context key was extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "52"
+      Verified:
+      - "150"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: DBotScore
+                accessor: Score
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1460,
+          "y": 2010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "52":
+    id: "52"
+    taskid: f784d731-7e6a-440a-8fca-775d14e357b9
+    type: regular
+    task:
+      id: f784d731-7e6a-440a-8fca-775d14e357b9
+      version: -1
+      name: Verify Context Error - Score
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'DBotScore.Score' context key was not extracted properly. This may indicate that the following change has been made to the 'NGFW Scan' playbook:
+          1- The 'ip' input configuration was changed for the 'ip' automation used in the 'Enrich scanner IP Address' task.
+          2- The 'ip' automation outputs have been modified and no longer contain the 'DBotScore.Score' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1460,
+          "y": 2190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "53":
+    id: "53"
+    taskid: a6e1c2dc-1fa1-4822-8d94-b2cb1583e4e7
+    type: condition
+    task:
+      id: a6e1c2dc-1fa1-4822-8d94-b2cb1583e4e7
+      version: -1
+      name: Verify Type
+      description: Verify that the ‘DBotScore.Type’ context key was extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "54"
+      Verified:
+      - "150"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: DBotScore
+                accessor: Type
+            iscontext: true
+          right:
+            value:
+              simple: IP
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1850,
+          "y": 2010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "54":
+    id: "54"
+    taskid: 823df802-8830-4c22-87f4-3ff472068825
+    type: regular
+    task:
+      id: 823df802-8830-4c22-87f4-3ff472068825
+      version: -1
+      name: Verify Context Error - Type
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'DBotScore.Type' context key was not extracted properly. This may indicate that the following change has been made to the 'NGFW Scan' playbook:
+          1- The 'ip' input configuration was changed for the 'ip' automation used in the 'Enrich scanner IP Address' task.
+          2- The 'ip' automation outputs have been modified and no longer contain the 'DBotScore.Type' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1850,
+          "y": 2190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "55":
+    id: "55"
+    taskid: de118444-ea4c-4932-84a3-d7eebaa663fb
+    type: condition
+    task:
+      id: de118444-ea4c-4932-84a3-d7eebaa663fb
+      version: -1
+      name: Verify Indicator
+      description: Verify that the ‘DBotScore.Indicator’ context key was extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "56"
+      Verified:
+      - "150"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: DBotScore
+                accessor: Indicator
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: alert
+                accessor: localip
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 2010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "56":
+    id: "56"
+    taskid: 6701249e-13f1-4a7f-8ce5-a449ed910fa9
+    type: regular
+    task:
+      id: 6701249e-13f1-4a7f-8ce5-a449ed910fa9
+      version: -1
+      name: Verify Context Error - Indicator
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'DBotScore.Indicator' context key was not extracted properly. This may indicate that the following change has been made to the 'NGFW Scan' playbook:
+          1- The 'ip' input configuration was changed for the 'ip' automation used in the 'Enrich scanner IP Address' task.
+          2- The 'ip' automation outputs have been modified and no longer contain the 'DBotScore.Indicator' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 2190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "57":
+    id: "57"
+    taskid: 5e532d8d-7484-4b7a-839c-7d2b275cd837
+    type: condition
+    task:
+      id: 5e532d8d-7484-4b7a-839c-7d2b275cd837
+      version: -1
+      name: Verify Vendor
+      description: Verify that the ‘DBotScore.Vendor’ context key was extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "58"
+      Verified:
+      - "150"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: DBotScore
+                accessor: Vendor
+            iscontext: true
+          right:
+            value:
+              simple: VirusTotal
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2250,
+          "y": 2010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "58":
+    id: "58"
+    taskid: ab3bd74a-d407-42c9-8d72-a80054d4b1f2
+    type: regular
+    task:
+      id: ab3bd74a-d407-42c9-8d72-a80054d4b1f2
+      version: -1
+      name: Verify Context Error - Vendor
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'DBotScore.Vendor' context key was not extracted properly. This may indicate that the following change has been made to the 'NGFW Scan' playbook:
+          1- The 'ip' input configuration was changed for the 'ip' automation used in the 'Enrich scanner IP Address' task.
+          2- The 'ip' automation outputs have been modified and no longer contain the 'DBotScore.Vendor' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2250,
+          "y": 2190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "59":
+    id: "59"
+    taskid: 89c8336d-c665-4833-837e-b16b33f14a78
+    type: title
+    task:
+      id: 89c8336d-c665-4833-837e-b16b33f14a78
+      version: -1
+      name: '''IP.attributes'' Context path'
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "60"
+      - "62"
+      - "64"
+      - "66"
+      - "68"
+      - "70"
+      - "72"
+      - "74"
+      - "76"
+      - "116"
+      - "118"
+      - "124"
+      - "126"
+      - "121"
+      - "122"
+      - "123"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1110,
+          "y": 4080
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "60":
+    id: "60"
+    taskid: de69dbfa-7268-443e-880b-4d06e2078cae
+    type: condition
+    task:
+      id: de69dbfa-7268-443e-880b-4d06e2078cae
+      version: -1
+      name: Verify AS Owner
+      description: Verify that the ‘VirusTotal.IP.attributes.as_owner’ context key was extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "61"
+      Verified:
+      - "154"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: VirusTotal.IP.attributes
+                accessor: as_owner
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1330,
+          "y": 4220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "61":
+    id: "61"
+    taskid: 76ac6e99-53f5-4966-86fc-c65ef34d8cc8
+    type: regular
+    task:
+      id: 76ac6e99-53f5-4966-86fc-c65ef34d8cc8
+      version: -1
+      name: Verify Context Error - AS Owner
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'VirusTotal.IP.attributes.as_owner' context key was not extracted properly. This may indicate that the following change has been made to the 'NGFW Scan' playbook:
+          1- The 'ip' input configuration was changed for the 'ip' automation used in the 'Enrich scanner IP Address' task.
+          2- The 'ip' automation outputs have been modified and no longer contain the 'VirusTotal.IP.attributes.as_owner' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1330,
+          "y": 4400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "62":
+    id: "62"
+    taskid: a994ab61-61b7-49a4-8c20-8daf317e79c3
+    type: condition
+    task:
+      id: a994ab61-61b7-49a4-8c20-8daf317e79c3
+      version: -1
+      name: Verify ASN
+      description: Verify that the ‘VirusTotal.IP.attributes.asn’ context key was extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "63"
+      Verified:
+      - "154"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: VirusTotal.IP.attributes
+                accessor: asn
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1730,
+          "y": 4220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "63":
+    id: "63"
+    taskid: bd1a8e2a-fb30-4ba4-8294-16827db24088
+    type: regular
+    task:
+      id: bd1a8e2a-fb30-4ba4-8294-16827db24088
+      version: -1
+      name: Verify Context Error - ASN
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'VirusTotal.IP.attributes.asn' context key was not extracted properly. This may indicate that the following change has been made to the 'NGFW Scan' playbook:
+          1- The 'ip' input configuration was changed for the 'ip' automation used in the 'Enrich scanner IP Address' task.
+          2- The 'ip' automation outputs have been modified and no longer contain the 'VirusTotal.IP.attributes.asn' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1730,
+          "y": 4400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "64":
+    id: "64"
+    taskid: 2463d480-69ee-4595-8d89-af95fe6fe71a
+    type: condition
+    task:
+      id: 2463d480-69ee-4595-8d89-af95fe6fe71a
+      version: -1
+      name: Verify Continent
+      description: Verify that the ‘VirusTotal.IP.attributes.continent’ context key was extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "65"
+      Verified:
+      - "154"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: VirusTotal.IP.attributes
+                accessor: continent
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2130,
+          "y": 4220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "65":
+    id: "65"
+    taskid: 4d254d04-ce1d-4631-818c-4bb91702c712
+    type: regular
+    task:
+      id: 4d254d04-ce1d-4631-818c-4bb91702c712
+      version: -1
+      name: Verify Context Error - Continent
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'VirusTotal.IP.attributes.continent' context key was not extracted properly. This may indicate that the following change has been made to the 'NGFW Scan' playbook:
+          1- The 'ip' input configuration was changed for the 'ip' automation used in the 'Enrich scanner IP Address' task.
+          2- The 'ip' automation outputs have been modified and no longer contain the 'VirusTotal.IP.attributes.continent' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2130,
+          "y": 4400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "66":
+    id: "66"
+    taskid: 6ab4da16-d409-4c58-85f2-45b894790b60
+    type: condition
+    task:
+      id: 6ab4da16-d409-4c58-85f2-45b894790b60
+      version: -1
+      name: Verify AS Country
+      description: Verify that the ‘VirusTotal.IP.attributes.country’ context key was extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "67"
+      Verified:
+      - "154"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: VirusTotal.IP.attributes
+                accessor: country
+            iscontext: true
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2530,
+          "y": 4220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "67":
+    id: "67"
+    taskid: e2440356-58b9-47ca-8a7a-3cb6d633b965
+    type: regular
+    task:
+      id: e2440356-58b9-47ca-8a7a-3cb6d633b965
+      version: -1
+      name: Verify Context Error - Country
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'VirusTotal.IP.attributes.country' context key was not extracted properly. This may indicate that the following change has been made to the 'NGFW Scan' playbook:
+          1- The 'ip' input configuration was changed for the 'ip' automation used in the 'Enrich scanner IP Address' task.
+          2- The 'ip' automation outputs have been modified and no longer contain the 'VirusTotal.IP.attributes.country' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2530,
+          "y": 4400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "68":
+    id: "68"
+    taskid: 97d04bf4-f0b7-467d-8cfe-f45b236206cb
+    type: condition
+    task:
+      id: 97d04bf4-f0b7-467d-8cfe-f45b236206cb
+      version: -1
+      name: Verify Last Analysis Date
+      description: Verify that the ‘VirusTotal.IP.attributes.last_analysis_date’ context key was extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "69"
+      Verified:
+      - "154"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: VirusTotal.IP.attributes
+                accessor: last_analysis_date
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2930,
+          "y": 4220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "69":
+    id: "69"
+    taskid: ab22949a-b2fc-476e-8fa4-f88ac23ca595
+    type: regular
+    task:
+      id: ab22949a-b2fc-476e-8fa4-f88ac23ca595
+      version: -1
+      name: Verify Context Error - Last Analysis Date
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'VirusTotal.IP.attributes.last_analysis_date' context key was not extracted properly. This may indicate that the following change has been made to the 'NGFW Scan' playbook:
+          1- The 'ip' input configuration was changed for the 'ip' automation used in the 'Enrich scanner IP Address' task.
+          2- The 'ip' automation outputs have been modified and no longer contain the 'VirusTotal.IP.attributes.last_analysis_date' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2930,
+          "y": 4400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "70":
+    id: "70"
+    taskid: be86775b-c919-42b4-8100-640d66c48757
+    type: condition
+    task:
+      id: be86775b-c919-42b4-8100-640d66c48757
+      version: -1
+      name: Verify Last Modification Date
+      description: Verify that the ‘VirusTotal.IP.attributes.last_modification_date’ context key was extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "71"
+      Verified:
+      - "154"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: VirusTotal.IP.attributes
+                accessor: last_modification_date
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3320,
+          "y": 4220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "71":
+    id: "71"
+    taskid: bbb950df-ebc2-4ea4-81e4-50f0fdfeee11
+    type: regular
+    task:
+      id: bbb950df-ebc2-4ea4-81e4-50f0fdfeee11
+      version: -1
+      name: Verify Context Error - Last Modification Date
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'VirusTotal.IP.attributes.last_modification_date' context key was not extracted properly. This may indicate that the following change has been made to the 'NGFW Scan' playbook:
+          1- The 'ip' input configuration was changed for the 'ip' automation used in the 'Enrich scanner IP Address' task.
+          2- The 'ip' automation outputs have been modified and no longer contain the 'VirusTotal.IP.attributes.last_modification_date' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3320,
+          "y": 4400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "72":
+    id: "72"
+    taskid: c1d6fc6b-90cd-4751-88a9-a8a204064570
+    type: condition
+    task:
+      id: c1d6fc6b-90cd-4751-88a9-a8a204064570
+      version: -1
+      name: Verify Network
+      description: Verify that the ‘VirusTotal.IP.attributes.network’ context key was extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "73"
+      Verified:
+      - "154"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: VirusTotal.IP.attributes
+                accessor: network
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 4110,
+          "y": 4220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "73":
+    id: "73"
+    taskid: 22fa05ac-b54a-4f10-85d1-d9feb33eb8ed
+    type: regular
+    task:
+      id: 22fa05ac-b54a-4f10-85d1-d9feb33eb8ed
+      version: -1
+      name: Verify Context Error - Network
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'VirusTotal.IP.attributes.network' context key was not extracted properly. This may indicate that the following change has been made to the 'NGFW Scan' playbook:
+          1- The 'ip' input configuration was changed for the 'ip' automation used in the 'Enrich scanner IP Address' task.
+          2- The 'ip' automation outputs have been modified and no longer contain the 'VirusTotal.IP.attributes.network' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 4110,
+          "y": 4400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "74":
+    id: "74"
+    taskid: f4255e5f-1675-4e62-865a-176f91033064
+    type: condition
+    task:
+      id: f4255e5f-1675-4e62-865a-176f91033064
+      version: -1
+      name: Verify Regional Internet Registry
+      description: Verify that the ‘VirusTotal.IP.attributes.regional_internet_registry’ context key was extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "75"
+      Verified:
+      - "154"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: VirusTotal.IP.attributes
+                accessor: regional_internet_registry
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 4500,
+          "y": 4220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "75":
+    id: "75"
+    taskid: 6a54b257-3301-4f36-8ca1-077cc63af9d6
+    type: regular
+    task:
+      id: 6a54b257-3301-4f36-8ca1-077cc63af9d6
+      version: -1
+      name: Verify Context Error - Regional Internet Registry
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'VirusTotal.IP.attributes.regional_internet_registry' context key was not extracted properly. This may indicate that the following change has been made to the 'NGFW Scan' playbook:
+          1- The 'ip' input configuration was changed for the 'ip' automation used in the 'Enrich scanner IP Address' task.
+          2- The 'ip' automation outputs have been modified and no longer contain the 'VirusTotal.IP.attributes.regional_internet_registry' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 4500,
+          "y": 4400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "76":
+    id: "76"
+    taskid: 27dff1cf-82e7-4d0b-8f22-790d2355bfbe
+    type: condition
+    task:
+      id: 27dff1cf-82e7-4d0b-8f22-790d2355bfbe
+      version: -1
+      name: Verify Reputation
+      description: Verify that the ‘VirusTotal.IP.attributes.reputation’ context key was extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "77"
+      Verified:
+      - "154"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: VirusTotal.IP.attributes
+                accessor: reputation
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 4900,
+          "y": 4220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "77":
+    id: "77"
+    taskid: 389c5af0-8ddb-4144-813e-76c0fbe844c5
+    type: regular
+    task:
+      id: 389c5af0-8ddb-4144-813e-76c0fbe844c5
+      version: -1
+      name: Verify Context Error - Reputation
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'VirusTotal.IP.attributes.reputation' context key was not extracted properly. This may indicate that the following change has been made to the 'NGFW Scan' playbook:
+          1- The 'ip' input configuration was changed for the 'ip' automation used in the 'Enrich scanner IP Address' task.
+          2- The 'ip' automation outputs have been modified and no longer contain the 'VirusTotal.IP.attributes.reputation' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 4900,
+          "y": 4400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "80":
+    id: "80"
+    taskid: 405d1a14-998b-443b-8004-8b0fd44b3ff1
+    type: condition
+    task:
+      id: 405d1a14-998b-443b-8004-8b0fd44b3ff1
+      version: -1
+      name: Verify Last Analysis Stats - Harmless
+      description: Verify that the ‘VirusTotal.IP.attributes.last_analysis_stats.harmless’ context key was extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "81"
+      Verified:
+      - "154"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: VirusTotal.IP.attributes.last_analysis_stats
+                accessor: harmless
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3720,
+          "y": 4220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "81":
+    id: "81"
+    taskid: 9d18dd53-30f1-479a-82e4-85cb23264ae1
+    type: regular
+    task:
+      id: 9d18dd53-30f1-479a-82e4-85cb23264ae1
+      version: -1
+      name: Verify Context Error - Last Analysis Stats - Harmless
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'VirusTotal.IP.attributes.last_analysis_stats.harmless' context key was not extracted properly. This may indicate that the following change has been made to the 'NGFW Scan' playbook:
+          1- The 'ip' input configuration was changed for the 'ip' automation used in the 'Enrich scanner IP Address' task.
+          2- The 'ip' automation outputs have been modified and no longer contain the 'VirusTotal.IP.attributes.last_analysis_stats.harmless' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3720,
+          "y": 4400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "82":
+    id: "82"
+    taskid: d743562f-235c-46e0-8270-32b03bc38ad4
+    type: condition
+    task:
+      id: d743562f-235c-46e0-8270-32b03bc38ad4
+      version: -1
+      name: Verify Malicious Count Stats
+      description: Verify that the ‘VirusTotal.IP.attributes.last_analysis_stats.malicious’ context key was extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "83"
+      Verified:
+      - "155"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: VirusTotal.IP.attributes.last_analysis_stats
+                accessor: malicious
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1330,
+          "y": 4730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "83":
+    id: "83"
+    taskid: 23132230-db1b-4a46-8172-d852f831ed69
+    type: regular
+    task:
+      id: 23132230-db1b-4a46-8172-d852f831ed69
+      version: -1
+      name: Verify Context Error - Malicious Count Stats
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'VirusTotal.IP.attributes.last_analysis_stats.malicious' context key was not extracted properly. This may indicate that the following change has been made to the 'NGFW Scan' playbook:
+          1- The 'ip' input configuration was changed for the 'ip' automation used in the 'Enrich scanner IP Address' task.
+          2- The 'ip' automation outputs have been modified and no longer contain the 'VirusTotal.IP.attributes.last_analysis_stats.malicious' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1330,
+          "y": 4910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "84":
+    id: "84"
+    taskid: 2703254f-1a72-4648-8a31-4ebe2f80281c
+    type: condition
+    task:
+      id: 2703254f-1a72-4648-8a31-4ebe2f80281c
+      version: -1
+      name: Verify Suspicious Count Stats
+      description: Verify that the ‘VirusTotal.IP.attributes.last_analysis_stats.suspicious’ context key was extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "85"
+      Verified:
+      - "155"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: VirusTotal.IP.attributes.last_analysis_stats
+                accessor: suspicious
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1730,
+          "y": 4730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "85":
+    id: "85"
+    taskid: 6edaabee-d8c8-4659-884a-75cf6eaec1f8
+    type: regular
+    task:
+      id: 6edaabee-d8c8-4659-884a-75cf6eaec1f8
+      version: -1
+      name: Verify Context Error - Suspicious Count Stats
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'VirusTotal.IP.attributes.last_analysis_stats.suspicious' context key was not extracted properly. This may indicate that the following change has been made to the 'NGFW Scan' playbook:
+          1- The 'ip' input configuration was changed for the 'ip' automation used in the 'Enrich scanner IP Address' task.
+          2- The 'ip' automation outputs have been modified and no longer contain the 'VirusTotal.IP.attributes.last_analysis_stats.suspicious' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1730,
+          "y": 4910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "86":
+    id: "86"
+    taskid: 16a75e51-be06-46ad-8d5e-033e63918d82
+    type: condition
+    task:
+      id: 16a75e51-be06-46ad-8d5e-033e63918d82
+      version: -1
+      name: Verify Timeout Count Stats
+      description: Verify that the ‘VirusTotal.IP.attributes.last_analysis_stats.timeout’ context key was extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "87"
+      Verified:
+      - "155"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: VirusTotal.IP.attributes.last_analysis_stats
+                accessor: timeout
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2130,
+          "y": 4730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "87":
+    id: "87"
+    taskid: 6b8ab0b1-9ed6-4bf7-8ff7-98cb26aa9e9c
+    type: regular
+    task:
+      id: 6b8ab0b1-9ed6-4bf7-8ff7-98cb26aa9e9c
+      version: -1
+      name: Verify Context Error - Timeout Count Stats
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'VirusTotal.IP.attributes.last_analysis_stats.timeout' context key was not extracted properly. This may indicate that the following change has been made to the 'NGFW Scan' playbook:
+          1- The 'ip' input configuration was changed for the 'ip' automation used in the 'Enrich scanner IP Address' task.
+          2- The 'ip' automation outputs have been modified and no longer contain the 'VirusTotal.IP.attributes.last_analysis_stats.timeout' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2130,
+          "y": 4910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "88":
+    id: "88"
+    taskid: 8fce32e2-b628-45ee-8903-ce6fbaa30df9
+    type: condition
+    task:
+      id: 8fce32e2-b628-45ee-8903-ce6fbaa30df9
+      version: -1
+      name: Verify Undetected Count Stats
+      description: Verify that the ‘VirusTotal.IP.attributes.last_analysis_stats.undetected’ context key was extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "89"
+      Verified:
+      - "155"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: VirusTotal.IP.attributes.last_analysis_stats
+                accessor: undetected
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2530,
+          "y": 4730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "89":
+    id: "89"
+    taskid: 9bb68c37-9996-4b7d-824f-fbb0300f4841
+    type: regular
+    task:
+      id: 9bb68c37-9996-4b7d-824f-fbb0300f4841
+      version: -1
+      name: Verify Context Error - Undetected Count Stats
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'VirusTotal.IP.attributes.last_analysis_stats.undetected' context key was not extracted properly. This may indicate that the following change has been made to the 'NGFW Scan' playbook:
+          1- The 'ip' input configuration was changed for the 'ip' automation used in the 'Enrich scanner IP Address' task.
+          2- The 'ip' automation outputs have been modified and no longer contain the 'VirusTotal.IP.attributes.last_analysis_stats.undetected' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2530,
+          "y": 4910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "92":
+    id: "92"
+    taskid: 5c08a71b-37d4-4b82-88ab-d844afe9853d
+    type: condition
+    task:
+      id: 5c08a71b-37d4-4b82-88ab-d844afe9853d
+      version: -1
+      name: Verify Last Analysis Date
+      description: Verify that the ‘VirusTotal.IP.attributes.threat_severity.last_analysis_date’ context key was extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "93"
+      Verified:
+      - "156"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: VirusTotal.IP.attributes.threat_severity
+                accessor: last_analysis_date
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1330,
+          "y": 5230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "93":
+    id: "93"
+    taskid: ffbc45fe-6fea-4beb-8c17-830d8bbce4ae
+    type: regular
+    task:
+      id: ffbc45fe-6fea-4beb-8c17-830d8bbce4ae
+      version: -1
+      name: Verify Context Error - Last Analysis Date
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'VirusTotal.IP.attributes.threat_severity.last_analysis_date' context key was not extracted properly. This may indicate that the following change has been made to the 'NGFW Scan' playbook:
+          1- The 'ip' input configuration was changed for the 'ip' automation used in the 'Enrich scanner IP Address' task.
+          2- The 'ip' automation outputs have been modified and no longer contain the 'VirusTotal.IP.attributes.threat_severity.last_analysis_date' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1330,
+          "y": 5410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "94":
+    id: "94"
+    taskid: b0033607-a435-4caf-8f13-cf7eb40a6473
+    type: condition
+    task:
+      id: b0033607-a435-4caf-8f13-cf7eb40a6473
+      version: -1
+      name: Verify Threat Description
+      description: Verify that the ‘VirusTotal.IP.attributes.threat_severity.level_description’ context key was extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "95"
+      Verified:
+      - "156"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: VirusTotal.IP.attributes.threat_severity
+                accessor: level_description
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1730,
+          "y": 5230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "95":
+    id: "95"
+    taskid: c1a2a24d-1fab-43bf-8b60-edb2e40b5b58
+    type: regular
+    task:
+      id: c1a2a24d-1fab-43bf-8b60-edb2e40b5b58
+      version: -1
+      name: Verify Context Error - Threat Description
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'VirusTotal.IP.attributes.threat_severity.level_description' context key was not extracted properly. This may indicate that the following change has been made to the 'NGFW Scan' playbook:
+          1- The 'ip' input configuration was changed for the 'ip' automation used in the 'Enrich scanner IP Address' task.
+          2- The 'ip' automation outputs have been modified and no longer contain the 'VirusTotal.IP.attributes.threat_severity.level_description' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1730,
+          "y": 5410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "96":
+    id: "96"
+    taskid: 524cdf3b-ee45-4369-8bfc-68375b61b9c2
+    type: condition
+    task:
+      id: 524cdf3b-ee45-4369-8bfc-68375b61b9c2
+      version: -1
+      name: Verify Threat Severity
+      description: Verify that the ‘VirusTotal.IP.attributes.threat_severity.threat_severity_level’ context key was extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "97"
+      Verified:
+      - "156"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: VirusTotal.IP.attributes.threat_severity
+                accessor: threat_severity_level
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2120,
+          "y": 5230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "97":
+    id: "97"
+    taskid: a5c64a5c-5ce3-4d45-8da6-0d9f64274916
+    type: regular
+    task:
+      id: a5c64a5c-5ce3-4d45-8da6-0d9f64274916
+      version: -1
+      name: Verify Context Error - Threat Severity
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'VirusTotal.IP.attributes.threat_severity.threat_severity_level' context key was not extracted properly. This may indicate that the following change has been made to the 'NGFW Scan' playbook:
+          1- The 'ip' input configuration was changed for the 'ip' automation used in the 'Enrich scanner IP Address' task.
+          2- The 'ip' automation outputs have been modified and no longer contain the 'VirusTotal.IP.attributes.threat_severity.threat_severity_level' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2120,
+          "y": 5410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "98":
+    id: "98"
+    taskid: a49ca49e-829b-4587-8026-98af1381b513
+    type: condition
+    task:
+      id: a49ca49e-829b-4587-8026-98af1381b513
+      version: -1
+      name: Verify Version
+      description: Verify that the ‘VirusTotal.IP.attributes.threat_severity.version’ context key was extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "99"
+      Verified:
+      - "156"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: VirusTotal.IP.attributes.threat_severity
+                accessor: version
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2510,
+          "y": 5230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "99":
+    id: "99"
+    taskid: a9009057-3d57-426f-8356-bb90f9dbd6c2
+    type: regular
+    task:
+      id: a9009057-3d57-426f-8356-bb90f9dbd6c2
+      version: -1
+      name: Verify Context Error - Version
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'VirusTotal.IP.attributes.threat_severity.version' context key was not extracted properly. This may indicate that the following change has been made to the 'NGFW Scan' playbook:
+          1- The 'ip' input configuration was changed for the 'ip' automation used in the 'Enrich scanner IP Address' task.
+          2- The 'ip' automation outputs have been modified and no longer contain the 'VirusTotal.IP.attributes.threat_severity.version' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2510,
+          "y": 5410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "102":
+    id: "102"
+    taskid: 4483c50a-429d-43c0-844e-32164df7e9fc
+    type: condition
+    task:
+      id: 4483c50a-429d-43c0-844e-32164df7e9fc
+      version: -1
+      name: Verify Bad Collection
+      description: Verify that the ‘VirusTotal.IP.attributes.threat_severity.threat_severity_data.belongs_to_bad_collection’ context key was extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "103"
+      Verified:
+      - "157"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: VirusTotal.IP.attributes.threat_severity.threat_severity_data
+                accessor: belongs_to_bad_collection
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1330,
+          "y": 5740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "103":
+    id: "103"
+    taskid: c7315880-8fd7-486a-8e36-3a07f3dfd170
+    type: regular
+    task:
+      id: c7315880-8fd7-486a-8e36-3a07f3dfd170
+      version: -1
+      name: Verify Context Error - Bad Collection
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'VirusTotal.IP.attributes.threat_severity.threat_severity_data.belongs_to_bad_collection' context key was not extracted properly. This may indicate that the following change has been made to the 'NGFW Scan' playbook:
+          1- The 'ip' input configuration was changed for the 'ip' automation used in the 'Enrich scanner IP Address' task.
+          2- The 'ip' automation outputs have been modified and no longer contain the 'VirusTotal.IP.attributes.threat_severity.threat_severity_data.belongs_to_bad_collection' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1330,
+          "y": 5920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "104":
+    id: "104"
+    taskid: 319961a1-328f-44b1-8c48-9bea60b85779
+    type: condition
+    task:
+      id: 319961a1-328f-44b1-8c48-9bea60b85779
+      version: -1
+      name: Verify Threat Actor
+      description: Verify that the ‘VirusTotal.IP.attributes.threat_severity.threat_severity_data.belongs_to_threat_actor’ context key was extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "105"
+      Verified:
+      - "157"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: VirusTotal.IP.attributes.threat_severity.threat_severity_data
+                accessor: belongs_to_threat_actor
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1720,
+          "y": 5740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "105":
+    id: "105"
+    taskid: c7666fd0-c7bb-4cbd-8131-c5077f5b28bf
+    type: regular
+    task:
+      id: c7666fd0-c7bb-4cbd-8131-c5077f5b28bf
+      version: -1
+      name: Verify Context Error - Threat Actor
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'VirusTotal.IP.attributes.threat_severity.threat_severity_data.belongs_to_threat_actor' context key was not extracted properly. This may indicate that the following change has been made to the 'NGFW Scan' playbook:
+          1- The 'ip' input configuration was changed for the 'ip' automation used in the 'Enrich scanner IP Address' task.
+          2- The 'ip' automation outputs have been modified and no longer contain the 'VirusTotal.IP.attributes.threat_severity.threat_severity_data.belongs_to_threat_actor' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1720,
+          "y": 5920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "106":
+    id: "106"
+    taskid: 193a726a-925f-44a3-8a52-3a30249c5971
+    type: condition
+    task:
+      id: 193a726a-925f-44a3-8a52-3a30249c5971
+      version: -1
+      name: Verify High Severity Communicating Files
+      description: Verify that the ‘VirusTotal.IP.attributes.threat_severity.threat_severity_data.has_bad_communicating_files_high’ context key was extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "107"
+      Verified:
+      - "157"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: VirusTotal.IP.attributes.threat_severity.threat_severity_data
+                accessor: has_bad_communicating_files_high
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2110,
+          "y": 5740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "107":
+    id: "107"
+    taskid: 81dc9eb8-f237-4bcb-8511-e088d4ef62ec
+    type: regular
+    task:
+      id: 81dc9eb8-f237-4bcb-8511-e088d4ef62ec
+      version: -1
+      name: Verify Context Error - High Severity Communicating Files
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'VirusTotal.IP.attributes.threat_severity.threat_severity_data.has_bad_communicating_files_high' context key was not extracted properly. This may indicate that the following change has been made to the 'NGFW Scan' playbook:
+          1- The 'ip' input configuration was changed for the 'ip' automation used in the 'Enrich scanner IP Address' task.
+          2- The 'ip' automation outputs have been modified and no longer contain the 'VirusTotal.IP.attributes.threat_severity.threat_severity_data.has_bad_communicating_files_high' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2110,
+          "y": 5920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "108":
+    id: "108"
+    taskid: 739e14b9-d49e-4cd3-8f6a-4b3131efad03
+    type: condition
+    task:
+      id: 739e14b9-d49e-4cd3-8f6a-4b3131efad03
+      version: -1
+      name: Verify Medium Severity Communicating Files
+      description: Verify that the ‘VirusTotal.IP.attributes.threat_severity.threat_severity_data.has_bad_communicating_files_medium’ context key was extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "109"
+      Verified:
+      - "157"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: VirusTotal.IP.attributes.threat_severity.threat_severity_data
+                accessor: has_bad_communicating_files_medium
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2500,
+          "y": 5740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "109":
+    id: "109"
+    taskid: ec5b963b-352c-48f1-84f3-53186e6cd811
+    type: regular
+    task:
+      id: ec5b963b-352c-48f1-84f3-53186e6cd811
+      version: -1
+      name: Verify Context Error - Medium Severity Communicating Files
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'VirusTotal.IP.attributes.threat_severity.threat_severity_data.has_bad_communicating_files_medium' context key was not extracted properly. This may indicate that the following change has been made to the 'NGFW Scan' playbook:
+          1- The 'ip' input configuration was changed for the 'ip' automation used in the 'Enrich scanner IP Address' task.
+          2- The 'ip' automation outputs have been modified and no longer contain the 'VirusTotal.IP.attributes.threat_severity.threat_severity_data.has_bad_communicating_files_medium' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2500,
+          "y": 5920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "110":
+    id: "110"
+    taskid: 2883f242-33ca-4c97-815e-52e263c1b23a
+    type: condition
+    task:
+      id: 2883f242-33ca-4c97-815e-52e263c1b23a
+      version: -1
+      name: Verify High Severity Downloaded Files
+      description: Verify that the ‘VirusTotal.IP.attributes.threat_severity.threat_severity_data.has_bad_downloaded_files_high’ context key was extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "111"
+      Verified:
+      - "157"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: VirusTotal.IP.attributes.threat_severity.threat_severity_data
+                accessor: has_bad_downloaded_files_high
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2890,
+          "y": 5740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "111":
+    id: "111"
+    taskid: 1ac159ef-ddae-4cbe-848b-f1338bb394a7
+    type: regular
+    task:
+      id: 1ac159ef-ddae-4cbe-848b-f1338bb394a7
+      version: -1
+      name: Verify Context Error - High Severity Downloaded Files
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'VirusTotal.IP.attributes.threat_severity.threat_severity_data.has_bad_downloaded_files_high' context key was not extracted properly. This may indicate that the following change has been made to the 'NGFW Scan' playbook:
+          1- The 'ip' input configuration was changed for the 'ip' automation used in the 'Enrich scanner IP Address' task.
+          2- The 'ip' automation outputs have been modified and no longer contain the 'VirusTotal.IP.attributes.threat_severity.threat_severity_data.has_bad_downloaded_files_high' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2890,
+          "y": 5920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "112":
+    id: "112"
+    taskid: 7a58c8f1-1c8b-477d-8a2f-3c063f7f2e53
+    type: condition
+    task:
+      id: 7a58c8f1-1c8b-477d-8a2f-3c063f7f2e53
+      version: -1
+      name: Verify Medium Severity Downloaded Files
+      description: Verify that the ‘VirusTotal.IP.attributes.threat_severity.threat_severity_data.has_bad_downloaded_files_medium’ context key was extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "113"
+      Verified:
+      - "157"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: VirusTotal.IP.attributes.threat_severity.threat_severity_data
+                accessor: has_bad_downloaded_files_medium
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3290,
+          "y": 5740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "113":
+    id: "113"
+    taskid: 5c796e8a-0756-4a82-806f-2c7e6054f58e
+    type: regular
+    task:
+      id: 5c796e8a-0756-4a82-806f-2c7e6054f58e
+      version: -1
+      name: Verify Context Error - Medium Severity Downloaded Files
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'VirusTotal.IP.attributes.threat_severity.threat_severity_data.has_bad_downloaded_files_medium' context key was not extracted properly. This may indicate that the following change has been made to the 'NGFW Scan' playbook:
+          1- The 'ip' input configuration was changed for the 'ip' automation used in the 'Enrich scanner IP Address' task.
+          2- The 'ip' automation outputs have been modified and no longer contain the 'VirusTotal.IP.attributes.threat_severity.threat_severity_data.has_bad_downloaded_files_medium' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3290,
+          "y": 5920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "114":
+    id: "114"
+    taskid: 62bb18a7-3a0c-4f1b-8dfd-ca3e63d75b85
+    type: condition
+    task:
+      id: 62bb18a7-3a0c-4f1b-8dfd-ca3e63d75b85
+      version: -1
+      name: Verify Threat Detections Count
+      description: Verify that the ‘VirusTotal.IP.attributes.threat_severity.threat_severity_data.num_detections’ context key was extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "115"
+      Verified:
+      - "157"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: VirusTotal.IP.attributes.threat_severity.threat_severity_data
+                accessor: num_detections
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3690,
+          "y": 5740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "115":
+    id: "115"
+    taskid: c1e4d6c1-6783-4c5d-87f0-dee3c68ebe08
+    type: regular
+    task:
+      id: c1e4d6c1-6783-4c5d-87f0-dee3c68ebe08
+      version: -1
+      name: Verify Context Error - Threat Detections Count
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'VirusTotal.IP.attributes.threat_severity.threat_severity_data.num_detections' context key was not extracted properly. This may indicate that the following change has been made to the 'NGFW Scan' playbook:
+          1- The 'ip' input configuration was changed for the 'ip' automation used in the 'Enrich scanner IP Address' task.
+          2- The 'ip' automation outputs have been modified and no longer contain the 'VirusTotal.IP.attributes.threat_severity.threat_severity_data.num_detections' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3690,
+          "y": 5920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "116":
+    id: "116"
+    taskid: fd5fce32-65bf-4074-8393-390f36cc756f
+    type: condition
+    task:
+      id: fd5fce32-65bf-4074-8393-390f36cc756f
+      version: -1
+      name: Verify Total Votes - Harmless
+      description: Verify that the ‘VirusTotal.IP.attributes.total_votes.harmless’ context key was extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "117"
+      Verified:
+      - "154"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: VirusTotal.IP.attributes.total_votes
+                accessor: harmless
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 5290,
+          "y": 4220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "117":
+    id: "117"
+    taskid: 307f905c-24c1-4202-8ddf-8493431c55c0
+    type: regular
+    task:
+      id: 307f905c-24c1-4202-8ddf-8493431c55c0
+      version: -1
+      name: Verify Context Error - Total Votes - Harmless
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'VirusTotal.IP.attributes.total_votes.harmless' context key was not extracted properly. This may indicate that the following change has been made to the 'NGFW Scan' playbook:
+          1- The 'ip' input configuration was changed for the 'ip' automation used in the 'Enrich scanner IP Address' task.
+          2- The 'ip' automation outputs have been modified and no longer contain the 'VirusTotal.IP.attributes.total_votes.harmless' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 5290,
+          "y": 4400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "118":
+    id: "118"
+    taskid: f691ec5e-cae8-4da2-8490-8dee07e81c04
+    type: condition
+    task:
+      id: f691ec5e-cae8-4da2-8490-8dee07e81c04
+      version: -1
+      name: Verify Total Votes - Malicious
+      description: Verify that the ‘VirusTotal.IP.attributes.total_votes.malicious’ context key was extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "119"
+      Verified:
+      - "154"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: VirusTotal.IP.attributes.total_votes
+                accessor: malicious
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 5680,
+          "y": 4220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "119":
+    id: "119"
+    taskid: 1e35a3d3-54de-4671-8ff4-4e02be5de79c
+    type: regular
+    task:
+      id: 1e35a3d3-54de-4671-8ff4-4e02be5de79c
+      version: -1
+      name: Verify Context Error - Total Votes - Malicious
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'VirusTotal.IP.attributes.total_votes.malicious' context key was not extracted properly. This may indicate that the following change has been made to the 'NGFW Scan' playbook:
+          1- The 'ip' input configuration was changed for the 'ip' automation used in the 'Enrich scanner IP Address' task.
+          2- The 'ip' automation outputs have been modified and no longer contain the 'VirusTotal.IP.attributes.total_votes.malicious' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 5680,
+          "y": 4400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "120":
+    id: "120"
+    taskid: 3d1bad70-3422-4ead-8f12-a41367282a9d
+    type: title
+    task:
+      id: 3d1bad70-3422-4ead-8f12-a41367282a9d
+      version: -1
+      name: '''VirusTotal'' Context Data'
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "128"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 2920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "121":
+    id: "121"
+    taskid: 8b7eca20-6d5a-46a7-8b81-16f703857326
+    type: title
+    task:
+      id: 8b7eca20-6d5a-46a7-8b81-16f703857326
+      version: -1
+      name: '''IP.attributes.last_analysis_stats'' Context path'
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "82"
+      - "84"
+      - "86"
+      - "88"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1330,
+          "y": 4590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "122":
+    id: "122"
+    taskid: b958ecb5-9019-413a-8cd3-8e6cd57052d7
+    type: title
+    task:
+      id: b958ecb5-9019-413a-8cd3-8e6cd57052d7
+      version: -1
+      name: '''IP.attributes.threat_severity'' Context path'
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "92"
+      - "94"
+      - "96"
+      - "98"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1330,
+          "y": 5090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "123":
+    id: "123"
+    taskid: bbce8425-630a-4b78-843c-2d92fffdabcd
+    type: title
+    task:
+      id: bbce8425-630a-4b78-843c-2d92fffdabcd
+      version: -1
+      name: '''IP.attributes.threat_severity.threat_severity_data'' Context path'
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "102"
+      - "104"
+      - "106"
+      - "108"
+      - "110"
+      - "112"
+      - "114"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1330,
+          "y": 5590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "124":
+    id: "124"
+    taskid: f0342be3-ca30-4c42-87a0-5f74341169be
+    type: condition
+    task:
+      id: f0342be3-ca30-4c42-87a0-5f74341169be
+      version: -1
+      name: Verify Whois
+      description: Verify that the ‘VirusTotal.IP.attributes.whois’ context key was extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "125"
+      Verified:
+      - "154"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: VirusTotal.IP.attributes
+                accessor: whois
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 6080,
+          "y": 4220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "125":
+    id: "125"
+    taskid: b5826910-cc3e-4c21-8f0c-98cf7efc8372
+    type: regular
+    task:
+      id: b5826910-cc3e-4c21-8f0c-98cf7efc8372
+      version: -1
+      name: Verify Context Error - Whois
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'VirusTotal.IP.attributes.whois' context key was not extracted properly. This may indicate that the following change has been made to the 'NGFW Scan' playbook:
+          1- The 'ip' input configuration was changed for the 'ip' automation used in the 'Enrich scanner IP Address' task.
+          2- The 'ip' automation outputs have been modified and no longer contain the 'VirusTotal.IP.attributes.whois' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 6080,
+          "y": 4400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "126":
+    id: "126"
+    taskid: 750a2d4e-f2ae-41e3-818e-2518103b0c62
+    type: condition
+    task:
+      id: 750a2d4e-f2ae-41e3-818e-2518103b0c62
+      version: -1
+      name: Verify Whois Date
+      description: Verify that the ‘VirusTotal.IP.attributes.whois_date’ context key was extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "127"
+      Verified:
+      - "154"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: VirusTotal.IP.attributes
+                accessor: whois_date
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 6470,
+          "y": 4220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "127":
+    id: "127"
+    taskid: 54fe7e18-4f3e-4218-8932-8ddc11f8f747
+    type: regular
+    task:
+      id: 54fe7e18-4f3e-4218-8932-8ddc11f8f747
+      version: -1
+      name: Verify Context Error - Whois Date
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'VirusTotal.IP.attributes.whois_date' context key was not extracted properly. This may indicate that the following change has been made to the 'NGFW Scan' playbook:
+          1- The 'ip' input configuration was changed for the 'ip' automation used in the 'Enrich scanner IP Address' task.
+          2- The 'ip' automation outputs have been modified and no longer contain the 'VirusTotal.IP.attributes.whois_date' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 6470,
+          "y": 4400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "128":
+    id: "128"
+    taskid: 74310019-4855-4eee-8bde-8ea00b67b752
+    type: title
+    task:
+      id: 74310019-4855-4eee-8bde-8ea00b67b752
+      version: -1
+      name: '''IP'' Context path'
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "129"
+      - "131"
+      - "133"
+      - "135"
+      - "59"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 890,
+          "y": 3060
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "129":
+    id: "129"
+    taskid: 9c0b1d96-0250-4c77-8d1f-38cbd03c37e6
+    type: condition
+    task:
+      id: 9c0b1d96-0250-4c77-8d1f-38cbd03c37e6
+      version: -1
+      name: Verify ID
+      description: Verify that the ‘VirusTotal.IP.id’ context key was extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "130"
+      Verified:
+      - "152"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: VirusTotal.IP
+                accessor: id
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1110,
+          "y": 3200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "130":
+    id: "130"
+    taskid: be752e49-4e9c-4748-8e40-a3cf22c7c75b
+    type: regular
+    task:
+      id: be752e49-4e9c-4748-8e40-a3cf22c7c75b
+      version: -1
+      name: Verify Context Error - ID
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'VirusTotal.IP.id' context key was not extracted properly. This may indicate that the following change has been made to the 'NGFW Scan' playbook:
+          1- The 'ip' input configuration was changed for the 'ip' automation used in the 'Enrich scanner IP Address' task.
+          2- The 'ip' automation outputs have been modified and no longer contain the 'VirusTotal.IP.id' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1110,
+          "y": 3380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "131":
+    id: "131"
+    taskid: ed5020fe-fc82-4e1c-863a-ffe51c5c6dc9
+    type: condition
+    task:
+      id: ed5020fe-fc82-4e1c-863a-ffe51c5c6dc9
+      version: -1
+      name: Verify Links
+      description: Verify that the ‘VirusTotal.IP.links.self’ context key was extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "132"
+      Verified:
+      - "152"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: VirusTotal.IP.links
+                accessor: self
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1510,
+          "y": 3200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "132":
+    id: "132"
+    taskid: 279ff773-7657-485f-86fc-ba5d9e5240ea
+    type: regular
+    task:
+      id: 279ff773-7657-485f-86fc-ba5d9e5240ea
+      version: -1
+      name: Verify Context Error - Links
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'VirusTotal.IP.links.self' context key was not extracted properly. This may indicate that the following change has been made to the 'NGFW Scan' playbook:
+          1- The 'ip' input configuration was changed for the 'ip' automation used in the 'Enrich scanner IP Address' task.
+          2- The 'ip' automation outputs have been modified and no longer contain the 'VirusTotal.IP.links.self' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1510,
+          "y": 3380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "133":
+    id: "133"
+    taskid: 26107f50-7fb6-4615-86cc-b11f677501d8
+    type: condition
+    task:
+      id: 26107f50-7fb6-4615-86cc-b11f677501d8
+      version: -1
+      name: Verify Type
+      description: Verify that the ‘VirusTotal.IP.type’ context key was extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "134"
+      Verified:
+      - "152"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: VirusTotal.IP
+                accessor: type
+            iscontext: true
+          right:
+            value:
+              simple: ip_address
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1910,
+          "y": 3200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "134":
+    id: "134"
+    taskid: c24bfaab-c310-48db-80d5-099b2e3823a5
+    type: regular
+    task:
+      id: c24bfaab-c310-48db-80d5-099b2e3823a5
+      version: -1
+      name: Verify Context Error - Type
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'VirusTotal.IP.type' context key was not extracted properly. This may indicate that the following change has been made to the 'NGFW Scan' playbook:
+          1- The 'ip' input configuration was changed for the 'ip' automation used in the 'Enrich scanner IP Address' task.
+          2- The 'ip' automation outputs have been modified and no longer contain the 'VirusTotal.IP.type' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1910,
+          "y": 3380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "135":
+    id: "135"
+    taskid: 4fd8a038-b7d0-43a5-84ad-c14e9332f83c
+    type: title
+    task:
+      id: 4fd8a038-b7d0-43a5-84ad-c14e9332f83c
+      version: -1
+      name: '''IP.relationships'' Context path'
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "136"
+      - "138"
+      - "140"
+      - "142"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1110,
+          "y": 3570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "136":
+    id: "136"
+    taskid: 614bd701-c3f9-4146-83fa-3c58f10e26a0
+    type: condition
+    task:
+      id: 614bd701-c3f9-4146-83fa-3c58f10e26a0
+      version: -1
+      name: Verify Communicating Files
+      description: Verify that the ‘VirusTotal.IP.relationships.communicating_files’ context key was extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "137"
+      Verified:
+      - "153"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: VirusTotal.IP.relationships
+                accessor: communicating_files
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1110,
+          "y": 3710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "137":
+    id: "137"
+    taskid: 0385310f-4a38-4b29-8753-41f45da0d18c
+    type: regular
+    task:
+      id: 0385310f-4a38-4b29-8753-41f45da0d18c
+      version: -1
+      name: Verify Context Error - Communicating Files
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'VirusTotal.IP.relationships.communicating_files' context key was not extracted properly. This may indicate that the following change has been made to the 'NGFW Scan' playbook:
+          1- The 'ip' input configuration was changed for the 'ip' automation used in the 'Enrich scanner IP Address' task.
+          2- The 'ip' automation outputs have been modified and no longer contain the 'VirusTotal.IP.relationships.communicating_files' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1110,
+          "y": 3890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "138":
+    id: "138"
+    taskid: 377a77d0-c31f-455d-895a-d425852d22b4
+    type: condition
+    task:
+      id: 377a77d0-c31f-455d-895a-d425852d22b4
+      version: -1
+      name: Verify Downloaded Files
+      description: Verify that the ‘VirusTotal.IP.relationships.downloaded_files’ context key was extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "139"
+      Verified:
+      - "153"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: VirusTotal.IP.relationships
+                accessor: downloaded_files
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1510,
+          "y": 3710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "139":
+    id: "139"
+    taskid: fabcef16-df0f-49f2-85ba-57a5d356a10f
+    type: regular
+    task:
+      id: fabcef16-df0f-49f2-85ba-57a5d356a10f
+      version: -1
+      name: Verify Context Error - Downloaded Files
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'VirusTotal.IP.relationships.downloaded_files' context key was not extracted properly. This may indicate that the following change has been made to the 'NGFW Scan' playbook:
+          1- The 'ip' input configuration was changed for the 'ip' automation used in the 'Enrich scanner IP Address' task.
+          2- The 'ip' automation outputs have been modified and no longer contain the 'VirusTotal.IP.relationships.downloaded_files' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1510,
+          "y": 3890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "140":
+    id: "140"
+    taskid: 53ccbcff-a875-455f-830c-1acdc8cc243b
+    type: condition
+    task:
+      id: 53ccbcff-a875-455f-830c-1acdc8cc243b
+      version: -1
+      name: Verify Referrer Files
+      description: Verify that the ‘VirusTotal.IP.relationships.referrer_files’ context key was extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "141"
+      Verified:
+      - "153"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: VirusTotal.IP.relationships
+                accessor: referrer_files
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1910,
+          "y": 3710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "141":
+    id: "141"
+    taskid: 84ee94b4-a92b-47ba-8703-7f558bc7fc57
+    type: regular
+    task:
+      id: 84ee94b4-a92b-47ba-8703-7f558bc7fc57
+      version: -1
+      name: Verify Context Error - Referrer Files
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'VirusTotal.IP.relationships.referrer_files' context key was not extracted properly. This may indicate that the following change has been made to the 'NGFW Scan' playbook:
+          1- The 'ip' input configuration was changed for the 'ip' automation used in the 'Enrich scanner IP Address' task.
+          2- The 'ip' automation outputs have been modified and no longer contain the 'VirusTotal.IP.relationships.referrer_files' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1910,
+          "y": 3890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "142":
+    id: "142"
+    taskid: f9c7c701-fc65-4677-82fb-b07b3adae2e3
+    type: condition
+    task:
+      id: f9c7c701-fc65-4677-82fb-b07b3adae2e3
+      version: -1
+      name: Verify URLs
+      description: Verify that the ‘VirusTotal.IP.relationships.urls’ context key was extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "143"
+      Verified:
+      - "153"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: VirusTotal.IP.relationships
+                accessor: urls
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2310,
+          "y": 3710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "143":
+    id: "143"
+    taskid: 68839872-c920-4c1e-8b83-42e87dbd7b0d
+    type: regular
+    task:
+      id: 68839872-c920-4c1e-8b83-42e87dbd7b0d
+      version: -1
+      name: Verify Context Error - URLs
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'VirusTotal.IP.relationships.urls' context key was not extracted properly. This may indicate that the following change has been made to the 'NGFW Scan' playbook:
+          1- The 'ip' input configuration was changed for the 'ip' automation used in the 'Enrich scanner IP Address' task.
+          2- The 'ip' automation outputs have been modified and no longer contain the 'VirusTotal.IP.relationships.urls' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2310,
+          "y": 3890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "144":
+    id: "144"
+    taskid: 25355f03-e8dc-4158-81ed-511259dc103e
+    type: title
+    task:
+      id: 25355f03-e8dc-4158-81ed-511259dc103e
+      version: -1
+      name: '''foundIncidents'' Context Data'
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "145"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 1360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "145":
+    id: "145"
+    taskid: 8b0ae58b-c7aa-4b74-8263-44bbcb5825a1
+    type: condition
+    task:
+      id: 8b0ae58b-c7aa-4b74-8263-44bbcb5825a1
+      version: -1
+      name: Verify Found Incidents
+      description: Verify that the ‘foundIncidents’ context key was extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "146"
+      Verified:
+      - "149"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: foundIncidents
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 1490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "146":
+    id: "146"
+    taskid: 00d63daa-22d4-4d35-86ea-206ffdbac75b
+    type: regular
+    task:
+      id: 00d63daa-22d4-4d35-86ea-206ffdbac75b
+      version: -1
+      name: Verify Context Error - Found Incidents
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'foundIncidents' context key was not extracted properly. This may indicate that the following change has been made to the 'NGFW Scan' playbook:
+          1- The 'ip' input configuration was changed for the 'ip' automation used in the 'Enrich scanner IP Address' task.
+          2- The 'ip' automation outputs have been modified and no longer contain the 'foundIncidents' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 1670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "148":
+    id: "148"
+    taskid: 5506f82d-161b-4d37-850a-b8a57651e996
+    type: title
+    task:
+      id: 5506f82d-161b-4d37-850a-b8a57651e996
+      version: -1
+      name: Done Verifying Parent Incident Fields
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "22"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -20,
+          "y": 1730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "149":
+    id: "149"
+    taskid: dec28135-f623-482b-8289-468b6f940003
+    type: title
+    task:
+      id: dec28135-f623-482b-8289-468b6f940003
+      version: -1
+      name: Done Verifying 'foundIncidents' Context Data
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "159"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 6910,
+          "y": 1685
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "150":
+    id: "150"
+    taskid: 6212356b-ba68-4545-876c-4e0267918d57
+    type: title
+    task:
+      id: 6212356b-ba68-4545-876c-4e0267918d57
+      version: -1
+      name: Done Verifying 'DBotScore' Context Data
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "159"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 6910,
+          "y": 2190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "151":
+    id: "151"
+    taskid: 2ad7cc1e-4ab8-473d-8008-807356c63ac2
+    type: title
+    task:
+      id: 2ad7cc1e-4ab8-473d-8008-807356c63ac2
+      version: -1
+      name: Done Verifying 'IP' Context Data
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "159"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 6910,
+          "y": 2720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "152":
+    id: "152"
+    taskid: f9a7f705-ac2e-411a-83ee-9fed1ba13944
+    type: title
+    task:
+      id: f9a7f705-ac2e-411a-83ee-9fed1ba13944
+      version: -1
+      name: Done Verifying 'IP' Context Path
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "158"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 6870,
+          "y": 3395
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "153":
+    id: "153"
+    taskid: c561b6d5-9a9b-4857-8105-2465a425e2c7
+    type: title
+    task:
+      id: c561b6d5-9a9b-4857-8105-2465a425e2c7
+      version: -1
+      name: Done Verifying 'IP.relationships' Context Path
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "158"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 6870,
+          "y": 3890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "154":
+    id: "154"
+    taskid: c6f38c2a-e25b-4889-88b0-2f45e77f18c7
+    type: title
+    task:
+      id: c6f38c2a-e25b-4889-88b0-2f45e77f18c7
+      version: -1
+      name: Done Verifying 'IP.attributes' Context Path
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "158"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 6870,
+          "y": 4400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "155":
+    id: "155"
+    taskid: 57feef27-28bd-461d-808e-b2bbba5372c1
+    type: title
+    task:
+      id: 57feef27-28bd-461d-808e-b2bbba5372c1
+      version: -1
+      name: Done Verifying 'IP.attributes.last_analysis_stats' Context Path
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "158"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 6870,
+          "y": 4925
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "156":
+    id: "156"
+    taskid: 58437c28-bf88-4373-8f30-6fdf1ec355fb
+    type: title
+    task:
+      id: 58437c28-bf88-4373-8f30-6fdf1ec355fb
+      version: -1
+      name: Done Verifying 'IP.attributes.threat_severity ' Context Path
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "158"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 6870,
+          "y": 5400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "157":
+    id: "157"
+    taskid: 4af9881f-17df-4499-800b-42b8dc2dac5d
+    type: title
+    task:
+      id: 4af9881f-17df-4499-800b-42b8dc2dac5d
+      version: -1
+      name: Done Verifying 'IP.attributes.threat_severity.threat_severity_data' Context Path
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "158"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 6870,
+          "y": 5910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "158":
+    id: "158"
+    taskid: 93c9401a-5573-4ed3-88bb-0c69a6e83358
+    type: title
+    task:
+      id: 93c9401a-5573-4ed3-88bb-0c69a6e83358
+      version: -1
+      name: Done Verifying 'VirusTotal' Context Data
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "159"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 7080,
+          "y": 6060
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "159":
+    id: "159"
+    taskid: af4e21b3-b6f7-43c7-8eaa-a87cc3994469
+    type: title
+    task:
+      id: af4e21b3-b6f7-43c7-8eaa-a87cc3994469
+      version: -1
+      name: Done Verifying Context Data
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "22"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 7290,
+          "y": 6200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "102_157_Verified": 0.11,
+      "104_157_Verified": 0.12,
+      "106_157_Verified": 0.1,
+      "108_157_Verified": 0.1,
+      "110_157_Verified": 0.1,
+      "112_157_Verified": 0.14,
+      "114_157_Verified": 0.28,
+      "116_154_Verified": 0.1,
+      "118_154_Verified": 0.1,
+      "124_154_Verified": 0.11,
+      "126_154_Verified": 0.29,
+      "129_152_Verified": 0.1,
+      "131_152_Verified": 0.16,
+      "133_152_Verified": 0.31,
+      "136_153_Verified": 0.11,
+      "138_153_Verified": 0.12,
+      "140_153_Verified": 0.15,
+      "142_153_Verified": 0.27,
+      "16_151_Verified": 0.26,
+      "18_151_Verified": 0.11,
+      "26_151_Verified": 0.13,
+      "28_151_Verified": 0.13,
+      "30_151_Verified": 0.14,
+      "32_151_Verified": 0.11,
+      "34_151_Verified": 0.1,
+      "36_151_Verified": 0.1,
+      "38_151_Verified": 0.1,
+      "40_151_Verified": 0.11,
+      "42_151_Verified": 0.1,
+      "44_151_Verified": 0.1,
+      "46_151_Verified": 0.1,
+      "49_150_Verified": 0.11,
+      "51_150_Verified": 0.12,
+      "53_150_Verified": 0.12,
+      "55_150_Verified": 0.1,
+      "57_150_Verified": 0.27,
+      "60_154_Verified": 0.1,
+      "62_154_Verified": 0.1,
+      "64_154_Verified": 0.11,
+      "66_154_Verified": 0.1,
+      "68_154_Verified": 0.1,
+      "70_154_Verified": 0.1,
+      "72_154_Verified": 0.1,
+      "74_154_Verified": 0.11,
+      "76_154_Verified": 0.1,
+      "80_154_Verified": 0.1,
+      "82_155_Verified": 0.1,
+      "84_155_Verified": 0.12,
+      "86_155_Verified": 0.11,
+      "88_155_Verified": 0.31,
+      "92_156_Verified": 0.1,
+      "94_156_Verified": 0.1,
+      "96_156_Verified": 0.14,
+      "98_156_Verified": 0.36
+    },
+    "paper": {
+      "dimensions": {
+        "height": 6375,
+        "width": 7690,
+        "x": -20,
+        "y": 30
+      }
+    }
+  }
+inputs: []
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.6.0
+marketplaces:
+- marketplacev2

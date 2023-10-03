@@ -8,11 +8,21 @@ WIZ_HTTP_QUERIES_LIMIT = 500  # Request limit during run
 WIZ_API_LIMIT = 500  # limit number of returned records from the Wiz API
 WIZ = 'wiz'
 
+WIZ_VERSION = '1.2.11'
+INTEGRATION_GUID = '8864e131-72db-4928-1293-e292f0ed699f'
+
+
+def get_integration_user_agent():
+    integration_user_agent = f'{INTEGRATION_GUID}/xsoar/{WIZ_VERSION}'
+    return integration_user_agent
+
+
 # Standard headers
-HEADERS_AUTH = {}
-HEADERS_AUTH["Content-Type"] = "application/x-www-form-urlencoded"
-HEADERS = {}
-HEADERS["Content-Type"] = "application/json"
+HEADERS_AUTH = {"Content-Type": "application/x-www-form-urlencoded",
+                "User-Agent": get_integration_user_agent()}
+
+HEADERS = {"Content-Type": "application/json",
+           "User-Agent": get_integration_user_agent()}
 
 TOKEN = None
 URL = ''
@@ -986,7 +996,6 @@ def clear_issue_note(issue_id):
 
     query = DELETE_NOTE_QUERY
     for note in issue_notes:
-
         variables = {
             "input": {
                 "id": note['id']

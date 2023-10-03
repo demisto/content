@@ -796,6 +796,9 @@ script:
     - contextPath: AzureSentinel.IncidentAlert.Tactic
       description: The tactics of the alert.
       type: Unknown
+    - contextPath: AzureSentinel.IncidentAlert.Techniques
+      description: The techniques of the alert.
+      type: Unknown
     - contextPath: AzureSentinel.IncidentAlert.DisplayName
       description: The display name of the alert.
       type: String
@@ -1776,7 +1779,7 @@ script:
       description: The alerts' severities on which the cases will be generated.
       type: Unknown
     - contextPath: AzureSentinel.AlertRule.properties.displayNamesFilter
-      description: The alerts' displayNames on which the cases will be generated
+      description: The alerts' displayNames on which the cases will be generated.
       type: Unknown
   - arguments:
     - description: The alert rule template ID. If not given, will return all alert rule templates.
@@ -1843,7 +1846,7 @@ script:
       description: The version of this template in the format <a.b.c>, where all are numbers. For example <1.0.2>.
       type: String
     - contextPath: AzureSentinel.AlertRuleTemplate.properties.requiredDataConnectors.connectorId
-      description: The connector ID that provides the following data types
+      description: The connector ID that provides the following data types.
       type: String
     - contextPath: AzureSentinel.AlertRuleTemplate.properties.requiredDataConnectors.dataTypes
       description: The data types used by the alert rule template.
@@ -2280,7 +2283,7 @@ script:
       description: The event grouping settings.
       type: Unknown
     - contextPath: AzureSentinel.AlertRule.properties.customDetails
-      description: Dictionary of string key-value pairs of columns to be attached to the alert
+      description: Dictionary of string key-value pairs of columns to be attached to the alert.
       type: Unknown
     - contextPath: AzureSentinel.AlertRule.properties.entityMappings
       description: Array of the entity mappings of the alert rule.
@@ -2336,7 +2339,7 @@ script:
       description: The name of the resource.
       type: String
     - contextPath: AzureSentinel.ResourceGroup.type
-      description: The type of the resource. E.g., "Microsoft.Compute/virtualMachines" or "Microsoft.Storage/storageAccounts"
+      description: The type of the resource. E.g., "Microsoft.Compute/virtualMachines" or "Microsoft.Storage/storageAccounts".
       type: String
     - contextPath: AzureSentinel.ResourceGroup.location
       description: The location of the resource group.
@@ -2351,7 +2354,7 @@ script:
     execution: false
     name: azure-sentinel-auth-reset
     arguments: []
-  dockerimage: demisto/crypto:1.0.0.68914
+  dockerimage: demisto/crypto:1.0.0.74979
   isfetch: true
   runonce: false
   script: '-'
