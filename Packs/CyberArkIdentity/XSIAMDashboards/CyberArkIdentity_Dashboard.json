@@ -2,7 +2,7 @@
     "dashboards_data": [
         {
             "name": "CyberArk Posture Overview",
-            "description": "example",
+            "description": "examplee",
             "status": "ENABLED",
             "layout": [
                 {
