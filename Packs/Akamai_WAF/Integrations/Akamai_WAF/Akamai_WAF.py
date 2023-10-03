@@ -5874,6 +5874,7 @@ def get_cps_change_status_command(client: Client,
         t=human_readable_ec,
         removeNull=True,
     )
+    demisto.debug(f'{human_readable=} , {context_entry=} , {raw_response}')
     return human_readable, context_entry, raw_response
 
 
