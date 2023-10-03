@@ -32,11 +32,35 @@ def create_xsoar_certificate_indicator(certificate: dict):
             "signaturealgorithm": certificate_data["signature_algorithm"].sub(" ", "").split(","),
             "subject": build_xsoar_grid(certificate_data["subject"]),
             "issuer": build_xsoar_grid(certificate_data["issuer"]),
-            "x.509v3extensions": build_xsoar_grid(certificate_data["issuer"])
+            "x.509v3extensions": build_xsoar_grid(certificate_data["issuer"]),
+            "tags": ["Fake Domain", "CertStream"]
         },
         "rawJSON": certificate,
+        "relationships": create_relationship_list(certificate_data["fingerprint"], certificate_data["all_domains"])
     }])
 
+
+def create_relationship_list(value: str, domains: list[str]) -> list[EntityRelationship]:
+    """Creates an XSOAR relationship object
+
+    Args:
+        value (str): The certificate fingerprint value
+        domains (list[str]): A list of domains in the certificate
+
+    Returns:
+        list[EntityRelationship]: A list of XSOAR relationship objects
+    """
+    relationships = []
+    entity_a = value
+    for domain in domains:
+        relation_obj = EntityRelationship(
+            name=EntityRelationship.Relationships.RELATED_TO,
+            entity_a=entity_a,
+            entity_a_type="X.509 Certificate",
+            entity_b=domain,
+            entity_b_type="Domain")
+        relationships.append(relation_obj.to_indicator())
+    return relationships
 
 def check_homographs(domain: str, homographs: list, levenshtein_distance_threshold: float) -> bool:
     """Checks each word in a domain for similarity to the provided homograph list.
