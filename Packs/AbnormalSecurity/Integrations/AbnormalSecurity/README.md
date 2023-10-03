@@ -1171,12 +1171,10 @@ Get a list of vendors
 
 #### Context Output
 
-| **Path**                                          | **Type** | **Description**                                                                        |
-| ------------------------------------------------- | -------- | -------------------------------------------------------------------------------------- |
-| AbnormalSecurity.VendorsList.vendors              | Unknown  | List of vendors.                                                                       |
-| AbnormalSecurity.VendorsList.vendors.vendorDomain | String   | The domain of the vendor.                                                              |
-| AbnormalSecurity.VendorsList.pageNumber           | Number   | The current page number.                                                               |
-| AbnormalSecurity.VendorsList.nextPageNumber       | Number   | The next page number. Will not be included in the response if there are no more pages. |
+| **Path**                              | **Type** | **Description**           |
+| ------------------------------------- | -------- | ------------------------- |
+| AbnormalSecurity.vendors              | Unknown  | List of vendors.          |
+| AbnormalSecurity.vendors.vendorDomain | String   | The domain of the vendor. |
 
 #### Command Example
 
@@ -1187,21 +1185,17 @@ Get a list of vendors
 ```json
 {
     "AbnormalSecurity": {
-        "VendorsList": {
-            "vendors": [
-                {
-                    "vendorDomain": "test-domain-1.com"
-                },
-                {
-                    "vendorDomain": "test-domain-2.com"
-                },
-                {
-                    "vendorDomain": "test-domain-2.com"
-                }
-            ],
-            "pageNumber": 1,
-            "nextPageNumber": 2
-        }
+        "vendors": [
+            {
+                "vendorDomain": "test-domain-1.com"
+            },
+            {
+                "vendorDomain": "test-domain-2.com"
+            },
+            {
+                "vendorDomain": "test-domain-2.com"
+            }
+        ]
     }
 }
 ```

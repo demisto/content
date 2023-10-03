@@ -539,18 +539,12 @@ script:
       description: Get a list of vendors.
       name: abnormal-security-list-vendors
       outputs:
-        - contextPath: AbnormalSecurity.VendorsList.vendors
+        - contextPath: AbnormalSecurity.vendors
           description: List of vendors.
           type: Unknown
-        - contextPath: AbnormalSecurity.VendorsList.vendors.vendorDomain
+        - contextPath: AbnormalSecurity.vendors.vendorDomain
           description: The domain of the vendor.
           type: String
-        - contextPath: AbnormalSecurity.VendorsList.pageNumber
-          description: The current page number.
-          type: Number
-        - contextPath: AbnormalSecurity.VendorsList.nextPageNumber
-          description: The next page number.
-          type: Number
 
     - arguments:
         - description: The domain name of the specific vendor for which you want to get details.
