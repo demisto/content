@@ -1349,7 +1349,7 @@ script:
     outputs:
     - contextPath: Akamai.Cps.Enrollments.Deployment
       description: Akamai Cps Enrollments Deployment
-      type: dictionary
+      type: Dictionary
   - arguments:
     - auto: PREDEFINED
       description: Whether a CIDR block was added, updated, or removed from service. You can use this parameter as a sorting mechanism and return only CIDR blocks with a change status of add, update, or delete. Note that a status of delete means the CIDR block is no longer in service, and you can remove it from your firewall rules.
