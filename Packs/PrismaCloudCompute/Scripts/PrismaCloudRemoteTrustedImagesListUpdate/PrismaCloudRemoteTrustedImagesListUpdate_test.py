@@ -3,4 +3,6 @@ import pytest
 
 
 def test_update_remote_trusted_images():
-    pass
+    list_name = 'List Name'
+    current_trusted_images = {}
+    trusted_group_id = 'Group'

@@ -25,19 +25,19 @@ def current_remote_images_same_as_local(remote_images, local_images):
     return set(remote_images) == set(local_images)
 
 
-def update_group_from_images(remote_trusted_images: Dict[str, Any], current_trusted_images: list, trusted_group_id: str) -> bool:
+def update_group_from_images(remote_trusted_images: Dict[str, Any], current_trusted_images: list, trusted_group_id: str) -> \
+    tuple[bool, str]:
     """
     Update the remote trusted images group with latest images from local source.
     """
     for group in remote_trusted_images['groups']:
         if group['_id'] == trusted_group_id:
             if current_remote_images_same_as_local(group['images'], current_trusted_images):
-                return False
+                return False, 'Local and remote lists were equal, not updating list.'
             group['images'] = current_trusted_images
-            return True
+            return True, ''
 
-    raise DemistoException(f'Group {trusted_group_id} was not found '
-                           f'in the given Prisma Cloud Compute trusted images groups list.')
+    return False, f'Group {trusted_group_id} was not found in the given trusted images groups list.'
 
 
 def update_remote_list(current_dict):
@@ -61,16 +61,12 @@ def update_remote_trusted_images(args: Dict[str, Any]):
     remote_trusted_images = args.get('current_trusted_images')
     if isinstance(remote_trusted_images, str):
         remote_trusted_images = json.loads(remote_trusted_images)
-    if isinstance(remote_trusted_images, dict):
-        remote_trusted_images = [remote_trusted_images]
 
     trusted_group_id = str(args.get('trusted_group_id'))
 
-    update_remote = update_group_from_images(remote_trusted_images, local_trusted_images, trusted_group_id)
+    update_remote, result = update_group_from_images(remote_trusted_images, local_trusted_images, trusted_group_id)
     if update_remote:
         result = update_remote_list(remote_trusted_images)
-    else:
-        result = 'Local and remote lists were equal, not updating list.'
     return CommandResults(readable_output=result)
 
 
