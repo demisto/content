@@ -652,7 +652,7 @@ class Client(BaseClient):
         Returns:
             Resposne object or Exception
         """
-        return self.send_request(path, method, body, headers=headers, sc_api=sc_api, cr_api=cr_api)
+        return self.send_request(path, method, body, headers=headers, sc_api=sc_api, cr_api=cr_api, custom_api=custom_api)
 
     def send_request(self, path: str, method: str = 'GET', body: dict | None = None, params: dict | None = None,
                      headers: dict | None = None, file=None, sc_api: bool = False, cr_api: bool = False,
