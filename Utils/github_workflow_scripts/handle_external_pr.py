@@ -279,7 +279,7 @@ def main():
     ver = get_pack_metadata(pr_files[0]).get('currentVersion')
     print(f'version is: {ver}')
     if pr.user.login == MARKETPLACE_CONTRIBUTION_PR_AUTHOR:
-        contributors_body = f'Thanks for contributing to a Cortex XSOAR supported pack, To receive credit for your generous' \
+        contributors_body = f'Thanks for contributing to a Cortex XSOAR supported pack. To receive credit for your generous' \
                             f' contribution, please ask the reviewer to update your information in the pack contributors file.' \
                             f' See more information here [link](https://xsoar.pan.dev/docs/packs/packs-format#contributorsjson)'
     else:
