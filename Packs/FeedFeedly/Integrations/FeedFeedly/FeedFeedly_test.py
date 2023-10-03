@@ -2,7 +2,12 @@ import json
 
 from FeedFeedly import Client
 
-URL = "https://api.feedly.com/v3/enterprise/ioc?streamId=tag%2FenterpriseName%2Fcategory%2Fuuid&count=20&newerThan=0&client=feedly.demisto.client"
+URL = (
+    "https://api.feedly.com/v3/enterprise/ioc?"
+    "streamId=tag%2FenterpriseName%2Fcategory%2Fuuid&count=20"
+    "&newerThan=0"
+    "&client=feedly.demisto.client"
+)
 
 
 def util_load_json(path):

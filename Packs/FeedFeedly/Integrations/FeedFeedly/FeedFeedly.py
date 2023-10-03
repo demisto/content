@@ -964,13 +964,11 @@ def fetch_indicators_command(client: Client, params: dict[str, str], context: di
         Indicators.
     """
     return client.fetch_indicators_from_stream(
-        params["feedly_stream_id"],
-        newer_than=float(context.get("last_successful_run", time.time() - 7 * 24 * 3600)),
-        # newer_than=time.time() - 7 * 24 * 3600,
+        params["feedly_stream_id"], newer_than=float(context.get("last_successful_run", time.time() - 7 * 24 * 3600)),
     )
 
 
-def main():
+def main():  # pragma: no cover
     params = demisto.params()
 
     command = demisto.command()
@@ -983,7 +981,7 @@ def main():
             base_url=FEEDLY_BASE_URL,
             verify=not params.get("insecure", False),
             proxy=params.get("proxy", False),
-            headers={"Authorization": f"Bearer {params.get('credentials', {}).get('password')}"},
+            headers={"Authorization": f"Bearer {params['credentials']['password']}"},
         )
 
         if command == "test-module":
