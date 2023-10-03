@@ -122,6 +122,7 @@ def uninstall_pack(client: demisto_client,
                    pack_id: str,
                    attempts_count: int = 5,
                    sleep_interval: int = 60,
+                   request_timeout: int = 300,
                    ):
     """
 
@@ -130,6 +131,7 @@ def uninstall_pack(client: demisto_client,
         pack_id: packs id to uninstall
         attempts_count (int): The number of attempts to install the packs.
         sleep_interval (int): The sleep interval, in seconds, between install attempts.
+        request_timeout (int): The timeout per call to the server.
     Returns:
         Boolean - If the operation succeeded.
 
@@ -168,7 +170,9 @@ def uninstall_pack(client: demisto_client,
                                         sleep_interval=sleep_interval,
                                         should_try_handler=should_try_handler,
                                         success_handler=success_handler,
-                                        api_exception_handler=api_exception_handler)
+                                        api_exception_handler=api_exception_handler,
+                                        request_timeout=request_timeout
+                                        )
 
 
 def uninstall_packs(client: demisto_client, pack_ids: list):
