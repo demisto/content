@@ -65,7 +65,7 @@ def test_scan_file_command(mocker, file_name, data, expected_md_results):
         mocker.patch.object(demisto, 'getFilePath', return_value={"path": file_path, "name": file_name})
         mocker.patch.object(demisto, 'params', return_value={'url': BASE_URL})
         mocker.patch.object(requests, 'post', side_effect=mocked_requests_post)
-        mocker.patch.object(demisto, 'args', return_value={'fileId': '1191@302'})
+        mocker.patch.object(demisto, 'args', return_value={'fileId': '1191@302', 'scanRule': 'Test'})
         mocker.patch.object(demisto, 'results')
 
         from OPSWATMetadefenderV2 import scan_file_command
