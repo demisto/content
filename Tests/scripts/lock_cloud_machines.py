@@ -7,12 +7,14 @@ import random
 import requests
 from google.cloud import storage  # noqa
 import argparse
+from Utils.github_workflow_scripts.utils import get_env_var
 
+GITLAB_SERVER_URL = get_env_var('CI_SERVER_URL', 'https://code.pan.run')  # disable-secrets-detection
 LOCKS_BUCKET = 'xsoar-ci-artifacts'
 QUEUE_REPO = 'queue'
 MACHINES_LOCKS_REPO = 'machines_locks'
-JOB_STATUS_URL = 'https://code.pan.run/api/v4/projects/{}/jobs/{}'  # disable-secrets-detection
-CONTENT_GITLAB_PROJECT_ID = '2596'
+JOB_STATUS_URL = '{}/api/v4/projects/{}/jobs/{}'  # disable-secrets-detection
+CONTENT_GITLAB_PROJECT_ID = get_env_var('CI_PROJECT_ID', '2596')  # the default is the id of the content repo in code.pan.run
 
 
 def options_handler() -> argparse.Namespace:
@@ -99,7 +101,7 @@ def check_job_status(token: str, job_id: str, num_of_retries: int = 5, interval:
     Returns: the status of the job.
 
     """
-    user_endpoint = JOB_STATUS_URL.format(CONTENT_GITLAB_PROJECT_ID, job_id)
+    user_endpoint = JOB_STATUS_URL.format(GITLAB_SERVER_URL, CONTENT_GITLAB_PROJECT_ID, job_id)
     headers = {'PRIVATE-TOKEN': token}
 
     for attempt_num in range(1, num_of_retries + 1):
