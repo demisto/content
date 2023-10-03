@@ -248,6 +248,14 @@ def get_scan_result_command():
 
 
 def get_sanitized_file_command():
+    """
+    Get OPSWAT sanitization result (Requires CDR feature).
+    Args:
+        scan_id(int): The scan id.
+
+    Returns:
+        (demisto.Results).
+    """
     scan_id = demisto.args()['id']
     res = get_scan_result(scan_id)
     # Check the scan report whether there is a sanitized file.
