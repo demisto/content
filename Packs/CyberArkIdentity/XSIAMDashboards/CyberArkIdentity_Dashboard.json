@@ -58,6 +58,8 @@
             "default_dashboard_id": 1,
             "global_id": "1e49879917b94fb4823343037974ae4f",
             "metadata": {
+                "cache_ttl": 30,
+                "lazy_load": true,
                 "params": [
                     {
                         "name": "action",
