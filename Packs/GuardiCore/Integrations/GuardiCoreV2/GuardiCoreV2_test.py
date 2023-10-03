@@ -365,7 +365,7 @@ def test_fetch_incidents_no_first(mocker, requests_mock):
 
     client = Client(base_url='https://api.guardicoreexample.com/api/v3.0',
                     verify=False, proxy=False, username='test', password='test')
-    incidents, last_fetch = fetch_incidents(client, {})
+    incidents, last_fetch, _ = fetch_incidents(client, {})
     # Fetch first time, then change last fetch
     last_three = int(parse('3 days').replace(tzinfo=utc).timestamp()) * 1000
     assert last_fetch == last_three
@@ -399,7 +399,7 @@ def test_fetch_incidents(mocker, requests_mock):
 
     client = Client(base_url='https://api.guardicoreexample.com/api/v3.0',
                     verify=False, proxy=False, username='test', password='test')
-    incidents, last_fetch = fetch_incidents(client, {
+    incidents, last_fetch, _ = fetch_incidents(client, {
         'first_fetch': '40 years'})  # if xsoar is still here when this is a bug then we have a good problem on our hands :)
     # Fetch first time, then change last fetch
     assert last_fetch == 1611322222222
@@ -412,50 +412,61 @@ def test_fetch_incidents(mocker, requests_mock):
     requests_mock.get('https://api.guardicoreexample.com/api/v3.0/incidents',
                       json=incidents_data.get('second'))
 
-    incidents, last_fetch = fetch_incidents(client, {})
+    incidents, last_fetch, _ = fetch_incidents(client, {})
     # Now we should see the last fetch changed
     assert last_fetch == 1611322333333
     assert len(incidents) == 1
 
 
 @freeze_time("2021-01-22 15:30:22.222")
-def test_fetch_incidents_does_not_add_new_incident(mocker, requests_mock):
+def test_fetch_incidents_no_duplicates(mocker, requests_mock):
     """
-    Verify that the fetch incidents does not add a new incident if the last incident is older than the last fetch.
-    Given
-    - a first_fetch time (of 40 days)
-    When
-    - we mock the fetch incidents flow
-    Then
-    - Validate that the second fetch does not add a new older incident.
+    Given:
+    - Two sequential fetch runs
+    When:
+    - API in first fetch returns two (unsorted) incidents:
+      1. id=aa02280b-3f49-403e-b232-a263ee822d52, start_time=1611322222222
+      2. id=adb636b7-f941-438f-82ce-c0f44ddb5324, start_time=1611322111111
+    - API in second fetch returns two incidents:
+      1. id=aa02280b-3f49-403e-b232-a263ee822d52, start_time=1611322222222 (already fetched)
+      2. id=79bb091f-0b87-43cf-a383-03badd9ff546, start_time=1611322333333
+    Then:
+    - Verify the incidents in the first fetch run are sorted by occurrence
+    - Verify that the 2nd fetch returns only the latest incident
+    - Verify last_fetch is increased and last_ids contains the ID of the latest incident
     """
     from GuardiCoreV2 import Client, fetch_incidents
-    from CommonServerPython import \
-        demisto  # noqa # pylint: disable=unused-wildcard-importcommon
-    incidents_data = util_load_json(
-        'test_data/fetch_incidents_response.json')
+    fetch_params = {'first_fetch': '3 days'}
+    incidents_data = util_load_json('test_data/fetch_incidents_no_duplicates.json')
     requests_mock.post(
         'https://api.guardicoreexample.com/api/v3.0/authenticate',
-        json={'access_token': TEST_API_KEY})
-    requests_mock.get('https://api.guardicoreexample.com/api/v3.0/incidents',
-                      json=incidents_data.get('second'))
-
+        json={'access_token': TEST_API_KEY},
+    )
     client = Client(base_url='https://api.guardicoreexample.com/api/v3.0',
                     verify=False, proxy=False, username='test', password='test')
-    incidents, last_fetch = fetch_incidents(client, {
-        'first_fetch': '40 years'})  # if xsoar is still here when this is a bug then we have a good problem on our hands :)
-    # Fetch first time, then change last fetch
-    assert last_fetch == 1611322333333
-    assert incidents[0].get('name') == 'Guardicore Incident (INC-79BB091F)'
+
+    # fetch first
+    requests_mock.get(
+        'https://api.guardicoreexample.com/api/v3.0/incidents',
+        json=incidents_data.get('first'),
+    )
+    incidents, last_fetch, last_ids = fetch_incidents(client, fetch_params)
+    assert len(incidents) == 2
+    assert "adb636b7" in incidents[0]["name"].lower()
+    assert "aa02280b" in incidents[1]["name"].lower()
+
+    # second fetch
+    mocker.patch.object(
+        demisto,
+        'getLastRun',
+        return_value={'last_fetch': last_fetch, 'last_ids': last_ids},
+    )
+    requests_mock.get(
+        'https://api.guardicoreexample.com/api/v3.0/incidents',
+        json=incidents_data.get('second'),
+    )
+    incidents, second_run_last_fetch, last_ids = fetch_incidents(client, fetch_params)
     assert len(incidents) == 1
-
-    mocker.patch.object(demisto, 'getLastRun',
-                        return_value={
-                            'last_fetch': last_fetch})
-    requests_mock.get('https://api.guardicoreexample.com/api/v3.0/incidents',
-                      json=incidents_data.get('first'))
-
-    incidents, last_fetch = fetch_incidents(client, {})
-    # Now we should see the last fetch didn't change.
-    assert last_fetch == 1611322333333
-    assert len(incidents) == 0
+    assert "aa02280b" not in incidents[0]["name"].lower()
+    assert last_fetch < second_run_last_fetch
+    assert last_ids == ["79bb091f-0b87-43cf-a383-03badd9ff546"]
