@@ -885,6 +885,11 @@ class BranchTestCollector(TestCollector):
 
             case FileType.SCRIPT | FileType.PLAYBOOK:
                 try:
+
+                    if yml.id_.endswith("ApiModule"):
+                        logger.info(f"Found changes in ApiModule = {yml.id_}, starting collecting related integrations")
+                        return self._collect_integrations_using_apimodule(yml.id_)
+
                     tests = tuple(yml.tests)  # raises NoTestsConfiguredException if 'no tests' in the tests field
                     reason = CollectionReason.SCRIPT_PLAYBOOK_CHANGED
 
@@ -926,6 +931,18 @@ class BranchTestCollector(TestCollector):
                 content_item_range=yml.version_range,
                 allow_incompatible_marketplace=override_support_level_compatibility,
             )
+
+    def _collect_integrations_using_apimodule(self, api_module_id: str) -> CollectionResult | None:
+        integrations_using_apimodule = self.id_set.api_modules_to_integrations.get(api_module_id, [])
+        result = []
+        for integration in integrations_using_apimodule:
+            try:
+                result.append(self._collect_single(integration.path))
+            except (NothingToCollectException, NonXsoarSupportedPackException) as e:
+                logger.info(str(e))
+                continue
+        logger.debug(f"Collected for {api_module_id}: {result}")
+        return CollectionResult.union(result)
 
     def _collect_xsiam_and_modeling_pack(self,
                                          file_type: FileType | None,
