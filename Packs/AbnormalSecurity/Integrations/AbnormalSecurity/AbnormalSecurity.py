@@ -234,7 +234,7 @@ class Client(BaseClient):
 
         response = self._remove_keys_from_response(response, ["pageNumber", "nextPageNumber"])
 
-        return response
+        return response["vendors"]
 
     def get_the_details_of_a_vendor_case_request(self, caseId):
         headers = self._headers
