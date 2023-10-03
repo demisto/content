@@ -1,13 +1,7 @@
 import copy
 from urllib.parse import parse_qs
 
-import urllib3
-
 from CommonServerPython import *  # noqa: F401
-
-# disable insecure warnings
-urllib3.disable_warnings()
-
 
 FEEDLY_BASE_URL = "https://api.feedly.com"
 
@@ -323,10 +317,6 @@ class STIX2Parser:
         }
 
         attack_pattern["customFields"] = fields
-
-        if not is_demisto_version_ge("6.2.0"):
-            # For versions less than 6.2 - that only support STIX and not the newer types - Malware, Tool, etc.
-            attack_pattern = STIX2Parser.change_attack_pattern_to_stix_attack_pattern(attack_pattern)
 
         return [attack_pattern]
 

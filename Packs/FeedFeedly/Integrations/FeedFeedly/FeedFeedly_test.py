@@ -1,6 +1,6 @@
 import json
 
-from Feedly import Client
+from FeedFeedly import Client
 
 URL = "https://api.feedly.com/v3/enterprise/ioc?streamId=tag%2FenterpriseName%2Fcategory%2Fuuid&count=20&newerThan=0&client=feedly.demisto.client"
 

@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: Feedly
+  id: Feedly Feed
   version: -1
 configuration:
 - defaultvalue: 'true'
@@ -11,7 +11,7 @@ configuration:
 - displaypassword: API key
   name: credentials
   type: 9
-  required: false
+  required: true
   hiddenusername: true
 - additionalinfo: Indicators from this integration instance will be marked with this reputation
   defaultvalue: Bad
@@ -101,8 +101,8 @@ configuration:
   type: 0
   additionalinfo: Supports CSV values.
   name: feedTags
-display: Feedly
-name: Feedly
+display: Feedly Feed
+name: Feedly Feed
 script:
   commands:
   - arguments:

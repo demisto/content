@@ -1,9 +1,9 @@
 Ingest articles with indicators, entities and relationships from Feedly into XSOAR
 
-## Configure Feedly on Cortex XSOAR
+## Configure FeedFeedly on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Feedly.
+2. Search for FeedFeedly.
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Description** | **Required** |
