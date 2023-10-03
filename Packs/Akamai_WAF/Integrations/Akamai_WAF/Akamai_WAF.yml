@@ -1333,7 +1333,7 @@ script:
     outputs:
     - contextPath: Akamai.SiteShieldMaps
       description: Akamai SiteShield Maps
-      type: list
+      type: List
   - arguments:
     - description: Unique Identifier of the Enrollment on which to perform the desired operation. And it can be retrived via list_enrollments_command
       name: enrollment_id
