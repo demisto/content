@@ -1,4 +1,3 @@
-import argparse
 import json
 import os
 from datetime import datetime, timedelta
@@ -30,7 +29,7 @@ JIRA_LABELS = json.loads(os.environ.get("JIRA_LABELS", "[]"))
 
 def create_jira_issue(jira_server: JIRA,
                       test_suite: TestSuite,
-                      options: argparse.Namespace,
+                      max_days_to_reopen: int,
                       now: datetime) -> Issue:
     properties = {prop.name: prop.value for prop in test_suite.properties()}
     build_id = properties.get("ci_pipeline_id", "")
@@ -38,7 +37,8 @@ def create_jira_issue(jira_server: JIRA,
     summary = generate_ticket_summary(f"{properties['pack_id']} - {properties['file_name']}")
     jql_query = generate_query(summary)
     search_issues: ResultList[Issue] = jira_server.search_issues(jql_query, maxResults=1)  # type: ignore[assignment]
-    jira_issue, link_to_issue, use_existing_issue = find_existing_jira_ticket(jira_server, now, options, search_issues)
+    jira_issue, link_to_issue, use_existing_issue = find_existing_jira_ticket(jira_server, now, max_days_to_reopen,
+                                                                              search_issues[0] if search_issues else None)
 
     if jira_issue is not None:
         jira_server.add_comment(issue=jira_issue, body=description)
@@ -85,17 +85,17 @@ def generate_query(summary: str) -> str:
 
 def find_existing_jira_ticket(jira_server: JIRA,
                               now: datetime,
-                              options: argparse.Namespace,
-                              search_issues: ResultList[Issue]) -> tuple[Issue | None, Issue | None, bool]:
+                              max_days_to_reopen: int,
+                              jira_issue: Issue) -> tuple[Issue | None, Issue | None, bool]:
     link_to_issue = None
-    jira_issue = None
-    if use_existing_issue := (len(search_issues) == 1):
-        searched_issue = search_issues[0]
+    jira_issue_to_use = None
+    if use_existing_issue := (jira_issue is not None):
+        searched_issue: Issue = jira_issue
         if searched_issue.get_field("resolution"):
             resolution_date = datetime.strptime(searched_issue.get_field("resolutiondate"), JIRA_TIME_FORMAT)
             if use_existing_issue := (resolution_date
                                       and (now - resolution_date)
-                                      <= timedelta(days=options.max_days_to_reopen)):  # type: ignore[assignment]
+                                      <= timedelta(days=max_days_to_reopen)):  # type: ignore[assignment]
 
                 #  Get the available transitions for the issue
                 transitions = jira_server.transitions(searched_issue)
@@ -108,25 +108,30 @@ def find_existing_jira_ticket(jira_server: JIRA,
                         break
                 if unresolved_transition:
                     jira_server.transition_issue(searched_issue, unresolved_transition['id'])
-                    jira_issue = searched_issue
+                    jira_issue_to_use = searched_issue
                 else:
                     logging.error(f"Failed to find the '{JIRA_ISSUE_UNRESOLVED_TRANSITION_NAME}' "
                                   f"transition for issue {searched_issue.key}")
-                    jira_issue = None
+                    jira_issue_to_use = None
                     use_existing_issue = False
                     link_to_issue = searched_issue
 
             else:
                 link_to_issue = searched_issue
         else:
-            jira_issue = searched_issue
-    return jira_issue, link_to_issue, use_existing_issue
+            jira_issue_to_use = searched_issue
+    return jira_issue_to_use, link_to_issue, use_existing_issue
 
 
-def generate_description(build_id: str, properties: dict[str, str], test_suite: TestSuite) -> str:
+def generate_build_markdown_link(build_id: str) -> str:
     build_url = f"{GITLAB_SERVER_URL}/{GITLAB_PROJECT_ID}/-/pipelines/{build_id}" if build_id else ""
     build_id_hash = f" #{build_id}" if build_id else ""
     build_markdown_link = f"[Nightly{build_id_hash}|{build_url}]" if build_id else f"Nightly{build_id_hash}"
+    return build_markdown_link
+
+
+def generate_description(build_id: str, properties: dict[str, str], test_suite: TestSuite) -> str:
+    build_markdown_link = generate_build_markdown_link(build_id)
     table = tabulate(tabular_data=[
         ["Total", test_suite.tests],
         ["Failed", test_suite.failures],

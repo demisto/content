@@ -53,7 +53,7 @@ def main():
         xml = JUnitXml.fromfile(options.junit_path)
         for test_suite in xml.iterchildren(TestSuite):
             if test_suite.failures or test_suite.errors:
-                create_jira_issue(jira_server, test_suite, options, now)
+                create_jira_issue(jira_server, test_suite, options.max_days_to_reopen, now)
             else:
                 logging.debug(f"Skipped creating Jira issue for successful test {test_suite.name}")
 
