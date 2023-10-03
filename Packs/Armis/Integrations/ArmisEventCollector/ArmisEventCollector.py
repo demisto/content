@@ -65,10 +65,9 @@ class Client(BaseClient):
             list[dict]: List of events objects represented as dictionaries.
         """
         params: dict[str, Any] = {'aql': aql_query, 'includeTotal': 'true', 'length': max_fetch, 'orderBy': 'time'}
-        if after:  # if there is a time frame thats relative to last run
-            params['aql'] += f' after:{after.strftime(DATE_FORMAT)}'
-
-        # make first request to get first page of threat activity
+        if not after:  # if this is the first fetch run of the instance, use current datetime as starting point
+            after = datetime.now()
+        params['aql'] += f' after:{after.strftime(DATE_FORMAT)}'  # add 'after' date filter to AQL query in the desired format
         raw_response = self._http_request(url_suffix='/search/', method='GET', params=params, headers=self._headers)
         results = raw_response.get('data', {}).get('results', [])
 
@@ -296,7 +295,7 @@ def fetch_by_event_type(event_type: EVENT_TYPE, events: list, next_run: dict, cl
         next_run[last_fetch_time] = new_events[-1].get('time') if new_events else last_run.get(last_fetch_time)
 
         events.extend(new_events)
-        demisto.debug(f'debug-log: overall {len(new_events)} alerts (after dedup)')
+        demisto.debug(f'debug-log: overall {len(new_events)} {event_type.type} (after dedup)')
         demisto.debug(f'debug-log: last {event_type.type} in list: {new_events[-1] if new_events else {}}')
     else:
         next_run.update(last_run)
