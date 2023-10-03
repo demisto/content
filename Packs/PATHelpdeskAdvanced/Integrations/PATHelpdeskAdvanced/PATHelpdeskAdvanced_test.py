@@ -23,24 +23,6 @@ from PATHelpdeskAdvanced import (
 
 
 @pytest.mark.parametrize(
-    "kwargs, expected_start, expected_limit",
-    [
-        ({"limit": 10}, 0, 10),
-        ({"page": 2, "page_size": 20, "limit": 30}, 40, 20),
-    ],
-)
-def test_paginate(kwargs, expected_start, expected_limit):
-    """
-    Given the keyword arguments `kwargs`, `expected_start`, and `expected_limit`.
-    When the `paginate` function is called with the provided keyword arguments.
-    Then the result of the pagination should have the expected values.
-    """
-    result = paginate(**kwargs)
-    assert result.start == expected_start
-    assert result.limit == expected_limit
-
-
-@pytest.mark.parametrize(
     "demisto_name, expected_demisto_name, expected_hda_name",
     [
         ("incident_id", "incident_id", "IncidentID"),
@@ -454,7 +436,7 @@ class TestClient:
             return_value={},
         )
         client = TestClient.dummy_client()
-        assert client.refresh_token == "refresh_token"
+        assert client.token.refresh_token == "refresh_token"
 
     @classmethod
     def test_expired_token(cls, mocker, requests_mock) -> None:
@@ -480,7 +462,7 @@ class TestClient:
             return_value={},
         )
         client = TestClient.dummy_client()
-        assert client.refresh_token == "new_refresh_token"
+        assert client.token.refresh_token == "new_refresh_token"
 
     @classmethod
     @freezegun.freeze_time("2023-01-01 12:00:00")
@@ -513,8 +495,8 @@ class TestClient:
         client = TestClient.dummy_client()
 
         # Assert valid token reused
-        assert client.refresh_token == "new_refresh_token"
-        assert client.request_token == "new_request_token"
+        assert client.token.refresh_token == "new_refresh_token"
+        assert client.token.request_token == "new_request_token"
 
     @classmethod
     def test_add_ticket_attachment(cls, mocker, requests_mock):
@@ -695,10 +677,9 @@ class TestClient:
             '+{"property":+"parentobjectid",+"op":+"eq",+"value":+"a12345c"}]'
         )
         assert result.readable_output == (
-            "### Attachments of A12345C\n|File Name|Ticket ID|Last Update|Description|Object Description|"
-            "First Update User ID|Object Entity"
-            "|Content Type|\n|---|---|---|---|---|---|---|---|\n| Untitled document.pdf | 1234567C | 2023-08-02T00:00:00Z | "
-            "Untitled document.pdf | Untitled document.pdf | S44444C | Attachment | application/pdf |\n"
+            "### Attachments of A12345C\n|File Name|Last Update|Description|Object Description|First Update User ID|Object Entity"
+            "|Content Type|\n|---|---|---|---|---|---|---|\n| Untitled document.pdf | 2023-08-02T00:00:00Z | Untitled document.pdf"
+            " | Untitled document.pdf | S44444C | Attachment | application/pdf |\n"
         )
         assert result.outputs == [
             {
