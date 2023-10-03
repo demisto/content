@@ -223,23 +223,6 @@ xpanse-prepare-testing-bucket:
   extends:
     - .generic-prepare-testing-bucket
 
-# add-dep-changes-in-pr-comment:
-#   tags:
-#     - gke
-#   stage: prepare-testing-bucket
-#   extends:
-#     - .default-job-settings
-#   needs: ['mpv2-prepare-testing-bucket', 'xpanse-prepare-testing-bucket', 'xsoar-prepare-testing-bucket']
-#   when: always
-#   except:
-#   - triggers
-#   - schedules
-#   script:
-#     - |
-#       if [[ $CI_COMMIT_BRANCH != "master" ]]; then
-#         python3 ./Tests/scripts/update_pack_dependencies_changes_in_pr.py --github-token $GITHUB_TOKEN --current-sha $CI_COMMIT_SHA --current-branch $CI_COMMIT_BRANCH --artifacts-folder $ARTIFACTS_FOLDER --mandatory-only true
-#       fi
-
 .test_content_on_xsoar_server_instances_base:
   tags:
     - gke
