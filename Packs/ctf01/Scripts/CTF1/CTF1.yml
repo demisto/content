@@ -19,8 +19,6 @@ args:
   - "03"
   - "04"
   - "05"
-  - "06"
-  - "07"
   isArray: true
 scripttarget: 0
 subtype: python3
