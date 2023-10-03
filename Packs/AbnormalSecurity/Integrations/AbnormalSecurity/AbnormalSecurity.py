@@ -236,7 +236,6 @@ class Client(BaseClient):
 
         return response["vendorCases"]
 
-
     def get_the_details_of_a_vendor_case_request(self, caseId):
         headers = self._headers
 
