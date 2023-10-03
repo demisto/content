@@ -102,7 +102,9 @@ echo ${DEMISTO_LIC_PATH} > demisto_lic_path
 DEMISTO_PACK_SIGNATURE_UTIL_PATH="./signDirectory"
 echo ${DEMISTO_PACK_SIGNATURE_UTIL_PATH} > demisto_pack_sig_util_path
 
-clone_repository_with_fallback_branch "code.pan.run" "gitlab-ci-token" "${CI_JOB_TOKEN}" "xsoar/content-test-conf" "${CI_COMMIT_BRANCH}" 3 10 "master"
+CI_SERVER_HOST=${CI_SERVER_HOST:-code.pan.run}
+
+clone_repository_with_fallback_branch "${CI_SERVER_HOST}" "gitlab-ci-token" "${CI_JOB_TOKEN}" "${CI_PROJECT_NAMESPACE}/content-test-conf" "${CI_COMMIT_BRANCH}" 3 10 "master"
 
 cp ./content-test-conf/secrets_build_scripts/google_secret_manager_handler.py ./Tests/scripts
 cp ./content-test-conf/secrets_build_scripts/add_secrets_file_to_build.py ./Tests/scripts
@@ -119,7 +121,7 @@ if [[ "${NIGHTLY}" == "true" || "${EXTRACT_PRIVATE_TESTDATA}" == "true" ]]; then
 fi
 rm -rf ./content-test-conf
 
-clone_repository_with_fallback_branch "code.pan.run" "gitlab-ci-token" "${CI_JOB_TOKEN}" "xsoar/infra" "${CI_COMMIT_BRANCH}" 3 10 "master"
+clone_repository_with_fallback_branch "${CI_SERVER_HOST}" "gitlab-ci-token" "${CI_JOB_TOKEN}" "${CI_PROJECT_NAMESPACE}/infra" "${CI_COMMIT_BRANCH}" 3 10 "master"
 
 cp -r ./infra/xsiam_servers.json $XSIAM_SERVERS_PATH
 cp -r ./infra/xsoar_ng_servers.json $XSOAR_NG_SERVERS_PATH
