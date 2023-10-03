@@ -284,6 +284,8 @@ def list_alerts_command(client: Client, args: dict[str, Any]) -> CommandResults:
             ``args['business_units_list']`` List of business units of the Alert status.
             ``args['lte_creation_time']`` string of time format "2019-12-31T23:59:00".
             ``args['gte_creation_time']`` string of time format "2019-12-31T23:59:00".
+            ``args['case_id_list']`` List of integers of the Case ID.
+            ``args['tags']`` List of tags.
             ``args['sort_by_creation_time']`` optional - enum (asc,desc).
             ``args['sort_by_severity']`` optional - enum (asc,desc).
             ``args['page']`` Page number (for pagination). The default is 0 (the first page).
@@ -299,6 +301,7 @@ def list_alerts_command(client: Client, args: dict[str, Any]) -> CommandResults:
     business_units_list = argToList(args.get('business_units_list'))
     lte_creation_time = args.get('lte_creation_time')
     gte_creation_time = args.get('gte_creation_time')
+    case_id_list = argToList(args.get('case_id_list'))
     sort_by_creation_time = args.get('sort_by_creation_time')
     sort_by_severity = args.get('sort_by_severity')
     tags = argToList(args.get('tags'))
@@ -339,6 +342,8 @@ def list_alerts_command(client: Client, args: dict[str, Any]) -> CommandResults:
         })
     if tags:
         search_params.append({"field": "tags", "operator": "in", "value": tags})
+    if case_id_list:
+        search_params.append({"field": "case_id_list", "operator": "in", "value": case_id_list})
 
     if sort_by_creation_time:
         request_data = {"request_data": {"filters": search_params, 'search_from': search_from,
