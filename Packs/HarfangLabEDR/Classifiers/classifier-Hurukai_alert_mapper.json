@@ -155,23 +155,23 @@
 				"Agents ID": {
 					"simple": "agents.id"
 				},
-				"Total Security Event Count": {
+				"HarfangLab EDR Total Security Event Count": {
 					"simple": "total_security_event_count"
 				},
 
-				"Critical Security Event Count": {
+				"HarfangLab EDR Critical Security Event Count": {
 					"simple": "security_event_count_by_level.critical"
 				},
 				"Description": {
 					"simple": "note.content"
 				},
-				"High Security Event Count": {
+				"HarfangLab EDR High Security Event Count": {
 					"simple": "security_event_count_by_level.high"
 				},
-				"Medium Security Event Count": {
+				"HarfangLab EDR Medium Security Event Count": {
 					"simple": "security_event_count_by_level.medium"
 				},
-				"Low Security Event Count": {
+				"HarfangLab EDR Low Security Event Count": {
 					"simple": "security_event_count_by_level.low"
 				},
 				"MITRE Tactic Name": {
@@ -192,16 +192,16 @@
 				"Rule Name": {
 					"simple": "rules.rule_name"
 				},
-				"Threat ID": {
+				"HarfangLab EDR Threat ID": {
 					"simple": "id"
 				},
-				"Top Agents": {
+				"HarfangLab EDR Top Agents": {
 					"simple": "top_agents.agent_hostname"
 				},
-				"Top Impacted Users": {
+				"HarfangLab EDR Top Impacted Users": {
 					"simple": "top_impacted_users.user_name"
 				},
-				"Top Rules": {
+				"HarfangLab EDR Top Rules": {
 					"simple": "top_rules.rule_name"
 				},
 				"Users": {
