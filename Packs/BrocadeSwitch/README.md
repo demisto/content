@@ -7,7 +7,7 @@ This pack includes XSIAM content.
 This section describes the configuration that needs to be done on Brocade Fabric OS switch appliances in order to forward their event logs to Cortex XSIAM Broker VM via syslog. 
 
 ### Syslog Forwarding Configuration
-Brocade Fabric OS switches supports forwarding the audited events to a remote syslog server. The syslog forwarding configuration is done via the [***syslogAdmin***](https://techdocs.broadcom.com/us/en/fibre-channel-networking/fabric-os/fabric-os-commands/9-2-x/Fabric-OS-Commands/syslogAdmin.html) command. 
+Brocade Fabric OS switches support forwarding the audited events to a remote syslog server. The syslog forwarding configuration is done via the [***syslogAdmin***](https://techdocs.broadcom.com/us/en/fibre-channel-networking/fabric-os/fabric-os-commands/9-2-x/Fabric-OS-Commands/syslogAdmin.html) command. 
 
 For adding the Cortex XSIAM Broker VM as a syslog server, run the following command on the switch appliance CLI (Command Line Interface), replacing _\<IP\>_ and _\<Port\>_ with the actual corresponding IP address (or hostname) and port of the target [XSIAM Syslog Broker VM](#broker-vm):  
 
