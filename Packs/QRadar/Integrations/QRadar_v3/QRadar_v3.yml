@@ -22,7 +22,7 @@ configuration:
   section: Connect
 - display: QRadar API Version
   defaultvalue: 17.0
-  additionalinfo: API version of QRadar (e.g., '12.0'). Minimum API version is 10.1.
+  additionalinfo: API version of QRadar (e.g., '12.0'). Minimum API version is 10.1. Since QRadar API v19, The timestamp fields should be provided as milliseconds epoch format instead of seconds.
   name: api_version
   type: 0
   required: true
@@ -967,7 +967,7 @@ script:
       - LAST_SEEN
       - UNKNOWN
     - name: time_to_live
-      description: "The time to live interval, time range. for example: '1 month' or '5 minutes'"
+      description: "The time to live interval, time range. for example: '1 month' or '5 minutes'."
     - name: fields
       description: 'Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "name,timeout_type". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see: https://ibmsecuritydocs.github.io/qradar_api_14.0/14.0--reference_data-sets-POST.html.'
       isArray: true
@@ -1399,7 +1399,7 @@ script:
       name: filter
     - description: "If used, will filter all fields except for the specified ones. Use this parameter to specify which fields you would like to get back in the response. Fields that are not explicitly named, are excluded. Specify subfields in brackets and multiple fields in the same object separated by commas. The filter uses QRadar's field names. For reference, consult: https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offenses-GET.html"
       name: fields
-    - description: 'Range of results to return. e.g.: 0-20'
+    - description: 'Range of results to return. e.g.: 0-20.'
       name: range
     - description: Table headers to use the human readable output (if none provided, will show all table headers).
       name: headers
@@ -1480,11 +1480,11 @@ script:
       description: Is the offense protected.
       type: boolean
     - contextPath: QRadar.Offense.RemoteDestinationCount
-      description: The remote destinations that are associated with the offesne. If this value is greater than 0 that means your offense has a remote destination, you will need to use QRadarFullSearch playbook with the following query - SELECT destinationip FROM events WHERE inOffense(<offenseID>) GROUP BY destinationip
+      description: The remote destinations that are associated with the offesne. If this value is greater than 0 that means your offense has a remote destination, you will need to use QRadarFullSearch playbook with the following query - SELECT destinationip FROM events WHERE inOffense(<offenseID>) GROUP BY destinationip.
       type: Unknown
   - arguments:
     - default: true
-      description: Offense ID
+      description: Offense ID.
       name: offense_id
       required: true
     - description: 'Query to filter offense. For reference please consult: https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.3.1/com.ibm.qradar.doc/c_rest_api_filtering.html'
@@ -1513,10 +1513,10 @@ script:
       description: The source addresses that are associated with the offense.
       type: Unknown
     - contextPath: QRadar.Offense.DestinationAddress
-      description: The local destination addresses that are associated with the offense. If your offense has a remote destination, you will need to use the QRadarFullSearch playbook with the following query - SELECT destinationip FROM events WHERE inOffense(<offenseID>) GROUP BY destinationip
+      description: The local destination addresses that are associated with the offense. If your offense has a remote destination, you will need to use the QRadarFullSearch playbook with the following query - SELECT destinationip FROM events WHERE inOffense(<offenseID>) GROUP BY destinationip.
       type: Unknown
     - contextPath: QRadar.Offense.RemoteDestinationCount
-      description: The remote destination that are associated with the offesne. If this value is greater than 0, it means that your offense has a remote destination, you will need to use the QRadarFullSearch playbook with the following query - SELECT destinationip FROM events WHERE inOffense(<offenseID>) GROUP BY destinationip
+      description: The remote destination that are associated with the offesne. If this value is greater than 0, it means that your offense has a remote destination, you will need to use the QRadarFullSearch playbook with the following query - SELECT destinationip FROM events WHERE inOffense(<offenseID>) GROUP BY destinationip.
       type: Unknown
     - contextPath: QRadar.Offense.AssignedTo
       description: The user the offense is assigned to.
@@ -1681,11 +1681,11 @@ script:
       description: Is the offense protected.
       type: boolean
     - contextPath: QRadar.Offense.RemoteDestinationCount
-      description: The remote destinations that are associated with the offesne. If this value is greater than 0 that means your offense has a remote destination, you will need to use QRadarFullSearch playbook with the following query - SELECT destinationip FROM events WHERE inOffense(<offenseID>) GROUP BY destinationip
+      description: The remote destinations that are associated with the offesne. If this value is greater than 0 that means your offense has a remote destination, you will need to use QRadarFullSearch playbook with the following query - SELECT destinationip FROM events WHERE inOffense(<offenseID>) GROUP BY destinationip.
       type: Unknown
   - arguments:
     - default: true
-      description: The query expressions in AQL (for more information about Ariel Query Language, review "https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.3.0/com.ibm.qradar.doc/c_aql_intro.html")
+      description: The query expressions in AQL (for more information about Ariel Query Language, review "https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.3.0/com.ibm.qradar.doc/c_aql_intro.html").
       name: query_expression
       required: true
     - description: Table headers to use the human readable output (if none provided, will show all table headers).
@@ -1722,7 +1722,7 @@ script:
       description: The search id.
       name: search_id
       required: true
-    - description: 'Range of results to return. e.g.: 0-20'
+    - description: 'Range of results to return. e.g.: 0-20.'
       name: range
     - description: Table headers to use the human readable output (if none provided, will show all table headers).
       name: headers
@@ -1740,7 +1740,7 @@ script:
       name: filter
     - description: "If used, will filter all fields except for the specified ones. Use this parameter to specify which fields you would like to get back in the response. Fields that are not named are excluded. Specify subfields in brackets and multiple fields in the same object separated by commas. The filter uses QRadar's field names, for reference, consult: https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--asset_model-assets-GET.html"
       name: fields
-    - description: 'Range of results to return. e.g.: 0-20'
+    - description: 'Range of results to return. e.g.: 0-20.'
       name: range
     - description: Table headers to use the human readable output (if none provided, will show all table headers).
       name: headers
@@ -1976,7 +1976,7 @@ script:
       description: Reference time to live.
       type: string
     - contextPath: QRadar.Reference.TimeoutType
-      description: 'Reference timeout type. Valid values are: UNKNOWN, FIRST_SEEN, LAST_SEEN'
+      description: 'Reference timeout type. Valid values are: UNKNOWN, FIRST_SEEN, LAST_SEEN.'
       type: string
     - contextPath: QRadar.Reference.Data
       description: Reference set items.
@@ -2102,7 +2102,7 @@ script:
       description: Number of elements.
       type: number
     - contextPath: QRadar.Reference.TimeoutType
-      description: 'Reference timeout type. One of: UNKNOWN, FIRST_SEEN, LAST_SEEN'
+      description: 'Reference timeout type. One of: UNKNOWN, FIRST_SEEN, LAST_SEEN.'
       type: string
   - arguments:
     - description: The name of the reference set to remove a value from.
@@ -2135,7 +2135,7 @@ script:
       description: Number of elements.
       type: number
     - contextPath: QRadar.Reference.TimeoutType
-      description: 'Reference timeout type. One of: UNKNOWN, FIRST_SEEN, LAST_SEEN'
+      description: 'Reference timeout type. One of: UNKNOWN, FIRST_SEEN, LAST_SEEN.'
       type: string
   - arguments:
     - description: "If used, will filter all fields except for the specified ones. Use this parameter to specify which fields you would like to get back in the response. Fields that are not explicitly named are excluded. Specify subfields in brackets and multiple fields in the same object are separated by commas. The filter uses QRadar's field names, for reference please consult: https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offenses-offense_id-notes-note_id-GET.html"
@@ -2279,9 +2279,9 @@ script:
       name: filter
     - description: "If used, will filter all fields except for the ones specified. Use this argument to specify which fields should be returned in the response. Fields that are not named are excluded. Specify subfields in brackets and multiple fields in the same object separated by commas. The filter uses QRadar's field names, for reference, consult: https://ibmsecuritydocs.github.io/qradar_api_14.0/14.0--siem-source_addresses-GET.html."
       name: fields
-    - description: 'Range of results to return. e.g.: 0-20'
+    - description: 'Range of results to return. e.g.: 0-20.'
       name: range
-    description: Get Source IPs
+    description: Get Source IPs.
     name: qradar-ips-source-get
     outputs:
     - contextPath: QRadar.SourceIP.ID
@@ -2322,9 +2322,9 @@ script:
       name: filter
     - description: "If used, will filter all fields except for the ones specified. Use this argument to specify which fields should be returned in the response. Fields that are not named are excluded. Specify subfields in brackets and multiple fields in the same object separated by commas. The filter uses QRadar's field names, for reference, consult: https://ibmsecuritydocs.github.io/qradar_api_14.0/14.0--siem-local_destination_addresses-GET.html."
       name: fields
-    - description: 'Range of results to return. e.g.: 0-20'
+    - description: 'Range of results to return. e.g.: 0-20.'
       name: range
-    description: Get Source IPs
+    description: Get Source IPs.
     name: qradar-ips-local-destination-get
     outputs:
     - contextPath: QRadar.LocalDestinationIP.ID
@@ -2535,7 +2535,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.13.72123
+  dockerimage: demisto/python3:3.10.13.75921
   isremotesyncin: true
   longRunning: true
   isFetchSamples: true

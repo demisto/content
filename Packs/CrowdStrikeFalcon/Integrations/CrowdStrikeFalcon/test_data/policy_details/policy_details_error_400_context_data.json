@@ -1,0 +1,50 @@
+[
+    {
+        "CreatedAt": "2020-08-18T08:30:21.760579Z",
+        "DeletedAt": null,
+        "ID": 1,
+        "UpdatedAt": "2023-06-21T18:47:44.371539Z",
+        "account_scope": "",
+        "alert_logic": "1. List all IAM users.|\n2. Filter on users with active access keys.|\n3. Filter on access keys that have not been rotated in 90 days.|\n4. Alert on each user.",
+        "api_command": "ListUsers, ListAccessKeys",
+        "asset_type_id": 8,
+        "attack_types": [
+            "Credential policy violation"
+        ],
+        "cis_benchmark_ids": [
+            108,
+            641,
+            740
+        ],
+        "cli_command": "aws2 iam list-users, aws2 iam list-access-keys",
+        "cloud_asset_type": "user",
+        "cloud_document": "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html",
+        "cloud_platform_type": "aws",
+        "cloud_service_subtype": "Access Keys",
+        "cloud_service_type": "IAM",
+        "default_severity": "informational",
+        "description": "Because IAM access keys are long-term credentials, as time goes on, the risk of these keys being exposed is increased.\n\nKeys are often left on old servers, accidentally published through Git, or stolen from developer machines. The longer the keys are valid, the more likely they are to be discovered in one of these places. By ensuring keys are rotated at least every 90 days, you can be confident that if those keys are discovered, they cannot be abused.",
+        "is_enabled": true,
+        "is_remediable": false,
+        "mitre_attack_cloud_matrix": "https://attack.mitre.org/tactics/TA0006/",
+        "mitre_attack_cloud_subtype": "https://attack.mitre.org/techniques/T1528/",
+        "nist_benchmark_ids": [
+            2,
+            3,
+            281,
+            941
+        ],
+        "pci_benchmark_ids": [
+            120
+        ],
+        "policy_remediation": "Step 1. From the AWS Console, navigate to the IAM page.|\nStep 2. Locate and click on the offending IAM User.|\nStep 3. Click on the Security Credentials tab.|\nStep 4. Navigate to the Access Keys section and choose between making the access key inactive, deleting the key, or rotating the key.",
+        "policy_statement": "IAM user access key active longer than 90 days",
+        "policy_type": "Configuration",
+        "tactic": "Credential Access",
+        "tactic_id": "TA0006",
+        "tactic_url": "https://attack.mitre.org/tactics/TA0006/",
+        "technique": "Steal Application Access Token",
+        "technique_id": "T1528",
+        "technique_url": "https://attack.mitre.org/techniques/T1528/"
+    }
+]
