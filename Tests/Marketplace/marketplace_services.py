@@ -3739,7 +3739,7 @@ class Pack:
                     copied_blob = build_bucket.copy_blob(
                         blob=build_bucket_image_blob, destination_bucket=production_bucket,
                         new_name=os.path.join(storage_base_path,
-                                              build_bucket_image_path.split("content/")[1]).replace("packs/", "")
+                                              build_bucket_image_path.split("content/")[-1]).replace("packs/", "")
                     )
                     if not copied_blob.exists():
                         logging.error(f"Failed to copy {self._pack_name} dynamic dashboard image: {build_bucket_image_blob.name} "
