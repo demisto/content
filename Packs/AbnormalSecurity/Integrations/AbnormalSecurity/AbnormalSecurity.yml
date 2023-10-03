@@ -539,10 +539,10 @@ script:
       description: Get a list of vendors.
       name: abnormal-security-list-vendors
       outputs:
-        - contextPath: AbnormalSecurity.vendors
+        - contextPath: AbnormalSecurity.VendorsList
           description: List of vendors.
           type: Unknown
-        - contextPath: AbnormalSecurity.vendors.vendorDomain
+        - contextPath: AbnormalSecurity.VendorsList.vendorDomain
           description: The domain of the vendor.
           type: String
 
@@ -629,10 +629,10 @@ script:
       description: Get a list of vendor cases.
       name: abnormal-security-list-vendor-cases
       outputs:
-        - contextPath: AbnormalSecurity.vendorCases
+        - contextPath: AbnormalSecurity.VendorCases
           description: List of vendor cases.
           type: Unknown
-        - contextPath: AbnormalSecurity.vendorCases.vendorCaseId
+        - contextPath: AbnormalSecurity.VendorCases.vendorCaseId
           description: The identifier of the vendor case.
           type: Number
 

@@ -641,7 +641,7 @@ def get_a_list_of_vendors_command(client, args):
     markdown = tableToMarkdown('Vendor Domains', response.get('vendors'), headers=['vendorDomain'], removeNull=True)
     command_results = CommandResults(
         readable_output=markdown,
-        outputs_prefix='AbnormalSecurity',
+        outputs_prefix='AbnormalSecurity.VendorsList',
         outputs_key_field='vendorDomain',
         outputs=response,
         raw_response=response,
@@ -689,7 +689,7 @@ def get_a_list_of_vendor_cases_command(client, args):
     markdown = tableToMarkdown('Vendor Case IDs', response.get('vendorCases'), removeNull=True)
     command_results = CommandResults(
         readable_output=markdown,
-        outputs_prefix='AbnormalSecurity',
+        outputs_prefix='AbnormalSecurity.VendorCases',
         outputs_key_field="vendorCaseId",
         outputs=response,
         raw_response=response

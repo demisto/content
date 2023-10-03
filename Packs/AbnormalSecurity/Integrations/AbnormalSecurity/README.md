@@ -1171,10 +1171,10 @@ Get a list of vendors
 
 #### Context Output
 
-| **Path**                              | **Type** | **Description**           |
-| ------------------------------------- | -------- | ------------------------- |
-| AbnormalSecurity.vendors              | Unknown  | List of vendors.          |
-| AbnormalSecurity.vendors.vendorDomain | String   | The domain of the vendor. |
+| **Path**                                  | **Type** | **Description**           |
+| ----------------------------------------- | -------- | ------------------------- |
+| AbnormalSecurity.VendorsList              | Unknown  | List of vendors.          |
+| AbnormalSecurity.VendorsList.vendorDomain | String   | The domain of the vendor. |
 
 #### Command Example
 
@@ -1185,7 +1185,7 @@ Get a list of vendors
 ```json
 {
     "AbnormalSecurity": {
-        "vendors": [
+        "VendorsList": [
             {
                 "vendorDomain": "test-domain-1.com"
             },
@@ -1367,8 +1367,8 @@ Get a list of vendor cases
 
 | **Path**                                  | **Type** | **Description**                    |
 | ----------------------------------------- | -------- | ---------------------------------- |
-| AbnormalSecurity.vendorCases              | Unknown  | List of vendor cases.              |
-| AbnormalSecurity.vendorCases.vendorCaseId | Number   | The identifier of the vendor case. |
+| AbnormalSecurity.VendorCases              | Unknown  | List of vendor cases.              |
+| AbnormalSecurity.VendorCases.vendorCaseId | Number   | The identifier of the vendor case. |
 
 #### Command Example
 
@@ -1379,7 +1379,7 @@ Get a list of vendor cases
 ```json
 {
     "AbnormalSecurity": {
-        "vendorCases": [
+        "VendorCases": [
             {
                 "vendorCaseId": 123
             },
