@@ -1,11 +1,11 @@
 
 default:
-  image: docker-io.art.code.pan.run/devdemisto/gitlab-content-ci:1.0.0.64455
+  image: ${DOCKER_IO}/devdemisto/gitlab-content-ci:1.0.0.64455
   artifacts:
     expire_in: 30 days
     paths:
-      - /builds/xsoar/content/artifacts/*
-      - /builds/xsoar/content/pipeline_jobs_folder/*
+      - ${CI_PROJECT_DIR}/artifacts/*
+      - ${CI_PROJECT_DIR}/pipeline_jobs_folder/*
     when: always
 
 stages:
@@ -33,20 +33,20 @@ variables:
   STORAGE_BASE_PATH: ""
   SLACK_CHANNEL: "dmst-build-test"
   DEMISTO_README_VALIDATION: "true"
-  ARTIFACTS_FOLDER: "/builds/xsoar/content/artifacts"
-  PIPELINE_JOBS_FOLDER: "/builds/xsoar/content/pipeline_jobs_folder"
-  ARTIFACTS_FOLDER_XSOAR: "/builds/xsoar/content/artifacts/xsoar"
-  ARTIFACTS_FOLDER_MPV2: "/builds/xsoar/content/artifacts/marketplacev2"
-  ARTIFACTS_FOLDER_XPANSE: "/builds/xsoar/content/artifacts/xpanse"
-  ARTIFACTS_FOLDER_XSOAR_SAAS: "/builds/xsoar/content/artifacts/xsoar_saas"
-  BASH_ENV: "/builds/xsoar/content/artifacts/bash_env"
-  PYTHONPATH: "/builds/xsoar/content"
+  ARTIFACTS_FOLDER: "${CI_PROJECT_DIR}/artifacts"
+  PIPELINE_JOBS_FOLDER: "${CI_PROJECT_DIR}/pipeline_jobs_folder"
+  ARTIFACTS_FOLDER_XSOAR: "${CI_PROJECT_DIR}/artifacts/xsoar"
+  ARTIFACTS_FOLDER_MPV2: "${CI_PROJECT_DIR}/artifacts/marketplacev2"
+  ARTIFACTS_FOLDER_XPANSE: "${CI_PROJECT_DIR}/artifacts/xpanse"
+  ARTIFACTS_FOLDER_XSOAR_SAAS: "${CI_PROJECT_DIR}/artifacts/xsoar_saas"
+  BASH_ENV: "${CI_PROJECT_DIR}/artifacts/bash_env"
+  PYTHONPATH: "${CI_PROJECT_DIR}"
   PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
   FEATURE_BRANCH_NAME: "v4.5.0"
   IFRA_ENV_TYPE: "Content-Env"
   GIT_DEPTH: 0
   GET_SOURCES_ATTEMPTS: 3  # see https://docs.gitlab.com/ee/ci/runners/configure_runners.html#job-stages-attempts
-  ENV_RESULTS_PATH: "/builds/xsoar/content/artifacts/env_results.json"
+  ENV_RESULTS_PATH: "${CI_PROJECT_DIR}/artifacts/env_results.json"
   GCS_PRODUCTION_BUCKET: "marketplace-dist"
   GCS_PRODUCTION_V2_BUCKET: "marketplace-v2-dist"
   GCS_PRODUCTION_XPANSE_BUCKET: "xpanse-dist"
@@ -64,6 +64,7 @@ variables:
   FF_USE_FASTZIP: "true"
   POETRY_VERSION: "1.6.1"
   INSTALL_POETRY: "true"
+  DOCKER_IO: docker-io.art.code.pan.run
 
 include:
   - local: .gitlab/ci/.gitlab-ci.global.yml
