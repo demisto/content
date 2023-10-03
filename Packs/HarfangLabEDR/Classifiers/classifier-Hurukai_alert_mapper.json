@@ -113,7 +113,7 @@
                 "Tenant Name": {
                     "simple": "tenant"
                 },
-		"Threat ID": {
+		"HarfangLab EDR Threat ID": {
 		    "simple": "threat_key"
 		},
                 "User SID": {
