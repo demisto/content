@@ -149,17 +149,6 @@ validate-content-conf:
     - cp "./Tests/conf.json" "$ARTIFACTS_FOLDER/conf.json"
     - section_end "Create Content Artifacts and Update Conf"
 
-    - section_start "Find dependencies changes" --collapsed
-    - |
-      if [[ -z $BUCKET_UPLOAD || $TEST_UPLOAD == "false" ]]; then
-        source ./Tests/scripts/get_previous_master_sha.sh --fail
-        echo "Finding pack dependencies diff against $PREVIOUS_MASTER_SHA"
-        python Tests/scripts/find_pack_dependencies_changes.py --gitlab-token $GITLAB_API_TOKEN --master-sha $PREVIOUS_MASTER_SHA --job-name $CI_JOB_NAME --artifacts-folder $ARTIFACTS_FOLDER
-      else
-        echo "Test upload flow - skipping find dependencies changes"
-      fi
-    - section_end "Find dependencies changes"
-
     - section_start "Replace Cortex XSOAR" --collapsed
     - |
       if [[ $MARKETPLACE_VERSION == "marketplacev2" ||  $MARKETPLACE_VERSION == "xpanse" ]];
@@ -233,23 +222,6 @@ xpanse-prepare-testing-bucket:
     MARKETPLACE_BUCKET: "$GCS_MARKET_XPANSE_BUCKET"
   extends:
     - .generic-prepare-testing-bucket
-
-add-dep-changes-in-pr-comment:
-  tags:
-    - gke
-  stage: prepare-testing-bucket
-  extends:
-    - .default-job-settings
-  needs: ['mpv2-prepare-testing-bucket', 'xpanse-prepare-testing-bucket', 'xsoar-prepare-testing-bucket']
-  when: always
-  except:
-  - triggers
-  - schedules
-  script:
-    - |
-      if [[ $CI_COMMIT_BRANCH != "master" ]]; then
-        python3 ./Tests/scripts/update_pack_dependencies_changes_in_pr.py --github-token $GITHUB_TOKEN --current-sha $CI_COMMIT_SHA --current-branch $CI_COMMIT_BRANCH --artifacts-folder $ARTIFACTS_FOLDER --mandatory-only true
-      fi
 
 .test_content_on_xsoar_server_instances_base:
   tags:
