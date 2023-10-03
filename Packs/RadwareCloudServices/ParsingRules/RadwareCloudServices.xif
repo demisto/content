@@ -1,2 +1,9 @@
 [INGEST:vendor="radware", product="access_logs", target_dataset="radware_access_logs_raw", no_hit=keep]
+// Split grouped events
+filter _raw_log ~= "^\["
+| alter raw_log_array = arraymap(split(if(_raw_log ~= "^\[", rtrim(ltrim(_raw_log, "["), "]")), "},"), trim("@element"))
+| alter raw_log_array = arraymap(raw_log_array, if(to_string("@element") ~= "[^\}]$", concat("@element", "}"), "@element"))
+| alter raw_log_array_split = raw_log_array
+| arrayexpand raw_log_array_split;
+
 alter _time = parse_timestamp("%d/%b/%Y:%X %z", time);
