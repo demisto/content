@@ -38,7 +38,7 @@ Scan file in OPSWAT
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| fileId | Entry id of a file in Demisto. | Required | 
+| fileId | Entry id of a file in XSOAR. | Required | 
 | scanRule | Name of the Rule to use for scanning (Optional). | Optional | 
 
 #### Context Output
