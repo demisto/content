@@ -86,7 +86,6 @@ configuration:
   - 'Threats'
   type: 16
   advanced: True
-
 - additionalinfo: When selected, closes the XSOAR incident, which is mirrored from the HarfangLab EDR.
   defaultvalue: 'false'
   display: Close Mirrored security event or threat in the XSOAR
@@ -1041,7 +1040,6 @@ script:
   isremotesyncout: true
   longRunning: false
   runonce: false
-
   script: ''
   subtype: python3
   type: python
