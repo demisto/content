@@ -2,7 +2,13 @@ id: Local Analysis alert Investigation - Test
 version: -1
 name: Local Analysis alert Investigation - Test
 description: |-
-  This playbook tests the 'Local Analysis alert Investigation' playbook, which is part of the 'Core' pack. The playbook includes the following conducted tests:.
+  This playbook tests the 'Local Analysis alert Investigation' playbook, which is part of the 'Core' pack. The playbook includes the following conducted tests:
+  - Checks playbook run correctly without inputs.
+  - Checks the handling of malicious verdicts.
+  - Verify the execution of containment actions.
+  - Validate the blocking of indicators.
+  - Test raising severity of the incident
+  - Test file detonation
 starttaskid: "0"
 tasks:
   "0":
