@@ -232,7 +232,7 @@ class Client(BaseClient):
 
         response = self._http_request("get", "vendor-cases", params=params, headers=headers)
 
-        response = self._remove_keys_from_response(response, ["pageNumber"])
+        response = self._remove_keys_from_response(response, ["pageNumber", "nextPageNumber"])
 
         return response
 

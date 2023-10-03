@@ -629,14 +629,11 @@ script:
       description: Get a list of vendor cases.
       name: abnormal-security-list-vendor-cases
       outputs:
-        - contextPath: AbnormalSecurity.VendorCases.vendorCases
+        - contextPath: AbnormalSecurity.vendorCases
           description: List of vendor cases.
           type: Unknown
-        - contextPath: AbnormalSecurity.VendorCases.vendorCases.vendorCaseId
+        - contextPath: AbnormalSecurity.vendorCases.vendorCaseId
           description: The identifier of the vendor case.
-          type: Number
-        - contextPath: AbnormalSecurity.VendorCases.pageNumber
-          description: The current page number.
           type: Number
 
     - arguments:

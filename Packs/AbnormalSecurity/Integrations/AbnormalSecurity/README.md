@@ -1365,11 +1365,10 @@ Get a list of vendor cases
 
 #### Context Output
 
-| **Path**                                              | **Type** | **Description**                    |
-| ----------------------------------------------------- | -------- | ---------------------------------- |
-| AbnormalSecurity.VendorCases.vendorCases              | Unknown  | List of vendor cases.              |
-| AbnormalSecurity.VendorCases.vendorCases.vendorCaseId | Number   | The identifier of the vendor case. |
-| AbnormalSecurity.VendorCases.pageNumber               | Number   | The current page number.           |
+| **Path**                                  | **Type** | **Description**                    |
+| ----------------------------------------- | -------- | ---------------------------------- |
+| AbnormalSecurity.vendorCases              | Unknown  | List of vendor cases.              |
+| AbnormalSecurity.vendorCases.vendorCaseId | Number   | The identifier of the vendor case. |
 
 #### Command Example
 
@@ -1380,20 +1379,17 @@ Get a list of vendor cases
 ```json
 {
     "AbnormalSecurity": {
-        "VendorCases": {
-            "vendorCases": [
-                {
-                    "vendorCaseId": 123
-                },
-                {
-                    "vendorCaseId": 456
-                },
-                {
-                    "vendorCaseId": 789
-                }
-            ],
-            "pageNumber": 1
-        }
+        "vendorCases": [
+            {
+                "vendorCaseId": 123
+            },
+            {
+                "vendorCaseId": 456
+            },
+            {
+                "vendorCaseId": 789
+            }
+        ]
     }
 }
 ```
