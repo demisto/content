@@ -1,5 +1,5 @@
 [file:Hurukai.yml]
-ignore=IN126,BA124,RM110
+ignore=IN126,BA124,RM110,IN147
 
 [file:incidentfield-Threat_ID.json]
 ignore=IF115
@@ -12,6 +12,7 @@ ignore=IF115
 
 [file:incidentfield-Top_Rules.json]
 ignore=IF115
+
 
 [known_words]
 harfanglab
