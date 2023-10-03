@@ -698,7 +698,7 @@ def create_text_out_format(iocs: IO, request_args: RequestArguments) -> Union[IO
         1) if drop_invalids, drop invalids (has invalid chars)
         2) if port_stripping, strip ports
     """
-    enforce_ascii = argToBoolean(demisto.params().get('broker', False))
+    enforce_ascii = argToBoolean(demisto.params().get('enforce_ascii', False))
     ipv4_formatted_indicators = set()
     ipv6_formatted_indicators = set()
     iocs.seek(0)
