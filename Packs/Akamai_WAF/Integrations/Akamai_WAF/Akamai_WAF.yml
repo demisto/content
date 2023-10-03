@@ -1368,7 +1368,7 @@ script:
     outputs:
     - contextPath: Akamai.CidrBlocks
       description: A List of CIDR Blocks
-      type: list
+      type: List
   - arguments:
     - description: Enrollment on which to perform the desired operation. And it can be retrived via list_enrollments_command
       name: enrollment_id
