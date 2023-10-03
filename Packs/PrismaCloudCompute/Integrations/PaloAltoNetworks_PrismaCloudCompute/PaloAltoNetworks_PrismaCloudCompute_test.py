@@ -1696,7 +1696,7 @@ def test_update_trusted_images_command(mocker):
 
     update_trusted_images(client, args)
     http_request.assert_called_with(method='PUT', url_suffix='trust/data',
-                                    data=images_list_json, resp_type='response', ok_codes=(200,))
+                                    json_data=images_list_json, resp_type='response', ok_codes=(200,))
 
 
 def test_get_container_scan_results_command(requests_mock):

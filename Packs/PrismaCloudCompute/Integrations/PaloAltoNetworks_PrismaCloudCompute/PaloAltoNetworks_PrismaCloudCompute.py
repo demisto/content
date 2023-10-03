@@ -504,7 +504,7 @@ class PrismaCloudComputeClient(BaseClient):
         """
         Sends a request to update trusted images information.
         """
-        return self._http_request(method="PUT", url_suffix="trust/data", data=data, resp_type="response", ok_codes=(200,))
+        return self._http_request(method="PUT", url_suffix="trust/data", json_data=data, resp_type="response", ok_codes=(200,))
 
     def get_container_scan_results(self, params: Optional[dict] = None) -> List[dict]:
         """
@@ -2298,6 +2298,8 @@ def update_trusted_images(client: PrismaCloudComputeClient, args: dict) -> Comma
         CommandResults: command-results object.
     """
     images_list_json = args.get("images_list_json")
+    if not isinstance(images_list_json, dict):
+        images_list_json = json.loads(str(images_list_json))
 
     client.update_trusted_images(data=images_list_json)
     return CommandResults(
