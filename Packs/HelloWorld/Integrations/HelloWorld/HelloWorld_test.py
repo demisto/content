@@ -53,14 +53,52 @@ https://xsoar.pan.dev/docs/integrations/unit-testing
 """
 
 import json
-import io
-
+from CommonServerPython import DemistoException
+from HelloWorld import (Client, ip_reputation_command, alert_list_command, validate_api_key,
+                        dedup_by_ids, alert_note_create_command, fetch_incidents)
 import pytest
 
 
+EXAMPLE_RES_LIST = [{
+    "id": 1,
+    "alert_id": 1000,
+    "kind": "Realtime",
+    "date": "2021-05-20T12:40:55.662949Z",
+},
+    {
+    "id": 2,
+    "alert_id": 2000,
+    "kind": "Realtime",
+    "date": "2021-05-20T12:40:56.662949Z"
+},
+    {
+    "id": 3,
+    "alert_id": 3000,
+    "kind": "Realtime",
+    "date": "2021-05-20T12:40:57.662949Z"
+},
+    {
+    "id": 4,
+    "alert_id": 4000,
+    "kind": "Realtime",
+    "date": "2021-05-20T12:40:58.662949Z"
+},
+]
+
+
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
+
+
+def create_mock_client():
+    return Client(
+        base_url='https://api.example.com',
+        verify=False,
+        headers={
+            'Authentication': 'Token some_api_key'
+        }
+    )
 
 
 def test_say_hello():
@@ -88,538 +126,323 @@ def test_say_hello():
     assert response.outputs == 'Hello Dbot'
 
 
-def test_start_scan(requests_mock):
-    """
-    Tests helloworld-scan-start command function.
-
-        Given:
-            - requests_mock instance to generate the appropriate start_scan API
-              response when the correct start_scan API request is performed.
-            - A hostname.
-
-        When:
-            - Running the 'scan_start_command'.
-
-        Then:
-            -  Checks the output of the command function with the expected output.
-
-    """
-    from HelloWorld import Client, scan_start_command
-
-    mock_response = {
-        'scan_id': '7a161a3f-8d53-42de-80cd-92fb017c5a12',
-        'status': 'RUNNING'
-    }
-    requests_mock.get('https://test.com/api/v1/start_scan?hostname=example.com', json=mock_response)
-
-    client = Client(
-        base_url='https://test.com/api/v1',
-        verify=False,
-        headers={
-            'Authentication': 'Bearer some_api_key'
-        }
-    )
-
-    args = {
-        'hostname': 'example.com'
-    }
-
-    response = scan_start_command(client, args)
-
-    assert response.outputs_prefix == 'HelloWorld.Scan'
-    assert response.outputs_key_field == 'scan_id'
-    assert response.outputs == {
-        'scan_id': '7a161a3f-8d53-42de-80cd-92fb017c5a12',
-        'status': 'RUNNING',
-        'hostname': 'example.com'
-    }
-
-
-def test_status_scan(requests_mock):
-    """
-    Tests helloworld-scan-status command function.
-
-        Given:
-            - requests_mock instance to generate the appropriate check_scan
-              API responses based on the scan ID provided.
-            - Scan IDs.
-
-        When:
-            - Running the 'scan_status_command'.
-
-        Then:
-            - Checks the output of the command function with the expected output.
-              For scan_id 100, 300 status should be COMPLETE while for scan ID 200 is RUNNING.
-
-    """
-    from HelloWorld import Client, scan_status_command
-
-    mock_response = {
-        'scan_id': '100',
-        'status': 'COMPLETE'
-    }
-    requests_mock.get('https://test.com/api/v1/check_scan?scan_id=100', json=mock_response)
-
-    mock_response = {
-        'scan_id': '200',
-        'status': 'RUNNING'
-    }
-    requests_mock.get('https://test.com/api/v1/check_scan?scan_id=200', json=mock_response)
-
-    mock_response = {
-        'scan_id': '300',
-        'status': 'COMPLETE'
-    }
-    requests_mock.get('https://test.com/api/v1/check_scan?scan_id=300', json=mock_response)
-
-    client = Client(
-        base_url='https://test.com/api/v1',
-        verify=False,
-        headers={
-            'Authentication': 'Bearer some_api_key'
-        }
-    )
-
-    args = {
-        'scan_id': ['100', '200', '300']
-    }
-
-    response = scan_status_command(client, args)
-
-    assert response.outputs_prefix == 'HelloWorld.Scan'
-    assert response.outputs_key_field == 'scan_id'
-    assert response.outputs == [
-        {
-            'scan_id': '100',
-            'status': 'COMPLETE'
-        },
-        {
-            'scan_id': '200',
-            'status': 'RUNNING'
-        },
-        {
-            'scan_id': '300',
-            'status': 'COMPLETE'
-        }
-    ]
-
-
-def test_scan_results(requests_mock):
-    """
-    Tests helloworld-scan-results command function.
-
-        Given:
-            - requests_mock instance to generate the appropriate get_scan_results API response,
-              loaded from a local JSON file.
-
-        When:
-            - Running the 'scan_results_command'.
-
-        Then:
-            - Checks the output of the command function with the expected output.
-    """
-    from HelloWorld import Client, scan_results_command
-    from CommonServerPython import Common
-
-    mock_response = util_load_json('test_data/scan_results.json')
-    requests_mock.get('https://test.com/api/v1/get_scan_results?scan_id=100', json=mock_response)
-
-    client = Client(
-        base_url='https://test.com/api/v1',
-        verify=False,
-        headers={
-            'Authentication': 'Bearer some_api_key'
-        }
-    )
-
-    args = {
-        'scan_id': '100',
-        'format': 'json'
-    }
-
-    response = scan_results_command(client, args)
-
-    assert response[0].outputs == mock_response
-    assert response[0].outputs_prefix == 'HelloWorld.Scan'
-    assert response[0].outputs_key_field == 'scan_id'
-
-    # This command also returns Common.CVE data
-    assert isinstance(response, list)
-    assert len(response) > 1
-    for i in range(1, len(response)):
-        assert isinstance(response[i].indicator, Common.CVE)
-
-
-def test_search_alerts(requests_mock):
-    """
-    Tests helloworld-search-alerts command function.
-
-        Given:
-            - requests_mock instance to generate the appropriate get_alerts API response,
-              loaded from a local JSON file.
-
-        When:
-            - Running the 'search_alerts_command'.
-
-        Then:
-            - Checks the output of the command function with the expected output.
-    """
-    from HelloWorld import Client, search_alerts_command
-
-    mock_response = util_load_json('test_data/search_alerts.json')
-    requests_mock.get(
-        'https://test.com/api/v1/get_alerts?alert_status=ACTIVE&severity=Critical&max_results=2&start_time=1581982463',
-        json=mock_response['alerts'])
-
-    client = Client(
-        base_url='https://test.com/api/v1',
-        verify=False,
-        headers={
-            'Authentication': 'Bearer some_api_key'
-        }
-    )
-
-    args = {
-        'severity': 'Critical',
-        'start_time': 1581982463,
-        'max_results': 2,
-        'status': 'ACTIVE'
-    }
-
-    response = search_alerts_command(client, args)
-
-    # We modify the timestamp from the raw mock_response of the API, because the
-    # integration changes the format from timestamp to ISO8601.
-    mock_response['alerts'][0]['created'] = '2020-02-17T23:34:23.000Z'
-    mock_response['alerts'][1]['created'] = '2020-02-17T23:34:23.000Z'
-
-    assert response.outputs_prefix == 'HelloWorld.Alert'
-    assert response.outputs_key_field == 'alert_id'
-    assert response.outputs == mock_response['alerts']
-
-
-def test_get_alert(requests_mock):
-    """
-    Tests helloworld-get-alert command function.
-
-        Given:
-            - requests_mock instance to generate the appropriate get_alert_details API response,
-              loaded from a local JSON file.
-            - An alert ID.
-
-        When:
-            - Running the 'get_alert_command'.
-
-        Then:
-            - Checks the output of the command function with the expected output.
-    """
-    from HelloWorld import Client, get_alert_command
-
-    mock_response = util_load_json('test_data/get_alert.json')
-    requests_mock.get('https://test.com/api/v1/get_alert_details?alert_id=695b3238-05d6-4934-86f5-9fff3201aeb0',
-                      json=mock_response)
-
-    client = Client(
-        base_url='https://test.com/api/v1',
-        verify=False,
-        headers={
-            'Authentication': 'Bearer some_api_key'
-        }
-    )
-
-    args = {
-        'alert_id': '695b3238-05d6-4934-86f5-9fff3201aeb0',
-    }
-
-    response = get_alert_command(client, args)
-
-    # We modify the timestamp from the raw mock_response of the API, because the
-    # integration changes the format from timestamp to ISO8601.
-    mock_response['created'] = '2020-04-17T14:43:59.000Z'
-
-    assert response.outputs == mock_response
-    assert response.outputs_prefix == 'HelloWorld.Alert'
-    assert response.outputs_key_field == 'alert_id'
-
-
-def test_update_alert_status(requests_mock):
-    """
-    Tests helloworld-update-alert-status command function.
-
-        Given:
-            - requests_mock instance to generate the appropriate change_alert_status API response,
-              loaded from a local JSON file.
-            - Alert ID and a status.
-
-        When:
-            - Running the 'update_alert_status_command'.
-
-        Then:
-            - Checks the output of the command function with the expected output.
-    """
-    from HelloWorld import Client, update_alert_status_command
-
-    mock_response = util_load_json('test_data/update_alert_status.json')
-    requests_mock.get(
-        'https://test.com/api/v1/change_alert_status?alert_id=695b3238-05d6-4934-86f5-9fff3201aeb0&alert_status=CLOSED',
-        json=mock_response)
-
-    client = Client(
-        base_url='https://test.com/api/v1',
-        verify=False,
-        headers={
-            'Authentication': 'Bearer some_api_key'
-        }
-    )
-
-    args = {
-        'alert_id': '695b3238-05d6-4934-86f5-9fff3201aeb0',
-        'status': 'CLOSED'
-    }
-
-    response = update_alert_status_command(client, args)
-
-    # We modify the timestamp from the raw mock_response of the API, because the
-    # integration changes the format from timestamp to ISO8601.
-    mock_response['updated'] = '2020-04-17T14:45:12.000Z'
-
-    assert response.outputs == mock_response
-    assert response.outputs_prefix == 'HelloWorld.Alert'
-    assert response.outputs_key_field == 'alert_id'
-
-
-def test_ip(requests_mock):
-    """
-    Tests the ip reputation command function.
-
-        Given:
-            - requests_mock instance to generate the appropriate ip reputation API response,
-              loaded from a local JSON file.
-            - An IP address to check.
-
-        When:
-            - Running the 'ip_reputation_command'.
-
-        Then:
-            - Checks the output of the command function with the expected output.
-    """
-    from HelloWorld import Client, ip_reputation_command
-    from CommonServerPython import Common, DBotScoreReliability
-
-    ip_to_check = '151.1.1.1'
-    mock_response = util_load_json('test_data/ip_reputation.json')
-    requests_mock.get(f'http://test.com/api/v1/ip?ip={ip_to_check}',
-                      json=mock_response)
-
-    client = Client(
-        base_url='http://test.com/api/v1',
-        verify=False,
-        headers={
-            'Authorization': 'Bearer some_api_key'
-        }
-    )
-
-    args = {
-        'ip': ip_to_check,
-        'threshold': 65,
-    }
-
-    response = ip_reputation_command(client, args, 65, DBotScoreReliability.C)
-
-    assert response[0].outputs == mock_response
-    assert response[0].outputs_prefix == 'HelloWorld.IP'
-    assert response[0].outputs_key_field == 'ip'
-
-    # This command also returns Common.IP data
-    assert isinstance(response, list)
-    assert isinstance(response[0].indicator, Common.IP)
-    assert response[0].indicator.ip == ip_to_check
-
-
-def test_domain(requests_mock):
-    """
-    Tests the domain reputation command function.
-
-        Given:
-            - requests_mock instance to generate the appropriate domain reputation API response,
-              loaded from a local JSON file.
-            - A domain to check.
-
-        When:
-            - Running the 'domain_reputation_command'.
-
-        Then:
-            - Checks the output of the command function with the expected output.
-    """
-    from HelloWorld import Client, domain_reputation_command
-    from CommonServerPython import Common, DBotScoreReliability
-
-    domain_to_check = 'google.com'
-    mock_response = util_load_json('test_data/domain_reputation.json')
-    requests_mock.get(f'http://test.com/api/v1/domain?domain={domain_to_check}',
-                      json=mock_response)
-
-    client = Client(
-        base_url='http://test.com/api/v1',
-        verify=False,
-        headers={
-            'Authorization': 'Bearer some_api_key'
-        }
-    )
-
-    args = {
-        'domain': domain_to_check,
-        'threshold': 65,
-    }
-
-    response = domain_reputation_command(client, args, 65, DBotScoreReliability.C)
-
-    # We modify the timestamps from the raw mock_response of the API, because the
-    # integration changes the format from timestamp to ISO8601.
-    mock_response['expiration_date'] = '2028-09-14T04:00:00.000Z'
-    mock_response['creation_date'] = '1997-09-15T04:00:00.000Z'
-    mock_response['updated_date'] = '2019-09-09T15:39:04.000Z'
-
-    assert response[0].outputs == mock_response
-    assert response[0].outputs_prefix == 'HelloWorld.Domain'
-    assert response[0].outputs_key_field == 'domain'
-
-    # This command also returns Common.Domain data
-    assert isinstance(response, list)
-    assert isinstance(response[0].indicator, Common.Domain)
-    assert response[0].indicator.domain == domain_to_check
-
-
-def test_fetch_incidents(requests_mock):
-    """
-    Tests the fetch-incidents command function.
-
-        Given:
-            - requests_mock instance to generate the appropriate get_alert API response,
-              loaded from a local JSON file.
-
-        When:
-            - Running the 'fetch_incidents' command.
-
-        Then:
-            - Checks the output of the command function with the expected output.
-    """
-    from HelloWorld import Client, fetch_incidents
-
-    mock_response = util_load_json('test_data/search_alerts.json')
-    requests_mock.get(
-        'https://test.com/api/v1/get_alerts?alert_status=ACTIVE'
-        '&severity=Low%2CMedium%2CHigh%2CCritical&max_results=2'
-        '&start_time=1581944401', json=mock_response['alerts'])
-
-    client = Client(
-        base_url='https://test.com/api/v1',
-        verify=False,
-        headers={
-            'Authentication': 'Bearer some_api_key'
-        }
-    )
-
-    last_run = {
-        'last_fetch': 1581944401  # Mon Feb 17 2020
-    }
-
-    _, new_incidents = fetch_incidents(
-        client=client,
-        max_results=2,
-        last_run=last_run,
-        alert_status='ACTIVE',
-        min_severity='Low',
-        alert_type=None,
-        first_fetch_time='3 days',
-    )
-
-    assert new_incidents == [
-        {
-            'name': 'Hello World Alert 100',
-            'occurred': '2020-02-17T23:34:23.000Z',
-            'rawJSON': json.dumps(mock_response['alerts'][0]),
-            'severity': 4,  # critical, this is XSOAR severity (already converted)
-        },
-        {
-            'name': 'Hello World Alert 200',
-            'occurred': '2020-02-17T23:34:23.000Z',
-            'rawJSON': json.dumps(mock_response['alerts'][1]),
-            'severity': 2,  # medium, this is XSOAR severity (already converted)
-        }
-    ]
-
-
-def test_invalid_ip():
-    """
-        Given:
-            - An invalid IP address to check.
-
-        When:
-            - Running the 'ip_reputation_command'.
-
-        Then:
-            - Checks that the command raises a suitable error message (Invalid IP).
-    """
-    from HelloWorld import Client, ip_reputation_command
-    from CommonServerPython import DBotScoreReliability
-
-    ip_to_check = '1.1.1'  # an invalid ip
-
-    client = Client(
-        base_url='http://test.com/api/v1',
-        verify=False,
-        headers={
-            'Authorization': 'Bearer some_api_key'
-        }
-    )
-
-    args = {
-        'ip': ip_to_check,
-        'threshold': 65,
-    }
-
-    with pytest.raises((Exception, ValueError)) as e:
-        ip_reputation_command(client, args, 65, DBotScoreReliability.C)
-
-    assert e.value.args[0] == f'IP "{ip_to_check}" is not valid'
-
-
-@pytest.mark.parametrize('domain_date, expected_parsed_date', [
-    ('1997-09-15 04:00:00', '1997-09-15T04:00:00.000Z'),
-    (['1997-09-15 04:00:00'], '1997-09-15T04:00:00.000Z')
-])
-def test_parse_domain_date(domain_date, expected_parsed_date):
-    """
-        Given:
-            1. A string of a date.
-            2. A list including a string of a date.
-
-        When:
-            - Running the 'parse_domain_date' function.
-
-        Then:
-            - Verify that the dates were parsed to ISO8601 format correctly.
-    """
-    from HelloWorld import parse_domain_date
-
-    assert parse_domain_date(domain_date) == expected_parsed_date
-
-
-@pytest.mark.parametrize('hello_world_severity, expected_xsoar_severity', [
-    ('Low', 1), ('Medium', 2), ('High', 3), ('Critical', 4)
+@ pytest.mark.parametrize('hello_world_severity, expected_xsoar_severity', [
+    ('low', 1), ('medium', 2), ('high', 3), ('critical', 4), ('unknown', 0)
 ])
 def test_convert_to_demisto_severity(hello_world_severity, expected_xsoar_severity):
     """
         Given:
-            - A string represent an HelloWorld severity.
+            - A string represents a HelloWorld severity.
 
         When:
             - Running the 'convert_to_demisto_severity' function.
 
         Then:
-            - Verify that the severity was translated to an XSOAR severity correctly.
+            - Verify that the severity was correctly translated to a Cortex XSOAR severity.
     """
     from HelloWorld import convert_to_demisto_severity
 
     assert convert_to_demisto_severity(hello_world_severity) == expected_xsoar_severity
+
+
+def test_api_key():
+    """Validates an API key. Since this is a tutorial, there is a dummy API key.
+
+    When:
+        - An API key is provided as a string argument
+    Then:
+        - The key is checked against known valid keys
+        - If invalid, an exception is raised with a clear message.
+    """
+    api_key = "some_api_key"
+
+    with pytest.raises(DemistoException):
+        validate_api_key(api_key)
+
+
+@pytest.mark.parametrize("alerts, ids_to_compare, expected", [
+    ([{"id": 1}, {"id": 2}], [2, 3], ([{"id": 1}], 1)),
+    ([{"id": 2}, {"id": 3}], [2, 3], ([], 2)),
+    ([{"id": 4}, {"id": 5}], [2, 3], ([{"id": 4}, {"id": 5}], 0))
+])
+def test_dedup_by_ids(alerts, ids_to_compare, expected):
+    """
+    Given:
+        - A list of alerts
+        - A list of IDs to compare against
+
+    When:
+        - Running dedup_by_ids() with the alerts and ID list
+
+    Then:
+        - Ensure the deduped alerts match the expected
+        - Ensure the number of duplicates match the expected
+    """
+    deduped, dups = dedup_by_ids(alerts, ids_to_compare)
+    assert deduped == expected[0]
+    assert dups == expected[1]
+
+
+class TestIPCommand:
+
+    @pytest.fixture(autouse=True)
+    def setup(self):
+        self.mocked_client = create_mock_client()
+
+    def test_ip_reputation_command_single_ip(self, mocker):
+        """
+        Given:
+            - Args with a single IP
+
+        When:
+            - Mock client returns reputation for the IP
+            - Run ip_reputation_command with args
+
+        Then:
+            - Validate expected number of results
+            - Validate IP address in outputs
+            - Validate DBotScore outputs as expected
+        """
+        args = {'ip': '8.8.8.8'}
+        mocker.patch.object(self.mocked_client, 'get_ip_reputation', return_value={'attributes': {'reputation': 80}})
+
+        result = ip_reputation_command(self.mocked_client, args, default_threshold=60, reliability='A - Completely reliable')
+
+        assert len(result) == 1
+        assert len(result[0].outputs) == 1  # type: ignore
+        ip_output = result[0].to_context()['EntryContext']['IP(val.Address && val.Address == obj.Address)']
+        assert ip_output
+        assert ip_output[0]['Address'] == '8.8.8.8'
+
+        dbot_output = result[0].to_context()['EntryContext'][
+            'DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)']
+        assert dbot_output[0]['Indicator'] == '8.8.8.8'
+        assert dbot_output[0]['Score'] == 1
+
+    def test_ip_reputation_command_multiple_ips(self, mocker):
+        """
+        Given:
+            - A list of IP addresses as input
+
+        When:
+            - Mock client returns reputation scores for each IP
+            - Run ip_reputation_command with multiple IPs
+
+        Then:
+            - Ensure correct number of results returned
+            - Validate indicator and score for each result
+        """
+        args = {'ip': ['8.8.8.8', '1.1.1.1']}
+        mocker.patch.object(self.mocked_client, 'get_ip_reputation', side_effect=[
+            {'attributes': {'reputation': 80}},
+            {'attributes': {'reputation': 20}}])
+
+        result = ip_reputation_command(self.mocked_client, args, default_threshold=60, reliability='A - Completely reliable')
+
+        assert len(result) == 2
+        dbot_output_1 = result[0].to_context()['EntryContext'][
+            'DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)']
+        assert dbot_output_1[0]['Score'] == 1
+        assert dbot_output_1[0]['Indicator'] == '8.8.8.8'
+
+        dbot_output_2 = result[1].to_context()['EntryContext'][
+            'DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)']
+        assert dbot_output_2[0]['Indicator'] == '1.1.1.1'
+        assert dbot_output_2[0]['Score'] == 3
+
+    def test_ip_reputation_command_invalid_ip(self):
+        """
+        Given:
+            - Args with an invalid IP address
+
+        When:
+            - Running ip_reputation_command with the invalid IP
+
+        Then:
+            - Should raise ValueError
+        """
+        args = {'ip': 'invalid'}
+
+        with pytest.raises(ValueError):
+            ip_reputation_command(self.mocked_client, args, default_threshold=60, reliability='A - Completely reliable')
+
+
+class TestAlertListCommand:
+
+    @pytest.fixture(autouse=True)
+    def setup(self):
+        self.mocked_client = create_mock_client()
+
+    # DEVELOPER TIP
+    # Using the parametrize fixture helps you generate many test cases on the same function,
+    # to make sure you are fully covered.
+    # Make sure to check all edge-cases such as empty responses, wrong inputs, etc.
+    # When using parametrize it's optional to add an ID, which will make test failure easier to debug.
+
+    @pytest.mark.parametrize(
+        'args, expected_limit, expected_severity',
+        (
+            pytest.param(
+                {"alert_id": 1}, 1, 'low',
+                id="given id"),  # expecting one record
+            pytest.param(
+                {"alert_id": 2, "severity": 'high'}, 1, 'high',
+                id="given id and wrong severity"),  # expecting one record ignoring severity
+            pytest.param(
+                {"alert_id": 3, "limit": 5}, 1, 'low',
+                id="given id, no severity and limit")  # expecting one record ignoring limit
+        ))
+    def test_alert_list_given_id(self, mocker, args, expected_limit, expected_severity):
+        """
+        Given:
+            - Args containing alert_id
+        When:
+            - Calling alert_list_command with mocked client
+        Then:
+            - The correct function is being called (single alert) correctly
+        """
+        single_id_call_mock = mocker.patch.object(self.mocked_client, 'get_alert',
+                                                  return_value={'id': 1, 'title': 'alert 1'})
+
+        result = alert_list_command(self.mocked_client, args)
+
+        assert result.readable_output.startswith('### Items List (Sample Data)')
+        assert len(result.outputs) == expected_limit
+        single_id_call_mock.assert_called()
+        single_id_call_mock.assert_called_once_with(args['alert_id'])
+
+    @pytest.mark.parametrize(
+        'args, expected_limit, expected_severity',
+        (
+            pytest.param(
+                {"severity": 'high', "limit": 3}, 3, 'high',
+                id="given limit and severity"),
+        ))
+    def test_alert_list(self, mocker, args, expected_limit, expected_severity):
+        """
+        Given:
+            - Args
+
+        When:
+            - Calling alert_list_command with mocked client and args
+
+        Then:
+            - Ensure mocked client method called correctly
+            - Validate returned command results contain data
+        """
+        mocked_list_call = mocker.patch.object(self.mocked_client, 'get_alert_list',
+                                               return_value=[{'id': 1, 'title': 'alert 1'},
+                                                             {'id': 2, 'title': 'alert 2'},
+                                                             {'id': 3, 'title': 'alert 3'}])
+
+        result = alert_list_command(self.mocked_client, args)
+
+        mocked_list_call.assert_called()
+        mocked_list_call.assert_called_once_with(limit=expected_limit, severity=expected_severity)
+        assert result.readable_output.startswith('### Items List (Sample Data)')  # type: ignore
+
+    @pytest.mark.parametrize(
+        'args',
+        (
+            pytest.param(
+                {"limit": 3},
+                id="given only limit"),
+            pytest.param(
+                {},
+                id="given empty args"),
+        ))
+    def test_alert_list_fail(self, mocker, args):
+        """
+        Given:
+            - Args without severity
+        When:
+            - Calling alert_list_command with mocked client and args
+        Then:
+            - Should raise DemistoException as severity is required
+        """
+        mocker.patch.object(self.mocked_client, 'get_alert_list',
+                            return_value=[{'id': 1, 'title': 'alert 1'},
+                                          {'id': 2, 'title': 'alert 2'},
+                                          {'id': 3, 'title': 'alert 3'}])
+
+        with pytest.raises(DemistoException):
+            alert_list_command(self.mocked_client, args)
+
+
+class TestAlertNoteCreate:
+
+    @pytest.fixture(autouse=True)
+    def init(self):
+        self.client = create_mock_client()
+
+    def test_success(self, mocker):
+        args = {'alert_id': 123, 'note_text': 'Test note'}
+        mocker.patch.object(self.client, 'create_note', return_value={'status': 'success'})
+
+        result = alert_note_create_command(self.client, args)
+
+        assert result.readable_output == 'Note was created successfully.'
+        assert result.outputs['status'] == 'success'
+
+
+class TestFetchAlerts:
+
+    EXAMPLE_ALERTS = [{'id': 1, 'name': 'Incident 1'},
+                      {'id': 2, 'name': 'Incident 2'},
+                      {'id': 3}]
+
+    @pytest.fixture(autouse=True)
+    def setup(self):
+        self.client = create_mock_client()
+
+    def test_first_run(self, mocker):
+        """
+        Given:
+            - An empty last run
+            - A first fetch time
+        When:
+            - Running fetch_incidents for the first time
+            - Mocking the client's alert list response
+        Then:
+            - Returned incidents should match mocked alerts
+            - Next run should have the last alert IDs
+        """
+        last_run: dict = {}
+        first_fetch = '2021-01-01T00:00:00Z'
+        mocker.patch.object(self.client, 'get_alert_list', return_value=self.EXAMPLE_ALERTS)
+
+        next_run, incidents = fetch_incidents(
+            self.client,
+            max_results=3,
+            last_run=last_run,
+            first_fetch_time=first_fetch
+        )
+
+        # Assertions
+        assert incidents[0]['name'] == 'Incident 1'
+        assert incidents[1]['name'] == 'Incident 2'
+        assert incidents[2]['name'] == 'Hello World Alert'
+
+        assert next_run['last_ids'] == [1, 2, 3]
+
+    def test_subsequent_run(self):
+        """
+        Given:
+            - A last run with a last fetch time and list of last incident IDs
+        When:
+            - Fetch incidents is called with the last run
+            - First fetch time is provided
+        Then:
+            - Returned incidents should have occurred after last fetch
+            - Number of returned incidents should match max results
+            - Next run should have new updated last incident IDs
+        """
+        last_run = {'last_fetch': '2021-02-01T00:00:00Z', 'last_ids': [1, 2, 3]}
+        first_fetch = '2021-01-01T00:00:00Z'
+
+        next_run, incidents = fetch_incidents(self.client,
+                                              max_results=3, last_run=last_run, first_fetch_time=first_fetch)
+
+        assert incidents[0]['occurred'] > last_run['last_fetch']
+        assert len(incidents) == 3
+        assert next_run['last_ids'] == [4, 5, 6]
