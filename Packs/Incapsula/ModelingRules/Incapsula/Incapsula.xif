@@ -51,5 +51,5 @@ alter
 	xdm.observer.unique_identifier = to_string(deviceExternalId),
 	xdm.target.domain = sourceServiceName,
 	xdm.source.user_agent = requestClientApplication,
-	xdm.alert.original_threat_id = cs11 -> [0].api_specification_violation_type,
+	xdm.alert.original_alert_id = cs11 -> [0].api_specification_violation_type,
 	xdm.alert.original_threat_name = cs11 -> [0].parameter_name;
