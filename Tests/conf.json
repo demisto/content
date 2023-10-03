@@ -64,7 +64,6 @@
                 "active_directory_80k",
                 "virus_total_v3"
             ]
-<<<<<<< HEAD
         },
         {
             "playbookID": "Local Analysis alert Investigation - Test",
@@ -75,8 +74,6 @@
             "instance_names": [
                 "virus_total_v3"
             ]
-=======
->>>>>>> master
         },
         {
             "integrations": "Microsoft Defender Advanced Threat Protection",
