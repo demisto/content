@@ -17,7 +17,6 @@
         "Pierre-HarfangLab"
     ],
     "marketplaces": [
-        "xsoar",
-        "marketplacev2"
+        "xsoar"
     ]
 }

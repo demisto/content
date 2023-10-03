@@ -595,7 +595,6 @@ def test_module(client, args):
 def fetch_incidents(client, args):
     last_run = demisto.getLastRun()
 
-
     if not last_run:
         last_run = [{}, {}]
 
@@ -605,9 +604,8 @@ def fetch_incidents(client, args):
     current_fetch_info_sec_events: dict = last_run[0]
     current_fetch_info_threats: dict = last_run[1]
 
-    max_results = args.get('max_results', None)
+    max_fetch = args.get('max_fetch', None)
     fetch_types = args.get('fetch_types', [])
-
 
     if 'first_fetch' in args and args['first_fetch']:
         days = int(args['first_fetch'])
@@ -682,7 +680,7 @@ def fetch_incidents(client, args):
             if incident_created_time_us > latest_created_time_us:
                 latest_created_time_us = incident_created_time_us
 
-            if max_results and len(incidents) >= max_results:
+            if max_fetch and len(incidents) >= max_fetch:
                 break
 
         current_fetch_info_threats = {'last_fetch': latest_created_time_us,
@@ -745,7 +743,7 @@ def fetch_incidents(client, args):
             if incident_created_time_us > latest_created_time_us:
                 latest_created_time_us = incident_created_time_us
 
-            if max_results and len(incidents) >= max_results:
+            if max_fetch and len(incidents) >= max_fetch:
                 break
 
         current_fetch_info_sec_events = {'last_fetch': latest_created_time_us,
@@ -2116,7 +2114,7 @@ def hunt_search_runned_process_hash(client, args):
         )
 
 
-def isolate_endpoint(client, args) -> Dict[str, Any]:
+def isolate_endpoint(client, args) -> CommandResults:
     agentid = args.get('agent_id', None)
     data = client.isolate_endpoint(agentid)
 
@@ -2137,7 +2135,7 @@ def isolate_endpoint(client, args) -> Dict[str, Any]:
     )
 
 
-def deisolate_endpoint(client, args) -> Dict[str, Any]:
+def deisolate_endpoint(client, args) -> CommandResults:
     agentid = args.get('agent_id', None)
     data = client.deisolate_endpoint(agentid)
 
@@ -2154,7 +2152,7 @@ def deisolate_endpoint(client, args) -> Dict[str, Any]:
     )
 
 
-def change_security_event_status(client, args):
+def change_security_event_status(client, args) -> CommandResults:
     eventid = args.get('security_event_id', None)
     status = args.get('status', None)
 
@@ -2675,11 +2673,11 @@ def get_function_from_command_name(command):
 
 
 def get_security_events(client, security_event_ids=None, min_created_timestamp=None, min_updated_timestamp=None,
-                        alert_status=None, alert_type=None, min_severity=SEVERITIES[0], max_results=None, fields=None,
+                        alert_status=None, alert_type=None, min_severity=SEVERITIES[0], max_fetch=None, fields=None,
                         limit=MAX_NUMBER_OF_ALERTS_PER_CALL, ordering='alert_time', threat_id=None):
     security_events = []
 
-    agents = {}
+    agents: Dict[str, Any] = {}
 
     if security_event_ids:
         for sec_evt_id in security_event_ids:
@@ -2786,13 +2784,13 @@ def get_security_events(client, security_event_ids=None, min_created_timestamp=N
 
             security_events.append(alert)
 
-            if max_results and len(security_events) >= max_results:
+            if max_fetch and len(security_events) >= max_fetch:
                 break
 
         demisto.debug(f'Got eventually {len(security_events)} security events')
 
         args['offset'] += len(results['results'])
-        if results['count'] == 0 or not results['next'] or (max_results and len(security_events) >= max_results):
+        if results['count'] == 0 or not results['next'] or (max_fetch and len(security_events) >= max_fetch):
             break
 
     return security_events
@@ -2827,7 +2825,7 @@ def enrich_threat(client, threat):
 
 
 def get_threats(client, threat_ids=None, min_created_timestamp=None, min_updated_timestamp=None, threat_status=None,
-                min_severity=SEVERITIES[0], max_results=None, fields=None, limit=MAX_NUMBER_OF_ALERTS_PER_CALL,
+                min_severity=SEVERITIES[0], max_fetch=None, fields=None, limit=MAX_NUMBER_OF_ALERTS_PER_CALL,
                 ordering='last_seen'):
     threats = []
 
@@ -2866,11 +2864,11 @@ def get_threats(client, threat_ids=None, min_created_timestamp=None, min_updated
             for threat in results['results']:
                 threat_ids.append(threat['id'])
 
-                if max_results and len(threat_ids) >= max_results:
+                if max_fetch and len(threat_ids) >= max_fetch:
                     break
 
             args['offset'] += len(results['results'])
-            if results['count'] == 0 or not results['next'] or (max_results and len(threat_ids) >= max_results):
+            if results['count'] == 0 or not results['next'] or (max_fetch and len(threat_ids) >= max_fetch):
                 break
 
     for threat_id in threat_ids:
@@ -3119,7 +3117,7 @@ def close_in_hfl(delta: Dict[str, Any]) -> bool:
     return demisto.params().get('close_in_hfl') and any(field in delta for field in closing_fields)
 
 
-def update_security_event_request(client, ids: List[str], status: str) -> Dict:
+def update_security_event_request(client, ids: List[str], status: str) -> str:
     if status not in SECURITY_EVENT_STATUS:
         raise DemistoException(f'HarfangLab EDR Error: '
                                f'Status given is {status} and it is not in {SECURITY_EVENT_STATUS}')
@@ -3129,7 +3127,7 @@ def update_security_event_request(client, ids: List[str], status: str) -> Dict:
     return 'OK'
 
 
-def update_threat_request(client, ids: List[str], status: str) -> Dict:
+def update_threat_request(client, ids: List[str], status: str) -> str:
     if status not in SECURITY_EVENT_STATUS:
         raise DemistoException(f'HarfangLab EDR Error: '
                                f'Status given is {status} and it is not in {SECURITY_EVENT_STATUS}')
@@ -3283,7 +3281,7 @@ def main():
             args['alert_type'] = demisto.params().get('alert_type', None)
             args['min_severity'] = demisto.params().get(
                 'min_severity', SEVERITIES[0])
-            args['max_results'] = demisto.params().get('max_results', None)
+            args['max_fetch'] = demisto.params().get('max_fetch', None)
             args['mirror_direction'] = demisto.params().get('mirror_direction', None)
             args['fetch_types'] = demisto.params().get('fetch_types', None)
         return_results(target_function(client, args))

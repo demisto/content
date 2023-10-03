@@ -16,10 +16,15 @@ configuration:
   name: incidentType
   type: 13
   required: false
+- name: credentials
+  type: 9
+  displaypassword: API Key
+  hiddenusername: true
 - display: API Key
   name: apikey
+  type: 0
   required: false
-  type: 4
+  hidden: true
 - display: Long running instance
   name: longRunning
   type: 8
@@ -50,9 +55,9 @@ configuration:
   - ACTIVE
   - CLOSED
   type: 15
-- additionalinfo: Fetch maximum <max_results> security events and/or threats per call (leave empty if unlimited).
+- additionalinfo: Fetch maximum <max_fetch> security events and/or threats per call (leave empty if unlimited).
   display: Maximum number of incidents to fetch per call
-  name: max_results
+  name: max_fetch
   required: false
   type: 0
 - additionalinfo: Start fetching alerts and/or threats whose creation date is higher than now minus <first_fetch> days.
@@ -1028,7 +1033,7 @@ script:
       required: true
     description: Delete an IOC from a Threat Intelligence source.
     name: harfanglab-delete-ioc-from-source
-  dockerimage: demisto/python3:3.10.13.73190
+  dockerimage: demisto/python3:3.10.13.74666
   isfetch: true
   ismappable: true
   isremotesyncin: true
