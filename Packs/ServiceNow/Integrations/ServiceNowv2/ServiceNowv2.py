@@ -2468,7 +2468,7 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) 
                     tags = argToList(tags)
 
             entries.append({
-                'Type': note.get('type'),
+                'Type': note.get('type', 1),
                 'Category': note.get('category'),
                 'Contents': f"Type: {note.get('element')}\nCreated By: {note.get('sys_created_by')}\n"
                             f"Created On: {note.get('sys_created_on')}\n{note.get('value')}",

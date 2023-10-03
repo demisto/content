@@ -1,0 +1,56 @@
+{
+    "armis_security_raw": {
+        "type": {
+            "type": "string",
+            "is_array": false
+        },
+        "description": {
+            "type": "string",
+            "is_array": false
+        },
+        "title": {
+            "type": "string",
+            "is_array": false
+        },
+        "alertId": {
+            "type": "int",
+            "is_array": false
+        },
+        "severity": {
+            "type": "string",
+            "is_array": false
+        },
+        "activityUUIDs": {
+            "type": "string",
+            "is_array": false
+        },
+        "status": {
+            "type": "string",
+            "is_array": false
+        },
+        "deviceIds": {
+            "type": "string",
+            "is_array": false
+        },
+        "content": {
+            "type": "string",
+            "is_array": false
+        },
+        "protocol": {
+            "type": "string",
+            "is_array": false
+        },
+        "sensor": {
+            "type": "string",
+            "is_array": false
+        },
+        "activityUUID": {
+            "type": "string",
+            "is_array": false
+        },
+        "site": {
+            "type": "string",
+            "is_array": false
+        }
+    }
+}

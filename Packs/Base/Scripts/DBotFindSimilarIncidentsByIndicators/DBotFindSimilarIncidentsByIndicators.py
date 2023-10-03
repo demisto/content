@@ -8,7 +8,6 @@ import numpy as np
 from collections import Counter
 import re
 import math
-from typing import List, Dict
 
 STATUS_DICT = {
     0: "Pending",
@@ -25,7 +24,7 @@ INCIDENT_FIELDS_TO_USE = ['indicators']
 FIELD_INDICATOR_TYPE = 'indicator_type'
 
 
-def normalize(x: List[str]) -> str:
+def normalize(x: list[str]) -> str:
     """
     Normalize function for indicators
     :param x:  list of indicators
@@ -43,7 +42,7 @@ def identity_score(x):
     return x
 
 
-def flatten_list(my_list: List[List]) -> List:
+def flatten_list(my_list: list[list]) -> list:
     """
     Flatten a list of list
     :param l: list of list
@@ -177,7 +176,7 @@ class Model:
             lambda x: ','.join([id for id in x.split(' ') if id in vocabulary]))
 
 
-def get_all_indicators_for_incident(incident_id: str) -> List[Dict]:
+def get_all_indicators_for_incident(incident_id: str) -> list[dict]:
     """
     Get indicators for one incident
     :param incident_id: incident id
@@ -193,7 +192,7 @@ def get_all_indicators_for_incident(incident_id: str) -> List[Dict]:
     return indicators
 
 
-def get_number_of_invs_for_indicators(indicator: Dict) -> int:
+def get_number_of_invs_for_indicators(indicator: dict) -> int:
     """
     :param indicator: list of dict representing indicators
     :return: lenght of investigation ids for this indicators
@@ -202,7 +201,7 @@ def get_number_of_invs_for_indicators(indicator: Dict) -> int:
     return len(invs)
 
 
-def get_indicators_from_incident_ids(ids: List[str]) -> List[Dict]:
+def get_indicators_from_incident_ids(ids: list[str]) -> list[dict]:
     """
     Get indicators for list of incidents ids
     :param ids: List of incident ids
@@ -223,18 +222,18 @@ def get_indicators_from_incident_ids(ids: List[str]) -> List[Dict]:
     return indicators
 
 
-def match_indicators_incident(indicators: List[Dict], incident_ids: List[str]) -> Dict[str, List]:
+def match_indicators_incident(indicators: list[dict], incident_ids: list[str]) -> dict[str, list]:
     """
     :param indicators: list of dict representing indicators
     :param incident_ids: list of incident ids
     :return: dict of {incident id : list of indicators ids related to this incident)
     """
-    d = {k: [] for k in incident_ids}  # type: Dict[str, List]
+    d = {k: [] for k in incident_ids}  # type: dict[str, list]
     for indicator in indicators:
         inv_ids = indicator.get('investigationIDs', None)
         if inv_ids:
             for inv_id in inv_ids:
-                if inv_id in d.keys():
+                if inv_id in d:
                     d[inv_id] = d[inv_id] + [indicator['id']]
     return d
 
@@ -287,7 +286,7 @@ def return_outputs_custom(readable_output, outputs=None):
         "Contents": outputs,
         "EntryContext": outputs,
     }
-    demisto.results(return_entry)
+    return CommandResults(outputs=return_entry)
 
 
 def return_no_mututal_indicators_found_entry():
@@ -300,7 +299,7 @@ def create_context_for_indicators(indicators_df=None):
     if indicators_df is None:
         indicators_context = []
     else:
-        indicators_df.rename({'Value': 'value'}, axis=1, inplace=True)
+        indicators_df.rename({'Value': 'value'}, axis=1, inplace=True)  # noqa: PD002
         indicators_df = indicators_df[['id', 'value']]
         indicators_context = indicators_df.to_dict(orient='records')
     return {'indicators': indicators_context}
@@ -314,7 +313,7 @@ def add_context_key(entry_context):
 
 
 def return_indicator_entry(incident_ids, indicators_types, indicators_list):
-    indicators_query = 'investigationIDs:({})'.format(' '.join('"{}"'.format(id_) for id_ in incident_ids))
+    indicators_query = 'investigationIDs:({})'.format(' '.join(f'"{id_}"' for id_ in incident_ids))
     fields = ['id', 'indicator_type', 'investigationIDs', 'relatedIncCount', 'score', 'value']
     indicators_args = {'query': indicators_query, 'limit': '150', 'populateFields': ','.join(fields)}
     res = demisto.executeCommand('GetIndicatorsByQuery', args=indicators_args)
@@ -335,10 +334,10 @@ def return_indicator_entry(incident_ids, indicators_types, indicators_list):
     if len(indicators_df) == 0:
         return_no_mututal_indicators_found_entry()
         return indicators_df
-    indicators_df['Id'] = indicators_df['id'].apply(lambda x: "[%s](#/indicator/%s)" % (x, x))
+    indicators_df['Id'] = indicators_df['id'].apply(lambda x: f"[{x}](#/indicator/{x})")
     indicators_df = indicators_df.sort_values(['score', 'Involved Incidents Count'], ascending=False)
     indicators_df['Reputation'] = indicators_df['score'].apply(scoreToReputation)
-    indicators_df.rename({'value': 'Value', 'indicator_type': 'Type'}, axis=1, inplace=True)
+    indicators_df.rename({'value': 'Value', 'indicator_type': 'Type'}, axis=1, inplace=True)  # noqa: PD002
     indicators_headers = ['Id', 'Value', 'Type', 'Reputation', 'Involved Incidents Count']
     hr = tableToMarkdown('Mutual Indicators', indicators_df.to_dict(orient='records'),
                          headers=indicators_headers)
@@ -346,7 +345,7 @@ def return_indicator_entry(incident_ids, indicators_types, indicators_list):
     return indicators_df
 
 
-def get_indicators_map(indicators: List[Dict]) -> Dict[str, Dict]:
+def get_indicators_map(indicators: list[dict]) -> dict[str, dict]:
     """
     :param indicators: list of dict representing indicators
     :return: Dictionary {id of indicators: indicators}
@@ -354,11 +353,11 @@ def get_indicators_map(indicators: List[Dict]) -> Dict[str, Dict]:
     return {ind['id']: ind for ind in indicators}
 
 
-def join(my_list: List) -> str:
+def join(my_list: list) -> str:
     return ' '.join(my_list)
 
 
-def organize_data(similar_incidents: pd.DataFrame, indicators_map: Dict[str, Dict], threshold: float,
+def organize_data(similar_incidents: pd.DataFrame, indicators_map: dict[str, dict], threshold: float,
                   max_incidents_to_display: int) \
         -> pd.DataFrame:
     """
@@ -370,22 +369,23 @@ def organize_data(similar_incidents: pd.DataFrame, indicators_map: Dict[str, Dic
     :return: Clean DataFrame of incident
     """
     similar_incidents = similar_incidents.reset_index().rename(columns={'index': 'id'})
-    similar_incidents['incident ID'] = similar_incidents['id'].apply(lambda _id: "[%s](#/Details/%s)" % (_id, _id))
+    similar_incidents['incident ID'] = similar_incidents['id'].apply(lambda _id: f"[{_id}](#/Details/{_id})")
     similar_incidents['Identical indicators'] = similar_incidents['Identical indicators'].apply(
         lambda _ids: '\n'.join(
             [indicators_map.get(x).get('value') if indicators_map.get(x) else ' ' for x in  # type: ignore
              _ids.split(',')]))  # type: ignore
     similar_incidents = similar_incidents[['incident ID', 'id', 'Identical indicators', 'similarity indicators']]
     similar_incidents = similar_incidents[similar_incidents['similarity indicators'] > threshold]
-    similar_incidents.sort_values(['similarity indicators'], inplace=True, ascending=False)
+    similar_incidents.sort_values(['similarity indicators'], inplace=True, ascending=False)  # noqa: PD002
     return similar_incidents.head(max_incidents_to_display)
 
 
 def return_no_similar_incident_found_entry():
     hr = '### No Similar indicators' + '\n'
     hr += 'No Similar indicators were found.'
-    return_outputs(readable_output=hr, outputs={'DBotFindSimilarIncidentsByIndicators': create_context_for_incidents()},
-                   raw_response={})
+    return CommandResults(readable_output=hr,
+                          outputs={'DBotFindSimilarIncidentsByIndicators': create_context_for_incidents()},
+                          raw_response={})
 
 
 def create_context_for_incidents(similar_incidents=pd.DataFrame()):
@@ -407,8 +407,8 @@ def create_context_for_incidents(similar_incidents=pd.DataFrame()):
     return context
 
 
-def display_actual_incident(incident_df: pd.DataFrame, incident_id: str, fields_incident_to_display: List[str],
-                            from_date: str) -> None:
+def display_actual_incident(incident_df: pd.DataFrame, incident_id: str, fields_incident_to_display: list[str],
+                            from_date: str) -> CommandResults:
     """
     Display current incident
     :param incident_df: DataFrame of incident
@@ -419,18 +419,19 @@ def display_actual_incident(incident_df: pd.DataFrame, incident_id: str, fields_
     """
     incident_df['id'] = [incident_id]
     incident_df = enriched_incidents(incident_df, fields_incident_to_display, from_date)
-    incident_df['Incident ID'] = incident_df['id'].apply(lambda _id: "[%s](#/Details/%s)" % (_id, _id))
+    incident_df['Incident ID'] = incident_df['id'].apply(lambda _id: f"[{_id}](#/Details/{_id})")
     col_incident = incident_df.columns.tolist()
     col_incident = FIRST_COLUMNS_INCIDENTS_DISPLAY + [x for x in col_incident if
                                                       x not in FIRST_COLUMNS_INCIDENTS_DISPLAY + ['id', 'indicators']]
     col_incident = [x.title() for x in col_incident]
     incident_df = incident_df.rename(str.title, axis='columns')
     incident_json = incident_df.to_dict(orient='records')
-    return_outputs(readable_output=tableToMarkdown("Actual Incident", incident_json,
-                                                   col_incident))
+    return CommandResults(readable_output=tableToMarkdown("Actual Incident",
+                                                          incident_json,
+                                                          col_incident))
 
 
-def load_indicators_for_current_incident(incident_id: str, indicators_types: List[str], min_nb_of_indicators: int,
+def load_indicators_for_current_incident(incident_id: str, indicators_types: list[str], min_nb_of_indicators: int,
                                          max_indicators_for_white_list: int):
     """
     Take
@@ -476,13 +477,15 @@ def get_incidents_ids_related_to_indicators(indicators, query):
     return incident_ids, False
 
 
-def get_incidents_filtered_from_query(incident_ids, query):
+def get_ids_condition_clause(incident_ids):
     if incident_ids:
-        incident_ids = [f'incident.id:{inc_id}' for inc_id in incident_ids]
-        ids_condition = "(" + " OR ".join(incident_ids) + ")"
-    else:
-        ids_condition = ""
-    query += " AND %s" % ids_condition
+        return "incident.id:(" + " ".join(incident_ids) + ")"
+    return ""
+
+
+def get_incidents_filtered_from_query(incident_ids, query):
+    ids_condition_clause = get_ids_condition_clause(incident_ids)
+    query += " AND %s" % ids_condition_clause
     res = demisto.executeCommand('GetIncidentsByQuery', {
         'query': query,
         'populateFields': 'id'
@@ -497,7 +500,7 @@ def get_incidents_filtered_from_query(incident_ids, query):
     return filtered_incidents
 
 
-def get_related_incidents_with_indicators(incident_ids: List[str], indicators_types: List[str],
+def get_related_incidents_with_indicators(incident_ids: list[str], indicators_types: list[str],
                                           incident_id: str) -> pd.DataFrame:
     """
     Create dataframe of incident with indicators from incidents ids list
@@ -534,7 +537,7 @@ def organize_current_incident(current_incident_df, indicators_map):
     return current_incident_df
 
 
-def return_outputs_tagged(similar_incidents: pd.DataFrame, context: Dict, tag: Optional[str] = None):
+def return_outputs_tagged(similar_incidents: pd.DataFrame, context: dict, tag: Optional[str] = None):
     colums_to_display = FIRST_COLUMNS_INCIDENTS_DISPLAY + [x for x in similar_incidents.columns.tolist() if
                                                            x not in FIRST_COLUMNS_INCIDENTS_DISPLAY + FIELDS_TO_REMOVE_TO_DISPLAY]
     similar_incidents_renamed = similar_incidents.rename(str.title, axis='columns')
@@ -550,7 +553,7 @@ def return_outputs_tagged(similar_incidents: pd.DataFrame, context: Dict, tag: O
     }
     if tag is not None:
         return_entry["Tags"] = [tag]
-    demisto.results(return_entry)
+    return CommandResults(outputs=return_entry)
 
 
 def main():
@@ -596,7 +599,7 @@ def main():
         return
 
     # Current incident
-    indicators_for_incident = [' '.join(set([x.get('id') for x in indicators]))]  # type: ignore
+    indicators_for_incident = [' '.join({x.get('id') for x in indicators})]  # type: ignore
     current_incident_df = pd.DataFrame(indicators_for_incident, columns=['indicators'])
 
     # Prediction
@@ -612,11 +615,12 @@ def main():
     incident_found_bool = (len(similar_incidents) > 0)
 
     if show_actual_incident == 'True':
-        display_actual_incident(current_incident_df, incident_id, fields_incident_to_display, from_date)
+        command_results = display_actual_incident(current_incident_df, incident_id, fields_incident_to_display, from_date)
+        return_results(command_results)
 
     if incident_found_bool:
         context = create_context_for_incidents(similar_incidents)
-        return_outputs_tagged(similar_incidents, context, 'similarIncidents')
+        return_results(return_outputs_tagged(similar_incidents, context, 'similarIncidents'))
     else:
         return_no_similar_incident_found_entry()
 

@@ -375,7 +375,7 @@ script:
     - contextPath: ReversingLabs.a1000_ip_urls
       description: A1000 URL-s hosted on an IP address
       type: Unknown
-  dockerimage: demisto/reversinglabs-sdk-py3:2.0.0.64132
+  dockerimage: demisto/reversinglabs-sdk-py3:2.0.0.68562
   runonce: false
   script: '-'
   subtype: python3

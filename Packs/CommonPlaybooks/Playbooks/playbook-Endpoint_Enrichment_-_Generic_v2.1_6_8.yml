@@ -108,10 +108,11 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isExists
+      - - operator: isNotEmpty
           left:
             value:
-              simple: inputs.Hostname
+              complex:
+                root: inputs.Hostname
             iscontext: true
     view: |-
       {

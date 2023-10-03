@@ -133,6 +133,7 @@ def error_parser(resp_err: requests.Response, api: str = 'graph') -> str:
     """
     try:
         response: dict = resp_err.json()
+        demisto.debug(f"Error response from {api=}: {response=}")
         if api == 'graph':
 
             # AADSTS50173 points to password change https://login.microsoftonline.com/error?code=50173.
@@ -141,8 +142,10 @@ def error_parser(resp_err: requests.Response, api: str = 'graph') -> str:
             if "AADSTS50173" in response.get('error_description', ''):
                 integration_context: dict = get_integration_context()
                 integration_context['current_refresh_token'] = ''
+                integration_context['graph_access_token'] = ''
                 set_integration_context(integration_context)
-                raise ValueError(
+                demisto.debug("Detected Error: AADSTS50173, Successfully reset the current_refresh_token and graph_access_token.")
+                raise DemistoException(
                     "The account password has been changed or reset. Please regenerate the 'Authorization code' "
                     "parameter and then run !microsoft-teams-auth-test to re-authenticate")
 

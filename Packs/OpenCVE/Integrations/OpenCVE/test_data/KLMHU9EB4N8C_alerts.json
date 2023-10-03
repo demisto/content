@@ -1,0 +1,17 @@
+[
+    {
+        "id": "475fde88-00dc-4024-9499-8197e334dfe7",
+        "created_at": "2023-08-02T08:37:45Z",
+        "cve": "CVE-2021-28478",
+        "details": {
+            "products": [],
+            "vendors": [
+                "microsoft"
+            ],
+            "filters": [
+                "summary",
+                "cvss"
+            ]
+        }
+    }
+]

@@ -148,15 +148,42 @@
 				"Xpanse Tags": {
 					"complex": {
 						"filters": [],
-						"root": "original_tags",
-						"transformers": []
+						"root": "tags",
+						"transformers": [
+							{
+								"args": {
+									"applyIfEmpty": {
+										"isContext": true
+									},
+									"defaultValue": {
+										"isContext": true,
+										"value": {
+											"simple": "original_tags"
+										}
+									}
+								},
+								"operator": "SetIfEmpty"
+							}
+						]
 					}
 				},
                 "Xpanse Category": {
                     "simple": "asm_alert_categories"
                 }
             }
-		}
+		},
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Tags": {
+                    "complex": {
+                        "filters": [],
+                        "root": "tags",
+                        "transformers": []
+                    }
+                }
+            }
+        }
     },
     "name": "Xpanse - Incoming Mapper",
     "type": "mapping-incoming",

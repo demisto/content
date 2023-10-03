@@ -242,7 +242,7 @@ def get_pack_dependencies(client: demisto_client,
                 logging.warning(f"API request to fetch dependencies of pack '{pack_id}' has failed.\n"
                                 f"Response code '{ex.status}'\nResponse: '{ex.body}'\nResponse Headers: '{ex.headers}'")
 
-            elif isinstance(ex, (HTTPError, HTTPWarning)):
+            elif isinstance(ex, HTTPError | HTTPWarning):
                 logging.warning(f"Failed to perform HTTP request : {ex}")
 
             else:
@@ -349,11 +349,11 @@ def install_packs_private(client: demisto_client,
                                  test_pack_path=test_pack_path)
 
 
-def get_error_ids(body: str) -> set[str]:
+def get_error_ids(body: str) -> dict[int, str]:
     with contextlib.suppress(json.JSONDecodeError):
         response_info = json.loads(body)
-        return {error["id"] for error in response_info.get("errors", []) if "id" in error}
-    return set()
+        return {error["id"]: error.get("details", "") for error in response_info.get("errors", []) if "id" in error}
+    return {}
 
 
 def install_packs(client: demisto_client,
@@ -417,10 +417,15 @@ def install_packs(client: demisto_client,
                     logging.error(f"Unable to install malformed packs: {malformed_ids}, retrying without them.")
                     packs_to_install = [pack for pack in packs_to_install if pack['id'] not in malformed_ids]
 
-                if (error_ids := get_error_ids(ex.body)) and WLM_TASK_FAILED_ERROR_CODE in error_ids:
-                    # If we got this error code, it means that the modeling rules are not valid, exiting install flow.
-                    raise Exception(f"Got [{WLM_TASK_FAILED_ERROR_CODE}] error code - Modeling rules and Dataset validations "
-                                    f"failed. Please look at GCP logs to understand why it failed.") from ex
+                error_ids = get_error_ids(ex.body)
+                if WLM_TASK_FAILED_ERROR_CODE in error_ids:
+                    if "polling request failed for task ID" in error_ids[WLM_TASK_FAILED_ERROR_CODE].lower():
+                        logging.error(f"Got {WLM_TASK_FAILED_ERROR_CODE} error code - polling request failed for task ID, "
+                                      f"retrying.")
+                    else:
+                        # If we got this error code, it means that the modeling rules are not valid, exiting install flow.
+                        raise Exception(f"Got [{WLM_TASK_FAILED_ERROR_CODE}] error code - Modeling rules and Dataset validations "
+                                        f"failed. Please look at GCP logs to understand why it failed.") from ex
 
                 if not attempt:  # exhausted all attempts, understand what happened and exit.
                     if 'timeout awaiting response' in ex.body:
@@ -508,7 +513,7 @@ def search_pack_and_its_dependencies(client: demisto_client,
                                            checked_packs=[pack_id])
 
     except Exception as ex:
-        logging.error(f"Error: {ex}\n\nStack trace:\n" + traceback.format_exc())
+        logging.error(f"Error: {ex}\n\nStack trace:\n{traceback.format_exc()}")
         SUCCESS_FLAG = False
         return
 

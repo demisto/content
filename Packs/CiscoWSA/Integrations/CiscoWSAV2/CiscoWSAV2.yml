@@ -31,7 +31,7 @@ script:
   type: python
   subtype: python3
   script: '-'
-  dockerimage: demisto/python3:3.10.12.68300
+  dockerimage: demisto/python3:3.10.13.72123
   commands:
   - name: cisco-wsa-access-policy-list
     description: |-

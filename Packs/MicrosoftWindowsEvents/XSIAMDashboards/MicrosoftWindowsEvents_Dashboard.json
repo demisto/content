@@ -3,7 +3,7 @@
         {
             "name": "Microsoft Windows Events",
             "description": "This dashboard displays common statistics from windows events",
-            "cache_ttl": 5,
+            "metadata": {"cache_ttl": 5},
             "status": "ENABLED",
             "layout": [
                 {

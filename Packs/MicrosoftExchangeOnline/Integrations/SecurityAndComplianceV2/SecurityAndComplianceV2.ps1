@@ -555,6 +555,7 @@ class OAuth2DeviceCodeClient {
             $client.RefreshTokenIfExpired()
         #>
     }
+
     ClearContext(){
         $this.access_token = $null
         $this.refresh_token = $null
@@ -622,7 +623,6 @@ class SecurityAndComplianceClient {
         }
         Connect-ExchangeOnline @cmd_params -CommandName $CommandName -WarningAction:SilentlyContinue -ShowBanner:$false | Out-Null
     }
-
 
     DisconnectSession(){
         Disconnect-ExchangeOnline -Confirm:$false -WarningAction:SilentlyContinue 6>$null | Out-Null
@@ -913,6 +913,7 @@ class SecurityAndComplianceClient {
         }
         if ($action -eq "Preview") {
             $cmd_params.Preview = $true
+            $cmd_params.Confirm = $false
         } elseif ($action -eq "Purge") {
             $cmd_params.Purge = $true
             $cmd_params.PurgeType = $purge_type
@@ -1905,7 +1906,9 @@ function Main {
 Command: $command
 Arguments: $($command_arguments | ConvertTo-Json)
 Error: $($_.Exception.Message)")
-        if ($command -ne "test-module") {
+        if ($_.Exception.Message -like "*Unable to open a web page using xdg-open*" ) {
+           Write-Host "It looks like the access token has expired. Please run the command !$script:COMMAND_PREFIX-auth-start, before running this command."
+        } elseif ($command -ne "test-module") {
             ReturnError "Error:
             Integration: $script:INTEGRATION_NAME
             Command: $command

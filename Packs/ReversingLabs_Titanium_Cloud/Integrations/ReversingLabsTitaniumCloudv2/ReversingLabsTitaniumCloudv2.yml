@@ -502,7 +502,7 @@ script:
     - contextPath: ReversingLabs.url_analyses_feed_from_date
       description: ''
       type: Unknown
-  dockerimage: demisto/reversinglabs-sdk-py3:2.0.0.64132
+  dockerimage: demisto/reversinglabs-sdk-py3:2.0.0.68562
   runonce: false
   script: '-'
   subtype: python3
