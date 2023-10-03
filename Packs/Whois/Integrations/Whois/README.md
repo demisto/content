@@ -21,6 +21,8 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### whois
 ***
 Provides data enrichment for domains.
+Since whois is a free service, with some services it can be blocked for some requests from the cloud.
+Due to the fact that it is a free service, its reliability is not perfect and is out of our control.
 
 
 #### Base Command
