@@ -12,7 +12,7 @@
             }
         }
     },
-    "name": "Hurukai - Outgoing Mapper",
+    "name": "Hurukai - Outgoing mapper",
     "type": "mapping-outgoing",
     "version": -1,
     "fromVersion": "6.0.0"
