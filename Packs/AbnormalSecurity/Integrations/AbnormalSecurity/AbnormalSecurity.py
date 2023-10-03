@@ -687,7 +687,7 @@ def get_a_list_of_vendor_cases_command(client, args):
     page_number = str(args.get('page_number', ''))
 
     response = client.get_a_list_of_vendor_cases_request(filter_, page_size, page_number)
-    markdown = tableToMarkdown('Vendor Case IDs', removeNull=True)
+    markdown = tableToMarkdown('Vendor Case IDs', response, removeNull=True)
     command_results = CommandResults(
         readable_output=markdown,
         outputs_prefix='AbnormalSecurity.VendorCases',
