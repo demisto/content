@@ -220,7 +220,7 @@ def test_get_the_details_of_a_vendor_case_command(mocker):
             - Assert output prefix data is as expected
     """
     client = mock_client(mocker, util_load_json('test_data/test_get_the_details_of_a_vendor_case.json'))
-    results = get_the_details_of_a_vendor_case_command(client, {"case_id":2})
+    results = get_the_details_of_a_vendor_case_command(client, {"case_id": 2})
     assert results.outputs.get('vendorCaseId') == 123
     assert results.outputs.get('timeline')[0].get('threatId') == 1234
     assert results.outputs_prefix == 'AbnormalSecurity.VendorCaseDetails'
