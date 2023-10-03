@@ -24,6 +24,7 @@ XSOAR_SEVERITY_BY_AMP_SEVERITY = {
 
 ISO_8601_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 
+
 class FetchIncidentsError(Exception):
     """Raised when there's an error in fetching incidents."""
     pass
@@ -256,7 +257,6 @@ class Client(BaseClient):
         for key in keys_to_remove:
             response.pop(key, None)
         return response
-
 
 
 def check_the_status_of_an_action_requested_on_a_case_command(client, args):
