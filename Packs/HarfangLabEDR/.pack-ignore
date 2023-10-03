@@ -1,6 +1,18 @@
 [file:Hurukai.yml]
 ignore=IN126,BA124,RM110
 
+[file:incidentfield-Threat_ID.json]
+ignore=IF115
+
+[file:incidentfield-Top_Agents.json]
+ignore=IF115
+
+[file:incidentfield-Top_Impacted_Users.json]
+ignore=IF115
+
+[file:incidentfield-Top_Rules.json]
+ignore=IF115
+
 [known_words]
 harfanglab
 filesize

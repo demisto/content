@@ -16,9 +16,13 @@ configuration:
   name: incidentType
   type: 13
   required: false
+- name: credentials
+  type: 9
+  displaypassword: API Key
+  hiddenusername: true
 - display: API Key
   name: apikey
-  type: 4
+  type: 0
   required: false
   hidden: true
 - display: Long running instance
@@ -52,9 +56,9 @@ configuration:
   - CLOSED
   type: 15
   required: false
-- additionalinfo: Fetch maximum <max_results> security events and/or threats per call (leave empty if unlimited).
+- additionalinfo: Fetch maximum <max_fetch> security events and/or threats per call (leave empty if unlimited).
   display: Maximum number of incidents to fetch per call
-  name: max_results
+  name: max_fetch
   required: false
   type: 0
 - additionalinfo: Start fetching alerts and/or threats whose creation date is higher than now minus <first_fetch> days.
