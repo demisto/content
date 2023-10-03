@@ -56,6 +56,7 @@ def check_homographs(domain: str, homographs: list, levenshtein_distance_thresho
                 return True
     return False
 
+
 def fetch_certificates(message: dict, context: dict) -> None:
     """A callback function that handles each message from the CertStream feed.
 
@@ -76,7 +77,6 @@ def fetch_certificates(message: dict, context: dict) -> None:
                     demisto.info(f"Potential homograph match found for domain: {domain}")
                     create_xsoar_certificate_indicator(message)
                     ## TODO create incident or alert ##
-
 
         now = datetime.now()
         domains = ", ".join(message["data"]["leaf_cert"]["all_domains"][1:])
@@ -152,7 +152,7 @@ def long_running_execution_command(host: str, word_list_name: str, list_update_i
             demisto.error(e)
 
 
-def levenshtein_distance(original_string: str, reference_string:str) -> float:
+def levenshtein_distance(original_string: str, reference_string: str) -> float:
     """The Levenshtein distance is a string metric for measuring the difference between two sequences.
 
     Args:
