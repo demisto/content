@@ -18,7 +18,7 @@ This integration was integrated and tested with version 2.13.7+ of Hurukai
     | Fetch alerts with type | Comma-separated list of types of alerts to fetch \(sigma, yara, hlai, vt, ransom, ioc, glimps, orion...\). | False |
     | Minimum severity of alerts to fetch |  | True |
     | Fetch alerts with status (ACTIVE, CLOSED) |  | False |
-    | Maximum number of incidents to fetch per call | Fetch maximum &lt;max_results&gt; security events and/or threats per call \(leave empty if unlimited\). | False |
+    | Maximum number of incidents to fetch per call | Fetch maximum &lt;max_fetch&gt; security events and/or threats per call \(leave empty if unlimited\). | False |
     | First fetch time | Start fetching alerts and/or threats whose creation date is higher than now minus &lt;first_fetch&gt; days. | True |
     | Mirroring Direction | Choose the direction to mirror the detection: Incoming \(from HarfangLab EDR to Cortex XSOAR\), Outgoing \(from Cortex XSOAR to HarfangLab EDR\), or Incoming and Outgoing \(to/from HarfangLab EDR and Cortex XSOAR\). | False |
     | Fetch types |  | True |
@@ -2783,7 +2783,7 @@ Search DNS resolutions
             "dns": [
                 {
                     "IP addresses": [
-                        "209.197.3.8"
+                        "XXX.XXX.XXX.XXX"
                     ],
                     "agentid": "2eabb3d4-2fe4-45c7-ba87-4fc486f37638",
                     "create date": "2023-07-20T08:14:28.306000Z",
@@ -2797,7 +2797,7 @@ Search DNS resolutions
                 },
                 {
                     "IP addresses": [
-                        "209.197.3.8"
+                        "XXX.XXX.XXX.XXX"
                     ],
                     "agentid": "2eabb3d4-2fe4-45c7-ba87-4fc486f37638",
                     "create date": "2023-07-20T08:14:23.768000Z",
@@ -2811,8 +2811,8 @@ Search DNS resolutions
                 },
                 {
                     "IP addresses": [
-                        "95.140.239.0",
-                        "87.248.222.128"
+                        "XXX.XXX.XXX.XXX",
+                        "XXX.XXX.XXX.XXX"
                     ],
                     "agentid": "2eabb3d4-2fe4-45c7-ba87-4fc486f37638",
                     "create date": "2023-07-20T04:14:23.397000Z",
@@ -2826,8 +2826,8 @@ Search DNS resolutions
                 },
                 {
                     "IP addresses": [
-                        "23.77.197.180",
-                        "23.77.197.145"
+                        "XXX.XXX.XXX.XXX",
+                        "XXX.XXX.XXX.XXX"
                     ],
                     "agentid": "524f8ab7-c2c0-4b31-893c-564acb8f857a",
                     "create date": "2023-07-17T13:03:34.656000Z",
@@ -2841,8 +2841,8 @@ Search DNS resolutions
                 },
                 {
                     "IP addresses": [
-                        "23.77.197.180",
-                        "23.77.197.145"
+                        "XXX.XXX.XXX.XXX",
+                        "XXX.XXX.XXX.XXX"
                     ],
                     "agentid": "524f8ab7-c2c0-4b31-893c-564acb8f857a",
                     "create date": "2023-07-17T13:03:28.608000Z",
@@ -2856,7 +2856,7 @@ Search DNS resolutions
                 },
                 {
                     "IP addresses": [
-                        "209.197.3.8"
+                        "XXX.XXX.XXX.XXX"
                     ],
                     "agentid": "524f8ab7-c2c0-4b31-893c-564acb8f857a",
                     "create date": "2023-07-16T13:03:36.331000Z",
@@ -2870,7 +2870,7 @@ Search DNS resolutions
                 },
                 {
                     "IP addresses": [
-                        "209.197.3.8"
+                        "XXX.XXX.XXX.XXX"
                     ],
                     "agentid": "524f8ab7-c2c0-4b31-893c-564acb8f857a",
                     "create date": "2023-07-16T13:03:28.944000Z",
@@ -2884,8 +2884,8 @@ Search DNS resolutions
                 },
                 {
                     "IP addresses": [
-                        "95.140.239.0",
-                        "87.248.222.128"
+                        "XXX.XXX.XXX.XXX",
+                        "XXX.XXX.XXX.XXX"
                     ],
                     "agentid": "524f8ab7-c2c0-4b31-893c-564acb8f857a",
                     "create date": "2023-07-15T13:03:37.980000Z",
@@ -2899,8 +2899,8 @@ Search DNS resolutions
                 },
                 {
                     "IP addresses": [
-                        "95.140.239.0",
-                        "87.248.222.128"
+                        "XXX.XXX.XXX.XXX",
+                        "XXX.XXX.XXX.XXX"
                     ],
                     "agentid": "524f8ab7-c2c0-4b31-893c-564acb8f857a",
                     "create date": "2023-07-15T13:03:29.162000Z",
@@ -2914,7 +2914,7 @@ Search DNS resolutions
                 },
                 {
                     "IP addresses": [
-                        "209.197.3.8"
+                        "XXX.XXX.XXX.XXX"
                     ],
                     "agentid": "524f8ab7-c2c0-4b31-893c-564acb8f857a",
                     "create date": "2023-07-14T13:03:50.310000Z",
@@ -2928,7 +2928,7 @@ Search DNS resolutions
                 },
                 {
                     "IP addresses": [
-                        "209.197.3.8"
+                        "XXX.XXX.XXX.XXX"
                     ],
                     "agentid": "524f8ab7-c2c0-4b31-893c-564acb8f857a",
                     "create date": "2023-07-14T13:03:42.865000Z",
@@ -2942,7 +2942,7 @@ Search DNS resolutions
                 },
                 {
                     "IP addresses": [
-                        "209.197.3.8"
+                        "XXX.XXX.XXX.XXX"
                     ],
                     "agentid": "524f8ab7-c2c0-4b31-893c-564acb8f857a",
                     "create date": "2023-07-14T02:14:55.276000Z",
@@ -2956,8 +2956,8 @@ Search DNS resolutions
                 },
                 {
                     "IP addresses": [
-                        "23.77.197.145",
-                        "23.77.197.180"
+                        "XXX.XXX.XXX.XXX",
+                        "XXX.XXX.XXX.XXX"
                     ],
                     "agentid": "524f8ab7-c2c0-4b31-893c-564acb8f857a",
                     "create date": "2023-07-13T13:03:34.668000Z",
@@ -2971,8 +2971,8 @@ Search DNS resolutions
                 },
                 {
                     "IP addresses": [
-                        "23.77.197.145",
-                        "23.77.197.180"
+                        "XXX.XXX.XXX.XXX",
+                        "XXX.XXX.XXX.XXX"
                     ],
                     "agentid": "524f8ab7-c2c0-4b31-893c-564acb8f857a",
                     "create date": "2023-07-13T13:03:29.584000Z",
@@ -2986,7 +2986,7 @@ Search DNS resolutions
                 },
                 {
                     "IP addresses": [
-                        "95.140.239.0"
+                        "XXX.XXX.XXX.XXX"
                     ],
                     "agentid": "524f8ab7-c2c0-4b31-893c-564acb8f857a",
                     "create date": "2023-07-13T02:14:55.484000Z",
@@ -3000,8 +3000,8 @@ Search DNS resolutions
                 },
                 {
                     "IP addresses": [
-                        "23.77.197.180",
-                        "23.77.197.145"
+                        "XXX.XXX.XXX.XXX",
+                        "XXX.XXX.XXX.XXX"
                     ],
                     "agentid": "5011b34e-183f-438a-a44c-a0e32a89719a",
                     "create date": "2023-07-06T05:33:19.372000Z",
@@ -3015,8 +3015,8 @@ Search DNS resolutions
                 },
                 {
                     "IP addresses": [
-                        "23.77.197.180",
-                        "23.77.197.145"
+                        "XXX.XXX.XXX.XXX",
+                        "XXX.XXX.XXX.XXX"
                     ],
                     "agentid": "5011b34e-183f-438a-a44c-a0e32a89719a",
                     "create date": "2023-07-06T05:33:11.969000Z",
@@ -3030,8 +3030,8 @@ Search DNS resolutions
                 },
                 {
                     "IP addresses": [
-                        "23.77.197.180",
-                        "23.77.197.145"
+                        "XXX.XXX.XXX.XXX",
+                        "XXX.XXX.XXX.XXX"
                     ],
                     "agentid": "5011b34e-183f-438a-a44c-a0e32a89719a",
                     "create date": "2023-07-04T05:25:43.924000Z",
@@ -3045,8 +3045,8 @@ Search DNS resolutions
                 },
                 {
                     "IP addresses": [
-                        "23.77.197.180",
-                        "23.77.197.145"
+                        "XXX.XXX.XXX.XXX",
+                        "XXX.XXX.XXX.XXX"
                     ],
                     "agentid": "5011b34e-183f-438a-a44c-a0e32a89719a",
                     "create date": "2023-07-04T05:25:37.176000Z",
@@ -3060,7 +3060,7 @@ Search DNS resolutions
                 },
                 {
                     "IP addresses": [
-                        "209.197.3.8"
+                        "XXX.XXX.XXX.XXX"
                     ],
                     "agentid": "5011b34e-183f-438a-a44c-a0e32a89719a",
                     "create date": "2023-07-02T05:25:42.501000Z",
@@ -3074,7 +3074,7 @@ Search DNS resolutions
                 },
                 {
                     "IP addresses": [
-                        "209.197.3.8"
+                        "XXX.XXX.XXX.XXX"
                     ],
                     "agentid": "5011b34e-183f-438a-a44c-a0e32a89719a",
                     "create date": "2023-07-02T05:25:35.173000Z",
@@ -3088,8 +3088,8 @@ Search DNS resolutions
                 },
                 {
                     "IP addresses": [
-                        "23.77.197.145",
-                        "23.77.197.180"
+                        "XXX.XXX.XXX.XXX",
+                        "XXX.XXX.XXX.XXX"
                     ],
                     "agentid": "5011b34e-183f-438a-a44c-a0e32a89719a",
                     "create date": "2023-07-01T11:40:33.272000Z",
@@ -3103,8 +3103,8 @@ Search DNS resolutions
                 },
                 {
                     "IP addresses": [
-                        "23.77.197.145",
-                        "23.77.197.180"
+                        "XXX.XXX.XXX.XXX",
+                        "XXX.XXX.XXX.XXX"
                     ],
                     "agentid": "5011b34e-183f-438a-a44c-a0e32a89719a",
                     "create date": "2023-07-01T11:40:28.846000Z",
@@ -3118,8 +3118,8 @@ Search DNS resolutions
                 },
                 {
                     "IP addresses": [
-                        "23.77.197.180",
-                        "23.77.197.145"
+                        "XXX.XXX.XXX.XXX",
+                        "XXX.XXX.XXX.XXX"
                     ],
                     "agentid": "5011b34e-183f-438a-a44c-a0e32a89719a",
                     "create date": "2023-07-01T03:40:39.204000Z",
@@ -3133,8 +3133,8 @@ Search DNS resolutions
                 },
                 {
                     "IP addresses": [
-                        "23.77.197.145",
-                        "23.77.197.180"
+                        "XXX.XXX.XXX.XXX",
+                        "XXX.XXX.XXX.XXX"
                     ],
                     "agentid": "5011b34e-183f-438a-a44c-a0e32a89719a",
                     "create date": "2023-06-30T23:40:27.344000Z",
@@ -3148,7 +3148,7 @@ Search DNS resolutions
                 },
                 {
                     "IP addresses": [
-                        "209.197.3.8"
+                        "XXX.XXX.XXX.XXX"
                     ],
                     "agentid": "5011b34e-183f-438a-a44c-a0e32a89719a",
                     "create date": "2023-06-30T15:40:28.177000Z",
@@ -3171,7 +3171,7 @@ Search DNS resolutions
 >```
 >{
 >    "IP addresses": [
->        "209.197.3.8"
+>        "XXX.XXX.XXX.XXX"
 >    ],
 >    "agentid": "5011b34e-183f-438a-a44c-a0e32a89719a",
 >    "create date": "2023-06-30T15:40:28.177000Z",
