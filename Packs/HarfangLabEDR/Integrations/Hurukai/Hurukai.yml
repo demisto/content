@@ -58,6 +58,7 @@ configuration:
 - additionalinfo: Fetch maximum <max_fetch> security events and/or threats per call (leave empty if unlimited).
   display: Maximum number of incidents to fetch per call
   name: max_fetch
+  defaultvalue: 1000
   required: false
   type: 0
 - additionalinfo: Start fetching alerts and/or threats whose creation date is higher than now minus <first_fetch> days.
@@ -112,11 +113,11 @@ configuration:
   type: 8
   required: false
 defaultmapperin: Hurukai alert mapper
-defaultmapperout: Hurukai outgoing mapper
+defaultmapperout: Hurukai - Outgoing mapper
 defaultclassifier: Hurukai classifier
 description: |-
   HarfangLab EDR Connector,
-  Compatible version 2.13.7+
+  Compatible version 2.13.7+.
 display: HarfangLab EDR
 name: Hurukai
 script:
@@ -1033,7 +1034,7 @@ script:
       required: true
     description: Delete an IOC from a Threat Intelligence source.
     name: harfanglab-delete-ioc-from-source
-  dockerimage: demisto/python3:3.10.13.74666
+  dockerimage: demisto/python3:3.10.13.75921
   isfetch: true
   ismappable: true
   isremotesyncin: true
