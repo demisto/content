@@ -21,12 +21,24 @@
     "testInterval": 20,
     "tests": [
         {
+            "playbookID": "Test Playbook - NGFW Scan",
+            "integrations": "VirusTotal (API v3)",
+            "instance_names": "virus_total_v3",
+            "timeout": 1600
+        },
+        {
+            "playbookID": "Test Playbook - WildFire Malware",
+            "integrations": "VirusTotal (API v3)",
+            "instance_names": "virus_total_v3",
+            "timeout": 1600
+        },
+        {
             "playbookID": "T1036 - Masquerading - Test",
             "integrations": "VirusTotal (API v3)",
             "instance_names": "virus_total_v3",
             "timeout": 800
         },
-	    {
+        {
             "playbookID": "T1059 - Command and Scripting Interpreter - Test",
             "integrations": "LOLBAS Feed",
             "timeout": 600
@@ -35,23 +47,23 @@
             "playbookID": "Eradication plan - Test",
             "timeout": 600
         },
-		{
+        {
             "playbookID": "Containment Plan - Test",
             "timeout": 800,
             "integrations": "Active Directory Query v2",
             "instance_names": "active_directory_80k"
         },
-		{
+        {
             "playbookID": "Enrichment for Verdict - Test",
             "timeout": 500,
-			"integrations": [
-				"Active Directory Query v2",
-				"VirusTotal (API v3)"
-			],
-			"instance_names": [
-				"active_directory_80k",
-				"virus_total_v3"
-			]
+            "integrations": [
+                "Active Directory Query v2",
+                "VirusTotal (API v3)"
+            ],
+            "instance_names": [
+                "active_directory_80k",
+                "virus_total_v3"
+            ]
         },
         {
             "integrations": "Microsoft Defender Advanced Threat Protection",
@@ -714,7 +726,6 @@
             "timeout": 1300,
             "instance_names": "ms_graph_mail_dev"
         },
-
         {
             "integrations": "MicrosoftGraphMail",
             "timeout": 900,
@@ -994,7 +1005,8 @@
         },
         {
             "integrations": "Thinkst Canary",
-            "playbookID": "CanaryTools Test"
+            "playbookID": "CanaryTools Test",
+            "is_mockable": false
         },
         {
             "integrations": "ThreatMiner",
@@ -1831,7 +1843,7 @@
             "integrations": "CrowdstrikeFalcon",
             "playbookID": "Test - CrowdStrike Falcon",
             "fromversion": "4.1.0",
-            "timeout": 500,
+            "timeout": 1000,
             "is_mockable": false
         },
         {
@@ -2874,8 +2886,8 @@
         {
             "playbookID": "Account Enrichment - Generic v2.1 - Test",
             "integrations": [
-            "Active Directory Query v2",
-            "Cortex XDR - IR"
+                "Active Directory Query v2",
+                "Cortex XDR - IR"
             ],
             "memory_threshold": 100,
             "instance_names": "active_directory_80k",
@@ -3672,6 +3684,10 @@
         {
             "playbookID": "IfThenElse-Test",
             "fromversion": "5.0.0"
+        },
+        {
+            "playbookID": "If-Elif Test",
+            "fromversion": "6.9.0"
         },
         {
             "integrations": "Imperva WAF",
@@ -4956,14 +4972,6 @@
             "fromversion": "5.0.0"
         },
         {
-            "playbookID": "TruSTAR v2-Test",
-            "fromversion": "5.0.0",
-            "integrations": [
-                "TruSTAR v2",
-                "TruSTAR"
-            ]
-        },
-        {
             "playbookID": "Relationships scripts - Test",
             "fromversion": "6.2.0"
         },
@@ -5868,7 +5876,8 @@
         "SentinelOne V2": "No instance - developed by partner",
         "CheckPhish": "Issue CRTX-86562",
         "SecurityAndComplianceV2": "Can only be authenticated via MFA and requires user interaction to configure.",
-        "ThreatExchange v2": "No instance"
+        "ThreatExchange v2": "No instance",
+        "PhishLabs IOC EIR": "No instance, CRTX-91214"
     },
     "nightly_packs": [
         "CommonScripts",

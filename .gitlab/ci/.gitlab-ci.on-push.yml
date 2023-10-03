@@ -121,6 +121,7 @@ validate-content-conf:
   stage: prepare-testing-bucket
   script:
     - !reference [.download-demisto-conf]
+    - !reference [.create-release-notes-and-common-docs]
     - !reference [.secrets-fetch]
     - section_start "Create or update content graph" --collapsed
 
@@ -147,6 +148,17 @@ validate-content-conf:
 
     - cp "./Tests/conf.json" "$ARTIFACTS_FOLDER/conf.json"
     - section_end "Create Content Artifacts and Update Conf"
+
+    - section_start "Find dependencies changes" --collapsed
+    - |
+      if [[ -z $BUCKET_UPLOAD || $TEST_UPLOAD == "false" ]]; then
+        source ./Tests/scripts/get_previous_master_sha.sh --fail
+        echo "Finding pack dependencies diff against $PREVIOUS_MASTER_SHA"
+        python Tests/scripts/find_pack_dependencies_changes.py --gitlab-token $GITLAB_API_TOKEN --master-sha $PREVIOUS_MASTER_SHA --job-name $CI_JOB_NAME --artifacts-folder $ARTIFACTS_FOLDER
+      else
+        echo "Test upload flow - skipping find dependencies changes"
+      fi
+    - section_end "Find dependencies changes"
 
     - section_start "Replace Cortex XSOAR" --collapsed
     - |
@@ -222,6 +234,23 @@ xpanse-prepare-testing-bucket:
   extends:
     - .generic-prepare-testing-bucket
 
+add-dep-changes-in-pr-comment:
+  tags:
+    - gke
+  stage: prepare-testing-bucket
+  extends:
+    - .default-job-settings
+  needs: ['mpv2-prepare-testing-bucket', 'xpanse-prepare-testing-bucket', 'xsoar-prepare-testing-bucket']
+  when: always
+  except:
+  - triggers
+  - schedules
+  script:
+    - |
+      if [[ $CI_COMMIT_BRANCH != "master" ]]; then
+        python3 ./Tests/scripts/update_pack_dependencies_changes_in_pr.py --github-token $GITHUB_TOKEN --current-sha $CI_COMMIT_SHA --current-branch $CI_COMMIT_BRANCH --artifacts-folder $ARTIFACTS_FOLDER --mandatory-only true
+      fi
+
 .test_content_on_xsoar_server_instances_base:
   tags:
     - gke
@@ -294,15 +323,18 @@ xpanse-prepare-testing-bucket:
         cp ./Tests/test_playbooks_report.json $ARTIFACTS_FOLDER/test_playbooks_report.json
       fi
     - section_end "Run Tests"
-    - section_start "Destroy Instances"
-    - |
-      if [ -z "${TIME_TO_LIVE}" -a "$CI_PIPELINE_SOURCE" = "contrib" ]; then
-        TIME_TO_LIVE=300
-      fi
-      python3 ./Tests/scripts/destroy_instances.py --artifacts-dir $ARTIFACTS_FOLDER --env-file $ARTIFACTS_FOLDER/env_results.json --instance-role "$INSTANCE_ROLE" || EXIT_CODE=$?
-    - section_end "Destroy Instances"
     - job-done
     - exit $EXIT_CODE
+  after_script:
+    - !reference [.default-after-script]
+    - !reference [.install_ssh_keys]
+    - !reference [.ssh-config-setup]
+    - section_start "Destroy Instances"
+    - python3 ./Tests/scripts/destroy_instances.py --artifacts-dir $ARTIFACTS_FOLDER --env-file $ARTIFACTS_FOLDER/env_results.json --instance-role "$INSTANCE_ROLE"
+    - if [ $? -ne 0 ]; then
+        echo "Failed to destroy instances, exit code"$?";
+      fi
+    - section_end "Destroy Instances"
 
 tests_xsoar_server:
   extends:
@@ -366,6 +398,8 @@ jobs-done-check-on-push:
     - job: xsiam_server_ga
       optional: true
     - job: tests_xsoar_server
+      optional: true
+    - job: xsoar_ng_server_ga
       optional: true
   tags:
     - gke
@@ -437,9 +471,11 @@ slack-notify-nightly-build:
     - section_end "Test Modeling Rules"
 
     - !reference [.cloud-machine-information]
-    - !reference [.unlock-machine]
     - job-done
     - exit $EXIT_CODE
+  after_script:
+    - source .gitlab/helper_functions.sh
+    - !reference [.unlock-machine]
 
 #xsiam_server_dev:
 #  extends:
@@ -502,8 +538,8 @@ xsiam_server_ga:
         - ${ARTIFACTS_FOLDER}/modeling_rules_results.xml
     paths:
       - ${ARTIFACTS_FOLDER}/modeling_rules_results.xml
-      - /builds/xsoar/content/artifacts/*  # restoring the default artifacts path from the job default settings
-      - /builds/xsoar/content/pipeline_jobs_folder/*  # restoring the default artifacts path from the job default settings
+      - ${CI_PROJECT_DIR}/artifacts/*  # restoring the default artifacts path from the job default settings
+      - ${CI_PROJECT_DIR}/pipeline_jobs_folder/*  # restoring the default artifacts path from the job default settings
 
 xsoar_ng_server_ga:
   extends:
@@ -569,7 +605,7 @@ test-upload-flow:
     -   echo "Sleeping for 10 seconds before retrying"
     -   sleep 10
     - done
-    - echo "Successful triggered test upload - https://code.pan.run/xsoar/content/-/pipelines/$pipeline_id"  # disable-secrets-detection
+    - echo "Successful triggered test upload - ${CI_SERVER_URL}/${CI_PROJECT_NAMESPACE}/content/-/pipelines/$pipeline_id"  # disable-secrets-detection
     - section_end "Trigger Test Upload Flow On Testing Branch"
 
     - section_start "Wait For Upload To Finish"
