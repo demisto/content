@@ -283,7 +283,7 @@ def main():
                             f' contribution, please ask the reviewer to update your information in the pack contributors file.' \
                             f' See more information here [link](https://xsoar.pan.dev/docs/packs/packs-format#contributorsjson)'
     else:
-        contributors_body = f'Hi @{pr.user.login}, Thanks for contributing to a Cortex XSOAR supported pack. To receive ' \
+        contributors_body = f'Hi @{pr.user.login}, thanks for contributing to a Cortex XSOAR supported pack. To receive ' \
                         f'credit for your generous contribution please follow this [link]' \
                         f'(https://xsoar.pan.dev/docs/packs/packs-format#contributorsjson).'
     if XSOAR_SUPPORT_LEVEL_LABEL in labels_to_add and ver != '1.0.0':
