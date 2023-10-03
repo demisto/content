@@ -1442,7 +1442,7 @@ script:
     outputs:
     - contextPath: Akamai.Enrollment.Changes
       description: Akamai Enrollment Changes
-      type: dictionary
+      type: Dictionary
   - arguments:
     - description: ' Enrollment path found in the pending change location field'
       name: enrollment_path
