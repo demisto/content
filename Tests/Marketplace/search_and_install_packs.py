@@ -36,7 +36,7 @@ PACK_PATH_VERSION_REGEX = re.compile(fr'^{GCPConfig.PRODUCTION_STORAGE_BASE_PATH
 WLM_TASK_FAILED_ERROR_CODE = 101704
 
 GITLAB_SESSION = Session()
-CONTENT_PROJECT_ID = "2596"
+CONTENT_PROJECT_ID = os.getenv('CI_PROJECT_ID', '2596')  # the default is the id of the content repo in code.pan.run
 PACKS_DIR = "Packs"
 PACK_METADATA_FILE = Pack.USER_METADATA
 GITLAB_PACK_METADATA_URL = f'{{gitlab_url}}/api/v4/projects/{CONTENT_PROJECT_ID}/repository/files/{PACKS_DIR}%2F{{pack_id}}%2F{PACK_METADATA_FILE}'  # noqa: E501
