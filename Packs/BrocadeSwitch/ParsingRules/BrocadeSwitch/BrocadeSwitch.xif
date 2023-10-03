@@ -1,7 +1,21 @@
 [INGEST:vendor="brocade", product="switch", target_dataset="brocade_switch_raw", no_hit = keep]
-// Support only date time of format: MMM dd hh:mm:ss. For example: Jan 01 10:00:00
-filter _raw_log ~= "\>\s*[A-Za-z]+\s+\d+\s+\d+\:\d+\:\d+"
-| alter tmp_event_time = arrayindex(regextract(_raw_log ,"\>\s*([A-Za-z]+\s+\d+\s+\d+\:\d+\:\d+)\s+"),0),
-    tmp_year = format_timestamp("%Y",_insert_time )
-| alter _time = parse_timestamp("%b %d %H:%M:%S %Y",concat(tmp_event_time, " ", tmp_year ))
-| fields - tmp_event_time, tmp_year;
+// Supports Legacy RFC 3164 compatible timestamps format: "MMM dd HH:MM:SS" . For example: "Oct 03 19:25:34"
+filter _raw_log ~= "\>\s*\w+\s+\d+\s+\d+\:\d+\:\d+"
+| alter  
+    // Extract timestamp from the raw log 
+    tmp_raw_timestamp = arrayindex(regextract(_raw_log ,"\>\s*(\w+\s+\d+\s+\d+\:\d+\:\d+)\s+"), 0),
+
+    // RFC 3164 timestamps lack the year, so default to the current year 
+    tmp_current_year = arrayindex(regextract(to_string(current_time()), "\d{4}"), 0)
+
+// Format timestamp string with current year inserted
+| alter tmp_timestamp_string = format_string("%s %s", tmp_current_year, tmp_raw_timestamp)
+
+// Convert the timestamp string representation to a datetime object 
+| alter tmp_time = parse_timestamp("%Y %b %d %H:%M:%S", tmp_timestamp_string)
+
+// if calculated time is in the future (due to year transition during log ingestion), then fallback to previous year
+| alter _time = if(  
+    tmp_time < current_time(), tmp_time, 
+    parse_timestamp("%Y %b %d %H:%M:%S", format_string("%s %s", to_string(subtract(to_integer(tmp_current_year), 1)), tmp_raw_timestamp)))
+| fields - tmp*;
