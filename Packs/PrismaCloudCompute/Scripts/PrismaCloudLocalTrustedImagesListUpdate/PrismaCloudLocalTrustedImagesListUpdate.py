@@ -16,6 +16,20 @@ def get_list_if_exist(list_name: str) -> tuple[bool, dict]:
     return True, current_list
 
 
+def get_list_from_args(list_from_args: Optional[Union[str, dict, list]] = None) -> list:
+    """
+    Gets an input and returns it in a list format.
+    """
+    if not list_from_args:
+        return []
+
+    if isinstance(list_from_args, str):
+        list_from_args = json.loads(list_from_args)
+    if isinstance(list_from_args, dict):
+        list_from_args = [list_from_args]
+    return list_from_args
+
+
 def update_dict_from_images(current_dict: Dict[str, str], deployed_images: list, passed_ci_scan_images: list) -> Dict[str, str]:
     """
     Update the trusted images dict with the latest images from Prisma Cloud Compute commands outputs provided.
@@ -34,7 +48,7 @@ def update_dict_from_images(current_dict: Dict[str, str], deployed_images: list,
     return current_dict
 
 
-def remove_expired_images(current_dict: Dict[str, str], time_frame: datetime):
+def remove_expired_images(current_dict: Dict[str, str], time_frame: datetime) -> dict:
     """
     Return only images that haven't expired from the trusted images dict.
     """
@@ -44,7 +58,7 @@ def remove_expired_images(current_dict: Dict[str, str], time_frame: datetime):
     return updated_dict
 
 
-def create_update_list(list_name: str, list_content: Dict[str, str], is_list_exist: bool) -> CommandResults:
+def create_update_list(list_name: str, list_content: Dict[str, str], is_list_exist: bool) -> str:
     """
     Creates or updates a list on XSOAR.
     """
@@ -57,31 +71,25 @@ def create_update_list(list_name: str, list_content: Dict[str, str], is_list_exi
         raise get_error(res)
 
     response = res[0]['Contents']
-    readable_output = f'List {list_name} {"Updated" if is_list_exist else "Created"} Successfully.'
-
-    return CommandResults(readable_output=readable_output)
+    return f'List {list_name} {"Updated" if is_list_exist else "Created"} Successfully.'
 
 
-def update_local_trusted_images(args: Dict[str, Any]):
+def update_local_trusted_images(args: Dict[str, Any]) -> CommandResults:
     """
     Updates the local trusted images list with latest images from Prisma Cloud Compute.
     """
     list_name = args['list_name']
     is_list_exist, current_dict = get_list_if_exist(list_name)
 
-    deployed_images = args.get('deployed_images') or []
-    if isinstance(deployed_images, dict):
-        deployed_images = [deployed_images]
-    passed_ci_scan_images = args.get('passed_ci_scan_images') or []
-    if isinstance(passed_ci_scan_images, dict):
-        passed_ci_scan_images = [passed_ci_scan_images]
+    deployed_images = get_list_from_args(args.get('deployed_images'))
+    passed_ci_scan_images = get_list_from_args(args.get('passed_ci_scan_images'))
     current_dict = update_dict_from_images(current_dict, deployed_images, passed_ci_scan_images)
 
     time_frame = dateparser.parse(args.get('time_frame', '24 hours'))
     updated_dict = remove_expired_images(current_dict, time_frame)
 
     result = create_update_list(list_name, updated_dict, is_list_exist)
-    return result
+    return CommandResults(readable_output=result)
 
 
 def main():
