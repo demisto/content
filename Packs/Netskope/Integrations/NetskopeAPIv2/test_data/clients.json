@@ -1,0 +1,27 @@
+{
+    "schemas": [
+        "urn:ietf:params:scim:api:messages:2.0:ListResponse"
+    ],
+    "totalResults": 2,
+    "Resources": [
+        {
+            "id": "TESTXSOAR",
+            "externalId": "User-Ext_id",
+            "userName": "upn1",
+            "active": true,
+            "name": {
+                "givenName": "first_name",
+                "familyName": "last_name"
+            },
+            "emails": [
+                {
+                    "type": "work",
+                    "value": "example@tal.gu",
+                    "primary": true
+                }
+            ]
+        }
+    ],
+    "itemsPerPage": 2,
+    "startIndex": 1
+}

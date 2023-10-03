@@ -276,8 +276,8 @@
             }
         }
     },
-    "name": "Netskope Mapper",
     "type": "mapping-incoming",
+    "name": "Netskope Mapper",
     "version": -1,
     "fromVersion": "6.2.0"
 }
