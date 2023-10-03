@@ -193,7 +193,7 @@ try:
     import requests
     from requests.adapters import HTTPAdapter
     from urllib3.util import Retry
-    from typing import Optional, Dict, List, Any, Union, Set
+    from typing import Optional, Dict, List, Any, Union, Set, overload, Literal
     
     from urllib3 import disable_warnings
     disable_warnings()
@@ -6239,41 +6239,90 @@ class IndicatorsTimeline:
         self.indicators_timeline = timelines
 
 
-def arg_to_number(arg, arg_name=None, required=False):
-    # type: (Any, Optional[str], bool) -> Optional[int]
-    """Converts an XSOAR argument to a Python int
+# @overload
+# def arg_to_number(arg, arg_name=None, required=False):
+#     # type: (Any, Optional[str], bool) -> Optional[int]
+#     """Converts an XSOAR argument to a Python int
 
-    This function is used to quickly validate an argument provided to XSOAR
-    via ``demisto.args()`` into an ``int`` type. It will throw a ValueError
-    if the input is invalid. If the input is None, it will throw a ValueError
-    if required is ``True``, or ``None`` if required is ``False.
+#     This function is used to quickly validate an argument provided to XSOAR
+#     via ``demisto.args()`` into an ``int`` type. It will throw a ValueError
+#     if the input is invalid. If the input is None, it will throw a ValueError
+#     if required is ``True``, or ``None`` if required is ``False.
 
-    :type arg: ``Any``
-    :param arg: argument to convert
+#     :type arg: ``Any``
+#     :param arg: argument to convert
 
-    :type arg_name: ``str``
-    :param arg_name: argument name
+#     :type arg_name: ``str``
+#     :param arg_name: argument name
 
-    :type required: ``bool``
-    :param required:
-        throws exception if ``True`` and argument provided is None
+#     :type required: ``bool``
+#     :param required:
+#         throws exception if ``True`` and argument provided is None
 
-    :return:
-        returns an ``int`` if arg can be converted
-        returns ``None`` if arg is ``None`` and required is set to ``False``
-        otherwise throws an Exception
-    :rtype: ``Optional[int]``
-    """
+#     :return:
+#         returns an ``int`` if arg can be converted
+#         returns ``None`` if arg is ``None`` and required is set to ``False``
+#         otherwise throws an Exception
+#     :rtype: ``Optional[int]``
+#     """
 
+#     if arg is None or arg == '':
+#         if required is True:
+#             if arg_name:
+#                 raise ValueError('Missing "{}"'.format(arg_name))
+#             else:
+#                 raise ValueError('Missing required argument')
+
+#         return None
+
+#     arg = encode_string_results(arg)
+
+#     if isinstance(arg, str):
+#         if arg.isdigit():
+#             return int(arg)
+
+#         try:
+#             return int(float(arg))
+#         except Exception:
+#             if arg_name:
+#                 raise ValueError('Invalid number: "{}"="{}"'.format(arg_name, arg))
+#             else:
+#                 raise ValueError('"{}" is not a valid number'.format(arg))
+#     if isinstance(arg, int):
+#         return arg
+
+#     if arg_name:
+#         raise ValueError('Invalid number: "{}"="{}"'.format(arg_name, arg))
+#     else:
+#         raise ValueError('"{}" is not a valid number'.format(arg))
+
+
+@overload
+def arg_to_number(arg, arg_name=None) -> int:
+    # Implementation without required parameter
+    return arg_to_number(arg, arg_name=None, required=True)
+
+
+@overload
+def arg_to_number(arg, required: Literal[True], arg_name=None) -> int:
     if arg is None or arg == '':
-        if required is True:
-            if arg_name:
-                raise ValueError('Missing "{}"'.format(arg_name))
-            else:
-                raise ValueError('Missing required argument')
+        if arg_name:
+            raise ValueError('Missing "{}"'.format(arg_name))
+        else:
+            raise ValueError('Missing required argument')
 
+    return shared_code(arg, arg_name)
+
+
+@overload
+def arg_to_number(arg, required: Literal[False], arg_name=None) -> Optional[int]:
+    if arg is None or arg == '':
         return None
 
+    return shared_code(arg, arg_name)
+   
+
+def shared_code(arg, arg_name) -> int:
     arg = encode_string_results(arg)
 
     if isinstance(arg, str):
