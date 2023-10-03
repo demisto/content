@@ -267,13 +267,13 @@ def main():
         args: dict = demisto.args()
         params: dict = demisto.params()
         # There're several options for tenant_id & auth_and_token_url due to the recent credentials set supoort enhancment.
-        tenant_id: str = params.get('tenant_id', '') \
+        tenant_id: str = params.get('creds_tenant_id', {}).get('password', '') \
             or params.get('_tenant_id', '') \
-            or params.get('creds_tenant_id', {}).get('password', '')
-        auth_and_token_url: str = params.get('auth_id', '') \
+            or params.get('tenant_id', '')
+        auth_and_token_url: str = params.get('creds_auth_id', {}).get('password', '') \
             or params.get('_auth_id', '') \
-            or params.get('creds_auth_id', {}).get('password', '')
-        enc_key: str = params.get('enc_key', '') or (params.get('credentials') or {}).get('password', '')
+            or params.get('auth_id', '')
+        enc_key: str = (params.get('credentials') or {}).get('password', '') or params.get('enc_key', '')
         server = params.get('url', '')
         base_url: str = urljoin(server, '/v1.0')
         endpoint = GRAPH_BASE_ENDPOINTS.get(server, 'com')
