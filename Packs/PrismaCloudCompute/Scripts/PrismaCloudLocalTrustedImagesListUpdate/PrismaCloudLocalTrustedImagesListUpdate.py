@@ -16,7 +16,7 @@ def get_list_if_exist(list_name: str) -> tuple[bool, dict]:
     return True, current_list
 
 
-def get_list_from_args(list_from_args: Optional[Union[str, dict, list]] = None) -> list:
+def get_list_from_args(list_from_args: Optional[Union[str, dict, list]] = None):
     """
     Gets an input and returns it in a list format.
     """
@@ -70,7 +70,6 @@ def create_update_list(list_name: str, list_content: Dict[str, str], is_list_exi
     if is_error(res):
         raise get_error(res)
 
-    response = res[0]['Contents']
     return f'List {list_name} {"Updated" if is_list_exist else "Created"} Successfully.'
 
 
@@ -85,7 +84,7 @@ def update_local_trusted_images(args: Dict[str, Any]) -> CommandResults:
     passed_ci_scan_images = get_list_from_args(args.get('passed_ci_scan_images'))
     current_dict = update_dict_from_images(current_dict, deployed_images, passed_ci_scan_images)
 
-    time_frame = dateparser.parse(args.get('time_frame', '24 hours'))
+    time_frame: datetime = dateparser.parse(args.get('time_frame', '24 hours'))  # type: ignore[assignment]
     updated_dict = remove_expired_images(current_dict, time_frame)
 
     result = create_update_list(list_name, updated_dict, is_list_exist)

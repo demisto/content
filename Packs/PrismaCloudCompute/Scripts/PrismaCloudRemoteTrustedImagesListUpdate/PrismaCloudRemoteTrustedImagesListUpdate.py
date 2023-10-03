@@ -27,7 +27,7 @@ def current_remote_images_same_as_local(remote_images, local_images):
 
 def update_group_from_images(remote_trusted_images: Dict[str, Any], current_trusted_images: list, trusted_group_id: str) -> bool:
     """
-    Update the remote trused images group with latest images from local source.
+    Update the remote trusted images group with latest images from local source.
     """
     for group in remote_trusted_images['groups']:
         if group['_id'] == trusted_group_id:
@@ -35,6 +35,9 @@ def update_group_from_images(remote_trusted_images: Dict[str, Any], current_trus
                 return False
             group['images'] = current_trusted_images
             return True
+
+    raise DemistoException(f'Group {trusted_group_id} was not found '
+                           f'in the given Prisma Cloud Compute trusted images groups list.')
 
 
 def update_remote_list(current_dict):
@@ -56,7 +59,12 @@ def update_remote_trusted_images(args: Dict[str, Any]):
     local_trusted_images = list((get_xsoar_list(list_name)).keys())
 
     remote_trusted_images = args.get('current_trusted_images')
-    trusted_group_id = args.get('trusted_group_id')
+    if isinstance(remote_trusted_images, str):
+        remote_trusted_images = json.loads(remote_trusted_images)
+    if isinstance(remote_trusted_images, dict):
+        remote_trusted_images = [remote_trusted_images]
+
+    trusted_group_id = str(args.get('trusted_group_id'))
 
     update_remote = update_group_from_images(remote_trusted_images, local_trusted_images, trusted_group_id)
     if update_remote:
