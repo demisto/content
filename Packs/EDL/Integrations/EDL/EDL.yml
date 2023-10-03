@@ -114,6 +114,14 @@ configuration:
   section: Collect
   advanced: true
   required: false
+- additionalinfo: If selected, it will force the list to contain only ASCII chars (non ascii URLs will be dropped).
+  defaultvalue: 'false'
+  display: Enforce ASCII only
+  name: enforce_ascii
+  type: 8
+  section: Collect
+  advanced: true
+  required: false
 - display: Prepend string to list
   name: prepend_string
   type: 12
