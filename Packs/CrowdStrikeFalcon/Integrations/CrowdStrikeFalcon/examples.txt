@@ -23,3 +23,7 @@ cs-falcon-ods-create-scheduled-scan host_groups=7471ba0636b34cbb8c65fae7979a6a9b
 cs-falcon-ods-query-scan-host filter="scan_id:[\"123456789\",\"987654321\"]"
 cs-falcon-ods-query-malicious-files hash=1a1eb17d1f9e4d82a9e8ba73d1095593,2e99e4fc7a4f4b1e9254e0af210a6994 offset=10 limit=50
 cs-falcon-ods-delete-scheduled-scan ids=9acf0c069d3d4a5b82badb170966e77c
+cs-falcon-cspm-list-policy-details policy_ids=1,2
+cs-falcon-cspm-list-service-policy-settings limit=2
+cs-falcon-cspm-update-policy_settings policy_id=1 enabled=true regions="eu-central-1,eu-central-2" severity=high tag_excluded=false
+cs-falcon-resolve-identity-detection ids="id_1,id_2" add_tag="Demo tag" append_comment="Demo comment" assign_to_name="morganf" show_in_ui=true update_status=in_progress
