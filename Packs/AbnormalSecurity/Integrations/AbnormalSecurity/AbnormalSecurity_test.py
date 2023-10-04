@@ -164,8 +164,8 @@ def test_get_a_list_of_vendors_command(mocker):
     """
     client = mock_client(mocker, util_load_json('test_data/test_get_a_list_of_vendors.json'))
     results = get_a_list_of_vendors_command(client, {})
-    assert results.outputs.get('vendors')[0].get('vendorDomain') == 'test-domain-1.com'
-    assert results.outputs_prefix == 'AbnormalSecurity'
+    assert results.outputs[0].get('vendorDomain') == 'test-domain-1.com'
+    assert results.outputs_prefix == 'AbnormalSecurity.VendorsList'
 
 
 def test_get_the_details_of_a_specific_vendor_command(mocker):
@@ -207,8 +207,8 @@ def test_get_a_list_of_vendor_cases_command(mocker):
     """
     client = mock_client(mocker, util_load_json('test_data/test_get_a_list_of_vendor_cases.json'))
     results = get_a_list_of_vendor_cases_command(client, {})
-    assert results.outputs.get('vendorCases')[0].get('vendorCaseId') == 123
-    assert results.outputs_prefix == 'AbnormalSecurity'
+    assert results.outputs[0].get('vendorCaseId') == 123
+    assert results.outputs_prefix == 'AbnormalSecurity.VendorCases'
 
 
 def test_get_the_details_of_a_vendor_case_command(mocker):
