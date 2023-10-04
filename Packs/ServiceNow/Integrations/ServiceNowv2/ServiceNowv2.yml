@@ -1571,7 +1571,7 @@ script:
       - PATCH
       - DELETE
       required: true
-    - description: the API path starting with forward slash (/).
+    - description: the API path (without a leading forward slash '/').
       name: path
       required: true
     - description: data to send in body, can be json.
