@@ -2,10 +2,8 @@ from CommonServerPython import *
 
 ''' IMPORTS '''
 import requests
-import base64
 from datetime import datetime, timezone
 import urllib3
-from typing import Dict
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -79,8 +77,9 @@ class Client(BaseClient):
                 response_json = response.json()
                 return response_json['data']
 
-            except (Exception,) as e:
+            except Exception:
                 pass
+        return None
 
 
 def validate_input(args, is_iocs=False):
@@ -132,14 +131,14 @@ def validate_input(args, is_iocs=False):
             if _start_date > _end_date:
                 raise ValueError(f"Start date {args.get('start_date')} cannot be after end date {args.get('end_date')}")
 
-        return None
+        return
     except Exception as e:
-        demisto.error("Exception with validating inputs [{}]".format(e))
+        demisto.error(f"Exception with validating inputs [{e}]")
         raise e
 
 
 def alert_input_structure(input_params):
-    input_params_alerts: Dict[str, Any] = {
+    input_params_alerts: dict[str, Any] = {
         "orderBy": [
             {
                 "created_at": input_params['order_by']
@@ -219,14 +218,13 @@ def format_incidents(alerts, hide_cvv_expiry):
     :param alerts events fetched from the server
     :return: incidents to feed into XSOAR
     """
-    events: List[Dict[str, Any]] = []
+    events: List[dict[str, Any]] = []
     try:
         for alert in alerts:
 
-            if hide_cvv_expiry:
-                if alert['service'] == 'compromised_cards':
-                    alert['data_message']['data']['bank']['card']['cvv'] = "xxx"
-                    alert['data_message']['data']['bank']['card']['expiry'] = "xx/xx/xxxx"
+            if hide_cvv_expiry and alert['service'] == 'compromised_cards':
+                alert['data_message']['data']['bank']['card']['cvv'] = "xxx"
+                alert['data_message']['data']['bank']['card']['expiry'] = "xx/xx/xxxx"
 
             alert_details = {
                 "name": "Cyble Vision Alert on {}".format(alert['service']),
@@ -244,8 +242,8 @@ def format_incidents(alerts, hide_cvv_expiry):
 
         return events
     except Exception as e:
-        demisto.debug('Unable to format incidents, error: {}'.format(e))
-        raise Exception("Error: [{}] for response [{}]".format(e, alerts))
+        demisto.debug(f'Unable to format incidents, error: {e}')
+        raise Exception(f"Error: [{e}] for response [{alerts}]")
 
 
 def fetch_service_details(client, base_url, token):
@@ -358,7 +356,7 @@ def cyble_events(client, method, token, url, args, base_url, last_run, hide_cvv_
 
         timestamp = alert['created_at']
 
-        if timestamp in timestamp_count.keys():
+        if timestamp in timestamp_count:
             timestamp_count[timestamp] += 1
         else:
             timestamp_count[timestamp] = 1
@@ -471,8 +469,6 @@ def update_remote_system(client, method, token, args, url):
 
         set_request(client, method, token, body, url)
 
-    return None
-
 
 def get_mapping_fields(client, token, url):
     """
@@ -505,7 +501,7 @@ def get_mapping_fields(client, token, url):
     fields = {}
 
     for alert in alerts:
-        for key in alert.keys():
+        for key in alert:
             fields[key] = alert[key]
 
     incident_type_scheme = SchemeTypeMapping(type_name='cyble_outgoing_mapper')
@@ -558,7 +554,7 @@ def cyble_alert_group(client, method, token, url, args):
 
     """
 
-    input_params_alerts_group: Dict[str, Any] = {
+    input_params_alerts_group: dict[str, Any] = {
         "orderBy": [
             {
                 "created_at": args.get('order_by', "asc")
@@ -666,11 +662,11 @@ def cyble_fetch_iocs(client, method, token, args, url):
                              'risk_rating': "{}".format(ioc['risk_rating']),
                              'confident_rating': "{}".format(ioc['confident_rating']),
                              'ioc_type': "{}".format(ioc['ioc_type']['name']),
-                             'attack': "{}".format(lst_attack),
-                             'tags': "{}".format(lst_tags)
+                             'attack': f"{lst_attack}",
+                             'tags': f"{lst_tags}"
                              })
     except Exception as e:
-        raise Exception("Error: [{}] for response [{}]".format(e, iocs))
+        raise Exception(f"Error: [{e}] for response [{iocs}]")
 
     markdown = tableToMarkdown('Indicator of Compromise:', lst_iocs, )
 

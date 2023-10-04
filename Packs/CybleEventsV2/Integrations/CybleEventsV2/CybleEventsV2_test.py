@@ -10,7 +10,6 @@ You must add at least a Unit Test function for every XSOAR command
 you are implementing with your integration
 """
 
-import io
 import json
 from datetime import datetime, timezone, timedelta
 
@@ -20,7 +19,7 @@ import demistomock as demisto
 
 
 def util_load_json(path):
-    with io.open("test_data/" + path, mode='r', encoding='utf-8') as f:
+    with open("test_data/" + path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -221,10 +220,9 @@ def test_limit_cyble_vision_fetch_detail(requests_mock, capfd, offset, limit):
 
     url = "https://test.com/apollo/api/v1/y/alerts"
 
-    with capfd.disabled():
-        with pytest.raises(ValueError,
-                           match=f"The limit argument should contain a positive number, up to 1000, limit: {limit}"):
-            cyble_events(client, 'POST', "some_random_token", url, args, "https://test.com", {}, True)
+    with capfd.disabled(), pytest.raises(ValueError,
+                                         match=f"The limit argument should contain a positive number, up to 1000, limit: {limit}"):
+        cyble_events(client, 'POST', "some_random_token", url, args, "https://test.com", {}, True)
 
 
 def test_limit_validate_input(capfd):
@@ -236,11 +234,10 @@ def test_limit_validate_input(capfd):
         'from': '0',
         'limit': '-1',
     }
-    with capfd.disabled():
-        with pytest.raises(ValueError,
-                           match=f"The limit argument should contain a positive number,"
-                                 f" up to 1000, limit: {args.get('limit', '50')}"):
-            validate_input(args=args)
+    with capfd.disabled(), pytest.raises(ValueError,
+                                         match=f"The limit argument should contain a positive number,"
+                                         f" up to 1000, limit: {args.get('limit', '50')}"):
+        validate_input(args=args)
 
 
 def test_limit_validate_ioc_input(capfd):
@@ -252,11 +249,10 @@ def test_limit_validate_ioc_input(capfd):
         'from': '0',
         'limit': '-1',
     }
-    with capfd.disabled():
-        with pytest.raises(ValueError,
-                           match=f"The limit argument should contain a positive number, "
-                                 f"up to 1000, limit: {args.get('limit', '50')}"):
-            validate_input(args=args, is_iocs=True)
+    with capfd.disabled(), pytest.raises(ValueError,
+                                         match=f"The limit argument should contain a positive number, "
+                                         f"up to 1000, limit: {args.get('limit', '50')}"):
+        validate_input(args=args, is_iocs=True)
 
 
 def test_datecheck_validate_input(capfd):
@@ -269,11 +265,10 @@ def test_datecheck_validate_input(capfd):
         'limit': '1'
     }
 
-    with capfd.disabled():
-        with pytest.raises(ValueError,
-                           match=f"Start date {args.get('start_date')} cannot "
-                                 f"be after end date {args.get('end_date')}"):
-            validate_input(args=args, is_iocs=True)
+    with capfd.disabled(), pytest.raises(ValueError,
+                                         match=f"Start date {args.get('start_date')} cannot "
+                                         f"be after end date {args.get('end_date')}"):
+        validate_input(args=args, is_iocs=True)
 
 
 def test_edate_validate_input(capfd):
@@ -289,7 +284,7 @@ def test_edate_validate_input(capfd):
     with capfd.disabled():
         with pytest.raises(ValueError) as excinfo:
             validate_input(args=args)
-        assert str("End date must be a date before or equal to") in str(excinfo)
+        assert "End date must be a date before or equal to" in str(excinfo)
 
 
 def test_date_validate_input(capfd):
@@ -305,7 +300,7 @@ def test_date_validate_input(capfd):
     with capfd.disabled():
         with pytest.raises(ValueError) as excinfo:
             validate_input(args=args)
-        assert str("cannot be after end date") in str(excinfo)
+        assert "cannot be after end date" in str(excinfo)
 
 
 def test_offset_cyble_vision_fetch_detail(requests_mock, capfd):
@@ -340,10 +335,9 @@ def test_offset_cyble_vision_fetch_detail(requests_mock, capfd):
     url = "https://test.com/apollo/api/v1/y/alerts"
     base_url = "https://test.com"
 
-    with capfd.disabled():
-        with pytest.raises(ValueError,
-                           match="The parameter from has a negative value, from: -1'"):
-            cyble_events(client, 'POST', "some_random_token", url, args, base_url, {}, True)
+    with capfd.disabled(), pytest.raises(ValueError,
+                                         match="The parameter from has a negative value, from: -1'"):
+        cyble_events(client, 'POST', "some_random_token", url, args, base_url, {}, True)
 
 
 def test_get_alert_fetch(requests_mock):
@@ -416,7 +410,7 @@ def test_data_alert_invalidate_date(capfd):
     with capfd.disabled():
         with pytest.raises(ValueError) as excinfo:
             validate_input(args=args)
-        assert str("does not match format") in str(excinfo)
+        assert "does not match format" in str(excinfo)
 
 
 def test_data_alert_iocs_date(capfd):
@@ -432,7 +426,7 @@ def test_data_alert_iocs_date(capfd):
     with capfd.disabled():
         with pytest.raises(ValueError) as excinfo:
             validate_input(args=args, is_iocs=True)
-        assert str("unconverted data remains") in str(excinfo)
+        assert "unconverted data remains" in str(excinfo)
 
 
 def test_get_subscribed_services_for_other_alert(requests_mock):
