@@ -2,7 +2,7 @@ import json
 import time
 import copy
 from unittest.mock import MagicMock, patch
-
+from datetime import datetime
 import pytest
 
 from Devo_v2 import (
@@ -240,14 +240,30 @@ def test_time_range():
     time_from_string_ts = 1578619830
     time_to_string = "2020-01-10T02:30:30"
     time_to_string_ts = 1578623430
+    future_timestamp = 2862390524
+    # Test Unix timestamp input
     assert get_time_range(time_from, None)[0] == time_from
     assert get_time_range(time_from, time_to)[1] == time_to
     assert get_time_range(str(time_from), None)[0] == time_from
     assert get_time_range(str(time_from), str(time_to))[1] == time_to
+    # Test natural language input
     assert get_time_range("1 minute", None)[0] - time_from < abs(tolerance)
     assert get_time_range("2 minute", None)[0] <= time_from
+    # Test string datetime input
     assert get_time_range(time_from_string, None)[0] - time_from_string_ts < abs(tolerance)
     assert get_time_range(time_from_string, time_to_string)[1] - time_to_string_ts < abs(tolerance)
+    # Test Python datetime object input
+    dt_from = datetime.fromtimestamp(time_from)
+    assert abs(get_time_range(dt_from, None)[0] - time_from) < tolerance
+    # Additional test for Python datetime object input
+    dt_additional = datetime.now()
+    assert get_time_range(dt_additional, None)[0] == dt_additional.timestamp()
+    # Negative test for future timestamp
+    try:
+        get_time_range(future_timestamp, None)[0]
+    except ValueError as exc:
+        error_msg = str(exc)
+        assert 'Date should not be greater than current time' in error_msg
 
 
 @patch("Devo_v2.READER_ENDPOINT", MOCK_READER_ENDPOINT, create=True)
