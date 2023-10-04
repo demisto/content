@@ -1,13 +1,13 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-from typing import Dict, List, Any
+from typing import Any
 import traceback
 
 
 ''' STANDALONE FUNCTION '''
 
 
-def panorama_search_policy_command(args: Dict[str, Any]) -> List:
+def panorama_search_policy_command(args: Dict[str, Any]) -> list:
     """Takes rule_name and returns output of !pan-os-list-rules or null message.
 
     Args:
