@@ -10,7 +10,7 @@ enabled: true
 args:
 - name: list_name
   required: true
-  description: The name of the XSOAR internal list we wish to use in order to update the remote trust images list.
+  description: The name of the Cortex XSOAR internal list to use in order to update the remote trust images list.
 - name: trusted_group_id
   required: true
   description: The trusted group which should be updated with the images of the given list. In order to get the trusted groups ID, either use the Prisma Cloud UI (the ID would be the group name) or use the "prisma-cloud-compute-trusted-images-get" command.
