@@ -3206,7 +3206,7 @@ def get_remote_incident_data(client: Client, remote_incident_id: str):
     )  # a list with one dict in it
     mirrored_data = mirrored_data_list[0]
 
-    mirrored_data["incident_type"] = "incident"
+    mirrored_data["incident_type"] = "SentinelOne Incident"
     return mirrored_data
 
 
