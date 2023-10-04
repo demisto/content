@@ -94,7 +94,7 @@ class TestHttpRequest:
             client.http_request('suffix', requests_kwargs={})
         assert e.value.message == f'Could not parse json out of {text}'
         assert e.value.res.status_code == 200
-        assert isinstance(e.value.exception, (requests.exceptions.JSONDecodeError, json.decoder.JSONDecodeError))
+        assert isinstance(e.value.exception, requests.exceptions.JSONDecodeError | json.decoder.JSONDecodeError)
 
 
 class TestGetRequestsKwargs:
@@ -190,7 +190,7 @@ class TestCreateFile:
 
     @staticmethod
     def get_file(path):
-        with open(path, 'r') as _file:
+        with open(path) as _file:
             return _file.read()
 
     @staticmethod
@@ -673,10 +673,10 @@ class TestCommands:
         mocker.patch.object(demisto, 'getIntegrationContext', return_value={'ts': 1591142400000})
         mocker.patch.object(demisto, 'createIndicators')
         mocker.patch.object(demisto, 'searchIndicators', return_value={})
-        xdr_res = {'reply': list(map(lambda xdr_ioc: xdr_ioc[0], TestXDRIOCToDemisto.data_test_xdr_ioc_to_demisto))}
+        xdr_res = {'reply': [xdr_ioc[0] for xdr_ioc in TestXDRIOCToDemisto.data_test_xdr_ioc_to_demisto]}
         mocker.patch.object(Client, 'http_request', return_value=xdr_res)
         get_changes(client)
-        xdr_ioc_to_timeline(list(map(lambda x: str(x[0].get('RULE_INDICATOR')), TestXDRIOCToDemisto.data_test_xdr_ioc_to_demisto)))    # noqa: E501
+        xdr_ioc_to_timeline([str(x[0].get('RULE_INDICATOR')) for x in TestXDRIOCToDemisto.data_test_xdr_ioc_to_demisto])    # noqa: E501
 
 
 class TestParams:
@@ -724,7 +724,7 @@ class TestParams:
         Client.tag = demisto.params().get('feedTags', demisto.params().get('tag', Client.tag))
         Client.tlp_color = demisto.params().get('tlp_color')
         client = Client({'url': 'yana'})
-        xdr_res = {'reply': list(map(lambda xdr_ioc: xdr_ioc[0], TestXDRIOCToDemisto.data_test_xdr_ioc_to_demisto))}
+        xdr_res = {'reply': [xdr_ioc[0] for xdr_ioc in TestXDRIOCToDemisto.data_test_xdr_ioc_to_demisto]}
         mocker.patch.object(Client, 'http_request', return_value=xdr_res)
         get_changes(client)
         output = outputs.call_args.args[0]
