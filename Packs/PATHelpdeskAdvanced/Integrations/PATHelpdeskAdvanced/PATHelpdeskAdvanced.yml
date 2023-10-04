@@ -547,7 +547,7 @@ script:
       description: List of attachments for the ticket.
       type: string
     - contextPath: HelpdeskAdvanced.Ticket.AutEmailCounter
-      description: The aut email counter.
+      description: The AUT email counter.
       type: string
     - contextPath: HelpdeskAdvanced.Ticket.ContactID
       description: The contact ID of the ticket.
