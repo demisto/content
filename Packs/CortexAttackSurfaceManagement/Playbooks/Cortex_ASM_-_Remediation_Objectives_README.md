@@ -1,4 +1,4 @@
-Playbook that populates remediation objectives field that is used to display the remediation actions to the end user.
+Playbook that populates the remediation objectives field that is used to display the remediation actions to the end user.
 
 ## Dependencies
 
@@ -14,8 +14,8 @@ This playbook does not use any integrations.
 
 ### Scripts
 
-* GridFieldSetup
 * Set
+* GridFieldSetup
 
 ### Commands
 

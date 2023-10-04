@@ -1,11 +1,11 @@
 
 default:
-  image: ${DOCKER_IO}/devdemisto/gitlab-content-ci:1.0.0.64455
+  image: docker-io.art.code.pan.run/devdemisto/gitlab-content-ci:1.0.0.64455
   artifacts:
     expire_in: 30 days
     paths:
-      - ${CI_PROJECT_DIR}/artifacts/*
-      - ${CI_PROJECT_DIR}/pipeline_jobs_folder/*
+      - /builds/xsoar/content/artifacts/*
+      - /builds/xsoar/content/pipeline_jobs_folder/*
     when: always
 
 stages:
@@ -33,20 +33,20 @@ variables:
   STORAGE_BASE_PATH: ""
   SLACK_CHANNEL: "dmst-build-test"
   DEMISTO_README_VALIDATION: "true"
-  ARTIFACTS_FOLDER: "${CI_PROJECT_DIR}/artifacts"
-  PIPELINE_JOBS_FOLDER: "${CI_PROJECT_DIR}/pipeline_jobs_folder"
-  ARTIFACTS_FOLDER_XSOAR: "${CI_PROJECT_DIR}/artifacts/xsoar"
-  ARTIFACTS_FOLDER_MPV2: "${CI_PROJECT_DIR}/artifacts/marketplacev2"
-  ARTIFACTS_FOLDER_XPANSE: "${CI_PROJECT_DIR}/artifacts/xpanse"
-  ARTIFACTS_FOLDER_XSOAR_SAAS: "${CI_PROJECT_DIR}/artifacts/xsoar"
-  BASH_ENV: "${CI_PROJECT_DIR}/artifacts/bash_env"
-  PYTHONPATH: "${CI_PROJECT_DIR}"
+  ARTIFACTS_FOLDER: "/builds/xsoar/content/artifacts"
+  PIPELINE_JOBS_FOLDER: "/builds/xsoar/content/pipeline_jobs_folder"
+  ARTIFACTS_FOLDER_XSOAR: "/builds/xsoar/content/artifacts/xsoar"
+  ARTIFACTS_FOLDER_MPV2: "/builds/xsoar/content/artifacts/marketplacev2"
+  ARTIFACTS_FOLDER_XPANSE: "/builds/xsoar/content/artifacts/xpanse"
+  ARTIFACTS_FOLDER_XSOAR_SAAS: "/builds/xsoar/content/artifacts/xsoar"
+  BASH_ENV: "/builds/xsoar/content/artifacts/bash_env"
+  PYTHONPATH: "/builds/xsoar/content"
   PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
   FEATURE_BRANCH_NAME: "v4.5.0"
   IFRA_ENV_TYPE: "Content-Env"
   GIT_DEPTH: 0
   GET_SOURCES_ATTEMPTS: 3  # see https://docs.gitlab.com/ee/ci/runners/configure_runners.html#job-stages-attempts
-  ENV_RESULTS_PATH: "${CI_PROJECT_DIR}/artifacts/env_results.json"
+  ENV_RESULTS_PATH: "/builds/xsoar/content/artifacts/env_results.json"
   GCS_PRODUCTION_BUCKET: "marketplace-dist"
   GCS_PRODUCTION_V2_BUCKET: "marketplace-v2-dist"
   GCS_PRODUCTION_XPANSE_BUCKET: "xpanse-dist"
@@ -60,17 +60,16 @@ variables:
   DEMISTO_SDK_GRAPH_FORCE_CREATE: "true"  # change this when the demisto-sdk update-graph command is stable
   DEMISTO_SDK_LOG_FILE_PATH: $ARTIFACTS_FOLDER/logs/demisto_sdk_debug.log
   CONTENT_GITLAB_CI: "true"
-  POETRY_VIRTUALENVS_OPTIONS_ALWAYS_COPY: "true"
-  FF_USE_FASTZIP: "true"
-  POETRY_VERSION: "1.6.1"
-  INSTALL_POETRY: "true"
-  DOCKER_IO: docker-io.art.code.pan.run
   JIRA_ISSUE_UNRESOLVED_TRANSITION_NAME: "Backlog"
   JIRA_PROJECT_ID: "CIAC"
   JIRA_SERVER_URL: "https://jira-hq.paloaltonetworks.local"
   JIRA_VERIFY_SSL: "False"
   # Jira additional fields are a json string that will be parsed into a dictionary containing the name of the field as the key and the value as a dictionary containing the value of the field.
   JIRA_ADDITIONAL_FIELDS: '{"customfield_17166":{"value": "IN"},"customfield_17167":{"value": "FALSE"},"customfield_17168":{"value": "Single"}}'
+  POETRY_VIRTUALENVS_OPTIONS_ALWAYS_COPY: "true"
+  FF_USE_FASTZIP: "true"
+  POETRY_VERSION: "1.6.1"
+  INSTALL_POETRY: "true"
 
 include:
   - local: .gitlab/ci/.gitlab-ci.global.yml
