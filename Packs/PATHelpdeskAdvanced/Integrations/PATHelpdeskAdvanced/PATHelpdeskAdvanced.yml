@@ -540,61 +540,61 @@ script:
       description: The ID of the ticket to change status for.
       required: true
     outputs:
-    - contextPath: HelpdeskAdvanced.Ticket.AccountID
+    - contextPath: HelpdeskAdvanced.TicketHistory.AccountID
       description: The account ID of the ticket.
       type: string
-    - contextPath: HelpdeskAdvanced.Ticket.Attachments
+    - contextPath: HelpdeskAdvanced.TicketHistory.Attachments
       description: List of attachments for the ticket.
       type: string
-    - contextPath: HelpdeskAdvanced.Ticket.AutEmailCounter
+    - contextPath: HelpdeskAdvanced.TicketHistory.AutEmailCounter
       description: The AUT email counter.
       type: string
-    - contextPath: HelpdeskAdvanced.Ticket.ContactID
+    - contextPath: HelpdeskAdvanced.TicketHistory.ContactID
       description: The contact ID of the ticket.
       type: string
-    - contextPath: HelpdeskAdvanced.Ticket.Data.Comment
+    - contextPath: HelpdeskAdvanced.TicketHistory.Data.Comment
       description: The comment text.
       type: string
-    - contextPath: HelpdeskAdvanced.Ticket.Data.Date
+    - contextPath: HelpdeskAdvanced.TicketHistory.Data.Date
       description: The date of the history entry.
       type: string
-    - contextPath: HelpdeskAdvanced.Ticket.Data.From
+    - contextPath: HelpdeskAdvanced.TicketHistory.Data.From
       description: The user who made the change.
       type: string
-    - contextPath: HelpdeskAdvanced.Ticket.Data.FromID
+    - contextPath: HelpdeskAdvanced.TicketHistory.Data.FromID
       description: The ID of the user who made the change.
       type: string
-    - contextPath: HelpdeskAdvanced.Ticket.Data.Problem
+    - contextPath: HelpdeskAdvanced.TicketHistory.Data.Problem
       description: The problem associated with the history entry.
       type: string
-    - contextPath: HelpdeskAdvanced.Ticket.Data.To
+    - contextPath: HelpdeskAdvanced.TicketHistory.Data.To
       description: The user/team the ticket was assigned to.
       type: string
-    - contextPath: HelpdeskAdvanced.Ticket.Data.ToID
+    - contextPath: HelpdeskAdvanced.TicketHistory.Data.ToID
       description: The ID of the user/team the ticket was assigned to.
       type: string
-    - contextPath: HelpdeskAdvanced.Ticket.ExternalAction
+    - contextPath: HelpdeskAdvanced.TicketHistory.ExternalAction
       description: The external action associated with the history entry.
       type: string
-    - contextPath: HelpdeskAdvanced.Ticket.FullName
+    - contextPath: HelpdeskAdvanced.TicketHistory.FullName
       description: The full name of the ticket.
       type: string
-    - contextPath: HelpdeskAdvanced.Ticket.HistoryID
+    - contextPath: HelpdeskAdvanced.TicketHistory.HistoryID
       description: The ID of the history entry.
       type: string
-    - contextPath: HelpdeskAdvanced.Ticket.OperationDescription
+    - contextPath: HelpdeskAdvanced.TicketHistory.OperationDescription
       description: The description of the operation.
       type: string
-    - contextPath: HelpdeskAdvanced.Ticket.OperationTypeID
+    - contextPath: HelpdeskAdvanced.TicketHistory.OperationTypeID
       description: The type ID of the operation.
       type: string
-    - contextPath: HelpdeskAdvanced.Ticket.UpdateDate
+    - contextPath: HelpdeskAdvanced.TicketHistory.UpdateDate
       description: The date the ticket was last updated.
       type: date
-    - contextPath: HelpdeskAdvanced.Ticket.UserID
+    - contextPath: HelpdeskAdvanced.TicketHistory.UserID
       description: The user ID of the ticket.
       type: string
-    - contextPath: HelpdeskAdvanced.Ticket.Username
+    - contextPath: HelpdeskAdvanced.TicketHistory.Username
       description: The username associated with the ticket.
       type: string
 
