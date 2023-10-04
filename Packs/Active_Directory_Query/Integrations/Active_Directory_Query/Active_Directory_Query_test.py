@@ -818,8 +818,7 @@ def test_test_credentials_command(mocker):
         The result returns with successful connection
     """
     import Active_Directory_Query
-    args = {'username': 'username_test_credentials', 'password': 'password_test_credentials',
-            'ntlm': 'true'}
+    args = {'username': 'username_test_credentials', 'password': 'password_test_credentials'}
     mocker.patch.object(demisto, 'args', return_value=args)
 
     class MockConnection:
