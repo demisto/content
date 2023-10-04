@@ -263,8 +263,7 @@ def get_sanitized_file_command():
         res = get_sanitized_file(scan_id)
         demisto.results(fileResult(filename=sanitized_file_name, data=res, file_type=EntryType.ENTRY_INFO_FILE))
     else:
-        myErrorText = "No sanitized file."
-        demisto.results({"Type": entryTypes["warning"], "ContentsFormat": formats["text"], "Contents": myErrorText})
+        demisto.results({"Type": entryTypes["warning"], "ContentsFormat": formats["text"], "Contents": "No sanitized file."})
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
