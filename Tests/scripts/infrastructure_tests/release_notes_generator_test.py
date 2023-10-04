@@ -703,7 +703,17 @@ class TestMergeVersionBlocks:
             "1.0.2", id="Merge combined notes with general notes."),
     ])
     def test_merge_rns_with_general_notes(self, pack_rns: dict, expected_rns: str, expected_version: str):
-
+        """
+        Given: Two consecutive versions of RNs.
+            - Case 1: Both containing general pack notes.
+            - Case 2: One contains a content entity change and one contains general pack notes.
+            - Case 3: One is combined (content entity change & general note) and one contains general pack notes.
+        When: Using merge_version_blocks function.
+        Then: Ensure that the merge was done correctly:
+            - General notes were merged and are on top.
+            - All other notes are also present.
+            - The latest version is as expected.
+        """
         merged_rn_block, latest_version = merge_version_blocks(pack_rns)
         assert merged_rn_block == expected_rns
         assert latest_version == expected_version
