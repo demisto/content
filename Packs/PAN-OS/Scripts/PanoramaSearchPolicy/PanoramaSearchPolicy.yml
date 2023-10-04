@@ -1,0 +1,22 @@
+args:
+- description: policy rule name to search.
+  name: rule_name
+  required: true
+comment: Automation that searches for a security policy by name for all device-groups found on Panorama to include "shared".  If found, output is the same as the !pan-os-list-rules command.
+commonfields:
+  id: PanoramaSearchPolicy
+  version: -1
+dockerimage: demisto/python3:3.10.13.75921
+enabled: true
+engineinfo: {}
+name: PanoramaSearchPolicy
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 6.8.0
+tests:
+- No tests (auto formatted)
