@@ -26,7 +26,7 @@ XSIAM_SERVERS = {
 }
 
 
-def create_build_object_with_mock(mocker, build_object_type):
+def create_build_object_with_mock(mocker, server_type):
     args = ['-u', "$USERNAME", '-p', "$PASSWORD", '-c', "$CONF_PATH", '-s', "$SECRET_CONF_PATH",
             '--tests_to_run', "$ARTIFACTS_FOLDER/filter_file.txt",
             '--pack_ids_to_install', "$ARTIFACTS_FOLDER/content_packs_to_install.txt",
