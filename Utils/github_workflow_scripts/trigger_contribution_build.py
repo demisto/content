@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import os
+
 import argparse
 import sys
 
@@ -7,7 +7,6 @@ import requests
 import urllib3
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-GITLAB_PROJECT_ID = os.getenv('CI_PROJECT_ID', '2596')  # the default is the id of the content project in code.pan.run
 
 
 def arguments_handler():
@@ -40,7 +39,7 @@ def trigger_generic_webhook(options):
     body = {
         "name": "GenericWebhook_trigger_contribution_build",
         "raw_json": {"BaseBranch": base_branch, "PullRequestNumber": pr_number, "ContribBranch": contrib_branch,
-                     "ProjectID": GITLAB_PROJECT_ID},
+                     "ProjectID": "2596"},
     }
     # post to Content Gold
     res = requests.post(contribution_build_instance_url, json=body, auth=(username, password))

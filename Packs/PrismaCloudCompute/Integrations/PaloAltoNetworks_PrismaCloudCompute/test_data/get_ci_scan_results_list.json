@@ -1,0 +1,324 @@
+[
+    {
+        "_id": "aaa",
+        "entityInfo": {
+            "Secrets": [
+                "/opt/az/lib/python3.10/test/key.pem"
+            ],
+            "_id": "sha256:a1",
+            "agentless": false,
+            "allCompliance": {},
+            "appEmbedded": false,
+            "applications": [
+                {
+                    "installedFromPackage": true,
+                    "knownVulnerabilities": 115,
+                    "layerTime": 1695214343,
+                    "name": "node",
+                    "path": "/usr/bin/node",
+                    "version": "12.22.9"
+                }
+            ],
+            "binaries": [
+                {
+                    "cveCount": 0,
+                    "fileMode": 493,
+                    "md5": "a1",
+                    "name": "python3.10",
+                    "path": "/opt/az/bin/python3.10"
+                },
+                {
+                    "cveCount": 0,
+                    "fileMode": 420,
+                    "md5": "a2",
+                    "name": "python.o",
+                    "path": "/opt/az/lib/python3.10/config-3.10-x86_64-linux-gnu/python.o"
+                }
+            ],
+            "cloudMetadata": {},
+            "collections": [
+                "All",
+                "Access Group"
+            ],
+            "complianceDistribution": {
+                "critical": 0,
+                "high": 4,
+                "low": 0,
+                "medium": 1,
+                "total": 5
+            },
+            "complianceIssues": [
+                {
+                    "cause": "",
+                    "cri": false,
+                    "cve": "",
+                    "cvss": 0,
+                    "description": "It is a good practice to run the container as a non-root user, if possible.",
+                    "discovered": "0001-01-01T00:00:00Z",
+                    "exploit": "",
+                    "fixDate": 0,
+                    "functionLayer": "",
+                    "id": 41,
+                    "layerTime": 0,
+                    "link": "",
+                    "packageName": "",
+                    "packageVersion": "",
+                    "published": 0,
+                    "riskFactors": null,
+                    "secret": {},
+                    "severity": "high",
+                    "status": "",
+                    "templates": [
+                        "AAA"
+                    ],
+                    "text": "",
+                    "title": "Image should be created with a non-root user",
+                    "twistlock": false,
+                    "type": "image",
+                    "vecStr": "",
+                    "wildfireMalware": {}
+                }
+            ],
+            "complianceIssuesCount": 5,
+            "complianceRiskScore": 40100,
+            "creationTime": "2023-09-20T12:53:00.899Z",
+            "distro": "Ubuntu 22.04.3 LTS",
+            "err": "",
+            "files": [],
+            "firewallProtection": {
+                "enabled": false,
+                "outOfBandMode": "",
+                "supported": false
+            },
+            "firstScanTime": "2023-09-20T12:53:12.177Z",
+            "foundSecrets": null,
+            "history": [
+                {
+                    "created": 1692165712,
+                    "emptyLayer": true,
+                    "id": "11",
+                    "instruction": "RELEASE"
+                }
+            ],
+            "hostname": "aaa",
+            "hosts": {},
+            "id": "sha256:a3",
+            "image": {
+                "created": "2023-09-20T12:53:00.899Z",
+                "entrypoint": [
+                    "python3"
+                ]
+            },
+            "installedProducts": {
+                "docker": "24.0.6",
+                "hasPackageManager": true,
+                "osDistro": "Ubuntu"
+            },
+            "instances": [
+                {
+                    "host": "a4",
+                    "image": "1.dkr.ecr.eu-central-1.amazonaws.com/pythonscript:a3",
+                    "modified": "2023-09-20T12:53:36.956Z",
+                    "registry": "1.dkr.ecr.eu-central-1.amazonaws.com",
+                    "repo": "pythonscript",
+                    "tag": "tag"
+                }
+            ],
+            "isARM64": false,
+            "labels": [
+                "org.opencontainers.image.ref.name:ubuntu"
+            ],
+            "layers": [
+                "sha256:a5"
+            ],
+            "malwareAnalyzedTime": "0001-01-01T00:00:00Z",
+            "osDistro": "ubuntu",
+            "osDistroRelease": "jammy",
+            "osDistroVersion": "22.04",
+            "packageCorrelationDone": true,
+            "packageManager": true,
+            "pushTime": "0001-01-01T00:00:00Z",
+            "redHatNonRPMImage": false,
+            "repoDigests": [],
+            "repoTag": {
+                "registry": "1.dkr.ecr.eu-central-1.amazonaws.com",
+                "repo": "pythonscript",
+                "tag": "tag"
+            },
+            "riskFactors": {
+                "Attack complexity: low": {},
+                "Attack vector: network": {},
+                "Critical severity": {},
+                "DoS - High": {},
+                "DoS - Low": {},
+                "Exploit exists - POC": {},
+                "Has fix": {},
+                "High severity": {},
+                "Medium severity": {},
+                "Recent vulnerability": {},
+                "Remote execution": {}
+            },
+            "scanBuildDate": "20230914",
+            "scanID": 0,
+            "scanTime": "2023-09-20T12:53:36.956Z",
+            "scanVersion": "31.01.131",
+            "secretScanMetrics": {},
+            "tags": [
+                {
+                    "registry": "1.dkr.ecr.eu-central-1.amazonaws.com",
+                    "repo": "pythonscript",
+                    "tag": "tag"
+                }
+            ],
+            "topLayer": "sha256:a6",
+            "trustStatus": "",
+            "type": "ciImage",
+            "vulnerabilitiesCount": 81,
+            "vulnerabilityDistribution": {
+                "critical": 1,
+                "high": 5,
+                "low": 34,
+                "medium": 41,
+                "total": 81
+            },
+            "vulnerabilityRiskScore": 1054134,
+            "wildFireUsage": null
+        },
+        "pass": true,
+        "time": "2023-09-20T12:53:37.229Z",
+        "version": "30.01.1"
+    },
+    {
+        "_id": "bbb",
+        "entityInfo": {
+            "Secrets": [
+                "/opt/aa/lib/python3.10/test/secret.pem"
+            ],
+            "_id": "sha256:f3",
+            "agentless": false,
+            "allCompliance": {},
+            "appEmbedded": false,
+            "applications": [
+                {
+                    "installedFromPackage": true,
+                    "knownVulnerabilities": 115,
+                    "layerTime": 1695209203,
+                    "name": "ccc",
+                    "path": "/usr/bin/node",
+                    "version": "12.01.01"
+                }
+            ],
+            "cloudMetadata": {},
+            "collections": [
+                "Access Group"
+            ],
+            "complianceDistribution": {
+                "critical": 0,
+                "high": 4,
+                "low": 0,
+                "medium": 1,
+                "total": 5
+            },
+            "complianceIssuesCount": 5,
+            "complianceRiskScore": 40100,
+            "creationTime": "2023-09-20T11:27:10.233Z",
+            "distro": "Ubuntu 22.04.3 LTS",
+            "err": "",
+            "files": [],
+            "firewallProtection": {
+                "enabled": false,
+                "outOfBandMode": "",
+                "supported": false
+            },
+            "firstScanTime": "2023-09-20T11:27:22.081Z",
+            "foundSecrets": null,
+            "hostname": "aaa",
+            "hosts": {},
+            "id": "sha256:a1",
+            "image": {
+                "created": "2023-09-20T11:27:10.233Z",
+                "entrypoint": [
+                    "python3"
+                ]
+            },
+            "installedProducts": {
+                "docker": "24.0.6",
+                "hasPackageManager": true,
+                "osDistro": "Ubuntu 22.04.3 LTS"
+            },
+            "instances": [
+                {
+                    "host": "aaa",
+                    "image": "pythonserver.azurecr.io/pythonserver:a1",
+                    "modified": "2023-09-20T11:27:50.809Z",
+                    "registry": "pythonserver.azurecr.io",
+                    "repo": "pythonserver",
+                    "tag": "a1"
+                }
+            ],
+            "isARM64": false,
+            "labels": [
+                "org.opencontainers.image.ref.name:ubuntu",
+                "org.opencontainers.image.version:22.04"
+            ],
+            "layers": [
+                "sha256:a1"
+            ],
+            "malwareAnalyzedTime": "0001-01-01T00:00:00Z",
+            "osDistro": "ubuntu",
+            "osDistroRelease": "jammy",
+            "osDistroVersion": "22.04",
+            "packageCorrelationDone": true,
+            "packageManager": true,
+            "pushTime": "0001-01-01T00:00:00Z",
+            "redHatNonRPMImage": false,
+            "repoDigests": [],
+            "repoTag": {
+                "registry": "pythonserver.azurecr.io",
+                "repo": "pythonserver",
+                "tag": "tag"
+            },
+            "riskFactors": {
+                "Attack complexity: low": {},
+                "Attack vector: network": {},
+                "Critical severity": {},
+                "DoS - High": {},
+                "DoS - Low": {},
+                "Exploit exists - POC": {},
+                "Has fix": {},
+                "High severity": {},
+                "Medium severity": {},
+                "Recent vulnerability": {},
+                "Remote execution": {}
+            },
+            "scanBuildDate": "20230914",
+            "scanID": 0,
+            "scanTime": "2023-09-20T11:27:50.809Z",
+            "scanVersion": "31.01.131",
+            "secretScanMetrics": {},
+            "tags": [
+                {
+                    "registry": "pythonserver.azurecr.io",
+                    "repo": "pythonserver",
+                    "tag": "tag"
+                }
+            ],
+            "topLayer": "sha256:a6",
+            "trustStatus": "",
+            "type": "ciImage",
+            "vulnerabilitiesCount": 72,
+            "vulnerabilityDistribution": {
+                "critical": 1,
+                "high": 5,
+                "low": 34,
+                "medium": 32,
+                "total": 72
+            },
+            "vulnerabilityRiskScore": 1053234,
+            "wildFireUsage": null
+        },
+        "pass": true,
+        "time": "2023-09-20T11:27:51.087Z",
+        "version": "31.01.131"
+    }
+]
