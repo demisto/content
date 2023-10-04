@@ -1,7 +1,4 @@
 category: Authentication & Identity Management
-sectionOrder:
-- Connect
-- Collect
 commonfields:
   id: CyberArkPAS
   version: -1
@@ -57,6 +54,11 @@ configuration:
   section: Connect
   advanced: true
   required: false
+- defaultvalue: '1'
+  display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  required: false
+  type: 19
 description: Use the CyberArk Privileged Access Security (PAS) solution to manage users, safes, vaults, and accounts from Cortex XSOAR.
 display: CyberArk PAS
 name: CyberArkPAS
@@ -68,7 +70,7 @@ script:
       required: true
     - description: The user type according to the license.
       name: user_type
-    - description: The CyberArkPAS interfaces that this user is not authorized to use, e.g., - "PSM", "PSMP"
+    - description: The CyberArkPAS interfaces that this user is not authorized to use, e.g., - "PSM", "PSMP".
       isArray: true
       name: non_authorized_interfaces
     - description: The location in the vault where the user will be created. Must begin with "\\".  If just "\\", the vault is in the root.
@@ -93,7 +95,7 @@ script:
       predefined:
       - 'true'
       - 'false'
-    - description: 'A comma-separated list of user permissions. Valid values are: AuditUsers, AddUpdateUsers, ResetUsersPasswords, ActivateUsers, AddNetworkAreas, ManageDirectoryMapping, ManageServerFileCategories, BackupAllSafes, RestoreAllSafes e.g., AddSafes,AuditUsers'
+    - description: 'A comma-separated list of user permissions. Valid values are: AuditUsers, AddUpdateUsers, ResetUsersPasswords, ActivateUsers, AddNetworkAreas, ManageDirectoryMapping, ManageServerFileCategories, BackupAllSafes, RestoreAllSafes e.g., AddSafes,AuditUsers.'
       isArray: true
       name: vault_authorization
     - description: Notes and comments.
@@ -165,7 +167,7 @@ script:
       name: username
     - description: User type according to the license.
       name: user_type
-    - description: The CyberArkPAS interfaces that this user is not authorized to use, e.g., "PSM", "PSMP"
+    - description: The CyberArkPAS interfaces that this user is not authorized to use, e.g., "PSM", "PSMP".
       isArray: true
       name: non_authorized_interfaces
     - description: The location in the vault where the user will be created. Must begin with "\\". If just "\\", the vault is in the root.
@@ -186,7 +188,7 @@ script:
       predefined:
       - 'true'
       - 'false'
-    - description: 'A comma-separated list of user permissions. Valid values are: AddSafes, AuditUsers, AddUpdateUsers, ResetUsersPasswords, ActivateUsers, AddNetworkAreas, ManageDirectoryMapping, ManageServerFileCategories, BackupAllSafes, RestoreAllSafes e.g., AddSafes,AuditUsers'
+    - description: 'A comma-separated list of user permissions. Valid values are: AddSafes, AuditUsers, AddUpdateUsers, ResetUsersPasswords, ActivateUsers, AddNetworkAreas, ManageDirectoryMapping, ManageServerFileCategories, BackupAllSafes, RestoreAllSafes e.g., AddSafes,AuditUsers.'
       isArray: true
       name: vault_authorization
     - description: Notes and comments.
@@ -346,6 +348,7 @@ script:
     - contextPath: CyberArkPAS.Safes.OLACEnabled
       description: Whether or not to enable Object Level Access Control (OLAC) for the safes.
       type: Boolean
+    arguments: []
   - arguments:
     - description: The name of the safe about which information is returned.
       name: safe_name
@@ -507,10 +510,7 @@ script:
       name: search_in
     - description: The membership expiration date in the format MM\DD\YY. Leave empty if there is no expiration date.
       name: membership_expiration_date
-    - description: |-
-        The user’s permissions in the safe.
-        Valid values: UseAccounts, RetrieveAccounts, ListAccounts, AddAccounts, UpdateAccountContent, UpdateAccountProperties, InitiateCPMAccountManagementOperations, InitiateCPMAccountManagementOperations, SpecifyNextAccountContent, RenameAccounts, DeleteAccounts, UnlockAccounts, ManageSafe, ManageSafeMembers, BackupSafe, ViewAuditLog, ViewAuditLog, ViewSafeMembers, AccessWithoutConfirmation, CreateFolders, DeleteFolders, MoveAccountsAndFolders
-        e.g., UseAccounts,RetrieveAccounts
+    - description: "The user’s permissions in the safe.\nValid values: UseAccounts, RetrieveAccounts, ListAccounts, AddAccounts, UpdateAccountContent, UpdateAccountProperties, InitiateCPMAccountManagementOperations, InitiateCPMAccountManagementOperations, SpecifyNextAccountContent, RenameAccounts, DeleteAccounts, UnlockAccounts, ManageSafe, ManageSafeMembers, BackupSafe, ViewAuditLog, ViewAuditLog, ViewSafeMembers, AccessWithoutConfirmation, CreateFolders, DeleteFolders, MoveAccountsAndFolders\ne.g., UseAccounts,RetrieveAccounts."
       isArray: true
       name: permissions
     - description: The name of the safe to add a member to.
@@ -550,11 +550,7 @@ script:
       required: true
     - description: The membership expiration date in the format MM\DD\YY. Leave empty if there is no expiration date.
       name: membership_expiration_date
-    - description: |-
-        The user’s permissions in the safe.
-        Valid values are:
-        UseAccounts, RetrieveAccounts, ListAccounts, AddAccounts, UpdateAccountContent, UpdateAccountProperties, InitiateCPMAccountManagementOperations, InitiateCPMAccountManagementOperations, SpecifyNextAccountContent, RenameAccounts, DeleteAccounts, UnlockAccounts, ManageSafe, ManageSafeMembers, BackupSafe, ViewAuditLog, ViewAuditLog, ViewSafeMembers, RequestsAuthorizationLevel, AccessWithoutConfirmation, CreateFolders, DeleteFolders, MoveAccountsAndFolders
-        e.g., UseAccounts,RetrieveAccounts
+    - description: "The user’s permissions in the safe.\nValid values are:\nUseAccounts, RetrieveAccounts, ListAccounts, AddAccounts, UpdateAccountContent, UpdateAccountProperties, InitiateCPMAccountManagementOperations, InitiateCPMAccountManagementOperations, SpecifyNextAccountContent, RenameAccounts, DeleteAccounts, UnlockAccounts, ManageSafe, ManageSafeMembers, BackupSafe, ViewAuditLog, ViewAuditLog, ViewSafeMembers, RequestsAuthorizationLevel, AccessWithoutConfirmation, CreateFolders, DeleteFolders, MoveAccountsAndFolders\ne.g., UseAccounts,RetrieveAccounts."
       isArray: true
       name: permissions
     - description: The name of the safe to which the safe member belongs.
@@ -629,9 +625,7 @@ script:
       name: password
       required: true
       secret: true
-    - description: |-
-        Object containing key-value pairs to associate with the account, as defined by the account platform.
-        e.g., {"Location": "IT", "OwnerName": "MSSPAdmin"}
+    - description: "Object containing key-value pairs to associate with the account, as defined by the account platform.\ne.g., {\"Location\": \"IT\", \"OwnerName\": \"MSSPAdmin\"}."
       name: properties
     - auto: PREDEFINED
       defaultValue: 'true'
@@ -743,14 +737,9 @@ script:
       description: The name or address of the machine where the account will be used.
       type: String
   - arguments:
-    - description: |-
-        List of keywords to search for in the accounts.
-        Separated with a space, e.g,. Windows admin
+    - description: "List of keywords to search for in the accounts.\nSeparated with a space, e.g,. Windows admin."
       name: search
-    - description: |-
-        Property or properties by which to sort the returned accounts.
-        The properties are followed by a comma and then 'asc' (default) or 'desc' to control the sort direction,
-        e.g., Windows,asc
+    - description: "Property or properties by which to sort the returned accounts.\nThe properties are followed by a comma and then 'asc' (default) or 'desc' to control the sort direction,\ne.g., Windows,asc."
       name: sort
     - defaultValue: '0'
       description: The offset of the first account that is returned in the collection of results. Default is '0'.
@@ -932,10 +921,10 @@ script:
     - contextPath: CyberArkPAS.SecurityEvents.type
       description: The type of the security events.
       type: String
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.13.75921
   isfetch: true
   runonce: false
-  script: '-'
+  script: ''
   subtype: python3
   type: python
 tests:
