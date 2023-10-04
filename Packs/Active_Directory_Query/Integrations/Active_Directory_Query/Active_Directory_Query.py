@@ -1783,7 +1783,7 @@ def test_credentials_command(SERVER_IP):
             auto_bind=True,
         )
         connection.unbind()
-    except:
+    except LDAPBindError:
         raise DemistoException(f"Credential test with username {username} was not successful.")
     return CommandResults(
         outputs_prefix='ActiveDirectory.ValidCredentials',
