@@ -4,7 +4,7 @@ commonfields:
   version: -1
 configuration:
 - additionalinfo: Cisco Umbrella Reporting API base URL.
-  defaultvalue: https://reports.api.umbrella.com
+  defaultvalue: https://api.umbrella.com
   display: API URL
   name: api_url
   required: true

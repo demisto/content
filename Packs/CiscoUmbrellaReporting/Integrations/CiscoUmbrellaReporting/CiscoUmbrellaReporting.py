@@ -17,7 +17,7 @@ DEFAULT_FROM_DATE = "-7days"
 DEFAULT_TO_DATE = "now"
 DEFAULT_OFFSET = 0
 INTEGRATION_CONTEXT_NAME = 'UmbrellaReporting'
-TOKEN_ENDPOINT = "https://management.api.umbrella.com/auth/v2/oauth2/token"
+TOKEN_ENDPOINT = "https://api.umbrella.com/auth/v2/token"
 IP_PARAM = 'ip'
 DOMAIN_PARAM = 'domains'
 URL_PARAM = 'urls'
@@ -100,7 +100,7 @@ class Client(BaseClient):
 
         token_response = self._http_request(
             method='POST',
-            full_url=self.token_url,
+            full_url=urljoin(self._base_url, '/auth/v2/token'),
             auth=(self.client_key, self.secret_key),
             data=payload,
             error_handler=cisco_umbrella_access_token_error_handler
@@ -134,8 +134,7 @@ class Client(BaseClient):
             Return the raw api response from Cisco Umbrella Reporting API.
         """
         result: Dict = {}
-        url_path = f'{self._base_url}/v2/organizations' \
-                   f'/{self.organisation_id}/{end_point}'
+        url_path = urljoin(self._base_url, f'/reports/v2/{end_point}')
         access_token = self.get_access_token()
         response = self._http_request(
             method='GET',
