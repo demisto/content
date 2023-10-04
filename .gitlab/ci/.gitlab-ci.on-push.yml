@@ -164,7 +164,7 @@ validate-content-conf:
         python Tests/scripts/create_artifacts_graph/create_artifacts.py --marketplace "$MARKETPLACE_VERSION" --artifacts-output "${ARTIFACTS_FOLDER}/content_packs" --dependencies-output "${ARTIFACTS_FOLDER}/packs_dependencies.json" --packs-output "${ARTIFACTS_FOLDER}/packs.json" --no-zip --bucket-upload "$BUCKET_UPLOAD"
       fi
 
-    - gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY"
+    - gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" >> "${ARTIFACTS_FOLDER}/logs/gcloud_auth.log" 2>&1
 
     - cp "./Tests/conf.json" "${ARTIFACTS_FOLDER}/conf.json"
     - section_end "Create Content Artifacts and Update Conf"

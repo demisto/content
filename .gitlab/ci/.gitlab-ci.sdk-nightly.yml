@@ -53,7 +53,7 @@ demisto_sdk_nightly:check_idset_dependent_commands:
     - section_end "Update Conf"
     - !reference [.create-id-set]
     - section_start "Activate GCloud Service Account" --collapsed
-    - gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" >> $ARTIFACTS_FOLDER/logs/auths.log 2>&1
+    - gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" >> "${ARTIFACTS_FOLDER}/logs/gcloud_auth.log" 2>&1
     - echo "successfully activated google cloud service account"
     - section_end "Activate GCloud Service Account"
     - section_start "Download private ID set" --collapsed

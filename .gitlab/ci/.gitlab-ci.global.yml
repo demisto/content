@@ -175,7 +175,7 @@
 
 .get_last_upload_commit: &get_last_upload_commit
   - section_start "Getting last bucket upload commit"
-  - gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" > "${ARTIFACTS_FOLDER}/logs/gauth.out" 2>"${ARTIFACTS_FOLDER}/logs/gauth.err"
+  - gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" >> "${ARTIFACTS_FOLDER}/logs/gcloud_auth.log" 2>&1
   - gsutil cp "gs://$GCS_MARKET_BUCKET/content/packs/index.json" "${ARTIFACTS_FOLDER}/previous_index.json"
   - export LAST_UPLOAD_COMMIT=$(cat "${ARTIFACTS_FOLDER}/previous_index.json" | jq -r ".\"commit\"")
   - section_end "Getting last bucket upload commit"
@@ -240,7 +240,7 @@
 .lock-machine:
   - section_start "Lock Machine" --collapsed
   - echo "Authenticating GCP"
-  - gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" > "${ARTIFACTS_FOLDER}/logs/gauth.out" 2>"${ARTIFACTS_FOLDER}/logs/gauth.err"
+  - gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" >> "${ARTIFACTS_FOLDER}/logs/gcloud_auth.log" 2>&1
   - echo "Auth done successfully"
   - ./Tests/scripts/wait_in_line_for_cloud_env.sh "$CLOUD_MACHINES_TYPE"
   - source CloudEnvVariables
@@ -254,7 +254,7 @@
     if [[ -n "${CLOUD_CHOSEN_MACHINE_IDS}" ]]; then
       if [[ -e "${ARTIFACTS_FOLDER}/logs/lock_file.txt" ]]; then
         echo "Job finished, removing lock file for machine ids:${CLOUD_CHOSEN_MACHINE_IDS}"
-        gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" > "${ARTIFACTS_FOLDER}/logs/gauth.out" 2>"${ARTIFACTS_FOLDER}/logs/gauth.err"
+        gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" >> "${ARTIFACTS_FOLDER}/logs/gcloud_auth.log" 2>&1
         gsutil rm "gs://xsoar-ci-artifacts/$GCS_LOCKS_PATH/machines_locks/*-lock-$CI_JOB_ID"
         echo "Finished removing lock file"
       else
@@ -424,7 +424,7 @@
     - echo "Download index.zip"
     - INDEX_PATH=$(mktemp)
     - |
-      gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" >> "${ARTIFACTS_FOLDER}/logs/auth.out"
+      gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" >> "${ARTIFACTS_FOLDER}/logs/gcloud_auth.log" 2>&1
       echo "successfully activated google cloud service account"
       gsutil cp "gs://marketplace-dist/content/packs/index.zip" $INDEX_PATH
       echo "successfully downloaded index.zip"

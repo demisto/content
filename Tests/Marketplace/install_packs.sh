@@ -24,7 +24,7 @@ if [[ ! -f "$GCS_MARKET_KEY" ]]; then
 fi
 
 echo "Trying to authenticate with GCS..."
-gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" > auth.out 2>&1
+gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" >> "${ARTIFACTS_FOLDER}/logs/gcloud_auth.log" 2>&1
 exit_on_error $? "Failed to authenticate with GCS"
 
 echo "Successfully authenticated with GCS."
