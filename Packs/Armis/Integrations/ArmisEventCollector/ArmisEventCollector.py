@@ -65,7 +65,7 @@ class Client(BaseClient):
             list[dict]: List of events objects represented as dictionaries.
         """
         params: dict[str, Any] = {'aql': aql_query, 'includeTotal': 'true', 'length': max_fetch, 'orderBy': 'time'}
-        if not after:  # if this is the first fetch run of the instance, use current datetime as starting point
+        if not after:  # this should only happen when get-event command is used without from_date argument
             after = datetime.now()
         params['aql'] += f' after:{after.strftime(DATE_FORMAT)}'  # add 'after' date filter to AQL query in the desired format
         raw_response = self._http_request(url_suffix='/search/', method='GET', params=params, headers=self._headers)
@@ -380,9 +380,11 @@ def handle_fetched_events(events: list[dict[str, Any]], next_run: dict[str, str 
         )
         demisto.setLastRun(next_run)
         demisto.debug(f'debug-log: {len(events)} events were sent to XSIAM.')
-        demisto.debug(f'debug-log: {next_run=}')
     else:
-        demisto.debug('debug-log: No new events fetched, Last run was not updated.')
+        demisto.setLastRun(next_run)
+        demisto.debug('debug-log: No new events fetched.')
+
+    demisto.debug(f'debug-log: {next_run=}')
 
 
 def events_to_command_results(events: list[dict[str, Any]]) -> CommandResults:
@@ -399,6 +401,21 @@ def events_to_command_results(events: list[dict[str, Any]]) -> CommandResults:
         readable_output=tableToMarkdown(name=f'{VENDOR} {PRODUCT} events',
                                         t=events,
                                         removeNull=True))
+
+
+def init_last_run(last_run: dict, event_types_to_fetch) -> None:
+    """ Initialize last fetch time values for all selected event types to current time.
+        This will set a fetch starting point until events are fetched for each event type.
+
+    Args:
+        last_run (dict): _description_
+        event_types_to_fetch (_type_): _description_
+    """
+    now: datetime = datetime.now()
+    now_str: str = now.strftime(DATE_FORMAT)
+    for event_type in event_types_to_fetch:
+        last_fetch_time = f'{EVENT_TYPES[event_type].type}_last_fetch_time'
+        last_run[last_fetch_time] = now_str
 
 
 ''' MAIN FUNCTION '''
@@ -435,6 +452,9 @@ def main():  # pragma: no cover
 
         elif command in ('fetch-events', 'armis-get-events'):
             should_return_results = False
+
+            if not last_run:  # only happens on initial fetch
+                init_last_run(last_run, event_types_to_fetch)
 
             if command == 'armis-get-events':
                 last_run = {}
