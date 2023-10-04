@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 0ec0ccf5-ca95-46cc-8cad-2fcff1f458c7
+    taskid: 794ea566-5909-4619-868b-a0c9b134442d
     type: start
     task:
-      id: 0ec0ccf5-ca95-46cc-8cad-2fcff1f458c7
+      id: 794ea566-5909-4619-868b-a0c9b134442d
       version: -1
       name: ""
       iscommand: false
@@ -36,10 +36,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: f026b4a7-f96f-4870-86c8-09ea5b524218
+    taskid: a00d76e7-a156-4f93-8856-22ecae005068
     type: condition
     task:
-      id: f026b4a7-f96f-4870-86c8-09ea5b524218
+      id: a00d76e7-a156-4f93-8856-22ecae005068
       version: -1
       name: What provider is this service?
       description: Determines which cloud provider the service is in order to direct to the correct enrichment.
@@ -144,10 +144,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 857fd027-e074-4bf2-825e-cbd22c4a5beb
+    taskid: a636a097-e2f4-402a-8332-32ca089f03d8
     type: title
     task:
-      id: 857fd027-e074-4bf2-825e-cbd22c4a5beb
+      id: a636a097-e2f4-402a-8332-32ca089f03d8
       version: -1
       name: Completed
       type: title
@@ -172,10 +172,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 51fddee6-a8a3-4e97-8783-b061d8ecfd00
+    taskid: 139354b7-aeae-458a-8c6c-0ec55d135d46
     type: playbook
     task:
-      id: 51fddee6-a8a3-4e97-8783-b061d8ecfd00
+      id: 139354b7-aeae-458a-8c6c-0ec55d135d46
       version: -1
       name: Azure - Network Security Group Remediation
       description: |-
@@ -256,10 +256,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: eefc9a4f-11f6-4dd3-837e-c000f7f2d7ac
+    taskid: 9a8816b4-03c2-4195-8ce3-b0b86c7c9d1a
     type: playbook
     task:
-      id: eefc9a4f-11f6-4dd3-837e-c000f7f2d7ac
+      id: 9a8816b4-03c2-4195-8ce3-b0b86c7c9d1a
       version: -1
       name: AWS - Unclaimed S3 Bucket Remediation
       description: The playbook will create the unclaimed S3 bucket.
@@ -307,10 +307,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: e3f88892-eff3-4e72-857a-f24e290f71f4
+    taskid: 250db32f-08b9-4ba4-85cb-97eb57c873fd
     type: playbook
     task:
-      id: e3f88892-eff3-4e72-857a-f24e290f71f4
+      id: 250db32f-08b9-4ba4-85cb-97eb57c873fd
       version: -1
       name: AWS - Security Group Remediation v2
       description: This playbook takes in some information about an EC2 instance (ID and public_ip) and with provided port and protocol, determines what security groups on the primary interface of an EC2 instance are over-permissive.  It uses an automation to determine what interface on an EC2 instance has an over-permissive security group on, determine which security groups have over-permissive rules and to replace them with a copy of the security group that has only the over-permissive portion removed.  Over-permissive is defined as sensitive ports (SSH, RDP, etc) being exposed to the internet via IPv4.
@@ -372,10 +372,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 70238dbb-d732-45c0-8bbc-8454b2a54279
+    taskid: b7e49418-8047-4b8d-88b8-51fd2401be05
     type: playbook
     task:
-      id: 70238dbb-d732-45c0-8bbc-8454b2a54279
+      id: b7e49418-8047-4b8d-88b8-51fd2401be05
       version: -1
       name: GCP - Firewall Remediation
       playbookName: GCP - Firewall Remediation
@@ -463,10 +463,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 6d374aa1-59cd-485c-8fc9-6ee5fdd7867a
+    taskid: bdbc79b2-528b-4a9a-80de-742695e5c6c8
     type: condition
     task:
-      id: 6d374aa1-59cd-485c-8fc9-6ee5fdd7867a
+      id: bdbc79b2-528b-4a9a-80de-742695e5c6c8
       version: -1
       name: Is AWSAssumeRoleName Input defined?
       description: Determines which cloud provider the service is in order to direct to the correct enrichment.
@@ -499,10 +499,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 8447163f-46f0-4567-8871-d38e950991f3
+    taskid: c2207b16-2040-497b-8c11-a1ead1f33bf7
     type: playbook
     task:
-      id: 8447163f-46f0-4567-8871-d38e950991f3
+      id: c2207b16-2040-497b-8c11-a1ead1f33bf7
       version: -1
       name: AWS - Security Group Remediation v2
       description: This playbook takes in some information about an EC2 instance (ID and public_ip) and with provided port and protocol, determines what security groups on the primary interface of an EC2 instance are over-permissive.  It uses an automation to determine what interface on an EC2 instance has an over-permissive security group on, determine which security groups have over-permissive rules and to replace them with a copy of the security group that has only the over-permissive portion removed.  Over-permissive is defined as sensitive ports (SSH, RDP, etc) being exposed to the internet via IPv4.
@@ -585,10 +585,10 @@ tasks:
     isautoswitchedtoquietmode: false
   '12':
     id: '12'
-    taskid: a016d354-84fc-4c97-880d-3f2c93d43aaf
+    taskid: 2c0d5957-47db-4aea-8327-99cbea225660
     type: playbook
     task:
-      id: a016d354-84fc-4c97-880d-3f2c93d43aaf
+      id: 2c0d5957-47db-4aea-8327-99cbea225660
       version: -1
       name: Cortex ASM - On Prem Remediation
       playbookName: Cortex ASM - On Prem Remediation

@@ -328,7 +328,7 @@ class TestCollector(ABC):
         match self.marketplace:
             case MarketplaceVersions.MarketplaceV2:
                 return tuple(self.conf['test_marketplacev2'])
-            case MarketplaceVersions.XSOAR:
+            case MarketplaceVersions.XSOAR | MarketplaceVersions.XSOAR_SAAS:
                 return XSOAR_SANITY_TEST_NAMES
             case MarketplaceVersions.XPANSE:
                 return ()  # none at the moment
@@ -732,7 +732,7 @@ class TestCollector(ABC):
                 if (MarketplaceVersions.MarketplaceV2 not in content_item_marketplaces) or \
                         (MarketplaceVersions.XSOAR in content_item_marketplaces):
                     raise IncompatibleMarketplaceException(content_item_path, self.marketplace)
-            case MarketplaceVersions.XSOAR | MarketplaceVersions.XPANSE:
+            case MarketplaceVersions.XSOAR | MarketplaceVersions.XPANSE | MarketplaceVersions.XSOAR_SAAS:
                 if self.marketplace not in content_item_marketplaces:
                     raise IncompatibleMarketplaceException(content_item_path, self.marketplace)
             case _:
@@ -1335,8 +1335,8 @@ class XSIAMNightlyTestCollector(NightlyTestCollector):
 
 
 class XSOARNightlyTestCollector(NightlyTestCollector):
-    def __init__(self, graph: bool = False):
-        super().__init__(MarketplaceVersions.XSOAR, graph=graph)
+    def __init__(self, marketplace: MarketplaceVersions = MarketplaceVersions.XSOAR, graph: bool = False):
+        super().__init__(marketplace, graph=graph)
 
     def _collect(self) -> CollectionResult | None:
         return CollectionResult.union((
@@ -1411,9 +1411,6 @@ if __name__ == '__main__':
     branch_name = PATHS.content_repo.active_branch.name
 
     marketplace = MarketplaceVersions(args.marketplace)
-    if marketplace == MarketplaceVersions.XSOAR_SAAS:
-        # When collecting test xsoar is equivalent to xsoar saas
-        marketplace = MarketplaceVersions.XSOAR
 
     nightly = args.nightly
     service_account = args.service_account
@@ -1437,7 +1434,7 @@ if __name__ == '__main__':
             case False, _:  # not nightly
                 collector = BranchTestCollector(branch_name, marketplace, service_account, graph=graph)
             case True, MarketplaceVersions.XSOAR:
-                collector = XSOARNightlyTestCollector(graph=graph)
+                collector = XSOARNightlyTestCollector(marketplace=marketplace, graph=graph)
             case True, MarketplaceVersions.MarketplaceV2:
                 collector = XSIAMNightlyTestCollector(graph=graph)
             case True, MarketplaceVersions.XPANSE:
