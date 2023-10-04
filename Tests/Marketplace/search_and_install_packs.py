@@ -342,6 +342,7 @@ def install_packs(client: demisto_client,
                   packs_to_install: list,
                   attempts_count: int = 5,
                   sleep_interval: int = 60,
+                  request_timeout: int = 300,
                   ) -> tuple[bool, list]:
     """ Make a packs installation request.
        If a pack fails to install due to malformed pack, this function catches the corrupted pack and call another
@@ -355,6 +356,7 @@ def install_packs(client: demisto_client,
         packs_to_install (list): A list of the packs to install.
         attempts_count (int): The number of attempts to install the packs.
         sleep_interval (int): The sleep interval, in seconds, between install attempts.
+        request_timeout (int): The timeout per call to the server.
     Returns:
         bool: True if the operation succeeded and False otherwise and a list of packs that were installed.
     """
@@ -451,7 +453,9 @@ def install_packs(client: demisto_client,
                                         sleep_interval=sleep_interval,
                                         success_handler=success_handler,
                                         api_exception_handler=api_exception_handler,
-                                        should_try_handler=should_try_handler)
+                                        should_try_handler=should_try_handler,
+                                        request_timeout=request_timeout,
+                                       )
 
 
 def search_pack_and_its_dependencies(client: demisto_client,
