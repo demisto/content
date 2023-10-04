@@ -725,7 +725,8 @@ class TestClient:
         )
         assert result.readable_output == (
             "### Attachments of A12345C\n|File Name|Last Update|Description|Object Description|First Update User ID|Object Entity"
-            "|Content Type|\n|---|---|---|---|---|---|---|\n| Untitled document.pdf | 2023-08-02T00:00:00Z | Untitled document.pdf"
+            "|Content Type|\n|---|---|---|---|---|---|---|\n| Untitled document.pdf "
+            "| 2023-08-02T00:00:00Z | Untitled document.pdf"
             " | Untitled document.pdf | S44444C | Attachment | application/pdf |\n"
         )
         assert result.outputs == [
