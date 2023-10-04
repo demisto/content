@@ -403,13 +403,13 @@ def events_to_command_results(events: list[dict[str, Any]]) -> CommandResults:
                                         removeNull=True))
 
 
-def init_last_run(last_run: dict, event_types_to_fetch) -> None:
-    """ Initialize last fetch time values for all selected event types to current time.
-        This will set a fetch starting point until events are fetched for each event type.
+def set_last_run_with_current_time(last_run: dict, event_types_to_fetch) -> None:
+    """ Set last fetch time values for all selected event types to current time.
+        This will set a fetch starting time until events are fetched for each event type.
 
     Args:
-        last_run (dict): _description_
-        event_types_to_fetch (_type_): _description_
+        last_run (dict): Last run dictionary.
+        event_types_to_fetch (list): List of event types to fetch.
     """
     now: datetime = datetime.now()
     now_str: str = now.strftime(DATE_FORMAT)
@@ -453,8 +453,8 @@ def main():  # pragma: no cover
         elif command in ('fetch-events', 'armis-get-events'):
             should_return_results = False
 
-            if not last_run:  # only happens on initial fetch
-                init_last_run(last_run, event_types_to_fetch)
+            if not last_run:  # in initial fetch - update last fetch time values to current time
+                set_last_run_with_current_time(last_run, event_types_to_fetch)
 
             if command == 'armis-get-events':
                 last_run = {}
