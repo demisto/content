@@ -105,12 +105,12 @@ def calculate_test_playbooks_results_table(jira_tickets_for_playbooks: dict[str,
                                            server_versions: set[str],
                                            add_total_row: bool = True,
                                            no_color: bool = False,
-                                           with_jira: bool = True) -> tuple[list[str], list[list[Any]], JUnitXml, int]:
+                                           without_jira: bool = False) -> tuple[list[str], list[list[Any]], JUnitXml, int]:
     xml = JUnitXml()
-    if with_jira:
-        headers = copy.copy(TEST_SUITE_FIXED_HEADERS)
-    else:
+    if without_jira:
         headers = copy.copy(TEST_SUITE_BASE_HEADERS)
+    else:
+        headers = copy.copy(TEST_SUITE_FIXED_HEADERS)
     server_versions_list: list[str] = sorted(server_versions)
     for server_version in server_versions_list:
         for status in TEST_SUITE_STATUSES:
@@ -122,10 +122,10 @@ def calculate_test_playbooks_results_table(jira_tickets_for_playbooks: dict[str,
     for playbook_id, playbook_results in tqdm(playbooks_results.items(), desc="Generating test summary", unit="playbook",
                                               leave=True, colour='green', miniters=10, mininterval=5.0):
         row = []
-        if with_jira and (jira_ticket := jira_tickets_for_playbooks.get(playbook_id)):
+        if not without_jira and (jira_ticket := jira_tickets_for_playbooks.get(playbook_id)):
             row.append(jira_ticket.key)
             row.append(jira_ticket.get_field("resolution") if jira_ticket.get_field("resolution") else NOT_AVAILABLE)
-        elif with_jira:
+        elif not without_jira:
             row.extend([NOT_AVAILABLE] * len(TEST_SUITE_JIRA_HEADERS))
 
         skipped_count = 0

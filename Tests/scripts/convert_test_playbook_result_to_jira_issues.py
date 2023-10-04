@@ -157,6 +157,7 @@ def main():
             sys.exit(1)
 
         for playbook_id, test_suites in playbooks_results.items():
+            # We create the table without Jira tickets columns, as we don't want to have them within the Jira issue.
             headers, tabulate_data, xml, total_errors = calculate_test_playbooks_results_table(jira_tickets_for_playbooks,
                                                                                                {
                                                                                                    playbook_id: test_suites
@@ -164,7 +165,7 @@ def main():
                                                                                                server_versions,
                                                                                                add_total_row=False,
                                                                                                no_color=True,
-                                                                                               with_jira=False)
+                                                                                               without_jira=True)
 
             if (jira_ticket := jira_tickets_for_playbooks.get(playbook_id)) or total_errors:
                 # if the ticket isn't resolved, or we found new errors, we update it, otherwise we skip it.

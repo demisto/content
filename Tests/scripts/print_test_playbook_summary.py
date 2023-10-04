@@ -20,6 +20,7 @@ urllib3.disable_warnings()  # Disable insecure warnings
 def options_handler():
     parser = argparse.ArgumentParser(description='Utility for printing the test playbooks summary')
     parser.add_argument('--artifacts-path', help='Path to the artifacts directory', required=True)
+    parser.add_argument('--without-jira', help='Print the summary without Jira tickets', action='store_true')
     return parser.parse_args()
 
 
@@ -68,7 +69,7 @@ def old_print_test_summary(artifacts_path: str) -> None:
         sys.exit(1)
 
 
-def print_test_summary(artifacts_path: str) -> bool:
+def print_test_summary(artifacts_path: str, without_jira: bool) -> bool:
     test_playbooks_report = Path(artifacts_path) / "test_playbooks_report.xml"
 
     # iterate over the artifacts path and find all the test playbook result files
@@ -83,19 +84,23 @@ def print_test_summary(artifacts_path: str) -> bool:
     logging.info(f"Found {len(test_playbooks_result_files_list)} test playbook result files")
     playbooks_results, server_versions = calculate_test_playbooks_results(test_playbooks_result_files_list)
 
-    logging.info("Searching for Jira tickets for playbooks with the following settings:\n"
-                 f'Jira server url: {JIRA_SERVER_URL}\n'
-                 f'Jira verify SSL: {JIRA_VERIFY_SSL}\n'
-                 f'Jira project id: {JIRA_PROJECT_ID}\n'
-                 f'Jira issue type: {JIRA_ISSUE_TYPE}\n'
-                 f'Jira component: {JIRA_COMPONENT}\n')
-
-    jira_tickets_for_playbooks = get_jira_tickets_for_playbooks(list(playbooks_results.keys()))
-    logging.info(f"Found {len(jira_tickets_for_playbooks)} Jira tickets out of {len(playbooks_results)} playbooks")
+    if without_jira:
+        logging.info("Printing test playbook summary without Jira tickets")
+        jira_tickets_for_playbooks = {}
+    else:
+        logging.info("Searching for Jira tickets for playbooks with the following settings:\n"
+                     f'Jira server url: {JIRA_SERVER_URL}\n'
+                     f'Jira verify SSL: {JIRA_VERIFY_SSL}\n'
+                     f'Jira project id: {JIRA_PROJECT_ID}\n'
+                     f'Jira issue type: {JIRA_ISSUE_TYPE}\n'
+                     f'Jira component: {JIRA_COMPONENT}\n')
+        jira_tickets_for_playbooks = get_jira_tickets_for_playbooks(list(playbooks_results.keys()))
+        logging.info(f"Found {len(jira_tickets_for_playbooks)} Jira tickets out of {len(playbooks_results)} playbooks")
 
     headers, tabulate_data, xml, total_errors = calculate_test_playbooks_results_table(jira_tickets_for_playbooks,
                                                                                        playbooks_results,
-                                                                                       server_versions)
+                                                                                       server_versions,
+                                                                                       without_jira=without_jira)
     xml.write(test_playbooks_report.as_posix(), pretty=True)
     table = tabulate(tabulate_data, headers, tablefmt="pretty", stralign="left", numalign="center")
     logging.info(f"Test Playbook Results:\n{table}")
@@ -108,7 +113,7 @@ def main():
         install_logging('print_test_playbook_summary.log', logger=logging)
         options = options_handler()
         logging.info(f"Printing test playbook summary - artifacts path: {options.artifacts_path}")
-        if not print_test_summary(artifacts_path=options.artifacts_path):
+        if not print_test_summary(artifacts_path=options.artifacts_path, without_jira=options.without_jira):
             old_print_test_summary(artifacts_path=options.artifacts_path)
         logging.info("Finished printing test summary")
     except Exception as e:
