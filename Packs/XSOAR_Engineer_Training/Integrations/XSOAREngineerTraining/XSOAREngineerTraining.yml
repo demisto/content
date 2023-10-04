@@ -97,7 +97,7 @@ script:
     - description: Who to send the fake email to.
       name: to
       required: true
-    - description: The body of the fake email that we don't be sending.
+    - description: The body of the fake email that we are not actually sending.
       name: body
       required: true
     description: Send an email. (Doesn't actually send an email.)

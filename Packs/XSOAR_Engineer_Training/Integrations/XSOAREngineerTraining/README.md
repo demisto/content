@@ -1,6 +1,7 @@
 The XSOAR Engineer Training (XET) integration provides sample data to fetch events into Cortex XSOAR, and commands to build playbooks around.
 
-Use for training purposes only. 
+Use for training purposes only.
+This integration was integrated and tested with version xx of XSOAR Engineer Training.
 
 ## Configure XSOAR Engineer Training on Cortex XSOAR
 
@@ -38,7 +39,6 @@ Fetches events from the XSOAR Engineer Training (XET) integration.
 #### Context Output
 
 There is no context output for this command.
-
 ### xet-ad-get-user
 
 ***
@@ -52,7 +52,7 @@ Retrieves detailed information about a user account. The user can be specified b
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| dn | The Distinguished Name of the user for which to return information. | Optional | 
+| dn | The Distinguished Name of the user in which to return information. | Optional | 
 | username | Queries users by the samAccountName attribute. | Optional | 
 | email | Queries by the user's email address. | Optional | 
 
@@ -93,7 +93,6 @@ Expires the password of an Active Directory user.
 #### Context Output
 
 There is no context output for this command.
-
 ### xet-ad-set-new-password
 
 ***
@@ -113,7 +112,6 @@ Sets a new password for an Active Directory user.
 #### Context Output
 
 There is no context output for this command.
-
 ### xet-siem-search
 
 ***
@@ -134,7 +132,7 @@ Searches the simulated SIEM for events.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SIEM.Result | array | The results of the SIEM search. The results are a JSON array, in which each item is a SIEM event. | 
+| SIEM.Result | unknown | The results of the SIEM search. The results are a JSON array, in which each item is a SIEM event. | 
 
 ### xet-send-mail
 
@@ -150,6 +148,7 @@ Send an email. (Doesn't actually send an email.)
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | to | Who to send the fake email to. | Required | 
+| body | The body of the fake email that we are not actually sending. | Required | 
 
 #### Context Output
 
