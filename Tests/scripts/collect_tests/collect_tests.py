@@ -1115,6 +1115,10 @@ class BranchTestCollector(TestCollector):
                                      f'(expected `<modifier>\t<file>` or `<modifier>\t<old_location>\t<new_location>`'
                                      f', got {line}')
 
+            if not file_path.startswith("Packs/"):
+                logger.warning(f"File outside Packs/ was modified: {file_path}, skipping")
+                continue
+
             if git_status not in {'A', 'M', 'D', }:
                 logger.warning(f'unexpected {git_status=}, considering it as <M>odified')
 
