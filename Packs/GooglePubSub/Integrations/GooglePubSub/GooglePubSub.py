@@ -833,6 +833,7 @@ def extract_acks_and_msgs(raw_msgs, add_ack_to_msg=True):
     """
     msg_list = []
     acknowledges = []
+    msg_ids = set()
     if isinstance(raw_msgs, dict):
         rcvd_msgs = raw_msgs.get("receivedMessages", [])
         for raw_msg in rcvd_msgs:
@@ -851,7 +852,13 @@ def extract_acks_and_msgs(raw_msgs, add_ack_to_msg=True):
                 acknowledges.append(ack_id)
                 if add_ack_to_msg:
                     msg["ackId"] = ack_id
-            msg_list.append(msg)
+            # messageId is optional
+            if "messageId" not in msg:
+                msg_list.append(msg)
+            # prevent duplicate messages in the same pull
+            elif msg["messageId"] not in msg_ids:
+                msg_ids.add(msg["messageId"])
+                msg_list.append(msg)
     return acknowledges, msg_list
 
 
