@@ -39,6 +39,15 @@ demisto_score_to_xdr: Dict[int, str] = {
 }
 
 
+def create_validation_errors_response(validation_errors):
+    response = ''
+    for item in validation_errors:
+        indicator = item.get('indicator')
+        error = item.get('error')
+        response += f'The indicator "{indicator}" has validation error: "{error}".\n'
+    return response + '\n'
+
+
 def batch_iocs(generator, batch_size=200):
     current_batch = []
     for indicator in generator:
@@ -125,9 +134,12 @@ def get_headers(params: Dict) -> Dict:
     return headers
 
 
-def get_requests_kwargs(_json=None, file_path: Optional[str] = None) -> Dict:
+def get_requests_kwargs(_json=None, file_path: Optional[str] = None, validate: bool = False) -> Dict:
     if _json is not None:
-        return {'data': json.dumps({"request_data": _json})}
+        data = {"request_data": _json}
+        if validate:
+            data['validate'] = True
+        return {'data': json.dumps(data)}
     elif file_path is not None:
         return {'files': [('file', ('iocs.json', open(file_path, 'rb'), 'application/json'))]}
     else:
@@ -365,13 +377,16 @@ def tim_insert_jsons(client: Client):
     else:
         iocs = get_indicators(indicators)
     if iocs:
+        validation_errors = []
         path = 'tim_insert_jsons/'
         for i, single_batch_iocs in enumerate(batch_iocs(iocs)):
             demisto.debug(f'push batch: {i}')
             requests_kwargs: Dict = get_requests_kwargs(_json=list(
-                map(demisto_ioc_to_xdr, single_batch_iocs)))
-            client.http_request(url_suffix=path, requests_kwargs=requests_kwargs)
-    return_outputs('push done.')
+                map(demisto_ioc_to_xdr, single_batch_iocs)), validate=True)
+            response = client.http_request(url_suffix=path, requests_kwargs=requests_kwargs)
+            validation_errors.extend(response.get('reply', {}).get('validation_errors'))
+        errors = create_validation_errors_response(validation_errors)
+        return_outputs(f'{errors}push done.')
 
 
 def iocs_command(client: Client):
