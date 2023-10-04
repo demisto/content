@@ -231,7 +231,7 @@
     - .default-before-script
 
 .trigger-slack-notification:
-  stage: .post
+  stage: .pre
   trigger:
     strategy: depend
     include:
