@@ -199,6 +199,7 @@ def get_pack_dependencies(client: demisto_client,
                           pack_id: str,
                           attempts_count: int = 5,
                           sleep_interval: int = 60,
+                          request_timeout: int = 900,
                           ) -> dict | None:
     """
     Get pack's required dependencies.
@@ -208,6 +209,7 @@ def get_pack_dependencies(client: demisto_client,
         pack_id (str): ID of the pack to get dependencies for.
         attempts_count (int): The number of attempts to install the packs.
         sleep_interval (int): The sleep interval, in seconds, between request retry attempts.
+        request_timeout (int): The timeout per call to the server.
 
     Returns:
         dict | None: API response data for the /search/dependencies endpoint. None if the request failed.
@@ -231,7 +233,7 @@ def get_pack_dependencies(client: demisto_client,
                                            method='POST',
                                            response_type='object',
                                            body=body,
-                                           request_timeout=None,
+                                           request_timeout=request_timeout,
                                            attempts_count=attempts_count,
                                            sleep_interval=sleep_interval,
                                            success_handler=success_handler)
