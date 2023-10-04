@@ -9,10 +9,10 @@ def get_xsoar_list(list_name: str) -> dict:
     Gets a list from XSOAR if it exists.
     """
     res = demisto.executeCommand('getList', {'listName': list_name})
-    if is_error(res):
-        raise get_error(res)
     if 'Item not found' in res[0]['Contents']:
         raise DemistoException(f'List {list_name} was not found.')
+    if is_error(res):
+        raise DemistoException(get_error(res))
 
     current_list = json.loads(res[0]['Contents']) or {}
     return current_list
@@ -46,7 +46,7 @@ def update_remote_list(current_dict):
     """
     res = demisto.executeCommand('prisma-cloud-compute-trusted-images-update', {'images_list_json': json.dumps(current_dict)})
     if is_error(res):
-        raise get_error(res)
+        raise DemistoException(get_error(res))
 
     return res[0]['HumanReadable']
 

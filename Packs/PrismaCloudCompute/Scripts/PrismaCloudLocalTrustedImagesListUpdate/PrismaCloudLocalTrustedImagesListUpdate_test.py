@@ -1,6 +1,9 @@
 import json
 
-from PrismaCloudLocalTrustedImagesListUpdate import update_local_trusted_images
+import dateparser
+import pytest
+from freezegun import freeze_time
+
 import demistomock as demisto
 
 deployed_image_1 = {'Secrets': None, '_id': 'sha256:4c', 'agentless': True, 'allCompliance': {}, 'appEmbedded': False,
@@ -87,13 +90,21 @@ passed_ci_scan_image_2 = {"_id": "sha256:7", "repoTag": {"registry": "pythonserv
 def execute_command(name, args=None):
     if name == 'getList' and args and 'listName' in args and args['listName'] == 'existingList':
         return [{'Contents': json.dumps({'b-example:*': '2023-10-03T15:34:52Z'}), 'Type': 'LIST'}]
-    if name == 'setList' or name == 'createList':
+    if name in ['setList', 'createList']:
         return None
-    else:
-        raise ValueError('Unimplemented command called: {}'.format(name))
 
 
 def test_update_local_trusted_images(mocker):
+    """
+    Given:
+        - Inputs including list name, time frame, and sample images
+    When:
+        - Calling the script with the inputs
+    Then:
+        - The script executes as expected and the readable output matches the expected value
+    """
+    from PrismaCloudLocalTrustedImagesListUpdate import update_local_trusted_images
+
     mocker.patch.object(demisto, 'executeCommand', side_effect=execute_command)
 
     list_name = 'existingList'
@@ -104,3 +115,133 @@ def test_update_local_trusted_images(mocker):
     response = update_local_trusted_images(args)
     assert response.readable_output == 'List existingList Updated Successfully.'
 
+
+@pytest.mark.parametrize('given_input, expected', [
+    (None, []),
+    ('{"str": "value"}', [{'str': 'value'}]), 
+    ({"dict": "value"}, [{'dict': 'value'}]),
+    ([{"list": "value"}], [{"list": "value"}])
+])
+def test_get_list_from_args(given_input, expected):
+    """
+    Given:
+        - Various input arguments for the script
+    When:
+        - Calling the script with the different input arguments
+    Then:
+        - Returns the expected output of type list
+    """
+    from PrismaCloudLocalTrustedImagesListUpdate import get_list_from_args
+
+    assert get_list_from_args(given_input) == expected
+
+
+@pytest.mark.parametrize('list_name,get_list_response,expected_exists,expected_list', [
+    ('test_list', {'Type': 1, 'Contents': '{"key": "value"}'}, True, {"key": "value"}),
+    ('bad_list', {'Type': 4, 'Contents': 'Item not found'}, False, {}),
+])
+def test_get_list_if_exist(mocker, list_name, get_list_response, expected_exists, expected_list):
+    """
+    Given:
+        - A list name input parameter
+    When:
+        - Calling getList with the list name
+    Then:
+        - Returns the expected output of whether the list exists and its content
+    """
+    from PrismaCloudLocalTrustedImagesListUpdate import get_list_if_exist
+
+    mocker.patch('PrismaCloudLocalTrustedImagesListUpdate.demisto.executeCommand', return_value=[get_list_response])
+
+    exists, list_ = get_list_if_exist(list_name)
+
+    assert exists == expected_exists
+    assert list_ == expected_list
+
+
+@freeze_time('2022-02-22T00:00:00')
+@pytest.mark.parametrize('current_dict, deployed_images, passed_ci_scan_images, expected', [
+    ({}, 
+     [{'repoTag': {'registry': 'r1', 'repo': 'img1'}}],
+     [{'repoTag': {'registry': 'r2', 'repo': 'img2'}}],
+     {'r1/img1:*': '2022-02-22T00:00:00Z', 'r2/img2:*': '2022-02-22T00:00:00Z'}),
+    ({'r1/img1:*': '2022-02-21T00:00:00Z'},
+     [],
+     [{'repoTag': {'registry': 'r1', 'repo': 'img1'}}], 
+     {'r1/img1:*': '2022-02-22T00:00:00Z'}),
+])
+def test_update_dict_from_images(current_dict, deployed_images, passed_ci_scan_images, expected):
+    """
+    Given:
+        - Input parameters for current dictionary, deployed images list, and CI scan images list
+    When:
+        - Calling the script with the input parameters
+    Then:
+        - The updated dictionary returned contains the expected entries
+    """
+    from PrismaCloudLocalTrustedImagesListUpdate import update_dict_from_images
+
+    result = update_dict_from_images(current_dict, deployed_images, passed_ci_scan_images)
+    assert result == expected
+
+
+@freeze_time('2022-01-03T00:00:00')
+@pytest.mark.parametrize('current_dict, time_frame, expected', [
+    (
+        {
+            'image1': '2022-01-01T00:00:00', 
+            'image2': '2022-01-02T00:00:00',
+            'image3': '2022-01-03T00:00:00'
+        },
+        '2022-01-02T00:00:00',
+        {
+            'image2': '2022-01-02T00:00:00',
+            'image3': '2022-01-03T00:00:00'
+        }
+    ),
+    (
+        {
+            'image1': '2022-01-03T00:00:00',
+        },
+        '1 hour',
+        {}
+    )
+])
+def test_remove_expired_images(current_dict, time_frame, expected):
+    """
+    Given:
+        - A dictionary containing image entries with timestamps and a time frame for expiration
+    When:
+        - Calling the script with a time frame
+    Then:
+        - The function filters out images with timestamps older than the time frame so the returned dictionary contains only unexpired images
+    """
+    from PrismaCloudLocalTrustedImagesListUpdate import remove_expired_images
+
+    result = remove_expired_images(current_dict, dateparser.parse(time_frame))
+    assert result == expected
+
+
+@pytest.mark.parametrize('list_name, list_data, is_list_exist', [
+    ('test', {'image': 'img1'}, True),
+    ('test', {'image': 'img2'}, False)
+])
+def test_create_update_list(mocker, list_name, list_data, is_list_exist):
+    """
+    Given:
+        - A list name from script parameters
+    When:
+        - Calling create_update_list with the inputs
+    Then:
+        - The result matches expected strings based on the input existance of the list
+    """
+    from PrismaCloudLocalTrustedImagesListUpdate import create_update_list
+
+    mocker.patch.object(demisto, 'executeCommand', return_value=[])
+
+    result = create_update_list(list_name, list_data, is_list_exist)
+    
+    if is_list_exist:
+        assert result == 'List test Updated Successfully.'
+    else:
+        assert result == 'List test Created Successfully.'

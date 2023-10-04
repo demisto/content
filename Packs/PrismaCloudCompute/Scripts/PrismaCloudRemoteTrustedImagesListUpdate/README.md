@@ -24,8 +24,8 @@ This script uses the following commands and scripts.
 | **Argument Name** | **Description** |
 | --- | --- |
 | list_name | The name of the XSOAR internal list we wish to use in order to update the remote trust images list. |
-| trusted_group_id | The trusted group which should be updated with the images of the given list. In order to get the trusted groups ID, either use the Prisma Cloud UI \(the ID would be the group name\) or use the "prisma-cloud-compute-trusted-images-get" command. |
-| current_trusted_images | The current state of the trusted images in Prisma Cloud. Can be retrieved with the "prisma-cloud-compute-trusted-images-get" command. |
+| trusted_group_id | The trusted group which should be updated with the images of the given list. In order to get the trusted groups ID, either use the Prisma Cloud UI \(the ID would be the group name\) or use the "prisma-cloud-compute-trusted-images-list" command. |
+| current_trusted_images | The current state of the trusted images in Prisma Cloud. Can be retrieved with the "prisma-cloud-compute-trusted-images-list" command. |
 
 ## Outputs
 
