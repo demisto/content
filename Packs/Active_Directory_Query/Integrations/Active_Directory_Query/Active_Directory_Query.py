@@ -1980,7 +1980,7 @@ def main():
             delete_group()
 
         elif command == 'ad-test-credentials':
-            return return_results(test_credentials_command(SERVER_IP, ntlm_connection=demisto.params().get('ntlm')))
+            return return_results(test_credentials_command(SERVER_IP, ntlm_connection=NTLM_AUTH))
 
         # IAM commands
         elif command == 'iam-get-user':
