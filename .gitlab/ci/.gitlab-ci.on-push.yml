@@ -304,7 +304,11 @@ xpanse-prepare-testing-bucket:
     - section_start "Destroy Instances"
     - python3 ./Tests/scripts/destroy_instances.py --artifacts-dir $ARTIFACTS_FOLDER --env-file $ARTIFACTS_FOLDER/env_results.json --instance-role "$INSTANCE_ROLE"
     - if [ $? -ne 0 ]; then
-        echo "Failed to destroy instances, exit code"$?";
+    - python3 ./Tests/scripts/destroy_instances.py --artifacts-dir $ARTIFACTS_FOLDER --env-file $ARTIFACTS_FOLDER/env_results.json --instance-role "$INSTANCE_ROLE"
+    - destroy_instances_exit_code=$?
+    - |
+      if [ ${destroy_instances_exit_code} -ne 0 ]; then
+        echo "Failed to destroy instances, exit code: ${destroy_instances_exit_code}"
       fi
     - section_end "Destroy Instances"
 
@@ -510,8 +514,8 @@ xsiam_server_ga:
         - ${ARTIFACTS_FOLDER}/modeling_rules_results.xml
     paths:
       - ${ARTIFACTS_FOLDER}/modeling_rules_results.xml
-      - ${CI_PROJECT_DIR}/artifacts/*  # restoring the default artifacts path from the job default settings
-      - ${CI_PROJECT_DIR}/pipeline_jobs_folder/*  # restoring the default artifacts path from the job default settings
+      - /builds/xsoar/content/artifacts/*  # restoring the default artifacts path from the job default settings
+      - /builds/xsoar/content/pipeline_jobs_folder/*  # restoring the default artifacts path from the job default settings
 
 xsoar_ng_server_ga:
   extends:
@@ -577,7 +581,7 @@ test-upload-flow:
     -   echo "Sleeping for 10 seconds before retrying"
     -   sleep 10
     - done
-    - echo "Successful triggered test upload - ${CI_SERVER_URL}/${CI_PROJECT_NAMESPACE}/content/-/pipelines/$pipeline_id"  # disable-secrets-detection
+    - echo "Successful triggered test upload - https://code.pan.run/xsoar/content/-/pipelines/$pipeline_id"  # disable-secrets-detection
     - section_end "Trigger Test Upload Flow On Testing Branch"
 
     - section_start "Wait For Upload To Finish"
