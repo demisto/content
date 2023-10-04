@@ -1779,7 +1779,7 @@ def test_credentials_command(SERVER_IP, ntlm_connection):
             server_ip=SERVER_IP,
             username=username,
             password=args.get('password'),
-            argToBoolean(ntlm_connection),
+            ntlm_connection=argToBoolean(ntlm_connection),
             auto_bind=True,
         )
         connection.unbind()
