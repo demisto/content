@@ -592,7 +592,7 @@ class Client(BaseClient):
 
     def get_ticket_history(self, ticket_id: str) -> dict:
         # Note: this endpoint has a different structure than the rest:
-        #   1. no `data` (resuluts are returned directly in the root).
+        #   1. no `data` (results are returned directly in the root).
         #   2. the `success` field only returned on failure. (hence require_succes_true=False)
         return self.http_request(
             url_suffix=f"Ticket/History?{_OBJECT_ID.hda_name}={ticket_id}",
@@ -901,25 +901,17 @@ def list_ticket_sources_command(client: Client, args: dict) -> CommandResults:
 
 
 def get_ticket_history_command(client: Client, args: dict) -> CommandResults:
-    response = client.get_ticket_history(args["ticket_id"])
+    response = client.get_ticket_history(ticket_id := args["ticket_id"])
     response = convert_response_dates(response)
     return CommandResults(
         outputs=response,
-        outputs_prefix=f"{VENDOR}.Ticket",
+        outputs_prefix=f"{VENDOR}.TicketHistory.{ticket_id}",
         outputs_key_field=HISTORY_ID.hda_name,
         raw_response=response,
         readable_output=pat_table_to_markdown(
-            title="PAT HelpdeskAdvanced Ticket History",
+            title=f"Ticket History: {ticket_id}",
             output=response,
-            fields=(
-                UPDATE_DATE,
-                OPERATION_TYPE_ID,
-                OPERATION_DESCRIPTION,
-                FULL_NAME,
-                USER_NAME,
-                CONTACT_ID,
-                ACCOUNT_ID,
-            ),
+            fields=None,
             removeNull=True,
             is_auto_json_transform=True,
         ),

@@ -137,6 +137,53 @@ class TestCommands:
         )
 
     @classmethod
+    def test_get_ticket_history(cls, mocked_client):
+        from PATHelpdeskAdvanced import get_ticket_history_command
+
+        """
+        Given a client instance and arguments for getting a ticket's history
+        When get_ticket_history is called with the client and args
+        Then it should return a CommandResults instance with the expected outputs
+        """
+        TICKET_ID = "dummy_ticket_id"
+        history = [
+            {
+                "AccountID": "",
+                "Attachments": None,
+                "AutEmailCounter": 0,
+                "ContactID": "",
+                "Data": {
+                    "Comment": "testing",
+                    "From": "Solved",
+                    "FromID": "S6",
+                    "To": "In Progress",
+                    "ToID": "S2",
+                },
+                "ExternalAction": None,
+                "FullName": "John Doe",
+                "HistoryID": 5665556,
+                "OperationDescription": "Status change",
+                "OperationTypeID": 20,
+                "UpdateDate": "2023-10-04T07:45:35Z",
+                "UserID": "S00000C",
+                "Username": "username",
+            }
+        ]
+        mocked_client.get_ticket_history.return_value = history
+
+        result = get_ticket_history_command(mocked_client, {"ticket_id": TICKET_ID})
+        assert result.outputs_prefix == f"HelpdeskAdvanced.TicketHistory.{TICKET_ID}"
+        assert result.outputs == history
+        assert result.raw_response == history
+        assert result.readable_output == (
+            "### Ticket History: dummy_ticket_id\n"
+            "|Aut Email Counter|Data|Full Name|History ID|Operation Description|Operation Type ID|Update Date|User ID|Username|\n"
+            "|---|---|---|---|---|---|---|---|---|\n|  |"
+            " ***Comment***: testing<br>***From***: Solved<br>***FromID***: S6<br>***To***:"
+            " In Progress<br>***ToID***: S2 | John Doe |  | Status change |  | 2023-10-04T07:45:35Z | S00000C | username |\n"
+        )
+
+    @classmethod
     def test_list_tickets(cls, mocked_client):
         """
         Given a client instance
