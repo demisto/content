@@ -111,6 +111,7 @@ def calculate_test_playbooks_results_table(jira_tickets_for_playbooks: dict[str,
         headers = copy.copy(TEST_SUITE_BASE_HEADERS)
     else:
         headers = copy.copy(TEST_SUITE_FIXED_HEADERS)
+    headers_offset = len(headers)
     server_versions_list: list[str] = sorted(server_versions)
     for server_version in server_versions_list:
         for status in TEST_SUITE_STATUSES:
@@ -152,7 +153,7 @@ def calculate_test_playbooks_results_table(jira_tickets_for_playbooks: dict[str,
             tabulate_data.append(row)
 
             # Offset the total row by the number of fixed headers
-            for i, cell in enumerate(row[len(headers):], start=len(headers)):
+            for i, cell in enumerate(row[headers_offset:], start=headers_offset):
                 if cell != NOT_AVAILABLE:
                     total_row[i] += cell
         else:
