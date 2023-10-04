@@ -88,7 +88,7 @@ There is no context output for this command.
 
 ***
 Get OPSWAT sanitization result (Requires CDR feature).
-In order to have sanitized versions of the file, the DeepCDR feature needs to be enabled in the Worfflow rule used for scanning the file.
+In order to have sanitized versions of the file, the DeepCDR feature needs to be enabled in the Workflow rule used for scanning the file.
 
 #### Base Command
 
