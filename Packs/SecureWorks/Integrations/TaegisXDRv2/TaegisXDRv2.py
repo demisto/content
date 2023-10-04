@@ -560,14 +560,14 @@ def fetch_alerts_command(client: Client, env: str, args=None):
 
 
 def fetch_assets_command(client: Client, env: str, args=None):
-    page = arg_to_number(args.get("page", 0))
-    page_size = arg_to_number(args.get("page_size", 10))
+    page = arg_to_number(args.get("page")) or 0
+    page_size = arg_to_number(args.get("page_size")) or 10
 
     variables: dict[str, Any] = {
         "input": {},
         "pagination_input": {
             "limit": page_size,
-            "offset": page_size * page,  # type: ignore
+            "offset": page_size * page,
         }
     }
 
@@ -1333,14 +1333,14 @@ def fetch_playbook_execution_command(client: Client, env: str, args=None):
 
 
 def fetch_users_command(client: Client, env: str, args=None):
-    page = arg_to_number(args.get("page", 0))
-    page_size = arg_to_number(args.get("page_size", 10))
+    page = arg_to_number(args.get("page")) or 0
+    page_size = arg_to_number(args.get("page_size")) or 10
 
     variables: dict[str, Any] = {
         "filters": {
             "status": args.get("status", ""),
             "perPage": page_size,
-            "pageOffset": page_size * page,  # type: ignore
+            "pageOffset": page_size * page,
         }
     }
     fields: str = args.get("fields") or "user_id email family_name given_name status"
