@@ -1,6 +1,6 @@
 [MODEL: dataset = brocade_switch_raw]
 alter
-    switch_name = arrayindex(regextract(_raw_log, "\<\d+\>\s*\w+\s+\d+\s\d+:\d+:\d+\s(\w\-]+)\s"), 0),
+    switch_name = arrayindex(regextract(_raw_log, "\<\d+\>\s*\w+\s+\d+\s+\d+:\d+:\d+\s+([\w\-]+)\s"), 0),
     syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\s*\w+"), 0)),
     event_payload = arrayindex(regextract(_raw_log, "\d{2}\:\d{2}\:\d{2}\s\S+\s(.+)"), 0),
     event_type = if(_raw_log ~= "SCP\s|scp\s", "SCP",
@@ -48,7 +48,7 @@ alter
     source_ip = if(event_type = "CLI CMD", arrayindex(regextract(event_payload , "from\s\S+\sclient\s(\S+)"), 0), //CLI CMD Audit events
                    event_type = "SNMP", arrayindex(regextract(event_payload , "intruder IP:\s*([^, ]+)"), 0), // SNMP events
                    event_type = "Security", arrayindex(regextract(event_payload , "src IP (\S+)"), 0)), // Security events 
-    source_mac = arraystring(regextract(event_payload , "src MAC (\S+)"), ":"), // Extract MAC address from Security events & reformat it from xxxx.xxxx.xxxx to xx:xx:xx:xx:xx:xx
+    source_mac = arraystring(regextract(event_payload , "src MAC (\S+)"), ":"), // Extract MAC address from Security events
     source_username = if(event_type = "CLI CMD", arrayindex(regextract(event_payload, "\sby\s+(\S+)"), 0),
                          event_type = "Security", arrayindex(regextract(event_payload , "\sby\s+(?:user\s+)?(\S+)"), 0)),
     syslog_facility = floor(divide(syslog_priority, 8)),
@@ -57,6 +57,7 @@ alter
 | alter 
     event_outcome = coalesce(access_outcome, auth_status, dhcps_outcome, mdup_outcome, interface_port_state, server_response, system_poe_outcome), 
     event_outcome_reason = coalesce(dhcps_outcome_reason, mdup_outcome_reason, system_poe_outcome_reason),
+    source_mac_formatted = arraystring(regextract(source_mac, "[\da-fA-F]{2}"), ":"), // reformat the mac from xxxx.xxxx.xxxx to xx:xx:xx:xx:xx:xx
     source_ipv4 = if(source_ip ~= "(?:\d{1,3}\.){3}\d{1,3}", source_ip),
     source_ipv6 = if(source_ip ~= "(?:[a-fA-F\d]{0,4}\:){7}[\wa-fA-F]{0,4}", source_ip),
     syslog_severity = to_string(subtract(syslog_priority, multiply(syslog_facility, 8))),
@@ -79,7 +80,7 @@ alter
     xdm.source.host.device_id = client_id,
     xdm.source.host.ipv4_addresses = if(source_ipv4 != null, arraycreate(source_ipv4)),
     xdm.source.host.ipv6_addresses = if(source_ipv6 != null, arraycreate(source_ipv6)),
-    xdm.source.host.mac_addresses = if(source_mac != null, arraycreate(source_mac)),
+    xdm.source.host.mac_addresses = if(source_mac_formatted != null, arraycreate(source_mac_formatted)),
     xdm.source.sent_packets = to_integer(access_attempts),
     xdm.source.user.username = source_username,
     xdm.target.interface = interface_port,
