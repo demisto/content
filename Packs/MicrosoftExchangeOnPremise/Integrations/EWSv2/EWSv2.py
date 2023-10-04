@@ -480,7 +480,7 @@ def get_account_autodiscover(account_email, access_type=ACCESS_TYPE, time_zone=N
             config_args = construct_config_args(context_dict, credentials)
             account = Account(
                 primary_smtp_address=account_email, autodiscover=False, config=Configuration(**config_args),
-                access_type=access_type, default_timezone=EWSTimeZone(time_zone)
+                access_type=access_type, default_timezone=time_zone
             )
             account.root.effective_rights.read  # pylint: disable=E1101
             return account
