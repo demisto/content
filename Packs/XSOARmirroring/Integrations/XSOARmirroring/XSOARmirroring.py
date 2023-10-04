@@ -82,7 +82,7 @@ class Client(BaseClient):
             url_suffix=f'/investigation/{incident_id}',
             json_data=data
         )
-        return inv_with_entries.get('entries')
+        return inv_with_entries.get('entries', [])
 
     def get_incident_fields(self) -> List[Dict[str, Any]]:
         return self._http_request(
@@ -317,7 +317,7 @@ tuple[Dict[str, Union[List[Dict[Any, Any]], str, Any]], List[Dict[str, Any]]]:
     :rtype: ``Tuple[Dict[str, str], List[dict]]``
     """
     demisto.debug(f'last run is: {last_run}')
-    last_fetched_incidents: list = last_run.get('last_fetched_incidents', [])  # type: ignore
+    last_fetched_incidents: list = last_run.get('last_fetched_incidents', []) # type: ignore
     if not last_fetch:
         last_fetch = first_fetch_time  # type: ignore
     else:
@@ -338,8 +338,7 @@ tuple[Dict[str, Union[List[Dict[Any, Any]], str, Any]], List[Dict[str, Any]]]:
 
     demisto.debug(f'XSOAR Mirroring: Fetching incidents since last fetch: {last_fetch}')
 
-    incidents, last_fetched_incidents = get_and_dedup_incidents(client,last_fetched_incidents,
-                                                                  query, max_results, last_fetch)
+    incidents, last_fetched_incidents = get_and_dedup_incidents(client, last_fetched_incidents, query, max_results, last_fetch)
     if fetch_incident_history:
         integration_context = get_integration_context()
         incident_mirror_reset: dict = {incident['id']: True for incident in incidents}
@@ -801,25 +800,22 @@ def update_remote_system_command(client: Client, args: Dict[str, Any], mirror_ta
     return new_incident_id
 
 
-def get_and_dedup_incidents(client: Client, last_fetched_incidents: list[dict],
+def get_and_dedup_incidents(client: Client, last_fetched_incidents:  List[Any],
                             query: str, max_results: int, last_fetch: Union[str, int]) -> tuple[list[dict], list[dict]]:
     """ get incidents and dedup the incidents response.
 
     Cases:
     1.  Empty incidents list (no new incidents received from API response).
-        Meaning: Usually means there are not any more incidents to fetch at the moment.
-        Handle: Return empty list of incidents and the unchanged list of 'last_fetched_incidents' for next run.
+        Return empty list of incidents and the unchanged the list of 'last_fetched_incidents'.
 
-    2.  The response include incidents from the previous fetch cycle.
-        Meaning: There are potentially more incidents with the same timestamp.
-        Handle: Get more incidents util the number of the incident equal to the requested max fetch_limit.
-        Add the list of fetched incidents IDs to current 'last_fetched_incidents' from last run,
-        return list of new incidents and updated list of 'last_fetched_incidents' for next run.
+    2.  The response includes incidents from the previous fetch cycle, with the same timestamp.
+        Fetch incidents until the number of incidents is equal to the requested max fetch_limit.
+        Add the list of fetched incident IDs to the current 'last_fetched_incidents' from last run,
+        return a list of new incidents, and updated list of 'last_fetched_incidents'.
 
-    3.  Most recent incident has later timestamp then other incidents in the response.
-        Meaning: This is the normal case where incidents in the response have different timestamps.
-        Handle: Return list of new incidents and a list of 'new_ids' containing only IDs of
-                incidents with identical latest time for next run.
+    3.  Most recent incident has a later timestamp than other incidents in the response.
+        Return a list of new incidents and a list of 'new_ids' containing only the IDs of
+        incidents with identical latest times for next run.
 
     Args:
         incidents (list[dict]): List of incidents from the current fetch response.
@@ -828,34 +824,35 @@ def get_and_dedup_incidents(client: Client, last_fetched_incidents: list[dict],
     Returns:
         tuple[list[dict], list[str]: The list of dedup incidents and ID list of incidents of current fetch.
     """
-    last_fatched_incident = (dateparser.parse(last_fetched_incidents[-1]["created"])
-                             if last_fetched_incidents else None)
+    last_fatched_incident = dateparser.parse(str(last_fetch))
 
     new_incidents: list = []
     page = 0
     while len(new_incidents) < max_results:
         incidents = client.search_incidents(
-        query=query,
-        max_results=max_results,
-        start_time=last_fetch,
-        field="created",
-        page=page,
+            query=query,
+            max_results=max_results,
+            start_time=last_fetch,
+            field="created",
+            page=page,
         )
-        # Case 1: Empty response len(incidents) == 0
+        # Case 1: Empty response.
         if len(incidents) == 0:
             break
         for incident in incidents:
             if len(new_incidents) >= max_results:
                 break
-            incident_dict = {"id": incident["id"], "created": incident["created"]}
-            incident_creation_time = dateparser.parse(incident["created"])
-            if incident_dict not in last_fetched_incidents:
+            incident_id = incident.get("id")
+            incident_creation_time = dateparser.parse(incident.get("created", datetime.now()))
+            if incident_id not in last_fetched_incidents:
                 # Case 3: The last fetched incident with the different timestamp then the previous incident.
                 if last_fatched_incident and incident_creation_time and last_fatched_incident < incident_creation_time:
-                    last_fetched_incidents = [incident_dict]
+                    demisto.debug(f"XSOAR Mirroring: reset the last_fetched_incidents list with id {incident_id}")
+                    last_fetched_incidents = [incident_id]
                 # Case 2: The last fetched incident with the same timestamp as the previous incident.
                 else:
-                    last_fetched_incidents.append(incident_dict)
+                    demisto.debug(f"XSOAR Mirroring: attached id {incident_id} to the last_fetched_incidents list")
+                    last_fetched_incidents.append(incident_id)
                 new_incidents.append(incident)
                 last_fatched_incident = incident_creation_time
         page += 1
