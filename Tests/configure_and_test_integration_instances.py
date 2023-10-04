@@ -71,7 +71,9 @@ AVOID_DOCKER_IMAGE_VALIDATION = {
 }
 ID_SET_PATH = './artifacts/id_set.json'
 XSOAR_BUILD_TYPE = "XSOAR"
+XSOAR_SASS_BUILD_TYPE = "XSOAR SAAS"
 CLOUD_BUILD_TYPE = "XSIAM"
+BUILD_TYPES = [XSOAR_BUILD_TYPE, XSOAR_SASS_BUILD_TYPE, CLOUD_BUILD_TYPE]
 MARKETPLACE_TEST_BUCKET = 'marketplace-ci-build/content/builds'
 MARKETPLACE_XSIAM_BUCKETS = 'marketplace-v2-dist-dev/upload-flow/builds-xsiam'
 ARTIFACTS_FOLDER_MPV2 = os.getenv('ARTIFACTS_FOLDER_MPV2', '/builds/xsoar/content/artifacts/marketplacev2')
@@ -955,7 +957,8 @@ def options_handler(args=None):
                         default='./artifacts/filter_file.txt')
     parser.add_argument('-pl', '--pack_ids_to_install', help='Path to the packs to install file.',
                         default='./artifacts/content_packs_to_install.txt')
-    parser.add_argument('--build_object_type', help='Build type running: XSOAR or XSIAM')
+    parser.add_argument('--build_object_type', help=f'Build type running, choices: {",".join(BUILD_TYPES)}',
+                        default=Build.run_environment, choices=BUILD_TYPES)
     parser.add_argument('--cloud_machine', help='cloud machine to use, if it is cloud build.')
     parser.add_argument('--cloud_servers_path', help='Path to secret cloud server metadata file.')
     parser.add_argument('--cloud_servers_api_keys', help='Path to file with cloud Servers api keys.')
@@ -1775,7 +1778,7 @@ def create_build_object() -> Build:
     logging.info(f'Build type: {options.build_object_type}')
     if options.build_object_type == XSOAR_BUILD_TYPE:
         return XSOARBuild(options)
-    elif options.build_object_type == CLOUD_BUILD_TYPE:
+    elif options.build_object_type in [CLOUD_BUILD_TYPE, XSOAR_SASS_BUILD_TYPE]:
         return CloudBuild(options)
     else:
         raise Exception(f"Wrong Build object type {options.build_object_type}.")
