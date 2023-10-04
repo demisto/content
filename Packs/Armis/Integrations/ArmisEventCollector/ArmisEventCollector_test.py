@@ -398,18 +398,8 @@ class TestFetchFlow:
             'time': '2023-01-01T01:00:30.123456+00:00'
         }]
 
-    case_initial_fetch = (  # type: ignore
-        1000,
-        {},
-        fetch_start_time,
-        ['Events'],
-        events_with_different_time_1,
-        events_with_different_time_1,
-        {'events_last_fetch_ids': ['3'],
-            'events_last_fetch_time': '2023-01-01T01:00:30.123456+00:00', 'access_token': 'test_access_token'}
-    )
-
     case_first_fetch = (  # type: ignore
+        # this case test the actual first fetch that runs after the initial fetch (that only sets the last run)
         1000,
         {'alerts_last_fetch_time': '2023-01-01T01:00:00'},
         fetch_start_time,
