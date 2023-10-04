@@ -92,6 +92,7 @@ def execute_command(name, args=None):
         return [{'Contents': json.dumps({'b-example:*': '2023-10-03T15:34:52Z'}), 'Type': 'LIST'}]
     if name in ['setList', 'createList']:
         return None
+    return None
 
 
 def test_update_local_trusted_images(mocker):

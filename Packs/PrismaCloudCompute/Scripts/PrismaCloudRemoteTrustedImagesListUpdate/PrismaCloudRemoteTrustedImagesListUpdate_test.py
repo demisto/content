@@ -139,4 +139,4 @@ def test_update_remote_list(mocker):
         {'HumanReadable': 'Updated successfully the trusted repository, image, and registry.', 'Type': 'NOTE'}])
 
     assert update_remote_list([{'_id': '1', 'images': ['img1']}]) == \
-           'Updated successfully the trusted repository, image, and registry.'
+        'Updated successfully the trusted repository, image, and registry.'
