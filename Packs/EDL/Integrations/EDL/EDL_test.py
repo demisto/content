@@ -817,7 +817,7 @@ def test_get_indicators_to_format_text_enforce_ascii(mocker):
     indicator_searcher = IndicatorsSearcher(5)
     request_args = edl.RequestArguments(out_format='PAN-OS (text)', query='', limit=3, url_port_stripping=True,
                                         url_protocol_stripping=True, url_truncate=True)
-    mocker.patch.object(demisto, 'params', return_value={'enforce_ascii': True,})
+    mocker.patch.object(demisto, 'params', return_value={'enforce_ascii': True, })
     indicators_data, _ = get_indicators_to_format(indicator_searcher, request_args)
     indicators_data = edl.create_text_out_format(indicators_data, request_args)
 
