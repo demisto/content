@@ -16,9 +16,10 @@ from Tests.scripts.utils import logging_wrapper as logging
 
 TOTAL_HEADER = "Total"
 NOT_AVAILABLE = "N/A"
-TEST_SUITE_JIRA_HEADERS = ["Jira Ticket", "Jira Ticket Resolution"]
 TEST_SUITE_STATUSES = ["Failures", "Errors", "Skipped", "Total"]
-TEST_SUITE_FIXED_HEADERS = ["Playbook ID"] + TEST_SUITE_JIRA_HEADERS
+TEST_SUITE_JIRA_HEADERS = ["Jira Ticket", "Jira Ticket Resolution"]
+TEST_SUITE_BASE_HEADERS = ["Playbook ID"]
+TEST_SUITE_FIXED_HEADERS = TEST_SUITE_BASE_HEADERS + TEST_SUITE_JIRA_HEADERS
 NO_COLOR_ESCAPE_CHAR = "\033[0m"
 RED_COLOR = "\033[91m"
 GREEN_COLOR = "\033[92m"
@@ -103,25 +104,28 @@ def calculate_test_playbooks_results_table(jira_tickets_for_playbooks: dict[str,
                                            playbooks_results: dict[str, dict[str, Any]],
                                            server_versions: set[str],
                                            add_total_row: bool = True,
-                                           no_color: bool = False) -> tuple[list[str], list[list[Any]], JUnitXml, int]:
+                                           no_color: bool = False,
+                                           with_jira: bool = True) -> tuple[list[str], list[list[Any]], JUnitXml, int]:
     xml = JUnitXml()
-    headers = copy.copy(TEST_SUITE_FIXED_HEADERS)
+    if with_jira:
+        headers = copy.copy(TEST_SUITE_FIXED_HEADERS)
+    else:
+        headers = copy.copy(TEST_SUITE_BASE_HEADERS)
     server_versions_list: list[str] = sorted(server_versions)
     for server_version in server_versions_list:
         for status in TEST_SUITE_STATUSES:
             headers.append(f"{status} ({server_version})")
     tabulate_data = []
-    total_row: list[Any] = ([NOT_AVAILABLE] * len(TEST_SUITE_FIXED_HEADERS)
+    total_row: list[Any] = ([NOT_AVAILABLE] * len(headers)
                             + [0] * (len(server_versions_list) * len(TEST_SUITE_STATUSES)))
     total_errors = 0
     for playbook_id, playbook_results in tqdm(playbooks_results.items(), desc="Generating test summary", unit="playbook",
                                               leave=True, colour='green', miniters=10, mininterval=5.0):
         row = []
-        jira_ticket = jira_tickets_for_playbooks.get(playbook_id)
-        if jira_ticket:
+        if with_jira and (jira_ticket := jira_tickets_for_playbooks.get(playbook_id)):
             row.append(jira_ticket.key)
             row.append(jira_ticket.get_field("resolution") if jira_ticket.get_field("resolution") else NOT_AVAILABLE)
-        else:
+        elif with_jira:
             row.extend([NOT_AVAILABLE] * len(TEST_SUITE_JIRA_HEADERS))
 
         skipped_count = 0
@@ -148,7 +152,7 @@ def calculate_test_playbooks_results_table(jira_tickets_for_playbooks: dict[str,
             tabulate_data.append(row)
 
             # Offset the total row by the number of fixed headers
-            for i, cell in enumerate(row[len(TEST_SUITE_FIXED_HEADERS):], start=len(TEST_SUITE_FIXED_HEADERS)):
+            for i, cell in enumerate(row[len(headers):], start=len(headers)):
                 if cell != NOT_AVAILABLE:
                     total_row[i] += cell
         else:

@@ -163,7 +163,8 @@ def main():
                                                                                                },
                                                                                                server_versions,
                                                                                                add_total_row=False,
-                                                                                               no_color=True)
+                                                                                               no_color=True,
+                                                                                               with_jira=False)
 
             if (jira_ticket := jira_tickets_for_playbooks.get(playbook_id)) or total_errors:
                 # if the ticket isn't resolved, or we found new errors, we update it, otherwise we skip it.
