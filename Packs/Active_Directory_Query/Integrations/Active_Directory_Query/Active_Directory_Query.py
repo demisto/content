@@ -1773,16 +1773,17 @@ def test_credentials_command(SERVER_IP):
     args = demisto.args()
     username = args.get('username')
     server = Server(SERVER_IP, get_info='ALL')
-    if connection := create_connection(
-        server=server,
-        server_ip=SERVER_IP,
-        username=username,
-        password=args.get('password'),
-        ntlm_connection=argToBoolean(args.get('ntlm')),
-        auto_bind=True,
-    ):
+    try:
+        connection = create_connection(
+            server=server,
+            server_ip=SERVER_IP,
+            username=username,
+            password=args.get('password'),
+            ntlm_connection=argToBoolean(demisto.params().get('ntlm')),
+            auto_bind=True,
+        )
         connection.unbind()
-    else:
+    except:
         raise DemistoException(f"Credential test with username {username} was not successful.")
     return CommandResults(
         outputs_prefix='ActiveDirectory.ValidCredentials',
