@@ -868,7 +868,7 @@ def prepare_current_incident(incident_df: pd.DataFrame, display_fields: List[str
     :param exact_match_fields: exact_match_fields
     :return:
     """
-    
+
     incident_filter = incident_df.copy()
     incident_filter = incident_df[[x for x in
                                    display_fields + similar_text_field + similar_categorical_field
