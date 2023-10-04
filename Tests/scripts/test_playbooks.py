@@ -107,27 +107,30 @@ def calculate_test_playbooks_results_table(jira_tickets_for_playbooks: dict[str,
                                            no_color: bool = False,
                                            without_jira: bool = False) -> tuple[list[str], list[list[Any]], JUnitXml, int]:
     xml = JUnitXml()
-    if without_jira:
-        headers = copy.copy(TEST_SUITE_BASE_HEADERS)
-    else:
-        headers = copy.copy(TEST_SUITE_FIXED_HEADERS)
-    headers_offset = len(headers)
+    headers = copy.copy(TEST_SUITE_BASE_HEADERS if without_jira else TEST_SUITE_FIXED_HEADERS)
+    fixed_headers_length = len(headers)
     server_versions_list: list[str] = sorted(server_versions)
     for server_version in server_versions_list:
         for status in TEST_SUITE_STATUSES:
             headers.append(f"{status} ({server_version})")
     tabulate_data = []
-    total_row: list[Any] = ([NOT_AVAILABLE] * len(headers)
-                            + [0] * (len(server_versions_list) * len(TEST_SUITE_STATUSES)))
+    total_row: list[Any] = ([NOT_AVAILABLE] * fixed_headers_length + [0] * (len(server_versions_list) * len(TEST_SUITE_STATUSES)))
     total_errors = 0
     for playbook_id, playbook_results in tqdm(playbooks_results.items(), desc="Generating test summary", unit="playbook",
                                               leave=True, colour='green', miniters=10, mininterval=5.0):
-        row = []
-        if not without_jira and (jira_ticket := jira_tickets_for_playbooks.get(playbook_id)):
-            row.append(jira_ticket.key)
-            row.append(jira_ticket.get_field("resolution") if jira_ticket.get_field("resolution") else NOT_AVAILABLE)
-        elif not without_jira:
-            row.extend([NOT_AVAILABLE] * len(TEST_SUITE_JIRA_HEADERS))
+        row: list[Any] = []
+        if not without_jira:
+            if jira_ticket := jira_tickets_for_playbooks.get(playbook_id):
+                row.extend(
+                    (
+                        jira_ticket.key,
+                        jira_ticket.get_field("resolution")
+                        if jira_ticket.get_field("resolution")
+                        else NOT_AVAILABLE,
+                    )
+                )
+            else:
+                row.extend([NOT_AVAILABLE] * len(TEST_SUITE_JIRA_HEADERS))
 
         skipped_count = 0
         errors_count = 0
@@ -135,10 +138,14 @@ def calculate_test_playbooks_results_table(jira_tickets_for_playbooks: dict[str,
             test_suite: TestSuite = playbook_results.get(server_version)
             if test_suite:
                 xml.add_testsuite(test_suite)
-                row.append(test_suite.failures)
-                row.append(test_suite.errors)
-                row.append(test_suite.skipped)
-                row.append(test_suite.tests)
+                row.extend(
+                    (
+                        test_suite.failures,
+                        test_suite.errors,
+                        test_suite.skipped,
+                        test_suite.tests,
+                    )
+                )
                 errors_count += test_suite.errors + test_suite.failures
                 if test_suite.skipped and test_suite.failures == 0 and test_suite.errors == 0:
                     skipped_count += 1
@@ -153,7 +160,7 @@ def calculate_test_playbooks_results_table(jira_tickets_for_playbooks: dict[str,
             tabulate_data.append(row)
 
             # Offset the total row by the number of fixed headers
-            for i, cell in enumerate(row[headers_offset:], start=headers_offset):
+            for i, cell in enumerate(row[fixed_headers_length:], start=fixed_headers_length):
                 if cell != NOT_AVAILABLE:
                     total_row[i] += cell
         else:
