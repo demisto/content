@@ -65,7 +65,7 @@ class Client(BaseClient):
             list[dict]: List of events objects represented as dictionaries.
         """
         params: dict[str, Any] = {'aql': aql_query, 'includeTotal': 'true', 'length': max_fetch, 'orderBy': 'time'}
-        if not after:  # this should only happen when get-event command is used without from_date argument
+        if not after:  # this should only happen when get-events command is used without from_date argument
             after = datetime.now()
         params['aql'] += f' after:{after.strftime(DATE_FORMAT)}'  # add 'after' date filter to AQL query in the desired format
         raw_response = self._http_request(url_suffix='/search/', method='GET', params=params, headers=self._headers)
