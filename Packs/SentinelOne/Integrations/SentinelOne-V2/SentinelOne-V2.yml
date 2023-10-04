@@ -1968,7 +1968,7 @@ script:
     - name: site_id
       required: true
       description: A valid site ID.
-    description: Expire the site of the given ID
+    description: Expire the site of the given ID.
     name: sentinelone-expire-site
     outputs:
     - contextPath: SentinelOne.Site.ID
@@ -2279,7 +2279,7 @@ script:
     - description: 'The queryId that is returned when creating a query under Create Query. Example: "q1xx2xx3". Get the query_id from the "get-query-id" command.'
       name: query_id
       required: true
-    description: Returns status of a Deep Visibility Query
+    description: Returns status of a Deep Visibility Query.
     name: sentinelone-get-dv-query-status
     outputs:
     - contextPath: SentinelOne.Query.Status.progressStatus
@@ -2313,7 +2313,7 @@ script:
       description: IP Address.
     - contextPath: SentinelOne.MAC.mac
       description: MAC Address.
-  dockerimage: demisto/python3:3.10.13.73190
+  dockerimage: demisto/python3:3.10.13.75921
   isfetch: true
   ismappable: true
   isremotesyncin: true
