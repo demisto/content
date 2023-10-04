@@ -72,8 +72,7 @@ class Client(BaseClient):
     For this implementation, no special attributes defined
     """
 
-    def __init__(self, base_url: str, organisation_id: str,
-                 secret_key: str, client_key: str,
+    def __init__(self, base_url: str, secret_key: str, client_key: str,
                  verify=None,
                  proxy=None):
         super().__init__(
@@ -84,9 +83,6 @@ class Client(BaseClient):
         self.token_url = TOKEN_ENDPOINT
         self.secret_key = secret_key
         self.client_key = client_key
-        self.organisation_id = organisation_id
-        if not self.organisation_id.isdigit():
-            raise DemistoException("Invalid Input Error: The Organization ID must be a number.")
 
     def get_access_token(self):
         """
@@ -1290,7 +1286,6 @@ def main():
     params = demisto.params()
     secret_key = params.get('credentials', {}).get('password')
     client_key = params.get('credentials', {}).get('identifier')
-    organisation_id = params.get('organization_id')
 
     # get the service API url
     base_url = params.get("api_url")
@@ -1303,7 +1298,6 @@ def main():
     try:
         client = Client(
             base_url=base_url,
-            organisation_id=organisation_id,
             secret_key=secret_key,
             client_key=client_key,
             proxy=proxy,

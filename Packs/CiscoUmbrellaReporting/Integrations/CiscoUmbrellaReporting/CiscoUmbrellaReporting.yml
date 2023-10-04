@@ -14,8 +14,9 @@ configuration:
   name: organization_id
   required: true
   type: 0
-- additionalinfo: Client ID and Client Secret.
-  display: Client ID
+- additionalinfo: API Key and API Secret.
+  display: API Key
+  displaypassword: API Secret
   name: credentials
   required: true
   type: 9
