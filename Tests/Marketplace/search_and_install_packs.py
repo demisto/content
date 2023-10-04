@@ -457,7 +457,7 @@ def install_packs(client: demisto_client,
                                         api_exception_handler=api_exception_handler,
                                         should_try_handler=should_try_handler,
                                         request_timeout=request_timeout,
-                                       )
+                                        )
 
 
 def search_pack_and_its_dependencies(client: demisto_client,

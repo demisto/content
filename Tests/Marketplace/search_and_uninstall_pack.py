@@ -22,7 +22,7 @@ def check_if_pack_still_installed(client: demisto_client,
                                   attempts_count: int = 3,
                                   sleep_interval: int = 30,
                                   request_timeout: int = 300,
-                                 ):
+                                  ):
     """
 
     Args:
@@ -51,7 +51,7 @@ def check_if_pack_still_installed(client: demisto_client,
                                         sleep_interval=sleep_interval,
                                         success_handler=success_handler,
                                         request_timeout=request_timeout,
-                                       )
+                                        )
 
 
 def get_all_installed_packs(client: demisto_client, non_removable_packs: list):
