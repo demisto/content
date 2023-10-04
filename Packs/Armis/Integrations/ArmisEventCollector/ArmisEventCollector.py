@@ -455,6 +455,7 @@ def main():  # pragma: no cover
             if not last_run:  # initial fetch - update last fetch time values to current time
                 set_last_run_with_current_time(last_run, event_types_to_fetch)
                 demisto.setLastRun(last_run)
+                demisto.debug('debug-log: Initial fetch - updating last fetch time value to current time for each event type.')
 
             else:
                 if command == 'armis-get-events':
