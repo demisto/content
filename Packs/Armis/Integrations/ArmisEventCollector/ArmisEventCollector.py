@@ -381,7 +381,6 @@ def handle_fetched_events(events: list[dict[str, Any]], next_run: dict[str, str 
         demisto.setLastRun(next_run)
         demisto.debug(f'debug-log: {len(events)} events were sent to XSIAM.')
     else:
-        demisto.setLastRun(next_run)
         demisto.debug('debug-log: No new events fetched.')
 
     demisto.debug(f'debug-log: {next_run=}')
@@ -453,30 +452,32 @@ def main():  # pragma: no cover
         elif command in ('fetch-events', 'armis-get-events'):
             should_return_results = False
 
-            if not last_run:  # in initial fetch - update last fetch time values to current time
+            if not last_run:  # initial fetch - update last fetch time values to current time
                 set_last_run_with_current_time(last_run, event_types_to_fetch)
+                demisto.setLastRun(last_run)
 
-            if command == 'armis-get-events':
-                last_run = {}
-                should_return_results = True
+            else:
+                if command == 'armis-get-events':
+                    last_run = {}
+                    should_return_results = True
 
-            should_push_events = (command == 'fetch-events' or should_push_events)
+                should_push_events = (command == 'fetch-events' or should_push_events)
 
-            events, next_run = fetch_events(
-                client=client,
-                max_fetch=max_fetch,
-                last_run=last_run,
-                fetch_start_time=fetch_start_time,
-                event_types_to_fetch=event_types_to_fetch,
-            )
+                events, next_run = fetch_events(
+                    client=client,
+                    max_fetch=max_fetch,
+                    last_run=last_run,
+                    fetch_start_time=fetch_start_time,
+                    event_types_to_fetch=event_types_to_fetch,
+                )
 
-            demisto.debug(f'debug-log: {len(events)} events fetched from armis api')
+                demisto.debug(f'debug-log: {len(events)} events fetched from armis api')
 
-            if should_push_events:
-                handle_fetched_events(events, next_run)
+                if should_push_events:
+                    handle_fetched_events(events, next_run)
 
-            if should_return_results:
-                return_results(events_to_command_results(events))
+                if should_return_results:
+                    return_results(events_to_command_results(events))
 
         else:
             raise NotImplementedError(f'Command {command} is not implemented')
