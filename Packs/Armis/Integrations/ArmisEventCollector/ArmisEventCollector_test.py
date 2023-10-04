@@ -398,7 +398,7 @@ class TestFetchFlow:
             'time': '2023-01-01T01:00:30.123456+00:00'
         }]
 
-    case_first_fetch = (  # type: ignore
+    case_initial_fetch = (  # type: ignore
         1000,
         {},
         fetch_start_time,
@@ -408,6 +408,18 @@ class TestFetchFlow:
         {'events_last_fetch_ids': ['3'],
             'events_last_fetch_time': '2023-01-01T01:00:30.123456+00:00', 'access_token': 'test_access_token'}
     )
+
+    case_first_fetch = (  # type: ignore
+        1000,
+        {'alerts_last_fetch_time': '2023-01-01T01:00:00'},
+        fetch_start_time,
+        ['Events'],
+        events_with_different_time_1,
+        events_with_different_time_1,
+        {'events_last_fetch_ids': ['3'],
+            'events_last_fetch_time': '2023-01-01T01:00:30.123456+00:00', 'access_token': 'test_access_token'}
+    )
+
     case_second_fetch = (  # type: ignore
         1000,
         {'events_last_fetch_ids': ['1', '2', '3'],
@@ -463,7 +475,7 @@ class TestFetchFlow:
     )
 
     @ pytest.mark.parametrize('max_fetch, last_run, fetch_start_time, event_types_to_fetch, response, events, next_run', [
-        case_first_fetch, case_second_fetch, case_second_fetch_with_duplicates,
+        case_initial_fetch, case_first_fetch, case_second_fetch, case_second_fetch_with_duplicates,
         case_no_new_event_from_fetch, case_all_events_from_fetch_have_the_same_time
     ])
     def test_fetch_flow_cases(self, mocker, dummy_client, max_fetch, last_run,
