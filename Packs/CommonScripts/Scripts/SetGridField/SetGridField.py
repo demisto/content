@@ -162,6 +162,13 @@ def get_current_table(grid_id: str) -> pd.DataFrame:
         DataFrame: Existing grid data.
     """
     custom_fields = demisto.incident().get("CustomFields", {})
+    if grid_id not in custom_fields:
+        demisto.info(f"The following grid id was not found: {grid_id}. Please make sure you entered the correct "
+                         f"incident type with the \"Machine name\" as it appears in the incident field editor in "
+                         f"Settings->Advanced ->Fields (Incident). Also make sure that this value appears in the "
+                         f"incident Context Data under incident - if not then please consult with support.")
+        return pd.DataFrame()
+
     current_table: Optional[List[dict]] = custom_fields.get(grid_id)
 
     return pd.DataFrame(current_table)
@@ -351,13 +358,6 @@ def main():
     try:
         # Normalize grid id from any form to connected lower words, e.g. my_word/myWord -> myword
         grid_id = normalized_string(args.get('grid_id'))
-        custom_fields = demisto.incident().get("CustomFields", {})
-        if grid_id not in custom_fields:
-            return_results(f"The following grid id was not found: {grid_id}. Please make sure you entered the correct "
-                            f"incident type with the \"Machine name\" as it appears in the incident field editor in "
-                            f"Settings->Advanced ->Fields (Incident). Also make sure that this value appears in the "
-                            f"incident Context Data under incident - if not then please consult with support.")
-
 
         context_path = args.get('context_path')
         # Build updated table
