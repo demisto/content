@@ -958,7 +958,7 @@ def options_handler(args=None):
     parser.add_argument('-pl', '--pack_ids_to_install', help='Path to the packs to install file.',
                         default='./artifacts/content_packs_to_install.txt')
     parser.add_argument('--build_object_type', help=f'Build type running, choices: {",".join(BUILD_TYPES)}',
-                        default=Build.run_environment, choices=BUILD_TYPES)
+                        default=Build.run_environment)
     parser.add_argument('--cloud_machine', help='cloud machine to use, if it is cloud build.')
     parser.add_argument('--cloud_servers_path', help='Path to secret cloud server metadata file.')
     parser.add_argument('--cloud_servers_api_keys', help='Path to file with cloud Servers api keys.')
