@@ -1,8 +1,7 @@
 id: Cyble Vision Alert V2
 version: -1
 name: Cyble Vision Alert V2
-description: ""
-fromversion: 6.2.0
+description: Playbook for Cyble Vision Alert V2.
 starttaskid: "0"
 tasks:
   "0":
@@ -20,11 +19,12 @@ tasks:
       '#none#':
       - "1"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 50
+          "y": -20
         }
       }
     note: false
@@ -47,9 +47,12 @@ tasks:
       type: regular
       iscommand: true
       brand: cybleeventsv2
+    nexttasks:
+      '#none#':
+      - "2"
     scriptarguments:
       end_date:
-        simple: ${incident.end_date}
+        simple: ${inputs.end_date}
       from:
         simple: "0"
       limit:
@@ -57,8 +60,9 @@ tasks:
       order_by:
         simple: asc
       start_date:
-        simple: ${incident.start_date}
+        simple: ${inputs.start_date}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -73,15 +77,43 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: b347133b-3ed6-4d2f-8e8f-a8cd36d402dd
+    type: title
+    task:
+      id: b347133b-3ed6-4d2f-8e8f-a8cd36d402dd
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 275,
+        "height": 595,
         "width": 380,
         "x": 50,
-        "y": 50
+        "y": -20
       }
     }
   }
@@ -91,13 +123,14 @@ inputs:
     simple: "2023-05-30T00:00:00+00:00"
   required: true
   description: ""
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: end_date
   value:
     simple: "2023-05-31T00:00:00+00:00"
   required: true
   description: ""
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs: []
 tests:
 - No tests (auto formatted)
+fromversion: 6.2.0

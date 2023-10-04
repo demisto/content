@@ -7,13 +7,15 @@ This integration was integrated and tested with version 2.0 of cybleeventsv2
 2. Search for CybleEventsV2.
 3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | URL | Server URL \(e.g. <https://example.net\>) | True |
-    | Access Token | Access Token | True |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
-    | Incident Fetch Limit | Maximum incidents to be fetched every time. Upper limit is 50 incidents. | False |
+    | **Parameter**                      | **Description**                                                         | **Required** |
+    |------------------------------------|-------------------------------------------------------------------------| --- |
+    | URL                                | Server URL \(e.g. <https://example.net\>)                               | True |
+    | Access Token                       | Access Token                                                            | True |
+    | Trust any certificate (not secure) |                                                                         | False |
+    | Use system proxy settings          |                                                                         | False |
+    | Incident Fetch Limit               | Maximum incidents to be fetched every time. Upper limit is 50 incidents | False |
+    | Hide Card Details                  | Select to hide CVV and Expiry date of card                              | False | 
+     | Update Incident to Remote System   | Select to update changes in any incident to Vision                      | False |
 
 4. To ensure that fetch incidents works:
     * Select the Fetches incidents radio button.
