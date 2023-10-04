@@ -258,7 +258,7 @@ def get_sanitized_file_command():
     scan_id = demisto.args()['id']
     res = get_scan_result(scan_id)
     # Check the scan report whether there is a sanitized file.
-    if res.get('process_info', {}).get('post_processing', {}).get('actions_ran', {}) == "Sanitized":
+    if res.get('process_info', {}).get('post_processing', {}).get('actions_ran') == "Sanitized":
         sanitized_file_name = res['process_info']['post_processing'].get('converted_destination', 'sanitized.file')
         res = get_sanitized_file(scan_id)
         demisto.results(fileResult(filename=sanitized_file_name, data=res, file_type=EntryType.ENTRY_INFO_FILE))
