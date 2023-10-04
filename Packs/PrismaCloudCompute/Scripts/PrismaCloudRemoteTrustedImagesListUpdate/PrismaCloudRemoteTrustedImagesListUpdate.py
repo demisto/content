@@ -18,7 +18,7 @@ def get_xsoar_list(list_name: str) -> dict:
     return current_list
 
 
-def current_remote_images_same_as_local(remote_images, local_images):
+def current_remote_images_same_as_local(remote_images: list, local_images: list):
     """
     Compares remote images to local trusted images list and returns True if same, False otherwise.
     """
@@ -26,7 +26,7 @@ def current_remote_images_same_as_local(remote_images, local_images):
 
 
 def update_group_from_images(remote_trusted_images: Dict[str, Any], current_trusted_images: list, trusted_group_id: str) -> \
-    tuple[bool, str]:
+        tuple[bool, str]:
     """
     Update the remote trusted images group with latest images from local source.
     """
@@ -40,7 +40,7 @@ def update_group_from_images(remote_trusted_images: Dict[str, Any], current_trus
     return False, f'Group {trusted_group_id} was not found in the given trusted images groups list.'
 
 
-def update_remote_list(current_dict):
+def update_remote_list(current_dict: dict):
     """
     Updates the remote trusted images list with the latest images from the local trusted images list.
     """

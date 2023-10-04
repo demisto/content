@@ -118,7 +118,7 @@ def test_update_local_trusted_images(mocker):
 
 @pytest.mark.parametrize('given_input, expected', [
     (None, []),
-    ('{"str": "value"}', [{'str': 'value'}]), 
+    ('{"str": "value"}', [{'str': 'value'}]),
     ({"dict": "value"}, [{'dict': 'value'}]),
     ([{"list": "value"}], [{"list": "value"}])
 ])
@@ -161,13 +161,13 @@ def test_get_list_if_exist(mocker, list_name, get_list_response, expected_exists
 
 @freeze_time('2022-02-22T00:00:00')
 @pytest.mark.parametrize('current_dict, deployed_images, passed_ci_scan_images, expected', [
-    ({}, 
+    ({},
      [{'repoTag': {'registry': 'r1', 'repo': 'img1'}}],
      [{'repoTag': {'registry': 'r2', 'repo': 'img2'}}],
      {'r1/img1:*': '2022-02-22T00:00:00Z', 'r2/img2:*': '2022-02-22T00:00:00Z'}),
     ({'r1/img1:*': '2022-02-21T00:00:00Z'},
      [],
-     [{'repoTag': {'registry': 'r1', 'repo': 'img1'}}], 
+     [{'repoTag': {'registry': 'r1', 'repo': 'img1'}}],
      {'r1/img1:*': '2022-02-22T00:00:00Z'}),
 ])
 def test_update_dict_from_images(current_dict, deployed_images, passed_ci_scan_images, expected):
@@ -185,11 +185,11 @@ def test_update_dict_from_images(current_dict, deployed_images, passed_ci_scan_i
     assert result == expected
 
 
-@freeze_time('2022-01-03T00:00:00')
+@freeze_time('2022-01-04T00:00:00')
 @pytest.mark.parametrize('current_dict, time_frame, expected', [
     (
         {
-            'image1': '2022-01-01T00:00:00', 
+            'image1': '2022-01-01T00:00:00',
             'image2': '2022-01-02T00:00:00',
             'image3': '2022-01-03T00:00:00'
         },
@@ -214,7 +214,7 @@ def test_remove_expired_images(current_dict, time_frame, expected):
     When:
         - Calling the script with a time frame
     Then:
-        - The function filters out images with timestamps older than the time frame so the returned dictionary contains only unexpired images
+        - The function returns a dictionary containing only unexpired images
     """
     from PrismaCloudLocalTrustedImagesListUpdate import remove_expired_images
 
@@ -240,7 +240,7 @@ def test_create_update_list(mocker, list_name, list_data, is_list_exist):
     mocker.patch.object(demisto, 'executeCommand', return_value=[])
 
     result = create_update_list(list_name, list_data, is_list_exist)
-    
+
     if is_list_exist:
         assert result == 'List test Updated Successfully.'
     else:
