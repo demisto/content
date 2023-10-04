@@ -2,6 +2,7 @@ import json
 import os
 from datetime import datetime, timedelta
 from tempfile import NamedTemporaryFile
+from typing import Optional
 
 from jira import JIRA, Issue
 from jira.client import ResultList
@@ -86,7 +87,7 @@ def generate_query(summary: str) -> str:
 def find_existing_jira_ticket(jira_server: JIRA,
                               now: datetime,
                               max_days_to_reopen: int,
-                              jira_issue: Issue) -> tuple[Issue | None, Issue | None, bool]:
+                              jira_issue: Optional[Issue]) -> tuple[Issue | None, Issue | None, bool]:
     link_to_issue = None
     jira_issue_to_use = None
     if use_existing_issue := (jira_issue is not None):
