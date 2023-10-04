@@ -5,7 +5,6 @@ import shutil
 import subprocess
 import time
 from pathlib import Path
-from typing import Union
 from git import GitCommandError, Head, Repo
 from zipfile import ZipFile
 from packaging.version import Version
@@ -21,7 +20,7 @@ changed_packs = set()
 # HELPER FUNCTIONS
 
 
-def json_write(file_path: str, data: Union[list, dict]):
+def json_write(file_path: str, data: list | dict):
     """ Writes given data to a json file
 
     Args:
