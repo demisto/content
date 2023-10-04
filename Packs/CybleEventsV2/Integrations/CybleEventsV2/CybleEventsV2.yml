@@ -42,7 +42,7 @@ configuration:
   name: first_fetch_timestamp
   type: 0
   required: false
-- display: Hide (CVV/Expiry)
+- display: Hide Card Details
   hidden: false
   name: hide_data
   required: false
@@ -179,7 +179,7 @@ script:
       type: String
   - description: Retrieves a User Profile schema, which holds all of the user fields within the application. Used for outgoing-mapping through the Get Schema option.
     name: get-mapping-fields
-  dockerimage: demisto/python3:3.10.13.74666
+  dockerimage: demisto/python3:3.10.13.75921
   isfetch: true
   runonce: false
   script: '-'
