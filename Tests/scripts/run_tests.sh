@@ -57,7 +57,7 @@ else
 fi
 
 exit_code=0
-if [[ "${INSTANCE_ROLE}" == "XSIAM" ]]; then
+if [[ "${INSTANCE_ROLE}" == "XSIAM" ]] || [[ "${INSTANCE_ROLE}" == "XSOAR SAAS" ]]; then
   if [ -n "${CLOUD_CHOSEN_MACHINE_IDS}" ]; then
     IFS=', ' read -r -a CLOUD_CHOSEN_MACHINE_ID_ARRAY <<< "${CLOUD_CHOSEN_MACHINE_IDS}"
     for CLOUD_CHOSEN_MACHINE_ID in "${CLOUD_CHOSEN_MACHINE_ID_ARRAY[@]}"; do

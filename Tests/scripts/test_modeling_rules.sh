@@ -73,8 +73,8 @@ if [ -n "${CLOUD_CHOSEN_MACHINE_IDS}" ]; then
     XSIAM_SERVER_CONFIG=$(jq -r ".[\"${CLOUD_CHOSEN_MACHINE_ID}\"]" < "$XSIAM_SERVERS_PATH")
     XSIAM_URL=$(echo "$XSIAM_SERVER_CONFIG" | jq -r ".[\"base_url\"]")
     AUTH_ID=$(echo "$XSIAM_SERVER_CONFIG" | jq -r ".[\"x-xdr-auth-id\"]")
-    API_KEY=$(jq -r ".[\"${CLOUD_CHOSEN_MACHINE_ID}\"]" < "$XSIAM_API_KEYS")
-    XSIAM_TOKEN=$(jq -r ".[\"${CLOUD_CHOSEN_MACHINE_ID}\"]" < "$XSIAM_TOKENS")
+    API_KEY=$(jq -r ".[\"${CLOUD_CHOSEN_MACHINE_ID}\"]" < "$CLOUD_API_KEYS")
+    XSIAM_TOKEN=$(jq -r ".[\"${CLOUD_CHOSEN_MACHINE_ID}\"]" < "$CLOUD_API_TOKENS")
 
     demisto-sdk modeling-rules test --xsiam-url="${XSIAM_URL}" --auth-id="${AUTH_ID}" --api-key="${API_KEY}" \
       --xsiam-token="${XSIAM_TOKEN}" --non-interactive "${MODELING_RULES_RESULTS_ARG[@]}" \

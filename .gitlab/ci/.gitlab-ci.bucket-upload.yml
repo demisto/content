@@ -287,6 +287,7 @@ install-packs-in-xsiam-ga:
     GCS_MACHINES_BUCKET: "marketplace-v2-dist-dev/upload-flow/builds-xsiam"
     CLOUD_SERVERS_FILE: "xsiam_servers_path"
     CLOUD_API_KEYS: $XSIAM_API_KEYS
+    CLOUD_API_TOKENS: $XSIAM_TOKENS
     NON_REMOVABLE_PACKS: "Base"
 
 

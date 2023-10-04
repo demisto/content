@@ -31,12 +31,12 @@ echo "Successfully authenticated with GCS."
 
 echo "starting configure_and_install_packs instance role: ${INSTANCE_ROLE}"
 
-if [[ "${INSTANCE_ROLE}" == "XSIAM" ]]; then
+if [[ "${INSTANCE_ROLE}" == "XSIAM" ]] || [[ "${INSTANCE_ROLE}" == "XSOAR SAAS" ]]; then
   if [ -n "${CLOUD_CHOSEN_MACHINE_IDS}" ]; then
     exit_code=0
     IFS=', ' read -r -a CLOUD_CHOSEN_MACHINE_ID_ARRAY <<< "${CLOUD_CHOSEN_MACHINE_IDS}"
     for CLOUD_CHOSEN_MACHINE_ID in "${CLOUD_CHOSEN_MACHINE_ID_ARRAY[@]}"; do
-      python3 ./Tests/Marketplace/configure_and_install_packs.py -s "$SECRET_CONF_PATH" --ami_env "${INSTANCE_ROLE}" --branch "$CI_COMMIT_BRANCH" --build_number "$CI_PIPELINE_ID" --service_account $GCS_MARKET_KEY -e "$EXTRACT_FOLDER" --cloud_machine "${CLOUD_CHOSEN_MACHINE_ID}" --cloud_servers_path ${XSIAM_SERVERS_PATH} --pack_ids_to_install "$ARTIFACTS_FOLDER/content_packs_to_install.txt" --cloud_servers_api_keys $XSIAM_API_KEYS
+      python3 ./Tests/Marketplace/configure_and_install_packs.py -s "$SECRET_CONF_PATH" --ami_env "${INSTANCE_ROLE}" --branch "$CI_COMMIT_BRANCH" --build_number "$CI_PIPELINE_ID" --service_account $GCS_MARKET_KEY -e "$EXTRACT_FOLDER" --cloud_machine "${CLOUD_CHOSEN_MACHINE_ID}" --cloud_servers_path ${XSIAM_SERVERS_PATH} --pack_ids_to_install "$ARTIFACTS_FOLDER/content_packs_to_install.txt" --cloud_servers_api_keys ${CLOUD_API_KEYS}
       if [ $? -ne 0 ]; then
         exit_code=1
         echo "Failed to install packs on machine ${CLOUD_CHOSEN_MACHINE_ID}"
