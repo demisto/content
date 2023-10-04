@@ -986,3 +986,26 @@ def test_parse_xdr_comments(raw_comment: str | list[str], comments_as_tags: bool
     """
     from XDR_iocs import _parse_xdr_comments
     assert _parse_xdr_comments(raw_comment, comments_as_tags) == expected_comment
+
+
+@pytest.mark.parametrize(
+    'validation_errors, expected_str', (
+        ([{'indicator': '1.1.1.1',
+           'error': 'Expiration time 1696323079000 is invalid; expiration date cannot be in the past'},
+          {'indicator': '3.3.3.3',
+           'error': 'Expiration time 1696150302000 is invalid; expiration date cannot be in the past'}],
+         'Expiration time 1696323079000 is invalid; expiration date cannot be in the past'),
+        ([{'indicator': '1.1.1.1',
+           'error': 'Expiration time 1696323079000 is invalid; expiration date cannot be in the past'}],
+         'Expiration time 1696323079000 is invalid; expiration date cannot be in the past'),
+        ([],
+         'push done'),
+    ))
+def test_create_validation_errors_response(validation_errors, expected_str):
+    """
+    Given   a custom field name, and comma-separated comments in it
+    When    converting an XSOAR IOC to XDR
+    Then    check the output values
+    """
+    from XDR_iocs import create_validation_errors_response
+    assert expected_str in create_validation_errors_response(validation_errors)
