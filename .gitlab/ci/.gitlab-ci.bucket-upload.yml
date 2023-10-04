@@ -90,7 +90,6 @@ xsoar-saas-prepare-testing-bucket-upload-flow:
     - xsoar-saas-prepare-testing-bucket
   variables:
     IFRA_ENV_TYPE: "Bucket-Upload"
-    MARKETPLACE_VERSION: "xsoar_saas"
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR_SAAS}"
   rules:
     - if: '$CI_COMMIT_BRANCH =~ /pull\/[0-9]+/'
