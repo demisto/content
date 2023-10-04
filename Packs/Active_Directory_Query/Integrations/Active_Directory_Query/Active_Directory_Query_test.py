@@ -811,7 +811,7 @@ def test_search_users_empty_userAccountControl(mocker):
 def test_test_credentials_command(mocker):
     """
     Given:
-        The 'userAccountControl' attribute was returned empty
+        A demisto args object with username and password
     When:
         Run the 'ad-test-credentials' command
     Then:
@@ -830,5 +830,5 @@ def test_test_credentials_command(mocker):
 
     with patch("Active_Directory_Query.create_connection", side_effect=mock_create_connection), \
             patch("Active_Directory_Query.Connection.unbind", side_effect=MockConnection.unbind):
-        command_results = Active_Directory_Query.test_credentials_command(BASE_TEST_PARAMS['server_ip'])
+        command_results = Active_Directory_Query.test_credentials_command(BASE_TEST_PARAMS['server_ip'], ntlm_connection)
         assert command_results.readable_output == 'Credential test with username username_test_credentials succeeded.'
