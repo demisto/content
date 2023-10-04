@@ -22,6 +22,8 @@ IGNORED_LINES_REGEX = re.compile(r'<!-[\W\w]*?-->')
 ENTITY_TYPE_SECTION_REGEX = re.compile(r'^#### ([\w ]+)$\n([\w\W]*?)(?=^#### )|^#### ([\w ]+)$\n([\w\W]*)', re.M)
 ENTITY_SECTION_REGEX = re.compile(r'^##### (.+)$\n([\w\W]*?)(?=^##### )|^##### (.+)$\n([\w\W]*)|'
                                   r'^- \*\*(.+)\*\*$\n([\w\W]*)', re.M)
+PACK_GENERAL_NOTES_REGEX = re.compile(r'^## (.+)$\n([\w\W]*?)(?=^#### )|^## ([\w ]+)$\n([\w\W]*)', re.M)
+PACK_GENERAL_NOTES_SECTION_REGEX = re.compile(r'^## (.+)$\n([\w\W]*)|^- \*\*(.+)\*\*$\n([\w\W]*)', re.M)
 
 LAYOUT_TYPE_TO_NAME = {
     "details": "Summary",
@@ -104,6 +106,9 @@ def construct_entities_block(entities_data: dict) -> str:
     Args:
         entities_data (dict): dictionary of the form:
             {
+                Pack: {
+                    PackName: <description>
+                }
                 Integrations: {
                     Integration1: <description>,
                     Integration2:<description>,
@@ -120,6 +125,13 @@ def construct_entities_block(entities_data: dict) -> str:
 
     """
     release_notes = ''
+
+    # Keep general notes on top.
+    general_notes = entities_data.pop('Pack')
+    if general_notes:
+        for pack_name, general_comments in sorted(general_notes.items()):
+            release_notes += f'## {pack_name}\n{general_comments}'
+
     for entity_type, entities_description in sorted(entities_data.items()):
         pretty_entity_type = re.sub(r'([a-z])([A-Z])', r'\1 \2', entity_type)
         release_notes += f'#### {pretty_entity_type}\n'
@@ -306,6 +318,36 @@ def aggregate_release_notes(pack_name: str, pack_versions_dict: dict, pack_metad
             f'{pack_release_notes}')
 
 
+def append_commment_to_data(entities_data, entity_type, entity_name, entity_comment):
+    """Append release note comment to the right place in merged dict.
+
+    Note: This function alters the provided dictionary and does not create a different updated copy.
+
+    Args:
+        entities_data: A dictionary of the current release notes merge.
+        entity_type: The type of entity the release notes are concerning. (Integration / Playbook / etc).
+        entity_name: The name of the content entity.
+        entity_comment: The release note comment to append.
+
+    Returns:
+        dict: the updated dictionary.
+    """
+    # release notes of the entity
+    if entity_name in entities_data[entity_type]:
+        exists_comment = entities_data[entity_type][entity_name]
+        if entity_comment and entity_name != '[special_msg]':
+            if not exists_comment.startswith('- '):
+                logging.debug(f'Adding missing "-" to entity comment: {exists_comment}')
+                entities_data[entity_type][entity_name] = f'- {exists_comment}'
+            if not entity_comment.strip().startswith('- '):
+                logging.debug(f'Adding missing "-" to entity comment: {entity_comment}')
+                entity_comment = f'- {entity_comment.strip()}'
+        entities_data[entity_type][entity_name] += f'{entity_comment.strip()}\n'
+    else:
+        entities_data[entity_type][entity_name] = f'{entity_comment.strip()}\n'
+    return entities_data
+
+
 def merge_version_blocks(pack_versions_dict: dict, return_str: bool = True) -> tuple[str | dict, str]:
     """
     merge several pack release note versions into a single block.
@@ -325,6 +367,21 @@ def merge_version_blocks(pack_versions_dict: dict, return_str: bool = True) -> t
                                                       key=lambda pack_item: Version(pack_item[0])):
         latest_version = pack_version
         version_release_notes = version_release_notes.strip()
+
+        # Handle general pack notes.
+        general_note_sections = PACK_GENERAL_NOTES_REGEX.findall(version_release_notes)
+        if general_note_sections:
+            # Assume only one general notes section at the start of the file.
+            general_note_components = general_note_sections[0]
+            entity_type = 'Pack'
+            entities_data.setdefault(entity_type, {})
+            # Extract Pack name
+            entity_name = general_note_components[0] or general_note_components[2] or general_note_components[4]
+            entity_name = entity_name.replace('__', '')
+            # release notes of the entity
+            entity_comment = general_note_components[1] or general_note_components[3] or general_note_components[5]
+            entities_data = append_commment_to_data(entities_data, entity_type, entity_name, entity_comment)
+
         # extract release notes sections by content types (all playbooks, all scripts, etc...)
         # assuming all entity titles start with level 4 header ("####") and then a list of all comments
         sections = ENTITY_TYPE_SECTION_REGEX.findall(version_release_notes)
@@ -345,18 +402,7 @@ def merge_version_blocks(pack_versions_dict: dict, return_str: bool = True) -> t
                 entity_name = entity_name.replace('__', '')
                 # release notes of the entity
                 entity_comment = entity[1] or entity[3] or entity[5]
-                if entity_name in entities_data[entity_type]:
-                    exists_comment = entities_data[entity_type][entity_name]
-                    if entity_comment and entity_name != '[special_msg]':
-                        if not exists_comment.startswith('- '):
-                            logging.debug(f'Adding missing "-" to entity comment: {exists_comment}')
-                            entities_data[entity_type][entity_name] = f'- {exists_comment}'
-                        if not entity_comment.strip().startswith('- '):
-                            logging.debug(f'Adding missing "-" to entity comment: {entity_comment}')
-                            entity_comment = f'- {entity_comment.strip()}'
-                    entities_data[entity_type][entity_name] += f'{entity_comment.strip()}\n'
-                else:
-                    entities_data[entity_type][entity_name] = f'{entity_comment.strip()}\n'
+                entities_data = append_commment_to_data(entities_data, entity_type, entity_name, entity_comment)
 
     pack_release_notes = construct_entities_block(entities_data).strip() if return_str else entities_data
 
