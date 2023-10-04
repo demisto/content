@@ -1184,6 +1184,8 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
+      '#default#':
+      - "4"
       "yes":
       - "44"
       - "45"
@@ -1221,6 +1223,9 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
     scriptarguments:
       endpoint_id_list:
         complex:
@@ -1266,6 +1271,9 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
     scriptarguments:
       host_id:
         complex:
@@ -1802,7 +1810,6 @@ outputs:
 - contextPath: Core.Endpoint.group_name
   description: The name of the group to which the endpoint belongs.
 - contextPath: Core.RiskyHost
-  description: The risky host object.
   type: unknown
 - contextPath: Core.RiskyHost.type
   description: Form of identification element.
