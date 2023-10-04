@@ -1769,7 +1769,7 @@ def set_password_not_expire(default_base_dn):
         raise DemistoException(f"Unable to fetch attribute 'userAccountControl' for user {sam_account_name}.")
 
 
-def test_credentials_command(SERVER_IP):
+def test_credentials_command(SERVER_IP, ntlm_connection):
     args = demisto.args()
     username = args.get('username')
     server = Server(SERVER_IP, get_info='ALL')
@@ -1779,7 +1779,7 @@ def test_credentials_command(SERVER_IP):
             server_ip=SERVER_IP,
             username=username,
             password=args.get('password'),
-            ntlm_connection=argToBoolean(demisto.params().get('ntlm')),
+            argToBoolean(ntlm_connection),
             auto_bind=True,
         )
         connection.unbind()
@@ -1980,7 +1980,7 @@ def main():
             delete_group()
 
         elif command == 'ad-test-credentials':
-            return return_results(test_credentials_command(SERVER_IP))
+            return return_results(test_credentials_command(SERVER_IP, ntlm_connection=demisto.params().get('ntlm')))
 
         # IAM commands
         elif command == 'iam-get-user':
