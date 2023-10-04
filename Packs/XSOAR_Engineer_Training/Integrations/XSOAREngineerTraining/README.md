@@ -39,6 +39,16 @@ Fetches events from the XSOAR Engineer Training (XET) integration.
 #### Context Output
 
 There is no context output for this command.
+#### Command example
+```!xet-get-events```
+#### Human Readable Output
+
+>### Training Events
+>|eventID|occurred|sourceIP|sourceUser|type|url|urlCategory|userAgent|
+>|---|---|---|---|---|---|---|---|
+>| 4218 | 2023-10-04T21:30:06Z | 10.8.8.8 | m@xsoar.local | url blocked | https:<span>//</span>xsoar.pan.dev/52/download.zip | MALWARE | Mozilla/5.0(WindowsNT6.1;WOW64;rv:27.0)Gecko/20100101Firefox/27.0 |
+
+
 ### xet-ad-get-user
 
 ***
@@ -75,6 +85,67 @@ Retrieves detailed information about a user account. The user can be specified b
 | Account.Username | unknown | The samAccountName of the user. | 
 | Account.Email | unknown | The email address of the user. | 
 
+#### Command example
+```!xet-ad-get-user email="james.bond@xsoar.local"```
+#### Context Example
+```json
+{
+    "Account": {
+        "DisplayName": [
+            "James Bond"
+        ],
+        "Email": [
+            "james.bond@xsoar.local"
+        ],
+        "Groups": [
+            "CN=Agents,CN=Users,DC=xsoar,DC=local"
+        ],
+        "ID": "CN=James Bond,CN=Users,DC=xsoar,DC=local",
+        "Manager": [
+            "CN=M,CN=Users,DC=xsoar,DC=local"
+        ],
+        "Type": "AD",
+        "Username": [
+            "XSOAR007"
+        ]
+    },
+    "ActiveDirectory": {
+        "Users": {
+            "displayName": [
+                "James Bond"
+            ],
+            "dn": "CN=James Bond,CN=Users,DC=xsoar,DC=local",
+            "mail": [
+                "james.bond@xsoar.local"
+            ],
+            "manager": [
+                "CN=M,CN=Users,DC=xsoar,DC=local"
+            ],
+            "memberOf": [
+                "CN=Agents,CN=Users,DC=xsoar,DC=local"
+            ],
+            "name": [
+                "James Bond"
+            ],
+            "sAMAccountName": [
+                "XSOAR007"
+            ],
+            "userAccountControl": [
+                512
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Active Directory - Get Users
+>|displayName|dn|mail|manager|memberOf|name|sAMAccountName|userAccountControl|
+>|---|---|---|---|---|---|---|---|
+>| James Bond | CN=James Bond,CN=Users,DC=xsoar,DC=local | james.bond@xsoar.local | CN=M,CN=Users,DC=xsoar,DC=local | CN=Agents,CN=Users,DC=xsoar,DC=local | James Bond | XSOAR007 | 512 |
+
+
 ### xet-ad-expire-password
 
 ***
@@ -93,6 +164,12 @@ Expires the password of an Active Directory user.
 #### Context Output
 
 There is no context output for this command.
+#### Command example
+```!xet-ad-expire-password username="XSOAR007"```
+#### Human Readable Output
+
+>Expired password successfully
+
 ### xet-ad-set-new-password
 
 ***
@@ -112,6 +189,12 @@ Sets a new password for an Active Directory user.
 #### Context Output
 
 There is no context output for this command.
+#### Command example
+```!xet-ad-set-new-password username="XSOAR007" password="bondjamesbond"```
+#### Human Readable Output
+
+>User password successfully set
+
 ### xet-siem-search
 
 ***
@@ -134,6 +217,14 @@ Searches the simulated SIEM for events.
 | --- | --- | --- |
 | SIEM.Result | unknown | The results of the SIEM search. The results are a JSON array, in which each item is a SIEM event. | 
 
+#### Command example
+```!xet-siem-search query="host:crossiscoming81"```
+#### Human Readable Output
+
+>### SIEM Search results for query: host:crossiscoming81
+>**No entries.**
+
+
 ### xet-send-mail
 
 ***
@@ -153,3 +244,8 @@ Send an email. (Doesn't actually send an email.)
 #### Context Output
 
 There is no context output for this command.
+#### Command example
+```!xet-send-mail to="james.bond@xsoar.local" body="shaken or stirred?"```
+#### Human Readable Output
+
+>XSOAR Engineer Training: fake email notification not sent
