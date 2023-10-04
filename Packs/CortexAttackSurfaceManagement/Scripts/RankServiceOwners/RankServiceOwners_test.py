@@ -578,11 +578,11 @@ def test_get_num_distinct_reasons():
     """
     pipeline = OwnerFeaturizationPipeline()
     out = pipeline.get_num_reasons({
-        'Name': 'Amira',
-        'Email': 'amira@example.com',
-        'Source': 'GCP | Chain: GCP project owner of a service account attached to the VM \
+        'name': 'Amira',
+        'email': 'amira@example.com',
+        'source': 'GCP | Chain: GCP project owner of a service account attached to the VM \
             | Owner-In-Tags-From-PrismaCloud | Owner-In-Tags-From-GCP',
-        'Timestamp': '1'
+        'timestamp': '1'
     })
     assert out == 4
 
@@ -593,11 +593,11 @@ def test_get_num_distinct_sources():
     """
     pipeline = OwnerFeaturizationPipeline()
     out = pipeline.get_num_distinct_sources({
-        'Name': 'Amira',
-        'Email': 'amira@example.com',
-        'Source': 'GCP | Chain: GCP project owner of a service account attached to the VM \
+        'name': 'Amira',
+        'email': 'amira@example.com',
+        'source': 'GCP | Chain: GCP project owner of a service account attached to the VM \
             | Owner-In-Tags-From-PrismaCloud | Owner-In-Tags-From-GCP',
-        'Timestamp': '1'
+        'timestamp': '1'
     })
     assert out == 2
 
@@ -608,28 +608,28 @@ def test_get_min_path_length():
     """
     pipeline = OwnerFeaturizationPipeline()
     out = pipeline.get_min_path_length({
-        'Name': 'Amira',
-        'Email': 'amira@example.com',
-        'Source': 'X',
-        'Timestamp': '1'
+        'name': 'Amira',
+        'email': 'amira@example.com',
+        'source': 'X',
+        'timestamp': '1'
     })
     assert out == 1
 
     pipeline = OwnerFeaturizationPipeline()
     out = pipeline.get_min_path_length({
-        'Name': 'Amira',
-        'Email': 'amira@example.com',
-        'Source': 'Chain: Chain: Chain: Chain: X',
-        'Timestamp': '1'
+        'name': 'Amira',
+        'email': 'amira@example.com',
+        'source': 'Chain: Chain: Chain: Chain: X',
+        'timestamp': '1'
     })
     assert out == 5
 
     pipeline = OwnerFeaturizationPipeline()
     out = pipeline.get_min_path_length({
-        'Name': 'Amira',
-        'Email': 'amira@example.com',
-        'Source': 'X | Chain: Chain: Chain: Chain: Y',
-        'Timestamp': '1'
+        'name': 'Amira',
+        'email': 'amira@example.com',
+        'source': 'X | Chain: Chain: Chain: Chain: Y',
+        'timestamp': '1'
     })
     assert out == 1
 
@@ -639,10 +639,10 @@ def test_get_name_similarity_person_asset():
     Verify get_name_similarity_person_asset
     """
     owner = {
-        'Name': 'Amira Muhammad',
-        'Email': 'amuhammad@example.com',
-        'Source': 'irrelevant',
-        'Timestamp': '1'
+        'name': 'Amira Muhammad',
+        'email': 'amuhammad@example.com',
+        'source': 'irrelevant',
+        'timestamp': '1'
     }
 
     # has 1/1 matched
@@ -684,20 +684,20 @@ def test_get_in_cmdb():
     # CMDB attested
     pipeline = OwnerFeaturizationPipeline()
     out = pipeline.get_in_cmdb({
-        'Name': 'Amira',
-        'Email': 'amira@example.com',
-        'Source': 'ABC-XYZ CMDB',
-        'Timestamp': '1'
+        'name': 'Amira',
+        'email': 'amira@example.com',
+        'source': 'ABC-XYZ CMDB',
+        'timestamp': '1'
     })
     assert out == 1
 
     # CMDB not attested
     pipeline = OwnerFeaturizationPipeline()
     out = pipeline.get_in_cmdb({
-        'Name': 'Amira',
-        'Email': 'amira@example.com',
-        'Source': 'Some other source',
-        'Timestamp': '1'
+        'name': 'Amira',
+        'email': 'amira@example.com',
+        'source': 'Some other source',
+        'timestamp': '1'
     })
     assert out == 0
 
@@ -709,30 +709,30 @@ def test_get_in_logs():
     # Splunk attested
     pipeline = OwnerFeaturizationPipeline()
     out = pipeline.get_in_logs({
-        'Name': 'Amira',
-        'Email': 'amira@example.com',
-        'Source': 'Splunk',
-        'Timestamp': '1'
+        'name': 'Amira',
+        'email': 'amira@example.com',
+        'source': 'Splunk',
+        'timestamp': '1'
     })
     assert out == 1
 
     # arbitrary log attested
     pipeline = OwnerFeaturizationPipeline()
     out = pipeline.get_in_logs({
-        'Name': 'Amira',
-        'Email': 'amira@example.com',
-        'Source': 'some LOG source',
-        'Timestamp': '1'
+        'name': 'Amira',
+        'email': 'amira@example.com',
+        'source': 'some LOG source',
+        'timestamp': '1'
     })
     assert out == 1
 
     # logs not attested
     pipeline = OwnerFeaturizationPipeline()
     out = pipeline.get_in_logs({
-        'Name': 'Amira',
-        'Email': 'amira@example.com',
-        'Source': 'Some other source',
-        'Timestamp': '1'
+        'name': 'Amira',
+        'email': 'amira@example.com',
+        'source': 'Some other source',
+        'timestamp': '1'
     })
     assert out == 0
 
@@ -744,16 +744,16 @@ def test_base_case():
     asm_system_ids = ["afr-rdp-1", "j291mv-is"]
 
     owners = [
-        {'Name': 'Amira', 'Email': 'amira@example.com', 'Source': 'GCP | \
+        {'name': 'Amira', 'email': 'amira@example.com', 'source': 'GCP | \
             Chain: GCP project owner of a service account attached to the VM | \
-                Owner-In-Tags-From-PrismaCloud | Owner-In-Tags-From-GCP', 'Timestamp': '1'},
-        {'Name': 'Brandon', 'Email': 'brandon@example.com', 'Source': 'GCP | \
-            Owner-In-Tags-From-GCP | Tenable.io | New-Log-Source', 'Timestamp': '2'},
-        {'Name': 'Chun', 'Email': 'chun@example.com', 'Source': 'SNOW-CMDB', 'Timestamp': '3'},
-        {'Name': 'Divya', 'Email': 'divya@example.com', 'Source': 'Chain: Chain: \VM launches with a service account, \
+                Owner-In-Tags-From-PrismaCloud | Owner-In-Tags-From-GCP', 'timestamp': '1'},
+        {'name': 'Brandon', 'email': 'brandon@example.com', 'source': 'GCP | \
+            Owner-In-Tags-From-GCP | Tenable.io | New-Log-Source', 'timestamp': '2'},
+        {'name': 'Chun', 'email': 'chun@example.com', 'source': 'SNOW-CMDB', 'timestamp': '3'},
+        {'name': 'Divya', 'email': 'divya@example.com', 'source': 'Chain: Chain: \VM launches with a service account, \
             which belongs to GCP project my-project that grants Editor permissions to svc-acct@my-project.gserviceaccount.com, \
-                which this person can impersonate', 'Timestamp': '4'},
-        {'Name': 'Automation First Remediation', 'Email': 'afr@example.com', 'Source': 'GCP | Splunk', 'Timestamp': '5'},
+                which this person can impersonate', 'timestamp': '4'},
+        {'name': 'Automation First Remediation', 'email': 'afr@example.com', 'source': 'GCP | Splunk', 'timestamp': '5'},
     ]
 
     observed_output = featurize(asm_system_ids, owners)
@@ -796,7 +796,7 @@ def test_featurize_owner_error(mocker):
 
     # normally would expect 1 reason
     owners = [
-        {'Name': 'Amira', 'Email': 'amira@example.com', 'Source': 'GCP ', 'Timestamp': '1'},
+        {'name': 'Amira', 'email': 'amira@example.com', 'source': 'GCP ', 'timestamp': '1'},
     ]
     asm_system_ids = []
 
@@ -816,7 +816,7 @@ def test_featurize_similarity_error(mocker):
     )
 
     owners = [
-        {'Name': 'Amira', 'Email': 'amira@example.com', 'Source': 'GCP ', 'Timestamp': '1'},
+        {'name': 'Amira', 'email': 'amira@example.com', 'source': 'GCP ', 'timestamp': '1'},
     ]
     # normally would expect greater-than-zero-similarity
     asm_system_ids = ['amira-test']

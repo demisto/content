@@ -559,7 +559,7 @@ class OwnerFeaturizationPipeline():
         Returns 0 if there is no match at all.
         Returns 0 to 1 if there is a potential match.
         """
-        personal_monikers = [owner.get("Email", ""), owner.get("Name", "")]
+        personal_monikers = [owner.get("email", ""), owner.get("name", "")]
         best_similarity = 0.0
         for service_id in service_identifiers:
             similarity = get_name_similarity_index(personal_monikers, service_id)
