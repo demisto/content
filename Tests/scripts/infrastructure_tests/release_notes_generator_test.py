@@ -686,7 +686,7 @@ class TestMergeVersionBlocks:
         pytest.param({
             "1.0.1": "## SomePack\n"
                      "\n"
-                     "- Added some stuff.\n" 
+                     "- Added some stuff.\n"
                      "#### Integrations\n"
                      "##### Some Integration\n"
                      "- Some stuff.",

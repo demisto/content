@@ -127,7 +127,7 @@ def construct_entities_block(entities_data: dict) -> str:
     release_notes = ''
 
     # Keep general notes on top.
-    general_notes = entities_data.pop('Pack')
+    general_notes = entities_data.pop('Pack', None)
     if general_notes:
         for pack_name, general_comments in sorted(general_notes.items()):
             release_notes += f'## {pack_name}\n{general_comments}'
