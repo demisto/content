@@ -655,3 +655,55 @@ class TestMergeVersionBlocks:
         rn_block, latest_version = merge_version_blocks(pack_versions_dict)
         assert latest_version == expected_version
         assert rn_block == expected_results
+
+    @pytest.mark.parametrize('pack_rns, expected_rns, expected_version', [
+        pytest.param({
+            "1.0.1": "## SomePack\n"
+                     "\n"
+                     "- Added some stuff.",
+            "1.0.2": "## SomePack\n"
+                     "\n"
+                     "- Added some other stuff."
+        },
+            "## SomePack\n"
+            "- Added some stuff.\n"
+            "- Added some other stuff.",
+            "1.0.2", id="Merge general notes together."),
+        pytest.param({
+            "1.0.1": "#### Integrations\n"
+                     "##### Some Integration\n"
+                     "- Some stuff.",
+            "1.0.2": "## SomePack\n"
+                     "\n"
+                     "- Added some other stuff."
+        },
+            "## SomePack\n"
+            "- Added some other stuff.\n"
+            "#### Integrations\n"
+            "##### Some Integration\n"
+            "- Some stuff.",
+            "1.0.2", id="Merge general notes with entity RNs."),
+        pytest.param({
+            "1.0.1": "## SomePack\n"
+                     "\n"
+                     "- Added some stuff.\n" 
+                     "#### Integrations\n"
+                     "##### Some Integration\n"
+                     "- Some stuff.",
+            "1.0.2": "## SomePack\n"
+                     "\n"
+                     "- Added some other stuff."
+        },
+            "## SomePack\n"
+            "- Added some stuff.\n"
+            "- Added some other stuff.\n"
+            "#### Integrations\n"
+            "##### Some Integration\n"
+            "- Some stuff.",
+            "1.0.2", id="Merge combined notes with general notes."),
+    ])
+    def test_merge_rns_with_general_notes(self, pack_rns: dict, expected_rns: str, expected_version: str):
+
+        merged_rn_block, latest_version = merge_version_blocks(pack_rns)
+        assert merged_rn_block == expected_rns
+        assert latest_version == expected_version
