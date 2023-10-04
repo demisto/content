@@ -16,14 +16,9 @@ if [ -n "${CLOUD_API_KEYS}" ]; then
   echo "${CLOUD_API_KEYS}" > "cloud_api_keys.json"
 fi
 
-INSTANCE_ROLE=$1
-SERVER_TYPE=$2
 CONF_PATH="./Tests/conf.json"
-IS_NIGHTLY=false
 
-if [ -n "${NIGHTLY}" ]; then
-  IS_NIGHTLY=true
-fi
+[ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
 
 if [ -f ./Tests/test_pack.zip ]; then
   echo "Copying test_pack.zip to artifacts folder:${ARTIFACTS_FOLDER}"

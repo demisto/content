@@ -297,7 +297,7 @@ xpanse-prepare-testing-bucket:
 
     - section_end "Copy env results to artifacts folder"
     - section_start "Install Packs and run Test-Module"
-    - ./Tests/scripts/install_content_and_test_integrations.sh "$INSTANCE_ROLE" "$SERVER_TYPE" || EXIT_CODE=$?
+    - ./Tests/scripts/install_content_and_test_integrations.sh || EXIT_CODE=$?
     - cp -f "${ARTIFACTS_FOLDER}/conf.json" Tests/conf.json
     - section_end "Install Packs and run Test-Module"
     - section_start "Wait Until Server Ready"
@@ -455,7 +455,7 @@ slack-notify-nightly-build:
     - !reference [.uninstall-packs-and-reset-bucket-cloud]
 
     - section_start "Install Packs and run Test-Module"
-    - ./Tests/scripts/install_content_and_test_integrations.sh "$INSTANCE_ROLE" "$SERVER_TYPE" || EXIT_CODE=$?
+    - ./Tests/scripts/install_content_and_test_integrations.sh || EXIT_CODE=$?
     - section_end "Install Packs and run Test-Module"
 
     - section_start "Run Tests"
@@ -557,7 +557,7 @@ xsoar_ng_server_ga:
     ARTIFACTS_FOLDER_INSTANCE: "${ARTIFACTS_FOLDER_XSOAR_SAAS}/instance_saas"
     ENV_RESULTS_PATH: "${ARTIFACTS_FOLDER_XSOAR}/env_results.json"
     GCS_MACHINES_BUCKET: "marketplace-dist-dev/upload-flow/builds-xsoar-ng"
-    SERVER_TYPE: "XSOAR"
+    SERVER_TYPE: "XSOAR SAAS"
     MARKETPLACE_NAME: "xsoar"
     NON_REMOVABLE_PACKS: "Base"
   needs:
@@ -648,7 +648,6 @@ test-upload-flow:
 
 tests_xsoar_server-test_playbooks_results:
   variables:
-    SERVER_TYPE: "XSOAR"
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
     JIRA_ISSUE_TYPE: "XSOAR Dev Bug"
     JIRA_COMPONENT: "Test Failure"
