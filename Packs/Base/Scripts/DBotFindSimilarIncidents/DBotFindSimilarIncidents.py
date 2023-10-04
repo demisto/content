@@ -869,10 +869,9 @@ def prepare_current_incident(incident_df: pd.DataFrame, display_fields: List[str
     :return:
     """
 
-    incident_filter = incident_df.copy()
-    incident_filter = incident_df[[x for x in
-                                   display_fields + similar_text_field + similar_categorical_field
-                                   + exact_match_fields if x in incident_df.columns]]
+    incident_filter = incident_df.copy()[[x for x in
+                                          display_fields + similar_text_field + similar_categorical_field
+                                          + exact_match_fields if x in incident_df.columns]]
     if COLUMN_TIME in incident_filter.columns.tolist():
         incident_filter[COLUMN_TIME] = incident_filter[COLUMN_TIME].apply(lambda x: return_clean_date(x))
     if 'id' in incident_filter.columns.tolist():

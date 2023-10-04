@@ -343,7 +343,7 @@ class TestCloseTruePositive:
 
 
 class TestCloseFalsePositive:
-    def setup(self):
+    def setup_method(self):
         self.success_response = get_fetch_data()['CLOSE_FALSE_POSITIVE_SUCCESS']
         self.failure_response = get_fetch_data()['CLOSE_FALSE_POSITIVE_FAILURE']
 
