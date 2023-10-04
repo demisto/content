@@ -86,8 +86,7 @@ def get_dbot_file_context(file_hash, dbotscore):
 
 
 def get_sanitized_file(scan_id):
-    res = http_req(method='GET', url_suffix=f'file/converted/{scan_id}', parse_json=False)
-    return res
+    return http_req(method='GET', url_suffix=f'file/converted/{scan_id}', parse_json=False)
 
 
 def get_hash_info_command():
