@@ -1433,7 +1433,7 @@ if __name__ == '__main__':
         match (nightly, marketplace):
             case False, _:  # not nightly
                 collector = BranchTestCollector(branch_name, marketplace, service_account, graph=graph)
-            case True, MarketplaceVersions.XSOAR:
+            case (True, (MarketplaceVersions.XSOAR | MarketplaceVersions.XSOAR_SAAS)):
                 collector = XSOARNightlyTestCollector(marketplace=marketplace, graph=graph)
             case True, MarketplaceVersions.MarketplaceV2:
                 collector = XSIAMNightlyTestCollector(graph=graph)
