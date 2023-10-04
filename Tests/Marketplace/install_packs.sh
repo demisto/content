@@ -31,7 +31,7 @@ echo "Successfully authenticated with GCS."
 
 echo "starting configure_and_install_packs instance role: ${INSTANCE_ROLE}"
 
-if [[ "${INSTANCE_ROLE}" == "XSIAM" ]] || [[ "${INSTANCE_ROLE}" == "XSOAR SAAS" ]]; then
+if [[ "${SERVER_TYPE}" == "XSIAM" ]] || [[ "${SERVER_TYPE}" == "XSOAR SAAS" ]]; then
   if [ -n "${CLOUD_CHOSEN_MACHINE_IDS}" ]; then
     exit_code=0
     IFS=', ' read -r -a CLOUD_CHOSEN_MACHINE_ID_ARRAY <<< "${CLOUD_CHOSEN_MACHINE_IDS}"

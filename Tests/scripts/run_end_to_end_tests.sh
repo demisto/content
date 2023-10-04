@@ -3,7 +3,7 @@
 CLOUD_SERVERS_PATH=$(cat $CLOUD_SERVERS_FILE)
 echo ${CLOUD_API_KEYS} > "cloud_api_keys.json"
 
-if [[ "${INSTANCE_ROLE}" == "XSIAM" ]]; then
+if [[ "${SERVER_TYPE}" == "XSIAM" ]]; then
 
   if [[ -z "${CLOUD_CHOSEN_MACHINE_IDS}" ]]; then
     echo "CLOUD_CHOSEN_MACHINE_IDS is not defined, exiting..."
