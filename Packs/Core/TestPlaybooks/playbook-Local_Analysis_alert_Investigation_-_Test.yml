@@ -635,27 +635,37 @@ tasks:
           transformers:
           - operator: If-Then-Else
             args:
-              condition:
-                value:
-                  simple: lhs!=rhs
-              conditionB: {}
-              conditionInBetween: {}
-              else:
-                value:
-                  simple: ${alert= '(initiatorsha256:"' + val.initiatorsha256 + '" or hostip:"' + val.hostip + '") ' + 'and sourceBrand:"' + val.sourceBrand + '" and name:"' + val.name + '"'}
-              equals: {}
-              lhs:
-                value:
-                  simple: alert.filesha256
-                iscontext: true
-              lhsB: {}
-              options: {}
-              optionsB: {}
-              rhs: {}
-              rhsB: {}
-              then:
-                value:
-                  simple: ${alert= '(filesha256:"' + val.filesha256 + '" or hostip:"' + val.hostip + '") ' + 'and sourceBrand:"' + val.sourceBrand + '" and name:"' + val.name + '"'}
+          condition:
+            value:
+              simple: lhs!=rhs
+          conditionB:
+            value:
+              simple: lhsB!=rhsB
+          conditionInBetween:
+            value:
+              simple: and
+          else:
+            value:
+              simple: ${alert= '(initiatorsha256:"' + "" + '" or hostip:"' + "" +
+                '") ' + 'and sourceBrand:"' + val.sourceBrand + '" and name:"' + val.name
+                + '"'}
+          equals: {}
+          lhs:
+            value:
+              simple: alert.filesha256
+            iscontext: true
+          lhsB:
+            value:
+              simple: alert.hostip
+          options: {}
+          optionsB: {}
+          rhs: {}
+          rhsB: {}
+          then:
+            value:
+              simple: ${alert= '(filesha256:"' + val.filesha256 + '" or hostip:"'
+                + val.hostip + '") ' + 'and sourceBrand:"' + val.sourceBrand + '"
+                and name:"' + val.name + '"'}
       SHA256:
         complex:
           root: alert
