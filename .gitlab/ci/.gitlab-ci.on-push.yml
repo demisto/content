@@ -629,7 +629,7 @@ test-upload-flow:
   extends:
     - .default-job-settings
   script:
-    - ls -l "${ARTIFACTS_FOLDER}"
+    - EXIT_CODE=0
     - ./Tests/scripts/convert_test_playbook_result_to_jira_issues.sh || EXIT_CODE=$?
     - job-done
     - exit "${EXIT_CODE}"
