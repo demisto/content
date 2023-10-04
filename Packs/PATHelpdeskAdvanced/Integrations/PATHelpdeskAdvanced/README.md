@@ -347,7 +347,7 @@ Get ticket history.
 | --- | --- | --- |
 | HelpdeskAdvanced.Ticket.AccountID | string | The account ID of the ticket. | 
 | HelpdeskAdvanced.Ticket.Attachments | string | List of attachments for the ticket. | 
-| HelpdeskAdvanced.Ticket.AutEmailCounter | string | The aut email counter. | 
+| HelpdeskAdvanced.Ticket.AutEmailCounter | string | The AUT email counter. | 
 | HelpdeskAdvanced.Ticket.ContactID | string | The contact ID of the ticket. | 
 | HelpdeskAdvanced.Ticket.Data.Comment | string | The comment text. | 
 | HelpdeskAdvanced.Ticket.Data.Date | string | The date of the history entry. | 
