@@ -157,7 +157,7 @@ def get_hash_info_command():
 
 def scan_file_command():
     file_entry_id = demisto.args()['fileId']
-    scan_rule_name = demisto.args().get('scanRule', None)
+    scan_rule_name = demisto.args().get('scanRule')
     res, file_name = scan_file(file_entry_id, scan_rule_name)
     scan_id = res['data_id']
     md = '# OPSWAT-Metadefender\n'
