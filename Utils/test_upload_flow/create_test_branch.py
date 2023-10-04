@@ -5,25 +5,23 @@ import shutil
 import subprocess
 import time
 from pathlib import Path
+from typing import Union
 from git import GitCommandError, Head, Repo
 from zipfile import ZipFile
 from packaging.version import Version
 
 from Tests.scripts.utils import logging_wrapper as logging
 from Tests.scripts.utils.log_util import install_logging
-from Utils.github_workflow_scripts.utils import get_env_var
 
 versions_dict = {}
 pack_items_dict = {}
 changed_packs = set()
 
-GITLAB_SERVER_HOST = get_env_var('CI_SERVER_HOST', 'code.pan.run')  # disable-secrets-detection
-GITLAB_PROJECT_NAMESPACE = get_env_var('CI_PROJECT_NAMESPACE', 'xsoar')  # disable-secrets-detection
 
 # HELPER FUNCTIONS
 
 
-def json_write(file_path: str, data: list | dict):
+def json_write(file_path: str, data: Union[list, dict]):
     """ Writes given data to a json file
 
     Args:
@@ -368,9 +366,8 @@ def main():
         repo.git.commit(m="Added Test file", no_verify=True)
         repo.git.push('--set-upstream',
                       f'https://GITLAB_PUSH_TOKEN:{args.gitlab_mirror_token}@'  # disable-secrets-detection
-                      f'{GITLAB_SERVER_HOST}/{GITLAB_PROJECT_NAMESPACE}/content.git',  # disable-secrets-detection
-                      branch, push_option="ci.skip")  # disable-secrets-detection
-        logging.info("Successfully pushed the branch to GitLab content repo")
+                      f'code.pan.run/xsoar/content.git', branch, push_option="ci.skip")  # disable-secrets-detection
+        logging.info("Successfuly pushing the branch to Gitlab content repo")
 
     except GitCommandError as e:
         logging.error(e)

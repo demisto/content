@@ -2341,7 +2341,7 @@ script:
       description: JSON containing the list of trusted images to update. In order to view the structure, use ***prisma-cloud-compute-trusted-images-list*** to retrieve the current state of the list.
       required: true
   - name: prisma-cloud-compute-container-scan-results-list
-    description: Retrieves container scan reports. Maps to Monitor > Compliance > Images > Deployed in the Console UI.
+    description: Retrieves container scan reports. Maps to Monitor > Compliance > Containers in the Console UI.
     arguments:
     - name: collections
       description: A comma-separated list of collection names that you have defined in Prisma Cloud Compute.

@@ -44,10 +44,11 @@ Automated remediation is only possible when the right conditions are met.  These
   - Postgres Server
   - Elasticsearch Server
   - Unclaimed S3 Bucket*
-- Asset is a cloud compute instance:
+- Asset one of the following:
   - AWS EC2 Instance
   - Azure Compute Instance
   - GCP Compute Engine (VM)
+  - On Prem asset protect with Palo Alto Networks Firewall
 - Service owner information found through one of the following:
   - AWS IAM
   - Azure IAM
@@ -61,6 +62,7 @@ Automated remediation is only possible when the right conditions are met.  These
 - Indicators of a non-production host:
   - "dev" or related words found in environment-related tags associated with the asset (case insensitive)
   - Has an active "DevelopmentEnvironment" classification from processing of public data
+  - Optional: this check can be disabled with the `BypassDevCheck` parent playbook input
 
 \* The `Unclaimed S3 Bucket` attack surface rule ID only requires `AWS-S3` integration to be enabled.
 
@@ -78,6 +80,8 @@ The main active response playbook is the `Cortex ASM - ASM Alert` playbook. This
   - [Cortex ASM - Enrichment](#cortex-asm---enrichment)
   - [Cortex ASM - GCP Enrichment](#cortex-asm---gcp-enrichment)
   - [Cortex ASM - Jira Notification](#cortex-asm---jira-notification)
+  - [Cortex ASM - On Prem Enrichment](#cortex-asm---on-prem-enrichment)
+  - [Cortex ASM - On Prem Remediation](#cortex-asm---on-prem-remediation)
   - [Cortex ASM - Prisma Cloud Enrichment](#cortex-asm---prisma-cloud-enrichment)
   - [Cortex ASM - Qualys Enrichment](#cortex-asm---qualys-enrichment)
   - [Cortex ASM - Rapid7 Enrichment](#cortex-asm---rapid7-enrichment)
@@ -152,6 +156,18 @@ A playbook that given the IP address enriches GCP information relevant to ASM al
 A playbook that is used to create Jira tickets directed toward service owners to notify them of their internet exposures.
 
 ![Cortex ASM - Jira Notification](https://raw.githubusercontent.com/demisto/content/94341532ed2e30cb0c5fb3235ef10b4411c8337c/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_Jira_Notification.png)
+
+#### Cortex ASM - On Prem Enrichment
+
+A playbook that given an IP address, port, and protocol of a service, enriches using on-prem integrations to find the related firewall rule and other related information.
+
+![Cortex ASM - On Prem Enrichment](https://raw.githubusercontent.com/demisto/content/8eb2a558a040e76040191456fd707f102cb16647/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_On_Prem_Enrichment.png)
+
+#### Cortex ASM - On Prem Remediation
+
+A playbook that adds new block rule(s) to on-prem firewall vendors in order to block internet access for internet exposures.
+
+![Cortex ASM - On Prem Remediation](https://raw.githubusercontent.com/demisto/content/8eb2a558a040e76040191456fd707f102cb16647/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_On_Prem_Remediation.png)
 
 #### Cortex ASM - Prisma Cloud Enrichment
 
