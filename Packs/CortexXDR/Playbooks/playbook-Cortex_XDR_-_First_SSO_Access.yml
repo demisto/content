@@ -1,5 +1,15 @@
 id: Cortex XDR - First SSO Access
-version: -1
+version: 24
+contentitemexportablefields:
+  contentitemfields:
+    packID: CortexXDR
+    packName: Cortex XDR by Palo Alto Networks
+    itemVersion: 5.0.8
+    fromServerVersion: 6.8.0
+    toServerVersion: ""
+    definitionid: ""
+    prevname: ""
+vcShouldKeepItemLegacyProdMachine: false
 name: Cortex XDR - First SSO Access
 description: |-
   Investigates a Cortex XDR incident containing First SSO access from ASN in organization
@@ -24,7 +34,6 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "2"
@@ -46,10 +55,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: e337418e-95d8-4cac-8585-f9f2f19daf46
+    taskid: e868adc2-744e-4cb7-8ad9-78674f05ec61
     type: regular
     task:
-      id: e337418e-95d8-4cac-8585-f9f2f19daf46
+      id: e868adc2-744e-4cb7-8ad9-78674f05ec61
       version: -1
       name: IP Enrichment
       description: IP to check.
@@ -69,6 +78,7 @@ tasks:
         complex:
           root: inputs.IPAddress
     separatecontext: false
+    continueonerror: true
     continueonerrortype: ""
     view: |-
       {
@@ -128,11 +138,11 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "1"
       - "93"
+      - "188"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -160,7 +170,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "157"
@@ -169,8 +178,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 267.5,
-          "y": 590
+          "x": 337.5,
+          "y": 920
         }
       }
     note: false
@@ -191,7 +200,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "160"
@@ -200,8 +208,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 657.5,
-          "y": 2250
+          "x": 727.5,
+          "y": 2580
         }
       }
     note: false
@@ -231,8 +239,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -112.5,
-          "y": 3260
+          "x": -42.5,
+          "y": 3590
         }
       }
     note: false
@@ -262,8 +270,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 850,
-          "y": 2580
+          "x": 920,
+          "y": 2910
         }
       }
     note: false
@@ -306,8 +314,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 527.5,
-          "y": 1240
+          "x": 597.5,
+          "y": 1570
         }
       }
     note: false
@@ -319,10 +327,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "93":
     id: "93"
-    taskid: 77ef71e3-5c97-400e-8684-f0cab0f615d9
+    taskid: 370149de-8532-43a4-84bd-30624f990d7c
     type: playbook
     task:
-      id: 77ef71e3-5c97-400e-8684-f0cab0f615d9
+      id: 370149de-8532-43a4-84bd-30624f990d7c
       version: -1
       name: Account Enrichment - Generic v2.1
       description: |-
@@ -334,8 +342,9 @@ tasks:
         - PingOne
         - Okta
         - AWS IAM
+        - Cortex XDR (account enrichment and reputation)
 
-        Also, the playbook supports the generic command 'iam-get-user' (implemented in IAM integrations). For more information, visit https://xsoar.pan.dev/docs/integrations/iam-integrations.
+        Also, the playbook supports the generic command 'iam-get-user' (implemented in IAM integrations. For more information, visit https://xsoar.pan.dev/docs/integrations/iam-integrations.
       playbookName: Account Enrichment - Generic v2.1
       type: playbook
       iscommand: false
@@ -356,6 +365,12 @@ tasks:
               fields:
                 value:
                   simple: "2"
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: inputs.Username
+                iscontext: true
     separatecontext: true
     continueonerrortype: ""
     loop:
@@ -399,8 +414,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 720,
-          "y": 1410
+          "x": 790,
+          "y": 1740
         }
       }
     note: false
@@ -416,8 +431,8 @@ tasks:
       methods:
       - email
       format: ""
-      bcc:
-      cc:
+      bcc: null
+      cc: null
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -453,10 +468,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "111":
     id: "111"
-    taskid: 3b6bc054-4584-41a4-80b6-7a4e2842b490
+    taskid: 8e11862e-ab39-4741-8e68-98663af571eb
     type: condition
     task:
-      id: 3b6bc054-4584-41a4-80b6-7a4e2842b490
+      id: 8e11862e-ab39-4741-8e68-98663af571eb
       version: -1
       name: IP is malicious?
       description: Check if the IP is malicious.
@@ -472,23 +487,37 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isEqualNumber
+      - - operator: isNotEmpty
           left:
             value:
               complex:
-                root: DBotScore
-                accessor: Score
+                root: DBotScore.Score
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: DBotScore.Type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: ip
+                    ignorecase: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: DBotScore.Score
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "3"
             iscontext: true
-          right:
-            value:
-              simple: "3"
           ignorecase: true
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 267.5,
-          "y": -1340
+          "x": 480,
+          "y": -1320
         }
       }
     note: false
@@ -509,7 +538,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "181"
@@ -542,7 +570,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "172"
@@ -552,8 +579,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 267.5,
-          "y": -290
+          "x": 480,
+          "y": 40
         }
       }
     note: false
@@ -571,7 +598,8 @@ tasks:
       id: 74577fe2-2dc9-4913-8f77-18be32c48ca2
       version: -1
       name: Should the Endpoint be isolated automatically?
-      description: Checks if the endpoint can be isolated automatically based on the input's value. (AutomaticallyIsolateEndpoint)
+      description: Checks if the endpoint can be isolated automatically based on the
+        input's value. (AutomaticallyIsolateEndpoint)
       type: condition
       iscommand: false
       brand: ""
@@ -598,8 +626,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 647.5,
-          "y": 2760
+          "x": 717.5,
+          "y": 3090
         }
       }
     note: false
@@ -629,8 +657,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 850,
-          "y": 2940
+          "x": 920,
+          "y": 3270
         }
       }
     note: false
@@ -666,8 +694,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 420,
-          "y": 2940
+          "x": 490,
+          "y": 3270
         }
       }
     note: false
@@ -715,8 +743,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 37.5,
-          "y": 200
+          "x": 257.5,
+          "y": 530
         }
       }
     note: false
@@ -766,7 +794,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "115"
@@ -775,8 +802,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -112.5,
-          "y": -430
+          "x": -100,
+          "y": -130
         }
       }
     note: false
@@ -841,8 +868,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 430,
-          "y": 2580
+          "x": 500,
+          "y": 2910
         }
       }
     note: false
@@ -872,8 +899,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -552.5,
-          "y": -600
+          "x": -420,
+          "y": -340
         }
       }
     note: false
@@ -921,8 +948,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 490,
-          "y": 20
+          "x": 710,
+          "y": 350
         }
       }
     note: false
@@ -966,8 +993,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 490,
-          "y": 410
+          "x": 710,
+          "y": 740
         }
       }
     note: false
@@ -1077,8 +1104,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 37.5,
-          "y": 20
+          "x": 257.5,
+          "y": 350
         }
       }
     note: false
@@ -1090,18 +1117,18 @@ tasks:
     isautoswitchedtoquietmode: false
   "157":
     id: "157"
-    taskid: b67ff8da-2897-42a3-8e54-4b74fe65048b
+    taskid: ca43b3d2-ac73-444f-85e7-6233c9c1b221
     type: playbook
     task:
-      id: b67ff8da-2897-42a3-8e54-4b74fe65048b
+      id: ca43b3d2-ac73-444f-85e7-6233c9c1b221
       version: -1
       name: Cortex XDR - First SSO Access - Set Verdict
       description: |-
         This playbook determines the alert’s verdict based on the results of multiple checks.
         By default, if at least two of the checks' results are true, the verdict is set to malicious.
         else if only one check's results are true, the verdict is set to suspicious.
-        If none of the conditions is true,  the verdict is set to non-malicious.
-        It is possible to change the threshold value of the inputs to change the sensitivity of the verdict
+        If none of the conditions is true, the verdict is set to non-malicious.
+        It is possible to change the threshold value of the inputs to change the sensitivity of the verdict.
       playbookName: Cortex XDR - First SSO Access - Set Verdict
       type: playbook
       iscommand: false
@@ -1149,6 +1176,57 @@ tasks:
       XDRRelatedAlertsThreshold:
         complex:
           root: inputs.XDRRelatedAlertsThreshold
+      XDRRiskyHost:
+        complex:
+          root: PaloAltoNetworksXDR.RiskyHost
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: PaloAltoNetworksXDR.RiskyHost.risk_level
+                iscontext: true
+              right:
+                value:
+                  simple: MED
+              ignorecase: true
+            - operator: isEqualString
+              left:
+                value:
+                  simple: PaloAltoNetworksXDR.RiskyHost.risk_level
+                iscontext: true
+              right:
+                value:
+                  simple: HIGH
+              ignorecase: true
+          accessor: |
+            id
+          transformers:
+          - operator: uniq
+      XDRRiskyUser:
+        complex:
+          root: PaloAltoNetworksXDR.RiskyUser
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: PaloAltoNetworksXDR.RiskyUser.risk_level
+                iscontext: true
+              right:
+                value:
+                  simple: MED
+              ignorecase: true
+            - operator: isEqualString
+              left:
+                value:
+                  simple: PaloAltoNetworksXDR.RiskyUser.risk_level
+                iscontext: true
+              right:
+                value:
+                  simple: HIGH
+              ignorecase: true
+          accessor: id
+          transformers:
+          - operator: uniq
     separatecontext: false
     continueonerrortype: ""
     loop:
@@ -1159,8 +1237,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 267.5,
-          "y": 720
+          "x": 337.5,
+          "y": 1050
         }
       }
     note: false
@@ -1203,8 +1281,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 490,
-          "y": 200
+          "x": 710,
+          "y": 530
         }
       }
     note: false
@@ -1222,7 +1300,8 @@ tasks:
       id: 36cba334-80b3-45b9-8f46-d04ab74bc01a
       version: -1
       name: Should the Account be disabled automatically?
-      description: Checks if the account can be disabled and resets the account's password automatically based on the input's value. (AutomaticallyBlockAccount)
+      description: Checks if the account can be disabled and resets the account's
+        password automatically based on the input's value. (AutomaticallyBlockAccount)
       type: condition
       iscommand: false
       brand: ""
@@ -1249,8 +1328,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 657.5,
-          "y": 2400
+          "x": 727.5,
+          "y": 2730
         }
       }
     note: false
@@ -1271,7 +1350,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "76"
@@ -1280,8 +1358,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 647.5,
-          "y": 3120
+          "x": 717.5,
+          "y": 3450
         }
       }
     note: false
@@ -1295,13 +1373,34 @@ tasks:
     isautoswitchedtoquietmode: false
   "163":
     id: "163"
-    taskid: 45b89b57-833e-402d-8b3e-d283a47c595a
+    taskid: cf885728-125d-4d23-832d-fee04d733e29
     type: condition
     task:
-      id: 45b89b57-833e-402d-8b3e-d283a47c595a
+      id: cf885728-125d-4d23-832d-fee04d733e29
       version: -1
       name: Analyst decision - Is this a True positive?
-      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
+      description: |-
+        Consider the following data from the user investigation playbook, and make a decision based on it and the reputation of the associated indicators.
+
+        SIEM:
+        Number of failed logon events: ${NumOfSiemFailedLogon}
+
+        Okta:
+        Number of failed logon events to Okta: ${NumOfOktaFailedLogon}
+        Number of generally failed logons: ${NumOfFailedLogon}
+        Number of failed logons from specified ASN (if applies): ${NumOfFailedLogonASN}
+        Number of suspicious activities: ${NumOfOktaSuspiciousActivities}
+        Suspicious activity descriptions: ${SuspiciousUserActivities}
+        Suspicious user-agents: ${SuspiciousUserAgent}
+        User devices used for logon: ${UserDevices}
+        Applications used by the user: ${UserApplication}
+        Whether the user works from a permanent country: ${PermanentCountry}
+
+        Firewall:
+        Number of threat logs from firewall: ${NumOfThreatLogs}
+
+        Azure:
+        Failed logons from Azure Analytics logs: ${AzureFailedLogonLogs}
       type: condition
       iscommand: false
       brand: ""
@@ -1315,8 +1414,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 267.5,
-          "y": 2050
+          "x": 337.5,
+          "y": 2380
         }
       }
     note: false
@@ -1331,8 +1430,8 @@ tasks:
         simple: Based on the investigation details, is this a true positive?
       methods: []
       format: ""
-      bcc:
-      cc:
+      bcc: null
+      cc: null
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -1357,7 +1456,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "151"
@@ -1366,8 +1464,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 37.5,
-          "y": -110
+          "x": 257.5,
+          "y": 220
         }
       }
     note: false
@@ -1388,7 +1486,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "149"
@@ -1397,8 +1494,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 490,
-          "y": -110
+          "x": 710,
+          "y": 220
         }
       }
     note: false
@@ -1419,7 +1516,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "88"
@@ -1428,8 +1524,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 527.5,
-          "y": 1110
+          "x": 597.5,
+          "y": 1440
         }
       }
     note: false
@@ -1450,7 +1546,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "178"
@@ -1459,8 +1554,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 267.5,
-          "y": 1590
+          "x": 337.5,
+          "y": 1920
         }
       }
     note: false
@@ -1478,7 +1573,8 @@ tasks:
       id: e8f8bda5-9fed-45e8-8aa3-5473750b4fbc
       version: -1
       name: Should engage with the manager?
-      description: Whether to ask the user manager for the legitimacy of the login events, in case of a user logged in from an unusual country.
+      description: Whether to ask the user manager for the legitimacy of the login
+        events, in case of a user logged in from an unusual country.
       type: condition
       iscommand: false
       brand: ""
@@ -1515,8 +1611,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 267.5,
-          "y": 905
+          "x": 337.5,
+          "y": 1235
         }
       }
     note: false
@@ -1585,8 +1681,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 267.5,
-          "y": 1730
+          "x": 337.5,
+          "y": 2060
         }
       }
     note: false
@@ -1607,7 +1703,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "76"
@@ -1616,8 +1711,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -112.5,
-          "y": 2250
+          "x": -42.5,
+          "y": 2580
         }
       }
     note: false
@@ -1673,8 +1768,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -112.5,
-          "y": -840
+          "x": 220,
+          "y": -570
         }
       }
     note: false
@@ -1686,19 +1781,22 @@ tasks:
     isautoswitchedtoquietmode: false
   "181":
     id: "181"
-    taskid: 418e7f45-3394-43eb-8ff0-50453c346092
+    taskid: 39ac4b59-8832-4b6c-8695-6f52decaa026
     type: condition
     task:
-      id: 418e7f45-3394-43eb-8ff0-50453c346092
+      id: 39ac4b59-8832-4b6c-8695-6f52decaa026
       version: -1
       name: Should verify factor authentication automatically?
-      description: Checks whether to automatically initiate two-factor authentication verification based on the input's value. (AutomaticallyClearSessions)
+      description: Checks whether to automatically initiate two-factor authentication
+        verification based on the input's value. (AutomaticallyClearSessions)
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
       '#default#':
       - "145"
+      Yes, high risk user:
+      - "191"
       "yes":
       - "180"
     separatecontext: false
@@ -1715,12 +1813,40 @@ tasks:
             value:
               simple: "True"
           ignorecase: true
+    - label: Yes, high risk user
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.ForceClearSessionsForHighRiskUsers
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PaloAltoNetworksXDR.RiskyUser
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: PaloAltoNetworksXDR.RiskyUser.risk_level
+                      iscontext: true
+                    right:
+                      value:
+                        simple: HIGH
+                    ignorecase: true
+            iscontext: true
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": -112.5,
-          "y": -1020
+          "y": -1010
         }
       }
     note: false
@@ -1759,8 +1885,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -112.5,
-          "y": -600
+          "x": 220,
+          "y": -340
         }
       }
     note: false
@@ -1770,6 +1896,81 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "188":
+    id: "188"
+    taskid: 8dbcd262-0460-4bfa-8cfa-c881e1fd4424
+    type: playbook
+    task:
+      id: 8dbcd262-0460-4bfa-8cfa-c881e1fd4424
+      version: -1
+      name: Endpoint Enrichment - Generic v2.1
+      playbookName: Endpoint Enrichment - Generic v2.1
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "111"
+    scriptarguments:
+      Hostname:
+        complex:
+          root: inputs.EndpointID
+          transformers:
+          - operator: uniq
+      UseReputationCommand:
+        simple: "False"
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": -392.5,
+          "y": -1520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "191":
+    id: "191"
+    taskid: a139de72-68c7-4106-865a-5e929e777862
+    type: title
+    task:
+      id: a139de72-68c7-4106-865a-5e929e777862
+      version: -1
+      name: Force clear sessions
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "180"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -112.5,
+          "y": -720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {
@@ -1787,16 +1988,15 @@ view: |-
       "178_72_yes": 0.32,
       "180_145_#default#": 0.51,
       "180_187_yes": 0.37,
-      "181_145_#default#": 0.36,
       "181_180_yes": 0.44,
       "88_100_yes": 0.46,
       "88_176_#default#": 0.25
     },
     "paper": {
       "dimensions": {
-        "height": 5125,
-        "width": 1782.5,
-        "x": -552.5,
+        "height": 5455,
+        "width": 1720,
+        "x": -420,
         "y": -1800
       }
     }
@@ -1807,7 +2007,7 @@ inputs:
     simple: "False"
   required: false
   description: Whether to isolate the endpoint automatically.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: XDRRelatedAlertsThreshold
   value:
     simple: "3"
@@ -1817,7 +2017,7 @@ inputs:
     This is the minimum threshold for XDR related alerts based on user activity to identify suspicious activity.
     example: If this input is set to '3', and the 'Cortex XDR - First SSO Access - Set Verdict' sub-playbook has found 4 XDR related alerts - It will classify this check as suspicious activity.
     The default value is '3'.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: FailedlogonUserThreshold
   value:
     simple: "30"
@@ -1826,7 +2026,7 @@ inputs:
     This is the minimum threshold for failed login attempts by the user.
     example: If this input is set to '30', and the 'Cortex XDR - First SSO Access - Set Verdict' sub-playbook has found 31 failed login attempts - It will classify this check as suspicious activity.
     The default value is '30'.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: FailedlogonFromASNThreshold
   value:
     simple: "20"
@@ -1835,44 +2035,45 @@ inputs:
     This is the minimum threshold for failed login attempts from ASN.
     example: If this input is set to '20', and the 'Cortex XDR - First SSO Access - Set Verdict' sub-playbook has found 21 failed login attempts from ASN - It will classify this check as suspicious activity.
     The default value is '20'.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: EndpointID
   value: {}
   required: false
   description: XDR Endpoint ID.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: Username
   value: {}
   required: false
   description: User name.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: IPAddress
   value: {}
   required: false
   description: IP Address from the XDR Alert.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: LoginCountry
   value: {}
   required: false
   description: The country from which the user logged in.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: AutomaticallyBlockAccount
   value:
     simple: "False"
   required: false
   description: Whether to block the account automatically.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: ContactUserManager
   value:
     simple: "False"
   required: false
-  description: Whether to ask the user manager for the legitimacy of the login events, in case of a user logged in from an unusual country.
-  playbookInputQuery:
+  description: Whether to ask the user manager for the legitimacy of the login events,
+    in case of a user logged in from an unusual country.
+  playbookInputQuery: null
 - key: AlertName
   value: {}
   required: false
   description: Alert Name.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: MaliciousVerdictThreshold
   value:
     simple: "2"
@@ -1881,7 +2082,7 @@ inputs:
     The 'Malicious verdict' threshold to determine a malicious verdict.
     The default value is '2'.
     Should be Greater than the "SuspiciousVerdictThreshold" input.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: SuspiciousVerdictThreshold
   value:
     simple: "1"
@@ -1890,74 +2091,88 @@ inputs:
     The 'Suspicious verdict' threshold to determine a suspicious verdict.
     The default value is '1'.
     Should be lower than the "MaliciousVerdictThreshold" input.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: SplunkIndex
   value:
     simple: '*'
   required: false
   description: Splunk's index name in which to search. Default is "*" - All.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: SplunkEarliestTime
   value:
     simple: -1d
   required: false
   description: The earliest time for the Splunk search query.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: SplunkLatestTime
   value:
     simple: now
   required: false
   description: The latest time for the Splunk search query.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: QRadarSearchTime
   value:
     simple: Last 1 days
   required: false
-  description: 'The Search Time for the QRadar search query. for example:  Last 1 days'
-  playbookInputQuery:
+  description: 'The Search Time for the QRadar search query. for example:  Last 1
+    days'
+  playbookInputQuery: null
 - key: AzureSearchTime
   value:
     simple: ago(1d)
   required: false
-  description: 'The Search Time for the Azure Log Analytics search query. for example: ago(1d)'
-  playbookInputQuery:
+  description: 'The Search Time for the Azure Log Analytics search query. for example:
+    ago(1d)'
+  playbookInputQuery: null
 - key: SIEMFailedLogonSearch
   value:
     simple: "True"
   required: false
-  description: Whether to search for failed logon logs from Siem? Can be False or True.
-  playbookInputQuery:
+  description: Whether to search for failed logon logs from Siem? Can be False or
+    True.
+  playbookInputQuery: null
 - key: ThreatLogSearch
   value:
     simple: "True"
   required: false
   description: Whether to search for threat logs from PAN-OS? Can be False or True.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: XDRAlertSearch
   value:
     simple: "True"
   required: false
   description: Whether to search for Related alerts from XDR? Can be False or True.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: OktaSearch
   value:
     simple: "True"
   required: false
   description: Whether to search for logs from Okta? Can be False or True.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: XDRUsernameField
   value:
     simple: actor_effective_username
   required: false
   description: Cortex XDR User name Field.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: AutomaticallyClearSessions
   value:
     simple: "False"
   required: false
-  description: Whether to clear all the user sessions automatically.
-  playbookInputQuery:
+  description: Whether to clear all the user sessions automatically. Can be used in
+    conjunction with the ForceClearSessionsForHighRiskUsers input.
+  playbookInputQuery: null
+- key: ForceClearSessionsForHighRiskUsers
+  value:
+    simple: "False"
+  required: false
+  description: |-
+    Whether to clear user sessions regardless of the AutomaticallyClearSessions input for users with High risk.
+    Users receive their risk level based on Cortex XDR's ITDR module. The risks can be:
+    - LOW
+    - MED
+    - HIGH
+
+    Setting this to True will clear the user sessions in Okta if the user has a high risk, automatically. Setting this and the AutomaticallyClearSessions inputs to False, will prompt the analyst to take action manually even if the user has a high risk associated with it.
+  playbookInputQuery: null
 outputs: []
-tests:
-- No tests (auto formatted)
-fromversion: 6.8.0

@@ -1,5 +1,15 @@
 id: Cortex XDR - First SSO Access - Set Verdict
-version: -1
+version: 10
+contentitemexportablefields:
+  contentitemfields:
+    packID: CortexXDR
+    packName: Cortex XDR by Palo Alto Networks
+    itemVersion: 5.1.2
+    fromServerVersion: 6.8.0
+    toServerVersion: ""
+    definitionid: ""
+    prevname: ""
+vcShouldKeepItemLegacyProdMachine: false
 name: Cortex XDR - First SSO Access - Set Verdict
 description: |-
   This playbook determines the alert’s verdict based on the results of multiple checks.
@@ -19,7 +29,6 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "100"
@@ -30,6 +39,8 @@ tasks:
       - "108"
       - "109"
       - "107"
+      - "122"
+      - "123"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -96,7 +107,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -203,7 +213,8 @@ tasks:
       id: e2087b45-f36f-4b3a-8800-2cb841b059ec
       version: -1
       name: Verdict
-      description: A conditional task whose action path is determined by the verdict results.
+      description: A conditional task whose action path is determined by the verdict
+        results.
       type: condition
       iscommand: false
       brand: ""
@@ -1045,7 +1056,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "95"
@@ -1076,7 +1086,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "67"
@@ -1107,7 +1116,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "110"
@@ -1127,6 +1135,127 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "122":
+    id: "122"
+    taskid: 272c20de-5bc6-4d78-8c0a-caa9d03c5ca8
+    type: regular
+    task:
+      id: 272c20de-5bc6-4d78-8c0a-caa9d03c5ca8
+      version: -1
+      name: Check for risky users
+      description: Checks if there are risky users involved in the incident, and sets
+        data accordingly in the VerdictResult object key.
+      scriptName: SetMultipleValues
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "118"
+    scriptarguments:
+      keys:
+        simple: Risky user involved?
+      parent:
+        simple: VerdictResult
+      values:
+        complex:
+          root: .
+          transformers:
+          - operator: If-Then-Else
+            args:
+              condition:
+                value:
+                  simple: lhs==rhs
+              else:
+                value:
+                  simple: "True"
+              equals: {}
+              lhs:
+                value:
+                  simple: inputs.XDRRiskyUser
+                iscontext: true
+              options: {}
+              rhs: {}
+              then:
+                value:
+                  simple: "False"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -4210,
+          "y": 290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "123":
+    id: "123"
+    taskid: 6025d9a3-8fab-47bb-8f6b-6f4bee42eae2
+    type: regular
+    task:
+      id: 6025d9a3-8fab-47bb-8f6b-6f4bee42eae2
+      version: -1
+      name: Check for risky hosts
+      description: Checks if there are risky hosts involved in the incident, and sets
+        data accordingly in the VerdictResult object key.
+      scriptName: SetMultipleValues
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "118"
+    scriptarguments:
+      keys:
+        simple: Risky host involved?
+      parent:
+        simple: VerdictResult
+      values:
+        complex:
+          root: .
+          transformers:
+          - operator: If-Then-Else
+            args:
+              condition:
+                value:
+                  simple: lhs==rhs
+              else:
+                value:
+                  simple: "True"
+              equals: {}
+              lhs:
+                value:
+                  simple: inputs.XDRRiskyHost
+                iscontext: true
+              options: {}
+              rhs: {}
+              then:
+                value:
+                  simple: "False"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -4630,
+          "y": 290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {
@@ -1136,8 +1265,8 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 1935,
-        "width": 3270,
-        "x": -3790,
+        "width": 4110,
+        "x": -4630,
         "y": 90
       }
     }
@@ -1149,79 +1278,98 @@ inputs:
   description: |-
     This is the minimum threshold for failed login attempts by the user.
     example: If this input is set to '30', and the playbook has found 31 failed login attempts - It will classify this check as suspicious activity.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: FailedlogonFromASNThreshold
   value: {}
   required: false
   description: |-
     This is the minimum threshold for failed login attempts from ASN.
     example: If this input is set to '20', and the playbook has found 21 failed login attempts from ASN - It will classify this check as suspicious activity.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: XDRRelatedAlertsThreshold
   value: {}
   required: false
   description: |-
     This is the minimum threshold for XDR related alerts based on user activity to identify suspicious activity.
     example: If this input is set to '3', and the playbook has found 4 XDR related alerts - It will classify this check as suspicious activity.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: MaliciousVerdictThreshold
   value: {}
   required: false
   description: |-
     The 'Malicious verdict' threshold to determine a malicious verdict.
     Should be Greater than the "SuspiciousVerdictThreshold" input.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: SuspiciousVerdictThreshold
   value: {}
   required: false
   description: |-
     The 'Suspicious verdict' threshold to determine a suspicious verdict.
     Should be lower than the "MaliciousVerdictThreshold" input.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: AlertName
   value: {}
   required: false
   description: Alert Name.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: NumOfFailedLogonASN
   value: {}
   required: false
   description: The number of failed logins from the ASN.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: RelatedCampaign
   value: {}
   required: false
   description: Campaign related to the indicator.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: NumOfXDRAlerts
   value: {}
   required: false
   description: The number of XDR alerts for the user.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: NumOfFailedLogon
   value: {}
   required: false
   description: The number of failed logins.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: NumOfOktaSuspiciousUserAgent
   value: {}
   required: false
   description: The number of suspicious user agents from Okta.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: NumOfOktaSuspiciousActivities
   value: {}
   required: false
   description: The number of suspicious activities for the user from Okta.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: PermanentCountry
   value: {}
   required: false
-  description: True if the user works from a permanent country from Okta. Otherwise, false.
-  playbookInputQuery:
+  description: True if the user works from a permanent country from Okta. Otherwise,
+    false.
+  playbookInputQuery: null
+- key: XDRRiskyUser
+  value:
+    complex:
+      root: PaloAltoNetworksXDR.RiskyUser
+      accessor: id
+      transformers:
+      - operator: uniq
+  required: false
+  description: Usernames of users that were found as risky by Cortex XDR.
+  playbookInputQuery: null
+- key: XDRRiskyHost
+  value:
+    complex:
+      root: PaloAltoNetworksXDR.RiskyHost
+      accessor: |
+        id
+      transformers:
+      - operator: uniq
+  required: false
+  description: Hostnames that were found as risky by Cortex XDR
+  playbookInputQuery: null
 outputs:
 - contextPath: Verdict
   description: The verdict based on the results of multiple checks.
   type: unknown
-tests:
-- No tests (auto formatted)
-fromversion: 6.8.0
