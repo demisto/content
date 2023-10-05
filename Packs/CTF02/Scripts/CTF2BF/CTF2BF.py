@@ -47,14 +47,14 @@ bad_images = [
 ]
 
 HTML_MESSAGE_1 = '''
-<img src="%s" alt="Robot">
+<img src="%s" alt="ok" width="350" height="200">
 <div style='font-size:18px;'>
 Well Done!!!
 </div>
 ''' % (good_images[random.randint(0, len(good_images) - 1)])
 
 HTML_MESSAGE_BAD = '''
-<img src="%s" alt="Error">
+<img src="%s" alt="Error" width="350" height="200">
 <div style='font-size:18px;'>
 Nope!!! Try again.
 Remember to overwrite the "secret" argument when you are re-running the task. 
