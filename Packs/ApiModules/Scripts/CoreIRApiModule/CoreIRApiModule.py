@@ -3268,12 +3268,16 @@ def get_original_alerts_command(client: CoreClient, args: Dict) -> CommandResult
             demisto.debug(e)
             continue
         # remove original_alert_json field and add its content to alert.
-        alert.update(
-            alert.pop('original_alert_json', None))
-        updated_alert = filter_general_fields(alert)
-        if 'event' in updated_alert:
-            filter_vendor_fields(updated_alert)
-        filtered_alerts.append(updated_alert)
+        alert.update(alert.pop('original_alert_json', {}))
+
+        if argToBoolean(args.get('filter_alert_fields',True)):
+            alert_result = filter_general_fields(alert)
+            if 'event' in alert_result:
+                filter_vendor_fields(alert_result)
+        else:
+            alert_result = alert
+
+        filtered_alerts.append(alert_result)
 
     return CommandResults(
         outputs_prefix=f'{args.get("integration_context_brand", "CoreApiModule")}.OriginalAlert',
@@ -3421,7 +3425,7 @@ def get_dynamic_analysis_command(client: CoreClient, args: Dict) -> CommandResul
             demisto.debug("encountered the following while decoding dictionary values, skipping")
             demisto.debug(e)
         # remove original_alert_json field and add its content to alert.
-        alert.update(alert.pop('original_alert_json', None))
+        alert.update(alert.pop('original_alert_json', {}))
         if demisto.get(alert, 'messageData.dynamicAnalysis'):
             filtered_alerts.append(demisto.get(alert, 'messageData.dynamicAnalysis'))
     if not filtered_alerts:

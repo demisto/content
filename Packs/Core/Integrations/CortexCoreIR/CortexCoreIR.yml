@@ -1978,6 +1978,14 @@ script:
       isArray: true
       name: alert_ids
       required: true
+    - description: Whether to return only a subset of the alert fields. Filtering the fields can reduce response size for large alerts.
+      auto: PREDEFINED
+      name: filter_alert_fields
+      required: true
+      defaultValue: 'true'
+      predefined:
+      - 'true'
+      - 'false'
     description: Returns dynamic analysis of each alert ID.
     name: core-get-dynamic-analysis
     outputs:
