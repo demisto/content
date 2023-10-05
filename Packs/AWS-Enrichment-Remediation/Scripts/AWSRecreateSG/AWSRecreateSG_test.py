@@ -51,7 +51,7 @@ def test_instance_info(mocker):
     from AWSRecreateSG import instance_info
     from test_data.sample import INSTANCE_INFO
     mocker.patch.object(demisto, "executeCommand", return_value=INSTANCE_INFO)
-    args = {"instance_id": "fake-instance-id", "public_ip": "1.1.1.1", "assume_role": "test_role"}
+    args = {"instance_id": "fake-instance-id", "public_ip": "1.1.1.1", "assume_role": "test_role", "region": "us-east-1"}
     result = instance_info(**args)
     assert result == ({'eni-00000000000000000': ['sg-00000000000000000']}, 'AWS - EC2')
 
@@ -70,7 +70,8 @@ def test_sg_fix(mocker):
     from test_data.sample import SG_INFO
     new_sg = [{'Type': 1, 'Contents': {'AWS.EC2.SecurityGroups': {'GroupId': 'sg-00000000000000001'}}}]
     mocker.patch.object(demisto, "executeCommand", return_value=new_sg)
-    args = {"sg_info": SG_INFO, "port": 22, "protocol": "tcp", "assume_role": "test_role", "instance_to_use": "AWS - EC2"}
+    args = {"sg_info": SG_INFO, "port": 22, "protocol": "tcp", "assume_role": "test_role", "instance_to_use": "AWS - EC2",
+            "region": "us-east-1"}
     result = sg_fix(**args)
     assert result == {'new-sg': 'sg-00000000000000001'}
 
@@ -98,7 +99,7 @@ def test_determine_excessive_access(mocker):
 
     mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand)
     args = {"int_sg_mapping": {'eni-00000000000000000': ['sg-00000000000000000']}, "port": 22,
-            "protocol": "tcp", "assume_role": "test_role", "instance_to_use": "AWS - EC2"}
+            "protocol": "tcp", "assume_role": "test_role", "instance_to_use": "AWS - EC2", "region": "us-east-1"}
     result = determine_excessive_access(**args)
     assert result == [{'int': 'eni-00000000000000000', 'old-sg': 'sg-00000000000000000', 'new-sg': 'sg-00000000000000001'}]
 
