@@ -267,7 +267,7 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict[str, Union[
                     first_fetch_time: Union[int, str], query: str | None, mirror_direction: str,
                     mirror_tag: list[str], mirror_playbook_id: bool = False,
                     fetch_incident_history: bool = False) -> \
-    tuple[Dict[str, Union[List[Dict[Any, Any]], str, Any]], List[Dict[str, Any]]]:
+        tuple[dict[str, Union[list[dict[Any, Any]], str, Any]], list[dict[str, Any]]]:
     """This function retrieves new incidents every interval (default is 1 minute).
 
     :type client: ``Client``
@@ -317,7 +317,7 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict[str, Union[
     :rtype: ``Tuple[Dict[str, str], List[dict]]``
     """
     demisto.debug(f'last run is: {last_run}')
-    last_fetched_incidents: list = last_run.get('last_fetched_incidents', []) # type: ignore
+    last_fetched_incidents: list = last_run.get('last_fetched_incidents', [])  # type: ignore
     if not last_fetch:
         last_fetch = first_fetch_time  # type: ignore
     else:
@@ -960,3 +960,4 @@ def main() -> None:  # pragma: no cover
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
+

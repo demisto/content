@@ -227,134 +227,198 @@ def test_validate_and_prepare_basic_params(params, expected_url):
 
 # test_dedup_incidents parametrize arguments
 case_incidents_with_different_times = (
-    '2023-09-26T15:13:45.000000Z',
+    "2023-09-26T15:13:45.000000Z",
     # responses from search_incidents
-    [[{'id': '1', 'version': 8, 'created': '2023-09-26T15:13:45Z'},
-      {'id': '2', 'version': 8, 'created': '2023-09-26T15:14:45Z'},
-        {'id': '3', 'version': 8, 'created': '2023-09-26T15:15:45Z'},
-        {'id': '4', 'version': 8, 'created': '2023-09-26T15:16:45Z'},
-        {'id': '5', 'version': 8, 'created': '2023-09-26T15:17:45Z'}], []]   # max fetch
-    , 5    # incidents_last_fetch_ids
-    , [], (
+    [
+        [
+            {"id": "1", "version": 8, "created": "2023-09-26T15:13:45Z"},
+            {"id": "2", "version": 8, "created": "2023-09-26T15:14:45Z"},
+            {"id": "3", "version": 8, "created": "2023-09-26T15:15:45Z"},
+            {"id": "4", "version": 8, "created": "2023-09-26T15:16:45Z"},
+            {"id": "5", "version": 8, "created": "2023-09-26T15:17:45Z"},
+        ],
+        [],
+    ],  # max fetch
+    5,  # incidents_last_fetch_ids
+    [],
+    (
         # expected incident result
-        [{'id': '1', 'version': 8, 'created': '2023-09-26T15:13:45Z'},
-         {'id': '2', 'version': 8, 'created': '2023-09-26T15:14:45Z'},
-            {'id': '3', 'version': 8, 'created': '2023-09-26T15:15:45Z'},
-            {'id': '4', 'version': 8, 'created': '2023-09-26T15:16:45Z'},
-            {'id': '5', 'version': 8, 'created': '2023-09-26T15:17:45Z'}],
+        [
+            {"id": "1", "version": 8, "created": "2023-09-26T15:13:45Z"},
+            {"id": "2", "version": 8, "created": "2023-09-26T15:14:45Z"},
+            {"id": "3", "version": 8, "created": "2023-09-26T15:15:45Z"},
+            {"id": "4", "version": 8, "created": "2023-09-26T15:16:45Z"},
+            {"id": "5", "version": 8, "created": "2023-09-26T15:17:45Z"},
+        ],
         # expected incidents_last_fetch_ids result
-        ['5']))
+        ["5"],
+    ),
+)
 
 
 case_incidents_with_the_same_times = (
-    '2023-09-26T15:13:45.000000Z',
+    "2023-09-26T15:13:45.000000Z",
     # responses from search_incidents
-    [[{'id': '1', 'version': 8, 'created': '2023-09-26T15:13:45Z'},
-      {'id': '2', 'version': 8, 'created': '2023-09-26T15:13:45Z'},
-        {'id': '3', 'version': 8, 'created': '2023-09-26T15:13:45Z'},
-        {'id': '4', 'version': 8, 'created': '2023-09-26T15:13:45Z'},
-        {'id': '5', 'version': 8, 'created': '2023-09-26T15:13:45Z'}], []]    # max fetch
-    , 5    # incidents_last_fetch_ids
-    , [], (
+    [
+        [
+            {"id": "1", "version": 8, "created": "2023-09-26T15:13:45Z"},
+            {"id": "2", "version": 8, "created": "2023-09-26T15:13:45Z"},
+            {"id": "3", "version": 8, "created": "2023-09-26T15:13:45Z"},
+            {"id": "4", "version": 8, "created": "2023-09-26T15:13:45Z"},
+            {"id": "5", "version": 8, "created": "2023-09-26T15:13:45Z"},
+        ],
+        [],
+    ],  # max fetch
+    5,  # incidents_last_fetch_ids
+    [],
+    (
         # expected incident result
-        [{'id': '1', 'version': 8, 'created': '2023-09-26T15:13:45Z'},
-         {'id': '2', 'version': 8, 'created': '2023-09-26T15:13:45Z'},
-            {'id': '3', 'version': 8, 'created': '2023-09-26T15:13:45Z'},
-            {'id': '4', 'version': 8, 'created': '2023-09-26T15:13:45Z'},
-            {'id': '5', 'version': 8, 'created': '2023-09-26T15:13:45Z'}],
+        [
+            {"id": "1", "version": 8, "created": "2023-09-26T15:13:45Z"},
+            {"id": "2", "version": 8, "created": "2023-09-26T15:13:45Z"},
+            {"id": "3", "version": 8, "created": "2023-09-26T15:13:45Z"},
+            {"id": "4", "version": 8, "created": "2023-09-26T15:13:45Z"},
+            {"id": "5", "version": 8, "created": "2023-09-26T15:13:45Z"},
+        ],
         # expected incidents_last_fetch_ids result
-        ['1', '2', '3', '4', '5']))
+        ["1", "2", "3", "4", "5"],
+    ),
+)
 
 
 case_with_empty_response_with_incidents_last_fetch_ids = (
-    '2023-09-26T15:13:41.000000Z',
+    "2023-09-26T15:13:41.000000Z",
     # responses from search_incidents
-    [[], []]    # max fetch
-    , 5    # incidents_last_fetch_ids
-    , ['1', '2', '3', '4', '5'], (
+    [[], []],  # max fetch
+    5,  # incidents_last_fetch_ids
+    ["1", "2", "3", "4", "5"],
+    (
         # expected incident result
         [],
         # expected incidents_last_fetch_ids result
-        ['1', '2', '3', '4', '5']))
+        ["1", "2", "3", "4", "5"],
+    ),
+)
 
 
 case_with_empty_response_without_incidents_last_fetch_ids = (
-    '2023-09-26T15:13:41.000000Z',
+    "2023-09-26T15:13:41.000000Z",
     # responses from search_incidents
-    [[], []]    # max fetch
-    , 5    # incidents_last_fetch_ids
-    , [], (
+    [[], []],  # max fetch
+    5,  # incidents_last_fetch_ids
+    [],
+    (
         # expected incident result
         [],
         # expected incidents_last_fetch_ids result
-        []))
+        [],
+    ),
+)
 
 case_with_more_then_one_API_call_with_incidents_last_fetch_ids = (
-    '2023-09-26T15:13:41.000000Z',
+    "2023-09-26T15:13:41.000000Z",
     # responses from search_incidents
-    [[{'id': '1', 'version': 8, 'created': '2023-09-26T15:13:41Z'},
-      {'id': '2', 'version': 8, 'created': '2023-09-26T15:13:42Z'},
-        {'id': '3', 'version': 8, 'created': '2023-09-26T15:13:43Z'},
-        {'id': '4', 'version': 8, 'created': '2023-09-26T15:13:44Z'},
-      {'id': '5', 'version': 8, 'created': '2023-09-26T15:13:45Z'}],
-        [{'id': '5', 'version': 8, 'created': '2023-09-26T15:13:45Z'},
-         {'id': '6', 'version': 8, 'created': '2023-09-26T15:13:46Z'},
-         {'id': '7', 'version': 8, 'created': '2023-09-26T15:13:47Z'},
-     {'id': '8', 'version': 8, 'created': '2023-09-26T15:13:48Z'},
-     {'id': '9', 'version': 8, 'created': '2023-09-26T15:13:49Z'}], ], 5   # max fetch
-    , ['1'],  # incidents_last_fetch_ids
+    [
+        [
+            {"id": "1", "version": 8, "created": "2023-09-26T15:13:41Z"},
+            {"id": "2", "version": 8, "created": "2023-09-26T15:13:42Z"},
+            {"id": "3", "version": 8, "created": "2023-09-26T15:13:43Z"},
+            {"id": "4", "version": 8, "created": "2023-09-26T15:13:44Z"},
+            {"id": "5", "version": 8, "created": "2023-09-26T15:13:45Z"},
+        ],
+        [
+            {"id": "5", "version": 8, "created": "2023-09-26T15:13:45Z"},
+            {"id": "6", "version": 8, "created": "2023-09-26T15:13:46Z"},
+            {"id": "7", "version": 8, "created": "2023-09-26T15:13:47Z"},
+            {"id": "8", "version": 8, "created": "2023-09-26T15:13:48Z"},
+            {"id": "9", "version": 8, "created": "2023-09-26T15:13:49Z"},
+        ],
+    ],
+    5,  # max fetch
+    ["1"],  # incidents_last_fetch_ids
     (  # expected incident result
-        [{'id': '2', 'version': 8, 'created': '2023-09-26T15:13:42Z'},
-         {'id': '3', 'version': 8, 'created': '2023-09-26T15:13:43Z'},
-            {'id': '4', 'version': 8, 'created': '2023-09-26T15:13:44Z'},
-            {'id': '5', 'version': 8, 'created': '2023-09-26T15:13:45Z'},
-            {'id': '6', 'version': 8, 'created': '2023-09-26T15:13:46Z'}],
+        [
+            {"id": "2", "version": 8, "created": "2023-09-26T15:13:42Z"},
+            {"id": "3", "version": 8, "created": "2023-09-26T15:13:43Z"},
+            {"id": "4", "version": 8, "created": "2023-09-26T15:13:44Z"},
+            {"id": "5", "version": 8, "created": "2023-09-26T15:13:45Z"},
+            {"id": "6", "version": 8, "created": "2023-09-26T15:13:46Z"},
+        ],
         # expected incidents_last_fetch_ids result
-        ['6']))
+        ["6"],
+    ),
+)
 
 case_with_an_incident_that_was_fetched = (
-    '2023-09-26T15:13:41.000000Z',
+    "2023-09-26T15:13:41.000000Z",
     # responses from search_incidents
-    [[{'id': '1', 'version': 8, 'created': '2023-09-26T15:13:41Z'},
-      {'id': '2', 'version': 8, 'created': '2023-09-26T15:13:42Z'},
-      {'id': '3', 'version': 8, 'created': '2023-09-26T15:13:43Z'}],
-     []], 5    # max fetch
-    , ['1'],  # incidents_last_fetch_ids
+    [
+        [
+            {"id": "1", "version": 8, "created": "2023-09-26T15:13:41Z"},
+            {"id": "2", "version": 8, "created": "2023-09-26T15:13:42Z"},
+            {"id": "3", "version": 8, "created": "2023-09-26T15:13:43Z"},
+        ],
+        [],
+    ],
+    5,  # max fetch
+    ["1"],  # incidents_last_fetch_ids
     (
         # expected incident result
-        [{'id': '2', 'version': 8, 'created': '2023-09-26T15:13:42Z'},
-         {'id': '3', 'version': 8, 'created': '2023-09-26T15:13:43Z'}],
+        [
+            {"id": "2", "version": 8, "created": "2023-09-26T15:13:42Z"},
+            {"id": "3", "version": 8, "created": "2023-09-26T15:13:43Z"},
+        ],
         # expected incidents_last_fetch_ids result
-        ['3']))
+        ["3"],
+    ),
+)
 
 
 case_with_an_incident_that_was_fetched_and_there_are_more_with_the_same_time = (
-    '2023-09-26T15:13:41.000000Z',
+    "2023-09-26T15:13:41.000000Z",
     # responses from search_incidents
-    [[{'id': '1', 'version': 8, 'created': '2023-09-26T15:13:41Z'},
-      {'id': '2', 'version': 8, 'created': '2023-09-26T15:13:41Z'},
-      {'id': '3', 'version': 8, 'created': '2023-09-26T15:13:41Z'}],
-     []], 5    # max fetch
-    , ['1'],  # incidents_last_fetch_ids
+    [
+        [
+            {"id": "1", "version": 8, "created": "2023-09-26T15:13:41Z"},
+            {"id": "2", "version": 8, "created": "2023-09-26T15:13:41Z"},
+            {"id": "3", "version": 8, "created": "2023-09-26T15:13:41Z"},
+        ],
+        [],
+    ],
+    5,  # max fetch
+    ["1"],  # incidents_last_fetch_ids
     (
         # expected incident result
-        [{'id': '2', 'version': 8, 'created': '2023-09-26T15:13:41Z'},
-         {'id': '3', 'version': 8, 'created': '2023-09-26T15:13:41Z'}],
+        [
+            {"id": "2", "version": 8, "created": "2023-09-26T15:13:41Z"},
+            {"id": "3", "version": 8, "created": "2023-09-26T15:13:41Z"},
+        ],
         # expected incidents_last_fetch_ids result
-        ['1', '2', '3']))
+        ["1", "2", "3"],
+    ),
+)
 
 
-@pytest.mark.parametrize('last_fetch, incident_to_return , max_fetch, incidents_last_fetch_ids, expected_result', [
-    case_incidents_with_different_times,
-    case_incidents_with_the_same_times,
-    case_with_empty_response_with_incidents_last_fetch_ids,
-    case_with_empty_response_without_incidents_last_fetch_ids,
-    case_with_more_then_one_API_call_with_incidents_last_fetch_ids,
-    case_with_an_incident_that_was_fetched,
-    case_with_an_incident_that_was_fetched_and_there_are_more_with_the_same_time,
-])
-def test_dedup_incidents_with_seconds_timestamp(mocker, last_fetch, incident_to_return, max_fetch,
-                                                incidents_last_fetch_ids, expected_result):
+@pytest.mark.parametrize(
+    "last_fetch, incident_to_return , max_fetch, incidents_last_fetch_ids, expected_result",
+    [
+        case_incidents_with_different_times,
+        case_incidents_with_the_same_times,
+        case_with_empty_response_with_incidents_last_fetch_ids,
+        case_with_empty_response_without_incidents_last_fetch_ids,
+        case_with_more_then_one_API_call_with_incidents_last_fetch_ids,
+        case_with_an_incident_that_was_fetched,
+        case_with_an_incident_that_was_fetched_and_there_are_more_with_the_same_time,
+    ],
+)
+def test_dedup_incidents_with_seconds_timestamp(
+    mocker,
+    last_fetch,
+    incident_to_return,
+    max_fetch,
+    incidents_last_fetch_ids,
+    expected_result,
+):
     """
     Given:
         - Case 1: All incidents from the current fetch cycle have different timestamp.
@@ -370,9 +434,15 @@ def test_dedup_incidents_with_seconds_timestamp(mocker, last_fetch, incident_to_
         - Verify that the dedup mechanism correctly handles the different test cases by comparing the expected and actual results.
     """
     from XSOARmirroring import get_and_dedup_incidents
+
     client = Client("")
-    mocker.patch.object(Client, 'search_incidents', side_effect=incident_to_return)
-    assert get_and_dedup_incidents(client, incidents_last_fetch_ids, "", max_fetch, last_fetch) == expected_result
+    mocker.patch.object(Client, "search_incidents", side_effect=incident_to_return)
+    assert (
+        get_and_dedup_incidents(
+            client, incidents_last_fetch_ids, "", max_fetch, last_fetch
+        )
+        == expected_result
+    )
 
 
 def test_get_incident_entries_without_entries(mocker):
@@ -387,14 +457,25 @@ def test_get_incident_entries_without_entries(mocker):
         - Ensure that an empty list is returned when there is no entries.
     """
     from XSOARmirroring import Client
+
     client = Client(base_url="https://test.com")
-    mocker.patch.object(client, '_http_request', return_value={
-    "closed": "2023-09-20T10:54:00.669862412Z",
-    "closingUserId": "DBot",
-    "created": "2023-09-20T09:07:46.457488661Z",
-    "details": "",
-    })
-    result = client.get_incident_entries(incident_id="1", from_date='1696494896', max_results=1, 
-                                         categories=None, tags_and_operator=True, tags=None)
+    mocker.patch.object(
+        client,
+        "_http_request",
+        return_value={
+            "closed": "2023-09-20T10:54:00.669862412Z",
+            "closingUserId": "DBot",
+            "created": "2023-09-20T09:07:46.457488661Z",
+            "details": "",
+        },
+    )
+    result = client.get_incident_entries(
+        incident_id="1",
+        from_date="1696494896",
+        max_results=1,
+        categories=None,
+        tags_and_operator=True,
+        tags=None,
+    )
     assert result is not None
     assert result == []
