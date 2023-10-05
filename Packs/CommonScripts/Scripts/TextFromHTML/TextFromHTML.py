@@ -51,7 +51,8 @@ def main():  # pragma: no cover
         result = CommandResults(
             outputs_prefix='TextFromHTML',
             outputs=text if context_path else None,
-            readable_output=text
+            raw_response=text,
+            readable_output=text,
         )
 
         return_results(result)
