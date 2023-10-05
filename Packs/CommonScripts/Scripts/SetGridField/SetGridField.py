@@ -373,12 +373,6 @@ def main():
                 grid_id: table,
             },
         })
-        custom_fields = demisto.incident().get("CustomFields", {})
-        if grid_id not in custom_fields:
-            raise ValueError(f"The following grid id was not found: {grid_id}. Please make sure you entered the correct "
-                            f"incident type with the \"Machine name\" as it appears in the incident field editor in "
-                            f"Settings->Advanced ->Fields (Incident). Also make sure that this value appears in the "
-                            f"incident Context Data under incident - if not then please consult with support.")
         if is_error(res):
             demisto.error(f'failed to execute "setIncident" with table: {table}')
             return_results(res)
