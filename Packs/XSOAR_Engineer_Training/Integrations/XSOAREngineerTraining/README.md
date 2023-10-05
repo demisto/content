@@ -1,7 +1,7 @@
 The XSOAR Engineer Training (XET) integration provides sample data to fetch events into Cortex XSOAR, and commands to build playbooks around.
 
 Use for training purposes only.
-This integration was integrated and tested with versions 6.12 and 8.3 of XSOAR.
+This integration was integrated and tested with versions 6.9+ and 8.3 of XSOAR.
 
 ## Configure XSOAR Engineer Training on Cortex XSOAR
 
