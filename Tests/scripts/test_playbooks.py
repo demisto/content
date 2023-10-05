@@ -105,7 +105,8 @@ def calculate_test_playbooks_results_table(jira_tickets_for_playbooks: dict[str,
                                            server_versions: set[str],
                                            add_total_row: bool = True,
                                            no_color: bool = False,
-                                           without_jira: bool = False) -> tuple[list[str], list[list[Any]], JUnitXml, int]:
+                                           without_jira: bool = False,
+                                           with_skipped: bool = False) -> tuple[list[str], list[list[Any]], JUnitXml, int]:
     xml = JUnitXml()
     headers = copy.copy(TEST_SUITE_BASE_HEADERS if without_jira else TEST_SUITE_FIXED_HEADERS)
     fixed_headers_length = len(headers)
@@ -154,7 +155,7 @@ def calculate_test_playbooks_results_table(jira_tickets_for_playbooks: dict[str,
 
         total_errors += errors_count
         # If all the test suites were skipped, don't add the row to the table.
-        if skipped_count != len(server_versions_list):
+        if skipped_count != len(server_versions_list) or with_skipped:
             row.insert(0,
                        (red_text(playbook_id) if errors_count else green_text(playbook_id) if not no_color else playbook_id))
             tabulate_data.append(row)
