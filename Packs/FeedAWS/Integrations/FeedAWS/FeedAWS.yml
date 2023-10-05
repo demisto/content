@@ -158,11 +158,11 @@ script:
   commands:
   - arguments:
     - defaultValue: '50'
-      description: limits the number of context indicators to output
+      description: limits the number of context indicators to output.
       name: limit
     description: Fetches indicators from the feed.
     name: aws-get-indicators
-  dockerimage: demisto/py3-tools:1.0.0.72003
+  dockerimage: demisto/py3-tools:1.0.0.75615
   feed: true
   runonce: false
   script: '-'

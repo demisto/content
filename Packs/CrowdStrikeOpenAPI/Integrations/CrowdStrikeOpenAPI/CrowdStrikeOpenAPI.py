@@ -4,6 +4,7 @@ import urllib3
 
 # flake8: noqa: E501
 
+
 class Client:
     def __init__(self, params: Dict):
         self.cs_client = CrowdStrikeClient(params)

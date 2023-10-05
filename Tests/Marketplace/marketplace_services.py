@@ -30,6 +30,7 @@ from Tests.Marketplace.marketplace_constants import PackFolders, Metadata, GCPCo
     PackTags, PackIgnored, Changelog, BASE_PACK_DEPENDENCY_DICT, SIEM_RULES_OBJECTS, PackStatus, PACK_FOLDERS_TO_ID_SET_KEYS, \
     CONTENT_ROOT_PATH, XSOAR_MP, XSIAM_MP, XPANSE_MP, TAGS_BY_MP, CONTENT_ITEM_NAME_MAPPING, \
     ITEMS_NAMES_TO_DISPLAY_MAPPING, RN_HEADER_TO_ID_SET_KEYS
+from demisto_sdk.commands.common.constants import MarketplaceVersions, MarketplaceVersionToMarketplaceName
 from Utils.release_notes_generator import aggregate_release_notes_for_marketplace, merge_version_blocks, construct_entities_block
 from Tests.scripts.utils import logging_wrapper as logging
 
@@ -3628,8 +3629,14 @@ class Pack:
             with open(integration_yaml_path[0]) as pack_file:
                 integration_yaml_content = yaml.safe_load(pack_file)
 
-            image_storage_path = os.path.join(pack_storage_root_path,
+            image_background: list[str] = re.findall(r'_([^_]+)\.svg$', dynamic_dashboard_image)
+            if not image_background or image_background[0].lower() not in ['dark', 'light']:
+                raise BaseException(f"Could not find background for image in path {dynamic_dashboard_image}.\nThe svg image "
+                                    "file should be named either as `<ImageName>_dark.svg` or `<ImageName>_light.svg`")
+
+            image_storage_path = os.path.join(pack_storage_root_path, image_background[0].lower(),
                                               f"{integration_yaml_content.get('commonfields', {}).get('id', '')}.svg")
+            logging.debug(f"Uploading image in path '{dynamic_dashboard_image}' to bucket directory '{image_storage_path}'")
             pack_image_blob = storage_bucket.blob(image_storage_path)
 
             try:
@@ -3700,8 +3707,7 @@ class Pack:
 
         return task_status
 
-    def copy_dynamic_dashboard_images(self, production_bucket, build_bucket, images_data, storage_base_path,
-                                      build_bucket_base_path):
+    def copy_dynamic_dashboard_images(self, production_bucket, build_bucket, images_data, storage_base_path):
         """ Copies pack's dynamic dashboard image from the build bucket to the production bucket
 
         Args:
@@ -3709,7 +3715,6 @@ class Pack:
             build_bucket (google.cloud.storage.bucket.Bucket): The build bucket
             images_data (dict): The images data structure from Prepare Content step
             storage_base_path (str): The target destination of the upload in the target bucket.
-            build_bucket_base_path (str): The path of the build bucket in gcp.
         Returns:
             bool: Whether the operation succeeded.
 
@@ -3720,25 +3725,24 @@ class Pack:
         pc_uploaded_dynamic_dashboard_images = images_data.get(self._pack_name,
                                                                {}).get(BucketUploadFlow.DYNAMIC_DASHBOARD_IMAGES, [])
 
-        for image_name in pc_uploaded_dynamic_dashboard_images:
-            build_bucket_image_path = os.path.join(build_bucket_base_path, 'images',
-                                                   os.path.basename(image_name)).replace("packs/", "")
+        for build_bucket_image_path in pc_uploaded_dynamic_dashboard_images:
+            logging.debug(f"Found uploaded dynamic dashboard image in build bucket path: {build_bucket_image_path}")
             build_bucket_image_blob = build_bucket.blob(build_bucket_image_path)
 
             if not build_bucket_image_blob.exists():
-                logging.error(f"Found changed/added dynamic dashboard image {image_name} in content repo but "
-                              f"{build_bucket_image_path} does not exist in build bucket")
+                logging.error(f"Found changed/added dynamic dashboard image in content repo but "
+                              f"'{build_bucket_image_path}' does not exist in build bucket")
                 task_status = False
             else:
-                logging.info(f"Copying {self._pack_name} pack dynamic dashboard image: {image_name}")
+                logging.info(f"Copying {self._pack_name} pack dynamic dashboard image: {build_bucket_image_path}")
                 try:
                     copied_blob = build_bucket.copy_blob(
                         blob=build_bucket_image_blob, destination_bucket=production_bucket,
-                        new_name=os.path.join(storage_base_path, 'images', os.path.basename(image_name)).replace("packs/", "")
+                        new_name=os.path.join(storage_base_path, build_bucket_image_path.split("content/")[1])
                     )
                     if not copied_blob.exists():
-                        logging.error(f"Copy {self._pack_name} dynamic dashboard image: {build_bucket_image_blob.name} "
-                                      f"blob to {copied_blob.name} blob failed.")
+                        logging.error(f"Failed to copy {self._pack_name} dynamic dashboard image: {build_bucket_image_blob.name} "
+                                      f"blob to {copied_blob.name} blob.")
                         task_status = False
                     else:
                         num_copied_images += 1
@@ -4279,7 +4283,7 @@ def underscore_file_name_to_dotted_version(file_name: str) -> str:
     return os.path.splitext(file_name)[0].replace('_', '.')
 
 
-def get_last_commit_from_index(service_account):
+def get_last_commit_from_index(service_account, marketplace=MarketplaceVersions.XSOAR):
     """ Downloading index.json from GCP and extract last upload commit.
 
     Args:
@@ -4288,8 +4292,9 @@ def get_last_commit_from_index(service_account):
     Returns: last upload commit.
 
     """
+    production_bucket_name = MarketplaceVersionToMarketplaceName.get(marketplace)
     storage_client = init_storage_client(service_account)
-    storage_bucket = storage_client.bucket(GCPConfig.PRODUCTION_BUCKET)
+    storage_bucket = storage_client.bucket(production_bucket_name)
     index_storage_path = os.path.join('content/packs/', f"{GCPConfig.INDEX_NAME}.json")
     index_blob = storage_bucket.blob(index_storage_path)
     index_string = index_blob.download_as_string()

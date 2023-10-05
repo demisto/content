@@ -38,6 +38,17 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
+- defaultvalue: 'RED'
+  display: Share Level Type
+  name: share_level
+  type: 15
+  required: false
+  additionalinfo: A designation of how the indicator may be shared based on the US-CERT's Traffic Light Protocol.
+  options:
+  - RED
+  - AMBER
+  - GREEN
+  - WHITE
 - defaultvalue: 'false'
   display: Use system proxy settings
   name: proxy
@@ -225,7 +236,7 @@ script:
       description: The ID of the ThreatExchange member that submitted the descriptor. Non-editable.
       type: String
     - contextPath: ThreatExchange.IP.owner.name
-      description: The name of the ThreatExchange member that submitted the descriptor. Non-editable
+      description: The name of the ThreatExchange member that submitted the descriptor. Non-editable.
       type: String
     - contextPath: ThreatExchange.IP.raw_indicator
       description: A raw, unsanitized string of the indicator being described.
@@ -263,6 +274,14 @@ script:
       name: since
     - description: 'The end timestamp for collecting malware. Supported time formats: epoch time (e.g., 1619870400), ISO 8601 (e.g., 2021-05-01T12:00:00), and free text (e.g., 24 hours ago).'
       name: until
+    - auto: PREDEFINED
+      description: A designation of how the indicator may be shared, based on the US-CERT's Traffic Light Protocol.
+      name: share_level
+      predefined:
+      - RED
+      - AMBER
+      - GREEN
+      - WHITE
     description: Checks the URL reputation.
     name: url
     outputs:
@@ -321,7 +340,7 @@ script:
       description: The ID of the ThreatExchange member that submitted the descriptor. Non-editable.
       type: String
     - contextPath: ThreatExchange.URL.owner.name
-      description: The name of the ThreatExchange member that submitted the descriptor. Non-editable
+      description: The name of the ThreatExchange member that submitted the descriptor. Non-editable.
       type: String
     - contextPath: ThreatExchange.URL.raw_indicator
       description: A raw, unsanitized string of the indicator being described.
@@ -359,6 +378,14 @@ script:
       name: since
     - description: 'The end timestamp for collecting malware. Supported time formats: epoch time (e.g., 1619870400), ISO 8601 (e.g., 2021-05-01T12:00:00), and free text (e.g., 24 hours ago).'
       name: until
+    - auto: PREDEFINED
+      description: A designation of how the indicator may be shared, based on the US-CERT's Traffic Light Protocol.
+      name: share_level
+      predefined:
+      - RED
+      - AMBER
+      - GREEN
+      - WHITE
     description: Checks a domain reputation.
     name: domain
     outputs:
@@ -414,7 +441,7 @@ script:
       description: The ID of the ThreatExchange member that submitted the descriptor. Non-editable.
       type: String
     - contextPath: ThreatExchange.Domain.owner.name
-      description: The name of the ThreatExchange member that submitted the descriptor. Non-editable
+      description: The name of the ThreatExchange member that submitted the descriptor. Non-editable.
       type: String
     - contextPath: ThreatExchange.Domain.raw_indicator
       description: A raw, unsanitized string of the indicator being described.
@@ -659,7 +686,7 @@ script:
     - contextPath: ThreatExchange.Object.id
       description: ID of a ThreatExchange object.
       type: String
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.13.74666
   runonce: false
   script: '-'
   subtype: python3

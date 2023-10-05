@@ -62,9 +62,9 @@ script:
       - 'true'
       - 'false'
       required: true
-    - description: 'Since date'
+    - description: 'Since date.'
       name: since
-    - description: 'Until date'
+    - description: 'Until date.'
       name: until
     - description: A string pointing at the next page of results. The marker can be found within the previous response.
       name: marker
@@ -74,7 +74,7 @@ script:
   type: python
   subtype: python3
   isfetchevents: true
-  dockerimage: demisto/python3:3.10.13.72123
+  dockerimage: demisto/python3:3.10.13.73190
 marketplaces:
 - marketplacev2
 fromversion: 6.8.0

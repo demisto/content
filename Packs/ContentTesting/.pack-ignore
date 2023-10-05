@@ -7,3 +7,5 @@ ignore=BA110
 [file:playbook-MockSubplaybook.yml]
 ignore=BA110
 
+[known_words]
+Avg
