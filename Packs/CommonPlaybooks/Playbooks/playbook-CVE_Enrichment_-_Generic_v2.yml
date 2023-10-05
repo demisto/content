@@ -111,10 +111,10 @@ tasks:
     isautoswitchedtoquietmode: false
   '4':
     id: '4'
-    taskid: 585da989-e6b4-4bef-825d-0ec6633468f6
+    taskid: 5199c9bb-9a57-4d36-80fe-3bc1035e785e
     type: condition
     task:
-      id: 585da989-e6b4-4bef-825d-0ec6633468f6
+      id: 5199c9bb-9a57-4d36-80fe-3bc1035e785e
       version: -1
       name: Is IBM X-Force Exchange integration enabled?
       description: Verify that there's a valid instance of "IBM X-Force Exchange" enabled.
@@ -143,7 +143,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: IBM X-Force Exchange v2
+                        simple: XFE_v2
                     ignorecase: true
                 - - operator: isEqualString
                     left:
@@ -239,10 +239,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 3b681d80-2eda-45c7-8b93-6ff90dfe7d0b
+    taskid: ac59954c-2ceb-46e7-8777-4836c7c4f2f8
     type: regular
     task:
-      id: 3b681d80-2eda-45c7-8b93-6ff90dfe7d0b
+      id: ac59954c-2ceb-46e7-8777-4836c7c4f2f8
       version: -1
       name: Get CVE info from CIRCL CVE Search
       description: Returns CVE information by CVE ID.
@@ -257,6 +257,7 @@ tasks:
       cve:
         complex:
           root: inputs.cve_id
+    continueonerror: true
     separatecontext: false
     view: |-
       {
@@ -344,10 +345,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: 4a780829-b489-471b-8efe-06074536ff63
+    taskid: b0fe344b-5959-445a-8d84-7115d281072e
     type: regular
     task:
-      id: 4a780829-b489-471b-8efe-06074536ff63
+      id: b0fe344b-5959-445a-8d84-7115d281072e
       version: -1
       name: VulnDB - Get vulnerability details by CVE
       description: Returns full details about vulnerabilities, by CVE ID.
@@ -373,6 +374,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerror: true
     continueonerrortype: ""
     skipunavailable: true
     quietmode: 0
