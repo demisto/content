@@ -1981,7 +1981,6 @@ script:
     - description: Whether to return only a subset of the alert fields. Filtering the fields can reduce response size for large alerts.
       auto: PREDEFINED
       name: filter_alert_fields
-      required: true
       defaultValue: 'true'
       predefined:
       - 'true'
