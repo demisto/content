@@ -376,6 +376,19 @@ jobs-done-check-on-push:
   tags:
     - gke
 
+slack-notify-build-on-push:
+  extends:
+    - .push-rule
+    - .trigger-slack-notification
+  variables:
+    PIPELINE_TO_QUERY: $CI_PIPELINE_ID
+    WORKFLOW: 'Content Nightly'
+    JOB_NAME: 'xsoar-prepare-testing-bucket'
+    # Passes the environment variable from the parent pipeline to the child which can be useful for cases
+    # when triggering pipeline with alternate env variable value passed in the API call
+    SLACK_CHANNEL: 'dmst-build-test'
+    SLACK_JOB: 'true'
+
 slack-notify-nightly-build:
   extends:
     - .trigger-slack-notification
