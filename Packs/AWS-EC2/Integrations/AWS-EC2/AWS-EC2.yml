@@ -3452,28 +3452,28 @@ script:
     description: Creates a launch template. A launch template contains the parameters to launch an instance.
     name: aws-ec2-create-launch-template
     outputs:
-    - contextPath: AWS.EC2.LaunchTemplates.LaunchTemplate.LaunchTemplateId
+    - contextPath: AWS.EC2.LaunchTemplates.LaunchTemplateId
       description: The ID of the launch template.
       type: String
-    - contextPath: AWS.EC2.LaunchTemplates.LaunchTemplate.LaunchTemplateName
+    - contextPath: AWS.EC2.LaunchTemplates.LaunchTemplateName
       description: The name of the launch template.
       type: String
-    - contextPath: AWS.EC2.LaunchTemplates.LaunchTemplate.CreateTime
+    - contextPath: AWS.EC2.LaunchTemplates.CreateTime
       description: The time launch template was created.
       type: Date
-    - contextPath: AWS.EC2.LaunchTemplates.LaunchTemplate.CreatedBy
+    - contextPath: AWS.EC2.LaunchTemplates.CreatedBy
       description: The principal that created the launch template.
       type: String
-    - contextPath: AWS.EC2.LaunchTemplates.LaunchTemplate.DefaultVersionNumber
+    - contextPath: AWS.EC2.LaunchTemplates.DefaultVersionNumber
       description: The version number of the default version of the launch template.
       type: Number
-    - contextPath: AWS.EC2.LaunchTemplates.LaunchTemplate.LatestVersionNumber
+    - contextPath: AWS.EC2.LaunchTemplates.LatestVersionNumber
       description: The version number of the latest version of the launch template.
       type: Number
-    - contextPath: AWS.EC2.LaunchTemplates.LaunchTemplate.Tags.Key
+    - contextPath: AWS.EC2.LaunchTemplates.Tags.Key
       description: The key of the tag.
       type: String
-    - contextPath: AWS.EC2.LaunchTemplates.LaunchTemplate.Tags.Value
+    - contextPath: AWS.EC2.LaunchTemplates.Tags.Value
       description: The value of the tag.
       type: String
   - arguments:
