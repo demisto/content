@@ -14,9 +14,7 @@ from Tests.scripts.utils.log_util import install_logging
 
 DEMISTO_GREY_ICON = 'https://3xqz5p387rui1hjtdv1up7lw-wpengine.netdna-ssl.com/wp-content/' \
                     'uploads/2018/07/Demisto-Icon-Dark.png'
-print("before:", os.getenv('ARTIFACTS_FOLDER'))
 ROOT_ARTIFACTS_FOLDER = os.getenv('ARTIFACTS_FOLDER', './artifacts')
-print("after:", ROOT_ARTIFACTS_FOLDER)
 ARTIFACTS_FOLDER_XSOAR = os.getenv('ARTIFACTS_FOLDER_XSOAR', './artifacts/xsoar')
 ARTIFACTS_FOLDER_MPV2 = os.getenv('ARTIFACTS_FOLDER_MPV2', './artifacts/marketplacev2')
 CONTENT_CHANNEL = 'dmst-build-test'
