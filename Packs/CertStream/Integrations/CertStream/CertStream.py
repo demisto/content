@@ -25,10 +25,10 @@ def set_incident_severity(similarity: float) -> int:
     if similarity >= 0.85:
         return IncidentSeverity.CRITICAL
 
-    elif 0.85 > similarity > 0.75:
+    elif 0.85 > similarity >= 0.75:
         return IncidentSeverity.HIGH
 
-    elif 0.75 >= similarity > 0.65:
+    elif 0.75 > similarity >= 0.65:
         return IncidentSeverity.MEDIUM
 
     else:
@@ -111,12 +111,12 @@ def create_relationship_list(value: str, domains: list[str]) -> list[EntityRelat
     return relationships
 
 
-def check_homographs(domain: str, user_homographs: list, levenshtein_distance_threshold: float) -> tuple[bool, dict]:
+def check_homographs(domain: str, user_homographs: dict, levenshtein_distance_threshold: float) -> tuple[bool, dict]:
     """Checks each word in a domain for similarity to the provided homograph list.
 
     Args:
         domain (str): The domain to check for homographs
-        homographs (list): A list of homograph strings from XSOAR
+        user_homographs (dict): A list of homograph strings from XSOAR
         levenshtein_distance_threshold (float): The Levenshtein distance threshold for determining similarity between strings
 
     Returns:
@@ -124,7 +124,7 @@ def check_homographs(domain: str, user_homographs: list, levenshtein_distance_th
     """
     words = domain.split(".")[:-1]  # All words in the domain without the TLD
     for word in words:
-        for asset, homographs in user_homographs:
+        for asset, homographs in user_homographs.items():
             for homograph in homographs:
                 similarity = compute_similarity(homograph, word)
                 if similarity > levenshtein_distance_threshold:
@@ -160,12 +160,8 @@ def fetch_certificates(message: dict, context: dict) -> None:
                     create_xsoar_certificate_indicator(message)
                     create_xsoar_incident(message, domain, now, result)
 
-        now = datetime.now()
-        domains = ", ".join(message["data"]["leaf_cert"]["all_domains"][1:])
-        demisto.info(f"[{now:%m/%d/%y %H:%M:%S}] {domain} (SAN: {domains})\n")
 
-
-def get_homographs_list(list_name: str) -> list:
+def get_homographs_list(list_name: str) -> dict:
     """Fetches ths latest list of homographs from XSOAR
 
     Args:
@@ -174,16 +170,21 @@ def get_homographs_list(list_name: str) -> list:
     Returns:
         list: A list of homographs
     """
-    lists = json.loads(demisto.internalHttpRequest("GET", "/lists/").get("body", {}))
-    for list in lists:
-        if list["id"] != list_name:
+    try:
+        lists = json.loads(demisto.internalHttpRequest("GET", "/lists/").get("body", {}))
+
+    except Exception as e:
+        demisto.error(f"{e}")
+
+    for user_list in lists:
+        if user_list["id"] != list_name:
             continue
 
         else:
-            return json.loads(list["data"])
+            return json.loads(user_list["data"])
 
     demisto.error("List of words not found")
-    raise
+    raise IOError
 
 
 def levenshtein_distance(original_string: str, reference_string: str) -> float:
@@ -249,7 +250,7 @@ def long_running_execution_command(host: str, word_list_name: str, list_update_i
 
 
 
-def test_module(host: str):
+def test_module(host: str, word_list_name: str):
     def on_message(message: dict, context: dict):
         """ A callback function that handles each message from the CertStream feed.
 
@@ -261,10 +262,18 @@ def test_module(host: str):
             KeyboardInterrupt: After 2 messages raises an interruption to stop the loop.
         """
         context["messages"] += 1
+        demisto.debug(f'Got {context["messages"]} message(s)')
         if context["messages"] == 2:
             raise KeyboardInterrupt
 
     try:
+        try:
+            homographs = get_homographs_list(word_list_name)
+
+        except Exception:
+            demisto.error(f'Words list {word_list_name} not found')
+            return f'Words list "{word_list_name}" not found'
+
         c = CertStreamClient(on_message, url=host, skip_heartbeats=True, on_open=None, on_error=None)
         c._context = {"messages": 0}
         c.run_forever(ping_interval=15)
@@ -280,7 +289,7 @@ def main():  # pragma: no cover
     host: str = params["url"]
     word_list_name: str = params["list_name"]
     list_update_interval: int = params.get("update_interval", 30)
-    levenshtein_distance_threshold: float = params.get("levenshtein_distance_threshold", 0.85)
+    levenshtein_distance_threshold: float = float(params.get("levenshtein_distance_threshold", 0.85))
 
     try:
         if command == "long-running-execution":
@@ -289,7 +298,7 @@ def main():  # pragma: no cover
                                                           list_update_interval,
                                                           levenshtein_distance_threshold))
         elif command == "test-module":
-            return_results(test_module(host))
+            return_results(test_module(host, word_list_name))
         else:
             raise NotImplementedError(f"Command {command} is not implemented.")
     except Exception:
