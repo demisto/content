@@ -190,7 +190,7 @@ class Client:
         """
 
         Arguments:
-            lock: in the case of locking back the configuration.
+            lock: Whether to lock or unlock. True to lock, False to unlock.
             service_id: object id or application id of the service.
 
         Returns:
