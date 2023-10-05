@@ -9,7 +9,7 @@ This integration was integrated and tested with version 2.0 of cybleeventsv2
 
     | **Parameter**                      | **Description**                                                         | **Required** |
     |------------------------------------|-------------------------------------------------------------------------| --- |
-    | URL                                | Server URL \(e.g. <https://example.net\>)                               | True |
+    | URL                                | Server URL \(e.g., <https://example.net\>)                               | True |
     | Access Token                       | Access Token                                                            | True |
     | Trust any certificate (not secure) |                                                                         | False |
     | Use system proxy settings          |                                                                         | False |

@@ -88,7 +88,7 @@ script:
       name: limit
     - auto: PREDEFINED
       defaultValue: last_seen
-      description: Sorting based on the column(last_seen,first_seen,ioc_type).
+      description: Sorting based on the column (last_seen, first_seen, ioc_type).
       name: sort_by
       predefined:
       - last_seen
@@ -97,7 +97,7 @@ script:
     - auto: PREDEFINED
       default: true
       defaultValue: asc
-      description: A sorting order for ioc. Either Ascending or Descending. The default value is Ascending.
+      description: A sorting order for ioc. 
       name: order
       predefined:
       - asc
@@ -126,7 +126,7 @@ script:
       required: true
     - auto: PREDEFINED
       defaultValue: asc
-      description: A sorting order for the fetched alerts. Either Ascending or Descending. The default value is Ascending.
+      description: A sorting order for the fetched alerts. 
       name: order_by
       predefined:
       - asc
@@ -153,7 +153,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       defaultValue: asc
-      description: A sorting order for the fetched alerts. Either Ascending or Descending. The default value is Ascending.
+      description: A sorting order for the fetched alerts. 
       name: order_by
       predefined:
       - asc
