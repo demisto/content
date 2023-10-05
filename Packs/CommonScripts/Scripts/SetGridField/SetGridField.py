@@ -367,7 +367,7 @@ def main():  # pragma: no cover
                 grid_id: table,
             },
         })
-        custom_fields = demisto.incident().get("customFields", {})
+        custom_fields = demisto.incident().get("CustomFields", {})
         if grid_id not in custom_fields:
             raise ValueError(f"The following grid id was not found: {grid_id}. Please make sure you entered the correct "
                              f"incident type with the \"Machine name\" as it appears in the incident field editor in "
