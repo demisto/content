@@ -17,6 +17,7 @@ echo "Preparing content packs for testing ..."
 
 KF=$(mktemp)
 echo "$GCS_MARKET_KEY" > "$KF"
+mkdir -p "${ARTIFACTS_FOLDER}/logs/"
 gcloud auth activate-service-account --key-file="$KF" >> "${ARTIFACTS_FOLDER}/logs/gcloud_auth.log" 2>&1
 echo "Auth loaded successfully."
 
