@@ -196,7 +196,7 @@ def test_get_alert(requests_mock):
 
 @pytest.mark.parametrize(
     "offset,limit", [
-        ('0', '1289'), ('0', '-2')
+        ('0', '1789'), ('0', '-2')
     ]
 )
 def test_limit_cyble_vision_fetch_detail(requests_mock, capfd, offset, limit):
@@ -358,7 +358,7 @@ def test_get_alert_fetch(requests_mock):
 
     url = "https://test.com/apollo/api/v1/y/alerts"
 
-    response, next = cyble_events(client, 'POST', "some_random_token", url, {}, 'https://test.com', {}, False)
+    response, next = cyble_events(client, 'POST', "some_random_token", url, {}, 'https://test.com', {}, False, False)
 
     assert isinstance(response, list)
     assert len(response) == 1
@@ -457,7 +457,7 @@ def test_update_incident(requests_mock):
     """
     from CybleEventsV2 import Client, cyble_events
 
-    mock_response_1 = util_load_json("dummy_update_incidents.json")
+    mock_response_1 = util_load_json("dummy_update_incident.json")
     requests_mock.put('https://test.com/apollo/api/v1/y/alerts', json=mock_response_1)
 
     client = Client(

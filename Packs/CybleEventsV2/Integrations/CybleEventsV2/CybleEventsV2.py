@@ -272,8 +272,9 @@ def fetch_subscribed_services(client, method, base_url, token):
     subscribed_services = set_request(client, method, token, {}, get_subscribed_service_url)
     service_name_list = []
 
-    for subscribed_service in subscribed_services:
-        service_name_list.append({"name": subscribed_service['name']})
+    if subscribed_services:
+        for subscribed_service in subscribed_services:
+            service_name_list.append({"name": subscribed_service['name']})
 
     return service_name_list
 
