@@ -90,7 +90,7 @@ if [ -n "${CI}" ]; then
     echo "Detected CI environment. Running extra requirements"
     echo "Check if poetry files are valid"
     poetry check --no-interaction
-    exit_on_error $? "Failed to check poetry files, exiting with exit code $?"
+    exit_on_error $? "Failed to check poetry files"
 
     echo "Installing dependencies..."
     for ((i=1; i <= retry_count; i++)); do
@@ -101,15 +101,15 @@ if [ -n "${CI}" ]; then
             sleep "${sleep_time}"
         fi
     done
-    exit_on_error "${exit_code}" "Failed to install dependencies after ${retry_count} tries, with exit code ${exit_code}"
+    exit_on_error "${exit_code}" "Failed to install dependencies after ${retry_count} tries"
 else
     echo "Detected local environment"
     echo "Check if poetry files are valid"
     poetry check
-    exit_on_error $? "Failed to check poetry files, exiting with exit code $?"
+    exit_on_error $? "Failed to check poetry files"
     echo "Installing dependencies..."
     poetry install
-    exit_on_error $? "Failed to install dependencies, exiting with exit code $?"
+    exit_on_error $? "Failed to install dependencies"
 fi
 
 echo "=========================="
@@ -121,7 +121,7 @@ echo "======================="
 if [ -n "${CI}" ]; then
     echo "Detected CI environment. Running npm ci..."
     npm ci --cache .npm --prefer-offline --no-fund --no-audit  # Clean install
-    exit_on_error $? "Failed to install npm dependencies, exiting with exit code $?"
+    exit_on_error $? "Failed to install npm dependencies"
 elif [ -n "${NO_NPM}" ]; then
     echo "Skipping npm node modules setup as environment variable NO_NPM is set"
 else
@@ -135,7 +135,7 @@ __EOF__
     else
         echo "Running: npm install ..."        
         npm install --no-fund --no-audit
-        exit_on_error $? "Failed to install npm dependencies, exiting with exit code $?"
+        exit_on_error $? "Failed to install npm dependencies"
     fi
 fi
 
