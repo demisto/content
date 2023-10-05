@@ -512,6 +512,13 @@ script:
       description: The application object id (not the app id).
       required: true
     outputs: []
+  - description: Lock configuration of a service principal.
+    name: msgraph-apps-service-principal-lock-configuration
+    arguments:
+      - name: id
+        description: The application object id (not the app id).
+        required: true
+    outputs: [ ]
   runonce: false
   script: '-'
   type: python
