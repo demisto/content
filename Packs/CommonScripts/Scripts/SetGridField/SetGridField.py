@@ -163,9 +163,7 @@ def get_current_table(grid_id: str) -> pd.DataFrame:
     """
     custom_fields = demisto.incident().get("CustomFields", {})
     current_table: Optional[List[dict]] = custom_fields.get(grid_id)
-    if not current_table:
-        return pd.DataFrame()
-    return pd.DataFrame(current_table)
+    return pd.DataFrame(current_table) if current_table else pd.DataFrame()
 
 
 @logger
@@ -321,7 +319,6 @@ def build_grid_command(grid_id: str, context_path: str, keys: List[str], columns
         raise DemistoException(f'The number of keys: {len(keys)} should match the number of columns: {len(columns)}.')
     # Get old Data
     old_table = get_current_table(grid_id=grid_id)
-
     # Change columns to all lower case (underscores allowed).
     columns = [normalized_column_name(phrase) for phrase in columns]
     # Create new Table from the given context path.
@@ -347,7 +344,7 @@ def build_grid_command(grid_id: str, context_path: str, keys: List[str], columns
     return filtered_table
 
 
-def main():  # pragme: no cover
+def main():  # pragma: no cover
     args = demisto.args()
     try:
         # Normalize grid id from any form to connected lower words, e.g. my_word/myWord -> myword
