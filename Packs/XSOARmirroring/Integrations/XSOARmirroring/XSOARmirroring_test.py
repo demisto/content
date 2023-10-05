@@ -153,7 +153,7 @@ def test_fetch_incidents_mirror_playbook_id(mocker, mirror_playbook_id: bool):
     Then:
         - Ensure the incident result does not contain playbookId field if and only if `mirror_playbook_id` is False.
     """
-    mocker.patch.object(Client, 'search_incidents', return_value=INCIDENTS_MIRRORING_PLAYBOOK_ID)
+    mocker.patch.object(Client, 'search_incidents', side_effect=[INCIDENTS_MIRRORING_PLAYBOOK_ID, []])
 
     first_fetch = dateparser.parse('3 days').strftime(XSOAR_DATE_FORMAT)
     client = Client("dummy token")
