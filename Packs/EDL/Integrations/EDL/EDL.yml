@@ -117,7 +117,7 @@ configuration:
 - display: Enforce ASCII only
   name: enforce_ascii
   type: 8
-  additionalinfo: If selected, it will force the list to contain only ASCII chars (non ascii URLs will be dropped).
+  additionalinfo: If selected, it will force the list to contain only ASCII chars (non-ASCII URLs will be dropped).
   section: Collect
   advanced: true
   required: false
