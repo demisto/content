@@ -1,38 +1,7 @@
 id: Cortex XDR - Possible External RDP Brute-Force
-version: 25
-contentitemexportablefields:
-  contentitemfields:
-    packID: CortexXDR
-    packName: Cortex XDR by Palo Alto Networks
-    itemVersion: 5.1.4
-    fromServerVersion: 6.8.0
-    toServerVersion: ""
-    definitionid: ""
-    prevname: ""
-vcShouldKeepItemLegacyProdMachine: false
+version: -1
 name: Cortex XDR - Possible External RDP Brute-Force
-description: "This playbook investigates a “Possible External RDP Brute Force” XDR
-  Alert by gathering user, IP, and hostname information, and investigating if the
-  following suspicious elements exists:\n\n- \"IP Reputation\" - Dbot Score is 2-3
-  \n- \"Source geolocation\" - RDP Connection made from rare geo-location \n-  Related
-  to campaign - IP address is related to campaign, based on TIM module\n-  Hunting
-  results - the hunt for indicators related to the source IP and the related campaign
-  returned results\n-  XDR Alert search - XDR Alerts that related to the same username
-  and endpoint, and to the MITRE tactics that comes after \"Credential Access\", were
-  found.\n- Risky User - The user that was identified in the attack was given a medium
-  or high score by XDR's ITDR module.\n- Risky Host - The destination host that was
-  identified in the attack was given a medium or high score by XDR's ITDR module.\n\nSet
-  verdict method:\n* Critical Element - The \"Critical Element\" input allows you
-  to select a specific element that, if identified as suspicious,  the investigation's
-  final verdict will be deemed a \"True Positive\".\n\n* Final Verdict -  Each suspicious
-  element is being added to an array called \"Suspicious Elements\", which is used
-  to count potential security threats. The array size will be compared to a final
-  threshold. If the size is greater than or equal to the threshold, the investigation's
-  final verdict will be deemed a \"True Positive\".\n\n* User Engagement - The \"UserEngagementThreshold\"
-  input allows you to set the number of suspicious elements that trigger user engagement.
-  When this threshold is met, an email will be sent to the user and their manager
-  asking for authorization of RDP activity. If the RDP activity is not authorized
-  by the user, the investigation's final verdict will be deemed a \"True Positive\".\n"
+description: "This playbook investigates a “Possible External RDP Brute Force” XDR Alert by gathering user, IP, and hostname information, and investigating if the following suspicious elements exists:\n\n- \"IP Reputation\" - Dbot Score is 2-3 \n- \"Source geolocation\" - RDP Connection made from rare geo-location \n-  Related to campaign - IP address is related to campaign, based on TIM module\n-  Hunting results - the hunt for indicators related to the source IP and the related campaign returned results\n-  XDR Alert search - XDR Alerts that related to the same username and endpoint, and to the MITRE tactics that comes after \"Credential Access\", were found.\n- Risky User - The user that was identified in the attack was given a medium or high score by XDR's ITDR module.\n- Risky Host - The destination host that was identified in the attack was given a medium or high score by XDR's ITDR module.\n\nSet verdict method:\n* Critical Element - The \"Critical Element\" input allows you to select a specific element that, if identified as suspicious,  the investigation's final verdict will be deemed a \"True Positive\".\n\n* Final Verdict -  Each suspicious element is being added to an array called \"Suspicious Elements\", which is used to count potential security threats. The array size will be compared to a final threshold. If the size is greater than or equal to the threshold, the investigation's final verdict will be deemed a \"True Positive\".\n\n* User Engagement - The \"UserEngagementThreshold\" input allows you to set the number of suspicious elements that trigger user engagement. When this threshold is met, an email will be sent to the user and their manager asking for authorization of RDP activity. If the RDP activity is not authorized by the user, the investigation's final verdict will be deemed a \"True Positive\".\n"
 starttaskid: "0"
 tasks:
   "0":
@@ -45,6 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -75,6 +45,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "3"
@@ -188,6 +159,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "111"
@@ -215,8 +187,7 @@ tasks:
       id: b57c464f-3cd5-4885-8577-1097f5eb23c4
       version: -1
       name: Communicate With User?
-      description: Check if user engagement is needed, based on UserEngagementThreshold
-        input.
+      description: Check if user engagement is needed, based on UserEngagementThreshold input.
       type: condition
       iscommand: false
       brand: ""
@@ -353,7 +324,7 @@ tasks:
       methods:
       - email
       format: ""
-      bcc: null
+      bcc:
       cc: {}
       timings:
         retriescount: 2
@@ -448,6 +419,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "98"
@@ -480,6 +452,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "99"
@@ -546,6 +519,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -711,8 +685,7 @@ tasks:
       id: c8b84676-d085-4424-84e7-806522185c01
       version: -1
       name: Has related Indicators to hunt?
-      description: Hunt for indicators that are related to the RDP Connection external
-        IP.
+      description: Hunt for indicators that are related to the RDP Connection external IP.
       type: condition
       iscommand: false
       brand: ""
@@ -774,9 +747,7 @@ tasks:
       id: 264737a7-d382-4445-887b-f205ad7f02ba
       version: -1
       name: Threat Hunting - Generic
-      description: "This playbook enables threat hunting for IOCs in your enterprise.
-        It currently supports the following integrations: \n- Splunk\n- Qradar\n-
-        Pan-os \n- Cortex data lake \n- Autofocus\n- Microsoft 365 Defender"
+      description: "This playbook enables threat hunting for IOCs in your enterprise. It currently supports the following integrations: \n- Splunk\n- Qradar\n- Pan-os \n- Cortex data lake \n- Autofocus\n- Microsoft 365 Defender"
       playbookName: Threat Hunting - Generic
       type: playbook
       iscommand: false
@@ -885,6 +856,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "53"
@@ -915,6 +887,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "110"
@@ -1010,6 +983,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "140"
@@ -1099,6 +1073,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "72"
@@ -1131,6 +1106,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "87"
@@ -1433,8 +1409,7 @@ tasks:
       id: e9ed0cb6-440b-4073-8cf2-fa18485134dd
       version: -1
       name: Cortex XDR - Isolate Endpoint
-      description: This playbook accepts an XDR endpoint ID and isolates it using
-        the 'Palo Alto Networks Cortex XDR - Investigation and Response' integration.
+      description: This playbook accepts an XDR endpoint ID and isolates it using the 'Palo Alto Networks Cortex XDR - Investigation and Response' integration.
       playbookName: Cortex XDR - Isolate Endpoint
       type: playbook
       iscommand: false
@@ -1481,6 +1456,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "32"
@@ -1613,18 +1589,7 @@ tasks:
       id: 070cf325-c3c1-4315-83e4-a124573437fa
       version: -1
       name: Cortex XDR - Possible External RDP Brute-Force - Set Verdict
-      description: "This playbook creating an array called \"Suspicious Elements\",
-        which is used to count potential security threats. The following elements
-        can be added to the array:\n\n- \"IP Reputation\" - Dbot Score is 2-3 \n-
-        \"Source geolocation\" - RDP Connection made from rare geo-location \n-  Related
-        to campaign - IP address is related to campaign, based on TIM module\n-  Hunting
-        results - the hunt for indicators related to the source IP and the related
-        campaign returned results\n-  XDR Alert search - XDR Alerts that related to
-        the same username and endpoint, and to the MITRE tactics that comes after
-        \"Credential Access\", were found.\n\nThe array will then be outputted and
-        its size will be compared to a final threshold. If the size is greater than
-        or equal to the threshold, the investigation's final verdict will be deemed
-        a \"True Positive.\""
+      description: "This playbook creating an array called \"Suspicious Elements\", which is used to count potential security threats. The following elements can be added to the array:\n\n- \"IP Reputation\" - Dbot Score is 2-3 \n- \"Source geolocation\" - RDP Connection made from rare geo-location \n-  Related to campaign - IP address is related to campaign, based on TIM module\n-  Hunting results - the hunt for indicators related to the source IP and the related campaign returned results\n-  XDR Alert search - XDR Alerts that related to the same username and endpoint, and to the MITRE tactics that comes after \"Credential Access\", were found.\n\nThe array will then be outputted and its size will be compared to a final threshold. If the size is greater than or equal to the threshold, the investigation's final verdict will be deemed a \"True Positive.\""
       playbookName: Cortex XDR - Possible External RDP Brute-Force - Set Verdict
       type: playbook
       iscommand: false
@@ -1847,6 +1812,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "66"
@@ -1907,6 +1873,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "141"
@@ -1937,6 +1904,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "137"
@@ -1964,8 +1932,7 @@ tasks:
       id: f7253592-fc4b-4d96-887c-dfc9f81c7da7
       version: -1
       name: Is Active Directory Enabled?
-      description: Returns 'yes' if the integration brand is available. Otherwise
-        returns 'no'.
+      description: Returns 'yes' if the integration brand is available. Otherwise returns 'no'.
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -2080,6 +2047,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "142"
@@ -2852,6 +2820,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "73"
@@ -3058,26 +3027,24 @@ inputs:
   value: {}
   required: false
   description: RDP connection username.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: ExternalIP
   value: {}
   required: false
   description: Source external IP address.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: AutoRemediation
   value:
     simple: "false"
   required: false
-  description: Set this value to "true" to enable auto remediation (IP Block and User
-    Block).
-  playbookInputQuery: null
+  description: Set this value to "true" to enable auto remediation (IP Block and User Block).
+  playbookInputQuery:
 - key: FinalThreshold
   value:
     simple: "3"
   required: false
-  description: The threshold number of suspicious elements required to determine a
-    'True Positive' verdict.
-  playbookInputQuery: null
+  description: The threshold number of suspicious elements required to determine a 'True Positive' verdict.
+  playbookInputQuery:
 - key: CriticalElement
   value: {}
   required: false
@@ -3092,7 +3059,7 @@ inputs:
     Risky Host
 
     NOTE: You can read about the meaning of every element in the playbook description.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: UserEngagementThreshold
   value:
     simple: "2"
@@ -3101,49 +3068,52 @@ inputs:
     The threshold number of suspicious elements that will trigger a user engagement. Set 0 to disable user engagement.
 
     NOTICE: If this threshold is equal to or higher than "FinalThreshold", the final verdict will be deemed by the user response and not by the FinalThreshold calculation.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: Hostname
   value: {}
   required: false
   description: RDP connection destination hostname.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: EndpointID
   value: {}
   required: false
   description: RDP connection destination endpoint ID.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: Alert_Name
   value: {}
   required: false
   description: Alert name.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: AlertDescription
   value: {}
   required: false
   description: Alert description.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: Country
   value: {}
   required: false
   description: Source external IP country.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: IsolateEndpoint
   value:
     simple: "false"
   required: false
-  description: Set this value to "true" to enable endpoint isolation in case of a
-    true positive.
-  playbookInputQuery: null
+  description: Set this value to "true" to enable endpoint isolation in case of a true positive.
+  playbookInputQuery:
 - key: SOCEmailAddress
   value: {}
   required: false
   description: The SOC email address to use for the user engagement section.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: EarlyContainment
   value:
     simple: "true"
   required: false
-  description: Set this value to "true" to allow early containment when the IP is
-    known malicious
-  playbookInputQuery: null
+  description: Set this value to "true" to allow early containment when the IP is known malicious
+  playbookInputQuery:
 outputs: []
+tests:
+- no tests
+fromversion: 6.8.0
+contentitemexportablefields:
+  contentitemfields: {}

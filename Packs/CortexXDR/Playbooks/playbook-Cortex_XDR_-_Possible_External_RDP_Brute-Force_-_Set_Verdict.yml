@@ -1,27 +1,7 @@
 id: Cortex XDR - Possible External RDP Brute-Force - Set Verdict
-version: 12
-contentitemexportablefields:
-  contentitemfields:
-    packID: CortexXDR
-    packName: Cortex XDR by Palo Alto Networks
-    itemVersion: 5.1.4
-    fromServerVersion: 6.8.0
-    toServerVersion: ""
-    definitionid: ""
-    prevname: ""
-vcShouldKeepItemLegacyProdMachine: false
+version: -1
 name: Cortex XDR - Possible External RDP Brute-Force - Set Verdict
-description: "This playbook creating an array called \"Suspicious Elements\", which
-  is used to count potential security threats. The following elements can be added
-  to the array:\n\n- \"IP Reputation\" - Dbot Score is 2-3 \n- \"Source geolocation\"
-  - RDP Connection made from rare geo-location \n-  Related to campaign - IP address
-  is related to campaign, based on TIM module\n-  Hunting results - the hunt for indicators
-  related to the source IP and the related campaign returned results\n-  XDR Alert
-  search - XDR Alerts that related to the same username and endpoint, and to the MITRE
-  tactics that comes after \"Credential Access\", were found.\n\nThe array will then
-  be outputted and its size will be compared to a final threshold. If the size is
-  greater than or equal to the threshold, the investigation's final verdict will be
-  deemed a \"True Positive.\""
+description: "This playbook creating an array called \"Suspicious Elements\", which is used to count potential security threats. The following elements can be added to the array:\n\n- \"IP Reputation\" - Dbot Score is 2-3 \n- \"Source geolocation\" - RDP Connection made from rare geo-location \n-  Related to campaign - IP address is related to campaign, based on TIM module\n-  Hunting results - the hunt for indicators related to the source IP and the related campaign returned results\n-  XDR Alert search - XDR Alerts that related to the same username and endpoint, and to the MITRE tactics that comes after \"Credential Access\", were found.\n\nThe array will then be outputted and its size will be compared to a final threshold. If the size is greater than or equal to the threshold, the investigation's final verdict will be deemed a \"True Positive.\""
 starttaskid: "0"
 tasks:
   "0":
@@ -34,6 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "3"
@@ -426,6 +407,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -692,7 +674,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-system: true
 view: |-
   {
     "linkLabelsPosition": {
@@ -718,29 +699,27 @@ inputs:
   value: {}
   required: false
   description: Number of XDR alerts that are related to the same user or endpoint.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: RelatedCampaign
   value: {}
   required: false
   description: Campaign related to the external IP.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: HuntResults
   value: {}
   required: false
-  description: Determine whether hunting results exist. The input value should be
-    true or false.
-  playbookInputQuery: null
+  description: Determine whether hunting results exist. The input value should be true or false.
+  playbookInputQuery:
 - key: UnusualGeoLocation
   value: {}
   required: false
-  description: ' determine whether the RDP connection has made RDP Connection made
-    from rare geo-location. the input value should be true or false.'
-  playbookInputQuery: null
+  description: ' determine whether the RDP connection has made RDP Connection made from rare geo-location. the input value should be true or false.'
+  playbookInputQuery:
 - key: IpReputation
   value: {}
   required: false
   description: The external IP reputation.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: XDRRiskyUser
   value:
     complex:
@@ -769,7 +748,7 @@ inputs:
       - operator: uniq
   required: false
   description: Usernames of users that were found as risky by Cortex XDR.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: XDRRiskyHost
   value:
     complex:
@@ -798,8 +777,15 @@ inputs:
       - operator: uniq
   required: false
   description: Hostnames that were found as risky by Cortex XDR.
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs:
 - contextPath: Suspicious_Elements
   description: Array that contains all the suspicious elements.
   type: unknown
+tests:
+- Test XDR Playbook general commands
+- Test XDR Playbook
+fromversion: 6.8.0
+contentitemexportablefields:
+  contentitemfields: {}
+system: true

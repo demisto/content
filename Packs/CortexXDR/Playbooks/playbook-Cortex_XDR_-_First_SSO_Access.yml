@@ -1,15 +1,5 @@
 id: Cortex XDR - First SSO Access
-version: 24
-contentitemexportablefields:
-  contentitemfields:
-    packID: CortexXDR
-    packName: Cortex XDR by Palo Alto Networks
-    itemVersion: 5.0.8
-    fromServerVersion: 6.8.0
-    toServerVersion: ""
-    definitionid: ""
-    prevname: ""
-vcShouldKeepItemLegacyProdMachine: false
+version: -1
 name: Cortex XDR - First SSO Access
 description: |-
   Investigates a Cortex XDR incident containing First SSO access from ASN in organization
@@ -34,6 +24,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "2"
@@ -78,7 +69,6 @@ tasks:
         complex:
           root: inputs.IPAddress
     separatecontext: false
-    continueonerror: true
     continueonerrortype: ""
     view: |-
       {
@@ -127,6 +117,7 @@ tasks:
     quietmode: 2
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerror: true
   "2":
     id: "2"
     taskid: a47c2c3e-ddf0-49d2-8e6c-a8b5b11212ea
@@ -138,6 +129,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -170,6 +162,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "157"
@@ -200,6 +193,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "160"
@@ -431,8 +425,8 @@ tasks:
       methods:
       - email
       format: ""
-      bcc: null
-      cc: null
+      bcc:
+      cc:
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -538,6 +532,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "181"
@@ -570,6 +565,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "172"
@@ -598,8 +594,7 @@ tasks:
       id: 74577fe2-2dc9-4913-8f77-18be32c48ca2
       version: -1
       name: Should the Endpoint be isolated automatically?
-      description: Checks if the endpoint can be isolated automatically based on the
-        input's value. (AutomaticallyIsolateEndpoint)
+      description: Checks if the endpoint can be isolated automatically based on the input's value. (AutomaticallyIsolateEndpoint)
       type: condition
       iscommand: false
       brand: ""
@@ -794,6 +789,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "115"
@@ -1300,8 +1296,7 @@ tasks:
       id: 36cba334-80b3-45b9-8f46-d04ab74bc01a
       version: -1
       name: Should the Account be disabled automatically?
-      description: Checks if the account can be disabled and resets the account's
-        password automatically based on the input's value. (AutomaticallyBlockAccount)
+      description: Checks if the account can be disabled and resets the account's password automatically based on the input's value. (AutomaticallyBlockAccount)
       type: condition
       iscommand: false
       brand: ""
@@ -1350,6 +1345,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "76"
@@ -1430,8 +1426,8 @@ tasks:
         simple: Based on the investigation details, is this a true positive?
       methods: []
       format: ""
-      bcc: null
-      cc: null
+      bcc:
+      cc:
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -1456,6 +1452,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "151"
@@ -1486,6 +1483,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "149"
@@ -1516,6 +1514,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "88"
@@ -1546,6 +1545,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "178"
@@ -1573,8 +1573,7 @@ tasks:
       id: e8f8bda5-9fed-45e8-8aa3-5473750b4fbc
       version: -1
       name: Should engage with the manager?
-      description: Whether to ask the user manager for the legitimacy of the login
-        events, in case of a user logged in from an unusual country.
+      description: Whether to ask the user manager for the legitimacy of the login events, in case of a user logged in from an unusual country.
       type: condition
       iscommand: false
       brand: ""
@@ -1703,6 +1702,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "76"
@@ -1787,18 +1787,17 @@ tasks:
       id: 39ac4b59-8832-4b6c-8695-6f52decaa026
       version: -1
       name: Should verify factor authentication automatically?
-      description: Checks whether to automatically initiate two-factor authentication
-        verification based on the input's value. (AutomaticallyClearSessions)
+      description: Checks whether to automatically initiate two-factor authentication verification based on the input's value. (AutomaticallyClearSessions)
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
       '#default#':
       - "145"
-      Yes, high risk user:
-      - "191"
       "yes":
       - "180"
+      Yes, high risk user:
+      - "191"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -1908,6 +1907,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "111"
@@ -1951,6 +1951,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "180"
@@ -1970,7 +1971,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-system: true
 view: |-
   {
     "linkLabelsPosition": {
@@ -2007,7 +2007,7 @@ inputs:
     simple: "False"
   required: false
   description: Whether to isolate the endpoint automatically.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: XDRRelatedAlertsThreshold
   value:
     simple: "3"
@@ -2017,7 +2017,7 @@ inputs:
     This is the minimum threshold for XDR related alerts based on user activity to identify suspicious activity.
     example: If this input is set to '3', and the 'Cortex XDR - First SSO Access - Set Verdict' sub-playbook has found 4 XDR related alerts - It will classify this check as suspicious activity.
     The default value is '3'.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: FailedlogonUserThreshold
   value:
     simple: "30"
@@ -2026,7 +2026,7 @@ inputs:
     This is the minimum threshold for failed login attempts by the user.
     example: If this input is set to '30', and the 'Cortex XDR - First SSO Access - Set Verdict' sub-playbook has found 31 failed login attempts - It will classify this check as suspicious activity.
     The default value is '30'.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: FailedlogonFromASNThreshold
   value:
     simple: "20"
@@ -2035,45 +2035,44 @@ inputs:
     This is the minimum threshold for failed login attempts from ASN.
     example: If this input is set to '20', and the 'Cortex XDR - First SSO Access - Set Verdict' sub-playbook has found 21 failed login attempts from ASN - It will classify this check as suspicious activity.
     The default value is '20'.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: EndpointID
   value: {}
   required: false
   description: XDR Endpoint ID.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: Username
   value: {}
   required: false
   description: User name.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: IPAddress
   value: {}
   required: false
   description: IP Address from the XDR Alert.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: LoginCountry
   value: {}
   required: false
   description: The country from which the user logged in.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: AutomaticallyBlockAccount
   value:
     simple: "False"
   required: false
   description: Whether to block the account automatically.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: ContactUserManager
   value:
     simple: "False"
   required: false
-  description: Whether to ask the user manager for the legitimacy of the login events,
-    in case of a user logged in from an unusual country.
-  playbookInputQuery: null
+  description: Whether to ask the user manager for the legitimacy of the login events, in case of a user logged in from an unusual country.
+  playbookInputQuery:
 - key: AlertName
   value: {}
   required: false
   description: Alert Name.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: MaliciousVerdictThreshold
   value:
     simple: "2"
@@ -2082,7 +2081,7 @@ inputs:
     The 'Malicious verdict' threshold to determine a malicious verdict.
     The default value is '2'.
     Should be Greater than the "SuspiciousVerdictThreshold" input.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: SuspiciousVerdictThreshold
   value:
     simple: "1"
@@ -2091,77 +2090,73 @@ inputs:
     The 'Suspicious verdict' threshold to determine a suspicious verdict.
     The default value is '1'.
     Should be lower than the "MaliciousVerdictThreshold" input.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: SplunkIndex
   value:
     simple: '*'
   required: false
   description: Splunk's index name in which to search. Default is "*" - All.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: SplunkEarliestTime
   value:
     simple: -1d
   required: false
   description: The earliest time for the Splunk search query.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: SplunkLatestTime
   value:
     simple: now
   required: false
   description: The latest time for the Splunk search query.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: QRadarSearchTime
   value:
     simple: Last 1 days
   required: false
-  description: 'The Search Time for the QRadar search query. for example:  Last 1
-    days'
-  playbookInputQuery: null
+  description: 'The Search Time for the QRadar search query. for example:  Last 1 days'
+  playbookInputQuery:
 - key: AzureSearchTime
   value:
     simple: ago(1d)
   required: false
-  description: 'The Search Time for the Azure Log Analytics search query. for example:
-    ago(1d)'
-  playbookInputQuery: null
+  description: 'The Search Time for the Azure Log Analytics search query. for example: ago(1d)'
+  playbookInputQuery:
 - key: SIEMFailedLogonSearch
   value:
     simple: "True"
   required: false
-  description: Whether to search for failed logon logs from Siem? Can be False or
-    True.
-  playbookInputQuery: null
+  description: Whether to search for failed logon logs from Siem? Can be False or True.
+  playbookInputQuery:
 - key: ThreatLogSearch
   value:
     simple: "True"
   required: false
   description: Whether to search for threat logs from PAN-OS? Can be False or True.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: XDRAlertSearch
   value:
     simple: "True"
   required: false
   description: Whether to search for Related alerts from XDR? Can be False or True.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: OktaSearch
   value:
     simple: "True"
   required: false
   description: Whether to search for logs from Okta? Can be False or True.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: XDRUsernameField
   value:
     simple: actor_effective_username
   required: false
   description: Cortex XDR User name Field.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: AutomaticallyClearSessions
   value:
     simple: "False"
   required: false
-  description: Whether to clear all the user sessions automatically. Can be used in
-    conjunction with the ForceClearSessionsForHighRiskUsers input.
-  playbookInputQuery: null
+  description: Whether to clear all the user sessions automatically. Can be used in conjunction with the ForceClearSessionsForHighRiskUsers input.
+  playbookInputQuery:
 - key: ForceClearSessionsForHighRiskUsers
   value:
     simple: "False"
@@ -2174,5 +2169,11 @@ inputs:
     - HIGH
 
     Setting this to True will clear the user sessions in Okta if the user has a high risk, automatically. Setting this and the AutomaticallyClearSessions inputs to False, will prompt the analyst to take action manually even if the user has a high risk associated with it.
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs: []
+tests:
+- no tests
+fromversion: 6.8.0
+contentitemexportablefields:
+  contentitemfields: {}
+system: true

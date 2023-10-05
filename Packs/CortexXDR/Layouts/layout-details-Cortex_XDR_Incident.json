@@ -1,15 +1,15 @@
 {
-	"TypeName": "Cortex XDR Incident",
-	"kind": "details",
-	"fromVersion": "5.0.0",
-	"layout": {
-		"TypeName": "",
-		"id": "Cortex XDR Incident",
-		"kind": "details",
-		"modified": "2019-09-01T12:25:49.808989+03:00",
-		"name": "",
-		"system": false,
-		"tabs": [
+    "TypeName": "Cortex XDR Incident",
+    "kind": "details",
+    "fromVersion": "5.0.0",
+    "layout": {
+        "TypeName": "",
+        "id": "Cortex XDR Incident",
+        "kind": "details",
+        "modified": "2019-09-01T12:25:49.808989+03:00",
+        "name": "",
+        "system": false,
+        "tabs": [
             {
                 "hidden": false,
                 "id": "1vduzkpmlh",
@@ -103,9 +103,7 @@
                         "hideName": false,
                         "i": "1vduzkpmlh-61263cc0-98b1-11e9-97d7-ed26ef9e46c8",
                         "isVisible": true,
-                        "items": [
-
-                        ],
+                        "items": [],
                         "maxW": 3,
                         "minH": 1,
                         "minW": 1,
@@ -162,9 +160,7 @@
                         "hideName": false,
                         "i": "1vduzkpmlh-770ec200-98b1-11e9-97d7-ed26ef9e46c8",
                         "isVisible": true,
-                        "items": [
-
-                        ],
+                        "items": [],
                         "maxW": 3,
                         "minH": 1,
                         "minW": 1,
@@ -183,9 +179,7 @@
                         "hideName": false,
                         "i": "1vduzkpmlh-842632c0-98b1-11e9-97d7-ed26ef9e46c8",
                         "isVisible": true,
-                        "items": [
-
-                        ],
+                        "items": [],
                         "maxW": 3,
                         "minH": 1,
                         "minW": 1,
@@ -204,9 +198,7 @@
                         "hideName": false,
                         "i": "1vduzkpmlh-4a31afa0-98ba-11e9-a519-93a53c759fe0",
                         "isVisible": true,
-                        "items": [
-
-                        ],
+                        "items": [],
                         "maxW": 3,
                         "minH": 1,
                         "minW": 1,
@@ -225,9 +217,7 @@
                         "hideName": false,
                         "i": "1vduzkpmlh-7717e580-9bed-11e9-9a3f-8b4b2158e260",
                         "isVisible": true,
-                        "items": [
-
-                        ],
+                        "items": [],
                         "maxW": 3,
                         "minH": 1,
                         "minW": 1,
@@ -533,9 +523,7 @@
                         "h": 2,
                         "hideName": false,
                         "i": "1vduzkpmlh-6f1661f0-ad44-11e9-a569-716c95c51bfe",
-                        "items": [
-
-                        ],
+                        "items": [],
                         "maxW": 3,
                         "minH": 1,
                         "minW": 1,
@@ -553,9 +541,7 @@
                         "h": 2,
                         "hideName": false,
                         "i": "1vduzkpmlh-5cc7f260-ad4f-11e9-a2d3-c520aeb407da",
-                        "items": [
-
-                        ],
+                        "items": [],
                         "maxW": 3,
                         "minH": 1,
                         "minW": 1,
@@ -573,9 +559,7 @@
                         "h": 2,
                         "hideName": false,
                         "i": "1vduzkpmlh-11cd1fd0-ad52-11e9-a2d3-c520aeb407da",
-                        "items": [
-
-                        ],
+                        "items": [],
                         "maxW": 3,
                         "minH": 1,
                         "minW": 1,
@@ -666,9 +650,7 @@
                     {
                         "h": 2,
                         "i": "1vduzkpmlh-c037a9b0-5412-11eb-830f-fbfa6e45cb4e",
-                        "items": [
-
-                        ],
+                        "items": [],
                         "maxW": 3,
                         "minH": 1,
                         "minW": 1,
@@ -694,9 +676,7 @@
                         "hideName": false,
                         "i": "swtuqptgvs-067d4900-98b4-11e9-97d7-ed26ef9e46c8",
                         "isVisible": true,
-                        "items": [
-
-                        ],
+                        "items": [],
                         "maxW": 3,
                         "minH": 1,
                         "minW": 1,
@@ -708,12 +688,8 @@
                             ],
                             "lastId": "",
                             "pageSize": 100,
-                            "tags": [
-
-                            ],
-                            "users": [
-
-                            ]
+                            "tags": [],
+                            "users": []
                         },
                         "queryType": "warRoomFilter",
                         "readOnly": true,
@@ -729,9 +705,7 @@
                         "hideName": false,
                         "i": "swtuqptgvs-cc557320-98b7-11e9-b34a-852d068f44fe",
                         "isVisible": true,
-                        "items": [
-
-                        ],
+                        "items": [],
                         "maxW": 3,
                         "minH": 1,
                         "minW": 1,
@@ -881,10 +855,11 @@
                 "type": "canvas"
             }
         ],
-		"typeId": "Cortex XDR Incident",
-		"version": -1
-	},
-	"typeId": "Cortex XDR Incident",
-	"version": -1,
-	"toVersion": "5.9.9"
+        "typeId": "Cortex XDR Incident",
+        "version": -1
+    },
+    "typeId": "Cortex XDR Incident",
+    "version": -1,
+    "toVersion": "5.9.9",
+    "description": ""
 }

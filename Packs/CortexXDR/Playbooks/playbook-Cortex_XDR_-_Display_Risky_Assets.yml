@@ -1,9 +1,7 @@
-id: d57de4de-66a9-421c-826c-d6a60a6d9ea0
-version: 16
-vcShouldKeepItemLegacyProdMachine: false
+id: Cortex XDR - Display Risky Assets
+version: -1
 name: Cortex XDR - Display Risky Assets
-description: This playbooks displays risky users and risky hosts, as detected by Cortex
-  XDR's ITDR module. The data is displayed in incident fields in XDR incidents.
+description: This playbooks displays risky users and risky hosts, as detected by Cortex XDR's ITDR module. The data is displayed in incident fields in XDR incidents.
 tags:
 - XDR
 - ITDR
@@ -19,6 +17,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -47,8 +46,7 @@ tasks:
       id: 1f26dc0c-e4fd-415a-8276-d017ff8343fe
       version: -1
       name: Is a risky user involved in the incident?
-      description: Checks whether any of the enriched users has a risk score associated
-        to it in XDR.
+      description: Checks whether any of the enriched users has a risk score associated to it in XDR.
       type: condition
       iscommand: false
       brand: ""
@@ -133,6 +131,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "4"
@@ -243,8 +242,7 @@ tasks:
       id: 15a20427-aac6-42bf-8c14-cfa3514669b3
       version: -1
       name: Is a risky host involved in the incident?
-      description: Checks whether any of the enriched hosts has a risk score associated
-        to it in XDR.
+      description: Checks whether any of the enriched hosts has a risk score associated to it in XDR.
       type: condition
       iscommand: false
       brand: ""
@@ -329,6 +327,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "10"
@@ -442,6 +441,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -482,9 +482,8 @@ inputs:
       transformers:
       - operator: uniq
   required: false
-  description: A list of risky usernames, their scores, risk levels, and the reasons
-    for the risk, as outputted from the "xdr-list-risky-users" command.
-  playbookInputQuery: null
+  description: A list of risky usernames, their scores, risk levels, and the reasons for the risk, as outputted from the "xdr-list-risky-users" command.
+  playbookInputQuery:
 - key: XDRRiskyHosts
   value:
     complex:
@@ -493,8 +492,10 @@ inputs:
       transformers:
       - operator: uniq
   required: false
-  description: A list of risky hosts, their scores, risk levels, and the reasons for
-    the risk, as outputted from the "xdr-list-risky-hosts" command.
-  playbookInputQuery: null
+  description: A list of risky hosts, their scores, risk levels, and the reasons for the risk, as outputted from the "xdr-list-risky-hosts" command.
+  playbookInputQuery:
 outputs: []
 quiet: true
+tests:
+- No tests (auto formatted)
+fromversion: 6.5.0

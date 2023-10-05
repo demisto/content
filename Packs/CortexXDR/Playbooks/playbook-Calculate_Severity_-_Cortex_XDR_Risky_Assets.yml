@@ -1,6 +1,5 @@
-id: 90dbc600-0ab2-4186-80ab-5b12058af528
-version: 19
-vcShouldKeepItemLegacyProdMachine: false
+id: Calculate Severity - Cortex XDR Risky Assets
+version: -1
 name: Calculate Severity - Cortex XDR Risky Assets
 starttaskid: "0"
 tasks:
@@ -14,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "11"
@@ -45,6 +45,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -69,8 +70,7 @@ tasks:
       id: 4567ad72-940b-4cd1-896a-28b84d9e40e4
       version: -1
       name: Is there a risky user?
-      description: Checks if there is a risky user, as outputted by the "xdr-list-risky-users"
-        command.
+      description: Checks if there is a risky user, as outputted by the "xdr-list-risky-users" command.
       type: condition
       iscommand: false
       brand: ""
@@ -133,6 +133,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -274,8 +275,7 @@ tasks:
       id: 3bed87cc-68c9-498a-8230-b0f4967d5841
       version: -1
       name: Is there a risky host?
-      description: Checks if there is a risky host, as outputted by the "xdr-list-risky-hosts"
-        command.
+      description: Checks if there is a risky host, as outputted by the "xdr-list-risky-hosts" command.
       type: condition
       iscommand: false
       brand: ""
@@ -335,8 +335,7 @@ tasks:
       id: 123cb178-a4d8-4bbf-8b37-e4fc5cdf9106
       version: -1
       name: What is the highest risk level associated with the users?
-      description: Checks which user has the highest risk level, and sets a severity
-        output accordingly.
+      description: Checks which user has the highest risk level, and sets a severity output accordingly.
       type: condition
       iscommand: false
       brand: ""
@@ -431,6 +430,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -458,8 +458,7 @@ tasks:
       id: 2130a3eb-dea1-467b-8334-bc6ab3b3a496
       version: -1
       name: What is the highest risk level associated with the hosts?
-      description: Checks which host has the highest risk level, and sets a severity
-        output accordingly.
+      description: Checks which host has the highest risk level, and sets a severity output accordingly.
       type: condition
       iscommand: false
       brand: ""
@@ -678,9 +677,8 @@ inputs:
       transformers:
       - operator: uniq
   required: false
-  description: An object of risky users and their corresponding scores, as outputted
-    by the "xdr-list-risky-users" command.
-  playbookInputQuery: null
+  description: An object of risky users and their corresponding scores, as outputted by the "xdr-list-risky-users" command.
+  playbookInputQuery:
 - key: XDRRiskyHosts
   value:
     complex:
@@ -689,15 +687,16 @@ inputs:
       transformers:
       - operator: uniq
   required: false
-  description: An object of risky hosts and their corresponding scores, as outputted
-    by the "xdr-list-risky-hosts" command.
-  playbookInputQuery: null
+  description: An object of risky hosts and their corresponding scores, as outputted by the "xdr-list-risky-hosts" command.
+  playbookInputQuery:
 outputs:
 - contextPath: Severities.XDRUserSeverity
-  description: The severity evaluated by the highest risk level associated with the
-    Cortex XDR user. Can be Low, Medium or High.
+  description: The severity evaluated by the highest risk level associated with the Cortex XDR user. Can be Low, Medium or High.
   type: unknown
 - contextPath: Severities.XDRHostSeverity
-  description: The severity evaluated by the highest risk level associated with the
-    Cortex XDR host. Can be Low, Medium or High.
+  description: The severity evaluated by the highest risk level associated with the Cortex XDR host. Can be Low, Medium or High.
   type: unknown
+tests:
+  - no tests
+fromversion: 6.5.0
+description: Calculates a severity for the incident based on the involvement of risky users or risky hosts in the incident, as determined by the Cortex XDR ITDR module.
