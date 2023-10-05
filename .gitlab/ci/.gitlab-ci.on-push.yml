@@ -644,9 +644,9 @@ test-upload-flow:
     expire_in: 30 days
     reports:
       junit:
-        - "${ARTIFACTS_FOLDER_INSTANCE}/test_playbooks_report.xml"
+        - "${ARTIFACTS_FOLDER}/test_playbooks_report.xml"
     paths:
-      - "${ARTIFACTS_FOLDER_INSTANCE}/test_playbooks_report.xml"
+      - "${ARTIFACTS_FOLDER}/test_playbooks_report.xml"
       - /builds/xsoar/content/artifacts/*  # restoring the default artifacts path from the job default settings
       - /builds/xsoar/content/pipeline_jobs_folder/*  # restoring the default artifacts path from the job default settings
 
