@@ -10,7 +10,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from functools import lru_cache
 from pathlib import Path
 from threading import Lock
-from typing import Any
+from typing import Any, List
 
 import demisto_client
 from demisto_sdk.commands.common import tools
@@ -607,13 +607,16 @@ def get_pack_installation_request_data(pack_id: str, pack_version: str):
     }
 
 
-def install_all_content_packs_for_nightly(client: demisto_client, host: str, service_account: str) -> bool:
+def install_all_content_packs_for_nightly(
+    client: demisto_client, host: str, service_account: str, pack_ids_to_install: List[str]
+) -> bool:
     """ Iterates over the packs currently located in the Packs directory. Wrapper for install_packs.
     Retrieving the latest version of each pack from the production bucket.
 
     :param client: Demisto-py client to connect to the server.
     :param host: FQDN of the server.
     :param service_account: The full path to the service account json.
+    :param pack_ids_to_install: List of pack IDs to install specifically to XSOAR marketplace.
     :return: Boolean value indicating whether the installation was successful or not.
     """
     all_packs = []
@@ -624,12 +627,12 @@ def install_all_content_packs_for_nightly(client: demisto_client, host: str, ser
     logging.debug(f"Installing all content packs for nightly flow in server {host}")
 
     # Add deprecated packs to IGNORED_FILES list:
-    for pack_id in os.listdir(PACKS_FULL_PATH):
+    for pack_id in pack_ids_to_install:
         if is_pack_deprecated(pack_id=pack_id, production_bucket=False):
             logging.debug(f'Skipping installation of hidden pack "{pack_id}"')
             IGNORED_FILES.append(pack_id)
 
-    for pack_id in os.listdir(PACKS_FULL_PATH):
+    for pack_id in pack_ids_to_install:
         if pack_id not in IGNORED_FILES:
             pack_version = get_latest_version_from_bucket(pack_id, production_bucket)
             if pack_version:
