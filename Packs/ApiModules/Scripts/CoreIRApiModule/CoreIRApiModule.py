@@ -3211,21 +3211,22 @@ def filter_general_fields(alert: dict, filter_fields: bool = True) -> dict:
     """
 
     if filter_fields:
-        updated_alert = {k:v for k,v in alert.items() if k in ALERT_GENERAL_FIELDS}
+        updated_alert = {k: v for k, v in alert.items() if k in ALERT_GENERAL_FIELDS}
     else:
         updated_alert = alert
-            
+
     if not (event := alert.get('raw_abioc', {}).get('event', {})):
         return_warning('No XDR cloud analytics event.')
         return updated_alert
 
     if filter_fields:
-        updated_event = {k:v for k,v in event.items() if k in ALERT_EVENT_GENERAL_FIELDS}
+        updated_event = {k: v for k, v in event.items() if k in ALERT_EVENT_GENERAL_FIELDS}
     else:
         updated_event = event
-    
+
     updated_alert['event'] = updated_event
     return updated_alert
+
 
 def filter_vendor_fields(alert: dict):
     """Remove non relevant fields from the alert event (filter by vendor: Amazon/google/Microsoft)
@@ -3270,11 +3271,11 @@ def get_original_alerts_command(client: CoreClient, args: Dict) -> CommandResult
             continue
         # remove original_alert_json field and add its content to alert.
         alert.update(alert.pop('original_alert_json', {}))
-        
+
         filter_fields = argToBoolean(args.get('filter_alert_fields', True))
-        
+
         alert_result = filter_general_fields(alert, filter_fields)
-        if filter_fields  and 'event' in alert_result:
+        if filter_fields and 'event' in alert_result:
             filter_vendor_fields(alert_result)
 
         filtered_alerts.append(alert_result)

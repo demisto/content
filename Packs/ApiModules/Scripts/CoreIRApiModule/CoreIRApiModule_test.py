@@ -2612,8 +2612,8 @@ def test_get_original_alerts_command__with_filter(requests_mock):
 
     output = get_original_alerts_command(client, args).outputs[0]
     assert len(output) == 4  # make sure fields were filtered
-    event =  output['event']
-    assert len(event) == 23 # make sure fields were filtered
+    event = output['event']
+    assert len(event) == 23  # make sure fields were filtered
     assert event.get('_time') == 'DATE'  # assert general filter is correct
     assert event.get('cloud_provider') == 'AWS'  # assert general filter is correct
     assert event.get('raw_log', {}).get('userIdentity', {}).get('accountId') == 'ID'  # assert vendor filter is correct
@@ -2644,6 +2644,7 @@ def test_get_original_alerts_command__without_filtering(requests_mock):
     event = alert['event']
     assert len(alert) == 13  # make sure fields were not filtered
     assert len(event) == 41  # make sure fields were not filtered
+
 
 def test_get_dynamic_analysis(requests_mock):
     """
