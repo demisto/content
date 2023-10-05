@@ -1,0 +1,21 @@
+{
+  "remediationData": {
+    "Attack": {
+      "814": {
+        "SHA256": [
+          "0000000000000000000000000000000000000000000000000000000000000000"
+        ],
+        "Drop Path": [
+          "SOFTWA\\Mic\\Wind\\Curr\\Win\\Specia\\User"
+        ]
+      }
+    }
+  },
+  "mitigationVendors": [
+    {
+      "id": "splunk",
+      "fileExport": false,
+      "searchQuery": "(file_hash IN (1111111111111111111111111111111111111111111111111111111111111111)"
+    }
+  ]
+}

@@ -9,23 +9,42 @@ configuration:
   type: 0
 - display: Private Key ID
   name: private_key_id
-  required: true
   type: 4
+  hidden: true
+  required: false
+- name: private_key_id_creds
+  type: 9
+  displaypassword: Private Key ID
+  hiddenusername: true
+  required: false
 - defaultvalue: ''
   display: Private Key
   name: private_key
-  required: true
   type: 4
+  hidden: true
+  required: false
+- name: private_key_creds
+  type: 9
+  displaypassword: Private Key
+  hiddenusername: true
+  required: false
 - defaultvalue: ''
   display: Client Email
   name: client_email
-  required: true
   type: 0
-- defaultvalue: ''
-  display: Client ID
+  hidden: true
+  required: false
+- display: Client ID
   name: client_id
-  required: true
   type: 4
+  defaultvalue: ''
+  hidden: true
+  required: false
+- display: Client Email
+  name: client_email_creds
+  type: 9
+  displaypassword: Client ID
+  required: false
 - defaultvalue: ''
   display: Client X509 Cert URL
   name: client_x509_cert_url
@@ -33,39 +52,32 @@ configuration:
   type: 0
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+
+  required: false
 description: Google Cloud Platform Resource Manager
 display: Google Resource Manager
 name: Google Resource Manager
 script:
   commands:
   - arguments:
-    - default: false
-      defaultValue: ''
+    - defaultValue: ''
       description: |-
         The unique, user-assigned ID of the Project. It must be 6 to 30 lowercase letters, digits, or hyphens. It must start with a letter. Trailing hyphens are prohibited.
         Example: tokyo-rain-123
-      isArray: false
       name: project_id
       predefined: ['']
       required: true
-    - default: false
-      defaultValue: ''
-      description: The ID of the parent resource. Organizations' Name output is in
-        the format "organizations/12345" where the numbers after the forward slash
-        are the ID of the organization. To find Organization IDs available to assign
-        as a parent resource try running the grm-search-organization command.
-      isArray: false
+    - defaultValue: ''
+      description: The ID of the parent resource. Organizations' Name output is in the format "organizations/12345" where the numbers after the forward slash are the ID of the organization. To find Organization IDs available to assign as a parent resource try running the grm-search-organization command.
       name: parent_id
       predefined: []
       required: true
-    - default: false
-      defaultValue: ''
+    - defaultValue: ''
       description: |-
         The label keys associated with this Project.
         Label keys must be between 1 and 63 characters long and conform to the following regular expression: [a-z]([-a-z0-9]*[a-z0-9])?.
@@ -73,26 +85,18 @@ script:
       isArray: true
       name: label_keys
       predefined: []
-      required: false
-    - default: false
-      defaultValue: ''
+    - defaultValue: ''
       description: |-
         The user-assigned display name of the Project. It must be 4 to 30 characters. Supported characters: lowercase and uppercase letters, numbers, hyphens, single-quotes, double-quotes, spaces, and exclamation points.
         Example: My Project
-      isArray: false
       name: name
       predefined: []
-      required: false
-    - default: false
-      defaultValue: ''
-      description: 'Represents the resource type the parent_id is for. Valid resource
-        types: "organization" and "folder".'
-      isArray: false
+    - defaultValue: ''
+      description: 'Represents the resource type the parent_id is for. Valid resource types: "organization" and "folder".'
       name: parent_type
       predefined: [organization, folder]
       required: true
-    - default: false
-      defaultValue: ''
+    - defaultValue: ''
       description: |-
         The label values associated with this Project.
         Label values must be between 0 and 63 characters long and conform to the following regular expression ([a-z]([-a-z0-9]*[a-z0-9])?)?. A label value can be empty.
@@ -100,18 +104,14 @@ script:
       isArray: true
       name: label_values
       predefined: []
-      required: false
-    description: Request that new Project resource be created with the user-specified
-      values passed as command arguments.
-    execution: false
+    description: Request that new Project resource be created with the user-specified values passed as command arguments.
     name: grm-create-project
     outputs:
     - contextPath: GRM.Project.Name
       description: The user-assigned display name of the Project.
       type: String
     - contextPath: GRM.Project.ID
-      description: 'The unique, user-assigned ID of
-        the Project.'
+      description: 'The unique, user-assigned ID of the Project.'
       type: String
     - contextPath: GRM.Project.Number
       description: The number uniquely identifying the project.
@@ -132,15 +132,12 @@ script:
       description: Type of the parent resource.
       type: String
   - arguments:
-    - default: false
-      defaultValue: ''
+    - defaultValue: ''
       description: The unique ID of the Project to fetch, e.g., tokyo-rain-123.
-      isArray: false
       name: project_id
       predefined: []
       required: true
     description: Retrieves the Project by the specified project_id, e.g., my-project-123.
-    execution: false
     name: grm-get-project
     outputs:
     - contextPath: GRM.Project.Number
@@ -168,8 +165,7 @@ script:
       description: Type of the parent resource.
       type: String
   - arguments:
-    - default: false
-      defaultValue: ''
+    - defaultValue: ''
       description: |-
         An expression for filtering the results of the request. Filter rules are case insensitive. The fields eligible for filtering are:
         name
@@ -183,37 +179,28 @@ script:
         labels.color:*            The project has the label color.
         labels.color:red          The project's label color has the value red.
         labels.color:red labels.size:big    The project's label color has the value red and its label size has the value big.
-      isArray: false
       name: filter
       predefined: []
-      required: false
-    description: Lists projects that are visible to the user and satisfies the specified
-      filter. Projects are returned in an unspecified order.
-    execution: false
+    description: Lists projects that are visible to the user and satisfies the specified filter. Projects are returned in an unspecified order.
     name: grm-list-projects
     outputs:
     - contextPath: GRM.Project.Name
-      description: The user-assigned display name
-        of the Project.
+      description: The user-assigned display name of the Project.
       type: String
     - contextPath: GRM.Project.ID
-      description: 'The unique, user-assigned ID of
-        the Project.'
+      description: 'The unique, user-assigned ID of the Project.'
       type: String
     - contextPath: GRM.Project.Number
-      description: The number uniquely identifying
-        the project.
+      description: The number uniquely identifying the project.
       type: String
     - contextPath: GRM.Project.State
       description: The Project lifecycle state.
       type: String
     - contextPath: GRM.Project.CreateTime
-      description: The time the resource was
-        created
+      description: The time the resource was created
       type: Date
     - contextPath: GRM.Project.Label
-      description: The labels associated with this
-        Project.
+      description: The labels associated with this Project.
       type: Unknown
     - contextPath: GRM.Project.Parent.ID
       description: ID of the parent resource.
@@ -222,44 +209,30 @@ script:
       description: Type of the parent resource.
       type: String
   - arguments:
-    - default: false
-      defaultValue: ''
+    - defaultValue: ''
       description: |-
         The unique ID of the Project to update.
         Example: tokyo-rain-123
-      isArray: false
       name: project_id
       predefined: []
       required: true
-    - default: false
-      defaultValue: ''
+    - defaultValue: ''
       description: |-
         The string to update the Project name with. It must be 4 to 30 characters. Supported characters are: lowercase and uppercase letters, numbers, hyphens, single-quotes, double-quotes, spaces, and exclamation points.
         Example: My Project
-      isArray: false
       name: name
       predefined: []
-      required: false
-    - default: false
-      defaultValue: ''
-      description: The ID of the parent resource. Organizations' Name output is in
-        the format `organizations/12345` where the numbers after the forward slash
-        are the ID of the organization. To find Organization IDs available to assign
-        as a parent resource try running the grm-search-organization command.
-      isArray: false
+    - defaultValue: ''
+      description: The ID of the parent resource. Organizations' Name output is in the format `organizations/12345` where the numbers after the forward slash are the ID of the organization. To find Organization IDs available to assign as a parent resource try running the grm-search-organization command.
       name: parent_id
       predefined: []
       required: true
-    - default: false
-      defaultValue: ''
-      description: 'The resource type the parent_id is for. Valid resource types:
-        "organization" and "folder".'
-      isArray: false
+    - defaultValue: ''
+      description: 'The resource type the parent_id is for. Valid resource types: "organization" and "folder".'
       name: parent_type
       predefined: [organization, folder]
       required: true
-    - default: false
-      defaultValue: ''
+    - defaultValue: ''
       description: |-
         The label keys to associate with this Project.
         Label keys must be between 1 and 63 characters long and conform to the following regular expression: [a-z]([-a-z0-9]*[a-z0-9])?.
@@ -267,9 +240,7 @@ script:
       isArray: true
       name: label_keys
       predefined: []
-      required: false
-    - default: false
-      defaultValue: ''
+    - defaultValue: ''
       description: |-
         The label values to associate with this Project.
         Label values must be between 0 and 63 characters long and conform to the following regular expression ([a-z]([-a-z0-9]*[a-z0-9])?)?. A label value can be empty.
@@ -277,16 +248,11 @@ script:
       isArray: true
       name: label_values
       predefined: []
-      required: false
-    description: Updates the attributes of the Project identified by the specified
-      project_id. Currently the only fields that can be updated are the project name
-      and labels.
-    execution: false
+    description: Updates the attributes of the Project identified by the specified project_id. Currently the only fields that can be updated are the project name and labels.
     name: grm-update-project
     outputs:
     - contextPath: GRM.Project.Name
-      description: The user-assigned display name
-        of the Project.
+      description: The user-assigned display name of the Project.
       type: String
     - contextPath: GRM.Project.ID
       description: The unique, user-assigned ID of the Project.
@@ -310,45 +276,25 @@ script:
       description: Type of the parent resource.
       type: String
   - arguments:
-    - default: false
-      defaultValue: ''
+    - defaultValue: ''
       description: |-
         number
         The maximum number of Organizations to return in the response.
-      isArray: false
       name: page_size
       predefined: []
-      required: false
-    - default: false
-      defaultValue: ''
-      description: A pagination token returned from a previous call to "organizations.search"
-        that indicates from where listing should continue.
-      isArray: false
+    - defaultValue: ''
+      description: A pagination token returned from a previous call to "organizations.search" that indicates from where listing should continue.
       name: page_token
       predefined: []
-      required: false
-    - default: false
-      defaultValue: ''
-      description: "An expression for filtering the Organizations returned in the\
-        \ results. Filter rules are case-insensitive.\n\nOrganizations may be filtered\
-        \ by 'owner.directoryCustomerId' or by 'domain', where the domain is a G Suite\
-        \ domain, for example:\n\nowner.directorycustomerid:123456789\tOrganizations\
-        \ with owner.directory_customer_id equal to 123456789.\ndomain:google.com\t\
-        Organizations corresponding to the domain google.com."
-      isArray: false
+    - defaultValue: ''
+      description: "An expression for filtering the Organizations returned in the results. Filter rules are case-insensitive.\n\nOrganizations may be filtered by 'owner.directoryCustomerId' or by 'domain', where the domain is a G Suite domain, for example:\n\nowner.directorycustomerid:123456789\tOrganizations with owner.directory_customer_id equal to 123456789.\ndomain:google.com\tOrganizations corresponding to the domain google.com."
       name: filter
       predefined: []
-      required: false
-    description: Searches Organization resources that are visible to the user and
-      satisfies the specified filter. Organizations are returned in an unspecified
-      order. New Organizations do not necessarily appear at the end of the results.
-    execution: false
+    description: Searches Organization resources that are visible to the user and satisfies the specified filter. Organizations are returned in an unspecified order. New Organizations do not necessarily appear at the end of the results.
     name: grm-search-organizations
     outputs:
     - contextPath: GRM.Organization.Name
-      description: 'The resource name of the
-        organization. This is the organization''s relative path in the API. Its format
-        is "organizations/[organization_id]" e.g. "organizations/1234".'
+      description: 'The resource name of the organization. This is the organization''s relative path in the API. Its format is "organizations/[organization_id]" e.g. "organizations/1234".'
       type: String
     - contextPath: GRM.Organization.State
       description: The organization's current lifecycle state.
@@ -360,22 +306,16 @@ script:
       description: The G Suite customer ID used in the Directory API.
       type: String
   - arguments:
-    - default: false
-      defaultValue: ''
+    - defaultValue: ''
       description: The resource name of the Organization to fetch, e.g., "organizations/1234".
-      isArray: false
       name: name
       predefined: []
       required: true
-    description: Fetches an Organization resource identified by the specified resource
-      name.
-    execution: false
+    description: Fetches an Organization resource identified by the specified resource name.
     name: grm-get-organization
     outputs:
     - contextPath: GRM.Organization.Name
-      description: 'The resource name of the
-        organization. This is the organization''s relative path in the API. Its format
-        is "organizations/[organization_id]" e.g. "organizations/1234".'
+      description: 'The resource name of the organization. This is the organization''s relative path in the API. Its format is "organizations/[organization_id]" e.g. "organizations/1234".'
       type: String
     - contextPath: GRM.Organization.State
       description: The organization's current lifecycle state.
@@ -387,17 +327,14 @@ script:
       description: The G Suite customer ID used in the Directory API.
       type: String
   - arguments:
-    - default: false
-      defaultValue: ''
+    - defaultValue: ''
       description: |-
         The unique ID of the Project to delete.
         Example: tokyo-rain-123
-      isArray: false
       name: project_id
       predefined: []
       required: true
-    description: Marks the Project identified by the specified project_id to be deleted,
-      e.g., my-project-123.
+    description: Marks the Project identified by the specified project_id to be deleted, e.g., my-project-123.
     execution: true
     name: grm-delete-project
     outputs:
@@ -426,18 +363,14 @@ script:
       description: Type of the parent resource.
       type: String
   - arguments:
-    - default: false
-      defaultValue: ''
+    - defaultValue: ''
       description: |-
         The unique ID of the Project to restore.
         Example: tokyo-rain-123
-      isArray: false
       name: project_id
       predefined: []
       required: true
-    description: Restores the Project identified by the specified project_id, e.g.,
-      my-project-123.
-    execution: false
+    description: Restores the Project identified by the specified project_id, e.g., my-project-123.
     name: grm-undelete-project
     outputs:
     - contextPath: GRM.Project.State
@@ -464,12 +397,11 @@ script:
     - contextPath: GRM.Project.Parent.Type
       description: Type of the parent resource.
       type: String
-  dockerimage: demisto/googleapi-python3:1.0.0.36486
-  isfetch: false
+  dockerimage: demisto/googleapi-python3:1.0.0.63869
   runonce: false
   script: ''
   type: python
   subtype: python3
 fromversion: 5.0.0
 tests:
-  - GoogleResourceManager-Test
+- GoogleResourceManager-Test

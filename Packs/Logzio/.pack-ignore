@@ -1,5 +1,5 @@
 [file:Logzio.yml]
-ignore=IN126,IN145
+ignore=IN126
 
 [file:README.md]
 ignore=RM104
@@ -19,9 +19,9 @@ ignore=IF100
 [file:incidentfield-Logz.io_Alert_Summary.json]
 ignore=IF100
 
-
 [file:Logzio_image.png]
 ignore=IM111
 
 [file:classifier-Logzio.json]
 ignore=BA101
+

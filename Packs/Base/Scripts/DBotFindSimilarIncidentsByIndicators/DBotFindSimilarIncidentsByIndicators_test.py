@@ -1,3 +1,4 @@
+import pytest
 import pandas as pd
 # from CommonServerPython import *
 # import pytest
@@ -92,3 +93,12 @@ def test_score(mocker):
     scores = res.values.tolist()
     assert (all(scores[i] >= scores[i + 1] for i in range(len(scores) - 1)))
     assert (all(scores[i] >= 0 for i in range(len(scores) - 1)))
+
+
+@pytest.mark.parametrize("incident_ids, expected_result", [
+    (['1', '2', '3'], "incident.id:(1 2 3)"),
+])
+def test_get_ids_condition_clause(incident_ids, expected_result):
+    from DBotFindSimilarIncidentsByIndicators import get_ids_condition_clause
+    result = get_ids_condition_clause(incident_ids)
+    assert expected_result == result

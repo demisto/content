@@ -2,8 +2,9 @@ import demistomock as demisto
 from CommonServerPython import *
 import requests
 import os
+import urllib3
 
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 
 def get_response(url: str, use_head: str, verify_ssl: bool) -> requests.Response:
@@ -34,7 +35,7 @@ def delete_environment_variables(use_system_proxy: str):
     if use_system_proxy == 'false':
         env_variables = ['HTTP_PROXY', 'HTTPS_PROXY', 'http_proxy', 'https_proxy']
         for env_var in env_variables:
-            if(env_var in os.environ):
+            if (env_var in os.environ):
                 del os.environ[env_var]
 
 

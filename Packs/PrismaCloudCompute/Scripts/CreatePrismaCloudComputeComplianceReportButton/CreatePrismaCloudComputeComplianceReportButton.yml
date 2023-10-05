@@ -1,0 +1,27 @@
+args:
+- isArray: true
+  name: table
+  required: true
+  description: The table of data.
+- name: title
+  required: true
+  description: The title of the report.
+- description: The to email address.
+  name: to
+  required: true
+commonfields:
+  id: CreatePrismaCloudComputeComplianceReportButton
+  version: -1
+dockerimage: demisto/python3:3.10.11.56082
+enabled: true
+name: CreatePrismaCloudComputeComplianceReportButton
+runas: DBotWeakRole
+script: ''
+comment: Generate a compliance report via button.
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 6.0.0
+tests:
+- PaloAltoNetworks_PrismaCloudCompute-Test

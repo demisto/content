@@ -1,0 +1,30 @@
+commonfields:
+  id: StringSimilarity
+  version: -1
+name: StringSimilarity
+script: ''
+type: python
+tags: []
+comment: This automation calculates the similarity ratio between text and a list of strings and outputs a decimal value between 0.0 and 1.0 (1.0 if the sequences are identical, and 0.0 if they don't have anything in common).
+enabled: true
+args:
+- name: string_A
+  required: true
+  description: First input string.
+- name: string_B
+  required: true
+  description: Second input string.
+- name: similarity_threshold
+  description: The similarity threshold to show results for, a value between 0 < x >1.
+  defaultValue: "0.1"
+outputs:
+- contextPath: StringSimilarity.SimilarityScore
+  description: Similarity score - a value between 1.0 if the sequences are identical, and 0.0 if they have nothing in common.
+scripttarget: 0
+dockerimage: demisto/python3:3.10.12.68714
+subtype: python3
+runonce: false
+runas: DBotWeakRole
+fromversion: 6.9.0
+tests:
+- No tests (auto formatted)

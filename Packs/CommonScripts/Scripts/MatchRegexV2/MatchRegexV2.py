@@ -1,7 +1,6 @@
 import demistomock as demisto
 from CommonServerPython import *
 
-from typing import Dict
 import re
 
 
@@ -38,8 +37,8 @@ def parse_regex_flags(raw_flags: str = 'gim'):
     return flags, multiple_matches
 
 
-def main(args: Dict):
-    data = args.get('data')
+def main(args: dict):
+    data: str = args.get('data')  # type: ignore[assignment]
     raw_regex = args.get('regex', '')
     group = int(args.get('group', '0'))
     context_key = args.get('contextKey', '')
@@ -59,14 +58,11 @@ def main(args: Dict):
     else:
         regex_result = regex.search(data)
         if regex_result:
-            results = regex_result.group(group)
+            results = regex_result.group(group)  # type: ignore[assignment]
 
     results = results[0] if len(results) == 1 else results
 
-    if results:
-        human_readable = json.dumps(results)
-    else:
-        human_readable = 'Regex does not match.'
+    human_readable = json.dumps(results) if results else 'Regex does not match.'
 
     context = {}
     if context_key:

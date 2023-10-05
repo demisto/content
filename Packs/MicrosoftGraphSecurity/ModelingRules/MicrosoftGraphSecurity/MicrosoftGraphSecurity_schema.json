@@ -1,5 +1,9 @@
 {
     "msft_graph_security_alerts_raw": {
+      "_reporting_device_name": {
+        "type": "string",
+        "is_array": false
+      },
       "id": {
         "type": "string",
         "is_array": false
@@ -62,11 +66,15 @@
       },
       "mitreTechniques": {
         "type": "string",
-        "is_array": true
+        "is_array": false
       },
       "evidence": {
         "type": "string",
-        "is_array": true
+        "is_array": false
+      },
+      "classification": {
+        "type": "string",
+        "is_array": false
       }
     }
   }

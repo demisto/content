@@ -1,7 +1,7 @@
-from requests import Response
-from http import HTTPStatus
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+from requests import Response
+from http import HTTPStatus
 
 JWT_TOKEN_EXPIRATION_PERIOD = 30
 V2_PREFIX = "v2.0"

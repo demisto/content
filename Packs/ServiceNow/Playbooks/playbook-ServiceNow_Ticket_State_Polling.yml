@@ -59,7 +59,7 @@ tasks:
         complex:
           root: inputs.InstanceName
       dt:
-        simple: ServiceNow.Ticket(val.State != '6' || val.State != '7').Number
+        simple: ServiceNow.Ticket(val.State != '6' && val.State != '7').Number
       ids:
         complex:
           root: inputs.TicketNumber
@@ -244,8 +244,7 @@ inputs:
 - key: Timeout
   value: {}
   required: true
-  description: Amount of time to poll before declaring a timeout and resuming the
-    playbook (in minutes).
+  description: Amount of time to poll before declaring a timeout and resuming the playbook (in minutes).
   playbookInputQuery:
 - key: InstanceName
   value: {}

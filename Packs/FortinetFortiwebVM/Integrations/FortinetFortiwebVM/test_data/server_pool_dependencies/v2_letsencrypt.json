@@ -1,0 +1,19 @@
+{
+    "results": [
+      {
+        "id": 1,
+        "can_view": 0,
+        "q_ref": 0,
+        "can_clone": 1,
+        "q_type": 1,
+        "name": "test",
+        "domain": "test",
+        "status": 0,
+        "expire-date": "",
+        "certificate": "",
+        "private-key": "",
+        "renew-period": 30,
+        "sz_san-list": 0
+      }
+    ]
+  }

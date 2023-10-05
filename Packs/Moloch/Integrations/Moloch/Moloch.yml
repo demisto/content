@@ -44,18 +44,11 @@ script:
     - name: start
       description: 'The entry to start at (Default: 0)'
     - name: startTime
-      description: 'If date parameter is not set, this is the start time of the date
-        to return. If an interger, the number of seconds since Unix EPOC is used,
-        otherwise parsed with javascript Date parser. Usage example: !moloch_connections_json
-        startTime="2014/02/26 10:27:57". For further examples explore: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/parse'
+      description: 'If date parameter is not set, this is the start time of the date to return. If an interger, the number of seconds since Unix EPOC is used, otherwise parsed with javascript Date parser. Usage example: !moloch_connections_json startTime="2014/02/26 10:27:57". For further examples explore: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/parse'
     - name: stopTime
-      description: 'If date parameter is not set, this is the stop time of the date
-        to return. If an interger, the number of seconds since Unix EPOC is used,
-        otherwise parsed with javascript Date parser. Usage example: !moloch_connections_json
-        stopTime="2014/02/26 11:27:57". For further examples explore: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/parse'
+      description: 'If date parameter is not set, this is the stop time of the date to return. If an interger, the number of seconds since Unix EPOC is used, otherwise parsed with javascript Date parser. Usage example: !moloch_connections_json stopTime="2014/02/26 11:27:57". For further examples explore: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/parse'
     - name: strictly
-      description: When set the entire session must be inside the date range to be
-        observed, otherwise if it overlaps it is displayed
+      description: When set the entire session must be inside the date range to be observed, otherwise if it overlaps it is displayed
     - name: view
       description: The view name to apply before the expression
     description: Retrieve the connections data in json format
@@ -78,18 +71,11 @@ script:
     - name: start
       description: 'The entry to start at (Default: 0)'
     - name: startTime
-      description: 'If date parameter is not set, this is the start time of the date
-        to return. If an interger, the number of seconds since Unix EPOC is used,
-        otherwise parsed with javascript Date parser. Usage example: !moloch_connections_csv
-        startTime="2014/02/26 10:27:57". For further examples explore: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/parse'
+      description: 'If date parameter is not set, this is the start time of the date to return. If an interger, the number of seconds since Unix EPOC is used, otherwise parsed with javascript Date parser. Usage example: !moloch_connections_csv startTime="2014/02/26 10:27:57". For further examples explore: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/parse'
     - name: stopTime
-      description: 'If date parameter is not set, this is the stop time of the date
-        to return. If an interger, the number of seconds since Unix EPOC is used,
-        otherwise parsed with javascript Date parser. Usage example: !moloch_connections_csv
-        stopTime="2014/02/26 11:27:57". For further examples explore: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/parse'
+      description: 'If date parameter is not set, this is the stop time of the date to return. If an interger, the number of seconds since Unix EPOC is used, otherwise parsed with javascript Date parser. Usage example: !moloch_connections_csv stopTime="2014/02/26 11:27:57". For further examples explore: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/parse'
     - name: strictly
-      description: When set the entire session must be inside the date range to be
-        observed, otherwise if it overlaps it is displayed
+      description: When set the entire session must be inside the date range to be observed, otherwise if it overlaps it is displayed
     - name: view
       description: The view name to apply before the expression
     description: Retrieve the connections data in csv format
@@ -121,18 +107,11 @@ script:
     - name: start
       description: 'The entry to start at (Default: 0)'
     - name: startTime
-      description: 'If date parameter is not set, this is the start time of the date
-        to return. If an interger, the number of seconds since Unix EPOC is used,
-        otherwise parsed with javascript Date parser. Usage example: !moloch_sessions_json
-        startTime="2014/02/26 10:27:57". For further examples explore: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/parse'
+      description: 'If date parameter is not set, this is the start time of the date to return. If an interger, the number of seconds since Unix EPOC is used, otherwise parsed with javascript Date parser. Usage example: !moloch_sessions_json startTime="2014/02/26 10:27:57". For further examples explore: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/parse'
     - name: stopTime
-      description: 'If date parameter is not set, this is the stop time of the date
-        to return. If an interger, the number of seconds since Unix EPOC is used,
-        otherwise parsed with javascript Date parser. Usage example: !moloch_sessions_json
-        stopTime="2014/02/26 11:27:57". For further examples explore: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/parse'
+      description: 'If date parameter is not set, this is the stop time of the date to return. If an interger, the number of seconds since Unix EPOC is used, otherwise parsed with javascript Date parser. Usage example: !moloch_sessions_json stopTime="2014/02/26 11:27:57". For further examples explore: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/parse'
     - name: strictly
-      description: When set the entire session must be inside the date range to be
-        observed, otherwise if it overlaps it is displayed
+      description: When set the entire session must be inside the date range to be observed, otherwise if it overlaps it is displayed
     - name: view
       description: The view name to apply before the expression
     description: Retrieve the session data in json format
@@ -153,18 +132,11 @@ script:
     - name: start
       description: 'The entry to start at (Default: 0)'
     - name: startTime
-      description: 'If date parameter is not set, this is the start time of the date
-        to return. If an interger, the number of seconds since Unix EPOC is used,
-        otherwise parsed with javascript Date parser. Usage example: !moloch_sessions_csv
-        startTime="2014/02/26 10:27:57". For further examples explore: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/parse'
+      description: 'If date parameter is not set, this is the start time of the date to return. If an interger, the number of seconds since Unix EPOC is used, otherwise parsed with javascript Date parser. Usage example: !moloch_sessions_csv startTime="2014/02/26 10:27:57". For further examples explore: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/parse'
     - name: stopTime
-      description: 'If date parameter is not set, this is the stop time of the date
-        to return. If an interger, the number of seconds since Unix EPOC is used,
-        otherwise parsed with javascript Date parser. Usage example: !moloch_sessions_csv
-        stopTime="2014/02/26 11:27:57". For further examples explore: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/parse'
+      description: 'If date parameter is not set, this is the stop time of the date to return. If an interger, the number of seconds since Unix EPOC is used, otherwise parsed with javascript Date parser. Usage example: !moloch_sessions_csv stopTime="2014/02/26 11:27:57". For further examples explore: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/parse'
     - name: strictly
-      description: When set the entire session must be inside the date range to be
-        observed, otherwise if it overlaps it is displayed
+      description: When set the entire session must be inside the date range to be observed, otherwise if it overlaps it is displayed
     - name: view
       description: The view name to apply before the expression
     description: Retrieve the session data in csv format
@@ -187,18 +159,11 @@ script:
     - name: start
       description: 'The entry to start at (Default: 0)'
     - name: startTime
-      description: 'If date parameter is not set, this is the start time of the date
-        to return. If an interger, the number of seconds since Unix EPOC is used,
-        otherwise parsed with javascript Date parser. Usage example: !moloch_sessions_pcap
-        startTime="2014/02/26 10:27:57". For further examples explore: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/parse'
+      description: 'If date parameter is not set, this is the start time of the date to return. If an interger, the number of seconds since Unix EPOC is used, otherwise parsed with javascript Date parser. Usage example: !moloch_sessions_pcap startTime="2014/02/26 10:27:57". For further examples explore: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/parse'
     - name: stopTime
-      description: 'If date parameter is not set, this is the stop time of the date
-        to return. If an interger, the number of seconds since Unix EPOC is used,
-        otherwise parsed with javascript Date parser. Usage example: !moloch_sessions_pcap
-        stopTime="2014/02/26 11:27:57". For further examples explore: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/parse'
+      description: 'If date parameter is not set, this is the stop time of the date to return. If an interger, the number of seconds since Unix EPOC is used, otherwise parsed with javascript Date parser. Usage example: !moloch_sessions_pcap stopTime="2014/02/26 11:27:57". For further examples explore: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/parse'
     - name: strictly
-      description: When set the entire session must be inside the date range to be
-        observed, otherwise if it overlaps it is displayed
+      description: When set the entire session must be inside the date range to be observed, otherwise if it overlaps it is displayed
     - name: view
       description: The view name to apply before the expression
     description: Retrieve the raw session data in pcap format
@@ -213,18 +178,11 @@ script:
     - name: size
       description: The number of unique values to return
     - name: startTime
-      description: 'If date parameter is not set, this is the start time of the date
-        to return. If an interger, the number of seconds since Unix EPOC is used,
-        otherwise parsed with javascript Date parser. Usage example: !moloch_spigraph_json
-        startTime="2014/02/26 10:27:57". For further examples explore: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/parse'
+      description: 'If date parameter is not set, this is the start time of the date to return. If an interger, the number of seconds since Unix EPOC is used, otherwise parsed with javascript Date parser. Usage example: !moloch_spigraph_json startTime="2014/02/26 10:27:57". For further examples explore: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/parse'
     - name: stopTime
-      description: 'If date parameter is not set, this is the stop time of the date
-        to return. If an interger, the number of seconds since Unix EPOC is used,
-        otherwise parsed with javascript Date parser. Usage example: !moloch_spigraph_json
-        stopTime="2014/02/26 11:27:57". For further examples explore: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/parse'
+      description: 'If date parameter is not set, this is the stop time of the date to return. If an interger, the number of seconds since Unix EPOC is used, otherwise parsed with javascript Date parser. Usage example: !moloch_spigraph_json stopTime="2014/02/26 11:27:57". For further examples explore: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/parse'
     - name: strictly
-      description: When set the entire session must be inside the date range to be
-        observed, otherwise if it overlaps it is displayed
+      description: When set the entire session must be inside the date range to be observed, otherwise if it overlaps it is displayed
     - name: view
       description: The view name to apply before the expression
     description: Retrieve the spigraph data in json format
@@ -237,18 +195,11 @@ script:
     - name: spi
       description: A comma separated list of fields to return data for
     - name: startTime
-      description: 'If date parameter is not set, this is the start time of the date
-        to return. If an interger, the number of seconds since Unix EPOC is used,
-        otherwise parsed with javascript Date parser. Usage example: !moloch_spiview_json
-        startTime="2014/02/26 10:27:57". For further examples explore: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/parse'
+      description: 'If date parameter is not set, this is the start time of the date to return. If an interger, the number of seconds since Unix EPOC is used, otherwise parsed with javascript Date parser. Usage example: !moloch_spiview_json startTime="2014/02/26 10:27:57". For further examples explore: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/parse'
     - name: stopTime
-      description: 'If date parameter is not set, this is the stop time of the date
-        to return. If an interger, the number of seconds since Unix EPOC is used,
-        otherwise parsed with javascript Date parser. Usage example: !moloch_spiview_json
-        stopTime="2014/02/26 11:27:57". For further examples explore: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/parse'
+      description: 'If date parameter is not set, this is the stop time of the date to return. If an interger, the number of seconds since Unix EPOC is used, otherwise parsed with javascript Date parser. Usage example: !moloch_spiview_json stopTime="2014/02/26 11:27:57". For further examples explore: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/parse'
     - name: strictly
-      description: When set the entire session must be inside the date range to be
-        observed, otherwise if it overlaps it is displayed
+      description: When set the entire session must be inside the date range to be observed, otherwise if it overlaps it is displayed
     - name: view
       description: The view name to apply before the expression
     description: Retrieve the spiview data in json format
@@ -263,23 +214,14 @@ script:
       default: true
       description: The database field name to unique on
     - name: startTime
-      description: 'If date parameter is not set, this is the start time of the date
-        to return. If an interger, the number of seconds since Unix EPOC is used,
-        otherwise parsed with javascript Date parser. Usage example: !moloch_unique_json
-        startTime="2014/02/26 10:27:57". For further examples explore: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/parse'
+      description: 'If date parameter is not set, this is the start time of the date to return. If an interger, the number of seconds since Unix EPOC is used, otherwise parsed with javascript Date parser. Usage example: !moloch_unique_json startTime="2014/02/26 10:27:57". For further examples explore: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/parse'
     - name: stopTime
-      description: 'If date parameter is not set, this is the stop time of the date
-        to return. If an interger, the number of seconds since Unix EPOC is used,
-        otherwise parsed with javascript Date parser. Usage example: !moloch_unique_json
-        stopTime="2014/02/26 11:27:57". For further examples explore: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/parse'
+      description: 'If date parameter is not set, this is the stop time of the date to return. If an interger, the number of seconds since Unix EPOC is used, otherwise parsed with javascript Date parser. Usage example: !moloch_unique_json stopTime="2014/02/26 11:27:57". For further examples explore: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/parse'
     - name: strictly
-      description: When set the entire session must be inside the date range to be
-        observed, otherwise if it overlaps it is displayed
+      description: When set the entire session must be inside the date range to be observed, otherwise if it overlaps it is displayed
     - name: view
       description: The view name to apply before the expression
     description: Retrieve the unique data for a field in json format
-  runonce: false
-hidden: false
 fromversion: 5.0.0
 tests:
 - no test

@@ -1,0 +1,89 @@
+category: Analytics & SIEM
+sectionOrder:
+- Connect
+- Collect
+commonfields:
+  id: Darktrace Event Collector
+  version: -1
+configuration:
+- name: base_url
+  display: Server URL (e.g., https://example.cloud.darktrace.com)
+  required: true
+  defaultvalue:
+  type: 0
+  additionalinfo: 'REST API Endpoint of Darktrace server.'
+  section: Connect
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+  section: Connect
+  advanced: true
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+  section: Connect
+  advanced: true
+- additionalinfo: Public token obtained by creating an API token pair on the /config configuration page.
+  displaypassword: Public API Token
+  hiddenusername: true
+  name: public_creds
+  required: true
+  type: 9
+  section: Connect
+- additionalinfo: Private token obtained by creating an API token pair on the /config configuration page.
+  displaypassword: Private API Token
+  hiddenusername: true
+  name: private_creds
+  required: true
+  type: 9
+  section: Connect
+- additionalinfo: Maximum number of Darktrace model breaches to fetch at a time.
+  defaultvalue: '1000'
+  display: Max events per fetch
+  name: max_fetch
+  required: false
+  type: 0
+  section: Collect
+- additionalinfo: Time to start fetching the first incidents.
+  defaultvalue: 3 days
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  name: first_fetch
+  required: false
+  type: 0
+  section: Collect
+description: Use this integration to fetch model breaches from Darktrace as events in XSIAM.
+display: Darktrace Event Collector
+name: Darktrace Event Collector
+script:
+  commands:
+  - arguments:
+    - description: The number of events to return.
+      name: limit
+      defaultValue: 10
+    - description: The start time by which to filter events. Date format will be the same as in the first_fetch parameter.
+      name: start_time
+    - description: The end time by which to filter events.
+      name: end_time
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Set this argument to True in order to create events, otherwise the command will only display them.
+      name: should_push_events
+      predefined:
+      - 'true'
+      - 'false'
+      required: true
+    description: Gets events from Darktrace.
+    name: darktrace-get-events
+  runonce: false
+  script: "-"
+  type: python
+  subtype: python3
+  isfetchevents: true
+  dockerimage: demisto/python3:3.10.12.68714
+marketplaces:
+- marketplacev2
+fromversion: 6.9.0
+tests:
+- No tests (auto formatted)

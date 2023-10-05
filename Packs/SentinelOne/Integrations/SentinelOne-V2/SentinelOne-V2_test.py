@@ -1,4 +1,3 @@
-import io
 import json
 import pytest
 import demistomock as demisto
@@ -9,7 +8,7 @@ main = sentinelone_v2.main
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -18,7 +17,8 @@ def demisto_mocker_2_1(mocker):
     mocker.patch.object(demisto, 'params', return_value={'token': 'token',
                                                          'url': 'https://usea1.sentinelone.net',
                                                          'api_version': '2.1',
-                                                         'fetch_threat_rank': '4'})
+                                                         'fetch_threat_rank': '4',
+                                                         'fetch_type': 'Threats'})
     mocker.patch.object(demisto, 'getLastRun', return_value={'time': 1558541949000})
     mocker.patch.object(demisto, 'incidents')
 
@@ -28,7 +28,8 @@ def demisto_mocker_2_0(mocker):
     mocker.patch.object(demisto, 'params', return_value={'token': 'token',
                                                          'url': 'https://usea1.sentinelone.net',
                                                          'api_version': '2.0',
-                                                         'fetch_threat_rank': '4'})
+                                                         'fetch_threat_rank': '4',
+                                                         'fetch_type': 'Threats'})
     mocker.patch.object(demisto, 'getLastRun', return_value={'time': 1558541949000})
     mocker.patch.object(demisto, 'incidents')
     mocker.patch.object(demisto, 'results')
@@ -512,7 +513,7 @@ def test_get_events(mocker, requests_mock):
 
     call = sentinelone_v2.return_results.call_args_list
     context_outputs = call[0].args[0].outputs
-    assert all(key in context_outputs.keys() for key in expected_context.keys())
+    assert all(key in context_outputs for key in expected_context)
 
 
 def test_run_remote_script(mocker, requests_mock):
@@ -599,7 +600,7 @@ def test_get_installed_applications(mocker, requests_mock):
 
     call = sentinelone_v2.return_results.call_args_list
     command_results = call[0].args[0]
-    assert command_results.outputs == [{'InstalledOn': '2023-02-10', 'Name': 'test', 'Publisher': 'abc', 'Size': 50, 'Version': '2.1'}] # noqa
+    assert command_results.outputs == [{'InstalledOn': '2023-02-10', 'Name': 'test', 'Publisher': 'abc', 'Size': 50, 'Version': '2.1'}]  # noqa
 
 
 def test_get_remote_data_command(mocker, requests_mock):
@@ -626,7 +627,14 @@ def test_get_remote_data_command(mocker, requests_mock):
 
     call = sentinelone_v2.return_results.call_args_list
     command_results = vars(call[0].args[0])
-    assert command_results == {'mirrored_object': {'name': 'test', 'id': '123456', 'incident_type': 'incident'}, 'entries': []}
+    assert command_results == {
+        'mirrored_object': {
+            'name': 'test',
+            'id': '123456',
+            'incident_type': 'SentinelOne Incident'
+        },
+        'entries': []
+    }
 
 
 def test_get_modified_remote_data_command(mocker, requests_mock):
@@ -688,3 +696,76 @@ def test_get_mapping_fields_command():
     result = sentinelone_v2.get_mapping_fields_command()
     assert result.scheme_types_mappings[0].type_name == 'SentinelOne Incident'
     assert list(result.scheme_types_mappings[0].fields.keys()) == ['analystVerdict', 'incidentStatus']
+
+
+def test_get_dv_query_status(mocker, requests_mock):
+    """
+    Given: queryId
+    When: run get_status
+    Then: ensure the context output are as expected and contained the Query Status
+    """
+    requests_mock.get('https://usea1.sentinelone.net/web/api/v2.1/dv/query-status',
+                      json={
+                          'data': {
+                              'QueryID': '1234567890',
+                              'progressStatus': 100,
+                              'queryModeInfo': {
+                                  'lastActivatedAt': '2022-07-19T21:20:54+00:00',
+                                  'mode': 'scalyr'
+                              },
+                              'responseState': 'FINISHED',
+                              'warnings': None
+                          }
+                      })
+    mocker.patch.object(demisto, 'params', return_value={'token': 'token',
+                                                         'url': 'https://usea1.sentinelone.net',
+                                                         'api_version': '2.1',
+                                                         'fetch_threat_rank': '4'})
+    mocker.patch.object(demisto, 'command', return_value='sentinelone-get-dv-query-status')
+    mocker.patch.object(demisto, 'args', return_value={
+        'query_id': '1234567890'
+    })
+    mocker.patch.object(sentinelone_v2, 'return_results')
+    main()
+
+    call = sentinelone_v2.return_results.call_args_list
+    command_results = call[0].args[0]
+    assert command_results.outputs.get('QueryID') == '1234567890'
+    assert command_results.outputs.get('responseState') == 'FINISHED'
+
+
+def test_get_agent_mac(mocker, requests_mock):
+    """
+        Given: agentId
+        When: run get_status
+        Then: ensures returned context details are as expected
+    """
+
+    requests_mock.get('https://usea1.sentinelone.net/web/api/v2.1/agents',
+                      json={
+                          'data': [{
+                              'computerName': 'computerName_test',
+                              'id': 'agentId_test',
+                              'networkInterfaces': [{
+                                  'int_name': 'int_name_test',
+                                  'inet': 'ip_test',
+                                  'physical': 'mac_test'
+                              }]
+                          }]
+                      })
+    mocker.patch.object(demisto, 'params', return_value={'token': 'token',
+                                                         'url': 'https://usea1.sentinelone.net',
+                                                         'api_version': '2.1',
+                                                         'fetch_threat_rank': '4'})
+    mocker.patch.object(demisto, 'command', return_value='sentinelone-get-agent-mac')
+    mocker.patch.object(demisto, 'args', return_value={
+        'agent_id': '1234567890'
+    })
+    mocker.patch.object(sentinelone_v2, 'return_results')
+    main()
+
+    call = sentinelone_v2.return_results.call_args_list
+    command_results = call[0].args[0]
+    assert command_results.outputs[0].get('agent_id') == 'agentId_test'
+    assert command_results.outputs[0].get('ip') == 'ip_test'
+    assert command_results.outputs[0].get('mac') == 'mac_test'

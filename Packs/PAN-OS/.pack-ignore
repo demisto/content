@@ -2,7 +2,7 @@
 ignore=PA116
 
 [file:Panorama.yml]
-ignore=IN136,IN145,IN124,IN154
+ignore=IN136,IN124
 
 [file:README.md]
 ignore=RM102,RM106
@@ -12,15 +12,6 @@ ignore=RM106
 
 [file:playbook-PAN-OS_-_Block_URL_-_Custom_URL_Category_README.md]
 ignore=RM106
-
-[file:playbook-PAN-OS_Create_Or_Edit_Rule_Test.yml]
-ignore=auto-test
-
-[file:playbook-Endpoint_Malware_Investigation_-_Generic_-_Test.yml]
-ignore=auto-test
-
-[file:PCAP_Parsing_And_Indicator_Enrichment_Test.yml]
-ignore=auto-test
 
 [file:playbook-PAN-OS_-_Block_URL_-_Custom_URL_Category.yml]
 ignore=PB121
@@ -40,6 +31,17 @@ finanical
 ransomeware
 pbf
 ampersand
+customurlcategory
+sourcedevice
+securityprofilegroup
+securityprofile
+destinationdevice
+logforwardingprofile
+negatesource
+icmpunreachable
+negatedestination
+grouptag
+sourceuser
 
 [file:PanoramaCVECoverage.yml]
 ignore=BA124

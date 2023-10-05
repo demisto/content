@@ -1,6 +1,6 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 from enum import Enum
-import demistomock as demisto
-from CommonServerPython import *
 
 special = ['n', 't', '\\', '"', '\'', '7', 'r']
 DEFAULT_LIMIT = 100
@@ -66,8 +66,10 @@ def apply_filters(incidents: List, args: Dict):
 
     filtered_incidents = []
     for incident in incidents:
+        incident_id, incident_type = incident.get('id'), incident.get('type')
         if names_to_filter and incident['name'] not in names_to_filter:
             continue
+        demisto.debug(f'{incident_id=}, {incident_type=}')
         if types_to_filter and incident['type'] not in types_to_filter:
             continue
         filtered_incidents.append(incident)
@@ -153,34 +155,48 @@ def search_incidents(args: Dict):   # pragma: no cover
         return 'Incidents not found.', {}, {}
 
     limit = arg_to_number(args.get('limit')) or DEFAULT_LIMIT
-    result_data_list = res[0]["Contents"]["data"]
+    all_found_incidents = res[0]["Contents"]["data"]
+    demisto.debug(
+        f'Amount of incidents before filtering = {len(all_found_incidents)} with args {args} before pagination'
+    )
+    all_found_incidents = add_incidents_link(apply_filters(all_found_incidents, args), platform)
+    demisto.debug(
+        f'Amount of incidents after filtering = {len(all_found_incidents)} before pagination'
+    )
     # adding 1 here because the default page number start from 0
     max_page = (res[0]["Contents"]["total"] // DEFAULT_PAGE_SIZE) + 1
+    demisto.debug(f'{max_page=}')
 
     page = STARTING_PAGE_NUMBER
-    while len(result_data_list) < limit and page < max_page:
+    while len(all_found_incidents) < limit and page < max_page:
         args['page'] = page
-        result_data_list.extend(execute_command('getIncidents', args).get('data') or [])
+        current_page_found_incidents = execute_command('getIncidents', args).get('data') or []
+        demisto.debug(
+            f'before filtering {len(current_page_found_incidents)=} '
+            f' {args=} {page=}'
+        )
+        current_page_found_incidents = add_incidents_link(apply_filters(current_page_found_incidents, args), platform)
+        demisto.debug(f'after filtering = {len(current_page_found_incidents)=}')
+        all_found_incidents.extend(current_page_found_incidents)
         page += 1
 
-    data = apply_filters(result_data_list, args)
-    data = add_incidents_link(data, platform)
-    data = data[:limit]
+    all_found_incidents = all_found_incidents[:limit]
     headers: List[str]
     if platform == 'x2':
         headers = ['id', 'name', 'severity', 'details', 'hostname', 'initiatedby', 'status',
                    'owner', 'targetprocessname', 'username', 'alertLink']
-        data = transform_to_alert_data(data)
-        md = tableToMarkdown(name="Alerts found", t=data, headers=headers, removeNull=True, url_keys=['alertLink'])
+        all_found_incidents = transform_to_alert_data(all_found_incidents)
+        md = tableToMarkdown(name="Alerts found", t=all_found_incidents, headers=headers, removeNull=True, url_keys=['alertLink'])
     else:
         headers = ['id', 'name', 'severity', 'status', 'owner', 'created', 'closed', 'incidentLink']
         if is_summarized_version:
-            data = summarize_incidents(args, data)
+            all_found_incidents = summarize_incidents(args, all_found_incidents)
             if args.get("add_fields_to_summarize_context"):
                 add_headers: List[str] = args.get("add_fields_to_summarize_context", '').split(",")
                 headers = headers + add_headers
-        md = tableToMarkdown(name="Incidents found", t=data, headers=headers)
-    return md, data, res
+        md = tableToMarkdown(name="Incidents found", t=all_found_incidents, headers=headers)
+    demisto.debug(f'amount of all the incidents that were found {len(all_found_incidents)}')
+    return md, all_found_incidents, res
 
 
 def main():  # pragma: no cover

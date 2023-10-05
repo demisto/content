@@ -1,8 +1,8 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import sys
 from re import escape
 
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
 
 FILTER_CONFIG_PATH = "/opt/WCG/config/filter.config"
 CMD_DEL_RULE_FORMAT = "sed -i '/^{0}={1} action=[A-Za-z]*$/d' {2}"

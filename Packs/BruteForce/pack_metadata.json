@@ -28,10 +28,6 @@
             "mandatory": false,
             "display_name": "Gmail"
         },
-        "EWSMailSender": {
-            "mandatory": false,
-            "display_name": "EWS Mail Sender"
-        },
         "MailSenderNew": {
             "mandatory": false,
             "display_name": "Mail Sender (New)"
@@ -51,10 +47,6 @@
         "CommonPlaybooks": {
             "mandatory": true,
             "display_name": "Common Playbooks"
-        },
-        "Compliance": {
-            "mandatory": true,
-            "display_name": "Compliance"
         },
         "MicrosoftGraphMail": {
             "mandatory": false,

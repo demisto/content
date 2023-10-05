@@ -1,0 +1,294 @@
+id: Containment Plan - Disable Account
+version: -1
+name: Containment Plan - Disable Account
+description: |-
+  ## Containment Plan - Disable Account
+
+  This playbook is a sub-playbook within the containment plan playbook.
+  The playbook disables users by utilizing the sub-playbook "Block Account - Generic v2"
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 9fb1ed1d-c22c-48bb-8a3c-4d58bbca6347
+    type: start
+    task:
+      id: 9fb1ed1d-c22c-48bb-8a3c-4d58bbca6347
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "12"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 4d874c50-7a1f-489c-8397-3fc3304eeea6
+    type: title
+    task:
+      id: 4d874c50-7a1f-489c-8397-3fc3304eeea6
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 73bc4723-d270-4e04-8a74-c13b5b1369f1
+    type: regular
+    task:
+      id: 73bc4723-d270-4e04-8a74-c13b5b1369f1
+      version: -1
+      name: Set disabled users to the Incident context
+      description: commands.local.cmd.set.parent.incident.context
+      script: Builtin|||setParentIncidentContext
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      key:
+        simple: UsersBlockList
+      value:
+        complex:
+          root: Blocklist
+          accessor: Final
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 575
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 073f607c-a924-43c1-8852-d480e1454fdc
+    type: condition
+    task:
+      id: 073f607c-a924-43c1-8852-d480e1454fdc
+      version: -1
+      name: Should disable the account?
+      description: Whether to disable the account based on the input values.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.UserContainment
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.Username
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 0
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 32ec3207-df33-4d5f-8551-2a49ca677b62
+    type: regular
+    task:
+      id: 32ec3207-df33-4d5f-8551-2a49ca677b62
+      version: -1
+      name: Set users to disable
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.11/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      key:
+        simple: UsersToDisable
+      value:
+        complex:
+          root: inputs.Username
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: b35ee9bb-51f1-4f64-8df5-b490d1592b2c
+    type: playbook
+    task:
+      id: b35ee9bb-51f1-4f64-8df5-b490d1592b2c
+      version: -1
+      name: Block Account - Generic v2
+      playbookName: Block Account - Generic v2
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      Tag:
+        simple: XSIAM alert - ${alert.id}
+      UserVerification:
+        complex:
+          root: inputs.UserVerification
+      Username:
+        complex:
+          root: UsersToDisable
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "12_2_#default#": 0.16
+    },
+    "paper": {
+      "dimensions": {
+        "height": 955,
+        "width": 380,
+        "x": 450,
+        "y": -140
+      }
+    }
+  }
+inputs:
+- key: UserContainment
+  value:
+    simple: "True"
+  required: false
+  description: Set to 'True' to disable the user account.
+  playbookInputQuery:
+- key: Username
+  value: {}
+  required: false
+  description: The username to disable.
+  playbookInputQuery: null
+- key: UserVerification
+  value:
+    simple: "True"
+  required: false
+  description: |-
+    Possible values:True/False. Default:True.
+    Specify if User Verification is required to disable users.
+  playbookInputQuery: null
+outputs:
+- contextPath: Blocklist.Final
+  description: Blocked accounts
+  type: unknown
+quiet: true
+tests:
+- No tests (auto formatted)
+fromversion: 6.6.0
+marketplaces:
+- marketplacev2

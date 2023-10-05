@@ -14,7 +14,7 @@ commonfields:
 contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ""
-dockerimage: demisto/python3:3.10.6.33415
+dockerimage: demisto/python3:3.10.12.63474
 enabled: true
 name: xsoar-ws-poll-status
 outputs:
@@ -25,7 +25,6 @@ outputs:
   type: boolean
 polling: true
 runas: DBotWeakRole
-runonce: false
 script: ''
 scripttarget: 0
 subtype: python3

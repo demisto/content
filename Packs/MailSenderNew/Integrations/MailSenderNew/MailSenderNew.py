@@ -1,5 +1,8 @@
-import demistomock as demisto
-from CommonServerPython import *
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+import contextlib
+from typing import NoReturn
+
 from email.mime.audio import MIMEAudio
 from email.mime.base import MIMEBase
 from email.mime.image import MIMEImage
@@ -21,7 +24,7 @@ import traceback
 import sys
 from itertools import zip_longest
 
-SERVER = None
+SERVER: Optional[smtplib.SMTP] = None
 UTF_8 = 'utf-8'
 
 
@@ -30,18 +33,17 @@ def randomword(length):
     Generate a random string of given length
     """
     letters = string.ascii_lowercase
-    return ''.join(random.choice(letters) for i in range(length))
+    return ''.join(random.choice(letters) for _ in range(length))
 
 
-def return_error_mail_sender(data):
+def return_error_mail_sender(data) -> NoReturn:  # type: ignore
     """
     Return error as result and exit
     """
     if SERVER:
-        try:
-            SERVER.quit()  # quite may throw if the connection was closed already
-        except Exception:
-            pass
+        # quite may throw if the connection was closed already
+        with contextlib.suppress(Exception):
+            SERVER.quit()
     return_error(data)
 
 
@@ -49,12 +51,12 @@ def guess_type(filename):
     """
     Return the maintype and subtype guessed based on the extension
     """
-    ctype, encoding = mimetypes.guess_type(filename)
-    if ctype is None or encoding is not None:
+    content_type, encoding = mimetypes.guess_type(filename)
+    if content_type is None or encoding is not None:
         # No guess could be made, or the file is encoded (compressed), so
         # use a generic bag-of-bits type.
-        ctype = 'application/octet-stream'
-    return ctype.split('/', 1)
+        content_type = 'application/octet-stream'
+    return content_type.split('/', 1)
 
 
 def handle_file(msg, filename, maintype, subtype, cid, data):
@@ -85,35 +87,37 @@ def handle_file(msg, filename, maintype, subtype, cid, data):
     msg.attach(att)
 
 
-def handle_html(htmlBody):
+def handle_html(html_body):
     """
     Extract all data-url content from within the html and return as separate attachments.
     Due to security implications, we support only images here
     We might not have Beautiful Soup so just do regex search
     """
     attachments = []
-    cleanBody = ''
-    lastIndex = 0
+    clean_body = ''
+    last_index = 0
     for i, m in enumerate(
-            re.finditer(r'<img.+?src=\"(data:(image\/.+?);base64,([a-zA-Z0-9+/=\r\n]+?))\"', htmlBody, re.I)):
+            re.finditer(r'<img.+?src=\"(data:(image/.+?);base64,([a-zA-Z0-9+/=\r\n]+?))\"', html_body, re.I)):
         maintype, subtype = m.group(2).split('/', 1)
+        name = 'image%d.%s' % (i, subtype)
         att = {
             'maintype': maintype,
             'subtype': subtype,
             'data': base64.b64decode(m.group(3)),
-            'name': 'image%d.%s' % (i, subtype)
+            'name': name,
+            'cid': '%r@%r.%r' % (name, randomword(8), randomword(8))
         }
-        att['cid'] = '%r@%r.%r' % (att['name'], randomword(8), randomword(8))
         attachments.append(att)
-        cleanBody += htmlBody[lastIndex:m.start(1)] + 'cid:' + att['cid']
-        lastIndex = m.end() - 1
-    cleanBody += htmlBody[lastIndex:]
-    return cleanBody, attachments
+        clean_body += html_body[last_index:m.start(1)] + 'cid:' + att['cid']
+        last_index = m.end() - 1
+    clean_body += html_body[last_index:]
+    return clean_body, attachments
 
 
 def collect_manual_attachments():
     attachments = []
-    for attachment in demisto.getArg('manualAttachObj') or []:
+    manual_attach_obj: List[Dict[Any, Any]] = demisto.getArg('manualAttachObj') or []
+    for attachment in manual_attach_obj:
         res = demisto.getFilePath(os.path.basename(attachment['RealFileName']))
 
         path = res['path']
@@ -141,20 +145,20 @@ def collect_attachments():
     Collect all attachments into a list with all data
     """
     attachments = []
-    attachIDs = argToList(demisto.getArg('attachIDs'))
-    attachNames = argToList(demisto.getArg('attachNames'))
-    attachCIDs = argToList(demisto.getArg('attachCIDs'))
-    for i, aid in enumerate(attachIDs):
+    attach_ids = argToList(demisto.getArg('attachIDs'))
+    attach_names = argToList(demisto.getArg('attachNames'))
+    attach_cids = argToList(demisto.getArg('attachCIDs'))
+    for i, aid in enumerate(attach_ids):
         try:
-            fileRes = demisto.getFilePath(aid)
+            file_res = demisto.getFilePath(aid)
 
-            path = fileRes['path']
-            if len(attachNames) > i and attachNames[i]:
-                filename = attachNames[i]
+            path = file_res['path']
+            if len(attach_names) > i and attach_names[i]:
+                filename = attach_names[i]
             else:
-                filename = fileRes['name']
-            if len(attachCIDs) > i and attachCIDs[i]:
-                cid = attachCIDs[i]
+                filename = file_res['name']
+            if len(attach_cids) > i and attach_cids[i]:
+                cid = attach_cids[i]
             else:
                 cid = ''
             maintype, subtype = guess_type(filename)
@@ -172,9 +176,9 @@ def collect_attachments():
                 'data': data,
                 'cid': cid
             })
-        except Exception as ex:
-            demisto.error("Invalid entry {} with exception: {}".format(aid, ex))
-            return_error_mail_sender('Entry %s is not valid or is not a file entry' % (aid))
+        except Exception as exc:
+            demisto.error("Invalid entry {} with exception: {}".format(aid, exc))
+            return_error_mail_sender('Entry %s is not valid or is not a file entry' % aid)
 
     # handle transient files
     args = demisto.args()
@@ -200,27 +204,30 @@ def collect_attachments():
     return attachments
 
 
-def template_params():
+def parse_params(params):
+    actual_params = {}
+    # Build a simple key/value
+    for p in params:
+        if params[p].get('value'):
+            actual_params[p] = params[p]['value']
+        elif params[p].get('key'):
+            actual_params[p] = demisto.dt(demisto.context(), params[p]['key'])
+    return actual_params
+
+
+def parse_template_params():
     """
     Translate the template params if they exist from the context
     """
-    actualParams = {}
-    paramsStr = demisto.getArg('templateParams')
-    if paramsStr:
-        if isinstance(paramsStr, dict):
-            params = paramsStr
+    params_str = demisto.getArg('templateParams')
+    if params_str:
+        if isinstance(params_str, dict):
+            return parse_params(params_str)
         else:
             try:
-                params = json.loads(paramsStr)
+                return parse_params(json.loads(params_str))
             except (ValueError, TypeError) as e:
                 return_error_mail_sender('Unable to parse templateParams: %s' % (str(e)))
-        # Build a simple key/value
-        for p in params:
-            if params[p].get('value'):
-                actualParams[p] = params[p]['value']
-            elif params[p].get('key'):
-                actualParams[p] = demisto.dt(demisto.context(), params[p]['key'])
-    return actualParams
 
 
 def header(s):
@@ -242,14 +249,14 @@ def create_msg():
     additional_header = argToList(demisto.getArg('additionalHeader'))
     subject = demisto.getArg('subject') or ''
     body = demisto.getArg('body') or ''
-    htmlBody = demisto.getArg('htmlBody') or ''
-    replyTo = demisto.getArg('replyTo')
-    templateParams = template_params()
-    if templateParams:
-        body = body.format(**templateParams)
-        htmlBody = htmlBody.format(**templateParams)
+    html_body = demisto.getArg('htmlBody') or ''
+    reply_to = demisto.getArg('replyTo')
+    template_params = parse_template_params()
+    if template_params:
+        body = body.format(**template_params)
+        html_body = html_body.format(**template_params)
 
-    # Basic validation - we allow pretty much everything but you have to have at least a recipient
+    # Basic validation - we allow pretty much everything, but you have to have at least a recipient
     # We allow messages without subject and also without body
     if not to and not cc and not bcc:
         return_error_mail_sender('You must have at least one recipient')
@@ -258,7 +265,7 @@ def create_msg():
     attachments.extend(collect_manual_attachments())
 
     # Let's see what type of message we are talking about
-    if not htmlBody:
+    if not html_body:
         # This is a simple text message - we cannot have CIDs here
         if len(attachments) > 0:
             # This is multipart - default is mixed
@@ -271,18 +278,18 @@ def create_msg():
             # Just text, how boring
             msg = MIMEText(body, 'plain', UTF_8)
     else:
-        htmlBody, htmlAttachments = handle_html(htmlBody)
-        attachments += htmlAttachments
+        html_body, html_attachments = handle_html(html_body)
+        attachments += html_attachments
         if len(attachments) > 0:
             msg = MIMEMultipart()
             msg.preamble = 'The message is only available on a MIME-aware mail reader.\n'
             if body:
                 alt = MIMEMultipart('alternative')
                 alt.attach(MIMEText(body, 'plain', UTF_8))
-                alt.attach(MIMEText(htmlBody, 'html', UTF_8))
+                alt.attach(MIMEText(html_body, 'html', UTF_8))
                 msg.attach(alt)
             else:
-                msg.attach(MIMEText(htmlBody, 'html', UTF_8))
+                msg.attach(MIMEText(html_body, 'html', UTF_8))
             for att in attachments:
                 handle_file(msg, att['name'], att['maintype'], att['subtype'], att['cid'], att['data'])
         else:
@@ -290,15 +297,15 @@ def create_msg():
                 msg = MIMEMultipart('alternative')
                 msg.preamble = 'The message is only available on a MIME-aware mail reader.\n'
                 msg.attach(MIMEText(body, 'plain', UTF_8))
-                msg.attach(MIMEText(htmlBody, 'html', UTF_8))
+                msg.attach(MIMEText(html_body, 'html', UTF_8))
             else:
-                msg = MIMEText(htmlBody, 'html', UTF_8)
+                msg = MIMEText(html_body, 'html', UTF_8)
 
     # Add the relevant headers to the most outer message
     msg['Subject'] = header(subject)
     msg['From'] = header(demisto.getParam('from'))
-    if replyTo:
-        msg['Reply-To'] = header(replyTo)
+    if reply_to:
+        msg['Reply-To'] = header(reply_to)
     if to:
         msg['To'] = header(','.join(to))
     if cc:
@@ -308,21 +315,23 @@ def create_msg():
             header_name_and_value = h.split('=', 1)
             msg[header_name_and_value[0]] = header(header_name_and_value[1])
     # Notice we should not add BCC header since Python2 does not filter it
-    return msg.as_string(), to, cc, bcc
+    return body, html_body, msg.as_string(), to, cc, bcc
 
 
 def get_user_pass():
-    if demisto.getParam('credentials'):
-        return (str(demisto.getParam('credentials').get('identifier', '')),
-                str(demisto.getParam('credentials').get('password', '')))
-    return (None, None)
+    credentials: Dict[str, Any] = demisto.getParam('credentials')  # noqa
+    if credentials:
+        return (str(credentials.get('identifier', '')),
+                str(credentials.get('password', '')))
+    return None, None
 
 
 def swap_stderr(new_stderr):
-    '''swap value of stderr if given, return old value.
+    """
+    swap value of stderr if given, return old value.
+    smtplib uses `sys.stderr` directly in newer versions, so use that instead
 
-    smtplib uses sys.stderr directly in newer versions, so use that instead
-    '''
+    """
     if hasattr(smtplib, 'stderr'):
         module = smtplib
     else:
@@ -337,10 +346,10 @@ def main():
     # Following methods raise exceptions so no need to check for return codes
     # But we do need to catch them
     global SERVER
-    FROM = demisto.getParam('from')
-    FQDN = demisto.params().get('fqdn')
-    FQDN = (FQDN and FQDN.strip()) or None
-    TLS = demisto.getParam('tls')
+    from_email = demisto.getParam('from')
+    fqdn = demisto.params().get('fqdn')
+    fqdn = (fqdn and fqdn.strip()) or None
+    tls = demisto.getParam('tls')
     stderr_org = None
     try:
         if demisto.command() == 'test-module':
@@ -348,16 +357,16 @@ def main():
             smtplib.SMTP.debuglevel = 1
 
         # TODO - support for non-valid certs
-        if TLS == 'SSL/TLS':
-            SERVER = SMTP_SSL(demisto.getParam('host'), int(demisto.params().get('port', 0)), local_hostname=FQDN)
+        if tls == 'SSL/TLS':
+            SERVER = SMTP_SSL(demisto.getParam('host'), int(demisto.params().get('port', 0)), local_hostname=fqdn)
         else:
             SERVER = SMTP(demisto.getParam('host'),     # type: ignore[assignment]
-                          int(demisto.params().get('port', 0)), local_hostname=FQDN)
+                          int(demisto.params().get('port', 0)), local_hostname=fqdn)
 
         SERVER.ehlo()  # type: ignore
         # For BC purposes where TLS was a checkbox (no value only true or false) if TLS=True or TLS='STARTTLS' we enter
         # this condition, otherwise it means TLS is not configured (TLS=False) or is set to 'SSL/TLS' or 'None'.
-        if TLS is True or TLS == 'STARTTLS' or str(TLS).lower() == 'true':
+        if tls is True or tls == 'STARTTLS' or str(tls).lower() == 'true':
             SERVER.starttls()  # type: ignore
         user, password = get_user_pass()
         if user:
@@ -374,9 +383,9 @@ def main():
         if demisto.command() == 'test-module':
             msg = MIMEText('This is a test mail from Demisto\nRegards\nDBot')  # type: Message
             msg['Subject'] = 'Test mail from Demisto'
-            msg['From'] = FROM
-            msg['To'] = FROM
-            SERVER.sendmail(FROM, [FROM], msg.as_string())  # type: ignore[union-attr]
+            msg['From'] = from_email
+            msg['To'] = from_email
+            SERVER.sendmail(from_email, [from_email], msg.as_string())  # type: ignore[union-attr]
             SERVER.quit()  # type: ignore[union-attr]
             demisto.results('ok')
         elif demisto.command() == 'send-mail':
@@ -386,12 +395,22 @@ def main():
                 cc = argToList(demisto.getArg('cc'))
                 bcc = argToList(demisto.getArg('bcc'))
                 str_msg = raw_message
+                html_body = raw_message
             else:
-                (str_msg, to, cc, bcc) = create_msg()
+                (_, html_body, str_msg, to, cc, bcc) = create_msg()
 
-            SERVER.sendmail(FROM, to + cc + bcc, str_msg)  # type: ignore[union-attr]
-            SERVER.quit()  # type: ignore[union-attr]
-            demisto.results('Mail sent successfully')
+            SERVER.sendmail(from_email, to + cc + bcc, str_msg)  # type: ignore[union-attr]
+            SERVER.quit()
+            render_body = argToBoolean(demisto.getArg('renderBody') or False)
+            results = [CommandResults(entry_type=EntryType.NOTE, raw_response='Mail sent successfully')]
+            if render_body:
+                results.append(CommandResults(
+                    entry_type=EntryType.NOTE,
+                    content_format=EntryFormat.HTML,
+                    raw_response=html_body,
+                ))
+
+            return_results(results)
         else:
             return_error_mail_sender('Command not recognized')
     except SMTPRecipientsRefused as e:

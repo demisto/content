@@ -1,39 +1,27 @@
 [MODEL: dataset=msft_graph_security_alerts_raw]
 filter _reporting_device_name = "https://graph.microsoft.com/beta/security/alerts_v2"
+| alter 
+    alertEvidence_json = arraystring(arraymap(evidence -> [], if("@element" ~= "alertEvidence", "@element", null)), ""),
+    analyzedMessageEvidence_json = arraystring(arraymap(evidence -> [], if("@element" ~= "analyzedMessageEvidence", "@element", null)), ""),
+    analyzedMessageEvidence2_json = arraymap(evidence -> [], if("@element" ~= "analyzedMessageEvidence", "@element", null)),
+    cloudApplicationEvidence_json = arraystring(arraymap(evidence -> [], if("@element" ~= "cloudApplicationEvidence", "@element", null)), ""),
+    deviceEvidence_json = arraystring(arraymap(evidence -> [], if("@element" ~= "deviceEvidence", "@element", null)), ""),
+    fileEvidence_json = arraystring(arraymap(evidence -> [], if("@element" ~= "fileEvidence", "@element", null)), ""),
+    ipEvidence_json = arraymap(evidence -> [], if("@element" ~= "ipEvidence", "@element", null)),
+    mailboxEvidence_json = arraystring(arraymap(evidence -> [], if("@element" ~= "mailboxEvidence", "@element", null)), ""),
+    processEvidence_json = arraystring(arraymap(evidence -> [], if("@element" ~= "processEvidence", "@element", null)), ""),
+    registryKeyEvidence_json = arraystring(arraymap(evidence -> [], if("@element" ~= "registryKeyEvidence", "@element", null)), ""),
+    registryValueEvidence_json = arraystring(arraymap(evidence -> [], if("@element" ~= "registryValueEvidence", "@element", null)), ""),
+    urlEvidence_json = arraystring(arraymap(evidence -> [], if("@element" ~= "urlEvidence", "@element", null)), ""),
+    userEvidence_json = arraystring(arraymap(evidence -> [], if("@element" ~= "userEvidence", "@element", null)), "")
 | alter
-    json_arr1 = evidence -> [0]{},
-    json_arr2 = evidence -> [1]{},
-    json_arr3 = evidence -> [2]{},
-    json_arr4 = evidence -> [3]{},
-    json_arr5 = evidence -> [4]{},
-    json_arr6 = evidence -> [5]{},
-    json_arr7 = evidence -> [6]{},
-    json_arr8 = evidence -> [7]{},
-    json_arr9 = evidence -> [8]{},
-    json_arr10 = evidence -> [9]{}
-| alter
-    alertEvidence_json = if(json_arr1 ~= "alertEvidence", json_arr1, json_arr2 ~= "alertEvidence", json_arr2, json_arr3 ~= "alertEvidence", json_arr3, json_arr4 ~= "alertEvidence", json_arr4, json_arr5 ~= "alertEvidence", json_arr5, json_arr6 ~= "alertEvidence", json_arr6, json_arr7 ~= "alertEvidence", json_arr7, json_arr8 ~= "alertEvidence", json_arr8, json_arr9 ~= "alertEvidence", json_arr9, json_arr10 ~= "alertEvidence", json_arr10, null),
-//
-analyzedMessageEvidence_json = if(json_arr1 ~= "analyzedMessageEvidence", json_arr1, json_arr2 ~= "analyzedMessageEvidence", json_arr2, json_arr3 ~= "analyzedMessageEvidence", json_arr3, json_arr4 ~= "analyzedMessageEvidence", json_arr4, json_arr5 ~= "analyzedMessageEvidence", json_arr5, json_arr6 ~= "analyzedMessageEvidence", json_arr6, json_arr7 ~= "analyzedMessageEvidence", json_arr7, json_arr8 ~= "analyzedMessageEvidence", json_arr8, json_arr9 ~= "analyzedMessageEvidence", json_arr9, json_arr10 ~= "analyzedMessageEvidence", json_arr10, null),
-//
-cloudApplicationEvidence_json = if(json_arr1 ~= "cloudApplicationEvidence", json_arr1, json_arr2 ~= "cloudApplicationEvidence", json_arr2, json_arr3 ~= "cloudApplicationEvidence", json_arr3, json_arr4 ~= "cloudApplicationEvidence", json_arr4, json_arr5 ~= "cloudApplicationEvidence", json_arr5, json_arr6 ~= "cloudApplicationEvidence", json_arr6, json_arr7 ~= "cloudApplicationEvidence", json_arr7, json_arr8 ~= "cloudApplicationEvidence", json_arr8, json_arr9 ~= "cloudApplicationEvidence", json_arr9, json_arr10 ~= "cloudApplicationEvidence", json_arr10, null),
-//
-deviceEvidence_json = if(json_arr1 ~= "deviceEvidence", json_arr1, json_arr2 ~= "deviceEvidence", json_arr2, json_arr3 ~= "deviceEvidence", json_arr3, json_arr4 ~= "deviceEvidence", json_arr4, json_arr5 ~= "deviceEvidence", json_arr5, json_arr6 ~= "deviceEvidence", json_arr6, json_arr7 ~= "deviceEvidence", json_arr7, json_arr8 ~= "deviceEvidence", json_arr8, json_arr9 ~= "deviceEvidence", json_arr9, json_arr10 ~= "deviceEvidence", json_arr10, null),
-//
-fileEvidence_json = if(json_arr1 ~= "fileEvidence", json_arr1, json_arr2 ~= "fileEvidence", json_arr2, json_arr3 ~= "fileEvidence", json_arr3, json_arr4 ~= "fileEvidence", json_arr4, json_arr5 ~= "fileEvidence", json_arr5, json_arr6 ~= "fileEvidence", json_arr6, json_arr7 ~= "fileEvidence", json_arr7, json_arr8 ~= "fileEvidence", json_arr8, json_arr9 ~= "fileEvidence", json_arr9, json_arr10 ~= "fileEvidence", json_arr10, null),
-//
-ipEvidence_json = if(json_arr1 ~= "ipEvidence", json_arr1, json_arr2 ~= "ipEvidence", json_arr2, json_arr3 ~= "ipEvidence", json_arr3, json_arr4 ~= "ipEvidence", json_arr4, json_arr5 ~= "ipEvidence", json_arr5, json_arr6 ~= "ipEvidence", json_arr6, json_arr7 ~= "ipEvidence", json_arr7, json_arr8 ~= "ipEvidence", json_arr8, json_arr9 ~= "ipEvidence", json_arr9, json_arr10 ~= "ipEvidence", json_arr10, null),
-//
-mailboxEvidence_json = if(json_arr1 ~= "mailboxEvidence", json_arr1, json_arr2 ~= "mailboxEvidence", json_arr2, json_arr3 ~= "mailboxEvidence", json_arr3, json_arr4 ~= "mailboxEvidence", json_arr4, json_arr5 ~= "mailboxEvidence", json_arr5, json_arr6 ~= "mailboxEvidence", json_arr6, json_arr7 ~= "mailboxEvidence", json_arr7, json_arr8 ~= "mailboxEvidence", json_arr8, json_arr9 ~= "mailboxEvidence", json_arr9, json_arr10 ~= "mailboxEvidence", json_arr10, null),
-//
-processEvidence_json = if(json_arr1 ~= "processEvidence", json_arr1, json_arr2 ~= "processEvidence", json_arr2, json_arr3 ~= "processEvidence", json_arr3, json_arr4 ~= "processEvidence", json_arr4, json_arr5 ~= "processEvidence", json_arr5, json_arr6 ~= "processEvidence", json_arr6, json_arr7 ~= "processEvidence", json_arr7, json_arr8 ~= "processEvidence", json_arr8, json_arr9 ~= "processEvidence", json_arr9, json_arr10 ~= "processEvidence", json_arr10, null),
-//
-registryKeyEvidence_json = if(json_arr1 ~= "registryKeyEvidence", json_arr1, json_arr2 ~= "registryKeyEvidence", json_arr2, json_arr3 ~= "registryKeyEvidence", json_arr3, json_arr4 ~= "registryKeyEvidence", json_arr4, json_arr5 ~= "registryKeyEvidence", json_arr5, json_arr6 ~= "registryKeyEvidence", json_arr6, json_arr7 ~= "registryKeyEvidence", json_arr7, json_arr8 ~= "registryKeyEvidence", json_arr8, json_arr9 ~= "registryKeyEvidence", json_arr9, json_arr10 ~= "registryKeyEvidence", json_arr10, null),
-//
-registryValueEvidence_json = if(json_arr1 ~= "registryValueEvidence", json_arr1, json_arr2 ~= "registryValueEvidence", json_arr2, json_arr3 ~= "registryValueEvidence", json_arr3, json_arr4 ~= "registryValueEvidence", json_arr4, json_arr5 ~= "registryValueEvidence", json_arr5, json_arr6 ~= "registryValueEvidence", json_arr6, json_arr7 ~= "registryValueEvidence", json_arr7, json_arr8 ~= "registryValueEvidence", json_arr8, json_arr9 ~= "registryValueEvidence", json_arr9, json_arr10 ~= "registryValueEvidence", json_arr10, null),
-//
-urlEvidence_json = if(json_arr1 ~= "urlEvidence", json_arr1, json_arr2 ~= "urlEvidence", json_arr2, json_arr3 ~= "urlEvidence", json_arr3, json_arr4 ~= "urlEvidence", json_arr4, json_arr5 ~= "urlEvidence", json_arr5, json_arr6 ~= "urlEvidence", json_arr6, json_arr7 ~= "urlEvidence", json_arr7, json_arr8 ~= "urlEvidence", json_arr8, json_arr9 ~= "urlEvidence", json_arr9, json_arr10 ~= "urlEvidence", json_arr10, null)
-| alter
+// userEvidence Fields
+    userEvidence_userAccount_accountName = json_extract_scalar(userEvidence_json, "$.userAccount.accountName"),
+    userEvidence_userAccount_domainName = json_extract_scalar(userEvidence_json, "$.userAccount.domainName"),
+    userEvidence_userAccount_userSid = json_extract_scalar(userEvidence_json, "$.userAccount.userSid"),
+    userEvidence_userAccount_azureAdUserId = json_extract_scalar(userEvidence_json, "$.userAccount.azureAdUserId"),
+    userEvidence_userAccount_userPrincipalName = json_extract_scalar(userEvidence_json, "$.userAccount.userPrincipalName"),
+    userEvidence_userAccount_displayName = json_extract_scalar(userEvidence_json, "$.userAccount.displayName"),
 // alertEvidence Fields
     alertEvidence_tags = json_extract_scalar(alertEvidence_json, "$.tags"),
 // analyzedMessageEvidence Fields
@@ -41,8 +29,8 @@ urlEvidence_json = if(json_arr1 ~= "urlEvidence", json_arr1, json_arr2 ~= "urlEv
     analyzedMessageEvidence_threats = json_extract_scalar(analyzedMessageEvidence_json, "$.threats"),
     analyzedMessageEvidence_internetMessageId = json_extract_scalar(analyzedMessageEvidence_json, "$.internetMessageId"),
     analyzedMessageEvidence_receivedDateTime = json_extract_scalar(analyzedMessageEvidence_json, "$.receivedDateTime"),
-    analyzedMessageEvidence_recipientEmailAddress = json_extract_scalar(analyzedMessageEvidence_json, "$.recipientEmailAddress"),
     analyzedMessageEvidence_subject = json_extract_scalar(analyzedMessageEvidence_json, "$.subject"),
+    analyzedMessageEvidence_recipientEmailAddress = arraymap(analyzedMessageEvidence2_json, json_extract_scalar("@element", "$.recipientEmailAddress")),
 // cloudApplicationEvidence Fields
     cloudApplicationEvidence_tags = json_extract_scalar(cloudApplicationEvidence_json, "$.tags"),
     cloudApplicationEvidence_displayName = json_extract_scalar(cloudApplicationEvidence_json, "$.displayName"),
@@ -62,8 +50,8 @@ urlEvidence_json = if(json_arr1 ~= "urlEvidence", json_arr1, json_arr2 ~= "urlEv
     fileEvidence_fileDetails_sha256 = json_extract_scalar(fileEvidence_json, "$.fileDetails.sha256"),
     fileEvidence_fileDetails_signer = json_extract_scalar(fileEvidence_json, "$.fileDetails.signer"),
 // ipEvidence Fields
-    ipEvidence_tags = json_extract_scalar(ipEvidence_json, "$.tags"),
-    ipEvidence_ipAddress = json_extract_scalar(ipEvidence_json, "$.ipAddress"),
+    ipEvidence_tags = arraystring(arraymap(ipEvidence_json, json_extract_scalar("@element", "$.tags")), " "),
+    ipEvidence_ipAddress = arraymap(ipEvidence_json, json_extract_scalar("@element", "$.ipAddress")),
 // mailboxEvidence Fields
     mailboxEvidence_tags = json_extract_scalar(mailboxEvidence_json, "$.tags"),
     mailboxEvidence_displayName = json_extract_scalar(mailboxEvidence_json, "$.displayName"),
@@ -107,43 +95,45 @@ urlEvidence_json = if(json_arr1 ~= "urlEvidence", json_arr1, json_arr2 ~= "urlEv
     get_email_timestamp = arraystring(regextract(analyzedMessageEvidence_receivedDateTime, "\d+\/\d+\/\d+ \d+:\d+:\d+ [A-Z]{2}"), ""),
     get_email_zone = replex(arraystring(regextract(analyzedMessageEvidence_receivedDateTime, "[+|-]\d+:\d+"), ""), ":", ""),
     check_ipv4 = if(ipEvidence_ipAddress !~= ":", ipEvidence_ipAddress, null),
-    check_ipv6 = if(ipEvidence_ipAddress ~= ":", ipEvidence_ipAddress, null)
+    check_ipv6 = if(ipEvidence_ipAddress ~= ":", ipEvidence_ipAddress, null),
+    outcome_check = coalesce(fileEvidence_detectionStatus, processEvidence_detectionStatus, to_string(classification))
 | alter
     xdm.observer.unique_identifier = id,
     xdm.event.description = title,
     xdm.event.is_completed = check_resolved,
     xdm.alert.subcategory = category,
-    xdm.event.outcome = if(fileEvidence_detectionStatus = "blocked", XDM_CONST.OUTCOME_SUCCESS, fileEvidence_detectionStatus = "detected", XDM_CONST.OUTCOME_FAILED, fileEvidence_detectionStatus = "prevented", XDM_CONST.OUTCOME_PARTIAL, processEvidence_detectionStatus = "blocked", XDM_CONST.OUTCOME_SUCCESS, processEvidence_detectionStatus = "detected", XDM_CONST.OUTCOME_FAILED, processEvidence_detectionStatus = "prevented", XDM_CONST.OUTCOME_PARTIAL, classification = "falsePositive", XDM_CONST.OUTCOME_SUCCESS, classification = "truePositive", XDM_CONST.OUTCOME_FAILED, classification = "benignPositive", XDM_CONST.OUTCOME_PARTIAL, coalesce(fileEvidence_detectionStatus, processEvidence_detectionStatus, classification) = null, null, to_string(coalesce(fileEvidence_detectionStatus, processEvidence_detectionStatus, classification))),
-    xdm.event.tags = arraycreate(coalesce(alertEvidence_tags, analyzedMessageEvidence_tags, cloudApplicationEvidence_tags, deviceEvidence_tags, fileEvidence_tags, ipEvidence_tags, mailboxEvidence_tags, processEvidence_tags, registryKeyEvidence_tags, registryValueEvidence_tags, urlEvidence_tags)),
-    xdm.alert.severity = coalesce(severity, deviceEvidence_riskScore),
+    xdm.event.outcome = if(fileEvidence_detectionStatus = "blocked", XDM_CONST.OUTCOME_SUCCESS, fileEvidence_detectionStatus = "detected", XDM_CONST.OUTCOME_FAILED, fileEvidence_detectionStatus = "prevented", XDM_CONST.OUTCOME_PARTIAL, processEvidence_detectionStatus = "blocked", XDM_CONST.OUTCOME_SUCCESS, processEvidence_detectionStatus = "detected", XDM_CONST.OUTCOME_FAILED, processEvidence_detectionStatus = "prevented", XDM_CONST.OUTCOME_PARTIAL, classification = "falsePositive", XDM_CONST.OUTCOME_SUCCESS, classification = "truePositive", XDM_CONST.OUTCOME_FAILED, classification = "benignPositive", XDM_CONST.OUTCOME_PARTIAL, outcome_check = null, null, to_string(outcome_check)),
+    xdm.event.tags = arraycreate(alertEvidence_tags, analyzedMessageEvidence_tags, cloudApplicationEvidence_tags, deviceEvidence_tags, fileEvidence_tags, ipEvidence_tags, mailboxEvidence_tags, processEvidence_tags, registryKeyEvidence_tags, registryValueEvidence_tags, urlEvidence_tags),
+    xdm.alert.severity = coalesce(to_string(severity), deviceEvidence_riskScore),
     xdm.source.host.device_id = tenantId,
     xdm.alert.description = description,
     xdm.intermediate.agent.identifier = detectorId,
-    xdm.event.id = coalesce(incidentId, providerAlertId),
-    xdm.intermediate.host.fqdn = coalesce(alertWebUrl, incidentWebUrl),
-    xdm.alert.original_threat_name = coalesce(determination, analyzedMessageEvidence_threats),
+    xdm.event.id = coalesce(to_string(incidentId), to_string(providerAlertId)),
+    xdm.intermediate.host.fqdn = coalesce(to_string(alertWebUrl), to_string(incidentWebUrl)),
+    xdm.alert.original_threat_name = coalesce(to_string(determination), analyzedMessageEvidence_threats),
     xdm.observer.type = serviceSource,
     xdm.intermediate.host.hostname = detectionSource,
     xdm.email.message_id = analyzedMessageEvidence_internetMessageId, 
     xdm.email.delivery_timestamp = parse_timestamp("%m/%d/%Y %H:%M:%S %p %z", arraystring(arraycreate(get_email_timestamp, get_email_zone), " ")),
-    xdm.email.recipients = arraycreate(analyzedMessageEvidence_recipientEmailAddress),
+    xdm.email.recipients = analyzedMessageEvidence_recipientEmailAddress,
     xdm.email.subject = analyzedMessageEvidence_subject,
     xdm.source.application.name = cloudApplicationEvidence_displayName,
     xdm.source.cloud.project = cloudApplicationEvidence_instanceName,
     xdm.source.host.fqdn = deviceEvidence_deviceDnsName,
-    xdm.source.host.os = unified_os_version, 
+    xdm.source.host.os = unified_os_version,
+    xdm.source.agent.identifier = userEvidence_userAccount_azureAdUserId, 
     xdm.source.host.os_family = if(lowercase_os_platform ~= "win|windows", XDM_CONST.OS_FAMILY_WINDOWS, lowercase_os_platform ~= "mac|macos", XDM_CONST.OS_FAMILY_MACOS, lowercase_os_platform ~= "linux", XDM_CONST.OS_FAMILY_LINUX, lowercase_os_platform ~= "android", XDM_CONST.OS_FAMILY_ANDROID, lowercase_os_platform ~= "ios", XDM_CONST.OS_FAMILY_IOS, lowercase_os_platform ~= "ubuntu", XDM_CONST.OS_FAMILY_UBUNTU, lowercase_os_platform ~= "debian", XDM_CONST.OS_FAMILY_DEBIAN, lowercase_os_platform ~= "fedora", XDM_CONST.OS_FAMILY_FEDORA, lowercase_os_platform ~= "centos", XDM_CONST.OS_FAMILY_CENTOS, lowercase_os_platform ~= "chromeos", XDM_CONST.OS_FAMILY_CHROMEOS, lowercase_os_platform ~= "solaris", XDM_CONST.OS_FAMILY_SOLARIS, lowercase_os_platform ~= "scada", XDM_CONST.OS_FAMILY_SCADA),
     xdm.target.file.filename = fileEvidence_fileDetails_fileName,
     xdm.target.file.path = fileEvidence_fileDetails_filePath,
     xdm.target.file.size = to_integer(fileEvidence_fileDetails_fileSize),
     xdm.target.file.sha256 = fileEvidence_fileDetails_sha256,
     xdm.target.file.signer = fileEvidence_fileDetails_signer,
-    xdm.alert.mitre_techniques = arraycreate(mitreTechniques),
-    xdm.source.ipv4 = check_ipv4,
-    xdm.source.ipv6 = check_ipv6,
-    xdm.source.user.username = coalesce(mailboxEvidence_displayName, mailboxEvidence_primaryAddress, mailboxEvidence_userAccount_accountName, mailboxEvidence_userAccount_userPrincipalName, mailboxEvidence_userAccount_domainName, processEvidence_userAccount_accountName, processEvidence_userAccount_userPrincipalName),
-    xdm.source.user.domain = coalesce(mailboxEvidence_userAccount_domainName, processEvidence_userAccount_domainName),
-    xdm.source.user.identifier = coalesce(mailboxEvidence_userAccount_userSid, processEvidence_userAccount_userSid),
+    xdm.alert.mitre_techniques = arraymap(json_extract_array(mitreTechniques, "$"), replex("@element", "\"", "")),
+    xdm.source.host.ipv4_addresses = check_ipv4,
+    xdm.source.host.ipv6_addresses = check_ipv6,
+    xdm.source.user.username = coalesce(mailboxEvidence_displayName, mailboxEvidence_primaryAddress, mailboxEvidence_userAccount_accountName, mailboxEvidence_userAccount_userPrincipalName, processEvidence_userAccount_accountName, processEvidence_userAccount_userPrincipalName, userEvidence_userAccount_accountName, userEvidence_userAccount_userPrincipalName, userEvidence_userAccount_displayName),
+    xdm.source.user.domain = coalesce(mailboxEvidence_userAccount_domainName, processEvidence_userAccount_domainName, userEvidence_userAccount_domainName),
+    xdm.source.user.identifier = coalesce(mailboxEvidence_userAccount_userSid, processEvidence_userAccount_userSid, userEvidence_userAccount_userSid),
     xdm.source.process.executable.filename = processEvidence_imageFile_fileName,
     xdm.source.process.executable.path = processEvidence_imageFile_filePath,
     xdm.source.process.executable.size = to_integer(processEvidence_imageFile_fileSize), 

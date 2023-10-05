@@ -1,0 +1,800 @@
+id: PAN-OS - Add Anti-Spyware Security Profile To Rule - Test
+version: -1
+name: PAN-OS - Add Anti-Spyware Security Profile To Rule - Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 91f140c7-ce33-46aa-8aaa-67ee10b79f9a
+    type: start
+    task:
+      id: 91f140c7-ce33-46aa-8aaa-67ee10b79f9a
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "12"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 60
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 18f09112-091b-4d3a-82f4-e4adc022822f
+    type: playbook
+    task:
+      id: 18f09112-091b-4d3a-82f4-e4adc022822f
+      version: -1
+      name: PAN-OS - Add Anti-Spyware Security Profile To Rule - Safely
+      description: |-
+        This playbook is used to add an Anti-Spyware security profile to a rule in PAN-OS in a safe manner. This means that it first checks if there's already a security profile attached, and if there is - it won't necessarily overwrite it.
+        In addition, it checks if there's a Security Profile Group attached, and if there is, it will try to add the Security Profile to the group safely.
+        In case we are trying to apply a Security Profile that doesn't exist yet - the playbook will create it too.
+      playbookName: PAN-OS - Add Anti-Spyware Security Profile To Rule
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      OverwriteProfileIfExists:
+        simple: "True"
+      RuleName:
+        complex:
+          root: inputs.RuleName
+      SecurityProfileName:
+        complex:
+          root: inputs.SecurityProfileName
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: efc4ae6d-2174-43ee-8fce-dc2c91741e4e
+    type: playbook
+    task:
+      id: efc4ae6d-2174-43ee-8fce-dc2c91741e4e
+      version: -1
+      name: PAN-OS - Add Anti-Spyware Security Profile To Rule
+      description: |-
+        This playbook is used to add an Anti-Spyware security profile to a rule in PAN-OS in a safe manner. It provides granular control over the behavior for cases where a rule already has an Anti-Spyware profile attached, or has a security profile group configured to it with/without an Anti-Spyware profile.
+        The playbook outputs the Anti-Spyware profile configured for the rule at the time the playbook finished. This could be the previous profile if it was not overwritten, or it could be a new one that it was overwritten with.
+      playbookName: PAN-OS - Add Anti-Spyware Security Profile To Rule
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+      - "8"
+    scriptarguments:
+      OverwriteProfileIfExists:
+        simple: "False"
+      RuleName:
+        complex:
+          root: inputs.RuleName
+      SecurityProfileName:
+        complex:
+          root: inputs.SecurityProfileName
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 8ddca218-6722-4e06-8bac-61b46056c7c6
+    type: title
+    task:
+      id: 8ddca218-6722-4e06-8bac-61b46056c7c6
+      version: -1
+      name: New Profile, No Overwrite
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 5de992f2-2553-4cf8-8009-0f1b47912880
+    type: regular
+    task:
+      id: 5de992f2-2553-4cf8-8009-0f1b47912880
+      version: -1
+      name: Get rule information
+      description: Returns a list of predefined Security Rules.
+      script: '|||pan-os-list-rules'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      rulename:
+        complex:
+          root: inputs.RuleName
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 915
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 963a6ec9-a441-4e97-8ffd-a617e41de8ec
+    type: condition
+    task:
+      id: 963a6ec9-a441-4e97-8ffd-a617e41de8ec
+      version: -1
+      name: Was the older profile kept (still applied to rule)?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Panorama.SecurityRule.SecurityProfile.spyware
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: inputs.OldSecurityProfileName
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 07b78754-0ca7-46d4-8ee3-683869668fa3
+    type: regular
+    task:
+      id: 07b78754-0ca7-46d4-8ee3-683869668fa3
+      version: -1
+      name: Error - the profile of the rule has been changed
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: The anti-spyware security profile attached to the rule has changed. Since we did not overwrite it, it should have kept the old profile there. Please verify that the playbook inputs were not changed, and check the logic of the subplaybook for any problems.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 870,
+          "y": 1270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 44beac7b-ad4c-4673-8366-62cbbbddf741
+    type: title
+    task:
+      id: 44beac7b-ad4c-4673-8366-62cbbbddf741
+      version: -1
+      name: Overwrite Profile
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "18"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: d7d833cf-219e-4099-883e-089ec49dce63
+    type: condition
+    task:
+      id: d7d833cf-219e-4099-883e-089ec49dce63
+      version: -1
+      name: Was the older profile outputted?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: AntiSpywareProfileNameApplied
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: inputs.OldSecurityProfileName
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 30,
+          "y": 915
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: daa78f9f-6aa1-4f93-8485-3f85c4948f94
+    type: regular
+    task:
+      id: daa78f9f-6aa1-4f93-8485-3f85c4948f94
+      version: -1
+      name: Error - the right profile was not saved to outputs
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: Something must have changed in the playbook logic, which causes a different output for the applied profile. The output should be the name of the profile that is applied to the rule at the end of the playbook execution. So if we overwrite it with profile A it should output profile A, and if profile B is applied and we don't overwrite with A, it should output profile B.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -450,
+          "y": 1110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 3a2611b3-d94b-4adf-8868-683b3f048eee
+    type: condition
+    task:
+      id: 3a2611b3-d94b-4adf-8868-683b3f048eee
+      version: -1
+      name: Was the output correct?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "11"
+      "yes":
+      - "16"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: AntiSpywareProfileNameApplied
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: inputs.SecurityProfileName
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1925
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 8b1388e2-310a-4cb2-821a-3e1e19dd6173
+    type: regular
+    task:
+      id: 8b1388e2-310a-4cb2-821a-3e1e19dd6173
+      version: -1
+      name: Error - the right profile was not saved to outputs
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: Something must have changed in the playbook logic, which causes a different output for the applied profile. The output should be the name of the profile that is applied to the rule at the end of the playbook execution. So if we overwrite it with profile A it should output profile A, and if profile B is applied and we don't overwrite with A, it should output profile B.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 90,
+          "y": 2100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 977329e0-8726-4a72-85f8-b91a483c91e4
+    type: regular
+    task:
+      id: 977329e0-8726-4a72-85f8-b91a483c91e4
+      version: -1
+      name: Delete context
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 17c7adc1-7623-4692-8d1a-f49ef08f217d
+    type: regular
+    task:
+      id: 17c7adc1-7623-4692-8d1a-f49ef08f217d
+      version: -1
+      name: Ensure some test profile is applied to the rule
+      description: Applies a security profile to specific rules or rules with a specific tag.
+      script: '|||pan-os-apply-security-profile'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      profile_name:
+        complex:
+          root: inputs.OldSecurityProfileName
+      profile_type:
+        simple: spyware
+      rule_name:
+        complex:
+          root: inputs.RuleName
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: b5a9793c-937c-4ce8-8353-fcad1a1e6306
+    type: regular
+    task:
+      id: b5a9793c-937c-4ce8-8353-fcad1a1e6306
+      version: -1
+      name: Error - the profile was not added to the rule
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: The anti-spyware security profile was not added to the rule like it should be. Please verify that the playbook inputs were not changed, and that the rule exists in PAN-OS. If the rule doesn't exist, someone must have deleted it by accident. Create a new rule (doesn't matter what config) and don't attach any security profiles to it. Then change the playbook input to the new name of the rule, and that should fix the test.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 750,
+          "y": 2870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 1198bd56-4fb5-4ce7-8223-f76791f64953
+    type: regular
+    task:
+      id: 1198bd56-4fb5-4ce7-8223-f76791f64953
+      version: -1
+      name: Get rule information
+      description: Returns a list of predefined Security Rules.
+      script: '|||pan-os-list-rules'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      rulename:
+        complex:
+          root: inputs.RuleName
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2275
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: b6636a21-c868-4966-83fb-72e2d037f9cd
+    type: condition
+    task:
+      id: b6636a21-c868-4966-83fb-72e2d037f9cd
+      version: -1
+      name: Was the profile overwritten?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "15"
+      "yes":
+      - "19"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Panorama.SecurityRule.SecurityProfile.spyware
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: inputs.SecurityProfileName
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: bf1f43f9-09b1-4500-8277-083337d206c7
+    type: regular
+    task:
+      id: bf1f43f9-09b1-4500-8277-083337d206c7
+      version: -1
+      name: Delete context
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 188c0235-7095-41eb-8a07-e23c5c21cecc
+    type: title
+    task:
+      id: 188c0235-7095-41eb-8a07-e23c5c21cecc
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3060
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: b97c8851-c104-4fe5-8df4-1ab3eff53d42
+    type: regular
+    task:
+      id: b97c8851-c104-4fe5-8df4-1ab3eff53d42
+      version: -1
+      name: Commit the changes + reverts
+      description: Commits a configuration to the Palo Alto firewall or Panorama, validates if a commit was successful if using polling="true" otherwise does not validate if the commit was successful. Committing to Panorama does not push the configuration to the firewalls. To push the configuration, run the panorama-push-to-device-group command.
+      script: '|||pan-os-commit'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      description:
+        simple: Commit for test
+      polling:
+        simple: "true"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2435
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "5_7_yes": 0.22,
+      "8_7_yes": 0.12
+    },
+    "paper": {
+      "dimensions": {
+        "height": 3065,
+        "width": 1700,
+        "x": -450,
+        "y": 60
+      }
+    }
+  }
+inputs:
+- key: RuleName
+  value:
+    simple: Prince Test Rule For Profile
+  required: false
+  description: The rule must exist in PAN-OS.
+  playbookInputQuery:
+- key: SecurityProfileName
+  value:
+    simple: Prince Test Profile For Rule
+  required: false
+  description: The Anti-Spyware security profile will be created if it doesn't exist.
+  playbookInputQuery:
+- key: OldSecurityProfileName
+  value:
+    simple: Prince Test Older Profile
+  required: false
+  description: This will serve as the "existing" profile for  the rule. It will get replaced during the test.
+  playbookInputQuery:
+outputs: []
+fromversion: 6.9.0
+description: Test playbook for adding an anti spyware profile to a security rule in PAN-OS.

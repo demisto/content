@@ -11,8 +11,15 @@ This script uses the [Rasterize](https://xsoar.pan.dev/docs/reference/integratio
 | **Name** | **Description** |
 | --- | --- |
 | Script Type | python3 |
-| Tags |  |
+| Tags | ml |
 | Cortex XSOAR Version | 6.0.0 |
+
+## Used In
+
+---
+This script is used in the following playbooks and scripts.
+
+Phishing - Machine Learning Analysis
 
 ## Inputs
 ---
@@ -26,6 +33,7 @@ This script uses the [Rasterize](https://xsoar.pan.dev/docs/reference/integratio
 | forceModel | Whether to force the model to run if the URL belongs to the whitelist. If True, the model will run in every case. If False, the model will run only if the URL does not belong to the whitelist. |
 | resetModel | Whether to reset the model to the model existing in Docker. |
 | debug | Whether to enter debug mode. |
+| reliability | Reliability of the source providing the intelligence data. |
 
 ## Outputs
 ---

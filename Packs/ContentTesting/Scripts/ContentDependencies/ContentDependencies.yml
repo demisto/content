@@ -1,0 +1,36 @@
+args:
+- default: true
+  defaultValue: markdown
+  description: '"markdown" or "csv"'
+  name: format
+- description: File name for CSV data
+  name: filename
+- description: 'Playbook search query to limit scope. For example:   "name:Cortex*" to limit scope playbook names starting with "Cortex"'
+  name: query
+- description: Incident field to update markdown for display or blank to return results to war room
+  name: fieldname
+comment: |-
+  Searches a set of playbooks, or all playbooks if no playbook query is provided, and identifies all dependencies between playbooks and automations and outputs either CSV or markdown.  WARNING: Should be run on DEV since it may consume 100% CPU for 10 or more minutes if all playbooks are searched.
+
+  This automation should be run in dev environments. It will consume 100% CPU for 10 minutes or more - depending on the amount of playbook and automation content.  It is set to timeout at 15 minutes in Advanced settings. This may need to be increased if content amount is large.  It only parses python scripts to see if additional automations/commands are invoked via demisto.executeCommand or execute_command. Javascript automations are not parsed.  Command names passed in a variable to demisto.executeCommand or execute_command are not reported.  If a python automation fails to parse, an error is reported in the war room: any automations it calls are not reported.
+  Integration commands and builtins are not parsed
+commonfields:
+  id: ContentDependencies
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+dockerimage: demisto/python3:3.10.13.72123
+enabled: true
+name: ContentDependencies
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+timeout: 2.4µs
+type: python
+fromversion: 6.8.0
+tests:
+- No tests (auto formatted)

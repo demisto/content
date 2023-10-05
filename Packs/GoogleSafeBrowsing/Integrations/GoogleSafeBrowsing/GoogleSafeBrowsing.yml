@@ -84,6 +84,5 @@ script:
       description: Reliability of the source providing the intelligence data.
       type: String
     description: Check URL Reputation
-hidden: false
 system: true
 fromversion: 5.0.0

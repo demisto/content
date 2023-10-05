@@ -1,0 +1,11 @@
+{
+    "HumanReadable": "### Created List Properties\n|Title|ID|Description|Type|\n|---|---|---|---|\n| blocklist | com.scur.type.regex.460 |  | regex |\n",
+    "EntryContext": {
+        "SWG.List(val.ID && val.ID == obj.ID)": {
+            "Description": "",
+            "ID": "com.scur.type.regex.460",
+            "Title": "blocklist",
+            "Type": "regex"
+        }
+    }
+}

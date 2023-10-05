@@ -8,14 +8,14 @@ commonfields:
 configuration:
 - display: Role Arn
   name: roleArn
-  required: false
   type: 0
   section: Connect
+  required: false
 - display: Role Session Name
   name: roleSessionName
-  required: false
   type: 0
   section: Connect
+  required: false
 - display: AWS Default Region
   name: defaultRegion
   options:
@@ -37,161 +37,112 @@ configuration:
   - eu-west-3
   - us-gov-east-1
   - us-gov-west-1
-  required: false
   type: 15
   section: Connect
   advanced: true
+  required: false
 - display: Role Session Duration
   name: sessionDuration
-  required: false
   type: 0
   section: Connect
   advanced: true
+  required: false
 - display: Access Key
   name: credentials
-  required: false
   type: 9
   displaypassword: Secret Key
   section: Connect
+  required: false
 - display: Access Key
   name: access_key
-  required: false
   type: 0
   hidden: true
   section: Connect
+  required: false
 - display: Secret Key
   name: secret_key
-  required: false
   type: 4
   hidden: true
   section: Connect
+  required: false
 - display: Timeout
   name: timeout
   additionalinfo: The time in seconds till a timeout exception is reached. You can specify just the read timeout (for example 60) or also the connect timeout followed after a comma (for example 60,10). If a connect timeout is not specified, a default of 10 second will be used.
   defaultvalue: 60,10
-  required: false
   type: 0
   section: Connect
   advanced: true
+  required: false
 - display: Retries
   name: retries
   defaultvalue: 5
   additionalinfo: "The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time."
-  required: false
   type: 0
   section: Connect
   advanced: true
+  required: false
 - display: PrivateLink service URL.
   name: endpoint_url
-  required: false
   type: 0
   section: Connect
   advanced: true
+  required: false
 - display: STS PrivateLink URL.
   name: sts_endpoint_url
-  required: false
   type: 0
   section: Connect
   advanced: true
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
   section: Connect
   advanced: true
+  required: false
 description: Amazon Web Services Simple Storage Service (S3)
 display: AWS - S3
 name: AWS - S3
 script:
   commands:
   - arguments:
-    - default: false
-      description: The name of S3 bucket to create (in lowercase).
-      isArray: false
+    - description: The name of S3 bucket to create (in lowercase).
       name: bucket
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: ACL for S3 bucket.
-      isArray: false
       name: acl
       predefined:
       - private
       - public-read
       - public-read-write
       - authenticated-read
-      required: false
-      secret: false
-    - default: false
-      description: Specifies the region where the bucket will be created. If you don't specify a region, the bucket will be created in US Standard.
-      isArray: false
+    - description: Specifies the region where the bucket will be created. If you don't specify a region, the bucket will be created in US Standard.
       name: locationConstraint
-      required: false
-      secret: false
-    - default: false
-      description: Allows grantee the read, write, read ACP, and write ACP permissions on the bucket.
-      isArray: false
+    - description: Allows grantee the read, write, read ACP, and write ACP permissions on the bucket.
       name: grantFullControl
-      required: false
-      secret: false
-    - default: false
-      description: Allows grantee to list the objects in the bucket.
-      isArray: false
+    - description: Allows grantee to list the objects in the bucket.
       name: grantRead
-      required: false
-      secret: false
-    - default: false
-      description: Allows grantee to read the bucket ACL.
-      isArray: false
+    - description: Allows grantee to read the bucket ACL.
       name: grantReadACP
-      required: false
-      secret: false
-    - default: false
-      description: Allows grantee to create, overwrite, and delete any object in the bucket.
-      isArray: false
+    - description: Allows grantee to create, overwrite, and delete any object in the bucket.
       name: grantWrite
-      required: false
-      secret: false
-    - default: false
-      description: Allows grantee to write the ACL for the applicable bucket.
-      isArray: false
+    - description: Allows grantee to write the ACL for the applicable bucket.
       name: grantWriteACP
-      required: false
-      secret: false
-    - default: false
-      description: The AWS Region, if not specified the default region will be used.
-      isArray: false
+    - description: The AWS Region, if not specified the default region will be used.
       name: region
-      required: false
-      secret: false
-    - default: false
-      description: The Amazon Resource Name (ARN) of the role to assume.
-      isArray: false
+    - description: The Amazon Resource Name (ARN) of the role to assume.
       name: roleArn
-      required: false
-      secret: false
-    - default: false
-      description: An identifier for the assumed role session.
-      isArray: false
+    - description: An identifier for the assumed role session.
       name: roleSessionName
-      required: false
-      secret: false
-    - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
-      isArray: false
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       name: roleSessionDuration
-      required: false
-      secret: false
-    deprecated: false
     description: Create AWS S3 bucket.
-    execution: false
     name: aws-s3-create-bucket
     outputs:
     - contextPath: AWS.S3.Buckets.BucketName
@@ -201,68 +152,29 @@ script:
       description: The AWS Region the bucket was created.
       type: string
   - arguments:
-    - default: false
-      description: Name of S3 bucket to delete.
-      isArray: false
+    - description: Name of S3 bucket to delete.
       name: bucket
       required: true
-      secret: false
-    - default: false
-      description: The AWS Region, if not specified the default region will be used.
-      isArray: false
+    - description: The AWS Region, if not specified the default region will be used.
       name: region
-      required: false
-      secret: false
-    - default: false
-      description: The Amazon Resource Name (ARN) of the role to assume.
-      isArray: false
+    - description: The Amazon Resource Name (ARN) of the role to assume.
       name: roleArn
-      required: false
-      secret: false
-    - default: false
-      description: An identifier for the assumed role session.
-      isArray: false
+    - description: An identifier for the assumed role session.
       name: roleSessionName
-      required: false
-      secret: false
-    - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
-      isArray: false
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       name: roleSessionDuration
-      required: false
-      secret: false
-    deprecated: false
     description: Delete AWS S3 bucket.
-    execution: false
     name: aws-s3-delete-bucket
   - arguments:
-    - default: false
-      description: The AWS Region, if not specified the default region will be used.
-      isArray: false
+    - description: The AWS Region, if not specified the default region will be used.
       name: region
-      required: false
-      secret: false
-    - default: false
-      description: The Amazon Resource Name (ARN) of the role to assume.
-      isArray: false
+    - description: The Amazon Resource Name (ARN) of the role to assume.
       name: roleArn
-      required: false
-      secret: false
-    - default: false
-      description: An identifier for the assumed role session.
-      isArray: false
+    - description: An identifier for the assumed role session.
       name: roleSessionName
-      required: false
-      secret: false
-    - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
-      isArray: false
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       name: roleSessionDuration
-      required: false
-      secret: false
-    deprecated: false
     description: List all S3 buckets in AWS account
-    execution: false
     name: aws-s3-list-buckets
     outputs:
     - contextPath: AWS.S3.Buckets.BucketName
@@ -272,39 +184,18 @@ script:
       description: Date the bucket was created.
       type: date
   - arguments:
-    - default: false
-      description: Name of bucket.
-      isArray: false
+    - description: Name of bucket.
       name: bucket
       required: true
-      secret: false
-    - default: false
-      description: The AWS Region, if not specified the default region will be used.
-      isArray: false
+    - description: The AWS Region, if not specified the default region will be used.
       name: region
-      required: false
-      secret: false
-    - default: false
-      description: The Amazon Resource Name (ARN) of the role to assume.
-      isArray: false
+    - description: The Amazon Resource Name (ARN) of the role to assume.
       name: roleArn
-      required: false
-      secret: false
-    - default: false
-      description: An identifier for the assumed role session.
-      isArray: false
+    - description: An identifier for the assumed role session.
       name: roleSessionName
-      required: false
-      secret: false
-    - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
-      isArray: false
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       name: roleSessionDuration
-      required: false
-      secret: false
-    deprecated: false
     description: Get AWS S3 Bucket Policy
-    execution: false
     name: aws-s3-get-bucket-policy
     outputs:
     - contextPath: AWS.S3.Buckets.Policy.Version
@@ -335,127 +226,51 @@ script:
       description: S3 Bucket Name.
       type: string
   - arguments:
-    - default: false
-      description: Name of S3 bucket.
-      isArray: false
+    - description: Name of S3 bucket.
       name: bucket
       required: true
-      secret: false
-    - default: false
-      description: The AWS Region, if not specified the default region will be used.
-      isArray: false
+    - description: The AWS Region, if not specified the default region will be used.
       name: region
-      required: false
-      secret: false
-    - default: false
-      description: The Amazon Resource Name (ARN) of the role to assume.
-      isArray: false
+    - description: The Amazon Resource Name (ARN) of the role to assume.
       name: roleArn
-      required: false
-      secret: false
-    - default: false
-      description: An identifier for the assumed role session.
-      isArray: false
+    - description: An identifier for the assumed role session.
       name: roleSessionName
-      required: false
-      secret: false
-    - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
-      isArray: false
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       name: roleSessionDuration
-      required: false
-      secret: false
-    deprecated: false
     description: Deletes the policy from the bucket.
-    execution: false
     name: aws-s3-delete-bucket-policy
   - arguments:
-    - default: false
-      description: The name of S3 bucket.
-      isArray: false
+    - description: The name of S3 bucket.
       name: bucket
-      required: false
-      secret: false
-    - default: false
-      description: The S3 object key to download.
-      isArray: false
+    - description: The S3 object key to download.
       name: key
-      required: false
-      secret: false
-    - default: false
-      description: The AWS Region, if not specified the default region will be used.
-      isArray: false
+    - description: The AWS Region, if not specified the default region will be used.
       name: region
-      required: false
-      secret: false
-    - default: false
-      description: The Amazon Resource Name (ARN) of the role to assume.
-      isArray: false
+    - description: The Amazon Resource Name (ARN) of the role to assume.
       name: roleArn
-      required: false
-      secret: false
-    - default: false
-      description: An identifier for the assumed role session.
-      isArray: false
+    - description: An identifier for the assumed role session.
       name: roleSessionName
-      required: false
-      secret: false
-    - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
-      isArray: false
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       name: roleSessionDuration
-      required: false
-      secret: false
-    deprecated: false
     description: Download a file from S3 bucket to war room.
-    execution: false
     name: aws-s3-download-file
   - arguments:
-    - default: false
-      description: The name of S3 bucket.
-      isArray: false
+    - description: The name of S3 bucket.
       name: bucket
       required: true
-      secret: false
-    - default: false
-      description: A delimiter is a character you use to group keys.
-      isArray: false
+    - description: A delimiter is a character you use to group keys.
       name: delimiter
-      required: false
-      secret: false
-    - default: false
-      description: Limits the response to keys that begin with the specified prefix.
-      isArray: false
+    - description: Limits the response to keys that begin with the specified prefix.
       name: prefix
-      required: false
-      secret: false
-    - default: false
-      description: The AWS Region, if not specified the default region will be used.
-      isArray: false
+    - description: The AWS Region, if not specified the default region will be used.
       name: region
-      required: false
-      secret: false
-    - default: false
-      description: The Amazon Resource Name (ARN) of the role to assume.
-      isArray: false
+    - description: The Amazon Resource Name (ARN) of the role to assume.
       name: roleArn
-      required: false
-      secret: false
-    - default: false
-      description: An identifier for the assumed role session.
-      isArray: false
+    - description: An identifier for the assumed role session.
       name: roleSessionName
-      required: false
-      secret: false
-    - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
-      isArray: false
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       name: roleSessionDuration
-      required: false
-      secret: false
-    deprecated: false
     description: List object in S3 bucket.
-    execution: false
     name: aws-s3-list-bucket-objects
     outputs:
     - contextPath: AWS.S3.Buckets.Objects.Key
@@ -468,55 +283,27 @@ script:
       description: Last date object was modified.
       type: Unknown
   - arguments:
-    - default: false
-      description: Name of S3 bucket.
-      isArray: false
+    - description: Name of S3 bucket.
       name: bucket
       required: true
-      secret: false
-    - default: false
-      description: The bucket policy to apply in json format.
-      isArray: false
+    - description: The bucket policy to apply in json format.
       name: policy
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Set this parameter to true to confirm that you want to remove your permissions to change this bucket policy in the future.
-      isArray: false
       name: confirmRemoveSelfBucketAccess
       predefined:
       - 'True'
       - 'False'
-      required: false
-      secret: false
-    - default: false
-      description: The AWS Region, if not specified the default region will be used.
-      isArray: false
+    - description: The AWS Region, if not specified the default region will be used.
       name: region
-      required: false
-      secret: false
-    - default: false
-      description: The Amazon Resource Name (ARN) of the role to assume.
-      isArray: false
+    - description: The Amazon Resource Name (ARN) of the role to assume.
       name: roleArn
-      required: false
-      secret: false
-    - default: false
-      description: An identifier for the assumed role session.
-      isArray: false
+    - description: An identifier for the assumed role session.
       name: roleSessionName
-      required: false
-      secret: false
-    - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
-      isArray: false
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       name: roleSessionDuration
-      required: false
-      secret: false
-    deprecated: false
     description: Replaces a policy on a bucket. If the bucket already has a policy, the one in this request completely replaces it.
-    execution: false
     name: aws-s3-put-bucket-policy
   - arguments:
     - description: The name of the bucket from which the server-side encryption configuration is retrieved.
@@ -545,62 +332,30 @@ script:
       description: S3 Bucket Encryption Key Enabled.
       type: boolean
   - arguments:
-    - default: false
-      description: Entry ID of the file to upload
-      isArray: false
+    - description: Entry ID of the file to upload
       name: entryID
       required: true
-      secret: false
-    - default: false
-      description: The name of the bucket to upload to
-      isArray: false
+    - description: The name of the bucket to upload to
       name: bucket
       required: true
-      secret: false
-    - default: false
-      description: The name of the key to upload to
-      isArray: false
+    - description: The name of the key to upload to
       name: key
       required: true
-      secret: false
-    - default: false
-      description: The AWS Region, if not specified the default region will be used.
-      isArray: false
+    - description: The AWS Region, if not specified the default region will be used.
       name: region
-      required: false
-      secret: false
-    - default: false
-      description: The Amazon Resource Name (ARN) of the role to assume.
-      isArray: false
+    - description: The Amazon Resource Name (ARN) of the role to assume.
       name: roleArn
-      required: false
-      secret: false
-    - default: false
-      description: An identifier for the assumed role session.
-      isArray: false
+    - description: An identifier for the assumed role session.
       name: roleSessionName
-      required: false
-      secret: false
-    - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
-      isArray: false
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       name: roleSessionDuration
-      required: false
-      secret: false
-    deprecated: false
     description: Upload file to S3 bucket
-    execution: false
     name: aws-s3-upload-file
   - arguments:
-    - default: false
-      description: The name of the Amazon S3 bucket whose PublicAccessBlock configuration you want to retrieve.
-      isArray: false
+    - description: The name of the Amazon S3 bucket whose PublicAccessBlock configuration you want to retrieve.
       name: bucket
       required: true
-      secret: false
-    deprecated: false
     description: Retrieves the PublicAccessBlock configuration for an Amazon S3 bucket.
-    execution: false
     name: aws-s3-get-public-access-block
     outputs:
     - contextPath: AWS.S3.Buckets.BucketName.PublicAccessBlockConfiguration.BlockPublicAcls
@@ -616,42 +371,24 @@ script:
       description: Specifies whether Amazon S3 should restrict public bucket policies for this bucket.
       type: Boolean
   - arguments:
-    - default: false
-      description: The name of the Amazon S3 bucket whose PublicAccessBlock configuration you want to retrieve.
-      isArray: false
+    - description: The name of the Amazon S3 bucket whose PublicAccessBlock configuration you want to retrieve.
       name: bucket
       required: true
-      secret: false
-    - default: false
-      description: Specifies whether Amazon S3 should block public access control lists (ACLs) for this bucket and objects in this bucket.
-      isArray: false
+    - description: Specifies whether Amazon S3 should block public access control lists (ACLs) for this bucket and objects in this bucket.
       name: BlockPublicAcls
       required: true
-      secret: false
-    - default: false
-      description: Specifies whether Amazon S3 should ignore public ACLs for this bucket and objects in this bucket.
-      isArray: false
+    - description: Specifies whether Amazon S3 should ignore public ACLs for this bucket and objects in this bucket.
       name: IgnorePublicAcls
       required: true
-      secret: false
-    - default: false
-      description: Specifies whether Amazon S3 should block public bucket policies for this bucket.
-      isArray: false
+    - description: Specifies whether Amazon S3 should block public bucket policies for this bucket.
       name: BlockPublicPolicy
       required: true
-      secret: false
-    - default: false
-      description: Specifies whether Amazon S3 should restrict public bucket policies for this bucket.
-      isArray: false
+    - description: Specifies whether Amazon S3 should restrict public bucket policies for this bucket.
       name: RestrictPublicBuckets
       required: true
-      secret: false
-    deprecated: false
     description: Creates or modifies the PublicAccessBlock configuration for an Amazon S3 bucket.
-    execution: false
     name: aws-s3-put-public-access-block
   dockerimage: demisto/boto3py3:1.0.0.52713
-  isfetch: false
   runonce: false
   script: ''
   type: python

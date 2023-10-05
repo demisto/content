@@ -169,8 +169,8 @@ def main() -> None:  # pragma: no cover
         elif command == 'fetch-events':
             should_push_events = True
         if should_push_events:
-            demisto.setLastRun(get_events.get_last_run(events, audit, last_run))  # type: ignore
             send_events_to_xsiam(events + audit, vendor=VENDOR, product=PRODUCT)
+            demisto.setLastRun(get_events.get_last_run(events, audit, last_run))  # type: ignore
 
     except Exception as exc:
         return_error(f'Failed to execute {command} command.\nError:\n{str(exc)}', error=exc)

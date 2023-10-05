@@ -1,7 +1,7 @@
-"""Script which closes the existing XSOAR incident whose respective Securonix incident is closed."""
-
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+"""Script which closes the existing XSOAR incident whose respective Securonix incident is closed."""
+
 import json
 import traceback
 from datetime import datetime

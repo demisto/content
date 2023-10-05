@@ -2,9 +2,10 @@ commonfields:
   id: McAfee Web Gateway
   version: -1
 name: McAfee Web Gateway
-display: McAfee Web Gateway
+deprecated: true
+display: McAfee Web Gateway (Deprecated)
 category: IT Services
-description: Block list/Allow list handling
+description: Deprecated. Use Skyhigh Secure Web Gateway (On Prem) instead.
 configuration:
 - display: Server URL (e.g. https://192.168.100.55)
   name: url
@@ -117,7 +118,6 @@ script:
       required: true
       description: Entry Position in table
     description: Delete an entry from a list
-  runonce: false
 tests:
 - McAfeeWebGatewayTest
 fromversion: 5.0.0

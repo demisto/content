@@ -1,0 +1,14 @@
+{
+    "error": {
+        "name": "Invalid Request",
+        "message": "Invalid request, please see the details",
+        "details": {
+            "errors": [
+                {
+                    "message": "IOC value should be one of: IpAddresses, Urls, Domains, Hashes, Emails",
+                    "path": "/0/iocValue"
+                }
+            ]
+        }
+    }
+}

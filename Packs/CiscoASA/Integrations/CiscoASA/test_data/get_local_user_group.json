@@ -1,0 +1,18 @@
+{
+    "kind": "object#LocalUserObjGroup",
+    "selfLink": "selfLink",
+    "name": "TEST_GROUP",
+    "members": [
+        {
+            "kind": "objectRef#UserObj",
+            "refLink": "members[0]_refLink",
+            "objectId": "Pikachu_I_Choose_You!"
+        },
+        {
+            "kind": "objectRef#UserObj",
+            "refLink": "members[1]_refLink",
+            "objectId": "Use_thunderbolt!"
+        }
+    ],
+    "objectId": "TEST_GROUP"
+}

@@ -1,0 +1,428 @@
+{
+    "description": "Incoming Mapper for Dataminr Pulse.",
+    "feed": false,
+    "id": "Dataminr Pulse - Incoming Mapper",
+    "mapping": {
+        "Dataminr Pulse Alert": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Alert ID": {
+                    "complex": {
+                        "filters": [],
+                        "root": "alertId",
+                        "transformers": []
+                    }
+                },
+                "Alert Name": {
+                    "complex": {
+                        "filters": [],
+                        "root": "caption",
+                        "transformers": []
+                    }
+                },
+                "Alert Type ID": {
+                    "complex": {
+                        "accessor": "id",
+                        "filters": [],
+                        "root": "alertType",
+                        "transformers": []
+                    }
+                },
+                "Dataminr Pulse Alert Type Color": {
+                    "complex": {
+                        "accessor": "color",
+                        "filters": [],
+                        "root": "alertType",
+                        "transformers": []
+                    }
+                },
+                "Dataminr Pulse Alert Type": {
+                    "complex": {
+                        "accessor": "name",
+                        "filters": [],
+                        "root": "alertType",
+                        "transformers": []
+                    }
+                },
+                "Dataminr Pulse Available Related Alerts": {
+                    "complex": {
+                        "filters": [],
+                        "root": "availableRelatedAlerts",
+                        "transformers": []
+                    }
+                },
+                "Dataminr Pulse Categories": {
+                    "complex": {
+                        "filters": [],
+                        "root": "categories",
+                        "transformers": []
+                    }
+                },
+                "Dataminr Pulse Companies": {
+                    "complex": {
+                        "filters": [],
+                        "root": "companies",
+                        "transformers": []
+                    }
+                },
+                "Dataminr Pulse Event Location Coordinates": {
+                    "complex": {
+                        "accessor": "coordinates",
+                        "filters": [],
+                        "root": "eventLocation",
+                        "transformers": []
+                    }
+                },
+                "Dataminr Pulse Event Location Name": {
+                    "complex": {
+                        "accessor": "name",
+                        "filters": [],
+                        "root": "eventLocation",
+                        "transformers": []
+                    }
+                },
+                "Dataminr Pulse Event Location Places": {
+                    "complex": {
+                        "accessor": "places",
+                        "filters": [],
+                        "root": "eventLocation",
+                        "transformers": []
+                    }
+                },
+                "Dataminr Pulse Event Location Radius": {
+                    "complex": {
+                        "accessor": "radius",
+                        "filters": [],
+                        "root": "eventLocation",
+                        "transformers": []
+                    }
+                },
+                "Dataminr Pulse Event Map Large URL": {
+                    "complex": {
+                        "filters": [],
+                        "root": "eventMapLargeURL",
+                        "transformers": []
+                    }
+                },
+                "Dataminr Pulse Event Map Small URL": {
+                    "complex": {
+                        "filters": [],
+                        "root": "eventMapSmallURL",
+                        "transformers": []
+                    }
+                },
+                "Dataminr Pulse Event Time": {
+                    "complex": {
+                        "filters": [],
+                        "root": "eventTime",
+                        "transformers": [
+                            {
+                                "operator": "TimeStampToDate"
+                            }
+                        ]
+                    }
+                },
+                "Dataminr Pulse Event Volume": {
+                    "complex": {
+                        "filters": [],
+                        "root": "eventVolume",
+                        "transformers": []
+                    }
+                },
+                "Dataminr Pulse Expand Alert URL": {
+                    "complex": {
+                        "filters": [],
+                        "root": "expandAlertURL",
+                        "transformers": []
+                    }
+                },
+                "Dataminr Pulse Expand Map URL": {
+                    "complex": {
+                        "filters": [],
+                        "root": "expandMapURL",
+                        "transformers": []
+                    }
+                },
+                "Dataminr Pulse Header Color": {
+                    "complex": {
+                        "filters": [],
+                        "root": "headerColor",
+                        "transformers": []
+                    }
+                },
+                "Dataminr Pulse Header Label": {
+                    "complex": {
+                        "filters": [],
+                        "root": "headerLabel",
+                        "transformers": []
+                    }
+                },
+                "Dataminr Pulse Metadata Cyber Addresses": {
+                    "complex": {
+                        "accessor": "addresses",
+                        "filters": [],
+                        "root": "metadata.cyber",
+                        "transformers": []
+                    }
+                },
+                "Dataminr Pulse Metadata Cyber AS Orgs": {
+                    "complex": {
+                        "accessor": "asOrgs",
+                        "filters": [],
+                        "root": "metadata.cyber",
+                        "transformers": []
+                    }
+                },
+                "Dataminr Pulse Metadata Cyber Hash Values": {
+                    "complex": {
+                        "accessor": "hashValues",
+                        "filters": [],
+                        "root": "metadata.cyber",
+                        "transformers": []
+                    }
+                },
+                "Dataminr Pulse Metadata Cyber Asns": {
+                    "complex": {
+                        "accessor": "asns",
+                        "filters": [],
+                        "root": "metadata.cyber",
+                        "transformers": []
+                    }
+                },
+                "Dataminr Pulse Metadata Cyber Hashes": {
+                    "complex": {
+                        "accessor": "hashes",
+                        "filters": [],
+                        "root": "metadata.cyber",
+                        "transformers": []
+                    }
+                },
+                "Dataminr Pulse Metadata Cyber Malwares": {
+                    "complex": {
+                        "accessor": "malwares",
+                        "filters": [],
+                        "root": "metadata.cyber",
+                        "transformers": []
+                    }
+                },
+                "Dataminr Pulse Metadata Cyber Orgs": {
+                    "complex": {
+                        "accessor": "orgs",
+                        "filters": [],
+                        "root": "metadata.cyber",
+                        "transformers": []
+                    }
+                },
+                "Dataminr Pulse Metadata Cyber Threats": {
+                    "complex": {
+                        "accessor": "threats",
+                        "filters": [],
+                        "root": "metadata.cyber",
+                        "transformers": []
+                    }
+                },
+                "Dataminr Pulse Metadata Cyber URLs": {
+                    "complex": {
+                        "accessor": "URLs",
+                        "filters": [],
+                        "root": "metadata.cyber",
+                        "transformers": []
+                    }
+                },
+                "Dataminr Pulse Metadata Cyber Vulnerabilities": {
+                    "complex": {
+                        "accessor": "vulnerabilities",
+                        "filters": [],
+                        "root": "metadata.cyber",
+                        "transformers": []
+                    }
+                },
+                "Dataminr Pulse Parent Alert ID": {
+                    "complex": {
+                        "filters": [],
+                        "root": "parentAlertId",
+                        "transformers": []
+                    }
+                },
+                "Dataminr Pulse Post Languages": {
+                    "complex": {
+                        "accessor": "languages",
+                        "filters": [],
+                        "root": "post",
+                        "transformers": []
+                    }
+                },
+                "Dataminr Pulse Post Link": {
+                    "complex": {
+                        "accessor": "link",
+                        "filters": [],
+                        "root": "post",
+                        "transformers": []
+                    }
+                },
+                "Dataminr Pulse Post Media": {
+                    "complex": {
+                        "accessor": "media",
+                        "filters": [],
+                        "root": "post",
+                        "transformers": []
+                    }
+                },
+                "Dataminr Pulse Post Timestamp": {
+                    "complex": {
+                        "accessor": "timestamp",
+                        "filters": [],
+                        "root": "post",
+                        "transformers": [
+							{
+								"operator": "TimeStampToDate"
+							}
+						]
+                    }
+                },
+                "Dataminr Pulse Publisher Category Color": {
+                    "complex": {
+                        "accessor": "color",
+                        "filters": [],
+                        "root": "publisherCategory",
+                        "transformers": []
+                    }
+                },
+                "Dataminr Pulse Publisher Category ID": {
+                    "complex": {
+                        "accessor": "id",
+                        "filters": [],
+                        "root": "publisherCategory",
+                        "transformers": []
+                    }
+                },
+                "Dataminr Pulse Publisher Category Name": {
+                    "complex": {
+                        "accessor": "name",
+                        "filters": [],
+                        "root": "publisherCategory",
+                        "transformers": []
+                    }
+                },
+                "Dataminr Pulse Publisher Category Short Name": {
+                    "complex": {
+                        "accessor": "shortName",
+                        "filters": [],
+                        "root": "publisherCategory",
+                        "transformers": []
+                    }
+                },
+                "Dataminr Pulse Related Terms": {
+                    "complex": {
+                        "filters": [],
+                        "root": "relatedTerms",
+                        "transformers": []
+                    }
+                },
+                "Dataminr Pulse Related Terms Query URL": {
+                    "complex": {
+                        "filters": [],
+                        "root": "relatedTermsQueryURL",
+                        "transformers": []
+                    }
+                },
+                "Dataminr Pulse Sectors": {
+                    "complex": {
+                        "filters": [],
+                        "root": "sectors",
+                        "transformers": []
+                    }
+                },
+                "Dataminr Pulse Source Channels": {
+                    "complex": {
+                        "accessor": "channels",
+                        "filters": [],
+                        "root": "source",
+                        "transformers": []
+                    }
+                },
+                "Dataminr Pulse Source Display Name": {
+                    "complex": {
+                        "accessor": "displayName",
+                        "filters": [],
+                        "root": "source",
+                        "transformers": []
+                    }
+                },
+                "Dataminr Pulse Source Entity Name": {
+                    "complex": {
+                        "accessor": "entityName",
+                        "filters": [],
+                        "root": "source",
+                        "transformers": []
+                    }
+                },
+                "Dataminr Pulse Source Verified": {
+                    "complex": {
+                        "accessor": "verified",
+                        "filters": [],
+                        "root": "source",
+                        "transformers": []
+                    }
+                },
+                "Dataminr Pulse Sub Caption Bullets Media": {
+                    "complex": {
+                        "accessor": "media",
+                        "filters": [],
+                        "root": "subCaption.bullets",
+                        "transformers": []
+                    }
+                },
+                "Dataminr Pulse Sub Caption Bullets Source": {
+                    "complex": {
+                        "accessor": "source",
+                        "filters": [],
+                        "root": "subCaption.bullets",
+                        "transformers": []
+                    }
+                },
+                "Dataminr Pulse Sub Caption Bullets content": {
+                    "complex": {
+                        "accessor": "content",
+                        "filters": [],
+                        "root": "subCaption.bullets",
+                        "transformers": []
+                    }
+                },
+                "Dataminr Pulse User Recent Images": {
+                    "complex": {
+                        "filters": [],
+                        "root": "userRecentImages",
+                        "transformers": []
+                    }
+                },
+                "Dataminr Pulse User Top Hashtags": {
+                    "complex": {
+                        "filters": [],
+                        "root": "userTopHashtags",
+                        "transformers": []
+                    }
+                },
+                "Dataminr Pulse Watchlists Matched By Type": {
+                    "complex": {
+                        "filters": [],
+                        "root": "watchlistsMatchedByType",
+                        "transformers": []
+                    }
+                }
+            }
+        },
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Alert ID": {
+                    "simple": "alertId"
+                }
+            }
+        }
+    },
+    "name": "Dataminr Pulse - Incoming Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.5.0"
+}

@@ -4,6 +4,7 @@ import urllib3
 from typing import Any
 from datetime import datetime, timezone, timedelta
 from dateutil import relativedelta
+from ZoomApiModule import *
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -16,14 +17,7 @@ RESPONSE_TIME_DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 VENDOR = 'Zoom'
 PRODUCT = 'Zoom'
 
-OAUTH_TOKEN_GENERATOR_URL = 'https://zoom.us/oauth/token'
-# The token’s time to live is 1 hour,
-# two minutes were subtract for extra safety.
-TOKEN_LIFE_TIME = timedelta(minutes=58)
 
-INVALID_CREDENTIALS = 'Invalid credentials. Verify that your credentials are valid.'
-INVALID_API_SECRET = 'Invalid API Secret. Verify that your API Secret is valid.'
-INVALID_ID_OR_SECRET = 'Invalid Client ID or Client Secret. Verify that your ID and Secret are valid.'
 EXTRA_PARAMS = """Too many fields were filled. You should fill the Account ID, Client ID, and Client Secret fields (
 OAuth)"""
 INVALID_FIRST_FETCH_TIME = "The First fetch time should fall within the last six months."
@@ -31,106 +25,11 @@ INVALID_FIRST_FETCH_TIME = "The First fetch time should fall within the last six
 LOG_TYPES = {"operationlogs": "operation_logs", "activities": "activity_logs"}
 EVENT_TYPE = {"operationlogs": "operation_log", "activities": "activity_log"}
 
-# maximum records that the api can return in one request
-MAX_RECORDS_PER_PAGE = 300
-
 ''' CLIENT CLASS '''
 
 
-class Client(BaseClient):  # pragma: no cover # based on Zoom pack
+class Client(Zoom_Client):
     """ A client class that implements logic to authenticate with Zoom application. """
-
-    def __init__(
-            self,
-            base_url: str,
-            account_id: str | None = None,
-            client_id: str | None = None,
-            client_secret: str | None = None,
-            verify=True,
-            proxy=False,
-    ):
-        super().__init__(base_url, verify, proxy)
-        self.account_id = account_id
-        self.client_id = client_id
-        self.client_secret = client_secret
-        # use the OAUTH authentication method.
-        try:
-            self.access_token = self.get_oauth_token()
-        except Exception as e:
-            demisto.debug(f"Cannot get access token. Error: {e}")
-            self.access_token = None
-
-    def generate_oauth_token(self):
-        """
-
-            Generate an OAuth Access token using the app credentials (AKA: client id and client secret)
-            and the account id
-
-            :return: valid token
-         """
-        token_res = self._http_request(method="POST", full_url=OAUTH_TOKEN_GENERATOR_URL,
-                                       params={"account_id": self.account_id,
-                                               "grant_type": "account_credentials"},
-                                       auth=(self.client_id, self.client_secret))
-        return token_res.get('access_token')
-
-    def get_oauth_token(self, force_gen_new_token=False):
-        """
-            Retrieves the token from the server if it's expired and updates the global HEADERS to include it
-
-            :param force_gen_new_token: If set to True will generate a new token regardless of time passed
-
-            :rtype: ``str``
-            :return: Token
-        """
-        now = datetime.now()
-        ctx = get_integration_context()
-
-        if not ctx or not ctx.get('token_info').get('generation_time', force_gen_new_token):
-            # new token is needed
-            oauth_token = self.generate_oauth_token()
-            ctx = {}
-        else:
-            generation_time = dateparser.parse(ctx.get('token_info').get('generation_time'))
-            if generation_time:
-                time_passed = now - generation_time
-            else:
-                time_passed = TOKEN_LIFE_TIME
-            if time_passed < TOKEN_LIFE_TIME:
-                # token hasn't expired
-                return ctx.get('token_info').get('oauth_token')
-            else:
-                # token expired
-                oauth_token = self.generate_oauth_token()
-
-        ctx.update({'token_info': {'oauth_token': oauth_token, 'generation_time': now.strftime("%Y-%m-%dT%H:%M:%S")}})
-        set_integration_context(ctx)
-        return oauth_token
-
-    def error_handled_http_request(self, method, url_suffix='', full_url=None, headers=None,
-                                   auth=None, json_data=None, params=None,
-                                   return_empty_response: bool = False, resp_type: str = 'json', stream: bool = False):
-
-        # all future functions should call this function instead of the original _http_request.
-        # This is needed because the OAuth token may not behave consistently,
-        # First the func will make an http request with a token,
-        # and if it turns out to be invalid, the func will retry again with a new token.
-        try:
-            return super()._http_request(method=method, url_suffix=url_suffix, full_url=full_url, headers=headers,
-                                         auth=auth, json_data=json_data, params=params,
-                                         return_empty_response=return_empty_response, resp_type=resp_type,
-                                         stream=stream)
-        except DemistoException as e:
-            if ('Invalid access token' in e.message
-                    or "Access token is expired." in e.message):
-                self.access_token = self.generate_oauth_token()
-                headers = {'authorization': f'Bearer {self.access_token}'}
-                return super()._http_request(method=method, url_suffix=url_suffix, full_url=full_url, headers=headers,
-                                             auth=auth, json_data=json_data, params=params,
-                                             return_empty_response=return_empty_response, resp_type=resp_type,
-                                             stream=stream)
-            else:
-                raise DemistoException(e.message)
 
     def search_events(self, log_type: str, first_fetch_time: datetime, last_time: str = '', limit: int = None) -> \
             tuple[str, list[dict[str, Any]]]:
@@ -308,6 +207,13 @@ def get_next_month(date_obj: datetime) -> datetime:
     return date_obj + relativedelta.relativedelta(months=1)
 
 
+def call_send_events_to_xsiam(events):
+    """Enhances and sends events to XSIAM"""
+    for event in events:
+        event["_time"] = event.get('time')
+    send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
+
+
 ''' MAIN FUNCTION '''
 
 
@@ -360,32 +266,27 @@ def main() -> None:
             result = test_module(client)
             return_results(result)
 
-        elif command in ('zoom-get-events', 'fetch-events'):
-            if command == 'zoom-get-events':
-                should_push_events = argToBoolean(args.pop('should_push_events'))
-                events, results = get_events(client=client,
-                                             limit=arg_to_number(args.get("limit")) or MAX_RECORDS_PER_PAGE,
-                                             first_fetch_time=first_fetch_datetime.replace(tzinfo=timezone.utc),
-                                             )
-                return_results(results)
+        elif command == 'zoom-get-events':
+            events, results = get_events(client=client,
+                                         limit=arg_to_number(args.get("limit")) or MAX_RECORDS_PER_PAGE,
+                                         first_fetch_time=first_fetch_datetime.replace(tzinfo=timezone.utc),
+                                         )
+            return_results(results)
 
-            else:  # command == 'fetch-events':
-                should_push_events = True
-                last_run = demisto.getLastRun()
-                next_run, events = fetch_events(client=client,
-                                                last_run=last_run,
-                                                first_fetch_time=first_fetch_datetime.replace(tzinfo=timezone.utc),
-                                                )
-                # saves next_run for the time fetch-events is invoked
-                demisto.debug(f'Set last run to {next_run}')
-                demisto.setLastRun(next_run)
-            if should_push_events:
-                for event in events:
-                    event["_time"] = event.get('time')
-                send_events_to_xsiam(events,
-                                     vendor=VENDOR,
-                                     product=PRODUCT,
-                                     )
+            if argToBoolean(args.pop('should_push_events')):
+                call_send_events_to_xsiam(events)
+
+        elif command == 'fetch-events':
+            last_run = demisto.getLastRun()
+            next_run, events = fetch_events(client=client,
+                                            last_run=last_run,
+                                            first_fetch_time=first_fetch_datetime.replace(tzinfo=timezone.utc),
+                                            )
+
+            call_send_events_to_xsiam(events)
+            # saves next_run for the time fetch-events is invoked
+            demisto.debug(f'Set last run to {next_run}')
+            demisto.setLastRun(next_run)
 
     # Log exceptions and return errors
     except Exception as e:

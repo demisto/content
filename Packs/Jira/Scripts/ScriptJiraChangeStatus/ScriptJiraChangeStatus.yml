@@ -1,0 +1,18 @@
+commonfields:
+  id: JiraChangeStatus
+  version: -1
+name: JiraChangeStatus
+script: ''
+type: python
+tags:
+- field-change-triggered
+enabled: true
+scripttarget: 0
+subtype: python3
+dockerimage: demisto/python3:3.10.12.63474
+runas: DBotWeakRole
+fromversion: 6.8.0
+comment: |-
+  This script changes the status field of a Jira incident. It gets the new Jira status of the remote Jira issue and updates the Cortex XSOAR incident status.
+tests:
+- No tests (auto formatted)

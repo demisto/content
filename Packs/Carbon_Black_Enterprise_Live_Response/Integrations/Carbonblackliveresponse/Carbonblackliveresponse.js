@@ -9,14 +9,16 @@ let SLEEP_BETWEEN_RETRIES = 1000 * 5;
 let DEFAULT_WAIT_TIMEOUT = 1000 * 60 * 2;
 let ERROR_MESSAGE = 'Use Live Response for Cb Defense or Cb Response.\nFor Cb Defense: Provide \'Live Response\' API key and connector.\nFor Cb Response: Provide API Token.';
 //validate the credentials are provided to match only one of the products
-if (params.apitoken && (params.apikey || params.connector) ) {
+let API_TOKEN = (params.credentials_api_token)? params.credentials_api_token.password : params.apitoken;
+let API_KEY = (params.credentials_api_key)? params.credentials_api_key.password : params.apikey;
+if (API_TOKEN && (API_KEY || params.connector) ) {
     throw ERROR_MESSAGE;
 }
 //determain Cb product
-if (params.apitoken) {
+if (API_TOKEN) {
     CB_PRODUCT = 'Response';
     BASE_URL = `${params.serverurl}/api/v1/cblr`;
-    AUTH = params.apitoken;
+    AUTH = API_TOKEN;
     COMMAND_DATA = [
         {to: 'CbSensorID', from: 'sensor_id'},
         {to: 'CbSessionID', from: 'session_id'},
@@ -30,10 +32,10 @@ if (params.apitoken) {
         {to: 'Result.Type', from: 'result_type'},
         {to: 'Result.Code', from: 'result_code'}
     ];
-} else if (params.apikey && params.connector){
+} else if (API_KEY && params.connector){
     CB_PRODUCT = 'Defense';
     BASE_URL = `${params.serverurl}/integrationServices/v3/cblr`
-    AUTH = params.apikey + '/' + params.connector;
+    AUTH = API_KEY + '/' + params.connector;
     COMMAND_DATA = [
         {to: 'CbSensorID', from: 'sensor_id'},
         {to: 'CbSessionID', from: 'session_id'},
@@ -1151,9 +1153,11 @@ function getFileRequest(sessionId, path, offset, bytes)   {
     let queryParams = {
         name: 'get file',
         object: path,
-        offset: offset,
-        get_count: bytes
+        offset: offset
     };
+    if (bytes) {
+        queryParams['get_count'] = bytes;
+    }
 
     let response = sendRequest(`/session/${sessionId}/command`, 'POST', queryParams).Body;
     try {
@@ -1164,24 +1168,16 @@ function getFileRequest(sessionId, path, offset, bytes)   {
 }
 
 function getFile() {
-    let command = directoryListRequest(args.session, args.path);
-    let commandId = command.id;
-    try {
-        command = getCommandInfo(args.session, commandId, DEFAULT_WAIT_TIMEOUT, SLEEP_BETWEEN_RETRIES);
-    }
-    catch(err) {
-        throw "Failed to get information on the file";
-    }
-    if (command.status === 'error') {
-        throw 'File not found on the endpoint';
-    }
-    let file = command.files[0];
-    let result = getFileRequest(args.session, args.path, 0, file.size);
+    let command = getFileRequest(args.session, args.path, 0);
     //wait for 1 second before trying to get command information
     sleep(1000);
     let timeout = (args['wait-timeout']) ? parseInt(args['wait-timeout']) * 1000 : DEFAULT_WAIT_TIMEOUT;
-
-    command = getCommandInfo(args['session'], result.id, timeout, SLEEP_BETWEEN_RETRIES, args['cancel-on-timeout']);
+    try{
+        command = getCommandInfo(args['session'], command.id, timeout, SLEEP_BETWEEN_RETRIES, args['cancel-on-timeout']);
+    }
+    catch(err) {
+        throw `Failed to get the file.\nError: ${err}.`;
+    }
     let commandEntry = commandEntries['get file'](command);
     let fileEntry = {}
     if (args.download == 'true') {

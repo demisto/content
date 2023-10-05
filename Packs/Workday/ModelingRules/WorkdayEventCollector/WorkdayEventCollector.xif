@@ -1,0 +1,78 @@
+[MODEL: dataset=workday_activity_raw]
+alter
+    src_ip_v4 = if(ipAddress !~= ":", ipAddress, null),
+    src_ip_v6 = if(ipAddress ~= ":", ipAddress, null)
+| alter 
+    xdm.source.user.username = systemAccount,
+    xdm.observer.action = activityAction,
+    xdm.source.user_agent = userAgent,
+    xdm.event.id = taskId,
+    xdm.source.host.device_category = deviceType,
+    xdm.source.ipv4 = src_ip_v4,
+    xdm.source.ipv6 = src_ip_v6,
+    xdm.session_context_id = sessionId,
+    xdm.event.operation_sub_type = taskDisplayName
+| alter
+    xdm.source.user.identifier = json_extract_scalar(`target`, "$.id"),
+    xdm.target.host.device_category = json_extract_scalar(`target`, "$.descriptor"),
+    xdm.target.url = json_extract_scalar(`target`, "$.href");
+
+[MODEL: dataset=workday_signon_raw]
+alter 
+    // define util constants
+    boolean_true = to_boolean("TRUE"),
+    boolean_false = to_boolean("FALSE"),
+    
+    // add labels for enriching event description according to the boolean flags
+    sigon_successful_label = if(to_integer(Successful) = 1, "Signon was successful.", to_integer(Successful) = 0, "Signon was unsuccessful."), 
+    account_disabled_or_expired_label = if(to_integer(Account_Disabled_or_Expired) = 1, "Account is disabled or expired."),
+    device_trusted_label = if(to_integer(Device_is_Trusted) = 1, "Sign on is from a trusted device."),
+    failed_signon_label = if(to_integer(Failed_Signon) = 1, "An invalid password was supplied for the Signon attempt."),
+    invalid_credentials_label = if(to_integer(Invalid_Credentials) = 1, "User provided invalid credentials."),
+    invalid_auth_channel_label = if(to_integer(Invalid_for_Authentication_Channel) = 1, "Invalid for authentication channel."),
+    invalid_auth_policy_label = if(to_integer(Invalid_for_Authentication_Policy) = 1, "Invalid for authentication policy."),
+    mfa_required_label = if(to_integer(Requires_MFA) = 1, "MFA is required."),
+    mfa_has_grace_label = if(to_integer(Has_Grace_Period_for_MFA) = 1, "MFA has a grace period."),
+    mfa_auth_exempt_label = if(to_integer(MFA_Authentication_Exempt) = 1, "MFA authentication is exempted."),
+    mfa_enrollment_label = if(to_integer(MFA_Enrollment) = 1, "User is enrolled in MFA."),
+    password_change_required_label = if(to_integer(Required_Password_Change) = 1, "Password change required."),
+    password_reset_label = if(to_integer(Forgotten_Password_Reset_Request) = 1, "A request was made to reset the password in the Signon attempt."),
+    password_changed_label = if(to_integer(Password_Changed) = 1, "The password was changed after the signon."),
+    read_only_label = if(to_integer(Tenant_Access_Read_Only) = 1, "Read only Access is enabled for the signon.")
+| alter
+    // init useful flags & extract nested json properties 
+    device_type_reference_id = Device_Type_Reference -> ID, 
+    is_account_disabled = if(to_integer(Account_Disabled_or_Expired) = 1, boolean_true, to_integer(Account_Disabled_or_Expired) = 0, boolean_false),
+    is_mfa_needed = if(to_integer(Requires_MFA) = 1, boolean_true, to_integer(Requires_MFA) = 0, boolean_false),
+    is_password_change_required = if(to_integer(Required_Password_Change) = 1, boolean_true, to_integer(Required_Password_Change) = 0, boolean_false), 
+    is_sign_on_successful = if(to_integer(Successful) = 1, boolean_true, to_integer(Successful) = 0, boolean_false),
+    mfa_authentication_type_id = Multi_Factor_Authentication_Type_Reference -> ID,
+    os = lowercase(Operating_System),
+    saml_identity_provider_id = SAML_Identity_Provider_Reference -> ID, 
+    src_ipv4 = if(Signon_IP_Address ~= "\.", Signon_IP_Address),
+    src_ipv6 = if(Signon_IP_Address ~= ":", Signon_IP_Address), 
+    event_labels = arraycreate(sigon_successful_label, account_disabled_or_expired_label, device_trusted_label, failed_signon_label, invalid_credentials_label, invalid_auth_channel_label, invalid_auth_policy_label, mfa_required_label, mfa_has_grace_label, mfa_auth_exempt_label, mfa_enrollment_label, password_change_required_label, password_reset_label, password_changed_label, read_only_label)
+| alter
+    // map fields
+    xdm.auth.auth_method = Authentication_Type,
+    xdm.auth.is_mfa_needed = is_mfa_needed,
+    xdm.auth.mfa.method = mfa_authentication_type_id, 
+    xdm.auth.mfa.provider = if(to_integer(MFA_Enrollment) = 1, saml_identity_provider_id), 
+    xdm.event.type = if(is_sign_on_successful, "Successful Signon", is_sign_on_successful = false, "Signon Failure", "Signon"),
+    xdm.event.description = arraystring(event_labels, " "),
+    xdm.event.outcome = if(is_sign_on_successful, XDM_CONST.OUTCOME_SUCCESS, is_sign_on_successful = boolean_false, XDM_CONST.OUTCOME_FAILED, XDM_CONST.OUTCOME_UNKNOWN),
+    xdm.event.outcome_reason = Authentication_Failure_Message, 
+    xdm.logon.type = Authentication_Channel, 
+    xdm.network.session_id = Short_Session_ID,
+    xdm.network.tls.protocol_version = TLS_Version, 
+    xdm.observer.unique_identifier = API_Client_ID,
+    xdm.source.host.device_id = device_type_reference_id, 
+    xdm.source.host.os = Operating_System, 
+    xdm.source.host.os_family = if(os contains "windows", XDM_CONST.OS_FAMILY_WINDOWS, os contains "mac", XDM_CONST.OS_FAMILY_MACOS, os contains "linux", XDM_CONST.OS_FAMILY_LINUX, os contains "android", XDM_CONST.OS_FAMILY_ANDROID, os contains "ios", XDM_CONST.OS_FAMILY_IOS, os contains "ubuntu", XDM_CONST.OS_FAMILY_UBUNTU, os contains "debian", XDM_CONST.OS_FAMILY_DEBIAN, os contains "fedora", XDM_CONST.OS_FAMILY_FEDORA, os contains "centos", XDM_CONST.OS_FAMILY_CENTOS, os contains "chrome", XDM_CONST.OS_FAMILY_CHROMEOS, os contains "solaris", XDM_CONST.OS_FAMILY_SOLARIS, os contains "scada", XDM_CONST.OS_FAMILY_SCADA, Operating_System),
+    xdm.source.ipv4 = src_ipv4,
+    xdm.source.ipv6 = src_ipv6, 
+    xdm.source.user_agent = Browser_Type,
+    xdm.source.user.is_disabled = is_account_disabled,
+    xdm.source.user.is_password_expired = is_password_change_required,
+    xdm.source.user.username = to_string(User_Name),
+    xdm.source.zone = Location;

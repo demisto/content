@@ -1,16 +1,10 @@
 args:
-- default: false
-  description: A1000 classification report
-  isArray: false
+- description: A1000 classification report
   name: a1000_classification_report
   required: true
-  secret: false
-- default: false
-  description: A1000 full report
-  isArray: false
+- description: A1000 full report
   name: a1000_full_report
   required: true
-  secret: false
 comment: Calculates A1000 final classification based on A1000 classification and A1000 full reports.
 commonfields:
   id: A1000FinalClassification
@@ -56,12 +50,10 @@ outputs:
   type: String
 script: '-'
 subtype: python3
-system: false
 timeout: '0'
 type: python
 dockerimage: demisto/python3:3.10.10.48392
 runas: DBotWeakRole
-runonce: false
 tests:
 - No tests (auto formatted)
 fromversion: 6.0.0

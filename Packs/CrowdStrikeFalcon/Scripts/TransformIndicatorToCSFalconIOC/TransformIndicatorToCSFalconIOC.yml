@@ -1,16 +1,11 @@
 args:
-- default: false
-  description: |-
+- description: |-
     The indicators query. Using `GetIndicatorsByQuery` automation.
     Example: `type:IP and lastSeen:>="2022-02-16T16:20:00 +0200" `
-  isArray: false
   name: query
   required: true
-  secret: false
 - auto: PREDEFINED
-  default: false
   description: The action that will be taken if the indicator will be discovered in the organization.
-  isArray: false
   name: action
   predefined:
   - no_action
@@ -19,29 +14,16 @@ args:
   - prevent_no_ui
   - prevent
   required: true
-  secret: false
-- default: false
-  defaultValue: '10000'
+- defaultValue: '10000'
   description: The maximum number of indicators to fetch.
-  isArray: false
   name: limit
-  required: false
-  secret: false
-- default: false
-  defaultValue: '0'
+- defaultValue: '0'
   description: The results offset page. Only change when the number of the results exceed the limit.
-  isArray: false
   name: offset
-  required: false
-  secret: false
-- default: false
-  description: "List of host group IDs that the indicator applies to. \nCan be retrieved by running the cs-falcon-list-host-groups command.\nEither applied_globally or host_groups must be provided."
+- description: "List of host group IDs that the indicator applies to. \nCan be retrieved by running the cs-falcon-list-host-groups command.\nEither applied_globally or host_groups must be provided."
   isArray: true
   name: host_groups
-  required: false
-  secret: false
 - auto: PREDEFINED
-  default: false
   description: The platforms that the indicator applies to.
   isArray: true
   name: platforms
@@ -50,23 +32,17 @@ args:
   - windows
   - linux
   required: true
-  secret: false
 - auto: PREDEFINED
-  default: false
   defaultValue: 'true'
   description: "Whether the indicator is applied globally. \nEither applied_globally or host_groups must be provided. Default set to True."
-  isArray: false
   name: applied_globally
   predefined:
   - 'true'
   - 'false'
-  required: false
-  secret: false
 comment: Transform a XSOAR indicator into a Crowd Strike Falcon IOC. The output (found at the TransformIndicatorToCSFalconIOC.JsonOutput context path) is a JSON, which represents the indicators in CS Falcon format. This JSON can be used as the input for the *cs-falcon-batch-upload-custom-ioc* command.
 commonfields:
   id: TransformIndicatorToCSFalconIOC
   version: -1
-enabled: false
 name: TransformIndicatorToCSFalconIOC
 outputs:
 - contextPath: TransformIndicatorToCSFalconIOC
@@ -110,10 +86,9 @@ outputs:
   type: Unknown
 script: '-'
 subtype: python3
-system: false
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.10.9.46807
+dockerimage: demisto/python3:3.10.12.66339
 tests:
 - No tests (auto formatted)
 fromversion: 6.0.0

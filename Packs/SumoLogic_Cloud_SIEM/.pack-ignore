@@ -1,8 +1,6 @@
-[file:SumoLogicCloudSIEM.yml]
-ignore=IN145
-
 [file:SumoLogicCloudSIEM_image.png]
 ignore=IM111
 
 [known_words]
-SumoUrl
+sumourl
+

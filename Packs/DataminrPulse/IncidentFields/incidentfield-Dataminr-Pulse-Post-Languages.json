@@ -1,0 +1,62 @@
+{
+    "id": "incident_dataminrpulsepostlanguages",
+    "version": -1,
+    "modified": "2023-01-30T17:24:23.674294635+05:30",
+    "name": "Dataminr Pulse Post Languages",
+    "ownerOnly": false,
+    "cliName": "dataminrpulsepostlanguages",
+    "type": "grid",
+    "closeForm": true,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": true,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Dataminr Pulse Alert"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "columns": [
+        {
+            "key": "position",
+            "displayName": "Position",
+            "type": "shortText",
+            "required": false,
+            "script": "",
+            "width": 150,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": true,
+            "selectValues": null
+        },
+        {
+            "key": "lang",
+            "displayName": "Language",
+            "type": "shortText",
+            "required": false,
+            "script": "",
+            "width": 150,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": true,
+            "selectValues": null
+        }
+    ],
+    "defaultRows": [
+        {},
+        {},
+        {}
+    ],
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.5.0"
+}

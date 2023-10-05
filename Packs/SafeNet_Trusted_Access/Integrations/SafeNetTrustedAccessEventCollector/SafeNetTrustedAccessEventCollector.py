@@ -17,6 +17,7 @@ class Client(BaseClient):
     Client will implement the service API, and should not contain any Demisto logic.
     Should only do requests and return data.
     """
+
     def get_logs(self, marker=None, since=None, until=None):
         since = since.strftime(DATE_FORMAT)[:-4] + 'Z' if since else None
         until = until.strftime(DATE_FORMAT)[:-4] + 'Z' if until else None
@@ -147,23 +148,26 @@ def main() -> None:  # pragma: no cover
         if command == 'test-module':
             return_results(test_module(client, limit, first_fetch))
 
-        elif command in ('sta-get-events', 'fetch-events'):
-
-            if command == 'sta-get-events':
-                events, results = get_events_command(client, demisto.args())
-                return_results(results)
-
-            else:  # command == 'fetch-events':
-                last_run = demisto.getLastRun()
-                events, last_run = fetch_events_command(client, first_fetch, last_run, limit)
-                demisto.setLastRun(last_run)
-
+        elif command == 'sta-get-events':
+            events, results = get_events_command(client, demisto.args())
+            return_results(results)
             if argToBoolean(args.get('should_push_events', 'true')):
                 send_events_to_xsiam(
                     events,
                     params.get('vendor', 'safenet'),
                     params.get('product', 'trusted_access')
                 )
+
+        elif command == 'fetch-events':
+            last_run = demisto.getLastRun()
+            events, last_run = fetch_events_command(client, first_fetch, last_run, limit)
+
+            send_events_to_xsiam(
+                events,
+                params.get('vendor', 'safenet'),
+                params.get('product', 'trusted_access')
+            )
+            demisto.setLastRun(last_run)
 
     # Log exceptions and return errors
     except Exception as e:

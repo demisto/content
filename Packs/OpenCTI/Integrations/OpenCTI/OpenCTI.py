@@ -1,10 +1,10 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import copy
 from typing import List, Optional
 from io import StringIO
 import sys
-import demistomock as demisto  # noqa: E402 lgtm [py/polluting-import]
 import urllib3
-from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
 from pycti import OpenCTIApiClient, Identity
 
 # Disable insecure warnings
@@ -93,8 +93,7 @@ def reset_last_run():
 
 
 def get_indicators(client: OpenCTIApiClient, indicator_types: List[str], score: List[str] = None,
-                   limit: Optional[int] = 500,
-                   last_run_id: Optional[str] = None) -> dict:
+                   limit: Optional[int] = 500, last_run_id: Optional[str] = None, search: str = "") -> dict:
     """ Retrieving indicators from the API
 
     Args:
@@ -103,6 +102,7 @@ def get_indicators(client: OpenCTIApiClient, indicator_types: List[str], score: 
         indicator_types: List of indicators types to return.
         last_run_id: The last id from the previous call to use pagination.
         limit: the max indicators to fetch
+        search: The indicator's value to filter by.
 
     Returns:
         indicators: dict of indicators
@@ -119,7 +119,8 @@ def get_indicators(client: OpenCTIApiClient, indicator_types: List[str], score: 
         })
 
     indicators = client.stix_cyber_observable.list(after=last_run_id, first=limit,
-                                                   withPagination=True, filters=filters)
+                                                   withPagination=True, filters=filters,
+                                                   search=search)
     return indicators
 
 
@@ -138,6 +139,7 @@ def get_indicators_command(client: OpenCTIApiClient, args: dict) -> CommandResul
     limit = arg_to_number(args.get('limit', 50))
     start = arg_to_number(args.get('score_start', 1))
     end = arg_to_number(args.get('score_end', 100)) + 1  # type:ignore
+    search = args.get("search", "")
     score = None
     if start or end:
         score = [str(i) for i in range(start, end)]  # type:ignore
@@ -147,7 +149,8 @@ def get_indicators_command(client: OpenCTIApiClient, args: dict) -> CommandResul
         indicator_types=indicator_types,
         limit=limit,
         last_run_id=last_run_id,
-        score=score
+        score=score,
+        search=search
     )
 
     last_run = raw_response.get('pagination', {}).get('endCursor')  # type: ignore

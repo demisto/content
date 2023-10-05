@@ -1,0 +1,8 @@
+!swg-get-available-lists name=blocklist
+!swg-get-list list_id=com.scur.type.regex.386
+!swg-get-list-entry list_id=com.scur.type.regex.386 entry_pos=0
+!swg-insert-entry list_id=com.scur.type.regex.386 entry_pos=0 name="http*://evil.corp*" description="ticket #1: This is an evil domain"
+!swg-delete-entry list_id=com.scur.type.regex.386 entry_pos=0
+!swg-modify-list list_id=com.scur.type.regex.386 config=`<list><description>blocklist</description><content><listEntry><entry>http*://evil.corp/*</entry><description>ticket #1: This is an evil domain</description></listEntry></content></list>`
+!swg-create-list name="blocklist" type=regex
+!swg-delete-list list_id=com.scur.type.regex.460

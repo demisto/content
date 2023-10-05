@@ -757,7 +757,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "80"
+      - "82"
     scriptarguments:
       AzureSearchTime:
         complex:
@@ -890,7 +890,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "80"
+      - "83"
     scriptarguments:
       ASN:
         complex:
@@ -981,17 +981,31 @@ tasks:
       lh:
         complex:
           root: NumOfOktaFailedLogon
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: "0"
       rh:
         complex:
           root: NumOfSiemFailedLogon
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: "0"
     separatecontext: false
     continueonerror: true
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 110,
-          "y": 730
+          "x": 80,
+          "y": 905
         }
       }
     note: false
@@ -1001,7 +1015,132 @@ tasks:
     quietmode: 2
     isoversize: false
     isautoswitchedtoquietmode: false
-system: true
+  "82":
+    id: "82"
+    taskid: 8dd8d181-471d-40a0-8865-c25b043dec1f
+    type: regular
+    task:
+      id: 8dd8d181-471d-40a0-8865-c25b043dec1f
+      version: -1
+      name: Set Number Of SIEM Failed Logon
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "80"
+    scriptarguments:
+      key:
+        simple: NumOfSiemFailedLogon
+      value:
+        complex:
+          root: inputs.Username
+          transformers:
+          - operator: If-Then-Else
+            args:
+              condition:
+                value:
+                  simple: lhs==rhs
+              conditionB: {}
+              conditionInBetween: {}
+              else:
+                value:
+                  simple: NumOfSiemFailedLogon
+                iscontext: true
+              equals: {}
+              lhs:
+                value:
+                  simple: NumOfSiemFailedLogon
+                iscontext: true
+              lhsB: {}
+              options: {}
+              optionsB: {}
+              rhs: {}
+              rhsB: {}
+              then:
+                value:
+                  simple: "0"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 370,
+          "y": 705
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "83":
+    id: "83"
+    taskid: fdffde9f-b35c-4077-83ca-4d1d0bb93701
+    type: regular
+    task:
+      id: fdffde9f-b35c-4077-83ca-4d1d0bb93701
+      version: -1
+      name: Set Number Of Okta Failed Logon
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "80"
+    scriptarguments:
+      key:
+        simple: NumOfOktaFailedLogon
+      value:
+        complex:
+          root: inputs.Username
+          transformers:
+          - operator: If-Then-Else
+            args:
+              condition:
+                value:
+                  simple: lhs==rhs
+              conditionB: {}
+              conditionInBetween: {}
+              else:
+                value:
+                  simple: NumOfOktaFailedLogon
+                iscontext: true
+              equals: {}
+              lhs:
+                value:
+                  simple: NumOfOktaFailedLogon
+                iscontext: true
+              lhsB: {}
+              options: {}
+              optionsB: {}
+              rhs: {}
+              rhsB: {}
+              then:
+                value:
+                  simple: "0"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -160,
+          "y": 725
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {

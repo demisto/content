@@ -10,11 +10,9 @@ ignore=RM106
 [file:playbook-Detonate_URL_-_ThreatGrid_README.md]
 ignore=RM106
 
-[file:ThreatGrid.yml]
-ignore=IN145
-
 [file:FeedCiscoSecureMalwareAnalytics_image.png]
 ignore=IM111
 
 [file:ThreatGrid_image.png]
 ignore=IM111
+

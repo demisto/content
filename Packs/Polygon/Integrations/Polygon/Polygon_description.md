@@ -5,3 +5,5 @@
 2. Navigate to Profile and click Generate auth token.
 3. Your server URL is the same as your Huntbox web interface URL.
 3. API Key was generated in 2.
+
+Notice: Submitting indicators using the ***polygon-upload-url*** command of this integration might make the indicator data publicly available.  See the vendor’s documentation for more details.

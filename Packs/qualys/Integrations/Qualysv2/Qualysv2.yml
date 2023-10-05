@@ -1,4 +1,4 @@
-category: Utilities
+category: Vulnerability Management
 commonfields:
   id: QualysV2
   version: -1
@@ -8,18 +8,19 @@ configuration:
   name: url
   required: true
   type: 0
+  additionalinfo: "When using asset-tag commands, the official documentation recommends that the SERVER URL parameter should be in the following format: `https://qualysapi.<tenant>.apps.qualys.com/<end-point>`. For more details see the integration documentation."
 - display: Username
   name: credentials
   required: true
   type: 9
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 description: Qualys Vulnerability Management lets you create, run, fetch and manage reports, launch and manage vulnerability and compliance scans, and manage the host assets you want to scan for vulnerabilities and compliance.
 display: Qualys v2
 name: QualysV2
@@ -2034,6 +2035,18 @@ script:
       description: Qualys response for the host update.
       type: String
   - arguments:
+    - description: Specify 1 for active schedules only, or 0 for deactivated schedules only.
+      name: active
+    - description: Specify 1 to distribute the scan to all scanner appliances in the network.
+      name: scanners_in_network
+    - description: A comma-separated list of Fully Qualified Domain Names to be scanned.
+      name: fqdn
+    - description: The number of times the scan will be run before it is deactivated.
+      name: recurrence
+    - description: Specify 1 to distribute the scan to all scanner appliances in the network.
+      name: end_after_mins
+    - description: Specifies the name of the Scanner Appliance for the map, when the map target has private use internal IPs. When using Express Lite, Internal Scanning must be enabled in your account.
+      name: iscanner_id
     - description: The scan title.
       name: scan_title
       required: true
@@ -2668,9 +2681,44 @@ script:
       required: true
     description: Delete an existing asset tag.
     name: qualys-asset-tag-delete
-
-  dockerimage: demisto/python3:3.10.10.49934
-  runonce: false
+  - arguments:
+    - description: Specify 1 to view input parameters in the XML output.
+      name: echo_request
+      auto: PREDEFINED
+      predefined:
+      - "0"
+      - "1"
+      defaultValue: "0"
+    - description: Purge host information for the defined host IDs/ranges.
+      name: ids
+    - description: Purge host information for the defined IP addresses/ranges.
+      name: ips
+    - description: Purge hosts belonging to asset groups with the defined IDs,
+      name: ag_ids
+    - description: Purge hosts belonging to asset groups with the defined strings in the asset group title.
+      name: ag_titles
+    - description: Restrict the request to the defined custom network IDs.
+      name: network_ids
+    - description: Purge hosts not scanned since the defined date and time.
+      name: no_vm_scan_since
+    - description: Purge compliance hosts not scanned since the defined date and time.
+      name: no_compliance_scan_since
+    - description: The type of data to purge. Specify “vm” to purge vulnerability data, specify “pc” to purge compliance data, or specify both as a comma-separated list to purge both types of data
+      name: data_scope
+    - description: This parameter is valid only when the policy compliance module is enabled for the user account. Specify 1 to purge compliance hosts in the user's account. Specify 0 to purge hosts which are not assigned to the PC module.
+      name: compliance_enabled
+      auto: PREDEFINED
+      predefined:
+      - "0"
+      - "1"
+    - description: Purge only hosts that have an operating system matching the defined regular expression. Use “%5E%24” to match an empty string.
+      name: os_pattern
+    name: qualys-purge-scan-host-data
+    outputs:
+    - contextPath: Qualys.Purge.ID
+      description: IDs of the hosts queued for purging.
+    description: Purge hosts in your account to remove the assessment data associated with them.
+  dockerimage: demisto/python3:3.10.12.63474
   script: ''
   subtype: python3
   type: python

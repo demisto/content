@@ -19,12 +19,10 @@ outputs:
   type: String
 script: '-'
 subtype: python3
-system: false
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.9.7.24076
+dockerimage: demisto/python3:3.10.12.63474
 runas: DBotWeakRole
-runonce: false
 tags: []
 tests:
 - no test

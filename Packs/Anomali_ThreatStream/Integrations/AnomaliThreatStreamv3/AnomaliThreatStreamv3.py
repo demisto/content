@@ -1,7 +1,7 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import emoji
 
-import demistomock as demisto
-from CommonServerPython import *
 import traceback
 import urllib3
 from datetime import date
@@ -455,6 +455,27 @@ class Client(BaseClient):
         url_suffix = f'v1/{entity_type_url}/{entity_id}/{associated_entity_type_url}/bulk_add/'
         return self.http_request("POST", url_suffix,
                                  json={'ids': associated_entity_ids_list})
+
+    def add_indicator_tag(self, indicator_ids: list[str], tags: list[str]):
+        data_request = {
+            "ids": indicator_ids,
+            "tags": [{"name": tag, "tlp": "red"} for tag in tags],
+        }
+        self.http_request(
+            method="POST",
+            url_suffix="v2/intelligence/bulk_tagging/",
+            data=json.dumps(data_request))
+
+    def remove_indicator_tag(self, indicator_ids: list[str], tags: list[str]):
+        data_request = {
+            "ids": indicator_ids,
+            "tags": [{"name": tags}],
+        }
+
+        self.http_request(
+            method="PATCH",
+            url_suffix="v2/intelligence/bulk_remove_tags/",
+            data=json.dumps(data_request))
 
 
 class DBotScoreCalculator:
@@ -2069,25 +2090,30 @@ def get_passive_dns(client: Client, value, all_results=None, type=DBotScoreType.
 
 
 def import_ioc_with_approval(client: Client, import_type, import_value, confidence="50", classification="Private",
-                             threat_type="exploit", severity="low", ip_mapping=None, domain_mapping=None,
-                             url_mapping=None, email_mapping=None, md5_mapping=None, tags=None):
+                             threat_type="exploit", severity="low", default_state='inactive',
+                             ip_mapping=None, domain_mapping=None,
+                             url_mapping=None, email_mapping=None, md5_mapping=None, tags=None,
+                             source_confidence_weight=None, tags_tlp: str = None, expiration_ts=None):
     """
         Imports indicators data to ThreatStream.
         The data can be imported using one of three import_types: data-text (plain-text),
         file-id of uploaded file to war room or URL.
     """
-    # prepare
     data = assign_params(
         classification=classification,
         confidence=int(confidence),
+        source_confidence_weight=arg_to_number(source_confidence_weight) if source_confidence_weight else None,
         ip_mapping=ip_mapping,
+        default_state=default_state,
+        expiration_ts=expiration_ts,
         domain_mapping=domain_mapping,
         url_mapping=url_mapping,
         email_mapping=email_mapping,
         md5_mapping=md5_mapping,
         threat_type=threat_type,
         severity=severity,
-        tags=json.dumps([{'name': tag} for tag in argToList(tags)]) if tags else None
+        tags=(json.dumps([({'name': tag, 'tlp': tags_tlp.lower()} if tags_tlp else {'name': tag}) for tag in argToList(tags)])
+              if tags else None)
     )
     files = None
     uploaded_file = None
@@ -2127,9 +2153,10 @@ def import_ioc_with_approval(client: Client, import_type, import_value, confiden
         raise DemistoException('The data was not imported. Check if valid arguments were passed')
 
 
-def import_ioc_without_approval(client: Client, classification, file_id=None, confidence=None, allow_unresolved='no',
+def import_ioc_without_approval(client: Client, classification, file_id=None, confidence=None,
+                                allow_unresolved='no',
                                 source_confidence_weight=None, expiration_ts=None, severity=None,
-                                tags=None, trustedcircles=None, indicators_json=None):
+                                tags=None, trustedcircles=None, indicators_json=None, tags_tlp: str = None):
     """
         Imports indicators data to ThreatStream.
         file_id of uploaded file to war room.
@@ -2165,7 +2192,8 @@ def import_ioc_without_approval(client: Client, classification, file_id=None, co
         source_confidence_weight=source_confidence_weight,
         expiration_ts=expiration_ts,
         severity=severity,
-        tags=tags,
+        tags=([({'name': tag, 'tlp': tags_tlp.lower()} if tags_tlp else {'name': tag}) for tag in argToList(tags)]
+              if tags else None),
         trustedcircles=trustedcircles
     )
     ioc_to_import.update({"meta": meta})
@@ -2367,7 +2395,7 @@ def submit_report(client: Client, submission_type, submission_value, import_indi
         'import_indicators': import_indicators
     }
     if detail:
-        data['detail'] = detail
+        data['report_radio-notes'] = detail
 
     uploaded_file = None
     files = None
@@ -2531,6 +2559,30 @@ def search_intelligence(client: Client, **kwargs):
     )
 
 
+def add_indicator_tag_command(client: Client, **kwargs) -> CommandResults:
+    indicator_ids: list[str] = argToList(kwargs["indicator_ids"])
+    tags: list[str] = argToList(kwargs["tags"])
+
+    client.add_indicator_tag(indicator_ids, tags)
+
+    return CommandResults(
+        readable_output=f"The tags have been successfully added"
+                        f" for the following ids:\n `{', '.join(indicator_ids)}`"
+    )
+
+
+def remove_indicator_tag_command(client: Client, **kwargs) -> CommandResults:
+    indicator_ids: list[str] = argToList(kwargs["indicator_ids"])
+    tags: list[str] = argToList(kwargs["tags"])
+
+    client.remove_indicator_tag(indicator_ids, tags)
+
+    return CommandResults(
+        readable_output=f"The tags were successfully deleted"
+                        f" for the following ids:\n `{', '.join(indicator_ids)}`"
+    )
+
+
 def main():
     """
     Initiate integration command
@@ -2599,6 +2651,8 @@ def main():
         'threatstream-approve-import-job': approve_import_job_command,
         'threatstream-search-threat-model': search_threat_model_command,
         'threatstream-add-threat-model-association': add_threat_model_association_command,
+        'threatstream-add-indicator-tag': add_indicator_tag_command,
+        'threatstream-remove-indicator-tag': remove_indicator_tag_command,
     }
     try:
 

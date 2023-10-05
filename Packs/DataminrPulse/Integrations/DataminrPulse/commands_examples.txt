@@ -1,0 +1,3 @@
+!dataminrpulse-watchlists-get
+!dataminrpulse-alerts-get query="Google" num=2 use_configured_watchlist_names=yes
+!dataminrpulse-related-alerts-get alert_id="969633949-1679028615394-3"

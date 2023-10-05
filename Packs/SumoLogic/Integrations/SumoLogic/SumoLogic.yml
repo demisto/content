@@ -20,12 +20,20 @@ configuration:
   name: accessID
   defaultvalue: ""
   type: 0
-  required: true
+  hidden: true
+  required: false
 - display: Access key - can be created in Sumo Logic under "Settings"
   name: accessKey
   defaultvalue: ""
   type: 4
-  required: true
+  hidden: true
+  required: false
+- display: Access ID - can be created in Sumo Logic under "Settings"
+  name: credentialsAccess
+  type: 9
+  displaypassword: Access key - can be created in Sumo Logic under "Settings"
+  section: Connect
+  required: false
 - display: Use system proxy settings
   name: useproxy
   type: 8
@@ -39,8 +47,7 @@ configuration:
   name: escape_urls
   defaultvalue: "false"
   type: 8
-  additionalinfo: "Whether to add escaping before `=` chars in URLs. For further information,\
-    \ see the pack README"
+  additionalinfo: "Whether to add escaping before `=` chars in URLs. For further information, see the pack README"
   required: false
 - display: Seconds to sleep between checking for results
   name: sleepBetweenChecks
@@ -70,8 +77,7 @@ configuration:
   defaultvalue: "600"
   type: 0
   required: false
-- display: Time between fetches (in seconds). The actual time will be the maximum
-    between the selected value and the server configuration.
+- display: Time between fetches (in seconds). The actual time will be the maximum between the selected value and the server configuration.
   name: fetchDelay
   defaultvalue: 60
   type: 0
@@ -103,48 +109,37 @@ script:
       description: The search query to execute.
     - name: from
       required: true
-      description: 'The ISO 8601 date of the time range to start the search. For example:
-        2016-08-28T12:00:00. Can also be milliseconds since epoch.'
+      description: 'The ISO 8601 date of the time range to start the search. For example: 2016-08-28T12:00:00. Can also be milliseconds since epoch.'
     - name: to
       required: true
-      description: 'The ISO 8601 date of the time range to end the search. For example:
-        2016-08-28T12:00:00). Can also be milliseconds since epoch.'
+      description: 'The ISO 8601 date of the time range to end the search. For example: 2016-08-28T12:00:00). Can also be milliseconds since epoch.'
     - name: limit
-      description: Maximum number of results to return from the query. Default is
-        100. The value specified will override the default set in the "limit" parameter.
+      description: Maximum number of results to return from the query. Default is 100. The value specified will override the default set in the "limit" parameter.
       defaultValue: "100"
     - name: offset
-      description: Return results starting at this offset. should be int - by default
-        is 0
+      description: Return results starting at this offset. should be int - by default is 0
       defaultValue: "0"
     - name: timezone
-      description: The time zone if from/to is not in milliseconds. Default is UTC.
-        Please refer to the article at https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
-        for a list of time zone codes.
+      description: The time zone if from/to is not in milliseconds. Default is UTC. Please refer to the article at https://en.wikipedia.org/wiki/List_of_tz_database_time_zones for a list of time zone codes.
       defaultValue: UTC
     - name: maxTimeToWaitForResults
-      description: Maximum amount of time (in minutes) to wait for the search to complete.
-        Default is 10 minutes.
+      description: Maximum amount of time (in minutes) to wait for the search to complete. Default is 10 minutes.
       defaultValue: "10"
     - name: headers
-      description: 'A comma-separated list of table headers that are displayed in
-        order. For example: "_blockid,_collector,_format".'
+      description: 'A comma-separated list of table headers that are displayed in order. For example: "_blockid,_collector,_format".'
     - name: byReceiptTime
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
-      description: If "true", the search is executed using receipt time. Default is
-        "false".
+      description: If "true", the search is executed using receipt time. Default is "false".
       defaultValue: "false"
     - name: waitForSearchComplete
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
-      description: If "true", the search will wait for the query to iterate over all
-        messages before returning results. This is useful when working with aggregate
-        records, as otherwise the query may return partial values.
+      description: If "true", the search will wait for the query to iterate over all messages before returning results. This is useful when working with aggregate records, as otherwise the query may return partial values.
       defaultValue: "false"
     outputs:
     - contextPath: Search.Messages
@@ -153,7 +148,6 @@ script:
       description: The array of aggregate records.
     description: Search SumoLogic for records that match the specified query.
   isfetch: true
-  runonce: false
 tests:
-- SumoLogic-Test
+- No tests (auto formatted)
 fromversion: 5.0.0

@@ -4,11 +4,10 @@ from CommonServerUserPython import *
 ''' IMPORTS '''
 
 import json
-import requests
 import dateparser
+import urllib3
 
-# Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
@@ -22,12 +21,13 @@ class Client(BaseClient):
     Client will implement the service API, and should not contain any Demisto logic.
     Should only do requests and return data.
     """
+
     def do_request(self, method, url_suffix, params=None, data=None, json_data=None, resp_type='json', files=None):
 
         res = self._http_request(method, url_suffix, params=params, data=data, json_data=json_data, files=files,
                                  resp_type=resp_type, ok_codes=(200, 201, 204), return_empty_response=True)
 
-        if resp_type == 'other' or isinstance(res, dict) or isinstance(res, list):
+        if isinstance(res, (dict, list)) or resp_type == 'other':
             return res
         return {}
 
@@ -237,7 +237,7 @@ def main():
 
     # get the service API url
     base_url = urljoin(demisto.params()['url'], '/api')
-    token = demisto.params().get('token')
+    token = demisto.params().get('token_creds', {}).get('password') or demisto.params().get('token')
     verify_certificate = not demisto.params().get('insecure', False)
 
     # How much time before the first fetch to retrieve incidents

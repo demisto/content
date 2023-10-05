@@ -3,7 +3,7 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: Phishing - Generic v3
-description: "This playbook investigates and remediates a potential phishing incident. It engages with the user who triggered the incident while investigating the incident itself.\n\nNote: \n- Final remediation tasks are manual by default. can be managed by \"SearchAndDelete\" and \"BlockIndicators\" inputs.\n- Do not rerun this playbook inside a phishing incident since it can produce an unexpected result. Create a new incident instead if needed."
+description: "This playbook investigates and remediates a potential phishing incident. It engages with the user who triggered the incident while investigating the incident itself.\n\nNote:\n- Final remediation tasks are manual by default. can be managed by \"SearchAndDelete\" and \"BlockIndicators\" inputs. \n- Do not rerun this playbook inside a phishing incident since it can produce an unexpected result. Create a new incident instead if needed."
 starttaskid: "0"
 tasks:
   "0":
@@ -70,7 +70,7 @@ tasks:
       {
         "position": {
           "x": -260,
-          "y": 2710
+          "y": 2520
         }
       }
     note: false
@@ -101,7 +101,7 @@ tasks:
       {
         "position": {
           "x": -920,
-          "y": 3215
+          "y": 3025
         }
       }
     note: false
@@ -133,8 +133,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -247.5,
-          "y": 4920
+          "x": -410,
+          "y": 5040
         }
       }
     note: false
@@ -169,7 +169,9 @@ tasks:
         }
       }
     note: false
-    timertriggers: []
+    timertriggers:
+    - fieldname: triagesla
+      action: start
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
@@ -210,7 +212,7 @@ tasks:
       {
         "position": {
           "x": 770,
-          "y": 630
+          "y": 800
         }
       }
     note: false
@@ -254,7 +256,7 @@ tasks:
       {
         "position": {
           "x": -260,
-          "y": 2895
+          "y": 2705
         }
       }
     note: false
@@ -279,7 +281,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "8"
+      - "223"
     scriptarguments:
       body:
         simple: |-
@@ -308,9 +310,7 @@ tasks:
         }
       }
     note: false
-    timertriggers:
-    - fieldname: detectionsla
-      action: stop
+    timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
@@ -330,7 +330,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "53"
+      - "222"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -503,7 +503,7 @@ tasks:
       {
         "position": {
           "x": 432.5,
-          "y": 3930
+          "y": 3740
         }
       }
     note: false
@@ -598,7 +598,7 @@ tasks:
       {
         "position": {
           "x": 212.5,
-          "y": 4550
+          "y": 4360
         }
       }
     note: false
@@ -625,8 +625,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -247.5,
-          "y": 5085
+          "x": -410,
+          "y": 5205
         }
       }
     note: false
@@ -657,11 +657,13 @@ tasks:
       {
         "position": {
           "x": 432.5,
-          "y": 3070
+          "y": 2880
         }
       }
     note: false
-    timertriggers: []
+    timertriggers:
+    - fieldname: detectionsla
+      action: stop
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
@@ -688,7 +690,7 @@ tasks:
       {
         "position": {
           "x": -920,
-          "y": 3070
+          "y": 2880
         }
       }
     note: false
@@ -712,16 +714,16 @@ tasks:
       brand: ""
     nexttasks:
       "No":
-      - "151"
+      - "226"
       "yes":
-      - "149"
+      - "30"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": -920,
-          "y": 3380
+          "y": 3210
         }
       }
     note: false
@@ -752,7 +754,7 @@ tasks:
       {
         "position": {
           "x": -200,
-          "y": 4550
+          "y": 4360
         }
       }
     note: false
@@ -797,7 +799,7 @@ tasks:
       {
         "position": {
           "x": 212.5,
-          "y": 4200
+          "y": 4010
         }
       }
     note: false
@@ -855,14 +857,14 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "8"
+      - "223"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 432.5,
-          "y": 4720
+          "y": 4530
         }
       }
     note: false
@@ -947,7 +949,7 @@ tasks:
       {
         "position": {
           "x": 770,
-          "y": 450
+          "y": 620
         }
       }
     note: false
@@ -1022,6 +1024,7 @@ tasks:
       - "131"
       - "154"
       - "170"
+      - "216"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1032,7 +1035,9 @@ tasks:
         }
       }
     note: false
-    timertriggers: []
+    timertriggers:
+    - fieldname: triagesla
+      action: stop
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
@@ -1079,8 +1084,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -260,
-          "y": 1865
+          "x": 20,
+          "y": 1775
         }
       }
     note: false
@@ -1110,8 +1115,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -260,
-          "y": 1730
+          "x": 20,
+          "y": 1640
         }
       }
     note: false
@@ -1153,8 +1158,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -260,
-          "y": 2090
+          "x": 20,
+          "y": 2000
         }
       }
     note: false
@@ -1228,8 +1233,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -260,
-          "y": 2265
+          "x": 20,
+          "y": 2175
         }
       }
     note: false
@@ -1261,7 +1266,7 @@ tasks:
       {
         "position": {
           "x": -260,
-          "y": 2540
+          "y": 2360
         }
       }
     note: false
@@ -1332,7 +1337,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1262.5,
+          "x": -1782.5,
           "y": 600
         }
       }
@@ -1470,14 +1475,14 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "213"
+      - "220"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 640,
-          "y": 4070
+          "y": 3880
         }
       }
     note: false
@@ -1508,7 +1513,7 @@ tasks:
       {
         "position": {
           "x": 212.5,
-          "y": 4070
+          "y": 3880
         }
       }
     note: false
@@ -1538,8 +1543,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -910,
-          "y": 1730
+          "x": -1050,
+          "y": 1640
         }
       }
     note: false
@@ -1584,8 +1589,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -910,
-          "y": 1865
+          "x": -1050,
+          "y": 1775
         }
       }
     note: false
@@ -1615,8 +1620,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1557.5,
-          "y": 1730
+          "x": -1507.5,
+          "y": 1640
         }
       }
     note: false
@@ -1659,8 +1664,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1557.5,
-          "y": 1865
+          "x": -1507.5,
+          "y": 1775
         }
       }
     note: false
@@ -1691,8 +1696,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1557.5,
-          "y": 2080
+          "x": -1507.5,
+          "y": 2160
         }
       }
     note: false
@@ -1828,13 +1833,11 @@ tasks:
       {
         "position": {
           "x": 190,
-          "y": 3760
+          "y": 3570
         }
       }
     note: false
-    timertriggers:
-    - fieldname: detectionsla
-      action: stop
+    timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
@@ -1878,6 +1881,16 @@ tasks:
                 root: incident
                 accessor: reporteremailaddress
             iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.UserEngagement
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+          ignorecase: true
     - label: yes - phishing
       condition:
       - - operator: isNotEmpty
@@ -1887,12 +1900,22 @@ tasks:
                 root: incident
                 accessor: reporteremailaddress
             iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.UserEngagement
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+          ignorecase: true
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 432.5,
-          "y": 3550
+          "y": 3360
         }
       }
     note: false
@@ -1940,13 +1963,11 @@ tasks:
       {
         "position": {
           "x": 660,
-          "y": 3760
+          "y": 3570
         }
       }
     note: false
-    timertriggers:
-    - fieldname: detectionsla
-      action: stop
+    timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
@@ -1966,7 +1987,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "8"
+      - "223"
       "Yes":
       - "16"
     separatecontext: false
@@ -1982,6 +2003,16 @@ tasks:
             iscontext: true
           right:
             value: {}
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.UserEngagement
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+          ignorecase: true
     continueonerrortype: ""
     view: |-
       {
@@ -2030,77 +2061,7 @@ tasks:
       {
         "position": {
           "x": 212.5,
-          "y": 4375
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "153":
-    id: "153"
-    taskid: 54c0f37b-b540-413b-8d1d-ff2f3c44e100
-    type: condition
-    task:
-      id: 54c0f37b-b540-413b-8d1d-ff2f3c44e100
-      version: -1
-      name: Did domain-squatting occur?
-      description: Checks whether the attacker tried to squat another domain involved in this incident.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "84"
-      "yes":
-      - "155"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: DBotScore
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: DBotScore.Vendor
-                      iscontext: true
-                    right:
-                      value:
-                        simple: DomainSquatting
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: DBotScore.Indicator
-                      iscontext: true
-                    right:
-                      value:
-                        simple: incident.reportedemailfrom
-                      iscontext: true
-                - - operator: greaterThanOrEqual
-                    left:
-                      value:
-                        simple: DBotScore.Score
-                      iscontext: true
-                    right:
-                      value:
-                        simple: "2"
-            iscontext: true
-          right:
-            value: {}
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 310,
-          "y": 1865
+          "y": 4185
         }
       }
     note: false
@@ -2117,104 +2078,21 @@ tasks:
     task:
       id: 74f8be3e-bd84-492b-8e45-e6ebd2d4cdd9
       version: -1
-      name: Domain-squatting
+      name: Spear Phishing
       type: title
       iscommand: false
       brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - "153"
+      - "225"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 310,
-          "y": 1730
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "155":
-    id: "155"
-    taskid: b58fc3ce-c37a-46c4-839b-ea035ef824de
-    type: regular
-    task:
-      id: b58fc3ce-c37a-46c4-839b-ea035ef824de
-      version: -1
-      name: Save domain-squatting result to incident field
-      description: commands.local.cmd.set.incident
-      script: Builtin|||setIncident
-      type: regular
-      iscommand: true
-      brand: Builtin
-    nexttasks:
-      '#none#':
-      - "84"
-    scriptarguments:
-      domainsquattingresult:
-        complex:
-          root: DBotScore
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: DBotScore.Vendor
-                iscontext: true
-              right:
-                value:
-                  simple: DomainSquatting
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: DBotScore.Indicator
-                iscontext: true
-              right:
-                value:
-                  simple: incident.reportedemailfrom
-                iscontext: true
-          - - operator: greaterThanOrEqual
-              left:
-                value:
-                  simple: DBotScore.Score
-                iscontext: true
-              right:
-                value:
-                  simple: "2"
-          accessor: Indicator
-          transformers:
-          - operator: uniq
-          - operator: split
-            args:
-              delimiter:
-                value:
-                  simple: '@'
-          - operator: LastArrayElement
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: The attacker used the domain **
-              suffix: {}
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: '** which looks like another domain involved in this incident.'
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 310,
-          "y": 2090
+          "x": 970,
+          "y": 1640
         }
       }
     note: false
@@ -2306,7 +2184,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1262.5,
+          "x": -1782.5,
           "y": 795
         }
       }
@@ -2489,8 +2367,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 860,
-          "y": 1730
+          "x": 500,
+          "y": 1640
         }
       }
     note: false
@@ -2619,8 +2497,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 860,
-          "y": 1865
+          "x": 500,
+          "y": 1775
         }
       }
     note: false
@@ -2680,8 +2558,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 860,
-          "y": 2090
+          "x": 500,
+          "y": 2000
         }
       }
     note: false
@@ -2765,8 +2643,8 @@ tasks:
         - Block Account - Generic v2
         - Block IP - Generic v3
         - Block File - Generic v2
-        - Block Email - Generic
-        - Block Domain - Generic
+        - Block Email - Generic v2
+        - Block Domain - Generic v2
 
       playbookName: Block Indicators - Generic v3
       type: playbook
@@ -2802,6 +2680,12 @@ tasks:
                   simple: "3"
           accessor: Indicator
           transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: SemiAutomatedBlockOptions.Name
+                iscontext: true
           - operator: uniq
       EmailToBlock:
         complex:
@@ -2826,6 +2710,12 @@ tasks:
                   simple: "3"
           accessor: Indicator
           transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: SemiAutomatedBlockOptions.Email.Address
+                iscontext: true
           - operator: uniq
       FilesToBlock:
         complex:
@@ -2850,6 +2740,12 @@ tasks:
                   simple: "3"
           accessor: Indicator
           transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: SemiAutomatedBlockOptions.SHA256
+                iscontext: true
           - operator: uniq
       IP:
         complex:
@@ -2874,6 +2770,12 @@ tasks:
                   simple: "3"
           accessor: Indicator
           transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: SemiAutomatedBlockOptions.Address
+                iscontext: true
           - operator: uniq
       InputEnrichment:
         simple: "False"
@@ -2904,6 +2806,12 @@ tasks:
                   simple: "3"
           accessor: Indicator
           transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: SemiAutomatedBlockOptions.Data
+                iscontext: true
           - operator: uniq
       UserVerification:
         simple: "False"
@@ -2942,7 +2850,7 @@ tasks:
       {
         "position": {
           "x": 640,
-          "y": 4200
+          "y": 4360
         }
       }
     note: false
@@ -2985,7 +2893,7 @@ tasks:
       {
         "position": {
           "x": 432.5,
-          "y": 3200
+          "y": 3010
         }
       }
     note: false
@@ -3024,7 +2932,7 @@ tasks:
       {
         "position": {
           "x": 660,
-          "y": 3380
+          "y": 3190
         }
       }
     note: false
@@ -3034,37 +2942,572 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "216":
+    id: "216"
+    taskid: 774d29ad-0044-48f0-8ed8-8bde43ca7fb8
+    type: title
+    task:
+      id: 774d29ad-0044-48f0-8ed8-8bde43ca7fb8
+      version: -1
+      name: Threat Intelligence Analysis
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "217"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -600,
+          "y": 1640
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "217":
+    id: "217"
+    taskid: f18ca3f8-df34-40f4-8466-57f1140952a8
+    type: playbook
+    task:
+      id: f18ca3f8-df34-40f4-8466-57f1140952a8
+      version: -1
+      name: TIM - Indicator Relationships Analysis
+      playbookName: TIM - Indicator Relationships Analysis
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "218"
+    scriptarguments:
+      Indicator:
+        complex:
+          root: IP
+          accessor: Address
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: URL.Data
+                iscontext: true
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: Domain.Name
+                iscontext: true
+      LimitResults:
+        simple: "300"
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": -600,
+          "y": 1775
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "218":
+    id: "218"
+    taskid: 44a904d8-10cd-4f8c-8d9f-1560df2b6d40
+    type: condition
+    task:
+      id: 44a904d8-10cd-4f8c-8d9f-1560df2b6d40
+      version: -1
+      name: Incident indicators related to campaign/report from TIM?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "84"
+      "yes":
+      - "219"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: RelatedCampaign
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: RelatedReport
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -600,
+          "y": 1950
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "219":
+    id: "219"
+    taskid: 5d9db4d3-8f4c-4835-815f-874362252bae
+    type: regular
+    task:
+      id: 5d9db4d3-8f4c-4835-815f-874362252bae
+      version: -1
+      name: Set Threat Intel findings to layout
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "84"
+    scriptarguments:
+      relatedcampaign:
+        complex:
+          root: RelatedCampaign
+      relatedreport:
+        complex:
+          root: RelatedReport
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -600,
+          "y": 2150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "220":
+    id: "220"
+    taskid: 224a0570-4019-4dc8-8d76-5f44f766859e
+    type: condition
+    task:
+      id: 224a0570-4019-4dc8-8d76-5f44f766859e
+      version: -1
+      name: Automatically block indicators?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "221"
+      "yes":
+      - "213"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.BlockIndicators
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 640,
+          "y": 4010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "221":
+    id: "221"
+    taskid: 92133fbe-7c78-4df5-89e3-3c7b82629767
+    type: regular
+    task:
+      id: 92133fbe-7c78-4df5-89e3-3c7b82629767
+      version: -1
+      name: Set all indicators to semi-automated block options
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "213"
+    scriptarguments:
+      key:
+        simple: SemiAutomatedBlockOptions
+      value:
+        complex:
+          root: File
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: Domain
+                iscontext: true
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: Account
+                iscontext: true
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: URL
+                iscontext: true
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: IP
+                iscontext: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 890,
+          "y": 4180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "222":
+    id: "222"
+    taskid: 8b370acf-362f-45b2-81f6-10f886fb4d58
+    type: condition
+    task:
+      id: 8b370acf-362f-45b2-81f6-10f886fb4d58
+      version: -1
+      name: Engage with the user?
+      description: Checks whether to inform the user about the verdict of the incident.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "56"
+      "yes":
+      - "53"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.UserEngagement
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+          ignorecase: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: reporteremailaddress
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 770,
+          "y": 430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "223":
+    id: "223"
+    taskid: 04046165-90c9-4bcc-8aad-fdf13f03568c
+    type: condition
+    task:
+      id: 04046165-90c9-4bcc-8aad-fdf13f03568c
+      version: -1
+      name: Pause to manually perform additional actions?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "224"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.TakeManualActions
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -410,
+          "y": 4700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "224":
+    id: "224"
+    taskid: 29be8530-7a2a-4454-81cf-90f3478b7c8b
+    type: regular
+    task:
+      id: 29be8530-7a2a-4454-81cf-90f3478b7c8b
+      version: -1
+      name: Take manual actions
+      description: 'Take notes and additional necessary manual actions before continuing. Once this task will be completed, the incident will be closed.'
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -640,
+          "y": 4870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "225":
+    id: "225"
+    taskid: 04a23fe1-d4d1-4509-87c8-b9b00ec41c07
+    type: playbook
+    task:
+      id: 04a23fe1-d4d1-4509-87c8-b9b00ec41c07
+      version: -1
+      name: Spear Phishing Investigation
+      playbookName: Spear Phishing Investigation
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "84"
+    scriptarguments:
+      DomainSquattingResults:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Vendor
+                iscontext: true
+              right:
+                value:
+                  simple: DomainSquatting
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Indicator
+                iscontext: true
+              right:
+                value:
+                  simple: incident.reportedemailfrom
+                iscontext: true
+              ignorecase: true
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "2"
+          accessor: Indicator
+      KeywordsToSearch:
+        complex:
+          root: inputs.KeyWordsToSearch
+      MailBody:
+        complex:
+          root: incident
+          accessor: emailbody
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: incident.emailbodyhtml
+                iscontext: true
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 970,
+          "y": 1775
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "226":
+    id: "226"
+    taskid: c2203ede-e9ad-40d8-82ed-80addb93ae9e
+    type: title
+    task:
+      id: c2203ede-e9ad-40d8-82ed-80addb93ae9e
+      version: -1
+      name: Email Is Benign
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "151"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -920,
+          "y": 3390
+        }
+      }
+    note: false
+    timertriggers:
+    - fieldname: detectionsla
+      action: stop
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 system: true
 view: |-
   {
     "linkLabelsPosition": {
-      "132_133_yes": 0.55,
-      "132_84_#default#": 0.13,
+      "132_133_yes": 0.7,
+      "132_84_#default#": 0.33,
       "137_135_yes": 0.54,
       "137_52_#default#": 0.16,
       "149_148_yes - phishing": 0.66,
       "149_27_#default#": 0.21,
-      "151_16_Yes": 0.57,
-      "151_8_#default#": 0.22,
+      "151_16_Yes": 0.72,
+      "151_223_#default#": 0.19,
       "152_28_yes": 0.38,
-      "153_155_yes": 0.44,
-      "153_84_#default#": 0.1,
-      "15_31_#default#": 0.6,
+      "15_30_Malicious": 0.48,
+      "15_31_#default#": 0.52,
       "162_163_yes": 0.41,
       "162_52_#default#": 0.22,
       "179_211_yes": 0.5,
       "179_84_#default#": 0.1,
       "214_215_yes": 0.37,
-      "33_149_yes": 0.18,
+      "218_84_#default#": 0.48,
+      "222_53_yes": 0.42,
+      "222_56_#default#": 0.17,
+      "223_224_yes": 0.47,
+      "33_30_yes": 0.1,
       "36_152_Yes": 0.49,
       "79_82_yes": 0.46,
       "79_84_#default#": 0.17
     },
     "paper": {
       "dimensions": {
-        "height": 5660,
-        "width": 2797.5,
-        "x": -1557.5,
+        "height": 5780,
+        "width": 3132.5,
+        "x": -1782.5,
         "y": -510
       }
     }
@@ -3245,8 +3688,33 @@ inputs:
     This input will be used as the "original_authentication_header" argument in the "CheckEmailAuthenticity" script under the "Authenticate email" task.
     The header that holds the original Authentication-Results header value. This can be used when an intermediate server changes the original email and holds the original header value in a different header. Note - Use this only if you trust the server creating this header.
   playbookInputQuery:
+- key: UserEngagement
+  value:
+    simple: "True"
+  required: false
+  description: |-
+    Specify whether to engage with the user via email for investigation updates.
+    Set the value to 'True' to allow user engagement, or 'False' to avoid user engagement.
+  playbookInputQuery:
+- key: TakeManualActions
+  value:
+    simple: "False"
+  required: false
+  description: |-
+    Specify whether to stop the playbook to take additional action before closing the incident.
+    Set the value to 'True' to stop the playbook before closing the incidents, or "False" to close the incident once the playbook flow is done.
+  playbookInputQuery:
+- key: KeyWordsToSearch
+  value: {}
+  required: false
+  description: |-
+    A comma-separated list of keywords to search in the email body.
+    For example: name of the organization finance app that the attacker might impersonate.
+    This input is used in the "Spear Phishing Investigation" sub-playbook.
+  playbookInputQuery:
 outputs: []
 tests:
 - Phishing v3 - Get Original Email + Search & Delete - Test
 - Phishing v3 - DomainSquatting+EML+MaliciousIndicators - Test
 fromversion: 6.5.0
+toversion: 6.7.9

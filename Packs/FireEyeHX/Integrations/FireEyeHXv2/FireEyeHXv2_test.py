@@ -1,13 +1,12 @@
-import io
 import json
 from pathlib import Path
-
+from typing import Any
 import pytest
 from CommonServerPython import DemistoException
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -1667,6 +1666,7 @@ def test_list_indicator_categories_command(mocker, requests_mock, file_name: str
     request = requests_mock.get(f'{base_url}/indicator_categories', status_code=status_code, json=mocked_response)
     client = Client(base_url)
     command_result = list_indicator_categories_command(client, {'search': 'foo', 'limit': 49})
+    command_result.raw_response = command_result.raw_response or None
     assert command_result.to_context() == expected_context
     assert request.called_once
     assert request.last_request._url_parts.query == 'limit=49&search=foo'
@@ -1991,3 +1991,37 @@ def test_validate_base_url(baseurl: str, expected_error: str):
     with pytest.raises(ValueError) as e:
         validate_base_url(baseurl)
     assert str(e.value) == expected_error
+
+
+CREATE_INDICATOR_ARGS = {
+    'category': 'test_cat',
+    'name': 'test_name',
+    'display_name': 'test_display_name',
+    'description': 'test_desc',
+    'platforms': ['platform1', 'platform2'],
+    'data': {
+        '_id': 'test'
+    }
+}
+
+
+def test_create_indicator_command(monkeypatch):
+    import FireEyeHXv2
+
+    class MockClient:
+        def __init__(self, base_url):
+            pass
+
+        def get_token_request(self):
+            return "mock_token"
+
+        def new_indicator_request(self, category, body: dict[str, Any]):
+            return CREATE_INDICATOR_ARGS
+
+    monkeypatch.setattr(FireEyeHXv2, "Client", MockClient)
+
+    args = CREATE_INDICATOR_ARGS
+    from FireEyeHXv2 import Client, create_indicator_command
+    client = Client(base_url='https://www.example.com')
+    command_result = create_indicator_command(client=client, args=args)
+    assert command_result.raw_response == CREATE_INDICATOR_ARGS

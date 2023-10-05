@@ -1,6 +1,6 @@
 fromversion: 6.10.0
-id: Tenable_io_modeling_rule
-name: Tenable.io Modeling Rule
+id: Tenable_io_ParsingRule
+name: Tenable.io Parsing Rule
 rules: ''
 tags:
  - tenable

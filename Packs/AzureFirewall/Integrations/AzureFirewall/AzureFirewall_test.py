@@ -21,7 +21,7 @@ def load_mock_response(file_path: str) -> str:
     Returns:
         str: Mock file content.
     """
-    with open(file_path, mode='r', encoding='utf-8') as mock_file:
+    with open(file_path, encoding='utf-8') as mock_file:
         return mock_file.read()
 
 
@@ -118,7 +118,7 @@ def test_azure_firewall_get_command(requests_mock):
     mock_response = json.loads(load_mock_response('test_data/firewall/firewall_get.json'))
     requests_mock.get(url, json=mock_response)
 
-    command_arguments = dict(firewall_names=firewall_name)
+    command_arguments = {"firewall_names": firewall_name}
     result = azure_firewall_get_command(client, command_arguments)
 
     assert len(result[0].outputs) == 1
@@ -150,7 +150,7 @@ def test_azure_firewall_rules_collection_list_command_for_firewall(requests_mock
     mock_response = json.loads(load_mock_response('test_data/firewall/firewall_get.json'))
     requests_mock.get(url, json=mock_response)
 
-    command_arguments = dict(firewall_name=firewall_name, rule_type="application_rule")
+    command_arguments = {"firewall_name": firewall_name, "rule_type": "application_rule"}
     result = azure_firewall_rules_collection_list_command(client, command_arguments)
 
     assert len(result.outputs) == 1
@@ -188,7 +188,7 @@ def test_azure_firewall_rules_collection_list_command_for_policy(requests_mock):
     requests_mock.get(url, json=mock_response)
 
     rule_type = "application_rule"
-    command_arguments = dict(policy=policy_name, rule_type=rule_type)
+    command_arguments = {"policy": policy_name, "rule_type": rule_type}
     result = azure_firewall_rules_collection_list_command(client, command_arguments)
 
     collection_key = get_policy_rule_collection_name(rule_type=rule_type)
@@ -229,7 +229,7 @@ def test_azure_firewall_rules_list_command_for_policy(requests_mock):
     mock_response = json.loads(load_mock_response('test_data/policy/policy_rule_list.json'))
     requests_mock.get(url, json=mock_response)
 
-    command_arguments = dict(policy=policy_name, collection_name=collection_name)
+    command_arguments = {"policy": policy_name, "collection_name": collection_name}
     result = azure_firewall_rules_list_command(client, command_arguments)
 
     assert len(result.outputs) == 1
@@ -263,7 +263,7 @@ def test_azure_firewall_rules_list_command_for_firewall(requests_mock):
     mock_response = json.loads(load_mock_response('test_data/firewall/firewall_get.json'))
     requests_mock.get(url, json=mock_response)
 
-    command_arguments = dict(firewall_name=firewall_name, collection_name=collection_name, rule_type="application_rule")
+    command_arguments = {"firewall_name": firewall_name, "collection_name": collection_name, "rule_type": "application_rule"}
     result = azure_firewall_rules_list_command(client, command_arguments)
 
     assert len(result.outputs) == 1
@@ -297,8 +297,8 @@ def test_azure_firewall_rules_get_command_for_firewall(requests_mock):
     mock_response = json.loads(load_mock_response('test_data/firewall/firewall_get.json'))
     requests_mock.get(url, json=mock_response)
 
-    command_arguments = dict(firewall_name=firewall_name, collection_name=collection_name, rule_type="application_rule",
-                             rule_name=rule_name)
+    command_arguments = {"firewall_name": firewall_name, "collection_name": collection_name, "rule_type": "application_rule",
+                         "rule_name": rule_name}
     result = azure_firewall_rule_get_command(client, command_arguments)
 
     assert result.outputs_key_field == 'name'
@@ -331,7 +331,7 @@ def test_azure_firewall_rule_get_command_for_policy(requests_mock):
     mock_response = json.loads(load_mock_response('test_data/policy/policy_rule_list.json'))
     requests_mock.get(url, json=mock_response)
 
-    command_arguments = dict(policy=policy_name, collection_name=collection_name, rule_name=rule_name)
+    command_arguments = {"policy": policy_name, "collection_name": collection_name, "rule_name": rule_name}
     result = azure_firewall_rule_get_command(client, command_arguments)
 
     assert result.outputs_key_field == 'name'
@@ -363,8 +363,8 @@ def test_azure_firewall_policy_create_command(requests_mock):
     mock_response = json.loads(load_mock_response('test_data/policy/policy_create.json'))
     requests_mock.put(url, json=mock_response)
 
-    command_arguments = dict(policy_name=policy_name, threat_intelligence_mode="Turned-off", location="eastus",
-                             tier="Standard", enable_proxy="False")
+    command_arguments = {"policy_name": policy_name, "threat_intelligence_mode": "Turned-off", "location": "eastus",
+                         "tier": "Standard", "enable_proxy": "False"}
     result = azure_firewall_policy_create_command(client, command_arguments)
 
     assert len(result.outputs) == 1
@@ -464,7 +464,7 @@ def test_azure_firewall_policy_get_command(requests_mock):
     mock_response = json.loads(load_mock_response('test_data/policy/policy_get.json'))
     requests_mock.get(url, json=mock_response)
 
-    command_arguments = dict(policy_names=policy_name)
+    command_arguments = {"policy_names": policy_name}
     result = azure_firewall_policy_get_command(client, command_arguments)
 
     assert len(result) == 1
@@ -495,7 +495,7 @@ def test_azure_firewall_policy_delete_command(requests_mock):
 
     requests_mock.delete(url, status_code=202)
 
-    command_arguments = dict(policy_names=policy_name)
+    command_arguments = {"policy_names": policy_name}
     result = azure_firewall_policy_delete_command(client, command_arguments)
 
     assert len(result) == 1

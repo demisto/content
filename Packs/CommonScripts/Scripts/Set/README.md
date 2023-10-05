@@ -135,6 +135,7 @@ There are no outputs for this script.
 
 ## Known Limitations
 The script has some limitations with appending to the context in different cases and formats:
+- The *value* argument can't be larger than 25MB. In general, it is not recommended to ingest large data to context values. 
 - When *append* is set to `false` - the script will not support [dt](https://xsoar.pan.dev/docs/integrations/dt) operations given as part of the *key* argument.
 - When **Set** is called from within another script - if *append* is set tot `true` it is necessary to manually
 return the results given by the `demisto.executeCommand`, for the context update to take place.

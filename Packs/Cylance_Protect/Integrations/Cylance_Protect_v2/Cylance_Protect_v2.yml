@@ -14,56 +14,71 @@ configuration:
   section: Connect
 - display: Application ID
   name: app_id
-  required: true
   type: 0
   section: Connect
+  hidden: true
+  required: false
 - display: Application Secret
   name: app_secret
-  required: true
   type: 4
   section: Connect
+  hidden: true
+  required: false
 - display: Tenant API Key
   name: tid
-  required: true
   type: 4
   section: Connect
+  hidden: true
+  required: false
+- display: Application ID
+  name: app_creds
+  type: 9
+  section: Connect
+  displaypassword: Application Secret
+  required: false
+- name: api_key
+  type: 9
+  section: Connect
+  hiddenusername: true
+  displaypassword: Tenant API Key
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Trust any certificate (not secure)
   name: unsecure
-  required: false
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Fetch incidents
   name: isFetch
-  required: false
   type: 8
   section: Collect
+  required: false
 - display: Incident type
   name: incidentType
-  required: false
   type: 13
   section: Connect
+  required: false
 - defaultvalue: "-59"
   display: File Threshold
   name: file_threshold
-  required: false
   type: 0
   section: Connect
   advanced: true
+  required: false
 - defaultvalue: "1"
   display: Incidents Fetch Interval
   name: incidentFetchInterval
-  required: false
   type: 19
   section: Collect
   advanced: true
-description: Manage Endpoints using Cylance protect
+  required: false
+description: Manage Endpoints using Cylance protect.
 display: Cylance Protect v2
 name: Cylance Protect v2
 script:
@@ -114,10 +129,10 @@ script:
       type: Unknown
   - arguments:
     - default: true
-      description: The device ID
+      description: The device ID.
       name: id
       required: true
-    description: Allows a caller to request a specific device resource belonging to a Tenant
+    description: Allows a caller to request a specific device resource belonging to a Tenant.
     name: cylance-protect-get-device
     outputs:
     - contextPath: CylanceProtect.Device.AgentVersion
@@ -176,10 +191,10 @@ script:
       type: string
   - arguments:
     - default: true
-      description: The hostname (DNS name)
+      description: The hostname (DNS name).
       name: hostname
       required: true
-    description: Allows a caller to request a specific device resource belonging to a Tenant by hostname
+    description: Allows a caller to request a specific device resource belonging to a Tenant by hostname.
     name: cylance-protect-get-device-by-hostname
     outputs:
     - contextPath: CylanceProtect.Device.AgentVersion
@@ -369,7 +384,7 @@ script:
       name: pageNumber
     - description: The page size parameter is optional. When the value is not specified, the default is 10. Max is 200.
       name: pageSize
-    description: Request zone information for your organization. This will return the top 100 records
+    description: Request zone information for your organization. This will return the top 100 records.
     name: cylance-protect-get-zones
     outputs:
     - contextPath: CylanceProtect.Zones.Criticality
@@ -647,7 +662,7 @@ script:
       - Quarantine
       - Waive
       required: true
-    - description: ID of device to be updated
+    - description: ID of device to be updated.
       name: device_id
       required: true
     description: Updates the status of a convicted threat. Can be "Quarantine" or "Waive".
@@ -867,15 +882,15 @@ script:
   - name: cylance-optics-create-instaquery
     arguments:
     - name: name
-      description: |
+      description: |-
         InstaQuery name
-        ok test
+        ok test.
       required: true
     - name: description
-      description: InstaQuery description
+      description: InstaQuery description.
       required: true
     - name: artifact
-      description: InstaQuery artifact, select from the list
+      description: InstaQuery artifact, select from the list.
       required: true
       auto: PREDEFINED
       predefined:
@@ -884,7 +899,7 @@ script:
       - NetworkConnection
       - RegistryKey
     - name: match_value_type
-      description: InstaQuery value type to match, select from the list
+      description: InstaQuery value type to match, select from the list.
       required: true
       auto: PREDEFINED
       predefined:
@@ -907,13 +922,13 @@ script:
       - RegistryKey.FileMd5
       - RegistryKey.IsPersistencePoint
     - name: match_values
-      description: Value to search in InstaQuery
+      description: Value to search in InstaQuery.
       required: true
     - name: zone
-      description: Zone of the object
+      description: Zone of the object.
       required: true
     - name: match_type
-      description: Match type fuzzy or exact
+      description: Match type fuzzy or exact.
       required: true
       auto: PREDEFINED
       predefined:
@@ -933,7 +948,7 @@ script:
   - name: cylance-optics-get-instaquery-result
     arguments:
     - name: query_id
-      description: InstaQuery ID
+      description: InstaQuery ID.
       required: true
     description: Get a cylance InstaQuery search result.
     outputs:
@@ -951,11 +966,10 @@ script:
     description: Get a list of all current InstaQueries.
     outputs:
     - contextPath: InstaQuery.List
-      description: The list of InstaQuery
+      description: The list of InstaQuery.
       type: string
-  dockerimage: demisto/pyjwt3:1.0.0.55049
+  dockerimage: demisto/pyjwt3:1.0.0.74100
   isfetch: true
-  runonce: false
   script: ''
   subtype: python3
   type: python

@@ -28,9 +28,7 @@ args:
   predefined:
   - "True"
   - "False"
-comment: "Generates a certificate signing request for fulfillment by an organization
-  certification authority (CA)\n\nOutput is the request.csr file placed directly into
-  context under a \"File\" object. "
+comment: "Generates a certificate signing request for fulfillment by an organization certification authority (CA)\n\nOutput is the request.csr file placed directly into context under a \"File\" object. "
 commonfields:
   id: GenerateCSR
   version: -1
@@ -38,7 +36,6 @@ dockerimage: demisto/ansible-runner:1.0.0.47562
 enabled: true
 name: GenerateCSR
 runas: DBotWeakRole
-runonce: false
 script: ''
 scripttarget: 0
 subtype: python3

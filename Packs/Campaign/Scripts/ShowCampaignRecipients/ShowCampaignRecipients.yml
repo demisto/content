@@ -10,8 +10,7 @@ comment: Displays the phishing campaign recipients' email addresses and the numb
 enabled: true
 scripttarget: 0
 subtype: python3
-runonce: false
-dockerimage: demisto/python3:3.10.8.36650
+dockerimage: demisto/python3:3.10.12.63474
 runas: DBotWeakRole
 fromversion: 5.5.0
 tests:

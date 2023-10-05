@@ -1,8 +1,8 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 """Main file for RubrikPolaris Integration."""
 from typing import Tuple
 
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
 
 from rubrik_polaris.rubrik_polaris import PolarisClient
 from rubrik_polaris.exceptions import ProxyException
@@ -52,7 +52,7 @@ OBJECT_NAME = "Object Name"
 OBJECT_ID = "Object ID"
 DEFAULT_FIRST_FETCH = "3 days"
 MAX_MATCHES_PER_OBJECT = 100
-MAXIMUM_FILE_SIZE = 20000000000
+MAXIMUM_FILE_SIZE = 5000000
 
 MESSAGES = {
     'NO_RECORDS_FOUND': "No {} were found for the given argument(s).",
@@ -1096,7 +1096,7 @@ def validate_ioc_scan_args(args: Dict[str, Any]) -> dict:
             for i in range(len(snapshot_id))]
 
     max_matches_per_snapshot = MAX_MATCHES_PER_OBJECT
-    max_file_size = MAXIMUM_FILE_SIZE
+    max_file_size = arg_to_number(args.get('max_file_size', MAXIMUM_FILE_SIZE), 'max_file_size')
     return {
         "object_ids": object_id,
         "cluster_id": cluster_id,

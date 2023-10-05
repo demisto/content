@@ -1,0 +1,27 @@
+args:
+- description: Comment to be added to the Jira issue.
+  name: comment
+  required: true
+- auto: PREDEFINED
+  defaultValue: comment tag
+  description: The comment tag. Use the comment entry tag (defined in your instance configuration) to mirror the comment to Jira.
+  name: tags
+  predefined:
+  - comment tag
+  isArray: true
+comment: Use this script to add a comment with a tag (the "Comment tag to Jira" defined in the instance configuration) as an entry in XSOAR, which will then be mirrored as a comment to a Jira issue. This script should be run within an incident.
+commonfields:
+  id: JiraAddComment
+  version: -1
+name: JiraAddComment
+script: ""
+type: python
+tags: []
+enabled: true
+scripttarget: 0
+subtype: python3
+dockerimage: demisto/python3:3.10.12.63474
+runas: DBotWeakRole
+fromversion: 6.8.0
+tests:
+- No tests (auto formatted)

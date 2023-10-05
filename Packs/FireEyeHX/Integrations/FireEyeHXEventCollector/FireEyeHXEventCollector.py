@@ -152,9 +152,6 @@ def fetch_events(
     if not should_push_events:
         return fetched_events
 
-    if fetched_events:
-        last_alert: dict = fetched_events[-1]
-        demisto.setLastRun({'last_alert_id': str(last_alert.get('id'))})
     try:
         demisto.info(f'sending the following amount of events into XSIAM: {len(fetched_events)}')
         send_events_to_xsiam(
@@ -164,6 +161,11 @@ def fetch_events(
         )
     except Exception as e:
         demisto.info(f'got error when trying to send events to XSIAM: [{e}]')
+        raise e
+
+    if fetched_events:
+        last_alert: dict = fetched_events[-1]
+        demisto.setLastRun({'last_alert_id': str(last_alert.get('id'))})
 
     return fetched_events
 
@@ -175,8 +177,6 @@ def populate_modeling_rule_fields(events: list) -> None:
             event['id'] = event['_id']
             del event['_id']
 
-            if event_date := arg_to_datetime(event.get('event_at')):
-                event['_time'] = timestamp_to_datestring(event_date.timestamp() * 1000)
         except TypeError:
             # modeling rule will default on ingestion time if _time is missing
             pass

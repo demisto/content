@@ -1,3 +1,5 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 """
 Cisco ThreatGird integration
 """
@@ -6,18 +8,8 @@ import hashlib
 from datetime import datetime
 from typing import (
     Any,
-    Dict,
-    Callable,
-    MutableMapping,
-    MutableSequence,
-    Tuple,
-    Optional,
-    List,
-    Union,
-    Set,
 )
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
+from collections.abc import Callable, MutableMapping, MutableSequence
 
 DEFAULT_INTERVAL = 90
 DEFAULT_TIMEOUT = 600
@@ -34,7 +26,7 @@ API_V3_PREFIX = "/api/v3/"
 MAX_DAYS_DIFF = 14
 TIME_FORMAT = "%Y-%m-%d"
 
-ANALYSIS_OUTPUTS: Dict[str, Any] = {
+ANALYSIS_OUTPUTS: dict[str, Any] = {
     "artifacts": {
         "output": "ArtifactAnalysis",
         "keys_to_delete": ["antivirus", "forensics"],
@@ -61,7 +53,7 @@ ANALYSIS_OUTPUTS: Dict[str, Any] = {
     },
 }
 
-PREFIX_OUTPUTS: Dict[str, Any] = {
+PREFIX_OUTPUTS: dict[str, Any] = {
     "artifact": "Artifact",
     "path": "Path",
     "domain": "Domain",
@@ -89,12 +81,17 @@ class Client(BaseClient):
 
     def get_sample(
         self,
-        sample_id: Optional[str] = None,
-        limit: Optional[int] = None,
-        offset: Optional[int] = None,
-        artifact: Optional[str] = None,
-        summary: Optional[str] = None,
-    ) -> Dict[str, Any]:
+        sample_id: str | None = None,
+        limit: int | None = None,
+        offset: int | None = None,
+        artifact: str | None = None,
+        summary: str | None = None,
+        user_only: bool | None = False,
+        org_only: bool | None = False,
+        sha1: str | None = None,
+        sha256: str | None = None,
+        md5: str | None = None,
+    ) -> dict[str, Any]:
         """Retrieves the Sample Info record of a submission by sample ID.
 
         Args:
@@ -110,13 +107,18 @@ class Client(BaseClient):
         params = remove_empty_elements({
             "limit": limit,
             "offset": offset,
+            "user_only": user_only,
+            "org_only": org_only,
+            "md5": md5,
+            "sha1": sha1,
+            "sha256": sha256,
         })
 
         url_suffix = f"samples/{sample_id}" if sample_id else "samples"
         url_suffix = f"{url_suffix}/summary" if summary else url_suffix
 
         if artifact:
-            resp_type = "text"
+            resp_type = "content"
             url_suffix = f"{url_suffix}/{artifact}"
         else:
             resp_type = "json"
@@ -132,8 +134,8 @@ class Client(BaseClient):
         self,
         sample_id: str,
         analysis_type: str,
-        arg_value: Optional[str] = None,
-    ) -> Dict[str, Any]:
+        arg_value: str | None = None,
+    ) -> dict[str, Any]:
         """Get analysis data for a specific sample.
 
         Args:
@@ -155,7 +157,7 @@ class Client(BaseClient):
                     f"samples/{sample_id}/analysis/{url_prefix}"),
         )
 
-    def whoami(self) -> Dict[str, Any]:
+    def whoami(self) -> dict[str, Any]:
         """Get details about correct login user and organization.
 
         Returns:
@@ -168,9 +170,9 @@ class Client(BaseClient):
         self,
         arg_name: str,
         arg_value: str,
-        limit: Optional[int] = None,
-        offset: Optional[int] = None,
-    ) -> Dict[str, Any]:
+        limit: int | None = None,
+        offset: int | None = None,
+    ) -> dict[str, Any]:
         """Returns a list of samples associated to the domain /
             IP / URL / path / artifact / registry key that specified.
 
@@ -191,7 +193,7 @@ class Client(BaseClient):
             params=params,
         )
 
-    def get_sample_state(self, sample_id: str) -> Dict[str, Any]:
+    def get_sample_state(self, sample_id: str) -> dict[str, Any]:
         """Get the sample state.
 
         Args:
@@ -203,9 +205,14 @@ class Client(BaseClient):
         return self._http_request(
             "GET", urljoin(API_V2_PREFIX, f"samples/{sample_id}/state"))
 
-    def upload_sample(self,
-                      files: Optional[Dict] = None,
-                      payload: Optional[Dict] = None) -> Dict[str, Any]:
+    def upload_sample(
+        self,
+        files: dict | None = None,
+        payload: dict | None = None,
+        private: bool | None = None,
+        vm: str | None = None,
+        playbook: str | None = None,
+    ) -> dict[str, Any]:
         """Submits a sample (file or URL) to Malware Analytics for analysis.
         Args:
             files (dict, optional): File name and path in XSOAR.
@@ -214,16 +221,19 @@ class Client(BaseClient):
         Returns:
             Dict[str, Any]: API response from Cisco ThreatGrid.
         """
-
-        return self._http_request(
-            "POST",
-            urljoin(API_V2_PREFIX, "samples"),
-            files=files,
-            data=payload,
-        )
+        params = remove_empty_elements({
+            'private': private,
+            'vm': vm,
+            'playbook': playbook
+        })
+        return self._http_request("POST",
+                                  urljoin(API_V2_PREFIX, "samples"),
+                                  files=files,
+                                  data=payload,
+                                  params=params)
 
     def associated_samples(self, arg_name: str, arg_value: str,
-                           url_arg: str) -> Dict[str, Any]:
+                           url_arg: str) -> dict[str, Any]:
         """Returns a list of domains / URLs associated with the IP or
             list of IPs / URLs associated with the domain.
 
@@ -244,18 +254,18 @@ class Client(BaseClient):
     def get_feeds(
         self,
         arg_name: str,
-        arg_value: Optional[Any],
-        ioc: Optional[Any],
-        severity: Optional[int],
-        confidence: Optional[int],
-        sample_id: Optional[str] = None,
-        before: Optional[str] = None,
-        after: Optional[Any] = None,
-        user_only: Optional[bool] = False,
-        org_only: Optional[bool] = False,
-        limit: Optional[int] = None,
-        offset: Optional[int] = None,
-    ) -> Dict[str, Any]:
+        arg_value: Any | None,
+        ioc: Any | None,
+        severity: int | None,
+        confidence: int | None,
+        sample_id: str | None = None,
+        before: str | None = None,
+        after: Any | None = None,
+        user_only: bool | None = False,
+        org_only: bool | None = False,
+        limit: int | None = None,
+        offset: int | None = None,
+    ) -> dict[str, Any]:
         """Retrieves a list of ips/iocs/domains/urls/paths associated with
             an Indicator of Compromise (IOC).
 
@@ -302,19 +312,19 @@ class Client(BaseClient):
 
     def search_submission(
         self,
-        query: Optional[str] = None,
-        sort_by: Optional[str] = None,
-        term: Optional[str] = None,
-        state: Optional[str] = None,
-        before: Optional[str] = None,
-        after: Optional[str] = None,
-        user_only: Optional[bool] = None,
-        org_only: Optional[bool] = None,
-        highlight: Optional[bool] = None,
-        sort_order: Optional[str] = None,
-        limit: Optional[int] = None,
-        offset: Optional[int] = None,
-    ) -> Dict[str, Any]:
+        query: str | None = None,
+        sort_by: str | None = None,
+        term: str | None = None,
+        state: str | None = None,
+        before: str | None = None,
+        after: str | None = None,
+        user_only: bool | None = None,
+        org_only: bool | None = None,
+        highlight: bool | None = None,
+        sort_order: str | None = None,
+        limit: int | None = None,
+        offset: int | None = None,
+    ) -> dict[str, Any]:
         """Search submission that has been submitted to Cisco Malware Analytics for
             analysis has an associated Submission record.
 
@@ -365,7 +375,7 @@ class Client(BaseClient):
         self,
         arg_name: str,
         arg_value: str,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Get details about specified IP/URL/domain/path.
 
         Args:
@@ -383,7 +393,7 @@ class Client(BaseClient):
     def get_rate_limit(
         self,
         login: str,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Get rate limit for a specific user name.
 
         Args:
@@ -401,9 +411,9 @@ class Client(BaseClient):
         self,
         feed_name: str,
         output_type: str,
-        before: Optional[str] = None,
-        after: Optional[str] = None,
-    ) -> Dict[str, Any]:
+        before: str | None = None,
+        after: str | None = None,
+    ) -> dict[str, Any]:
         """Gets a specific threat feed.
 
         Args:
@@ -428,7 +438,7 @@ class Client(BaseClient):
 
 def search_submission_command(
     client: Client,
-    args: Dict[str, Any],
+    args: dict[str, Any],
 ) -> CommandResults:
     """Search submission that has been submitted to Cisco Malware Analytics
         for analysis has an associated Submission record.
@@ -490,7 +500,7 @@ def search_submission_command(
 
 def search_command(
     client: Client,
-    args: Dict[str, Any],
+    args: dict[str, Any],
 ) -> CommandResults:
     """Search submission that has been submitted to Cisco Malware Analytics
         for analysis has an associated Submission record.
@@ -530,7 +540,7 @@ def search_command(
 
 def list_associated_samples_command(
     client: Client,
-    args: Dict[str, Any],
+    args: dict[str, Any],
 ) -> CommandResults:
     """Returns a list of samples associated to the
         domain / IP / URL / path / artifact / registry key that specified.
@@ -578,7 +588,7 @@ def list_associated_samples_command(
 
 def analysis_sample_command(
     client: Client,
-    args: Dict[str, Any],
+    args: dict[str, Any],
 ) -> CommandResults:
     """Get data about a specific IOC / processes / artifact / network-stream
         from the relevant section of the sample's analysis.json.
@@ -620,7 +630,7 @@ def analysis_sample_command(
 
 def get_rate_limit_command(
     client: Client,
-    args: Dict[str, Any],
+    args: dict[str, Any],
 ) -> CommandResults:
     """Get rate limit for a specific user name.
 
@@ -653,7 +663,7 @@ def get_rate_limit_command(
 
 def who_am_i_command(
     client: Client,
-    args: Dict[str, Any],
+    args: dict[str, Any],
 ) -> CommandResults:
     """Get data about a specific IOC / processes / artifact / network-stream
         from the relevant section of the sample's analysis.json.
@@ -684,7 +694,7 @@ def who_am_i_command(
 
 def get_specific_feed_command(
     client: Client,
-    args: Dict[str, Any],
+    args: dict[str, Any],
 ) -> CommandResults:
     """Get data about a specific IOC / processes / artifact / network-stream
         from the relevant section of the sample's analysis.json.
@@ -726,7 +736,7 @@ def get_specific_feed_command(
 
 def associated_command(
     client: Client,
-    args: Dict[str, Any],
+    args: dict[str, Any],
 ) -> CommandResults:
     """Returns a list of domains / URLs associated with the IP or
         list of IPs / URLs associated with the domain.
@@ -766,7 +776,7 @@ def associated_command(
 
 def feeds_command(
     client: Client,
-    args: Dict[str, Any],
+    args: dict[str, Any],
 ) -> CommandResults:
     """Retrieves a list of domain / IP / URL / path / artifact / registry key that specified,
         associated with an Indicator of Compromise (IOC).
@@ -825,7 +835,7 @@ def feeds_command(
 
 def upload_sample_command(
     client: Client,
-    args: Dict[str, Any],
+    args: dict[str, Any],
 ) -> CommandResults:
     """Submits a sample (file ID or URL) to Malware Analytics for analysis.
 
@@ -838,16 +848,25 @@ def upload_sample_command(
     """
     file_id = args.get("file_id")
     url = args.get("url")
+    private = optional_arg_to_boolean(args.get("private"))
+    vm = args.get("vm")
+    playbook = args.get("playbook")
 
     if (file_id and url) or (not file_id and not url):
         raise ValueError("You must specified file_id or url, not both.")
 
     if file_id:
         file = parse_file_to_sample(file_id)
-        response = client.upload_sample(files=file)
+        response = client.upload_sample(files=file,
+                                        private=private,
+                                        vm=vm,
+                                        playbook=playbook)
     else:
         payload = {"url": url}
-        response = client.upload_sample(payload=payload)
+        response = client.upload_sample(payload=payload,
+                                        private=private,
+                                        vm=vm,
+                                        playbook=playbook)
     uploaded_sample = response["data"]
 
     return CommandResults(
@@ -860,7 +879,7 @@ def upload_sample_command(
 
 def get_sample_command(
     client: Client,
-    args: Dict[str, Any],
+    args: dict[str, Any],
 ) -> CommandResults:
     """Retrieves the Sample Info record of a submission by sample ID.
 
@@ -875,6 +894,11 @@ def get_sample_command(
     is_summary = get_arg_from_command_name(args["command_name"], 3)
     arg_name = is_summary if is_summary == "summary" else arg_name
     sample_id = args.get("sample_id")
+    sha1 = args.get("sha1")
+    sha256 = args.get("sha256")
+    md5 = args.get("md5")
+    user_only = args.get("user_only")
+    org_only = args.get("org_only")
 
     artifact = args.get("artifact")
     limit, offset, pagination_message = pagination(args)
@@ -890,6 +914,11 @@ def get_sample_command(
         offset=offset,
         artifact=artifact,
         summary=SAMPLE_ARGS[arg_name]["summary"],  # type: ignore[arg-type]
+        user_only=user_only,
+        org_only=org_only,
+        sha1=sha1,
+        sha256=sha256,
+        md5=md5,
     )
 
     sample_details = response
@@ -922,7 +951,7 @@ def get_sample_command(
 
 def sample_state_get_command(
     client: Client,
-    args: Dict[str, Any],
+    args: dict[str, Any],
 ) -> CommandResults:
     """Get sample state.
     Args:
@@ -950,7 +979,7 @@ def sample_state_get_command(
     poll_message="Upload sample is executing",
     requires_polling_arg=False,
 )
-def schedule_command(args: Dict[str, Any], client: Client) -> PollResult:
+def schedule_command(args: dict[str, Any], client: Client) -> PollResult:
     """Build scheduled command if sample state is not 'succ'.
     Args:
         client (Client): ThreatGrid API client.
@@ -1022,8 +1051,8 @@ def get_dbotscore(
 
 def reputation_command(
     client: Client,
-    args: Dict[str, Any],
-) -> Union[List[CommandResults], CommandResults]:
+    args: dict[str, Any],
+) -> list[CommandResults] | CommandResults:
     """
     Generic reputation command that returns information about Files/IPs/URLs/Domains.
     Args:
@@ -1045,12 +1074,15 @@ def reputation_command(
             state="succ",
             sort_by="analyzed_at",
         )
+
         if response["data"]["current_item_count"] == 0:
             score = 0
-            sample_details = {}
+            sample_details = {generic_command_name: command_arg}
             sample_id = ""
+
         else:
             sample_details = response["data"]["items"][0]["item"]
+            sample_details[generic_command_name] = command_arg
             sample_analysis_date = dict_safe_get(
                 sample_details,
                 ["analysis", "metadata", "sandcastle_env", "analysis_end"],
@@ -1061,7 +1093,7 @@ def reputation_command(
 
             if not is_day_diff_valid(sample_analysis_date):
                 score = 0
-                sample_details = {}
+                sample_details = {generic_command_name: command_arg}
                 sample_id = ""
 
         dbot_score = get_dbotscore(score, generic_command_name, command_arg,
@@ -1075,6 +1107,7 @@ def reputation_command(
             "dbot_score": dbot_score,
             "sample_details": sample_details,
         }
+
         command_results.append(reputation_helper_command(**kwargs))
 
     return command_results
@@ -1228,10 +1261,17 @@ def parse_file_indicator(
         "sha1": sha1,
         "sha256": sha256,
     }
-    readable_output = tableToMarkdown(
-        name=f"ThreatGrid File Reputation for {md5} \n",
-        t=outputs,
-    )
+
+    file_hash = sample_details.get('file')
+    if md5 or sha1 or sha256:
+        readable_output = tableToMarkdown(
+            name=f"ThreatGrid File Reputation for {file_hash} \n",
+            t=outputs,
+        )
+    else:
+        readable_output = tableToMarkdown(
+            name=f"ThreatGrid File Not Found for {file_hash} \n",
+            t={"file": file_hash})
 
     return CommandResults(
         readable_output=readable_output,
@@ -1334,7 +1374,7 @@ def parse_url_indicator(
 
 def delete_keys_from_dict(
         dictionary: MutableMapping,
-        keys_to_delete: Union[Set[str], List[str]]) -> Dict[str, Any]:
+        keys_to_delete: set[str] | list[str]) -> dict[str, Any]:
     """Get a modified dictionary without the requested keys.
     Args:
         dictionary (Dict[str, Any]): Dictionary to modify according to.
@@ -1343,7 +1383,7 @@ def delete_keys_from_dict(
         Dict[str, Any]: Modified dictionary without requested keys.
     """
     keys_set = set(keys_to_delete)
-    modified_dict: Dict[str, Any] = {}
+    modified_dict: dict[str, Any] = {}
 
     for key, value in dictionary.items():
         if key not in keys_set:
@@ -1362,9 +1402,9 @@ def delete_keys_from_dict(
 
 
 def validate_pagination_arguments(
-    page: Optional[int] = None,
-    page_size: Optional[int] = None,
-    limit: Optional[int] = None,
+    page: int | None = None,
+    page_size: int | None = None,
+    limit: int | None = None,
 ):
     """Validate pagination arguments according to their default.
     Args:
@@ -1383,11 +1423,11 @@ def validate_pagination_arguments(
         raise ValueError(
             f"page argument must be greater than {MIN_PAGE_NUM-1}.")
 
-    if limit is not None and limit <= MIN_LIMIT:
+    if limit is not None and limit < MIN_LIMIT:
         raise ValueError(f"limit argument must be greater than {MIN_LIMIT}.")
 
 
-def pagination(args: Dict[str, Any]) -> Tuple:
+def pagination(args: dict[str, Any]) -> tuple:
     """Return the correct limit and offset for the API
         based on the user arguments page, page_size and limit.
 
@@ -1415,7 +1455,7 @@ def pagination(args: Dict[str, Any]) -> Tuple:
     return new_limit, offset, pagination_message
 
 
-def optional_arg_to_boolean(arg: Optional[Any]) -> Optional[bool]:
+def optional_arg_to_boolean(arg: Any | None) -> bool | None:
     """Retrieve arg boolean value if it's not none.
     Args:
         arg (str): Boolean argument.
@@ -1425,7 +1465,7 @@ def optional_arg_to_boolean(arg: Optional[Any]) -> Optional[bool]:
     return argToBoolean(arg) if arg is not None else None
 
 
-REPUTATION_TYPE_TO_FUNCTION: Dict[str, Callable] = {
+REPUTATION_TYPE_TO_FUNCTION: dict[str, Callable] = {
     "ip": parse_ip_indicator,
     "url": parse_url_indicator,
     "domain": parse_domain_indicator,
@@ -1457,7 +1497,7 @@ SAMPLE_ARGS = {
 def parse_output(
     items: dict,
     analysis_arg: str,
-) -> Union[Dict[Any, Any], Any, None]:
+) -> dict[Any, Any] | Any | None:
     """Get relevant output from response.
 
     Args:
@@ -1480,7 +1520,7 @@ def parse_output(
     return items_to_display
 
 
-def parse_file_to_sample(file_id: str) -> Dict[str, Any]:
+def parse_file_to_sample(file_id: str) -> dict[str, Any]:
     """Open file to send data to API.
 
     Args:
@@ -1526,7 +1566,7 @@ def get_arg_from_command_name(
         ) from exc
 
 
-def delete_key_from_list(items: list, keys_to_delete: list) -> List[dict]:
+def delete_key_from_list(items: list, keys_to_delete: list) -> list[dict]:
     """Delete keys from list.
 
     Args:
@@ -1556,8 +1596,8 @@ def test_module(client: Client):
 
 def main() -> None:
 
-    params: Dict[str, Any] = demisto.params()
-    args: Dict[str, Any] = demisto.args()
+    params: dict[str, Any] = demisto.params()
+    args: dict[str, Any] = demisto.args()
 
     base_url = params["base_url"]
     api_token = params.get("credentials", {}).get("password")

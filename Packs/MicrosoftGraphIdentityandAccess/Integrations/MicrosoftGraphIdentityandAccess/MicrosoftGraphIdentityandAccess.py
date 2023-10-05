@@ -2,11 +2,10 @@
 An integration to MS Graph Identity and Access endpoint.
 https://docs.microsoft.com/en-us/graph/api/resources/serviceprincipal?view=graph-rest-1.0
 """
-from typing import Tuple
-
 import urllib3
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
+from MicrosoftApiModule import *  # noqa: E402
 
 # Disable insecure warnings
 urllib3.disable_warnings()  # pylint: disable=no-member
@@ -17,12 +16,17 @@ class Client:  # pragma: no cover
     def __init__(self, app_id: str, verify: bool, proxy: bool,
                  azure_ad_endpoint: str = 'https://login.microsoftonline.com', client_credentials: bool = False,
                  tenant_id: str = None, enc_key: str = None,
-                 managed_identities_client_id: Optional[str] = None):
+                 managed_identities_client_id: Optional[str] = None, private_key: Optional[str] = None,
+                 certificate_thumbprint: Optional[str] = None):
         if app_id and '@' in app_id:
             app_id, refresh_token = app_id.split('@')
             integration_context = get_integration_context()
             integration_context['current_refresh_token'] = refresh_token
             set_integration_context(integration_context)
+        elif not enc_key and not (certificate_thumbprint and private_key):
+            raise DemistoException('Either enc_key or (Certificate Thumbprint and Private Key) must be provided. For further '
+                                   'information see '
+                                   'https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication')
         args = {
             "azure_ad_endpoint": azure_ad_endpoint,
             "self_deployed": True,
@@ -34,7 +38,10 @@ class Client:  # pragma: no cover
             "tenant_id": tenant_id,
             "enc_key": enc_key,
             "managed_identities_client_id": managed_identities_client_id,
-            "managed_identities_resource_uri": Resources.graph
+            "managed_identities_resource_uri": Resources.graph,
+            "certificate_thumbprint": certificate_thumbprint,
+            "private_key": private_key,
+            "command_prefix": "msgraph-identity",
         }
         if not client_credentials:
             args["scope"] = 'offline_access RoleManagement.ReadWrite.Directory'
@@ -53,7 +60,7 @@ class Client:  # pragma: no cover
         Docs:
             https://docs.microsoft.com/en-us/graph/api/directoryrole-list?view=graph-rest-1.0&tabs=http
         """
-        results = list()
+        results = []
         res = self.ms_client.http_request(
             'GET', 'v1.0/directoryRoles')
         results.extend(res.get('value'))
@@ -135,7 +142,7 @@ class Client:  # pragma: no cover
             THe created IP named location
 
         Docs:
-            https://docs.microsoft.com/en-us/graph/api/conditionalaccessroot-post-namedlocations?view=graph-rest-1.0&tabs=http # noqa
+            https://docs.microsoft.com/en-us/graph/api/conditionalaccessroot-post-namedlocations?view=graph-rest-1.0&tabs=http
         """
         return self.ms_client.http_request(
             'POST', 'v1.0/identity/conditionalAccess/namedLocations', json_data=data)
@@ -182,7 +189,7 @@ class Client:  # pragma: no cover
             a list of dictionaries with the object from the api
 
         Docs:
-            https://docs.microsoft.com/en-us/graph/api/conditionalaccessroot-list-namedlocations?view=graph-rest-1.0&tabs=http # noqa
+            https://docs.microsoft.com/en-us/graph/api/conditionalaccessroot-list-namedlocations?view=graph-rest-1.0&tabs=http
         """
         odata_query = '?'
         if limit:
@@ -346,14 +353,6 @@ def complete_auth(client: Client) -> str:  # pragma: no cover
 def test_connection(client: Client) -> str:  # pragma: no cover
     client.ms_client.get_access_token()
     return '✅ Success!'
-
-
-def reset_auth() -> CommandResults:  # pragma: no cover
-    set_integration_context({})
-    return CommandResults(
-        readable_output='Authorization was reset successfully. Run **!msgraph-identity-auth-start** to '
-                        'start the authentication process.'
-    )
 
 
 def list_directory_roles(ms_client: Client, args: dict) -> CommandResults:  # pragma: no cover
@@ -807,7 +806,7 @@ def detection_to_incident(detection: dict, detection_date: str) -> dict:
     return incident
 
 
-def detections_to_incidents(detections: List[Dict[str, str]], last_fetch_datetime: str) -> Tuple[List[Dict[str, str]], str]:  # pragma: no cover  # noqa
+def detections_to_incidents(detections: List[Dict[str, str]], last_fetch_datetime: str) -> tuple[List[Dict[str, str]], str]:  # pragma: no cover  # noqa
     """
     Given the detections retrieved from Azure Identity Protection, transforms their data to incidents format.
     """
@@ -876,10 +875,12 @@ def main():  # pragma: no cover
             tenant_id=params.get("tenant_id"),
             client_credentials=params.get("client_credentials", False),
             enc_key=(params.get('credentials') or {}).get('password'),
-            managed_identities_client_id=get_azure_managed_identities_client_id(params)
+            managed_identities_client_id=get_azure_managed_identities_client_id(params),
+            certificate_thumbprint=params.get('creds_certificate', {}).get('identifier'),
+            private_key=(replace_spaces_in_credential(params.get('creds_certificate', {}).get('password')))
         )
         if command == 'test-module':
-            if client.ms_client.managed_identities_client_id:
+            if client.ms_client.managed_identities_client_id or client.ms_client.grant_type == CLIENT_CREDENTIALS:
                 test_connection(client=client)
                 return_results('ok')
             else:
@@ -891,7 +892,7 @@ def main():  # pragma: no cover
         elif command == 'msgraph-identity-auth-test':
             return_results(test_connection(client))
         elif command == 'msgraph-identity-auth-reset':
-            return_results(test_connection(client))
+            return_results(reset_auth())
         elif command == 'msgraph-identity-directory-roles-list':
             return_results(list_directory_roles(client, args))
         elif command == 'msgraph-identity-directory-role-members-list':
@@ -935,8 +936,6 @@ def main():  # pragma: no cover
 
 
 ''' ENTRY POINT '''
-
-from MicrosoftApiModule import *  # noqa: E402
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()

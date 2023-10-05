@@ -40,8 +40,7 @@ args:
   description: Returns an error if not all of the incidents where modified.
   defaultValue: "false"
 scripttarget: 0
-runonce: false
 tests:
 - No test
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.10.10.48392
+dockerimage: demisto/python3:3.10.12.63474

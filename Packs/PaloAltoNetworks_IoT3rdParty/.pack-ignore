@@ -32,7 +32,7 @@ ignore=PB106
 ignore=PB106
 
 [file:PaloAltoNetworksIoT3rdParty.yml]
-ignore=IN145,BA124
+ignore=BA124
 
 [file:SendAllPANWIoTDevicesToServiceNow.yml]
 ignore=BA124

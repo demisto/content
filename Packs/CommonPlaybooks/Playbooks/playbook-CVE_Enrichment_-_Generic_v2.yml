@@ -133,6 +133,15 @@ tasks:
                       value:
                         simple: XFE
                     ignorecase: true
+                  - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: XFE_v2
+                    ignorecase: true
                 - - operator: isEqualString
                     left:
                       value:
@@ -144,6 +153,9 @@ tasks:
                     ignorecase: true
                 accessor: brand
             iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -156,6 +168,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "5":
     id: "5"
     taskid: 8f3572d2-dbfc-4c4b-82af-94d06b99e727
@@ -255,20 +269,21 @@ tasks:
       id: d2ff276a-dd81-4805-80c3-ee44976b4020
       version: -1
       name: Get CVE information from XFE
-      description: Retrieve CVE information from XFE.
-      script: XFE|||cve-search
+      description: Search for details about the given CVE.
+      script: '|||cve-search'
       type: regular
       iscommand: true
-      brand: XFE
+      brand: ""
     nexttasks:
       '#none#':
       - '2'
     scriptarguments:
-      cveId:
+      cve_id:
         complex:
           root: inputs.cve_id
-    continueonerror: true
     separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -280,8 +295,11 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: true
-  '11':
-    id: '11'
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
     taskid: 81a2e52a-0a2a-4791-8a55-e4249923b7b3
     type: title
     task:

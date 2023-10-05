@@ -1,0 +1,351 @@
+id: Test Playbook - CrowdStrike Falcon - Get Endpoint Forensics Data
+version: -1
+name: Test Playbook - CrowdStrike Falcon - Get Endpoint Forensics Data
+description: "This playbook tests the 'CrowdStrike Falcon - Get Endpoint Forensics Data' playbook which is part of the 'Malware Investigation and Response' pack.\nBy examining the context data of the playbook, the 'CrowdStrike Falcon - Get Endpoint Forensics Data' playbook outputs are tested. "
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 21896868-8531-4ae5-8666-cea52014a9ec
+    type: start
+    task:
+      id: 21896868-8531-4ae5-8666-cea52014a9ec
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "32"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -140,
+          "y": -1505
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: 4dbfaa04-78aa-482f-800b-e0ed5b5dd204
+    type: regular
+    task:
+      id: 4dbfaa04-78aa-482f-800b-e0ed5b5dd204
+      version: -1
+      name: Delete Context
+      description: The task deletes all of the context data. Having a clean beginning to a test playbook ensures that a test can be sterile and that unrelated issues can be eliminated.
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "244"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -140,
+          "y": -1375
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "84":
+    id: "84"
+    taskid: 4de8eaba-01aa-4a61-85df-65de61567633
+    type: title
+    task:
+      id: 4de8eaba-01aa-4a61-85df-65de61567633
+      version: -1
+      name: Start Testing
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "243"
+      - "246"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -140,
+          "y": -1050
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "202":
+    id: "202"
+    taskid: 8d5a4742-998c-49db-87f4-7298cbd18f64
+    type: title
+    task:
+      id: 8d5a4742-998c-49db-87f4-7298cbd18f64
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -140,
+          "y": -725
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "227":
+    id: "227"
+    taskid: 46e23428-6e70-4d92-87cf-2ec4c91d51bc
+    type: regular
+    task:
+      id: 46e23428-6e70-4d92-87cf-2ec4c91d51bc
+      version: -1
+      name: Verify Context Data Error - Command PS - Filename
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'CrowdStrike.Command.ps.Filename’ context key was not populated. This may indicate that one or more of the following changes have been made to the 'CrowdStrike Falcon - Get Endpoint Forensics Data' playbook:
+          1- The 'List processes' task failed.
+          2- The 'cs-falcon-rtr-list-processes' automation outputs have been modified and no longer contain the 'CrowdStrike.Command.ps.Filename' context key.
+          3- The 'host_id' input configuration was changed for the 'cs-falcon-rtr-list-processes' automation used in the 'List processes' task.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -690,
+          "y": -740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "243":
+    id: "243"
+    taskid: 509b970b-f829-41f2-89b3-819c04693a09
+    type: condition
+    task:
+      id: 509b970b-f829-41f2-89b3-819c04693a09
+      version: -1
+      name: Verify Command PS - Filename
+      description: Verify that the 'CrowdStrike.Command.ps.Filename' context key was populated.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "227"
+      Verified:
+      - "202"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: CrowdStrike.Command.ps
+                accessor: Filename
+            iscontext: true
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -350,
+          "y": -910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "244":
+    id: "244"
+    taskid: 29f4b28d-6467-4f65-87db-730618c9fe0c
+    type: playbook
+    task:
+      id: 29f4b28d-6467-4f65-87db-730618c9fe0c
+      version: -1
+      name: CrowdStrike Falcon - Get Endpoint Forensics Data
+      description: |-
+        This playbook is part of the 'Malware Investigation And Response' pack. For more information, refer to https://xsoar.pan.dev/docs/reference/packs/malware-investigation-and-response.
+        This playbook extracts data from the host using RTR commands. For example, commands for getting a list of running processes and network connections.
+      playbookName: CrowdStrike Falcon - Get Endpoint Forensics Data
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "84"
+    scriptarguments:
+      DeviceId:
+        simple: 046761c46ec84f40b27b6f79ce7cd32c
+    separatecontext: false
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": -140,
+          "y": -1210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "246":
+    id: "246"
+    taskid: 8ff4b244-cc7c-452c-8c7f-a26fad12379e
+    type: condition
+    task:
+      id: 8ff4b244-cc7c-452c-8c7f-a26fad12379e
+      version: -1
+      name: Verify Command Netstat - Filename
+      description: Verify that the 'CrowdStrike.Command.netstat.Filename' context key was populated.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "247"
+      Verified:
+      - "202"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: CrowdStrike.Command.netstat
+                accessor: Filename
+            iscontext: true
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": -910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "247":
+    id: "247"
+    taskid: 18662da2-884a-4691-8f32-cfb7690f0a47
+    type: regular
+    task:
+      id: 18662da2-884a-4691-8f32-cfb7690f0a47
+      version: -1
+      name: Verify Context Data Error - Command Netstat - Filename
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'CrowdStrike.Command.netstat.Filename’ context key was not populated. This may indicate that one or more of the following changes have been made to the 'CrowdStrike Falcon - Get Endpoint Forensics Data' playbook:
+          1- The 'List network connections' task failed.
+          2- The 'cs-falcon-rtr-list-network-stats' automation outputs have been modified and no longer contain the 'CrowdStrike.Command.netstat.Filename' context key.
+          3- The 'host_id' input configuration was changed for the 'cs-falcon-rtr-list-network-stats' automation used in the 'List network connections' task.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 360,
+          "y": -740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "243_202_Verified": 0.43,
+      "246_202_Verified": 0.48
+    },
+    "paper": {
+      "dimensions": {
+        "height": 860,
+        "width": 1430,
+        "x": -690,
+        "y": -1505
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.5.0

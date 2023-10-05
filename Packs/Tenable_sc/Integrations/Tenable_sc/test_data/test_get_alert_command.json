@@ -1,0 +1,19 @@
+{
+    "test_case_1":{
+        "args": {
+            "alert_id": "35"
+        },
+        "mock_response": {"error_code":0,"error_msg":"","response":{"action":[{"definition":{"assignee":{"firstname":"Admin","id":"27","lastname":"User","username":"lmanager","uuid":"uuid"},
+        "description":"","name":"Ticket opened by Test Alert 1","notes":""},"id":"1","objectID":null,"status":"0","type":"ticket","users":[]}],"canManage":"true","canUse":"true","createdTime":"1676531587",
+        "description":"","didTriggerLastEvaluation":"true","executeOnEveryTrigger":"false","id":"1","lastEvaluated":"1687095001","lastTriggered":"1676531588","modifiedTime":"1676531587","name":"Test Alert 1",
+        "owner":{"firstname":"Admin","id":"27","lastname":"User","username":"lmanager","uuid":"uuid"},"ownerGroup":{"description":"Full Access group","id":"0","name":"Full Access"},
+        "query":{"description":"","id":"5599","name":"Query for alert 'Test Alert 1' at 1676531587"},"schedule":{"repeatRule":"FREQ=DAILY;INTERVAL=1","start":"TZID=America/New_York:20230216T093000","type":"ical"},
+        "status":"0","triggerName":"sumip","triggerOperator":"\u003e=","triggerValue":"10"},"timestamp":1687158848,"type":"regular","warnings":[]},
+        "expected_hr": "### Tenable.sc Alert\n|ID|Name|LastTriggered|State|Behavior|\n|---|---|---|---|---|\n| 1 | Test Alert 1 | 2023-02-16T07:13:08Z | Triggered | Execute only on first trigger |\n### Condition\n|Trigger|Query|\n|---|---|\n| sumip >= 10 | Query for alert 'Test Alert 1' at 1676531587 |\n### Actions\n|Type|\n|---|\n| ticket |\n",
+        "expected_ec": {"ID": "1", "Name": "Test Alert 1", "LastTriggered": "2023-02-16T07:13:08Z", "State": "Triggered", "Behavior": "Execute only on first trigger", "Action": [{
+            "Type": "ticket",
+            "Values": ""
+          }], "Condition": {"Trigger": "sumip >= 10", "Query": "Query for alert 'Test Alert 1' at 1676531587", "Filter": []}
+        }
+    }        
+}

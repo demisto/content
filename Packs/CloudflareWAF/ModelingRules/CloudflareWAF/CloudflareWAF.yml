@@ -1,0 +1,6 @@
+fromversion: 8.2.0
+id: Cloudflare_WAF_ModelingRule
+name: Cloudflare WAF Modeling Rule
+rules: ''
+schema: ''
+tags:

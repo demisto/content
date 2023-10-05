@@ -1,26 +1,20 @@
 args:
-- default: false
-  description: 'Hello command - prints hello to anyone.'
-  isArray: false
+- description: 'Hello command - prints hello to anyone.'
   name: name
-  required: false
-  secret: false
-comment: Hello World Script
+comment: Hello World Script.
 commonfields:
   id: HelloWorldScript
   version: -1
-enabled: false
 name: HelloWorldScript
 outputs:
 - contextPath: HelloWorld.hello
   description: Should be Hello **something** here.
   type: String
 script: '-'
-system: false
 tags:
 - helloworld
 timeout: '0'
 type: python
 subtype: python3
-dockerimage: demisto/python3:3.10.10.48392
+dockerimage: demisto/python3:3.10.12.63474
 fromversion: 5.0.0

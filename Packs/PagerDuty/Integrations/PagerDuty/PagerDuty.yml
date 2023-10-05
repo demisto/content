@@ -5,58 +5,54 @@ commonfields:
 configuration:
 - display: API Key
   name: APIKey
-  required: true
   type: 4
+  hidden: true
+  required: false
+- displaypassword: API Key
+  name: credentials_api_key
+  hiddenusername: true
+  type: 9
+  required: false
 - display: Service Key (for triggering, acknowledging and resolving events only)
   name: ServiceKey
-  required: false
   type: 0
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 - display: Fetch incidents
   name: isFetch
-  required: false
   type: 8
+  required: false
 - display: Incident type
   name: incidentType
-  required: false
   type: 13
+  required: false
 - defaultvalue: '1'
   display: Initial Fetch Interval(In minutes, used only for first fetch or after Reset last run)
   name: FetchInterval
-  required: false
   type: 0
+  required: false
 - display: Default requestor ID for adding people to incidents
   name: DefaultRequestor
-  required: false
   type: 0
+  required: false
 description: Alert and notify users using PagerDuty
 display: PagerDuty v2
 name: PagerDuty v2
 script:
   commands:
   - arguments:
-    - default: false
-      description: Show only the schedules whose name matches the query
-      isArray: false
+    - description: Show only the schedules whose name matches the query
       name: query
-      required: false
-      secret: false
-    - default: false
-      description: The limit for the amount of schedules to receive(Default is 25, max value is 100)
-      isArray: false
+    - description: The limit for the amount of schedules to receive(Default is 25, max value is 100)
       name: limit
-      required: false
-      secret: false
-    deprecated: false
     description: Receive all schedules from PagerDuty
-    execution: false
     name: PagerDuty-get-all-schedules
     outputs:
     - contextPath: PagerDuty.Schedules.id
@@ -68,25 +64,13 @@ script:
   - arguments:
     - default: true
       description: (default and mandatory) The unique identifier of the schedule
-      isArray: false
       name: scheduleID
       required: true
-      secret: false
-    - default: false
-      description: The start of the date range Using ISO 8601 Representation. E.g. !PagerDutyGetUsersOnCall since=2011-05-06T17:00Z
-      isArray: false
+    - description: The start of the date range Using ISO 8601 Representation. E.g. !PagerDutyGetUsersOnCall since=2011-05-06T17:00Z
       name: since
-      required: false
-      secret: false
-    - default: false
-      description: The end of the date range
-      isArray: false
+    - description: The end of the date range
       name: until
-      required: false
-      secret: false
-    deprecated: false
     description: Returns the names and details of on call users at a certain time or by specific schedule
-    execution: false
     name: PagerDuty-get-users-on-call
     outputs:
     - contextPath: PagerDutyUser.id
@@ -108,27 +92,15 @@ script:
       description: The time zone of the user
       type: string
   - arguments:
-    - default: false
-      description: The limit for the amount of users to receive(Default is 25, max value is 100)
-      isArray: false
+    - description: The limit for the amount of users to receive(Default is 25, max value is 100)
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: Filters the results, showing only on-call users for the specified escalation policy IDs.
+    - description: Filters the results, showing only on-call users for the specified escalation policy IDs.
       isArray: true
       name: escalation_policy_ids
-      required: false
-      secret: false
-    - default: false
-      description: Filters the results, showing only on-call users for the specified schedule IDs. If the value is null, permanent on-call user are included due to direct user escalation policy targets.
+    - description: Filters the results, showing only on-call users for the specified schedule IDs. If the value is null, permanent on-call user are included due to direct user escalation policy targets.
       isArray: true
       name: schedule_ids
-      required: false
-      secret: false
-    deprecated: false
     description: Returns the names and details of current on call personnel
-    execution: false
     name: PagerDuty-get-users-on-call-now
     outputs:
     - contextPath: PagerDutyUser.ID
@@ -151,43 +123,21 @@ script:
       type: string
   - arguments:
     - auto: PREDEFINED
-      default: false
       description: Returns only the incidents currently in the passed status(es). Valid status options are triggered,acknowledged, and resolved. (Default values are triggered,acknowledged)
-      isArray: false
       name: status
       predefined:
       - triggered
       - acknowledged
       - resolved
-      required: false
-      secret: false
-    - default: false
-      description: Beginning date and time. Using ISO 8601 Representation. E.g. PagerDutyIncidents since=2011-05-06T17:00Z (must be used with until argument)
-      isArray: false
+    - description: Beginning date and time. Using ISO 8601 Representation. E.g. PagerDutyIncidents since=2011-05-06T17:00Z (must be used with until argument)
       name: since
-      required: false
-      secret: false
-    - default: false
-      description: Used to specify both the field you wish to sort the results on, as well as the direction (ascending/descending) of the results.See more https://v2.developer.pagerduty.com/v2/page/api-reference#!/Incidents/get_incidents
-      isArray: false
+    - description: Used to specify both the field you wish to sort the results on, as well as the direction (ascending/descending) of the results.See more https://v2.developer.pagerduty.com/v2/page/api-reference#!/Incidents/get_incidents
       name: sortBy
-      required: false
-      secret: false
-    - default: false
-      description: Last date and time.  Using ISO 8601 Representation. E.g. PagerDutyIncidents until=2016-05-06T13:00Z
-      isArray: false
+    - description: Last date and time.  Using ISO 8601 Representation. E.g. PagerDutyIncidents until=2016-05-06T13:00Z
       name: until
-      required: false
-      secret: false
-    - default: false
-      description: Incident de-duplication key. E.g. 8e42eeb6391a4a2abeda5d12e09bddec
-      isArray: false
+    - description: Incident de-duplication key. E.g. 8e42eeb6391a4a2abeda5d12e09bddec
       name: incident_key
-      required: false
-      secret: false
-    deprecated: false
     description: Shows incidents in PagerDuty. Default status parameters are triggered,acknowledged
-    execution: false
     name: PagerDuty-incidents
     outputs:
     - contextPath: PagerDuty.Incidents.ID
@@ -263,22 +213,14 @@ script:
       description: The incident's de-duplication key
       type: String
   - arguments:
-    - default: false
-      description: Specific human-readable unique identifier, such as a hostname, for the system having the problem.
-      isArray: false
+    - description: Specific human-readable unique identifier, such as a hostname, for the system having the problem.
       name: source
       required: true
-      secret: false
-    - default: false
-      description: "\t A high-level, text summary message of the event. Will be used to construct an alert's description."
-      isArray: false
+    - description: "\t A high-level, text summary message of the event. Will be used to construct an alert's description."
       name: summary
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The severity of the event
-      isArray: false
       name: severity
       predefined:
       - critical
@@ -286,57 +228,27 @@ script:
       - warning
       - info
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The action to be executed
-      isArray: false
       name: action
       predefined:
       - trigger
       - acknowledge
       - resolve
       required: true
-      secret: false
-    - default: false
-      description: A short description of the problem
-      isArray: false
+    - description: A short description of the problem
       name: description
-      required: false
-      secret: false
-    - default: false
-      description: 'A cluster or grouping of sources. For example, sources “prod-datapipe-02” and “prod-datapipe-03” might both be part of “prod-datapipe”. Example: "prod-datapipe" "www"'
-      isArray: false
+    - description: 'A cluster or grouping of sources. For example, sources “prod-datapipe-02” and “prod-datapipe-03” might both be part of “prod-datapipe”. Example: "prod-datapipe" "www"'
       name: group
-      required: false
-      secret: false
-    - default: false
-      description: 'The class/type of the event. Example: "High CPU" "Latency"'
-      isArray: false
+    - description: 'The class/type of the event. Example: "High CPU" "Latency"'
       name: event_class
-      required: false
-      secret: false
-    - default: false
-      description: 'The part or component of the affected system that is broken. Example: "keepalive" "webping"'
-      isArray: false
+    - description: 'The part or component of the affected system that is broken. Example: "keepalive" "webping"'
       name: component
-      required: false
-      secret: false
-    - default: false
-      description: Incident key, used to acknowledge/resolve specific event
-      isArray: false
+    - description: Incident key, used to acknowledge/resolve specific event
       name: incident_key
-      required: false
-      secret: false
-    - default: false
-      description: Service key for the integration
-      isArray: false
+    - description: Service key for the integration
       name: serviceKey
-      required: false
-      secret: false
-    deprecated: false
     description: Creates a new event/incident in PagerDuty(In order to use this command you have to enter the Service Key in the integration settings)
-    execution: false
     name: PagerDuty-submit-event
     outputs:
     - contextPath: PagerDuty.Event.Status
@@ -346,15 +258,10 @@ script:
       description: Incident key
       type: string
   - arguments:
-    - default: false
-      description: 'ID of the wanted user '
-      isArray: false
+    - description: 'ID of the wanted user '
       name: UserID
       required: true
-      secret: false
-    deprecated: false
     description: Get the contact methods of a given user
-    execution: false
     name: PagerDuty-get-contact-methods
     outputs:
     - contextPath: PagerDuty.Contact_methods.phone
@@ -370,15 +277,10 @@ script:
       description: The email of the user
       type: string
   - arguments:
-    - default: false
-      description: ID of the wanted user
-      isArray: false
+    - description: ID of the wanted user
       name: UserID
       required: true
-      secret: false
-    deprecated: false
     description: Get the users notification rules
-    execution: false
     name: PagerDuty-get-users-notification
     outputs:
     - contextPath: PagerDuty.Notification_rules.start_delay_in_minutes
@@ -391,21 +293,12 @@ script:
       description: The id of the notification rule
       type: string
   - arguments:
-    - default: false
-      description: Incident key
-      isArray: false
+    - description: Incident key
       name: incident_key
       required: true
-      secret: false
-    - default: false
-      description: Service key for the integration
-      isArray: false
+    - description: Service key for the integration
       name: serviceKey
-      required: false
-      secret: false
-    deprecated: false
     description: Resolves an existing event in PagerDuty
-    execution: false
     name: PagerDuty-resolve-event
     outputs:
     - contextPath: PagerDuty.Event.Status
@@ -415,21 +308,12 @@ script:
       description: Incident key
       type: string
   - arguments:
-    - default: false
-      description: Incident key
-      isArray: false
+    - description: Incident key
       name: incident_key
       required: true
-      secret: false
-    - default: false
-      description: Service key for the integration
-      isArray: false
+    - description: Service key for the integration
       name: serviceKey
-      required: false
-      secret: false
-    deprecated: false
     description: Acknowledges an existing event in PagerDuty
-    execution: false
     name: PagerDuty-acknowledge-event
     outputs:
     - contextPath: PagerDuty.Event.Status
@@ -439,15 +323,10 @@ script:
       description: Incident key
       type: string
   - arguments:
-    - default: false
-      description: ID of the incident to get information for.
-      isArray: false
+    - description: ID of the incident to get information for.
       name: incident_id
       required: true
-      secret: false
-    deprecated: false
     description: Get data about a incident from PagerDuty
-    execution: false
     name: PagerDuty-get-incident-data
     outputs:
     - contextPath: PagerDuty.Incidents.ID
@@ -522,9 +401,7 @@ script:
     - contextPath: PagerDuty.Incidents.incident_key
       description: The incident's de-duplication key
       type: String
-  - deprecated: false
-    description: Get Service keys for each of the services configured in the PagerDuty instance
-    execution: false
+  - description: Get Service keys for each of the services configured in the PagerDuty instance
     name: PagerDuty-get-service-keys
     outputs:
     - contextPath: PagerDuty.Service.ID
@@ -549,39 +426,19 @@ script:
       description: The key used to control events with the integration
       type: string
   - arguments:
-    - default: false
-      description: PagerDuty Incident ID to add responders to
-      isArray: false
+    - description: PagerDuty Incident ID to add responders to
       name: incident_id
       required: true
-      secret: false
-    - default: false
-      description: Message to send to responders
-      isArray: false
+    - description: Message to send to responders
       name: message
       required: true
-      secret: false
-    - default: false
-      description: Comma separated list of User IDs to request response from
-      isArray: false
+    - description: Comma separated list of User IDs to request response from
       name: user_requests
-      required: false
-      secret: false
-    - default: false
-      description: Comma separated list of Escalation Policy IDs to request response from
-      isArray: false
+    - description: Comma separated list of Escalation Policy IDs to request response from
       name: escalation_policy_requests
-      required: false
-      secret: false
-    - default: false
-      description: UserID sending the request (if blank, uses the default for the integration)
-      isArray: false
+    - description: UserID sending the request (if blank, uses the default for the integration)
       name: requestor_id
-      required: false
-      secret: false
-    deprecated: false
     description: Add responders to an incident
-    execution: false
     name: PagerDuty-add-responders
     outputs:
     - contextPath: PagerDuty.ResponderRequests.ResponderID
@@ -591,37 +448,23 @@ script:
       description: The name of the responder added
       type: String
   - arguments:
-    - default: false
-      description: The PagerDuty Incident ID to run the play on
-      isArray: false
+    - description: The PagerDuty Incident ID to run the play on
       name: incident_id
       required: true
-      secret: false
-    - default: false
-      description: User's email to trigger the response play from
-      isArray: false
+    - description: User's email to trigger the response play from
       name: from_email
       required: true
-      secret: false
-    - default: false
-      description: The UUID of the response play to run
-      isArray: false
+    - description: The UUID of the response play to run
       name: response_play_uuid
       required: true
-      secret: false
-    deprecated: false
-    execution: false
     name: PagerDuty-run-response-play
     description: Run a response play on PagerDuty (based on its UUID)
-  feed: false
   isfetch: true
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3
   type: python
-  dockerimage: demisto/python3:3.10.10.48392
+  dockerimage: demisto/python3:3.10.12.63474
 tests:
 - PagerDuty Test
 fromversion: 5.0.0

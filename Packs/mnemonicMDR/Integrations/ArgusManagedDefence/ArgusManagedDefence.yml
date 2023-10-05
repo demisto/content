@@ -4,8 +4,7 @@ commonfields:
 name: ArgusManagedDefence
 display: mnemonic MDR - Argus Managed Defence
 category: Data Enrichment & Threat Intelligence
-description: Rapidly detect, analyse and respond to security threats with mnemonic’s
-  leading Managed Detection and Response (MDR) service.
+description: Rapidly detect, analyse and respond to security threats with mnemonic’s leading Managed Detection and Response (MDR) service.
 configuration:
 - display: Fetch incidents
   name: isFetch
@@ -36,34 +35,28 @@ configuration:
   - Medium
   - High
   - Critical
-  additionalinfo: "Argus Cases with priority lower than this value will be excluded\
-    \ by fetch incidents."
+  additionalinfo: "Argus Cases with priority lower than this value will be excluded by fetch incidents."
 - display: First fetch time
   name: first_fetch
   defaultvalue: 3 days
   type: 0
-  required: false
   additionalinfo: "How far back should the first run fetch open cases in Argus."
+  required: false
 - display: Maximum number of incidents per fetch
   name: max_fetch
   defaultvalue: "0"
   type: 0
+  additionalinfo: "Maximum number of cases to be fetched from Argus. 0 means up to system limit (100 000)"
   required: false
-  additionalinfo: "Maximum number of cases to be fetched from Argus. 0 means up to\
-    \ system limit (100 000)"
 - display: Fetch incidents exclude tag
   name: exclude_tag
   type: 0
+  additionalinfo: 'Excludes fetching incidents with the optional tag. May be used to exclude fetching Argus Cases created by XSOAR. Tags in Argus are of key: value pairs. You may exclude with either (1) tag key, or (2) key: value pairs by a comma-separated string.'
   required: false
-  additionalinfo: 'Excludes fetching incidents with the optional tag. May be used
-    to exclude fetching Argus Cases created by XSOAR. Tags in Argus are of key: value
-    pairs. You may exclude with either (1) tag key, or (2) key: value pairs by a comma-separated
-    string.'
 - display: Incident Mirroring Direction
   name: mirror_direction
   defaultvalue: Incoming And Outgoing
   type: 15
-  required: false
   options:
   - None
   - Incoming
@@ -71,44 +64,42 @@ configuration:
   - Incoming And Outgoing
   additionalinfo: "Which direction should the integration mirror incidents."
   hidden:
-    - marketplacev2
+  - marketplacev2
+  required: false
 - display: Mirroring tag
   name: mirror_tag
   type: 0
-  required: false
   defaultvalue: "argus_mirror"
-  additionalinfo: "Names of tags used to mark incident entries to be mirrored. Comma\
-    \ separated."
+  additionalinfo: "Names of tags used to mark incident entries to be mirrored. Comma separated."
   hidden:
-    - marketplacev2
+  - marketplacev2
+  required: false
 - display: Close Argus Case
   name: close_argus_case
   defaultvalue: "true"
   type: 8
-  required: false
-  additionalinfo: 'If true, when an incident is closed in XSOAR: close the mirrored
-    Argus Case'
+  additionalinfo: 'If true, when an incident is closed in XSOAR: close the mirrored Argus Case'
   hidden:
-    - marketplacev2
+  - marketplacev2
+  required: false
 - display: Close XSOAR Incident
   name: close_incident
   defaultvalue: "true"
   type: 8
-  required: false
-  additionalinfo: 'If true, when mirrored Argus Case is closed: also close the XSOAR
-    Incident'
+  additionalinfo: 'If true, when mirrored Argus Case is closed: also close the XSOAR Incident'
   hidden:
-    - marketplacev2
+  - marketplacev2
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
-  required: false
   additionalinfo: "Skip HTTPS certification verification."
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
-  required: false
   additionalinfo: "Use system proxy settings."
+  required: false
 script:
   script: ''
   type: python
@@ -678,18 +669,15 @@ script:
     - name: end_timestamp
       description: End timestamp
     - name: limit
-      description: Set this value to set max number of results. By default, no restriction
-        on result set size.
+      description: Set this value to set max number of results. By default, no restriction on result set size.
     - name: offset
-      description: 'Set this value to skip the first (offset) objects. By default,
-        return result from first object. '
+      description: 'Set this value to skip the first (offset) objects. By default, return result from first object. '
     - name: include_deleted
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
-      description: Set to true to include deleted objects. By default, exclude deleted
-        objects.
+      description: Set to true to include deleted objects. By default, exclude deleted objects.
       defaultValue: "false"
     - name: sub_criteria
       description: Set additional criterias which are applied using a logical OR.
@@ -699,15 +687,13 @@ script:
       predefined:
       - "true"
       - "false"
-      description: 'Only relevant for subcriteria. If set to true, objects matching
-        this subcriteria object will be excluded. '
+      description: 'Only relevant for subcriteria. If set to true, objects matching this subcriteria object will be excluded. '
     - name: required
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
-      description: 'Only relevant for subcriteria. If set to true, objects matching
-        this subcriteria are required (AND-ed together with parent criteria). '
+      description: 'Only relevant for subcriteria. If set to true, objects matching this subcriteria are required (AND-ed together with parent criteria). '
     - name: customer_id
       description: 'Restrict search to data belonging to specified customers. '
       isArray: true
@@ -721,12 +707,10 @@ script:
       description: Restrict search to entries of one of these types.
       isArray: true
     - name: service
-      description: 'Restrict search to entries of one of these services (by service
-        shortname or ID). '
+      description: 'Restrict search to entries of one of these services (by service shortname or ID). '
       isArray: true
     - name: category
-      description: Restrict search to entries of one of these categories (by category
-        shortname or ID).
+      description: Restrict search to entries of one of these categories (by category shortname or ID).
       isArray: true
     - name: status
       description: 'Restrict search to entries of one of these statuses. '
@@ -735,8 +719,7 @@ script:
       description: Restrict search to entries with given priorties.
       isArray: true
     - name: asset_id
-      description: Restrict search to cases associated with specified assets (hosts,
-        services or processes).
+      description: Restrict search to cases associated with specified assets (hosts, services or processes).
       isArray: true
     - name: tag
       description: 'Restrict search to entries matching the given tag criteria. '
@@ -751,25 +734,20 @@ script:
       description: Search for keywords.
       isArray: true
     - name: time_field_strategy
-      description: 'Defines which timestamps will be included in the search (default
-        all). '
+      description: 'Defines which timestamps will be included in the search (default all). '
       isArray: true
     - name: time_match_strategy
-      description: Defines how strict to match against different timestamps (all/any)
-        using start and end timestamp (default any).
+      description: Defines how strict to match against different timestamps (all/any) using start and end timestamp (default any).
     - name: keyword_field_strategy
-      description: 'Defines which fields will be searched by keywords (default all
-        supported fields). '
+      description: 'Defines which fields will be searched by keywords (default all supported fields). '
       isArray: true
     - name: keyword_match_strategy
       description: 'Defines the MatchStrategy for keywords (default match all keywords). '
     - name: user
-      description: 'Restrict search to cases associated with these users or user groups
-        (by ID or shortname). '
+      description: 'Restrict search to cases associated with these users or user groups (by ID or shortname). '
       isArray: true
     - name: user_field_strategy
-      description: 'Defines which user fields will be searched (default match all
-        user fields). '
+      description: 'Defines which user fields will be searched (default match all user fields). '
       isArray: true
     - name: user_assigned
       auto: PREDEFINED
@@ -788,23 +766,20 @@ script:
       predefined:
       - "true"
       - "false"
-      description: 'If true, include list of workflows in result. Default is false
-        (not present). '
+      description: 'If true, include list of workflows in result. Default is false (not present). '
       defaultValue: "false"
     - name: include_description
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
-      description: 'If false, omit description from response. Default is true (description
-        is present). '
+      description: 'If false, omit description from response. Default is true (description is present). '
       defaultValue: "true"
     - name: access_mode
       description: If set, only match cases which is set to one of these access modes.
       isArray: true
     - name: explicit_access
-      description: If set, only match cases which have explicit access grants matching
-        the specified criteria.
+      description: If set, only match cases which have explicit access grants matching the specified criteria.
       isArray: true
     - name: sort_by
       description: List of properties to sort by (prefix with "-" to sort descending).
@@ -1615,8 +1590,7 @@ script:
   - name: argus-create-case
     arguments:
     - name: customer
-      description: ID or shortname of customer to create case for. Defaults to current
-        users customer.
+      description: ID or shortname of customer to create case for. Defaults to current users customer.
     - name: service
       required: true
       auto: PREDEFINED
@@ -1674,8 +1648,7 @@ script:
       - pendingClose
       - workingSoc
       - workingCustomer
-      description: 'Status of case to create. If not set, system will select automatically.
-        Creating a new case with status closed is not permitted. '
+      description: 'Status of case to create. If not set, system will select automatically. Creating a new case with status closed is not permitted. '
     - name: tags
       description: Tags to add on case creation.  (key,value,key,value, ...)
       isArray: true
@@ -1699,24 +1672,20 @@ script:
     - name: access_mode
       description: Access mode for new case. (default roleBased)
     - name: origin_email_address
-      description: If case is created from an email, specify origin email address
-        here.
+      description: If case is created from an email, specify origin email address here.
     - name: publish
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
-      description: Whether to publish new case. Creating an unpublished case requires
-        special permission. (default true)
+      description: Whether to publish new case. Creating an unpublished case requires special permission. (default true)
       defaultValue: "true"
     - name: default_watchers
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
-      description: Whether to enable default watchers for this case. If set to false,
-        default watchers will not be enabled, and will not be notified upon creation
-        of this case. (default true)
+      description: Whether to enable default watchers for this case. If set to false, default watchers will not be enabled, and will not be notified upon creation of this case. (default true)
       defaultValue: "true"
     outputs:
     - contextPath: Argus.Case.responseCode
@@ -3505,18 +3474,13 @@ script:
       - phishing
       - argus-improvement
       - argus-bug
-      description: 'If set, assign given category to specified category (by category
-        shortname). Set value to empty string to unset category. '
+      description: 'If set, assign given category to specified category (by category shortname). Set value to empty string to unset category. '
     - name: reporter
-      description: 'If set, set given user as reporter for case (by ID or shortname).
-        Shortname will be resolved in the current users domain. '
+      description: 'If set, set given user as reporter for case (by ID or shortname). Shortname will be resolved in the current users domain. '
     - name: assigned_user
-      description: 'If set, assign given user to case (by ID or shortname). Shortname
-        will be resolved in the current users domain. If blank, this will unset assignedUser. '
+      description: 'If set, assign given user to case (by ID or shortname). Shortname will be resolved in the current users domain. If blank, this will unset assignedUser. '
     - name: assigned_tech
-      description: If set, assign given technical user (solution engineer) to case
-        (by ID or shortname). Shortname will be resolved in the current users domain.
-        If blank, this will unset assignedTech.
+      description: If set, assign given technical user (solution engineer) to case (by ID or shortname). Shortname will be resolved in the current users domain. If blank, this will unset assignedTech.
     - name: customer_reference
       description: 'If set, change customer reference for case. '
     - name: comment
@@ -3528,8 +3492,7 @@ script:
       predefined:
       - "true"
       - "false"
-      description: 'f set, update the hasEvents flag for this case, signalling that
-        this case may have events associated to it. '
+      description: 'f set, update the hasEvents flag for this case, signalling that this case may have events associated to it. '
     - name: internal_comment
       auto: PREDEFINED
       predefined:
@@ -4696,8 +4659,7 @@ script:
     - name: end_timestamp
       description: End timestamp
     - name: sort_by
-      description: Order results by these properties (prefix with - to sort descending)
-        (as list)
+      description: Order results by these properties (prefix with - to sort descending) (as list)
     - name: include_flags
       description: Search objects with these flags set  (as list)
     - name: exclude_flags
@@ -4955,8 +4917,7 @@ script:
     - contextPath: Argus.Events.data.id
       description: Event ID
       type: String
-    description: 'Search for aggregated events (OSB! advanced method: look in API
-      doc)'
+    description: 'Search for aggregated events (OSB! advanced method: look in API doc)'
   - name: argus-get-payload
     arguments:
     - name: type
@@ -5477,8 +5438,7 @@ script:
     - name: end_timestamp
       description: 'Search objects until this timestamp  (default: now)'
     - name: sort_by
-      description: Order results by these properties (prefix with - to sort descending)
-        (as comma-separated list)
+      description: Order results by these properties (prefix with - to sort descending) (as comma-separated list)
     - name: include_flags
       description: (as comma-separated list)
     - name: exclude_flags
@@ -5764,11 +5724,9 @@ script:
       - green
       - amber
       - red
-      description: Lookup with specified TLPs, public usage only TLP white allowed
-        (as comma-separated list)
+      description: Lookup with specified TLPs, public usage only TLP white allowed (as comma-separated list)
     - name: limit
-      description: Max number of results to be returned, default unset means default
-        limit 25 will be used, 0 means unlimited.
+      description: Max number of results to be returned, default unset means default limit 25 will be used, 0 means unlimited.
     - name: offset
       description: Number of results to be skipped first (default 0).
     outputs:
@@ -6003,8 +5961,7 @@ script:
       description: Argus Case ID
     - name: lastUpdate
       description: Time or timestamp case was last updated.
-    description: Get remote data from a remote incident. This method does not update
-      the current incident, and should be used for debugging purposes.
+    description: Get remote data from a remote incident. This method does not update the current incident, and should be used for debugging purposes.
   - name: update-remote-system
     arguments: []
     description: Updates the remote system with incident changes.
@@ -6074,11 +6031,9 @@ script:
       required: true
       description: Case ID
     description: Download all attachments related to Argus Case.
-  dockerimage: demisto/argus-toolbelt:3.0.0.49088
+  dockerimage: demisto/argus-toolbelt:2.0.0.29288
   isfetch: true
-  runonce: false
   subtype: python3
-  ismappable: false
   isremotesyncin: true
   isremotesyncout: true
 fromversion: 5.0.0

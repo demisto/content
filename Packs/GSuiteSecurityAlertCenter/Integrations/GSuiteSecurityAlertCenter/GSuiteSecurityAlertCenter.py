@@ -322,7 +322,10 @@ def test_module(gsuite_client, last_run: Dict, params: Dict[str, Any]) -> str:
         list_alerts_params = {
             'pageSize': 1,
         }
-        gsuite_client.set_authorized_http(scopes=SCOPES['ALERT'], subject=params.get('admin_email', ''))
+        gsuite_client.set_authorized_http(
+            scopes=SCOPES['ALERT'],
+            subject=params.get('admin_email_creds', {}).get('identifier') or params.get('admin_email', '')
+        )
         gsuite_client.http_request(url_suffix=URL_SUFFIX['LIST_ALERTS'], method='GET', params=list_alerts_params)
 
         if not gsuite_client.credentials.valid:
@@ -617,7 +620,7 @@ def fetch_incidents(client, last_run: Dict, params: Dict, is_test: bool = False)
             incidents (``List[dict]``): List of incidents that will be created in XSOAR.
     """
 
-    admin_email = params.get('admin_email')
+    admin_email = params.get('admin_email_creds', {}).get('identifier') or params.get('admin_email')
 
     fetch_feedback = params.get('fetch_feedback', False)
     # Validate arguments
@@ -683,7 +686,9 @@ def main() -> None:
 
     try:
         params = demisto.params()
-        service_account_dict = GSuiteClient.safe_load_non_strict_json(params.get('user_service_account_json'))
+        service_account_dict = GSuiteClient.safe_load_non_strict_json(
+            params.get('admin_email_creds', {}).get('password')
+            or params.get('user_service_account_json'))
         verify_certificate = not params.get('insecure', False)
         proxy = params.get('proxy', False)
 
@@ -693,7 +698,8 @@ def main() -> None:
 
         # prepare client class object
         gsuite_client = GSuiteClient(service_account_dict,
-                                     base_url=BASE_URL, verify=verify_certificate,
+                                     base_url=BASE_URL,
+                                     verify=verify_certificate,
                                      proxy=proxy,
                                      headers=headers)
 
@@ -712,7 +718,7 @@ def main() -> None:
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
         elif command in commands:
-            args['admin_email'] = params.get('admin_email', '')
+            args['admin_email'] = params.get('admin_email_creds', {}).get('identifier') or params.get('admin_email', '')
             return_results(commands[command](gsuite_client, args))
 
     # Log exceptions

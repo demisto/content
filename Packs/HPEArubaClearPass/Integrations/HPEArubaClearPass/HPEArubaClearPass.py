@@ -421,8 +421,8 @@ def disconnect_active_session_command(client: Client, args: Dict[str, Any]) -> C
 def main() -> None:
     params = demisto.params()
     base_url = urljoin(params.get('url'), '/api')
-    client_id = params.get('client_id')
-    client_secret = params.get('client_secret')
+    client_id = params.get('client_id_creds', {}).get('identifier') or params.get('client_id')
+    client_secret = params.get('client_id_creds', {}).get('password') or params.get('client_secret')
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
 

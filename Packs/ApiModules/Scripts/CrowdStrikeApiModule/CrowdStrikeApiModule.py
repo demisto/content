@@ -52,7 +52,7 @@ class CrowdStrikeClient(BaseClient):
             raise DemistoException(err_msg)
 
     def http_request(self, method, url_suffix, full_url=None, headers=None, json_data=None, params=None, data=None,
-                     files=None, timeout=10, ok_codes=None, return_empty_response=False, auth=None):
+                     files=None, timeout=10, ok_codes=None, return_empty_response=False, auth=None, resp_type='json'):
         """A wrapper for requests lib to send our requests and handle requests and responses better.
 
         :type method: ``str``
@@ -107,7 +107,7 @@ class CrowdStrikeClient(BaseClient):
         return super()._http_request(method=method, url_suffix=url_suffix, full_url=full_url, headers=headers,
                                      json_data=json_data, params=params, data=data, files=files, timeout=req_timeout,
                                      ok_codes=ok_codes, return_empty_response=return_empty_response, auth=auth,
-                                     error_handler=self._error_handler)
+                                     error_handler=self._error_handler, resp_type=resp_type)
 
     def _get_token(self, force_gen_new_token=False):
         """

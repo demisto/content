@@ -1,7 +1,7 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 from typing import Dict, List
 
-import demistomock as demisto
-from CommonServerPython import *
 from JSONFeedApiModule import *  # noqa: E402
 
 SEARCH_PARAMS = {
@@ -21,7 +21,7 @@ MAPPING = {
     'links_instantMessageTotalCount': 'intel471instantmessagetotalcount',
 }
 DEMISTO_VERSION = demisto.demistoVersion()
-CONTENT_PACK = 'Intel471 Feed/2.0.10'
+CONTENT_PACK = f'Intel471 Feed/{str(get_pack_version())}'
 INTEGRATION = 'Intel471 Actors Feed'
 USER_AGENT = f'XSOAR/{DEMISTO_VERSION["version"]}.{DEMISTO_VERSION["buildNumber"]} - {CONTENT_PACK} - {INTEGRATION}'
 

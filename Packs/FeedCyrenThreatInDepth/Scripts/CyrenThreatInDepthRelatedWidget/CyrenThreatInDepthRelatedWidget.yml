@@ -6,10 +6,9 @@ enabled: true
 name: CyrenThreatInDepthRelatedWidget
 script: '-'
 subtype: python3
-system: false
 tags:
 - dynamic-indicator-section
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.10.10.48392
+dockerimage: demisto/python3:3.10.12.63474
 fromversion: 6.0.0

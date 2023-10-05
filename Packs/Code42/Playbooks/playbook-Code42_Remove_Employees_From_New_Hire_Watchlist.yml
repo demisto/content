@@ -1,0 +1,536 @@
+id: Remove Employees from New Hire Watchlist
+version: -1
+fromversion: 6.8.0
+name: Remove Employees from New Hire Watchlist
+description: Loops through New Hire watchlist entries from Code42 Incydr and removes
+  employees based on specified criteria.
+tags:
+- Code42 Incydr
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 953732ec-59ab-4349-8352-e79378909d05
+    type: start
+    task:
+      id: 953732ec-59ab-4349-8352-e79378909d05
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": -480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 4c414a23-9b16-4ee7-87bf-d7a2aed2068c
+    type: condition
+    task:
+      id: 4c414a23-9b16-4ee7-87bf-d7a2aed2068c
+      version: -1
+      name: Is Start Date Before Look-Back Input?
+      description: ""
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "16"
+      "Yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: isBefore
+          left:
+            value:
+              complex:
+                root: start_date
+                transformers:
+                - operator: DateStringToISOFormat
+                  args:
+                    add_utc_timezone: {}
+                    dayfirst:
+                      value:
+                        simple: "false"
+                    fuzzy: {}
+                    yearfirst:
+                      value:
+                        simple: "true"
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: incident
+                accessor: created
+                transformers:
+                - operator: ModifyDateTime
+                  args:
+                    variation:
+                      value:
+                        simple: ${relative_look_back}
+                      iscontext: true
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 51e9dac9-63d1-4b8f-82e5-b9e64c9cce57
+    type: regular
+    task:
+      id: 51e9dac9-63d1-4b8f-82e5-b9e64c9cce57
+      version: -1
+      name: Get Incydr User Profile Information
+      description: Update a user's risk profile.
+      script: Code42|||code42-user-update-risk-profile
+      type: regular
+      iscommand: true
+      brand: Code42
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      ignore-outputs:
+        simple: "false"
+      username:
+        simple: ${inputs.incydr_username}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": -150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 9f2e7f86-1933-437e-85b1-495f6426a76a
+    type: regular
+    task:
+      id: 9f2e7f86-1933-437e-85b1-495f6426a76a
+      version: -1
+      name: Remove User from New Employee Watchlist
+      description: Remove a user from a watchlist.
+      script: Code42|||code42-watchlists-remove-user
+      type: regular
+      iscommand: true
+      brand: Code42
+    nexttasks:
+      '#error#':
+      - "18"
+      '#none#':
+      - "20"
+    scriptarguments:
+      username:
+        simple: ${inputs.incydr_username}
+      watchlist:
+        simple: NEW_EMPLOYEE
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 690,
+          "y": 360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 948cda91-b608-47fe-816b-abde4c7120b8
+    type: regular
+    task:
+      id: 948cda91-b608-47fe-816b-abde4c7120b8
+      version: -1
+      name: Set "No Action Taken" Log Message
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Log
+      value:
+        simple: No action taken on ${inputs.incydr_username}. Start date is within
+          defined look-back.
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 37bbca06-0156-45e4-83b5-6f7666f57633
+    type: regular
+    task:
+      id: 37bbca06-0156-45e4-83b5-6f7666f57633
+      version: -1
+      name: Set "Removed from Watchlist" Log Message
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Log
+      value:
+        simple: Removed ${inputs.incydr_username} from New Hire watchlist. Start date
+          is before defined look-back.
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 690,
+          "y": 710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 0c0d22b6-d0c9-4388-808d-8ad5429cb3ab
+    type: regular
+    task:
+      id: 0c0d22b6-d0c9-4388-808d-8ad5429cb3ab
+      version: -1
+      name: Set "Error Removing" Log Message
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Log
+      value:
+        simple: Attempted to remove ${inputs.incydr_username} from New Hire watchlist
+          but encountered an error.
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1140,
+          "y": 535
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 4f585b1a-e0db-4437-8a3c-04c774a4f96e
+    type: regular
+    task:
+      id: 4f585b1a-e0db-4437-8a3c-04c774a4f96e
+      version: -1
+      name: Format Start Date for Time Comparison
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      key:
+        simple: start_date
+      value:
+        simple: ${Code42.UserRiskProfiles.StartDate.year}-${Code42.UserRiskProfiles.StartDate.month}-${Code42.UserRiskProfiles.StartDate.day}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 20
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 81188106-dfb8-4250-8c8b-7a6d4afe328d
+    type: regular
+    task:
+      id: 81188106-dfb8-4250-8c8b-7a6d4afe328d
+      version: -1
+      name: Update Incydr User Profile
+      description: Update a user's risk profile.
+      script: Code42|||code42-user-update-risk-profile
+      type: regular
+      iscommand: true
+      brand: Code42
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      ignore-outputs:
+        simple: "false"
+      notes:
+        complex:
+          root: incident
+          accessor: created
+          transformers:
+          - operator: Cut
+            args:
+              delimiter:
+                value:
+                  simple: T
+              fields:
+                value:
+                  simple: "1"
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: '[XSOAR] Removed from New Hire watchlist on '
+              suffix:
+                value:
+                  simple: .
+      username:
+        simple: ${inputs.incydr_username}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 690,
+          "y": 535
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 40b0c383-031d-4177-8091-cc375bf69f41
+    type: regular
+    task:
+      id: 40b0c383-031d-4177-8091-cc375bf69f41
+      version: -1
+      name: Delete User Profile Context
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      key:
+        simple: Code42.UserRiskProfiles
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 0ca0220d-8bd8-48d9-86b6-6400ba702b20
+    type: regular
+    task:
+      id: 0ca0220d-8bd8-48d9-86b6-6400ba702b20
+      version: -1
+      name: Set Relative Look-Back String
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      key:
+        simple: relative_look_back
+      value:
+        simple: ${inputs.look_back} days ago
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": -330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 6a75cf82-f5d6-448b-8e3b-9089f7af982c
+    type: title
+    task:
+      id: 6a75cf82-f5d6-448b-8e3b-9089f7af982c
+      version: -1
+      name: Playbook Complete
+      type: title
+      iscommand: false
+      brand: ""
+      description: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 1060
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1605,
+        "width": 1290,
+        "x": 230,
+        "y": -480
+      }
+    }
+  }
+inputs:
+- key: incydr_username
+  value: {}
+  required: true
+  description: The username (in email format) provided by Code42 Incydr.
+  playbookInputQuery: null
+- key: look_back
+  value:
+    simple: "30"
+  required: true
+  description: Number of days to compare the start date against (e.g. "30", "7", etc.).
+    Default is 30.
+  playbookInputQuery: null
+outputs: []

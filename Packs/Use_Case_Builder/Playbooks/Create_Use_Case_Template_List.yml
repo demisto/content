@@ -1,0 +1,159 @@
+id: Create Use Case Template List
+version: -1
+contentitemexportablefields:
+  contentitemfields: {}
+name: Create Use Case Template List
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 5c113ede-87ee-4005-8556-a06f498e10ff
+    type: start
+    task:
+      id: 5c113ede-87ee-4005-8556-a06f498e10ff
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 1d8d4f53-5e8e-488a-83e3-6bc26225d083
+    type: regular
+    task:
+      id: 1d8d4f53-5e8e-488a-83e3-6bc26225d083
+      version: -1
+      name: Setting the list as an html
+      description: send HTTP POST request
+      script: '|||core-api-post'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      body:
+        simple: |-
+          {
+              "id": "UseCaseTemplate",
+              "version": -1,
+              "name": "UseCaseTemplate",
+              "type": "html"
+          }
+      uri:
+        simple: /lists/save
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 002e6d20-9405-466b-8f54-ae5e62240c90
+    type: regular
+    task:
+      id: 002e6d20-9405-466b-8f54-ae5e62240c90
+      version: -1
+      name: Creating the actual list
+      scriptName: CreateUseCaseTemplateList
+      type: regular
+      iscommand: false
+      description: ""
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 63529643-68c2-4c96-83e6-c06aff696d1a
+    type: title
+    task:
+      id: 63529643-68c2-4c96-83e6-c06aff696d1a
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 560,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+quiet: true
+fromversion: 6.10.0
+tests:
+- Run all tests
+description: 'This Playbook creates the HTML Use Case Builder document list'

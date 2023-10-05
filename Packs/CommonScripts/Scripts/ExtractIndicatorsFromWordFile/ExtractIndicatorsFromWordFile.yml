@@ -1,10 +1,7 @@
 args:
-- default: false
-  description: The entry ID of the word document to be parsed for indicators. The document can be either in DOC or DOCX format.
-  isArray: false
+- description: The entry ID of the word document to be parsed for indicators. The document can be either in DOC or DOCX format.
   name: entryID
   required: true
-  secret: false
 comment: |-
   Used to extract indicators from Word files (DOC, DOCX).
   The script does not extract data from macros (e.g., embedded code).
@@ -18,7 +15,6 @@ commonfields:
 enabled: true
 name: ExtractIndicatorsFromWordFile
 script: '-'
-system: false
 tags:
 - parser
 - autoextract
@@ -30,7 +26,6 @@ type: python
 subtype: python3
 runas: DBotRole
 dockerimage: demisto/office-utils:2.0.0.49835
-runonce: false
 fromversion: 5.0.0
 tests:
 - Extract Indicators From File - Generic v2 - Test

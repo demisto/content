@@ -1,0 +1,1693 @@
+id: AWS - User Investigation
+version: -1
+name: AWS - User Investigation
+description: "This playbook performs an investigation on a specific user in AWS environments, using queries and logs from AWS CloudTrail to locate the following activities performed by the user:\n- Failed login attempt\n- Suspicious activities \n- API access denied\n- Administrative user activities\n- Security rules and policies changes\n- Access keys and access token activities\n- Script-based user agent usage\n- User role changes activities\n- MFA device changes activities\n"
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: f3f2d42d-6426-4fa1-8645-5ca37e8b8676
+    type: start
+    task:
+      id: f3f2d42d-6426-4fa1-8645-5ca37e8b8676
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "46"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1460,
+          "y": -340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: e0e47d55-d099-4e4e-8a63-b950e8e06ca0
+    type: condition
+    task:
+      id: e0e47d55-d099-4e4e-8a63-b950e8e06ca0
+      version: -1
+      name: Is AWS CloudTrail enabled and is the user name defined?
+      description: Checks if the AWS CloudTrail integration is enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: AWS - CloudTrail
+                    ignorecase: true
+                accessor: state
+            iscontext: true
+          right:
+            value:
+              simple: active
+          ignorecase: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.Username
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1460,
+          "y": 130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 51206f1f-295e-4aee-8fb6-23a6c7b74613
+    type: title
+    task:
+      id: 51206f1f-295e-4aee-8fb6-23a6c7b74613
+      version: -1
+      name: AWS CloudTrail
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1460,
+          "y": -30
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 49213749-81ae-4feb-86d6-23fed8a9848b
+    type: regular
+    task:
+      id: 49213749-81ae-4feb-86d6-23fed8a9848b
+      version: -1
+      name: Aws-CloudTrail-lookup-events
+      description: Looks up API activity events captured by CloudTrail that create, update, or delete resources in your account. Events for a region can be looked up for the times in which you had CloudTrail turned on in that region during the last seven days.
+      script: AWS - CloudTrail|||aws-cloudtrail-lookup-events
+      type: regular
+      iscommand: true
+      brand: AWS - CloudTrail
+    nexttasks:
+      '#none#':
+      - "41"
+    scriptarguments:
+      attributeKey:
+        simple: Username
+      attributeValue:
+        complex:
+          root: inputs.Username
+      startTime:
+        complex:
+          root: TimeNow
+          transformers:
+          - operator: RegexExtractAll
+            args:
+              error_if_no_match: {}
+              ignore_case: {}
+              multi_line: {}
+              period_matches_newline: {}
+              regex:
+                value:
+                  simple: (.*)\.
+              unpack_matches: {}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1460,
+          "y": 315
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 56cd8ece-a7ce-463f-8cfe-dfa186935c86
+    type: title
+    task:
+      id: 56cd8ece-a7ce-463f-8cfe-dfa186935c86
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 360,
+          "y": 1430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 23cde925-a031-4457-8bbd-1b96f438d390
+    type: regular
+    task:
+      id: 23cde925-a031-4457-8bbd-1b96f438d390
+      version: -1
+      name: Load alerts JSON
+      description: Loads a JSON from a string input, and returns a JSON object result.
+      scriptName: LoadJSON
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+      - "11"
+      - "30"
+      - "32"
+      - "36"
+      - "35"
+      - "38"
+      - "44"
+      - "45"
+    scriptarguments:
+      input:
+        complex:
+          root: AWS.CloudTrail.Events
+          accessor: CloudTrailEvent
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1460,
+          "y": 700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: db70a4ed-7f97-4a5e-847f-544c05584d94
+    type: regular
+    task:
+      id: db70a4ed-7f97-4a5e-847f-544c05584d94
+      version: -1
+      name: 'API Access denied Count '
+      description: Set the `access denied` API calls, if it exists.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "33"
+    scriptarguments:
+      key:
+        simple: AwsApiAccessDeniedCount
+      value:
+        complex:
+          root: JsonObject
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: JsonObject.errorCode
+                iscontext: true
+              right:
+                value:
+                  simple: AccessDenied
+              ignorecase: true
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: JsonObject.eventType
+                iscontext: true
+              right:
+                value:
+                  simple: AwsApiCall
+              ignorecase: true
+          transformers:
+          - operator: count
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -370,
+          "y": 1020
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 7cb0546e-9cdc-4087-8510-1316faedee62
+    type: title
+    task:
+      id: 7cb0546e-9cdc-4087-8510-1316faedee62
+      version: -1
+      name: Administrative User Activities
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "13"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -810,
+          "y": 880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 600a27b1-37ee-4e3b-838b-86430e372820
+    type: title
+    task:
+      id: 600a27b1-37ee-4e3b-838b-86430e372820
+      version: -1
+      name: API Access Denied
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "10"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -370,
+          "y": 880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 5eeb31d6-8b7d-4301-8230-b91158122a71
+    type: regular
+    task:
+      id: 5eeb31d6-8b7d-4301-8230-b91158122a71
+      version: -1
+      name: 'Set Administrative User Activities Count '
+      description: |-
+        Set the administrative activities performed by the user, if it exists.
+        The task sets the following activities:
+        ResetAccountPassword, CreateUser, DeleteUser, AddUserToGroup, RemoveUserFromGroup, EnableUser, DisableUser, CreateGroup, DeleteGroup, UpdateGroup, UpdateUser, CreateRole, DeleteRole, UpdateRole, ActivateUser, ActivateUsers.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "33"
+    scriptarguments:
+      key:
+        simple: AwsAdminActivitiesCount
+      value:
+        complex:
+          root: JsonObject
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: JsonObject.eventName
+                iscontext: true
+              right:
+                value:
+                  simple: ResetAccountPassword
+              ignorecase: true
+            - operator: isEqualString
+              left:
+                value:
+                  simple: JsonObject.eventName
+                iscontext: true
+              right:
+                value:
+                  simple: CreateUser
+              ignorecase: true
+            - operator: isEqualString
+              left:
+                value:
+                  simple: JsonObject.eventName
+                iscontext: true
+              right:
+                value:
+                  simple: DeleteUser
+              ignorecase: true
+            - operator: isEqualString
+              left:
+                value:
+                  simple: JsonObject.eventName
+                iscontext: true
+              right:
+                value:
+                  simple: AddUserToGroup
+            - operator: isEqualString
+              left:
+                value:
+                  simple: JsonObject.eventName
+                iscontext: true
+              right:
+                value:
+                  simple: RemoveUserFromGroup
+              ignorecase: true
+            - operator: isEqualString
+              left:
+                value:
+                  simple: JsonObject.eventName
+                iscontext: true
+              right:
+                value:
+                  simple: EnableUser
+              ignorecase: true
+            - operator: isEqualString
+              left:
+                value:
+                  simple: JsonObject.eventName
+                iscontext: true
+              right:
+                value:
+                  simple: DisableUser
+              ignorecase: true
+            - operator: isEqualString
+              left:
+                value:
+                  simple: JsonObject.eventName
+                iscontext: true
+              right:
+                value:
+                  simple: CreateGroup
+            - operator: isEqualString
+              left:
+                value:
+                  simple: JsonObject.eventName
+                iscontext: true
+              right:
+                value:
+                  simple: DeleteGroup
+            - operator: isEqualString
+              left:
+                value:
+                  simple: JsonObject.eventName
+                iscontext: true
+              right:
+                value:
+                  simple: UpdateGroup
+            - operator: isEqualString
+              left:
+                value:
+                  simple: JsonObject.eventName
+                iscontext: true
+              right:
+                value:
+                  simple: UpdateUser
+            - operator: isEqualString
+              left:
+                value:
+                  simple: JsonObject.eventName
+                iscontext: true
+              right:
+                value:
+                  simple: CreateRole
+            - operator: isEqualString
+              left:
+                value:
+                  simple: JsonObject.eventName
+                iscontext: true
+              right:
+                value:
+                  simple: DeleteRole
+            - operator: isEqualString
+              left:
+                value:
+                  simple: JsonObject.eventName
+                iscontext: true
+              right:
+                value:
+                  simple: UpdateRole
+            - operator: isEqualString
+              left:
+                value:
+                  simple: JsonObject.eventName
+                iscontext: true
+              right:
+                value:
+                  simple: ActivateUser
+              ignorecase: true
+            - operator: isEqualString
+              left:
+                value:
+                  simple: JsonObject.eventName
+                iscontext: true
+              right:
+                value:
+                  simple: ActivateUsers
+              ignorecase: true
+          transformers:
+          - operator: count
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -810,
+          "y": 1020
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: e6dc04b1-a814-4b96-8490-b3abeb0fb356
+    type: regular
+    task:
+      id: e6dc04b1-a814-4b96-8490-b3abeb0fb356
+      version: -1
+      name: Security rules and policies were changed
+      description: |-
+        Set the security rules and policy changes made by the user if they exist.
+        The task sets the following activities:
+        CreatePolicy, DeletePolicy, UpdatePolicy, CreateAccessPolicy, DeleteAccessPolicy, UpdateAccessPolicy, CreateFirewall, DeleteFirewall, CreateFirewallRule, DeleteFirewallRule, UpdateFirewallRule, CreateFirewallPolicy, UpdateFirewallPolicy, DeleteFirewallPolicy.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "33"
+    scriptarguments:
+      key:
+        simple: AwsSecurityChangesCount
+      value:
+        complex:
+          root: JsonObject
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: JsonObject.eventName
+                iscontext: true
+              right:
+                value:
+                  simple: CreatePolicy
+              ignorecase: true
+            - operator: isEqualString
+              left:
+                value:
+                  simple: JsonObject.eventName
+                iscontext: true
+              right:
+                value:
+                  simple: DeletePolicy
+              ignorecase: true
+            - operator: isEqualString
+              left:
+                value:
+                  simple: JsonObject.eventName
+                iscontext: true
+              right:
+                value:
+                  simple: UpdatePolicy
+              ignorecase: true
+            - operator: isEqualString
+              left:
+                value:
+                  simple: JsonObject.eventName
+                iscontext: true
+              right:
+                value:
+                  simple: CreateAccessPolicy
+            - operator: isEqualString
+              left:
+                value:
+                  simple: JsonObject.eventName
+                iscontext: true
+              right:
+                value:
+                  simple: UpdateAccessPolicy
+              ignorecase: true
+            - operator: isEqualString
+              left:
+                value:
+                  simple: JsonObject.eventName
+                iscontext: true
+              right:
+                value:
+                  simple: DeleteAccessPolicy
+              ignorecase: true
+            - operator: isEqualString
+              left:
+                value:
+                  simple: JsonObject.eventName
+                iscontext: true
+              right:
+                value:
+                  simple: CreateFirewall
+              ignorecase: true
+            - operator: isEqualString
+              left:
+                value:
+                  simple: JsonObject.eventName
+                iscontext: true
+              right:
+                value:
+                  simple: DeleteFirewall
+              ignorecase: true
+            - operator: containsGeneral
+              left:
+                value:
+                  simple: JsonObject.eventName
+                iscontext: true
+              right:
+                value:
+                  simple: CreateFirewallRule
+              ignorecase: true
+            - operator: isEqualString
+              left:
+                value:
+                  simple: JsonObject.eventName
+                iscontext: true
+              right:
+                value:
+                  simple: DeleteFirewallRule
+              ignorecase: true
+            - operator: isEqualString
+              left:
+                value:
+                  simple: JsonObject.eventName
+                iscontext: true
+              right:
+                value:
+                  simple: UpdateFirewallRule
+              ignorecase: true
+            - operator: isEqualString
+              left:
+                value:
+                  simple: JsonObject.eventName
+                iscontext: true
+              right:
+                value:
+                  simple: CreateFirewallPolicy
+              ignorecase: true
+            - operator: isEqualString
+              left:
+                value:
+                  simple: JsonObject.eventName
+                iscontext: true
+              right:
+                value:
+                  simple: |
+                    UpdateFirewallPolicy
+              ignorecase: true
+            - operator: isEqualString
+              left:
+                value:
+                  simple: JsonObject.eventName
+                iscontext: true
+              right:
+                value:
+                  simple: DeleteFirewallPolicy
+              ignorecase: true
+          transformers:
+          - operator: count
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1250,
+          "y": 1020
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: 100e1858-9375-4062-86ec-bd60f4609a28
+    type: title
+    task:
+      id: 100e1858-9375-4062-86ec-bd60f4609a28
+      version: -1
+      name: Security rules were changed
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "29"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1250,
+          "y": 880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: f3211bb9-1f9b-4b60-8c8c-2b8afa8b16c7
+    type: regular
+    task:
+      id: f3211bb9-1f9b-4b60-8c8c-2b8afa8b16c7
+      version: -1
+      name: Access Keys and Access Token activities
+      description: |-
+        Set the access keys and access token activities performed by the user, if it exists.
+        The task sets the following activities:
+        CreateAccessKey, DeleteAccessKey, UpdateAccessKey, CreateApiKey, DeleteApiKey, UpdateApiKey, CreateKeyPair, DeleteKeyPair, CreateKey, DeleteKey, DeleteSSHPublicKey, CreateCliToken, CreateToken, DeleteOAuthToken, CreateEnrollmentToken.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "33"
+    scriptarguments:
+      key:
+        simple: AwsAccessKeyActivitiesCount
+      value:
+        complex:
+          root: JsonObject
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: JsonObject.eventName
+                iscontext: true
+              right:
+                value:
+                  simple: CreateAccessKey
+              ignorecase: true
+            - operator: isEqualString
+              left:
+                value:
+                  simple: JsonObject.eventName
+                iscontext: true
+              right:
+                value:
+                  simple: DeleteAccessKey
+              ignorecase: true
+            - operator: isEqualString
+              left:
+                value:
+                  simple: JsonObject.eventName
+                iscontext: true
+              right:
+                value:
+                  simple: UpdateAccessKey
+              ignorecase: true
+            - operator: isEqualString
+              left:
+                value:
+                  simple: JsonObject.eventName
+                iscontext: true
+              right:
+                value:
+                  simple: CreateApiKey
+              ignorecase: true
+            - operator: isEqualString
+              left:
+                value:
+                  simple: JsonObject.eventName
+                iscontext: true
+              right:
+                value:
+                  simple: DeleteApiKey
+              ignorecase: true
+            - operator: isEqualString
+              left:
+                value:
+                  simple: JsonObject.eventName
+                iscontext: true
+              right:
+                value:
+                  simple: UpdateApiKey
+              ignorecase: true
+            - operator: isEqualString
+              left:
+                value:
+                  simple: JsonObject.eventName
+                iscontext: true
+              right:
+                value:
+                  simple: CreateKeyPair
+              ignorecase: true
+            - operator: isEqualString
+              left:
+                value:
+                  simple: JsonObject.eventName
+                iscontext: true
+              right:
+                value:
+                  simple: DeleteKeyPair
+              ignorecase: true
+            - operator: isEqualString
+              left:
+                value:
+                  simple: JsonObject.eventName
+                iscontext: true
+              right:
+                value:
+                  simple: CreateKey
+              ignorecase: true
+            - operator: isEqualString
+              left:
+                value:
+                  simple: JsonObject.eventName
+                iscontext: true
+              right:
+                value:
+                  simple: DeleteKey
+              ignorecase: true
+            - operator: isEqualString
+              left:
+                value:
+                  simple: JsonObject.eventName
+                iscontext: true
+              right:
+                value:
+                  simple: DeleteSSHPublicKey
+              ignorecase: true
+            - operator: isEqualString
+              left:
+                value:
+                  simple: JsonObject.eventName
+                iscontext: true
+              right:
+                value:
+                  simple: CreateCliToken
+              ignorecase: true
+            - operator: isEqualString
+              left:
+                value:
+                  simple: JsonObject.eventName
+                iscontext: true
+              right:
+                value:
+                  simple: CreateToken
+              ignorecase: true
+            - operator: isEqualString
+              left:
+                value:
+                  simple: JsonObject.eventName
+                iscontext: true
+              right:
+                value:
+                  simple: DeleteOAuthToken
+              ignorecase: true
+            - operator: isEqualString
+              left:
+                value:
+                  simple: JsonObject.eventName
+                iscontext: true
+              right:
+                value:
+                  simple: CreateEnrollmentToken
+              ignorecase: true
+          transformers:
+          - operator: count
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1670,
+          "y": 1020
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: 5664ffb4-5474-49bc-8d99-504706acabeb
+    type: title
+    task:
+      id: 5664ffb4-5474-49bc-8d99-504706acabeb
+      version: -1
+      name: Access Keys and Access Tokens Modification
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "31"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1670,
+          "y": 880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: cd66a3d7-ef8b-4be3-8c03-d07a227f0739
+    type: title
+    task:
+      id: cd66a3d7-ef8b-4be3-8c03-d07a227f0739
+      version: -1
+      name: AWS CloudTrail Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1460,
+          "y": 1200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: 2c26000e-beeb-4d19-880e-5f417fbdcdf0
+    type: regular
+    task:
+      id: 2c26000e-beeb-4d19-880e-5f417fbdcdf0
+      version: -1
+      name: Failed logon attempt
+      description: Set the console failed logon performed by the user, if it exists.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "33"
+    scriptarguments:
+      key:
+        simple: AwsFailedLogonCount
+      value:
+        complex:
+          root: JsonObject
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: JsonObject.eventName
+                iscontext: true
+              right:
+                value:
+                  simple: ConsoleLogin
+              ignorecase: true
+          - - operator: isNotEqualString
+              left:
+                value:
+                  simple: JsonObject.responseElements.registryId
+                iscontext: true
+              right:
+                value:
+                  simple: Success
+              ignorecase: true
+          transformers:
+          - operator: count
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 1020
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: 35364c42-1631-409d-8887-f13308c77128
+    type: title
+    task:
+      id: 35364c42-1631-409d-8887-f13308c77128
+      version: -1
+      name: User Agent
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "37"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2090,
+          "y": 880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: 3a85deae-c6aa-421d-8c4e-6892fb967e7e
+    type: title
+    task:
+      id: 3a85deae-c6aa-421d-8c4e-6892fb967e7e
+      version: -1
+      name: Failed Login Attempt
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "34"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: d2a5d9c4-fda6-47bf-8505-002fbb79b918
+    type: regular
+    task:
+      id: d2a5d9c4-fda6-47bf-8505-002fbb79b918
+      version: -1
+      name: 'Script-based User Agent '
+      description: |-
+        Set the script-based user agent used by the user, if it exists.
+        The task sets the following script-based user agents :
+        Jakarta Commons-HttpClient, Python-urllib, Wget, curl.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "33"
+    scriptarguments:
+      key:
+        simple: AwsScriptBasedUserAgentCount
+      value:
+        complex:
+          root: JsonObject
+          filters:
+          - - operator: containsGeneral
+              left:
+                value:
+                  simple: JsonObject.userAgent
+                iscontext: true
+              right:
+                value:
+                  simple: Wget
+              ignorecase: true
+            - operator: containsGeneral
+              left:
+                value:
+                  simple: JsonObject.userAgent
+                iscontext: true
+              right:
+                value:
+                  simple: Jakarta Commons-HttpClient
+              ignorecase: true
+            - operator: containsGeneral
+              left:
+                value:
+                  simple: JsonObject.userAgent
+                iscontext: true
+              right:
+                value:
+                  simple: Python-urllib
+              ignorecase: true
+            - operator: containsGeneral
+              left:
+                value:
+                  simple: JsonObject.userAgent
+                iscontext: true
+              right:
+                value:
+                  simple: curl
+              ignorecase: true
+          transformers:
+          - operator: count
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2090,
+          "y": 1020
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: 2968d186-b0ce-43af-8b72-c78aaf3c3507
+    type: title
+    task:
+      id: 2968d186-b0ce-43af-8b72-c78aaf3c3507
+      version: -1
+      name: Suspicious Activities
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "40"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2520,
+          "y": 880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "40":
+    id: "40"
+    taskid: 3ea2ac79-77fd-4cea-8942-240abd7b46fe
+    type: regular
+    task:
+      id: 3ea2ac79-77fd-4cea-8942-240abd7b46fe
+      version: -1
+      name: Suspicious Activities
+      description: |-
+        Set the suspicious activities performed by the user, if it exists.
+        The task sets the following activities:
+        DeleteAlert ,DeleteAlarms ,DeleteCertificate ,DeleteCACertificate ,DeleteCertificateAuthority, DeleteLoggingConfiguration, DeleteWatchlist, StopLogging ,UpdateLoggingConfiguration, DeleteUser.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "33"
+    scriptarguments:
+      key:
+        simple: AwsSuspiciousActivitiesCount
+      value:
+        complex:
+          root: JsonObject
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: JsonObject.eventName
+                iscontext: true
+              right:
+                value:
+                  simple: DeleteAlert
+              ignorecase: true
+            - operator: isEqualString
+              left:
+                value:
+                  simple: JsonObject.eventName
+                iscontext: true
+              right:
+                value:
+                  simple: DeleteAlarms
+              ignorecase: true
+            - operator: isEqualString
+              left:
+                value:
+                  simple: JsonObject.eventName
+                iscontext: true
+              right:
+                value:
+                  simple: DeleteCertificate
+              ignorecase: true
+            - operator: isEqualString
+              left:
+                value:
+                  simple: JsonObject.eventName
+                iscontext: true
+              right:
+                value:
+                  simple: DeleteCACertificate
+            - operator: isEqualString
+              left:
+                value:
+                  simple: JsonObject.eventName
+                iscontext: true
+              right:
+                value:
+                  simple: DeleteCertificateAuthority
+            - operator: isEqualString
+              left:
+                value:
+                  simple: JsonObject.eventName
+                iscontext: true
+              right:
+                value:
+                  simple: DeleteLoggingConfiguration
+            - operator: isEqualString
+              left:
+                value:
+                  simple: JsonObject.eventName
+                iscontext: true
+              right:
+                value:
+                  simple: DeleteWatchlist
+            - operator: isEqualString
+              left:
+                value:
+                  simple: JsonObject.eventName
+                iscontext: true
+              right:
+                value:
+                  simple: StopLogging
+            - operator: isEqualString
+              left:
+                value:
+                  simple: JsonObject.eventName
+                iscontext: true
+              right:
+                value:
+                  simple: UpdateLoggingConfiguration
+            - operator: isEqualString
+              left:
+                value:
+                  simple: JsonObject.eventName
+                iscontext: true
+              right:
+                value:
+                  simple: DeleteUser
+          transformers:
+          - operator: count
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2520,
+          "y": 1020
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "41":
+    id: "41"
+    taskid: 8b328b9f-aaf6-48ce-8ebd-31408b7b7255
+    type: condition
+    task:
+      id: 8b328b9f-aaf6-48ce-8ebd-31408b7b7255
+      version: -1
+      name: Is cloud Trail Event exist?
+      description: Checks if the CloudTrail events were found.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: AWS.CloudTrail.Events
+                accessor: CloudTrailEvent
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1460,
+          "y": 500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "42":
+    id: "42"
+    taskid: 9830080e-0e31-4cfe-8deb-5ef4677e6951
+    type: regular
+    task:
+      id: 9830080e-0e31-4cfe-8deb-5ef4677e6951
+      version: -1
+      name: User Role Changes
+      description: |-
+        Set the user role changes made by the user if they exist.
+        The task sets the following activities:
+        AttachRolePolicy, DetachRolePolicy, DeleteRolePolicy.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "33"
+    scriptarguments:
+      key:
+        simple: AwsUserRoleChangesCount
+      value:
+        complex:
+          root: JsonObject
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: JsonObject.eventName
+                iscontext: true
+              right:
+                value:
+                  simple: AttachRolePolicy
+              ignorecase: true
+            - operator: isEqualString
+              left:
+                value:
+                  simple: JsonObject.eventName
+                iscontext: true
+              right:
+                value:
+                  simple: DetachRolePolicy
+              ignorecase: true
+            - operator: isEqualString
+              left:
+                value:
+                  simple: JsonObject.eventName
+                iscontext: true
+              right:
+                value:
+                  simple: DeleteRolePolicy
+              ignorecase: true
+          transformers:
+          - operator: count
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2940,
+          "y": 1020
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "43":
+    id: "43"
+    taskid: 93659738-177b-492a-86d0-6d98c044ffef
+    type: regular
+    task:
+      id: 93659738-177b-492a-86d0-6d98c044ffef
+      version: -1
+      name: User MFA Device Changes
+      description: Set the MFA device change event if performed by the user, if it exists.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "33"
+    scriptarguments:
+      key:
+        simple: AwsMFAConfigCount
+      value:
+        complex:
+          root: JsonObject
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: JsonObject.eventName
+                iscontext: true
+              right:
+                value:
+                  simple: DisableMFADevice
+              ignorecase: true
+            - operator: isEqualString
+              left:
+                value:
+                  simple: JsonObject.eventName
+                iscontext: true
+              right:
+                value:
+                  simple: EnableMFADevice
+              ignorecase: true
+          transformers:
+          - operator: count
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -3360,
+          "y": 1020
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "44":
+    id: "44"
+    taskid: 7c5f87ad-a130-4bd7-8ec2-254eb3384c65
+    type: title
+    task:
+      id: 7c5f87ad-a130-4bd7-8ec2-254eb3384c65
+      version: -1
+      name: User Role
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "42"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2940,
+          "y": 880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "45":
+    id: "45"
+    taskid: 52ca1b40-b83d-4c0d-8b91-446b15d8a2fb
+    type: title
+    task:
+      id: 52ca1b40-b83d-4c0d-8b91-446b15d8a2fb
+      version: -1
+      name: Multi-Factor Authentication
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "43"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -3360,
+          "y": 880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "46":
+    id: "46"
+    taskid: 7c2069a9-5b8c-4c03-8c6f-fe93558c93b7
+    type: regular
+    task:
+      id: 7c2069a9-5b8c-4c03-8c6f-fe93558c93b7
+      version: -1
+      name: Get Time for a search
+      description: |
+        Retrieves the current date and time.
+      scriptName: GetTime
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      dateFormat:
+        simple: ISO
+      daysAgo:
+        complex:
+          root: inputs.AwsTimeSearchFrom
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1460,
+          "y": -210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "1_5_yes": 0.37,
+      "1_8_#default#": 0.13,
+      "41_8_#default#": 0.15,
+      "41_9_yes": 0.51
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1835,
+        "width": 4100,
+        "x": -3360,
+        "y": -340
+      }
+    }
+  }
+inputs:
+- key: Username
+  value: {}
+  required: false
+  description: "The username to investigate. \nPlease enter the user's email."
+  playbookInputQuery:
+- key: AwsTimeSearchFrom
+  value:
+    simple: "1"
+  required: false
+  description: "The Search Time for the `GetTime` task used by the AWS Cloud Trail search query. \nThis value represents the number of days to include in the search.\nDefault value: 1.  (1 Day)"
+  playbookInputQuery:
+outputs:
+- contextPath: AwsMFAConfigCount
+  description: The number of MFA configurations performed by the user in the AWS environment.
+  type: unknown
+- contextPath: AwsUserRoleChangesCount
+  description: The number of user roles that were changed by the user in the AWS environment.
+  type: unknown
+- contextPath: AwsSuspiciousActivitiesCount
+  description: The number of suspicious activities performed by the user in the AWS environment.
+  type: unknown
+- contextPath: AwsScriptBasedUserAgentCount
+  description: The number of script-based user agent usages by the user in the AWS environment.
+  type: unknown
+- contextPath: AwsAccessKeyActivitiesCount
+  description: The number of access key activities performed by the user in the AWS environment.
+  type: unknown
+- contextPath: AwsSecurityChangesCount
+  description: The number of security rules that were changed by the user in the AWS environment.
+  type: unknown
+- contextPath: AwsAdminActivitiesCount
+  description: The number of administrative activities performed by the user in the AWS environment.
+  type: unknown
+- contextPath: AwsApiAccessDeniedCount
+  description: The number of API accesses denied by the user in the AWS environment.
+  type: unknown
+- contextPath: AwsFailedLogonCount
+  description: The number of failed logins by the user in the AWS environment.
+  type: unknown
+tests:
+- No tests (auto formatted)
+fromversion: 6.9.0

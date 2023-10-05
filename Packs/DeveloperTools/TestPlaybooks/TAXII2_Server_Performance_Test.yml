@@ -1149,7 +1149,7 @@ tasks:
       - "30"
     scriptarguments:
       headers:
-        simple: Accept:*/*
+        simple: Accept:application/taxii+json
       method:
         simple: GET
       url:
@@ -1254,7 +1254,7 @@ tasks:
       - "32"
     scriptarguments:
       headers:
-        simple: Accept:*/*
+        simple: Accept:application/taxii+json
       method:
         simple: GET
       url:
@@ -1435,7 +1435,7 @@ tasks:
       - "36"
     scriptarguments:
       headers:
-        simple: Accept:*/*
+        simple: Accept:application/taxii+json
       method:
         simple: GET
       url:
@@ -1540,7 +1540,7 @@ tasks:
       - "39"
     scriptarguments:
       headers:
-        simple: Accept:*/*
+        simple: Accept:application/taxii+json
       method:
         simple: GET
       url:
@@ -1683,7 +1683,7 @@ tasks:
       - "42"
     scriptarguments:
       headers:
-        simple: Accept:*/*
+        simple: Accept:application/taxii+json
       method:
         simple: GET
       url:
@@ -1826,7 +1826,7 @@ tasks:
       - "45"
     scriptarguments:
       headers:
-        simple: Accept:*/*
+        simple: Accept:application/taxii+json
       method:
         simple: GET
       url:
@@ -1931,7 +1931,7 @@ tasks:
       - "49"
     scriptarguments:
       headers:
-        simple: Accept:*/*
+        simple: Accept:application/taxii+json
       method:
         simple: GET
       url:
@@ -2074,7 +2074,7 @@ tasks:
       - "52"
     scriptarguments:
       headers:
-        simple: Accept:*/*
+        simple: Accept:application/taxii+json
       method:
         simple: GET
       url:
@@ -2217,7 +2217,7 @@ tasks:
       - "55"
     scriptarguments:
       headers:
-        simple: Accept:*/*
+        simple: Accept:application/taxii+json
       method:
         simple: GET
       url:

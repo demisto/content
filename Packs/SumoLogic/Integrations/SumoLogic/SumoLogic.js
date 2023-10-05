@@ -1,14 +1,19 @@
 var server = params.url.replace(/[\/]+$/, '') + '/' + params.apiVersion + '/';
 
 var doReq = function(method, path, parameters, cookies) {
+    var username = params.credentialsAccess.identifier || params.accessID;
+    var password = params.credentialsAccess.password || params.accessKey;
+    if ((!username)||(!password)){
+        return 'Access key and Access ID must be provided.';
+    }
     var result = http(
         server + path + (method === 'GET' && parameters ? encodeToURLQuery(parameters) : ''),
         {
             Headers: {'Content-Type': ['application/json'], 'Accept': ['application/json']},
             Method: method,
             Body: method == 'POST' && parameters ? JSON.stringify(parameters) : '',
-            Username: params.accessID,
-            Password: params.accessKey,
+            Username: username,
+            Password: password,
             Cookies: cookies
         },
         params.insecure,
@@ -96,6 +101,7 @@ var a2i = function(v, d) {
 };
 
 var defaultLimit = 100, defaultSleep = 3, defaultTimeout = 180, defaultSearchTimeout = 10;
+var limit = a2i(params.limit, defaultLimit)
 
 switch (command) {
     // This is the call made when pressing the integration test button.
@@ -119,7 +125,7 @@ switch (command) {
             }
         }
 
-        var s = search(params.fetchQuery, lastRun.time, now, a2i(params.limit, defaultLimit), 0, params.timeZone, a2i(params.maxTimeout, 180), !params.fetchRecords,
+        var s = search(params.fetchQuery, lastRun.time, now, limit, 0, params.timeZone, a2i(params.maxTimeout, 180), !params.fetchRecords,
             a2i(params.sleepBetweenChecks, defaultSleep), params.fetchRecords);
         var incidents = [];
         var currentFetch = lastRun.time;
@@ -189,18 +195,18 @@ switch (command) {
         }
         var headers = 'headers' in args ? argToList(args.headers) : undefined;
         var waitForSearchComplete = args.waitForSearchComplete == 'true';
-        var s = search(query, args.from, args.to, a2i(args.limit, defaultLimit), a2i(args.offset, 0), args.timezone,
+        var s = search(query, args.from, args.to, limit, a2i(args.offset, 0), args.timezone,
             a2i(args.maxTimeToWaitForResults, defaultSearchTimeout) * 60, args.byReceiptTime, a2i(params.sleepBetweenChecks, defaultSleep),
             waitForSearchComplete);
         var md = '';
         var ec = {};
         if (s.messages && s.messages.length > 0) {
             md = tableToMarkdown('SumoLogic Search Messages', s.messages, headers) + '\n';
-            ec.Search = {Messages: s.messages.length > defaultLimit ? s.messages.slice(0, defaultLimit) : s.messages};
+            ec.Search = {Messages: s.messages.length > limit ? s.messages.slice(0, limit) : s.messages};
         }
         if (s.records && s.records.length > 0) {
             md += tableToMarkdown('SumoLogic Search Records', s.records, headers);
-            ec.Search = {Records: s.records.length > defaultLimit ? s.records.slice(0, defaultLimit) : s.records};
+            ec.Search = {Records: s.records.length > limit ? s.records.slice(0, limit) : s.records};
         }
         if (!md) {
             md = 'No results found';

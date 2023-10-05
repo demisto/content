@@ -2051,3 +2051,111 @@ def test_format_domain_data_empty_domainStatuses():
 
     results = format_domain_data([mock_domain_data])
     assert results
+
+
+@pytest.mark.parametrize(
+    "args, expected_url, expected_data",
+    [
+        (
+            {
+                "asset_type": "ip-range",
+                "operation_type": "UNASSIGN",
+                "asset_id": "c871feab-7d38-4cc5-9d36-5dad76f6b389",
+                "tag_ids": ["tag1", "tag2"]
+            },
+            "https://example.com/api/v2/ip-range/tag-assignments/bulk",
+            {
+                "operations": [{
+                    'operationType': "UNASSIGN",
+                    'tagIds': ["tag1", "tag2"],
+                    'assetId': "c871feab-7d38-4cc5-9d36-5dad76f6b389"
+                }]
+            }
+        ),
+        (
+            {
+                "asset_type": "other-asset",  # one of : Certificate, Domain, CloudResource, Network, Device, ResponsiveIP
+                "operation_type": "UNASSIGN",
+                "asset_id": "c871feab-7d38-4cc5-9d36-5dad76f6b389",
+                "tag_ids": ["tag3", "tag4"]
+            },
+            "https://example.com/api/v3/assets/assets/annotations",
+            {
+                "operations": [{
+                    "operationType": "UNASSIGN",
+                    "annotationType": "TAG",
+                    "annotationIds": ["tag3", "tag4"],
+                    "assetId": "c871feab-7d38-4cc5-9d36-5dad76f6b389"
+                }]
+            }
+        )
+    ]
+)
+def test_manage_asset_tags(requests_mock, args, expected_url, expected_data):
+    """
+    Given:
+        - Different asset types
+    When
+        - Calling the `manage_asset_tags` method with the given `args`.
+    Then
+        - Assert that the HTTP request was made with the correct parameters
+    """
+    from ExpanseV2 import Client
+    client = Client(api_key="key", base_url="https://example.com/api", verify=True, proxy=False)
+    requests_mock.post(expected_url, json=expected_data)
+
+    client.manage_asset_tags(**args)
+
+
+@pytest.mark.parametrize(
+    "args, expected_url, expected_data",
+    [
+        (
+            {
+                "asset_type": "ip-range",
+                "operation_type": "UNASSIGN",
+                "asset_id": "f491b7ef-a7b9-4644-af90-36dc0a6b2000",
+                "poc_ids": ["f491b7ef-a7b9-4644-af90-36dc0a6b2000"]
+            },
+            "https://example.com/api/v2/ip-range/contact-assignments/bulk",
+            {
+                "operations": [{
+                    'operationType': "UNASSIGN",
+                    'contactIds': ["f491b7ef-a7b9-4644-af90-36dc0a6b2000"],
+                    'assetId': "f491b7ef-a7b9-4644-af90-36dc0a6b2000"
+                }]
+            }
+        ),
+        (
+            {
+                "asset_type": "other-asset",  # one of : Certificate, Domain, CloudResource, Network, Device, ResponsiveIP
+                "operation_type": "UNASSIGN",
+                "asset_id": "f491b7ef-a7b9-4644-af90-36dc0a6b2000",
+                "poc_ids": ["f491b7ef-a7b9-4644-af90-36dc0a6b2000"]
+            },
+            "https://example.com/api/v3/assets/assets/annotations",
+            {
+                "operations": [{
+                    "operationType": "UNASSIGN",
+                    "annotationType": "CONTACT",
+                    "annotationIds": ["f491b7ef-a7b9-4644-af90-36dc0a6b2000"],
+                    "assetId": "f491b7ef-a7b9-4644-af90-36dc0a6b2000"
+                }]
+            }
+        )
+    ]
+)
+def test_manage_asset_pocs(requests_mock, args, expected_url, expected_data):
+    """
+    Given:
+        - Different asset types
+    When
+        - Calling the `manage_asset_pocs` method with the given `args`.
+    Then
+        - Assert that the HTTP request was made with the correct parameters
+    """
+    from ExpanseV2 import Client
+    client = Client(api_key="key", base_url="https://example.com/api", verify=True, proxy=False)
+    requests_mock.post(expected_url, json=expected_data)
+
+    client.manage_asset_pocs(**args)

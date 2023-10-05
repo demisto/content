@@ -21,36 +21,32 @@ configuration:
 - additionalinfo: 'Note: "Type of incident to be fetched" and "Incident type" should be the same to fetch similar types of incidents.'
   defaultvalue: Alert
   display: Type of incident to be fetched
-  hidden: false
   name: fetch_type
   options:
   - Alert
   - Event
-  required: false
   type: 15
   section: Collect
   advanced: true
+  required: false
 - additionalinfo: The maximum limit is 1000.
   defaultvalue: '15'
   display: Maximum number of incidents per fetch
-  hidden: false
   name: max_fetch
-  required: false
   type: 0
   section: Collect
+  required: false
 - additionalinfo: 'Date or relative timestamp to start fetching incidents from. For Alert, incidents will be fetched based on triggered date. For Event, the incidents will be fetched based on event time. (Formats accepted:  2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.).'
   defaultvalue: 3 days
   display: First fetch time interval
-  hidden: false
   name: first_fetch
-  required: false
   type: 0
   section: Collect
+  required: false
 - additionalinfo: |-
     Fetch list of alerts as per the severity level. If not specified, it fetches all the incidents.
     Note: Severity level is only available for alerts.
   display: Severity levels
-  hidden: false
   name: severities
   options:
   - Information
@@ -58,13 +54,12 @@ configuration:
   - Warning
   - Serious
   - Critical
-  required: false
   type: 16
   section: Collect
   advanced: true
+  required: false
 - additionalinfo: Filter alerts based on the type of property to monitor. If not specified, it will fetch all types of alerts. To list additional object types, use the query 'SELECT DISTINCT ObjectType FROM Orion.AlertConfigurations' in the swis-query command.
   display: Object Types
-  hidden: false
   name: object_types
   options:
   - Application
@@ -92,13 +87,12 @@ configuration:
   - QoE Application (per node)
   - Wireless Access Point
   - Wireless Controller
-  required: false
   type: 16
   section: Collect
   advanced: true
+  required: false
 - additionalinfo: Filter events based on the type. If not specified, it will fetch all types of events. To list additional event types, use the query 'SELECT Name FROM Orion.EventTypes' in the swis-query command.
   display: Event Types
-  hidden: false
   name: event_types
   options:
   - Node Down
@@ -128,34 +122,33 @@ configuration:
   - Alert Triggered
   - Alert Reset
   - Anomaly detected
-  required: false
   type: 16
   section: Collect
   advanced: true
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Trust any certificate (not secure)
-  hidden: false
   name: insecure
-  required: false
   type: 8
   section: Connect
   advanced: true
+  required: false
 - defaultvalue: SolarWinds Alert
   display: Incident type
   name: incidentType
-  required: false
   type: 13
   section: Connect
+  required: false
 - display: Fetch incidents
   name: isFetch
-  required: false
   type: 8
   section: Collect
+  required: false
 description: The SolarWinds integration interacts with the SWIS API to allow you to fetch alerts and events. It also provides commands to retrieve lists of alerts and events.
 display: SolarWinds
 name: SolarWinds
@@ -163,44 +156,29 @@ script:
   commands:
   - arguments:
     - auto: PREDEFINED
-      default: false
       description: |-
         Whether to retrieve events that are acknowledged. If true, retrieves all acknowledged events.
         Possible values: "true" and "false".
-      isArray: false
       name: acknowledged
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         A comma-separated ist of event IDs.
         Note: event_id supports integer values (int64).
       isArray: true
       name: event_id
-      required: false
-      secret: false
-    - default: false
-      description: 'A comma-separated list of event types. For example: "Warning", "Informational", "Node Up", etc.'
+    - description: 'A comma-separated list of event types. For example: "Warning", "Informational", "Node Up", etc.'
       isArray: true
       name: event_type
-      required: false
-      secret: false
-    - default: false
-      description: A comma-separated list of nodes.
+    - description: A comma-separated list of nodes.
       isArray: true
       name: node
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: EventID
       description: |-
         Key by which the response will be sorted.
         For example: "EventID", "EventTime", "Message", "TimeStamp", "EventTypeName", "Node", etc.
-      isArray: false
       name: sort_key
       predefined:
       - EventID
@@ -209,36 +187,21 @@ script:
       - TimeStamp
       - EventTypeName
       - Node
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: ascending
       description: 'Order by which the response will be sorted. Possible values: "ascending" and "descending".'
-      isArray: false
       name: sort_order
       predefined:
       - ascending
       - descending
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '0'
+    - defaultValue: '0'
       description: The page number from which to retrieve events. By default, the per-page limit is 50 events. You can change this value in the limit argument.
-      isArray: false
       name: page
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: |-
         The maximum number of records to be retrieved.
         Note: The maximum value supported by the limit is maxValue int32.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieves a list of events according to filter values provided in the command arguments.
     execution: true
     name: swis-event-list
@@ -298,35 +261,24 @@ script:
       description: ID of an instance site of which event is triggered.
       type: Number
   - arguments:
-    - default: false
-      description: |-
+    - description: |-
         A comma-separated list of alert IDs.
         Note: alert_id supports integer values (int64).
       isArray: true
       name: alert_id
-      required: false
-      secret: false
-    - default: false
-      description: 'A comma-separated list of the type of property to monitor. For example: "Node", "IPAM.IPRequests", "Orion"."DiscoveryLogs", "APM: Component", "IPAM Networks", "Orion.NodesForecastCapacity", "APM: Application", "Orion.VolumesForecastCapacity", "Orion.NodesForecastCapacity", etc.'
+    - description: 'A comma-separated list of the type of property to monitor. For example: "Node", "IPAM.IPRequests", "Orion"."DiscoveryLogs", "APM: Component", "IPAM Networks", "Orion.NodesForecastCapacity", "APM: Application", "Orion.VolumesForecastCapacity", "Orion.NodesForecastCapacity", etc.'
       isArray: true
       name: type
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         A comma-separated list of severity levels.
         Possible values: "Information", "Warning", "Critical", "Serious", and "Notice".
       isArray: true
       name: severity
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: AlertActiveID
       description: |-
         Key by which the response will be sorted.
         For example: "AlertID", "AlertActiveID", "AlertObjectID", "TriggeredDateTime", "TriggeredMessage", "AcknowledgedDateTime", "EngineID", "Name","ObjectType", etc.
-      isArray: false
       name: sort_key
       predefined:
       - AlertID
@@ -338,38 +290,22 @@ script:
       - EngineID
       - Name
       - ObjectType
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: ascending
       description: 'Order by which the response will be sorted. Possible values are: "ascending" and "descending".'
-      isArray: false
       name: sort_order
       predefined:
       - ascending
       - descending
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '0'
+    - defaultValue: '0'
       description: The page number from which to retrieve alerts. By default, the per-page limit is 50 alerts. You can change this value in the limit argument.
-      isArray: false
       name: page
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: |-
         The number of records to be retrieved.
         Note: The maximum value supported by the limit is maxValue int32.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieves a list of alerts based on the filter values provided in the command arguments.
-    execution: false
     name: swis-alert-list
     outputs:
     - contextPath: SolarWinds.Alert.AlertActiveID
@@ -517,23 +453,15 @@ script:
       description: Team that is responsible for the alert.
       type: String
   - arguments:
-    - default: false
-      description: The SWQL query to be executed.
-      isArray: false
+    - description: The SWQL query to be executed.
       name: query
       required: true
-      secret: false
-    deprecated: false
     description: |-
       Executes a query request.
       Note: The guidelines for composing the query can be found in the 'View Integration Documentation' linked in the integration tips.
-    execution: false
     name: swis-query
-  dockerimage: demisto/python3:3.10.10.52956
-  feed: false
+  dockerimage: demisto/python3:3.10.12.66339
   isfetch: true
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3

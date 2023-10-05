@@ -1,12 +1,8 @@
 args:
-- default: false
-  description: The entry_id of the PCAP file to mine.
-  isArray: false
+- description: The entry_id of the PCAP file to mine.
   name: entry_id
   required: true
-  secret: false
 - auto: PREDEFINED
-  default: false
   description: A comma-separated list of protocols to output as context. If empty, will not output any protocols to context.
   isArray: true
   name: protocol_output
@@ -25,68 +21,32 @@ args:
   - FTP
   - SMB2
   - All
-  required: false
-  secret: false
 - auto: PREDEFINED
-  default: false
   description: Whether to extract IP, URL, and Email from PCAP file. Can be "True" or "False".
-  isArray: false
   name: extract_strings
   predefined:
   - 'True'
   - 'False'
-  required: false
-  secret: false
-- default: false
-  description: 'Filter to apply on PCAP. Wireshark syntax as can be found here: https://www.wireshark.org/docs/man-pages/wireshark-filter.html'
-  isArray: false
+- description: 'Filter to apply on PCAP. Wireshark syntax as can be found here: https://www.wireshark.org/docs/man-pages/wireshark-filter.html'
   name: pcap_filter
-  required: false
-  secret: false
-- default: false
-  description: Your own regular expression to extract from the PCAP.
-  isArray: false
+- description: Your own regular expression to extract from the PCAP.
   name: custom_regex
-  required: false
-  secret: false
-- default: false
-  description: The name of the PCAP file to save to the War Room after applying the
-    `pcap_filter` (i.e. `filtered_file.pcap`).
-  isArray: false
+- description: The name of the PCAP file to save to the War Room after applying the `pcap_filter` (i.e. `filtered_file.pcap`).
   name: filtered_file_name
-  required: false
-  secret: false
-- default: false
-  description: The entry ID for the RSA decryption key.
-  isArray: false
+- description: The entry ID for the RSA decryption key.
   name: rsa_decrypt_key_entry_id
-  required: false
-  secret: false
-- default: false
-  defaultValue: '15'
+- defaultValue: '15'
   description: Number of conversations to display. The default is 15.
-  isArray: false
   name: convs_to_display
-  required: false
-  secret: false
-- default: false
-  description: The WPA password. By providing the password you will be able to decrypt
-    encrypted traffic data.
-  isArray: false
+- description: The WPA password. By providing the password you will be able to decrypt encrypted traffic data.
   name: wpa_password
-  required: false
-  secret: false
 - auto: PREDEFINED
-  default: false
   defaultValue: 'False'
   description: Output to context the source and destination IPs in the PCAP file. Can be "True" or "False". The default is "False".
-  isArray: false
   name: extract_ips
   predefined:
   - 'True'
   - 'False'
-  required: false
-  secret: false
 comment: |-
   PcapMIner V2 allows to parse PCAP files by displaying the all of the relevant data within including ip addresses, ports, flows, specific protocol breakdown, searching by regex, decrypting encrypted  traffic and more.
   This automation takes about a minute to process 20,000 packets (which is approximately 10MB). If you want to mine large files you can either:
@@ -159,8 +119,7 @@ outputs:
   description: The emails extracted from the file.
   type: String
 - contextPath: PCAPResults.Regex
-  description: The regular expressions specified in `extract_regex` extracted from
-    the file.
+  description: The regular expressions specified in `extract_regex` extracted from the file.
   type: String
 - contextPath: PCAPResultsHTTP.ResponseStatusCode
   description: The response code.
@@ -400,7 +359,6 @@ outputs:
   description: The SSH key exchange message codes.
   type: String
 script: '-'
-system: false
 tags:
 - pcap
 - mine

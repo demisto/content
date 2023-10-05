@@ -1,5 +1,4 @@
 import json
-import io
 import requests_mock
 import demistomock as demisto
 
@@ -18,7 +17,7 @@ DEMISTO_PARAMS = {
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -83,7 +82,8 @@ def test_fetch_events_no_events(mocker):
 
     events = results.call_args[0][0]['Contents']
     last_run = mock_last_run.call_args
-    assert last_run == events is None
+    assert not last_run
+    assert not events
 
 
 def test_fetch_events_limit_set_to_one(mocker):

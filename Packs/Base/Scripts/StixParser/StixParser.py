@@ -1,10 +1,10 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import copy
 import tempfile
 from typing import Tuple
 
 from lxml import etree
-import demistomock as demisto
-from CommonServerPython import *
 from bs4 import BeautifulSoup
 import dateutil.parser
 from netaddr import IPNetwork
@@ -164,7 +164,6 @@ class STIX2Parser:
 
     @staticmethod
     def get_indicator_publication(indicator: Dict[str, Any]):
-
         """
         Build publications grid field from the indicator external_references field
 

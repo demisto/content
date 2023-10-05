@@ -2,7 +2,8 @@
 ignore=IN126
 
 [file:AWS-SQS.yml]
-ignore=IN126,BA108,BA109,IN145,IN124
+ignore=IN126,BA108,BA109,IN124
 
 [known_words]
-AbuseIPDB
+abuseipdb
+

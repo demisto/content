@@ -28,11 +28,17 @@ ALWAYS_INSTALLED_PACKS_XPANSE = ALWAYS_INSTALLED_PACKS_MARKETPLACE_V2
 
 ALWAYS_INSTALLED_PACKS_MAPPING = {
     MarketplaceVersions.XSOAR: ALWAYS_INSTALLED_PACKS_XSOAR,
+    MarketplaceVersions.XSOAR_SAAS: ALWAYS_INSTALLED_PACKS_XSOAR,
     MarketplaceVersions.MarketplaceV2: ALWAYS_INSTALLED_PACKS_MARKETPLACE_V2,
     MarketplaceVersions.XPANSE: ALWAYS_INSTALLED_PACKS_XPANSE,
 }
 
-DEFAULT_MARKETPLACE_WHEN_MISSING: MarketplaceVersions = MarketplaceVersions.XSOAR
+DEFAULT_MARKETPLACE_WHEN_MISSING: MarketplaceVersions = [
+    MarketplaceVersions.XSOAR,
+    MarketplaceVersions.XSOAR_SAAS,
+    MarketplaceVersions.MarketplaceV2,
+    MarketplaceVersions.XPANSE
+]
 
 SKIPPED_CONTENT_ITEMS__NOT_UNDER_PACK: set[str] = {
     # these are not under packs, and are not supported anymore.
@@ -110,6 +116,7 @@ IGNORED_FILE_TYPES: set[FileType] = {
     FileType.INI,
     FileType.PEM,
     FileType.LICENSE,
+    FileType.VULTURE_WHITELIST,
 }
 
 NON_CONTENT_FOLDERS: set[str] = set(TESTS_AND_DOC_DIRECTORIES) | {SAMPLES_DIR}
@@ -123,11 +130,17 @@ MODELING_RULE_COMPONENT_FILES: set[FileType] = {
 
 XSIAM_COMPONENT_FILES: set[FileType] = {
     FileType.PARSING_RULE,
+    FileType.PARSING_RULE_XIF,
     FileType.CORRELATION_RULE,
     FileType.XSIAM_DASHBOARD,
     FileType.XSIAM_REPORT,
     FileType.TRIGGER,
     FileType.MODELING_RULE_SCHEMA,
     FileType.XDRC_TEMPLATE,
-    FileType.LAYOUT_RULE
+    FileType.LAYOUT_RULE,
+    FileType.XDRC_TEMPLATE,
+    FileType.XSIAM_DASHBOARD,
+    FileType.XSIAM_REPORT,
+    FileType.TRIGGER,
+    FileType.CORRELATION_RULE,
 }

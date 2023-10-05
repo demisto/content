@@ -25,32 +25,32 @@ configuration:
 - display: Trust any certificate (not secure)
   name: unsecure
   type: 8
-  required: false
   section: Connect
   advanced: true
+  required: false
 - display: Fetch incidents
   name: isFetch
   type: 8
-  required: false
   section: Collect
+  required: false
 - display: Incident type
   name: incidentType
   type: 13
-  required: false
   section: Connect
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
-  required: false
   section: Connect
   advanced: true
+  required: false
 - display: 'Comma-separated list of threat behaviors to generate incidents for, e.g., "Exfiltration: SSL upload from non-browser to notable domain, Lateral Movement: Unix-based PSEXEC, C2: Possible ICMP tunnel"'
   name: threat_behaviors
   defaultvalue: ""
   type: 0
-  required: false
   section: Collect
   advanced: true
+  required: false
 - display: Period between incident fetch interval (in minutes)
   name: fetch_interval
   defaultvalue: "1"
@@ -82,10 +82,10 @@ configuration:
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
-  required: false
   type: 15
   section: Connect
   advanced: true
+  required: false
 - defaultvalue: indicatorType
   name: feedExpirationPolicy
   display: ''
@@ -94,22 +94,22 @@ configuration:
   - interval
   - indicatorType
   - suddenDeath
-  required: false
   type: 17
   section: Connect
   advanced: true
+  required: false
 - defaultvalue: '20160'
   name: feedExpirationInterval
   display: ''
-  required: false
   type: 1
   section: Connect
   advanced: true
+  required: false
 script:
   script: ''
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.11.54132
+  dockerimage: demisto/python3:3.10.12.63474
   commands:
   - name: awake-query-devices
     arguments:
@@ -664,7 +664,6 @@ script:
       type: string
     description: Lookup and enrich a device
   isfetch: true
-  runonce: false
 tests:
 - awake_security_test_pb
 fromversion: 5.0.0

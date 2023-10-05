@@ -287,7 +287,7 @@ def create_firewall_policy_command(args):
     )
     kwargs = {
         "FirewallPolicyName": args.get("firewall_policy_name", None),
-        "FirewallPolicy": safe_load_json(args.get("firewall_policy_json",None)),
+        "FirewallPolicy": safe_load_json(args.get("firewall_policy_json", None)),
         "Description": args.get("description", None),
         "Tags": parse_tag_field(args.get("tags")),
 
@@ -692,7 +692,7 @@ def list_rule_groups_command(args):
     )
     kwargs = {
         "NextToken": args.get("next_token", None),
-        "MaxResults": args.get("max_results",None)
+        "MaxResults": args.get("max_results", None)
     }
     kwargs = remove_empty_elements(kwargs)
     if args.get('raw_json') is not None and not kwargs:

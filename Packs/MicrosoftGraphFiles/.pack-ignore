@@ -1,5 +1,2 @@
-[file:MS_Graph_Files_-_Test.yml]
-ignore=auto-test
-
 [file:MicrosoftGraphFiles.yml]
-ignore=DS107,IN145
+ignore=DS107

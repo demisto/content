@@ -10,6 +10,10 @@ var sendRequest = function(args) {
 
     var queryArgs = {};
     var argKeys = Object.keys(args);
+    var key =  params.credentials_api_key ? params.credentials_api_key.password : params.key;
+    if (!key) {
+      return('API key must be provided.');
+    }
     for (var i = 0; i < argKeys.length; i++) {
         queryArgs[argKeys[i].replace('-','_')] = args[argKeys[i]];
     }
@@ -21,7 +25,7 @@ var sendRequest = function(args) {
             Headers: {
                 'Content-Type': ['application/x-www-form-urlencoded']
             },
-            Body: 'key=' + params.key
+            Body: 'key=' + key
         },
         params.insecure,
         params.proxy
@@ -68,6 +72,34 @@ var createEntry = function(response) {
     };
 };
 
+
+var createReputationEntry = function(response) {
+    var data = [];
+    ec = {};
+    ec.Account =[];
+    var reliability =  params.integration_reliability
+    persons = if (response.person) ? [response.person] : response.possible_persons
+
+    for (var i = 0; i < persons.length; i++) {
+        data[i] = addPerson(persons[i]);
+        ec.Account[i] = buildECReliability(data, i, reliability);
+        data[i]['Emails'] = '';
+        for (var j = 0; j < data[i].Email.length; j++) {
+            data[i]['Emails'] += data[i].Email[j].Address + '\n';
+        }
+        delete data[i].Email;
+    }
+
+    return {
+        Type: entryTypes.note,
+        ContentsFormat: formats.table,
+        Contents: data,
+        ReadableContentsFormat: formats.table,
+        HumanReadable: data,
+        EntryContext: ec
+    };
+};
+
 var buildEC = function(data, i) {
     return {
         Addresses: data[i].Addresses,
@@ -76,6 +108,23 @@ var buildEC = function(data, i) {
         Names: data[i].Names,
         Phones: data[i].Phones,
         Usernames: data[i].Usernames
+    };
+};
+
+var buildECReliability = function(data, i, reliability) {
+    return {
+        Addresses: data[i].Addresses,
+        Email: data[i].Email,
+        IDs: data[i].UserIDs,
+        Names: data[i].Names,
+        Phones: data[i].Phones,
+        Usernames: data[i].Usernames,
+        DbotScore: {
+            Indicator: data[i].Email,
+            Score: 0, // No score
+            Vendor: 'pipl',
+            Reliability: reliability
+        }
     };
 };
 
@@ -167,7 +216,7 @@ switch (command) {
         return createEntry(response);
     case 'email':
         var response = sendRequest(args);
-        return createEntry(response);
+        return createReputationEntry(response);
     default:
 
 }

@@ -29,7 +29,6 @@ dependson:
   - urlscan.io|||urlscan-get-http-transaction-list
   - urlscan.io|||urlscan-submit-url-command
   - urlscan.io|||urlscan-poll-uri
-runonce: false
 runas: DBotWeakRole
 fromversion: 5.0.0
 tests:

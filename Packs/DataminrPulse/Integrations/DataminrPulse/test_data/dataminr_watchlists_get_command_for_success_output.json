@@ -1,0 +1,26 @@
+[
+  {
+    "id": 3336248,
+    "type": "CUSTOM",
+    "name": "Custom-Keyword-Security",
+    "description": "",
+    "properties": {
+      "watchlistColor": "purple"
+    }
+  },
+  {
+    "id": 3337987,
+    "type": "COMPANY",
+    "name": "company_list",
+    "description": "",
+    "properties": {
+      "watchlistColor": "purple"
+    },
+    "companies": [
+      {
+        "id": "5936d9ec1bfbafc7a6ebb01d32d58855",
+        "name": "Some LLC"
+      }
+    ]
+  }
+]

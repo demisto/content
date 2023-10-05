@@ -1,0 +1,281 @@
+id: Setting up the Use Case Builder Content
+version: -1
+contentitemexportablefields:
+  contentitemfields: {}
+name: Setting up the Use Case Builder Content
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: edcef372-28a5-430a-8963-fb1c6dd5f71f
+    type: start
+    task:
+      id: edcef372-28a5-430a-8963-fb1c6dd5f71f
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 46493bf1-c0c7-4e25-8037-54479522ebdb
+    type: regular
+    task:
+      id: 46493bf1-c0c7-4e25-8037-54479522ebdb
+      version: -1
+      name: Downloading Getting Started Video
+      description: Getting Started with XSOAR
+      tags:
+      - Getting Started with XSOAR
+      scriptName: GettingStartedWithXSOAR
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      retry-count:
+        simple: "2"
+    reputationcalc: 2
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 73be8c66-f0f0-478c-8a8d-83c0f8034ffd
+    type: regular
+    task:
+      id: 73be8c66-f0f0-478c-8a8d-83c0f8034ffd
+      version: -1
+      name: Initializing Incident Flow
+      description: |-
+        This script allows sending an HTML email, using a template stored as a list item under Lists (Settings -> Advanced -> Lists).
+        Placeholders are marked in DT format (i.e. ${incident.id} for incident ID).
+        Available placeholders for example:
+        - ${incident.labels.Email/from}
+        - ${incident.name}
+        - ${object.value}
+        See incident Context Data menu for available placeholders
+
+        Note: Sending emails require an active  Mail Sender integration instance.
+      scriptName: CreateEmailHtmlBody
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      key:
+        simple: XSOARIncidentFlow
+      listTemplate:
+        simple: XSOARIncidentFlow
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 2d307b76-af0a-4a23-8568-2b768a068bf0
+    type: regular
+    task:
+      id: 2d307b76-af0a-4a23-8568-2b768a068bf0
+      version: -1
+      name: Display Incident Flow Html
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      xsoarincidentflow:
+        simple: ${lists.XSOARIncidentFlow}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: dee71615-3148-4bc7-87c4-ca08110b31fa
+    type: title
+    task:
+      id: dee71615-3148-4bc7-87c4-ca08110b31fa
+      version: -1
+      name: Setting Use Case Development Deadline SLA and Timers
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "3"
+      - "1"
+      - "7"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers:
+    - fieldname: usecasebuilderdevelopmentdeadline
+      action: start
+    - fieldname: usecasedevelopmenttimer
+      action: start
+    - fieldname: usecasetestingtimer
+      action: pause
+    - fieldname: usecasepreproductiontimer
+      action: pause
+    - fieldname: usecaseproductiontimer
+      action: pause
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 7ecc118e-02da-4b3e-87f1-1d44133ae5e3
+    type: title
+    task:
+      id: 7ecc118e-02da-4b3e-87f1-1d44133ae5e3
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 8b939430-e087-4ca9-85b5-ab4a190a4b3c
+    type: regular
+    task:
+      id: 8b939430-e087-4ca9-85b5-ab4a190a4b3c
+      version: -1
+      name: Setting the use case development stage to In Development
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      usecasedevelopmentstage:
+        simple: In Development
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 705,
+        "width": 1240,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+quiet: true
+fromversion: 6.10.0
+tests:
+- Run all tests
+description: 'This playbook generates the flow, markdown, and layout information'

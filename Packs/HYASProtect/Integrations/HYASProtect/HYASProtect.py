@@ -1,7 +1,8 @@
 from CommonServerPython import *
 
+import urllib3
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 # CORTEX XSOAR COMMAND CONSTANTS
 INTEGRATION_NAME = 'HYAS PROTECT'
@@ -48,6 +49,7 @@ class Client(BaseClient):
             headers={
                 'Content-type': 'application/json',
                 'X-API-Key': apikey,
+                'User-Agent': 'Cortex XSOAR'
             },
             proxy=proxy,
             ok_codes=(200,),

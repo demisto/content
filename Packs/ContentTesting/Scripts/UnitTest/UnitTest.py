@@ -1,9 +1,7 @@
-# Final Test: 6.10
-import io
-import uuid
-
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+import io
+import uuid
 
 
 def GetAutomationId(name):
@@ -94,7 +92,7 @@ def RunUTResults(args):
                             'invId': incid,
                             'inTaskID': task_id,
                             'version': -1,
-                            'args': {},
+                            'args': newargs,
                             'loopArgs': {}
                         },
                         'playbooksdebuginfo': {},

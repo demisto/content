@@ -11,11 +11,11 @@ data_test_check_if_found_incident = [
 ]
 
 
-def create_sample_incidents(start, end):
+def create_sample_incidents(start, end, incident_type):
     return [
         {
             u'id': u'{i}'.format(i=i),
-            u'type': u'Type{i}'.format(i=i),
+            u'type': u'{type}'.format(type=incident_type),
             u'name': u'incident-{i}'.format(i=i),
         } for i in range(start, end + 1)
     ]
@@ -30,18 +30,19 @@ def execute_get_incidents_command_side_effect(amount_of_mocked_incidents):
     for start in range(1, amount_of_mocked_incidents + 1, default_jump):
         end = min(amount_of_mocked_incidents, default_jump * counter)
 
+        incident_type = 'A' if counter % 2 == 0 else 'B'
         if counter == 1:
             execute_command_mock = [
                 {
                     'Contents': {
-                        'data': create_sample_incidents(start, end),
+                        'data': create_sample_incidents(start, end, incident_type),
                         'total': amount_of_mocked_incidents
                     }
                 }
             ]
         else:
             execute_command_mock = {
-                'data': create_sample_incidents(start, end)
+                'data': create_sample_incidents(start, end, incident_type)
             }
 
         mocked_incidents.append(execute_command_mock)
@@ -232,15 +233,18 @@ def test_summarize_incidents():
          'severity': 'n/a', 'status': 'n/a', 'test': 'n/a', 'type': 'n/a'}]
 
 
-@pytest.mark.parametrize('amount_of_mocked_incidents, args', [
-    # (306, {}),
-    # (306, {"limit": "200"}),
-    # (105, {"limit": "200"}),
-    # (1000, {"limit": "100"}),
-    # (1000, {"limit": "1100"}),
-    (205, {"limit": "105.5"})
+@pytest.mark.parametrize('amount_of_mocked_incidents, args, expected_incidents_length', [
+    (306, {}, 100),
+    (306, {"limit": "200"}, 200),
+    (105, {"limit": "200"}, 105),
+    (1000, {"limit": "100"}, 100),
+    (1000, {"limit": "1100"}, 1000),
+    (205, {"limit": "105.5"}, 105),
+    (700, {"limit": "500", 'type': 'A'}, 300),
+    (1500, {"limit": "250", 'type': 'A'}, 250),
+    (500, {"limit": "100", 'name': 'incident-8'}, 1),
 ])
-def test_main_flow_with_limit(mocker, amount_of_mocked_incidents, args):
+def test_main_flow_with_limit(mocker, amount_of_mocked_incidents, args, expected_incidents_length):
     """
     Given:
        - Case A: Total of 306 incidents matching in XSOAR and no args
@@ -249,17 +253,23 @@ def test_main_flow_with_limit(mocker, amount_of_mocked_incidents, args):
        - Case D: Total of 1000 incidents matching in XSOAR and limit = 100
        - Case E: Total of 1000 incidents matching in XSOAR and limit = 1100
        - Case F: Total of 205 incidents matching in XSOAR and limit = 105.5
+       - Case G: Total of 700 incidents and only 300 incidents which match type = 'A' and limit = 500
+       - Case H: Total of 1500 incidents and only 700 incidents which match type = 'A' and limit = 250
+       - Case I: Total of 500 incidents and only 1 incident that its name = 'incident-8' and limit = 100
 
     When:
        - Running the main flow
 
     Then:
-       - Case A: Make sure only 100 incidents has been returned (default of the limit if not stated)
-       - Case B: Make sure only 200 incidents has been returned.
-       - Case C: Make sure only 105 incidents has been returned (cause there are fewer incidents than requested limit)
-       - Case D: Make sure only 100 incidents has been returned.
-       - Case E: Make sure only 1000 incidents has been returned.
-       - Case F: Make sure only 105 (rounded) incidents has been returned.
+       - Case A: Make sure only 100 incidents have been returned (default of the limit if not stated)
+       - Case B: Make sure only 200 incidents have been returned.
+       - Case C: Make sure only 105 incidents have been returned (cause there are fewer incidents than requested limit)
+       - Case D: Make sure only 100 incidents have been returned.
+       - Case E: Make sure only 1000 incidents have been returned.
+       - Case F: Make sure only 105 (rounded) incidents have been returned.
+       - Case G: Make sure only 300 incidents have been returned.
+       - Case H: Make sure only 250 incidents have been returned.
+       - Case I: Make sure only one incident has been returned.
 
     """
     import SearchIncidentsV2
@@ -277,6 +287,4 @@ def test_main_flow_with_limit(mocker, amount_of_mocked_incidents, args):
     SearchIncidentsV2.main()
 
     assert return_results_mocker.called
-    assert len(return_results_mocker.call_args[0][0].outputs) == min(
-        amount_of_mocked_incidents, arg_to_number(args.get('limit')) or SearchIncidentsV2.DEFAULT_LIMIT
-    )
+    assert len(return_results_mocker.call_args[0][0].outputs) == expected_incidents_length

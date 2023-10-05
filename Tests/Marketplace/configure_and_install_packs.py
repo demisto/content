@@ -37,18 +37,21 @@ def options_handler():
 def install_packs_from_content_packs_to_install_path(servers, pack_ids, marketplace_tag_name, hostname=''):
     """
     Install pack_ids from "$ARTIFACTS_FOLDER/content_packs_to_install.txt" file, and packs dependencies.
+    This method is called during the post-update phase of the build (with branch changed applied).
 
     Args:
-        hostname:
         pack_ids: the pack IDs to install.
         servers: XSIAM or XSOAR Servers to install packs on it.
     """
-    install_packs_one_by_one: bool = marketplace_tag_name == XSIAM_MP
+    use_multithreading = marketplace_tag_name != XSIAM_MP
 
     for server in servers:
         logging.info(f'Starting to install all content packs in {hostname if hostname else server.internal_ip}')
-        _, success = search_and_install_packs_and_their_dependencies(pack_ids, server.client, hostname,
-                                                                     install_packs_one_by_one)
+        _, success = search_and_install_packs_and_their_dependencies(pack_ids=pack_ids,
+                                                                     client=server.client,
+                                                                     hostname=hostname,
+                                                                     multithreading=use_multithreading,
+                                                                     production_bucket=False)
         if not success:
             raise Exception('Failed to search and install packs and their dependencies.')
 
@@ -70,8 +73,8 @@ def xsoar_configure_and_install_flow(options, branch_name: str, build_number: st
 
     servers = []
     # Configure the Servers
-    for server_url, port in server_to_port_mapping.items():
-        server = XSOARServer(internal_ip=server_url, port=port, user_name=username, password=password)
+    for server_url in server_to_port_mapping:
+        server = XSOARServer(internal_ip=server_url, user_name=username, password=password, build_number=build_number)
         logging.info(f'Adding Marketplace configuration to {server_url}')
         error_msg: str = 'Failed to set marketplace configuration.'
         server.add_server_configuration(config_dict=MARKET_PLACE_CONFIGURATION, error_msg=error_msg)
@@ -82,28 +85,47 @@ def xsoar_configure_and_install_flow(options, branch_name: str, build_number: st
     if not content_path:
         raise Exception('Could not find content path')
 
-    # all packs that should be installed
+    # Create a list of all packs that should be installed
     packs_to_install = set(Build.fetch_pack_ids_to_install(options.pack_ids_to_install))
-    logging.info(f'packs to install before filtering by minServerVersion {packs_to_install}')
+    logging.info(f'Packs to install before filtering by minServerVersion: {packs_to_install}')
 
-    # get packs that their minServerVersion is higher than the server version
+    # Get packs with 'minServerVersion' that's higher than server's version
     packs_with_higher_server_version = get_packs_with_higher_min_version(
         packs_names=packs_to_install,
         server_numeric_version=server_version
     )
-    logging.info(f'packs with minServerVersion that is higher than server version {packs_with_higher_server_version}')
+    logging.info(f'Packs with minServerVersion that is higher than server version: {packs_with_higher_server_version}')
 
-    # remove all the packs that that their minServerVersion is higher than the server version.
+    # Remove packs that 'minServerVersion' that's higher than server's version.
     pack_ids_with_valid_min_server_version = packs_to_install - packs_with_higher_server_version
-    logging.info(f'starting to install content packs {pack_ids_with_valid_min_server_version}')
+    logging.info(f'Installing content packs: {pack_ids_with_valid_min_server_version}')
 
-    install_packs_from_content_packs_to_install_path(servers=servers,
-                                                     pack_ids=list(pack_ids_with_valid_min_server_version),
-                                                     marketplace_tag_name=XSOAR_MP)
+    for b in batch(list(pack_ids_with_valid_min_server_version), batch_size=20):
+        logging.info(f'installing packs in batch: {b}')
+        install_packs_from_content_packs_to_install_path(servers=servers,
+                                                         pack_ids=b,
+                                                         marketplace_tag_name=XSOAR_MP)
     logging.success(
-        f'Finished installing all content packs {pack_ids_with_valid_min_server_version} '
-        f'in {[server.internal_ip for server in servers]}'
+        f'Finished content packs: {pack_ids_with_valid_min_server_version} in {[server.internal_ip for server in servers]}'
     )
+
+
+def batch(iterable, batch_size=1):
+    """Gets an iterable and yields slices of it.
+
+    Args:
+        iterable (list): list or other iterable object.
+        batch_size (int): the size of batches to fetch
+
+    Return:
+        (list): Iterable slices of given
+    """
+    current_batch = iterable[:batch_size]
+    not_batched = iterable[batch_size:]
+    while current_batch:
+        yield current_batch
+        current_batch = not_batched[:batch_size]
+        not_batched = not_batched[batch_size:]
 
 
 def xsiam_configure_and_install_flow(options, branch_name: str, build_number: str):
@@ -120,7 +142,7 @@ def xsiam_configure_and_install_flow(options, branch_name: str, build_number: st
         options.cloud_servers_path,
         options.cloud_servers_api_keys)
     # Configure the Server
-    server = CloudServer(api_key, server_numeric_version, base_url, xdr_auth_id, cloud_machine)
+    server = CloudServer(api_key, server_numeric_version, base_url, xdr_auth_id, cloud_machine, build_number)
     CloudBuild.set_marketplace_url(servers=[server], branch_name=branch_name, ci_build_number=build_number)
 
     # extract pack_ids from the content_packs_to_install.txt

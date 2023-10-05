@@ -306,7 +306,7 @@
         }
     ],
     "offenses_first_loop": [
-        {
+        [{
             "username_count": 1,
             "description": "Session Closed\n",
             "rules": [
@@ -363,8 +363,8 @@
             ],
             "local_destination_count": 1,
             "status": "OPEN"
-        },
-        {
+        }, true],
+        [{
             "username_count": 1,
             "description": "Multiple Login Failures for the Same User\n containing Failure Audit: The domain controller failed to validate the credentials for an account\n",
             "rules": [
@@ -429,10 +429,10 @@
             ],
             "local_destination_count": 1,
             "status": "OPEN"
-        }
+        }, false]
     ],
     "offenses_second_loop": [
-        {
+        [{
             "username_count": 1,
             "description": "Session Closed\n",
             "rules": [
@@ -489,8 +489,8 @@
             ],
             "local_destination_count": 1,
             "status": "OPEN"
-        },
-        {
+        }, true],
+        [{
             "username_count": 1,
             "description": "Multiple Login Failures for the Same User\n containing Failure Audit: The domain controller failed to validate the credentials for an account\n",
             "rules": [
@@ -555,7 +555,7 @@
             ],
             "local_destination_count": 1,
             "status": "OPEN"
-        }
+        }, true]
     ],
     "events": [
         {

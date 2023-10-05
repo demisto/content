@@ -2,7 +2,7 @@
     "name": "Cisco Webex Teams",
     "description": "Send messages, create rooms and more, via the Cisco Spark API.",
     "support": "xsoar",
-    "currentVersion": "1.0.2",
+    "currentVersion": "1.0.3",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

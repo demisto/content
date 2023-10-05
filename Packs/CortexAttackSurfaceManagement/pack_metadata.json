@@ -2,7 +2,7 @@
     "name": "Cortex Attack Surface Management",
     "description": "Content for working with Attack Surface Management (ASM).",
     "support": "xsoar",
-    "currentVersion": "1.6.6",
+    "currentVersion": "1.7.0",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -19,29 +19,33 @@
         "Palo Alto Networks"
     ],
     "dependencies": {
-        "AWS-Enrichment-Remediation": {
-            "mandatory": false,
-            "display_name": "AWS Enrichment and Remediation"
-        },
-        "Azure-Enrichment-Remediation": {
-            "mandatory": false,
-            "display_name": "Azure Enrichment and Remediation"
-        },
-        "CommonScripts": {
+        "FiltersAndTransformers": {
             "mandatory": true,
-            "display_name": "Common Scripts"
+            "display_name": "Filters And Transformers"
+        },
+        "qualys": {
+            "mandatory": false,
+            "display_name": "Qualys"
+        },
+        "Rapid7_Nexpose": {
+            "mandatory": false,
+            "display_name": "Rapid7 InsightVM"
         },
         "GCP-Enrichment-Remediation": {
             "mandatory": false,
             "display_name": "GCP Enrichment and Remediation"
         },
-        "Nmap": {
+        "AWS-Enrichment-Remediation": {
             "mandatory": false,
-            "display_name": "Nmap"
+            "display_name": "AWS Enrichment and Remediation"
         },
-        "Rapid7_Nexpose": {
+        "CommonScripts": {
+            "mandatory": true,
+            "display_name": "Common Scripts"
+        },
+        "PrismaCloud": {
             "mandatory": false,
-            "display_name": "Rapid7 Nexpose"
+            "display_name": "Prisma Cloud by Palo Alto Networks"
         },
         "SplunkPy": {
             "mandatory": false,
@@ -51,13 +55,29 @@
             "mandatory": false,
             "display_name": "ServiceNow"
         },
+        "PAN-OS": {
+            "mandatory": false,
+            "display_name": "PAN-OS by Palo Alto Networks"
+        },
+        "SplunkPyPreRelease": {
+            "mandatory": false,
+            "display_name": "Splunk Prerelease (Deprecated)"
+        },
+        "Azure-Enrichment-Remediation": {
+            "mandatory": false,
+            "display_name": "Azure Enrichment and Remediation"
+        },
+        "Jira": {
+            "mandatory": false,
+            "display_name": "Atlassian Jira"
+        },
         "Tenable_io": {
             "mandatory": false,
             "display_name": "Tenable.io"
         },
-        "qualys": {
+        "GCP-IAM": {
             "mandatory": false,
-            "display_name": "Qualys"
+            "display_name": "GCP-IAM"
         }
     },
     "marketplaces": [
@@ -68,15 +88,16 @@
         "ASM"
     ],
     "displayedImages": [
-        "AWS-Enrichment-Remediation",
-        "Azure-Enrichment-Remediation",
-        "CommonScripts",
-        "GCP-Enrichment-Remediation",
-        "Nmap",
+        "qualys",
         "Rapid7_Nexpose",
+        "GCP-Enrichment-Remediation",
+        "AWS-Enrichment-Remediation",
+        "PrismaCloud",
         "SplunkPy",
         "ServiceNow",
-        "Tenable_io",
-        "qualys"
+        "PAN-OS",
+        "Azure-Enrichment-Remediation",
+        "Jira",
+        "Tenable_io"
     ]
 }
