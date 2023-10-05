@@ -2650,6 +2650,7 @@ def xml2json(xmlstring, options={}, strip_ns=1, strip=1):
        :return: The converted JSON
        :rtype: ``dict`` or ``list``
     """
+    xmlstring = xmlstring.replace('&', '&amp;')
     try:
         import defusedxml.ElementTree as defused_ET
         elem = defused_ET.fromstring(xmlstring)
