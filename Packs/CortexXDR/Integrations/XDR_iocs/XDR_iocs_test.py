@@ -999,7 +999,7 @@ def test_parse_xdr_comments(raw_comment: str | list[str], comments_as_tags: bool
            'error': 'Expiration time 1696323079000 is invalid; expiration date cannot be in the past'}],
          'Expiration time 1696323079000 is invalid; expiration date cannot be in the past'),
         ([],
-         '\n'),
+         ''),
     ))
 def test_create_validation_errors_response(validation_errors, expected_str):
     """

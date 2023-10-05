@@ -40,12 +40,14 @@ demisto_score_to_xdr: dict[int, str] = {
 
 
 def create_validation_errors_response(validation_errors):
-    response = 'The following IOCs were not pushed due to following errors:'
+    if not validation_errors:
+        return ''
+    response = 'The following IOCs were not pushed due to following errors:\n'
     for item in validation_errors:
         indicator = item.get('indicator')
         error = item.get('error')
         response += f'{indicator}: {error}.\n'
-    return response + '\n'
+    return response
 
 
 def batch_iocs(generator, batch_size=200):
