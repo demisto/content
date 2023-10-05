@@ -482,7 +482,7 @@ def get_mapping_fields(client, token, url):
     Returns: None
     """
 
-    input_params = {}
+    input_params: Dict[str, Any] = {}
 
     input_params['order_by'] = "asc"
     input_params['from_da'] = 0
