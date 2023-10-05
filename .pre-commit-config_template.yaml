@@ -66,6 +66,9 @@ repos:
           # enable with --test
   - id: run-unit-tests
 
+  - id: coverage-analyze
+    args: ["-i", ".coverage"]
+
   - id: format
           # update docker image to the latest version, assume no
     args: ["-ud", "-n", "--no-validate"]
