@@ -167,7 +167,7 @@ xpanse-prepare-testing-bucket-upload-flow:
       python3 ./Tests/scripts/wait_until_server_ready.py  -n ${IS_NIGHTLY} --instance-role "${INSTANCE_ROLE}" || EXIT_CODE=$?
     - section_end "Wait Until Server Ready"
     - section_start "Install Packs"
-    - ./Tests/Marketplace/install_packs.sh "$INSTANCE_ROLE" || EXIT_CODE=$?
+    - ./Tests/Marketplace/install_packs.sh || EXIT_CODE=$?
     - section_end "Install Packs"
     - section_start "Destroy instances"
     - python3 ./Tests/scripts/destroy_instances.py --artifacts-dir $ARTIFACTS_FOLDER --env-file $ARTIFACTS_FOLDER/env_results.json --instance-role "$INSTANCE_ROLE" || EXIT_CODE=$?
@@ -263,7 +263,7 @@ install-packs-in-server-master:
     - section_end "Get Instance Variables"
 
     - section_start "Install Packs"
-    - ./Tests/Marketplace/install_packs.sh "$INSTANCE_ROLE" || EXIT_CODE=$?
+    - ./Tests/Marketplace/install_packs.sh || EXIT_CODE=$?
     - section_end "Install Packs"
 
     - job-done
