@@ -336,7 +336,7 @@ def fetch_incidents_command(
         datetime_new_last_run = last_run
     # Query incidents by limit and creation time
     total = 0
-    offset = 50
+    offset = 0
     limit_incidents = int(limit)
     limit_page = min(50, limit_incidents)
     raw_response = client.get_incidents(created_after=datetime_new_last_run,

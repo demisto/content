@@ -372,3 +372,41 @@ def test_fetch__last_run_not_none(mocker):
     )
 
     assert last_run == {'lastRun': '2023-09-20T03:44:55Z'}
+
+
+def test_get_incidents_with_offset(mocker):
+    """
+
+    Given: limit number of incidents to fetch.
+    When: running fetch command
+    Then: assert the correct amount of incidents is returned
+
+    """
+    from PhishLabsIOC_EIR import Client, fetch_incidents_command
+
+    def mock_get_incident(status = None, created_after = None,
+                      created_before = None, closed_before = None,
+                      closed_after = None, sort = None, direction = None,
+                      limit = 25, offset = 0, period = None):
+        total_res = 4
+        incidents = []
+        if offset < total_res:
+            for i in range(offset, total_res):
+                incidents.append({'id': i, 'created': 'test'})
+        return {'metadata': {'count': total_res - offset}, 'incidents': incidents}
+
+    client = Client(
+        base_url="https://test.com/api/v1",
+        verify=False,
+        reliability='A'
+    )
+
+    mocker.patch.object(Client, 'get_incidents', side_effect=mock_get_incident)
+    incident_report, _ = fetch_incidents_command(
+        client=client,
+        last_run='2023-09-20T03:44:55Z',
+        fetch_time='3 days',
+        limit='4'
+    )
+
+    assert len(incident_report) == 4
