@@ -2920,14 +2920,14 @@ Creates a launch template. A launch template contains the parameters to launch a
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AWS.EC2.LaunchTemplates.LaunchTemplate.LaunchTemplateId | String | The ID of the launch template. | 
-| AWS.EC2.LaunchTemplates.LaunchTemplate.LaunchTemplateName | String | The name of the launch template. | 
-| AWS.EC2.LaunchTemplates.LaunchTemplate.CreateTime | Date | The time launch template was created. | 
-| AWS.EC2.LaunchTemplates.LaunchTemplate.CreatedBy | String | The principal that created the launch template. | 
-| AWS.EC2.LaunchTemplates.LaunchTemplate.DefaultVersionNumber | Number | The version number of the default version of the launch template. | 
-| AWS.EC2.LaunchTemplates.LaunchTemplate.LatestVersionNumber | Number | The version number of the latest version of the launch template. | 
-| AWS.EC2.LaunchTemplates.LaunchTemplate.Tags.Key | String | The key of the tag. | 
-| AWS.EC2.LaunchTemplates.LaunchTemplate.Tags.Value | String | The value of the tag. | 
+| AWS.EC2.LaunchTemplates.LaunchTemplateId | String | The ID of the launch template. | 
+| AWS.EC2.LaunchTemplates.LaunchTemplateName | String | The name of the launch template. | 
+| AWS.EC2.LaunchTemplates.CreateTime | Date | The time launch template was created. | 
+| AWS.EC2.LaunchTemplates.CreatedBy | String | The principal that created the launch template. | 
+| AWS.EC2.LaunchTemplates.DefaultVersionNumber | Number | The version number of the default version of the launch template. | 
+| AWS.EC2.LaunchTemplates.LatestVersionNumber | Number | The version number of the latest version of the launch template. | 
+| AWS.EC2.LaunchTemplates.Tags.Key | String | The key of the tag. | 
+| AWS.EC2.LaunchTemplates.Tags.Value | String | The value of the tag. | 
 
 
 ### aws-ec2-delete-launch-template
