@@ -10,3 +10,5 @@ ignore=IM111
 [file:DLP_Incident_Feedback_Loop_6_8.yml]
 ignore=PB106
 
+[known_words]
+DLP
