@@ -328,7 +328,7 @@ class TestCollector(ABC):
         match self.marketplace:
             case MarketplaceVersions.MarketplaceV2:
                 return tuple(self.conf['test_marketplacev2'])
-            case MarketplaceVersions.XSOAR:
+            case MarketplaceVersions.XSOAR | MarketplaceVersions.XSOAR_SAAS:
                 return XSOAR_SANITY_TEST_NAMES
             case MarketplaceVersions.XPANSE:
                 return ()  # none at the moment
@@ -732,7 +732,7 @@ class TestCollector(ABC):
                 if (MarketplaceVersions.MarketplaceV2 not in content_item_marketplaces) or \
                         (MarketplaceVersions.XSOAR in content_item_marketplaces):
                     raise IncompatibleMarketplaceException(content_item_path, self.marketplace)
-            case MarketplaceVersions.XSOAR | MarketplaceVersions.XPANSE:
+            case MarketplaceVersions.XSOAR | MarketplaceVersions.XPANSE | MarketplaceVersions.XSOAR_SAAS:
                 if self.marketplace not in content_item_marketplaces:
                     raise IncompatibleMarketplaceException(content_item_path, self.marketplace)
             case _:
@@ -885,6 +885,11 @@ class BranchTestCollector(TestCollector):
 
             case FileType.SCRIPT | FileType.PLAYBOOK:
                 try:
+
+                    if yml.id_.endswith("ApiModule"):
+                        logger.info(f"Found changes in ApiModule = {yml.id_}, starting collecting related integrations")
+                        return self._collect_integrations_using_apimodule(yml.id_)
+
                     tests = tuple(yml.tests)  # raises NoTestsConfiguredException if 'no tests' in the tests field
                     reason = CollectionReason.SCRIPT_PLAYBOOK_CHANGED
 
@@ -926,6 +931,18 @@ class BranchTestCollector(TestCollector):
                 content_item_range=yml.version_range,
                 allow_incompatible_marketplace=override_support_level_compatibility,
             )
+
+    def _collect_integrations_using_apimodule(self, api_module_id: str) -> CollectionResult | None:
+        integrations_using_apimodule = self.id_set.api_modules_to_integrations.get(api_module_id, [])
+        result = []
+        for integration in integrations_using_apimodule:
+            try:
+                result.append(self._collect_single(integration.path))
+            except (NothingToCollectException, NonXsoarSupportedPackException) as e:
+                logger.info(str(e))
+                continue
+        logger.debug(f"Collected for {api_module_id}: {result}")
+        return CollectionResult.union(result)
 
     def _collect_xsiam_and_modeling_pack(self,
                                          file_type: FileType | None,
@@ -1074,7 +1091,7 @@ class BranchTestCollector(TestCollector):
 
         if os.getenv('IFRA_ENV_TYPE') == 'Bucket-Upload':
             logger.info('bucket upload: getting last commit from index')
-            previous_commit = get_last_commit_from_index(self.service_account)
+            previous_commit = get_last_commit_from_index(self.service_account, self.marketplace)
             if self.branch_name == 'master':
                 current_commit = 'origin/master'
 
@@ -1318,8 +1335,8 @@ class XSIAMNightlyTestCollector(NightlyTestCollector):
 
 
 class XSOARNightlyTestCollector(NightlyTestCollector):
-    def __init__(self, graph: bool = False):
-        super().__init__(MarketplaceVersions.XSOAR, graph=graph)
+    def __init__(self, marketplace: MarketplaceVersions = MarketplaceVersions.XSOAR, graph: bool = False):
+        super().__init__(marketplace, graph=graph)
 
     def _collect(self) -> CollectionResult | None:
         return CollectionResult.union((
@@ -1394,9 +1411,6 @@ if __name__ == '__main__':
     branch_name = PATHS.content_repo.active_branch.name
 
     marketplace = MarketplaceVersions(args.marketplace)
-    if marketplace == MarketplaceVersions.XSOAR_SAAS:
-        # When collecting test xsoar is equivalent to xsoar saas
-        marketplace = MarketplaceVersions.XSOAR
 
     nightly = args.nightly
     service_account = args.service_account
@@ -1419,8 +1433,8 @@ if __name__ == '__main__':
         match (nightly, marketplace):
             case False, _:  # not nightly
                 collector = BranchTestCollector(branch_name, marketplace, service_account, graph=graph)
-            case True, MarketplaceVersions.XSOAR:
-                collector = XSOARNightlyTestCollector(graph=graph)
+            case (True, (MarketplaceVersions.XSOAR | MarketplaceVersions.XSOAR_SAAS)):
+                collector = XSOARNightlyTestCollector(marketplace=marketplace, graph=graph)
             case True, MarketplaceVersions.MarketplaceV2:
                 collector = XSIAMNightlyTestCollector(graph=graph)
             case True, MarketplaceVersions.XPANSE:

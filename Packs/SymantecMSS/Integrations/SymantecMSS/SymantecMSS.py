@@ -7,7 +7,7 @@ from CommonServerUserPython import *
 import xml
 import tempfile
 import contextlib
-import OpenSSL.crypto
+import OpenSSL.crypto  # type: ignore[import]
 from xml.sax.saxutils import escape
 import defusedxml.ElementTree as defused_ET
 import re
