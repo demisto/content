@@ -12,7 +12,7 @@ description: |-
   - Cylance Protect v2
   - CrowdStrike Falcon
   - ExtraHop Reveal(x)
-  - Cortex XDR (endpoint enrichment and reputation)
+  - Cortex XDR / Core (endpoint enrichment, reputation and risk)
   - Endpoint reputation using !endpoint command.
 starttaskid: "0"
 tasks:
@@ -1212,10 +1212,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "44":
     id: "44"
-    taskid: 830bb6b8-6624-42d0-8f7c-353ca01f3272
+    taskid: 6592c599-a3b8-4ce3-8840-b0077e5602ac
     type: regular
     task:
-      id: 830bb6b8-6624-42d0-8f7c-353ca01f3272
+      id: 6592c599-a3b8-4ce3-8840-b0077e5602ac
       version: -1
       name: Core IR Search device
       description: Gets a list of endpoints, according to the passed filters. If there are no filters, all endpoints are returned. Filtering by multiple fields will be concatenated using AND condition (OR is not supported). Maximum result set size is 100. Offset is the zero-based number of endpoint from the start of the result set (start by counting from 0).
@@ -1248,7 +1248,7 @@ tasks:
       {
         "position": {
           "x": 4220,
-          "y": 900
+          "y": 890
         }
       }
     note: false
@@ -1260,10 +1260,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "45":
     id: "45"
-    taskid: a03714b2-3f42-4e3e-8621-5e5042044ae6
+    taskid: 8c8575da-152b-4542-81e8-83e161c686f4
     type: regular
     task:
-      id: a03714b2-3f42-4e3e-8621-5e5042044ae6
+      id: 8c8575da-152b-4542-81e8-83e161c686f4
       version: -1
       name: Core IR get endpoint risk score
       description: Retrieve the risk score of a specific host or list of hosts with the highest risk score in the environment along with the reason affecting each score.
@@ -1292,6 +1292,17 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    fieldMapping:
+    - incidentfield: Host Risk Level
+      output:
+        complex:
+          root: Core.RiskyHost
+          accessor: risk_level
+    - incidentfield: Host Risk Reasons
+      output:
+        complex:
+          root: Core.RiskyHost.reasons
+          accessor: description
     skipunavailable: true
     quietmode: 0
     isoversize: false
@@ -1810,6 +1821,7 @@ outputs:
 - contextPath: Core.Endpoint.group_name
   description: The name of the group to which the endpoint belongs.
 - contextPath: Core.RiskyHost
+  description: The risky host object.
   type: unknown
 - contextPath: Core.RiskyHost.type
   description: Form of identification element.

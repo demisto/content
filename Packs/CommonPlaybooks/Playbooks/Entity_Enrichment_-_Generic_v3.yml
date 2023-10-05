@@ -768,6 +768,7 @@ outputs:
   description: The score.
   type: string
 - contextPath: Core
+  description: An object containing risky users and risky hosts as identified by the Core ITDR module.
   type: unknown
 - contextPath: Core.RiskyUser
   description: The risky user object.
@@ -795,6 +796,7 @@ outputs:
   description: The endpoint object.
   type: unknown
 - contextPath: Core.RiskyHost
+  description: The risky host object.
   type: unknown
 - contextPath: Core.Endpoint.endpoint_id
   description: The endpoint ID.

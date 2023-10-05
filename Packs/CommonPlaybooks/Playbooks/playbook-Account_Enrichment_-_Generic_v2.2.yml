@@ -12,7 +12,7 @@ description: |-
   - PingOne
   - Okta
   - AWS IAM
-  - Cortex XDR (account enrichment and reputation)
+  - Cortex XDR / Core (account enrichment and reputation and risk)
 
   Also, the playbook supports the generic command 'iam-get-user' (implemented in IAM integrations. For more information, visit https://xsoar.pan.dev/docs/integrations/iam-integrations.
 starttaskid: "0"
@@ -1647,10 +1647,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "71":
     id: "71"
-    taskid: a49270ce-d546-4ae4-86bc-8506ad818bb4
+    taskid: b726b45e-3135-4b8e-8051-3b987945e081
     type: regular
     task:
-      id: a49270ce-d546-4ae4-86bc-8506ad818bb4
+      id: b726b45e-3135-4b8e-8051-3b987945e081
       version: -1
       name: Get account risk score
       description: Retrieve the risk score of a specific user or list of users with the highest risk score in the environment along with the reason affecting each score.
@@ -1686,6 +1686,17 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    fieldMapping:
+    - incidentfield: User Risk Level
+      output:
+        complex:
+          root: Core.RiskyUser
+          accessor: risk_level
+    - incidentfield: User Risk Reasons
+      output:
+        complex:
+          root: Core.RiskyUser.reasons
+          accessor: description
     skipunavailable: true
     quietmode: 0
     isoversize: false
@@ -2126,7 +2137,7 @@ outputs:
 - contextPath: Core.RiskyUser.reasons.severity
   description: The severity of the incident.
 - contextPath: Core.RiskyUser.reasons.status
-  description: The incident status.
+  description: The incident status.demist
 - contextPath: Core.RiskyUser.reasons.points
   description: The score.
 tests:
