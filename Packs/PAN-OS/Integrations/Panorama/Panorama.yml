@@ -9371,12 +9371,6 @@ script:
       description: Status of export tech support file job.
     description: Exports a tech support file (TSF).
     polling: true
-  - name: pan-os-download-tech-support-file
-    arguments:
-    - name: job_id
-      required: true
-      description: Job ID of tech support file export (from pan-os-export-tech-support-file).
-    description: Downloads a tech support file (TSF) (must run 'pan-os-export-tech-support-file' first).
   dockerimage: demisto/pan-os-python:1.0.0.73711
   isfetch: true
   runonce: false

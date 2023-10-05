@@ -1,5 +1,5 @@
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
+register_module_line('Panorama', 'start', __line__())
+### pack version: 2.1.3
 
 
 from collections import defaultdict
@@ -873,7 +873,7 @@ def get_tsf_export_status(args: dict):
     return result
 
 
-def download_tsf_command(args: dict):
+def download_tsf(args: dict):
     """
     Download an exported TSF.
     """
@@ -910,12 +910,7 @@ def export_tsf_command(args: dict):
             'Status': job_status
         }
         return PollResult(
-            response=CommandResults(  # this is what the response will be in case job has finished
-                outputs_prefix='Panorama.TSF',
-                outputs_key_field='JobID',
-                outputs=context_output,
-                readable_output=tableToMarkdown('Export Status:', context_output, removeNull=True)
-            ),
+            response=download_tsf(args),
             continue_to_poll=job_status != 'FIN',  # continue polling if job isn't done
         )
     else:  # either no polling is required or this is the first run
@@ -14789,8 +14784,6 @@ def main():  # pragma: no cover
             return_results(list_device_groups_names())
         elif command == 'pan-os-export-tech-support-file':
             return_results(export_tsf_command(args))
-        elif command == 'pan-os-download-tech-support-file':
-            return_results(download_tsf_command(args))
         else:
             raise NotImplementedError(f'Command {command} is not implemented.')
     except Exception as err:
@@ -14803,3 +14796,4 @@ def main():  # pragma: no cover
 if __name__ in ["__builtin__", "builtins", '__main__']:
     main()
 
+register_module_line('Panorama', 'end', __line__())
