@@ -41,157 +41,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "1":
-    id: "1"
-    taskid: 54c10b5e-0a7f-421e-84ce-9fe9af76c3c5
-    type: playbook
-    task:
-      id: 54c10b5e-0a7f-421e-84ce-9fe9af76c3c5
-      version: -1
-      name: Local Analysis alert Investigation
-      description: |-
-        When an unknown executable, DLL, or macro attempts to run on a Windows or Mac endpoint, the Cortex XDR agent uses local analysis to determine if it is likely to be malware. Local analysis uses a static set of pattern-matching rules that inspect multiple file features and attributes, and a statistical model that was developed with machine learning on WildFire threat intelligence.
-
-        **Investigative Actions:**
-
-        Investigate the executed process image and verify if it is malicious using:
-
-        * XDR trusted signers
-        * VT trusted signers
-        * VT detection rate
-        * NSRL DB
-
-        **Response Actions**
-
-        The playbook's first response action is a containment plan that is based on the initial data provided within the alert. In that phase, the playbook will execute:
-
-        * Auto block indicators
-        * Auto file quarantine
-        * Manual endpoint isolation
-
-        When the playbook executes, it checks for additional activity using the Endpoint Investigation Plan playbook, and another phase, which includes containment and eradication, is executed.
-
-        This phase will execute the following containment actions:
-
-        * Manual block indicators
-        * Manual file quarantine
-        * Auto endpoint isolation
-
-        And the following eradication actions:
-
-        * Manual process termination
-        * Manual file deletion
-        * Manual reset of the user’s password
-
-        External resources:
-
-        [Malware Protection Flow](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Administrator-Guide/File-Analysis-and-Protection-Flow)
-      playbookName: Local Analysis alert Investigation
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "3"
-    scriptarguments:
-      AutoCloseAlert:
-        simple: "False"
-      AutoContainment:
-        simple: "True"
-      AutoEradication:
-        simple: "False"
-      AutoRecovery:
-        simple: "False"
-      CommentToAdd:
-        simple: '${alert.name}. Alert ID: ${alert.id}'
-      FileRemediation:
-        simple: False
-      GraywareAsMalware:
-        simple: "False"
-      Path:
-        complex:
-          root: alert
-          transformers:
-          - operator: DT
-            args:
-              dt:
-                value:
-                  simple: .=pickvalue(val);function pickvalue(x){if(x.filepath){return x.filepath} else {return x.initiatorpath}}
-      Query:
-        complex:
-          root: alert
-          transformers:
-          - operator: If-Then-Else
-            args:
-              condition:
-                value:
-                  simple: lhs!=rhs
-              conditionB: {}
-              conditionInBetween: {}
-              else:
-                value:
-                  simple: ${alert= '(initiatorsha256:"' + val.initiatorsha256 + '" or hostip:"' + val.hostip + '") ' + 'and sourceBrand:"' + val.sourceBrand + '" and name:"' + val.name + '"'}
-              equals: {}
-              lhs:
-                value:
-                  simple: alert.filesha256
-                iscontext: true
-              lhsB: {}
-              options: {}
-              optionsB: {}
-              rhs: {}
-              rhsB: {}
-              then:
-                value:
-                  simple: ${alert= '(filesha256:"' + val.filesha256 + '" or hostip:"' + val.hostip + '") ' + 'and sourceBrand:"' + val.sourceBrand + '" and name:"' + val.name + '"'}
-      SHA256:
-        complex:
-          root: alert
-          transformers:
-          - operator: DT
-            args:
-              dt:
-                value:
-                  simple: .=pickvalue(val);function pickvalue(x){if(x.filesha256){return x.filesha256} else {return x.initiatorsha256}}
-      ShouldManualReviewFP:
-        simple: "False"
-      ShouldOpenTicket:
-        simple: "False"
-      ShouldRescanBenign:
-        simple: "True"
-      ZendeskSubject:
-        simple: XSIAM Incident ID - ${parentIncidentFields.incident_id}
-      agentID:
-        complex:
-          root: Core.Endpoint
-          accessor: endpoint_id
-          transformers:
-          - operator: FirstArrayElement
-      description:
-        simple: ${parentIncidentFields.description}. ${parentIncidentFields.xdr_url}
-      serviceNowShortDescription:
-        simple: XSIAM Incident ID - ${parentIncidentFields.incident_id}
-    separatecontext: false
-    continueonerrortype: ""
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 100
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 560
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "2":
     id: "2"
     taskid: abf130ed-e11f-4fd5-87a1-5da6d20e6463
@@ -207,7 +56,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "1"
+      - "26"
     scriptarguments:
       agentid:
         complex:
@@ -245,10 +94,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 2221c442-8475-4b23-8725-fa893ab08073
+    taskid: d7a33165-5963-488e-8759-aeeaa798cb36
     type: condition
     task:
-      id: 2221c442-8475-4b23-8725-fa893ab08073
+      id: d7a33165-5963-488e-8759-aeeaa798cb36
       version: -1
       name: Testing Enrichment for Verdict by DBotScore Exist
       type: condition
@@ -269,8 +118,6 @@ tasks:
               complex:
                 root: DBotScore
             iscontext: true
-          right:
-            value: {}
           ignorecase: true
     continueonerrortype: ""
     view: |-
@@ -289,10 +136,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 35b8eb5f-de74-456f-80a9-a580023fa9e0
+    taskid: 0054f330-ac10-4e7b-8405-5a620cf52736
     type: condition
     task:
-      id: 35b8eb5f-de74-456f-80a9-a580023fa9e0
+      id: 0054f330-ac10-4e7b-8405-5a620cf52736
       version: -1
       name: Testing WildFire internal-wildfire-get-report by retrieved files Succeeded
       type: condition
@@ -323,8 +170,6 @@ tasks:
                         simple: zip
                     ignorecase: true
             iscontext: true
-          right:
-            value: {}
     continueonerrortype: ""
     view: |-
       {
@@ -553,167 +398,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "19":
-    id: "19"
-    taskid: e653b5a3-f31c-4bfa-848c-f53fdde3faf7
-    type: playbook
-    task:
-      id: e653b5a3-f31c-4bfa-848c-f53fdde3faf7
-      version: -1
-      name: Local Analysis alert Investigation
-      description: |-
-        When an unknown executable, DLL, or macro attempts to run on a Windows or Mac endpoint, the Cortex XDR agent uses local analysis to determine if it is likely to be malware. Local analysis uses a static set of pattern-matching rules that inspect multiple file features and attributes, and a statistical model that was developed with machine learning on WildFire threat intelligence.
-
-        **Investigative Actions:**
-
-        Investigate the executed process image and verify if it is malicious using:
-
-        * XDR trusted signers
-        * VT trusted signers
-        * VT detection rate
-        * NSRL DB
-
-        **Response Actions**
-
-        The playbook's first response action is a containment plan that is based on the initial data provided within the alert. In that phase, the playbook will execute:
-
-        * Auto block indicators
-        * Auto file quarantine
-        * Manual endpoint isolation
-
-        When the playbook executes, it checks for additional activity using the Endpoint Investigation Plan playbook, and another phase, which includes containment and eradication, is executed.
-
-        This phase will execute the following containment actions:
-
-        * Manual block indicators
-        * Manual file quarantine
-        * Auto endpoint isolation
-
-        And the following eradication actions:
-
-        * Manual process termination
-        * Manual file deletion
-        * Manual reset of the user’s password
-
-        External resources:
-
-        [Malware Protection Flow](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Administrator-Guide/File-Analysis-and-Protection-Flow)
-      playbookName: Local Analysis alert Investigation
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "11"
-    scriptarguments:
-      AutoCloseAlert:
-        simple: "False"
-      AutoContainment:
-        simple: "False"
-      AutoEradication:
-        simple: "False"
-      AutoRecovery:
-        simple: "False"
-      CommentToAdd:
-        simple: '${alert.name}. Alert ID: ${alert.id}'
-      FileRemediation:
-        simple: Quarantine
-      GraywareAsMalware:
-        simple: "False"
-      Path:
-        complex:
-          root: alert
-          transformers:
-          - operator: DT
-            args:
-              dt:
-                value:
-                  simple: .=pickvalue(val);function pickvalue(x){if(x.filepath){return x.filepath} else {return x.initiatorpath}}
-      Query:
-        complex:
-          root: alert
-          transformers:
-          - operator: If-Then-Else
-            args:
-          condition:
-            value:
-              simple: lhs!=rhs
-          conditionB:
-            value:
-              simple: lhsB!=rhsB
-          conditionInBetween:
-            value:
-              simple: and
-          else:
-            value:
-              simple: ${alert= '(initiatorsha256:"' + "" + '" or hostip:"' + "" +
-                '") ' + 'and sourceBrand:"' + val.sourceBrand + '" and name:"' + val.name
-                + '"'}
-          equals: {}
-          lhs:
-            value:
-              simple: alert.filesha256
-            iscontext: true
-          lhsB:
-            value:
-              simple: alert.hostip
-          options: {}
-          optionsB: {}
-          rhs: {}
-          rhsB: {}
-          then:
-            value:
-              simple: ${alert= '(filesha256:"' + val.filesha256 + '" or hostip:"'
-                + val.hostip + '") ' + 'and sourceBrand:"' + val.sourceBrand + '"
-                and name:"' + val.name + '"'}
-      SHA256:
-        complex:
-          root: alert
-          transformers:
-          - operator: DT
-            args:
-              dt:
-                value:
-                  simple: .=pickvalue(val);function pickvalue(x){if(x.filesha256){return x.filesha256} else {return x.initiatorsha256}}
-      ShouldManualReviewFP:
-        simple: "False"
-      ShouldOpenTicket:
-        simple: "False"
-      ShouldRescanBenign:
-        simple: "True"
-      ZendeskSubject:
-        simple: XSIAM Incident ID - ${parentIncidentFields.incident_id}
-      agentID:
-        complex:
-          root: Core.Endpoint
-          accessor: endpoint_id
-          transformers:
-          - operator: FirstArrayElement
-      description:
-        simple: ${parentIncidentFields.description}. ${parentIncidentFields.xdr_url}
-      serviceNowShortDescription:
-        simple: XSIAM Incident ID - ${parentIncidentFields.incident_id}
-    separatecontext: false
-    continueonerrortype: ""
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 100
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": -400
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "20":
     id: "20"
     taskid: 142180ea-7d98-4ab8-8ff4-381202cdebcf
@@ -734,7 +418,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "19"
+      - "25"
     scriptarguments:
       all:
         simple: "yes"
@@ -901,6 +585,229 @@ tasks:
         "position": {
           "x": 450,
           "y": 1860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 28ee446e-a045-4a88-8019-1c9343af7015
+    type: playbook
+    task:
+      id: 28ee446e-a045-4a88-8019-1c9343af7015
+      version: -1
+      name: Local Analysis alert Investigation
+      description: |-
+        When an unknown executable, DLL, or macro attempts to run on a Windows or Mac endpoint, the Cortex XDR agent uses local analysis to determine if it is likely to be malware. Local analysis uses a static set of pattern-matching rules that inspect multiple file features and attributes, and a statistical model that was developed with machine learning on WildFire threat intelligence.
+
+        **Investigative Actions:**
+
+        Investigate the executed process image and verify if it is malicious using:
+
+        * XDR trusted signers
+        * VT trusted signers
+        * VT detection rate
+        * NSRL DB
+
+        **Response Actions**
+
+        The playbook's first response action is a containment plan that is based on the initial data provided within the alert. In that phase, the playbook will execute:
+
+        * Auto block indicators
+        * Auto file quarantine
+        * Manual endpoint isolation
+
+        When the playbook executes, it checks for additional activity using the Endpoint Investigation Plan playbook, and another phase, which includes containment and eradication, is executed.
+
+        This phase will execute the following containment actions:
+
+        * Manual block indicators
+        * Manual file quarantine
+        * Auto endpoint isolation
+
+        And the following eradication actions:
+
+        * Manual process termination
+        * Manual file deletion
+        * Manual reset of the user’s password
+
+        External resources:
+
+        [Malware Protection Flow](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Administrator-Guide/File-Analysis-and-Protection-Flow)
+      playbookName: Local Analysis alert Investigation
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    separatecontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: 25eb20ea-b0c8-4943-8ab9-4609994169c5
+    type: playbook
+    task:
+      id: 25eb20ea-b0c8-4943-8ab9-4609994169c5
+      version: -1
+      name: Local Analysis alert Investigation
+      description: |-
+        When an unknown executable, DLL, or macro attempts to run on a Windows or Mac endpoint, the Cortex XDR agent uses local analysis to determine if it is likely to be malware. Local analysis uses a static set of pattern-matching rules that inspect multiple file features and attributes, and a statistical model that was developed with machine learning on WildFire threat intelligence.
+
+        **Investigative Actions:**
+
+        Investigate the executed process image and verify if it is malicious using:
+
+        * XDR trusted signers
+        * VT trusted signers
+        * VT detection rate
+        * NSRL DB
+
+        **Response Actions**
+
+        The playbook's first response action is a containment plan that is based on the initial data provided within the alert. In that phase, the playbook will execute:
+
+        * Auto block indicators
+        * Auto file quarantine
+        * Manual endpoint isolation
+
+        When the playbook executes, it checks for additional activity using the Endpoint Investigation Plan playbook, and another phase, which includes containment and eradication, is executed.
+
+        This phase will execute the following containment actions:
+
+        * Manual block indicators
+        * Manual file quarantine
+        * Auto endpoint isolation
+
+        And the following eradication actions:
+
+        * Manual process termination
+        * Manual file deletion
+        * Manual reset of the user’s password
+
+        External resources:
+
+        [Malware Protection Flow](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Administrator-Guide/File-Analysis-and-Protection-Flow)
+      playbookName: Local Analysis alert Investigation
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      AutoCloseAlert:
+        simple: "False"
+      AutoContainment:
+        simple: "True"
+      AutoEradication:
+        simple: "False"
+      AutoRecovery:
+        simple: "False"
+      CommentToAdd:
+        simple: '${alert.name}. Alert ID: ${alert.id}'
+      FileRemediation:
+        simple: "False"
+      GraywareAsMalware:
+        simple: "False"
+      Path:
+        complex:
+          root: alert
+          transformers:
+          - operator: DT
+            args:
+              dt:
+                value:
+                  simple: .=pickvalue(val);function pickvalue(x){if(x.filepath){return x.filepath} else {return x.initiatorpath}}
+      Query:
+        complex:
+          root: alert
+          transformers:
+          - operator: If-Then-Else
+            args:
+              condition:
+                value:
+                  simple: lhs!=rhs
+              conditionB:
+                value:
+                  simple: lhsB!=rhsB
+              conditionInBetween:
+                value:
+                  simple: and
+              else:
+                value:
+                  simple: ${alert= '(initiatorsha256:"' + "" + '" or hostip:"' + "" + '") ' + 'and sourceBrand:"' + val.sourceBrand + '" and name:"' + val.name + '"'}
+              equals: {}
+              lhs:
+                value:
+                  simple: alert.filesha256
+                iscontext: true
+              lhsB:
+                value:
+                  simple: alert.hostip
+              options: {}
+              optionsB: {}
+              rhs: {}
+              rhsB: {}
+              then:
+                value:
+                  simple: ${alert= '(filesha256:"' + val.filesha256 + '" or hostip:"' + val.hostip + '") ' + 'and sourceBrand:"' + val.sourceBrand + '" and name:"' + val.name + '"'}
+      SHA256:
+        complex:
+          root: alert
+          transformers:
+          - operator: DT
+            args:
+              dt:
+                value:
+                  simple: .=pickvalue(val);function pickvalue(x){if(x.filesha256){return x.filesha256} else {return x.initiatorsha256}}
+      ShouldManualReviewFP:
+        simple: "False"
+      ShouldOpenTicket:
+        simple: "False"
+      ShouldRescanBenign:
+        simple: "True"
+      ZendeskSubject:
+        simple: XSIAM Incident ID - ${parentIncidentFields.incident_id}
+      agentID:
+        complex:
+          root: Core.Endpoint
+          accessor: endpoint_id
+      description:
+        simple: ${parentIncidentFields.description}. ${parentIncidentFields.xdr_url}
+      serviceNowShortDescription:
+        simple: XSIAM Incident ID - ${parentIncidentFields.incident_id}
+    separatecontext: false
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 540
         }
       }
     note: false
