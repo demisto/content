@@ -409,7 +409,7 @@ def remove_password_service_principal_command(ms_client: Client, args: dict) -> 
     )
 
 
-def unlock_configuration_service_principal_command(ms_client: Client, args: dict, lock: bool = False) -> CommandResults:
+def change_configuration_service_principal_lock_status(ms_client: Client, args: dict, lock: bool) -> CommandResults:
     """
     Unlock / Lock configuration of a service principal.
 
@@ -497,9 +497,9 @@ def main():
         elif command == 'msgraph-apps-service-principal-password-remove':
             return_results(remove_password_service_principal_command(client, args))
         elif command == 'msgraph-apps-service-principal-unlock-configuration':
-            return_results(unlock_configuration_service_principal_command(client, args))
+            return_results(change_configuration_service_principal_lock_status(client, args, lock=False))
         elif command == 'msgraph-apps-service-principal-lock-configuration':
-            return_results(unlock_configuration_service_principal_command(client, args, lock=True))
+            return_results(change_configuration_service_principal_lock_status(client, args, lock=True))
         else:
             raise NotImplementedError(f"Command '{command}' not found.")
 

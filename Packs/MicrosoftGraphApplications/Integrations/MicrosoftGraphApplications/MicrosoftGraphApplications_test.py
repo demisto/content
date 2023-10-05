@@ -348,11 +348,11 @@ def test_unlock_configuration_service_principal_command(mocker, requests_mock, m
             - Ensure unlock_configuration_service_principal client's method was called with the lock == False
              (since here we're unlocking the configuration)
     """
-    from MicrosoftGraphApplications import unlock_configuration_service_principal_command
+    from MicrosoftGraphApplications import change_configuration_service_principal_lock_status
 
     requests_mock.patch("https://graph.microsoft.com/beta/applications/TEST", json={})
     mock_unlock_configuration_service_principal = mocker.patch.object(mocked_client, "unlock_configuration_service_principal")
-    unlock_configuration_service_principal_command(mocked_client, args={'id': 'TEST'})
+    change_configuration_service_principal_lock_status(mocked_client, args={'id': 'TEST'}, lock=False)
 
     assert mock_unlock_configuration_service_principal.call_args_list[0].kwargs['service_id'] == 'TEST'
     assert not mock_unlock_configuration_service_principal.call_args_list[0].kwargs['lock']
@@ -369,11 +369,11 @@ def test_lock_configuration_service_principal_command(mocker, requests_mock, moc
             - Ensure unlock_configuration_service_principal client's method was called with the lock == True
              (since here locking back the configuration)
     """
-    from MicrosoftGraphApplications import unlock_configuration_service_principal_command
+    from MicrosoftGraphApplications import change_configuration_service_principal_lock_status
 
     requests_mock.patch("https://graph.microsoft.com/beta/applications/TEST", json={})
     mock_unlock_configuration_service_principal = mocker.patch.object(mocked_client, "unlock_configuration_service_principal")
-    unlock_configuration_service_principal_command(mocked_client, args={'id': 'TEST'}, lock=True)
+    change_configuration_service_principal_lock_status(mocked_client, args={'id': 'TEST'}, lock=True)
 
     assert mock_unlock_configuration_service_principal.call_args_list[0].kwargs['service_id'] == 'TEST'
     assert mock_unlock_configuration_service_principal.call_args_list[0].kwargs['lock']
@@ -388,13 +388,13 @@ def test_unlock_configuration_service_principal_command_exception(mocker, reques
         Then:
             - Ensure KeyError Exception is thrown
     """
-    from MicrosoftGraphApplications import unlock_configuration_service_principal_command
+    from MicrosoftGraphApplications import change_configuration_service_principal_lock_status
 
     requests_mock.patch("https://graph.microsoft.com/beta/applications/TEST", json={})
     mocker.patch.object(mocked_client, "unlock_configuration_service_principal")
 
     with pytest.raises(KeyError):
-        unlock_configuration_service_principal_command(mocked_client, args={})
+        change_configuration_service_principal_lock_status(mocked_client, args={}, lock=False)
 
 
 def test_start_auth(mocker, mocked_client):
