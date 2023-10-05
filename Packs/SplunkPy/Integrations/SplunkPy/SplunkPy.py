@@ -2839,7 +2839,7 @@ def main():  # pragma: no cover
         splunk_get_indexes_command(service)
     elif command == 'fetch-incidents':
         demisto.info('########### FETCH #############')
-        fetch_incidents(service, mapper, comment_tag_from_splunk)
+        fetch_incidents(service, mapper, comment_tag_to_splunk, comment_tag_from_splunk)
     elif command == 'splunk-submit-event':
         splunk_submit_event_command(service, args)
     elif command == 'splunk-notable-event-edit':
