@@ -706,14 +706,14 @@ def create_text_out_format(iocs: IO, request_args: RequestArguments) -> Union[IO
     new_line = ''  # For the first time he will not add a new line
     for str_ioc in iocs:
         ioc = json.loads(str_ioc.rstrip())
-        if enforce_ascii:
-            try:
-                ioc.decode('ascii')
-            except UnicodeDecodeError:
-                continue
         indicator = ioc.get('value')
         if not indicator:
             continue
+        if enforce_ascii:
+            try:
+                indicator.encode('ascii')
+            except UnicodeEncodeError:
+                continue
         ioc_type = ioc.get('indicator_type')
 
         if ioc_type not in [FeedIndicatorType.IP, FeedIndicatorType.IPv6,

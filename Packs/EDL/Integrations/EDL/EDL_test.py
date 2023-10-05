@@ -647,7 +647,7 @@ class IndicatorsSearcher:
                     {'iocs': [{"value": "demisto.com:7000", "indicator_type": "URL"}]},
                     {'iocs': [{"value": "demisto.com/qwertqwer", "indicator_type": "URL"}]},
                     {'iocs': [{"value": "demisto.com", "indicator_type": "URL"}]},
-                    {'iocs': [{"value": "non ascii valuè"}]},]
+                    {'iocs': [{"value": "non ascii valuè", "indicator_type": "URL"}]},]
 
     def __iter__(self):
         return self
@@ -814,10 +814,10 @@ def test_get_indicators_to_format_text_enforce_ascii(mocker):
       - assert the indicators are returned properly for the requested format
     """
     import EDL as edl
+    mocker.patch.object(demisto, 'params', return_value={'enforce_ascii': True, })
     indicator_searcher = IndicatorsSearcher(5)
     request_args = edl.RequestArguments(out_format='PAN-OS (text)', query='', limit=3, url_port_stripping=True,
                                         url_protocol_stripping=True, url_truncate=True)
-    mocker.patch.object(demisto, 'params', return_value={'enforce_ascii': True, })
     indicators_data, _ = get_indicators_to_format(indicator_searcher, request_args)
     indicators_data = edl.create_text_out_format(indicators_data, request_args)
 
