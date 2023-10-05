@@ -11,7 +11,7 @@ from Tests.Marketplace.marketplace_services import init_storage_client
 DATE_FORMAT = '%Y-%m-%d'
 TIMESTAMP_FORMAT_SECONDS = '%Y-%m-%dT%H:%M:%SZ'
 TIMESTAMP_FORMAT_MICROSECONDS = '%Y-%m-%dT%H:%M:%S.%f'
-
+TEST_XDR_PREFIX = os.getenv("TEST_XDR_PREFIX", "") # for testing
 
 def create_minimal_report(source_file: str, destination_file: str) -> Tuple[bool, str]:
     if not os.path.isfile(source_file):
@@ -99,7 +99,7 @@ def options_handler():
                         required=True)
 
     parser.add_argument('-b', '--bucket_name',
-                        default="marketplace-dist-dev",
+                        default=f"{TEST_XDR_PREFIX}marketplace-dist-dev",
                         help=("Name of the bucket in Google Cloud Storage. "
                               "Default value is marketplace-dist-dev."),
                         required=False)
