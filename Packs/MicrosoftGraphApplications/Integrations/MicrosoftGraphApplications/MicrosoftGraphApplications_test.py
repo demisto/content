@@ -344,7 +344,9 @@ def test_unlock_configuration_service_principal_command(mocker, requests_mock, m
         When:
             - Executing msgraph-apps-service-principal-unlock-configuration command
         Then:
-            - Ensure unlock_configuration_service_principal client's method was called with the right arguments
+            - Ensure unlock_configuration_service_principal client's method was called with the right service_id
+            - Ensure unlock_configuration_service_principal client's method was called with the lock == False
+             (since here we're unlocking the configuration)
     """
     from MicrosoftGraphApplications import unlock_configuration_service_principal_command
 
@@ -352,8 +354,29 @@ def test_unlock_configuration_service_principal_command(mocker, requests_mock, m
     mock_unlock_configuration_service_principal = mocker.patch.object(mocked_client, "unlock_configuration_service_principal")
     unlock_configuration_service_principal_command(mocked_client, args={'id': 'TEST'})
 
-    assert mock_unlock_configuration_service_principal.call_args[0][0] == 'TEST'
-    assert mock_unlock_configuration_service_principal.call_args[1] == {}
+    assert mock_unlock_configuration_service_principal.call_args_list[0].kwargs['service_id'] == 'TEST'
+    assert not mock_unlock_configuration_service_principal.call_args_list[0].kwargs['lock']
+
+
+def test_lock_configuration_service_principal_command(mocker, requests_mock, mocked_client):
+    """
+        Given:
+            - Service principal (object) id
+        When:
+            - Executing msgraph-apps-service-principal-lock-configuration command
+        Then:
+            - Ensure unlock_configuration_service_principal client's method was called with the right service_id
+            - Ensure unlock_configuration_service_principal client's method was called with the lock == True
+             (since here locking back the configuration)
+    """
+    from MicrosoftGraphApplications import unlock_configuration_service_principal_command
+
+    requests_mock.patch("https://graph.microsoft.com/beta/applications/TEST", json={})
+    mock_unlock_configuration_service_principal = mocker.patch.object(mocked_client, "unlock_configuration_service_principal")
+    unlock_configuration_service_principal_command(mocked_client, args={'id': 'TEST'}, lock=True)
+
+    assert mock_unlock_configuration_service_principal.call_args_list[0].kwargs['service_id'] == 'TEST'
+    assert mock_unlock_configuration_service_principal.call_args_list[0].kwargs['lock']
 
 
 def test_unlock_configuration_service_principal_command_exception(mocker, requests_mock, mocked_client):
