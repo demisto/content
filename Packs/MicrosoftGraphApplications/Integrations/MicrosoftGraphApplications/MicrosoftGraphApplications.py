@@ -454,7 +454,7 @@ def test_module(client: Client) -> str:
     return "ok"
 
 
-def main():
+def main():  # pragma: no cover
     handle_proxy()
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
