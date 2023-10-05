@@ -351,7 +351,7 @@ def cyble_events(client, method, token, url, args, base_url, last_run, hide_cvv_
     final_input_structure = alert_input_structure(input_params)
 
     all_alerts = set_request(client, method, token, final_input_structure, url)
-    timestamp_count = {}
+    timestamp_count = {}    # type: ignore
 
     for alert in all_alerts:
 
