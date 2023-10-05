@@ -7,8 +7,10 @@ import random
 import requests
 from google.cloud import storage  # noqa
 import argparse
+import os
 
-LOCKS_BUCKET = 'xsoar-ci-artifacts'
+TEST_XDR_PREFIX = os.getenv("TEST_XDR_PREFIX", "") # for testing
+LOCKS_BUCKET = f'{TEST_XDR_PREFIX}xsoar-ci-artifacts'
 QUEUE_REPO = 'queue'
 MACHINES_LOCKS_REPO = 'machines_locks'
 JOB_STATUS_URL = 'https://code.pan.run/api/v4/projects/{}/jobs/{}'  # disable-secrets-detection
