@@ -63,7 +63,13 @@ tasks:
         simple: 'In this case, automated remediation will replace the security group that is allowing the risky service to be exposed to the public internet with a new security group: the new security group be created with the name of the old security group with ''_xpanse_ar_XXX'' appended to it and XXX signifies a random three digit number so there are no naming conflicts.'
     separatecontext: false
     continueonerrortype: ""
-    view: "{\n  \"position\": {\n    \"x\": 750,\n    \"y\": 500\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 750,
+          "y": 500
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -85,7 +91,13 @@ tasks:
       description: ''
     separatecontext: false
     continueonerrortype: ""
-    view: "{\n  \"position\": {\n    \"x\": 550,\n    \"y\": 830\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 550,
+          "y": 830
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -145,7 +157,13 @@ tasks:
                   simple: ' will ensure that internal communication to this asset can continue.'
     separatecontext: false
     continueonerrortype: ""
-    view: "{\n  \"position\": {\n    \"x\": -50,\n    \"y\": 500\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": -50,
+          "y": 500
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -205,7 +223,13 @@ tasks:
                   simple: ' will be created.'
     separatecontext: false
     continueonerrortype: ""
-    view: "{\n  \"position\": {\n    \"x\": 1150,\n    \"y\": 500\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 1150,
+          "y": 500
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -319,7 +343,13 @@ tasks:
               suffix: {}
     separatecontext: false
     continueonerrortype: ""
-    view: "{\n  \"position\": {\n    \"x\": 350,\n    \"y\": 500\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 350,
+          "y": 500
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -618,7 +648,13 @@ tasks:
           - operator: Stringify
     separatecontext: false
     continueonerrortype: ""
-    view: "{\n  \"position\": {\n    \"x\": 1570,\n    \"y\": 340\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 1570,
+          "y": 340
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -692,7 +728,13 @@ tasks:
                   simple: .
     separatecontext: false
     continueonerrortype: ""
-    view: "{\n  \"position\": {\n    \"x\": 1570,\n    \"y\": 500\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 1570,
+          "y": 500
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -804,7 +846,13 @@ tasks:
                   simple: '29'
     separatecontext: false
     continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 350,\n    \"y\": 340\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 350,
+          "y": 340
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -812,7 +860,20 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-view: "{\n  \"linkLabelsPosition\": {\n    \"14_4_AWS\": 0.52\n  },\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 1075,\n      \"width\": 2000,\n      \"x\": -50,\n      \"y\": -180\n    }\n  }\n}"
+view: |-
+  {
+    "linkLabelsPosition": {
+      "14_4_AWS": 0.52
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1075,
+        "width": 2000,
+        "x": -50,
+        "y": -180
+      }
+    }
+  }
 inputs: []
 outputs: []
 fromversion: 6.8.0
