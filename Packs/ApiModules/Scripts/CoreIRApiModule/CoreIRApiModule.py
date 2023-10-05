@@ -3270,9 +3270,8 @@ def get_original_alerts_command(client: CoreClient, args: Dict) -> CommandResult
         # remove original_alert_json field and add its content to alert.
         alert.update(alert.pop('original_alert_json', {}))
 
-        if argToBoolean(args.get('filter_alert_fields',True)):
-            alert_result = filter_general_fields(alert)
-            if 'event' in alert_result:
+        if argToBoolean(args.get('filter_alert_fields', True)):
+            if 'event' in (alert_result := filter_general_fields(alert)):
                 filter_vendor_fields(alert_result)
         else:
             alert_result = alert
