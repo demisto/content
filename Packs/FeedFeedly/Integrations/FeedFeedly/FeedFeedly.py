@@ -688,7 +688,7 @@ class STIX2Parser:
         a_value_to_relationship: dict[str, Any] = {}
         for relationships_object in relationships_lst:
             relationship_type = relationships_object.get("relationship_type")
-            if relationship_type not in EntityRelationship.Relationships.RELATIONSHIPS_NAMES.keys():
+            if not EntityRelationship.RelationshipsTypes.is_valid_type(relationship_type):
                 if relationship_type == "indicates":
                     relationship_type = "indicated-by"
                 else:
@@ -991,12 +991,11 @@ def main():  # pragma: no cover
             return_results(get_indicators_command(client, params, args))
 
         elif command == "fetch-indicators":
-            context = demisto.getIntegrationContext()
             now = time.time()
-            indicators = fetch_indicators_command(client, params, context)
+            indicators = fetch_indicators_command(client, params, demisto.getLastRun())
             for indicators_batch in batch(indicators, batch_size=2000):
                 demisto.createIndicators(indicators_batch)
-            demisto.setIntegrationContext({"last_successful_run": str(now)})
+            demisto.setLastRun({"last_successful_run": str(now)})
 
         else:
             raise NotImplementedError(f"Command {command} is not implemented.")
