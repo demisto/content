@@ -9,7 +9,7 @@ from google.cloud import storage  # noqa
 import argparse
 import os
 
-TEST_XDR_PREFIX = os.getenv("TEST_XDR_PREFIX", "") # for testing
+TEST_XDR_PREFIX = os.getenv("TEST_XDR_PREFIX", "")  # for testing
 LOCKS_BUCKET = f'{TEST_XDR_PREFIX}xsoar-ci-artifacts'
 QUEUE_REPO = 'queue'
 MACHINES_LOCKS_REPO = 'machines_locks'

@@ -40,7 +40,7 @@ from Tests.test_integration import __get_integration_config, test_integration_in
 from Tests.tools import run_with_proxy_configured
 from Tests.update_content_data import update_content
 
-TEST_XDR_PREFIX = os.getenv("TEST_XDR_PREFIX", "") # for testing
+TEST_XDR_PREFIX = os.getenv("TEST_XDR_PREFIX", "")  # for testing
 MARKET_PLACE_MACHINES = ('master',)
 SKIPPED_PACKS = ['NonSupported', 'ApiModules']
 NO_PROXY = ','.join([
