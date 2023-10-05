@@ -347,7 +347,7 @@ def build_grid_command(grid_id: str, context_path: str, keys: List[str], columns
     return filtered_table
 
 
-def main():
+def main():  # pragme: no cover
     args = demisto.args()
     try:
         # Normalize grid id from any form to connected lower words, e.g. my_word/myWord -> myword
