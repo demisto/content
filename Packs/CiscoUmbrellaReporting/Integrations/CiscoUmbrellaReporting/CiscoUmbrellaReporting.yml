@@ -9,11 +9,6 @@ configuration:
   name: api_url
   required: true
   type: 0
-- additionalinfo: Organization ID
-  display: Organization ID
-  name: organization_id
-  required: true
-  type: 0
 - additionalinfo: API Key and API Secret.
   display: API Key
   displaypassword: API Secret
