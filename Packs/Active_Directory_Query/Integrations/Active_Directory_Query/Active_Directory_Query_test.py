@@ -93,13 +93,13 @@ def ssl_bad_socket_server(port):
                     raise
                 conn.recv(32)
                 msg = b'THIS IS A TEST SERVER WHICH IGNORES PROTOCOL\n\n'
-                for x in range(10):
+                for _x in range(10):
                     msg += msg
                 conn.send(msg)
                 conn.shutdown(socket.SHUT_RDWR)
                 conn.close()
     except Exception as ex:
-        pytest.fail("Failed starting ssl_bad_socket_server: {}".format(ex))
+        pytest.fail(f"Failed starting ssl_bad_socket_server: {ex}")
         raise
 
 
@@ -439,7 +439,6 @@ def test_search_group_members(mocker):
 
         def search(self, *args, **kwargs):
             time.sleep(1)
-            return
 
     expected_entry = {
         'ActiveDirectory.Groups(obj.dn ==dn)': {'dn': 'dn', 'members': [{'dn': 'dn', 'category': 'group'}]},
@@ -540,7 +539,6 @@ def test_search_attributes_to_exclude(mocker):
 
         def search(self, *args, **kwargs):
             time.sleep(1)
-            return
 
     expected_results = {'ContentsFormat': 'json', 'Type': 1,
                         'Contents': [{'dn': 'dn'}],
@@ -648,7 +646,6 @@ def test_search_with_paging_bug(mocker):
             if page_size:
                 self.entries = [EntryMocker() for i in range(page_size)]
                 time.sleep(1)
-            return
 
     mocker.patch.object(demisto, 'results')
     mocker.patch.object(demisto, 'args',
@@ -771,7 +768,6 @@ def test_search_users_empty_userAccountControl(mocker):
 
         def search(self, *args, **kwargs):
             time.sleep(1)
-            return
 
     expected_results = {'ContentsFormat': 'json',
                         'Type': 1,
