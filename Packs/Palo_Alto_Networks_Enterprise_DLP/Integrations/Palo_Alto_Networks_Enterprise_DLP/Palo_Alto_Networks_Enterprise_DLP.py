@@ -368,7 +368,7 @@ def test(client):
 
 def print_debug_msg(msg: str):
     """
-    Prints a message to debug with QRadarMsg prefix.
+    Prints a message to debug with PAN-DLP-Msg prefix.
     Args:
         msg (str): Message to be logged.
 
@@ -598,8 +598,7 @@ def main():
     try:
         demisto.info('Command is %s' % (demisto.command(),))
         params = demisto.params()
-        print_debug_msg('Received parameters')
-        print_debug_msg(params)
+        print_debug_msg(f'Received parameters: {",".join(params.keys())}.')
         credentials = params.get('credentials')
 
         client = Client(BASE_URL, credentials, params.get('insecure'), params.get('proxy'))
