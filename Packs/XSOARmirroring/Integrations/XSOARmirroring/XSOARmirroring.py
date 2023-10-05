@@ -267,7 +267,7 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict[str, Union[
                     first_fetch_time: Union[int, str], query: str | None, mirror_direction: str,
                     mirror_tag: list[str], mirror_playbook_id: bool = False,
                     fetch_incident_history: bool = False) -> \
-tuple[Dict[str, Union[List[Dict[Any, Any]], str, Any]], List[Dict[str, Any]]]:
+    tuple[Dict[str, Union[List[Dict[Any, Any]], str, Any]], List[Dict[str, Any]]]:
     """This function retrieves new incidents every interval (default is 1 minute).
 
     :type client: ``Client``
@@ -800,7 +800,7 @@ def update_remote_system_command(client: Client, args: Dict[str, Any], mirror_ta
     return new_incident_id
 
 
-def get_and_dedup_incidents(client: Client, last_fetched_incidents:  List[Any],
+def get_and_dedup_incidents(client: Client, last_fetched_incidents: List[Any],
                             query: str, max_results: int, last_fetch: Union[str, int]) -> tuple[list[dict], list[dict]]:
     """ get incidents and dedup the incidents response.
 

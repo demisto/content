@@ -227,13 +227,13 @@ def test_validate_and_prepare_basic_params(params, expected_url):
 
 # test_dedup_incidents parametrize arguments
 case_incidents_with_different_times = (
-    '2023-09-26T15:13:45Z',
+    '2023-09-26T15:13:45.000000Z',
     # responses from search_incidents
     [[{'id': '1', 'version': 8, 'created': '2023-09-26T15:13:45Z'},
       {'id': '2', 'version': 8, 'created': '2023-09-26T15:14:45Z'},
         {'id': '3', 'version': 8, 'created': '2023-09-26T15:15:45Z'},
         {'id': '4', 'version': 8, 'created': '2023-09-26T15:16:45Z'},
-        {'id': '5', 'version': 8, 'created': '2023-09-26T15:17:45Z'}], []]    # max fetch
+        {'id': '5', 'version': 8, 'created': '2023-09-26T15:17:45Z'}], []]   # max fetch
     , 5    # incidents_last_fetch_ids
     , [], (
         # expected incident result
@@ -247,7 +247,7 @@ case_incidents_with_different_times = (
 
 
 case_incidents_with_the_same_times = (
-    '2023-09-26T15:13:45Z',
+    '2023-09-26T15:13:45.000000Z',
     # responses from search_incidents
     [[{'id': '1', 'version': 8, 'created': '2023-09-26T15:13:45Z'},
       {'id': '2', 'version': 8, 'created': '2023-09-26T15:13:45Z'},
@@ -267,7 +267,7 @@ case_incidents_with_the_same_times = (
 
 
 case_with_empty_response_with_incidents_last_fetch_ids = (
-    '2023-09-26T15:13:41Z',
+    '2023-09-26T15:13:41.000000Z',
     # responses from search_incidents
     [[], []]    # max fetch
     , 5    # incidents_last_fetch_ids
@@ -279,7 +279,7 @@ case_with_empty_response_with_incidents_last_fetch_ids = (
 
 
 case_with_empty_response_without_incidents_last_fetch_ids = (
-    '2023-09-26T15:13:41Z',
+    '2023-09-26T15:13:41.000000Z',
     # responses from search_incidents
     [[], []]    # max fetch
     , 5    # incidents_last_fetch_ids
@@ -290,7 +290,7 @@ case_with_empty_response_without_incidents_last_fetch_ids = (
         []))
 
 case_with_more_then_one_API_call_with_incidents_last_fetch_ids = (
-    '2023-09-26T15:13:41Z',
+    '2023-09-26T15:13:41.000000Z',
     # responses from search_incidents
     [[{'id': '1', 'version': 8, 'created': '2023-09-26T15:13:41Z'},
       {'id': '2', 'version': 8, 'created': '2023-09-26T15:13:42Z'},
@@ -301,7 +301,7 @@ case_with_more_then_one_API_call_with_incidents_last_fetch_ids = (
          {'id': '6', 'version': 8, 'created': '2023-09-26T15:13:46Z'},
          {'id': '7', 'version': 8, 'created': '2023-09-26T15:13:47Z'},
      {'id': '8', 'version': 8, 'created': '2023-09-26T15:13:48Z'},
-     {'id': '9', 'version': 8, 'created': '2023-09-26T15:13:49Z'}], ], 5    # max fetch
+     {'id': '9', 'version': 8, 'created': '2023-09-26T15:13:49Z'}], ], 5   # max fetch
     , ['1'],  # incidents_last_fetch_ids
     (  # expected incident result
         [{'id': '2', 'version': 8, 'created': '2023-09-26T15:13:42Z'},
@@ -313,7 +313,7 @@ case_with_more_then_one_API_call_with_incidents_last_fetch_ids = (
         ['6']))
 
 case_with_an_incident_that_was_fetched = (
-    '2023-09-26T15:13:41Z',
+    '2023-09-26T15:13:41.000000Z',
     # responses from search_incidents
     [[{'id': '1', 'version': 8, 'created': '2023-09-26T15:13:41Z'},
       {'id': '2', 'version': 8, 'created': '2023-09-26T15:13:42Z'},
@@ -329,7 +329,7 @@ case_with_an_incident_that_was_fetched = (
 
 
 case_with_an_incident_that_was_fetched_and_there_are_more_with_the_same_time = (
-    "2023-09-26T15:13:41Z",
+    '2023-09-26T15:13:41.000000Z',
     # responses from search_incidents
     [[{'id': '1', 'version': 8, 'created': '2023-09-26T15:13:41Z'},
       {'id': '2', 'version': 8, 'created': '2023-09-26T15:13:41Z'},
@@ -373,3 +373,28 @@ def test_dedup_incidents_with_seconds_timestamp(mocker, last_fetch, incident_to_
     client = Client("")
     mocker.patch.object(Client, 'search_incidents', side_effect=incident_to_return)
     assert get_and_dedup_incidents(client, incidents_last_fetch_ids, "", max_fetch, last_fetch) == expected_result
+
+
+def test_get_incident_entries_without_entries(mocker):
+    """
+    Given:
+        - incident_id and date.
+
+    When:
+        - Running the get_incident_entries request.
+
+    Then:
+        - Ensure that an empty list is returned when there is no entries.
+    """
+    from XSOARmirroring import Client
+    client = Client(base_url="https://test.com")
+    mocker.patch.object(client, '_http_request', return_value={
+    "closed": "2023-09-20T10:54:00.669862412Z",
+    "closingUserId": "DBot",
+    "created": "2023-09-20T09:07:46.457488661Z",
+    "details": "",
+    })
+    result = client.get_incident_entries(incident_id="1", from_date='1696494896', max_results=1, 
+                                         categories=None, tags_and_operator=True, tags=None)
+    assert result is not None
+    assert result == []
