@@ -56,9 +56,7 @@ merge-dev-secrets:
     - if: '$CI_PIPELINE_SOURCE =~ /^(push)$/ && $CI_COMMIT_BRANCH == $master_branch_name'
   stage: unittests-and-validations
   script:
-    - section_start "Download content-test-conf and infra" --collapsed
-    - ./Tests/scripts/download_conf_repos.sh 2>&1 | tee --append "${ARTIFACTS_FOLDER}/logs/download_conf_repos.log"
-    - section_end "Download content-test-conf and infra"
+    - !reference [.download-demisto-conf]
     - section_start "Merging and deleting dev secrets" --collapsed
     - python3 ./Tests/scripts/merge_and_delete_dev_secrets.py -sa "$GSM_SERVICE_ACCOUNT" --gsm_project_id_dev "$GSM_PROJECT_ID_DEV" --gsm_project_id_prod "$GSM_PROJECT_ID" >> "${ARTIFACTS_FOLDER}/logs/merge_secrets.log"
     - section_end "Merging and deleting dev secrets"

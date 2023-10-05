@@ -137,6 +137,7 @@ xpanse-prepare-testing-bucket-upload-flow:
     when: always
   variables:
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
+    ARTIFACTS_FOLDER_INSTANCE: "${ARTIFACTS_FOLDER_XSOAR}/instance_${INSTANCE_ROLE}"
     ENV_RESULTS_PATH: "${ARTIFACTS_FOLDER_XSOAR}/env_results.json"
     INSTANCE_CREATED: "true"
     SSH_TUNNEL_TIMEOUT: 10
@@ -146,9 +147,11 @@ xpanse-prepare-testing-bucket-upload-flow:
     - .default-job-settings
   script:
     - EXIT_CODE=0
-    - section_start "Download content-test-conf and infra" --collapsed
-    - ./Tests/scripts/download_conf_repos.sh 2>&1 | tee --append "${ARTIFACTS_FOLDER}/logs/download_conf_repos.log"
-    - section_end "Download content-test-conf and infra"
+    - section_start "Create Artifacts instance directory" --collapsed
+    - |
+      [ -d "${ARTIFACTS_FOLDER_INSTANCE}" ] || mkdir -p "${ARTIFACTS_FOLDER_INSTANCE}"
+    - section_end "Create Artifacts instance directory"
+    - !reference [.download-demisto-conf]
     - section_start "Secrets Fetch" --collapsed
     - SECRET_CONF_PATH=$(cat secret_conf_path)
     - python3 ./Tests/scripts/add_secrets_file_to_build.py -sa "$GSM_SERVICE_ACCOUNT" -sf "$SECRET_CONF_PATH" -u "$DEMISTO_USERNAME" -p "$DEMISTO_PASSWORD" --gsm_project_id_dev "$GSM_PROJECT_ID_DEV" --gsm_project_id_prod "$GSM_PROJECT_ID" >> $ARTIFACTS_FOLDER/logs/handle_secrets.log
@@ -223,9 +226,7 @@ install-packs-in-server-master:
     - .default-job-settings
   script:
     - EXIT_CODE=0
-    - section_start "Download content-test-conf and infra" --collapsed
-    - ./Tests/scripts/download_conf_repos.sh 2>&1 | tee --append "${ARTIFACTS_FOLDER}/logs/download_conf_repos.log"
-    - section_end "Download content-test-conf and infra"
+    - !reference [.download-demisto-conf]
     - section_start "Secrets Fetch" --collapsed
     - SECRET_CONF_PATH=$(cat secret_conf_path)
     - python3 ./Tests/scripts/add_secrets_file_to_build.py -sa "$GSM_SERVICE_ACCOUNT" -sf "$SECRET_CONF_PATH" -u "$DEMISTO_USERNAME" -p "$DEMISTO_PASSWORD" --gsm_project_id_dev "$GSM_PROJECT_ID_DEV" --gsm_project_id_prod "$GSM_PROJECT_ID" >> $ARTIFACTS_FOLDER/logs/handle_secrets.log
