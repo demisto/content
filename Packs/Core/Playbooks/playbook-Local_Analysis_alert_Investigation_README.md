@@ -33,7 +33,7 @@ And the following eradication actions:
 
 External resources:
 
-[Malware Protection Flow](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Administrator-Guide/File-Analysis-and-Protection-Flow)
+[Malware Protection Flow](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Administrator-Guide/File-Analysis-and-Protection-Flow).
 
 ## Dependencies
 
@@ -41,14 +41,14 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Ticket Management - Generic
-* Eradication Plan
-* Wildfire Detonate and Analyze File
 * Handle False Positive Alerts
-* Enrichment for Verdict
-* Endpoint Investigation Plan
-* Recovery Plan
 * Containment Plan
+* Recovery Plan
+* Eradication Plan
+* Endpoint Investigation Plan
+* Enrichment for Verdict
+* Wildfire Detonate and Analyze File
+* Ticket Management - Generic
 
 ### Integrations
 
@@ -62,11 +62,11 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 ### Commands
 
 * setParentIncidentFields
-* core-retrieve-files
 * core-report-incorrect-wildfire
-* internal-wildfire-get-report
-* core-retrieve-file-details
+* core-retrieve-files
 * closeInvestigation
+* core-retrieve-file-details
+* internal-wildfire-get-report
 
 ## Playbook Inputs
 
@@ -85,7 +85,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | SHA256 | The SHA256 hash of the file to respond to. Decided by the DT expression wether it's the initiator or the target file SHA256. | alert | Optional |
 | Path | The path of the file to respond to. Decided by the DT expression wether it's the initiator or the target file path. | alert | Optional |
 | Query | The query for searching previous alerts based on the file we want to respond to. Decided by the If-Then-Else expression wether it's the initiator or the target file. | alert | Optional |
-| ShouldOpenTicket | Whether to open a ticket automatically in a ticketing system. \(True/False\). | True | Optional |
+| ShouldOpenTicket | Whether to open a ticket automatically in a ticketing system. \(True/False\). | False | Optional |
 | serviceNowShortDescription | A short description of the ticket. | XSIAM Incident ID - ${parentIncidentFields.incident_id} | Optional |
 | serviceNowImpact | The impact for the new ticket. Leave empty for ServiceNow default impact. |  | Optional |
 | serviceNowUrgency | The urgency of the new ticket. Leave empty for ServiceNow default urgency. |  | Optional |
