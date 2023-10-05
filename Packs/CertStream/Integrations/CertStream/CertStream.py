@@ -35,24 +35,25 @@ def set_incident_severity(similarity: float) -> int:
         return IncidentSeverity.LOW
 
 
-def create_xsoar_incidents(certificate: dict, domain: str, current_time: datetime, similarity: float):
+def create_xsoar_incident(certificate: dict, domain: str, current_time: datetime, result: dict):
     """Creates an XSOAR 'New Suspicious Domain` incident using the certificate and domain details
 
     Args:
         certificate (dict): The certificate details from CertStream
         domain (str): The domain matching the homograph
-        current_time (datetime): The time the match occured at
-        similarity (float): The Levenshtein distance between the domain and the homograph
+        current_time (datetime): The time the match occurred at
+        result (dict): A dictionary containing details about the match like similarity score and matched asset.
     """
 
     incident = {
         "name": f"Suspicious Domain Discovered - {domain}",
         "occured": current_time,
         "type": "newsuspiciousdomain",
-        "severity": set_incident_severity(similarity),
+        "severity": set_incident_severity(result["similarity"]),
         "CustomFields": {
             "fingerprint": certificate["data"]["leaf_cert"]["fingerprint"],
-            "levenshtein_distance": similarity
+            "levenshtein_distance": result["similarity"],
+            "userasset": result["asset"]
         }
     }
 
@@ -110,7 +111,7 @@ def create_relationship_list(value: str, domains: list[str]) -> list[EntityRelat
     return relationships
 
 
-def check_homographs(domain: str, homographs: list, levenshtein_distance_threshold: float) -> bool:
+def check_homographs(domain: str, user_homographs: list, levenshtein_distance_threshold: float) -> tuple[bool, dict]:
     """Checks each word in a domain for similarity to the provided homograph list.
 
     Args:
@@ -123,10 +124,16 @@ def check_homographs(domain: str, homographs: list, levenshtein_distance_thresho
     """
     words = domain.split(".")[:-1]  # All words in the domain without the TLD
     for word in words:
-        for homograph in homographs:
-            if compute_similarity(homograph, word) > levenshtein_distance_threshold:
-                return True
-    return False
+        for asset, homographs in user_homographs:
+            for homograph in homographs:
+                similarity = compute_similarity(homograph, word)
+                if similarity > levenshtein_distance_threshold:
+                    return True, {"similarity": similarity,
+                                  "homograph": homograph,
+                                  "asset": asset}
+    return False, {"similarity": similarity,
+                   "homograph": homograph,
+                   "asset": asset}
 
 
 def fetch_certificates(message: dict, context: dict) -> None:
@@ -145,41 +152,17 @@ def fetch_certificates(message: dict, context: dict) -> None:
         else:
             for domain in all_domains:
                 # Check for homographs
-                if check_homographs(domain, context["homographs"], context["levenshtein_distance_threshold"]):
+                is_suspicious_domain, result = check_homographs(domain, context["homographs"],
+                                                                    context["levenshtein_distance_threshold"])
+                if is_suspicious_domain:
                     now = datetime.now()
                     demisto.info(f"Potential homograph match found for domain: {domain}")
                     create_xsoar_certificate_indicator(message)
-                    create_xsoar_incident(message, now)
+                    create_xsoar_incident(message, domain, now, result)
 
         now = datetime.now()
         domains = ", ".join(message["data"]["leaf_cert"]["all_domains"][1:])
         demisto.info(f"[{now:%m/%d/%y %H:%M:%S}] {domain} (SAN: {domains})\n")
-
-
-def test_module(host: str):
-    def on_message(message: dict, context: dict):
-        """ A callback function that handles each message from the CertStream feed.
-
-        Args:
-            message (dict): A single X.509 certificate message from the Certificate Transparency feed.
-            context (dict): The context object passed to the callback which can be used to store state across messages.
-
-        Raises:
-            KeyboardInterrupt: After 2 messages raises an interruption to stop the loop.
-        """
-        context["messages"] += 1
-        if context["messages"] == 2:
-            raise KeyboardInterrupt
-
-    try:
-        c = CertStreamClient(on_message, url=host, skip_heartbeats=True, on_open=None, on_error=None)
-        c._context = {"messages": 0}
-        c.run_forever(ping_interval=15)
-        c.close()
-        return "ok"
-
-    except Exception as e:
-        demisto.error(e)
 
 
 def get_homographs_list(list_name: str) -> list:
@@ -191,38 +174,16 @@ def get_homographs_list(list_name: str) -> list:
     Returns:
         list: A list of homographs
     """
-    lists = json.loads(demisto.internalHttpRequest("GET", "/lists/")).get("body", {})
+    lists = json.loads(demisto.internalHttpRequest("GET", "/lists/").get("body", {}))
     for list in lists:
         if list["id"] != list_name:
             continue
 
         else:
-            return list["data"].split("\n")
+            return json.loads(list["data"])
 
     demisto.error("List of words not found")
     raise
-
-
-def long_running_execution_command(host: str, word_list_name: str, list_update_interval: int, levenshtein_distance_threshold: float):
-    demisto.info("Starting CertStream Listener")
-    c = CertStreamClient(fetch_certificates, url=host, skip_heartbeats=True, on_open=None, on_error=None)
-    c._context = {
-        "fetch_time": datetime.now(),
-        "homographs": get_homographs_list(word_list_name),
-        "levenshtein_distance_threshold": levenshtein_distance_threshold
-    }
-
-    while True:
-        try:
-            now = datetime.now()
-            if now - c._context["fetch_time"] >= timedelta(minutes=list_update_interval):
-                c._context["fetch_time"] = now
-                c._context["homographs"] = get_homographs_list(word_list_name)
-
-            c.run_forever(ping_interval=15)
-            time.sleep(5)
-        except Exception as e:
-            demisto.error(e)
 
 
 def levenshtein_distance(original_string: str, reference_string: str) -> float:
@@ -264,6 +225,54 @@ def compute_similarity(input_string: str, reference_string: str) -> float:
     similarity = 1 - (distance / max_length)
     return similarity
 
+
+def long_running_execution_command(host: str, word_list_name: str, list_update_interval: int, levenshtein_distance_threshold: float):
+    demisto.info("Starting CertStream Listener")
+    c = CertStreamClient(fetch_certificates, url=host, skip_heartbeats=True, on_open=None, on_error=None)
+    c._context = {
+        "fetch_time": datetime.now(),
+        "homographs": get_homographs_list(word_list_name),
+        "levenshtein_distance_threshold": levenshtein_distance_threshold
+    }
+
+    while True:
+        try:
+            now = datetime.now()
+            if now - c._context["fetch_time"] >= timedelta(minutes=list_update_interval):
+                c._context["fetch_time"] = now
+                c._context["homographs"] = get_homographs_list(word_list_name)
+
+            c.run_forever(ping_interval=15)
+            time.sleep(5)
+        except Exception as e:
+            demisto.error(e)
+
+
+
+def test_module(host: str):
+    def on_message(message: dict, context: dict):
+        """ A callback function that handles each message from the CertStream feed.
+
+        Args:
+            message (dict): A single X.509 certificate message from the Certificate Transparency feed.
+            context (dict): The context object passed to the callback which can be used to store state across messages.
+
+        Raises:
+            KeyboardInterrupt: After 2 messages raises an interruption to stop the loop.
+        """
+        context["messages"] += 1
+        if context["messages"] == 2:
+            raise KeyboardInterrupt
+
+    try:
+        c = CertStreamClient(on_message, url=host, skip_heartbeats=True, on_open=None, on_error=None)
+        c._context = {"messages": 0}
+        c.run_forever(ping_interval=15)
+        c.close()
+        return "ok"
+
+    except Exception as e:
+        demisto.error(e)
 
 def main():  # pragma: no cover
     command = demisto.command()
