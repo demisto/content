@@ -3026,6 +3026,14 @@ script:
       predefined:
       - 'true'
       - 'false'
+    - description: Whether to return only a subset of the alert fields. Filtering the fields can reduce response size for large alerts.
+      auto: PREDEFINED
+      name: filter_alert_fields
+      required: true
+      defaultValue: 'true'
+      predefined:
+      - 'true'
+      - 'false'
     - description: The MITRE attack technique.
       isArray: true
       name: mitre_technique_id_and_name
