@@ -1011,6 +1011,10 @@ def fetch_last_emails(account, folder_name='Inbox', since_datetime=None, exclude
             demisto.debug(f"Encountered an ErrorMimeContentConversionFailed error object while iterating: {e}.\
                 Continuing to next item.")
             continue
+        except AttributeError as e:
+            demisto.debug(f"Encountered an AttributeError error object while iterating: {e}.\
+                 Continuing to next item.")
+
     demisto.debug(f'EWS V2 - Got total of {len(result)} from ews query. ')
     return result
 
