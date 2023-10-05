@@ -12,6 +12,53 @@ def build_xsoar_grid(data: dict) -> list:
     return [{"title": key.lower(), "value": value} for key, value in data.items()]
 
 
+def set_incident_severity(similarity: float) -> int:
+    """
+
+    Args:
+        similarity (float): Similarity score between 0 and 1.
+
+    Returns:
+        int: Cortex XSOAR Severity (1 to 4)
+    """
+
+    if similarity >= 0.85:
+        return IncidentSeverity.CRITICAL
+
+    elif 0.85 > similarity > 0.75:
+        return IncidentSeverity.HIGH
+
+    elif 0.75 >= similarity > 0.65:
+        return IncidentSeverity.MEDIUM
+
+    else:
+        return IncidentSeverity.LOW
+
+
+def create_xsoar_incidents(certificate: dict, domain: str, current_time: datetime, similarity: float):
+    """Creates an XSOAR 'New Suspicious Domain` incident using the certificate and domain details
+
+    Args:
+        certificate (dict): The certificate details from CertStream
+        domain (str): The domain matching the homograph
+        current_time (datetime): The time the match occured at
+        similarity (float): The Levenshtein distance between the domain and the homograph
+    """
+
+    incident = {
+        "name": f"Suspicious Domain Discovered - {domain}",
+        "occured": current_time,
+        "type": "newsuspiciousdomain",
+        "severity": set_incident_severity(similarity),
+        "CustomFields": {
+            "fingerprint": certificate["data"]["leaf_cert"]["fingerprint"],
+            "levenshtein_distance": similarity
+        }
+    }
+
+    demisto.createIncidents([incident])
+
+
 def create_xsoar_certificate_indicator(certificate: dict):
     """Creates an XSOAR certificate indicator
 
@@ -62,6 +109,7 @@ def create_relationship_list(value: str, domains: list[str]) -> list[EntityRelat
         relationships.append(relation_obj.to_indicator())
     return relationships
 
+
 def check_homographs(domain: str, homographs: list, levenshtein_distance_threshold: float) -> bool:
     """Checks each word in a domain for similarity to the provided homograph list.
 
@@ -98,9 +146,10 @@ def fetch_certificates(message: dict, context: dict) -> None:
             for domain in all_domains:
                 # Check for homographs
                 if check_homographs(domain, context["homographs"], context["levenshtein_distance_threshold"]):
+                    now = datetime.now()
                     demisto.info(f"Potential homograph match found for domain: {domain}")
                     create_xsoar_certificate_indicator(message)
-                    ## TODO create incident or alert ##
+                    create_xsoar_incident(message, now)
 
         now = datetime.now()
         domains = ", ".join(message["data"]["leaf_cert"]["all_domains"][1:])
