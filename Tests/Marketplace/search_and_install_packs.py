@@ -24,7 +24,6 @@ from Tests.Marketplace.common import ALREADY_IN_PROGRESS
 from Tests.Marketplace.common import wait_until_not_updating, generic_request_with_retries
 from Tests.Marketplace.marketplace_constants import (IGNORED_FILES,
                                                      PACKS_FOLDER,
-                                                     PACKS_FULL_PATH,
                                                      GCPConfig, Metadata)
 from Tests.Marketplace.marketplace_services import (Pack, init_storage_client,
                                                     load_json)
