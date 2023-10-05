@@ -40,11 +40,11 @@ demisto_score_to_xdr: dict[int, str] = {
 
 
 def create_validation_errors_response(validation_errors):
-    response = ''
+    response = 'The following IOCs were not pushed due to following errors:'
     for item in validation_errors:
         indicator = item.get('indicator')
         error = item.get('error')
-        response += f'The indicator "{indicator}" has validation error: "{error}".\n'
+        response += f'{indicator}: {error}.\n'
     return response + '\n'
 
 
@@ -372,12 +372,12 @@ def get_indicators(indicators: str) -> list:
 
 def tim_insert_jsons(client: Client):
     indicators = demisto.args().get('indicator', '')
+    validation_errors = []
     if not indicators:
         iocs = get_last_iocs()
     else:
         iocs = get_indicators(indicators)
     if iocs:
-        validation_errors = []
         path = 'tim_insert_jsons/'
         for i, single_batch_iocs in enumerate(batch_iocs(iocs)):
             demisto.debug(f'push batch: {i}')
@@ -385,8 +385,10 @@ def tim_insert_jsons(client: Client):
                 map(demisto_ioc_to_xdr, single_batch_iocs)), validate=True)
             response = client.http_request(url_suffix=path, requests_kwargs=requests_kwargs)
             validation_errors.extend(response.get('reply', {}).get('validation_errors'))
+    if validation_errors:
         errors = create_validation_errors_response(validation_errors)
-        return_outputs(f'{errors}push done.')
+        return_warning(errors)
+    return_outputs('push done.')
 
 
 def iocs_command(client: Client):
