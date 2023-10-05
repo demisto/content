@@ -1,6 +1,8 @@
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+
+
+
 
 ''' IMPORTS '''
 
@@ -853,13 +855,14 @@ def add_policy_content_request(uuid, content_type, change_description, schema_ve
             'enabled': bool(strtobool(enabled))
         } for ip in ips]
     elif urls:
+        existing_urls = [x['url'].lower() for x in content['content']['urls']]
         if 'urls' not in content['content']:
             content['content']['urls'] = []
         content['content']['urls'] += [{
             'url': url,
             'description': description,
             'enabled': bool(strtobool(enabled))
-        } for url in urls]
+        } for url in urls if url.lower() not in existing_urls]
     elif categories:
         if 'categories' not in content['content']:
             content['content']['categories'] = []
@@ -984,7 +987,8 @@ def delete_policy_content_request(uuid, content_type, change_description, schema
             content['content']['ipAddresses'] = ips_to_keep
     elif urls:
         if 'urls' in content['content']:
-            urls_to_keep = [url for url in content['content']['urls'] if url['url'] not in urls]
+            urls_to_delete = [x.lower() for x in urls]
+            urls_to_keep = [url for url in content['content']['urls'] if url['url'] not in urls_to_delete]
             content['content']['urls'] = urls_to_keep
     elif categories:
         if 'categories' in content['content']:
@@ -1202,3 +1206,4 @@ def main():
 
 if __name__ in ['__main__', '__builtin__', 'builtins']:
     main()
+
