@@ -1,3 +1,5 @@
+import typing
+
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
@@ -973,7 +975,7 @@ def get_human_readable_feed(collection_name, feed):
 
 def transform_function(result, previous_keys="", is_inside_list=False):
     result_dict = {}
-    additional_tables: list[Any] = []
+    additional_tables: typing.List[Any] = []
 
     if isinstance(result, dict):
         if is_inside_list:
@@ -1007,7 +1009,7 @@ def transform_function(result, previous_keys="", is_inside_list=False):
 
         return result_dict, additional_tables
 
-    elif isinstance(result, str | int | float) or result is None:
+    elif isinstance(result, (str, int, float)) or result is None:
         if not is_inside_list:
             result_dict.update({previous_keys: result})
         else:
@@ -1020,8 +1022,8 @@ def transform_function(result, previous_keys="", is_inside_list=False):
 """ Commands """
 
 
-def fetch_incidents_command(client: Client, last_run: dict, first_fetch_time: str,
-                            incident_collections: list, requests_count: int) -> tuple[dict, list]:
+def fetch_incidents_command(client: Client, last_run: typing.Dict, first_fetch_time: str,
+                            incident_collections: typing.List, requests_count: int) -> typing.Tuple[dict, list]:
     """
     This function will execute each interval (default is 1 minute).
 
@@ -1034,7 +1036,7 @@ def fetch_incidents_command(client: Client, last_run: dict, first_fetch_time: st
     :return: next_run will be last_run in the next fetch-incidents; incidents and indicators will be created in Demisto.
     """
     incidents = []
-    next_run: dict[str, dict[str, int | Any]] = {"last_fetch": {}}
+    next_run: typing.Dict[str, typing.Dict[str, Union[int, Any]]] = {"last_fetch": {}}
     for collection_name in incident_collections:
         last_fetch = last_run.get("last_fetch", {}).get(collection_name)
 
@@ -1112,7 +1114,7 @@ def get_info_by_id_command(collection_name: str):
     Decorator around actual commands, that returns command depends on `collection_name`.
     """
 
-    def get_info_by_id_for_collection(client: Client, args: dict) -> list[CommandResults]:
+    def get_info_by_id_for_collection(client: Client, args: dict) -> typing.List[CommandResults]:
         """
         This function returns additional information to context and War Room.
 
@@ -1143,7 +1145,7 @@ def get_info_by_id_command(collection_name: str):
         if "seqUpdate" in result:
             del result["seqUpdate"]
 
-        indicators: list[CommandResults] = []
+        indicators: typing.List[CommandResults] = []
         if coll_name not in ["apt/threat_actor", "hi/threat_actor"]:
             indicators = find_iocs_in_feed(result, coll_name)
 
