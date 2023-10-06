@@ -323,6 +323,15 @@ def test_fetch_investigation(requests_mock):
     assert response.outputs[0]["url"] == f"{TAEGIS_URL}/investigations/{args['id']}"
 
     # Investigation not found
+    client = mock_client(requests_mock, {
+            "errors": [{"message": "record not found"}],
+            "data": {"investigationV2": None}
+        }
+    )
+    response = fetch_investigation_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
+    assert len(response.outputs) == 0
+
+    # Invalid query response
     client = mock_client(requests_mock, {})
     response = fetch_investigation_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
     assert len(response.outputs) == 0

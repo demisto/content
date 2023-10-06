@@ -1250,6 +1250,10 @@ def fetch_investigation_command(client: Client, env: str, args=None):
     except (KeyError, TypeError):
         investigations = []
 
+    # If no investigation found, no error status is returned but investigation will be null
+    if len(investigations) == 1 and investigations[0] == None:
+        investigations = []
+
     for investigation in investigations:
         investigation.update({"url": generate_id_url(env, "investigations", investigation["id"])})
 
