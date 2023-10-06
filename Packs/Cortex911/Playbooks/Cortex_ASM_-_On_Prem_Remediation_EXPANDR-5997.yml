@@ -1,0 +1,371 @@
+id: Cortex ASM - On Prem Remediation_EXPANDR-5997
+version: 6
+contentitemexportablefields:
+  contentitemfields:
+    packID: ""
+    packName: Cortex Attack Surface Management
+    itemVersion: 1.7.0
+    fromServerVersion: 6.8.0
+    toServerVersion: ""
+    definitionid: ""
+    prevname: ""
+vcShouldKeepItemLegacyProdMachine: false
+name: Cortex ASM - On Prem Remediation_EXPANDR-5997
+description: |-
+  This playbook adds new block rule(s) to on-prem firewall vendors in order to block internet access for internet exposures.
+
+  Conditions:
+  This is currently limited to stand-alone firewalls for PAN-OS.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: d31ed4f9-0882-4ce6-86d4-a68c1e4eec34
+    type: start
+    task:
+      id: d31ed4f9-0882-4ce6-86d4-a68c1e4eec34
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": -460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 434e9297-4d1f-4c51-8136-2e6074cd21fe
+    type: regular
+    task:
+      id: 434e9297-4d1f-4c51-8136-2e6074cd21fe
+      version: -1
+      name: pan-os-list-rules
+      description: Returns a list of predefined Security Rules. (When passing a query,
+        all other arguments are overridden. Make sure the query includes all the filters
+        you want).
+      script: Panorama|||pan-os-list-rules
+      type: regular
+      iscommand: true
+      brand: Panorama
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      rulename:
+        complex:
+          root: inputs.RuleName
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": -140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 755a0afb-0aa6-419a-8c77-2781e31f06e0
+    type: playbook
+    task:
+      id: 755a0afb-0aa6-419a-8c77-2781e31f06e0
+      version: -1
+      name: PAN-OS - Block Destination Service
+      description: 'This playbook blocks a destination IP and service (TCP or UDP
+        port) by creating a rule for a specific device group on PAN-OS. '
+      playbookName: PAN-OS - Block Destination Service
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      AutoCommit:
+        simple: "True"
+      DestinationZone:
+        complex:
+          root: Panorama.SecurityRule
+          accessor: To
+      DeviceGroup:
+        complex:
+          root: inputs.DeviceGroup
+      IP:
+        complex:
+          root: inputs.RemoteIP
+      LogForwarding:
+        complex:
+          root: Panorama.SecurityRule
+          accessor: LogForwardingProfile
+      ObjectNamePrefix:
+        simple: xpanse-ar-object-
+      Port:
+        complex:
+          root: inputs.RemotePort
+          transformers:
+          - operator: Stringify
+      Protocol:
+        complex:
+          root: inputs.RemoteProtocol
+      RuleNamePrefix:
+        simple: xpanse-ar-rule
+      ServiceNamePrefix:
+        simple: xpanse-ar-service-
+      SourceZone:
+        complex:
+          root: Panorama.SecurityRule
+          accessor: From
+      WhereRule:
+        simple: top
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 933a2a81-89cf-47c9-8901-07fb3ab8bbb8
+    type: title
+    task:
+      id: 933a2a81-89cf-47c9-8901-07fb3ab8bbb8
+      version: -1
+      name: Complete
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 9f096ee5-d500-4054-8632-a4f701b3c79e
+    type: condition
+    task:
+      id: 9f096ee5-d500-4054-8632-a4f701b3c79e
+      version: -1
+      name: Is DeviceGroup specified?
+      description: Checks if DeviceGroup input is specified because of different !pan-os-list-rule
+        commands for standalone firewall vs Panorama.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "1"
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.DeviceGroup
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": -340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 005b8ced-2d5c-4653-892f-2d092696f7d7
+    type: regular
+    task:
+      id: 005b8ced-2d5c-4653-892f-2d092696f7d7
+      version: -1
+      name: pan-os-list-rules (pre-rulebase)
+      description: Returns a list of predefined Security Rules. (When passing a query,
+        all other arguments are overridden. Make sure the query includes all the filters
+        you want).
+      script: Panorama|||pan-os-list-rules
+      type: regular
+      iscommand: true
+      brand: Panorama
+    nexttasks:
+      '#error#':
+      - "7"
+      '#none#':
+      - "2"
+    scriptarguments:
+      device-group:
+        complex:
+          root: inputs.DeviceGroup
+      pre_post:
+        simple: pre-rulebase
+      rulename:
+        complex:
+          root: inputs.RuleName
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 890,
+          "y": -140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 1888cf31-9167-4ba1-8f3c-90eea6c260de
+    type: regular
+    task:
+      id: 1888cf31-9167-4ba1-8f3c-90eea6c260de
+      version: -1
+      name: pan-os-list-rules (post-rulebase)
+      description: Returns a list of predefined Security Rules. (When passing a query,
+        all other arguments are overridden. Make sure the query includes all the filters
+        you want).
+      script: Panorama|||pan-os-list-rules
+      type: regular
+      iscommand: true
+      brand: Panorama
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      device-group:
+        complex:
+          root: inputs.DeviceGroup
+      pre_post:
+        simple: post-rulebase
+      rulename:
+        complex:
+          root: inputs.RuleName
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 890,
+          "y": 70
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 945,
+        "width": 810,
+        "x": 460,
+        "y": -460
+      }
+    }
+  }
+inputs:
+- key: RuleName
+  value: {}
+  required: true
+  description: Firewall rule name to look up in the company configuration setting
+    for block rule.
+  playbookInputQuery: null
+- key: RemoteIP
+  value:
+    complex:
+      root: alert
+      accessor: remoteip
+  required: true
+  description: IP address of the service.
+  playbookInputQuery: null
+- key: RemoteProtocol
+  value:
+    complex:
+      root: alert
+      accessor: appid
+  required: true
+  description: Protocol of the service.
+  playbookInputQuery: null
+- key: RemotePort
+  value:
+    complex:
+      root: alert
+      accessor: remoteport
+  required: true
+  description: Port number of the service.
+  playbookInputQuery: null
+- key: DeviceGroup
+  value: {}
+  required: false
+  description: Device Group of the firewall rule to lookup
+  playbookInputQuery: null
+outputs: []
+sourceplaybookid: Cortex ASM - On Prem Remediation
