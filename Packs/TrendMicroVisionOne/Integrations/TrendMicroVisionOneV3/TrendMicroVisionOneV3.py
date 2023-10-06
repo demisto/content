@@ -15,9 +15,11 @@ from pytmv1 import (
     AccountTaskResp,
     BlockListTaskResp,
     CollectFileTaskResp,
+    EmailActivity,
     EmailMessageIdTask,
     EmailMessageTaskResp,
     EmailMessageUIdTask,
+    EndpointActivity,
     EndpointTask,
     EndpointTaskResp,
     ExceptionObject,
@@ -70,7 +72,13 @@ MESSAGE_ID = "message_id"
 MAILBOX = "mailbox"
 APP_NAME = "Trend Micro Vision One V3"
 ENDPOINT = "endpoint"
+START = "start"
+SELECT = "select"
+END = "end"
+TOP = "top"
 QUERY_OP = "query_op"
+FIELDS = "fields"
+GET_ACTIVITY_DATA_COUNT = "get_activity_data_count"
 ENTRY_ID = "entry_id"
 FILE_SHA1 = "file_sha1"
 SUCCEEDED = "succeeded"
@@ -138,6 +146,10 @@ TABLE_DELETE_EXCEPTION_LIST = "Delete object from exception list "
 TABLE_ADD_SUSPICIOUS_LIST = "Add object to suspicious list "
 TABLE_DELETE_SUSPICIOUS_LIST = "Delete object from suspicious list "
 TABLE_ENDPOINT_INFO = "Endpoint info "
+TABLE_GET_EMAIL_ACTIVITY_DATA = "Email activity data "
+TABLE_GET_EMAIL_ACTIVITY_DATA_COUNT = "Email activity data count "
+TABLE_GET_ENDPOINT_ACTIVITY_DATA = "Endpoint activity data "
+TABLE_GET_ENDPOINT_ACTIVITY_DATA_COUNT = "Endpoint activity data count"
 TABLE_GET_FILE_ANALYSIS_STATUS = "File analysis status "
 TABLE_GET_FILE_ANALYSIS_RESULT = "File analysis result "
 TABLE_GET_ALERT_DETAILS = "Alert details"
@@ -197,6 +209,8 @@ SANDBOX_SUBMISSION_POLLING_COMMAND = (
 )
 CHECK_TASK_STATUS_COMMAND = "trendmicro-visionone-check-task-status"
 GET_ENDPOINT_INFO_COMMAND = "trendmicro-visionone-get-endpoint-info"
+GET_EMAIL_ACTIVITY_DATA_COMMAND = "trendmicro-visionone-get-email-activity-data"
+GET_ENDPOINT_ACTIVITY_DATA_COMMAND = "trendmicro-visionone-get-endpoint-activity-data"
 GET_ALERT_DETAILS_COMMAND = "trendmicro-visionone-get-alert-details"
 UPDATE_STATUS_COMMAND = "trendmicro-visionone-update-status"
 ADD_NOTE_COMMAND = "trendmicro-visionone-add-note"
@@ -228,10 +242,12 @@ table_name = {
     QUARANTINE_EMAIL_COMMAND: TABLE_QUARANTINE_EMAIL_MESSAGE,
     DELETE_EXCEPTION_LIST_COMMAND: TABLE_DELETE_EXCEPTION_LIST,
     DELETE_SUSPICIOUS_LIST_COMMAND: TABLE_DELETE_SUSPICIOUS_LIST,
+    GET_EMAIL_ACTIVITY_DATA_COMMAND: TABLE_GET_EMAIL_ACTIVITY_DATA,
     GET_FILE_ANALYSIS_STATUS_COMMAND: TABLE_GET_FILE_ANALYSIS_STATUS,
     GET_FILE_ANALYSIS_RESULT_COMMAND: TABLE_GET_FILE_ANALYSIS_RESULT,
     DOWNLOAD_ANALYSIS_REPORT_COMMAND: TABLE_DOWNLOAD_ANALYSIS_REPORT,
     FILE_ENTRY_TO_SANDBOX_COMMAND: TABLE_SUBMIT_FILE_ENTRY_TO_SANDBOX,
+    GET_ENDPOINT_ACTIVITY_DATA_COMMAND: TABLE_GET_ENDPOINT_ACTIVITY_DATA,
     SANDBOX_SUBMISSION_POLLING_COMMAND: TABLE_SANDBOX_SUBMISSION_POLLING,
     DOWNLOAD_INVESTIGATION_PACKAGE_COMMAND: TABLE_DOWNLOAD_INVESTIGATION_PACKAGE,
     DOWNLOAD_SUSPICIOUS_OBJECT_LIST_COMMAND: TABLE_DOWNLOAD_SUSPICIOUS_OBJECT_LIST,
@@ -867,6 +883,204 @@ def get_endpoint_info(
         outputs_key_field="endpoint_name",
         outputs=message,
     )
+
+
+def get_endpoint_activity_data(
+    client: Client, args: Dict[str, Any]
+) -> Union[str, CommandResults]:
+    """
+    Displays search results from the Endpoint Activity Data source
+    in a paginated list and sends the result to demisto war room.
+
+    :type client: ``Client``
+    :param client: client object to use for api_key and base_url.
+
+    :type args: ``dict``
+    :param args: args object to fetch the argument data.
+
+    :return: sends data to demisto war room.
+    :rtype: ``dict`
+    """
+    # Optional Params
+    fields = args.get(FIELDS, EMPTY_STRING)
+    start = args.get(START, EMPTY_STRING)
+    end = args.get(END, EMPTY_STRING)
+    top = args.get(TOP, EMPTY_STRING)
+    select = args.get(SELECT, EMPTY_STRING).split(",")
+    get_activity_data_count = args.get(GET_ACTIVITY_DATA_COUNT, FALSE)
+    query_op = args.get(QUERY_OP, EMPTY_STRING)
+    # Choose QueryOp Enum based on user choice
+    if query_op.lower() == "or":
+        query_op = pytmv1.QueryOp.OR
+    elif query_op.lower() == "and":
+        query_op = pytmv1.QueryOp.AND
+    # Initialize pytmv1 client
+    v1_client = _get_client(APP_NAME, client.api_key, client.base_url)
+    # List to contain endpoint activity data
+    endpoint_activity_data: List[EndpointActivity] = []
+    message: list[Any] = []
+    # Should the data count be fetched
+    if get_activity_data_count == TRUE:
+        count = get_endpoint_activity_data_count(
+            v1_client, start, end, query_op, top, select, fields
+        )
+        message.append({"total_count": count})
+    # Make rest call
+    try:
+        v1_client.consume_endpoint_activity_data(
+            lambda consumer: endpoint_activity_data.append(consumer),
+            start_time=start,
+            end_time=end,
+            top=top,
+            select=select,
+            op=query_op,
+            **fields,
+        )
+    except Exception as err:
+        return_error(f"Something went wrong. {err}")
+
+    # Check if endpoint activity data is returned
+    if len(endpoint_activity_data) == 0:
+        err_msg = "No endpoint data found. Please check queries provided."
+        return_error(message=err_msg)
+    # Parse endpoint activity data to message list and send to war room
+    for activity in endpoint_activity_data:
+        message.append(activity.dict())
+
+    return CommandResults(
+        readable_output=tableToMarkdown(
+            table_name[GET_ENDPOINT_ACTIVITY_DATA_COMMAND],
+            message,
+            headerTransform=string_to_table_header,
+            removeNull=True,
+        ),
+        outputs_prefix="VisionOne.Endpoint_Activity_Data",
+        outputs_key_field="endpoint_host_name",
+        outputs=message,
+    )
+
+
+def get_endpoint_activity_data_count(
+    v1_client, start, end, query_op, top, select, fields
+) -> int:
+    """
+    Fetches endpoint activity data count.
+
+    :return: sends data count to demisto war room.
+    :rtype: ``int``
+    """
+    # Make rest call
+    resp = v1_client.get_endpoint_activity_data_count(
+        start_time=start,
+        end_time=end,
+        top=top,
+        select=select,
+        op=query_op,
+        **fields,
+    )
+    # Check if an error occurred
+    if _is_pytmv1_error(resp.result_code):
+        return_error(message=f"{unwrap(resp.error).message}", error=str(resp.error))
+    # Add results to message to be sent to the War Room
+    return unwrap(resp.response).total_count
+
+
+def get_email_activity_data(
+    client: Client, args: Dict[str, Any]
+) -> Union[str, CommandResults]:
+    """
+    Displays search results from the Email Activity Data source
+    in a paginated list and sends the result to demisto war room.
+
+    :type client: ``Client``
+    :param client: client object to use for api_key and base_url.
+
+    :type args: ``dict``
+    :param args: args object to fetch the argument data.
+
+    :return: sends data to demisto war room.
+    :rtype: ``dict`
+    """
+    # Optional Params
+    fields = args.get(FIELDS, EMPTY_STRING)
+    start = args.get(START, EMPTY_STRING)
+    end = args.get(END, EMPTY_STRING)
+    top = args.get(TOP, EMPTY_STRING)
+    select = args.get(SELECT, EMPTY_STRING).split(",")
+    get_activity_data_count = args.get(GET_ACTIVITY_DATA_COUNT, FALSE)
+    query_op = args.get(QUERY_OP, EMPTY_STRING)
+    # Choose QueryOp Enum based on user choice
+    if query_op.lower() == "or":
+        query_op = pytmv1.QueryOp.OR
+    elif query_op.lower() == "and":
+        query_op = pytmv1.QueryOp.AND
+    # List to populate email activity data
+    email_activity_data: List[EmailActivity] = []
+    message: list[Any] = []
+    # Initialize pytmv1 client
+    v1_client = _get_client(APP_NAME, client.api_key, client.base_url)
+    # Should the data count be fetched
+    if get_activity_data_count == TRUE:
+        count = get_email_activity_data_count(
+            v1_client, start, end, query_op, top, select, fields
+        )
+        message.append({"total_count": count})
+    # Make rest call
+    try:
+        v1_client.consume_email_activity_data(
+            lambda consumer: email_activity_data.append(consumer),
+            start_time=start,
+            end_time=end,
+            top=top,
+            select=select,
+            op=query_op,
+            **fields,
+        )
+    except Exception as err:
+        return_error(f"Something went wrong. {err}")
+    # Check if an error occurred
+    if len(email_activity_data) == 0:
+        err_msg = "No email activity data found. Please check queries provided."
+        return_error(message=err_msg)
+    for activity in email_activity_data:
+        message.append(activity.dict())
+
+    return CommandResults(
+        readable_output=tableToMarkdown(
+            table_name[GET_EMAIL_ACTIVITY_DATA_COMMAND],
+            message,
+            headerTransform=string_to_table_header,
+            removeNull=True,
+        ),
+        outputs_prefix="VisionOne.Email_Activity_Data",
+        outputs_key_field="mail_to_addresses",
+        outputs=message,
+    )
+
+
+def get_email_activity_data_count(
+    v1_client, start, end, query_op, top, select, fields
+) -> int:
+    """
+    Fetches email activity data count.
+
+    :return: sends activity data count to demisto war room.
+    :rtype: ``int`
+    """
+    # Make rest call
+    resp = v1_client.get_email_activity_data_count(
+        start_time=start,
+        end_time=end,
+        top=top,
+        select=select,
+        op=query_op,
+        **fields,
+    )
+    # Check if an error occurred
+    if _is_pytmv1_error(resp.result_code):
+        return_error(message=f"{unwrap(resp.error).message}", error=str(resp.error))
+    # Return the total count
+    return unwrap(resp.response).total_count
 
 
 def add_or_remove_from_block_list(
