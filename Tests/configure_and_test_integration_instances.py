@@ -736,7 +736,8 @@ class XSOARBuild(Build):
                             marketplace_buckets=None):
         url_suffix = f'{quote_plus(branch_name)}/{ci_build_number}/xsoar'
         config_path = 'marketplace.bootstrap.bypass.url'
-        config = {config_path: f'https://storage.googleapis.com/{TEST_XDR_PREFIX}marketplace-ci-build/content/builds/{url_suffix}'}
+        config = {config_path:
+                  f'https://storage.googleapis.com/{TEST_XDR_PREFIX}marketplace-ci-build/content/builds/{url_suffix}'}
         for server in servers:
             server.add_server_configuration(config, 'failed to configure marketplace custom url ', True)
         logging.success('Updated marketplace url and restarted servers')
