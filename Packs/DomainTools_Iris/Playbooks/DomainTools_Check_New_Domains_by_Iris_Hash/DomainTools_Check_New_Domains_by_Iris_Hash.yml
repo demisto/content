@@ -1,19 +1,24 @@
-id: 54636776-0cdd-4dba-8ee5-c578077c9ca0
-version: 1
+id: DomainTools_Check_New_Domains_by_Iris_Hash
+version: -1
 vcShouldKeepItemLegacyProdMachine: false
 name: DomainTools Check New Domains by Iris Hash
-description: This playbook retrieves domain from a given `search hash` with built-in
-  “first_seen” param. . Outputs all new domains in the current incident indicators.
+description: This playbook helps monitor for new domains matching given infrastructure
+  parameters (registrar, DNS, SSL certs, etc.). Start with a search in the Iris Investigate
+  UI. Add an advanced search filter for "First Seen", "Within", "the last day" (for
+  example) to your search. Run the search, then click "Import/Export Search" to view
+  the Search Hash. Copy that into this playbook trigger. Every time this playbook
+  runs, it will pull the new indicators matching the search and add them to the current
+  incident
 tags:
 - Domaintools
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 54e1f882-5cb1-4fef-8360-4f19bc4ebab4
+    taskid: 973301e8-0d0c-4cc3-8515-413c00e40176
     type: start
     task:
-      id: 54e1f882-5cb1-4fef-8360-4f19bc4ebab4
+      id: 973301e8-0d0c-4cc3-8515-413c00e40176
       version: -1
       name: ""
       iscommand: false
@@ -38,10 +43,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 76506aac-fc02-4eeb-8647-89c283f577bd
+    taskid: 1607408f-cd38-4c08-82e9-dcaf38fcad35
     type: regular
     task:
-      id: 76506aac-fc02-4eeb-8647-89c283f577bd
+      id: 1607408f-cd38-4c08-82e9-dcaf38fcad35
       version: -1
       name: Load Search Hash
       description: Pivot on connected infrastructure (IP, email, SSL), or import domains
@@ -55,10 +60,8 @@ tasks:
       '#none#':
       - "2"
     scriptarguments:
-      include_context:
-        simple: "true"
       search_hash:
-        simple: ${inputs.search_hash}
+        simple: ${inputs.iris_search_hash}
       using:
         simple: DomainTools Iris_instance_1
     separatecontext: false
@@ -78,12 +81,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: bcc8bf32-94ea-42b7-8da8-de49a413fa85
+    taskid: 4b22643b-d676-412b-8d04-9a38a373193e
     type: condition
     task:
-      id: bcc8bf32-94ea-42b7-8da8-de49a413fa85
+      id: 4b22643b-d676-412b-8d04-9a38a373193e
       version: -1
-      name: Is there New Domains?
+      name: Are there New Domains?
       description: |-
         Checks if one number(float) as bigger than the other(float)
         Returns yes: if first > second
@@ -101,7 +104,7 @@ tasks:
     scriptarguments:
       first:
         complex:
-          root: DomainTools.PivotedDomains
+          root: DomainTools.Pivots.PivotedDomains
           accessor: Name
           transformers:
           - operator: count
@@ -124,10 +127,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 0140060d-a836-4803-8b6c-dd5c1ce452e4
+    taskid: 9c41df56-994f-4efb-8226-aedd9a1b68f7
     type: title
     task:
-      id: 0140060d-a836-4803-8b6c-dd5c1ce452e4
+      id: 9c41df56-994f-4efb-8226-aedd9a1b68f7
       version: -1
       name: Done
       type: title
@@ -138,7 +141,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 895
+          "y": 1050
         }
       }
     note: false
@@ -150,12 +153,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 30bb7efb-604f-4f86-8cfa-cd6c08b64ae5
+    taskid: 38e5d1ad-6156-4396-877d-e2ff8045d046
     type: regular
     task:
-      id: 30bb7efb-604f-4f86-8cfa-cd6c08b64ae5
+      id: 38e5d1ad-6156-4396-877d-e2ff8045d046
       version: -1
-      name: Create an Indicator
+      name: Add New Domain as an Indicator
       description: Sets Data for a Domain in the Indicator Table
       tags:
       - new_domains
@@ -165,18 +168,18 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "6"
+      - "7"
     scriptarguments:
       domaintools_data:
-        simple: ${DomainTools.PivotedDomains}
+        simple: ${DomainTools.Pivots.PivotedDomains}
       incident_id:
         simple: ${CreateIncidentByDate.CurrentIncidentId}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 545
+          "x": -300,
+          "y": 550
         }
       }
     note: false
@@ -188,10 +191,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 195b68e7-d7c2-4af2-8606-5cd8761f7499
+    taskid: 2acb6136-a013-4137-8d01-8b4f5a02b24c
     type: regular
     task:
-      id: 195b68e7-d7c2-4af2-8606-5cd8761f7499
+      id: 2acb6136-a013-4137-8d01-8b4f5a02b24c
       version: -1
       name: Manually Review the Incident
       type: regular
@@ -204,8 +207,47 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 720
+          "x": -300,
+          "y": 880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: dcfda4ef-9cf2-4bea-892e-f2fdf08f1ece
+    type: condition
+    task:
+      id: dcfda4ef-9cf2-4bea-892e-f2fdf08f1ece
+      version: -1
+      name: Should wait for analyst review?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isTrue
+          left:
+            value:
+              simple: inputs.should_wait_for_analyst_review
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -300,
+          "y": 700
         }
       }
     note: false
@@ -220,18 +262,27 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 910,
-        "width": 492.5,
-        "x": 50,
+        "height": 1065,
+        "width": 730,
+        "x": -300,
         "y": 50
       }
     }
   }
 inputs:
-- key: search_hash
+- key: iris_search_hash
   value: {}
   required: true
-  description: the "search hash" that has a built in “first seen within” parameter.
+  description: 'The "search hash" that has a built in "first seen within" parameter.
+    -> Enter an Iris Investigate Search Hash (From the Iris Investigate UI: Advanced
+    -> Import/Export Search). This playbook works best when you include a filter for
+    "first seen within X [days/hours]" to monitor for new domains.'
+  playbookInputQuery: null
+- key: should_wait_for_analyst_review
+  value:
+    simple: "false"
+  required: true
+  description: Flags if users should wait for an analyst to review. Default is false.
+    Value can be either true/false only.
   playbookInputQuery: null
 outputs: []
-quiet: true

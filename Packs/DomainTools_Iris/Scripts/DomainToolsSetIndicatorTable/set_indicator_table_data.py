@@ -1,36 +1,49 @@
 from CommonServerPython import *
+from typing import Dict, Any
+from enum import Enum
+import traceback
 
 
-def find_age(create_date):
+class ReputationEnum(Enum):
+    BAD = "Bad"
+    SUSPICIOUS = "Suspicious"
+    GOOD = "Good"
+    UNKNOWN = "Unknown"
+
+
+def find_age(create_date: str) -> int:
     time_diff = datetime.now() - datetime.strptime(create_date, "%Y-%m-%d")
     return time_diff.days
 
 
-def find_indicator_reputation(domain_age, proximity_score, threat_profile_score):
-    proximity_score_threshold = int(demisto.args().get('proximity_score_threshold', 70))
-    age_threshold = int(demisto.args().get('age_threshold', 7))
-    threat_profile_score_threshold = int(demisto.args().get('threat_profile_score_threshold', 70))
+def find_indicator_reputation(domain_age: int, proximity_score: int, threat_profile_score: int) -> ReputationEnum:
+    proximity_score_threshold = arg_to_number(
+        demisto.args().get('proximity_score_threshold', 70))
+    age_threshold = arg_to_number(demisto.args().get('age_threshold', 7))
+    threat_profile_score_threshold = arg_to_number(
+        demisto.args().get('threat_profile_score_threshold', 70))
 
     if proximity_score > proximity_score_threshold or threat_profile_score > threat_profile_score_threshold:
-        return 'Bad'
+        return ReputationEnum.BAD
     elif domain_age < age_threshold and (
             proximity_score < proximity_score_threshold or threat_profile_score < threat_profile_score_threshold):
-        return 'Suspicious'
+        return ReputationEnum.SUSPICIOUS
     else:
-        return 'Good'
+        return ReputationEnum.GOOD
 
 
-def main():
-    domaintools_data = demisto.args().get("domaintools_data", None)
-
+def set_indicator_table_data(args: Dict[str, Any]) -> CommandResults:
     human_readable_str = "No context data for domain."
+
+    domaintools_data = args["domaintools_data"]
     if domaintools_data:
         domain_name = domaintools_data.get("Name")
         domaintools_hosting_data = domaintools_data.get("Hosting", {})
         domaintools_identity_data = domaintools_data.get("Identity", {})
         domaintools_analytics_data = domaintools_data.get("Analytics", {})
 
-        create_date = domaintools_data.get("Registration", {}).get("CreateDate")
+        create_date = domaintools_data.get(
+            "Registration", {}).get("CreateDate")
         domain_age = 0
         if create_date:
             domain_age = find_age(create_date)
@@ -38,19 +51,20 @@ def main():
         try:
             threat_profile_score = domaintools_analytics_data.get(
                 "ThreatProfileRiskScore", {}
-            ).get("RiskScore", 0)
+            ).get("RiskScore") or 0
             proximity_risk_score = domaintools_analytics_data.get(
-                "ProximityRiskScore", 0
-            )
-            reputation = find_indicator_reputation(domain_age, proximity_risk_score, threat_profile_score)
+                "ProximityRiskScore") or 0
+            reputation = find_indicator_reputation(
+                domain_age, proximity_risk_score, threat_profile_score)
+
         except Exception:
-            reputation = "Unknown"
+            reputation = ReputationEnum.UNKNOWN
 
         demisto_indicator = {
             "type": "Domain",
             "value": domain_name,
             "source": "DomainTools",
-            "reputation": reputation,
+            "reputation": reputation.value,
             "seenNow": "true",
             "ipaddresses": json.dumps(domaintools_hosting_data.get("IPAddresses")),
             "ipcountrycode": domaintools_hosting_data.get("IPCountryCode"),
@@ -69,17 +83,19 @@ def main():
             "domainage": domain_age,
         }
         demisto.executeCommand("createNewIndicator", demisto_indicator)
+
         human_readable_str = "Data for {} enriched.".format(domain_name)
 
-    demisto.results(
-        {
-            "Type": entryTypes["note"],
-            "ContentsFormat": formats["json"],
-            "Contents": {},
-            "HumanReadable": human_readable_str,
-            "EntryContext": {},
-        }
-    )
+    return CommandResults(readable_output=human_readable_str)
+
+
+def main():
+    try:
+        return_results(set_indicator_table_data(demisto.args()))
+    except Exception as ex:
+        demisto.error(traceback.format_exc())
+        return_error(
+            f"Failed to execute set_indicator_table_data. Error: {str(ex)}")
 
 
 if __name__ in ["__main__", "__builtin__", "builtins"]:

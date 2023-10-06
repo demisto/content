@@ -1,4 +1,4 @@
-from DomainToolsSetIndicatorTable.set_indicator_table_data import main, find_age, find_indicator_reputation
+from set_indicator_table_data import main, find_age, find_indicator_reputation
 from CommonServerPython import *
 
 
@@ -9,17 +9,20 @@ def test_find_age():
 
 
 def test_find_indicator_reputation_bad():
-    result = find_indicator_reputation(domain_age=2, proximity_score=69, threat_profile_score=71)
+    result = find_indicator_reputation(
+        domain_age=2, proximity_score=69, threat_profile_score=71)
     assert result == 'Bad'
 
 
 def test_find_indicator_reputation_suspicious():
-    result = find_indicator_reputation(domain_age=2, proximity_score=69, threat_profile_score=68)
+    result = find_indicator_reputation(
+        domain_age=2, proximity_score=69, threat_profile_score=68)
     assert result == 'Suspicious'
 
 
 def test_find_indicator_reputation_good():
-    result = find_indicator_reputation(domain_age=8, proximity_score=69, threat_profile_score=68)
+    result = find_indicator_reputation(
+        domain_age=8, proximity_score=69, threat_profile_score=68)
     assert result == 'Good'
 
 
@@ -120,6 +123,6 @@ def test_set_indicator_table(mocker):
     assert len(results) == 1
     assert results[0]["Type"] == entryTypes["note"]
     assert results[0]["ContentsFormat"] == formats["json"]
-    assert results[0]["Contents"] == {}
+    assert results[0]["Contents"] == None
     assert results[0]["HumanReadable"] == "Data for demisto.com enriched."
     assert results[0]["EntryContext"] == {}

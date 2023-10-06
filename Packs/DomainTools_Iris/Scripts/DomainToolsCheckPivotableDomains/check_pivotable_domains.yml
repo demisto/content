@@ -1,0 +1,99 @@
+args:
+- name: domaintools_data
+  required: true
+- name: max_registrant_contact_name_count
+  defaultValue: "200"
+- name: max_registrant_org_count
+  defaultValue: "200"
+- name: max_registrar_count
+  defaultValue: "200"
+- name: max_ssl_info_organization_count
+  defaultValue: "200"
+- name: max_ssl_info_hash_count
+  defaultValue: "350"
+- name: max_ssl_email_count
+  defaultValue: "350"
+- name: max_ssl_subject_count
+  defaultValue: "350"
+- name: max_name_server_host_count
+  defaultValue: "250"
+- name: max_name_server_ip_count
+  defaultValue: "250"
+- name: max_name_server_domain_count
+  defaultValue: "250"
+- name: max_soa_email_count
+  defaultValue: "200"
+- name: max_ip_address_count
+  defaultValue: "200"
+- name: max_mx_ip_count
+  defaultValue: "200"
+- name: max_mx_host_count
+  defaultValue: "200"
+- name: max_mx_domain_count
+  defaultValue: "200"
+- name: max_google_adsense_count
+  defaultValue: "200"
+- name: max_google_analytics_count
+  defaultValue: "200"
+outputs:
+- contextPath: PivotableDomains.PivotableRegistrantContactName.pivotable
+- contextPath: PivotableDomains.PivotableRegistrantContactName.items.count
+- contextPath: PivotableDomains.PivotableRegistrantContactName.items.value
+- contextPath: PivotableDomains.PivotableRegistrantOrg.pivotable
+- contextPath: PivotableDomains.PivotableRegistrantOrg.items.count
+- contextPath: PivotableDomains.PivotableRegistrantOrg.items.value
+- contextPath: PivotableDomains.PivotableSslInfoOrganization.pivotable
+- contextPath: PivotableDomains.PivotableSslInfoOrganization.items.count
+- contextPath: PivotableDomains.PivotableSslInfoOrganization.items.value
+- contextPath: PivotableDomains.PivotableSslInfoHash.pivotable
+- contextPath: PivotableDomains.PivotableSslInfoHash.items.count
+- contextPath: PivotableDomains.PivotableSslInfoHash.items.value
+- contextPath: PivotableDomains.PivotableNameServerHost.pivotable
+- contextPath: PivotableDomains.PivotableNameServerHost.items.count
+- contextPath: PivotableDomains.PivotableNameServerHost.items.value
+- contextPath: PivotableDomains.PivotableSoaEmail.pivotable
+- contextPath: PivotableDomains.PivotableSoaEmail.items.count
+- contextPath: PivotableDomains.PivotableSoaEmail.items.value
+- contextPath: PivotableDomains.PivotableIpAddress.pivotable
+- contextPath: PivotableDomains.PivotableIpAddress.items.count
+- contextPath: PivotableDomains.PivotableIpAddress.items.value
+- contextPath: PivotableDomains.PivotableNameServerIp.pivotable
+- contextPath: PivotableDomains.PivotableNameServerIp.items.count
+- contextPath: PivotableDomains.PivotableNameServerIp.items.value
+- contextPath: PivotableDomains.PivotableMxIp.pivotable
+- contextPath: PivotableDomains.PivotableMxIp.items.count
+- contextPath: PivotableDomains.PivotableMxIp.items.value
+- contextPath: PivotableDomains.PivotableRegistrar.pivotable
+- contextPath: PivotableDomains.PivotableRegistrar.items.count
+- contextPath: PivotableDomains.PivotableRegistrar.items.value
+- contextPath: PivotableDomains.PivotableSslSubject.pivotable
+- contextPath: PivotableDomains.PivotableSslSubject.items.count
+- contextPath: PivotableDomains.PivotableSslSubject.items.value
+- contextPath: PivotableDomains.PivotableSslEmail.pivotable
+- contextPath: PivotableDomains.PivotableSslEmail.items.count
+- contextPath: PivotableDomains.PivotableSslEmail.items.value
+- contextPath: PivotableDomains.PivotableNameServerDomain.pivotable
+- contextPath: PivotableDomains.PivotableNameServerDomain.items.count
+- contextPath: PivotableDomains.PivotableNameServerDomain.items.value
+- contextPath: PivotableDomains.PivotableMxHost.pivotable
+- contextPath: PivotableDomains.PivotableMxHost.items.count
+- contextPath: PivotableDomains.PivotableMxHost.items.value
+- contextPath: PivotableDomains.PivotableMxDomain.pivotable
+- contextPath: PivotableDomains.PivotableMxDomain.items.count
+- contextPath: PivotableDomains.PivotableMxDomain.items.value
+- contextPath: PivotableDomains.PivotableGoogleAnalytics.pivotable
+- contextPath: PivotableDomains.PivotableGoogleAnalytics.items.count
+- contextPath: PivotableDomains.PivotableGoogleAnalytics.items.value
+- contextPath: PivotableDomains.PivotableAdsense.pivotable
+- contextPath: PivotableDomains.PivotableAdsense.items.count
+- contextPath: PivotableDomains.PivotableAdsense.items.value
+commonfields:
+  id: CheckPivotableDomains
+  version: -1
+name: CheckPivotableDomains
+script: '-'
+type: python
+tags:
+- DomainTools
+enabled: true
+subtype: python3

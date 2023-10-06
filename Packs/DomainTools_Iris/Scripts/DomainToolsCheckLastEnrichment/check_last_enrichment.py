@@ -1,7 +1,9 @@
 from CommonServerPython import *
+from typing import Dict, Any
+import traceback
 
 
-def time_check(last_check):
+def time_check(last_check: str) -> bool:
     time_diff = datetime.now() - datetime.strptime(last_check, '%Y-%m-%d')
     if time_diff.days >= 1:
         return True
@@ -9,12 +11,26 @@ def time_check(last_check):
         return False
 
 
+def check_last_enrichment(args: Dict[str, Any]) -> CommandResults:
+    last_enrichment = args['last_enrichment']
+
+    should_refresh_enrichment = "yes" if last_enrichment is None or time_check(
+        last_enrichment) else "no"
+
+    return CommandResults(
+        outputs_prefix="CheckLastEnrichment",
+        outputs=should_refresh_enrichment,
+        readable_output=should_refresh_enrichment
+    )
+
+
 def main():
-    last_enrichment = demisto.args().get('last_enrichment', None)
-    if last_enrichment is None or time_check(last_enrichment):
-        demisto.results('yes')
-    else:
-        demisto.results('no')
+    try:
+        return_results(check_last_enrichment(demisto.args()))
+    except Exception as ex:
+        demisto.error(traceback.format_exc())
+        return_error(
+            f"Failed to execute set_indicator_table_data. Error: {str(ex)}")
 
 
 if __name__ in ['__main__', '__builtin__', 'builtins']:

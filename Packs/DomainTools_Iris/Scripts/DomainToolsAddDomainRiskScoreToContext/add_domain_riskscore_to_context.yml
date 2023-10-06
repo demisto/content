@@ -1,0 +1,18 @@
+commonfields:
+  id: AddDomainRiskScoreContext
+  version: -1
+name: AddDomainRiskScoreToContext
+script: '-'
+type: python
+tags:
+- DomainTools
+enabled: true
+args:
+- name: domaintools_data
+  required: true
+outputs:
+- contextPath: HighRiskPivotedDomains.Name
+  description: The domain name
+- contextPath: HighRiskPivotedDomains.OverallRiskScore
+  description: The overall risk score of the domain
+subtype: python3

@@ -12,6 +12,7 @@ from typing import Dict, Any
 from domaintools import API
 from domaintools import utils
 import urllib.parse
+import copy
 
 # disable insecure warnings
 urllib3.disable_warnings()
@@ -27,7 +28,7 @@ RISK_THRESHOLD = int(demisto.params().get('risk_threshold'))
 YOUNG_DOMAIN_TIMEFRAME = int(demisto.params().get('young_domain_timeframe'))
 VERIFY_CERT = not demisto.params().get('insecure', False)
 PROXIES = handle_proxy()
-GUIDED_PIVOT_THRESHOLD = int(demisto.params().get('pivot_threshold'))
+GUIDED_PIVOT_THRESHOLD = arg_to_number(demisto.params().get('pivot_threshold'))
 IRIS_LINK = 'https://iris.domaintools.com/investigate/search/'
 
 ''' HELPER FUNCTIONS '''
@@ -47,7 +48,7 @@ def http_request(method, params=None):
     api = API(
         USERNAME,
         API_KEY,
-        app_partner='cortex_xsoar',
+        app_partner='demisto',
         app_name='iris-plugin',
         app_version='1',
         proxy_url=PROXIES,
@@ -99,13 +100,7 @@ def get_dbot_score(proximity_score, age, threat_profile_score):
         return 1
 
 def should_include_context(include_context):
-    if include_context is False:
-        return False
-
-    return include_context is not None and include_context.lower() not in [
-        'false',
-        '0',
-    ]
+    return include_context == "true"
 
 def prune_context_data(data_obj):
     """
@@ -134,7 +129,7 @@ def prune_context_data(data_obj):
 def format_contact_grid(title, contact_dict):
     name = contact_dict.get('Name', {}).get('value')
     org = contact_dict.get('Org', {}).get('value')
-    email = ','.join([email.get('value') for email in contact_dict.get('Email', {})])
+    email = ','.join([email['value'] for email in contact_dict.get('Email', []) if 'value' in email])
     phone = contact_dict.get('Phone', {}).get('value')
     fax = contact_dict.get('Fax', {}).get('value')
     address = f"Street: {contact_dict.get('Street', {}).get('value')}, City: {contact_dict.get('City', {}).get('value')}, State: {contact_dict.get('State', {}).get('value')}, Postal: {contact_dict.get('Postal', {}).get('value')}, Country: {contact_dict.get('Country', {}).get('value')}"
@@ -212,8 +207,8 @@ def create_domain_context_outputs(domain_result):
             threat_profile_evidence = threat_profile_data.get('evidence')
 
     website_response = domain_result.get('website_response')
-    google_adsense = domain_result.get('adsense', {}).get('value')
-    google_analytics = domain_result.get('google_analytics', {}).get('value')
+    google_adsense = domain_result.get('adsense')
+    google_analytics = domain_result.get('google_analytics')
     popularity_rank = domain_result.get('popularity_rank')
     tags = domain_result.get('tags')
 
@@ -232,12 +227,13 @@ def create_domain_context_outputs(domain_result):
             'City': contact_data.get('city'),
             'State': contact_data.get('state'),
             'Postal': contact_data.get('postal'),
+            'Org': contact_data.get('org')
         }
-    soa_email = [soa_email.get('value') for soa_email in domain_result.get('soa_email')]
-    ssl_email = [ssl_email.get('value') for ssl_email in domain_result.get('ssl_email')]
+    soa_email = [soa_email for soa_email in domain_result.get('soa_email')]
+    ssl_email = [ssl_email for ssl_email in domain_result.get('ssl_email')]
     email_domains = [email_domain.get('value') for email_domain in domain_result.get('email_domain')]
     additional_whois_emails = domain_result.get('additional_whois_email')
-    domain_registrar = domain_result.get('registrar', {}).get('value') if domain_result.get('registrar') else ""
+    domain_registrar = domain_result.get('registrar')
     registrar_status = domain_result.get('registrar_status')
     ip_country_code = ip_addresses[0].get('country_code', {}).get('value') if len(ip_addresses) else ''
     mx_servers = domain_result.get('mx')
@@ -353,7 +349,7 @@ def domain_investigate(domain):
     Args:
         domain (str): Domain name to profile
 
-    Returns: All data relevant for Cortex XSOAR command.
+    Returns: All data relevant for Demisto command.
 
     """
     return http_request('iris-investigate', {'domains': domain})
@@ -364,7 +360,7 @@ def domain_enrich(domain):
     Args:
         domain (str): Domain name to profile
 
-    Returns: All data relevant for Cortex XSOAR command.
+    Returns: All data relevant for Demisto command.
 
     """
     return http_request('iris-enrich', {'domains': domain})
@@ -376,7 +372,7 @@ def domain_pivot(search_params):
     Args:
         domain (str): Domain name to get analytics for
 
-    Returns: All data relevant for Cortex XSOAR command.
+    Returns: All data relevant for Demisto command.
 
     """
     return http_request('iris-pivot', search_params)
@@ -518,7 +514,7 @@ def format_ips(ips):
         address = ip['address']
         address['count'] = format_guided_pivot_link("ip.ip", address)
 
-        asns = ip['asn']
+        asns = ip.get('asn', [])
         for asn in asns:
             asn['count'] = format_guided_pivot_link("ip.asn", asn)
 
@@ -652,7 +648,8 @@ def format_guided_pivot_link(link_type, item, domain=None):
 
 def format_investigate_output(result):
     domain = result.get('domain')
-    context = create_domain_context_outputs(result)
+    result_copy = copy.deepcopy(result)
+    context = create_domain_context_outputs(result_copy)
 
     domaintools_analytics_data = context.get('domaintools', {}).get('Analytics', {})
     domaintools_hosting_data = context.get('domaintools', {}).get('Hosting', {})
@@ -713,12 +710,13 @@ def format_investigate_output(result):
 
 def domain_command():
     """
-    Command to do a total profile of a domain.
+    Command to do a total profile of a domain using iris_investigate API endpoint.
+    e.g. !domain domain=domaintools.com
     """
-    domain = demisto.args().get('domain')
+    domain = demisto.args()['domain']
     domain_list = domain.split(",")
     domain_chunks = chunks(domain_list, 100)
-    include_context = demisto.args().get('include_context', False)
+    include_context = demisto.args().get('include_context')
 
     all_human_readable_output = ''
     all_raw_response = []
@@ -757,9 +755,10 @@ def domain_command():
 
 def domain_enrich_command():
     """
-    Command to do a total profile of a domain.
+    Command to do a total profile of a domain using iris-enrich API endpoint.
+    e.g. !domaintoolsiris-enrich domain=domaintools.com
     """
-    domain = demisto.args().get('domain')
+    domain = demisto.args()['domain']
     domain_list = domain.split(",")
     domain_chunks = chunks(domain_list, 100)
     include_context = demisto.args().get('include_context', False)
@@ -801,9 +800,10 @@ def domain_enrich_command():
 
 def domain_analytics_command():
     """
-    Command to do a analytics profile of a domain.
+    Command to get risk and other analytics for a domain using iris-investigate API endpoint.
+    e.g. !domaintoolsiris-analytics domain=domaintools.com
     """
-    domain = demisto.args().get('domain')
+    domain = demisto.args()['domain']
     response = domain_investigate(domain)
     human_readable = 'No results found.'
     outputs = {}  # type: Dict[Any, Any]
@@ -849,9 +849,10 @@ def domain_analytics_command():
 
 def threat_profile_command():
     """
-    Command to do a threat profile of a domain.
+    Command to get threat profile for a domain using iris-investigate API endpoint.
+    e.g. !domaintoolsiris-threat-profile domain=domaintools.com
     """
-    domain = demisto.args().get('domain')
+    domain = demisto.args()['domain']
     response = domain_investigate(domain)
     human_readable = 'No results found.'
     outputs = {}  # type: Dict[Any, Any]
@@ -924,7 +925,8 @@ def threat_profile_command():
 
 def domain_pivot_command():
     """
-    Command to do a domain pivot lookup.
+    Command to get list of domains that share connected infrastructure iris-investigate API endpoint.
+    e.g. !domaintoolsiris-pivot ip=1.1.1.1
     """
     search_data = {}  # type: Dict[Any, Any]
     search_type = ''
@@ -1000,7 +1002,14 @@ def domain_pivot_command():
         average_risk = round(statistics.mean(risk_list), 2) if risk_list else "Unknown"
         average_age = round(statistics.mean(age_list), 2) if age_list else "Unknown"
 
-        outputs = {'DomainTools.PivotedDomains(val.Name == obj.Name)': domain_context_list}
+        pivot_result = {
+            "Value": search_value,
+            "AverageRisk": average_risk,
+            "AverageAge": average_age,
+            "PivotedDomains": domain_context_list
+        }
+
+        outputs = {f'DomainTools.Pivots.PivotedDomains(val.Name == obj.Name)': domain_context_list}
         prune_context_data(outputs)
         headers = ['domain', 'risk_score']
 
@@ -1009,10 +1018,11 @@ def domain_pivot_command():
                                          sorted_output,
                                          headers=headers)
 
+
     results = CommandResults(
-        outputs_prefix='DomainTools.PivotedDomains',
-        outputs_key_field='Name',
-        outputs=domain_context_list,
+        outputs_prefix='DomainTools.Pivots',
+        outputs_key_field='Value',
+        outputs=pivot_result,
         readable_output=human_readable,
         ignore_auto_extract=True
     )
@@ -1025,7 +1035,11 @@ def to_camel_case(value):
 
 
 def whois_history_command():
-    domain = demisto.args().get('domain')
+    """
+    Command to get whois history for a domain using the whois-history API endpoint.
+    e.g. !whoisHistory domain=domaintools.com
+    """
+    domain = demisto.args()['domain']
     sort = demisto.args().get('sort')
     limit = demisto.args().get('limit')
     mode = demisto.args().get('mode')
@@ -1082,7 +1096,11 @@ def create_history_table(data, headers):
     return table
 
 def hosting_history_command():
-    domain = demisto.args().get('domain')
+    """
+    Command to get hosting history for a domain using the hosting-history API endpoint.
+    e.g. !hostingHistory domain=domaintools.com
+    """
+    domain = demisto.args()['domain']
     response = hosting_history(domain)
 
     ip_history = response.get('ip_history', [])
@@ -1119,7 +1137,11 @@ def hosting_history_command():
     return_results(results)
 
 def reverse_whois_command():
-    terms = demisto.args().get('terms')
+    """
+    Command to get list of domains that share same registrant info using the reverse-whois API endpoint.
+    e.g. !reverseWhois terms=domaintools
+    """
+    terms = demisto.args()['terms']
     exclude = demisto.args().get('exclude')
     scope = (
         'current'
@@ -1147,7 +1169,11 @@ def reverse_whois_command():
     return_results(results)
 
 def domain_profile_command():
-    domain = demisto.args().get('domain')
+    """
+    Command to get registration details for a domain using domain-profile API endpoint.
+    e.g. !domainProfile domain=domaintools.com
+    """
+    domain = demisto.args()['domain']
     results = domain_profile(domain)
     return_results({'response': results})
 
@@ -1165,7 +1191,7 @@ def change_keys(conv, obj):
             output[conv(key)] = value
     return output
 def parsed_whois_command():
-    domain = demisto.args().get('query')
+    domain = demisto.args()['query']
     response = parsed_whois(domain)
 
     whois_record = response.get('whois', {}).get('record', '')
@@ -1197,9 +1223,15 @@ def parsed_whois_command():
     return_results(results)
 
 def reverse_ip_command():
+    """
+    Command to deprecate the reverse-ip API endpoint.
+    """
     return_error('replaced by domaintoolsiris-pivot ip=')
 
 def reverse_ns_command():
+    """
+    Command to deprecate the reverse-ns API endpoint.
+    """
     return_error('replaced by domaintoolsiris-pivot name_server=')
 
 def test_module():
@@ -1215,7 +1247,7 @@ def test_module():
 
 def main():
     """
-    Main Cortex XSOAR function.
+    Main Demisto function.
     """
     try:
         if demisto.command() == 'test-module':
