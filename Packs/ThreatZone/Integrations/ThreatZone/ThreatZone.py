@@ -66,14 +66,8 @@ class Client(BaseClient):
         )
 
     def threatzone_get_sanitized(self, uuid):
-        http = urllib3.PoolManager()
-        url = f'https://app.threat.zone/download/v1/download/cdr/{uuid}'
-        # this method is only for tests, sanitized file downlaod will be implemented in API side.
-        headers = {
-            'Cookie': ""
-        }
-        r = http.request('GET', url, headers=headers)
-        return r.data
+        # next patch
+        return ""
 
     def threatzone_me(self):
         """
@@ -345,13 +339,12 @@ def threatzone_get_result(client: Client, args: dict[str, Any]) -> CommandResult
             sanitized_file_url = f"https://app.threat.zone/download/v1/download/cdr/{submission_uuid}"
             output['ThreatZone.Result(val.Job_ID == obj.Job_ID)']["SANITIZED"] = sanitized_file_url
             readable_dict["SANITIZED"] = sanitized_file_url
-            data = client.threatzone_get_sanitized(submission_uuid)
-            f_res = fileResult(f"sanitized-{submission_uuid}.zip", data)
+            # data = client.threatzone_get_sanitized(submission_uuid)
+            # f_res = fileResult(f"sanitized-{submission_uuid}.zip", data)
             res = create_res(readable_dict, output)
-            res.append(f_res)
+            # res.append(f_res)
 
     except Exception as e:
-        raise e
         output = {'ThreatZone.Result(val.Job_ID == obj.Job_ID)': {'REPORT': result}}
         res = create_res(result, output)
     return res
