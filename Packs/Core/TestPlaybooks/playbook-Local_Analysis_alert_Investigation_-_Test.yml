@@ -69,7 +69,7 @@ tasks:
       hostip:
         complex:
           root: Core.Endpoint
-          accessor: IPAddress
+          accessor: ip
       initiatorpath:
         simple: c:\Windows\System32\calc.exe
       initiatorsha256:
