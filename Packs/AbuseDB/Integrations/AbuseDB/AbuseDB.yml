@@ -53,6 +53,12 @@ configuration:
   section: Collect
   advanced: true
   required: false
+- display: Disable reputation lookups for private IP addresses
+  name: disable_private_ip_lookup
+  defaultvalue: 'false'
+  type: 8
+  required: false
+  additionalinfo: To reduce the number of lookups made to the VT API, this option can be selected to gracefully skip enrichment of any IP addresses allocated for private networks.
 - display: Disregard quota errors
   name: disregard_quota
   type: 8

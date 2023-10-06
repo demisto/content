@@ -6,6 +6,7 @@ import csv
 import os
 import urllib3
 import requests
+import ipaddress
 
 # disable insecure warnings
 urllib3.disable_warnings()
@@ -226,7 +227,7 @@ def createEntry(context_ip, context_ip_generic, human_readable, dbot_scores, tim
 ''' FUNCTIONS '''
 
 
-def check_ip_command(reliability, ip, days=MAX_AGE, verbose=VERBOSE, threshold=THRESHOLD):
+def check_ip_command(reliability, disable_private_ip_lookup, ip, days=MAX_AGE, verbose=VERBOSE, threshold=THRESHOLD):
     params = {
         "maxAgeInDays": days
     }
@@ -235,6 +236,10 @@ def check_ip_command(reliability, ip, days=MAX_AGE, verbose=VERBOSE, threshold=T
     ip_list = argToList(ip)
     entry_list = []
     for current_ip in ip_list:
+        if disable_private_ip_lookup and ipaddress.ip_address(current_ip).is_private:
+            readable_output = (f'Reputation lookups have been disabled for private IP addresses.\nLookup skipped for {current_ip}')
+            demisto.results(readable_output)
+            continue
         params["ipAddress"] = current_ip
         analysis = http_request("GET", url_suffix=CHECK_CMD, params=params)
         if analysis == API_QUOTA_REACHED_MESSAGE:
@@ -303,12 +308,13 @@ try:
         reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
     else:
         raise Exception("Please provide a valid value for the Source Reliability parameter.")
+    disable_private_ip_lookup = argToBoolean(demisto.params().get("disable_private_ip_lookup", "False"))
 
     if demisto.command() == 'test-module':
         # Tests connectivity and credentails on login
         test_module(reliability)
     elif demisto.command() == 'ip':
-        demisto.results(check_ip_command(reliability, **demisto.args()))
+        demisto.results(check_ip_command(reliability, disable_private_ip_lookup, **demisto.args()))
     elif demisto.command() == 'abuseipdb-check-cidr-block':
         demisto.results(check_block_command(reliability, **demisto.args()))
     elif demisto.command() == 'abuseipdb-report-ip':
