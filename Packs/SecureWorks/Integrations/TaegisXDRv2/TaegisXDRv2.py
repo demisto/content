@@ -1107,15 +1107,9 @@ def fetch_investigation_command(client: Client, env: str, args=None):
                 family_name
                 given_name
             }
-            assignee_user {
-                id
-                family_name
-                given_name
-                email
-            }
             priority
             type
-            processing_status {
+            processingStatus {
                 assets
                 events
                 alerts
