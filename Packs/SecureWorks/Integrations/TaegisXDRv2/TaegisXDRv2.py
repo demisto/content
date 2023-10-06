@@ -1251,7 +1251,7 @@ def fetch_investigation_command(client: Client, env: str, args=None):
         investigations = []
 
     # If no investigation found, no error status is returned but investigation will be null
-    if len(investigations) == 1 and investigations[0] == None:
+    if len(investigations) == 1 and investigations[0] is None:
         investigations = []
 
     for investigation in investigations:
