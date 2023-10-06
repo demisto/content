@@ -13,9 +13,11 @@ from TrendMicroVisionOneV3 import (
     submit_urls_to_sandbox,
     add_to_suspicious_list,
     submit_file_to_sandbox,
+    get_email_activity_data,
     get_file_analysis_status,
     get_file_analysis_result,
     download_analysis_report,
+    get_endpoint_activity_data,
     delete_from_suspicious_list,
     submit_file_entry_to_sandbox,
     get_sandbox_submission_status,
@@ -1050,6 +1052,64 @@ def test_get_endpoint_information(mocker):
     assert isinstance(result.outputs[0]["os_description"], str)
     assert isinstance(result.outputs[0]["product_code"], str)
     assert isinstance(result.outputs[0]["installed_product_codes"], list)
+
+
+# Mock response for get endpoint activity data
+def get_endpoint_activity_data_mock_response(*args, **kwargs):
+    with open("./test_data/get_endpoint_activity_data.json") as f:
+        return_value = json.load(f)
+    return return_value
+
+
+# Test case for get alert details
+def test_get_endpoint_activity_data(mocker):
+    mocker.patch.object(
+        TrendMicroVisionOneV3,
+        "get_endpoint_activity_data",
+        get_endpoint_activity_data_mock_response,
+    )
+    client = Client("https://tmv1-mock.trendmicro.com", api_key, proxy, verify)
+    args = {
+        "start": "2022-10-04T08:22:37Z",
+        "end": "2023-10-04T08:22:37Z",
+        "top": 50,
+        "query_op": "or",
+        "select": "dpt,dst,endpointHostName",
+        "get_activity_data_count": "true",
+        "fields": {"dpt": "443", "endpointHostName": "client1"},
+    }
+    result = get_endpoint_activity_data(client, args)
+    assert isinstance(result.outputs[0]["total_count"], int)
+    assert isinstance(result.outputs[1], dict)
+
+
+# Mock response for get endpoint activity data
+def get_email_activity_data_mock_response(*args, **kwargs):
+    with open("./test_data/get_email_activity_data.json") as f:
+        return_value = json.load(f)
+    return return_value
+
+
+# Test case for get alert details
+def test_get_email_activity_data(mocker):
+    mocker.patch.object(
+        TrendMicroVisionOneV3,
+        "get_email_activity_data",
+        get_email_activity_data_mock_response,
+    )
+    client = Client("https://tmv1-mock.trendmicro.com", api_key, proxy, verify)
+    args = {
+        "start": "2022-10-04T08:22:37Z",
+        "end": "2023-10-04T08:22:37Z",
+        "top": 50,
+        "query_op": "or",
+        "select": "mailFromAddresses,mailToAddresses",
+        "get_activity_data_count": "true",
+        "fields": {"mailToAddresses": "testemail@gmail.com", "mailMsgSubject": "spam"},
+    }
+    result = get_email_activity_data(client, args)
+    assert isinstance(result.outputs[0]["total_count"], int)
+    assert isinstance(result.outputs[1], dict)
 
 
 # Mock response for get alert details
