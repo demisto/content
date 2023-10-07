@@ -1,7 +1,5 @@
-register_module_line('Panorama', 'start', __line__())
-### pack version: 2.1.3
-
-
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 from collections import defaultdict
 from dataclasses import dataclass, fields
 from types import SimpleNamespace
@@ -853,7 +851,7 @@ def start_tsf_export():
     return result
 
 
-def get_tsf_export_status(args: dict):
+def get_tsf_export_status(job_id: str):
     """
     Get status of TSF export.
     """
@@ -862,7 +860,7 @@ def get_tsf_export_status(args: dict):
         'type': 'export',
         'category': 'tech-support',
         'action': 'status',
-        'job-id': args.get('job_id'),
+        'job-id': job_id,
         'key': API_KEY
     }
     result = http_request(
@@ -873,7 +871,7 @@ def get_tsf_export_status(args: dict):
     return result
 
 
-def download_tsf(args: dict):
+def download_tsf(job_id: str):
     """
     Download an exported TSF.
     """
@@ -881,7 +879,7 @@ def download_tsf(args: dict):
         'type': 'export',
         'category': 'tech-support',
         'action': 'get',
-        'job-id': args.get('job_id'),
+        'job-id': job_id,
         'key': API_KEY
     }
     result = http_request(
