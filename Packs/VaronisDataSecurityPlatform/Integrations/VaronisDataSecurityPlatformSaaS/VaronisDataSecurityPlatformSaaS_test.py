@@ -32,7 +32,7 @@ def test_varonis_get_alerts_command(mocker: MockerFixture):
     mocker.patch.object(
         client,
         'varonis_get_alerts',
-        return_value=util_load_json('test_data/varonis_get_alerts_api_response.json')
+        return_value=util_load_json('test_data/test_varonis_get_alerts_command/varonis_get_alerts_api_response.json')
     )
     mocker.patch.object(
         client,
@@ -45,8 +45,8 @@ def test_varonis_get_alerts_command(mocker: MockerFixture):
         return_value=util_load_json('test_data/varonis_get_users_api_response.json')
     )
 
-    args = util_load_json("test_data/demisto_search_alerts_args.json")
-    expected_outputs = util_load_json('test_data/varonis_get_alerts_command_output.json')
+    args = util_load_json("test_data/test_varonis_get_alerts_command/demisto_search_alerts_args.json")
+    expected_outputs = util_load_json('test_data/test_varonis_get_alerts_command/varonis_get_alerts_command_output.json')
 
     result = varonis_get_alerts_command(client, args)
 
@@ -128,12 +128,12 @@ def test_varonis_get_alerted_events_command(mocker: MockerFixture):
 
 
 def test_fetch_incidents(mocker: MockerFixture, requests_mock: MockerFixture):
-    from VaronisDataSecurityPlatformSaaS import fetch_incidents
+    from VaronisDataSecurityPlatformSaaS import fetch_incidents_command
 
     fetch_output = util_load_json('test_data/varonis_fetch_incidents_response.json')
 
     requests_mock.get(
-        'https://test.com/api/alert/alert/GetAlerts'
+        'https://test.com/api/alert/search/alert'
         '?ruleName=Suspicious&fromAlertSeqId=150&status=Open&severity=high&severity=medium&descendingOrder=True'
         '&aggregate=True&offset=0&maxResult=50',
         json=fetch_output)
@@ -156,7 +156,7 @@ def test_fetch_incidents(mocker: MockerFixture, requests_mock: MockerFixture):
         'last_fetched_id': 150
     }
 
-    next_run, incidents = fetch_incidents(
+    next_run, incidents = fetch_incidents_command(
         client=client,
         max_results=50,
         alert_status='Open',
