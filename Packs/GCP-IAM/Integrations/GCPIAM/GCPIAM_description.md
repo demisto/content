@@ -99,6 +99,7 @@ You can grant the permissions by predefined roles or by creating a custom role.
 | gcp-iam-service-account-enable | iam.serviceAccounts.enable |
 | gcp-iam-service-account-disable |iam.serviceAccounts.disable  |
 | gcp-iam-service-account-delete | iam.serviceAccounts.delete |
+| gcp-iam-service-account-generate-access-token | iam.serviceAccountTokenCreator |
 | gcp-iam-service-account-key-create | iam.serviceAccountKeys.create |
 | gcp-iam-service-account-keys-get | iam.serviceAccountKeys.get <br> iam.serviceAccountKeys.list |
 | gcp-iam-service-account-key-enable | Required grant 'Service Account Key Admin' role permission |

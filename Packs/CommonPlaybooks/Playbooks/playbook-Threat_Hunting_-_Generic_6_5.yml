@@ -57,25 +57,33 @@ tasks:
       - "4"
     scriptarguments:
       IPAddress:
-        simple: ${inputs.IPAddress}
+        complex:
+          root: inputs.IPAddress
       IndexName:
         simple: '*'
       InternalDomainName:
-        simple: ${inputs.InternalDomainName}
+        complex:
+          root: inputs.InternalDomainName
       InternalHostRegex:
-        simple: ${inputs.InternalHostRegex}
+        complex:
+          root: inputs.InternalHostRegex
       InternalIPRange:
-        simple: ${inputs.InternalRange}
+        complex:
+          root: inputs.InternalRange
       MD5:
-        simple: ${inputs.MD5}
+        complex:
+          root: inputs.MD5
       SHA1:
-        simple: ${inputs.SHA1}
+        complex:
+          root: inputs.SHA1
       SHA256:
-        simple: ${inputs.SHA256}
+        complex:
+          root: inputs.SHA256
       SelectFields:
         simple: source,timestamp
       URLDomain:
-        simple: ${inputs.URLDomain}
+        complex:
+          root: inputs.URLDomain
       earliest_time:
         complex:
           root: inputs.SplunkEarliestTime
@@ -123,21 +131,29 @@ tasks:
       - "4"
     scriptarguments:
       IPAddresses:
-        simple: ${inputs.IPAddress}
+        complex:
+          root: inputs.IPAddress
       InternalDomainName:
-        simple: ${inputs.InternalDomainName}
+        complex:
+          root: inputs.InternalDomainName
       InternalHostRegex:
-        simple: ${inputs.InternalHostRegex}
+        complex:
+          root: inputs.InternalHostRegex
       InternalRange:
-        simple: ${inputs.InternalRange}
+        complex:
+          root: inputs.InternalRange
       MD5:
-        simple: ${inputs.MD5}
+        complex:
+          root: inputs.MD5
       SHA1:
-        simple: ${inputs.SHA1}
+        complex:
+          root: inputs.SHA1
       SHA256:
-        simple: ${inputs.SHA256}
+        complex:
+          root: inputs.SHA256
       URLDomain:
-        simple: ${inputs.URLDomain}
+        complex:
+          root: inputs.URLDomain
     separatecontext: true
     continueonerrortype: ""
     loop:
@@ -205,26 +221,32 @@ tasks:
       - "4"
     scriptarguments:
       IPAddress:
-        simple: ${inputs.IPAddress}
+        complex:
+          root: inputs.IPAddress
       InternalRange:
-        simple: ${inputs.InternalRange}
+        complex:
+          root: inputs.InternalRange
       InvestigationIPFields:
         simple: sourceip,destinationip
       InvestigationUserFields:
         simple: username
       MD5:
-        simple: ${inputs.MD5}
+        complex:
+          root: inputs.MD5
       QradarIPfield:
         simple: sourceip,destinationip
       SHA1:
-        simple: ${inputs.SHA1}
+        complex:
+          root: inputs.SHA1
       SHA256:
-        simple: ${inputs.SHA256}
+        complex:
+          root: inputs.SHA256
       TimeFrame:
         complex:
           root: inputs.QRadarTimeFrame
       URLDomain:
-        simple: ${inputs.URLDomain}
+        complex:
+          root: inputs.URLDomain
     separatecontext: true
     continueonerrortype: ""
     loop:
@@ -452,7 +474,7 @@ outputs:
   description: Delivery location.
   type: string
 - contextPath: Microsoft365Defender.RetrievedEmails.AuthenticationDetails
-  description: Authentication details (SPF, DKIM, DMARC, CompAuth)
+  description: Authentication details (SPF, DKIM, DMARC, CompAuth).
   type: string
 - contextPath: Microsoft365Defender.RetrievedEmails.DeliveryAction
   description: Email subject.

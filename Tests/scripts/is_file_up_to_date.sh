@@ -17,7 +17,7 @@ if [[ $(git diff origin/master -G"." -- ${FILE_TO_CHECK}) ]]; then
             git checkout origin/master -- ${FILE_TO_CHECK}
             exit 0
         fi
-        if [[ -z "${CIRCLECI}" ]]; then
+        if [[ -z "${CIRCLECI}" && -f /usr/games/cowsay ]]; then
             # using printf & STDIN instead of command argument to support new lines in the message.
             # pick a ranadom cow-file
             printf "ERROR: %s has been changed.\nMerge from master" "${FILE_TO_CHECK}" | /usr/games/cowsay -n -f "$(ls /usr/share/cowsay/cows | shuf | head -1)"

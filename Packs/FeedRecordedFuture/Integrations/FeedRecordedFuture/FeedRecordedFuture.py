@@ -168,8 +168,10 @@ class Client(BaseClient):
         else:
             with open("response.txt", "w") as f:
                 f.write(response.text)
+        demisto.info('done build_iterator')
 
     def get_batches_from_file(self, limit):
+        demisto.info('reading from file')
         # we do this try to make sure the file gets deleted at the end
         try:
             file_stream = open("response.txt", 'rt')
@@ -184,11 +186,14 @@ class Client(BaseClient):
                 if not feed_batch:
                     file_stream.close()
                     return
+                demisto.info(f'yielding, {batch_size=}')
                 yield csv.DictReader(feed_batch, fieldnames=columns)
         finally:
             try:
                 os.remove("response.txt")
+                demisto.info('file was deleted')
             except OSError:
+                demisto.info('file could not be deleted')
                 pass
 
     def calculate_indicator_score(self, risk_from_feed):
@@ -273,6 +278,7 @@ def test_module(client: Client, *args) -> Tuple[str, dict, dict]:
     client.run_parameters_validations()
 
     for service in client.services:
+        demisto.debug(f'iterating over {service=}')
         # if there are risk rules, select the first one for test
         risk_rule = client.risk_rule[0] if client.risk_rule else None
         client.build_iterator(service, client.indicator_type, risk_rule)
@@ -380,6 +386,7 @@ def fetch_indicators_command(client, indicator_type, risk_rule: Optional[str] = 
     """
     indicators_value_set: Set[str] = set()
     for service in client.services:
+        demisto.debug(f'iterating over {service=}')
         client.build_iterator(service, indicator_type, risk_rule)
         feed_batches = client.get_batches_from_file(limit)
         for feed_dicts in feed_batches:

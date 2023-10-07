@@ -82,6 +82,7 @@ TICKET_TYPE_TO_CLOSED_STATE = {INCIDENT: '7',
                                'change_request': '3',
                                'sc_task': '3',
                                'sc_request': '3',
+                               'sc_req_item': '3',
                                SIR_INCIDENT: '3'}
 
 
@@ -2494,7 +2495,7 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) 
         if (ticket_state and ticket_state in server_close_custom_state) \
             or (ticket.get('closed_at') and close_incident == 'closed') \
                 or (ticket.get('resolved_at') and close_incident == 'resolved'):
-            demisto.debug(f'SNOW ticket changed state- should be closed in XSOAR: {ticket}')
+            demisto.debug(f'SNOW ticket changed state - should be closed in XSOAR: {ticket}')
             entries.append({
                 'Type': EntryType.NOTE,
                 'Contents': {
@@ -2585,8 +2586,13 @@ def update_remote_system_command(client: Client, args: Dict[str, Any], params: D
                 demisto.debug(f'Closing by custom state = {close_custom_state}')
                 is_custom_close = True
                 parsed_args.data['state'] = close_custom_state
+
         fields = get_ticket_fields(parsed_args.data, ticket_type=ticket_type)
         if closure_case:
+            # Convert the closing state to the right one if the ticket type is not incident in order to close the
+            # ticket/incident via XSOAR
+            if ticket_type in {'sc_task', 'sc_req_item', SIR_INCIDENT} and not is_custom_close:
+                fields['state'] = TICKET_TYPE_TO_CLOSED_STATE[ticket_type]
             fields = {key: val for key, val in fields.items() if key != 'closed_at' and key != 'resolved_at'}
 
         demisto.debug(f'Sending update request to server {ticket_type}, {ticket_id}, {fields}')

@@ -111,7 +111,7 @@ script:
   script: ''
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.13.73190
+  dockerimage: demisto/python3:3.10.13.74666
   isfetch: true
   isremotesyncin: true
   isremotesyncout: true
@@ -1073,6 +1073,9 @@ script:
       predefined:
       - 'true'
       - 'false'
+    - description: Usernames to return only users associated with.
+      name: usernames
+      isArray: true
     description: Lists all users and service accounts for your tenant. Maps to Settings > Access Control > Users in the Console UI.
     name: prisma-cloud-users-list
     outputs:
