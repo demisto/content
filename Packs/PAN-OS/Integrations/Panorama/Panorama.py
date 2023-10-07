@@ -901,14 +901,14 @@ def export_tsf_command(args: dict):
     Export a TSF from PAN-OS.
     """
     if job_id := args.get('job_id'):
-        export_tsf_status = get_tsf_export_status({'job_id': job_id}).get('response', {}).get('result', {})
+        export_tsf_status = get_tsf_export_status(job_id).get('response', {}).get('result', {})
         job_status = export_tsf_status.get('job', {}).get('status')
         context_output = {
             'JobID': job_id,
             'Status': job_status
         }
         return PollResult(
-            response=download_tsf(args),
+            response=download_tsf(job_id),
             continue_to_poll=job_status != 'FIN',  # continue polling if job isn't done
         )
     else:  # either no polling is required or this is the first run
@@ -14793,5 +14793,3 @@ def main():  # pragma: no cover
 
 if __name__ in ["__builtin__", "builtins", '__main__']:
     main()
-
-register_module_line('Panorama', 'end', __line__())
