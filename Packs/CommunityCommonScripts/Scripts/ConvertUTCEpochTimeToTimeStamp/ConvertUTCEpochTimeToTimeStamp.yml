@@ -1,0 +1,33 @@
+args:
+- description: Time in UTC Format, epoch Format
+  name: value
+  required: true
+- description: format of the time to convert(Ex:"%Y-%m-%d%H:%M:%S")
+  name: format
+  required: true
+- description: timeoffset to be converted(i.e. +2:30,+5:30)
+  name: utcoffset
+  type: unknown
+- description: Timezone to be converted (i.e 'Asia/Kolkata','Pacific/Auckland','Australia/Adelaide').Get the timezone list https://timezonedb.com/time-zones
+  name: timezone
+comment: This transformer convert the Epoch or UTC timestamp to desired stamp
+commonfields:
+  id: ConvertUTCEpochTimeToTimeStamp
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+dockerimage: demisto/python3:3.10.12.63474
+enabled: true
+name: ConvertUTCEpochTimeToTimeStamp
+runas: DBotWeakRole
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- transformer
+- date
+type: python
+fromversion: 6.8.0
+tests:
+- No tests (auto formatted)

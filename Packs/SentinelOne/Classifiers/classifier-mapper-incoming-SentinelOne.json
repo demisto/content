@@ -1,0 +1,95 @@
+{
+	"defaultIncidentType": "",
+	"definitionId": "",
+	"description": "SentinelOne Incoming Mapper",
+	"feed": false,
+	"id": "SentinelOne Incoming Mapper",
+	"mapping": {
+		"SentinelOne Incident": {
+			"dontMapEventToLabels": true,
+			"internalMapping": {
+				"SentinelOne Threat Analyst Verdict": {
+					"simple": "threatInfo.analystVerdictDescription"
+				},
+				"SentinelOne Threat ID": {
+					"simple": "id"
+				},
+				"SentinelOne Threat Status": {
+					"simple": "threatInfo.incidentStatusDescription"
+				},
+				"dbotMirrorDirection": {
+					"simple": "mirror_direction"
+				},
+				"dbotMirrorId": {
+					"simple": "id"
+				},
+				"dbotMirrorInstance": {
+					"simple": "mirror_instance"
+				}
+			}
+		},
+		"dbot_classification_incident_type_all": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"Agent ID": {
+					"simple": "agentRealtimeInfo.agentId"
+				},
+				"Classification": {
+					"simple": "threatInfo.classification"
+				},
+				"Device External IP": {
+					"simple": "agentDetectionInfo.externalIp"
+				},
+				"Device Local IP": {
+					"simple": "agentDetectionInfo.agentIpV4"
+				},
+				"Device Name": {
+					"simple": "agentRealtimeInfo.agentComputerName"
+				},
+				"Device OS Name": {
+					"simple": "agentDetectionInfo.agentOsName"
+				},
+				"Device Username": {
+					"simple": "agentDetectionInfo.agentLastLoggedInUserName"
+				},
+				"Domain Name": {
+					"simple": "agentRealtimeInfo.agentDomain"
+				},
+				"External Confidence": {
+					"simple": "threatInfo.confidenceLevel"
+				},
+				"External Status": {
+					"simple": "threatInfo.mitigationStatusDescription"
+				},
+				"File MD5": {
+					"simple": "threatInfo.md5"
+				},
+				"File Path": {
+					"simple": "threatInfo.filePath"
+				},
+				"File SHA1": {
+					"simple": "threatInfo.sha1"
+				},
+				"File SHA256": {
+					"simple": "threatInfo.sha256"
+				},
+				"File Size": {
+					"simple": "threatInfo.fileSize"
+				},
+				"OS Type": {
+					"simple": "agentRealtimeInfo.agentOsType"
+				},
+				"Threat Name": {
+					"simple": "threatInfo.threatName"
+				},
+				"Verdict": {
+					"simple": "threatInfo.analystVerdictDescription"
+				}
+			}
+		}
+	},
+	"name": "SentinelOne Incoming Mapper",
+	"type": "mapping-incoming",
+	"version": -1,
+	"fromVersion": "6.0.0"
+}

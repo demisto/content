@@ -3,10 +3,10 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: Block File - Generic v2
-description: "This playbook is used to block files from running on endpoints. \nThis\
-  \ playbook supports the following integrations:\n- Palo Alto Networks Traps\n- Palo\
-  \ Alto Networks Cortex XDR\n- Cybereason\n- Carbon Black Enterprise Response\n-\
-  \ Cylance Protect v2\n"
+description: "This playbook is used to block files from running on endpoints. \nThis
+  playbook supports the following integrations:\n- Palo Alto Networks Traps\n- Palo
+  Alto Networks Cortex XDR\n- Cybereason\n- Carbon Black Enterprise Response\n- Cylance
+  Protect v2\n"
 starttaskid: "0"
 tasks:
   "0":
@@ -22,7 +22,6 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "8"
       - "9"
       - "10"
       - "11"
@@ -48,14 +47,38 @@ tasks:
       id: 5a2f437e-234a-43ef-858d-28d07fd1c7c2
       version: -1
       name: Block File - Carbon Black Response
+      description: |-
+        This playbook receives an MD5 hash and adds it to the block list in Carbon Black Enterprise Response. Files with that MD5 hash are blocked from execution on the managed endpoints.
+
+        If the integration is disabled at the time of running, or if the hash is already on the block list, no action is taken on the MD5.
       playbookName: Block File - Carbon Black Response
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "3"
+    scriptarguments:
+      MD5:
+        complex:
+          root: inputs.Hash
+          filters:
+          - - operator: stringHasLength
+              left:
+                value:
+                  simple: inputs.Hash
+                iscontext: true
+              right:
+                value:
+                  simple: "32"
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: inputs.MD5
+                iscontext: true
+          - operator: uniq
     separatecontext: true
     loop:
       iscommand: false
@@ -90,7 +113,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
+          "x": 695,
           "y": 515
         }
       }
@@ -116,6 +139,27 @@ tasks:
     nexttasks:
       '#none#':
       - "3"
+    scriptarguments:
+      MD5:
+        complex:
+          root: inputs.Hash
+          filters:
+          - - operator: stringHasLength
+              left:
+                value:
+                  simple: inputs.Hash
+                iscontext: true
+              right:
+                value:
+                  simple: "32"
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: inputs.MD5
+                iscontext: true
+          - operator: uniq
     separatecontext: true
     loop:
       iscommand: false
@@ -151,6 +195,27 @@ tasks:
     nexttasks:
       '#none#':
       - "3"
+    scriptarguments:
+      SHA256:
+        complex:
+          root: inputs.Hash
+          filters:
+          - - operator: stringHasLength
+              left:
+                value:
+                  simple: inputs.Hash
+                iscontext: true
+              right:
+                value:
+                  simple: "64"
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: inputs.SHA256
+                iscontext: true
+          - operator: uniq
     separatecontext: true
     loop:
       iscommand: false
@@ -168,108 +233,6 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: true
-    quietmode: 0
-  "6":
-    id: "6"
-    taskid: 4e936a4c-b781-40a1-831a-be0c62a727d6
-    type: playbook
-    task:
-      id: 4e936a4c-b781-40a1-831a-be0c62a727d6
-      version: -1
-      name: Traps Blacklist File
-      playbookName: Traps Blacklist File
-      type: playbook
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "3"
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 0
-    view: |-
-      {
-        "position": {
-          "x": 1340,
-          "y": 340
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: true
-    quietmode: 0
-  "7":
-    id: "7"
-    taskid: de27dee3-4496-4589-8514-94db4642810f
-    type: playbook
-    task:
-      id: de27dee3-4496-4589-8514-94db4642810f
-      version: -1
-      name: Traps Quarantine Event
-      description: This playbook accepts a file hash and quarantines this file using
-        Traps.
-      playbookName: Traps Quarantine Event
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "3"
-    scriptarguments:
-      EventId:
-        complex:
-          root: inputs.EventId
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 0
-    view: |-
-      {
-        "position": {
-          "x": 1770,
-          "y": 340
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: true
-    quietmode: 0
-  "8":
-    id: "8"
-    taskid: e46175f0-26fc-4f24-87f7-d531354ca0dd
-    type: title
-    task:
-      id: e46175f0-26fc-4f24-87f7-d531354ca0dd
-      version: -1
-      name: Palo Alto Networks - Traps
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "6"
-      - "7"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1555,
-          "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
     quietmode: 0
   "9":
     id: "9"
@@ -374,7 +337,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2240,
+          "x": 1340,
           "y": 195
         }
       }
@@ -403,7 +366,24 @@ tasks:
     scriptarguments:
       HashList:
         complex:
-          root: inputs.SHA256
+          root: inputs.Hash
+          filters:
+          - - operator: stringHasLength
+              left:
+                value:
+                  simple: inputs.Hash
+                iscontext: true
+              right:
+                value:
+                  simple: "64"
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: inputs.SHA256
+                iscontext: true
+          - operator: uniq
     separatecontext: true
     loop:
       iscommand: false
@@ -413,7 +393,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2240,
+          "x": 1340,
           "y": 340
         }
       }
@@ -429,7 +409,7 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 530,
-        "width": 2570,
+        "width": 1670,
         "x": 50,
         "y": 50
       }
@@ -443,7 +423,7 @@ inputs:
       accessor: MD5
   required: false
   description: The MD5 hash of the file you want to block.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: SHA256
   value:
     complex:
@@ -452,10 +432,10 @@ inputs:
   required: false
   description: The SHA256 hash of the file you want to block.
   playbookInputQuery:
-- key: EventId
+- key: Hash
   value: {}
   required: false
-  description: Traps event ID that contains the malicious file to block.
+  description: In this input you can insert either MD5 or SHA256 that you wish to block.
   playbookInputQuery:
 outputs:
 - contextPath: CbResponse.BlockedHashes.LastBlock.Time

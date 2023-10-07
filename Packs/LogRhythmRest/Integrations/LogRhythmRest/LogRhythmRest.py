@@ -1,7 +1,7 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 # -*- coding: utf-8 -*-
 
-import demistomock as demisto
-from CommonServerPython import *
 from CommonServerUserPython import *
 
 ''' IMPORTS '''
@@ -11,14 +11,16 @@ import requests
 import random
 import string
 from datetime import datetime, timedelta
+import defusedxml.ElementTree as defused_ET
+import urllib3
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 
 ''' GLOBALS/PARAMS '''
 
-TOKEN = demisto.params().get('token', '')
+TOKEN = demisto.params().get('credentials_api_token', {}).get('password') or demisto.params().get('token', '')
 BASE_URL = demisto.params().get('url', '').strip('/')
 INSECURE = not demisto.params().get('insecure')
 CLUSTER_ID = demisto.params().get('cluster-id')
@@ -1527,7 +1529,7 @@ def execute_query(data_args):
         message = message[3:-2]
 
         try:
-            root = ET.fromstring(message)
+            root = defused_ET.fromstring(message)
 
             log_item = {
                 "EventID": str(root.find(xml_ns + 'EventID').text),  # type: ignore
@@ -1950,7 +1952,8 @@ def lr_get_query_result(data_args):
 
 def main():
     LOG('Command being called is %s' % (demisto.command()))
-
+    if not TOKEN:
+        raise DemistoException('API token must be provided.')
     try:
         handle_proxy()
         if demisto.command() == 'test-module':

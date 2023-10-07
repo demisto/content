@@ -10,7 +10,7 @@
   "isReadOnly": false,
   "system": false,
   "content": true,
-  "unsearchable": false,
+  "unsearchable": true,
   "version": -1,
   "unmapped": false,
   "hidden": false,

@@ -1,0 +1,37 @@
+args:
+- description: Alert's severity.
+  name: severity
+- description: Alert's remote IP.
+  name: ip
+- description: Is this in a development environment?
+  name: development_environment
+- description: Is this cloud managed?
+  isArray: true
+  name: cloud_managed
+- description: Has a service owner been identified?
+  isArray: true
+  name: service_owner_identified
+- description: Includes Cloud and Xpanse tags
+  isArray: true
+  name: tags
+- description: Externally Detected Providers
+  isArray: true
+  name: providers
+- description: List of remediation path rules for the alert's attack surface rule.
+  isArray: true
+  name: remediation_path_rules
+comment: For a given alert and remediation path rules that are defined for that alert's attack surface rule, this script takes each remediation path rule and looks at the rule criteria to see if the rule matches for the given alert. If multiple rules match, it will return the most recently created rule. This assumes that the rules passed in are filtered to correlate with the alert's attack surface rule.
+commonfields:
+  id: RemediationPathRuleEvaluation
+  version: -1
+dockerimage: demisto/python3:3.10.12.68714
+enabled: true
+name: RemediationPathRuleEvaluation
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 6.5.0
+tests:
+- No tests (auto formatted)

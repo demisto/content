@@ -4,3 +4,4 @@
 !asm-list-external-ip-address-range
 !asm-list-asset-internet-exposure name="acme.com" type=certificate has_active_external_services=no
 !asm-list-external-service domain=acme.com is_active=yes discovery_type=directly_discovery
+!asm-list-remediation-rule asm_rule_id=RdpServer sort_by_creation_time=desc

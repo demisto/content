@@ -1,4 +1,5 @@
-description: Initiates a new script execution of shell commands.
+deprecated: true
+description: Deprecated. Use the `xdr-script-commands-execute` command instead. Initiates a new script execution of shell commands.
 id: Cortex XDR - Execute commands
 inputs:
 - description: A comma-separated list of endpoint IDs.

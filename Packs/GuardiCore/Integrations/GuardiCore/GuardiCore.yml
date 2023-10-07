@@ -2,9 +2,9 @@ commonfields:
   id: GuardiCore
   version: -1
 name: GuardiCore
-display: GuardiCore
-category: Deception
-description: Data center breach detection
+display: GuardiCore (Deprecated)
+category: Deception & Breach Simulation
+description: Deprecated. Use GuardiCore v2 instead.
 configuration:
 - display: Server URL (e.g. https://192.168.0.1)
   name: server
@@ -50,21 +50,26 @@ script:
     - name: destination
       description: Filter by destination (hostname or IP address).
     description: Display information about incidents (with filters).
+    deprecated: true
   - name: guardicore-uncommon-domains
     arguments: []
     description: Display the uncommon domains.
+    deprecated: true
   - name: guardicore-unresolved-domains
     arguments: []
     description: Display the unresolved domains.
+    deprecated: true
   - name: guardicore-show-endpoint
     arguments:
     - name: host_id
       required: true
       description: The host ID.
     description: Display information about the endpoint given its ID.
+    deprecated: true
   - name: guardicore-dns-requests
     arguments: []
     description: Display the DNS requests.
+    deprecated: true
   - name: guardicore-search-endpoint
     arguments:
     - name: ip_address
@@ -72,9 +77,11 @@ script:
     - name: name
       description: The hostname of the endpoint.
     description: Display information about the endpoint by its hostname or IP address.
+    deprecated: true
   - name: guardicore-misconfigurations
     arguments: []
     description: Display the misconfigurations.
+    deprecated: true
   - name: guardicore-get-incident
     arguments:
     - name: id
@@ -82,6 +89,7 @@ script:
       default: true
       description: The ID of the incident.
     description: Display information about the given incident.
+    deprecated: true
   - name: guardicore-get-incident-iocs
     arguments:
     - name: id
@@ -89,24 +97,28 @@ script:
       default: true
       description: The ID of the incident.
     description: Display the IOCs (Indicators of Compromise) of the given incident.
+    deprecated: true
   - name: guardicore-get-incident-events
     arguments:
     - name: id
       required: true
       description: The ID of the incident.
     description: Display the events related to the given incidents.
+    deprecated: true
   - name: guardicore-get-incident-pcap
     arguments:
     - name: id
       required: true
       description: The ID of the incident.
     description: Retrieve the PCAP file attached to the given incident.
+    deprecated: true
   - name: guardicore-get-incident-attachments
     arguments:
     - name: id
       required: true
       description: The ID of the incident.
     description: Retrieve the files attached to the given incidents.
+    deprecated: true
   - name: guardicore-search-network-log
     arguments:
     - name: source
@@ -118,6 +130,8 @@ script:
     - name: uuid
       description: Filter by Event ID.
     description: Searches within the network log (with filters).
+    deprecated: true
 fromversion: 5.0.0
 tests:
-- No tests
+- No tests (deprecated)
+deprecated: true

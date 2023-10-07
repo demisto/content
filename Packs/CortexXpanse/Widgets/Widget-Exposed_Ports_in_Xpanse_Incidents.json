@@ -1,0 +1,31 @@
+{
+    "dataType": "incidents",
+    "params": {
+        "groupBy": [
+            "xpanseport"
+        ],
+        "valuesFormat": "abbreviated"
+    },
+    "query": "type:\"Xpanse Alert\" ",
+    "modified": "2023-03-21T16:05:28.239445879Z",
+    "name": "Exposed Ports in Xpanse Incidents",
+    "dateRange": {
+        "fromDate": "0001-01-01T00:00:00Z",
+        "toDate": "0001-01-01T00:00:00Z",
+        "period": {
+            "by": "",
+            "byTo": "",
+            "byFrom": "days",
+            "toValue": null,
+            "fromValue": 30,
+            "field": ""
+        },
+        "fromDateLicense": "0001-01-01T00:00:00Z"
+    },
+    "isPredefined": true,
+    "version": -1,
+    "id": "d964ed66-bf7c-4eb0-86ac-2ca26b377dc8",
+    "widgetType": "pie",
+    "fromVersion": "6.8.0",
+    "description": ""
+}

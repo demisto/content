@@ -11,7 +11,17 @@ This pack contains the response playbooks for the following breaches:
 - [NOBELIUM - wide scale APT29 spear-phishing](https://xsoar.pan.dev/docs/reference/playbooks/NOBELIUM---wide-scale-APT29-spear-phishing)
 - [CVE-2021-34527 | CVE-2021-1675 - PrintNightmare](https://xsoar.pan.dev/docs/reference/playbooks/cve-2021-1675---print-nightmare)
 - [Kaseya VSA 0-day - REvil Ransomware Supply Chain Attack](https://xsoar.pan.dev/docs/reference/playbooks/kaseya-vsa--0-day---r-evil-ransomware-supply-chain-attack)
+
+More playbooks are available in the following packs:
+
+- [CVE-2021-40444 - MSHTML RCE](https://xsoar.pan.dev/docs/reference/playbooks/cve-2021-40444---mshtml-rce)
+- [CVE-2021-44228 - Log4j RCE](https://xsoar.pan.dev/docs/reference/playbooks/cve-2021-44228---log4j-rce)
+- [CVE-2022-26134 - Confluence RCE](https://xsoar.pan.dev/docs/reference/playbooks/cve-2022-26134---confluence-rce)
 - [CVE-2022-30190 - MSDT RCE](https://xsoar.pan.dev/docs/reference/playbooks/cve-2022-30190---msdt-rce)
+- [CVE-2022-3786 & CVE-2022-3602 - OpenSSL X.509 Buffer Overflows](https://xsoar.pan.dev/docs/reference/playbooks/cve-2022-3786--cve-2022-3602---open-ssl-x509-buffer-overflows)
+- [CVE-2022-41040 & CVE-2022-41082 - ProxyNotShell](https://xsoar.pan.dev/docs/reference/playbooks/cve-2022-41040--cve-2022-41082---proxy-not-shell)
+- [CVE-2023-23397 - Microsoft Outlook EoP](https://cortex.marketplace.pan.dev/marketplace/details/CVE_2023_23397__Microsoft_Outlook_EoP/)
+- [3CXDesktopApp Supply Chain Attack](https://xsoar.pan.dev/docs/reference/playbooks/3-cx-desktop-app-supply-chain-attack)
 ##### How to enable it?
 
 - Install the pack.

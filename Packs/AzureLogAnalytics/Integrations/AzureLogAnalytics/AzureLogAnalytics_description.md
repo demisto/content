@@ -27,16 +27,12 @@ In the self-deployed mode, you can authenticate by using one of the following fl
 ### Authentication Code flow
 
 ---
-1. Copy the following URL and replace `CLIENT_ID` and `REDIRECT_URI` with your own client ID and redirect URI:
-   ```https://login.microsoftonline.com/common/oauth2/authorize?response_type=code&resource=https://management.core.windows.net&client_id=CLIENT_ID&redirect_uri=REDIRECT_URI```
-2. Enter the link.
-   You will be prompted to grant Cortex XSOAR permissions for your Azure Service Management. You are automatically redirected to a link with the following structure:
-   ```REDIRECT_URI?code=AUTH_CODE&session_state=SESSION_STATE```
-1. Copy the `AUTH_CODE` (without the `“code=”` prefix, and the `session_state` parameter) and paste it in your instance configuration under the **Authorization code** parameter. 
-2. Enter your client ID in the **ID** parameter. 
-3. Enter your client secret in the **password** parameter.
-4. Enter your tenant ID in the **Token** parameter.
-5. Enter your redirect URI in the **Redirect URI** parameter.
+1. Enter your client ID in the **ID** parameter. 
+2. Enter your client secret in the **password** parameter.
+3. Enter your tenant ID in the **Token** parameter.
+4. Enter your redirect URI in the **Redirect URI** parameter.
+5. Save the integration settings.
+6. Run the `!azure-log-analytics-generate-login-url` command in the War Room and follow the instruction.
 
 
 ### Authorize Cortex XSOAR for Azure Log Analytics (Client-Credentials Configuration)

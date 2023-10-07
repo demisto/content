@@ -3,7 +3,9 @@ from CommonServerPython import *
 import traceback
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+import urllib3
+urllib3.disable_warnings()
+
 
 '''CLIENT CLASS'''
 
@@ -12,6 +14,7 @@ class Client(BaseClient):
     """
     Atlassian IAM Client class that implements logic to authenticate with Atlassian.
     """
+
     def __init__(self, base_url, directory_id, headers, ok_codes=None, verify=True, proxy=False):
         super().__init__(base_url, verify=verify, proxy=proxy, ok_codes=ok_codes, headers=headers)
         self.directory_id = directory_id
@@ -176,7 +179,7 @@ def main():
     base_url = params.get('url')
     if base_url[-1] != '/':
         base_url += '/'
-    access_token = params.get('access_token')
+    access_token = params.get('access_token_creds', {}).get('password') or params.get('access_token')
     directory_id = params.get('directory_id')
 
     mapper_in = params.get('mapper_in')

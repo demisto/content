@@ -263,3 +263,227 @@ def test_add_safe_member_permissions_validate(mocker, permission_exist):
     for permission in permissions:
         if 'ManageSafeMembers' in permission.get('Key'):
             assert permission.get('Value') == permission_exist
+
+
+V11_RESPONSE_SAFES_1 = {
+    "Safes": [
+        {
+            "safeUrlId": "Test",
+            "safeName": "Test",
+            "safeNumber": 2,
+            "description": "",
+            "location": "\\",
+            "creator": {
+                "memberId": "2",
+                "memberName": "Administrator"
+            },
+            "olacEnabled": False,
+            "managingCPM": "",
+            "numberOfVersionsRetention": None,
+            "numberOfDaysRetention": 30,
+            "autoPurgeEnabled": False,
+            "creationTime": 00000,
+            "lastModificationTime": 000000,
+            "isExpiredMember": False
+        },
+    ],
+    "Total": 1769,
+    "nextLink": "example.com"
+}
+V12_RESPONSE_SAFES_1 = {
+    "value": [
+        {
+            "safeUrlId": "Test",
+            "safeName": "Test",
+            "safeNumber": 2,
+            "description": "",
+            "location": "\\",
+            "creator": {
+                "memberId": "2",
+                "memberName": "Administrator"
+            },
+            "olacEnabled": False,
+            "managingCPM": "",
+            "numberOfVersionsRetention": None,
+            "numberOfDaysRetention": 30,
+            "autoPurgeEnabled": False,
+            "creationTime": 00000,
+            "lastModificationTime": 000000,
+            "isExpiredMember": False
+        },
+    ],
+    "count": 1769,
+    "nextLink": "example.com"
+}
+COUNT_1 = "1769"
+OUTPUT_1 = [{'safeUrlId': 'Test', 'safeName': 'Test', 'safeNumber': 2, 'description': '', 'location': '\\',
+             'creator': {'memberId': '2', 'memberName': 'Administrator'}, 'olacEnabled': False, 'managingCPM': '',
+             'numberOfVersionsRetention': None, 'numberOfDaysRetention': 30, 'autoPurgeEnabled': False,
+             'creationTime': 0,
+             'lastModificationTime': 0, 'isExpiredMember': False}]
+
+
+@pytest.mark.parametrize('response, count_or_total, expected_output', [(V11_RESPONSE_SAFES_1, COUNT_1, OUTPUT_1),
+                                                                       (V12_RESPONSE_SAFES_1, COUNT_1, OUTPUT_1)])
+def test_pas_safes_list(mocker, response: dict, count_or_total: str, expected_output: list[dict]):
+    """
+    Given:
+        - Response to cyberark-pas-safes-list command (in either the API <=v11 version, or the >=v12 format)
+        - Expected count/ total value
+        - Expected output
+    When:
+        - cyberark-pas-safes-list is executed
+    Then:
+        - Ensure the readable_output contains the correct total/count and not None according to the response's structure
+        - Ensure the output matches what is expected
+    """
+    mocker.patch.object(Client, '_generate_token')
+    client = Client(server_url="https://api.cyberark.com/", username="user1", password="12345", use_ssl=False,
+                    proxy=False, max_fetch=50)
+    mocker.patch.object(client, 'get_list_safes', return_value=response)
+    results = get_list_safes_command(client=client)
+    assert count_or_total in results.readable_output
+    assert results.outputs == expected_output
+
+
+V11_RESPONSE_SAFES_2 = {
+    "SafeMembers": [
+        {
+            "safeUrlId": "",
+            "safeName": "Test",
+            "safeNumber": 1,
+            "memberId": 1,
+            "memberName": "Example",
+            "memberType": "Example",
+            "membershipExpirationDate": None,
+            "isExpiredMembershipEnable": False,
+            "isPredefinedUser": True,
+            "permissions": {
+                "useAccounts": True,
+                "retrieveAccounts": True,
+                "listAccounts": True,
+                "addAccounts": True,
+                "updateAccountContent": True,
+                "updateAccountProperties": True,
+                "initiateCPMAccountManagementOperations": True,
+                "specifyNextAccountContent": True,
+                "renameAccounts": True,
+                "deleteAccounts": True,
+                "unlockAccounts": True,
+                "manageSafe": True,
+                "manageSafeMembers": True,
+                "backupSafe": True,
+                "viewAuditLog": True,
+                "viewSafeMembers": True,
+                "accessWithoutConfirmation": True,
+                "createFolders": True,
+                "deleteFolders": True,
+                "moveAccountsAndFolders": True,
+                "requestsAuthorizationLevel1": False,
+                "requestsAuthorizationLevel2": False
+            }
+        }
+    ],
+    "Total": 8
+}
+V12_RESPONSE_SAFES_2 = {
+    "value": [
+        {
+            "safeUrlId": "",
+            "safeName": "Test",
+            "safeNumber": 1,
+            "memberId": 1,
+            "memberName": "Example",
+            "memberType": "Example",
+            "membershipExpirationDate": None,
+            "isExpiredMembershipEnable": False,
+            "isPredefinedUser": True,
+            "permissions": {
+                "useAccounts": True,
+                "retrieveAccounts": True,
+                "listAccounts": True,
+                "addAccounts": True,
+                "updateAccountContent": True,
+                "updateAccountProperties": True,
+                "initiateCPMAccountManagementOperations": True,
+                "specifyNextAccountContent": True,
+                "renameAccounts": True,
+                "deleteAccounts": True,
+                "unlockAccounts": True,
+                "manageSafe": True,
+                "manageSafeMembers": True,
+                "backupSafe": True,
+                "viewAuditLog": True,
+                "viewSafeMembers": True,
+                "accessWithoutConfirmation": True,
+                "createFolders": True,
+                "deleteFolders": True,
+                "moveAccountsAndFolders": True,
+                "requestsAuthorizationLevel1": False,
+                "requestsAuthorizationLevel2": False
+            }
+        }
+    ],
+    "count": 8
+}
+COUNT_2 = "8"
+OUTPUT_2 = [
+    {
+        "safeUrlId": "",
+        "safeName": "Test",
+        "safeNumber": 1,
+        "memberId": 1,
+        "memberName": "Example",
+        "memberType": "Example",
+        "membershipExpirationDate": None,
+        "isExpiredMembershipEnable": False,
+        "isPredefinedUser": True,
+        "permissions": {
+            "useAccounts": True,
+            "retrieveAccounts": True,
+            "listAccounts": True,
+            "addAccounts": True,
+            "updateAccountContent": True,
+            "updateAccountProperties": True,
+            "initiateCPMAccountManagementOperations": True,
+            "specifyNextAccountContent": True,
+            "renameAccounts": True,
+            "deleteAccounts": True,
+            "unlockAccounts": True,
+            "manageSafe": True,
+            "manageSafeMembers": True,
+            "backupSafe": True,
+            "viewAuditLog": True,
+            "viewSafeMembers": True,
+            "accessWithoutConfirmation": True,
+            "createFolders": True,
+            "deleteFolders": True,
+            "moveAccountsAndFolders": True,
+            "requestsAuthorizationLevel1": False,
+            "requestsAuthorizationLevel2": False
+        }
+    }
+]
+
+
+@pytest.mark.parametrize('response, count_or_total, expected_output', [(V11_RESPONSE_SAFES_2, COUNT_2, OUTPUT_2),
+                                                                       (V12_RESPONSE_SAFES_2, COUNT_2, OUTPUT_2)])
+def test_pas_safe_members_list(mocker, response: dict, count_or_total: str, expected_output: list[dict]):
+    """
+    Given:
+        - Response to cyberark-pas-safe-members-list command (in either the <=V11 version, or the >=V12 format)
+        - Expected count/ total value
+        - Expected output
+    When:
+        - cyberark-pas-safe-members-list is executed
+    Then:
+        - Ensure the readable_output contains the correct total/count and not None according to the response's structure
+        - Ensure the output matches what is expected
+    """
+    mocker.patch.object(Client, '_generate_token')
+    client = Client(server_url="https://api.cyberark.com/", username="user1", password="12345", use_ssl=False,
+                    proxy=False, max_fetch=50)
+    mocker.patch.object(client, 'list_safe_members', return_value=response)
+    results = list_safe_members_command(client=client, safe_name="Test")
+    assert count_or_total in results.readable_output
+    assert results.outputs == expected_output

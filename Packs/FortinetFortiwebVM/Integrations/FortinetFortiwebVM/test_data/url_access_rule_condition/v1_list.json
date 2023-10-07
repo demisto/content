@@ -1,0 +1,34 @@
+[
+    {
+        "sourceAddress": true,
+        "sourceAddressType": 3,
+        "iPv4IPv6": "test",
+        "type": 2,
+        "domain": "",
+        "urlPattern": "test",
+        "_id": "2",
+        "id": "2",
+        "disurlType": "Simple String",
+        "urlType": "1",
+        "dismatch": "match this condition",
+        "meetthisconditionif": "1",
+        "source_domain_type": 1,
+        "source_domain": "domain"
+    },
+    {
+        "sourceAddress": true,
+        "sourceAddressType": 3,
+        "iPv4IPv6": "test",
+        "type": 2,
+        "domain": "",
+        "urlPattern": "/test",
+        "_id": "3",
+        "id": "3",
+        "disurlType": "Simple String",
+        "urlType": "1",
+        "dismatch": "match this condition",
+        "meetthisconditionif": "1",
+        "source_domain_type": 1,
+        "source_domain": "domain"
+    }
+]

@@ -1,7 +1,7 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import json
 
-import demistomock as demisto
-from CommonServerPython import *
 
 """
 Use the IvantiHeatCreateProblemExample script to create a problem object (JSON) in Ivanti Heat.

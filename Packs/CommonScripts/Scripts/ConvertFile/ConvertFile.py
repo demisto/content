@@ -49,7 +49,7 @@ def convert_file(file_path: str, out_format: str, all_files: bool, outdir: str) 
         # make sure we don't have zombie processes (seen when converting pdf to html)
         try:
             zombies, ps_out = find_zombie_processes()
-            if zombies:
+            if zombies:  # pragma no cover
                 demisto.info("Found zombie processes will waitpid: {}".format(ps_out))
                 for pid in zombies:
                     waitres = os.waitpid(int(pid), os.WNOHANG)

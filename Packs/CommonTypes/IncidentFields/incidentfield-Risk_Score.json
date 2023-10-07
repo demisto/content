@@ -9,9 +9,11 @@
 		"AWS EC2 Instance Misconfiguration",
 		"Microsoft CAS Alert",
 		"Trend Micro CAS Event",
-		"Netwitness Incident",
+		"NetWitness Incident",
 		"Skyhigh Security Alert",
-		"Skyhigh Security Threat"
+		"Skyhigh Security Threat",
+		"AWS Security Hub Finding",
+		"Prisma Cloud - VM Alert Prioritization"
 	],
 	"breachScript": "",
 	"caseInsensitive": true,
@@ -37,7 +39,9 @@
 	"selectValues": [],
 	"sla": 0,
 	"system": false,
-	"systemAssociatedTypes": null,
+	"systemAssociatedTypes": [
+		"Prisma Cloud - VM Alert Prioritization"
+	],
 	"threshold": 72,
 	"type": "shortText",
 	"unmapped": false,

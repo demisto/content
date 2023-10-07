@@ -1,0 +1,64 @@
+category: Analytics & SIEM
+sectionOrder:
+- Connect
+- Collect
+commonfields:
+  id: WithSecureEventCollector
+  version: -1
+configuration:
+- display: Server URL
+  name: url
+  required: true
+  type: 0
+  section: Connect
+- name: credentials
+  display: Client ID
+  required: true
+  type: 9
+  additionalinfo: Client ID and Client Secret.
+  displaypassword: Client Secret
+  section: Connect
+- defaultvalue: 3 days
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year)
+  name: first_fetch_time
+  type: 0
+  section: Collect
+  required: false
+- defaultvalue: 1000
+  display: Maximum number of events per fetch. Max 1000
+  name: limit
+  type: 0
+  section: Collect
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  section: Connect
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  section: Connect
+  required: false
+description: WithSecure event collector integration for Cortex XSIAM.
+display: WithSecure Event Collector
+name: WithSecureEventCollector
+script:
+  commands:
+  - arguments:
+    - description: The date to start collecting the events from.
+      name: fetch_from
+    - description: The maximum amount of events to return.
+      name: limit
+    description: Manual command used to fetch events and display them.
+    name: with-secure-get-events
+  isfetchevents: true
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.10.12.63474
+fromversion: 6.8.0
+marketplaces:
+- marketplacev2
+tests:
+- No tests

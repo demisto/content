@@ -1,0 +1,30 @@
+[
+    {
+        "description": "description",
+        "ips": [
+            "ips_0",
+            "ips_1"
+        ],
+        "sample_md5": "sample_md5",
+        "sample": "sample",
+        "sample_sha256": "sample_sha256",
+        "info": "info",
+        "domain": "domain",
+        "sample_sha1": "sample_sha1",
+        "timestamp": "timestamp"
+    },
+    {
+        "description": "description",
+        "ips": [
+            "ips_0",
+            "ips_1"
+        ],
+        "sample_md5": "sample_md5",
+        "sample": "sample",
+        "sample_sha256": "sample_sha256",
+        "info": "info",
+        "domain": "domain",
+        "sample_sha1": "sample_sha1",
+        "timestamp": "timestamp"
+    }
+]

@@ -1,0 +1,340 @@
+id: IsIPPrivate - Test
+version: -1
+name: IsIPPrivate - Test
+description: Tests the IsIPPrivate script by checking that it properly detects private and public IPs.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: f891a6c7-2596-4e1b-8f55-81989fa12f03
+    type: start
+    task:
+      id: f891a6c7-2596-4e1b-8f55-81989fa12f03
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: a5d3cc37-b3c0-4b03-82be-5cfb24aa4bd0
+    type: regular
+    task:
+      id: a5d3cc37-b3c0-4b03-82be-5cfb24aa4bd0
+      version: -1
+      name: Save IPs in context
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      key:
+        simple: TestIPs
+      value:
+        simple: '["192.168.1.1", "8.8.4.4"]'
+    reputationcalc: 1
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: de1f9edc-1d09-4b6d-890b-a07a6826c9f6
+    type: regular
+    task:
+      id: de1f9edc-1d09-4b6d-890b-a07a6826c9f6
+      version: -1
+      name: Check if private IPs
+      description: |-
+        The script takes a list of IP addresses and checks whether they're in the private IP ranges defined in the PrivateIPRangeList argument. by default, the PrivateIPRangeList argument will use the XSOAR list called "PrivateIPRanges".
+        The list can be modified, and by default uses the ranges defined by the Internet Assigned Numbers Authority (IANA). The following are the default CIDR ranges for private IPv4 addresses:
+        - 10.0.0.0/8 (range: 10.0.0.0 to 10.255.255.255)
+        - 172.16.0.0/12 (range: 172.16.0.0 to 172.31.255.255)
+        - 192.168.0.0/16 (range: 192.168.0.0 to 192.168.255.255)
+      scriptName: IsIPPrivate
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+      - "5"
+    scriptarguments:
+      IPAddresses:
+        complex:
+          root: TestIPs
+    reputationcalc: 1
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 52b9bf9c-c98f-485c-8423-e330660a1920
+    type: condition
+    task:
+      id: 52b9bf9c-c98f-485c-8423-e330660a1920
+      version: -1
+      name: Was the private IP detected as private?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: IP
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: IP.Address
+                      iscontext: true
+                    right:
+                      value:
+                        simple: 192.168.1.1
+                - - operator: isTrue
+                    left:
+                      value:
+                        simple: IP.Private
+                      iscontext: true
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: d67e547b-3c1f-442c-8408-8338a8894e93
+    type: title
+    task:
+      id: d67e547b-3c1f-442c-8408-8338a8894e93
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 2afe37b2-548e-4729-8717-3fc496790d95
+    type: condition
+    task:
+      id: 2afe37b2-548e-4729-8717-3fc496790d95
+      version: -1
+      name: Was the public IP detected as public?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: IP
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: IP.Address
+                      iscontext: true
+                    right:
+                      value:
+                        simple: 8.8.4.4
+                - - operator: isFalse
+                    left:
+                      value:
+                        simple: IP.Private
+                      iscontext: true
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 670,
+          "y": 540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: c6d5a2d6-f875-4136-89ad-f687ee7f639e
+    type: regular
+    task:
+      id: c6d5a2d6-f875-4136-89ad-f687ee7f639e
+      version: -1
+      name: Error with public IP
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: The IP 8.8.4.4 was supposed to be detected as public, but was detected as private instead.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 900,
+          "y": 740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: ee61bdac-6de2-4a5e-8f54-0cbaa64150d8
+    type: regular
+    task:
+      id: ee61bdac-6de2-4a5e-8f54-0cbaa64150d8
+      version: -1
+      name: Error with private IP
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: The IP 192.168.1.1 was supposed to be detected as private, but was detected as public instead.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -10,
+          "y": 730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "3_4_yes": 0.15,
+      "5_4_yes": 0.21
+    },
+    "paper": {
+      "dimensions": {
+        "height": 935,
+        "width": 1290,
+        "x": -10,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+quiet: true
+marketplaces:
+- xsoar
+fromversion: 6.5.0

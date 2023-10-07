@@ -14,10 +14,12 @@ pid = arrayindex(regextract(_raw_log ,"\spid\=(\S+)\s"),0),
 comm = arrayindex(regextract(_raw_log ,"\scomm\=\"*([^\"]+)\"*\s"),0),
 exe = arrayindex(regextract(_raw_log ,"\sexe\=\"*([^\"]+)\"*\s"),0)
 | alter
+    outcome_result = coalesce(res,success)
+| alter
     xdm.event.id = eventid,
 	xdm.event.type = type,
     xdm.session_context_id = ses,
-    xdm.event.outcome = coalesce(res,success),
+    xdm.event.outcome = if(outcome_result = "failed", XDM_CONST.OUTCOME_FAILED, outcome_result = "no", XDM_CONST.OUTCOME_FAILED, outcome_result = "success", XDM_CONST.OUTCOME_SUCCESS, outcome_result = "yes", XDM_CONST.OUTCOME_SUCCESS, outcome_result = null, null, to_string(outcome_result)),
     xdm.event.operation = coalesce(op,key),
 	xdm.source.user.username = acct,
 	xdm.source.user.identifier = uid,

@@ -1,0 +1,6 @@
+name: AWSGuardDuty Parsing Rule
+id: AWSGuardDuty ParsingRule
+fromversion: 6.10.0
+tags: []
+rules: ''
+samples: ''

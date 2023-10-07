@@ -17,7 +17,6 @@
     "myPack"
   ],
   "unmockable_integrations": {},
-  "nightly_integrations": [],
   "parallel_integrations": [],
   "private_tests": [],
   "test_marketplacev2": []

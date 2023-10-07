@@ -290,11 +290,21 @@ def test_process_root_get_ls(mocker, integration_context_filename, dir_name, rec
     assert equals_object(response.body, expected)
 
 
-@pytest.mark.parametrize(argnames='integration_context_filename, path, output_filename',
-                         argvalues=[
-                             ('./test_data/integration_ctx_common.json', '/a.dat', './test_data/download_out_01.dat'),
-                             ('./test_data/integration_ctx_common.json', '/x/XYZ/アイウエオ.txt', './test_data/download_out_02.dat'),
-                         ])
+@pytest.mark.parametrize(
+    argnames="integration_context_filename, path, output_filename",
+    argvalues=[
+        (
+            "./test_data/integration_ctx_common.json",
+            "/a.dat",
+            "./test_data/download_out_01.dat",
+        ),
+        (
+            "./test_data/integration_ctx_common.json",
+            "/x/XYZ/アイウエオ.txt",
+            "./test_data/download_out_02.dat",
+        ),
+    ],
+)
 def test_process_root_get_download(mocker, integration_context_filename, path, output_filename):
     """
         Given:
@@ -1310,6 +1320,58 @@ def test_command_reset(mocker):
 
     settings = WebFileRepository.Settings(params)
     res = WebFileRepository.command_reset({}, settings)
+    assert 'Done' in res
+
+
+@pytest.mark.parametrize(argnames='entry_id, '
+                                  'name',
+                         argvalues=[
+                             ('0000', None),
+                             ('0000', 'name'),
+                         ])
+def test_command_upload_file(mocker, entry_id, name):
+    """
+        Given:
+            Some patterns of entry_ids for command_upload_file
+
+        When:
+            Running script to send a request.
+
+        Then:
+            Validate the right response returns.
+    """
+    params = {
+        'longRunningPort': '8000',
+        'rwCredentials': {},
+        'authenticationMethod': None,
+        'publicReadAccess': True,
+        'mimeTypes': None,
+        'mergeMimeTypes': True,
+        'attachmentExtensions': None,
+        'storageProtection': 'read/write',
+        'maxStorageSize': None,
+        'maxSandboxSize': None,
+    }
+    mocker.patch.object(demisto, 'params', return_value=params)
+    mocker.patch.object(demisto, 'getFilePath', return_value={
+        'name': 'upload_file.dat',
+        'path': 'test_data/upload_file.dat'
+    })
+
+    client = MockBaseClient(mocker, headers={}, json_data={
+        'success': True,
+        'message': ''
+    })
+    mocker.patch.object(WebFileRepository, 'new_client', return_value=client)
+
+    importlib.reload(WebFileRepository)
+
+    args = assign_params(
+        entry_id=entry_id,
+        name=name
+    )
+    settings = WebFileRepository.Settings(params)
+    res = WebFileRepository.command_upload_file(args, settings)
     assert 'Done' in res
 
 

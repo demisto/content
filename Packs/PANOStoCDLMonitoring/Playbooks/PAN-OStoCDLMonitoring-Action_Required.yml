@@ -50,7 +50,7 @@ tasks:
 
         ${CDL.monitoring.FirewallsWithoutLogsSent}
 
-        You could use this documentation https://docs.paloaltonetworks.com/cortex/cortex-data-lake/cortex-data-lake-getting-started/get-started-with-cortex-data-lake/key.html as reference.
+        You could use this documentation https://docs.paloaltonetworks.com/cortex/cortex-data-lake/cortex-data-lake-getting-started as reference.
 
         Please do not validate this task before the problem is fixed.
       id: d273ae4f-6ad2-406a-8a9f-b0f2b3bd64ed

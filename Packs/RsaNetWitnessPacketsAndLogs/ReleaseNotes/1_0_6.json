@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "By default every RSA request will be send using SSL on the port 50105. To disable SSL use the option 'useSSL=false'. As before you can change the port using the parameter 'concentratorPort' and choose a suggested one or set a specific one not listed."
+}

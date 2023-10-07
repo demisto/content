@@ -1,8 +1,7 @@
-import base64
-import zlib
-
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+import base64
+import zlib
 
 
 def base64_list_to_file(args):

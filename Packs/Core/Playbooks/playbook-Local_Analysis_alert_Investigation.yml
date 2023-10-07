@@ -37,7 +37,7 @@ description: |-
 
   External resources:
 
-  [Malware Protection Flow](https://docs.paloaltonetworks.com/traps/4-2/traps-endpoint-security-manager-admin/malware-protection/malware-protection-flow)
+  [Malware Protection Flow](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Administrator-Guide/File-Analysis-and-Protection-Flow)
 starttaskid: '0'
 tasks:
   '0':
@@ -59,7 +59,7 @@ tasks:
       {
         "position": {
           "x": 430,
-          "y": -1260
+          "y": -1800
         }
       }
     note: false
@@ -69,13 +69,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
-  '2':
-    id: '2'
-    taskid: 00284430-f646-4df9-833d-f688131f2ff3
+  "2":
+    id: "2"
+    taskid: c91fc254-410b-425e-87b2-c69a28f65349
     type: condition
     task:
-      id: 00284430-f646-4df9-833d-f688131f2ff3
+      id: c91fc254-410b-425e-87b2-c69a28f65349
       version: -1
       name: Verdict by FileVerdict AND Prevalence
       description: Checks the verdict returned by the 'Enrichment for Verdict' playbook.
@@ -86,7 +85,7 @@ tasks:
       '#default#':
       - '33'
       True Positive:
-      - '6'
+      - "81"
     separatecontext: false
     conditions:
     - label: True Positive
@@ -100,6 +99,14 @@ tasks:
             value:
               simple: Suspicious
           ignorecase: true
+        - operator: isEqualString
+          left:
+            value:
+              simple: FileVerdict
+            iscontext: true
+          right:
+            value:
+              simple: Malicious
       - - operator: isEqualString
           left:
             value:
@@ -115,7 +122,7 @@ tasks:
       {
         "position": {
           "x": 430,
-          "y": -480
+          "y": -1000
         }
       }
     note: false
@@ -146,7 +153,7 @@ tasks:
       {
         "position": {
           "x": 430,
-          "y": -1125
+          "y": -1660
         }
       }
     note: false
@@ -497,7 +504,7 @@ tasks:
       {
         "position": {
           "x": 900,
-          "y": 4090
+          "y": 4100
         }
       }
     note: false
@@ -679,7 +686,7 @@ tasks:
       {
         "position": {
           "x": 430,
-          "y": 4270
+          "y": 4290
         }
       }
     note: false
@@ -877,8 +884,7 @@ tasks:
           accessor: agentid
       windows_file_paths:
         complex:
-          root: alert
-          accessor: initiatorpath
+          root: inputs.Path
     separatecontext: false
     view: |-
       {
@@ -931,13 +937,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
-  '61':
-    id: '61'
-    taskid: 3093b2d9-983f-4f94-834c-42ec5e420933
+  "61":
+    id: "61"
+    taskid: 109f06df-2f1f-4c89-8b00-e84b143cf481
     type: playbook
     task:
-      id: 3093b2d9-983f-4f94-834c-42ec5e420933
+      id: 109f06df-2f1f-4c89-8b00-e84b143cf481
       version: -1
       name: Enrichment for Verdict
       playbookName: Enrichment for Verdict
@@ -948,21 +953,6 @@ tasks:
     nexttasks:
       '#none#':
       - "79"
-    separatecontext: true
-    view: |-
-      {
-        "position": {
-          "x": 430,
-          "y": -1000
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
     scriptarguments:
       CloseReason:
         simple: Resolved - False Positive,Resolved - Duplicate Incident,Resolved - Known Issue
@@ -972,8 +962,7 @@ tasks:
           accessor: domainname
       FileSHA256:
         complex:
-          root: alert
-          accessor: initiatorsha256
+          root: inputs.SHA256
       IP:
         complex:
           root: alert
@@ -987,21 +976,37 @@ tasks:
           root: alert
           accessor: username
       query:
-        simple: (initiatorsha256:${alert.initiatorsha256.[0]} or hostip:${alert.hostip.[0]}) and sourceBrand:"${alert.sourceBrand}" and name:"${alert.name}"
+        complex:
+          root: inputs.Query
       threshold:
         simple: "5"
+    separatecontext: true
+    continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""
       wait: 1
       max: 100
-    continueonerrortype: ""
-  '62':
-    id: '62'
-    taskid: e6c0a750-ebf9-4801-8506-0e9d4a60fa6b
+    view: |-
+      {
+        "position": {
+          "x": 430,
+          "y": -1520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "62":
+    id: "62"
+    taskid: 00ca705e-0d89-43f9-8176-fea4dc6eaea5
     type: playbook
     task:
-      id: e6c0a750-ebf9-4801-8506-0e9d4a60fa6b
+      id: 00ca705e-0d89-43f9-8176-fea4dc6eaea5
       version: -1
       name: Containment Plan
       description: "This playbook handles all the containment actions available with Cortex XSIAM, including:  \n* Isolate endpoint\n* Disable account\n* Quarantine file\n* Block indicators\n* Clear user session (currently, the playbook supports only Okta)\n\nNote: The playbook inputs enable manipulating the execution flow; read the input descriptions for details."
@@ -1035,61 +1040,20 @@ tasks:
         simple: 'True'
       FileHash:
         complex:
-          root: alert
-          filters:
-          - - operator: isNotEqualString
-              left:
-                value:
-                  simple: alert.initiatorpath
-                iscontext: true
-              right:
-                value:
-                  simple: c:\windows\explorer.exe
-              ignorecase: true
-          accessor: initiatorsha256
-          transformers:
-          - operator: SetIfEmpty
-            args:
-              applyIfEmpty: {}
-              defaultValue:
-                value:
-                  simple: alert.targetprocesssha256
-                iscontext: true
+          root: inputs.ShouldManualReviewFP
       FilePath:
         complex:
-          root: alert.initiatorpath
-          filters:
-          - - operator: isNotEqualString
-              left:
-                value:
-                  simple: alert.initiatorpath
-                iscontext: true
-              right:
-                value:
-                  simple: c:\windows\explorer.exe
-              ignorecase: true
-          transformers:
-          - operator: SetIfEmpty
-            args:
-              applyIfEmpty: {}
-              defaultValue:
-                value:
-                  simple: alert.targetprocesscmd
-                iscontext: true
-          - operator: replaceMatch
-            args:
-              regex:
-                value:
-                  simple: \"
-              replaceWith: {}
+          root: inputs.Path
       FileRemediation:
         simple: Quarantine
       HostContainment:
         simple: 'True'
       IAMUserDomain:
-        simple: '@demisto.com'
+        simple: ''
       UserContainment:
-        simple: 'True'
+        simple: "True"
+      UserVerification:
+        simple: "False"
       Username:
         complex:
           root: alert
@@ -1116,13 +1080,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
-  '63':
-    id: '63'
-    taskid: ec40b96f-666a-4094-8ed3-e6aab59c2730
+  "63":
+    id: "63"
+    taskid: 461f2351-9e50-443b-8486-795bc963d33c
     type: playbook
     task:
-      id: ec40b96f-666a-4094-8ed3-e6aab59c2730
+      id: 461f2351-9e50-443b-8486-795bc963d33c
       version: -1
       name: Endpoint Investigation Plan
       description: "This playbook handles all the endpoint investigation actions available with Cortex XSIAM, including the following tasks:\n* Pre-defined MITRE tactics\n* Host fields (Host ID)\n* Attacker fields (Attacker IP, External host)\n* MITRE techniques\n* File hash (currently, the playbook supports only SHA256)  \n\nNote: The playbook inputs enable manipulating the execution flow; read the input descriptions for details."
@@ -1182,13 +1145,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
-  '64':
-    id: '64'
-    taskid: 5ea8b1bd-b5c1-4f74-8c99-d0c7cadbc788
+  "64":
+    id: "64"
+    taskid: f232d4e1-9457-469a-805a-2064f2f0c30e
     type: playbook
     task:
-      id: 5ea8b1bd-b5c1-4f74-8c99-d0c7cadbc788
+      id: f232d4e1-9457-469a-805a-2064f2f0c30e
       version: -1
       name: Containment Plan
       description: "This playbook handles all the containment actions available with Cortex XSIAM, including:  \n* Isolate endpoint\n* Disable account\n* Quarantine file\n* Block indicators\n* Clear user session (currently, the playbook supports only Okta)\n\nNote: The playbook inputs enable manipulating the execution flow; read the input descriptions for details."
@@ -1222,40 +1184,73 @@ tasks:
         simple: 'True'
       FileHash:
         complex:
-          root: foundIncidents.CustomFields
-          filters:
-          - - operator: isNotEqualString
-              left:
+          root: alert
+          transformers:
+          - operator: If-Then-Else
+            args:
+              condition:
                 value:
-                  simple: foundIncidents.CustomFields.initiatorpath
+                  simple: lhs!=rhs
+              conditionB: {}
+              conditionInBetween: {}
+              else:
+                value:
+                  simple: foundIncidents.CustomFields.initiatorsha256
                 iscontext: true
-              right:
+              equals: {}
+              lhs:
                 value:
-                  simple: c:\windows\explorer.exe
-              ignorecase: true
-          accessor: initiatorsha256
+                  simple: alert.filesha256
+                iscontext: true
+              lhsB: {}
+              options: {}
+              optionsB: {}
+              rhs: {}
+              rhsB: {}
+              then:
+                value:
+                  simple: foundIncidents.CustomFields.filesha256
+                iscontext: true
+          - operator: uniq
       FilePath:
         complex:
-          root: foundIncidents.CustomFields.initiatorpath
-          filters:
-          - - operator: isNotEqualString
-              left:
+          root: alert
+          transformers:
+          - operator: If-Then-Else
+            args:
+              condition:
+                value:
+                  simple: lhs!=rhs
+              conditionB: {}
+              conditionInBetween: {}
+              else:
                 value:
                   simple: foundIncidents.CustomFields.initiatorpath
                 iscontext: true
-              right:
+              equals: {}
+              lhs:
                 value:
-                  simple: c:\windows\explorer.exe
-              ignorecase: true
+                  simple: alert.filesha256
+                iscontext: true
+              lhsB: {}
+              options: {}
+              optionsB: {}
+              rhs: {}
+              rhsB: {}
+              then:
+                value:
+                  simple: foundIncidents.CustomFields.filepath
+                iscontext: true
+          - operator: uniq
       FileRemediation:
         complex:
           root: inputs.FileRemediation
       HostContainment:
-        simple: 'True'
-      IAMUserDomain:
-        simple: '@demisto.com'
+        simple: "True"
       UserContainment:
-        simple: 'True'
+        simple: "True"
+      UserVerification:
+        simple: "False"
       Username:
         complex:
           root: foundIncidents.CustomFields
@@ -1280,13 +1275,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
-  '65':
-    id: '65'
-    taskid: 285706e5-a4eb-43cc-872f-358f36b7130d
+  "65":
+    id: "65"
+    taskid: d59aca07-8dd0-410e-8c3f-a971980653cf
     type: playbook
     task:
-      id: 285706e5-a4eb-43cc-872f-358f36b7130d
+      id: d59aca07-8dd0-410e-8c3f-a971980653cf
       version: -1
       name: Eradication Plan
       description: "This playbook handles all the eradication actions available with Cortex XSIAM, including the following tasks:\n* Reset user password\n* Delete file\n* Kill process (currently, the playbook supports terminating a process by name)  \n\nNote: The playbook inputs enable manipulating the execution flow; read the input descriptions for details."
@@ -1307,8 +1301,33 @@ tasks:
           accessor: agentid
       FilePath:
         complex:
-          root: foundIncidents.CustomFields
-          accessor: initiatorpath
+          root: alert
+          transformers:
+          - operator: If-Then-Else
+            args:
+              condition:
+                value:
+                  simple: lhs!=rhs
+              conditionB: {}
+              conditionInBetween: {}
+              else:
+                value:
+                  simple: foundIncidents.CustomFields.initiatorpath
+                iscontext: true
+              equals: {}
+              lhs:
+                value:
+                  simple: alert.filesha256
+                iscontext: true
+              lhsB: {}
+              options: {}
+              optionsB: {}
+              rhs: {}
+              rhsB: {}
+              then:
+                value:
+                  simple: foundIncidents.CustomFields.filepath
+                iscontext: true
       FileRemediation:
         complex:
           root: inputs.FileRemediation
@@ -1336,13 +1355,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
-  '66':
-    id: '66'
-    taskid: a84ecff6-1daa-40b0-8019-eae05b7f50b4
+  "66":
+    id: "66"
+    taskid: 32acfe19-fb1e-43f7-8302-9f695f5173cb
     type: playbook
     task:
-      id: a84ecff6-1daa-40b0-8019-eae05b7f50b4
+      id: 32acfe19-fb1e-43f7-8302-9f695f5173cb
       version: -1
       name: Recovery Plan
       description: |-
@@ -1361,8 +1379,7 @@ tasks:
     scriptarguments:
       FileHash:
         complex:
-          root: alert
-          accessor: initiatorsha256
+          root: inputs.SHA256
       endpointID:
         complex:
           root: alert
@@ -1391,13 +1408,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
-  '67':
-    id: '67'
-    taskid: 2d05803b-4219-4a89-8fc0-797095488810
+  "67":
+    id: "67"
+    taskid: 58f335fb-7b1f-4de2-83e6-5c80421dbdc5
     type: playbook
     task:
-      id: 2d05803b-4219-4a89-8fc0-797095488810
+      id: 58f335fb-7b1f-4de2-83e6-5c80421dbdc5
       version: -1
       name: Handle False Positive Alerts
       playbookName: Handle False Positive Alerts
@@ -1413,11 +1429,13 @@ tasks:
     scriptarguments:
       FileSHA256:
         complex:
-          root: alert
-          accessor: initiatorsha256
+          root: inputs.SHA256
       ShouldCloseAutomatically:
         complex:
           root: inputs.AutoCloseAlert
+      ShouldHandleFPautomatically:
+        complex:
+          root: inputs.ShouldManualReviewFP
       alertName:
         complex:
           root: alert
@@ -1430,9 +1448,6 @@ tasks:
         complex:
           root: alert
           accessor: username
-      ShouldHandleFPautomatically:
-        complex:
-          root: inputs.ShouldManualReviewFP
     separatecontext: true
     loop:
       iscommand: false
@@ -1740,10 +1755,10 @@ tasks:
     continueonerrortype: ""
   "77":
     id: "77"
-    taskid: 6d77bb2d-ffee-4fe5-845f-7a7f1fd33fdb
+    taskid: 825db812-8d09-472e-8829-f2808842eb05
     type: regular
     task:
-      id: 6d77bb2d-ffee-4fe5-845f-7a7f1fd33fdb
+      id: 825db812-8d09-472e-8829-f2808842eb05
       version: -1
       name: Check for existing WF report
       description: Retrieves results for a file hash using WildFire.
@@ -1757,8 +1772,7 @@ tasks:
     scriptarguments:
       sha256:
         complex:
-          root: alert
-          accessor: initiatorsha256
+          root: inputs.SHA256
     separatecontext: false
     view: |-
       {
@@ -1842,7 +1856,7 @@ tasks:
       {
         "position": {
           "x": 430,
-          "y": -830
+          "y": -1350
         }
       }
     note: false
@@ -1868,7 +1882,7 @@ tasks:
       '#default#':
       - "2"
       True Positive:
-      - "6"
+      - "81"
     separatecontext: false
     conditions:
     - label: True Positive
@@ -1889,7 +1903,7 @@ tasks:
       {
         "position": {
           "x": 430,
-          "y": -680
+          "y": -1200
         }
       }
     note: false
@@ -1899,12 +1913,185 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "81":
+    id: "81"
+    taskid: 59958d6b-33b1-4e97-82d4-4c46bc7301ad
+    type: regular
+    task:
+      id: 59958d6b-33b1-4e97-82d4-4c46bc7301ad
+      version: -1
+      name: Set Incident Severity to High
+      description: commands.local.cmd.set.parent.incident.field
+      script: Builtin|||setParentIncidentFields
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "83"
+    scriptarguments:
+      manual_severity:
+        simple: high
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 900,
+          "y": -810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "83":
+    id: "83"
+    taskid: 827b7119-1b9f-4d4b-89d4-2e6b4c61f6da
+    type: condition
+    task:
+      id: 827b7119-1b9f-4d4b-89d4-2e6b4c61f6da
+      version: -1
+      name: Should open a ticket automatically in a ticketing system?
+      description: Checks whether to open a ticket automatically in a ticketing system.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "84"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.ShouldOpenTicket
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 900,
+          "y": -650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "84":
+    id: "84"
+    taskid: dc6ec815-5f93-49bb-89af-1ca132ce5acb
+    type: playbook
+    task:
+      id: dc6ec815-5f93-49bb-89af-1ca132ce5acb
+      version: -1
+      name: Ticket Management - Generic
+      description: "`Ticket Management - Generic` allows you to open new tickets or update comments to the existing ticket in the following ticketing systems:\n-ServiceNow \n-Zendesk \nusing the following sub-playbooks:\n-`ServiceNow - Ticket Management`\n-`Zendesk - Ticket Management`\n"
+      playbookName: Ticket Management - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      CommentToAdd:
+        complex:
+          root: inputs.CommentToAdd
+      ZendeskAssigne:
+        complex:
+          root: inputs.ZendeskAssigne
+      ZendeskCollaborators:
+        complex:
+          root: inputs.ZendeskCollaborators
+      ZendeskPriority:
+        complex:
+          root: inputs.ZendeskPriority
+      ZendeskRequester:
+        complex:
+          root: inputs.ZendeskRequester
+      ZendeskStatus:
+        complex:
+          root: inputs.ZendeskStatus
+      ZendeskSubject:
+        complex:
+          root: inputs.ZendeskSubject
+      ZendeskTags:
+        complex:
+          root: inputs.ZendeskTags
+      ZendeskType:
+        complex:
+          root: inputs.ZendeskType
+      addCommentPerEndpoint:
+        complex:
+          root: inputs.addCommentPerEndpoint
+      description:
+        complex:
+          root: inputs.description
+      serviceNowAssignmentGroup:
+        complex:
+          root: inputs.serviceNowAssignmentGroup
+      serviceNowCategory:
+        complex:
+          root: inputs.serviceNowCategory
+      serviceNowImpact:
+        complex:
+          root: inputs.serviceNowImpact
+      serviceNowSeverity:
+        complex:
+          root: inputs.serviceNowSeverity
+      serviceNowShortDescription:
+        complex:
+          root: inputs.serviceNowShortDescription
+      serviceNowTicketType:
+        complex:
+          root: inputs.serviceNowTicketType
+      serviceNowUrgency:
+        complex:
+          root: inputs.serviceNowUrgency
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 1140,
+          "y": -480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
       "14_39_#default#": 0.23,
       "2_33_#default#": 0.1,
-      "2_6_True Positive": 0.71,
+      "2_81_True Positive": 0.62,
       "34_39_No": 0.58,
       "34_67_Yes": 0.54,
       "46_47_#default#": 0.54,
@@ -1918,14 +2105,16 @@ view: |-
       "75_67_#default#": 0.67,
       "78_39_no": 0.14,
       "78_59_#default#": 0.72,
-      "80_6_True Positive": 0.57
+      "80_2_#default#": 0.48,
+      "80_81_True Positive": 0.5,
+      "83_84_yes": 0.38
     },
     "paper": {
       "dimensions": {
-        "height": 5595,
+        "height": 6155,
         "width": 1710,
         "x": 430,
-        "y": -1260
+        "y": -1800
       }
     }
   }
@@ -1987,6 +2176,163 @@ inputs:
     simple: "False"
   required: false
   description: Whether to ask for a manual review before false positive handling. Should be True or False
+  playbookInputQuery:
+- key: SHA256
+  value:
+    complex:
+      root: alert
+      transformers:
+      - operator: DT
+        args:
+          dt:
+            value:
+              simple: .=pickvalue(val);function pickvalue(x){if(x.filesha256){return x.filesha256} else {return x.initiatorsha256}}
+  required: false
+  description: The SHA256 hash of the file to respond to. Decided by the DT expression wether it's the initiator or the target file SHA256.
+  playbookInputQuery:
+- key: Path
+  value:
+    complex:
+      root: alert
+      transformers:
+      - operator: DT
+        args:
+          dt:
+            value:
+              simple: .=pickvalue(val);function pickvalue(x){if(x.filepath){return x.filepath} else {return x.initiatorpath}}
+  required: false
+  description: The path of the file to respond to. Decided by the DT expression wether it's the initiator or the target file path.
+  playbookInputQuery:
+- key: Query
+  value:
+    complex:
+      root: alert
+      transformers:
+      - operator: If-Then-Else
+        args:
+          condition:
+            value:
+              simple: lhs!=rhs
+          conditionB: {}
+          conditionInBetween: {}
+          else:
+            value:
+              simple: ${alert= '(initiatorsha256:"' + val.initiatorsha256 + '" or hostip:"' + val.hostip + '") ' + 'and sourceBrand:"' + val.sourceBrand + '" and name:"' + val.name + '"'}
+          equals: {}
+          lhs:
+            value:
+              simple: alert.filesha256
+            iscontext: true
+          lhsB: {}
+          options: {}
+          optionsB: {}
+          rhs: {}
+          rhsB: {}
+          then:
+            value:
+              simple: ${alert= '(filesha256:"' + val.filesha256 + '" or hostip:"' + val.hostip + '") ' + 'and sourceBrand:"' + val.sourceBrand + '" and name:"' + val.name + '"'}
+  required: false
+  description: The query for searching previous alerts based on the file we want to respond to. Decided by the If-Then-Else expression wether it's the initiator or the target file.
+  playbookInputQuery:
+- key: ShouldOpenTicket
+  value:
+    simple: "True"
+  required: false
+  description: Whether to open a ticket automatically in a ticketing system. (True/False).
+  playbookInputQuery:
+- key: serviceNowShortDescription
+  value:
+    simple: XSIAM Incident ID - ${parentIncidentFields.incident_id}
+  required: false
+  description: A short description of the ticket.
+  playbookInputQuery:
+- key: serviceNowImpact
+  value: {}
+  required: false
+  description: The impact for the new ticket. Leave empty for ServiceNow default impact.
+  playbookInputQuery:
+- key: serviceNowUrgency
+  value: {}
+  required: false
+  description: The urgency of the new ticket. Leave empty for ServiceNow default urgency.
+  playbookInputQuery:
+- key: serviceNowSeverity
+  value: {}
+  required: false
+  description: The severity of the new ticket. Leave empty for ServiceNow default severity.
+  playbookInputQuery:
+- key: serviceNowTicketType
+  value: {}
+  required: false
+  description: The ServiceNow ticket type. Options are "incident", "problem", "change_request", "sc_request", "sc_task", or "sc_req_item". Default is "incident".
+  playbookInputQuery:
+- key: serviceNowCategory
+  value: {}
+  required: false
+  description: The category of the ServiceNow ticket.
+  playbookInputQuery:
+- key: serviceNowAssignmentGroup
+  value: {}
+  required: false
+  description: The group to which to assign the new ticket.
+  playbookInputQuery:
+- key: ZendeskPriority
+  value: {}
+  required: false
+  description: The urgency with which the ticket should be addressed. Allowed values are "urgent", "high", "normal", or "low".
+  playbookInputQuery:
+- key: ZendeskRequester
+  value: {}
+  required: false
+  description: The user who requested this ticket.
+  playbookInputQuery:
+- key: ZendeskStatus
+  value: {}
+  required: false
+  description: The state of the ticket. Allowed values are "new", "open", "pending", "hold", "solved", or "closed".
+  playbookInputQuery:
+- key: ZendeskSubject
+  value:
+    simple: XSIAM Incident ID - ${parentIncidentFields.incident_id}
+  required: false
+  description: The value of the subject field for this ticket.
+  playbookInputQuery:
+- key: ZendeskTags
+  value: {}
+  required: false
+  description: The array of tags applied to this ticket.
+  playbookInputQuery:
+- key: ZendeskType
+  value: {}
+  required: false
+  description: The type of this ticket. Allowed values are "problem", "incident", "question", or "task".
+  playbookInputQuery:
+- key: ZendeskAssigne
+  value: {}
+  required: false
+  description: The agent currently assigned to the ticket.
+  playbookInputQuery:
+- key: ZendeskCollaborators
+  value: {}
+  required: false
+  description: The users currently CC'ed on the ticket.
+  playbookInputQuery:
+- key: description
+  value:
+    simple: ${parentIncidentFields.description}. ${parentIncidentFields.xdr_url}
+  required: false
+  description: The ticket description.
+  playbookInputQuery:
+- key: addCommentPerEndpoint
+  value: {}
+  required: false
+  description: 'Whether to append a new comment to the ticket for each endpoint in the incident. Possible values: True/False.'
+  playbookInputQuery:
+- key: CommentToAdd
+  value:
+    simple: '${alert.name}. Alert ID: ${alert.id}'
+  required: false
+  description: Comment for the ticket.
   playbookInputQuery:
 outputs: []
 tests:

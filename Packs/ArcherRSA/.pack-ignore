@@ -1,6 +1,3 @@
-[file:playbook-Archer_Playbook_Test.yml]
-ignore=auto-test
-
 [file:RSAArcher.yml]
 ignore=IN126
 
@@ -10,9 +7,12 @@ ignore=IN126
 [file:README.md]
 ignore=RM102,RM104,RM106
 
-
 [file:ArcherV2_image.png]
 ignore=IM111
 
 [file:RSAArcher_image.png]
 ignore=IM111
+
+[file:ArcherCreateIncidentExample.yml]
+ignore=BA124
+

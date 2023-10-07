@@ -1,0 +1,38 @@
+{
+    "kind": "collection#LocalUserObj",
+    "selfLink": "selfLink",
+    "rangeInfo": {
+        "offset": 0,
+        "limit": 5,
+        "total": 5
+    },
+    "items": [
+        {
+            "kind": "object#LocalUserObj",
+            "selfLink": "items[0]_selfLink",
+            "name": "I",
+            "MSCHAPauthenticated": false,
+            "privilegeLevel": 15,
+            "ASDM_CLIAccessType": "Full",
+            "objectId": "I"
+        },
+        {
+            "kind": "object#LocalUserObj",
+            "selfLink": "items[1]_selfLink",
+            "name": "Choose",
+            "MSCHAPauthenticated": false,
+            "privilegeLevel": 15,
+            "ASDM_CLIAccessType": "Full",
+            "objectId": "Choose"
+        },
+        {
+            "kind": "object#LocalUserObj",
+            "selfLink": "items[2]_selfLink",
+            "name": "You",
+            "MSCHAPauthenticated": false,
+            "privilegeLevel": 15,
+            "ASDM_CLIAccessType": "Full",
+            "objectId": "You"
+        }
+    ]
+}

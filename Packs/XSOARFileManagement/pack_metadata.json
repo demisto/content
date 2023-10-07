@@ -1,0 +1,21 @@
+{
+    "name": "XSOAR File Management",
+    "description": "This pack let user manipulate file inside XSOAR more easily than with the builtin functions.",
+    "support": "community",
+    "currentVersion": "1.0.1",
+    "author": "Pierre",
+    "url": "",
+    "email": "",
+    "created": "2023-02-07T13:03:55Z",
+    "categories": ["Utilities"],
+    "tags": [],
+    "useCases": [],
+    "keywords": ["File"],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "Winultimatum"
+    ]
+}

@@ -758,7 +758,7 @@ def setIntegrationContextVersioned(context, version=-1, sync=False):
     Returns:
       None: No data returned
 
-    """
+    """  # noqa: E501
     global integrationContext
     integrationContext = context
 
@@ -801,6 +801,10 @@ def incident():
     """Retrieves the current incident and all its fields (e.g. name, type).
     The incident custom fields will be populated as a `dict` under the CustomFields attribute
     (for example the `filename` custom field can be retrieved using `demisto.incident()['CustomFields'].get('filename')`).
+
+    demisto.incident gets the data from the script on the beginning of the execution,
+    hence if updating the incident context during script execution,
+    it won't be reflected when calling demisto.incident, which will return stale context data.
 
     Returns:
       dict: dict representing an incident object
@@ -1202,7 +1206,7 @@ def searchRelationships(args):
     Retrieves Indicators Relationship data according to given filters.
     Args:
       args (dict): The relationships filter object.
-        Should contain a "filter" item, holding any of the relationship filters, E.g.:
+        A dictionary with the following keys:
         - size (int)
         - relationshipNames (List[str])
         - entities (List[str])
@@ -1220,7 +1224,7 @@ def searchRelationships(args):
 
     Example (partial results):
     ```
-    >>> demisto.searchRelationships({"filter": {"entities": ["8.8.8.8", "google.com"], "size": 2}})
+    >>> demisto.searchRelationships({"entities": ["8.8.8.8", "google.com"], "size": 2})
         {
         "total": 2,
         "data": [

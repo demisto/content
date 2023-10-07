@@ -3,124 +3,20 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 """IMPORTS"""
-import boto3
 import json
-from datetime import datetime, date, timedelta
-from botocore.config import Config
+from datetime import datetime, date
+import dateparser
 
 
-"""GLOBAL VARIABLES"""
-AWS_DEFAULT_REGION = demisto.params().get('defaultRegion')
-AWS_ROLE_ARN = demisto.params().get('roleArn')
-AWS_ROLE_SESSION_NAME = demisto.params().get('roleSessionName')
-AWS_ROLE_SESSION_DURATION = demisto.params().get('sessionDuration')
-AWS_ROLE_POLICY = None
-AWS_ACCESS_KEY_ID = demisto.params().get('credentials', {}).get('identifier') or demisto.params().get('access_key')
-AWS_SECRET_ACCESS_KEY = demisto.params().get('credentials', {}).get('password') or demisto.params().get('secret_key')
-VERIFY_CERTIFICATE = not demisto.params().get('insecure', True)
-TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
-proxies = handle_proxy(proxy_param_name='proxy', checkbox_default_value=False)
-config = Config(
-    connect_timeout=1,
-    retries=dict(
-        max_attempts=5
-    ),
-    proxies=proxies
-)
+def get_aws_session(aws_client, args, **kwargs):
 
-
-def aws_session(service='accessanalyzer', region=None, roleArn=None, roleSessionName=None, roleSessionDuration=None,
-                rolePolicy=None):
-    kwargs = {}
-    if roleArn and roleSessionName is not None:
-        kwargs.update({
-            'RoleArn': roleArn,
-            'RoleSessionName': roleSessionName,
-        })
-    elif AWS_ROLE_ARN and AWS_ROLE_SESSION_NAME is not None:
-        kwargs.update({
-            'RoleArn': AWS_ROLE_ARN,
-            'RoleSessionName': AWS_ROLE_SESSION_NAME,
-        })
-
-    if roleSessionDuration is not None:
-        kwargs.update({'DurationSeconds': int(roleSessionDuration)})
-    elif AWS_ROLE_SESSION_DURATION is not None:
-        kwargs.update({'DurationSeconds': int(AWS_ROLE_SESSION_DURATION)})
-
-    if rolePolicy is not None:
-        kwargs.update({'Policy': rolePolicy})
-    elif AWS_ROLE_POLICY is not None:
-        kwargs.update({'Policy': AWS_ROLE_POLICY})
-    if kwargs and not AWS_ACCESS_KEY_ID:
-
-        if not AWS_ACCESS_KEY_ID:
-            sts_client = boto3.client('sts', config=config, verify=VERIFY_CERTIFICATE,
-                                      region_name=AWS_DEFAULT_REGION)
-            sts_response = sts_client.assume_role(**kwargs)
-            if region is not None:
-                client = boto3.client(
-                    service_name=service,
-                    region_name=region,
-                    aws_access_key_id=sts_response['Credentials']['AccessKeyId'],
-                    aws_secret_access_key=sts_response['Credentials']['SecretAccessKey'],
-                    aws_session_token=sts_response['Credentials']['SessionToken'],
-                    verify=VERIFY_CERTIFICATE,
-                    config=config
-                )
-            else:
-                client = boto3.client(
-                    service_name=service,
-                    region_name=AWS_DEFAULT_REGION,
-                    aws_access_key_id=sts_response['Credentials']['AccessKeyId'],
-                    aws_secret_access_key=sts_response['Credentials']['SecretAccessKey'],
-                    aws_session_token=sts_response['Credentials']['SessionToken'],
-                    verify=VERIFY_CERTIFICATE,
-                    config=config
-                )
-    elif AWS_ACCESS_KEY_ID and AWS_ROLE_ARN:
-        sts_client = boto3.client(
-            service_name='sts',
-            aws_access_key_id=AWS_ACCESS_KEY_ID,
-            aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
-            verify=VERIFY_CERTIFICATE,
-            config=config
-        )
-        kwargs.update({
-            'RoleArn': AWS_ROLE_ARN,
-            'RoleSessionName': AWS_ROLE_SESSION_NAME,
-        })
-        sts_response = sts_client.assume_role(**kwargs)
-        client = boto3.client(
-            service_name=service,
-            region_name=AWS_DEFAULT_REGION,
-            aws_access_key_id=sts_response['Credentials']['AccessKeyId'],
-            aws_secret_access_key=sts_response['Credentials']['SecretAccessKey'],
-            aws_session_token=sts_response['Credentials']['SessionToken'],
-            verify=VERIFY_CERTIFICATE,
-            config=config
-        )
-    else:
-        if region is not None:
-            client = boto3.client(
-                service_name=service,
-                region_name=region,
-                aws_access_key_id=AWS_ACCESS_KEY_ID,
-                aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
-                verify=VERIFY_CERTIFICATE,
-                config=config
-            )
-        else:
-            client = boto3.client(
-                service_name=service,
-                region_name=AWS_DEFAULT_REGION,
-                aws_access_key_id=AWS_ACCESS_KEY_ID,
-                aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
-                verify=VERIFY_CERTIFICATE,
-                config=config
-            )
-
-    return client
+    return aws_client.aws_session(
+        service='accessanalyzer',
+        region=args.get('region'),
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
+        **kwargs)
 
 
 class DatetimeEncoder(json.JSONEncoder):
@@ -134,298 +30,266 @@ class DatetimeEncoder(json.JSONEncoder):
         return json.JSONEncoder.default(self, obj)
 
 
-def list_analyzers_command(args):
-    client = aws_session(
-        region=args.get('region'),
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration')
-    )
+def list_analyzers_command(aws_client, args):
 
-    data = []
-
+    client = get_aws_session(aws_client, args)
     response = client.list_analyzers()
-    for analyzer in response['analyzers']:
-        data.append(analyzer)
-    data = json.loads(json.dumps(data, cls=DatetimeEncoder))
-
-    ec = {'AWS.AccessAnalyzer.Analyzers(val.arn === obj.arn)': data}
-    human_readable = tableToMarkdown("AWS Access Analyzer Analyzers", data)
-    return_outputs(human_readable, ec)
-
-
-def list_analyzed_resource_command(args):
-    client = aws_session(
-        region=args.get('region'),
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+    rew_response = json.loads(json.dumps(response, cls=DatetimeEncoder))
+    analyzers = rew_response['analyzers']
+    return CommandResults(
+        outputs_prefix='AWS.AccessAnalyzer.Analyzers',
+        outputs_key_field='arn',
+        outputs=analyzers,
+        readable_output=tableToMarkdown("AWS Access Analyzer Analyzers", analyzers, headerTransform=pascalToSpace),
+        raw_response=rew_response
     )
 
-    kwargs = {
-        'analyzerArn': args.get('analyzerArn')
-    }
 
+def list_analyzed_resource_command(aws_client, args):
+    analyzer_arn = args.get('analyzerArn')
+    kwargs = {
+        'analyzerArn': analyzer_arn,
+    }
     if args.get('maxResults'):
         kwargs['maxResults'] = int(args.get('maxResults'))
     if args.get('resourceType'):
         kwargs['resourceType'] = args.get('resourceType')
 
+    client = get_aws_session(aws_client, args)
     response = client.list_analyzed_resources(**kwargs)
-    data = []
-    for resource in response['analyzedResources']:
-        resource['analyzerArn'] = args.get('analyzerArn')
-        data.append(resource)
-
-    ec = {'AWS.AccessAnalyzer.Analyzers(val.analyzerArn === obj.analyzerArn)': data}
-    human_readable = tableToMarkdown("AWS Access Analyzer Resource", data)
-    return_outputs(human_readable, ec)
-
-
-def get_findings_command(args):
-    client = aws_session(
-        region=args.get('region'),
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+    analyzed_resources = [
+        resource | {'analyzerArn': analyzer_arn}
+        for resource in response['analyzedResources']
+    ]
+    headers = ['resourceArn', 'resourceOwnerAccount', 'resourceType']
+    return CommandResults(
+        outputs_prefix='AWS.AccessAnalyzer.Resource',
+        outputs_key_field='resourceArn',
+        outputs=analyzed_resources,
+        readable_output=tableToMarkdown("AWS Access Analyzer Resources",
+                                        analyzed_resources,
+                                        headers=headers,
+                                        headerTransform=pascalToSpace),
+        raw_response=response
     )
 
+
+def list_findings_command(aws_client, args):
+    response = get_findings(aws_client, args)
+    findings = [
+        finding | {'analyzerArn': args.get('analyzerArn')}
+        for finding in response['findings']
+    ]
+    headers = ['id', 'resource', 'principal', 'condition', 'updatedAt', 'status']
+    return CommandResults(
+        outputs_prefix='AWS.AccessAnalyzer.Finding',
+        outputs_key_field='id',
+        outputs=findings,
+        readable_output=tableToMarkdown("AWS Access Analyzer Findings",
+                                        findings,
+                                        headers=headers,
+                                        headerTransform=pascalToSpace),
+        raw_response=response
+    )
+
+
+def get_analyzed_resource_command(aws_client, args):
+
+    client = get_aws_session(aws_client, args)
+    response = client.get_analyzed_resource(analyzerArn=args.get('analyzerArn'), resourceArn=args.get('resourceArn'))
+
+    response = json.loads(json.dumps(response, cls=DatetimeEncoder))
+    resource = response['resource']
+    resource['analyzerArn'] = args.get('analyzerArn')
+
+    return CommandResults(
+        outputs_prefix='AWS.AccessAnalyzer.Resource',
+        outputs_key_field='id',
+        outputs=resource,
+        readable_output=tableToMarkdown("AWS Access Analyzer Resource", resource, headerTransform=pascalToSpace),
+        raw_response=response
+    )
+
+
+def get_finding_command(aws_client, args):
+
+    client = get_aws_session(aws_client, args)
+    response = client.get_finding(analyzerArn=args.get('analyzerArn'), id=args.get('findingId'))
+    response = json.loads(json.dumps(response, cls=DatetimeEncoder))
+    finding = response['finding']
+    finding['analyzerArn'] = args.get('analyzerArn')
+
+    return CommandResults(
+        outputs_prefix='AWS.AccessAnalyzer.Finding',
+        outputs_key_field='id',
+        outputs=finding,
+        readable_output=tableToMarkdown("AWS Access Analyzer Finding", finding, headerTransform=pascalToSpace),
+        raw_response=response
+    )
+
+
+def start_resource_scan_command(aws_client, args):
+    client = get_aws_session(aws_client, args)
+    client.start_resource_scan(analyzerArn=args.get('analyzerArn'), resourceArn=args.get('resourceArn'))
+    return "Resource scan request sent."
+
+
+def update_findings_command(aws_client, args):
+    client = get_aws_session(aws_client, args)
     kwargs = {
-        'analyzerArn': args.get('analyzerArn')
+        'analyzerArn': args.get('analyzerArn'),
+        'ids': argToList(args.get('findingIds')),
+        'status': args.get('status')
+    }
+
+    client.update_findings(**kwargs)
+    return "Findings updated."
+
+
+def test_function(aws_client, args) -> str:
+    err_msg = ''
+    try:
+        client = get_aws_session(aws_client, args)
+        response = client.list_analyzers()
+        if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+            return 'ok'
+
+        err_msg = str(response)
+    except Exception as e:
+        err_msg = str(e)
+
+    raise DemistoException(f'Failed to run test-module: {err_msg}')
+
+
+def get_filters(args):
+    return {
+        field: {"eq": [args.get(field)]}
+        for field in ('resourceType', 'status')
+        if args.get(field)
+    }
+
+
+def get_findings(aws_client, args):
+    kwargs = {
+        'analyzerArn': args.get('analyzerArn'),
+        'sort': {
+            'attributeName': 'UpdatedAt',
+            'orderBy': 'DESC'
+        }
     }
 
     if args.get('maxResults'):
         kwargs['maxResults'] = int(args.get('maxResults'))
-
-    filters = {}
-    if args.get('resourceType'):
-        filters['resourceType'] = {"eq": [args.get('resourceType')]}
-
-    if args.get('status'):
-        filters['status'] = {"eq": [args.get('status')]}
 
     if args.get('nextToken'):
         kwargs['nextToken'] = args.get('nextToken')
 
-    kwargs['sort'] = {
-        'attributeName': 'UpdatedAt',
-        'orderBy': 'DESC'
-    }
-
-    if len(filters) > 0:
+    if filters := get_filters(args):
         kwargs['filter'] = filters
 
+    client = get_aws_session(aws_client, args)
     response = client.list_findings(**kwargs)
-    data = json.loads(json.dumps(response, cls=DatetimeEncoder))
-
-    return [data] if isinstance(data, dict) else data
+    return json.loads(json.dumps(response, cls=DatetimeEncoder))
 
 
-def list_findings_command(args):
-    client = aws_session(
-        region=args.get('region'),
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
-    )
-
-    kwargs = {
-        'analyzerArn': args.get('analyzerArn')
-    }
-
-    if args.get('maxResults'):
-        kwargs['maxResults'] = int(args.get('maxResults'))
-
-    filters = {}
-    if args.get('resourceType'):
-        filters['resourceType'] = {"eq": [args.get('resourceType')]}
-
-    if args.get('status'):
-        filters['status'] = {"eq": [args.get('status')]}
-
-    if len(filters) > 0:
-        kwargs['filter'] = filters
-
-    response = client.list_findings(**kwargs)
-    data = json.loads(json.dumps(response['findings'], cls=DatetimeEncoder))
-
-    ec = {'AWS.AccessAnalyzer.Findings(val.id === obj.id)': data}
-    human_readable = tableToMarkdown("AWS Access Analyzer Findings", data)
-    return_outputs(human_readable, ec)
-
-
-def get_analyzed_resource_command(args):
-    client = aws_session(
-        region=args.get('region'),
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
-    )
-
-    kwargs = {
-        'analyzerArn': args.get('analyzerArn'),
-        'resourceArn': args.get('resourceArn')
-    }
-
-    response = client.get_analyzed_resource(**kwargs)
-    data = json.loads(json.dumps(response['resource'], cls=DatetimeEncoder))
-    data['analyzerArn'] = args.get('analyzerArn')
-
-    ec = {'AWS.AccessAnalyzer.Analyzers(val.analyzerArn === obj.analyzerArn)': data}
-    human_readable = tableToMarkdown("AWS Access Analyzer Resource", data)
-    return_outputs(human_readable, ec)
-
-
-def get_finding_command(args):
-    client = aws_session(
-        region=args.get('region'),
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
-    )
-
-    kwargs = {
-        'analyzerArn': args.get('analyzerArn'),
-        'id': args.get('findingId')
-    }
-
-    response = client.get_finding(**kwargs)
-    data = json.loads(json.dumps(response['finding'], cls=DatetimeEncoder))
-    data['analyzerArn'] = args.get('analyzerArn')
-
-    ec = {'AWS.AccessAnalyzer.Analyzers(val.analyzerArn === obj.analyzerArn)': data}
-    human_readable = tableToMarkdown("AWS Access Analyzer Resource", data)
-    return_outputs(human_readable, ec)
-
-
-def start_resource_scan_command(args):
-    client = aws_session(
-        region=args.get('region'),
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
-    )
-
-    kwargs = {
-        'analyzerArn': args.get('analyzerArn'),
-        'resourceArn': args.get('resourceArn')
-    }
-
-    response = client.start_resource_scan(**kwargs)
-    if response['ResponseMetadata']['HTTPStatusCode'] == 200:
-        demisto.results("Resource scan request sent.")
-
-
-def update_findings_command(args):
-    client = aws_session(
-        region=args.get('region'),
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
-    )
-
-    ids = args.get('findingIds').split(',')
-
-    kwargs = {
-        'analyzerArn': args.get('analyzerArn'),
-        'ids': ids,
-        'status': args.get('status')
-    }
-
-    response = client.update_findings(**kwargs)
-    if response['ResponseMetadata']['HTTPStatusCode'] == 200:
-        demisto.results("Findings updated")
-
-
-def test_function():
-    try:
-        client = aws_session()
-        response = client.list_analyzers()
-        if response['ResponseMetadata']['HTTPStatusCode'] == 200:
-            demisto.results('ok')
-        else:
-            return_error(str(response))
-
-    except Exception as e:
-        return return_error(str(e))
-
-
-def fetch_incidents(last_run: dict = None):
-    dParams = demisto.params()
-    # Get the last fetch time, if exists
-    last_fetch = last_run.get('time') if isinstance(last_run, dict) else None
-
+def get_earliest_fetch_time():
+    last_run = demisto.getLastRun()
+    params = demisto.params()
+    earliest_fetch_time = last_run and last_run.get('time')
+    demisto.debug(f'{last_run=}')
     # Handle first time fetch, fetch incidents retroactively
-    if last_fetch is None:
-        today = datetime.today()
-        delta = today - timedelta(days=50)
-        last_fetch = date_to_timestamp(delta)
+    if not earliest_fetch_time:
+        first_fetch = dateparser.parse(params.get('first_fetch', '3 days'))
+        earliest_fetch_time = date_to_timestamp(first_fetch)
+    return earliest_fetch_time
 
+
+def fetch_incidents(aws_client):
+    params = demisto.params()
+    findings_args = {
+        'roleArn': params.get('roleArn'),
+        'region': params.get('region'),
+        'roleSessionName': params.get('roleSessionName'),
+        'roleSessionDuration': params.get('roleSessionDuration'),
+        'analyzerArn': params.get('analyzerArn'),
+        'maxResults': int(params.get('max_fetch', 25))
+    }
+
+    latest_finding_time = earliest_fetch_time = get_earliest_fetch_time()
     incidents: list = []
-    dArgs = {}
-    dArgs['roleArn'] = dParams.get('roleArn')
-    dArgs['region'] = dParams.get('region')
-    dArgs['roleSessionName'] = dParams.get('roleSessionName')
-    dArgs['roleSessionDuration'] = dParams.get('roleSessionDuration')
-    dArgs['analyzerArn'] = dParams.get('analyzerArn')
-    dArgs['maxResults'] = 25
+    should_stop_fetch = False
 
-    nextToken = None
-    incidents = []
-    tmp_last_fetch = last_fetch
-
+    demisto.debug(f'{findings_args=}')
+    demisto.debug(f'{earliest_fetch_time=}')
     while True:
+        findings_response = get_findings(aws_client, findings_args)
+        for finding in findings_response['findings']:
 
-        if nextToken:
-            dArgs['nextToken'] = nextToken
-        raw_incidents = get_findings_command(dArgs)
-
-        for raw_incident in raw_incidents[0]['findings']:
-            incident = {
-                'name': f"AWS Access Analyzer Alert - {raw_incident['id']}",
-                'occurred': raw_incident['updatedAt'] + 'Z',
-                'rawJSON': json.dumps(raw_incident)
-            }
-
-            inc_timestamp = date_to_timestamp(raw_incident['updatedAt'])
-
-            if inc_timestamp > int(last_fetch):
-                incidents.append(incident)
-                if inc_timestamp > tmp_last_fetch:
-                    tmp_last_fetch = inc_timestamp
-            else:
+            finding_timestamp = date_to_timestamp(finding['updatedAt'])
+            if finding_timestamp <= int(earliest_fetch_time):
+                demisto.debug(f'{finding_timestamp=} is less then {earliest_fetch_time=} - stop fetching')
+                should_stop_fetch = True
                 break
 
-        if 'nextToken' in raw_incidents[0]:
-            nextToken = raw_incidents[0]['nextToken']
-        else:
+            latest_finding_time = max(finding_timestamp, int(latest_finding_time))
+            incidents.append({
+                'name': f"AWS Access Analyzer Alert - {finding['id']}",
+                'occurred': finding['updatedAt'] + 'Z',
+                'rawJSON': json.dumps(finding)
+            })
+
+        if should_stop_fetch or 'nextToken' not in findings_response:
             break
 
-    demisto.setLastRun({"time": tmp_last_fetch if tmp_last_fetch else last_fetch})
-    return incidents
+        findings_args['nextToken'] = findings_response['nextToken']
+
+    demisto.debug(f'next last_run: {latest_finding_time=}')
+    demisto.setLastRun({"time": latest_finding_time})
+    demisto.incidents(incidents)
 
 
-"""EXECUTION BLOCK"""
-try:
-    if demisto.command() == 'test-module':
-        result = test_function()
-    elif demisto.command() == 'fetch-incidents':
-        incidents = fetch_incidents(demisto.getLastRun())
-        demisto.incidents(incidents)
-    elif demisto.command() == 'aws-access-analyzer-list-analyzers':
-        list_analyzers_command(demisto.args())
-    elif demisto.command() == 'aws-access-analyzer-list-analyzed-resource':
-        list_analyzed_resource_command(demisto.args())
-    elif demisto.command() == 'aws-access-analyzer-list-findings':
-        list_findings_command(demisto.args())
-    elif demisto.command() == 'aws-access-analyzer-get-analyzed-resource':
-        get_analyzed_resource_command(demisto.args())
-    elif demisto.command() == 'aws-access-analyzer-get-finding':
-        get_finding_command(demisto.args())
-    elif demisto.command() == 'aws-access-analyzer-start-resource-scan':
-        start_resource_scan_command(demisto.args())
-    elif demisto.command() == 'aws-access-analyzer-update-findings':
-        update_findings_command(demisto.args())
+def main():
+    params = demisto.params()
+    aws_default_region = params.get('defaultRegion')
+    aws_role_arn = params.get('role_arn')
+    aws_role_session_name = params.get('role_session_name')
+    aws_role_session_duration = params.get('sessionDuration')
+    aws_role_policy = None
+    aws_access_key_id = params.get('credentials', {}).get('identifier') or params.get('access_key')
+    aws_secret_access_key = params.get('credentials', {}).get('password') or params.get('secret_key')
+    verify_certificate = not params.get('insecure', True)
+    timeout = demisto.params().get('timeout')
+    retries = demisto.params().get('retries', 5)
+    validate_params(aws_default_region, aws_role_arn,
+                    aws_role_session_name, aws_access_key_id,
+                    aws_secret_access_key)
 
-except Exception as e:
-    return_error(f"Error has occured in AWS Access Analyzer Integration: {str(e)}")
+    aws_client = AWSClient(aws_default_region, aws_role_arn, aws_role_session_name, aws_role_session_duration,
+                           aws_role_policy, aws_access_key_id, aws_secret_access_key, verify_certificate, timeout,
+                           retries)
+
+    command = demisto.command()
+    args = demisto.args()
+    commands = {
+        'test-module': test_function,
+        'aws-access-analyzer-list-analyzers': list_analyzers_command,
+        'aws-access-analyzer-list-analyzed-resource': list_analyzed_resource_command,
+        'aws-access-analyzer-list-findings': list_findings_command,
+        'aws-access-analyzer-get-analyzed-resource': get_analyzed_resource_command,
+        'aws-access-analyzer-get-finding': get_finding_command,
+        'aws-access-analyzer-start-resource-scan': start_resource_scan_command,
+        'aws-access-analyzer-update-findings': update_findings_command,
+    }
+    try:
+        if command == 'fetch-incidents':
+            fetch_incidents(aws_client)
+        else:
+            return_results(commands[command](aws_client, args))
+    except Exception as e:
+        return_error(f"Error has occurred in AWS Access Analyzer Integration: {str(e)}")
+
+
+from AWSApiModule import *  # noqa: E402
+
+if __name__ in ('__builtin__', 'builtins', '__main__'):
+    main()

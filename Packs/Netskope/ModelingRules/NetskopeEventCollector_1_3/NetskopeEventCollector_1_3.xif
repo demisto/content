@@ -40,7 +40,8 @@ filter source_log_event = "page"
     xdm.target.location.longitude = to_float(dst_longitude),
 	xdm.target.location.region = dst_region,
 	xdm.target.location.timezone = dst_timezone,
-	xdm.target.port = dstport,
+	xdm.target.port = to_integer(dstport),
+	xdm.source.port = to_integer(srcport),	
 	xdm.target.sent_bytes = server_bytes,
 	xdm.target.url = page,
 	xdm.target.user.identifier = userkey;
@@ -65,7 +66,7 @@ filter source_log_event = "application"
 	xdm.auth.auth_method = access_method,
 	xdm.event.id = to_string(request_id),
 	xdm.observer.action = activity,
-	xdm.event.outcome = if(lower_b = "block", "FAILED", lower_b = "alert", "PARTIAL", lower_b = "allow", "SUCCESS", lower_b = "useralert", "PARTIAL", lower_b = "Detection", "PARTIAL", lower_b = "bypass", "SUCCESS", lower_b = "restrictToView", "SUCCESS", lower_b = "disableDownload", "FAILED", lower_b = "legalHold", "UNKNOWN", lower_b = "expireLink", "FAILED", lower_b = "restrictAccess", "FAILED", lower_b = "delete", "SUCCESS", lower_b = "quarantine", "SUCCESS", lower_b = "anomaly_detection", "PARTIAL", lower_b = "Detection", "PARTIAL", "UNKNOWN"),
+	xdm.event.outcome = if(lower_b = "block", XDM_CONST.OUTCOME_FAILED, lower_b = "alert", XDM_CONST.OUTCOME_PARTIAL, lower_b = "allow", XDM_CONST.OUTCOME_SUCCESS, lower_b = "useralert", XDM_CONST.OUTCOME_PARTIAL, lower_b = "Detection", XDM_CONST.OUTCOME_PARTIAL, lower_b = "bypass", XDM_CONST.OUTCOME_SUCCESS, lower_b = "restrictToView", XDM_CONST.OUTCOME_SUCCESS, lower_b = "disableDownload", XDM_CONST.OUTCOME_FAILED, lower_b = "legalHold", XDM_CONST.OUTCOME_UNKNOWN, lower_b = "expireLink", XDM_CONST.OUTCOME_FAILED, lower_b = "restrictAccess", XDM_CONST.OUTCOME_FAILED, lower_b = "delete", XDM_CONST.OUTCOME_SUCCESS, lower_b = "quarantine", XDM_CONST.OUTCOME_SUCCESS, lower_b = "anomaly_detection", XDM_CONST.OUTCOME_PARTIAL, lower_b = "Detection", XDM_CONST.OUTCOME_PARTIAL, lower_b = null, null, to_string(lower_b)),
 	xdm.event.outcome_reason = activity_status,
 	xdm.event.type = if(type = "nspolicy", coalesce(event_type, type), coalesce(type, event_type)),
 	xdm.network.http.browser = browser,
@@ -109,7 +110,8 @@ filter source_log_event = "application"
     xdm.target.location.longitude = to_float(dst_longitude),
 	xdm.target.location.region = dst_region,
 	xdm.target.location.timezone = dst_timezone,
-	xdm.target.port = dstport,
+	xdm.target.port = to_integer(dstport),
+	xdm.source.port = to_integer(srcport),	
 	xdm.target.sent_bytes = server_bytes,
 	xdm.target.url = coalesce(page, web_url),
 	xdm.target.user.identifier = userkey;
@@ -134,7 +136,7 @@ filter source_log_event = "alert"
 	xdm.auth.auth_method = access_method,
 	xdm.event.id = to_string(request_id),
 	xdm.observer.action = activity,
-	xdm.event.outcome = if(lower_b = "block", "FAILED", lower_b = "alert", "PARTIAL", lower_b = "allow", "SUCCESS", lower_b = "useralert", "PARTIAL", lower_b = "Detection", "PARTIAL", lower_b = "bypass", "SUCCESS", lower_b = "restrictToView", "SUCCESS", lower_b = "disableDownload", "FAILED", lower_b = "legalHold", "UNKNOWN", lower_b = "expireLink", "FAILED", lower_b = "restrictAccess", "FAILED", lower_b = "delete", "SUCCESS", lower_b = "quarantine", "SUCCESS", lower_b = "anomaly_detection", "PARTIAL", lower_b = "Detection", "PARTIAL", "UNKNOWN"),
+	xdm.event.outcome = if(lower_b = "block", XDM_CONST.OUTCOME_FAILED, lower_b = "alert", XDM_CONST.OUTCOME_PARTIAL, lower_b = "allow", XDM_CONST.OUTCOME_SUCCESS, lower_b = "useralert", XDM_CONST.OUTCOME_PARTIAL, lower_b = "Detection", XDM_CONST.OUTCOME_PARTIAL, lower_b = "bypass", XDM_CONST.OUTCOME_SUCCESS, lower_b = "restrictToView", XDM_CONST.OUTCOME_SUCCESS, lower_b = "disableDownload", XDM_CONST.OUTCOME_FAILED, lower_b = "legalHold", XDM_CONST.OUTCOME_UNKNOWN, lower_b = "expireLink", XDM_CONST.OUTCOME_FAILED, lower_b = "restrictAccess", XDM_CONST.OUTCOME_FAILED, lower_b = "delete", XDM_CONST.OUTCOME_SUCCESS, lower_b = "quarantine", XDM_CONST.OUTCOME_SUCCESS, lower_b = "anomaly_detection", XDM_CONST.OUTCOME_PARTIAL, lower_b = "Detection", XDM_CONST.OUTCOME_PARTIAL, lower_b = null, null, to_string(lower_b)),
 	xdm.event.outcome_reason = activity_status,
 	xdm.event.type = if(type != "nspolicy", coalesce(type, event_type), coalesce(event_type, type)),
 	xdm.network.http.browser = browser,
@@ -178,7 +180,8 @@ filter source_log_event = "alert"
     xdm.target.location.longitude = to_float(dst_longitude),
 	xdm.target.location.region = dst_region,
 	xdm.target.location.timezone = dst_timezone,
-	xdm.target.port = dstport,
+	xdm.target.port = to_integer(dstport),
+	xdm.source.port = to_integer(srcport),	
 	xdm.target.sent_bytes = server_bytes,
 	xdm.target.url = coalesce(page, web_url),
 	xdm.target.user.identifier = userkey;
@@ -191,7 +194,7 @@ filter source_log_event = "audit" or type = "admin_audit_logs"
 	xdm.alert.severity = coalesce(to_string(severity_level), ccl),
 	xdm.observer.action = audit_log_event,
 	xdm.alert.subcategory = if(json_extract_scalar(supporting_data, "$.data_type") = "policy", json_extract_scalar(supporting_data, "$.data_values[0]"), null),
-	xdm.event.description = details;
+	xdm.event.description = to_string(details);
 // Network Logs
 filter source_log_event = "network"
 | alter
@@ -204,7 +207,7 @@ filter source_log_event = "network"
 	xdm.network.ip_protocol = ip_protocol,
 	xdm.alert.severity = coalesce(severity, ccl),
 	xdm.auth.auth_method = access_method,
-	xdm.event.outcome = if(lower_b = "block", "FAILED", lower_b = "alert", "PARTIAL", lower_b = "allow", "SUCCESS", lower_b = "useralert", "PARTIAL", lower_b = "Detection", "PARTIAL", lower_b = "bypass", "SUCCESS", lower_b = "restrictToView", "SUCCESS", lower_b = "disableDownload", "FAILED", lower_b = "legalHold", "UNKNOWN", lower_b = "expireLink", "FAILED", lower_b = "restrictAccess", "FAILED", lower_b = "delete", "SUCCESS", lower_b = "quarantine", "SUCCESS", lower_b = "anomaly_detection", "PARTIAL", lower_b = "Detection", "PARTIAL", "UNKNOWN"),
+	xdm.event.outcome = if(lower_b = "block", XDM_CONST.OUTCOME_FAILED, lower_b = "alert", XDM_CONST.OUTCOME_PARTIAL, lower_b = "allow", XDM_CONST.OUTCOME_SUCCESS, lower_b = "useralert", XDM_CONST.OUTCOME_PARTIAL, lower_b = "Detection", XDM_CONST.OUTCOME_PARTIAL, lower_b = "bypass", XDM_CONST.OUTCOME_SUCCESS, lower_b = "restrictToView", XDM_CONST.OUTCOME_SUCCESS, lower_b = "disableDownload", XDM_CONST.OUTCOME_FAILED, lower_b = "legalHold", XDM_CONST.OUTCOME_UNKNOWN, lower_b = "expireLink", XDM_CONST.OUTCOME_FAILED, lower_b = "restrictAccess", XDM_CONST.OUTCOME_FAILED, lower_b = "delete", XDM_CONST.OUTCOME_SUCCESS, lower_b = "quarantine", XDM_CONST.OUTCOME_SUCCESS, lower_b = "anomaly_detection", XDM_CONST.OUTCOME_PARTIAL, lower_b = "Detection", XDM_CONST.OUTCOME_PARTIAL, lower_b = null, null, to_string(lower_b)),
 	xdm.event.type = type,
 	xdm.source.application.name = app,
 	xdm.source.host.hostname = hostname,
@@ -219,7 +222,8 @@ filter source_log_event = "network"
 	xdm.target.domain = type_web,
 	xdm.target.host.hostname = dsthost,
 	xdm.target.ipv4 = dstip,
-	xdm.target.port = dstport,
+	xdm.target.port = to_integer(dstport),
+	xdm.source.port = to_integer(srcport),	
 	xdm.target.sent_bytes = server_bytes,
 	xdm.target.user.identifier = userkey,
 	xdm.network.http.referrer = referer,

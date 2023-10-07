@@ -2,7 +2,7 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 EMAIL_INTEGRATIONS = ['Gmail', 'EWSO365', 'EWS v2', 'Agari Phishing Defense', 'MicrosoftGraphMail',
-                      'SecurityAndCompliance']
+                      'SecurityAndCompliance', 'SecurityAndComplianceV2']
 
 
 def get_delete_reported_email_integrations():

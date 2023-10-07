@@ -1,3 +1,5 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 from typing import Any, Dict, List, Tuple, Union
 
 import urllib3
@@ -5,8 +7,6 @@ from dateparser import parse
 from pytz import utc
 from requests_ntlm import HttpNtlmAuth
 
-import demistomock as demisto
-from CommonServerPython import *
 from CommonServerUserPython import *
 
 urllib3.disable_warnings()

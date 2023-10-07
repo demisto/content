@@ -1,0 +1,552 @@
+id: Prisma Cloud Remediation - GCP Compute Engine Misconfiguration v2
+version: -1
+fromversion: 6.5.0
+name: Prisma Cloud Remediation - GCP Compute Engine Misconfiguration v2
+description: |
+  This playbook remediates Prisma Cloud GCP Compute Engine alerts.  It calls sub-playbooks that perform the actual remediation steps.
+
+  Remediation:
+   - GCP VM instances have serial port access enabled
+   - GCP VM instances have block project-wide SSH keys feature disabled
+   - GCP VM instances without any custom metadata information
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 61bee172-14d4-4a48-815c-913b49bef800
+    type: start
+    task:
+      id: 61bee172-14d4-4a48-815c-913b49bef800
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 630,
+          "y": 0
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: 223e678e-d65d-4337-87b9-3233b3da80d5
+    type: condition
+    task:
+      id: 223e678e-d65d-4337-87b9-3233b3da80d5
+      version: -1
+      name: Is Google Cloud Compute integration enabled?
+      description: Verifies that the Google Cloud Compute integration is enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Google Cloud Compute
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+          right:
+            value:
+              simple: Google Cloud Compute
+    view: |-
+      {
+        "position": {
+          "x": 630,
+          "y": 140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: 1abd9220-e39e-4206-8aa3-dba2695c7f4e
+    type: title
+    task:
+      id: 1abd9220-e39e-4206-8aa3-dba2695c7f4e
+      version: -1
+      name: Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 630,
+          "y": 1670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: 29d44dce-2e00-46c3-8523-b4aaf1c1352c
+    type: condition
+    task:
+      id: 29d44dce-2e00-46c3-8523-b4aaf1c1352c
+      version: -1
+      name: Is there a policy to remediate?
+      description: Checks for a Prisma Cloud policy ID.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 350,
+          "y": 310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: 33d179f1-0884-41ba-82fb-f8cff80516da
+    type: condition
+    task:
+      id: 33d179f1-0884-41ba-82fb-f8cff80516da
+      version: -1
+      name: Update Compute Engine automatically?
+      description: Determines if the compute engine is updated automatically.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.AutoRemediateComputeEngine
+                transformers:
+                - operator: toLowerCase
+            iscontext: true
+          right:
+            value:
+              simple: "yes"
+    view: |-
+      {
+        "position": {
+          "x": -200,
+          "y": 480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: 16fb9188-5edd-4d99-814a-33090e0b03d2
+    type: condition
+    task:
+      id: 16fb9188-5edd-4d99-814a-33090e0b03d2
+      version: -1
+      name: Auto remediate?
+      description: Determines if the event is automatically remediated or manually updated.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "8"
+      "Yes":
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 90,
+          "y": 650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+        simple: ${incident.id} Autoremediate?
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+      replyOptions:
+      - "Yes"
+      - "No"
+  "7":
+    id: "7"
+    taskid: e8bff3c4-de53-4a71-8bcc-1ff7082b5737
+    type: condition
+    task:
+      id: e8bff3c4-de53-4a71-8bcc-1ff7082b5737
+      version: -1
+      name: Execute playbook
+      description: Executes the appropriate remediation sub-playbook based on the Prisma Cloud policy ID.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "8"
+      VMs:
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: VMs
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: a7e6ca7c-8b47-4556-9a34-d2ab88347b4b
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: 72b422c8-bef1-4842-a6c6-7230bf0b3492
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: 10bc76ee-6f29-4c04-98bb-b9f8bafb0964
+    view: |-
+      {
+        "position": {
+          "x": -200,
+          "y": 820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: 0e8b3b11-44a3-4b44-830f-f9493a739fc1
+    type: regular
+    task:
+      id: 0e8b3b11-44a3-4b44-830f-f9493a739fc1
+      version: -1
+      name: Manually update Compute Engine
+      description: Manually update Google Compute Engine alert.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 350,
+          "y": 990
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "9":
+    id: "9"
+    taskid: fb37a3ed-6884-4601-8841-f9414cf4a2ac
+    type: regular
+    task:
+      id: fb37a3ed-6884-4601-8841-f9414cf4a2ac
+      version: -1
+      name: Close investigation
+      description: Closes the current incident.
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      emailclassification: {}
+      id:
+        complex:
+          root: incident
+          accessor: id
+      mndadone: {}
+      phishingsubtype: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 350,
+          "y": 1500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "10":
+    id: "10"
+    taskid: 615b56ba-f121-4f7c-806c-a82fd25cda5e
+    type: playbook
+    task:
+      id: 615b56ba-f121-4f7c-806c-a82fd25cda5e
+      version: -1
+      name: Prisma Cloud Remediation - GCP Compute Engine Instance Misconfiguration
+      description: |-
+        This playbook remediates the following Prisma Cloud GCP Compute Engine VM Instance alerts.
+
+        Prisma Cloud policies remediated:
+
+         - GCP VM instances have serial port access enabled
+         - GCP VM instances have block project-wide SSH keys feature disabled
+         - GCP VM instances without any custom metadata information
+      playbookName: Prisma Cloud Remediation - GCP Compute Engine Instance Misconfiguration
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      policyId:
+        complex:
+          root: inputs.policyId
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": -390,
+          "y": 990
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "11":
+    id: "11"
+    taskid: 50e95fd5-f248-4f02-8556-11437e1323e8
+    type: condition
+    task:
+      id: 50e95fd5-f248-4f02-8556-11437e1323e8
+      version: -1
+      name: Is Prisma Cloud v2 integration enabled?
+      description: Is Prisma Cloud v2 integration enabled?
+      type: condition
+      iscommand: false
+      brand: PrismaCloud v2
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "12"
+    continueonerror: true
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: PrismaCloud v2
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 350,
+          "y": 1160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: 1491bb10-b009-4dd8-8d1b-f12ff53a746a
+    type: regular
+    task:
+      id: 1491bb10-b009-4dd8-8d1b-f12ff53a746a
+      version: -1
+      name: Dismiss Prisma Cloud alert
+      description: Dismiss or snooze the alerts matching the given filter. Either policy IDs or alert IDs must be provided. When no absolute time nor relative time arguments are provided, the default time range is all times. For snoozing, provide "snooze_unit" and "snooze_value" arguments.
+      script: PrismaCloud v2|||prisma-cloud-alert-dismiss
+      type: regular
+      iscommand: true
+      brand: PrismaCloud v2
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      alert_ids:
+        complex:
+          root: incident
+          accessor: labels
+          transformers:
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: id
+      dismissal_note:
+        simple: ${incident.labels.id} has been remediated by Cortex XSOAR.
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 120,
+          "y": 1330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "11_9_#default#": 0.49,
+      "2_3_#default#": 0.3,
+      "2_4_yes": 0.52,
+      "4_5_yes": 0.3,
+      "4_8_#default#": 0.22,
+      "5_6_#default#": 0.55,
+      "5_7_yes": 0.46,
+      "6_7_Yes": 0.45,
+      "6_8_No": 0.34,
+      "7_10_VMs": 0.57,
+      "7_8_#default#": 0.24
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1735,
+        "width": 1400,
+        "x": -390,
+        "y": 0
+      }
+    }
+  }
+inputs:
+- key: AutoRemediateComputeEngine
+  value:
+    simple: "no"
+  required: false
+  description: Execute GCP Compute Engine remediation automatically?
+- key: policyId
+  value:
+    complex:
+      root: incident
+      accessor: labels.policy
+      transformers:
+      - operator: ParseJSON
+      - operator: getField
+        args:
+          field:
+            value:
+              simple: policyId
+  required: false
+  description: Grab the Prima Cloud policy ID.
+outputs: []
+tests:
+- No Test

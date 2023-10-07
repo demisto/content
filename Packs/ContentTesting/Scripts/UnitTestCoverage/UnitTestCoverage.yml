@@ -1,0 +1,25 @@
+args:
+- name: playbook
+  description: ''
+comment: |
+  Assesses the tasks executed in a playbook during the content testing process.
+commonfields:
+  id: UnitTestCoverage
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+dockerimage: demisto/python3:3.10.13.72123
+enabled: true
+name: UnitTestCoverage
+runas: DBotWeakRole
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+timeout: 600ns
+type: python
+fromversion: 6.5.0
+tests:
+- No tests (auto formatted)
+runonce: false

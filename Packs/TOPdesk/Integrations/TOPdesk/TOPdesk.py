@@ -1,7 +1,7 @@
-import requests
-
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+import requests
+
 
 """TOPdesk integration for Cortex XSOAR"""
 
@@ -151,7 +151,7 @@ class Client(BaseClient):
         except Exception:
             demisto.debug('No items found')
             result = []
-        return(result)
+        return (result)
 
     def get_list(self, endpoint: str) -> List[Dict[str, Any]]:
         """Get list of objects using the API endpoint."""

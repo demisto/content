@@ -21,6 +21,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### whois
 ***
 Provides data enrichment for domains.
+This pack relies on free services for WHOIS information. As with many free services, the availability is not guaranteed. Free WHOIS providers may block or be reject queries.
 
 
 #### Base Command
@@ -878,3 +879,8 @@ Provides data enrichment for ips.
 >|---|---|---|---|---|---|
 >| 15169 | 8.8.8.0/24 | 1992-12-01 |  | LVLT-GOGL-8-8-8 | 8.8.8.8 |
 
+## Troubleshooting
+- The error message *Bad Gateway* (502) might occur when using a firewall/proxy. To fix the issue, make sure the whois TLD provider exists in your allowlist.
+- 
+## Known limitations
+- The IP lookup has a rate limit of 1 lookup per second.

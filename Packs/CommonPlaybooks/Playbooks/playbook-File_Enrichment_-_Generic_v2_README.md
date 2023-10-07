@@ -3,21 +3,28 @@ Enrich a file using one or more integrations.
 - Provide threat information
 
 ## Dependencies
+
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
+
 * File Enrichment - Virus Total (API v3)
 
 ### Integrations
+
 * Cylance Protect v2
 
 ### Scripts
+
 This playbook does not use any scripts.
 
 ### Commands
+
+* file
 * cylance-protect-get-threat
 
 ## Playbook Inputs
+
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
@@ -25,8 +32,10 @@ This playbook does not use any scripts.
 | MD5 | File MD5 hash to enrich. | File.MD5 | Optional |
 | SHA256 | The file SHA256 hash to enrich. | File.SHA256 | Optional |
 | SHA1 | The file SHA1 hash to enrich. | File.SHA1 | Optional |
+| UseReputationCommand | Define if you would like to use the \!file command.<br/>Note: This input should be used whenever there is no auto-extract enabled in the investigation flow.<br/>Possible values: True / False. | False | Required |
 
 ## Playbook Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |
@@ -47,5 +56,7 @@ This playbook does not use any scripts.
 | File.VirusTotal.Scans.Result | Scan result for this hash - signature, etc. | unknown |
 
 ## Playbook Image
+
 ---
+
 ![File Enrichment - Generic v2](../doc_files/File_Enrichment_-_Generic_v2.png)

@@ -1,0 +1,17 @@
+commonfields:
+  id: displayUtilitiesResults
+  version: -1
+name: displayUtilitiesResults
+script: ''
+type: python
+comment: This script displays the execution results of the tab's buttons in an HTML table format.
+tags:
+- dynamic-section
+enabled: true
+scripttarget: 0
+subtype: python3
+dockerimage: demisto/python3:3.10.12.63474
+runas: DBotWeakRole
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

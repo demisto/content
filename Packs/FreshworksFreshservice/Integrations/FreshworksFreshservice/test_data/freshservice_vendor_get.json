@@ -1,0 +1,22 @@
+{
+    "vendor": {
+        "address": {
+            "line1": "1 Infinite Loop",
+            "city": "Cupertino",
+            "state": "California",
+            "country": "United States",
+            "zipcode": "95014"
+        },
+        "id": 1,
+        "name": "Apple",
+        "description": "",
+        "contact_name": null,
+        "email": null,
+        "mobile": null,
+        "phone": null,
+        "primary_contact_id": null,
+        "custom_fields": {},
+        "created_at": "vendors[0]_created_at",
+        "updated_at": "vendors[0]_updated_at"
+    }
+}

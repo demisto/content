@@ -26,7 +26,12 @@
                     "tier": "Standard",
                     "capacity": 10
                 },
-                "storageAccountType": "GRS"
+                "storageAccountType": "GRS",
+                "maintenanceConfigurationId": "maintenanceConfigurationId",
+                "currentBackupStorageRedundancy":  "currentBackupStorageRedundancy",
+                "requestedBackupStorageRedundancy": "requestedBackupStorageRedundancy",
+                "isLedgerOn": false,
+                "isInfraEncryptionEnabled": false
             },
             "location": "eastus",
             "tags": {},

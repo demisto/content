@@ -1,0 +1,93 @@
+category: Utilities
+commonfields:
+  id: XSOAR File Management
+  version: -1
+configuration:
+- additionalinfo: Make sure XSOAR config 'External Host Name' is set and let this field empty otherwise set the external ip of XSOAR. Using https://127.0.0.1 don't work.
+  display: Server URL (e.g. https://example.net)
+  name: url
+  type: 0
+  required: false
+- display: ""
+  displaypassword: XSOAR Server API Key
+  hiddenusername: true
+  name: creds_apikey
+  type: 9
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+description: This integration uses the XSOAR API to perform basic but essentials actions on files.
+display: XSOAR File Management
+name: XSOAR File Management
+script:
+  commands:
+  - arguments:
+    - description: Incident ID to upload the file. If empty, the current incident ID is taken
+      name: incidentID
+    - description: Non binary content of the file (if set let filePath and filePath empty)
+      name: fileContent
+    - description: Entry ID of the file to read (if set let filePath and fileContent empty)
+      name: entryID
+    - description: 'Path of the file to read ex: incident.attachment.path (if set let entryID and fileContent empty)'
+      name: filePath
+    - description: Name of the file. Mandatory if used with filePath and fileContent otherwise the name of the file will not change
+      name: fileName
+    - auto: PREDEFINED
+      defaultValue: war room entry
+      description: 'Where to upload the file - Available options are: - ''war room entry'': the file will be uploaded as war room entry. - ''incident attachment'': the file will be uploaded as incident attachment. - default are ''war room entry'''
+      name: target
+      predefined:
+      - war room entry
+      - incident attachment
+    description: Copies a file from this incident to the specified incident. Usefull if you want to manipule file in the preprocessing
+    name: file-management-upload-file-to-incident
+  - arguments:
+    - description: Entry ID of the file
+      name: entryID
+      required: true
+    description: Delete the file from the incident and from the XSOAR server
+    execution: true
+    name: file-management-delete-file
+  - arguments:
+    - description: Entry ID of the file
+      name: entryID
+      required: true
+    description: Check if entry ID exist
+    name: file-management-check-file
+    outputs:
+    - description: Dictionary with EntryID as key and boolean if the file exists as value
+      contextPath: IsFileExists
+  - arguments:
+    - description: File path of the file
+      name: filePath
+      required: true
+    - description: ID of the incident to delete attachment
+      name: incidentID
+    - description: 'Name of the field (type attachment) you want to remove the attachment by default it''s the incident attachment (incident.attachment) field'
+      name: fieldName
+    description: Delete the attachment from the incident and from the XSOAR server
+    execution: true
+    name: file-management-delete-attachment
+  - arguments:
+    - description: Entry ID of the file to rename
+      name: entryID
+      required: true
+    - description: New name for the file
+      name: newFileName
+      required: true
+    description: 'Rename a file. Warning: use this only if necessary, it''s HEAVY to run, this will delete and recreate the file with another name !'
+    name: file-management-rename-file
+  dockerimage: demisto/python3:3.10.12.63474
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

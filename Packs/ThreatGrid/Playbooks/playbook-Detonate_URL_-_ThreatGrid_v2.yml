@@ -1,0 +1,250 @@
+id: Detonate URL - ThreatGrid v2
+version: -1
+name: Detonate URL - ThreatGrid v2
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: a40217c5-eb07-4e3b-885d-36424a2c5a85
+    type: start
+    task:
+      id: a40217c5-eb07-4e3b-885d-36424a2c5a85
+      description: start
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 5a59a000-8bfc-4537-8916-1dd8b873197b
+    type: regular
+    task:
+      id: 5a59a000-8bfc-4537-8916-1dd8b873197b
+      version: -1
+      name: ThreatGrid Upload URL
+      description: Submits a sample to threat grid for analysis. URL or file, not both.
+      script: '|||threat-grid-sample-upload'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      interval_in_seconds:
+        simple: ${inputs.interval}
+      timeout_in_seconds:
+        simple: ${inputs.timeout}
+      url:
+        simple: ${inputs.URL}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 1d32d967-6615-452d-830f-aac7d45e910e
+    type: condition
+    task:
+      id: 1d32d967-6615-452d-830f-aac7d45e910e
+      description: condition
+      version: -1
+      name: Is ThreatGrid enabled?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: containsString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: ThreatGridv2
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 805f6930-a82e-438d-88ef-c30ae9d8f3c8
+    type: title
+    task:
+      id: 805f6930-a82e-438d-88ef-c30ae9d8f3c8
+      description: title
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: f47a7d0e-7291-47d5-8111-b8d7d686f159
+    type: condition
+    task:
+      id: f47a7d0e-7291-47d5-8111-b8d7d686f159
+      description: condition
+      version: -1
+      name: Is there a URL to detonate?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "1"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: inputs.URL
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "4_3_#default#": 0.61
+    },
+    "paper": {
+      "dimensions": {
+        "height": 735,
+        "width": 605,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: URL
+  value:
+    simple: ${URL.Data}
+  required: false
+  description: URL of the sites to detonate.
+  playbookInputQuery: null
+- key: timeout
+  value:
+    simple: "60"
+  required: false
+  description: Indicates the time in seconds until the polling sequence times out. 
+    Default is 60.
+  playbookInputQuery: null
+- key: interval
+  value:
+    simple: "10"
+  required: false
+  description: Indicates the time in seconds to wait between command execution when
+    'polling' argument is true. Minimum value is 10 seconds. Default is 10.
+  playbookInputQuery: null
+outputs: []
+quiet: true
+fromversion: 5.0.0
+description: Detonate one or more URLs using the ThreatGrid integration.
+tests:
+ -  Detonate URL - Generic Test
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - all

@@ -42,7 +42,8 @@ Note: according to Remedy AR API documentation it is recommended to provide all 
 | service-type | Incident service-type. Possible values are: User Service Restoration, User Service Request, Infrastructure Event, Infrastructure Restoration. | Required | 
 | impact | Incident impact. Possible values are: 1-Extensive/Widespread, 2-Significant/Large, 3-Moderate/Limited, 4-Minor/Localized. | Required | 
 | urgency | Incident urgency. Possible values are: 1-Critical, 2-High, 3-Medium, 4-Low. | Required | 
-| custom-fields | Custom fields for incident creation. Should be comma separated query (i.e. field1=value1,field2=value2). | Optional | 
+| custom-fields | Custom fields for incident creation. Comma-separated query or custom-fields-seperator separated query. (e.g., field1=value1,field2=value2). | Optional |
+| custom-fields-separator | A custom delimiter to use for the custom-fields. Don't use '=' as a delimiter. Default value is ','. | Optional |
 
 
 #### Context Output
@@ -122,6 +123,7 @@ Fetch all incidents
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | query | Search query/qualification format of '&lt;field&gt; LIKE "&lt;values&gt;"' (e.g. 'Company LIKE "My company"', 'Submitter LIKE "%john%"'). | Optional | 
+| sort | Sort query results in descending or ascending order. Format:'&lt;field&gt;.asc' or '&lt;field&gt;.desc' (e.g. 'Assigned To.asc'). | Optional |
 
 
 #### Context Output

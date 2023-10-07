@@ -2,7 +2,19 @@
 ignore=RM106
 
 [known_words]
-TLP
+tlp
 ansii
 pylint
 linter
+
+[file:MicrosoftAzureStorageApiModule.yml]
+ignore=BA124
+
+[file:DemistoClassApiModule.yml]
+ignore=BA124
+
+[file:MicrosoftGraphMailApiModule.yml]
+ignore=BA124
+
+[tests_require_network]
+NGINXApiModule

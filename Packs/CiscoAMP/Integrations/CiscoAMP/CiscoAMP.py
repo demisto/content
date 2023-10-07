@@ -1,13 +1,21 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 """
-CiscoAMP (Advanced Malware Protection) API Integration for Cortex XSOAR (aka Demisto).
+██████  ███████ ██████  ██████  ███████  ██████  █████  ████████ ███████ ██████
+██   ██ ██      ██   ██ ██   ██ ██      ██      ██   ██    ██    ██      ██   ██
+██   ██ █████   ██████  ██████  █████   ██      ███████    ██    █████   ██   ██
+██   ██ ██      ██      ██   ██ ██      ██      ██   ██    ██    ██      ██   ██
+██████  ███████ ██      ██   ██ ███████  ██████ ██   ██    ██    ███████ ██████
+
+THIS INTEGRATION/PACK IS DEPRECATED - USE THE AMPv2 INTEGRATION FROM THE AMP PACK RATHER THAN CiscoAMP.
+The AMP pack is maintained and receives bug fixes, while the CiscoAMP pack is not.
+
 """
 import copy
 import math
 from typing import Callable, Dict, Any, MutableMapping, MutableSequence, Tuple, Optional
 from http import HTTPStatus
 from collections import namedtuple
-import demistomock as demisto
-from CommonServerPython import *  # pylint: disable=redefined-builtin, wildcard-import, unused-wildcard-import
 from CommonServerUserPython import *  # pylint: disable=wildcard-import
 
 

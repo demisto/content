@@ -1,7 +1,7 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import logging
 
-import demistomock as demisto
-from CommonServerPython import *
 
 from typing import List, Dict, Set, Optional
 import json
@@ -58,7 +58,9 @@ FILTER_OBJS = {
 }
 RELATIONSHIP_TYPES = EntityRelationship.Relationships.RELATIONSHIPS_NAMES.keys()
 ENTERPRISE_COLLECTION_ID = '95ecc380-afe9-11e4-9b6c-751b66dd541e'
-EXTRACT_TIMESTAMP_REGEX = r"\((.+)\)"
+EXTRACT_TIMESTAMP_REGEX = r"\(([^()]+)\)"
+SERVER_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S"
+DEFAULT_YEAR = datetime(1970, 1, 1)
 
 # disable warnings coming from taxii2client - https://github.com/OTRF/ATTACK-Python-Client/issues/43#issuecomment-1016581436
 logging.getLogger("taxii2client.v20").setLevel(logging.ERROR)
@@ -248,8 +250,8 @@ def map_fields_by_type(indicator_type: str, indicator_json: dict):
             continue
         url = external_reference.get('url', '')
         description = external_reference.get('description')
+        time_stamp = extract_date_time_from_description(description)
         source_name = external_reference.get('source_name')
-        time_stamp = extract_timestamp_from_description(description)
         publications.append({'link': url, 'title': description, 'source': source_name, 'timestamp': time_stamp})
 
     mitre_id = [external.get('external_id') for external in indicator_json.get('external_references', [])
@@ -261,6 +263,7 @@ def map_fields_by_type(indicator_type: str, indicator_json: dict):
         tags.extend(indicator_json.get('labels', ''))
 
     tlp = get_tlp(indicator_json)
+    indicator_json['description'] = remove_citations(indicator_json.get('description', ''))
 
     generic_mapping_fields = {
         'stixid': indicator_json.get('id'),
@@ -322,12 +325,43 @@ def map_fields_by_type(indicator_type: str, indicator_json: dict):
     return generic_mapping_fields
 
 
-def extract_timestamp_from_description(description: str) -> str:
+def remove_citations(description: str) -> str:
+    """
+    Args:
+        description (str): input description string can contain Citation parts.
+        delimited by parenthesis.
+        i.e (Citation ...)
+    Returns:
+        str: description string with no Citation parts.
+    """
+    return "".join(
+        substring
+        for substring in re.findall(r'\([^)]*\)|[^()]+', description)
+        if 'Citation' not in substring
+    )
+
+
+def extract_date_time_from_description(description: str) -> str:
+    """
+    Extract the Datetime object from the description.
+    In case of incomplete Datetime format, fill the missing component from the default format 1970-01-01T00:00:00.
+    In any other case, return empty str.
+    """
+    date_time_result = ''
     if not description or 'Citation' in description or 'n.d' in description:
-        return ''
-    match = re.search(EXTRACT_TIMESTAMP_REGEX, description)
-    timestamp = match.group(1) if match else ''
-    return timestamp
+        return date_time_result
+    matches = re.findall(EXTRACT_TIMESTAMP_REGEX, description)
+    for match in matches:
+        try:
+            # In case there is only one of the Datetime component (day,month,year), return an empty str.
+            int(match)
+            continue
+        except ValueError:
+            pass
+        if date_time_parsed := dateparser.parse(match, settings={'RELATIVE_BASE': DEFAULT_YEAR}):
+            date_time_result = datetime.strftime(date_time_parsed, SERVER_DATE_FORMAT)
+            break
+    return date_time_result
 
 
 def get_tlp(indicator_json: dict) -> str:
@@ -679,7 +713,7 @@ def main():
 
     # Log exceptions
     except Exception as e:
-        return_error(e)
+        return_error(str(e))
 
 
 from TAXII2ApiModule import *  # noqa: E402

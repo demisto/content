@@ -11,14 +11,13 @@ configuration:
 - additionalinfo: Use TSIG key name to authenticate against DNS `server'
   display: TSIG Key Name
   name: key_name
-  required: false
   type: 0
-- additionalinfo: Use TSIG key secret, associated with `key_name', to authenticate
-    against `server'
+  required: false
+- additionalinfo: Use TSIG key secret, associated with `key_name', to authenticate against `server'
   display: TSIG Key Secret
   name: key_secret
-  required: false
   type: 4
+  required: false
 description: Manage DNS records using NSUpdate.  Deprecated. Use Ansible DNS (in the Ansible Linux pack) instead.
 display: Ansible DNS (Deprecated)
 name: DNS
@@ -52,8 +51,7 @@ script:
         When omitted DNS will be queried to attempt finding the correct zone.
         Starting with Ansible 2.7 this parameter is optional.
       name: zone
-    - description: Sets the DNS record to modify. When zone is omitted this has to
-        be absolute (ending with a dot).
+    - description: Sets the DNS record to modify. When zone is omitted this has to be absolute (ending with a dot).
       name: record
       required: true
     - defaultValue: A
@@ -66,8 +64,7 @@ script:
       name: value
     - auto: PREDEFINED
       defaultValue: tcp
-      description: Sets the transport protocol (TCP or UDP). TCP is the recommended
-        and a more robust option.
+      description: Sets the transport protocol (TCP or UDP). TCP is the recommended and a more robust option.
       name: protocol
       predefined:
       - tcp
@@ -75,7 +72,6 @@ script:
     description: Manage DNS records.
     name: dns-nsupdate
   dockerimage: demisto/ansible-runner:1.0.0.21184
-  runonce: false
   script: ''
   subtype: python3
   type: python

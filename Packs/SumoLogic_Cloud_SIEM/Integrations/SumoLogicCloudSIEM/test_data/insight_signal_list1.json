@@ -1,0 +1,209 @@
+{
+  "data": {
+    "hasNextPage": true,
+    "objects": [
+      {
+        "allRecords": [
+          {}
+        ],
+        "entity": {
+          "id": "_ip-lab-1.2.3.4",
+          "ip": {"address": "1.2.3.4"},
+          "ipHostname": null,
+          "name": "1.2.3.4"
+        },
+        "artifacts": [],
+        "contentType": "RULE",
+        "description": "The caller doesn't have permission to execute the specified operation.",
+        "id": "b4709a3c-c886-5cf0-9c98-88d976161edd",
+        "name": "GCP API Permission Denied",
+        "recordCount": 1,
+        "recordTypes": [],
+        "ruleId": "MATCH-U01523",
+        "severity": 3,
+        "stage": "Persistence",
+        "suppressed": false,
+        "tags": [
+          "_mitreAttackTechnique:T1098",
+          "_mitreAttackTactic:TA0003"
+        ],
+        "timestamp": "2021-05-17T20:02:03.123000" 
+      },
+      {
+        "allRecords": [
+          {}
+        ],
+        "artifacts": [],
+        "entity": {
+          "id": "_ip-lab-1.2.3.4",
+          "ip": {"address": "1.2.3.4"},
+          "ipHostname": null,
+          "name": "1.2.3.4"
+        },
+        "contentType": "RULE",
+        "description": "Detect when a change to a GCP logging sink has been made. This could stop audit logs from being sent.",
+        "id": "38c4bfea-23b5-5e4f-998c-5433dd093834",
+        "name": "GCP Audit Logging Sink Modified",
+        "recordCount": 1,
+        "recordTypes": [],
+        "ruleId": "MATCH-U01517",
+        "severity": 3,
+        "suppressed": false,
+        "stage": "Defense Evasion",
+        "tags": [
+          "_mitreAttackTechnique:T1578",
+          "_mitreAttackTactic:TA0005"
+        ],
+        "timestamp": "2021-05-18T14:30:00.123000"
+      },
+      {
+        "allRecords": [
+          {}
+        ],
+        "artifacts": [],
+        "entity": {
+          "id": "_ip-lab-1.2.3.4",
+          "ip": {"address": "1.2.3.4"},
+          "ipHostname": null,
+          "name": "1.2.3.4"
+        },
+        "contentType": "RULE",
+        "description": "Detect when a firewall route is created or modified.",
+        "id": "0f335c0d-5ffe-5637-a868-146e7f401775",
+        "name": "GCP Audit GCE Network Route Created or Modified",
+        "recordCount": 1,
+        "recordTypes": [],
+        "ruleId": "MATCH-U01514",
+        "severity": 1,
+        "stage": "Defense Evasion",
+        "suppressed": false,
+        "tags": [
+          "_mitreAttackTechnique:T1578",
+          "_mitreAttackTactic:TA0005"
+        ],
+        "timestamp": "2021-05-17T16:24:23.123000"  
+      },
+      {
+        "artifacts": [],
+        "contentType": "RULE",
+        "description": "Detect when a VPC network is created.",
+        "id": "3bea8bf1-430d-5f68-b13c-81cdcf614e20",
+        "name": "GCP Audit GCE VPC Network Modified",
+        "recordCount": 1,
+        "recordTypes": [],
+        "ruleId": "MATCH-U01515",
+        "severity": 1,
+        "stage": "Defense Evasion",
+        "tags": [
+          "_mitreAttackTechnique:T1578",
+          "_mitreAttackTactic:TA0005"
+        ],
+        "timestamp": "2021-05-17T16:53:13.123000"
+      },
+      {
+        "artifacts": [],
+        "contentType": "RULE",
+        "description": "Detect when a change to a GCP Pub/Sub Subscription has been made. This could stop audit logs from being sent.",
+        "id": "ab1313bf-de71-539c-bae4-922475561a45",
+        "name": "GCP Audit Pub/Sub Subscriber Modified",
+        "recordCount": 1,
+        "recordTypes": [],
+        "ruleId": "MATCH-U01518",
+        "severity": 3,
+        "stage": "Defense Evasion",
+        "tags": [
+          "_mitreAttackTechnique:T1578",
+          "_mitreAttackTactic:TA0005"
+        ],
+        "timestamp": "2021-05-18T14:34:18.123000"
+      },
+      {
+        "artifacts": [],
+        "contentType": "RULE",
+        "description": "Detect when a GCP Pub/Sub Subscribtion has been deleted. This could stop audit logs from being sent.",
+        "id": "d1607da7-368b-5341-8aeb-927135c8f307",
+        "name": "GCP Audit Pub/Sub Topic Deleted",
+        "recordCount": 1,
+        "recordTypes": [],
+        "ruleId": "MATCH-U01519",
+        "severity": 3,
+        "stage": "Defense Evasion",
+        "tags": [
+          "_mitreAttackTechnique:T1578",
+          "_mitreAttackTactic:TA0005"
+        ],
+        "timestamp": "2021-05-18T14:45:51.123000"
+      },
+      {
+        "artifacts": [],
+        "contentType": "RULE",
+        "description": "Detect when a VPC network is created.",
+        "id": "bc7fb3ac-a86e-57ab-bf34-3f98789bb16f",
+        "name": "GCP Audit GCE VPC Network Modified",
+        "recordCount": 1,
+        "recordTypes": [],
+        "ruleId": "MATCH-U01515",
+        "severity": 1,
+        "stage": "Defense Evasion",
+        "tags": [
+          "_mitreAttackTechnique:T1578",
+          "_mitreAttackTactic:TA0005"
+        ],
+        "timestamp": "2021-05-17T16:53:13.123000"
+      },
+      {
+        "artifacts": [],
+        "contentType": "RULE",
+        "description": "The caller doesn't have permission to execute the specified operation.",
+        "id": "f845dfc7-dd64-58d9-a4d1-238da768ffd1",
+        "name": "GCP API Permission Denied",
+        "recordCount": 1,
+        "recordTypes": [],
+        "ruleId": "MATCH-U01523",
+        "severity": 3,
+        "stage": "Persistence",
+        "tags": [
+          "_mitreAttackTechnique:T1098",
+          "_mitreAttackTactic:TA0003"
+        ],
+        "timestamp": "2021-05-17T20:02:03.123000"
+      },
+      {
+        "artifacts": [],
+        "contentType": "RULE",
+        "description": "Detect when a change to a GCP logging sink has been made. This could stop audit logs from being sent.",
+        "id": "bb96f1eb-8794-5c69-9e20-f21c43be87aa",
+        "name": "GCP Audit Logging Sink Modified",
+        "recordCount": 1,
+        "recordTypes": [],
+        "ruleId": "MATCH-U01517",
+        "severity": 3,
+        "stage": "Defense Evasion",
+        "tags": [
+          "_mitreAttackTechnique:T1578",
+          "_mitreAttackTactic:TA0005"
+        ],
+        "timestamp": "2021-05-18T14:30:00.123000"
+      },
+      {
+        "artifacts": [],
+        "contentType": "RULE",
+        "description": "Detect when a firewall route is created or modified.",
+        "id": "8fbe5ecf-c83f-5ed8-9d6f-e5488e34d49c",
+        "name": "GCP Audit GCE Network Route Created or Modified",
+        "recordCount": 1,
+        "recordTypes": [],
+        "ruleId": "MATCH-U01514",
+        "severity": 1,
+        "stage": "Defense Evasion",
+        "tags": [
+          "_mitreAttackTechnique:T1578",
+          "_mitreAttackTactic:TA0005"
+        ],
+        "timestamp": "2021-05-17T16:24:23.123000"
+      }
+    ],
+    "total": 10
+  },
+  "errors": []
+}

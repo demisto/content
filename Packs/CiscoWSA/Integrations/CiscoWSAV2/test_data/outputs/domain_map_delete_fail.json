@@ -1,0 +1,16 @@
+{
+    "res_data": {
+        "delete_success": [
+            "test.com"
+        ],
+        "delete_failure": {
+            "content": [
+                "error1",
+                "error2"
+            ],
+            "error_msg": "'recipient_address', (['error1', 'error2']) recipient address(s) invalid or don't exist."
+        }
+    },
+    "res_message": "Success: 1, Failure: 2",
+    "res_code": 206
+}

@@ -1,0 +1,277 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: Reco
+  version: -1
+configuration:
+- display: Server URL (e.g. https://host.reco.ai/api/v1)
+  name: url
+  required: true
+  type: 0
+- section: Connect
+  display: JWT app token
+  displaypassword: API Token
+  name: api_token
+  type: 4
+  required: true
+  hiddenusername: true
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+- display: Incident type
+  name: incidentType
+  type: 13
+  required: false
+- display: Fetch incidents
+  name: isFetch
+  type: 8
+  required: false
+- defaultvalue: '200'
+  display: Max fetch
+  name: max_fetch
+  type: 0
+  required: false
+- additionalinfo: Incidents SaaS Source
+  display: Source
+  name: source
+  type: 0
+  required: false
+- additionalinfo: Created At time before which incidents will be fetched
+  display: Before
+  name: before
+  type: 0
+  required: false
+- additionalinfo: Created At time after which incidents will be fetched
+  display: After
+  name: after
+  type: 0
+  required: false
+- additionalinfo: Risk level of the incidents to fetch
+  display: Risk level
+  name: risk_level
+  type: 0
+  required: false
+- defaultvalue: 7 days
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  name: first_fetch
+  type: 0
+  section: Collect
+  required: false
+description: Reco is a Saas data security solution that protects your data from accidental leaks and malicious attacks.
+display: Reco
+name: Reco
+script:
+  dockerimage: demisto/python3:3.10.12.68714
+  isfetch: true
+  runonce: false
+  script: "-"
+  subtype: python3
+  type: python
+  commands:
+  - arguments:
+    - description: Values to add to the exclusion filter (split by ',')
+      name: values_to_add
+      required: true
+      type: List
+      isArray: true
+    - description: key too add to the exclusion filter (e.g. "CASE_SENSITIVE_TERMS", "LOCATION_CASE_INSENSITIVE_TERMS", "OWNERS", "FILE_IDS", "LOCATIONS")
+      name: key_to_add
+      required: true
+    description: Add exclusion filter to Reco Classifier
+    name: reco-add-exclusion-filter
+  - arguments:
+    - description: Comment to add to the incident
+      name: comment
+      required: true
+    - description: Incident ID to add the comment to
+      name: incident_id
+      required: true
+    description: Add a comment to an incident in Reco
+    name: reco-update-incident-timeline
+  - arguments:
+    - description: entity id of the file to resolve
+      name: entity_id
+      required: true
+    - description: label name to resolve (e.g. "Accessible to All Org Users", "Accessible by General Public")
+      name: label_name
+      required: true
+    description: Resolve an event in Reco Finding. Reco Findings contains aggregations of events. This command resolves the event in the Reco Finding.
+    name: reco-resolve-visibility-event
+  - arguments: []
+    description: Get Risky Users from Reco
+    name: reco-get-risky-users
+    outputs:
+    - contextPath: Reco.RiskyUsers
+      description: Risky Users
+  - arguments:
+    - description: Email address of the user to add to the risky users list in Reco
+      name: email_address
+      required: true
+    description: Tag a user as risky in Reco
+    name: reco-add-risky-user-label
+  - arguments:
+    - description: Email address of the user
+      name: email_address
+      required: true
+    - description: Return only sensitive assets owned by this user
+      name: only_sensitive
+      type: Boolean
+    description: Get all files user has access to from Reco
+    name: reco-get-assets-user-has-access-to
+    outputs:
+    - contextPath: Reco.Assets
+      description: Assets user has access to
+  - arguments:
+    - description: Email address of the user to tag as levaing org user
+      name: email_address
+      required: true
+    description: Tag a user as leaving org user in Reco
+    name: reco-add-leaving-org-user-label
+  - arguments:
+    - description: Asset name to search for
+      name: asset_name
+      required: true
+    - description: Return only sensitive assets owned by this user
+      name: regex_search
+      type: Boolean
+    description: Get all sensitive assets from Reco by name
+    name: reco-get-sensitive-assets-by-name
+  - arguments:
+    - description: Asset id to search for
+      name: asset_id
+      required: true
+    description: Get all sensitive assets from Reco by id
+    name: reco-get-sensitive-assets-by-id
+    outputs:
+    - contextPath: Reco.SensitiveAssets.file_name
+      description: The name of the asset
+      type: String
+    - contextPath: Reco.SensitiveAssets.file_owner
+      description: The owner of the asset
+      type: String
+    - contextPath: Reco.SensitiveAssets.file_url
+      description: Json string of the asset's url and the name
+      type: Unknown
+    - contextPath: Reco.SensitiveAssets.currently_permitted_users
+      description: List of currently permitted users
+      type: String
+    - contextPath: Reco.SensitiveAssets.visibility
+      description: Visibility of the asset
+      type: String
+    - contextPath: Reco.SensitiveAssets.location
+      description: The path of the asset
+      type: String
+    - contextPath: Reco.SensitiveAssets.source
+      description: SaaS tool source of the asset
+      type: String
+    - contextPath: Reco.SensitiveAssets.sensitivity_level
+      description: The sensitivity level of the asset
+      type: Number
+  - arguments:
+    - description: Entity Type (RM_LINK_TYPE_USER)
+      name: entity
+      required: true
+    - description: Entity ID (user email)
+      name: param
+      type: Boolean
+    description: Generate a magic link for reco UI (overview page)
+    name: reco-get-link-to-user-overview-page
+  - arguments:
+    - description: Last interaction time in days
+      name: last_interaction_time_in_days
+      required: true
+    description: Get 3rd parties accessible to sensitive assets
+    name: reco-get-3rd-parties-accessible-to-data-list
+    outputs:
+    - contextPath: Reco.Domains.domain
+      description: The domain of the 3rd party
+      type: String
+    - contextPath: Reco.Domains.last_activity
+      description: The last interaction time with the 3rd party
+      type: String
+    - contextPath: Reco.Domains.num_files
+      description: The number of files the 3rd party has access to
+      type: Number
+    - contextPath: Reco.Domains.num_users
+      description: The number of users the 3rd party has access to
+      type: Number
+    - contextPath: Reco.Domains.data_category
+      description: The data category of the assets the 3rd party has access to
+      type: String
+  - arguments: []
+    description: Get all sensitive assets with public link from Reco
+    name: reco-get-sensitive-assets-with-public-link
+    outputs:
+    - contextPath: Reco.Assets.asset_id
+      description: The asset id
+      type: String
+    - contextPath: Reco.Assets.asset
+      description: Json string of the asset's url and the name
+      type: Unknown
+    - contextPath: Reco.Assets.data_category
+      description: The data category of the asset
+      type: String
+    - contextPath: Reco.Assets.data_categories
+      description: The data categories of the asset
+      type: String
+    - contextPath: Reco.SensitiveAssets.location
+      description: The path of the asset
+      type: String
+    - contextPath: Reco.SensitiveAssets.source
+      description: SaaS tool source of the asset
+      type: String
+    - contextPath: Reco.Assets.last_access_date
+      description: The last access date of the asset
+      type: String
+  - arguments:
+    - description: Last interaction time in days
+      name: last_interaction_time_in_days
+      required: true
+    - description: Domain to search
+      name: domain
+      required: true
+    description: Get files shared with 3rd parties
+    name: reco-get-files-shared-with-3rd-parties
+    outputs:
+    - contextPath: Reco.Assets.asset_id
+      description: The asset id of the file
+      type: String
+    - contextPath: Reco.Assets.location
+      description: The location of the file
+      type: String
+    - contextPath: Reco.Assets.users
+      description: Users the file is shared with
+      type: String
+    - contextPath: Reco.Assets.asset
+      description: The asset metadata
+      type: Unknown
+    - contextPath: Reco.Assets.data_category
+      description: The data category of the assets the 3rd party has access to
+      type: String
+    - contextPath: Reco.Assets.last_access_date
+      description: The last access date of the asset
+      type: String
+    - contextPath: Reco.Assets.domain
+      description: The domain of the 3rd party
+      type: String
+  - arguments:
+    - description: alert id to get
+      name: alert_id
+      required: true
+    - description: status to set the alert to (e.g. "ALERT_STATUS_NEW", "ALERT_STATUS_IN_PROGRESS", "ALERT_STATUS_CLOSED")
+      name: status
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - ALERT_STATUS_NEW
+      - ALERT_STATUS_IN_PROGRESS
+      - ALERT_STATUS_CLOSED
+    description: update alert status in Reco
+    name: reco-change-alert-status
+tests:
+- No tests
+fromversion: 6.5.0

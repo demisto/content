@@ -22,31 +22,31 @@ configuration:
   type: 4
 - display: Fetch incidents
   name: isFetch
-  required: false
   type: 8
+  required: false
 - display: Incident type
   name: incidentType
-  required: false
   type: 13
+  required: false
 - defaultvalue: New
   display: 'Status to filter out alerts for fetching as incidents. The property values are: New,InProgress,Resolved (Comma separated values supported, e.g. New,Resolved)'
   name: fetch_status
-  required: false
   type: 0
+  required: false
 - defaultvalue: Informational,Low,Medium,High
   display: 'Severity to filter out alerts for fetching as incidents. The property values are: Informational,Low,Medium,High (Comma separated values supported, e.g. Medium,High)'
   name: fetch_severity
-  required: false
   type: 0
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
-description: Deprecated. Use the Microsoft Defender Advanced Threat Protection instead.
+  required: false
+description: Deprecated. Use the Microsoft Defender for Endpoint pack instead.
 display: Windows Defender Advanced Threat Protection (Deprecated)
 name: Windows Defender Advanced Threat Protection
 script:
@@ -54,26 +54,17 @@ script:
   - arguments:
     - default: true
       description: Machine ID to be used for isolation. e.g. 0a3250e0693a109f1affc9217be9459028aa8426
-      isArray: false
       name: machine_id
       required: true
-      secret: false
-    - default: false
-      description: Comment to associate with the action.
-      isArray: false
+    - description: Comment to associate with the action.
       name: comment
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Full isolation or selective isolation (Restrict only limited set of applications from accessing the network)
-      isArray: false
       name: isolation_type
       predefined:
       - Full
       - Selective
-      required: false
-      secret: false
     deprecated: true
     description: Isolates a machine from accessing external network.
     execution: true
@@ -92,21 +83,14 @@ script:
       description: True if machine is isolated, else false
       type: boolean
   - arguments:
-    - default: false
-      description: Machine ID to be used to stop the isolation. e.g. 0a3250e0693a109f1affc9217be9459028aa8426
-      isArray: false
+    - description: Machine ID to be used to stop the isolation. e.g. 0a3250e0693a109f1affc9217be9459028aa8426
       name: machine_id
       required: true
-      secret: false
-    - default: false
-      description: Comment to associate with the action.
-      isArray: false
+    - description: Comment to associate with the action.
       name: comment
       required: true
-      secret: false
     deprecated: true
     description: Undo an isolation of a machine
-    execution: false
     name: microsoft-atp-unisolate-machine
     outputs:
     - contextPath: MicrosoftATP.Machine.Isolation.Requestor
@@ -119,42 +103,25 @@ script:
       description: Machine ID
       type: Unknown
   - arguments:
-    - default: false
-      description: Computer DNS name
-      isArray: false
+    - description: Computer DNS name
       name: hostname
-      required: false
-      secret: false
-    - default: false
-      description: Machine last external IP address
-      isArray: false
+    - description: Machine last external IP address
       name: ip
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Machine risk score
-      isArray: false
       name: risk_score
       predefined:
       - Low
       - Medium
       - High
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Machine health status
-      isArray: false
       name: health_status
       predefined:
       - Active
       - Inactive
-      required: false
-      secret: false
     deprecated: true
     description: Retrieves a collection of machines that have communicated with WDATP cloud on the last 30 days
-    execution: false
     name: microsoft-atp-get-machines
     outputs:
     - contextPath: MicrosoftATP.Machine.ID
@@ -221,15 +188,11 @@ script:
       description: Machine OS version
       type: string
   - arguments:
-    - default: false
-      description: File hash to get machines related to
-      isArray: false
+    - description: File hash to get machines related to
       name: file
       required: true
-      secret: false
     deprecated: true
     description: Get a collection of machines related to a given file hash.
-    execution: false
     name: microsoft-atp-get-file-related-machines
     outputs:
     - contextPath: MicrosoftATP.Machine.ID
@@ -301,13 +264,10 @@ script:
   - arguments:
     - default: true
       description: Machine id to be used for getting the machine details, e.g. 0a3250e0693a109f1affc9217be9459028aa8426
-      isArray: false
       name: machine_id
       required: true
-      secret: false
     deprecated: true
     description: Get a machine details by its identity.
-    execution: false
     name: microsoft-atp-get-machine-details
     outputs:
     - contextPath: MicrosoftATP.Machine.ID
@@ -374,59 +334,40 @@ script:
       description: Machine OS version
       type: string
   - arguments:
-    - default: false
-      description: Machine ID to run the scan on
-      isArray: false
+    - description: Machine ID to run the scan on
       name: machine_id
       required: true
-      secret: false
-    - default: false
-      description: Comment to associate with the action
-      isArray: false
+    - description: Comment to associate with the action
       name: comment
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Defines the type of the scan
-      isArray: false
       name: scan_type
       predefined:
       - Quick
       - Full
       required: true
-      secret: false
     deprecated: true
     description: Initiate Windows Defender Antivirus scan on a machine
-    execution: false
     name: microsoft-atp-run-antivirus-scan
   - arguments:
     - auto: PREDEFINED
-      default: false
       description: Alert severity
-      isArray: false
       name: severity
       predefined:
       - High
       - Medium
       - Low
       - Informational
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Alert status
-      isArray: false
       name: status
       predefined:
       - New
       - InProgress
       - Resolved
-      required: false
-      secret: false
     deprecated: true
     description: Get a list of alerts present on the system.
-    execution: false
     name: microsoft-atp-list-alerts
     outputs:
     - contextPath: MicrosoftATP.Alert.DetectionSource
@@ -469,44 +410,27 @@ script:
       description: Alert category
       type: string
   - arguments:
-    - default: false
-      description: Alert ID to update
-      isArray: false
+    - description: Alert ID to update
       name: alert_id
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Alert status to update
-      isArray: false
       name: status
       predefined:
       - New
       - InProgress
       - Resolved
-      required: false
-      secret: false
-    - default: false
-      description: Owner of the alert
-      isArray: false
+    - description: Owner of the alert
       name: assigned_to
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Specifies the specification of the alert
-      isArray: false
       name: classification
       predefined:
       - Unknown
       - FalsePositive
       - TruePositive
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Specifies the determination of the alert
-      isArray: false
       name: determination
       predefined:
       - NotAvailable
@@ -516,11 +440,8 @@ script:
       - SecurityTesting
       - UnwantedSoftware
       - Other
-      required: false
-      secret: false
     deprecated: true
     description: Update the properties of an alert entity
-    execution: false
     name: microsoft-atp-update-alert
     outputs:
     - contextPath: MicrosoftATP.Alert.ID
@@ -538,71 +459,45 @@ script:
   - arguments:
     - default: true
       description: The query to run.
-      isArray: false
       name: query
       required: true
-      secret: false
     deprecated: true
     description: 'Allows you to run programmatic queries like in Windows Defender ATP Portal (https://securitycenter.windows.com/hunting). Limitations: You can only run a query on data from the last 30 days, The results will include a maximum of 10,000 rows, The number of executions is limited (up to 15 calls per minute, 15 minutes of running time every hour and 4 hours of running time a day)'
-    execution: false
     name: microsoft-atp-advanced-hunting
     outputs:
     - contextPath: MicrosoftATP.Hunt.Result
       description: Results of the query.
       type: Unknown
   - arguments:
-    - default: false
-      description: Id of the machine on which the event was identified. Required.
-      isArray: false
+    - description: Id of the machine on which the event was identified. Required.
       name: machine_id
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Severity of the alert.
-      isArray: false
       name: severity
       predefined:
       - Low
       - Medium
       - High
       required: true
-      secret: false
-    - default: false
-      description: Title for the alert.
-      isArray: false
+    - description: Title for the alert.
       name: title
       required: true
-      secret: false
-    - default: false
-      description: Description of the alert.
-      isArray: false
+    - description: Description of the alert.
       name: description
       required: true
-      secret: false
-    - default: false
-      description: Action that is recommended to be taken by security officer when analyzing the alert.
-      isArray: false
+    - description: Action that is recommended to be taken by security officer when analyzing the alert.
       name: recommended_action
       required: true
-      secret: false
-    - default: false
-      description: The time of the event, as obtained from the advanced query.
-      isArray: false
+    - description: The time of the event, as obtained from the advanced query.
       name: event_time
       required: true
-      secret: false
-    - default: false
-      description: The reportId, as obtained from the advanced query.
-      isArray: false
+    - description: The reportId, as obtained from the advanced query.
       name: report_id
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: None
       description: Category of the alert.
-      isArray: false
       name: category
       predefined:
       - None
@@ -636,11 +531,8 @@ script:
       - NotApplicable
       - EnterprisePolicy
       - General
-      required: false
-      secret: false
     deprecated: true
     description: Create a new alert entity using event data, as obtained from the Advanced Hunting.
-    execution: false
     name: microsoft-atp-create-alert
     outputs:
     - contextPath: MicrosoftATP.Alert.MachineID
@@ -674,15 +566,11 @@ script:
       description: Status of the alert
       type: string
   - arguments:
-    - default: false
-      description: ID of the alert.
-      isArray: false
+    - description: ID of the alert.
       name: id
       required: true
-      secret: false
     deprecated: true
     description: Retrieves the user associated to a specific alert.
-    execution: false
     name: microsoft-atp-get-alert-related-user
     outputs:
     - contextPath: MicrosoftATP.User.ID
@@ -714,7 +602,6 @@ script:
       type: boolean
   dockerimage: demisto/crypto:1.0.0.11287
   isfetch: true
-  runonce: false
   script: '-'
   type: python
   subtype: python3

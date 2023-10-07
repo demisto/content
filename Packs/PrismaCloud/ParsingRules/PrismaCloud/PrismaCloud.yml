@@ -1,0 +1,6 @@
+name: Palo Alto Prisma Cloud Parsing Rule
+id: Palo_Alto_Prisma_Cloud_ParsingRule
+fromversion: 8.2.0
+tags: []
+rules: ''
+samples: ''

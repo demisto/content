@@ -1,0 +1,22 @@
+{
+    "name": "Simple Debugger",
+    "description": "This content pack provides a simple debugger for debugging custom python automations in XSOAR.  You can visually trace code execution, set breakpoints, step through the code, display local variables, and profile execution times of python functions.",
+    "support": "community",
+    "currentVersion": "1.0.1",
+    "author": "rurhrlaub",
+    "url": "",
+    "email": "",
+    "created": "2023-03-03T18:11:11Z",
+    "categories": [
+        "Utilities"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar"
+    ],
+    "githubUser": [
+        "rurhrlaub"
+    ]
+}

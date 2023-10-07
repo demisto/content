@@ -27,8 +27,8 @@ There are two different authentication methods for self-deployed configuration:
 5. In the **Authentication Type** field, select the **Authorization Code** option.
 6. Mark **Use a self-deployed Azure Application** as true.
 7. In the **Application redirect URI** field, enter your Application redirect URI.
-8. In the **Authorization code** field, enter your Authorization code.
-9. Save the instance.
+8. Save the instance.
+9. Run the `!microsoft-atp-generate-login-url` command in the War Room and follow the instruction.
 
 ### Authentication Based on Azure Managed Identities
 ##### Note: This option is relevant only if the integration is running on Azure VM.

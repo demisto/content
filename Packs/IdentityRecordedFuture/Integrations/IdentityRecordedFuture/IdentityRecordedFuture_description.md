@@ -13,7 +13,7 @@ A valid API Token for Recorded Future Identity Intelligence needed to fetch info
 | proxy                            | Use system proxy settings                                         |
 | Password properties              | Password properties that are used as a filter                     |
 | Limit Identities                 | Limit of identities to get min is 0 and max is 10 000             |
-| Domains                          | List of domains to use in search and lookup commands(e.g. mycompany.com; nextcompany.com )|
+| Domains                          | List of domains to use in search and lookup commands(e.g. mycompany.com, nextcompany.com )|
 
 ---
 
@@ -21,5 +21,6 @@ A valid API Token for Recorded Future Identity Intelligence needed to fetch info
 * Identity actions
     * Search for identities.
     * Lookup for specific identity.
+    * Password lookup.
 
 Copyright 2021 Recorded Future, Inc.

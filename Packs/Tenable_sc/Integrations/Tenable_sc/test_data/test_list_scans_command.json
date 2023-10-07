@@ -1,0 +1,55 @@
+{
+    "test_case_1":{
+        "args": {
+            "manageable": "true"
+        },
+        "mock_response": {"error_code":0,"error_msg":"","response": {"manageable":
+        [{"description":"Test scan","id":"3","name":"test_scan_2023",
+        "owner":{"firstname":"","id":"2","lastname":"","username":"secman","uuid":"6012E220-AFF8-499F-AEB9-401E48155451"},
+        "ownerGroup":{"description":"Full Access group","id":"0","name":"Full Access"},
+        "policy":{"description":"","id":"1","name":"Network Scan","status":"0","uuid":"E5B862E9-08CB-40F8-AF2B-77D0205B5529"},
+        "uuid":"85544C20-B579-49DF-B69A-FBF3897CE39F"},
+        {"description":"Test scan 2023","id":"4","name":"test_scan_2023",
+        "owner":{"firstname":"","id":"2","lastname":"","username":"secman","uuid":"6012E220-AFF8-499F-AEB9-401E48155451"},
+        "ownerGroup":{"description":"Full Access group","id":"0","name":"Full Access"},
+        "policy":{"description":"","id":"1","name":"Network Scan","status":"0","uuid":"E5B862E9-08CB-40F8-AF2B-77D0205B5529"},
+        "uuid":"B703E4AC-811F-498E-BA4D-DE0A1800206D"}],
+        "usable":[{"description":"Test scan","id":"3","name":"test_scan_2023","owner":{"firstname":"","id":"2","lastname":"","username":"secman","uuid":"6012E220-AFF8-499F-AEB9-401E48155451"},
+        "ownerGroup":{"description":"Full Access group","id":"0","name":"Full Access"},
+        "policy":{"description":"","id":"1","name":"Network Scan","status":"0","uuid":"E5B862E9-08CB-40F8-AF2B-77D0205B5529"},
+        "uuid":"85544C20-B579-49DF-B69A-FBF3897CE39F"},
+        {"description":"Test scan 2023","id":"4","name":"test_scan_2023",
+        "owner":{"firstname":"","id":"2","lastname":"","username":"secman","uuid":"6012E220-AFF8-499F-AEB9-401E48155451"},
+        "ownerGroup":{"description":"Full Access group","id":"0","name":"Full Access"},
+        "policy":{"description":"","id":"1","name":"Network Scan","status":"0","uuid":"E5B862E9-08CB-40F8-AF2B-77D0205B5529"},
+        "uuid":"B703E4AC-811F-498E-BA4D-DE0A1800206D"}]},"timestamp":1687083018,"type":"regular","warnings":[]},
+        "expected_hr": "### Tenable.sc Scans\n|ID|Name|Description|Policy|Group|Owner|\n|---|---|---|---|---|---|\n| 3 | test_scan_2023 | Test scan | Network Scan | Full Access | secman |\n| 4 | test_scan_2023 | Test scan 2023 | Network Scan | Full Access | secman |\n",
+        "expected_ec": [{"Name": "test_scan_2023", "ID": "3", "Description": "Test scan", "Policy": "Network Scan", "Group": "Full Access", "Owner": "secman"}, {"Name": "test_scan_2023", "ID": "4", "Description": "Test scan 2023", "Policy": "Network Scan", "Group": "Full Access", "Owner": "secman"}]
+    },
+    "test_case_2":{
+        "args": {
+        },
+        "mock_response": {"error_code":0,"error_msg":"","response": {"manageable":
+        [{"description":"Test scan","id":"3","name":"test_scan_2023",
+        "owner":{"firstname":"","id":"2","lastname":"","username":"secman","uuid":"6012E220-AFF8-499F-AEB9-401E48155451"},
+        "ownerGroup":{"description":"Full Access group","id":"0","name":"Full Access"},
+        "policy":{"description":"","id":"1","name":"Network Scan","status":"0","uuid":"E5B862E9-08CB-40F8-AF2B-77D0205B5529"},
+        "uuid":"85544C20-B579-49DF-B69A-FBF3897CE39F"},
+        {"description":"Test scan 2023","id":"4","name":"test_scan_2023",
+        "owner":{"firstname":"","id":"2","lastname":"","username":"secman","uuid":"6012E220-AFF8-499F-AEB9-401E48155451"},
+        "ownerGroup":{"description":"Full Access group","id":"0","name":"Full Access"},
+        "policy":{"description":"","id":"1","name":"Network Scan","status":"0","uuid":"E5B862E9-08CB-40F8-AF2B-77D0205B5529"},
+        "uuid":"B703E4AC-811F-498E-BA4D-DE0A1800206D"}],
+        "usable":[{"description":"Test scan","id":"1","name":"test_scan_2023","owner":{"firstname":"","id":"2","lastname":"","username":"secman","uuid":"6012E220-AFF8-499F-AEB9-401E48155451"},
+        "ownerGroup":{"description":"Full Access group","id":"0","name":"Full Access"},
+        "policy":{"description":"","id":"1","name":"Network Scan","status":"0","uuid":"E5B862E9-08CB-40F8-AF2B-77D0205B5529"},
+        "uuid":"85544C20-B579-49DF-B69A-FBF3897CE39F"},
+        {"description":"Test scan 2023","id":"2","name":"test_scan_2023",
+        "owner":{"firstname":"","id":"2","lastname":"","username":"secman","uuid":"6012E220-AFF8-499F-AEB9-401E48155451"},
+        "ownerGroup":{"description":"Full Access group","id":"0","name":"Full Access"},
+        "policy":{"description":"","id":"1","name":"Network Scan","status":"0","uuid":"E5B862E9-08CB-40F8-AF2B-77D0205B5529"},
+        "uuid":"B703E4AC-811F-498E-BA4D-DE0A1800206D"}]},"timestamp":1687083018,"type":"regular","warnings":[]},
+        "expected_hr": "### Tenable.sc Scans\n|ID|Name|Description|Policy|Group|Owner|\n|---|---|---|---|---|---|\n| 1 | test_scan_2023 | Test scan | Network Scan | Full Access | secman |\n| 2 | test_scan_2023 | Test scan 2023 | Network Scan | Full Access | secman |\n",
+        "expected_ec": [{"Name": "test_scan_2023", "ID": "1", "Description": "Test scan", "Policy": "Network Scan", "Group": "Full Access", "Owner": "secman"}, {"Name": "test_scan_2023", "ID": "2", "Description": "Test scan 2023", "Policy": "Network Scan", "Group": "Full Access", "Owner": "secman"}]
+    }
+}

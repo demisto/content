@@ -1,0 +1,729 @@
+{
+    "detailsV2": {
+        "tabs": [
+            {
+                "hidden": false,
+                "id": "gfrgdzfgei",
+                "name": "Case Info",
+                "sections": [
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "gfrgdzfgei-fyjdlofdhd-gfrgdzfgei-fyjdlofdhd-gfrgdzfgei-field-changed-gfrgdzfgei-aa0d7560-b338-11e9-b119-d93d58ec6fe8",
+                        "items": [
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "type",
+                                "height": 22,
+                                "id": "0acff760-b339-11e9-b119-d93d58ec6fe8",
+                                "index": 0,
+                                "listId": "gfrgdzfgei-aa0d7560-b338-11e9-b119-d93d58ec6fe8",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "severity",
+                                "height": 22,
+                                "id": "0d2d2140-b339-11e9-b119-d93d58ec6fe8",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "owner",
+                                "height": 22,
+                                "id": "108218a0-b339-11e9-b119-d93d58ec6fe8",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "sourceinstance",
+                                "height": 22,
+                                "id": "19d3ced0-b339-11e9-b119-d93d58ec6fe8",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "sourcebrand",
+                                "height": 22,
+                                "id": "21f23520-b339-11e9-b119-d93d58ec6fe8",
+                                "index": 4,
+                                "listId": "gfrgdzfgei-aa0d7560-b338-11e9-b119-d93d58ec6fe8",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "playbookid",
+                                "height": 22,
+                                "id": "282bfcf0-b339-11e9-b119-d93d58ec6fe8",
+                                "index": 5,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Case Details",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "h": 2,
+                        "hideName": false,
+                        "i": "gfrgdzfgei-fyjdlofdhd-gfrgdzfgei-fyjdlofdhd-gfrgdzfgei-field-changed-gfrgdzfgei-ba344900-b338-11e9-b119-d93d58ec6fe8",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Work Plan",
+                        "static": false,
+                        "type": "workplan",
+                        "w": 1,
+                        "x": 2,
+                        "y": 8
+                    },
+                    {
+                        "h": 4,
+                        "hideName": false,
+                        "i": "gfrgdzfgei-fyjdlofdhd-gfrgdzfgei-fyjdlofdhd-gfrgdzfgei-field-changed-gfrgdzfgei-c690a720-b338-11e9-b119-d93d58ec6fe8",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Incident Timeline",
+                        "query": {
+                            "categories": [
+                                "incidentInfo"
+                            ],
+                            "lastId": "",
+                            "pageSize": 100,
+                            "tags": [],
+                            "users": []
+                        },
+                        "queryType": "warRoomFilter",
+                        "static": false,
+                        "type": "invTimeline",
+                        "w": 2,
+                        "x": 0,
+                        "y": 6
+                    },
+                    {
+                        "description": "Prisma Cloud alert summary details.",
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "gfrgdzfgei-fyjdlofdhd-gfrgdzfgei-fyjdlofdhd-gfrgdzfgei-field-changed-gfrgdzfgei-57cfecc0-f766-11e9-8c27-6359f1848ae7",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "prismacloudid",
+                                "height": 22,
+                                "id": "7a4369a0-f8b8-11e9-a470-b7537b797c27",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "prismacloudtime",
+                                "height": 22,
+                                "id": "97ada000-f8b8-11e9-a470-b7537b797c27",
+                                "index": 1,
+                                "listId": "gfrgdzfgei-57cfecc0-f766-11e9-8c27-6359f1848ae7",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "prismacloudstatus",
+                                "height": 22,
+                                "id": "7fc5c850-f8b8-11e9-a470-b7537b797c27",
+                                "index": 2,
+                                "listId": "gfrgdzfgei-57cfecc0-f766-11e9-8c27-6359f1848ae7",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "prismaclouddismissalnote",
+                                "height": 22,
+                                "id": "101ae170-35f9-11ee-8c1f-a16407f8f329",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "resourcetype",
+                                "height": 22,
+                                "id": "ad55c110-9d7b-11ed-9d7e-577698fe3729",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "prismacloudreason",
+                                "height": 22,
+                                "id": "7cf9fe20-f8b8-11e9-a470-b7537b797c27",
+                                "index": 0,
+                                "listId": "gfrgdzfgei-fyjdlofdhd-gfrgdzfgei-fyjdlofdhd-gfrgdzfgei-field-changed-gfrgdzfgei-57cfecc0-f766-11e9-8c27-6359f1848ae7",
+                                "sectionItemType": "field",
+                                "startCol": 2
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "firstseen",
+                                "height": 22,
+                                "id": "a5bd1cf0-f766-11e9-8c27-6359f1848ae7",
+                                "index": 1,
+                                "listId": "gfrgdzfgei-57cfecc0-f766-11e9-8c27-6359f1848ae7",
+                                "sectionItemType": "field",
+                                "startCol": 2
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "lastseen",
+                                "height": 22,
+                                "id": "a6b97e50-f766-11e9-8c27-6359f1848ae7",
+                                "index": 2,
+                                "listId": "gfrgdzfgei-57cfecc0-f766-11e9-8c27-6359f1848ae7",
+                                "sectionItemType": "field",
+                                "startCol": 2
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "riskscore",
+                                "height": 22,
+                                "id": "b062f170-f766-11e9-8c27-6359f1848ae7",
+                                "index": 3,
+                                "listId": "gfrgdzfgei-57cfecc0-f766-11e9-8c27-6359f1848ae7",
+                                "sectionItemType": "field",
+                                "startCol": 2
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "riskrating",
+                                "height": 22,
+                                "id": "aa6fa880-f766-11e9-8c27-6359f1848ae7",
+                                "index": 4,
+                                "listId": "gfrgdzfgei-57cfecc0-f766-11e9-8c27-6359f1848ae7",
+                                "sectionItemType": "field",
+                                "startCol": 2
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Prisma Cloud Alert Summary",
+                        "static": false,
+                        "w": 2,
+                        "x": 1,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideItemTitleOnlyOne": true,
+                        "hideName": false,
+                        "i": "gfrgdzfgei-fyjdlofdhd-gfrgdzfgei-fyjdlofdhd-gfrgdzfgei-field-changed-gfrgdzfgei-a02fde00-9ca2-11ed-95ed-2dfa375b67ff",
+                        "items": [
+                            {
+                                "dropEffect": "move",
+                                "endCol": 6,
+                                "fieldId": "prismacloudiamresults",
+                                "height": 106,
+                                "id": "ccdc2d50-9ca2-11ed-95ed-2dfa375b67ff",
+                                "index": 0,
+                                "listId": "gfrgdzfgei-field-changed-gfrgdzfgei-a02fde00-9ca2-11ed-95ed-2dfa375b67ff",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "IAM Permissions Results",
+                        "static": false,
+                        "w": 3,
+                        "x": 0,
+                        "y": 2
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideItemTitleOnlyOne": true,
+                        "hideName": false,
+                        "i": "gfrgdzfgei-fyjdlofdhd-gfrgdzfgei-fyjdlofdhd-gfrgdzfgei-field-changed-gfrgdzfgei-efdda150-9d4f-11ed-b331-4760f6b6f91f",
+                        "items": [
+                            {
+                                "endCol": 4,
+                                "fieldId": "prismacloudfindingsresults",
+                                "height": 106,
+                                "id": "f4e72680-9d4f-11ed-b331-4760f6b6f91f",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Findings Results",
+                        "static": false,
+                        "w": 2,
+                        "x": 0,
+                        "y": 4
+                    },
+                    {
+                        "h": 4,
+                        "i": "gfrgdzfgei-3828f530-9fc7-11ed-b6c8-c5aca74bc074",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Notifications And Ticketing",
+                        "query": {
+                            "fromTime": "0001-01-01T00:00:00Z",
+                            "pageSize": 0,
+                            "tags": [
+                                "NotificationsAndTicketing"
+                            ],
+                            "tagsAndOperator": false,
+                            "usersAndOperator": false
+                        },
+                        "queryType": "warRoomFilter",
+                        "static": false,
+                        "type": "invTimeline",
+                        "w": 1,
+                        "x": 2,
+                        "y": 4
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "hidden": false,
+                "id": "fyjdlofdhd",
+                "name": "Investigation",
+                "sections": [
+                    {
+                        "description": "Remediation tasks information.",
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "gfrgdzfgei-fyjdlofdhd-gfrgdzfgei-fyjdlofdhd-gfrgdzfgei-field-changed-fyjdlofdhd-f70ad9a0-93c3-11e9-a1e7-13edb5b78371",
+                        "isVisible": true,
+                        "items": [
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "policyrecommendation",
+                                "height": 48,
+                                "id": "25b6c980-93c4-11e9-a1e7-13edb5b78371",
+                                "index": 0,
+                                "listId": "f70ad9a0-93c3-11e9-a1e7-13edb5b78371",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxH": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Remediation Actions",
+                        "static": false,
+                        "w": 3,
+                        "x": 0,
+                        "y": 6
+                    },
+                    {
+                        "description": "Violated policy information.",
+                        "displayType": "ROW",
+                        "h": 3,
+                        "hideName": false,
+                        "i": "gfrgdzfgei-fyjdlofdhd-gfrgdzfgei-fyjdlofdhd-gfrgdzfgei-field-changed-fyjdlofdhd-3cf20d80-93c4-11e9-a1e7-13edb5b78371",
+                        "isVisible": true,
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "policyid",
+                                "height": 24,
+                                "id": "60add970-93c4-11e9-a1e7-13edb5b78371",
+                                "index": 0,
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "policytype",
+                                "height": 24,
+                                "id": "650d8a10-93c4-11e9-a1e7-13edb5b78371",
+                                "index": 1,
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "policyseverity",
+                                "height": 24,
+                                "id": "569fc100-a9d1-11e9-a91e-57df9227e86a",
+                                "index": 2,
+                                "listId": "3cf20d80-93c4-11e9-a1e7-13edb5b78371",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "policydescription",
+                                "height": 48,
+                                "id": "52384830-a9d1-11e9-a91e-57df9227e86a",
+                                "index": 3,
+                                "listId": "3cf20d80-93c4-11e9-a1e7-13edb5b78371",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "systemdefault",
+                                "height": 24,
+                                "id": "dbf3d150-a9d8-11e9-a91e-57df9227e86a",
+                                "index": 4,
+                                "listId": "3cf20d80-93c4-11e9-a1e7-13edb5b78371",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "policyremediable",
+                                "height": 24,
+                                "id": "67e58940-93c4-11e9-a1e7-13edb5b78371",
+                                "index": 5,
+                                "listId": "3cf20d80-93c4-11e9-a1e7-13edb5b78371",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "policydeleted",
+                                "height": 24,
+                                "id": "642758b0-a9d1-11e9-a91e-57df9227e86a",
+                                "index": 6,
+                                "listId": "3cf20d80-93c4-11e9-a1e7-13edb5b78371",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "lastmodifiedon",
+                                "height": 24,
+                                "id": "ad90aa40-a9d8-11e9-a91e-57df9227e86a",
+                                "index": 7,
+                                "listId": "3cf20d80-93c4-11e9-a1e7-13edb5b78371",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "lastmodifiedby",
+                                "height": 24,
+                                "id": "b07a0e90-a9d8-11e9-a91e-57df9227e86a",
+                                "index": 8,
+                                "startCol": 0
+                            }
+                        ],
+                        "maxH": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Policy Violated",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "description": "Violating resource information.",
+                        "displayType": "ROW",
+                        "h": 3,
+                        "hideName": false,
+                        "i": "gfrgdzfgei-fyjdlofdhd-gfrgdzfgei-fyjdlofdhd-gfrgdzfgei-field-changed-fyjdlofdhd-9c8d74a0-93c4-11e9-9dd5-3b4f6f9f1bae",
+                        "isVisible": true,
+                        "items": [
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "resourceid",
+                                "height": 24,
+                                "id": "bac55b40-93c4-11e9-9dd5-3b4f6f9f1bae",
+                                "index": 0,
+                                "listId": "9c8d74a0-93c4-11e9-9dd5-3b4f6f9f1bae",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "resourcename",
+                                "height": 24,
+                                "id": "b80a59f0-93c4-11e9-9dd5-3b4f6f9f1bae",
+                                "index": 1,
+                                "listId": "9c8d74a0-93c4-11e9-9dd5-3b4f6f9f1bae",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "resourcetype",
+                                "height": 24,
+                                "id": "c9fc50a0-93c4-11e9-9dd5-3b4f6f9f1bae",
+                                "index": 2,
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "region",
+                                "height": 24,
+                                "id": "c61a8290-93c4-11e9-9dd5-3b4f6f9f1bae",
+                                "index": 3,
+                                "listId": "9c8d74a0-93c4-11e9-9dd5-3b4f6f9f1bae",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "accountname",
+                                "height": 24,
+                                "id": "209fc340-3066-11ea-9aa4-0df78411179a",
+                                "index": 4,
+                                "listId": "9c8d74a0-93c4-11e9-9dd5-3b4f6f9f1bae",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "accountid",
+                                "height": 24,
+                                "id": "18654c40-a9d9-11e9-a91e-57df9227e86a",
+                                "index": 5,
+                                "listId": "9c8d74a0-93c4-11e9-9dd5-3b4f6f9f1bae",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "resourceapiname",
+                                "height": 24,
+                                "id": "0a428600-a9d9-11e9-a91e-57df9227e86a",
+                                "index": 6,
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "resourcecloudtype",
+                                "height": 24,
+                                "id": "cc430c50-93c4-11e9-9dd5-3b4f6f9f1bae",
+                                "index": 7,
+                                "listId": "9c8d74a0-93c4-11e9-9dd5-3b4f6f9f1bae",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxH": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Violating Resource",
+                        "static": false,
+                        "w": 1,
+                        "x": 1,
+                        "y": 0
+                    },
+                    {
+                        "description": "Resource subscription metadata.",
+                        "displayType": "ROW",
+                        "h": 3,
+                        "hideName": false,
+                        "i": "gfrgdzfgei-fyjdlofdhd-gfrgdzfgei-fyjdlofdhd-gfrgdzfgei-field-changed-fyjdlofdhd-5a18c180-a9d9-11e9-a91e-57df9227e86a",
+                        "isVisible": true,
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "subscriptionid",
+                                "height": 24,
+                                "id": "83f1a580-a9d9-11e9-a91e-57df9227e86a",
+                                "index": 0,
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "subscriptionname",
+                                "height": 24,
+                                "id": "89d759e0-a9d9-11e9-a91e-57df9227e86a",
+                                "index": 1,
+                                "listId": "5a18c180-a9d9-11e9-a91e-57df9227e86a",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "subscriptiontype",
+                                "height": 24,
+                                "id": "8f7e0970-a9d9-11e9-a91e-57df9227e86a",
+                                "index": 2,
+                                "listId": "5a18c180-a9d9-11e9-a91e-57df9227e86a",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "subscriptiondescription",
+                                "height": 24,
+                                "id": "b0f03380-a9d9-11e9-a91e-57df9227e86a",
+                                "index": 3,
+                                "listId": "5a18c180-a9d9-11e9-a91e-57df9227e86a",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "skuname",
+                                "height": 24,
+                                "id": "a0994f30-a9d9-11e9-a91e-57df9227e86a",
+                                "index": 4,
+                                "listId": "5a18c180-a9d9-11e9-a91e-57df9227e86a",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "skutier",
+                                "height": 24,
+                                "id": "a21e6890-a9d9-11e9-a91e-57df9227e86a",
+                                "index": 5,
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "subscriptioncreatedby",
+                                "height": 24,
+                                "id": "c4f66430-a9d9-11e9-a91e-57df9227e86a",
+                                "index": 6,
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "subscriptioncreatedon",
+                                "height": 24,
+                                "id": "c67f2710-a9d9-11e9-a91e-57df9227e86a",
+                                "index": 7,
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "subscriptionupdatedby",
+                                "height": 24,
+                                "id": "cdf73b40-a9d9-11e9-a91e-57df9227e86a",
+                                "index": 8,
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "subscriptionupdatedon",
+                                "height": 24,
+                                "id": "cf929bc0-a9d9-11e9-a91e-57df9227e86a",
+                                "index": 9,
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "subscriptionassignedby",
+                                "height": 24,
+                                "id": "dcfebc30-a9d9-11e9-a91e-57df9227e86a",
+                                "index": 10,
+                                "startCol": 0
+                            }
+                        ],
+                        "maxH": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Resource Subscription Details",
+                        "static": false,
+                        "w": 1,
+                        "x": 2,
+                        "y": 0
+                    },
+                    {
+                        "h": 3,
+                        "i": "gfrgdzfgei-fyjdlofdhd-gfrgdzfgei-fyjdlofdhd-gfrgdzfgei-7a6d6990-9d87-11ed-800f-97ee0fb0a49c",
+                        "items": [],
+                        "maxH": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Indicators",
+                        "query": "-verdict:Benign",
+                        "queryType": "input",
+                        "static": false,
+                        "type": "indicators",
+                        "w": 3,
+                        "x": 0,
+                        "y": 3
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "id": "warRoom",
+                "name": "War Room",
+                "type": "warRoom"
+            },
+            {
+                "id": "workPlan",
+                "name": "Work Plan",
+                "type": "workPlan"
+            },
+            {
+                "id": "evidenceBoard",
+                "name": "Evidence Board",
+                "type": "evidenceBoard"
+            },
+            {
+                "id": "relatedIncidents",
+                "name": "Related Incidents",
+                "type": "relatedIncidents"
+            },
+            {
+                "id": "canvas",
+                "name": "Canvas",
+                "type": "canvas"
+            }
+        ]
+    },
+    "group": "incident",
+    "id": "Prisma Cloud - VM Alert Prioritization",
+    "name": "Prisma Cloud - VM Alert Prioritization",
+    "system": false,
+    "version": -1,
+    "fromVersion": "6.8.0",
+    "marketplaces": [
+        "xsoar"
+    ],
+    "description": ""
+}

@@ -1,0 +1,119 @@
+id: Use Case Builder Playbook Reset
+version: -1
+contentitemexportablefields:
+  contentitemfields: {}
+name: Use Case Builder Playbook Reset
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 00bf6c9c-dad1-49cd-8e1a-24518a96f139
+    type: start
+    task:
+      id: 00bf6c9c-dad1-49cd-8e1a-24518a96f139
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 231583e2-1673-4fbe-8637-4655c239e348
+    type: regular
+    task:
+      id: 231583e2-1673-4fbe-8637-4655c239e348
+      version: -1
+      name: Set Playbook
+      description: commands.local.cmd.set.playbook
+      script: Builtin|||setPlaybook
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      name:
+        simple: Use Case Builder
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: b412b2a3-b601-450b-8d1b-4e3d6163ecb1
+    type: title
+    task:
+      id: b412b2a3-b601-450b-8d1b-4e3d6163ecb1
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 385,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+quiet: true
+fromversion: 6.10.0
+tests:
+- Run all tests
+description: 'This playbook resets the incident when the user chooses to start over.'

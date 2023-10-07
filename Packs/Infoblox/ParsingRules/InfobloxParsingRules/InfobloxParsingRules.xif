@@ -1,5 +1,7 @@
 [INGEST:vendor="infoblox", product="infoblox", target_dataset="infoblox_infoblox_raw", no_hit=drop]
-alter tmp_time_without_year = arraystring(regextract( _raw_log, "\<\d+\>(\w{3}\s\d{2}\s\d{2}\:\d{2}\:\d{2})\s"), ""), 
+// Support only date time of format: MMM dd hh:mm:ss. For example: "Jan 01 10:00:00".
+filter _raw_log ~= "\<\d+\>\w{3}\s\d{2}\s\d{2}\:\d{2}\:\d{2}\s"
+| alter tmp_time_without_year = arraystring(regextract( _raw_log, "\<\d+\>(\w{3}\s\d{2}\s\d{2}\:\d{2}\:\d{2})\s"), ""),
     tmp_year = to_string(format_timestamp("%Y",current_time()))
 | alter tmp_time_format = arraystring(arraycreate(tmp_year, tmp_time_without_year), " ")
 | alter _time = parse_timestamp("%Y %b %d %H:%M:%S", tmp_time_format)

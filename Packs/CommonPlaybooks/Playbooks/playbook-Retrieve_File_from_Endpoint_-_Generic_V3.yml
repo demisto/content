@@ -127,11 +127,14 @@ tasks:
       - "3"
     scriptarguments:
       Agent_ID:
-        simple: ${inputs.Agent_ID}
+        complex:
+          root: inputs.Agent_ID
       Host:
-        simple: ${inputs.Host}
+        complex:
+          root: inputs.Host
       Path:
-        simple: ${inputs.Path}
+        complex:
+          root: inputs.Path
     separatecontext: true
     loop:
       iscommand: false
@@ -176,8 +179,7 @@ inputs:
 - key: Host
   value: {}
   required: false
-  description: Hostname of the machine on which the file is located for PS remote
-    it can also be an IP address.
+  description: Hostname of the machine on which the file is located for PS remote it can also be an IP address.
   playbookInputQuery:
 - key: Path
   value: {}
@@ -227,5 +229,5 @@ outputs:
   description: The file SSDeep.
   type: string
 tests:
-- No tests.
+- Retrieve File from Endpoint - Generic V3 Test
 fromversion: 6.0.0

@@ -1,8 +1,8 @@
-''' IMPORTS '''
 import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+''' IMPORTS '''
 from typing import Dict, Tuple, List
 from datetime import timezone
-from CommonServerPython import *
 import urllib3
 
 urllib3.disable_warnings()

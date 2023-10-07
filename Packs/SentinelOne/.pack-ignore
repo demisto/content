@@ -1,14 +1,15 @@
 [file:SentinelOne-V2.yml]
-ignore=IN126,BA108,BA109,IN145,IN124
+ignore=IN126,BA108,BA109,IN124
 
 [file:README.md]
 ignore=RM106
-
-[file:SentinelOne.yml]
-ignore=IN145
 
 [file:SentinelOne_image.png]
 ignore=IM111
 
 [known_words]
 whitelist
+
+[file:SentinelOneModelingRules.yml]
+ignore=MR108
+

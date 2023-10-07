@@ -1,5 +1,14 @@
 [file:README.md]
 ignore=RM104
 
+[file:Ansible_Tower-_ad_hoc_command-_generic_polling.yml]
+ignore=BA101
+
+[file:Ansible_Tower-_job_generic_polling.yml]
+ignore=BA101
+
+[file:AnsibleTower.yml]
+ignore=BA101
+
 [known_words]
 Adhoc

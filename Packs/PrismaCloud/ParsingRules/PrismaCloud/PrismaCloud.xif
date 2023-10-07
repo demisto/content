@@ -1,0 +1,4 @@
+[INGEST:vendor="prisma", product="cloud", target_dataset="prisma_cloud_raw", no_hit=keep]
+// The alertTime timestamp parsing is supported for epoch unix-time timestamps represented in milliseconds 
+filter to_string(alertTime) ~= "\d{13}" 
+| alter _time = to_timestamp(to_integer(alertTime), "MILLIS");

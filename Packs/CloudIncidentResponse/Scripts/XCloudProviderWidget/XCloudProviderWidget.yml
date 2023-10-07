@@ -1,0 +1,17 @@
+commonfields:
+  id: XCloudProviderWidget
+  version: -1
+name: XCloudProviderWidget
+script: ''
+type: python
+tags:
+- dynamic-section
+comment: 'This script returns an HTML result of the cloud providers in the incident. The result will be displayed in the following font colors: AWS - red, GCP - green, Azure - blue.'
+enabled: true
+scripttarget: 0
+subtype: python3
+dockerimage: demisto/python3:3.10.12.63474
+runas: DBotWeakRole
+fromversion: 6.8.0
+tests:
+- No tests (auto formatted)

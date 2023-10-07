@@ -1,0 +1,25 @@
+{
+    "dataType": "incidents",
+    "params": {
+        "groupBy": [
+            "xpanseprotocol"
+        ],
+        "valuesFormat": "abbreviated"
+    },
+    "query": "type:\"Xpanse Alert\"",
+    "modified": "2023-05-26T17:24:45.104159477Z",
+    "name": "Xpanse Incidents by Protocol",
+    "dateRange": {
+        "period": {
+            "byFrom": "days",
+            "fromValue": 30
+        },
+        "fromDateLicense": "0001-01-01T00:00:00Z"
+    },
+    "isPredefined": true,
+    "version": -1,
+    "id": "de2b128e-6d0d-497e-87ea-484725f4701a",
+    "widgetType": "pie",
+    "fromVersion": "6.8.0",
+    "description": ""
+}

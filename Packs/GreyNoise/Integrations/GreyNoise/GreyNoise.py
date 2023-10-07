@@ -9,7 +9,6 @@ import re
 import copy
 from typing import Tuple, Dict, Any
 from greynoise import GreyNoise, exceptions, util  # type: ignore
-from greynoise.exceptions import RequestFailure, RateLimitError  # type: ignore
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -17,7 +16,7 @@ util.LOGGER.warning = util.LOGGER.debug
 
 """ CONSTANTS """
 
-TIMEOUT = 10
+TIMEOUT = 30
 PRETTY_KEY = {
     "ip": "IP",
     "first_seen": "First Seen",
@@ -33,24 +32,30 @@ PRETTY_KEY = {
     "city": "City",
     "country": "Country",
     "country_code": "Country Code",
+    "destination_countries": "Destination Countries",
+    "destination_country_codes": "Destination Country Codes",
     "organization": "Organization",
     "category": "Category",
+    "sensor_count": "Sensor Count",
+    "sensor_hits": "Sensor Hits",
+    "source_country": "Source Country",
+    "source_country_code": "Source Country Code",
     "tor": "Tor",
-    "rdns": "RDNS",
+    "rdns": "rDNS",
     "os": "OS",
     "region": "Region",
     "vpn": "VPN",
     "vpn_service": "VPN Service",
-    "raw_data": "raw_data",
-    "scan": "scan",
-    "port": "port",
-    "protocol": "protocol",
-    "web": "web",
-    "paths": "paths",
-    "useragents": "useragents",
+    "raw_data": "Raw Data",
+    "scan": "Scan",
+    "port": "Port",
+    "protocol": "Protocol",
+    "web": "Web",
+    "paths": "Paths",
+    "useragents": "User-Agents",
     "ja3": "ja3",
     "fingerprint": "fingerprint",
-    "hassh": "hassh",
+    "hassh": "HASSH",
     "bot": "BOT",
 }
 IP_CONTEXT_HEADERS = [
@@ -66,6 +71,27 @@ IP_CONTEXT_HEADERS = [
     "First Seen",
     "Last Seen",
 ]
+SIMILAR_HEADERS = [
+    "IP",
+    "Score",
+    "Classification",
+    "Actor",
+    "Organization",
+    "Source Country",
+    "Last Seen",
+    "Similarity Features"
+]
+TIMELINE_HEADERS = [
+    "Date",
+    "Classification",
+    "Tags",
+    "rDNS",
+    "Organization",
+    "ASN",
+    "Ports",
+    "Web Paths",
+    "User Agents",
+]
 RIOT_HEADERS = ["IP", "Category", "Name", "Trust Level", "Description", "Last Updated"]
 API_SERVER = util.DEFAULT_CONFIG.get("api_server")
 IP_QUICK_CHECK_HEADERS = ["IP", "Noise", "RIOT", "Code", "Code Description"]
@@ -74,7 +100,8 @@ STATS_KEY = {
     "spoofable": "Spoofable",
     "organizations": "Organizations",
     "actors": "Actors",
-    "countries": "Countries",
+    "source_countries": "Source Countries",
+    "destination_countries": "Destination Countries",
     "tags": "Tags",
     "operating_systems": "Operating Systems",
     "categories": "Categories",
@@ -102,13 +129,11 @@ EXCEPTION_MESSAGES = {
     "COMMAND_FAIL": "Failed to execute {} command.\n Error: {}",
     "SERVER_ERROR": "The server encountered an internal error for GreyNoise and was unable to complete your request.",
     "CONNECTION_TIMEOUT": "Connection timed out. Check your network connectivity.",
-    "PROXY": "Proxy Error - cannot connect to proxy. Either try clearing the "
-    "'Use system proxy' check-box or check the host, "
-    "authentication details and connection details for the proxy.",
+    "PROXY": "Proxy Error - cannot connect to proxy. Either try clearing the 'Use system proxy' check-box or check "
+             "the host, authentication details and connection details for the proxy.",
     "INVALID_RESPONSE": "Invalid response from GreyNoise. Response: {}",
     "QUERY_STATS_RESPONSE": "GreyNoise request failed. Reason: {}",
 }
-
 
 """ CLIENT CLASS """
 
@@ -131,10 +156,10 @@ class Client(GreyNoise):
                     f"Invalid API Offering ({response['offering']})or Expiration Date ({expiration_date})"
                 )
 
-        except RateLimitError:
+        except exceptions.RateLimitError:
             raise DemistoException(EXCEPTION_MESSAGES["API_RATE_LIMIT"])
 
-        except RequestFailure as err:
+        except exceptions.RequestFailure as err:
             status_code = err.args[0]
             body = str(err.args[1])
 
@@ -245,7 +270,7 @@ def get_ip_context_data(responses: list) -> list:
 
 
 def get_ip_reputation_score(classification: str) -> Tuple[int, str]:
-    """Get DBot score and human readable of score.
+    """Get DBot score and human-readable of score.
 
     :type classification: ``str``
     :param classification: classification of ip provided from GreyNoise.
@@ -746,6 +771,8 @@ def stats_command(client: Client, args: dict) -> Any:
             hr_list: list = []
             if value is None:
                 continue
+            if key == "countries":
+                continue
             for rec in value:
                 hr_rec: dict = {}
                 header = []
@@ -764,6 +791,140 @@ def stats_command(client: Client, args: dict) -> Any:
         outputs_key_field="query",
         outputs=remove_empty_elements(response),
         readable_output=human_readable,
+    )
+
+
+@exception_handler
+@logger
+def similarity_command(client: Client, args: dict) -> Any:
+    """Get similarity information for a specified IP.
+
+       :type client: ``Client``
+       :param client: Client object for interaction with GreyNoise.
+
+       :type args: ``dict``
+       :param args: All command arguments, usually passed from ``demisto.args()``.
+
+       :return: A ``CommandResults`` object that is then passed to ``return_results``,
+           that contains the IP information.
+       :rtype: ``CommandResults``
+    """
+    ip = args.get("ip", "")
+    min_score = args.get("minimum_score", 90)
+    limit = args.get("maximum_results", 50)
+    if isinstance(min_score, str):
+        min_score = int(min_score)
+    if isinstance(limit, str):
+        limit = int(limit)
+    response = client.similar(ip, min_score=min_score, limit=limit)
+    original_response = copy.deepcopy(response)
+    response = remove_empty_elements(response)
+    if not isinstance(response, dict):
+        raise DemistoException(EXCEPTION_MESSAGES["INVALID_RESPONSE"].format(response))
+
+    if response.get("similar_ips"):
+        tmp_response = []
+        for sim_ip in response.get("similar_ips", []):
+            modified_sim_ip = copy.deepcopy(sim_ip)
+            modified_sim_ip["IP"] = sim_ip.get("ip")
+            modified_sim_ip["Score"] = sim_ip.get("score", "0") * 100
+            modified_sim_ip["Classification"] = sim_ip.get("classification")
+            modified_sim_ip["Actor"] = sim_ip.get("actor")
+            modified_sim_ip["Organization"] = sim_ip.get("organization")
+            modified_sim_ip["Source Country"] = sim_ip.get("source_country")
+            modified_sim_ip["Last Seen"] = sim_ip.get("last_seen")
+            modified_sim_ip["Similarity Features"] = sim_ip.get("features")
+            tmp_response.append(modified_sim_ip)
+
+        human_readable = f"### IP: {ip} - Similar Internet Scanners found in GreyNoise\n"
+        human_readable += f'#### Total Similar IPs with Score above {min_score}%: {response.get("total")}\n'
+        if response.get('total', 0) > limit:
+            human_readable += f'##### Displaying {limit} results below.  To see all results, visit the GreyNoise ' \
+                              f'Visualizer.\n '
+
+        human_readable += tableToMarkdown(
+            name="GreyNoise Similar IPs", t=tmp_response, headers=SIMILAR_HEADERS, removeNull=True
+        )
+
+        similarity_link = f"https://viz.greynoise.io/ip-similarity/{ip}"
+        human_readable += f"\n*To view the detailed similarity result please click [here]({similarity_link}).*"
+
+    elif response["message"] == "ip not found":
+        human_readable = "### GreyNoise Similarity Lookup returned No Results."
+        viz_link = f"https://viz.greynoise.io/ip/{ip}"
+        human_readable += f"\n*To view this IP on the GreyNoise Visualizer please click [here]({viz_link}).*"
+
+    return CommandResults(
+        outputs_prefix="GreyNoise.Similar",
+        outputs_key_field="ip",
+        readable_output=human_readable, outputs=remove_empty_elements(response), raw_response=original_response
+    )
+
+
+@exception_handler
+@logger
+def timeline_command(client: Client, args: dict) -> Any:
+    """Get timeline information for a specified IP.
+
+       :type client: ``Client``
+       :param client: Client object for interaction with GreyNoise.
+
+       :type args: ``dict``
+       :param args: All command arguments, usually passed from ``demisto.args()``.
+
+       :return: A ``CommandResults`` object that is then passed to ``return_results``,
+           that contains the IP information.
+       :rtype: ``CommandResults``
+    """
+    ip = args.get("ip", "")
+    days = args.get("days", 30)
+    limit = args.get("maximum_results", 50)
+    if isinstance(days, str):
+        days = int(days)
+    if isinstance(limit, str):
+        limit = int(limit)
+    response = client.timelinedaily(ip, days=days, limit=limit)
+    original_response = copy.deepcopy(response)
+    response = remove_empty_elements(response)
+    if not isinstance(response, dict):
+        raise DemistoException(EXCEPTION_MESSAGES["INVALID_RESPONSE"].format(response))
+
+    if response.get("activity"):
+        tmp_response = []
+        for activity in response.get("activity", []):
+            modified_activity = copy.deepcopy(activity)
+            modified_activity["Date"] = activity.get("timestamp").split("T")[0]
+            modified_activity["Classification"] = activity.get("classification")
+            tag_names = [tag["name"] for tag in activity.get("tags", [])]
+            modified_activity["Tags"] = tag_names
+            modified_activity["rDNS"] = activity.get("rdns")
+            modified_activity["Organization"] = activity.get("organization")
+            modified_activity["ASN"] = activity.get("asn")
+            ports = [str(item["port"]) + "/" + str(item["transport_protocol"]) for item in activity.get("protocols", [])]
+            modified_activity["Ports"] = ports
+            modified_activity["Web Paths"] = activity.get("http_paths")
+            modified_activity["User Agents"] = activity.get("http_user_agents")
+            tmp_response.append(modified_activity)
+
+        human_readable = f"### IP: {ip} - GreyNoise IP Timeline\n"
+
+        human_readable += tableToMarkdown(
+            name="Internet Scanner Timeline Details - Daily Activity Summary", t=tmp_response, headers=TIMELINE_HEADERS,
+            removeNull=True
+        )
+
+        timeline_link = f"https://viz.greynoise.io/ip/{ip}?view=timeline"
+        human_readable += f"\n*To view the detailed timeline result please click [here]({timeline_link}).*"
+
+    else:
+        human_readable = "### GreyNoise IP Timeline Returned No Results."
+        viz_link = f"https://viz.greynoise.io/ip/{ip}"
+        human_readable += f"\n*To view this IP on the GreyNoise Visualizer please click [here]({viz_link}).*"
+
+    return CommandResults(
+        outputs_prefix="GreyNoise.Timeline",
+        outputs_key_field="ip",
+        readable_output=human_readable, outputs=remove_empty_elements(response), raw_response=original_response
     )
 
 
@@ -963,10 +1124,14 @@ def main() -> None:
     else:
         packs = []
 
-    pack_version = "1.2.0"
-    for pack in packs:
-        if pack["name"] == "GreyNoise":
-            pack_version = pack["currentVersion"]
+    pack_version = "1.3.0"
+    if isinstance(packs, list):
+        for pack in packs:
+            if pack["name"] == "GreyNoise":
+                pack_version = pack["currentVersion"]
+    else:  # packs is a dict
+        if packs.get("name") == "GreyNoise":
+            pack_version = packs.get("currentVersion")
 
     api_key = demisto.params().get("apikey")
     proxy = demisto.params().get("proxy", False)
@@ -1004,6 +1169,14 @@ def main() -> None:
 
         elif demisto.command() == "greynoise-stats":
             result = stats_command(client, demisto.args())
+            return_results(result)
+
+        elif demisto.command() == "greynoise-similarity":
+            result = similarity_command(client, demisto.args())
+            return_results(result)
+
+        elif demisto.command() == "greynoise-timeline":
+            result = timeline_command(client, demisto.args())
             return_results(result)
 
         elif demisto.command() == "greynoise-query":

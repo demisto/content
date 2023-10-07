@@ -1,0 +1,32 @@
+{
+    "id": "incident_securonixreason",
+    "version": -1,
+    "modified": "2023-01-19T12:19:33.091495885+05:30",
+    "name": "Securonix Reason",
+    "ownerOnly": false,
+    "description": "The reason that the incident was created. Usually includes the policy name and/or possible threat name.",
+    "cliName": "securonixreason",
+    "type": "multiSelect",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": true,
+    "associatedTypes": [
+        "Securonix Incident"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.5.0"
+}

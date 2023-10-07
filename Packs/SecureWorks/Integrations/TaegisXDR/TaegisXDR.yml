@@ -2,9 +2,10 @@ commonfields:
   id: TaegisXDR
   version: -1
 name: TaegisXDR
-display: TaegisXDR
+display: TaegisXDR (Deprecated)
+deprecated: true
 category: Data Enrichment & Threat Intelligence
-description: For integration with the Secureworks Taegis XDR platform
+description: Deprecated. Use TaegisXDR v2 instead.
 configuration:
 - display: Taegis Environment
   name: environment
@@ -18,8 +19,8 @@ configuration:
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
-  required: false
   defaultvalue: "false"
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
@@ -39,17 +40,15 @@ configuration:
 - name: max_fetch
   defaultvalue: '15'
   display: Maximum number of incidents per fetch
-  hidden: false
-  required: false
   type: 0
   additionalinfo: The maximum limit is 200.
+  required: false
 - name: first_fetch
   defaultvalue: 3 days
   display: First fetch time interval
-  hidden: false
-  required: false
   type: 0
   additionalinfo: 'Date or relative timestamp to start fetching incidents from. For Alert, incidents will be fetched based on triggered date. For Event, the incidents will be fetched based on event time. (Formats accepted:  2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.).'
+  required: false
 - display: Incidents Fetch Interval
   name: incidentFetchInterval
   defaultvalue: "1"
@@ -63,11 +62,8 @@ configuration:
   name: include_assets
   defaultvalue: "true"
   type: 8
+  additionalinfo: An error can occur when the API is slow or there are a large numbers of assets being added to a new incident/investigation. Disabling this will fetch incidents without including asset information, allowing time for the investigation creation to be completed.
   required: false
-  additionalinfo: An error can occur when the API is slow or there are a large numbers
-    of assets being added to a new incident/investigation. Disabling this will fetch
-    incidents without including asset information, allowing time for the investigation
-    creation to be completed.
 script:
   script: ''
   type: python
@@ -283,8 +279,82 @@ script:
     - contextPath: TaegisXDR.UnarchivedInvestigation
       description: The results from unarchiving an investigation
     description: Unarchive an investigation
-  dockerimage: demisto/python3:3.10.9.42476
-  runonce: false
+  - name: taegis-update-alert-status
+    arguments:
+    - name: ids
+      required: true
+      description: A list of alert IDs or string of comma-separated alert IDs to return
+      isArray: true
+    - name: status
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - FALSE_POSITIVE
+      - NOT_ACTIONABLE
+      - OPEN
+      - TRUE_POSITIVE_BENIGN
+      - TRUE_POSITIVE_MALICIOUS
+      description: The status to update the alert with
+    - name: reason
+      description: A simple comment/reason for the status change
+    outputs:
+    - contextPath: TaegisXDR.AlertStatusUpdate
+      description: The result of the alert status update
+    description: Update the status of an alert
+  - name: taegis-fetch-assets
+    arguments:
+    - name: page
+      description: Search results page number
+      defaultValue: "0"
+    - name: page_size
+      description: The number of results per-page
+      defaultValue: "10"
+    - name: endpoint_type
+      description: Filter assets by asset type
+    - name: host_id
+      description: Filter assets by host ID
+    - name: hostname
+      description: Filter assets by hostname
+    - name: investigation_id
+      description: Filter assets by related investigation ID
+    - name: ip_address
+      description: Filter assets by IP address
+    - name: mac_address
+      description: Filter assets by MAC address
+    - name: os_family
+      description: Filter assets by OS family
+    - name: os_version
+      description: Filter assets by OS version
+    - name: sensor_version
+      description: Filter assets by sensor version
+    - name: username
+      description: Filter assets by username
+    outputs:
+    - contextPath: TaegisXDR.Assets
+      description: A list of located assets
+    description: Fetch assets based on search criteria
+  - name: taegis-isolate-asset
+    arguments:
+    - name: id
+      required: true
+      description: Asset ID to isolate
+    - name: reason
+      required: true
+      description: A reason for the isolation
+    outputs:
+    - contextPath: TaegisXDR.AssetIsolation
+      description: Results from the asset isolation
+    description: Isolate a specific asset
+  - name: taegis-fetch-endpoint
+    arguments:
+    - name: id
+      required: true
+      description: The endpoint ID to fetch
+    outputs:
+    - contextPath: TaegisXDR.Endpoint
+      description: Results from fetching the endpoint information
+    description: Fetch endpoint information
+  dockerimage: demisto/python3:3.10.12.65389
   subtype: python3
   isfetch: true
   isFetchSamples: true

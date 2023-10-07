@@ -250,34 +250,35 @@ def main() -> None:
             result = test_module(client, first_fetch_epoch_time)
             return_results(result)
 
-        elif command in ('runzero-get-events', 'fetch-events'):
-            if command == 'runzero-get-events':
-                should_push_events = argToBoolean(args.get("should_push_events"))
-                events, results = get_events_command(
-                    client, query_string=f'created_at:>{first_fetch_epoch_time}',
-                    limit=arg_to_number(args.get("limit", DEFAULT_LIMIT))  # type: ignore
-                )
-                return_results(results)
-
-            else:  # command == 'fetch-events':
-                should_push_events = True
-                max_results = arg_to_number(arg=params.get('max_fetch'))
-
-                next_run, events = fetch_events(
-                    client=client,
-                    max_results=max_results,  # type: ignore
-                    last_run=demisto.getLastRun(),
-                    first_fetch_time=first_fetch_epoch_time
-                )
-
-                demisto.setLastRun(next_run)
-
-            if should_push_events:
+        elif command == 'runzero-get-events':
+            events, results = get_events_command(
+                client, query_string=f'created_at:>{first_fetch_epoch_time}',
+                limit=arg_to_number(args.get("limit", DEFAULT_LIMIT))  # type: ignore
+            )
+            return_results(results)
+            if argToBoolean(args.get("should_push_events")):
                 send_events_to_xsiam(
                     events,
                     vendor=VENDOR,
                     product=PRODUCT
                 )
+
+        elif command == 'fetch-events':
+            max_results = arg_to_number(arg=params.get('max_fetch'))
+
+            next_run, events = fetch_events(
+                client=client,
+                max_results=max_results,  # type: ignore
+                last_run=demisto.getLastRun(),
+                first_fetch_time=first_fetch_epoch_time
+            )
+
+            send_events_to_xsiam(
+                events,
+                vendor=VENDOR,
+                product=PRODUCT
+            )
+            demisto.setLastRun(next_run)
 
     except Exception as e:
         return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')

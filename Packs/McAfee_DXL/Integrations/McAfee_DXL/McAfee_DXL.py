@@ -1,11 +1,11 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 from typing import Dict
 import tempfile
 from dxlclient.client_config import DxlClientConfig
 from dxlclient.client import DxlClient
 from dxlclient.broker import Broker
 from dxlclient.message import Event
-import demistomock as demisto
-from CommonServerPython import *
 from CommonServerUserPython import *
 
 

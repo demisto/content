@@ -7,7 +7,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 * Prisma Cloud Remediation - AWS IAM Password Policy Misconfiguration
 
 ### Integrations
-* RedLock
+* PrismaCloud v2
 * Builtin
 
 ### Scripts

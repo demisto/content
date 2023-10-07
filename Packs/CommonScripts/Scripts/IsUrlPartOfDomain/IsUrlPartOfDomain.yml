@@ -1,21 +1,16 @@
 args:
-- default: false
-  description: A comma-separated list of domains.
+- description: A comma-separated list of domains.
   isArray: true
   name: domains
   required: true
-  secret: false
-- default: false
-  description: A comma-separated list of URLs.
+- description: A comma-separated list of URLs.
   isArray: true
   name: urls
   required: true
-  secret: false
 comment: Checks if the supplied URLs are in the specified domains.
 commonfields:
   id: IsUrlPartOfDomain
   version: -1
-enabled: false
 name: IsUrlPartOfDomain
 outputs:
 - contextPath: IsUrlPartOfDomain.URL
@@ -29,10 +24,9 @@ outputs:
   type: Boolean
 script: '-'
 subtype: python3
-system: false
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.9.8.24399
+dockerimage: demisto/python3:3.10.12.63474
 tests:
 - IsUrlPartOfDomain Test
 fromversion: 5.0.0

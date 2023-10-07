@@ -1,0 +1,38 @@
+{
+    "total_count": 101,
+    "workflow_runs": [
+        {
+            "id": 1212121,
+            "name": "Private repo nightly build",
+            "node_id": "WFR_ababba",
+            "head_branch": "master",
+            "head_sha": "12121212",
+            "path": ".github/workflows/nightly.yml",
+            "display_title": "Private repo nightly build",
+            "run_number": 1176,
+            "event": "schedule",
+            "status": "completed",
+            "conclusion": "success",
+            "workflow_id": 13131313,
+            "check_suite_id": 14141414,
+            "check_suite_node_id": "CS_vbvbvbvb",
+            "url": "https://api.github.com/repos/demisto/content-private/actions/runs/1212121",
+            "html_url": "https://github.com/demisto/content-private/actions/runs/1212121",
+            "pull_requests": [],
+            "created_at": "2023-07-03T02:28:14Z",
+            "updated_at": "2023-07-03T03:43:08Z",
+            "run_attempt": 1,
+            "referenced_workflows": [],
+            "run_started_at": "2023-07-03T02:28:14Z",
+            "jobs_url": "https://api.github.com/repos/demisto/content-private/actions/runs/1212121/jobs",
+            "logs_url": "https://api.github.com/repos/demisto/content-private/actions/runs/1212121/logs",
+            "check_suite_url": "https://api.github.com/repos/demisto/content-private/check-suites/14141414",
+            "artifacts_url": "https://api.github.com/repos/demisto/content-private/actions/runs/1212121/artifacts",
+            "cancel_url": "https://api.github.com/repos/demisto/content-private/actions/runs/1212121/cancel",
+            "rerun_url": "https://api.github.com/repos/demisto/content-private/actions/runs/1212121/rerun",
+            "previous_attempt_url": null,
+            "workflow_url": "https://api.github.com/repos/demisto/content-private/actions/workflows/13131313"
+        }
+    ]
+}
+        

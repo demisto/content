@@ -393,6 +393,7 @@
     "name": "Palo Alto Networks Enterprise DLP Incident Layout",
     "system": false,
     "fromVersion": "6.0.0",
+    "toVersion": "6.7.9",
     "version": -1,
     "description": "",
     "marketplaces": ["xsoar"]

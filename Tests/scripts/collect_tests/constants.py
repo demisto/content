@@ -17,12 +17,6 @@ SANITY_TEST_TO_PACK: dict[str, str] = {
     'Sanity Test - Playbook with mocked integration': 'HelloWorld',
 }
 
-DEFAULT_REPUTATION_TESTS: tuple[str, ...] = (
-    'FormattingPerformance - Test',
-    'reputations.json Test',
-    'Indicators reputation-.json Test',
-)
-
 ALWAYS_INSTALLED_PACKS_XSOAR = (
     'Base',
     'DeveloperTools',
@@ -34,11 +28,17 @@ ALWAYS_INSTALLED_PACKS_XPANSE = ALWAYS_INSTALLED_PACKS_MARKETPLACE_V2
 
 ALWAYS_INSTALLED_PACKS_MAPPING = {
     MarketplaceVersions.XSOAR: ALWAYS_INSTALLED_PACKS_XSOAR,
+    MarketplaceVersions.XSOAR_SAAS: ALWAYS_INSTALLED_PACKS_XSOAR,
     MarketplaceVersions.MarketplaceV2: ALWAYS_INSTALLED_PACKS_MARKETPLACE_V2,
     MarketplaceVersions.XPANSE: ALWAYS_INSTALLED_PACKS_XPANSE,
 }
 
-DEFAULT_MARKETPLACE_WHEN_MISSING: MarketplaceVersions = MarketplaceVersions.XSOAR
+DEFAULT_MARKETPLACE_WHEN_MISSING: MarketplaceVersions = [
+    MarketplaceVersions.XSOAR,
+    MarketplaceVersions.XSOAR_SAAS,
+    MarketplaceVersions.MarketplaceV2,
+    MarketplaceVersions.XPANSE
+]
 
 SKIPPED_CONTENT_ITEMS__NOT_UNDER_PACK: set[str] = {
     # these are not under packs, and are not supported anymore.
@@ -68,7 +68,6 @@ ONLY_INSTALL_PACK_FILE_TYPES: set[FileType] = {
     FileType.CORRELATION_RULE,
     FileType.XSIAM_DASHBOARD,
     FileType.XSIAM_REPORT,
-    FileType.REPORT,
     FileType.GENERIC_TYPE,
     FileType.GENERIC_FIELD,
     FileType.GENERIC_MODULE,
@@ -92,8 +91,11 @@ ONLY_INSTALL_PACK_FILE_TYPES: set[FileType] = {
     FileType.LAYOUT_RULE,
 }
 
-IGNORED_FILE_TYPES: set[FileType] = {
+ONLY_UPLOAD_PACK_FILE_TYPES: set[FileType] = {
     FileType.README,
+}
+
+IGNORED_FILE_TYPES: set[FileType] = {
     FileType.PACK_IGNORE,
     FileType.XIF_FILE,
     FileType.SECRET_IGNORE,
@@ -114,6 +116,7 @@ IGNORED_FILE_TYPES: set[FileType] = {
     FileType.INI,
     FileType.PEM,
     FileType.LICENSE,
+    FileType.VULTURE_WHITELIST,
 }
 
 NON_CONTENT_FOLDERS: set[str] = set(TESTS_AND_DOC_DIRECTORIES) | {SAMPLES_DIR}
@@ -123,4 +126,21 @@ MODELING_RULE_COMPONENT_FILES: set[FileType] = {
     FileType.MODELING_RULE_XIF,
     FileType.MODELING_RULE_SCHEMA,
     FileType.MODELING_RULE_TEST_DATA,
+}
+
+XSIAM_COMPONENT_FILES: set[FileType] = {
+    FileType.PARSING_RULE,
+    FileType.PARSING_RULE_XIF,
+    FileType.CORRELATION_RULE,
+    FileType.XSIAM_DASHBOARD,
+    FileType.XSIAM_REPORT,
+    FileType.TRIGGER,
+    FileType.MODELING_RULE_SCHEMA,
+    FileType.XDRC_TEMPLATE,
+    FileType.LAYOUT_RULE,
+    FileType.XDRC_TEMPLATE,
+    FileType.XSIAM_DASHBOARD,
+    FileType.XSIAM_REPORT,
+    FileType.TRIGGER,
+    FileType.CORRELATION_RULE,
 }

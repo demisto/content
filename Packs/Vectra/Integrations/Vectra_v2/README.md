@@ -1362,3 +1362,41 @@ There are no context output for this command.
   </tbody>
 </table>
 
+# Replacement Commands
+
+Vectra has developed a new XSOAR content pack to replace the legacy Cortex XSOAR content pack. This new content pack includes commands that replace and extend the functionality of existing commands. The following table outlines which commands should be used for updating existing integrations.
+
+
+| Legacy Command               | Replacement Command                               |
+|------------------------------|---------------------------------------------------|
+| `vectra-detections`          | `vectra-search-detections`                        |
+| `vectra-get-detections`      | `vectra-search-detections`                        |
+| `vectra-get-detection-by-id` | `vectra-detection-describe`                       |
+| `vectra-hosts`               | `vectra-search-hosts`                             |
+| `vectra-get-hosts`           | `vectra-search-hosts`                             |
+| `vectra-get-host-by-id`      | `vectra-host-describe`                            |
+| `vectra-get-users`           | `vectra-search-users`                             |
+| `vectra-search`              | `vectra-search-hosts`, `vectra-search-detections` |
+
+
+# New Commands
+
+In addition to the replacement commands, new functionality is included with the current content pack. The following table outlines the new functionality provided.
+
+| Command                        | Command Description                                               |
+|--------------------------------|-------------------------------------------------------------------|
+| `vectra-search-accounts`       | Returns a list of Account objects                                 |
+| `vectra-search-assignments`    | Return a list of assignments                                      |
+| `vectra-search-outcomes`       | Returns a list of assignment outcomes                             |
+| `vectra-account-describe`      | Returns a single Account details                                  |
+| `vectra-account-add-tags`      | Add tags to an Account                                            |
+| `vectra-host-del-tags`         | Delete tags from an Host                                          |
+| `vectra-detection-get-pcap`    | Returns a Detection's PCAP file (if available)                    |
+| `vectra-detection-markasfixed` | Marks/Unmarks a Detection as fixed by providing the Detection ID  |
+| `vectra-detection-add-tags`    | Add tags to a Detection                                           |
+| `vectra-detection-del-tags`    | Delete tags from a Detection                                      |
+| `vectra-outcome-describe`      | Returns a single outcome details                                  |
+| `vectra-outcome-create`        | Creates a new assignment outcome                                  |
+| `vectra-assignment-describe`   | Returns a single assignment details                               |
+| `vectra-assignment-assign`     | Assigns an Account/Host entity to a Vectra User for investigation |
+| `vectra-assignment-resolve`    | Resolves an assignment by selecting resolution scheme             |

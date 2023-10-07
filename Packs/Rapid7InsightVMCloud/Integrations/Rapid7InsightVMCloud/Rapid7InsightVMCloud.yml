@@ -1,0 +1,107 @@
+category: Vulnerability Management
+commonfields:
+  id: Rapid7 InsightVM Cloud
+  version: -1
+configuration:
+- display: Username
+  name: credentials
+  required: true
+  type: 9
+- defaultvalue: "false"
+  display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+- defaultvalue: https://us.api.insight.rapid7.com/vm
+  display: Server URL (e.g., https://example.net)
+  name: base_url
+  required: true
+  type: 0
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+description: InsightVM is a vulnerability management tool that can scan your network, eliminate vulnerabilities, and track and communicate its progress.
+display: Rapid7 InsightVM Cloud
+name: Rapid7 InsightVM Cloud
+script:
+  commands:
+  - arguments:
+    - description: The identifier of the asset to retrieve the details for.
+      name: asset_id
+      required: true
+    description: Returns the assessment and details of an asset (specified by ID). Only assets that the caller has access to can be returned.
+    name: insightvm-cloud-get-asset
+  - arguments:
+    - description: The identifier of the scan.
+      name: scan_id
+      required: true
+    description: Retrieves the scan with the specified identifier.
+    name: insightvm-cloud-get-scan
+  - arguments:
+    - defaultValue: "0"
+      description: The index of the page to retrieve.
+      name: page
+    - defaultValue: "10"
+      description: The number of records per page to retrieve.
+      name: size
+    description: Retrieves a page of scan engines.
+    name: insightvm-cloud-get-scan-engines
+  - arguments: []
+    description: Returns an indicator of the health of the API.
+    name: insightvm-cloud-get-health-check
+  - arguments:
+    - description: Search criteria for filtering assets returned.
+      name: hostname
+      required: true
+    - defaultValue: "0"
+      description: The index of the page (zero-based) to retrieve.
+      name: page
+    - defaultValue: "10"
+      description: The number of records per page to retrieve.
+      name: size
+    description: Returns the inventory, assessment, and summary details for a page of assets.
+    name: insightvm-cloud-search-assets
+  - arguments:
+    - defaultValue: "0"
+      description: The index of the page (zero-based) to retrieve.
+      name: page
+    - defaultValue: "10"
+      description: The number of records per page to retrieve.
+      name: size
+    description: Returns the details for sites.
+    name: insightvm-cloud-last-sites
+  - arguments:
+    - defaultValue: "0"
+      description: The index of the page to retrieve.
+      name: page
+    - defaultValue: "10"
+      description: The number of records per page to retrieve
+      name: size
+    - description: Query by which to search for vulnerabilities.
+      name: query
+      required: true
+    description: Returns all vulnerabilities that can be accessed.
+    name: insightvm-cloud-search-vulnerabilities
+  - arguments:
+    - description: A comma-separated list of asset IDs to scan.
+      name: asset_id
+      required: true
+    - description: The name of the scan.
+      name: name
+    description: Starts a scan.
+    name: insightvm-cloud-start-scan
+  - arguments:
+    - description: The identifier of the asset used to stop the scan.
+      name: id
+      required: true
+    description: Stops the scan with the specified identifier.
+    name: insightvm-cloud-stop-scan
+  dockerimage: demisto/python3:3.10.12.63474
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

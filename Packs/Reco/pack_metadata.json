@@ -1,0 +1,35 @@
+{
+    "name": "Reco",
+    "description": "Reco - detects and protects against sensitive data leakage",
+    "support": "partner",
+    "currentVersion": "1.1.6",
+    "author": "Reco",
+    "url": "https://reco.ai",
+    "email": "support@reco.ai",
+    "created": "2020-01-09T00:00:00Z",
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "useCases": [
+        "Asset Management",
+        "Identity and Access Management",
+        "Breach Notification"
+    ],
+    "keywords": [
+        "data leakage",
+        "data loss prevention",
+        "DLP",
+        "SaaS DLP",
+        "CASB",
+        "sensitive data",
+        "leaving employee",
+        "insider risk",
+        "sensitive data exposure",
+        "sensitive data protection"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "tags": []
+}

@@ -1,0 +1,358 @@
+{
+    "results": [
+        {
+            "detected_at": "2023-01-20T18:41:45Z",
+            "lookalike_domain": "test.com",
+            "lookalike_host": "test.com",
+            "reason": "The lookalike domain test.com will direct you to test.com",
+            "suspicious": true,
+            "target_domain": "test.com"
+        },
+        {
+            "detected_at": "2023-01-20T18:42:56Z",
+            "lookalike_domain": "test.com",
+            "lookalike_host": "test.com",
+            "reason": "Domain is a lookalike to test.com. The creation date is None.",
+            "target_domain": "test.com"
+        },
+        {
+            "detected_at": "2023-01-20T18:42:56Z",
+            "lookalike_domain": "test.com.au",
+            "lookalike_host": "test.com.au",
+            "reason": "Domain is a lookalike to test.com. The creation date is None.",
+            "target_domain": "test.com"
+        },
+        {
+            "detected_at": "2023-01-21T18:35:37Z",
+            "lookalike_domain": "test.com",
+            "lookalike_host": "test.com",
+            "reason": "The lookalike domain test.com will direct you to test.com",
+            "suspicious": true,
+            "target_domain": "test.com"
+        },
+        {
+            "detected_at": "2023-01-21T18:36:45Z",
+            "lookalike_domain": "test.com",
+            "lookalike_host": "test.com",
+            "reason": "Domain is a lookalike to test.com. The creation date is None.",
+            "target_domain": "test.com"
+        },
+        {
+            "detected_at": "2023-01-21T18:36:45Z",
+            "lookalike_domain": "test.com.nz",
+            "lookalike_host": "test.com.nz",
+            "reason": "Domain is a lookalike to test.com. The creation date is None.",
+            "target_domain": "test.com"
+        },
+        {
+            "detected_at": "2023-01-22T18:35:33Z",
+            "lookalike_domain": "test.com",
+            "lookalike_host": "test.com",
+            "reason": "The lookalike domain test.com will direct you to test.com",
+            "suspicious": true,
+            "target_domain": "test.com"
+        },
+        {
+            "detected_at": "2023-01-22T18:36:44Z",
+            "lookalike_domain": "test.com",
+            "lookalike_host": "test.com",
+            "target_domain": "test.com"
+        },
+        {
+            "detected_at": "2023-01-22T18:36:44Z",
+            "lookalike_domain": "test.com",
+            "lookalike_host": "test.com",
+            "reason": "Domain is a lookalike to test.com. The creation date is 2022-06-21.",
+            "target_domain": "test.com"
+        },
+        {
+            "detected_at": "2023-01-22T18:36:44Z",
+            "lookalike_domain": "test.com",
+            "lookalike_host": "test.com",
+            "reason": "Domain is a lookalike to test.com. The creation date is 2022-03-25.",
+            "target_domain": "test.com"
+        },
+        {
+            "detected_at": "2023-01-22T18:36:44Z",
+            "lookalike_domain": "test.com",
+            "lookalike_host": "test.com",
+            "reason": "Domain is a lookalike to test.com. The creation date is 2022-05-27.",
+            "target_domain": "test.com"
+        },
+        {
+            "detected_at": "2023-01-23T18:39:17Z",
+            "lookalike_domain": "test.com",
+            "lookalike_host": "test.com",
+            "reason": "Domain is a lookalike to test.com. The creation date is 2022-09-18.",
+            "target_domain": "test.com"
+        },
+        {
+            "detected_at": "2023-01-23T18:39:17Z",
+            "lookalike_domain": "test.com",
+            "lookalike_host": "test.com",
+            "reason": "Domain is a lookalike to test.com. The creation date is 2022-11-29.",
+            "target_domain": "test.com"
+        },
+        {
+            "detected_at": "2023-01-23T18:39:17Z",
+            "lookalike_domain": "test.com",
+            "lookalike_host": "test.com",
+            "reason": "Domain is a lookalike to test.com. The creation date is 2022-02-25.",
+            "target_domain": "test.com"
+        },
+        {
+            "detected_at": "2023-01-25T18:37:27Z",
+            "lookalike_domain": "test.com",
+            "lookalike_host": "test.com",
+            "reason": "Domain is a lookalike to test.com. The creation date is 2023-01-22.",
+            "target_domain": "test.com"
+        },
+        {
+            "detected_at": "2023-01-25T18:37:27Z",
+            "lookalike_domain": "test.com",
+            "lookalike_host": "test.com",
+            "reason": "Domain is a lookalike to test.com. The creation date is 2023-01-22.",
+            "target_domain": "test.com"
+        },
+        {
+            "detected_at": "2023-01-27T18:43:01Z",
+            "lookalike_domain": "test.com",
+            "lookalike_host": "test.com",
+            "reason": "Domain is a lookalike to test.com. The creation date is 2023-01-22.",
+            "target_domain": "test.com"
+        },
+        {
+            "detected_at": "2023-01-28T18:36:27Z",
+            "lookalike_domain": "test.com",
+            "lookalike_host": "test.com",
+            "reason": "Domain is a lookalike to test.com and has suspicious registration, behavior, or associations with known threats. The creation date is 2022-11-30.",
+            "suspicious": true,
+            "target_domain": "test.com"
+        },
+        {
+            "detected_at": "2023-01-28T18:37:03Z",
+            "lookalike_domain": "test.com",
+            "lookalike_host": "test.com",
+            "reason": "Domain is a lookalike to test.com. The creation date is 2022-09-18.",
+            "target_domain": "test.com"
+        },
+        {
+            "detected_at": "2023-01-28T18:37:03Z",
+            "lookalike_domain": "test.com",
+            "lookalike_host": "test.com",
+            "reason": "Domain is a lookalike to test.com. The creation date is unknown.",
+            "target_domain": "test.com"
+        },
+        {
+            "detected_at": "2023-01-28T18:37:03Z",
+            "lookalike_domain": "test.com",
+            "lookalike_host": "test.com",
+            "reason": "Domain is a lookalike to test.com. The creation date is 2022-11-30.",
+            "target_domain": "test.com"
+        },
+        {
+            "detected_at": "2023-01-29T18:37:05Z",
+            "lookalike_domain": "test.com.cz",
+            "lookalike_host": "test.com.cz",
+            "reason": "Domain is a lookalike to test.com. The creation date is unknown.",
+            "target_domain": "test.com"
+        },
+        {
+            "detected_at": "2023-01-31T18:41:47Z",
+            "lookalike_domain": "test.com",
+            "lookalike_host": "test.com",
+            "reason": "Domain is a lookalike to test.com. The creation date is 2022-12-22.",
+            "target_domain": "test.com"
+        },
+        {
+            "detected_at": "2023-01-31T18:41:47Z",
+            "lookalike_domain": "test.com",
+            "lookalike_host": "test.com",
+            "reason": "Domain is a lookalike to test.com. The creation date is 2023-01-29.",
+            "target_domain": "test.com"
+        },
+        {
+            "detected_at": "2023-02-02T18:39:33Z",
+            "lookalike_domain": "test.com",
+            "lookalike_host": "test.com",
+            "reason": "Domain is a lookalike to test.com. The creation date is 2022-09-18.",
+            "target_domain": "test.com"
+        },
+        {
+            "detected_at": "2023-02-03T18:38:17Z",
+            "lookalike_domain": "test.com",
+            "lookalike_host": "test.com",
+            "reason": "Domain is a lookalike to test.com. The creation date is 2023-02-01.",
+            "target_domain": "test.com"
+        },
+        {
+            "detected_at": "2023-02-03T18:38:17Z",
+            "lookalike_domain": "test.com",
+            "lookalike_host": "test.com",
+            "reason": "Domain is a lookalike to test.com. The creation date is 2022-05-11.",
+            "target_domain": "test.com"
+        },
+        {
+            "detected_at": "2023-02-05T18:37:12Z",
+            "lookalike_domain": "test.com",
+            "lookalike_host": "test.com",
+            "reason": "Domain is a lookalike to test.com. The creation date is 2022-03-20.",
+            "target_domain": "test.com"
+        },
+        {
+            "detected_at": "2023-02-05T18:37:12Z",
+            "lookalike_domain": "test.com",
+            "lookalike_host": "test.com",
+            "reason": "Domain is a lookalike to test.com. The creation date is 2022-08-21.",
+            "target_domain": "test.com"
+        },
+        {
+            "detected_at": "2023-02-07T18:37:06Z",
+            "lookalike_domain": "test.com",
+            "lookalike_host": "test.com",
+            "reason": "Domain is a lookalike to test.com. The creation date is 2022-12-12.",
+            "target_domain": "test.com"
+        },
+        {
+            "detected_at": "2023-02-07T18:37:06Z",
+            "lookalike_domain": "test.com",
+            "lookalike_host": "test.com",
+            "reason": "Domain is a lookalike to test.com. The creation date is unknown.",
+            "target_domain": "test.com"
+        },
+        {
+            "detected_at": "2023-02-09T18:37:32Z",
+            "lookalike_domain": "test.com",
+            "lookalike_host": "test.com",
+            "reason": "Domain is a lookalike to test.com. The creation date is unknown.",
+            "target_domain": "test.com"
+        },
+        {
+            "detected_at": "2023-02-09T18:37:32Z",
+            "lookalike_domain": "test.com",
+            "lookalike_host": "test.com",
+            "reason": "Domain is a lookalike to test.com. The creation date is 2022-03-20.",
+            "target_domain": "test.com"
+        },
+        {
+            "detected_at": "2023-02-09T18:37:32Z",
+            "lookalike_domain": "test.com",
+            "lookalike_host": "test.com",
+            "reason": "Domain is a lookalike to test.com. The creation date is unknown.",
+            "target_domain": "test.com"
+        },
+        {
+            "detected_at": "2023-02-09T18:37:32Z",
+            "lookalike_domain": "test.com",
+            "lookalike_host": "test.com",
+            "reason": "Domain is a lookalike to test.com. The creation date is unknown.",
+            "target_domain": "test.com"
+        },
+        {
+            "detected_at": "2023-02-09T18:37:32Z",
+            "lookalike_domain": "test.com",
+            "lookalike_host": "test.com",
+            "reason": "Domain is a lookalike to test.com. The creation date is unknown.",
+            "target_domain": "test.com"
+        },
+        {
+            "detected_at": "2023-02-09T18:37:32Z",
+            "lookalike_domain": "test.com",
+            "lookalike_host": "test.com",
+            "reason": "Domain is a lookalike to test.com. The creation date is unknown.",
+            "target_domain": "test.com"
+        },
+        {
+            "detected_at": "2023-02-11T18:36:41Z",
+            "lookalike_domain": "test.com",
+            "lookalike_host": "test.com",
+            "reason": "Domain is a lookalike to test.com and has suspicious registration, behavior, or associations with known threats. The creation date is 2022-11-21.",
+            "suspicious": true,
+            "target_domain": "test.com"
+        },
+        {
+            "detected_at": "2023-02-11T18:37:26Z",
+            "lookalike_domain": "test.com",
+            "lookalike_host": "test.com",
+            "reason": "Domain is a lookalike to test.com. The creation date is 2022-11-21.",
+            "target_domain": "test.com"
+        },
+        {
+            "detected_at": "2023-02-12T18:36:55Z",
+            "lookalike_domain": "test.com",
+            "lookalike_host": "test.com",
+            "reason": "Domain is a lookalike to test.com. The creation date is 2022-06-22.",
+            "target_domain": "test.com"
+        },
+        {
+            "detected_at": "2023-02-13T18:37:40Z",
+            "lookalike_domain": "test.com",
+            "lookalike_host": "test.com",
+            "reason": "Domain is a lookalike to test.com. The creation date is 2022-08-21.",
+            "target_domain": "test.com"
+        },
+        {
+            "detected_at": "2023-02-13T18:37:40Z",
+            "lookalike_domain": "test.com.es",
+            "lookalike_host": "test.com.es",
+            "reason": "Domain is a lookalike to test.com. The creation date is unknown.",
+            "target_domain": "test.com"
+        },
+        {
+            "detected_at": "2023-02-13T18:37:40Z",
+            "lookalike_domain": "test.com",
+            "lookalike_host": "test.com",
+            "reason": "Domain is a lookalike to test.com. The creation date is 2022-10-13.",
+            "target_domain": "test.com"
+        },
+        {
+            "detected_at": "2023-02-13T18:37:40Z",
+            "lookalike_domain": "test.com",
+            "lookalike_host": "test.com",
+            "reason": "Domain is a lookalike to test.com. The creation date is 2022-07-05.",
+            "target_domain": "test.com"
+        },
+        {
+            "detected_at": "2023-02-14T18:37:00Z",
+            "lookalike_domain": "test.com",
+            "lookalike_host": "test.com",
+            "reason": "Domain is a lookalike to test.com. The creation date is 2022-07-29.",
+            "target_domain": "test.com"
+        },
+        {
+            "detected_at": "2023-02-14T18:37:00Z",
+            "lookalike_domain": "test.com.my",
+            "lookalike_host": "test.com.my",
+            "reason": "Domain is a lookalike to test.com. The creation date is unknown.",
+            "target_domain": "test.com"
+        },
+        {
+            "detected_at": "2023-02-14T18:37:00Z",
+            "lookalike_domain": "test.com",
+            "lookalike_host": "test.com",
+            "reason": "Domain is a lookalike to test.com. The creation date is 2022-03-20.",
+            "target_domain": "test.com"
+        },
+        {
+            "detected_at": "2023-02-15T18:37:06Z",
+            "lookalike_domain": "test.com",
+            "lookalike_host": "test.com",
+            "reason": "Domain is a lookalike to test.com. The creation date is unknown.",
+            "target_domain": "test.com"
+        },
+        {
+            "detected_at": "2023-02-15T18:37:06Z",
+            "lookalike_domain": "test.com",
+            "lookalike_host": "test.com",
+            "reason": "Domain is a lookalike to test.com. The creation date is 2022-03-28.",
+            "target_domain": "test.com"
+        },
+        {
+            "detected_at": "2023-02-15T18:37:06Z",
+            "lookalike_domain": "test.com",
+            "lookalike_host": "test.com",
+            "reason": "Domain is a lookalike to test.com. The creation date is 2022-07-15.",
+            "target_domain": "test.com"
+        }
+    ]
+}

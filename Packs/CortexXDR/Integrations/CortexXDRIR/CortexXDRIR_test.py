@@ -54,8 +54,7 @@ def test_get_incident_list(requests_mock):
     requests_mock.post(f'{XDR_URL}/public_api/v1/incidents/get_incidents/', json=get_incidents_list_response)
 
     client = Client(
-        base_url=f'{XDR_URL}/public_api/v1', headers={}
-    )
+        base_url=f'{XDR_URL}/public_api/v1', verify=False, timeout=120, proxy=False)
     args = {
         'incident_id_list': '1 day'
     }
@@ -74,8 +73,7 @@ def test_get_incident_list_by_status(mocker):
     get_incidents_list_response = load_test_data('./test_data/get_incidents_list.json')
 
     client = Client(
-        base_url=f'{XDR_URL}/public_api/v1', headers={}
-    )
+        base_url=f'{XDR_URL}/public_api/v1', verify=False, timeout=120, proxy=False)
     args = {
         'incident_id_list': '1 day',
         'status': 'under_investigation,new'
@@ -111,8 +109,7 @@ def test_fetch_incidents(requests_mock, mocker):
     mocker.patch.object(demisto, 'params', return_value={"extra_data": True, "mirror_direction": "Incoming"})
 
     client = Client(
-        base_url=f'{XDR_URL}/public_api/v1', headers={}
-    )
+        base_url=f'{XDR_URL}/public_api/v1', verify=False, timeout=120, proxy=False)
 
     modified_raw_incident.get('alerts')[0]['host_ip_list'] = \
         modified_raw_incident.get('alerts')[0].get('host_ip').split(',')
@@ -143,8 +140,7 @@ def test_fetch_incidents_filtered_by_status(requests_mock, mocker):
     from CortexXDRIR import fetch_incidents, Client
 
     client = Client(
-        base_url=f'{XDR_URL}/public_api/v1', headers={}
-    )
+        base_url=f'{XDR_URL}/public_api/v1', verify=False, timeout=120, proxy=False)
 
     mocker.patch.object(client, 'get_incidents', side_effect=get_incident_by_status)
     mocker.patch.object(client, 'get_incident_extra_data', side_effect=get_incident_extra_data_by_status)
@@ -204,8 +200,7 @@ def test_fetch_incidents_with_rate_limit_error(requests_mock, mocker):
     mocker.patch.object(demisto, 'params', return_value={"extra_data": True, "mirror_direction": "Incoming"})
 
     client = Client(
-        base_url=f'{XDR_URL}/public_api/v1', headers={}
-    )
+        base_url=f'{XDR_URL}/public_api/v1', verify=False, timeout=120, proxy=False)
 
     next_run, incidents = fetch_incidents(client, '3 month', 'MyInstance')
     sort_all_list_incident_fields(modified_raw_incident)
@@ -230,8 +225,7 @@ def test_get_incident_extra_data(requests_mock):
                        json=get_incident_extra_data_response)
 
     client = Client(
-        base_url=f'{XDR_URL}/public_api/v1', headers={}
-    )
+        base_url=f'{XDR_URL}/public_api/v1', verify=False, timeout=120, proxy=False)
     args = {
         'incident_id': '1'
     }
@@ -250,12 +244,20 @@ def test_get_incident_extra_data(requests_mock):
 
     expected_output = {
         'PaloAltoNetworksXDR.Incident(val.incident_id==obj.incident_id)': expected_incident,
-        Common.File.CONTEXT_PATH: [{'Name': 'wildfire-test-pe-file.exe',
-                                    'SHA256': '8d5aec85593c85ecdc8d5ac601e163a1cc26d877f88c03e9e0e94c9dd4a38fca'}],
-        'Process(val.Name && val.Name == obj.Name)':
-            [{'Name': 'wildfire-test-pe-file.exe',
-              'CommandLine': '"C:\\Users\\Administrator\\Downloads\\wildfire-test-pe-file.exe"',
-              'Hostname': 'AAAAAA'}]
+        Common.File.CONTEXT_PATH: [
+            {
+                'Name': 'wildfire-test-pe-file.exe',
+                'SHA256': '8d5aec85593c85ecdc8d5ac601e163a1cc26d877f88c03e9e0e94c9dd4a38fca'
+            }
+        ],
+        'Process(val.Name && val.Name == obj.Name)': [
+            {
+                'Name': 'wildfire-test-pe-file.exe',
+                'CommandLine': '"C:\\Users\\Administrator\\Downloads\\wildfire-test-pe-file.exe"',
+                'Hostname': 'AAAAAA'
+            }
+        ],
+        'Endpoint(val.Hostname==obj.Hostname)': [{'Hostname': 'AAAAAA', 'ID': '1234'}]
     }
     assert expected_output == outputs
 
@@ -269,8 +271,7 @@ class TestFetchStarredIncident:
         requests_mock.post(f'{XDR_URL}/public_api/v1/incidents/get_incidents/', json=get_incidents_list_response)
 
         client = Client(
-            base_url=f'{XDR_URL}/public_api/v1', headers={}
-        )
+            base_url=f'{XDR_URL}/public_api/v1', verify=False, timeout=120, proxy=False)
         args = {
             'incident_id_list': '1 day',
             'starred': True,
@@ -301,8 +302,7 @@ class TestFetchStarredIncident:
         mocker.patch.object(demisto, 'getLastRun', side_effect=getLastRun_side_effect)
 
         client = Client(
-            base_url=f'{XDR_URL}/public_api/v1', headers={}
-        )
+            base_url=f'{XDR_URL}/public_api/v1', verify=False, timeout=120, proxy=False)
         args = {
             'incident_id_list': '1 day',
             'starred': True,
@@ -311,11 +311,13 @@ class TestFetchStarredIncident:
         }
         _, outputs, _ = get_incidents_command(client, args)
         res = outputs['PaloAltoNetworksXDR.Incident(val.incident_id==obj.incident_id)']
-        assert len(res) == 1 and res[0]['incident_id'] == '3'
+        assert len(res) == 1
+        assert res[0]['incident_id'] == '3'
 
         _, outputs, _ = get_incidents_command(client, args)
         res = outputs['PaloAltoNetworksXDR.Incident(val.incident_id==obj.incident_id)']
-        assert len(res) == 1 and res[0]['incident_id'] == '4'
+        assert len(res) == 1
+        assert res[0]['incident_id'] == '4'
 
     def test_fetch_only_starred_incidents(self, mocker):
         """
@@ -345,8 +347,7 @@ class TestFetchStarredIncident:
         mocker.patch.object(Client, '_http_request', side_effect=request_side_effect)
 
         client = Client(
-            base_url=f'{XDR_URL}/public_api/v1', headers={}
-        )
+            base_url=f'{XDR_URL}/public_api/v1', verify=False, timeout=120, proxy=False)
         next_run, incidents = fetch_incidents(client, '3 month', 'MyInstance', last_run_obj.get('next_run'),
                                               starred=True,
                                               starred_incidents_fetch_window='3 days')
@@ -373,8 +374,7 @@ def test_get_tenant_info(requests_mock):
     requests_mock.post(f'{XDR_URL}/public_api/v1/system/get_tenant_info/', json=tenant_info_response)
 
     client = Client(
-        base_url=f'{XDR_URL}/public_api/v1/', headers={}
-    )
+        base_url=f'{XDR_URL}/public_api/v1/', verify=False, timeout=120, proxy=False)
     expected_output = tenant_info_response.get('reply')
     response = get_tenant_info_command(client)
     assert response.outputs == expected_output
@@ -387,8 +387,7 @@ def test_insert_parsed_alert(requests_mock):
     requests_mock.post(f'{XDR_URL}/public_api/v1/alerts/insert_parsed_alerts/', json=insert_alerts_response)
 
     client = Client(
-        base_url=f'{XDR_URL}/public_api/v1', headers={}
-    )
+        base_url=f'{XDR_URL}/public_api/v1', verify=False, timeout=120, proxy=False)
     args = {
         "product": "VPN & Firewall-1",
         "vendor": "Check Point",
@@ -414,8 +413,7 @@ def test_insert_cef_alerts(requests_mock):
     requests_mock.post(f'{XDR_URL}/public_api/v1/alerts/insert_cef_alerts/', json=insert_cef_alerts_response)
 
     client = Client(
-        base_url=f'{XDR_URL}/public_api/v1', headers={}
-    )
+        base_url=f'{XDR_URL}/public_api/v1', verify=False, timeout=120, proxy=False)
 
     args = {
         'cef_alerts': [
@@ -503,8 +501,7 @@ def test_get_remote_data_command_should_update(requests_mock, mocker):
     """
     from CortexXDRIR import get_remote_data_command, Client, sort_all_list_incident_fields
     client = Client(
-        base_url=f'{XDR_URL}/public_api/v1', headers={}
-    )
+        base_url=f'{XDR_URL}/public_api/v1', verify=False, timeout=120, proxy=False)
     args = {
         'id': 1,
         'lastUpdate': 0
@@ -549,8 +546,7 @@ def test_get_remote_data_command_with_rate_limit_exception(mocker):
     """
     from CortexXDRIR import get_remote_data_command, Client
     client = Client(
-        base_url=f'{XDR_URL}/public_api/v1', headers={}
-    )
+        base_url=f'{XDR_URL}/public_api/v1', verify=False, timeout=120, proxy=False)
     args = {
         'id': 1,
         'lastUpdate': 0
@@ -577,8 +573,7 @@ def test_get_remote_data_command_should_not_update(requests_mock, mocker):
     """
     from CortexXDRIR import get_remote_data_command, Client, sort_all_list_incident_fields
     client = Client(
-        base_url=f'{XDR_URL}/public_api/v1', headers={}
-    )
+        base_url=f'{XDR_URL}/public_api/v1', verify=False, timeout=120, proxy=False)
     args = {
         'id': 1,
         'lastUpdate': '2020-07-31T00:00:00Z'
@@ -617,8 +612,7 @@ def test_get_remote_data_command_should_close_issue(requests_mock, mocker, incid
     import copy
     from CortexXDRIR import get_remote_data_command, Client, sort_all_list_incident_fields
     client = Client(
-        base_url=f'{XDR_URL}/public_api/v1', headers={}
-    )
+        base_url=f'{XDR_URL}/public_api/v1', verify=False, timeout=120, proxy=False)
     args = {
         'id': 1,
         'lastUpdate': 0
@@ -685,8 +679,7 @@ def test_get_remote_data_command_sync_owners(requests_mock, mocker):
     mocker.patch.object(demisto, 'params', return_value={"sync_owners": True})
     mocker.patch.object(demisto, 'findUser', return_value={"email": "moo@demisto.com", 'username': 'username'})
     client = Client(
-        base_url=f'{XDR_URL}/public_api/v1', headers={}
-    )
+        base_url=f'{XDR_URL}/public_api/v1', verify=False, timeout=120, proxy=False)
     args = {
         'id': 1,
         'lastUpdate': 0
@@ -736,8 +729,7 @@ def test_get_modified_remote_data_command(requests_mock):
     requests_mock.post(f'{XDR_URL}/public_api/v1/incidents/get_incidents/', json=get_incidents_list_response)
 
     client = Client(
-        base_url=f'{XDR_URL}/public_api/v1', headers={}
-    )
+        base_url=f'{XDR_URL}/public_api/v1', verify=False, timeout=120, proxy=False)
     args = {
         'lastUpdate': '2020-11-18T13:16:52.005381+02:00'
     }
@@ -754,8 +746,7 @@ def test_get_contributing_event_command(requests_mock):
     requests_mock.post(f'{XDR_URL}/public_api/v1/alerts/get_correlation_alert_data/', json=contributing_events)
 
     client = Client(
-        base_url=f'{XDR_URL}/public_api/v1', headers={}
-    )
+        base_url=f'{XDR_URL}/public_api/v1', verify=False, timeout=120, proxy=False)
     args = {
         "alert_ids": "[1111]",
     }
@@ -780,8 +771,7 @@ def test_replace_featured_field_command(requests_mock):
     }
 
     client = Client(
-        base_url=f'{XDR_URL}/public_api/v1', headers={}
-    )
+        base_url=f'{XDR_URL}/public_api/v1', verify=False, timeout=120, proxy=False)
     args = {
         "ad_type": "[\"ou\"]",
         "comments": "[\"this is a comment\"]",
@@ -798,8 +788,7 @@ def test_replace_featured_field_command(requests_mock):
 def test_failure_to_update_incident():
     from CortexXDRIR import update_incident_command, Client
     client = Client(
-        base_url=f'{XDR_URL}/public_api/v1', headers={}
-    )
+        base_url=f'{XDR_URL}/public_api/v1', verify=False, timeout=120, proxy=False)
 
     with pytest.raises(ValueError, match="Can't provide both assignee_email/assignee_name and unassign_user"):
         update_incident_command(client=client, args={'unassign_user': 'true', 'assigned_user_mail': 'user', 'status': 'new'})
@@ -812,8 +801,7 @@ def test_update_incident(requests_mock):
     requests_mock.post(f'{XDR_URL}/public_api/v1/incidents/update_incident/', json=update_incident_response)
 
     client = Client(
-        base_url=f'{XDR_URL}/public_api/v1', headers={}
-    )
+        base_url=f'{XDR_URL}/public_api/v1', verify=False, timeout=120, proxy=False)
     args = {
         'incident_id': '1',
         'status': 'new',
@@ -831,8 +819,7 @@ def test_update_incident(requests_mock):
 def test_update_remote_system_command(incident_changed, delta):
     from CortexXDRIR import update_remote_system_command, Client
     client = Client(
-        base_url=f'{XDR_URL}/public_api/v1', headers={}
-    )
+        base_url=f'{XDR_URL}/public_api/v1', verify=False, timeout=120, proxy=False)
     data = {'CortexXDRIRstatus': 'uninvestigated'}
     expected_remote_id = 'remote_id'
     args = {'remoteId': expected_remote_id, 'data': data, 'entries': [], 'incidentChanged': incident_changed,

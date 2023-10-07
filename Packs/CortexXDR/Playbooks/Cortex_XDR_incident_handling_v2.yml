@@ -3,7 +3,7 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: Cortex XDR incident handling v2
-description: "This playbook is triggered by fetching a Palo Alto Networks Cortex XDR\
+description: "Deprecated. Use `Cortex XDR incident handling v3` instead. This playbook is triggered by fetching a Palo Alto Networks Cortex XDR\
   \ incident.\nThe playbook syncs and updates new XDR alerts that construct the incident\
   \ and triggers a sub-playbook to handle each alert by type.\nThen, the playbook\
   \ performs enrichment on the incident's indicators and hunting for related IOCs.\n\
@@ -11,6 +11,7 @@ description: "This playbook is triggered by fetching a Palo Alto Networks Cortex
   \ stage or close the investigation as a false positive. \nAfter the remediation,\
   \ if there are no new alerts, the playbook stops the alert sync and closes the XDR\
   \ incident and investigation."
+deprecated: true
 starttaskid: "0"
 tasks:
   "0":

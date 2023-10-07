@@ -1,4 +1,3 @@
-
 [file:incidentfield-Actions_On_Campaign_Incidents.json]
 ignore=IF100
 
@@ -14,8 +13,14 @@ ignore=RM106
 [file:SetPhishingCampaignDetails.yml]
 ignore=SC106
 
-[file:GetCampaignLowSimilarityIncidentsInfo.yml]
-ignore=RM109
-
 [file:GetCampaignIncidentsInfo.yml]
-ignore=RM109
+ignore=BA124
+
+[file:ShowCampaignUniqueRecipients.yml]
+ignore=BA124
+
+[file:ShowCampaignUniqueSenders.yml]
+ignore=BA124
+
+[file:ShowNumberOfCampaignIncidents.yml]
+ignore=BA124

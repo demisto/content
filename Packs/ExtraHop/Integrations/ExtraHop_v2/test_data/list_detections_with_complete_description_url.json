@@ -1,0 +1,38 @@
+[
+    {
+        "id": 1032336,
+        "start_time": 1674561853793,
+        "update_time": 1675166490000,
+        "end_time": 1674561854035,
+        "mod_time": 1675166801866,
+        "title": "Weak Cipher Suite",
+        "description": "[VMware 835092](#/extrahop/#/metrics/devices/6c078a2ea98c42378048f72636c371c8.1111111111111111/overview?from=1674561853&interval_type=DT&until=1674561854) negotiated an SSL/TLS session with a cipher suite that includes a weak encryption algorithm such as CBC, 3DES, RC4, null, anonymous, or export. Remove this cipher suite from [VMware 835092](#/metrics/devices/6c078a2ea98c42378048f72636c371c8.0050568350920000/overview?from=1674561853&interval_type=DT&until=1674561854) and replace with stronger cipher suites.",
+        "categories": [
+            "sec.attack",
+            "sec.hardening"
+        ],
+        "risk_score": 30,
+        "type": "weak_cipher_individual",
+        "properties": {
+            "cipher_suite": "TLS_RSA_WITH_AES_256_CBC_SHA"
+        },
+        "participants": [
+            {
+                "object_type": "device",
+                "object_id": 3449,
+                "object_value": "0.0.0.2",
+                "role": "offender",
+                "external": false,
+                "id": 2031510
+            }
+        ],
+        "ticket_id": null,
+        "assignee": null,
+        "status": null,
+        "resolution": null,
+        "mitre_tactics": [],
+        "mitre_techniques": [],
+        "appliance_id": 0,
+        "is_user_created": false
+    }
+]

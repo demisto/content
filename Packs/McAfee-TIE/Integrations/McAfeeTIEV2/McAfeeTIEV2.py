@@ -76,13 +76,13 @@ class GeneralFileReputationParser(abc.ABC):
 
     @staticmethod
     def init(provider: int):
-        if(provider == FileProvider.GTI):
+        if (provider == FileProvider.GTI):
             return GtiFileReputationParser()
 
-        elif(provider == FileProvider.ENTERPRISE):
+        elif (provider == FileProvider.ENTERPRISE):
             return EnterpriseFileReputationParser()
 
-        elif(provider == FileProvider.ATD):
+        elif (provider == FileProvider.ATD):
             return AtdFileReputationParser()
 
         else:
@@ -104,13 +104,13 @@ class GeneralFileReputationParser(abc.ABC):
         This method is in charge of parsing the mutual section of the reputations by using the dictionary
         that is defined in the parent class (GeneralFileReputationParser).
         """
-        if(reputation_key == FileReputationProp.PROVIDER_ID):
+        if (reputation_key == FileReputationProp.PROVIDER_ID):
             return {self.GENERAL_REPUTATION_KEYS[reputation_key]: get_provider_name(provider_id=val)}
 
-        elif(reputation_key == FileReputationProp.CREATE_DATE):
+        elif (reputation_key == FileReputationProp.CREATE_DATE):
             return {self.GENERAL_REPUTATION_KEYS[reputation_key]: epoch_to_localtime(int(val))}
 
-        elif(reputation_key in self.GENERAL_REPUTATION_KEYS):
+        elif (reputation_key in self.GENERAL_REPUTATION_KEYS):
             return {self.GENERAL_REPUTATION_KEYS[reputation_key]: val}
 
         else:
@@ -123,7 +123,7 @@ class GeneralFileReputationParser(abc.ABC):
         """
         parsed_res: Dict[str, Any] = {}
         for key, val in reputation_data.items():
-            if(key == FileReputationProp.ATTRIBUTES):
+            if (key == FileReputationProp.ATTRIBUTES):
                 parsed_res |= self.parse_attributes(attributes=val)
 
             else:
@@ -142,10 +142,10 @@ class GtiFileReputationParser(GeneralFileReputationParser):
     def parse_attributes(self, attributes: Dict[str, Any]) -> Dict[str, Any]:
         parsed_res: Dict[str, Any] = {}
         for key, val in attributes.items():
-            if(key == FileGtiAttrib.FIRST_CONTACT):
+            if (key == FileGtiAttrib.FIRST_CONTACT):
                 parsed_res[self.ATTRIBUTES_KEYS[key]] = epoch_to_localtime(int(val))
 
-            elif(key in self.ATTRIBUTES_KEYS):
+            elif (key in self.ATTRIBUTES_KEYS):
                 parsed_res[self.ATTRIBUTES_KEYS[key]] = val
 
             else:
@@ -177,16 +177,16 @@ class EnterpriseFileReputationParser(GeneralFileReputationParser):
     def parse_attributes(self, attributes: Dict[str, Any]) -> Dict[str, Any]:
         parsed_res: Dict[str, Any] = {}
         for key, val in attributes.items():
-            if(key == FileEnterpriseAttrib.FIRST_CONTACT or key == FileEnterpriseAttrib.LAST_DETECTION_TIME):
+            if (key == FileEnterpriseAttrib.FIRST_CONTACT or key == FileEnterpriseAttrib.LAST_DETECTION_TIME):
                 parsed_res[self.ATTRIBUTES_KEYS[key]] = epoch_to_localtime(int(val))
 
-            elif(key == FileEnterpriseAttrib.SERVER_VERSION):
+            elif (key == FileEnterpriseAttrib.SERVER_VERSION):
                 parsed_res[self.ATTRIBUTES_KEYS[key]] = EnterpriseAttrib.to_version_string(val)
 
-            elif(key == FileEnterpriseAttrib.CHILD_FILE_REPS or key == FileEnterpriseAttrib.PARENT_FILE_REPS):
+            elif (key == FileEnterpriseAttrib.CHILD_FILE_REPS or key == FileEnterpriseAttrib.PARENT_FILE_REPS):
 
                 parsed_res[self.ATTRIBUTES_KEYS[key]] = val
-            elif(key in self.ATTRIBUTES_KEYS):
+            elif (key in self.ATTRIBUTES_KEYS):
                 parsed_res[self.ATTRIBUTES_KEYS[key]] = val
 
             else:
@@ -217,7 +217,7 @@ class AtdFileReputationParser(GeneralFileReputationParser):
     def parse_attributes(self, attributes: Dict[str, Any]) -> Dict[str, Any]:
         parsed_res: Dict[str, Any] = {}
         for key, val in attributes.items():
-            if(key in self.ATTRIBUTES_KEYS):
+            if (key in self.ATTRIBUTES_KEYS):
                 parsed_res[self.ATTRIBUTES_KEYS[key]] = val
 
             else:
@@ -455,9 +455,9 @@ def files_reputations_command(hashes: List[str], tie_client: TieClient, reliabil
 
 
 def files_references_command(hashes: List[str], tie_client: TieClient, query_limit: int) -> List[CommandResults]:
-    if(query_limit > MAX_QUERY_LIMIT):
+    if (query_limit > MAX_QUERY_LIMIT):
         raise DemistoException(f'Query limit must not exceed {MAX_QUERY_LIMIT}')
-    elif(query_limit <= 0):
+    elif (query_limit <= 0):
         raise DemistoException('Query limit must not be zero or negative')
 
     command_results: List[CommandResults] = []
@@ -625,11 +625,11 @@ def main():  # pragma: no cover
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
         exception_des = str(e)
-        if('4044' in exception_des):
+        if ('4044' in exception_des):
             return_error('Invalid value - Client certificates')
-        elif('4293' in exception_des):
+        elif ('4293' in exception_des):
             return_error('Invalid value - Broker CA certificates')
-        elif('4065' in exception_des):
+        elif ('4065' in exception_des):
             return_error('Invalid value - Client private key')
         else:
             return_error(f'Failed to execute {command} command.'

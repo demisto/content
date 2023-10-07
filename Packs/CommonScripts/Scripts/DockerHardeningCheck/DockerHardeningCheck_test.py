@@ -1,6 +1,6 @@
 from DockerHardeningCheck import (check_memory, mem_size_to_bytes, check_pids, check_fd_limits, check_non_root, check_cpus,
                                   get_default_gateway, check_network, CLOUD_METADATA_URL)
-from pytest import skip
+import pytest
 import os
 import ipaddress
 import requests_mock
@@ -30,7 +30,7 @@ def test_non_root():
 
 def test_check_cpus():
     if os.getenv("CI") == "true":
-        skip("skipping as in CI we run with a single CPU")
+        pytest.skip("skipping as in CI we run with a single CPU")
         return
     assert check_cpus(1)  # during unit tests we should fail
 
@@ -51,3 +51,13 @@ def test_check_network(requests_mock: requests_mock.Mocker, mocker: MockerFixtur
     assert CLOUD_METADATA_URL in res
     assert 'mock header' in res
     assert 'mock local header' in res
+
+
+def test_podman(mocker):
+    import DockerHardeningCheck
+    mocker.patch.dict(os.environ, {"container": "podman"})
+    mock_return_error = mocker.patch('DockerHardeningCheck.return_error')
+
+    DockerHardeningCheck.main()
+
+    mock_return_error.assert_called_once_with("This script only works in Docker containers. Podman is not supported")

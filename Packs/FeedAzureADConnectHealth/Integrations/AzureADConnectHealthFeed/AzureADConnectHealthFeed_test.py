@@ -1,7 +1,7 @@
 from AzureADConnectHealthFeed import Client
 
 
-URL = 'https://docs.microsoft.com/en-us/azure/active-directory/hybrid/how-to-connect-health-agent-install#outbound-connectivity-to-the-azure-service-endpoints' # noqa
+URL = 'https://docs.microsoft.com/en-us/azure/active-directory/hybrid/how-to-connect-health-agent-install#outbound-connectivity-to-the-azure-service-endpoints'  # noqa
 
 
 def test_build_iterator(requests_mock):

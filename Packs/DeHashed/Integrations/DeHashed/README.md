@@ -12,6 +12,8 @@ This integration allows you to check if your personal information such as your e
 | insecure | Trust any certificate \(not secure\) | False |
 | proxy | Use system proxy settings | False |
 | email_dbot_score | Email Severity: The DBot reputation for compromised emails \(SUSPICIOUS or MALICIOUS\) | False |
+| Source Reliability | Reliability of the source providing the intelligence data. | False |
+
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
@@ -102,6 +104,8 @@ Checks if an email address was compromised.
 | DBotScore.Type | String | The indicator type. | 
 | DBotScore.Vendor | String | The vendor used to calculate the score. | 
 | DBotScore.Score | Number | The actual score. | 
+| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. | 
+
 
 
 #### Command Example

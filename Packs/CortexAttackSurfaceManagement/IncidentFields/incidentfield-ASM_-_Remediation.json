@@ -15,7 +15,8 @@
             "script": "",
             "selectValues": null,
             "type": "shortText",
-            "width": 150
+            "width": 150,
+            "_comment": "Mandatory: Description of the remediation action."
         },
         {
             "displayName": "ActionTimestamp",
@@ -28,7 +29,8 @@
             "script": "",
             "selectValues": null,
             "type": "shortText",
-            "width": 150
+            "width": 150,
+            "_comment": "Mandatory: Timestamp of when action was taken."
         },
         {
             "displayName": "Outcome",
@@ -41,7 +43,8 @@
             "script": "",
             "selectValues": null,
             "type": "shortText",
-            "width": 150
+            "width": 150,
+            "_comment": "Mandatory: Outcome of the remediation action."
         },
         {
             "displayName": "OutcomeTimestamp",
@@ -54,7 +57,8 @@
             "script": "",
             "selectValues": null,
             "type": "shortText",
-            "width": 150
+            "width": 150,
+            "_comment": "Mandatory: Timestamp of the remediation outcome."
         }
     ],
     "content": true,
@@ -63,10 +67,10 @@
         {},
         {}
     ],
-    "description": "Collect information on remediation action(s)",
+    "description": "Collect information on remediation action(s).",
     "editForm": true,
     "group": 0,
-    "hidden": true,
+    "hidden": false,
     "id": "incident_asmremediation",
     "isReadOnly": false,
     "locked": false,

@@ -1,0 +1,625 @@
+{
+    "OriginalValue": "test",
+    "Status": "Done",
+    "Data": {
+        "Value": "rigpriv.com",
+        "Type": "Domains",
+        "Sources": [
+            {
+                "Name": "Cyber Crime Tracker",
+                "ConfidenceLevel": 1
+            },
+            {
+                "Name": "Cyware",
+                "ConfidenceLevel": 2
+            }
+        ],
+        "SystemTags": [
+            "malware related",
+            "rig"
+        ],
+        "Tags": [],
+        "Status": "Active",
+        "IsKnownIoc": true,
+        "RelatedMalwares": [
+            "rig"
+        ],
+        "RelatedThreatActors": [],
+        "RelatedCampaigns": [],
+        "FirstSeen": "Data_FirstSeen",
+        "LastSeen": "Data_LastSeen",
+        "UpdateDate": "Data_UpdateDate",
+        "Whitelisted": false,
+        "Severity": {
+            "Value": "Medium",
+            "Score": 40,
+            "Origin": "system"
+        },
+        "DnsRecords": [
+            {
+                "Value": "jm1.dns.com.",
+                "Type": "NS",
+                "FirstResolved": "Data_DnsRecords[0]_FirstResolved",
+                "LastResolved": "Data_DnsRecords[0]_LastResolved",
+                "Count": 760
+            },
+            {
+                "Value": "jm2.dns.com.",
+                "Type": "NS",
+                "FirstResolved": "Data_DnsRecords[1]_FirstResolved",
+                "LastResolved": "Data_DnsRecords[1]_LastResolved",
+                "Count": 760
+            },
+            {
+                "Value": "jay.cloudlayar.com.",
+                "Type": "NS",
+                "FirstResolved": "Data_DnsRecords[2]_FirstResolved",
+                "LastResolved": "Data_DnsRecords[2]_LastResolved",
+                "Count": 11544
+            },
+            {
+                "Value": "kate.cloudlayar.com.",
+                "Type": "NS",
+                "FirstResolved": "Data_DnsRecords[3]_FirstResolved",
+                "LastResolved": "Data_DnsRecords[3]_LastResolved",
+                "Count": 11544
+            },
+            {
+                "Value": "ns1.balticservers.com.",
+                "Type": "NS",
+                "FirstResolved": "Data_DnsRecords[4]_FirstResolved",
+                "LastResolved": "Data_DnsRecords[4]_LastResolved",
+                "Count": 59
+            },
+            {
+                "Value": "ns2.balticservers.com.",
+                "Type": "NS",
+                "FirstResolved": "Data_DnsRecords[5]_FirstResolved",
+                "LastResolved": "Data_DnsRecords[5]_LastResolved",
+                "Count": 59
+            },
+            {
+                "Value": "sid.ns.cloudflare.com.",
+                "Type": "NS",
+                "FirstResolved": "Data_DnsRecords[6]_FirstResolved",
+                "LastResolved": "Data_DnsRecords[6]_LastResolved",
+                "Count": 6322
+            },
+            {
+                "Value": "anna.ns.cloudflare.com.",
+                "Type": "NS",
+                "FirstResolved": "Data_DnsRecords[7]_FirstResolved",
+                "LastResolved": "Data_DnsRecords[7]_LastResolved",
+                "Count": 6322
+            },
+            {
+                "Value": "alex.ns.cloudflare.com.",
+                "Type": "NS",
+                "FirstResolved": "Data_DnsRecords[8]_FirstResolved",
+                "LastResolved": "Data_DnsRecords[8]_LastResolved",
+                "Count": 1203
+            },
+            {
+                "Value": "carol.ns.cloudflare.com.",
+                "Type": "NS",
+                "FirstResolved": "Data_DnsRecords[9]_FirstResolved",
+                "LastResolved": "Data_DnsRecords[9]_LastResolved",
+                "Count": 1203
+            },
+            {
+                "Value": "test",
+                "Type": "NS",
+                "FirstResolved": "Data_DnsRecords[10]_FirstResolved",
+                "LastResolved": "Data_DnsRecords[10]_LastResolved",
+                "Count": 2636
+            },
+            {
+                "Value": "test",
+                "Type": "NS",
+                "FirstResolved": "Data_DnsRecords[11]_FirstResolved",
+                "LastResolved": "Data_DnsRecords[11]_LastResolved",
+                "Count": 2636
+            },
+            {
+                "Value": "jm1.dns.com.",
+                "Type": "NS",
+                "FirstResolved": "Data_DnsRecords[12]_FirstResolved",
+                "LastResolved": "Data_DnsRecords[12]_LastResolved",
+                "Count": 1386
+            },
+            {
+                "Value": "jm2.dns.com.",
+                "Type": "NS",
+                "FirstResolved": "Data_DnsRecords[13]_FirstResolved",
+                "LastResolved": "Data_DnsRecords[13]_LastResolved",
+                "Count": 1386
+            },
+            {
+                "Value": "jay.cloudlayar.com.",
+                "Type": "NS",
+                "FirstResolved": "Data_DnsRecords[14]_FirstResolved",
+                "LastResolved": "Data_DnsRecords[14]_LastResolved",
+                "Count": 75
+            },
+            {
+                "Value": "kate.cloudlayar.com.",
+                "Type": "NS",
+                "FirstResolved": "Data_DnsRecords[15]_FirstResolved",
+                "LastResolved": "Data_DnsRecords[15]_LastResolved",
+                "Count": 75
+            },
+            {
+                "Value": "sid.ns.cloudflare.com.",
+                "Type": "NS",
+                "FirstResolved": "Data_DnsRecords[16]_FirstResolved",
+                "LastResolved": "Data_DnsRecords[16]_LastResolved",
+                "Count": 16
+            },
+            {
+                "Value": "anna.ns.cloudflare.com.",
+                "Type": "NS",
+                "FirstResolved": "Data_DnsRecords[17]_FirstResolved",
+                "LastResolved": "Data_DnsRecords[17]_LastResolved",
+                "Count": 16
+            },
+            {
+                "Value": "alex.ns.cloudflare.com.",
+                "Type": "NS",
+                "FirstResolved": "Data_DnsRecords[18]_FirstResolved",
+                "LastResolved": "Data_DnsRecords[18]_LastResolved",
+                "Count": 10
+            },
+            {
+                "Value": "carol.ns.cloudflare.com.",
+                "Type": "NS",
+                "FirstResolved": "Data_DnsRecords[19]_FirstResolved",
+                "LastResolved": "Data_DnsRecords[19]_LastResolved",
+                "Count": 10
+            },
+            {
+                "Value": "jm1.dns.com. admin.dns.com. 1656580813 7200 3600 1209600 1800",
+                "Type": "SOA",
+                "FirstResolved": "Data_DnsRecords[20]_FirstResolved",
+                "LastResolved": "Data_DnsRecords[20]_LastResolved",
+                "Count": 3
+            },
+            {
+                "Value": "jm1.dns.com. admin.dns.com. 1658479620 7200 3600 1209600 1800",
+                "Type": "SOA",
+                "FirstResolved": "Data_DnsRecords[21]_FirstResolved",
+                "LastResolved": "Data_DnsRecords[21]_LastResolved",
+                "Count": 150
+            },
+            {
+                "Value": "jake.cloudlayar.com. admin.cloudlayar.com. 4235596239 10000 2400 604800 3600",
+                "Type": "SOA",
+                "FirstResolved": "Data_DnsRecords[22]_FirstResolved",
+                "LastResolved": "Data_DnsRecords[22]_LastResolved",
+                "Count": 4972
+            },
+            {
+                "Value": "alex.ns.cloudflare.com. dns.cloudflare.com. 2024304375 10000 2400 604800 3600",
+                "Type": "SOA",
+                "FirstResolved": "Data_DnsRecords[23]_FirstResolved",
+                "LastResolved": "Data_DnsRecords[23]_LastResolved",
+                "Count": 2
+            },
+            {
+                "Value": "alex.ns.cloudflare.com. dns.cloudflare.com. 2024306855 10000 2400 604800 3600",
+                "Type": "SOA",
+                "FirstResolved": "Data_DnsRecords[24]_FirstResolved",
+                "LastResolved": "Data_DnsRecords[24]_LastResolved",
+                "Count": 74
+            },
+            {
+                "Value": "anna.ns.cloudflare.com. dns.cloudflare.com. 2025183645 10000 2400 604800 3600",
+                "Type": "SOA",
+                "FirstResolved": "Data_DnsRecords[25]_FirstResolved",
+                "LastResolved": "Data_DnsRecords[25]_LastResolved",
+                "Count": 24
+            },
+            {
+                "Value": "anna.ns.cloudflare.com. dns.cloudflare.com. 2025216404 10000 2400 604800 3600",
+                "Type": "SOA",
+                "FirstResolved": "Data_DnsRecords[26]_FirstResolved",
+                "LastResolved": "Data_DnsRecords[26]_LastResolved",
+                "Count": 18
+            },
+            {
+                "Value": "anna.ns.cloudflare.com. dns.cloudflare.com. 2025387962 10000 2400 604800 3600",
+                "Type": "SOA",
+                "FirstResolved": "Data_DnsRecords[27]_FirstResolved",
+                "LastResolved": "Data_DnsRecords[27]_LastResolved",
+                "Count": 253
+            },
+            {
+                "Value": "anna.ns.cloudflare.com. dns.cloudflare.com. 2026843341 10000 2400 604800 3600",
+                "Type": "SOA",
+                "FirstResolved": "Data_DnsRecords[28]_FirstResolved",
+                "LastResolved": "Data_DnsRecords[28]_LastResolved",
+                "Count": 906
+            },
+            {
+                "Value": "test abuse.opticaljungle.com. 2011062801 3600 900 604800 86400",
+                "Type": "SOA",
+                "FirstResolved": "Data_DnsRecords[29]_FirstResolved",
+                "LastResolved": "Data_DnsRecords[29]_LastResolved",
+                "Count": 3
+            },
+            {
+                "Value": "ns1.verification-hold.suspended-domain.com. admin.suspended-domain.com. 2012022012 7200 7200 172800 7200",
+                "Type": "SOA",
+                "FirstResolved": "Data_DnsRecords[30]_FirstResolved",
+                "LastResolved": "Data_DnsRecords[30]_LastResolved",
+                "Count": 46
+            },
+            {
+                "Value": "Data_DnsRecords[31]_Value",
+                "Type": "AAAA",
+                "FirstResolved": "Data_DnsRecords[31]_FirstResolved",
+                "LastResolved": "Data_DnsRecords[31]_LastResolved",
+                "Count": 703
+            },
+            {
+                "Value": "Data_DnsRecords[32]_Value",
+                "Type": "AAAA",
+                "FirstResolved": "Data_DnsRecords[32]_FirstResolved",
+                "LastResolved": "Data_DnsRecords[32]_LastResolved",
+                "Count": 703
+            },
+            {
+                "Value": "Data_DnsRecords[33]_Value",
+                "Type": "AAAA",
+                "FirstResolved": "Data_DnsRecords[33]_FirstResolved",
+                "LastResolved": "Data_DnsRecords[33]_LastResolved",
+                "Count": 56
+            },
+            {
+                "Value": "Data_DnsRecords[34]_Value",
+                "Type": "AAAA",
+                "FirstResolved": "Data_DnsRecords[34]_FirstResolved",
+                "LastResolved": "Data_DnsRecords[34]_LastResolved",
+                "Count": 56
+            },
+            {
+                "Value": "jm1.dns.com.",
+                "Type": "NS",
+                "Count": 133
+            },
+            {
+                "Value": "jm2.dns.com.",
+                "Type": "NS",
+                "Count": 133
+            },
+            {
+                "Value": "jay.cloudlayar.com.",
+                "Type": "NS",
+                "Count": 315
+            },
+            {
+                "Value": "kate.cloudlayar.com.",
+                "Type": "NS",
+                "Count": 315
+            },
+            {
+                "Value": "test",
+                "Type": "NS",
+                "Count": 33
+            },
+            {
+                "Value": "test",
+                "Type": "NS",
+                "Count": 33
+            },
+            {
+                "Value": "jay.cloudlayar.com.",
+                "Type": "NS",
+                "Count": 194
+            },
+            {
+                "Value": "kate.cloudlayar.com.",
+                "Type": "NS",
+                "Count": 194
+            },
+            {
+                "Value": "sid.ns.cloudflare.com.",
+                "Type": "NS",
+                "Count": 250
+            },
+            {
+                "Value": "anna.ns.cloudflare.com.",
+                "Type": "NS",
+                "Count": 250
+            },
+            {
+                "Value": "alex.ns.cloudflare.com.",
+                "Type": "NS",
+                "Count": 102
+            },
+            {
+                "Value": "carol.ns.cloudflare.com.",
+                "Type": "NS",
+                "Count": 102
+            }
+        ],
+        "Subdomains": [
+            "www.rigpriv.com",
+            "wap.rigpriv.com",
+            "m.rigpriv.com"
+        ],
+        "Whois": {
+            "History": [
+                {
+                    "RegistrationDetails": {
+                        "CreatedDate": "Data_Whois_History[0]_RegistrationDetails_CreatedDate",
+                        "UpdatedDate": "Data_Whois_History[0]_RegistrationDetails_UpdatedDate",
+                        "ExpiresDate": "Data_Whois_History[0]_RegistrationDetails_ExpiresDate",
+                        "Statuses": [
+                            "Data_Whois_History[0]_RegistrationDetails_Statuses_0"
+                        ],
+                        "NameServers": [
+                            "ALEX.NS.CLOUDFLARE.COM",
+                            "CAROL.NS.CLOUDFLARE.COM"
+                        ]
+                    },
+                    "RegistrantDetails": [
+                        {
+                            "Organization": "Newway",
+                            "Name": "Tom Black",
+                            "Email": "Data_Whois_History[0]_RegistrantDetails[0]_Email",
+                            "Telephone": "370370005030",
+                            "Fax": "",
+                            "City": "Siauliai",
+                            "State": "Siauliai",
+                            "Country": "LITHUANIA",
+                            "Address": "tilzes 74",
+                            "PostalCode": "12345",
+                            "CountryCode": ""
+                        },
+                        {
+                            "Organization": "Newway",
+                            "Name": "Tom Black",
+                            "Email": "Data_Whois_History[0]_RegistrantDetails[1]_Email",
+                            "Telephone": "370370005030",
+                            "Fax": "",
+                            "City": "Siauliai",
+                            "State": "Siauliai",
+                            "Country": "LITHUANIA",
+                            "Address": "tilzes 74",
+                            "PostalCode": "12345",
+                            "CountryCode": ""
+                        },
+                        {
+                            "Organization": "Newway",
+                            "Name": "Tom Black",
+                            "Email": "Data_Whois_History[0]_RegistrantDetails[2]_Email",
+                            "Telephone": "370370005030",
+                            "Fax": "",
+                            "City": "Siauliai",
+                            "State": "Siauliai",
+                            "Country": "LITHUANIA",
+                            "Address": "tilzes 74",
+                            "PostalCode": "12345",
+                            "CountryCode": ""
+                        },
+                        {
+                            "Organization": "Newway",
+                            "Name": "Tom Black",
+                            "Email": "Data_Whois_History[0]_RegistrantDetails[3]_Email",
+                            "Telephone": "370370005030",
+                            "Fax": "",
+                            "City": "Siauliai",
+                            "State": "Siauliai",
+                            "Country": "LITHUANIA",
+                            "Address": "tilzes 74",
+                            "PostalCode": "12345",
+                            "CountryCode": ""
+                        }
+                    ]
+                }
+            ],
+            "Current": {
+                "RegistrationDetails": {
+                    "CreatedDate": "Data_Whois_Current_RegistrationDetails_CreatedDate",
+                    "UpdatedDate": "Data_Whois_Current_RegistrationDetails_UpdatedDate",
+                    "ExpiresDate": "Data_Whois_Current_RegistrationDetails_ExpiresDate",
+                    "Statuses": [
+                        "clientHold",
+                        "clientUpdateProhibited"
+                    ],
+                    "NameServers": []
+                },
+                "RegistrantDetails": [
+                    {
+                        "Organization": "",
+                        "Name": "",
+                        "Email": "",
+                        "Telephone": "",
+                        "Fax": "",
+                        "City": "WU XI SHI",
+                        "State": "",
+                        "Country": "CHINA",
+                        "Address": "",
+                        "PostalCode": "",
+                        "CountryCode": "CN"
+                    }
+                ]
+            }
+        },
+        "Resolutions": [
+            {
+                "ResolvedIpAddress": "Data_Resolutions[0]_ResolvedIpAddress",
+                "Location": "HK",
+                "ASN": 62325,
+                "Operator": "HUNGTAK International Network Limited",
+                "FirstResolved": "Data_Resolutions[0]_FirstResolved",
+                "LastResolved": "Data_Resolutions[0]_LastResolved",
+                "ReportingSources": [
+                    "Farsight",
+                    "VirusTotal"
+                ]
+            },
+            {
+                "ResolvedIpAddress": "Data_Resolutions[1]_ResolvedIpAddress",
+                "Location": "HK",
+                "ASN": 134175,
+                "Operator": "SH2206-AP",
+                "FirstResolved": "Data_Resolutions[1]_FirstResolved",
+                "LastResolved": "Data_Resolutions[1]_LastResolved",
+                "ReportingSources": [
+                    "Farsight",
+                    "VirusTotal"
+                ]
+            },
+            {
+                "ResolvedIpAddress": "Data_Resolutions[2]_ResolvedIpAddress",
+                "Location": "US",
+                "ASN": 3900,
+                "Operator": "SWITCH, LTD",
+                "FirstResolved": "Data_Resolutions[2]_FirstResolved",
+                "LastResolved": "Data_Resolutions[2]_LastResolved",
+                "ReportingSources": [
+                    "Farsight",
+                    "VirusTotal"
+                ]
+            },
+            {
+                "ResolvedIpAddress": "Data_Resolutions[3]_ResolvedIpAddress",
+                "Location": "RU",
+                "ASN": 49505,
+                "Operator": "OOO \"Network of data-centers \"Selectel\"",
+                "FirstResolved": "Data_Resolutions[3]_FirstResolved",
+                "LastResolved": "Data_Resolutions[3]_LastResolved",
+                "ReportingSources": [
+                    "Farsight",
+                    "VirusTotal"
+                ]
+            },
+            {
+                "ResolvedIpAddress": "Data_Resolutions[4]_ResolvedIpAddress",
+                "Location": "RU",
+                "ASN": 49505,
+                "Operator": "OOO \"Network of data-centers \"Selectel\"",
+                "FirstResolved": "Data_Resolutions[4]_FirstResolved",
+                "LastResolved": "Data_Resolutions[4]_LastResolved",
+                "ReportingSources": [
+                    "Farsight",
+                    "VirusTotal"
+                ]
+            },
+            {
+                "ResolvedIpAddress": "Data_Resolutions[5]_ResolvedIpAddress",
+                "Location": "US",
+                "ASN": 3900,
+                "Operator": "SWITCH, LTD",
+                "FirstResolved": "Data_Resolutions[5]_FirstResolved",
+                "LastResolved": "Data_Resolutions[5]_LastResolved",
+                "ReportingSources": [
+                    "Farsight"
+                ]
+            },
+            {
+                "ResolvedIpAddress": "Data_Resolutions[6]_ResolvedIpAddress",
+                "Location": "US",
+                "ASN": 13335,
+                "Operator": "Cloudflare, Inc.",
+                "FirstResolved": "Data_Resolutions[6]_FirstResolved",
+                "LastResolved": "Data_Resolutions[6]_LastResolved",
+                "ReportingSources": [
+                    "Farsight",
+                    "VirusTotal"
+                ]
+            },
+            {
+                "ResolvedIpAddress": "Data_Resolutions[7]_ResolvedIpAddress",
+                "Location": "US",
+                "ASN": 13335,
+                "Operator": "Cloudflare, Inc.",
+                "FirstResolved": "Data_Resolutions[7]_FirstResolved",
+                "LastResolved": "Data_Resolutions[7]_LastResolved",
+                "ReportingSources": [
+                    "Farsight",
+                    "VirusTotal"
+                ]
+            },
+            {
+                "ResolvedIpAddress": "Data_Resolutions[8]_ResolvedIpAddress",
+                "Location": "US",
+                "ASN": 13335,
+                "Operator": "Cloudflare, Inc.",
+                "FirstResolved": "Data_Resolutions[8]_FirstResolved",
+                "LastResolved": "Data_Resolutions[8]_LastResolved",
+                "ReportingSources": [
+                    "Farsight"
+                ]
+            },
+            {
+                "ResolvedIpAddress": "Data_Resolutions[9]_ResolvedIpAddress",
+                "Location": "US",
+                "ASN": 13335,
+                "Operator": "Cloudflare, Inc.",
+                "FirstResolved": "Data_Resolutions[9]_FirstResolved",
+                "LastResolved": "Data_Resolutions[9]_LastResolved",
+                "ReportingSources": [
+                    "Farsight"
+                ]
+            },
+            {
+                "ResolvedIpAddress": "Data_Resolutions[10]_ResolvedIpAddress",
+                "Location": "US",
+                "ASN": 13335,
+                "Operator": "Cloudflare, Inc.",
+                "FirstResolved": "Data_Resolutions[10]_FirstResolved",
+                "LastResolved": "Data_Resolutions[10]_LastResolved",
+                "ReportingSources": [
+                    "Farsight",
+                    "VirusTotal"
+                ]
+            },
+            {
+                "ResolvedIpAddress": "Data_Resolutions[11]_ResolvedIpAddress",
+                "Location": "US",
+                "ASN": 13335,
+                "Operator": "Cloudflare, Inc.",
+                "FirstResolved": "Data_Resolutions[11]_FirstResolved",
+                "LastResolved": "Data_Resolutions[11]_LastResolved",
+                "ReportingSources": [
+                    "Farsight",
+                    "VirusTotal"
+                ]
+            }
+        ],
+        "RelatedHashes": {
+            "downloaded": [
+                "01fd9a6245c93f25ec2202d06bb40dbdcb5a3c1a0e5fb3db54c4d6253f9f7f4c",
+                "08f927981aac73a942b8dee00d6718933fc9096afb52724a32ca87708dbd7dbf",
+                "242273249d1916e38ec52e98064910afa9815627c8a8d04f057095eed4da687c",
+                "2bfaac11444683b6600dbaa7fa37ea89ce163f9e4f02db276c00373f8460d214",
+                "36020b569750db04fa575fe020ec1a21be4e72b1f5bceb00484a961e57581261",
+                "3e621cda9cb3cea3f13413356d6afa9fdbee443f4f10405f17cce32003e931de",
+                "4bdc75828362ee008b11ad43c758381dd64b0030dbdb02875a9c50066a29bc49",
+                "test",
+                "5f8443c0f7054d9497d4b9012444bee6ff1c45e8e9d7e16c91c3f96787a4c52f",
+                "688c16d97a52a2644fa48eb11610aac9f02f13af3466e317f313fee73202404f",
+                "6a7a2d28be75231d6ef149c7caf6a12db04ca600225cdccadf4980a1bcd3033c",
+                "7a1ccd50e435ccb5b2bbcc5c67dfc7a6cd4b305bb3f7f70a8107c13abd68d941",
+                "7bb5bca7c03f20bc632cb7f8e5834c35f88012ceaeb0cdb521042041b351d82b",
+                "test",
+                "94a8b4b22dab4171edde5b1bafbf2f17dbe3c3c4c01335c36ba3b6e5d3635b83",
+                "982f52e41414471de98a0b446680323e04d48ae1109637c5fdb82959e195f684",
+                "ad0db4b689db1a95fee339b147ff353bf96005736001cb08b3cb5be30cf90dca",
+                "c8a9dd7a99c6bb8a810b1245b8557dd4b195aa0e300366489788b5de89d218b6",
+                "cdb5a8442335cb960237c747f3e28e631e1d2e5e577a8b342500b0e26111e631",
+                "ee5c4e76576264b206e1892beb1a9679478b5130606548702ac66a8d729eef9f",
+                "f1420a97a84779f411f80b9136d498a185a8b8020e4a2304c63ced1974923d44",
+                "ff6d82e114a157f53eeaa4cb68bc7551920e2d42197016e8365ba16a5748b762"
+            ],
+            "communicating": [
+                "4943deade3c73a6548557a6f0bddacad4c18ba279c859e414c02c121c3fec4a9"
+            ],
+            "referencing": [
+                "4943deade3c73a6548557a6f0bddacad4c18ba279c859e414c02c121c3fec4a9"
+            ]
+        }
+    }
+}

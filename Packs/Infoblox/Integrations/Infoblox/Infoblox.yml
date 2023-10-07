@@ -10,21 +10,18 @@ configuration:
   type: 0
 - display: User Name
   name: credentials
-  required: false
   type: 9
+  required: false
 - defaultvalue: 'false'
   display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
-description: Infoblox enables you to receive metadata about IPs in your network and
-  manages the DNS Firewall by configuring RPZs. It defines RPZ rules to block DNS
-  resolution for malicious or unauthorized hostnames, or redirect clients to a walled
-  garden by substituting responses.
+  required: false
+description: Infoblox enables you to receive metadata about IPs in your network and manages the DNS Firewall by configuring RPZs. It defines RPZ rules to block DNS resolution for malicious or unauthorized hostnames, or redirect clients to a walled garden by substituting responses.
 display: Infoblox
 name: Infoblox
 script:
@@ -52,8 +49,7 @@ script:
       description: The current status of the address.
       type: string
     - contextPath: Infoblox.IP.IsConflict
-      description: Whether the IP address has either a MAC address conflict or a DHCP
-        lease conflict detected through a network discovery (if set to true).
+      description: Whether the IP address has either a MAC address conflict or a DHCP lease conflict detected through a network discovery (if set to true).
       type: string
     - contextPath: Infoblox.IP. Objects
       description: The objects associated with the IP address.
@@ -62,8 +58,7 @@ script:
       description: The current status of the address.
       type: string
     - contextPath: Infoblox.IP. Names
-      description: The DNS names. For example, if the IP address belongs to a host
-        record, this field contains the hostname.
+      description: The DNS names. For example, if the IP address belongs to a host record, this field contains the hostname.
       type: string
     - contextPath: Infoblox.IP. Extattrs
       description: Extra attributes relevant for this object.
@@ -94,11 +89,9 @@ script:
       name: page_size
     - description: The next page ID that was returned when last running this command.
       name: next_page_id
-    - description: The DNS view in which the records are located. For example 'External'. By default, the
-        'default' DNS view is searched.
+    - description: The DNS view in which the records are located. For example 'External'. By default, the 'default' DNS view is searched.
       name: view
-    description: Lists all response policy rules that belong to the given response
-      policy zone.
+    description: Lists all response policy rules that belong to the given response policy zone.
     name: infoblox-list-response-policy-zone-rules
     outputs:
     - contextPath: Infoblox.ResponsePolicyZoneRulesList.Name
@@ -120,8 +113,7 @@ script:
       description: The zone to which this rule belongs.
       type: string
     - contextPath: Infoblox.RulesNextPage.NextPageID
-      description: Retrieves the next page of the search. The last NextpageID corresponds
-        to the last search performed.
+      description: Retrieves the next page of the search. The last NextpageID corresponds to the last search performed.
       type: string
   - arguments:
     - description: Maximum results to return. (default is 50)
@@ -155,8 +147,7 @@ script:
       name: FQDN
       required: true
     - auto: PREDEFINED
-      description: 'The override policy of the response policy zone. Can be: "DISABLED",
-        "GIVEN", "NODATA", "NXDOMAIN", "PASSTHRU", or "SUBSTITUTE".'
+      description: 'The override policy of the response policy zone. Can be: "DISABLED", "GIVEN", "NODATA", "NXDOMAIN", "PASSTHRU", or "SUBSTITUTE".'
       name: rpz_policy
       predefined:
       - DISABLED
@@ -168,8 +159,7 @@ script:
       required: true
     - auto: PREDEFINED
       defaultValue: MAJOR
-      description: 'The severity of the response policy zone. Can be: "CRITICAL",
-        "MAJOR", "WARNING", or "INFORMATIONAL".'
+      description: 'The severity of the response policy zone. Can be: "CRITICAL", "MAJOR", "WARNING", or "INFORMATIONAL".'
       name: rpz_severity
       predefined:
       - CRITICAL
@@ -177,8 +167,7 @@ script:
       - WARNING
       - INFORMATIONAL
       required: true
-    - description: The alternative name of the redirect target in a substitute response
-        policy. policy zone.
+    - description: The alternative name of the redirect target in a substitute response policy. policy zone.
       name: substitute_name
     - auto: PREDEFINED
       defaultValue: LOCAL
@@ -214,8 +203,7 @@ script:
       type: string
   - arguments:
     - auto: PREDEFINED
-      description: 'The type of the rule to create. Can be: "Passthru", "Block" (No
-        such domain), "Block" (No data), or "Substitute" (domain name).'
+      description: 'The type of the rule to create. Can be: "Passthru", "Block" (No such domain), "Block" (No data), or "Substitute" (domain name).'
       name: rule_type
       predefined:
       - Passthru
@@ -224,8 +212,7 @@ script:
       - Substitute (domain name)
       required: true
     - auto: PREDEFINED
-      description: 'The type of the object for which to assign the rule. Can be: "Domain
-        Name", "IP address", or "Client IP address".'
+      description: 'The type of the object for which to assign the rule. Can be: "Domain Name", "IP address", or "Client IP address".'
       name: object_type
       predefined:
       - Domain Name
@@ -242,8 +229,7 @@ script:
       name: comment
     - description: The substitute name to assign (substitute domain only).
       name: substitute_name
-    - description: The DNS view in which the records are located. For example 'External'. By default, the
-        'default' DNS view is searched.
+    - description: The DNS view in which the records are located. For example 'External'. By default, the 'default' DNS view is searched.
       name: view
     description: Creates a response policy rule.
     name: infoblox-create-rpz-rule
@@ -348,8 +334,7 @@ script:
       required: true
     - description: Add a comment for this rule.
       name: comment
-    - description: The mail exchanger name in FQDN format. This value can be in unicode
-        format.
+    - description: The mail exchanger name in FQDN format. This value can be in unicode format.
       name: mail_exchanger
       required: true
     - description: Preference value, 0 to 65535 (inclusive).
@@ -388,17 +373,13 @@ script:
       required: true
     - description: Add a comment for this rule.
       name: comment
-    - description: The order parameter of the substitute rule of the NAPTR record.
-        This parameter specifies the order in which the NAPTR rules are applied when
-        multiple rules are present. Can be from 0 to 65535 (inclusive).
+    - description: The order parameter of the substitute rule of the NAPTR record. This parameter specifies the order in which the NAPTR rules are applied when multiple rules are present. Can be from 0 to 65535 (inclusive).
       name: order
       required: true
     - description: Preference value, 0 to 65535 (inclusive).
       name: preference
       required: true
-    - description: The substitute rule object replacement field of the NAPTR record.
-        For non-terminal NAPTR records, this field specifies the next domain name
-        to look up.
+    - description: The substitute rule object replacement field of the NAPTR record. For non-terminal NAPTR records, this field specifies the next domain name to look up.
       name: replacement
       required: true
     description: Creates a substitute rule for a NAPTR record.
@@ -431,12 +412,10 @@ script:
       required: true
     - description: Add a comment for this rule.
       name: comment
-    - description: The domain name of the RPZ substitute rule object of the PTR record
-        in FQDN format.
+    - description: The domain name of the RPZ substitute rule object of the PTR record in FQDN format.
       name: ptrdname
       required: true
-    - description: The name of the RPZ Substitute rule object of the PTR record in
-        FQDN format.
+    - description: The name of the RPZ Substitute rule object of the PTR record in FQDN format.
       name: name
     - description: The IPv4 Address of the substitute rule.
       name: ipv4addr
@@ -475,20 +454,16 @@ script:
       required: true
     - description: Add a comment for this rule.
       name: comment
-    - description: The port of the substitute rule of the SRV record. Can be 0 to
-        65535 (inclusive).
+    - description: The port of the substitute rule of the SRV record. Can be 0 to 65535 (inclusive).
       name: port
       required: true
-    - description: The priority of the substitute rule for the SRV Record. Can be
-        0 to 65535 (inclusive).
+    - description: The priority of the substitute rule for the SRV Record. Can be 0 to 65535 (inclusive).
       name: priority
       required: true
-    - description: The target of the substitute rule of the SRV record in FQDN format.
-        This value can be in unicode format.
+    - description: The target of the substitute rule of the SRV record in FQDN format. This value can be in unicode format.
       name: target
       required: true
-    - description: The weight of the substitute rule of the SRV record. Can be 0 to
-        65535 (inclusive).
+    - description: The weight of the substitute rule of the SRV record. Can be 0 to 65535 (inclusive).
       name: weight
       required: true
     description: Creates a substitute rule of a SRV record.
@@ -524,8 +499,7 @@ script:
       required: true
     - description: Add a comment for this rule.
       name: comment
-    - description: Text associated with the record. To enter leading, trailing, or
-        embedded spaces in the text, add quotes around the text to preserve the spaces.
+    - description: Text associated with the record. To enter leading, trailing, or embedded spaces in the text, add quotes around the text to preserve the spaces.
       name: text
       required: true
     description: Create a substitute rule for a txt record.
@@ -625,12 +599,10 @@ script:
       description: The reference ID of the rule.
       type: string
   - arguments:
-    - description: The ID of the rule reference (could be extracted by running the
-        search rules command).
+    - description: The ID of the rule reference (could be extracted by running the search rules command).
       name: reference_id
       required: true
-    description: Disables a rule by its reference ID (reference ID could be extracted
-      by running the searah rules command).
+    description: Disables a rule by its reference ID (reference ID could be extracted by running the searah rules command).
     name: infoblox-enable-rule
     outputs:
     - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Disable
@@ -652,12 +624,10 @@ script:
       description: The view of the definition.
       type: string
   - arguments:
-    - description: The ID of the rule reference (reference ID could be extracted by
-        running the 'infoblox-search-rule' command).
+    - description: The ID of the rule reference (reference ID could be extracted by running the 'infoblox-search-rule' command).
       name: reference_id
       required: true
-    description: Disable a rule by its reference ID (reference ID could be extracted
-      by running the 'infoblox-search-rule' command).
+    description: Disable a rule by its reference ID (reference ID could be extracted by running the 'infoblox-search-rule' command).
     name: infoblox-disable-rule
     outputs:
     - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Disable
@@ -679,12 +649,10 @@ script:
       description: The view of the definition.
       type: string
   - arguments:
-    - description: The Infoblox object type (can be retrieved by running the 'infoblox-list-response-policy-zone-rules'
-        command).
+    - description: The Infoblox object type (can be retrieved by running the 'infoblox-list-response-policy-zone-rules' command).
       name: object_type
       required: true
-    description: Returns the object fields names which can be used in the search rules
-      command.
+    description: Returns the object fields names which can be used in the search rules command.
     name: infoblox-get-object-fields
     outputs:
     - contextPath: Infoblox.ObjectFields.ObjectType
@@ -694,16 +662,13 @@ script:
       description: The list of supported fields for this object.
       type: string
   - arguments:
-    - description: The Infoblox object type (can be retrieved by running the 'infoblox-list-response-policy-zone-rules'
-        command).
+    - description: The Infoblox object type (can be retrieved by running the 'infoblox-list-response-policy-zone-rules' command).
       name: object_type
       required: true
-    - description: 'The full rule name (usually the rule name followed by its zone.
-        Example: name.domain.com)'
+    - description: 'The full rule name (usually the rule name followed by its zone. Example: name.domain.com)'
       name: rule_name
       required: true
-    - description: The fields to include in the return object (supported object fields
-        can be retrieved by running the *infoblox-get-object-fields* command).
+    - description: The fields to include in the return object (supported object fields can be retrieved by running the *infoblox-get-object-fields* command).
       name: output_fields
     description: Searches a specific rule by its name.
     name: infoblox-search-rule
@@ -718,20 +683,18 @@ script:
       description: The view of the definition.
       type: string
   - arguments:
-    - description: The reference ID of the rule (reference ID can be retrieved by
-        running the 'infoblox-search-rule' command).
+    - description: The reference ID of the rule (reference ID can be retrieved by running the 'infoblox-search-rule' command).
       name: reference_id
       required: true
     description: Deletes a rule.
     name: infoblox-delete-rpz-rule
   - arguments:
-    - description: The reference ID of the rule (could be extracted by running the
-        search rules command).
+    - description: The reference ID of the rule (could be extracted by running the search rules command).
       name: reference_id
       required: true
     description: Deletes a given response policy zone.
     name: infoblox-delete-response-policy-zone
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.10.12.63474
   runonce: false
   script: ''
   subtype: python3

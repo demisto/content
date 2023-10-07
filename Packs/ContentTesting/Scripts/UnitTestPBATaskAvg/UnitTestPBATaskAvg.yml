@@ -1,0 +1,22 @@
+commonfields:
+  id: UnitTestPBATaskAvg
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+dockerimage: demisto/python3:3.10.13.72123
+enabled: true
+name: UnitTestPBATaskAvg
+comment: ''
+runas: DBotWeakRole
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- dynamic-section
+timeout: 300ns
+type: python
+fromversion: 6.5.0
+tests:
+- No tests (auto formatted)
+runonce: false

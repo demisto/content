@@ -1,3 +1,5 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 # type: ignore
 from copy import deepcopy
 from typing import Any, Dict, List, Optional, Tuple
@@ -5,8 +7,6 @@ from urllib.parse import urljoin
 
 import urllib3
 
-import demistomock as demisto
-from CommonServerPython import *
 from CommonServerUserPython import *
 
 # disable insecure warnings
@@ -941,7 +941,7 @@ def main():
                             fetch_events=fetch_events,
                             max_events_fetch=max_events_fetch,
                             event_types=event_types,
-                            alerts_query=demisto.params().get('alert_query'),
+                            alerts_query=demisto.params().get('alerts_query'),
                             events_query=demisto.params().get('events_query'))
         elif command in commands:
             return_results(commands[command](client, demisto.args()))

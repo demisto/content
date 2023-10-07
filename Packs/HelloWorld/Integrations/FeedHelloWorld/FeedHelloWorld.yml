@@ -6,17 +6,15 @@ configuration:
 - defaultvalue: 'true'
   display: Fetch indicators
   name: feed
-  required: false
   type: 8
+  required: false
 - defaultvalue: https://openphish.com/feed.txt
   display: Server's URL
-  additionalinfo: Should be feed of type .txt. For using other types of feed, modify
-    the parsing in the python file.
+  additionalinfo: Should be feed of type .txt. For using other types of feed, modify the parsing in the python file.
   name: url
   required: true
   type: 0
-- additionalinfo: Indicators from this integration instance will be marked with this
-    reputation
+- additionalinfo: Indicators from this integration instance will be marked with this reputation
   defaultvalue: Bad
   display: Indicator Reputation
   name: feedReputation
@@ -25,8 +23,8 @@ configuration:
   - Good
   - Suspicious
   - Bad
-  required: false
   type: 18
+  required: false
 - additionalinfo: Reliability of the source providing the intelligence data
   defaultvalue: F - Reliability cannot be judged
   display: Source Reliability
@@ -40,8 +38,7 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
-- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators
-    fetched from the feed
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
   display: Traffic Light Protocol Color
   name: tlp_color
   options:
@@ -49,38 +46,36 @@ configuration:
   - AMBER
   - GREEN
   - WHITE
-  required: false
   type: 15
+  required: false
 - defaultvalue: '30'
   display: Feed Fetch Interval
   name: feedFetchInterval
-  required: false
   type: 19
-- additionalinfo: When selected, the exclusion list is ignored for indicators from
-    this feed. This means that if an indicator from this feed is on the exclusion
-    list, the indicator might still be added to the system.
+  required: false
+- additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
   defaultvalue: 'true'
   display: Bypass exclusion list
   name: feedBypassExclusionList
-  required: false
   type: 8
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 - display: ''
   name: feedExpirationPolicy
   type: 17
-  required: false
   options:
   - never
   - interval
   - indicatorType
   - suddenDeath
+  required: false
 - display: ''
   name: feedExpirationInterval
   type: 1
@@ -88,40 +83,30 @@ configuration:
 - additionalinfo: Supports CSV values.
   display: Tags
   name: feedTags
-  required: false
   type: 0
+  required: false
 - defaultvalue: 'true'
   display: Create relationships
   name: create_relationships
-  required: false
   type: 8
+  required: false
 display: HelloWorld Feed
 name: HelloWorld Feed
 script:
   commands:
   - arguments:
-    - default: false
-      defaultValue: '10'
+    - defaultValue: '10'
       description: The maximum number of results to return.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    deprecated: false
     description: Gets indicators from the feed.
-    execution: false
     name: helloworld-get-indicators
-  dockerimage: demisto/python3:3.10.7.33922
+  dockerimage: demisto/python3:3.10.12.63474
   feed: true
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3
   type: python
 fromversion: 5.5.0
-description: 'This is the Feed Hello World integration for getting started with your
-  feed integration.'
+description: 'This is the Feed Hello World integration for getting started with your feed integration.'
 tests:
 - No tests (auto formatted)

@@ -1,0 +1,88 @@
+{
+    "watchguard_xtm_raw": {
+        "leefEventID": {
+          "type": "string",
+          "is_array": false
+        },
+        "srcPort": {
+          "type": "int",
+          "is_array": false
+        },
+        "dstPort": {
+          "type": "int",
+          "is_array": false
+        },
+        "op": {
+          "type": "string",
+          "is_array": false
+        },
+        "proto": {
+          "type": "string",
+          "is_array": false
+        },
+        "dst": {
+          "type": "string",
+          "is_array": false
+        },
+        "msg": {
+          "type": "string",
+          "is_array": false
+        },
+        "src": {
+          "type": "string",
+          "is_array": false
+        },
+        "cats": {
+          "type": "string",
+          "is_array": false
+        },
+        "disp": {
+          "type": "string",
+          "is_array": false
+        },
+        "dstname": {
+          "type": "string",
+          "is_array": false
+        },
+        "app": {
+          "type": "string",
+          "is_array": false
+        },
+        "policy": {
+          "type": "string",
+          "is_array": false
+        },
+        "duration": {
+          "type": "string",
+          "is_array": false
+        },
+        "src_user": {
+          "type": "string",
+          "is_array": false
+        },
+        "rcvd_bytes": {
+          "type": "string",
+          "is_array": false
+        },
+        "sent_bytes": {
+          "type": "string",
+          "is_array": false
+        },
+        "sys_name": {
+          "type": "string",
+          "is_array": false
+        },
+        "in_if": {
+          "type": "string",
+          "is_array": false
+        },
+        "out_if": {
+          "type": "string",
+          "is_array": false
+        },
+        "leefProductVersion": {
+          "type": "string",
+          "is_array": false
+        }
+    }
+}

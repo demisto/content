@@ -1,11 +1,11 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import os
 import requests
 import traceback
 import json
 from datetime import datetime, timedelta
 from requests import HTTPError
-from CommonServerPython import *
-import demistomock as demisto
 
 DATE_FORMAT = '%Y-%m-%d %H:%M:%S'
 EMAIL = demisto.params().get('credentials')['identifier']

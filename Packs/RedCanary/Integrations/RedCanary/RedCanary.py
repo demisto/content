@@ -1,14 +1,15 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 from typing import Generator
 
-import demistomock as demisto
-from CommonServerPython import *
 from CommonServerUserPython import *
 
 ''' IMPORTS '''
 import requests
+import urllib3
 
 # disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 ''' GLOBAL VARS '''
 BASE_URL = ''
@@ -200,7 +201,6 @@ def get_full_timeline(detection_id, per_page=100):
 
 def process_timeline(detection_id):
     res = get_full_timeline(detection_id)
-
     activities = []
     domains = []
     files = []
@@ -215,31 +215,38 @@ def process_timeline(detection_id):
         additional_data = {}  # type:ignore
 
         if activity['attributes']['type'] == 'process_activity_occurred':
-            process = activity['attributes']['process_execution']['attributes']['operating_system_process'][
-                'attributes']
-            image = process['image']['attributes']
-            additional_data = {
-                'MD5': image['md5'],
-                'SHA256': image['sha256'],
-                'Path': image['path'],
-                'Type': image['file_type'],
-                'CommandLine': process['command_line']['attributes']['command_line'],
-            }
-            files.append({
-                'Name': os.path.basename(image['path']),
-                'MD5': image['md5'],
-                'SHA256': image['sha256'],
-                'Path': image['path'],
-                'Extension': os.path.splitext(image['path'])[-1],
-            })
-            processes.append({
-                'Name': os.path.basename(image['path']),
-                'Path': image['path'],
-                'MD5': image['md5'],
-                'SHA256': image['sha256'],
-                'StartTime': get_time_str(get_time_obj(process['started_at'])),
-                'CommandLine': process['command_line']['attributes']['command_line'],
-            })
+            process = activity['attributes']['process_execution']['attributes'].get(
+                'operating_system_process', {})
+            if not process:
+                demisto.debug('##### process attributes corrupted, skipping additional data. process response:'
+                              f'{activity.get("attributes", {}).get("process_execution")} #######')
+            else:
+                process = process.get('attributes', {}) or {}
+                image = process.get('image', {}).get('attributes')
+                additional_data = {
+                    'MD5': image.get('md5'),
+                    'SHA256': image.get('sha256'),
+                    'Path': image.get('path'),
+                    'Type': image.get('file_type'),
+                    'CommandLine': process.get('command_line', {}).get(
+                        'attributes', {}).get('command_line'),
+                }
+                files.append({
+                    'Name': os.path.basename(image.get('path', '')),
+                    'MD5': image.get('md5'),
+                    'SHA256': image.get('sha256'),
+                    'Path': image.get('path'),
+                    'Extension': os.path.splitext(image.get('path', ''))[-1],
+                })
+                processes.append({
+                    'Name': os.path.basename(image.get('path', '')),
+                    'Path': image.get('path'),
+                    'MD5': image.get('md5'),
+                    'SHA256': image.get('sha256'),
+                    'StartTime': get_time_str(get_time_obj(process.get('started_at'))),
+                    'CommandLine': process.get('command_line', {}).get(
+                        'attributes', {}).get('command_line'),
+                })
 
         elif activity['attributes']['type'] == 'network_connection_activity_occurred':
             network = activity['attributes']['network_connection']['attributes']
@@ -564,7 +571,7 @@ def fetch_incidents(last_run):
         if incident_id not in last_incidents_ids:
             # makes sure that the incident wasn't fetched before
             incidents.append(incident)
-            new_incidents_ids.append(incident_id)
+        new_incidents_ids.append(incident_id)
 
     if incidents:
         last_fetch = max([get_time_obj(incident['occurred']) for incident in incidents])  # noqa:F812
@@ -581,9 +588,10 @@ def test_integration():
 
 def main():
     global BASE_URL, API_KEY, USE_SSL
-    BASE_URL = urljoin(demisto.params().get('domain', ''), '/openapi/v3')
-    API_KEY = demisto.params().get('api_key')
-    USE_SSL = not demisto.params().get('insecure', False)
+    params = demisto.params()
+    BASE_URL = urljoin(params.get('domain', ''), '/openapi/v3')
+    API_KEY = params.get('api_key_creds', {}).get('password') or params.get('api_key')
+    USE_SSL = not params.get('insecure', False)
     ''' EXECUTION CODE '''
     COMMANDS = {
         'test-module': test_integration,

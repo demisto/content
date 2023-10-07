@@ -8,7 +8,6 @@ commonfields:
 enabled: true
 name: ContextGetMACAddresses
 runas: DBotWeakRole
-runonce: false
 script: ''
 scripttarget: 0
 tags: []

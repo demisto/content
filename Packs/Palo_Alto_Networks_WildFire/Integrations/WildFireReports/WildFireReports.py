@@ -7,7 +7,7 @@ urllib3.disable_warnings()
 
 
 class Client(BaseClient):
-    def __init__(self, base_url: str, verify: bool = True, proxy: bool = False, ok_codes=tuple(), headers: dict = None,
+    def __init__(self, base_url: str, verify: bool = True, proxy: bool = False, ok_codes=(), headers: dict = None,
                  token: str = None):
         super().__init__(base_url, verify, proxy, ok_codes, headers)
         self.token = token
@@ -20,10 +20,8 @@ class Client(BaseClient):
         Auto API expect the agent header to be 'xdr' when running from within XSIAM and 'xsoartim' when running from
         within XSOAR (both on-prem and cloud).
         """
-        platform = get_demisto_version().get('platform')
-        if platform == 'x2':
-            return 'xsoartim' if is_demisto_version_ge('8.0.0') else 'xdr'
-        return 'xsoartim'
+        platform = get_demisto_version().get('platform')  # Platform = xsoar_hosted / xsoar / x2 depends on the machine
+        return 'xdr' if platform == 'x2' else 'xsoartim'
 
     def get_file_report(self, file_hash: str):
         return self._http_request(
@@ -43,7 +41,7 @@ class Client(BaseClient):
 ''' COMMAND FUNCTIONS '''
 
 
-def test_module(client: Client) -> str:
+def test_module(client: Client) -> str:  # pragma: no coverage
     try:
         wildfire_hash_example = 'dca86121cc7427e375fd24fe5871d727'  # guardrails-disable-line
         res = client.get_file_report(wildfire_hash_example)
@@ -94,7 +92,7 @@ def wildfire_get_report_command(client: Client, args: Dict[str, str]):
 ''' MAIN FUNCTION '''
 
 
-def main():
+def main():  # pragma: no coverage
     command = demisto.command()
     params = demisto.params()
     args = demisto.args()

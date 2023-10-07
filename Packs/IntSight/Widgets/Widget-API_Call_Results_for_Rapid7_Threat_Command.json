@@ -1,0 +1,86 @@
+{
+    "dataType": "metrics",
+    "params": {
+        "showOthers": false,
+        "timeFrame": "days",
+        "customGroupBy": [
+            null,
+            {
+                "General Error": {
+                    "conditions": [
+                        [
+                            {
+                                "field": "apiResponseType",
+                                "operator": "isEqualCaseString",
+                                "right": "GeneralError",
+                                "type": "string"
+                            }
+                        ]
+                    ],
+                    "name": "General Error"
+                },
+                "Quota Error": {
+                    "conditions": [
+                        [
+                            {
+                                "field": "apiResponseType",
+                                "operator": "isEqualCaseString",
+                                "right": "QuotaError",
+                                "type": "string"
+                            }
+                        ]
+                    ],
+                    "name": "Quota Error"
+                },
+                "Success": {
+                    "conditions": [
+                        [
+                            {
+                                "field": "apiResponseType",
+                                "operator": "isEqualCaseString",
+                                "right": "Successful",
+                                "type": "string"
+                            }
+                        ]
+                    ],
+                    "name": "Success"
+                }
+            }
+        ],
+        "keys": [
+            "sum|totalAPICalls"
+        ],
+        "groupBy": [
+            "modified(d)",
+            "apiResponseType"
+        ],
+        "valuesFormat": "abbreviated",
+        "yAxisLabel": "Request Counts",
+        "xAxisLabel": "Time",
+        "referenceLine": {
+            "type": "max"
+        }
+    },
+    "query": "type:integration and instance:\"rapid7_threat_command_instance_1\" or \"rapid7_threat_command_instance_1_copy\"",
+    "modified": "2022-10-23T13:55:04.576754212Z",
+    "name": "API Call Results for Rapid7 Threat Command",
+    "dateRange": {
+        "fromDate": "0001-01-01T00:00:00Z",
+        "toDate": "0001-01-01T00:00:00Z",
+        "period": {
+            "by": "",
+            "byTo": "",
+            "byFrom": "days",
+            "toValue": null,
+            "fromValue": 0,
+            "field": ""
+        },
+        "fromDateLicense": "0001-01-01T00:00:00Z"
+    },
+    "isPredefined": true,
+    "version": -1,
+    "id": "c63390c0-0c5e-4906-8b44-a748e6a639ea",
+    "widgetType": "line",
+    "fromVersion": "6.5.0",
+    "description": ""
+}

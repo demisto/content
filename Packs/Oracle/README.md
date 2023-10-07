@@ -7,7 +7,7 @@ In order to use the collector, you will need to perform the following steps:
  - [Activate the Database Collector](#database-collector) 
 
 ### Broker VM
-You will need to use the information described [here](https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-pro-admin/broker-vm/set-up-broker-vm/configure-your-broker-vm).\
+You will need to use the information described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Pro-Administrator-Guide/Configure-the-Broker-VM).\
 You can configure the specific vendor and product for this instance.
 1. Navigate to **Settings** -> **Configuration** -> **Data Broker** -> **Broker VMs**. 
 2. Right-click the broker VM and select **Database Collector** -> **Activate**.
@@ -20,10 +20,10 @@ You will need to use the information described [here](https://docs.paloaltonetwo
 When configuring the `Database Connection` the `SQL Query` should look as follows:
 
 ```
-SELECT to_char(EVENT_TIMESTAMP,'YYYY/MM/DD HH:MM:SS.mi') as DB_TIMESTAMP, UNIFIED_AUDIT_TRAIL.*
+SELECT UNIFIED_AUDIT_TRAIL.*
 FROM UNIFIED_AUDIT_TRAIL
-WHERE to_char(EVENT_TIMESTAMP,'YYYY/MM/DD HH:MM:SS.mi') > ?
-ORDER BY  DB_TIMESTAMP DESC;
+WHERE UNIFIED_AUDIT_TRAIL.EVENT_TIMESTAMP > ?
+ORDER BY UNIFIED_AUDIT_TRAIL.EVENT_TIMESTAMP DESC;
 ```
 
 Make sure to use the correct value for "Retrieval Value", to match the Rising Column value type.

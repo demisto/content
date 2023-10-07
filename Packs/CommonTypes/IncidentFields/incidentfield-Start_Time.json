@@ -9,7 +9,11 @@
         "Microsoft Defender For Endpoint",
         "Skyhigh Security Alert",
         "Skyhigh Security Threat",
-        "Exabeam Incident"
+        "Exabeam Incident",
+        "Microsoft Sentinel Incident",
+        "Graph Security Alert",
+        "CrowdStrike Falcon IDP Detection",
+        "Stamus Networks DoC"
     ],
     "breachScript": "",
     "caseInsensitive": true,

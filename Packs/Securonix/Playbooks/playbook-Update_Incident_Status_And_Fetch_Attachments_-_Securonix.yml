@@ -1,0 +1,396 @@
+id: Update Incident Status And Fetch Attachments - Securonix
+version: -1
+name: Update Incident Status And Fetch Attachments - Securonix
+description: This playbook fetches the attachments for the incident. Also, it updates the state of the Securonix incident based on the configuration provided in integration configuration.
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: fc3e1e3e-240d-4639-8c3d-7584b9464336
+    type: start
+    task:
+      id: fc3e1e3e-240d-4639-8c3d-7584b9464336
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '9'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": -210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '1':
+    id: '1'
+    taskid: aa80eb4a-314c-4f56-8e68-3545998e5715
+    type: condition
+    task:
+      id: aa80eb4a-314c-4f56-8e68-3545998e5715
+      version: -1
+      name: Check whether to close Securonix Incident or not
+      description: Check whether to close Securonix Incident or not.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '5'
+      yes:
+      - '2'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isTrue
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: securonixcloseincident
+            iscontext: true
+          right:
+            value: {}
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '2':
+    id: '2'
+    taskid: f97a3aa1-2f17-4381-85ca-8bb06e4dc48b
+    type: regular
+    task:
+      id: f97a3aa1-2f17-4381-85ca-8bb06e4dc48b
+      version: -1
+      name: Get XSOAR to Securonix state mapping
+      description: Returns the state mapping.
+      script: '|||securonix-xsoar-state-mapping-get'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '3'
+    scriptarguments:
+      using:
+        simple: ${incident.sourceInstance}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 110,
+          "y": 390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '3':
+    id: '3'
+    taskid: 16f7dde2-d7f7-42a6-82f5-fe148578e62e
+    type: regular
+    task:
+      id: 16f7dde2-d7f7-42a6-82f5-fe148578e62e
+      version: -1
+      name: Close Securonix Incident
+      description: Update the status of the Securonix incident using the configuration provided in integration configuration.
+      scriptName: UpdateSecuronixIncidentStatus
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '4'
+    scriptarguments:
+      active_state_action:
+        complex:
+          root: Securonix.StateMapping.ACTIVE
+          accessor: action
+      active_state_status:
+        complex:
+          root: Securonix.StateMapping.ACTIVE
+          accessor: status
+      close_state_action:
+        complex:
+          root: Securonix.StateMapping.DONE
+          accessor: action
+      close_state_status:
+        complex:
+          root: Securonix.StateMapping.DONE
+          accessor: status
+      execution-timeout:
+        simple: '28000'
+      incident_id:
+        complex:
+          root: incident
+          accessor: securonixincidentid
+      only_active:
+        simple: 'False'
+      using:
+        simple: ${incident.sourceInstance}
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 110,
+          "y": 740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '4':
+    id: '4'
+    taskid: 53303533-569f-4f98-81d8-6d9c768e1f12
+    type: title
+    task:
+      id: 53303533-569f-4f98-81d8-6d9c768e1f12
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '5':
+    id: '5'
+    taskid: db821eef-af8f-4794-8bb1-317e9767ddc7
+    type: condition
+    task:
+      id: db821eef-af8f-4794-8bb1-317e9767ddc7
+      version: -1
+      name: Check whether mirroring direction is Out or Both
+      description: Check whether mirroring direction is Out or Both.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '4'
+      yes:
+      - '6'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: dbotMirrorDirection
+            iscontext: true
+          right:
+            value:
+              simple: Out
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: dbotMirrorDirection
+            iscontext: true
+          right:
+            value:
+              simple: Both
+    view: |-
+      {
+        "position": {
+          "x": 640,
+          "y": 390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '6':
+    id: '6'
+    taskid: 9140bd7e-a16a-42cc-87c9-b0f6b122abbe
+    type: regular
+    task:
+      id: 9140bd7e-a16a-42cc-87c9-b0f6b122abbe
+      version: -1
+      name: Get XSOAR to Securonix state mapping
+      description: Returns the state mapping of XSOAR with Securonix.
+      script: '|||securonix-xsoar-state-mapping-get'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '7'
+    scriptarguments:
+      using:
+        simple: ${incident.sourceInstance}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 830,
+          "y": 560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '7':
+    id: '7'
+    taskid: 70e90ac5-fb82-4ba6-8682-3ee4c4eaa717
+    type: regular
+    task:
+      id: 70e90ac5-fb82-4ba6-8682-3ee4c4eaa717
+      version: -1
+      name: Update status of Securonix Incident
+      description: Update the status of the Securonix incident using the configuration provided in integration configuration.
+      scriptName: UpdateSecuronixIncidentStatus
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '4'
+    scriptarguments:
+      active_state_action:
+        complex:
+          root: Securonix.StateMapping.ACTIVE
+          accessor: action
+      active_state_status:
+        complex:
+          root: Securonix.StateMapping.ACTIVE
+          accessor: status
+      execution-timeout:
+        simple: '28000'
+      incident_id:
+        complex:
+          root: incident
+          accessor: securonixincidentid
+      only_active:
+        simple: 'True'
+      using:
+        simple: ${incident.sourceInstance}
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 830,
+          "y": 740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '9':
+    id: '9'
+    taskid: 3c7ab4b8-6360-49bb-8a05-1a6cc027a048
+    type: regular
+    task:
+      id: 3c7ab4b8-6360-49bb-8a05-1a6cc027a048
+      version: -1
+      name: Fetch incident attachments
+      description: Retrieves the attachments available on the Securonix platform.
+      script: '|||securonix-incident-attachment-get'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    scriptarguments:
+      incident_id:
+        complex:
+          root: incident
+          accessor: securonixincidentid
+      using:
+        simple: ${incident.sourceInstance}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": -20
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "5_4_#default#": 0.59
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1185,
+        "width": 1100,
+        "x": 110,
+        "y": -210
+      }
+    }
+  }
+inputs: []
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.5.0

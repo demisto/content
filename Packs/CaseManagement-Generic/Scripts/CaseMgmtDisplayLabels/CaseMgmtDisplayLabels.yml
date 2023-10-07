@@ -1,0 +1,17 @@
+comment: 'Dynamic section that will display the Labels for an Incident in a markdown table.  '
+commonfields:
+  id: CaseMgmtDisplayLabels
+  version: -1
+dockerimage: demisto/python3:3.10.12.63474
+enabled: true
+name: CaseMgmtDisplayLabels
+runas: DBotWeakRole
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- dynamic-section
+type: python
+fromversion: 6.8.0
+tests:
+- No tests (auto formatted)

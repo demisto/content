@@ -1,6 +1,7 @@
 [file:FidelisEndpoint.yml]
-ignore=IN126
+ignore=IN126,BA124
 
 [known_words]
-Fidelis
-EDR
+fidelis
+edr
+

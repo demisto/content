@@ -1,0 +1,477 @@
+{
+    "OriginalValue": "test",
+    "Status": "Done",
+    "Data": {
+        "Value": "2f204f3b3abc97efc74b6fa016a874f9d4addb8ac70857267cc8e4feb9dbba26",
+        "Type": "Hashes",
+        "Sources": [
+            {
+                "Name": "AlienVault OTX",
+                "ConfidenceLevel": 3
+            },
+            {
+                "Name": "Threat Library",
+                "ConfidenceLevel": 3
+            },
+            {
+                "Name": "Botvrij.eu",
+                "ConfidenceLevel": 1
+            }
+        ],
+        "SystemTags": [
+            "apt40",
+            "australia",
+            "banking",
+            "bronze mohawk",
+            "cambodia",
+            "china",
+            "codeexecution",
+            "defence",
+            "defense",
+            "detectvulnerabilities",
+            "diplomatic",
+            "energy",
+            "exploitvulnerabilities",
+            "financial",
+            "foreign",
+            "gadolinium",
+            "gas",
+            "government",
+            "health",
+            "healthcare",
+            "heavy industry",
+            "japan",
+            "javascript scanbox",
+            "legal",
+            "leviathan",
+            "malaysia",
+            "malware related",
+            "manufacturing",
+            "media",
+            "meterpreter",
+            "military",
+            "political",
+            "red ladon",
+            "scanbox",
+            "socialengineering",
+            "spearphishing",
+            "statesponsored",
+            "ta423",
+            "temp.jumper",
+            "temp.periscope",
+            "united states of america",
+            "waterholeattack"
+        ],
+        "Tags": [],
+        "Status": "Active",
+        "IsKnownIoc": true,
+        "RelatedMalwares": [
+            "javascriptscanbox",
+            "meterpreter",
+            "scanbox"
+        ],
+        "RelatedThreatActors": [
+            "apt40"
+        ],
+        "RelatedCampaigns": [],
+        "FirstSeen": "Data_FirstSeen",
+        "LastSeen": "Data_LastSeen",
+        "UpdateDate": "Data_UpdateDate",
+        "Whitelisted": false,
+        "Severity": {
+            "Value": "Low",
+            "Score": 10,
+            "Origin": "system"
+        },
+        "AntivirusScanDate": "Data_AntivirusScanDate",
+        "FileName": "",
+        "FileType": "JavaScript",
+        "FileAuthor": "",
+        "FileDescription": "",
+        "FileSize": 24685,
+        "AntivirusDetectionRatio": "44%",
+        "AntivirusDetectedEngines": "27/61",
+        "AntivirusDetections": [
+            {
+                "Name": "Bkav",
+                "Version": "1.3.0.9899",
+                "Detected": false,
+                "Result": ""
+            },
+            {
+                "Name": "Lionic",
+                "Version": "7.5",
+                "Detected": true,
+                "Result": "Trojan.Script.Generic.4!c"
+            },
+            {
+                "Name": "DrWeb",
+                "Version": "7.0.58.8230",
+                "Detected": true,
+                "Result": "JS.Phishing.283"
+            },
+            {
+                "Name": "ClamAV",
+                "Version": "Data_AntivirusDetections[3]_Version",
+                "Detected": false,
+                "Result": ""
+            },
+            {
+                "Name": "CMC",
+                "Version": "2.4.2022.1",
+                "Detected": false,
+                "Result": ""
+            },
+            {
+                "Name": "CAT-QuickHeal",
+                "Version": "22.00",
+                "Detected": true,
+                "Result": "test"
+            },
+            {
+                "Name": "McAfee",
+                "Version": "6.0.6.653",
+                "Detected": true,
+                "Result": "JS/Agent.fd"
+            },
+            {
+                "Name": "Malwarebytes",
+                "Version": "Data_AntivirusDetections[7]_Version",
+                "Detected": false,
+                "Result": ""
+            },
+            {
+                "Name": "Zillya",
+                "Version": "2.0.0.4745",
+                "Detected": false,
+                "Result": ""
+            },
+            {
+                "Name": "Sangfor",
+                "Version": "Data_AntivirusDetections[9]_Version",
+                "Detected": false,
+                "Result": ""
+            },
+            {
+                "Name": "K7AntiVirus",
+                "Version": "12.46.45152",
+                "Detected": false,
+                "Result": ""
+            },
+            {
+                "Name": "K7GW",
+                "Version": "12.46.45131",
+                "Detected": false,
+                "Result": ""
+            },
+            {
+                "Name": "BitDefenderTheta",
+                "Version": "7.2.37796.0",
+                "Detected": false,
+                "Result": ""
+            },
+            {
+                "Name": "VirIT",
+                "Version": "9.5.318",
+                "Detected": false,
+                "Result": ""
+            },
+            {
+                "Name": "Cyren",
+                "Version": "Data_AntivirusDetections[14]_Version",
+                "Detected": true,
+                "Result": "JS/Agent.BKG"
+            },
+            {
+                "Name": "Symantec",
+                "Version": "Data_AntivirusDetections[15]_Version",
+                "Detected": true,
+                "Result": "Infostealer"
+            },
+            {
+                "Name": "ESET-NOD32",
+                "Version": "26201",
+                "Detected": false,
+                "Result": ""
+            },
+            {
+                "Name": "test",
+                "Version": "10.0.0.1040",
+                "Detected": true,
+                "Result": "TROJ_FRS.0NA103K222"
+            },
+            {
+                "Name": "Avast",
+                "Version": "22.11.7701.0",
+                "Detected": true,
+                "Result": "Other:Malware-gen [Trj]"
+            },
+            {
+                "Name": "Cynet",
+                "Version": "Data_AntivirusDetections[19]_Version",
+                "Detected": false,
+                "Result": ""
+            },
+            {
+                "Name": "Kaspersky",
+                "Version": "Data_AntivirusDetections[20]_Version",
+                "Detected": true,
+                "Result": "HEUR:Trojan.Script.Generic"
+            },
+            {
+                "Name": "BitDefender",
+                "Version": "7.2",
+                "Detected": true,
+                "Result": "Trojan.GenericKD.61807410"
+            },
+            {
+                "Name": "NANO-Antivirus",
+                "Version": "1.0.146.25648",
+                "Detected": false,
+                "Result": ""
+            },
+            {
+                "Name": "test",
+                "Version": "5.6.0.1032",
+                "Detected": false,
+                "Result": ""
+            },
+            {
+                "Name": "MicroWorld-eScan",
+                "Version": "14.0.409.0",
+                "Detected": true,
+                "Result": "Trojan.GenericKD.61807410"
+            },
+            {
+                "Name": "Tencent",
+                "Version": "Data_AntivirusDetections[25]_Version",
+                "Detected": false,
+                "Result": ""
+            },
+            {
+                "Name": "Ad-Aware",
+                "Version": "Data_AntivirusDetections[26]_Version",
+                "Detected": true,
+                "Result": "Trojan.GenericKD.61807410"
+            },
+            {
+                "Name": "Emsisoft",
+                "Version": "2022.6.0.32461",
+                "Detected": true,
+                "Result": "Trojan.GenericKD.61807410 (B)"
+            },
+            {
+                "Name": "Comodo",
+                "Version": "35127",
+                "Detected": false,
+                "Result": ""
+            },
+            {
+                "Name": "F-Secure",
+                "Version": "18.10.1137.128",
+                "Detected": false,
+                "Result": ""
+            },
+            {
+                "Name": "Baidu",
+                "Version": "Data_AntivirusDetections[30]_Version",
+                "Detected": false,
+                "Result": ""
+            },
+            {
+                "Name": "VIPRE",
+                "Version": "Data_AntivirusDetections[31]_Version",
+                "Detected": true,
+                "Result": "Trojan.GenericKD.61807410"
+            },
+            {
+                "Name": "TrendMicro",
+                "Version": "11.0.0.1006",
+                "Detected": true,
+                "Result": "TROJ_FRS.0NA103K222"
+            },
+            {
+                "Name": "McAfee-GW-Edition",
+                "Version": "v2019.1.2+3728",
+                "Detected": true,
+                "Result": "JS/Agent.fd"
+            },
+            {
+                "Name": "FireEye",
+                "Version": "Data_AntivirusDetections[34]_Version",
+                "Detected": true,
+                "Result": "Trojan.GenericKD.61807410"
+            },
+            {
+                "Name": "Sophos",
+                "Version": "Data_AntivirusDetections[35]_Version",
+                "Detected": false,
+                "Result": ""
+            },
+            {
+                "Name": "Ikarus",
+                "Version": "Data_AntivirusDetections[36]_Version",
+                "Detected": false,
+                "Result": ""
+            },
+            {
+                "Name": "GData",
+                "Version": "A:25.34416B:27.29419",
+                "Detected": true,
+                "Result": "Trojan.GenericKD.61807410"
+            },
+            {
+                "Name": "Jiangmin",
+                "Version": "16.0.100",
+                "Detected": false,
+                "Result": ""
+            },
+            {
+                "Name": "Avira",
+                "Version": "Data_AntivirusDetections[39]_Version",
+                "Detected": false,
+                "Result": ""
+            },
+            {
+                "Name": "Antiy-AVL",
+                "Version": "3.0",
+                "Detected": false,
+                "Result": ""
+            },
+            {
+                "Name": "Kingsoft",
+                "Version": "2017.9.26.565",
+                "Detected": false,
+                "Result": ""
+            },
+            {
+                "Name": "Gridinsoft",
+                "Version": "Data_AntivirusDetections[42]_Version",
+                "Detected": false,
+                "Result": ""
+            },
+            {
+                "Name": "Arcabit",
+                "Version": "2022.0.0.14",
+                "Detected": true,
+                "Result": "Trojan.Generic.D3AF1B32"
+            },
+            {
+                "Name": "ViRobot",
+                "Version": "2014.3.20.0",
+                "Detected": false,
+                "Result": ""
+            },
+            {
+                "Name": "ZoneAlarm",
+                "Version": "1.0",
+                "Detected": true,
+                "Result": "HEUR:Trojan.Script.Generic"
+            },
+            {
+                "Name": "Microsoft",
+                "Version": "1.1.19700.3",
+                "Detected": true,
+                "Result": "Trojan:JS/Tnega!MSR"
+            },
+            {
+                "Name": "Google",
+                "Version": "1667584831",
+                "Detected": true,
+                "Result": "Detected"
+            },
+            {
+                "Name": "AhnLab-V3",
+                "Version": "3.22.2.10299",
+                "Detected": true,
+                "Result": "Trojan/JS.Agent"
+            },
+            {
+                "Name": "Acronis",
+                "Version": "Data_AntivirusDetections[49]_Version",
+                "Detected": false,
+                "Result": ""
+            },
+            {
+                "Name": "VBA32",
+                "Version": "5.0.0",
+                "Detected": false,
+                "Result": ""
+            },
+            {
+                "Name": "ALYac",
+                "Version": "Data_AntivirusDetections[51]_Version",
+                "Detected": true,
+                "Result": "Trojan.GenericKD.61807410"
+            },
+            {
+                "Name": "MAX",
+                "Version": "2019.9.16.1",
+                "Detected": true,
+                "Result": "malware (ai score=86)"
+            },
+            {
+                "Name": "Zoner",
+                "Version": "Data_AntivirusDetections[53]_Version",
+                "Detected": false,
+                "Result": ""
+            },
+            {
+                "Name": "Rising",
+                "Version": "Data_AntivirusDetections[54]_Version",
+                "Detected": false,
+                "Result": ""
+            },
+            {
+                "Name": "Yandex",
+                "Version": "Data_AntivirusDetections[55]_Version",
+                "Detected": false,
+                "Result": ""
+            },
+            {
+                "Name": "TACHYON",
+                "Version": "2022-11-04.02",
+                "Detected": false,
+                "Result": ""
+            },
+            {
+                "Name": "MaxSecure",
+                "Version": "Data_AntivirusDetections[57]_Version",
+                "Detected": false,
+                "Result": ""
+            },
+            {
+                "Name": "Fortinet",
+                "Version": "6.4.258.0",
+                "Detected": true,
+                "Result": "JS/Agent.BA26!tr"
+            },
+            {
+                "Name": "AVG",
+                "Version": "22.11.7701.0",
+                "Detected": true,
+                "Result": "Other:Malware-gen [Trj]"
+            },
+            {
+                "Name": "Panda",
+                "Version": "Data_AntivirusDetections[60]_Version",
+                "Detected": false,
+                "Result": ""
+            }
+        ],
+        "RelatedHashes": [
+            {
+                "Type": "MD5",
+                "Value": "b46e92ace23a026e3d1772fecb1b6b3d"
+            },
+            {
+                "Type": "SHA1",
+                "Value": "29356fb4042b8ffc66209729fb1f75a2785e7368"
+            },
+            {
+                "Type": "SHA256",
+                "Value": "2f204f3b3abc97efc74b6fa016a874f9d4addb8ac70857267cc8e4feb9dbba26"
+            }
+        ]
+    }
+}

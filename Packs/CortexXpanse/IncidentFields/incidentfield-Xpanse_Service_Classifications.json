@@ -1,0 +1,49 @@
+{
+    "id": "incident_xpanseserviceclassifications",
+    "version": -1,
+    "modified": "2023-05-26T15:58:23.420416647Z",
+    "name": "Xpanse Service Classifications",
+    "ownerOnly": false,
+    "description": "Xpanse Service Classifications",
+    "cliName": "xpanseserviceclassifications",
+    "type": "grid",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedToAll": true,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "columns": [
+        {
+            "key": "activeclassifications",
+            "displayName": "Active Classifications",
+            "type": "shortText",
+            "orgType": "shortText",
+            "required": false,
+            "script": "",
+            "width": 150,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": false,
+            "selectValues": null
+        }
+    ],
+    "defaultRows": [
+        {},
+        {},
+        {}
+    ],
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.8.0"
+}

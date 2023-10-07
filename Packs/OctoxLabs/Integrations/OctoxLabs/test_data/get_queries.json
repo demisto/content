@@ -1,0 +1,17 @@
+{
+    "count": 1,
+    "results": [
+        {
+            "id": 142,
+            "name": "cisco ise machines",
+            "text": "Adapters = cisco-ise",
+            "tags": ["cisco"],
+            "count": 3,
+            "is_public": true,
+            "created_at": "2023-02-07T12:03:40.844255Z",
+            "updated_at": "2023-02-20T07:14:31.388814Z",
+            "username": "Admin",
+            "is_temporary": false
+        }
+    ]
+}

@@ -14,35 +14,25 @@ configuration:
   type: 9
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 description: On-premise firewall by Sophos enables you to manage your firewall, respond to threats, and monitor what’s happening on your network.
 display: Sophos Firewall
 name: sophos_firewall
 script:
   commands:
   - arguments:
-    - default: false
-      defaultValue: '0'
+    - defaultValue: '0'
       description: 'The start index for the rules to list, e.g: 5. Default is "0".'
-      isArray: false
       name: start
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: 'The end index for the rules to list, e.g: 20. Default is "50".'
-      isArray: false
       name: end
-      required: false
-      secret: false
-    deprecated: false
     description: 'Lists all firewall rules. IMPORTANT: The list starts at 0 (not 1)!'
-    execution: false
     name: sophos-firewall-rule-list
     outputs:
     - contextPath: SophosFirewall.SecurityPolicy.Name
@@ -70,15 +60,10 @@ script:
       description: Rule traffic logging code.
       type: Number
   - arguments:
-    - default: false
-      description: Name of the rule to get.
-      isArray: false
+    - description: Name of the rule to get.
       name: name
       required: true
-      secret: false
-    deprecated: false
     description: Gets a single firewall rule by name.
-    execution: false
     name: sophos-firewall-rule-get
     outputs:
     - contextPath: SophosFirewall.SecurityPolicy.Name
@@ -106,44 +91,27 @@ script:
       description: Rule traffic logging code.
       type: Number
   - arguments:
-    - default: false
-      description: Name of the new rule.
-      isArray: false
+    - description: Name of the new rule.
       name: name
       required: true
-      secret: false
-    - default: false
-      description: Description of the new rule.
-      isArray: false
+    - description: Description of the new rule.
       name: description
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: Enable
       description: 'Whether to enable the new rule. Possible values: "Enable" and "Disable". Default is "Enable".'
-      isArray: false
       name: status
       predefined:
       - Enable
       - Disable
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: IPv4
       description: 'The IP family. Possible values: "IPv4" and "IPv6". Default is "IPv4".'
-      isArray: false
       name: ip_family
       predefined:
       - IPv4
       - IPv6
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'The position of the new rule in the list. Possible values: "top", "bottom", "before", and "after". If "before" or "after" is selected, you must provide a value for the position_policy_name argument.'
-      isArray: false
       name: position
       predefined:
       - top
@@ -151,25 +119,16 @@ script:
       - after
       - before
       required: true
-      secret: false
-    - default: false
-      description: 'The name of the policy that the rule should be created before or after. This argument is required when the value of the position argument is "before" or "after".'
-      isArray: false
+    - description: 'The name of the policy that the rule should be created before or after. This argument is required when the value of the position argument is "before" or "after".'
       name: position_policy_name
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'Policy type of the new rule. Possible values: "User" and "Network".'
-      isArray: false
       name: policy_type
       predefined:
       - User
       - Network
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'Source zones to add to the rule. Possible values: "Any", "LAN". "WAN", "VPN", "DMZ", and "WiFi".'
       isArray: true
       name: source_zones
@@ -180,16 +139,10 @@ script:
       - VPN
       - DMZ
       - WiFi
-      required: false
-      secret: false
-    - default: false
-      description: Source networks to add to the rule.
+    - description: Source networks to add to the rule.
       isArray: true
       name: source_networks
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'Destination zones to add to the rule. Possible values: "Any", "LAN". "WAN", "VPN", "DMZ", and "WiFi".'
       isArray: true
       name: destination_zones
@@ -200,24 +153,14 @@ script:
       - VPN
       - DMZ
       - WiFi
-      required: false
-      secret: false
-    - default: false
-      description: Destination networks to add to the rule.
+    - description: Destination networks to add to the rule.
       isArray: true
       name: destination_networks
-      required: false
-      secret: false
-    - default: false
-      description: Destination services to add to the rule.
+    - description: Destination services to add to the rule.
       isArray: true
       name: services
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'The schedule for the rule. Possible values: "All the time", "Work hours (5 Day week)", "Work hours (6 Day week)", "All Time on Weekdays", "All Time on Weekends", "All Time on Sunday", "All Days 10:00 to 19:00". IMPORTANT: Creating a new schedule is available from the web console.'
-      isArray: false
       name: schedule
       predefined:
       - All the time
@@ -227,290 +170,164 @@ script:
       - All Time on Weekends
       - All Time on Sunday
       - All Days 10:00 to 19:00
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: Disable
       description: 'Whether to enable traffic logging for the policy. Possible values: "Enable" and "Disable". Default is "Disable".'
-      isArray: false
       name: log_traffic
       predefined:
       - Enable
       - Disable
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: Disable
-      description: 'Whether to check if the specified user/user group from the\
-        \ selected zone is allowed to access the selected service. Possible values: "Enable" and "Disable". Default is "Disable". When enabling match_identity, the members argument is required.'
-      isArray: false
+      description: 'Whether to check if the specified user/user group from the\ \ selected zone is allowed to access the selected service. Possible values: "Enable" and "Disable". Default is "Disable". When enabling match_identity, the members argument is required.'
       name: match_identity
       predefined:
       - Enable
       - Disable
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: Disable
-      description: 'Whether to accept traffic from unknown users. The captive portal page\
-        \ is displayed to the user where the user can log in to access the Internet.\
-        \ Possible values: "Enable" and "Disable". Default is "Disable". To enable this argument, the match_identity argument must be enabled and the value of the policy_type is "User".'
-      isArray: false
+      description: 'Whether to accept traffic from unknown users. The captive portal page\ \ is displayed to the user where the user can log in to access the Internet.\ \ Possible values: "Enable" and "Disable". Default is "Disable". To enable this argument, the match_identity argument must be enabled and the value of the policy_type is "User".'
       name: show_captive_portal
       predefined:
       - Enable
       - Disable
-      required: false
-      secret: false
-    - default: false
-      description: An existing user(s) or group(s) to add to the rule. This argument is required when match_identity is enabled.
+    - description: An existing user(s) or group(s) to add to the rule. This argument is required when match_identity is enabled.
       isArray: true
       name: members
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: Drop
       description: 'Action for the rule traffic. Possible values: "Accept", "Reject", and "Drop". Default is "Drop".'
-      isArray: false
       name: action
       predefined:
       - Accept
       - Reject
       - Drop
-      required: false
-      secret: false
-    - default: false
-      description: The DSCP marking level to classify the flow of packets based on the Traffic Shaping policy.
-      isArray: false
+    - description: The DSCP marking level to classify the flow of packets based on the Traffic Shaping policy.
       name: dscp_marking
-      required: false
-      secret: false
-    - default: false
-      description: The primary gateway. Applicable only in case of multiple gateways.
-      isArray: false
+    - description: The primary gateway. Applicable only in case of multiple gateways.
       name: primary_gateway
-      required: false
-      secret: false
-    - default: false
-      description: The backup gateway. Applicable only in case of multiple gateways.
-      isArray: false
+    - description: The backup gateway. Applicable only in case of multiple gateways.
       name: backup_gateway
-      required: false
-      secret: false
-    - default: false
-      defaultValue: Allow All
+    - defaultValue: Allow All
       description: The Application Filter policy for the rule. Default is "Allow All".
-      isArray: false
       name: application_control
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: Revoke
-      description: 'Whether to limit the bandwidth for the applications categorized\
-        \ under the Application category. This tag is only applicable when\
-        \ an application_control is selected. Possible values: "Apply" and "Revoke". Default is "Revoke".'
-      isArray: false
+      description: 'Whether to limit the bandwidth for the applications categorized\ \ under the Application category. This tag is only applicable when\ \ an application_control is selected. Possible values: "Apply" and "Revoke". Default is "Revoke".'
       name: application_based_qos_policy
       predefined:
       - Apply
       - Revoke
-      required: false
-      secret: false
-    - default: false
-      defaultValue: Allow All
+    - defaultValue: Allow All
       description: The Web Filter policy for the rule. Default is "Allow All".
-      isArray: false
       name: web_filter
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: Revoke
-      description: 'Whether to limit the bandwidth for the URLs categorized under the Web\
-        \ category. This tag is only applicable when a web_filter is defined." Possible values: "Apply" and "Revoke". Default is "Revoke".'
-      isArray: false
+      description: 'Whether to limit the bandwidth for the URLs categorized under the Web\ \ category. This tag is only applicable when a web_filter is defined." Possible values: "Apply" and "Revoke". Default is "Revoke".'
       name: web_category_base_qos_policy
       predefined:
       - Apply
       - Revoke
-      required: false
-      secret: false
-    - default: false
-      defaultValue: None
+    - defaultValue: None
       description: The Traffic Shaping policy for the rule. Default is "None".
-      isArray: false
       name: traffic_shaping_policy
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: Disable
       description: 'Whether to enable virus and spam scanning for the HTTP protocol. Possible values: "Enable" and "Disable". Default is "Disable".'
-      isArray: false
       name: scan_http
       predefined:
       - Enable
       - Disable
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: Disable
       description: 'Whether to enable virus and spam scanning for the HTTPS protocol. Possible values: "Enable" and "Disable". Default is "Disable".'
-      isArray: false
       name: scan_https
       predefined:
       - Enable
       - Disable
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: Disable
       description: 'Whether to enable sandstorm analysis. Possible values: "Enable" and "Disable". Default is "Disable".'
-      isArray: false
       name: sandstorm
       predefined:
       - Enable
       - Disable
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: Disable
       description: 'Whether to enable Google websites to use HTTP/s instead of QUICK QUIC. Possible values: "Enable" and "Disable". Default is "Disable".'
-      isArray: false
       name: block_quick_quic
       predefined:
       - Enable
       - Disable
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: Disable
       description: 'Whether to enable scanning of FTP traffic. Possible values: "Enable" and "Disable". Default is "Disable".'
-      isArray: false
       name: scan_ftp
       predefined:
       - Enable
       - Disable
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: Disable
-      description: 'Whether to exclude a user''s network traffic from data accounting.
-        This option is available only if the match_identity argument is enabled. Possible values: "Enable" and "Disable". Default is "Disable".'
-      isArray: false
+      description: 'Whether to exclude a user''s network traffic from data accounting. This option is available only if the match_identity argument is enabled. Possible values: "Enable" and "Disable". Default is "Disable".'
       name: data_accounting
       predefined:
       - Enable
       - Disable
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: Enable
       description: 'Whether to enable the NAT policy. Possible values: "Enable" and "Disable". Default is "Enable".'
-      isArray: false
       name: rewrite_source_address
       predefined:
       - Enable
       - Disable
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: Disable
       description: 'Whether to enable the Internet scheme to apply the user-based Web Filter policy for the rule. Possible values: "Enable" and "Disable". Default is "Disable".'
-      isArray: false
       name: web_filter_internet_scheme
       predefined:
       - Enable
       - Disable
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: Disable
       description: 'Whether to enable the Internet scheme to apply user-based Application Filter policy for the rule. Possible values: "Enable" and "Disable". Default is "Disable".'
-      isArray: false
       name: application_control_internet_scheme
       predefined:
       - Enable
       - Disable
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: Disable
       description: 'Whether to override the gateway of the default NAT policy. Possible values: "Enable" and "Disable". Default is "Disable".'
-      isArray: false
       name: override_gateway_default_nat_policy
       predefined:
       - Enable
       - Disable
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: Disable
       description: 'Whether to enable the source security heartbeat. Possible values: "Enable" and "Disable". Default is "Disable".'
-      isArray: false
       name: source_security_heartbeat
       predefined:
       - Enable
       - Disable
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: Disable
       description: 'Whether to enable the destination security heartbeat. Possible values: "Enable" and "Disable". Default is "Disable".'
-      isArray: false
       name: destination_security_heartbeat
       predefined:
       - Enable
       - Disable
-      required: false
-      secret: false
-    - default: false
-      defaultValue: MASQ
+    - defaultValue: MASQ
       description: The NAT policy to apply. Default is "MASQ".
-      isArray: false
       name: outbound_address
-      required: false
-      secret: false
-    - default: false
-      defaultValue: No Restriction
+    - defaultValue: No Restriction
       description: The minimum source health status permitted. Default is "No Restriction".
-      isArray: false
       name: minimum_source_hb_permitted
-      required: false
-      secret: false
-    - default: false
-      defaultValue: No Restriction
+    - defaultValue: No Restriction
       description: The minimum destination health status permitted. Default is "No Restriction".
-      isArray: false
       name: minimum_destination_hb_permitted
-      required: false
-      secret: false
-    - default: false
-      defaultValue: generalpolicy
+    - defaultValue: generalpolicy
       description: The IPS policy for the rule. Default is "generalpolicy".
-      isArray: false
       name: intrusion_prevention
-      required: false
-      secret: false
-    deprecated: false
     description: Adds a new firewall rule.
-    execution: false
     name: sophos-firewall-rule-add
     outputs:
     - contextPath: SophosFirewall.SecurityPolicy.Name
@@ -538,70 +355,42 @@ script:
       description: Rule traffic logging code.
       type: Number
   - arguments:
-    - default: false
-      description: Name of the new rule.
-      isArray: false
+    - description: Name of the new rule.
       name: name
       required: true
-      secret: false
-    - default: false
-      description: Description of the new rule.
-      isArray: false
+    - description: Description of the new rule.
       name: description
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: Enable
       description: 'Whether the rule is enabled. Possible values: "Enable" and "Disable". Default is "Enable".'
-      isArray: false
       name: status
       predefined:
       - Enable
       - Disable
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: IPv4
       description: 'The IP family. Possible values: "IPv4" and "IPv6". Default is "IPv4".'
-      isArray: false
       name: ip_family
       predefined:
       - IPv4
       - IPv6
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'The position of the new rule in the list. Possible values: "top", "bottom", "before", and "after". If "before" or "after" is selected, you must provide a value for the position_policy_name argument.'
-      isArray: false
       name: position
       predefined:
       - top
       - bottom
       - after
       - before
-      required: false
-      secret: false
-    - default: false
-      description: 'The name of the policy that the rule should be created before or after. This argument is required when the value of the position argument is "before" or "after".'
-      isArray: false
+    - description: 'The name of the policy that the rule should be created before or after. This argument is required when the value of the position argument is "before" or "after".'
       name: position_policy_name
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'Policy type of the new rule. Possible values: "User" and "Network".'
-      isArray: false
       name: policy_type
       predefined:
       - User
       - Network
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'Source zones to add to the rule. Possible values: "Any", "LAN". "WAN", "VPN", "DMZ", and "WiFi".'
       isArray: true
       name: source_zones
@@ -612,16 +401,10 @@ script:
       - VPN
       - DMZ
       - WiFi
-      required: false
-      secret: false
-    - default: false
-      description: Source networks to add to the rule.
+    - description: Source networks to add to the rule.
       isArray: true
       name: source_networks
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'Destination zones to add to the rule. Possible values: "Any", "LAN". "WAN", "VPN", "DMZ", and "WiFi".'
       isArray: true
       name: destination_zones
@@ -632,24 +415,14 @@ script:
       - VPN
       - DMZ
       - WiFi
-      required: false
-      secret: false
-    - default: false
-      description: Destination networks to add to the rule.
+    - description: Destination networks to add to the rule.
       isArray: true
       name: destination_networks
-      required: false
-      secret: false
-    - default: false
-      description: Destination services to add to the rule.
+    - description: Destination services to add to the rule.
       isArray: true
       name: services
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'The schedule for the rule. Possible values: "All the time", "Work hours (5 Day week)", "Work hours (6 Day week)", "All Time on Weekdays", "All Time on Weekends", "All Time on Sunday", "All Days 10:00 to 19:00". IMPORTANT: Creating a new schedule is available in the web console.'
-      isArray: false
       name: schedule
       predefined:
       - All the time
@@ -659,290 +432,164 @@ script:
       - All Time on Weekends
       - All Time on Sunday
       - All Days 10:00 to 19:00
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: Disable
       description: 'Whether to enable traffic logging for the policy. Possible values: "Enable" and "Disable". Default is "Disable".'
-      isArray: false
       name: log_traffic
       predefined:
       - Enable
       - Disable
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: Disable
-      description: 'Whether to check if the specified user/user group from the\
-        \ selected zone is allowed to access the selected service. Possible values: "Enable" and "Disable". Default is "Disable". IMPORTANT: When enabling match_identity, the members argument is required.'
-      isArray: false
+      description: 'Whether to check if the specified user/user group from the\ \ selected zone is allowed to access the selected service. Possible values: "Enable" and "Disable". Default is "Disable". IMPORTANT: When enabling match_identity, the members argument is required.'
       name: match_identity
       predefined:
       - Enable
       - Disable
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: Disable
-      description: 'Whether to accept traffic from unknown users. The captive portal page\
-        \ is displayed to the user where the user can log in to access the Internet.\
-        \ Possible values: "Enable" and "Disable". Default is "Disable". To enable this argument, the match_identity argument must be enabled and the value of the policy_type is "User".'
-      isArray: false
+      description: 'Whether to accept traffic from unknown users. The captive portal page\ \ is displayed to the user where the user can log in to access the Internet.\ \ Possible values: "Enable" and "Disable". Default is "Disable". To enable this argument, the match_identity argument must be enabled and the value of the policy_type is "User".'
       name: show_captive_portal
       predefined:
       - Enable
       - Disable
-      required: false
-      secret: false
-    - default: false
-      description: An existing user(s) or group(s) to add to the rule. This argument is required  when match_identity is enabled.
+    - description: An existing user(s) or group(s) to add to the rule. This argument is required  when match_identity is enabled.
       isArray: true
       name: members
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: Drop
       description: 'Action for the rule traffic. Possible values: "Accept", "Reject", and "Drop". Default is "Drop".'
-      isArray: false
       name: action
       predefined:
       - Accept
       - Reject
       - Drop
-      required: false
-      secret: false
-    - default: false
-      description: The DSCP marking level to classify the flow of packets based on the Traffic Shaping policy.
-      isArray: false
+    - description: The DSCP marking level to classify the flow of packets based on the Traffic Shaping policy.
       name: dscp_marking
-      required: false
-      secret: false
-    - default: false
-      description: The primary gateway. Applicable only in case of multiple gateways.
-      isArray: false
+    - description: The primary gateway. Applicable only in case of multiple gateways.
       name: primary_gateway
-      required: false
-      secret: false
-    - default: false
-      description: The backup gateway. Applicable only in case of multiple gateways.
-      isArray: false
+    - description: The backup gateway. Applicable only in case of multiple gateways.
       name: backup_gateway
-      required: false
-      secret: false
-    - default: false
-      defaultValue: Allow All
+    - defaultValue: Allow All
       description: The Application Filter policy for the rule. Default is "Allow All".
-      isArray: false
       name: application_control
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: Revoke
-      description: 'Whether to limit the bandwidth for the applications categorized\
-        \ under the Application category. This tag is only applicable when\
-        \ an application_control is selected. Possible values: "Apply" and "Revoke". Default is "Revoke".'
-      isArray: false
+      description: 'Whether to limit the bandwidth for the applications categorized\ \ under the Application category. This tag is only applicable when\ \ an application_control is selected. Possible values: "Apply" and "Revoke". Default is "Revoke".'
       name: application_based_qos_policy
       predefined:
       - Apply
       - Revoke
-      required: false
-      secret: false
-    - default: false
-      defaultValue: Allow All
+    - defaultValue: Allow All
       description: The Web Filter policy for the rule. Default is "Allow All".
-      isArray: false
       name: web_filter
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: Revoke
-      description: 'Whether to limit the bandwidth for the URLs categorized under the Web\
-        \ category. This tag is only applicable when a web_filter is defined." Possible values: "Apply" and "Revoke". Default is "Revoke".'
-      isArray: false
+      description: 'Whether to limit the bandwidth for the URLs categorized under the Web\ \ category. This tag is only applicable when a web_filter is defined." Possible values: "Apply" and "Revoke". Default is "Revoke".'
       name: web_category_base_qos_policy
       predefined:
       - Apply
       - Revoke
-      required: false
-      secret: false
-    - default: false
-      defaultValue: None
+    - defaultValue: None
       description: The Traffic Shaping policy for the rule. Default is "None".
-      isArray: false
       name: traffic_shaping_policy
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: Disable
       description: 'Whether to enable virus and spam scanning for HTTP protocol. Possible values: "Enable" and "Disable". Default is "Disable".'
-      isArray: false
       name: scan_http
       predefined:
       - Enable
       - Disable
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: Disable
       description: 'Whether to enable virus and spam scanning for HTTPS protocol. Possible values: "Enable" and "Disable". Default is "Disable".'
-      isArray: false
       name: scan_https
       predefined:
       - Enable
       - Disable
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: Disable
       description: 'Whether to enable sandstorm analysis. Possible values: "Enable" and "Disable". Default is "Disable".'
-      isArray: false
       name: sandstorm
       predefined:
       - Enable
       - Disable
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: Disable
       description: 'Whether to enable Google websites to use HTTP/s instead of QUICK QUIC. Possible values: "Enable" and "Disable". Default is "Disable".'
-      isArray: false
       name: block_quick_quic
       predefined:
       - Enable
       - Disable
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: Disable
       description: 'Whether to enable scanning of FTP traffic. Possible values: "Enable" and "Disable". Default is "Disable".'
-      isArray: false
       name: scan_ftp
       predefined:
       - Enable
       - Disable
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: Disable
-      description: 'Whether to exclude a user''s network traffic from data accounting.
-        This option is available only if the match_identity argument is enabled. Possible values: "Enable" and "Disable". Default is "Disable".'
-      isArray: false
+      description: 'Whether to exclude a user''s network traffic from data accounting. This option is available only if the match_identity argument is enabled. Possible values: "Enable" and "Disable". Default is "Disable".'
       name: data_accounting
       predefined:
       - Enable
       - Disable
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: Enable
       description: 'Whether to enable the NAT policy. Possible values: "Enable" and "Disable". Default is "Enable".'
-      isArray: false
       name: rewrite_source_address
       predefined:
       - Enable
       - Disable
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: Disable
-      description: 'Whether to enable the Internet scheme to apply the user-based Web Filter policy for the rule. Possible values: "Enable" and "Disable". Default is "Disable".' 
-      isArray: false
+      description: 'Whether to enable the Internet scheme to apply the user-based Web Filter policy for the rule. Possible values: "Enable" and "Disable". Default is "Disable".'
       name: web_filter_internet_scheme
       predefined:
       - Enable
       - Disable
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: Disable
       description: 'Whether to enable the Internet scheme to apply user-based Application Filter Policy for the rule. Possible values: "Enable" and "Disable". Default is "Disable".'
-      isArray: false
       name: application_control_internet_scheme
       predefined:
       - Enable
       - Disable
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: Disable
       description: 'Whether to override the gateway of the default NAT policy. Possible values: "Enable" and "Disable". Default is "Disable".'
-      isArray: false
       name: override_gateway_default_nat_policy
       predefined:
       - Enable
       - Disable
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: Disable
       description: 'Whether to enable the source security heartbeat. Possible values: "Enable" and "Disable". Default is "Disable".'
-      isArray: false
       name: source_security_heartbeat
       predefined:
       - Enable
       - Disable
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: Disable
       description: 'Whether to enable the destination security heartbeat. Possible values: "Enable" and "Disable". Default is "Disable".'
-      isArray: false
       name: destination_security_heartbeat
       predefined:
       - Enable
       - Disable
-      required: false
-      secret: false
-    - default: false
-      defaultValue: MASQ
+    - defaultValue: MASQ
       description: The NAT policy to be applied. Default is "MASQ".
-      isArray: false
       name: outbound_address
-      required: false
-      secret: false
-    - default: false
-      defaultValue: No Restriction
+    - defaultValue: No Restriction
       description: The minimum source health status permitted. Default is "No Restriction".
-      isArray: false
       name: minimum_source_hb_permitted
-      required: false
-      secret: false
-    - default: false
-      defaultValue: No Restriction
+    - defaultValue: No Restriction
       description: The minimum destination health status permitted. Default is "No Restriction".
-      isArray: false
       name: minimum_destination_hb_permitted
-      required: false
-      secret: false
-    - default: false
-      defaultValue: generalpolicy
+    - defaultValue: generalpolicy
       description: The IPS policy for the rule. Default is "generalpolicy".
-      isArray: false
       name: intrusion_prevention
-      required: false
-      secret: false
-    deprecated: false
     description: Updates an existing firewall rule.
-    execution: false
     name: sophos-firewall-rule-update
     outputs:
     - contextPath: SophosFirewall.SecurityPolicy.Name
@@ -970,15 +617,10 @@ script:
       description: Rule traffic logging code.
       type: Number
   - arguments:
-    - default: false
-      description: Name of the rule.
-      isArray: false
+    - description: Name of the rule.
       name: name
       required: true
-      secret: false
-    deprecated: false
     description: Deletes an existing firewall rule.
-    execution: false
     name: sophos-firewall-rule-delete
     outputs:
     - contextPath: SophosFirewall.SecurityPolicy.Name
@@ -988,23 +630,13 @@ script:
       description: Whether the rule is deleted.
       type: Bool
   - arguments:
-    - default: false
-      defaultValue: '0'
+    - defaultValue: '0'
       description: 'The start index for the rules to list, e.g: 5. Default is "0".'
-      isArray: false
       name: start
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: 'The end index for the rules to list, e.g: 20. Default is "50".'
-      isArray: false
       name: end
-      required: false
-      secret: false
-    deprecated: false
     description: 'Lists all firewall rule groups. IMPORTANT: The list starts at 0 (not 1)!'
-    execution: false
     name: sophos-firewall-rule-group-list
     outputs:
     - contextPath: SophosFirewall.SecurityPolicyGroup.Name
@@ -1026,15 +658,9 @@ script:
       description: Type of the rules in the group.
       type: Number
   - arguments:
-    - default: false
-      description: Name of the firewall rule group.
-      isArray: false
+    - description: Name of the firewall rule group.
       name: name
-      required: false
-      secret: false
-    deprecated: false
     description: Gets a single firewall rule group by name.
-    execution: false
     name: sophos-firewall-rule-group-get
     outputs:
     - contextPath: SophosFirewall.SecurityPolicyGroup.Name
@@ -1056,22 +682,13 @@ script:
       description: Type of the rules in the group.
       type: Number
   - arguments:
-    - default: false
-      description: Name of the rule group.
-      isArray: false
+    - description: Name of the rule group.
       name: name
       required: true
-      secret: false
-    - default: false
-      description: Description of the rule group.
-      isArray: false
+    - description: Description of the rule group.
       name: description
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'Type of the rules (policies) inside the group. Possible values: "Any", "User/network rule", "User rule", and "Business application rule".'
-      isArray: false
       name: policy_type
       predefined:
       - Any
@@ -1079,16 +696,10 @@ script:
       - Network rule
       - User rule
       - Business application rule
-      required: false
-      secret: false
-    - default: false
-      description: Rules contained in the group.
+    - description: Rules contained in the group.
       isArray: true
       name: rules
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'Source zones contained in the group. Possible values: "Any", "LAN", "WAN", "VPN", "DMZ", and "WiFi.'
       isArray: true
       name: source_zones
@@ -1099,10 +710,7 @@ script:
       - VPN
       - DMZ
       - WiFi
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'Destination zones contained in the group. Possible values: "Any", "LAN", "WAN", "VPN", "DMZ", and "WiFi.'
       isArray: true
       name: destination_zones
@@ -1113,11 +721,7 @@ script:
       - VPN
       - DMZ
       - WiFi
-      required: false
-      secret: false
-    deprecated: false
     description: Adds a new firewall rule group.
-    execution: false
     name: sophos-firewall-rule-group-add
     outputs:
     - contextPath: SophosFirewall.SecurityPolicyGroup.Name
@@ -1139,22 +743,13 @@ script:
       description: Type of the rules in the group.
       type: Number
   - arguments:
-    - default: false
-      description: Name of the rule group.
-      isArray: false
+    - description: Name of the rule group.
       name: name
       required: true
-      secret: false
-    - default: false
-      description: Description of the rule group.
-      isArray: false
+    - description: Description of the rule group.
       name: description
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'Type of the rules (policies) inside the group. Possible values: "Any", "User/network rule", "User rule", and "Business application rule".'
-      isArray: false
       name: policy_type
       predefined:
       - Any
@@ -1162,16 +757,10 @@ script:
       - Network rule
       - User rule
       - Business application rule
-      required: false
-      secret: false
-    - default: false
-      description: Rules contained in the group.
+    - description: Rules contained in the group.
       isArray: true
       name: rules
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'Source zones contained in the group. Possible values: "Any", "LAN", "WAN", "VPN", "DMZ", and "WiFi.'
       isArray: true
       name: source_zones
@@ -1182,10 +771,7 @@ script:
       - VPN
       - DMZ
       - WiFi
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'Destination zones contained in the group. Possible values: "Any", "LAN", "WAN", "VPN", "DMZ", and "WiFi.'
       isArray: true
       name: destination_zones
@@ -1196,11 +782,7 @@ script:
       - VPN
       - DMZ
       - WiFi
-      required: false
-      secret: false
-    deprecated: false
     description: Updates an existing firewall rule group.
-    execution: false
     name: sophos-firewall-rule-group-update
     outputs:
     - contextPath: SophosFirewall.SecurityPolicyGroup.Name
@@ -1222,15 +804,10 @@ script:
       description: Type of the rules in the group.
       type: Number
   - arguments:
-    - default: false
-      description: Name of the group.
-      isArray: false
+    - description: Name of the group.
       name: name
       required: true
-      secret: false
-    deprecated: false
     description: Deletes an existing firewall group.
-    execution: false
     name: sophos-firewall-rule-group-delete
     outputs:
     - contextPath: SophosFirewall.SecurityPolicyGroup.Name
@@ -1240,23 +817,13 @@ script:
       description: Whether the group is deleted.
       type: Bool
   - arguments:
-    - default: false
-      defaultValue: '0'
+    - defaultValue: '0'
       description: 'The start index for the rules to list, e.g: 5. Default is "0".'
-      isArray: false
       name: start
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: 'The end index for the rules to list, e.g: 20. Default is "50".'
-      isArray: false
       name: end
-      required: false
-      secret: false
-    deprecated: false
     description: 'Lists all URL groups. IMPORTANT: The list starts at 0 (not 1)!'
-    execution: false
     name: sophos-firewall-url-group-list
     outputs:
     - contextPath: SophosFirewall.WebFilterURLGroup.Name
@@ -1269,15 +836,11 @@ script:
       description: URL contained in the group.
       type: String
   - arguments:
-    - default: false
-      description: Name of the group.
+    - description: Name of the group.
       isArray: true
       name: name
       required: true
-      secret: false
-    deprecated: false
     description: Gets a single URL group by name.
-    execution: false
     name: sophos-firewall-url-group-get
     outputs:
     - contextPath: SophosFirewall.WebFilterURLGroup.Name
@@ -1290,27 +853,17 @@ script:
       description: URL contained in the group.
       type: String
   - arguments:
-    - default: false
-      description: Name of the group.
+    - description: Name of the group.
       isArray: true
       name: name
       required: true
-      secret: false
-    - default: false
-      description: Description of the group.
-      isArray: false
+    - description: Description of the group.
       name: description
-      required: false
-      secret: false
-    - default: false
-      description: Comma-separated list of URLs to add to the group.
+    - description: Comma-separated list of URLs to add to the group.
       isArray: true
       name: urls
       required: true
-      secret: false
-    deprecated: false
     description: Adds new URLs to the group.
-    execution: false
     name: sophos-firewall-url-group-add
     outputs:
     - contextPath: SophosFirewall.WebFilterURLGroup.Name
@@ -1323,27 +876,16 @@ script:
       description: URL contained in the group.
       type: String
   - arguments:
-    - default: false
-      description: Name of the group.
+    - description: Name of the group.
       isArray: true
       name: name
       required: true
-      secret: false
-    - default: false
-      description: Description of the group.
-      isArray: false
+    - description: Description of the group.
       name: description
-      required: false
-      secret: false
-    - default: false
-      description: Comma-separated list of URLs to add to the group.
+    - description: Comma-separated list of URLs to add to the group.
       isArray: true
       name: urls
-      required: false
-      secret: false
-    deprecated: false
     description: Updates an existing URL group.
-    execution: false
     name: sophos-firewall-url-group-update
     outputs:
     - contextPath: SophosFirewall.WebFilterURLGroup.Name
@@ -1356,15 +898,11 @@ script:
       description: URL contained in the group.
       type: String
   - arguments:
-    - default: false
-      description: Name of the group(s).
+    - description: Name of the group(s).
       isArray: true
       name: name
       required: true
-      secret: false
-    deprecated: false
     description: Deletes an existing URL group or groups.
-    execution: false
     name: sophos-firewall-url-group-delete
     outputs:
     - contextPath: SophosFirewall.WebFilterURLGroup.Name
@@ -1374,23 +912,13 @@ script:
       description: Whether the URL group is deleted.
       type: Bool
   - arguments:
-    - default: false
-      defaultValue: '0'
+    - defaultValue: '0'
       description: 'The start index for the rules to list, e.g: 5. Default is "0".'
-      isArray: false
       name: start
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: 'The end index for the rules to list, e.g: 20. Default is "50".'
-      isArray: false
       name: end
-      required: false
-      secret: false
-    deprecated: false
     description: 'Lists all IP hosts. IMPORTANT: The list starts at 0 (not 1)!'
-    execution: false
     name: sophos-firewall-ip-host-list
     outputs:
     - contextPath: SophosFirewall.IPHost.Name
@@ -1403,15 +931,10 @@ script:
       description: Type of the host.
       type: String
   - arguments:
-    - default: false
-      description: Name of the IP host.
-      isArray: false
+    - description: Name of the IP host.
       name: name
       required: true
-      secret: false
-    deprecated: false
     description: Gets a single IP host by name.
-    execution: false
     name: sophos-firewall-ip-host-get
     outputs:
     - contextPath: SophosFirewall.IPHost.Name
@@ -1424,16 +947,11 @@ script:
       description: Type of the host.
       type: String
   - arguments:
-    - default: false
-      description: Name of the IP host.
-      isArray: false
+    - description: Name of the IP host.
       name: name
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'Type of the host. Possible values: "IP", "Network", "IPRange", and "IPList".'
-      isArray: false
       name: host_type
       predefined:
       - IP
@@ -1441,57 +959,28 @@ script:
       - IPRange
       - IPList
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: IPv4
       description: 'The IP family. Possible values: "IPv4" and "IPv6". Default is "IPv4".'
-      isArray: false
       name: ip_family
       predefined:
       - IPv4
       - IPv6
-      required: false
-      secret: false
-    - default: false
-      description: IP address if IP or Network was the chosen host_type.
-      isArray: false
+    - description: IP address if IP or Network was the chosen host_type.
       name: ip_address
-      required: false
-      secret: false
-    - default: false
-      description: Subnet mask if Network was the chosen host_type.
-      isArray: false
+    - description: Subnet mask if Network was the chosen host_type.
       name: subnet_mask
-      required: false
-      secret: false
-    - default: false
-      description: Start of the IP range if IPRange was the chosen host_type.
-      isArray: false
+    - description: Start of the IP range if IPRange was the chosen host_type.
       name: start_ip
-      required: false
-      secret: false
-    - default: false
-      description: End of the IP range if IPRange was the chosen host_type.
-      isArray: false
+    - description: End of the IP range if IPRange was the chosen host_type.
       name: end_ip
-      required: false
-      secret: false
-    - default: false
-      description: List of IP addresses if IPList was the chosen host_type.
+    - description: List of IP addresses if IPList was the chosen host_type.
       isArray: true
       name: ip_addresses
-      required: false
-      secret: false
-    - default: false
-      description: Select the host group to which the host belongs.
+    - description: Select the host group to which the host belongs.
       isArray: true
       name: host_group
-      required: false
-      secret: false
-    deprecated: false
     description: Adds a new IP host.
-    execution: false
     name: sophos-firewall-ip-host-add
     outputs:
     - contextPath: SophosFirewall.IPHost.Name
@@ -1504,74 +993,39 @@ script:
       description: Type of the host.
       type: String
   - arguments:
-    - default: false
-      description: Name of the IP host.
-      isArray: false
+    - description: Name of the IP host.
       name: name
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'Type of the host. Possible values: "IP", "Network", "IPRange", and "IPList".'
-      isArray: false
       name: host_type
       predefined:
       - IP
       - Network
       - IPRange
       - IPList
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: IPv4
       description: 'The IP family. Possible values: "IPv4" and "IPv6". Default is "IPv4".'
-      isArray: false
       name: ip_family
       predefined:
       - IPv4
       - IPv6
-      required: false
-      secret: false
-    - default: false
-      description: IP address if IP or Network was the chosen host_type.
-      isArray: false
+    - description: IP address if IP or Network was the chosen host_type.
       name: ip_address
-      required: false
-      secret: false
-    - default: false
-      description: Subnet mask if Network was the chosen host_type.
-      isArray: false
+    - description: Subnet mask if Network was the chosen host_type.
       name: subnet_mask
-      required: false
-      secret: false
-    - default: false
-      description: Start of the IP range if IPRange was the chosen host_type.
-      isArray: false
+    - description: Start of the IP range if IPRange was the chosen host_type.
       name: start_ip
-      required: false
-      secret: false
-    - default: false
-      description: End of the IP range if IPRange was the chosen host_type.
-      isArray: false
+    - description: End of the IP range if IPRange was the chosen host_type.
       name: end_ip
-      required: false
-      secret: false
-    - default: false
-      description: List of IP addresses if IPList was the chosen host_type.
+    - description: List of IP addresses if IPList was the chosen host_type.
       isArray: true
       name: ip_addresses
-      required: false
-      secret: false
-    - default: false
-      description: Select the host group to which the host belongs.
+    - description: Select the host group to which the host belongs.
       isArray: true
       name: host_group
-      required: false
-      secret: false
-    deprecated: false
     description: Updates an existing IP host.
-    execution: false
     name: sophos-firewall-ip-host-update
     outputs:
     - contextPath: SophosFirewall.IPHost.Name
@@ -1584,15 +1038,10 @@ script:
       description: Type of the host.
       type: String
   - arguments:
-    - default: false
-      description: Name of the host.
-      isArray: false
+    - description: Name of the host.
       name: name
       required: true
-      secret: false
-    deprecated: false
     description: Deletes an existing IP host.
-    execution: false
     name: sophos-firewall-ip-host-delete
     outputs:
     - contextPath: SophosFirewall.IPHost.Name
@@ -1602,23 +1051,13 @@ script:
       description: Whether the IP host is deleted.
       type: Bool
   - arguments:
-    - default: false
-      defaultValue: '0'
+    - defaultValue: '0'
       description: 'The start index for the rules to list, e.g: 5. Default is "0".'
-      isArray: false
       name: start
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: 'The end index for the rules to list, e.g: 20. Default is "50".'
-      isArray: false
       name: end
-      required: false
-      secret: false
-    deprecated: false
     description: 'Lists all IP host groups. IMPORTANT: The list starts at 0 (not 1)!'
-    execution: false
     name: sophos-firewall-ip-host-group-list
     outputs:
     - contextPath: SophosFirewall.IPHostGroup.Name
@@ -1634,15 +1073,10 @@ script:
       description: IP family of the host group. Either IPv4 or IPv6.
       type: String
   - arguments:
-    - default: false
-      description: Name of the IP host group.
-      isArray: false
+    - description: Name of the IP host group.
       name: name
       required: true
-      secret: false
-    deprecated: false
     description: Gets a single IP host group by name.
-    execution: false
     name: sophos-firewall-ip-host-group-get
     outputs:
     - contextPath: SophosFirewall.IPHostGroup.Name
@@ -1658,37 +1092,21 @@ script:
       description: IP family of the host group. Either IPv4 or IPv6.
       type: String
   - arguments:
-    - default: false
-      description: Name of the IP host group.
-      isArray: false
+    - description: Name of the IP host group.
       name: name
       required: true
-      secret: false
-    - default: false
-      description: Description of the IP host group.
-      isArray: false
+    - description: Description of the IP host group.
       name: description
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'The IP family. Possible values: "IPv4" and "IPv6".'
-      isArray: false
       name: ip_family
       predefined:
       - IPv4
       - IPv6
-      required: false
-      secret: false
-    - default: false
-      description: IP hosts contained in the group. Must be hosts that exist in the system.
+    - description: IP hosts contained in the group. Must be hosts that exist in the system.
       isArray: true
       name: hosts
-      required: false
-      secret: false
-    deprecated: false
     description: Adds a new IP host group.
-    execution: false
     name: sophos-firewall-ip-host-group-add
     outputs:
     - contextPath: SophosFirewall.IPHostGroup.Name
@@ -1704,37 +1122,21 @@ script:
       description: IP family of the host group. Either IPv4 or IPv6.
       type: String
   - arguments:
-    - default: false
-      description: Name of the IP host group.
-      isArray: false
+    - description: Name of the IP host group.
       name: name
       required: true
-      secret: false
-    - default: false
-      description: Description of the IP host group.
-      isArray: false
+    - description: Description of the IP host group.
       name: description
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'The IP family. Possible values: "IPv4" and "IPv6".'
-      isArray: false
       name: ip_family
       predefined:
       - IPv4
       - IPv6
-      required: false
-      secret: false
-    - default: false
-      description: IP hosts contained in the group. Must be hosts that exist in the system.
+    - description: IP hosts contained in the group. Must be hosts that exist in the system.
       isArray: true
       name: hosts
-      required: false
-      secret: false
-    deprecated: false
     description: Updates an existing IP host group.
-    execution: false
     name: sophos-firewall-ip-host-group-update
     outputs:
     - contextPath: SophosFirewall.IPHostGroup.Name
@@ -1750,15 +1152,10 @@ script:
       description: IP family of the host group. Either IPv4 or IPv6.
       type: String
   - arguments:
-    - default: false
-      description: Name of the group.
-      isArray: false
+    - description: Name of the group.
       name: name
       required: true
-      secret: false
-    deprecated: false
     description: Deletes an existing IP host group.
-    execution: false
     name: sophos-firewall-ip-host-group-delete
     outputs:
     - contextPath: SophosFirewall.IPHostGroup.Name
@@ -1768,23 +1165,13 @@ script:
       description: Whether the IP host group is deleted.
       type: Bool
   - arguments:
-    - default: false
-      defaultValue: '0'
+    - defaultValue: '0'
       description: 'The start index for the rules to list, e.g: 5. Default is "0".'
-      isArray: false
       name: start
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: 'The end index for the rules to list, e.g: 20. Default is "50".'
-      isArray: false
       name: end
-      required: false
-      secret: false
-    deprecated: false
     description: 'Lists all firewall services. IMPORTANT: The list starts at 0 (not 1)!'
-    execution: false
     name: sophos-firewall-services-list
     outputs:
     - contextPath: SophosFirewall.Services.Name
@@ -1797,15 +1184,10 @@ script:
       description: Details about the service.
       type: String
   - arguments:
-    - default: false
-      description: Name of the firewall service.
-      isArray: false
+    - description: Name of the firewall service.
       name: name
       required: true
-      secret: false
-    deprecated: false
     description: Gets a single service by name.
-    execution: false
     name: sophos-firewall-services-get
     outputs:
     - contextPath: SophosFirewall.Services.Name
@@ -1818,16 +1200,11 @@ script:
       description: Details about the service.
       type: String
   - arguments:
-    - default: false
-      description: Name of the firewall service.
-      isArray: false
+    - description: Name of the firewall service.
       name: name
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'Type of service. Possible values: "TCPorUDP", "IP", "ICMP", and "ICMPv6".'
-      isArray: false
       name: service_type
       predefined:
       - TCPorUDP
@@ -1835,33 +1212,18 @@ script:
       - ICMP
       - ICMPv6
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'The protocol for the service if service_type is TCPorUDP. Possible values: "TCP" and "UDP".'
-      isArray: false
       name: protocol
       predefined:
       - TCP
       - UDP
-      required: false
-      secret: false
-    - default: false
-      description: 'Source port if service_type is TCPorUDP.'
-      isArray: false
+    - description: 'Source port if service_type is TCPorUDP.'
       name: source_port
-      required: false
-      secret: false
-    - default: false
-      description: 'Destination port if service_type is TCPorUDP.'
-      isArray: false
+    - description: 'Destination port if service_type is TCPorUDP.'
       name: destination_port
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Protocol name if service_type is IP.
-      isArray: false
       name: protocol_name
       predefined:
       - HOPOPT
@@ -2119,12 +1481,8 @@ script:
       - IPProto253
       - IPProto254
       - IPProto255
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: ICMP type if service_type is ICMP.
-      isArray: false
       name: icmp_type
       predefined:
       - Echo Reply
@@ -2155,12 +1513,8 @@ script:
       - SKIP
       - Photuris
       - Any Type
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: ICMP code if service_type is ICMP.
-      isArray: false
       name: icmp_code
       predefined:
       - '0'
@@ -2180,12 +1534,8 @@ script:
       - '13'
       - '14'
       - '15'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: ICMPv6 type if service_type is ICMPv6.
-      isArray: false
       name: icmp_v6_type
       predefined:
       - Destination Unreachable
@@ -2228,12 +1578,8 @@ script:
       - Private experimentation
       - Private experimentation
       - Any Type
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: ICMPv6 code if service_type is ICMPv6.
-      isArray: false
       name: icmp_v6_code
       predefined:
       - '0'
@@ -2253,11 +1599,7 @@ script:
       - '13'
       - '14'
       - '15'
-      required: false
-      secret: false
-    deprecated: false
     description: Adds a new firewall service.
-    execution: false
     name: sophos-firewall-services-add
     outputs:
     - contextPath: SophosFirewall.Services.Name
@@ -2270,50 +1612,29 @@ script:
       description: Details about the service.
       type: String
   - arguments:
-    - default: false
-      description: Name of the firewall service.
-      isArray: false
+    - description: Name of the firewall service.
       name: name
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'Type of service. Possible values: "TCPorUDP", "IP", "ICMP", and "ICMPv6".'
-      isArray: false
       name: service_type
       predefined:
       - TCPorUDP
       - IP
       - ICMP
       - ICMPv6
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'The protocol for the service if service_type is TCPorUDP. Possible values: "TCP" and "UDP".'
-      isArray: false
       name: protocol
       predefined:
       - TCP
       - UDP
-      required: false
-      secret: false
-    - default: false
-      description: 'Source port if service_type is TCPorUDP.'
-      isArray: false
+    - description: 'Source port if service_type is TCPorUDP.'
       name: source_port
-      required: false
-      secret: false
-    - default: false
-      description: 'Destination port if service_type is TCPorUDP.'
-      isArray: false
+    - description: 'Destination port if service_type is TCPorUDP.'
       name: destination_port
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Protocol name if service_type is IP.
-      isArray: false
       name: protocol_name
       predefined:
       - HOPOPT
@@ -2571,12 +1892,8 @@ script:
       - IPProto253
       - IPProto254
       - IPProto255
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: ICMP type if service_type is ICMP.
-      isArray: false
       name: icmp_type
       predefined:
       - Echo Reply
@@ -2607,12 +1924,8 @@ script:
       - SKIP
       - Photuris
       - Any Type
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: ICMP code if service_type is ICMP.
-      isArray: false
       name: icmp_code
       predefined:
       - '0'
@@ -2632,12 +1945,8 @@ script:
       - '13'
       - '14'
       - '15'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: ICMPv6 type if service_type is ICMPv6.
-      isArray: false
       name: icmp_v6_type
       predefined:
       - Destination Unreachable
@@ -2680,12 +1989,8 @@ script:
       - Private experimentation
       - Private experimentation
       - Any Type
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: ICMPv6 code if service_type is ICMPv6.
-      isArray: false
       name: icmp_v6_code
       predefined:
       - '0'
@@ -2705,11 +2010,7 @@ script:
       - '13'
       - '14'
       - '15'
-      required: false
-      secret: false
-    deprecated: false
     description: Updates an existing firewall service.
-    execution: false
     name: sophos-firewall-services-update
     outputs:
     - contextPath: SophosFirewall.Services.Name
@@ -2722,15 +2023,10 @@ script:
       description: Details about the service.
       type: String
   - arguments:
-    - default: false
-      description: Name of the service.
-      isArray: false
+    - description: Name of the service.
       name: name
       required: true
-      secret: false
-    deprecated: false
     description: Deletes an existing firewall service.
-    execution: false
     name: sophos-firewall-services-delete
     outputs:
     - contextPath: SophosFirewall.Services.Name
@@ -2740,23 +2036,13 @@ script:
       description: Whether the firewall service is deleted.
       type: Bool
   - arguments:
-    - default: false
-      defaultValue: '0'
+    - defaultValue: '0'
       description: 'The start index for the rules to list, e.g: 5. Default is "0".'
-      isArray: false
       name: start
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: 'The end index for the rules to list, e.g: 20. Default is "50".'
-      isArray: false
       name: end
-      required: false
-      secret: false
-    deprecated: false
     description: 'Lists all users. IMPORTANT: The list starts at 0 (not 1)!'
-    execution: false
     name: sophos-firewall-user-list
     outputs:
     - contextPath: SophosFirewall.User.Name
@@ -2781,15 +2067,10 @@ script:
       description: Status of the user.
       type: String
   - arguments:
-    - default: false
-      description: Name of the user.
-      isArray: false
+    - description: Name of the user.
       name: name
       required: true
-      secret: false
-    deprecated: false
     description: Gets a single user by name.
-    execution: false
     name: sophos-firewall-user-get
     outputs:
     - contextPath: SophosFirewall.User.Name
@@ -2814,59 +2095,33 @@ script:
       description: Status of the user.
       type: String
   - arguments:
-    - default: false
-      description: Username of the user.
-      isArray: false
+    - description: Username of the user.
       name: username
       required: true
-      secret: false
-    - default: false
-      description: Name of the user.
-      isArray: false
+    - description: Name of the user.
       name: name
       required: true
-      secret: false
-    - default: false
-      description: Description of the user.
-      isArray: false
+    - description: Description of the user.
       name: description
-      required: false
-      secret: false
-    - default: false
-      description: Email of the user.
-      isArray: false
+    - description: Email of the user.
       name: email
       required: true
-      secret: false
-    - default: false
-      defaultValue: Guest Group
+    - defaultValue: Guest Group
       description: Group of the user. Default is "Guest Group".
-      isArray: false
       name: group
-      required: false
-      secret: false
-    - default: false
-      description: The password of the user.
-      isArray: false
+    - description: The password of the user.
       name: password
       required: true
       secret: true
     - auto: PREDEFINED
-      default: false
       defaultValue: User
-      description: 'The type of the user. Possible values: "Administrator" and "User". Default is "User".' 
-      isArray: false
+      description: 'The type of the user. Possible values: "Administrator" and "User". Default is "User".'
       name: user_type
       predefined:
       - Administrator
       - User
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
-      description: 'Profile of the administrator if user_type is Administrator. Possible values: "Administrator", "Crypto Admin", "Security Admin", "Audit Admin", and "HAProfile". IMPORTANT: You can
-        add more types in the web console.'
-      isArray: false
+      description: 'Profile of the administrator if user_type is Administrator. Possible values: "Administrator", "Crypto Admin", "Security Admin", "Audit Admin", and "HAProfile". IMPORTANT: You can add more types in the web console.'
       name: profile
       predefined:
       - Administrator
@@ -2874,83 +2129,42 @@ script:
       - Security Admin
       - Audit Admin
       - HAProfile
-      required: false
-      secret: false
-    - default: false
-      defaultValue: Unlimited Internet Access
+    - defaultValue: Unlimited Internet Access
       description: The Surfing Quota policy. Default is "Unlimited Internet Access".
-      isArray: false
       name: surfing_quota_policy
-      required: false
-      secret: false
-    - default: false
-      defaultValue: Allowed all the time
+    - defaultValue: Allowed all the time
       description: The Access Time policy. Default is "Allowed all the time".
-      isArray: false
       name: access_time_policy
-      required: false
-      secret: false
-    - default: false
-      defaultValue: No Policy Applied
+    - defaultValue: No Policy Applied
       description: The SSL VPN policy. Default is "No Policy Applied".
-      isArray: false
       name: ssl_vpn_policy
-      required: false
-      secret: false
-    - default: false
-      defaultValue: No Policy Applied
+    - defaultValue: No Policy Applied
       description: The clientless policy. Default is "No Policy Applied".
-      isArray: false
       name: clientless_policy
-      required: false
-      secret: false
-    - default: false
-      defaultValue: 100 MB Total Data Transfer policy
+    - defaultValue: 100 MB Total Data Transfer policy
       description: 'The Data Transfer policy. Default is: "100 MB Total Data Transfer policy".'
-      isArray: false
       name: data_transfer_policy
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: Enable
       description: 'Whether to enable simultaneous logins global. Possible values: "Enable" and "Disable". Default is "Enable".'
-      isArray: false
       name: simultaneous_logins_global
       predefined:
       - Enable
       - Disable
-      required: false
-      secret: false
-    - default: false
-      defaultValue: All The Time
-      description: 'The schedule for appliance access. Default is "All The Time". IMPORTANT: This option\
-        \ is available only for Administrators.'
-      isArray: false
+    - defaultValue: All The Time
+      description: 'The schedule for appliance access. Default is "All The Time". IMPORTANT: This option\ \ is available only for Administrators.'
       name: schedule_for_appliance_access
-      required: false
-      secret: false
-    - default: false
-      defaultValue: High Guarantee User
+    - defaultValue: High Guarantee User
       description: The QoS policy. Default is "High Guarantee User".
-      isArray: false
       name: qos_policy
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: UserGroupNode
       description: 'The login restriction option. Possible values: "AnyNode" and "UserGroupNode". Default is "UserGroupNode".'
-      isArray: false
       name: login_restriction
       predefined:
       - AnyNode
       - UserGroupNode
-      required: false
-      secret: false
-    deprecated: false
     description: Adds a new user.
-    execution: false
     name: sophos-firewall-user-add
     outputs:
     - contextPath: SophosFirewall.User.Name
@@ -2975,59 +2189,31 @@ script:
       description: Status of the user.
       type: String
   - arguments:
-    - default: false
-      description: Username of the user.
-      isArray: false
+    - description: Username of the user.
       name: username
       required: true
-      secret: false
-    - default: false
-      description: Name of the user.
-      isArray: false
+    - description: Name of the user.
       name: name
       required: true
-      secret: false
-    - default: false
-      description: Description of the user.
-      isArray: false
+    - description: Description of the user.
       name: description
-      required: false
-      secret: false
-    - default: false
-      description: Email of the user.
-      isArray: false
+    - description: Email of the user.
       name: email
-      required: false
-      secret: false
-    - default: false
-      defaultValue: Guest Group
+    - defaultValue: Guest Group
       description: Group of the user. Default is "Guest Group".
-      isArray: false
       name: group
-      required: false
-      secret: false
-    - default: false
-      description: The password of the user.
-      isArray: false
+    - description: The password of the user.
       name: password
-      required: false
       secret: true
     - auto: PREDEFINED
-      default: false
       defaultValue: User
-      description: 'The type of the user. Possible values: "Administrator" and "User". Default is "User".' 
-      isArray: false
+      description: 'The type of the user. Possible values: "Administrator" and "User". Default is "User".'
       name: user_type
       predefined:
       - Administrator
       - User
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
-      description: 'Profile of the administrator if user_type is Administrator. Possible values: "Administrator", "Crypto Admin", "Security Admin", "Audit Admin", and "HAProfile". IMPORTANT: You can
-        add more types in the web console.'
-      isArray: false
+      description: 'Profile of the administrator if user_type is Administrator. Possible values: "Administrator", "Crypto Admin", "Security Admin", "Audit Admin", and "HAProfile". IMPORTANT: You can add more types in the web console.'
       name: profile
       predefined:
       - Administrator
@@ -3035,83 +2221,42 @@ script:
       - Security Admin
       - Audit Admin
       - HAProfile
-      required: false
-      secret: false
-    - default: false
-      defaultValue: Unlimited Internet Access
+    - defaultValue: Unlimited Internet Access
       description: The Surfing Quota policy. Default is "Unlimited Internet Access".
-      isArray: false
       name: surfing_quota_policy
-      required: false
-      secret: false
-    - default: false
-      defaultValue: Allowed all the time
+    - defaultValue: Allowed all the time
       description: The Access Time policy. Default is "Allowed all the time".
-      isArray: false
       name: access_time_policy
-      required: false
-      secret: false
-    - default: false
-      defaultValue: No Policy Applied
+    - defaultValue: No Policy Applied
       description: The SSL VPN policy. Default is "No Policy Applied".
-      isArray: false
       name: ssl_vpn_policy
-      required: false
-      secret: false
-    - default: false
-      defaultValue: No Policy Applied
+    - defaultValue: No Policy Applied
       description: The clientless policy. Default is "No Policy Applied".
-      isArray: false
       name: clientless_policy
-      required: false
-      secret: false
-    - default: false
-      defaultValue: 100 MB Total Data Transfer policy
+    - defaultValue: 100 MB Total Data Transfer policy
       description: 'The Data Transfer policy. Default is: "100 MB Total Data Transfer policy".'
-      isArray: false
       name: data_transfer_policy
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: Enable
       description: 'Whether to enable simultaneous logins global. Possible values: "Enable" and "Disable". Default is "Enable".'
-      isArray: false
       name: simultaneous_logins_global
       predefined:
       - Enable
       - Disable
-      required: false
-      secret: false
-    - default: false
-      defaultValue: All The Time
-      description: 'The schedule for appliance access. Default is "All The Time".IMPORTANT: This option\
-        \ is available only for Administrators.'
-      isArray: false
+    - defaultValue: All The Time
+      description: 'The schedule for appliance access. Default is "All The Time".IMPORTANT: This option\ \ is available only for Administrators.'
       name: schedule_for_appliance_access
-      required: false
-      secret: false
-    - default: false
-      defaultValue: High Guarantee User
+    - defaultValue: High Guarantee User
       description: The QoS policy. Default is "High Guarantee User".
-      isArray: false
       name: qos_policy
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: UserGroupNode
       description: 'The login restriction option. Possible values: "AnyNode" and "UserGroupNode". Default is "UserGroupNode".'
-      isArray: false
       name: login_restriction
       predefined:
       - AnyNode
       - UserGroupNode
-      required: false
-      secret: false
-    deprecated: false
     description: Updates a user.
-    execution: false
     name: sophos-firewall-user-update
     outputs:
     - contextPath: SophosFirewall.User.Name
@@ -3136,15 +2281,10 @@ script:
       description: Status of the user.
       type: String
   - arguments:
-    - default: false
-      description: Name of the user.
-      isArray: false
+    - description: Name of the user.
       name: name
       required: true
-      secret: false
-    deprecated: false
     description: Deletes an existing user.
-    execution: false
     name: sophos-firewall-user-delete
     outputs:
     - contextPath: SophosFirewall.User.Name
@@ -3154,23 +2294,13 @@ script:
       description: Whether the user is deleted.
       type: Bool
   - arguments:
-    - default: false
-      defaultValue: '0'
+    - defaultValue: '0'
       description: 'The start index for the rules to list, e.g: 5. Default is "0".'
-      isArray: false
       name: start
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: 'The end index for the rules to list, e.g: 20. Default is "50".'
-      isArray: false
       name: end
-      required: false
-      secret: false
-    deprecated: false
     description: 'Lists all app policies. IMPORTANT: The list starst at 0 (not 1)!'
-    execution: false
     name: sophos-firewall-app-policy-list
     outputs:
     - contextPath: SophosFirewall.ApplicationFilterPolicy.Name
@@ -3189,15 +2319,10 @@ script:
       description: Details of the rule.
       type: String
   - arguments:
-    - default: false
-      description: Name of the policy.
-      isArray: false
+    - description: Name of the policy.
       name: name
       required: true
-      secret: false
-    deprecated: false
     description: Gets a single app policy by name.
-    execution: false
     name: sophos-firewall-app-policy-get
     outputs:
     - contextPath: SophosFirewall.ApplicationFilterPolicy.Name
@@ -3216,98 +2341,55 @@ script:
       description: Details of the rule.
       type: String
   - arguments:
-    - default: false
-      description: Name of the policy.
-      isArray: false
+    - description: Name of the policy.
       name: name
       required: true
-      secret: false
-    - default: false
-      description: Description of the policy.
-      isArray: false
+    - description: Description of the policy.
       name: description
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'Whether microapp support is enabled. Possible values: "true" and "false".'
-      isArray: false
       name: micro_app_support
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'Default action for the policy. Possible values: "Allow" and "Deny".'
-      isArray: false
       name: default_action
       predefined:
       - Allow
       - Deny
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'Whether to enable the select all rule. Possible values: "Enable" and "Disable".'
-      isArray: false
       name: select_all
       predefined:
       - Enable
       - Disable
-      required: false
-      secret: false
-    - default: false
-      description: Categories to add to the rule.
+    - description: Categories to add to the rule.
       isArray: true
       name: categories
-      required: false
-      secret: false
-    - default: false
-      description: Risks to add to the rule.
+    - description: Risks to add to the rule.
       isArray: true
       name: risks
-      required: false
-      secret: false
-    - default: false
-      description: Applications to add to the rule.
+    - description: Applications to add to the rule.
       isArray: true
       name: applications
-      required: false
-      secret: false
-    - default: false
-      description: Characteristics to add to the rule.
+    - description: Characteristics to add to the rule.
       isArray: true
       name: characteristics
-      required: false
-      secret: false
-    - default: false
-      description: Technologies to add to the rule.
+    - description: Technologies to add to the rule.
       isArray: true
       name: technologies
-      required: false
-      secret: false
-    - default: false
-      description: Classifications to add to the rule.
+    - description: Classifications to add to the rule.
       isArray: true
       name: classifications
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'Action for the rule. Possible values: "Allow" and "Deny".'
-      isArray: false
       name: action
       predefined:
       - Allow
       - Deny
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'The schedule for the rule. Possible values: "All the time", "Work hours (5 Day week)", "Work hours (6 Day week)", "All Time on Weekdays", "All Time on Weekends", "All Time on Sunday", "All Days 10:00 to 19:00". IMPORTANT: Creating a new schedule is available in the web console.'
-      isArray: false
       name: schedule
       predefined:
       - All the time
@@ -3317,11 +2399,7 @@ script:
       - All Time on Weekends
       - All Time on Sunday
       - All Days 10:00 to 19:00
-      required: false
-      secret: false
-    deprecated: false
     description: Adds a new app policy.
-    execution: false
     name: sophos-firewall-app-policy-add
     outputs:
     - contextPath: SophosFirewall.ApplicationFilterPolicy.Name
@@ -3340,98 +2418,55 @@ script:
       description: Details of the rule.
       type: String
   - arguments:
-    - default: false
-      description: Name of the policy.
-      isArray: false
+    - description: Name of the policy.
       name: name
       required: true
-      secret: false
-    - default: false
-      description: Description of the policy.
-      isArray: false
+    - description: Description of the policy.
       name: description
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'Whether microapp support is enabled. Possible values: "true" and "false".'
-      isArray: false
       name: micro_app_support
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'Default action for the policy. Possible values: "Allow" and "Deny".'
-      isArray: false
       name: default_action
       predefined:
       - Allow
       - Deny
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'Whether to enable the select all rule. Possible values: "Enable" and "Disable".'
-      isArray: false
       name: select_all
       predefined:
       - Enable
       - Disable
-      required: false
-      secret: false
-    - default: false
-      description: Categories to add to the rule.
+    - description: Categories to add to the rule.
       isArray: true
       name: categories
-      required: false
-      secret: false
-    - default: false
-      description: Risks to add to the rule.
+    - description: Risks to add to the rule.
       isArray: true
       name: risks
-      required: false
-      secret: false
-    - default: false
-      description: Applications to add to the rule.
+    - description: Applications to add to the rule.
       isArray: true
       name: applications
-      required: false
-      secret: false
-    - default: false
-      description: Characteristics to add to the rule.
+    - description: Characteristics to add to the rule.
       isArray: true
       name: characteristics
-      required: false
-      secret: false
-    - default: false
-      description: Technologies to add to the rule.
+    - description: Technologies to add to the rule.
       isArray: true
       name: technologies
-      required: false
-      secret: false
-    - default: false
-      description: Classifications to add to the rule.
+    - description: Classifications to add to the rule.
       isArray: true
       name: classifications
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'Action for the rule. Possible values: "Allow" and "Deny".'
-      isArray: false
       name: action
       predefined:
       - Allow
       - Deny
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'The schedule for the rule. Possible values: "All the time", "Work hours (5 Day week)", "Work hours (6 Day week)", "All Time on Weekdays", "All Time on Weekends", "All Time on Sunday", "All Days 10:00 to 19:00". IMPORTANT: Creating a new schedule is available in the web console.'
-      isArray: false
       name: schedule
       predefined:
       - All the time
@@ -3441,11 +2476,7 @@ script:
       - All Time on Weekends
       - All Time on Sunday
       - All Days 10:00 to 19:00
-      required: false
-      secret: false
-    deprecated: false
     description: Updates an existing app policy.
-    execution: false
     name: sophos-firewall-app-policy-update
     outputs:
     - contextPath: SophosFirewall.ApplicationFilterPolicy.Name
@@ -3464,15 +2495,10 @@ script:
       description: Details of the rule.
       type: String
   - arguments:
-    - default: false
-      description: Name of the policy.
-      isArray: false
+    - description: Name of the policy.
       name: name
       required: true
-      secret: false
-    deprecated: false
     description: Deletes an existing app policy.
-    execution: false
     name: sophos-firewall-app-policy-delete
     outputs:
     - contextPath: SophosFirewall.ApplicationFilterPolicy.Name
@@ -3482,23 +2508,13 @@ script:
       description: Whether the firewall app policy is deleted.
       type: Bool
   - arguments:
-    - default: false
-      defaultValue: '0'
+    - defaultValue: '0'
       description: 'The start index for the rules to list, e.g: 5. Default is "0".'
-      isArray: false
       name: start
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: 'The end index for the rules to list, e.g: 20. Default is "50".'
-      isArray: false
       name: end
-      required: false
-      secret: false
-    deprecated: false
     description: 'Lists all app filter categories. IMPORTANT: The list starts at 0 (not 1)!'
-    execution: false
     name: sophos-firewall-app-category-list
     outputs:
     - contextPath: SophosFirewall.ApplicationFilterCategory.Name
@@ -3514,15 +2530,10 @@ script:
       description: Bandwidth usage type of the category.
       type: String
   - arguments:
-    - default: false
-      description: Name of the app category.
-      isArray: false
+    - description: Name of the app category.
       name: name
       required: true
-      secret: false
-    deprecated: false
     description: Gets a single app filter category by name.
-    execution: false
     name: sophos-firewall-app-category-get
     outputs:
     - contextPath: SophosFirewall.ApplicationFilterCategory.Name
@@ -3538,27 +2549,14 @@ script:
       description: Bandwidth usage type of the category.
       type: String
   - arguments:
-    - default: false
-      description: Name of the app category.
-      isArray: false
+    - description: Name of the app category.
       name: name
       required: true
-      secret: false
-    - default: false
-      description: The description of the category.
-      isArray: false
+    - description: The description of the category.
       name: description
-      required: false
-      secret: false
-    - default: false
-      description: QoS policy of the category.
-      isArray: false
+    - description: QoS policy of the category.
       name: qos_policy
-      required: false
-      secret: false
-    deprecated: false
     description: Updates an existing app filter category.
-    execution: false
     name: sophos-firewall-app-category-update
     outputs:
     - contextPath: SophosFirewall.ApplicationFilterCategory.Name
@@ -3574,23 +2572,13 @@ script:
       description: Bandwidth usage type of the category.
       type: String
   - arguments:
-    - default: false
-      defaultValue: '0'
+    - defaultValue: '0'
       description: 'The start index for the rules to list, e.g: 5. Default is "0".'
-      isArray: false
       name: start
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: 'The end index for the rules to list, e.g: 20. Default is "50".'
-      isArray: false
       name: end
-      required: false
-      secret: false
-    deprecated: false
     description: 'Lists all web filter policies. IMPORTANT: The list starts at 0 (not 1)!'
-    execution: false
     name: sophos-firewall-web-filter-list
     outputs:
     - contextPath: SophosFirewall.WebFilterPolicy.Name
@@ -3615,15 +2603,10 @@ script:
       description: Rule list information.
       type: String
   - arguments:
-    - default: false
-      description: Name of the policy.
-      isArray: false
+    - description: Name of the policy.
       name: name
       required: true
-      secret: false
-    deprecated: false
     description: Gets a single web filter policy by name.
-    execution: false
     name: sophos-firewall-web-filter-get
     outputs:
     - contextPath: SophosFirewall.WebFilterPolicy.Name
@@ -3648,136 +2631,78 @@ script:
       description: Rule list information.
       type: String
   - arguments:
-    - default: false
-      description: Name of the policy
-      isArray: false
+    - description: Name of the policy
       name: name
       required: true
-      secret: false
-    - default: false
-      description: Description of the policy.
-      isArray: false
+    - description: Description of the policy.
       name: description
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'Default action for the policy. Possible values: "Allow" and "Deny".'
-      isArray: false
       name: default_action
       predefined:
       - Allow
       - Deny
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'Whether the max download file size is enabled. Possible values: "0" and "1".'
-      isArray: false
       name: download_file_size_restriction_enabled
       predefined:
       - '0'
       - '1'
-      required: false
-      secret: false
-    - default: false
-      description: Maximum file size to enable downloading in MB.
-      isArray: false
+    - description: Maximum file size to enable downloading in MB.
       name: download_file_size_restriction
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'Enable to specify domains allowed to access the Google service. Possible values: "0" and "1".'
-      isArray: false
       name: goog_app_domain_list_enabled
       predefined:
       - '0'
       - '1'
-      required: false
-      secret: false
-    - default: false
-      description: The domains allowed to access the Google service.
-      isArray: false
+    - description: The domains allowed to access the Google service.
       name: goog_app_domain_list
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'Whether to enable YouTube Restricted Mode to restrict the content that is accessible. Possible values: "0" and "1".'
-      isArray: false
       name: youtube_filter_enabled
       predefined:
       - '0'
       - '1'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'Whether to adjust the policy used for YouTube Restricted Mode. Possible values: "0" and "1".'
-      isArray: false
       name: youtube_filter_is_strict
       predefined:
       - '0'
       - '1'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
-      description: 'Enable to block websites containing pornography and explicit sexual
-        content from appearing in the search results of Google, Yahoo, and Bing search
-        results. Possible values: "0" and "1".'
-      isArray: false
+      description: 'Enable to block websites containing pornography and explicit sexual content from appearing in the search results of Google, Yahoo, and Bing search results. Possible values: "0" and "1".'
       name: enforce_safe_search
       predefined:
       - '0'
       - '1'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'Whether to further limit inappropriate content by enforcing search engine filters for Creative Commons licensed images. Possible values: "0" and "1".'
-      isArray: false
       name: enforce_image_licensing
       predefined:
       - '0'
       - '1'
-      required: false
-      secret: false
-    - default: false
-      description: Comma-separted list of URL groups to block, allow, warn, or log.
-      isArray: false
+    - description: Comma-separted list of URL groups to block, allow, warn, or log.
       name: url_group_names
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'The HTTP action. Possible values: "Deny", "Allow", "Warn", and "Log".'
-      isArray: false
       name: http_action
       predefined:
       - Deny
       - Allow
       - Warn
       - Log
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'The HTTPs action. Possible values: "Deny", "Allow", "Warn", and "Log".'
-      isArray: false
       name: https_action
       predefined:
       - Deny
       - Allow
       - Warn
       - Log
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'The schedule for the rule. Possible values: "All the time", "Work hours (5 Day week)", "Work hours (6 Day week)", "All Time on Weekdays", "All Time on Weekends", "All Time on Sunday", "All Days 10:00 to 19:00". IMPORTANT: Creating a new schedule is available in the web console.'
-      isArray: false
       name: schedule
       predefined:
       - All the time
@@ -3787,59 +2712,36 @@ script:
       - All Time on Weekends
       - All Time on Sunday
       - All Days 10:00 to 19:00
-      required: false
-      secret: false
     - auto: PREDEFINED
       description: 'Whether to enable the policy rule. Possible values: "1" and "0".'
-      isArray: false
       name: policy_rule_enabled
       predefined:
       - '1'
       - '0'
-      required: false
-      secret: false
     - description: A comma-separated list of users who this rule will apply to.
-      isArray: false
       name: user_names
-      required: false
-      secret: false
     - description: 'A comma-separated list of CCL names. This argument is required When ccl_rule_enabled is ON.'
-      isArray: false
       name: ccl_names
-      required: false
-      secret: false
     - auto: PREDEFINED
       description: 'Whether to enable the CCL rule. Possible values: "0" and "1". If enabled, ccl_name is required.'
-      isArray: false
       name: ccl_rule_enabled
       predefined:
       - '1'
       - '0'
-      required: false
-      secret: false
     - auto: PREDEFINED
       description: 'Whether to enable the HTTP action. Possible values: "0" and "1".'
-      isArray: false
       name: follow_http_action
       predefined:
       - '1'
       - '0'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: Enable
       description: 'Whether to enable reporting of the policy. Possible values: "Enable" and "Disable". Default is "Enable".'
-      isArray: false
       name: enable_reporting
       predefined:
       - Enable
       - Disable
-      required: false
-      secret: false
-    deprecated: false
     description: Adds a new web filter policy.
-    execution: false
     name: sophos-firewall-web-filter-add
     outputs:
     - contextPath: SophosFirewall.WebFilterPolicy.Name
@@ -3864,138 +2766,78 @@ script:
       description: Rule list information.
       type: String
   - arguments:
-    - default: false
-      description: Name of the policy.
-      isArray: false
+    - description: Name of the policy.
       name: name
       required: true
-      secret: false
-    - default: false
-      description: Description of the policy.
-      isArray: false
+    - description: Description of the policy.
       name: description
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'Default action for the policy. Possible values: "Allow" and "Deny".'
-      isArray: false
       name: default_action
       predefined:
       - Allow
       - Deny
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'Whether the maximum download file size is enabled. Possible values: "0" and "1".'
-      isArray: false
       name: download_file_size_restriction_enabled
       predefined:
       - '0'
       - '1'
-      required: false
-      secret: false
-    - default: false
-      description: The maximum file size to enable downloading in MB.
-      isArray: false
+    - description: The maximum file size to enable downloading in MB.
       name: download_file_size_restriction
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'Whether to enable specifying domains allowed to access the Google service. Possible values: "0" and "1".'
-      isArray: false
       name: goog_app_domain_list_enabled
       predefined:
       - '0'
       - '1'
-      required: false
-      secret: false
-    - default: false
-      description: Comma-separated list of domains allowed to access the Google service.
-      isArray: false
+    - description: Comma-separated list of domains allowed to access the Google service.
       name: goog_app_domain_list
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
-      description: 'Whether to enable YouTube Restricted Mode to restrict the content that is
-        accessible. Possible values: "0" and "1".'
-      isArray: false
+      description: 'Whether to enable YouTube Restricted Mode to restrict the content that is accessible. Possible values: "0" and "1".'
       name: youtube_filter_enabled
       predefined:
       - '0'
       - '1'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'Whether to adjust the policy used for YouTube Restricted Mode. Possible values: "0" and "1".'
-      isArray: false
       name: youtube_filter_is_strict
       predefined:
       - '0'
       - '1'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
-      description: 'Whether to enable blocking websites containing pornography and explicit sexual
-        content from appearing in the search results of Google, Yahoo, and Bing search
-        results. Possible values: "0" and "1".'
-      isArray: false
+      description: 'Whether to enable blocking websites containing pornography and explicit sexual content from appearing in the search results of Google, Yahoo, and Bing search results. Possible values: "0" and "1".'
       name: enforce_safe_search
       predefined:
       - '0'
       - '1'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
-      description: 'Whether to further limit inappropriate content by enforcing search engine
-        filters for Creative Commons licensed images. Possible values: "0" and "1".'
-      isArray: false
+      description: 'Whether to further limit inappropriate content by enforcing search engine filters for Creative Commons licensed images. Possible values: "0" and "1".'
       name: enforce_image_licensing
       predefined:
       - '0'
       - '1'
-      required: false
-      secret: false
-    - default: false
-      description: Comma-separated list of URL groups to block, allow, warn, or log.
-      isArray: false
+    - description: Comma-separated list of URL groups to block, allow, warn, or log.
       name: url_group_names
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'The HTTP action. Possible values: "Deny", "Allow", "Warn", and "Log".'
-      isArray: false
       name: http_action
       predefined:
       - Deny
       - Allow
       - Warn
       - Log
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'The HTTPs action. Possible values: "Deny", "Allow", "Warn", and "Log".'
-      isArray: false
       name: https_action
       predefined:
       - Deny
       - Allow
       - Warn
       - Log
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'The schedule for the rule. Possible values: "All the time", "Work hours (5 Day week)", "Work hours (6 Day week)", "All Time on Weekdays", "All Time on Weekends", "All Time on Sunday", "All Days 10:00 to 19:00". IMPORTANT: Creating a new schedule is available in the web console.'
-      isArray: false
       name: schedule
       predefined:
       - All the time
@@ -4005,59 +2847,36 @@ script:
       - All Time on Weekends
       - All Time on Sunday
       - All Days 10:00 to 19:00
-      required: false
-      secret: false
     - auto: PREDEFINED
       description: 'Whether to enable the policy rule. Possible values: "1" and "0".'
-      isArray: false
       name: policy_rule_enabled
       predefined:
       - '1'
       - '0'
-      required: false
-      secret: false
     - description: A comma-separated list of users who this rule will apply to.
-      isArray: false
       name: user_names
-      required: false
-      secret: false
     - description: 'A comma-separated list of CCL names. REQUIRED: when ccl_rule_enabled is ON'
-      isArray: false
       name: ccl_names
-      required: false
-      secret: false
     - auto: PREDEFINED
       description: 'Whether to enable the CCL rule. Possible values: "0" and "1". IMPORTANT: If enabled, ccl_name is required.'
-      isArray: false
       name: ccl_rule_enabled
       predefined:
       - '1'
       - '0'
-      required: false
-      secret: false
     - auto: PREDEFINED
       description: 'Whether to enable the HTTP action. Possible values: "0" and "1".'
-      isArray: false
       name: follow_http_action
       predefined:
       - '1'
       - '0'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: Enable
       description: 'Whether to enable reporting of the policy. Possible values: "Enable" and "Disable". Default is "Enable".'
-      isArray: false
       name: enable_reporting
       predefined:
       - Enable
       - Disable
-      required: false
-      secret: false
-    deprecated: false
     description: Updates an existing web filter policy.
-    execution: false
     name: sophos-firewall-web-filter-update
     outputs:
     - contextPath: SophosFirewall.WebFilterPolicy.Name
@@ -4082,15 +2901,10 @@ script:
       description: Rule list information.
       type: String
   - arguments:
-    - default: false
-      description: Name of the policy.
-      isArray: false
+    - description: Name of the policy.
       name: name
       required: true
-      secret: false
-    deprecated: false
     description: Deletes an existing web filter policy.
-    execution: false
     name: sophos-firewall-web-filter-delete
     outputs:
     - contextPath: SophosFirewall.WebFilterPolicy.Name
@@ -4099,11 +2913,7 @@ script:
     - contextPath: SophosFirewall.WebFilterPolicy.IsDeleted
       description: Whether the policy is deleted.
       type: Bool
-  dockerimage: demisto/python3:3.10.5.31928
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
+  dockerimage: demisto/python3:3.10.12.63474
   runonce: false
   script: '-'
   subtype: python3

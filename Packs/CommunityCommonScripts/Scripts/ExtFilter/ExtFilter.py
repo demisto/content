@@ -1,3 +1,5 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import base64
 import copy
 import fnmatch
@@ -7,8 +9,6 @@ import re
 from email.header import decode_header
 from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
 
 PATALG_BINARY: int = 0
 PATALG_WILDCARD: int = 1
@@ -1202,7 +1202,7 @@ class ExtFilter:
                 return self.filter_values(root, optype, conds, path)
 
             conds = {optype: self.parse_conds_json(conds)}
-            if isinstance(root, dict):
+            if isinstance(root, (dict, list)):
                 return self.filter_with_expressions(root, conds, path, inlist)
             else:
                 return None

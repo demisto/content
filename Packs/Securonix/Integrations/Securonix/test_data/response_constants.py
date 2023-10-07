@@ -1,3 +1,5 @@
+from requests.models import Response
+
 RESPONSE_LIST_WORKFLOWS = {
     "result": {
         "workflows":
@@ -154,7 +156,8 @@ RESPONSE_GET_INCIDENT = {
                     "workflowName": "SOCTeamReview",
                     "url": "https://source_url.com",
                     "isWhitelisted": False,
-                    "watchlisted": False
+                    "watchlisted": False,
+                    "solrquery": "index = violation and ( ( @policyname = \"Response-PB-Resources-AutoPlay\" and @resourcename=\"Activityres17-Resource-549829\" )  ) AND @tenantname=\"Response-Automation\" AND datetime between \"02/07/2023 15:52:12\" \"02/07/2023 15:52:13\""
                 }
             ]
         }
@@ -446,4 +449,506 @@ RESPONSE_FETCH_INCIDENTS = {
             "watchlisted": False
         }
     ]
+}
+RESPONSE_FETCH_THREATS = [
+    {
+        "tenantid": 2,
+        "tenantname": "Response-Automation",
+        "violator": "Activityaccount",
+        "entityid": "VIOLATOR5-1673852881421",
+        "resourcegroupname": "RES-PLAYBOOK-DS-AUTOMATION",
+        "threatname": "TM_Response-PB-ActivityAccount-Manual",
+        "category": "NONE",
+        "resourcename": "RES10-RESOURCE-302184",
+        "resourcetype": "Res-Playbook",
+        "generationtime": "Mon, 16 Jan 2023 @ 01:53:31 AM",
+        "generationtime_epoch": 1673855611090,
+        "policies": [
+            "Response-PB-ActivityAccount-Manual"
+        ]
+    }
+]
+RESPONSE_LIST_THREATS = {
+    "Response": {
+        "Total records": 100,
+        "offset": 0,
+        "max": 2,
+        "threats": [
+            {
+                "tenantid": 2,
+                "tenantname": "Response-Automation",
+                "violator": "Activityaccount",
+                "entityid": "VIOLATOR5-1673852881421",
+                "resourcegroupname": "RES-PLAYBOOK-DS-AUTOMATION",
+                "threatname": "TM_Response-PB-ActivityAccount-Manual",
+                "category": "NONE",
+                "resourcename": "RES10-RESOURCE-302184",
+                "resourcetype": "Res-Playbook",
+                "generationtime": "Mon, 16 Jan 2023 @ 01:53:31 AM",
+                "generationtime_epoch": 1673855611090,
+                "policies": [
+                    "Response-PB-ActivityAccount-Manual"
+                ]
+            }
+        ]
+    }
+}
+
+RESPONSE_GET_INCIDENT_ACTIVITY_HISTORY_6_4 = {
+    "status": "OK",
+    "messages": [
+        "Get activity stream details for incident ID [2849604490]"
+    ],
+    "result": {
+        "activityStreamData": [
+            {
+                "caseid": "2849604490",
+                "actiontaken": "CREATED",
+                "status": "Open",
+                "comment": [
+                    {
+                        "Comments": "Incident created while executing playbook - Create Security Incident"
+                    }
+                ],
+                "eventTime": "Jan 12, 2023 7:25:38 AM",
+                "username": "Admin Admin",
+                "currentassignee": "API_TEST_SS",
+                "commentType": [
+                    "text"
+                ],
+                "currWorkflow": "SOCTeamReview",
+                "isPlayBookOutAvailable": False,
+                "creator": "admin"
+            },
+            {
+                "caseid": "2849604490",
+                "actiontaken": "In Progress",
+                "status": "In Progress",
+                "comment": [],
+                "eventTime": "Jan 12, 2023 8:16:22 AM",
+                "lastStatus": "Open",
+                "username": "Test User",
+                "currentassignee": "API_TEST_SS",
+                "pastassignee": "API_TEST_SS",
+                "commentType": [],
+                "prevWorkflow": "Test_XSOAR",
+                "currWorkflow": "Test_XSOAR",
+                "isPlayBookOutAvailable": False,
+                "creator": "test_user"
+            },
+            {
+                "caseid": "2849604490",
+                "actiontaken": "Closed",
+                "status": "Completed",
+                "comment": [],
+                "eventTime": "Jan 12, 2023 8:16:48 AM",
+                "lastStatus": "In Progress",
+                "username": "Test User",
+                "currentassignee": "API_TEST_SS",
+                "pastassignee": "API_TEST_SS",
+                "commentType": [],
+                "prevWorkflow": "Test_XSOAR",
+                "currWorkflow": "Test_XSOAR",
+                "isPlayBookOutAvailable": False,
+                "creator": "test_user"
+            }
+        ]
+    }
+}
+
+RESPONSE_LIST_VIOLATION_6_4 = {
+    "totalDocuments": 585651023,
+    "events": [
+        {
+            "timeline_by_month": "1672552800000",
+            "resourcegroupname": "SNX-IEE-AEE-51",
+            "eventid": "test-event-id",
+            "ipaddress": "0.0.0.0",
+            "week": "3",
+            "year": "2023",
+            "riskthreatname": "Abnormal DNS record type queries",
+            "eventlatitude": "1.2931",
+            "userid": "-1",
+            "dayofmonth": "16",
+            "jobid": "36819",
+            "resourcegroupid": "439",
+            "datetime": "1673869861092",
+            "timeline_by_hour": "1673888400000",
+            "accountname": "YOST",
+            "hour": "5",
+            "emailrecipientdomain": "test_domain",
+            "postalcode": "PO,1,3,5,6,7,14",
+            "tenantid": "3",
+            "id": "-1",
+            "timeline_by_minute": "1673869800000",
+            "generationtime": "01/16/2023 05:52:22",
+            "eventlongitude": "103.8558",
+            "eventcity": "Singapore",
+            "violator": "RTActivityAccount",
+            "transactionstring1": "Logon failure",
+            "categorizedtime": "Early Morning",
+            "rawevent": "test raw event",
+            "jobstarttime": "1673869810000",
+            "resourcetype": "Snx-Automation-Rt",
+            "dayofyear": "16",
+            "categoryseverity": "0",
+            "month": "0",
+            "invalid": "false",
+            "timeline": "1673848800000",
+            "dayofweek": "2",
+            "emailrecipient": "example.com",
+            "timeline_by_week": "1673762400000",
+            "tenantname": "test_tenant",
+            "policyname": "Snx-IEE-RiskBoosterMatchCriteria",
+            "resourcename": "Windows",
+            "emailsender": "example.com",
+            "category": "ACCOUNT MISUSE",
+            "eventcountry": "Singapore",
+            "eventregion": "Asia",
+            "resourcecomments": "ingestion_2.0"
+        },
+    ],
+    "error": False,
+    "available": False,
+    "queryId": "spotterwebservice-test-id",
+    "applicationTz": "CST6CDT",
+    "inputParams": {
+        "generationtime_from": "01/17/2022 00:00:00",
+        "max": "50",
+        "query": "index = violation",
+        "generationtime_to": "01/17/2023 00:00:20"
+    },
+    "index": "violation",
+    "nextCursorMarker": "test-cursor-marker"
+}
+
+RESPONSE_LIST_WHITELISTS_ENTRY = {
+    "status": "OK",
+    "messages": [
+        " WhiteList Name | Whitelist Type | Tenant Name "
+    ],
+    "result": [
+        "Dummy Whitelist 1 | Automated | test_tenant",
+        "Dummy Whitelist 2 | Automated | test_tenant"
+    ]
+}
+
+RESPONSE_GET_WHITELIST_ENTRY = {
+    "status": "OK",
+    "messages": [
+        "whitelistname : Dummy Threat Model MM",
+        "Entity/Attribute : Expiry Date"
+    ],
+    "result": {
+        "TEST123": "09/28/2035 21:21:19"
+    }
+}
+RESPONSE_CREATE_WHITELIST = {
+    "status": "OK",
+    "messages": [
+        "New Global whitelist created Successfully ..!",
+        "whitelistname : test_whitelist"
+    ],
+    "result": []
+}
+RESPONSE_DELETE_LOOKUP_TABLE_CONFIG_AND_DATA = 'test and data deleted successfully'
+
+RESPONSE_ADD_WHITELIST_ENTRY_6_4 = {
+    "status": "OK",
+    "messages": [
+        "entity added to global whitelist Successfully...!"
+    ],
+    "result": []
+}
+RESPONSE_DELETE_WHITELIST_ENTRY = {
+    "status": "OK",
+    "messages": [
+        "Whitelist Name : test_ng"
+    ],
+    "result": [
+        "EmployeeId Item removed from whitelist Successfully ..! "
+    ]
+}
+
+RESPONSE_LOOKUP_TABLE_LIST = [
+    {
+        'tenantName': 'All Tenants',
+        'lookupTableName': 'NonBusinessDomains',
+        'totalRecords': 2213,
+        'scope': 'global',
+        'type': 'system'
+    },
+    {
+        'tenantName': 'All Tenants',
+        'lookupTableName': 'CompressedFileExtensions',
+        'totalRecords': 240,
+        'scope': 'meta',
+        'type': 'system'
+    }
+]
+RESPONSE_LOOKUP_TABLE_ENTRY_ADD = "Entries added to  XSOAR_TEST successfully"
+
+RESPONSE_LOOKUP_TABLE_ENTRIES_LIST = [
+    {
+        "defaultenrichedevent": [
+            "0",
+            "Attempt",
+            "Cisco Netflow",
+            "Connection Statistics",
+            "Network",
+            "destinationport"
+        ],
+        "value_fieldname": "destinationport",
+        "value_vendor": "Cisco Netflow",
+        "value_categoryobject": "Network",
+        "lookupuniquekey": "-1^~CATEGORIZATION_FLOW|0",
+        "value_categoryoutcome": "Attempt",
+        "lookupname": "Categorization_Flow",
+        "value_categorybehavior": "Connection Statistics",
+        "value_key": "0",
+        "tenantid": -1,
+        "tenantname": "All Tenants",
+        "key": "0",
+        "timestamp": "Jan 23, 2023 7:01:33 AM"
+    },
+    {
+        "defaultenrichedevent": [
+            "1",
+            "Attempt",
+            "Cisco Netflow",
+            "Connection Statistics",
+            "Network",
+            "destinationport"
+        ],
+        "value_fieldname": "destinationport",
+        "value_vendor": "Cisco Netflow",
+        "value_categoryobject": "Network",
+        "lookupuniquekey": "-1^~CATEGORIZATION_FLOW|1",
+        "value_categoryoutcome": "Attempt",
+        "lookupname": "Categorization_Flow",
+        "value_categorybehavior": "Connection Statistics",
+        "value_key": "1",
+        "tenantid": -1,
+        "tenantname": "All Tenants",
+        "key": "1",
+        "timestamp": "Jan 23, 2023 7:01:33 AM"
+    }
+]
+
+RESPONSE_DELETE_LOOKUP_ENTRIES_DELETE = 'Successfully deleted the given key(s)!'
+
+
+RESPONSE_GET_INCIDENT_WORKFLOW = {
+    "status": "OK",
+    "messages": [
+        "Get incident workflow for incident ID [123456] - [TestWorkFlow]"
+    ],
+    "result": {
+        "workflow": "TestWorkFlow"
+    }
+}
+
+RESPONSE_GET_INCIDENT_STATUS = {
+    "status": "OK",
+    "messages": [
+        "Get incident status for incident ID [123456] - [TestStatus]"
+    ],
+    "result": {
+        "status": "TestStatus"
+    }
+}
+
+RESPONSE_GET_INCIDENT_AVAILABLE_ACTIONS = {
+    "status": "OK",
+    "messages": [
+        "Get possible actions for incident ID [100289], incident status [Open]"
+    ],
+    "result": [
+        {
+            "actionDetails": [
+                {
+                    "title": "Screen1",
+                    "sections": {
+                        "sectionName": "Comments",
+                        "attributes": [
+                            {
+                                "displayName": "Comments",
+                                "attributeType": "textarea",
+                                "attribute": "15_Comments",
+                                "required": "false"
+                            }
+                        ]
+                    }
+                }
+            ],
+            "actionName": "CLAIM",
+            "status": "CLAIMED"
+        },
+        {
+            "actionDetails": [
+                {
+                    "title": "Screen2",
+                    "sections": {
+                        "sectionName": "Comments",
+                        "attributes": [
+                            {
+                                "displayName": "Comments",
+                                "attributeType": "textarea",
+                                "attribute": "15_Comments",
+                                "required": "false"
+                            }
+                        ]
+                    }
+                }
+            ],
+            "actionName": "COMPLETED",
+            "status": "COMPLETED"
+        }
+    ]
+}
+
+RESPONSE_ADD_COMMENT_TO_INCIDENT = {
+    "status": "OK",
+    "messages": [
+        "Add comment to incident id - [100289]"
+    ],
+    "result": True
+}
+
+
+def get_mock_create_lookup_table_response():
+    RESPONSE_CREATE_LOOKUP_TABLE = Response()
+    RESPONSE_CREATE_LOOKUP_TABLE.status_code = 200
+    RESPONSE_CREATE_LOOKUP_TABLE._content = b'Lookup Table test_table created successfully'
+    return RESPONSE_CREATE_LOOKUP_TABLE
+
+
+def get_mock_attachment_response():
+    RESPONSE_GET_INCIDENT_ATTACHMENT_6_4 = Response()
+    RESPONSE_GET_INCIDENT_ATTACHMENT_6_4.headers = {'Content-Disposition': 'attachment;filename=test.txt'}
+    RESPONSE_GET_INCIDENT_ATTACHMENT_6_4.status_code = 200
+    RESPONSE_GET_INCIDENT_ATTACHMENT_6_4._content = b'test file'
+    return RESPONSE_GET_INCIDENT_ATTACHMENT_6_4
+
+
+DELETE_LOOKUP_TABLE_ENTRIES_INVALID_LOOKUP_NAME = [
+    {
+        "errorCode": 404,
+        "errorMessage": "lookupTableName doesn't exists. Please provide available lookupTableName.",
+        "errorType": "Functional"
+    }
+]
+
+DELETE_LOOKUP_TABLE_ENTRIES_INVALID_LOOKUP_KEYS = [
+    {
+        "errorCode": 404,
+        "errorMessage": "Error deleting the key! Please check the input params!key1",
+        "errorType": "Functional"
+    }
+]
+
+MIRROR_RESPONSE_GET_INCIDENT_ACTIVITY_HISTORY = {
+    "status": "OK",
+    "messages": [
+        "Get activity stream details for incident ID [2849604490]"
+    ],
+    "result": {
+        "activityStreamData": [
+            {
+                "caseid": "2849604490",
+                "actiontaken": "COMMENTS_ADDED",
+                "status": "Open",
+                "comment": [
+                    {
+                        "Comments": "Incident created while executing playbook - Create Security Incident"
+                    }
+                ],
+                "eventTime": "Jan 12, 2023 7:25:38 AM",
+                "username": "Admin Admin",
+                "currentassignee": "API_TEST_SS",
+                "commentType": [
+                    "text"
+                ],
+                "currWorkflow": "SOCTeamReview",
+                "isPlayBookOutAvailable": False,
+                "creator": "admin"
+            },
+            {
+                "caseid": "2849604490",
+                "actiontaken": "In Progress",
+                "status": "In Progress",
+                "comment": [],
+                "eventTime": "Jan 12, 2023 8:16:22 AM",
+                "lastStatus": "Open",
+                "username": "Test User",
+                "currentassignee": "API_TEST_SS",
+                "pastassignee": "API_TEST_SS",
+                "commentType": [],
+                "prevWorkflow": "Test_XSOAR",
+                "currWorkflow": "Test_XSOAR",
+                "isPlayBookOutAvailable": False,
+                "creator": "test_user"
+            },
+            {
+                "caseid": "2849604490",
+                "actiontaken": "Closed",
+                "status": "Completed",
+                "comment": [],
+                "eventTime": "Jan 12, 2023 8:16:48 AM",
+                "lastStatus": "In Progress",
+                "username": "Test User",
+                "currentassignee": "API_TEST_SS",
+                "pastassignee": "API_TEST_SS",
+                "commentType": [],
+                "prevWorkflow": "Test_XSOAR",
+                "currWorkflow": "Test_XSOAR",
+                "isPlayBookOutAvailable": False,
+                "creator": "test_user"
+            }
+        ]
+    }
+}
+
+MIRROR_ENTRIES = [
+    {'type': None, 'category': None, 'contents': 'This is a comment', 'contentsFormat': None,
+     'tags': ['comments', 'work_notes'], 'note': True, 'user': 'Admin'}
+]
+
+MIRROR_RESPONSE_GET_INCIDENT_ACTIVITY_HISTORY_ATTACHMENT = {
+    "status": "OK",
+    "messages": [
+        "Get activity stream details for incident ID [5010212504]"
+    ],
+    "result": {
+        "activityStreamData": [
+            {
+                "caseid": "1234",
+                "actiontaken": "CREATED",
+                "status": "Open",
+                "comment": [
+                    {
+                        "Comments": "Incident created while executing playbook - ServiceNow - Create Incident"
+                    }
+                ],
+                "eventTime": "Feb 22, 2023 8:39:50 PM",
+                "username": "Admin Admin",
+                "currentassignee": "API_TEST_SS",
+                "commentType": [
+                    "text"
+                ],
+                "currWorkflow": "SOCTeamReview",
+                "isPlayBookOutAvailable": False,
+                "creator": "admin"
+            },
+            {
+                "caseid": "1234",
+                "actiontaken": "ATTACHED_FILE",
+                "eventTime": "Feb 23, 2023 9:45:53 AM",
+                "attachment": "test.txt",
+                "username": "Crest Team",
+                "attachmentType": "doc",
+                "isPlayBookOutAvailable": False
+            }
+        ]
+    }
 }

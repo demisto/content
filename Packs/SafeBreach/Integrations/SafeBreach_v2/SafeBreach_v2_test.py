@@ -30,6 +30,7 @@ REMEDATION_DATA_LIST = load_test_data('./test_data/remediation_data.json')
 GET_INSIGHTS_LIST = load_test_data('./test_data/insights.json')
 SIMULATION = load_test_data('./test_data/simulation.json')
 NODES = load_test_data('./test_data/nodes.json')
+REMEDATION_DATA_LIST_UNVAILD_STRING = load_test_data('./test_data/remediation_data_with_unvaild_string.json')
 
 
 def test_get_insights(requests_mock, mocker):
@@ -140,6 +141,30 @@ def test_get_indicators(requests_mock, mocker):
     insight_category = ['Endpoint', 'Web']
     insight_data_type = ['Hash', 'Domain']
     hash_to_search = '109c702578b261d0eda01506625423f5a2b8cc107b0d8dfad84d39fb02bfa5cb'
+    res = get_indicators_command(client, insight_category, insight_data_type, 'AMBER', demisto.args())
+    assert demisto.results.call_count == 0
+    assert res[0]['value'] == hash_to_search
+    assert res[0]['type'] == 'File'
+
+
+def test_get_indicators_exception(requests_mock, mocker):
+    mocker.patch.object(demisto, 'args', return_value={'limit': '10'})
+    mocker.patch.object(demisto, 'results')
+    mocker.patch.object(demisto, 'params', return_value={'url': MOCK_URL})
+
+    for insight_id in [5, 6, 8, 9, 13, 14, 17]:
+        requests_mock.get(f'{MOCK_URL}/api/data/v1/accounts/{MOCK_ACCOUNT_ID}/insights/{insight_id}/remediation',
+                          json=REMEDATION_DATA_LIST_UNVAILD_STRING)
+
+    requests_mock.get(
+        f'{MOCK_URL}/api/data/v1/accounts/{MOCK_ACCOUNT_ID}/insights?type=actionBased',
+        json=GET_INSIGHTS_LIST)
+    requests_mock.get(
+        f'{MOCK_URL}/api/config/v1/accounts/{MOCK_ACCOUNT_ID}/nodes?details=true&deleted=true&assets=true',
+        json=NODES)
+    insight_category = ['Endpoint', 'Web']
+    insight_data_type = ['Hash', 'Domain']
+    hash_to_search = '0000000000000000000000000000000000000000000000000000000000000000'
     res = get_indicators_command(client, insight_category, insight_data_type, 'AMBER', demisto.args())
     assert demisto.results.call_count == 0
     assert res[0]['value'] == hash_to_search

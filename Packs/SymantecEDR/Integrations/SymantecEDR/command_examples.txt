@@ -1,0 +1,24 @@
+!symantec-edr-file-instance-list limit=1
+!symantec-edr-domain-instance-list limit=1
+!symantec-edr-endpoint-instance-list limit=1
+!symantec-edr-file-instance-list file_sha2=302c968ab3e1227d54df4e72f39088d7483d25eeb3037f0b16bc39cef2728fa4
+!symantec-edr-allow-list-policy-get limit=10
+!symantec-edr-deny-list-policy-get limit=10
+!symantec-edr-endpoint-isolate device_id=393b8e82-fe40-429f-8e5e-c6b79a0f2b1c
+!symantec-edr-endpoint-rejoin device_id=393b8e82-fe40-429f-8e5e-c6b79a0f2b1c
+!symantec-edr-endpoint-cancel-command command_id=bee3647b420f4e1bab822ca283fbeb00-2022-12-18
+!symantec-edr-endpoint-delete-file device_id=393b8e82-fe40-429f-8e5e-c6b79a0f2b1c sha2=302c968ab3e1227d54df4e72f39088d7483d25eeb3037f0b16bc39cef2728fa4
+!symantec-edr-endpoint-status command_id=b44a351058454c81af41ca98a20d622c-2022-12-18
+!symantec-edr-domain-file-association-list limit=1
+!symantec-edr-endpoint-domain-association-list limit=1
+!symantec-edr-endpoint-file-association-list limit=1
+!symantec-edr-incident-list limit=1
+!symantec-edr-incident-update action_type=add_comment incident_id=100022 value="added as part of testing xsoar command examples"
+!symantec-edr-incident-update action_type=update_resolution incident_id=100021 value=3
+!symantec-edr-incident-comment-get incident_id=100022 limit=1
+!symantec-edr-incident-update action_type=close_incident incident_id=100022
+!symantec-edr-incident-event-list limit=1
+!symantec-edr-event-list limit=1
+!symantec-edr-audit-event-list limit=1
+!symantec-edr-system-activity-list limit=1
+!file file=1dc0c8d7304c177ad0e74d3d2f1002eb773f4b180685a7df6bbe75ccc24b0164 using-brand=SymantecEDR

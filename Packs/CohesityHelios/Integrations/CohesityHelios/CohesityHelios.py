@@ -1,18 +1,18 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 """Cohesity Helios Integration for Cortex XSOAR (aka Demisto).
 """
-import demistomock as demisto
-from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 
 from datetime import datetime, timedelta
 from dateparser import parse
 from typing import Dict, Any
 import json
-import requests
+import urllib3
 import traceback
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
+urllib3.disable_warnings()  # pylint: disable=no-member
 
 
 ''' CONSTANTS '''

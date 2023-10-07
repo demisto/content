@@ -2,7 +2,7 @@
     "name": "Brute Force",
     "description": "This Content Pack helps you automate the repetitive tasks associated with Brute Force incidents. Custom incident views and layouts aid investigation.",
     "support": "xsoar",
-    "currentVersion": "1.2.3",
+    "currentVersion": "1.2.5",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -28,10 +28,6 @@
             "mandatory": false,
             "display_name": "Gmail"
         },
-        "EWSMailSender": {
-            "mandatory": false,
-            "display_name": "EWS Mail Sender"
-        },
         "MailSenderNew": {
             "mandatory": false,
             "display_name": "Mail Sender (New)"
@@ -51,10 +47,6 @@
         "CommonPlaybooks": {
             "mandatory": true,
             "display_name": "Common Playbooks"
-        },
-        "Compliance": {
-            "mandatory": true,
-            "display_name": "Compliance"
         },
         "MicrosoftGraphMail": {
             "mandatory": false,

@@ -20,7 +20,7 @@
         },
         "locationTechnology": "gps",
         "accuracy": 10,
-        "lastUpdate": 1605747972853
+        "lastUpdateDateTimeUtc": 1605747972853
       }
     }
   },
@@ -45,7 +45,7 @@
         },
         "locationTechnology": "gps",
         "accuracy": 15,
-        "lastUpdate": 1605747972853
+        "lastUpdateDateTimeUtc": 1605747972853
       }
     }
   }

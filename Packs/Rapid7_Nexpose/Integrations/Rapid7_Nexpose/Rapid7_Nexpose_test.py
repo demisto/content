@@ -55,7 +55,7 @@ def test_client_paged_http_request(mocker, mock_client: Client, mock_files_prefi
 
     mocker.patch.object(BaseClient, "_http_request", side_effect=pagination_side_effect)
     assert mock_client._paged_http_request(**test_input_kwargs) == \
-           load_test_data("paged_http_request", f"{expected_output_context_file}")
+        load_test_data("paged_http_request", f"{expected_output_context_file}")
 
 
 @pytest.mark.parametrize("test_input, expected_output",
@@ -588,7 +588,7 @@ def test_create_scan_schedule_command(mocker, mock_client: Client, test_input_kw
 
     else:
         assert create_scan_schedule_command(mock_client, **test_input_kwargs).outputs == \
-               expected_output_context
+            expected_output_context
 
         http_request.assert_called_with(
             method="POST",
@@ -1249,7 +1249,7 @@ def test_search_assets_command(mocker, mock_client: Client, api_mock_file: str, 
     assert isinstance(results, list)  # Assure a list of CommandResults has been received instead of a single one.
     # Using `sorted` to not fail test in case the order of CommandResults changes
     assert sorted([result.outputs for result in results], key=lambda d: d["AssetId"]) == \
-           sorted(expected_output_context, key=lambda d: d["AssetId"])
+        sorted(expected_output_context, key=lambda d: d["AssetId"])
 
 
 @pytest.mark.parametrize("site_id, credential_id, enabled",
@@ -1634,3 +1634,26 @@ def test_update_vulnerability_exception_status_command(mocker, mock_client: Clie
     )
 
     assert result.outputs is None
+
+
+@pytest.mark.parametrize("site_id, hosts, expected_post_data",
+                         [
+                             ("1", None, {"name": "Test Scan"}),
+                             ("1", ["192.0.2.0"], {"hosts": ["192.0.2.0"], "name": "Test Scan"})
+                         ])
+def test_start_site_scan_command(mocker, mock_client: Client, site_id: str, hosts: list[str] | None,
+                                 expected_post_data: dict):
+    """
+    Given: Valid parameters for the start_site_scan_command function.
+    When: Calling the start_site_scan_command function.
+    Then: Ensure a valid API call is made and no context output is returned.
+    """
+    http_request = mocker.patch.object(BaseClient, "_http_request", return_value={})
+    start_site_scan_command(client=mock_client, site_id=site_id, name="Test Scan", hosts=hosts)
+
+    http_request.assert_called_with(
+        url_suffix=f"/sites/{site_id}/scans",
+        method="POST",
+        resp_type="json",
+        json_data=expected_post_data,
+    )

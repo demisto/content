@@ -4,21 +4,18 @@ args:
   isArray: true
   name: ids
   required: true
-  secret: false
 comment: This automation allows to delete a relationship between indicator objects based on the relationship id.
 commonfields:
   id: DeleteIndicatorRelationships
   version: -1
-enabled: false
 name: DeleteIndicatorRelationships
 script: '-'
-system: false
 tags:
 - basescript
 timeout: '0'
 type: python
 subtype: python3
-dockerimage: demisto/python3:3.10.4.30607
+dockerimage: demisto/python3:3.10.12.63474
 fromversion: 6.2.0
 tests:
 - Relationships scripts - Test

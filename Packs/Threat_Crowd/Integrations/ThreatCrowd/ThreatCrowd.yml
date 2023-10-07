@@ -5,7 +5,6 @@ name: Threat Crowd
 display: Threat Crowd (Deprecated)
 category: Data Enrichment & Threat Intelligence
 description: Deprecated. Use Threat Crowd v2 instead.
-defaultEnabled: false
 configuration:
 - display: Server URL (e.g. https://192.168.0.1)
   name: server
@@ -129,7 +128,6 @@ script:
     - contextPath: File.ThreatCrowd.Scans
       description: The Threat Crowd scans of the file.
     description: Get a report of a file.
-hidden: false
 tests:
 - ThreatCrowd - Test
 fromversion: 5.0.0

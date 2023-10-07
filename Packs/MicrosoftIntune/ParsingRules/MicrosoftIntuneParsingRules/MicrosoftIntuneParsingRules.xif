@@ -1,0 +1,14 @@
+[INGEST:vendor="MSFT", product="Azure", target_dataset="msft_azure_raw", no_hit=keep]
+filter to_string(time) ~= "\d{4}\-\d{2}\-\d{2}T\d{2}:\d{2}:\d{2}[\.\dZ]+"
+| alter 
+    timestampModify = time
+| alter 
+    splitStr = split(timestampModify, ".")
+| alter 
+    epoch_s = to_string(to_epoch(parse_timestamp("%Y-%m-%dT%H:%M:%S", arrayindex(splitStr ,0)), "seconds")),
+    epoch_ms = to_string(arrayindex(regextract(trim(arrayindex(splitStr, 1),"Z"),"^(\d{3})"),0))
+| alter 
+    timestampModify = concat(epoch_s , epoch_ms)
+| alter 
+    _time = to_timestamp(to_integer(timestampModify), "millis")
+| fields -epoch_s, epoch_ms, splitStr, timestampModify;

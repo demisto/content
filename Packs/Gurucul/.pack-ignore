@@ -1,5 +1,9 @@
 [file:GuruculGRA.yml]
-ignore=IN136,IN145
+ignore=IN136
 
 [file:README.md]
 ignore=RM102
+
+[file:GRAAnomaliesDisplay.yml]
+ignore=BA124
+

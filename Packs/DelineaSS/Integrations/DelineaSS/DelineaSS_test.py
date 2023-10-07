@@ -8,7 +8,9 @@ from DelineaSS import Client, \
     folder_delete_command, folder_update_command, \
     user_delete_command, secret_create_command, user_create_command, \
     user_update_command, secret_rpc_changepassword_command, \
-    fetch_credentials_command, secret_search_name_command
+    fetch_credentials_command, secret_search_name_command, \
+    secret_search_command, folder_search_command, user_search_command
+
 from test_data.context import GET_PASSWORD_BY_ID_CONTEXT, \
     GET_USERNAME_BY_ID_CONTENT, SECRET_GET_CONTENT, \
     SECRET_PASSWORD_UPDATE_CONTEXT, SECRET_CHECKOUT_CONTEXT, \
@@ -16,7 +18,8 @@ from test_data.context import GET_PASSWORD_BY_ID_CONTEXT, \
     FOLDER_CREATE_CONTEXT, FOLDER_DELETE_CONTEXT, FOLDER_UPDATE_CONTEXT, \
     USER_DELETE_CONTEXT, SECRET_CREATE_CONTEXT, USER_CREATE_CONTEXT, \
     USER_UPDATE_CONTEXT, SECRET_RPC_CHANGE_PASSWORD_CONTEXT, \
-    SECRET_GET_CREDENTIALS_CONTEXT, SECRET_SEARCH_NAME_CONTEXT
+    SECRET_GET_CREDENTIALS_CONTEXT, SECRET_SEARCH_NAME_CONTEXT, \
+    SECRET_SEARCH_CONTEXT, FOLDER_SEARCH_CONTEXT, USER_SEARCH_CONTEXT
 from test_data.http_responses import GET_PASSWORD_BY_ID_RAW_RESPONSE, \
     GET_USERNAME_BY_ID_RAW_RESPONSE, SECRET_CHECKOUT_RAW_RESPONSE, \
     SECRET_GET_RAW_RESPONSE, SECRET_PASSWORD_UPDATE_RAW_RESPONSE, \
@@ -25,15 +28,16 @@ from test_data.http_responses import GET_PASSWORD_BY_ID_RAW_RESPONSE, \
     FOLDER_UPDATE_RAW_RESPONSE, USER_DELETE_RAW_RESPONSE, \
     SECRET_CREATE_RAW_RESPONSE, SECRET_RPC_CHANGE_PASSWORD_RAW_RESPONSE, \
     USER_CREATE_RAW_RESPONSE, USER_UPDATE_RAW_RESPONSE, SECRET_GET_CREDENTIALS_RAW_RESPONSE, \
-    SECRET_SEARCH_NAME_RAW_RESPONSE
+    SECRET_SEARCH_NAME_RAW_RESPONSE, SECRET_SEARCH_RAW_RESPONSE, FOLDER_SEARCH_RAW_RESPONSE, \
+    USER_SEARCH_RAW_RESPONSE
 
-GET_PASSWORD_BY_ID_ARGS = {"secret_id": "4"}
+GET_PASSWORD_BY_ID_ARGS = {"secret_id": "4", "autoComment": "TestGetPassword"}
 GET_USERNAME_BY_ID_ARGS = {"secret_id": "4"}
-SECRET_GET_ARGS = {"secret_id": "4"}
-SECRET_PASSWORD_UPDATE_ARGS = {"secret_id": "4", "newpassword": "NEWPASSWORD1"}
+SECRET_GET_ARGS = {"secret_id": "4", "autoComment": "TestGetSecret"}
+SECRET_PASSWORD_UPDATE_ARGS = {"secret_id": "4", "newpassword": "NEWPASSWORD1", "autoComment": "TestPasswordUpdate"}
 SECRET_CHECKOUT_ARGS = {"secret_id": "3"}
 SECRET_CHECKIN_ARGS = {"secret_id": "4"}
-SECRET_DELETE_ARGS = {"id": "9"}
+SECRET_DELETE_ARGS = {"id": "9", "autoComment": "TestDeleteSecret"}
 FOLDER_CREATE_ARGS = {"folderName": "xsoarFolderTest3", "folderTypeId": "1",
                       "parentFolderId": "3"}
 FOLDER_DELETE_ARGS = {"folder_id": "9"}
@@ -47,9 +51,12 @@ SECRET_CREATE_ARGS = {"name": "xsoarSecret", "secrettemplateid": "6003",
                       "username_item": "my-username",
                       "password_item": "password_item"}
 USER_UPDATE_ARGS = {"id": "28", "userName": "UserOne"}
-SECRET_RPC_CHANGE_PASSWORD_ARGS = {"secret_id": "4", "newpassword": "newPassword"}
+SECRET_RPC_CHANGE_PASSWORD_ARGS = {"secret_id": "4", "newpassword": "newPassword", "autoComment": "TestPasswordChange"}
 SECRET_GET_CREDENTIALS_ARGS = {"secretids": "4"}
 SECRET_SEARCH_NAME_ARGS = {"search_name": "Sayali"}
+SEARCH_SECRET_ARGS = {"filter_folderid": "145", "filter_searchfield": "Name", "filter_searchtext": "book"}
+SEARCH_FOLDER_ARGS = {"foldername": "admin"}
+SEARCH_USER_ARGS = {"filter_searchfield": "userName", "filter_searchtext": "Adil", "domainId": "-1"}
 
 
 @pytest.mark.parametrize('command, args, http_response, context', [
@@ -72,7 +79,10 @@ SECRET_SEARCH_NAME_ARGS = {"search_name": "Sayali"}
      SECRET_RPC_CHANGE_PASSWORD_RAW_RESPONSE, SECRET_RPC_CHANGE_PASSWORD_CONTEXT),
     (fetch_credentials_command, SECRET_GET_CREDENTIALS_ARGS, SECRET_GET_CREDENTIALS_RAW_RESPONSE,
      SECRET_GET_CREDENTIALS_CONTEXT),
-    (secret_search_name_command, SECRET_SEARCH_NAME_ARGS, SECRET_SEARCH_NAME_RAW_RESPONSE, SECRET_SEARCH_NAME_CONTEXT)
+    (secret_search_name_command, SECRET_SEARCH_NAME_ARGS, SECRET_SEARCH_NAME_RAW_RESPONSE, SECRET_SEARCH_NAME_CONTEXT),
+    (secret_search_command, SEARCH_SECRET_ARGS, SECRET_SEARCH_RAW_RESPONSE, SECRET_SEARCH_CONTEXT),
+    (folder_search_command, SEARCH_FOLDER_ARGS, FOLDER_SEARCH_RAW_RESPONSE, FOLDER_SEARCH_CONTEXT),
+    (user_search_command, SEARCH_USER_ARGS, USER_SEARCH_RAW_RESPONSE, USER_SEARCH_CONTEXT)
 
 ])
 def test_delinea_commands(command, args, http_response, context, mocker):

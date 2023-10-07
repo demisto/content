@@ -1,0 +1,25 @@
+{
+    "data": [
+        {
+            "id": 2372028386,
+            "account_id": 585832,
+            "name": "User submitted SPAM",
+            "description": null
+        },
+        {
+            "id": 2372028387,
+            "account_id": 585832,
+            "name": "PhishRIP Message Found",
+            "description": null
+        },
+        {
+            "id": 2372290413,
+            "account_id": 585832,
+            "name": "test",
+            "description": null
+        }
+    ],
+    "meta": {
+        "count": 3
+    }
+}

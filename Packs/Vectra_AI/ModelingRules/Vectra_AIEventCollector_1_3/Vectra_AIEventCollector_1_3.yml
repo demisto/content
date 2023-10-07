@@ -1,0 +1,6 @@
+fromversion: 6.10.0
+id: VectraAI_Event_collector_ModelingRule
+name: Vectra AI Event Collector Modeling Rule
+rules: ''
+schema: ''
+tags: Vectra Detection Audits

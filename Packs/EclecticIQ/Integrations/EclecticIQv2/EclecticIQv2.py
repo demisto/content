@@ -1,10 +1,10 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import json
 import re
 import traceback
 from typing import Any, Dict, List, Mapping, Tuple
-import demistomock as demisto
 import urllib3
-from CommonServerPython import *
 
 """EclecticIQ Integration for Cortex XSOAR."""
 
@@ -591,7 +591,7 @@ def EclecticIQ_create_observable(client: Client, args: Any) -> CommandResults:
 
 def main() -> None:
     params = demisto.params()
-    api_key = params.get('apikey')
+    api_key = params.get('apikey', {}).get('password')
     base_url = params.get('url')
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)

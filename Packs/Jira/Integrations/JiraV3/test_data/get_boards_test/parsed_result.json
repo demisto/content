@@ -1,0 +1,51 @@
+{
+    "Type": 1,
+    "ContentsFormat": "json",
+    "Contents": {
+        "maxResults": 50,
+        "startAt": 0,
+        "total": 1,
+        "isLast": true,
+        "values": [
+            {
+                "id": 14,
+                "self": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/agile/1.0/board/14",
+                "name": "COMPANYSA board",
+                "type": "kanban",
+                "location": {
+                    "projectId": 10022,
+                    "displayName": "Company Snoozing App (COMPANYSA)",
+                    "projectName": "Company Snoozing App",
+                    "projectKey": "COMPANYSA",
+                    "projectTypeKey": "software",
+                    "avatarURI": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/2/universal_avatar/view/type/project/avatar/10402?size=small",
+                    "name": "Company Snoozing App (COMPANYSA)"
+                }
+            }
+        ]
+    },
+    "HumanReadable": "### Boards\n|ID|Name|Project ID|Project Name|Type|\n|---|---|---|---|---|\n| 14 | COMPANYSA board | 10022 | Company Snoozing App | kanban |\n",
+    "EntryContext": {
+        "Jira.Board(val.id && val.id == obj.id)": [
+            {
+                "id": 14,
+                "self": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/agile/1.0/board/14",
+                "name": "COMPANYSA board",
+                "type": "kanban",
+                "location": {
+                    "projectId": 10022,
+                    "displayName": "Company Snoozing App (COMPANYSA)",
+                    "projectName": "Company Snoozing App",
+                    "projectKey": "COMPANYSA",
+                    "projectTypeKey": "software",
+                    "avatarURI": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/2/universal_avatar/view/type/project/avatar/10402?size=small",
+                    "name": "Company Snoozing App (COMPANYSA)"
+                }
+            }
+        ]
+    },
+    "IndicatorTimeline": [],
+    "IgnoreAutoExtract": false,
+    "Note": false,
+    "Relationships": []
+}

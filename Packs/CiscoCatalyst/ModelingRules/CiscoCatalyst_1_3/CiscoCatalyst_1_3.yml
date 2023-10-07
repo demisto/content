@@ -1,0 +1,6 @@
+fromversion: 6.10.0
+id: cisco_catalyst_modeling_rule
+name: Cisco Catalyst Modeling Rule
+rules: ''
+schema: ''
+tags: Cisco Catalyst
