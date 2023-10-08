@@ -209,8 +209,7 @@ tasks:
       id: be9c8f44-63bb-4ba0-873b-2168cdb2ab06
       version: -1
       name: Determine incident severity
-      description: Determines the severity level based on the highest result of all
-        severity calculations.
+      description: Determines the severity level based on the highest result of all severity calculations.
       type: condition
       iscommand: false
       brand: ""
@@ -229,7 +228,7 @@ tasks:
     conditions:
     - label: Critical
       condition:
-      - - operator: isExists
+      - - operator: isNotEmpty
           left:
             value:
               complex:
@@ -282,7 +281,7 @@ tasks:
             iscontext: true
     - label: High
       condition:
-      - - operator: isExists
+      - - operator: isNotEmpty
           left:
             value:
               complex:
@@ -335,7 +334,7 @@ tasks:
             iscontext: true
     - label: Medium
       condition:
-      - - operator: isExists
+      - - operator: isNotEmpty
           left:
             value:
               complex:
@@ -367,6 +366,7 @@ tasks:
                     right:
                       value:
                         simple: Medium
+                    ignorecase: true
                   - operator: isEqualString
                     left:
                       value:
@@ -388,7 +388,7 @@ tasks:
           ignorecase: true
     - label: Low
       condition:
-      - - operator: isExists
+      - - operator: isNotEmpty
           left:
             value:
               complex:
@@ -655,7 +655,7 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 905
+          "y": 870
         }
       }
     note: false
@@ -684,7 +684,8 @@ tasks:
       key:
         simple: Severities.MicrosoftHeadersSeverityCheck
       value:
-        simple: ${inputs.MicrosoftHeadersSeverityCheck}
+        complex:
+          root: inputs.MicrosoftHeadersSeverityCheck
     separatecontext: false
     view: |-
       {

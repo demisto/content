@@ -59,16 +59,26 @@ configuration:
 - name: fetch_incidentStatus
   display: Define which Alerts should be fetched.
   type: 16
+  defaultvalue: UNRESOLVED
   options:
   - RESOLVED
   - UNRESOLVED
   - IN_PROGRESS
   required: false
+- name: fetch_threat_incident_statuses
+  display: 'Define which Threats should be fetched.'
+  type: 16
+  defaultvalue: UNRESOLVED
+  required: false
+  options:
+  - RESOLVED
+  - UNRESOLVED
+  - IN_PROGRESS
 - name: fetch_limit
   display: 'Fetch limit: The maximum number of threats or alerts to fetch'
   type: 0
-  defaultvalue: '10'
   required: false
+  defaultvalue: '10'
 - name: fetch_site_ids
   display: Site IDs
   type: 0
@@ -77,21 +87,21 @@ configuration:
 - name: block_site_ids
   display: Block Site IDs
   type: 0
-  additionalinfo: Comma-separated list of site IDs for where hashes should be blocked. If left blank all hashes will be blocked globally. If filled out with site ids all hashes will be no longer be blocked globally, they will now be blocked in the scope of those sites.
   required: false
-- name: insecure
-  display: Trust any certificate (not secure)
+  additionalinfo: Comma-separated list of site IDs for where hashes should be blocked. If left blank all hashes will be blocked globally. If filled out with site ids all hashes will be no longer be blocked globally, they will now be blocked in the scope of those sites.
+- display: Trust any certificate (not secure)
+  name: insecure
   type: 8
   required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
-- additionalinfo: Use the "API Token (Recommended)" parameter instead.
-  display: API Token (Deprecated)
+- display: API Token (Deprecated)
   name: token
   type: 4
   required: false
+  additionalinfo: Use the "API Token (Recommended)" parameter instead.
 - defaultvalue: '1'
   display: Incidents Fetch Interval
   name: incidentFetchInterval
@@ -101,13 +111,13 @@ configuration:
   defaultvalue: None
   display: Incident Mirroring Direction
   name: mirror_direction
+  type: 15
+  required: false
   options:
   - None
   - Incoming
   - Outgoing
   - Incoming And Outgoing
-  type: 15
-  required: false
 - additionalinfo: When selected, closing the SentinelOne ticket is mirrored in Cortex XSOAR.
   defaultvalue: 'false'
   display: Close Mirrored XSOAR Incident
@@ -380,6 +390,8 @@ script:
     - description: 'A comma-separated list of site IDs to search for threats, for example: "225494730938493804,225494730938493915".'
       isArray: true
       name: site_ids
+    - description: 'Incident status. Example: "IN_PROGRESS, UNRESOLVED".'
+      name: incident_statuses
     description: Returns threats according to the specified filters.
     name: sentinelone-get-threats
     outputs:
@@ -898,7 +910,7 @@ script:
       description: Whether the policy is inherited from a site. "False" if the group has its own edited policy.
       type: Boolean
     - contextPath: SentinelOne.Group.type
-      description: Group type. Can be static or dynamic
+      description: Group type. Can be static or dynamic.
       type: String
     - contextPath: SentinelOne.Group.id
       description: The ID of the group.
@@ -1015,7 +1027,7 @@ script:
     - description: 'QueryId obtained when creating a query in the sentinelone-create-query command. Example: "q1xx2xx3".'
       name: query_id
       required: true
-    - description: Cursor pointer to get next page of results from query
+    - description: Cursor pointer to get next page of results from query.
       name: cursor
     description: Returns all Deep Visibility events that match the query.
     name: sentinelone-get-events
@@ -1090,7 +1102,7 @@ script:
       description: Event type.
       type: String
     - contextPath: SentinelOne.Cursor.Event
-      description: cursor to recieve next page
+      description: cursor to recieve next page.
       type: String
   - arguments:
     - description: The query string for which to return events.
@@ -1283,14 +1295,14 @@ script:
       predefined:
       - events
       - processes
-      description: Type of the query. For now it's "events"
+      description: Type of the query. For now it's "events".
     - name: query
       required: true
       description: The query string for which to return events.
     - name: description
       description: The description of the STAR rule.
     - name: expiration_date
-      description: 'If expiration mode is "Temporary" then it should be supplied, for example, "2019-08-03T04:49:26.257525Z" '
+      description: If expiration mode is "Temporary" then it should be supplied, for example, "2019-08-03T04:49:26.257525Z".
     - name: site_ids
       description: A comma-separated list of site IDs.
       isArray: true
@@ -1450,7 +1462,7 @@ script:
       predefined:
       - events
       - processes
-      description: Type of the query. For now it's "events"
+      description: Type of the query. For now it's "events".
     - name: query
       required: true
       description: The query string for which to return events.
@@ -1566,7 +1578,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       defaultValue: "true"
-      description: Whether the global list is accessible. (Same as `tenant` flag in API docs.)
+      description: Whether the global list is accessible. (Same as `tenant` flag in API docs.).
       name: global
       predefined:
       - "true"
@@ -1583,7 +1595,7 @@ script:
     - defaultValue: "1000"
       description: The maximum number of records to return.
       name: limit
-    - description: Hash to search for in the blocklist
+    - description: Hash to search for in the blocklist.
       name: hash
     description: Add a hash to the blocklist ("blacklist" in SentinelOne documentation). If the `global` flag is `true`, then group_ids, site_ids, and account_ids are ignored.
     name: sentinelone-get-blocklist
@@ -1655,7 +1667,7 @@ script:
       - windows
       - macos
       - linux
-    description: Remove a hash from the global blocklist in SentinelOne
+    description: Remove a hash from the global blocklist in SentinelOne.
     name: sentinelone-remove-hash-from-blocklist
     outputs:
     - contextPath: SentinelOne.RemoveHashFromBlocklist.hash
@@ -1694,7 +1706,7 @@ script:
       isArray: true
     - name: note
       required: true
-      description: Threat Note Text
+      description: Threat Note Text.
     description: Add a threat note to one or more threats. Relevant for API version 2.1.
     name: sentinelone-write-threat-note
     outputs:
@@ -1837,10 +1849,10 @@ script:
       description: 'A comma-separated list of free-text filtered by the indicator name. Example: "foo.dll".'
     - name: creator_contains
       description: 'A comma-separated list of free-text filtered by the user who uploaded the Threat Intelligence indicator. Example: "admin@sentinelone.com".'
+    - name: category_in
+      description: "The categories of the Threat Intelligence indicator. Example: The malware type associated with the IOC."
     - name: description_contains
       description: 'A comma-separated list of free-text filtered by the description of the indicator. Example: "Malicious-activity".'
-    - name: category_in
-      description: "The categories of the Threat Intelligence indicator. Example: The malware type associated with the IOC"
     - name: updated_at_gte
       description: 'The time (greater or equal to) at which the indicator was last updated in the SentinelOne database. Example: "2021-07-13T20:33:29.007906Z".'
     - name: updated_at_lte
@@ -1891,10 +1903,10 @@ script:
       description: Events created after this timestamp.
     - name: to_date
       required: true
-      description: Events created before or at this timestamp
+      description: Events created before or at this timestamp.
     - name: limit
       description: Limit number of returned items (1-100000).
-    description: Start a Deep Visibility Power query to get back status and potential results (ping afterwards using the queryId if query has not finished). Relevant for API version 2.1
+    description: Start a Deep Visibility Power query to get back status and potential results (ping afterwards using the queryId if query has not finished). Relevant for API version 2.1.
     name: sentinelone-create-power-query
   - arguments:
     - name: queryId
@@ -1956,7 +1968,7 @@ script:
     - name: site_id
       required: true
       description: A valid site ID.
-    description: Expire the site of the given ID
+    description: Expire the site of the given ID.
     name: sentinelone-expire-site
     outputs:
     - contextPath: SentinelOne.Site.ID
@@ -2001,7 +2013,7 @@ script:
       description: "Please provide the Valid Threat ID. Example: 14629133470822878."
     - name: password
       required: true
-      description: File encryption password. (At least 10 characters, three out of this list "uppercase", "lowercase", "digits" and "symbols" are mandatory. Maximum length is 256 characters.)
+      description: File encryption password. (At least 10 characters, three out of this list "uppercase", "lowercase", "digits" and "symbols" are mandatory. Maximum length is 256 characters.).
     name: sentinelone-fetch-threat-file
     description: Fetch a file associated with the threat that matches the filter.
     outputs:
@@ -2053,7 +2065,7 @@ script:
       description: Source process file path.
       type: String
     - contextPath: SentinelOne.Alert.SrcProcCommandline
-      description: The command line
+      description: The command line.
       type: String
     - contextPath: SentinelOne.Alert.SrcProcSHA1
       description: Source process SHA1 file hash.
@@ -2098,10 +2110,10 @@ script:
       description: Analyst verdict.
       type: String
     - contextPath: SentinelOne.Alert.IncidentStatus
-      description: Incident status
+      description: Incident status.
       type: String
     - contextPath: SentinelOne.Alert.EndpointName
-      description: Endpoint name
+      description: Endpoint name.
       type: String
     - contextPath: SentinelOne.Alert.AgentId
       description: Agent ID.
@@ -2127,7 +2139,7 @@ script:
   - arguments:
     - name: agent_ids
       required: true
-      description: "A comma-separated list of agent IDs. Example: 14629133470822878,14627455454652878"
+      description: "A comma-separated list of agent IDs. Example: 14629133470822878,14627455454652878."
     name: sentinelone-get-installed-applications
     description: Get the installed applications for a specific agent.
     outputs:
@@ -2149,7 +2161,7 @@ script:
   - arguments:
     - name: agent_ids
       required: true
-      description: "A comma-separated list of Agent IDs. Example: 14629133470822878,14627455454652878"
+      description: "A comma-separated list of Agent IDs. Example: 14629133470822878,14627455454652878."
     name: sentinelone-initiate-endpoint-scan
     description: Initiate the endpoint virus scan on provided agent IDs.
     outputs:
@@ -2160,7 +2172,7 @@ script:
       description: Whether the scan was initiated.
       type: Boolean
   - arguments:
-    - description: Value of the item to be removed from the exclusion list
+    - description: Value of the item to be removed from the exclusion list.
       name: item
       required: true
     - auto: PREDEFINED
@@ -2173,7 +2185,7 @@ script:
       - linux
     - description: "Exclusion item type. The options are: file_type, path, white_hash, certificate, or browser."
       name: exclusion_type
-    description: Remove an item from the SentinelOne exclusion list
+    description: Remove an item from the SentinelOne exclusion list.
     name: sentinelone-remove-item-from-whitelist
     outputs:
     - contextPath: SentinelOne.RemoveItemFromWhitelist.status
@@ -2204,7 +2216,7 @@ script:
       description: Script ID.
     - name: output_directory
       required: true
-      description: Output directory
+      description: Output directory.
     - name: agent_ids
       required: true
       description: A comma-separated list of agent IDs on which the script should run.
@@ -2267,23 +2279,23 @@ script:
     - description: 'The queryId that is returned when creating a query under Create Query. Example: "q1xx2xx3". Get the query_id from the "get-query-id" command.'
       name: query_id
       required: true
-    description: Returns status of a Deep Visibility Query
+    description: Returns status of a Deep Visibility Query.
     name: sentinelone-get-dv-query-status
     outputs:
     - contextPath: SentinelOne.Query.Status.progressStatus
-      description: Progress Query Status
+      description: Progress Query Status.
     - contextPath: SentinelOne.Query.Status.queryModeInfo.lastActivatedAt
-      description: Last Activated At
+      description: Last Activated At.
     - contextPath: SentinelOne.Query.Status.queryModeInfo.mode
-      description: Query Mode
+      description: Query Mode.
     - contextPath: SentinelOne.Query.Status.responseState
-      description: State of the Query
+      description: State of the Query.
     - contextPath: SentinelOne.Query.Status.warnings
-      description: Warnings during Query
+      description: Warnings during Query.
     - contextPath: SentinelOne.Query.Status.QueryId
-      description: QueryID From Request
+      description: QueryID From Request.
   - arguments:
-    - description: AgentId of the System
+    - description: AgentId of the System.
       name: agent_id
       required: true
     description: Returns network interface details for a given Agent ID. This includes MAC address details and interface description.
@@ -2292,16 +2304,16 @@ script:
     - contextPath: SentinelOne.MAC
       description: Agent network interface details.
     - contextPath: SentinelOne.MAC.agent_id
-      description: AgentID
+      description: AgentID.
     - contextPath: SentinelOne.MAC.hostname
-      description: Hostname
+      description: Hostname.
     - contextPath: SentinelOne.MAC.int_name
-      description: Interface Name
+      description: Interface Name.
     - contextPath: SentinelOne.MAC.ip
-      description: IP Address
+      description: IP Address.
     - contextPath: SentinelOne.MAC.mac
-      description: MAC Address
-  dockerimage: demisto/python3:3.10.12.68714
+      description: MAC Address.
+  dockerimage: demisto/python3:3.10.13.75921
   isfetch: true
   ismappable: true
   isremotesyncin: true

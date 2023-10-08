@@ -311,9 +311,27 @@ script:
       default: true
       required: true
     outputs:
+    - contextPath: File.MD5
+      description: MD5 hash.
+      type: String
     - contextPath: File.SHA1
-      description: 'The SHA1 hash of the file.'
-      type: Unknown
+      description: SHA1 hash.
+      type: String
+    - contextPath: File.SHA256
+      description: SHA256 hash.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
     - contextPath: ReversingLabs.dynamic_analysis_results
       description: The dynamic analysis results.
       type: Unknown
@@ -525,7 +543,7 @@ script:
     - contextPath: ReversingLabs.url_analyses_feed_from_date
       description: The URL analyses feed from date.
       type: Unknown
-  dockerimage: demisto/reversinglabs-sdk-py3:2.0.0.72317
+  dockerimage: demisto/reversinglabs-sdk-py3:2.0.0.73689
   runonce: false
   script: '-'
   subtype: python3

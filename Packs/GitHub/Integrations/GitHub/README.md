@@ -2912,6 +2912,27 @@ Triggers a GitHub workflow on a given repository and workflow.
 #### Context Output
 
 There is no context output for this command.
+
+### GitHub-cancel-workflow
+
+***
+Cancels a GitHub workflow.
+
+#### Base Command
+
+`GitHub-cancel-workflow`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- |--------------|
+| owner | The GitHub owner (organization or username) of the repository. | Optional     | 
+| repository | The GitHub repository name. | Optional     | 
+| workflow_id | The ID of the workflow to cancel. | Required     | 
+
+#### Context Output
+
+There is no context output for this command.
 ### GitHub-list-workflows
 
 ***

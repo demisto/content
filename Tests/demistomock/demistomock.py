@@ -758,7 +758,7 @@ def setIntegrationContextVersioned(context, version=-1, sync=False):
     Returns:
       None: No data returned
 
-    """
+    """  # noqa: E501
     global integrationContext
     integrationContext = context
 

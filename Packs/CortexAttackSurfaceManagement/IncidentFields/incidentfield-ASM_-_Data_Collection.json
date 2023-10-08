@@ -15,7 +15,8 @@
             "script": "",
             "selectValues": null,
             "type": "shortText",
-            "width": 150
+            "width": 150,
+            "_comment": "Mandatory: Options available on data collection task."
         },
         {
             "displayName": "Selected",
@@ -28,7 +29,8 @@
             "script": "",
             "selectValues": null,
             "type": "shortText",
-            "width": 150
+            "width": 150,
+            "_comment": "Mandatory: Which option was selected."
         },
         {
             "displayName": "Answerer",
@@ -41,7 +43,8 @@
             "script": "",
             "selectValues": null,
             "type": "shortText",
-            "width": 150
+            "width": 150,
+            "_comment": "Mandatory: Who answered the data collection task."
         },
         {
             "displayName": "Timestamp",
@@ -54,7 +57,8 @@
             "script": "",
             "selectValues": null,
             "type": "shortText",
-            "width": 150
+            "width": 150,
+            "_comment": "Mandatory: Timestamp of when the data collection task was completed."
         }
     ],
     "content": true,
@@ -63,7 +67,7 @@
         {},
         {}
     ],
-    "description": "Collect information on data collection tasks",
+    "description": "Collect information on data collection tasks.",
     "editForm": true,
     "group": 0,
     "hidden": false,

@@ -634,8 +634,7 @@ def test_initialize_edl_context():
                                           'url_truncate': False,
                                           'UpdateEDL': True,
                                           'maximum_cidr_size': 8,
-                                          'no_wildcard_tld': True,
-                                          'maximum_cidr_size': 8
+                                          'no_wildcard_tld': True
                                           }
 
 
