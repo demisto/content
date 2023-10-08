@@ -1,7 +1,7 @@
 id: Cortex XDR - Possible External RDP Brute-Force - Set Verdict
 version: -1
 name: Cortex XDR - Possible External RDP Brute-Force - Set Verdict
-description: "This playbook creating an array called \"Suspicious Elements\", which is used to count potential security threats. The following elements can be added to the array:\n\n- \"IP Reputation\" - Dbot Score is 2-3 \n- \"Source geolocation\" - RDP Connection made from rare geo-location \n-  Related to campaign - IP address is related to campaign, based on TIM module\n-  Hunting results - the hunt for indicators related to the source IP and the related campaign returned results\n-  XDR Alert search - XDR Alerts that related to the same username and endpoint, and to the MITRE tactics that comes after \"Credential Access\", were found.\n\nThe array will then be outputted and its size will be compared to a final threshold. If the size is greater than or equal to the threshold, the investigation's final verdict will be deemed a \"True Positive.\""
+description: "This playbook creating an array called \"Suspicious Elements\", which is used to count potential security threats. The following elements can be added to the array:\n\n- \"IP Reputation\" - DBot Score is 2-3 \n- \"Source geolocation\" - RDP Connection made from rare geo-location \n-  Related to campaign - IP address is related to campaign, based on TIM module\n-  Hunting results - the hunt for indicators related to the source IP and the related campaign returned results\n-  XDR Alert search - XDR Alerts that related to the same username and endpoint, and to the MITRE tactics that comes after \"Credential Access\", were found.\n- Risky User - one or more risky users are involved in the incident, as identified by the Cortex XDR - IR integration's ITDR module.\n- Risky Host - one or more risky hosts are involved in the incident, as identified by the Cortex XDR - IR integration's ITDR module.\n\n\nThe array will then be outputted and its size will be compared to a final threshold. If the size is greater than or equal to the threshold, the investigation's final verdict will be deemed a \"True Positive.\""
 starttaskid: "0"
 tasks:
   "0":
@@ -593,13 +593,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: dced1f3b-f423-4805-8773-da44cbd1e5e8
+    taskid: d45554b1-95ca-49af-8540-addc1a53c928
     type: condition
     task:
-      id: dced1f3b-f423-4805-8773-da44cbd1e5e8
+      id: d45554b1-95ca-49af-8540-addc1a53c928
       version: -1
       name: Risky host involved?
-      description: Checks if a risky user is involved in the incident.
+      description: Checks if a risky host is involved in the incident.
       type: condition
       iscommand: false
       brand: ""
@@ -783,8 +783,7 @@ outputs:
   description: Array that contains all the suspicious elements.
   type: unknown
 tests:
-- Test XDR Playbook general commands
-- Test XDR Playbook
+- no tests
 fromversion: 6.8.0
 contentitemexportablefields:
   contentitemfields: {}

@@ -2044,7 +2044,6 @@ tasks:
       version: -1
       name: Block Indicators - Generic v3
       playbookName: Block Indicators - Generic v3
-
       type: playbook
       iscommand: false
       brand: ""
@@ -2906,13 +2905,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "156":
     id: "156"
-    taskid: eb80e916-6ffb-4cdf-8a07-e36ef309e06c
+    taskid: 2b9d34d6-408e-4a2b-8685-a2e2c6925b71
     type: condition
     task:
-      id: eb80e916-6ffb-4cdf-8a07-e36ef309e06c
+      id: 2b9d34d6-408e-4a2b-8685-a2e2c6925b71
       version: -1
       name: Is the endpoint at high risk?
-      description: Check if the IP DbotScore is malicious.
+      description: Checks if the endpoint has a high risk associated to it by Cortex XDR.
       type: condition
       iscommand: false
       brand: ""
@@ -2941,6 +2940,8 @@ tasks:
                         simple: HIGH
                     ignorecase: true
             iscontext: true
+          right:
+            value: {}
     continueonerrortype: ""
     view: |-
       {
