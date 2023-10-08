@@ -46,7 +46,7 @@ configuration:
 description: Digital Guardian ARC event collector
 display: Digital Guardian ARC Event Collector
 name: DigitalGuardianARCEventCollector
-support_level_header: xsoar
+supportlevelheader: xsoar
 script:
   commands:
   - arguments:

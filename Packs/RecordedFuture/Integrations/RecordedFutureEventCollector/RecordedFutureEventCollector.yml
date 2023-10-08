@@ -38,7 +38,7 @@ configuration:
 description: This integration fetches alerts from Recorded Future.
 display: Recorded Future Event Collector
 name: RecordedFutureEventCollector
-support_level_header: xsoar
+supportlevelheader: xsoar
 script:
   commands:
   - arguments:

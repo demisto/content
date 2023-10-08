@@ -42,7 +42,7 @@ configuration:
 description: Collects alerts & threat activities from Armis resources.
 display: Armis Event Collector
 name: ArmisEventCollector
-support_level_header: xsoar
+supportlevelheader: xsoar
 script:
   commands:
   - arguments:

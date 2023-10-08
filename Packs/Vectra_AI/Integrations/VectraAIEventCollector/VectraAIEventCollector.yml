@@ -40,7 +40,7 @@ configuration:
 description: 'Collects Vectra Detections and Audits into XSIAM Events.'
 display: 'Vectra AI Event Collector'
 name: VectraAIEventCollector
-support_level_header: xsoar
+supportlevelheader: xsoar
 script:
   commands:
   - name: vectra-get-events

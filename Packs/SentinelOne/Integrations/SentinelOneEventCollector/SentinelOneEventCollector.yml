@@ -56,7 +56,7 @@ configuration:
 description: This integration fetches activities, threats, and alerts from SentinelOne.
 display: SentinelOne Event Collector
 name: SentinelOneEventCollector
-support_level_header: xsoar
+supportlevelheader: xsoar
 script:
   commands:
   - arguments:
