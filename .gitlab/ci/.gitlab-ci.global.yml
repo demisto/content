@@ -238,6 +238,7 @@
       - local: .gitlab/ci/.gitlab-ci.slack-notify.yml
     forward:
       yaml_variables: false
+
 .lock-machine:
   - section_start "Lock Machine" --collapsed
   - echo "Authenticating GCP"
