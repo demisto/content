@@ -169,7 +169,7 @@ def prepare_disable_iocs(iocs: str) -> tuple[str, list]:
 def create_file_iocs_to_keep(file_path, batch_size: int = 200):
     with open(file_path, 'w') as _file:
         has_iocs = False
-        for ioc in (x.get('value', '') for x in get_iocs_generator(size=batch_size)):
+        for ioc in (batch.get('value', '') for batch in get_iocs_generator(size=batch_size)):
             has_iocs = True
             _file.write(ioc + '\n')
 
@@ -189,7 +189,7 @@ def get_iocs_generator(size=200, query=None) -> Iterable:
     query = query or Client.query
     query = f'expirationStatus:active AND ({query})'
     try:
-        for iocs in (x.get('iocs', []) for x in IndicatorsSearcher(size=size, query=query)):
+        for iocs in (batch.get('iocs', []) for batch in IndicatorsSearcher(size=size, query=query)):
             for ioc in iocs:
                 yield ioc
     except StopIteration:
