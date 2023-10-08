@@ -44,6 +44,7 @@ script:
   isfetchevents: true
   subtype: python3
 fromversion: 6.8.0
+support_level_header: xsoar
 marketplaces:
 - marketplacev2
 tests:

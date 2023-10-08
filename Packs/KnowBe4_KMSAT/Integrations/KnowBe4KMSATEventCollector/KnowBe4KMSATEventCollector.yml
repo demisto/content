@@ -52,6 +52,7 @@ configuration:
 description: KnowBe4_KMSAT allows you to push and pull your external data to and from the KnowBe4 console.
 display: 'KnowBe4 KMSAT Event Collector'
 name: KnowBe4 KMSAT Event Collector
+support_level_header: xsoar
 script:
   commands:
   - description: Manual command to fetch and display events.
