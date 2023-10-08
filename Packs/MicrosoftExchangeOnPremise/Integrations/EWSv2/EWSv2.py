@@ -3,6 +3,7 @@ import hashlib
 import subprocess
 import warnings
 from multiprocessing import Process
+from typing import Optional
 
 import dateparser  # type: ignore
 import exchangelib
@@ -593,6 +594,18 @@ def is_empty_object(obj):
     else:
         size = len(obj)
     return size == 0
+
+
+def get_time_zone() -> Optional[EWSTimeZone]:
+    """get the XSOAR user time zone
+    :return:
+        returns an ``EWSTimeZone`` if TZ available or ``None`` if not
+    :rtype: ``Optional[EWSTimeZone]``
+    """
+    time_zone = demisto.callingContext.get('context', {}).get('User', {}).get('timeZone', None)
+    if time_zone:
+        time_zone = EWSTimeZone(time_zone)
+    return time_zone
 
 
 def get_attachment_name(attachment_name):  # pragma: no cover
@@ -2230,9 +2243,7 @@ def get_none_empty_addresses(addresses_ls):
 
 
 def send_email(args):
-    time_zone = demisto.callingContext.get('context', {}).get('User', {}).get('timeZone', None)
-    if time_zone:
-        time_zone = EWSTimeZone(time_zone)
+    time_zone = get_time_zone()
     account = get_account(account_email=ACCOUNT_EMAIL, time_zone=time_zone)
     bcc = get_none_empty_addresses(argToList(args.get('bcc')))
     cc = get_none_empty_addresses(argToList(args.get('cc')))
@@ -2275,10 +2286,7 @@ def send_email(args):
 
 
 def reply_email(args):  # pragma: no cover
-
-    time_zone = demisto.callingContext.get('context', {}).get('User', {}).get('timeZone', None)
-    if time_zone:
-        time_zone = EWSTimeZone(time_zone)
+    time_zone = get_time_zone()
     account = get_account(account_email=ACCOUNT_EMAIL, time_zone=time_zone)
     bcc = args.get('bcc').split(",") if args.get('bcc') else None
     cc = args.get('cc').split(",") if args.get('cc') else None
