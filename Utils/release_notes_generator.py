@@ -6,6 +6,7 @@ import glob
 import argparse
 from datetime import datetime
 import logging
+import copy
 
 from packaging.version import Version
 import requests
@@ -166,8 +167,8 @@ def get_pack_entities(pack_path):
         if match:
             entity_type = match.group(1)
         else:
-            # should not get here
-            entity_type = 'Extras'
+            # General pack comment
+            entity_type = 'Pack'
 
         name, description = get_new_entity_record(entity_path)
         entities_data.setdefault(entity_type, {})[name] = description
@@ -321,7 +322,7 @@ def aggregate_release_notes(pack_name: str, pack_versions_dict: dict, pack_metad
 def append_commment_to_data(entities_data, entity_type, entity_name, entity_comment):
     """Append release note comment to the right place in merged dict.
 
-    Note: This function alters the provided dictionary and does not create a different updated copy.
+    Note: This function copies the provided dictionary and creates a different updated copy.
 
     Args:
         entities_data: A dictionary of the current release notes merge.
@@ -332,23 +333,24 @@ def append_commment_to_data(entities_data, entity_type, entity_name, entity_comm
     Returns:
         dict: the updated dictionary.
     """
+    entities_data_new = copy.deepcopy(entities_data)
     # release notes of the entity
-    if entity_name in entities_data[entity_type]:
-        exists_comment = entities_data[entity_type][entity_name]
+    if entity_name in entities_data_new.get(entity_type, {}):
+        exists_comment = entities_data_new.get(entity_type, {}).get(entity_name)
         if entity_comment and entity_name != '[special_msg]':
             if not exists_comment.startswith('- '):
                 logging.debug(f'Adding missing "-" to entity comment: {exists_comment}')
-                entities_data[entity_type][entity_name] = f'- {exists_comment}'
+                entities_data_new[entity_type][entity_name] = f'- {exists_comment}'
             if not entity_comment.strip().startswith('- '):
                 logging.debug(f'Adding missing "-" to entity comment: {entity_comment}')
                 entity_comment = f'- {entity_comment.strip()}'
-        entities_data[entity_type][entity_name] += f'{entity_comment.strip()}\n'
+        entities_data_new[entity_type][entity_name] += f'{entity_comment.strip()}\n'
     else:
-        entities_data[entity_type][entity_name] = f'{entity_comment.strip()}\n'
-    return entities_data
+        entities_data_new[entity_type][entity_name] = f'{entity_comment.strip()}\n'
+    return entities_data_new
 
 
-def merge_version_blocks(pack_versions_dict: dict, return_str: bool = True) -> tuple[str | dict, str]:
+def merge_version_blocks(pack_versions_dict: dict, return_str: bool = True): # -> tuple[str | dict, str]:
     """
     merge several pack release note versions into a single block.
 

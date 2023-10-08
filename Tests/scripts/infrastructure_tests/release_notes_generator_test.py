@@ -668,7 +668,7 @@ class TestMergeVersionBlocks:
             "## SomePack\n"
             "- Added some stuff.\n"
             "- Added some other stuff.",
-            "1.0.2", id="Merge general notes together."),
+            "1.0.2", id="Merge general notes together"),
         pytest.param({
             "1.0.1": "#### Integrations\n"
                      "##### Some Integration\n"
@@ -682,7 +682,7 @@ class TestMergeVersionBlocks:
             "#### Integrations\n"
             "##### Some Integration\n"
             "- Some stuff.",
-            "1.0.2", id="Merge general notes with entity RNs."),
+            "1.0.2", id="Merge general notes with entity RNs"),
         pytest.param({
             "1.0.1": "## SomePack\n"
                      "\n"
@@ -700,7 +700,7 @@ class TestMergeVersionBlocks:
             "#### Integrations\n"
             "##### Some Integration\n"
             "- Some stuff.",
-            "1.0.2", id="Merge combined notes with general notes."),
+            "1.0.2", id="Merge combined notes with general notes"),
     ])
     def test_merge_rns_with_general_notes(self, pack_rns: dict, expected_rns: str, expected_version: str):
         """
