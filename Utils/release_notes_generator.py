@@ -350,7 +350,7 @@ def append_commment_to_data(entities_data, entity_type, entity_name, entity_comm
     return entities_data_new
 
 
-def merge_version_blocks(pack_versions_dict: dict, return_str: bool = True): # -> tuple[str | dict, str]:
+def merge_version_blocks(pack_versions_dict: dict, return_str: bool = True) -> tuple[str | dict, str]:
     """
     merge several pack release note versions into a single block.
 
