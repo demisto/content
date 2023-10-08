@@ -1,20 +1,7 @@
 {
     "id": "CybleEventsv2",
-    "version": 1,
-    "cacheVersn": 0,
-    "modified": "2023-09-13T18:15:25.481953001Z",
-    "created": "2023-09-13T18:15:25.47853912Z",
-    "sizeInBytes": 0,
-    "packID": "",
-    "packName": "",
-    "itemVersion": "",
-    "fromServerVersion": "",
-    "toServerVersion": "",
-    "definitionId": "",
+    "version": -1,
     "vcShouldIgnore": false,
-    "vcShouldKeepItemLegacyProdMachine": false,
-    "commitMessage": "",
-    "shouldCommit": false,
     "locked": false,
     "name": "CybleEventsv2",
     "prevName": "CybleEventsv2",
@@ -29,8 +16,6 @@
     "readonly": false,
     "default": false,
     "autorun": false,
-    "preProcessingScript": "",
-    "closureScript": "",
     "disabled": false,
     "reputationCalc": 0,
     "onChangeRepAlg": 0,
@@ -39,5 +24,6 @@
     "extractSettings": {
         "mode": "Specific",
         "fieldCliNameToExtractSettings": {}
-    }
+    },
+    "fromVersion": "6.9.0"
 }
