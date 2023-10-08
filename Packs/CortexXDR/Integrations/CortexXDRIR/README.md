@@ -2879,7 +2879,7 @@ Builtin Roles with this permission includes: "Investigator", "Privileged Investi
 
 ***
 Retrieve a list of the current users in the environment.
-Required license: Cortex XDR Pro per Endpoint, Cortex XDR Pro, or Cortex XDR Pro per TB.
+Required license: Cortex XDR Pro per Endpoint, Cortex XDR Pro, or Cortex XDR Pro per GB.
 
 #### Base Command
 
@@ -2949,6 +2949,7 @@ Required license: Cortex XDR Pro per Endpoint, Cortex XDR Pro, or Cortex XDR Pro
 
 ***
 Retrieve the risk score of a specific user or list of users with the highest risk score in the environment along with the reason affecting each score.
+Required license: Cortex XDR Pro per Endpoint, Cortex XDR Pro, or Cortex XDR Pro per GB.
 
 #### Base Command
 
@@ -3002,7 +3003,7 @@ Retrieve the risk score of a specific user or list of users with the highest ris
 
 ***
 Retrieve the risk score of a specific host or list of hosts with the highest risk score in the environment along with the reason affecting each score.
-Required license: Cortex XDR Pro per Endpoint, Cortex XDR Pro, or Cortex XDR Pro per TB.
+Required license: Cortex XDR Pro per Endpoint, Cortex XDR Pro, or Cortex XDR Pro per GB.
 
 #### Base Command
 
@@ -3056,7 +3057,7 @@ Required license: Cortex XDR Pro per Endpoint, Cortex XDR Pro, or Cortex XDR Pro
 
 ***
 Retrieve a list of the current user emails associated with one or more user groups in the environment.
-
+Required license: Cortex XDR Pro per Endpoint, Cortex XDR Pro, or Cortex XDR Pro per GB.
 #### Base Command
 
 `xdr-list-user-groups`
@@ -3112,6 +3113,7 @@ Retrieve a list of the current user emails associated with one or more user grou
 
 ***
 Retrieve information about one or more roles created in the environment.
+Required license: Cortex XDR Pro per Endpoint, Cortex XDR Pro, or Cortex XDR Pro per GB.
 
 #### Base Command
 
@@ -3174,7 +3176,7 @@ Retrieve information about one or more roles created in the environment.
 
 ***
 Add one or more users to a role.
-Required license: Cortex XDR Pro per Endpoint, Cortex XDR Pro, or Cortex XDR Pro per TB.
+Required license: Cortex XDR Pro per Endpoint, Cortex XDR Pro, or Cortex XDR Pro per GB.
 
 #### Base Command
 
@@ -3200,7 +3202,7 @@ There is no context output for this command.
 
 ***
 Remove one or more users from a role.
-Required license: Cortex XDR Pro per Endpoint, Cortex XDR Pro, or Cortex XDR Pro per TB.
+Required license: Cortex XDR Pro per Endpoint, Cortex XDR Pro, or Cortex XDR Pro per GB.
 
 #### Base Command
 
