@@ -5,10 +5,12 @@ import traceback
 from pathlib import Path
 
 import urllib3
+from jira import JIRA
 from junitparser import JUnitXml
 from tabulate import tabulate
 
-from Tests.scripts.jira_issues import JIRA_SERVER_URL, JIRA_VERIFY_SSL, JIRA_PROJECT_ID, JIRA_ISSUE_TYPE, JIRA_COMPONENT
+from Tests.scripts.jira_issues import JIRA_SERVER_URL, JIRA_VERIFY_SSL, JIRA_PROJECT_ID, JIRA_ISSUE_TYPE, JIRA_COMPONENT, \
+    JIRA_API_KEY
 from Tests.scripts.test_playbooks import calculate_test_playbooks_results, get_jira_tickets_for_playbooks, \
     calculate_test_playbooks_results_table, get_test_playbook_results_files
 from Tests.scripts.utils import logging_wrapper as logging
@@ -83,6 +85,10 @@ def print_test_summary(artifacts_path: str, without_jira: bool) -> bool:
 
     logging.info(f"Found {len(test_playbooks_result_files_list)} test playbook result files")
     playbooks_results, server_versions = calculate_test_playbooks_results(test_playbooks_result_files_list)
+
+    # TEST!
+    jira_server = JIRA(JIRA_SERVER_URL, token_auth=JIRA_API_KEY, options={'verify': JIRA_VERIFY_SSL})
+    logging.info(f"Jira server information: {jira_server.server_info()}")
 
     if without_jira:
         logging.info("Printing test playbook summary without Jira tickets")
