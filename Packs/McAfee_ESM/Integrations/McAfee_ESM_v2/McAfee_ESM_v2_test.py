@@ -242,12 +242,9 @@ def test_edit_case(mocker):
     mocker.patch.object(McAfeeESMClient, '_McAfeeESMClient__login', return_value={})
     mocker.patch.object(McAfeeESMClient, '_McAfeeESMClient__request', return_value={})
     mocker.patch.object(McAfeeESMClient, 'get_case_detail', return_value=('', {}, raw_response_has_event_list))
-    client = McAfeeESMClient(params)
     try:
+        client = McAfeeESMClient(params)
         client.edit_case()
-    except Exception:
-        pass
-    try:
         result = client._McAfeeESMClient__request.call_args.kwargs['data']['caseDetail']
     except Exception:
         pass
@@ -324,15 +321,15 @@ def test_alarm_to_incidents(mocker):
     mocker.patch.object(demisto, 'getLastRun', return_value={'alarms': {'time': create_time_difference_string(days=3)}})
     mocker.patch.object(demisto, 'setLastRun')
 
-    client = McAfeeESMClient(params)
-
-    last_run = mock_fetch_alarm_without_results(client)
-    assert last_run.get('alarms').get('time') == create_time_difference_string(days=3)
-
-    mocker.patch.object(demisto, 'getLastRun', return_value=last_run)
-    mocker.patch.object(McAfeeESMClient, 'fetch_alarms', side_effect=mock_fetch_alarams)
-    mocker.patch.object(demisto, 'incidents')
     try:
+        client = McAfeeESMClient(params)
+
+        last_run = mock_fetch_alarm_without_results(client)
+        assert last_run.get('alarms').get('time') == create_time_difference_string(days=3)
+
+        mocker.patch.object(demisto, 'getLastRun', return_value=last_run)
+        mocker.patch.object(McAfeeESMClient, 'fetch_alarms', side_effect=mock_fetch_alarams)
+        mocker.patch.object(demisto, 'incidents')
         client.fetch_incidents(params=params)
     except Exception:
         pass
@@ -357,8 +354,8 @@ class TestTestModule:
         }
         mocker.patch.object(McAfeeESMClient, '_McAfeeESMClient__login', return_value={})
         mocker.patch.object(McAfeeESMClient, '_McAfeeESMClient__request', return_value={})
-        client = McAfeeESMClient(params)
         try:
+            client = McAfeeESMClient(params)
             _, _, raw = client.test_module()
         except Exception:
             pass
