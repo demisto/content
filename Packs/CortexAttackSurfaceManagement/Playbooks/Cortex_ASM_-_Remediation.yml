@@ -313,7 +313,7 @@ tasks:
       id: 250db32f-08b9-4ba4-85cb-97eb57c873fd
       version: -1
       name: AWS - Security Group Remediation v2
-      description: This playbook takes in some information about an EC2 instance (ID and public_ip) and with provided port and protocol, determines what security groups on the primary interface of an EC2 instance are over-permissive. It uses an automation to determine what interface on an EC2 instance has an over-permissive security group on, determine which security groups have over-permissive rules and to replace them with a copy of the security group that has only the over-permissive portion removed. Over-permissive is defined as sensitive ports (SSH, RDP, etc) being exposed to the internet via IPv4.
+      description: This playbook takes in some information about an EC2 instance (ID and public_ip) and with provided port and protocol, determines what security groups on the primary interface of an EC2 instance are over-permissive. It uses an automation to determine what interface on an EC2 instance has an over-permissive security group on, determine which security groups have over-permissive rules and to replace them with a copy of the security group that has only the over-permissive portion removed.  Over-permissive is defined as sensitive ports (SSH, RDP, etc) being exposed to the internet via IPv4.
       playbookName: AWS - Security Group Remediation v2
       type: playbook
       iscommand: false
@@ -349,6 +349,12 @@ tasks:
         complex:
           root: alert
           accessor: remoteip
+      Region:
+        complex:
+          root: alert.asmcloud
+          accessor: region
+          transformers:
+          - operator: FirstArrayElement
     separatecontext: true
     continueonerrortype: ""
     loop:
@@ -556,6 +562,12 @@ tasks:
         complex:
           root: alert
           accessor: remoteip
+      Region:
+        complex:
+          root: alert.asmcloud
+          accessor: region
+          transformers:
+          - operator: FirstArrayElement
     separatecontext: true
     continueonerrortype: ""
     loop:
