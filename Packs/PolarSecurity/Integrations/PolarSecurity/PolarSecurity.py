@@ -53,7 +53,6 @@ class Client(BaseClient):
         body = body if body is not None else {}
         params = params if params is not None else {}
         url = f'{self._server_url}{path}'
-        res = {}
 
         max_retries = 3
         num_of_tries = 0
@@ -65,7 +64,7 @@ class Client(BaseClient):
                                        proxies=self._proxies
                                        )
             except Exception as error:
-                if res.status_code == 401:
+                if res and res.status_code == 401:
                     demisto.debug(f'Got status code 401 - {res}. Retrying ...')
                 else:
                     raise Exception(f'Polar Error: {error}')
@@ -101,7 +100,6 @@ def get_access_token(server_url, username, password):
     else, generate a new access token from
     the client id, client secret and refresh token.
     """
-    res = {}
     previous_token = get_integration_context()
     # Check if there is an existing valid access token
     if previous_token.get('access_token') and previous_token.get(
@@ -113,9 +111,10 @@ def get_access_token(server_url, username, password):
             try:
                 res = polar_login(server_url, username, password)
             except ValueError as exception:
+                message = res.content if res else ''
                 raise DemistoException(
                     'Failed to parse json object from response: {}'.format(
-                        res.content),
+                        message),
                     exception)
             if 'error' in res:
                 return_error(
@@ -145,7 +144,6 @@ def polar_login(server_url, username, password):
     Generate a refresh token using the given client credentials and save
     it in the integration context.
     """
-    res = {}
     url = f'{server_url}/auth'
     data = {
         'username': username,
@@ -155,8 +153,9 @@ def polar_login(server_url, username, password):
         try:
             res = requests.post(url, data)
         except ValueError as exception:
+            message = res.content if res else ''
             raise DemistoException(
-                f'Failed to parse json object from response: {res.content}',
+                f'Failed to parse json object from response: {message}',
                 exception)
         if res.json()['idToken']:
             return res
@@ -194,7 +193,6 @@ def polar_list_data_stores_command(polar_client, limit: int, page_size: int, nex
     has_next_page = True
     found_items = []
     query_params = {'pageSize': page_size}
-    res = {}
 
     try:
         while has_next_page and limit > 0:
@@ -204,8 +202,9 @@ def polar_list_data_stores_command(polar_client, limit: int, page_size: int, nex
                 res = polar_client.send_request(method='GET', path='/dataStores',
                                                 params=query_params, body={})
             except ValueError as exception:
+                message = res.content if res else ''
                 raise DemistoException(
-                    'Unable to retrieve data store list: {}'.format(res.content),
+                    'Unable to retrieve data store list: {}'.format(message),
                     exception)
             if res.json()['results'] is not None:
                 for item in res.json()['results']:
@@ -254,7 +253,6 @@ def polar_get_data_store_command(polar_client, store_id):
     """
     # URLencode the ID to make it safe to pass as a parameter
     safe_store_id = quote(store_id, safe='')
-    res = {}
     try:
         try:
             res = polar_client.send_request(
@@ -263,8 +261,9 @@ def polar_get_data_store_command(polar_client, store_id):
                 params={},
                 body={})
         except ValueError as exception:
+            message = res.content if res else ''
             raise DemistoException(
-                'Unable to retrieve data store list: {}'.format(res.content),
+                'Unable to retrieve data store list: {}'.format(message),
                 exception)
         if res.json() is not None:
             outputs = res.json()
@@ -298,7 +297,6 @@ def polar_data_stores_summary_command(polar_client):
             'classificationStatuses': 'CLASSIFIED,IN_PROGRESS',
             'encryptionStatuses': 'UNAVAILABLE_CUSTOM,AVAILABLE_CUSTOM'
         }
-        res = {}
         try:
             res = polar_client.send_request(
                 method='GET',
@@ -306,8 +304,9 @@ def polar_data_stores_summary_command(polar_client):
                 params=parameters,
                 body={})
         except ValueError as exception:
+            message = res.content if res else ''
             raise DemistoException(
-                'Unable to retrieve d list: {}'.format(res.content),
+                'Unable to retrieve d list: {}'.format(message),
                 exception)
         if res.json() is not None:
             outputs = res.json()
@@ -334,7 +333,6 @@ def polar_list_linked_vendors_command(polar_client):
     Get a list of all 3rd party vendors connected to your cloud workloads (relevant
     for cloud workloads connected to Polar Security only).
     """
-    res = {}
     try:
         try:
             res = polar_client.send_request(
@@ -343,8 +341,9 @@ def polar_list_linked_vendors_command(polar_client):
                 params={},
                 body={})
         except ValueError as exception:
+            message = res.content if res else ''
             raise DemistoException(
-                'Unable to retrieve vendor list: {}'.format(res.content),
+                'Unable to retrieve vendor list: {}'.format(message),
                 exception)
         if res:
             outputs: list = []
@@ -377,7 +376,6 @@ def polar_list_vendors_data_stores_command(polar_client, vendor_id, limit: int, 
     query_params = {'pageSize': page_size}
     has_next_page = True
     found_items: dict = {'dataStores': []}
-    res = {}
     try:
         while has_next_page and limit > 0:
             if next_token is not None:
@@ -389,9 +387,10 @@ def polar_list_vendors_data_stores_command(polar_client, vendor_id, limit: int, 
                     params=query_params,
                     body={})
             except ValueError as exception:
+                message = res.content if res else ''
                 raise DemistoException(
                     'Unable to retrieve vendor data store list: {}'.format(
-                        res.content), exception)
+                        message), exception)
             if res.json()['results'] is not None:
                 found_items['vendorId'] = f'{vendor_id}'
                 for item in res.json()['results']:

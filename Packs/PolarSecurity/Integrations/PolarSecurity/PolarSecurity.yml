@@ -103,9 +103,6 @@ script:
     - contextPath: PolarSecurity.DataStores.Stores.isBackedUp
       description: Backup status
       type: boolean
-    - contextPath: PolarSecurity.DataStores.Stores.managed
-      type: boolean
-      description: 
     - contextPath: PolarSecurity.DataStores.Stores.stats
       description: Array of statistics
   - arguments: []
@@ -203,9 +200,6 @@ script:
       type: string
     - contextPath: PolarSecurity.DataStores.Stores.stats
       description: Array of statistics
-    - contextPath: PolarSecurity.DataStores.Stores.managed
-      type: boolean
-      description:
     - contextPath: PolarSecurity.DataStores.Stores.cloudTags
       description: Array of tags assigned to store
     - contextPath: PolarSecurity.DataStores.Stores.cloudAccountDetails.cloudAccountId
