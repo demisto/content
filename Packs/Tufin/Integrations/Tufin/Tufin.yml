@@ -4,7 +4,7 @@ commonfields:
 name: Tufin
 display: Tufin
 category: Network Security
-description: Retrieve and analyze network access controls across Tufin-managed firewalls, SDN, and public cloud to identify vulnerable access paths of an attack
+description: Retrieve and analyze network access controls across Tufin-managed firewalls, SDN, and public cloud to identify vulnerable access paths of an attack.
 configuration:
 - display: SecureTrack IP or FQDN
   name: SecureTrack-Server
@@ -58,41 +58,41 @@ script:
     arguments:
     - name: source
       required: true
-      description: Source address/addresses (may contain multiple, comma separated values) e.g. 192.168.100.32 or 192.168.100.32/32,192.168.100.33
+      description: Source address/addresses (may contain multiple, comma separated values) e.g. 192.168.100.32 or 192.168.100.32/32,192.168.100.33.
     - name: destination
       required: true
-      description: Destination address/addresses (may contain multiple, comma separated values) e.g. 192.168.100.32 or 192.168.100.32/32,192.168.100.33
+      description: Destination address/addresses (may contain multiple, comma separated values) e.g. 192.168.100.32 or 192.168.100.32/32,192.168.100.33.
     - name: service
       description: Service parameter can be a port (for example, “tcp:80”, “any”) or an application (for example, “Skype”, “Facebook”).
     outputs:
     - contextPath: Tufin.Topology.TrafficAllowed
-      description: Traffic Permitted
+      description: Traffic Permitted.
       type: boolean
     - contextPath: Tufin.Topology.TrafficDevices
-      description: List of devices in path
+      description: List of devices in path.
       type: string
-    description: Search the Tufin Topology Map
+    description: Search the Tufin Topology Map.
   - name: tufin-search-topology-image
     arguments:
     - name: source
       required: true
-      description: Source address/addresses (may contain multiple, comma separated values)
+      description: Source address/addresses (may contain multiple, comma separated values).
     - name: destination
       required: true
-      description: Destination address/addresses (may contain multiple, comma separated values)
+      description: Destination address/addresses (may contain multiple, comma separated values).
     - name: service
       description: Service parameter can be a port (for example, “tcp:80”, “any”) or an application (for example, “Skype”, “Facebook”).
-    description: Search the Tufin Topology Map, returning an image
+    description: Search the Tufin Topology Map, returning an image.
   - name: tufin-object-resolve
     arguments:
     - name: ip
       required: true
-      description: IP Address to Resolve to Network Object
+      description: IP Address to Resolve to Network Object.
     outputs:
     - contextPath: Tufin.ObjectResolve.NumberOfObjects
       description: Number of objects that resolve to given IP address.
       type: number
-    description: Resolve IP address to Network Object
+    description: Resolve IP address to Network Object.
   - name: tufin-policy-search
     arguments:
     - name: search
@@ -100,22 +100,22 @@ script:
       description: The text format is for a field is <fieldname>:<text> for example source:192.168.1.1 or bareword for free text search. See the search info documentation in Securetrack Policy Browser page for more information.
     outputs:
     - contextPath: Tufin.Policysearch.NumberRulesFound
-      description: Number of rules found via search
+      description: Number of rules found via search.
       type: number
-    description: Search the policies of all devices managed by Tufin
+    description: Search the policies of all devices managed by Tufin.
   - name: tufin-get-zone-for-ip
     arguments:
     - name: ip
       required: true
-      description: IP Address
+      description: IP Address.
     outputs:
     - contextPath: Tufin.Zone.ID
-      description: Tufin Zone ID
+      description: Tufin Zone ID.
       type: number
     - contextPath: Tufin.Zone.Name
-      description: Tufin Zone Name
+      description: Tufin Zone Name.
       type: string
-    description: Match the IP address to the assigned Tufin Zone
+    description: Match the IP address to the assigned Tufin Zone.
   - name: tufin-submit-change-request
     arguments:
     - name: request-type
@@ -124,7 +124,7 @@ script:
       predefined:
       - Firewall Change Request
       - Server Decommission Request
-      description: Request Type
+      description: Request Type.
     - name: priority
       required: true
       auto: PREDEFINED
@@ -133,154 +133,154 @@ script:
       - High
       - Normal
       - Low
-      description: Request Priority
+      description: Request Priority.
     - name: source
       required: true
-      description: Source or Target
+      description: Source or Target.
     - name: destination
-      description: Destination (Mandatory for FW Change)
+      description: Destination (Mandatory for FW Change).
     - name: protocol
       auto: PREDEFINED
       predefined:
       - TCP
       - UDP
-      description: Protocol (Mandatory for FW Change)
+      description: Protocol (Mandatory for FW Change).
     - name: port
-      description: Port (Mandatory for FW Change)
+      description: Port (Mandatory for FW Change).
     - name: action
       auto: PREDEFINED
       predefined:
       - Accept
       - Drop
       - Remove
-      description: Action (Mandatory for FW Change)
+      description: Action (Mandatory for FW Change).
     - name: comment
-      description: Comment
+      description: Comment.
     - name: subject
       required: true
-      description: Ticket Subject
+      description: Ticket Subject.
     outputs:
     - contextPath: Tufin.Request.Status
-      description: Status of the request submission
+      description: Status of the request submission.
       type: string
-    description: Submit a change request to SecureChange
+    description: Submit a change request to SecureChange.
   - name: tufin-search-devices
     arguments:
     - name: name
-      description: Device name
+      description: Device name.
     - name: ip
-      description: Device IP
+      description: Device IP.
     - name: vendor
-      description: Device vendor
+      description: Device vendor.
     - name: model
-      description: Device model
+      description: Device model.
     outputs:
     - contextPath: Tufin.Device.ID
-      description: Device ID
+      description: Device ID.
       type: number
     - contextPath: Tufin.Device.Name
-      description: Device name
+      description: Device name.
       type: string
     - contextPath: Tufin.Device.Vendor
-      description: Device vendor
+      description: Device vendor.
       type: string
     - contextPath: Tufin.Device.Model
-      description: Device model
+      description: Device model.
       type: string
     - contextPath: Tufin.Device.IP
-      description: Device IP
+      description: Device IP.
       type: string
-    description: Search SecureTrack devices
+    description: Search SecureTrack devices.
   - name: tufin-get-change-info
     arguments:
     - name: ticket-id
-      description: SecureChange Ticket ID
+      description: SecureChange Ticket ID.
       required: true
     outputs:
     - contextPath: Tufin.Ticket.ID
-      description: Ticket ID
+      description: Ticket ID.
       type: number
     - contextPath: Tufin.Ticket.Subject
-      description: Ticket subject
+      description: Ticket subject.
       type: string
     - contextPath: Tufin.Ticket.Priority
-      description: Ticket priority
+      description: Ticket priority.
       type: string
     - contextPath: Tufin.Ticket.Status
-      description: Ticket status
+      description: Ticket status.
       type: string
     - contextPath: Tufin.Ticket.Requester
-      description: Ticket requester
+      description: Ticket requester.
       type: string
     - contextPath: Tufin.Ticket.WorkflowID
-      description: Ticket workflow ID
+      description: Ticket workflow ID.
       type: number
     - contextPath: Tufin.Ticket.WorkflowName
-      description: Ticket workflow name
+      description: Ticket workflow name.
       type: string
     - contextPath: Tufin.Ticket.CurrentStep
-      description: Ticket current step
+      description: Ticket current step.
       type: string
-    description: Get information on a SecureChange Ticket (ID retrieved from SecureChange UI)
+    description: Get information on a SecureChange Ticket (ID retrieved from SecureChange UI).
   - name: tufin-search-applications
     arguments:
     - name: name
-      description: Application name
+      description: Application name.
     outputs:
     - contextPath: Tufin.App.ID
-      description: Application ID
+      description: Application ID.
       type: number
     - contextPath: Tufin.App.Name
-      description: Application name
+      description: Application name.
       type: string
     - contextPath: Tufin.App.Status
-      description: Application status
+      description: Application status.
       type: string
     - contextPath: Tufin.App.Decommissioned
-      description: Is the application decommissioned
+      description: Is the application decommissioned.
       type: string
     - contextPath: Tufin.App.OwnerID
-      description: Application owner ID
+      description: Application owner ID.
       type: string
     - contextPath: Tufin.App.OwnerName
-      description: Application owner name
+      description: Application owner name.
       type: string
     - contextPath: Tufin.App.Comments
-      description: Application comments
+      description: Application comments.
       type: string
-    description: Search SecureApp applications
+    description: Search SecureApp applications.
   - name: tufin-search-application-connections
     arguments:
     - name: application-id
       required: true
-      description: Application ID
+      description: Application ID.
     outputs:
     - contextPath: Tufin.AppConnection.ID
-      description: Connection ID
+      description: Connection ID.
       type: number
     - contextPath: Tufin.AppConnection.Name
-      description: Connection name
+      description: Connection name.
       type: string
     - contextPath: Tufin.AppConnection.AppID
-      description: Application ID
+      description: Application ID.
       type: number
     - contextPath: Tufin.AppConnection.Status
-      description: Connection status
+      description: Connection status.
       type: string
     - contextPath: Tufin.AppConnection.Source
-      description: Connection source list
+      description: Connection source list.
       type: string
     - contextPath: Tufin.AppConnection.Destination
-      description: Connection destination list
+      description: Connection destination list.
       type: string
     - contextPath: Tufin.AppConnection.Service
-      description: Connection service list
+      description: Connection service list.
       type: string
     - contextPath: Tufin.AppConnection.Comment
-      description: Connection comment
+      description: Connection comment.
       type: string
-    description: Get SecureApp application connections
-  dockerimage: demisto/netutils:1.0.0.24101
+    description: Get SecureApp application connections.
+  dockerimage: demisto/netutils:1.0.0.74582
   subtype: python3
 fromversion: 5.0.0
 tests:

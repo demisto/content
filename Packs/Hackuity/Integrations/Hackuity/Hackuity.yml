@@ -35,74 +35,74 @@ script:
   commands:
   - arguments:
     - &argument_asset_name
-      description: The name of the asset
+      description: The name of the asset.
       name: asset_name
     - &argument_asset_type
-      description: The type of the asset if the asset name is specified (by default, restricts to IPs & domains)
+      description: The type of the asset if the asset name is specified (by default, restricts to IPs & domains).
       name: asset_type
     - &argument_attribute
-      description: An attribute value
+      description: An attribute value.
       name: attribute
     - &argument_cvss_min
-      description: The minimum CVSS (included)
+      description: The minimum CVSS (included).
       name: cvss_min
     - &argument_cvss_max
-      description: The maximum CVSS (excluded)
+      description: The maximum CVSS (excluded).
       name: cvss_max
     - &argument_limit
       defaultValue: '20'
-      description: The maximum number of items to return
+      description: The maximum number of items to return.
       name: limit
     - &argument_trs_min
-      description: The minimum TRS (included)
+      description: The minimum TRS (included).
       name: trs_min
     - &argument_trs_max
-      description: The maximum TRS (excluded)
+      description: The maximum TRS (excluded).
       name: trs_max
     - &argument_vuln_type
-      description: The vulnerability type (ID)
+      description: The vulnerability type (ID).
       name: vuln_type
     description: Search for findings in Hackuity.
     name: hackuity-search-findings
     outputs:
     - contextPath: Hackuity.Findings.Asset.ID
-      description: The ID of the asset
+      description: The ID of the asset.
       type: String
     - contextPath: Hackuity.Findings.Asset.Name
-      description: The name of the asset
+      description: The name of the asset.
       type: String
     - contextPath: Hackuity.Findings.Asset.Type
-      description: The type of the asset
+      description: The type of the asset.
       type: String
     - contextPath: Hackuity.Findings.Attributes
-      description: The attributes of the finding
+      description: The attributes of the finding.
       type: Unknown
     - contextPath: Hackuity.Findings.Score.CVSS
-      description: The CVSS of the finding
+      description: The CVSS of the finding.
       type: Number
     - contextPath: Hackuity.Findings.Score.TRS
-      description: The TRS of the finding
+      description: The TRS of the finding.
       type: Number
     - contextPath: Hackuity.Findings.ID
-      description: The ID of the finding
+      description: The ID of the finding.
       type: String
     - contextPath: Hackuity.Findings.Status.Ignored
-      description: Whether the finding is ignored
+      description: Whether the finding is ignored.
       type: Boolean
     - contextPath: Hackuity.Findings.Status.State
-      description: The state of the finding
+      description: The state of the finding.
       type: String
     - contextPath: Hackuity.Findings.Status.SubState
-      description: The sub-state of the finding
+      description: The sub-state of the finding.
       type: String
     - contextPath: Hackuity.Findings.Status.LastClosedAt
-      description: The date of the last time the finding was closed
+      description: The date of the last time the finding was closed.
       type: Date
     - contextPath: Hackuity.Findings.VulnType.ID
-      description: The ID of the vulnerability type
+      description: The ID of the vulnerability type.
       type: String
     - contextPath: Hackuity.Findings.VulnType.Name
-      description: The name of the vulnerability type
+      description: The name of the vulnerability type.
       type: String
   - arguments:
     - *argument_asset_name
@@ -118,40 +118,40 @@ script:
     name: hackuity-search-vulndb-vulnerabilities
     outputs: &outputs_vulnerabilities
     - contextPath: Hackuity.Vulnerabilities.Attributes
-      description: The attributes of the vulnerability
+      description: The attributes of the vulnerability.
       type: String
     - contextPath: Hackuity.Vulnerabilities.Score.CVSS
-      description: The CVSS of the vulnerability
+      description: The CVSS of the vulnerability.
       type: String
     - contextPath: Hackuity.Vulnerabilities.Score.TRS
-      description: The TRS of the vulnerability
+      description: The TRS of the vulnerability.
       type: String
     - contextPath: Hackuity.Vulnerabilities.Description
-      description: The description of the vulnerability
+      description: The description of the vulnerability.
       type: String
     - contextPath: Hackuity.Vulnerabilities.ID
-      description: The ID of the vulnerability
+      description: The ID of the vulnerability.
       type: String
     - contextPath: Hackuity.Vulnerabilities.Seen.First
-      description: The date of the first time the vulnerability has been seen
+      description: The date of the first time the vulnerability has been seen.
       type: Date
     - contextPath: Hackuity.Vulnerabilities.Findings.Total
-      description: The total number of findings on this vulnerability
+      description: The total number of findings on this vulnerability.
       type: String
     - contextPath: Hackuity.Vulnerabilities.Findings.Open
-      description: The number of open findings on this vulnerability
+      description: The number of open findings on this vulnerability.
       type: String
     - contextPath: Hackuity.Vulnerabilities.Findings.Closed
-      description: The number of closed findings on this vulnerability
+      description: The number of closed findings on this vulnerability.
       type: String
     - contextPath: Hackuity.Vulnerabilities.Findings.Ignored
-      description: The number of ignored findings on this vulnerability
+      description: The number of ignored findings on this vulnerability.
       type: String
     - contextPath: Hackuity.Vulnerabilities.VulnType.ID
-      description: The ID of the vulnerability type
+      description: The ID of the vulnerability type.
       type: String
     - contextPath: Hackuity.Vulnerabilities.VulnType.Name
-      description: The name of the vulnerability type
+      description: The name of the vulnerability type.
       type: String
   - arguments:
     - *argument_asset_name
@@ -170,29 +170,29 @@ script:
     name: hackuity-dashboard-widgets
     outputs:
     - contextPath: Hackuity.Dashboard.Widgets.ID
-      description: The ID of the widget
+      description: The ID of the widget.
       type: String
     - contextPath: Hackuity.Dashboard.Widgets.Params
-      description: The configuration of the widget
+      description: The configuration of the widget.
       type: Unknown
     - contextPath: Hackuity.Dashboard.Widgets.Type
-      description: The type of the widget
+      description: The type of the widget.
       type: String
   - arguments:
-    - description: The ID of the widget
+    - description: The ID of the widget.
       name: widget_id
       required: true
-    description: Get the data of a dashboard widget
+    description: Get the data of a dashboard widget.
     name: hackuity-dashboard-data
     outputs:
     - contextPath: Hackuity.Dashboard.Data
-      description: The data of the widget
+      description: The data of the widget.
       type: Unknown
   runonce: false
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.13.72123
+  dockerimage: demisto/python3:3.10.13.74666
 fromversion: 6.0.0
 tests:
 - No tests (auto formatted)

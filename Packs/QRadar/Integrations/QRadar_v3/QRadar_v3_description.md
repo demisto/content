@@ -16,6 +16,7 @@ You can apply additional (optional) filters for the fetch-incident query using t
 - Visit [QRadar Filter Syntax Documentation](https://www.ibm.com/docs/en/qradar-common?topic=versions-filter-syntax) for explanation about filter syntax.
 - Visit [QRadar Offense Documentation](https://www.ibm.com/docs/en/qradar-common?topic=card-offenses) for a list of all possible fields to be used in the filter.
 
+*Note*: Since QRadar API v19, The timestamp fields should be provided as milliseconds epoch format instead of seconds.
 #### Offense Enrichment
 * Incident Enrichment (IP) - When enabled, fetched incidents IP values (local source addresses and local destination addresses) will be fetched from QRadar instead of their ID values.
 * Incident Enrichment (Asset) - When enabled, fetched offenses will also contain correlated assets.

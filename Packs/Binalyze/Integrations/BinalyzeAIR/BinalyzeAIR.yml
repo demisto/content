@@ -32,7 +32,7 @@ script:
     arguments:
     - name: hostname
       required: true
-      description: Hostname of endpoint
+      description: Hostname of endpoint.
     - name: organization_id
       required: true
       auto: PREDEFINED
@@ -40,30 +40,30 @@ script:
       - '0'
       - '1'
       - '2'
-      description: Organization ID of the endpoint
+      description: Organization ID of the endpoint.
     - name: isolation
       required: true
       auto: PREDEFINED
       predefined:
       - enable
       - disable
-      description: To isolate use enable
+      description: To isolate use enable.
     outputs:
     - contextPath: BinalyzeAIR.Isolate.result._id
-      description: Isolation unique task ID
+      description: Isolation unique task ID.
       type: string
     - contextPath: BinalyzeAIR.Isolate.result.name
-      description: Isolation task name
+      description: Isolation task name.
       type: string
     - contextPath: BinalyzeAIR.Isolate.result.organizationId
-      description: Organization Id of endpoint
+      description: Organization Id of endpoint.
       type: number
-    description: Isolate an endpoint
+    description: Isolate an endpoint.
   - name: binalyze-air-acquire
     arguments:
     - name: hostname
       required: true
-      description: Hostname of endpoint
+      description: Hostname of endpoint.
     - name: profile
       required: true
       auto: PREDEFINED
@@ -74,10 +74,10 @@ script:
       - memory-ram-pagefile
       - quick
       - full
-      description: Acquisition profile
+      description: Acquisition profile.
     - name: case_id
       required: true
-      description: ID for the case,e.g. C-2022-0001
+      description: ID for the case,e.g. C-2022-0001.
     - name: organization_id
       required: true
       auto: PREDEFINED
@@ -85,19 +85,19 @@ script:
       - '0'
       - '1'
       - '2'
-      description: Organization ID of the endpoint
+      description: Organization ID of the endpoint.
     outputs:
     - contextPath: BinalyzeAIR.Acquire.result._id
-      description: Acquisition unique task ID
+      description: Acquisition unique task ID.
       type: string
     - contextPath: BinalyzeAIR.Acquire.result.name
-      description: Acquisiton task name
+      description: Acquisiton task name.
       type: string
     - contextPath: BinalyzeAIR.Acquire.result.organizationId
-      description: Organization Id of endpoint
+      description: Organization Id of endpoint.
       type: number
-    description: Acquire evidence from an endpoint
-  dockerimage: demisto/python3:3.10.13.72123
+    description: Acquire evidence from an endpoint.
+  dockerimage: demisto/python3:3.10.13.74666
   subtype: python3
 fromversion: 6.2.0
 tests:
