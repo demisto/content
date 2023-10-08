@@ -1,47 +1,25 @@
 {
-	"brands": null,
-	"cacheVersn": 0,
-	"defaultIncidentType": "",
-	"definitionId": "",
-	"description": "",
-	"feed": false,
-	"fromServerVersion": "",
-	"id": "8677095b-6b23-4d0d-83e5-ccdda0c86534",
-	"incidentSamples": null,
-	"indicatorSamples": null,
-	"instanceIds": null,
-	"itemVersion": "",
-	"keyTypeMap": {},
-	"locked": false,
-	"logicalVersion": 0,
-	"mapping": {
-		"CybleEventsv2": {
-			"dontMapEventToLabels": true,
-			"internalMapping": {
-				"id": {
-					"simple": "eventid"
-				},
-				"severity": {
-					"simple": "severity"
-				},
-				"status": {
-					"simple": "status"
-				}
-			}
-		}
-	},
-	"name": "CybleEventsv2-Outgoing-Mapper",
-	"nameRaw": "CybleEventsv2-Outgoing-Mapper",
-	"packID": "",
-	"packName": "",
-	"propagationLabels": [
-		"all"
-	],
-	"sourceClassifierId": "",
-	"system": false,
-	"toServerVersion": "",
-	"transformer": {},
-	"type": "mapping-outgoing",
-	"unclassifiedCases": null,
-	"version": -1
+    "description": "",
+    "feed": false,
+    "id": "CybleEventsv2-Outgoing-Mapper",
+    "mapping": {
+        "CybleEventsv2": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "id": {
+                    "simple": "eventid"
+                },
+                "severity": {
+                    "simple": "severity"
+                },
+                "status": {
+                    "simple": "status"
+                }
+            }
+        }
+    },
+    "name": "CybleEventsv2-Outgoing-Mapper",
+    "type": "mapping-outgoing",
+    "version": -1,
+    "fromVersion": "6.9.0"
 }

@@ -1,84 +1,62 @@
 {
-	"brands": null,
-	"cacheVersn": 0,
-	"defaultIncidentType": "",
-	"definitionId": "",
-	"description": "",
-	"feed": false,
-	"fromServerVersion": "",
-	"id": "1e8b6006-9566-49ef-829c-94adf940cb87",
-	"incidentSamples": null,
-	"indicatorSamples": null,
-	"instanceIds": null,
-	"itemVersion": "",
-	"keyTypeMap": {},
-	"locked": false,
-	"logicalVersion": 4,
-	"mapping": {
-		"CybleEventsv2": {
-			"dontMapEventToLabels": false,
-			"internalMapping": {
-				"Additional Data": {
-					"simple": "data_message"
-				},
-				"Event ID": {
-					"complex": {
-						"filters": [],
-						"root": "event_id",
-						"transformers": []
-					}
-				},
-				"Event Type": {
-					"complex": {
-						"filters": [],
-						"root": "event_type",
-						"transformers": []
-					}
-				},
-				"Source Create time": {
-					"simple": "created_at"
-				},
-				"dbotMirrorDirection": {
-					"simple": ".='Out'"
-				},
-				"dbotMirrorId": {
-					"simple": "event_id"
-				},
-				"dbotMirrorInstance": {
-					"simple": "mirrorInstance"
-				},
-				"dbotMirrorTags": {
-					"simple": ".=['severity','status']"
-				},
-				"name": {
-					"complex": {
-						"filters": [],
-						"root": "name",
-						"transformers": []
-					}
-				},
-				"severity": {
-					"complex": {
-						"filters": [],
-						"root": "severity",
-						"transformers": []
-					}
-				}
-			}
-		}
-	},
-	"name": "CybleEventsv2-Incoming-Mapper",
-	"nameRaw": "CybleEventsv2-Incoming-Mapper",
-	"packID": "",
-	"packName": "",
-	"propagationLabels": [
-		"all"
-	],
-	"sourceClassifierId": "",
-	"system": false,
-	"toServerVersion": "",
-	"transformer": {},
-	"type": "mapping-incoming",
-	"unclassifiedCases": null,
-	"version": -1
+    "description": "",
+    "feed": false,
+    "id": "CybleEventsv2-Incoming-Mapper",
+    "mapping": {
+        "CybleEventsv2": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Additional Data": {
+                    "simple": "data_message"
+                },
+                "Event ID": {
+                    "complex": {
+                        "filters": [],
+                        "root": "event_id",
+                        "transformers": []
+                    }
+                },
+                "Event Type": {
+                    "complex": {
+                        "filters": [],
+                        "root": "event_type",
+                        "transformers": []
+                    }
+                },
+                "Source Create time": {
+                    "simple": "created_at"
+                },
+                "dbotMirrorDirection": {
+                    "simple": ".='Out'"
+                },
+                "dbotMirrorId": {
+                    "simple": "event_id"
+                },
+                "dbotMirrorInstance": {
+                    "simple": "mirrorInstance"
+                },
+                "dbotMirrorTags": {
+                    "simple": ".=['severity','status']"
+                },
+                "name": {
+                    "complex": {
+                        "filters": [],
+                        "root": "name",
+                        "transformers": []
+                    }
+                },
+                "severity": {
+                    "complex": {
+                        "filters": [],
+                        "root": "severity",
+                        "transformers": []
+                    }
+                }
+            }
+        }
+    },
+    "name": "CybleEventsv2-Incoming-Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.9.0"
 }
