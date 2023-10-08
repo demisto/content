@@ -31,7 +31,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": -980
+          "y": -1220
         }
       }
     note: false
@@ -43,10 +43,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: abf130ed-e11f-4fd5-87a1-5da6d20e6463
+    taskid: 93c5d134-9146-4cbd-8d97-195c97925201
     type: regular
     task:
-      id: abf130ed-e11f-4fd5-87a1-5da6d20e6463
+      id: 93c5d134-9146-4cbd-8d97-195c97925201
       version: -1
       name: Set alert data
       description: commands.local.cmd.set.incident
@@ -56,7 +56,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "26"
+      - "27"
     scriptarguments:
       agentid:
         complex:
@@ -66,10 +66,6 @@ tasks:
         simple: "123"
       alertname:
         simple: test
-      hostip:
-        complex:
-          root: Core.Endpoint
-          accessor: ip
       initiatorpath:
         simple: c:\Windows\System32\calc.exe
       initiatorsha256:
@@ -82,7 +78,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 360
+          "y": 100
         }
       }
     note: false
@@ -212,7 +208,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 170
+          "y": -70
         }
       }
     note: false
@@ -243,7 +239,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": -210
+          "y": -450
         }
       }
     note: false
@@ -283,7 +279,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": -50
+          "y": -290
         }
       }
     note: false
@@ -428,7 +424,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": -605
+          "y": -845
         }
       }
     note: false
@@ -505,7 +501,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": -790
+          "y": -1030
         }
       }
     note: false
@@ -652,7 +648,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": -410
+          "y": -650
         }
       }
     note: false
@@ -817,6 +813,43 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: 7ff966be-560a-49dc-8691-d8d74867983a
+    type: regular
+    task:
+      id: 7ff966be-560a-49dc-8691-d8d74867983a
+      version: -1
+      name: Set Host IP
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setAlert
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      hostip:
+        complex:
+          root: Core.Endpoint
+          accessor: ip
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -827,10 +860,10 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 3095,
+        "height": 3335,
         "width": 890,
         "x": -60,
-        "y": -980
+        "y": -1220
       }
     }
   }
