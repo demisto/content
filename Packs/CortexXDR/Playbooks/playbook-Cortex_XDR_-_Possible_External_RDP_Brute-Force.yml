@@ -2242,11 +2242,11 @@ tasks:
     id: "142"
     taskid: dcd1d3e7-e9d4-4fe6-8bc3-4b34cade926d
     type: condition
-    description: ''
     task:
       id: dcd1d3e7-e9d4-4fe6-8bc3-4b34cade926d
       version: -1
       name: IP block executed?
+      description: ''
       type: condition
       iscommand: false
       brand: ""
@@ -2289,11 +2289,11 @@ tasks:
     id: "143"
     taskid: 6663c63c-2385-4491-8c16-c824eff03d1d
     type: condition
-    description: ''
     task:
       id: 6663c63c-2385-4491-8c16-c824eff03d1d
       version: -1
       name: User containment executed?
+      description: ''
       type: condition
       iscommand: false
       brand: ""
