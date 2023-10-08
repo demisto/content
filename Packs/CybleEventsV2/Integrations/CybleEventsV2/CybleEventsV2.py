@@ -680,7 +680,7 @@ def cyble_fetch_iocs(client, method, token, args, url):
     return command_results
 
 
-def main():
+def main():     # pragma: no cover
     """
          PARSE AND VALIDATE INTEGRATION PARAMS
      """
