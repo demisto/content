@@ -2044,6 +2044,7 @@ tasks:
       version: -1
       name: Block Indicators - Generic v3
       playbookName: Block Indicators - Generic v3
+
       type: playbook
       iscommand: false
       brand: ""
@@ -2241,6 +2242,7 @@ tasks:
     id: "142"
     taskid: dcd1d3e7-e9d4-4fe6-8bc3-4b34cade926d
     type: condition
+    description: ''
     task:
       id: dcd1d3e7-e9d4-4fe6-8bc3-4b34cade926d
       version: -1
@@ -2287,6 +2289,7 @@ tasks:
     id: "143"
     taskid: 6663c63c-2385-4491-8c16-c824eff03d1d
     type: condition
+    description: ''
     task:
       id: 6663c63c-2385-4491-8c16-c824eff03d1d
       version: -1
@@ -2407,6 +2410,7 @@ tasks:
       id: eab0c096-8fcf-4b32-8f4c-a481621a23df
       version: -1
       name: IP block executed?
+      description: ''
       type: condition
       iscommand: false
       brand: ""
@@ -2453,6 +2457,7 @@ tasks:
       id: 445ebaa4-d11c-4b27-8e85-f4fbee601ecf
       version: -1
       name: User containment executed?
+      description: ''
       type: condition
       iscommand: false
       brand: ""
@@ -2569,6 +2574,7 @@ tasks:
       id: 67cc761d-26b2-438a-8bed-cfc1a6bfcec8
       version: -1
       name: Check IP Reputation
+      description: ''
       type: condition
       iscommand: false
       brand: ""
@@ -2772,6 +2778,7 @@ tasks:
       id: 4567bca9-5d88-4092-8ed0-a56ca2170cdc
       version: -1
       name: Early containment enabled?
+      description: ''
       type: condition
       iscommand: false
       brand: ""
