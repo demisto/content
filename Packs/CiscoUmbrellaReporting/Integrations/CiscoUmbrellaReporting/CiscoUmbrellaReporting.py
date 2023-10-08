@@ -17,7 +17,6 @@ DEFAULT_FROM_DATE = "-7days"
 DEFAULT_TO_DATE = "now"
 DEFAULT_OFFSET = 0
 INTEGRATION_CONTEXT_NAME = 'UmbrellaReporting'
-TOKEN_ENDPOINT = "https://api.umbrella.com/auth/v2/token"
 IP_PARAM = 'ip'
 DOMAIN_PARAM = 'domains'
 URL_PARAM = 'urls'
@@ -80,7 +79,6 @@ class Client(BaseClient):
             verify=verify,
             proxy=proxy
         )
-        self.token_url = TOKEN_ENDPOINT
         self.secret_key = secret_key
         self.client_key = client_key
 
