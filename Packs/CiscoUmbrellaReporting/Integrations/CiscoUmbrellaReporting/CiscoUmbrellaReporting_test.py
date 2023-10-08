@@ -18,7 +18,6 @@ from CiscoUmbrellaReporting import Client, get_destinations_list_command, \
 
 client = Client(
     base_url="http://test.com",
-    organisation_id="1234567",
     secret_key="test_123",
     client_key="test@12345",
     proxy=False
