@@ -21,7 +21,7 @@ Netcraft takedown, submission and screenshot management.
     | Takedown Server URL | The URL to use for the Takedown Service. | True |
     | Submission Server URL | The URL to use for the Submission Service. | True |
     | API Key | The API key associated with the Netcraft account. | True |
-    | Region | The default region to use with the takedown service. | True |
+    | Region | The default region to use with the Takedown Service. | True |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
     | Fetch incidents |  | False |
@@ -40,7 +40,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### netcraft-attack-report
 
 ***
-Report a new attack or authorize an existing attack in the Takedown service.
+Report a new attack or authorize an existing attack in the Takedown Service.
 If a takedown for the attack already exists in the Netcraft system it will be authorized, otherwise, a new takedown will be added and authorized.
 
 

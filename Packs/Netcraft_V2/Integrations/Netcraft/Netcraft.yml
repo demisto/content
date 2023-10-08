@@ -35,7 +35,7 @@ configuration:
   required: true
   display: Region
   section: Connect
-  additionalinfo: The default region to use with the takedown service.
+  additionalinfo: The default region to use with the takedown Service.
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -82,7 +82,7 @@ script:
   commands:
   - name: netcraft-attack-report
     description: |
-      Report a new attack or authorize an existing attack in the Takedown service.
+      Report a new attack or authorize an existing attack in the Takedown Service.
       If a takedown for the attack already exists in the Netcraft system it will be authorized, otherwise, a new takedown will be added and authorized.
     arguments:
     - name: attack
