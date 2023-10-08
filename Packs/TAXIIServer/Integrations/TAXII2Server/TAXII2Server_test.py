@@ -275,6 +275,20 @@ def test_taxii20_get_server_info(mocker, taxii2_server_v20):
     assert result.outputs == integration_context['server_info']
 
 
+def test_taxii20_get_server_info_demisto_version(mocker, taxii2_server_v20):
+    from TAXII2Server import get_server_info_command
+    integration_context = {}
+    integration_context['server_info'] = {'api_roots': ["https://www.example.com/path/to/resource?query=parameter"],
+                                          'default': "https://www.example.com/path/to/resource?query=parameter",
+                                          'description': '',
+                                          'title': ''}
+    mocker.patch.object(demisto, 'demistoVersion', return_value={'version': '8.1.0', 'buildNumber': '12345'})
+
+    result = get_server_info_command(integration_context=integration_context)
+
+    assert result.outputs['default'] == 'https://ext-www.example.com/path/to/resource?query=parameter'
+
+
 def test_taxii21_collection(mocker, taxii2_server_v21):
     """
         Given
