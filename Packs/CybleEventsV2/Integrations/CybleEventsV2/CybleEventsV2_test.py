@@ -221,7 +221,8 @@ def test_limit_cyble_vision_fetch_detail(requests_mock, capfd, offset, limit):
     url = "https://test.com/apollo/api/v1/y/alerts"
 
     with capfd.disabled(), pytest.raises(ValueError,
-                                         match=f"The limit argument should contain a positive number, up to 1000, limit: {limit}"):
+                                         match=f"""The limit argument should contain a positive number,
+                                         up to 1000, limit: {limit}"""):
         cyble_events(client, 'POST', "some_random_token", url, args, "https://test.com", {}, True)
 
 
