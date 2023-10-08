@@ -22,11 +22,11 @@ def install_private_testing_pack(build: Build, test_pack_zip_path: str) -> bool:
 
     :param build: Build object containing the build settings.
     :param test_pack_zip_path: Path to test_pack zip.
-    :return: No object is returned. concurrently_run_function_on_servers will wait for the process to finish.
+    :return: Boolean indicating if the installation was successful.
     """
-    build.concurrently_run_function_on_servers(function=upload_zipped_packs,
-                                               pack_path=test_pack_zip_path)
-    return True
+    success, results = build.concurrently_run_function_on_servers(function=upload_zipped_packs,
+                                                                  pack_path=test_pack_zip_path)
+    return success and all(results)
 
 
 def install_packs_private(build: Build, pack_ids: list = None) -> bool:
@@ -143,10 +143,10 @@ def main():
                                                    tests_file_paths=tests_to_add_to_test_pack,
                                                    path_to_content=build.content_root)
     # Create and install private test pack
-    install_private_testing_pack(build, private_content_test_zip)
+    success = install_private_testing_pack(build, private_content_test_zip)
 
-    success = report_tests_status(failed_tests_pre, failed_tests_post, successful_tests_pre, successful_tests_post,
-                                  new_integrations, build)
+    success &= report_tests_status(failed_tests_pre, failed_tests_post, successful_tests_pre, successful_tests_post,
+                                   new_integrations, build)
     sleep(30)
     if not success or not installed_content_packs_successfully:
         sys.exit(2)

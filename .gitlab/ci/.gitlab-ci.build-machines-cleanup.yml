@@ -21,9 +21,12 @@ build-machines-cleanup:
     - !reference [.lock-machine]
     - !reference [.uninstall-packs-and-reset-bucket-cloud]
     - !reference [.cloud-machine-information]
-    - !reference [.unlock-machine]
     - job-done
     - exit "${EXIT_CODE}"
+  after_script:
+    - source .gitlab/helper_functions.sh
+    - !reference [ .unlock-machine ]
+  timeout: 4 hours
   variables:
     CLOUD_MACHINES_TYPE: "nightly"
     CLOUD_MACHINES_COUNT: "all"
@@ -39,7 +42,7 @@ build-machines-cleanup:
     GCS_MACHINES_BUCKET: "marketplace-v2-dist-dev/upload-flow/builds-xsiam"
     SERVER_TYPE: "XSIAM"
     MARKETPLACE_NAME: "marketplacev2"
-    UNREMOVABLE_PACKS: "Base"
+    NON_REMOVABLE_PACKS: "Base"
 
 fan-in-build-machines-cleanup:
   tags:

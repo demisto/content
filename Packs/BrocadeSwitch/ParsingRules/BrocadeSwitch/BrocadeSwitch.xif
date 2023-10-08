@@ -1,7 +1,23 @@
 [INGEST:vendor="brocade", product="switch", target_dataset="brocade_switch_raw", no_hit = keep]
-// Support only date time of format: MMM dd hh:mm:ss. For example: Jan 01 10:00:00
-filter _raw_log ~= "\>\s*[A-Za-z]+\s+\d+\s+\d+\:\d+\:\d+"
-| alter tmp_event_time = arrayindex(regextract(_raw_log ,"\>\s*([A-Za-z]+\s+\d+\s+\d+\:\d+\:\d+)\s+"),0),
-    tmp_year = format_timestamp("%Y",_insert_time )
-| alter _time = parse_timestamp("%b %d %H:%M:%S %Y",concat(tmp_event_time, " ", tmp_year ))
-| fields - tmp_event_time, tmp_year;
+// Supports Legacy RFC 3164 compatible timestamps format: "MMM dd HH:MM:SS" . For example: "Oct 03 19:25:34"
+filter _raw_log ~= "\>\s*\w+\s+\d+\s+\d+\:\d+\:\d+"
+| alter // Extract current year and raw timestamp
+    tmp_current_year = arrayindex(regextract(to_string(_insert_time), "\d{4}"), 0),
+    tmp_raw_timestamp_string = arrayindex(regextract(_raw_log ,"\>\s*(\w+\s+\d+\s+\d+\:\d+\:\d+)\s+"), 0)
+| alter // Reformat the raw timestamp representation with current year 
+    tmp_current_year_timestamp_string = concat(tmp_current_year, " ", tmp_raw_timestamp_string)
+| alter // Converts the timestamp string representation to datetime format
+    tmp_current_year_timestamp_datetime = parse_timestamp("%Y %b %d %H:%M:%S", tmp_current_year_timestamp_string)
+| alter // Check if the calculated date is in the future (due to year transitioning during log ingestion )
+    tmp_time_difference = timestamp_diff(tmp_current_year_timestamp_datetime, current_time(), "DAY")
+| alter // Calculate previous year 
+    tmp_previous_year = if(tmp_time_difference > 0, to_string(subtract(to_integer(tmp_current_year), 1)), null)
+| alter // Adjust timestamp to previous year if required
+    tmp_previous_year_timestamp_string = if(tmp_previous_year != null, concat(tmp_previous_year, " ", tmp_raw_timestamp_string), null)
+| alter // Converts the previous year string representation to datetime format 
+    tmp_previous_year_timestamp_datetime = if(tmp_previous_year_timestamp_string != null, parse_timestamp("%Y %b %d %H:%M:%S", tmp_previous_year_timestamp_string), null)
+| alter // Set to the relevant timestamp 
+    tmp_final_timestamp = coalesce(tmp_previous_year_timestamp_datetime, tmp_current_year_timestamp_datetime, _insert_time) 
+| alter // Assign the timestamp 
+    _time = tmp_final_timestamp
+| fields - tmp*;

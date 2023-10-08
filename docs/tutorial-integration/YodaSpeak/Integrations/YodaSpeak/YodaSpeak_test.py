@@ -83,4 +83,4 @@ def test_test_module_failure(requests_mock, file: str):
     json_response = util_load_json(file)
     requests_mock.post(ENDPOINT_URL, json=json_response)
     response = test_module(client)
-    assert f'Unexpected result from the service: success=' in response
+    assert 'Unexpected result from the service: success=' in response

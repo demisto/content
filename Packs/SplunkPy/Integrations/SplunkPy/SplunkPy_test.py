@@ -1542,6 +1542,7 @@ def test_splunk_search_command(mocker, polling, status):
 
     mocker.patch.object(ScheduledCommand, 'raise_error_if_not_supported')
     search_result = splunk.splunk_search_command(Service(status), mock_args)
+    search_result = search_result if isinstance(search_result, CommandResults) else search_result[0]
 
     if search_result.scheduled_command:
         assert search_result.outputs['Status'] == status
