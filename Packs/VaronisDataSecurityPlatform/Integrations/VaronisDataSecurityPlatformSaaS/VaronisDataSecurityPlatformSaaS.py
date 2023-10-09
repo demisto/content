@@ -20,8 +20,8 @@ MAX_USERS_TO_SEARCH = 5
 NON_EXISTENT_SID = -1000
 MAX_INCIDENTS_TO_FETCH = 50
 THREAT_MODEL_ENUM_ID = 5821
-ALERT_STATUSES = {'New': 1, 'Under Investigation': 2, 'Closed': 3, 'Action Required': 4, 'Auto-Resolved': 5}
-ALERT_SEVERITIES = ['High', 'Medium', 'Low']
+ALERT_STATUSES = {'new': 1, 'under investigation': 2, 'closed': 3, 'action required': 4, 'auto-resolved': 5}
+ALERT_SEVERITIES = ['high', 'medium', 'low']
 CLOSE_REASONS = {
     'none': 0,
     'resolved': 1,
@@ -859,7 +859,7 @@ def varonis_get_alerts_command(client: Client, args: Dict[str, Any]) -> CommandR
     if alert_statuses:
         for status in alert_statuses:
             if status.lower() not in ALERT_STATUSES.keys():
-                raise ValueError(f'There is no status {severity}.')
+                raise ValueError(f'There is no status {status}.')
     
     ruleIds = get_rule_ids(client, threat_model_names)
     
@@ -1026,7 +1026,7 @@ def main() -> None:
     if not is_xsoar_env():
         url = 'https://dev66f47.varonis-preprod.com'
         apiKey = 'vkey1_15536d2768e1493bac596dfe2b66e5c2_XNZhl8VzALAx2jSIEAM/I1gp4CnYJVOcvptxquXx0Hg='
-        command = 'test-module'  # 'test-module'|
+        command = 'fetch-incidents'  # 'test-module'|
                                  # 'varonis-get-alerts'|
                                  # 'varonis-get-alerted-events'|
                                  # 'varonis-update-alert-status'|
