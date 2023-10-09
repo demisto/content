@@ -697,18 +697,16 @@ async def handle_zoom_response(request: Request, credentials: HTTPBasicCredentia
     credentials_param = demisto.params().get('credentials')
     auth_failed = False
     v_token = demisto.params().get('verification_token', {}).get('password')
-    if 'Basic' not in str(token) and v_token:
-        demisto.debug(v_token)
+    if not str(token).startswith('Basic') and v_token:
         if token != v_token:
             auth_failed = True
 
     elif credentials and credentials_param and (username := credentials_param.get('identifier')):
         password = credentials_param.get('password', '')
-        demisto.debug(username, password)
         if not compare_digest(credentials.username, username) or not compare_digest(credentials.password, password):
             auth_failed = True
     if auth_failed:
-        demisto.debug('Authorization failed ')
+        demisto.debug('Authorization failed')
         return Response(status_code=status.HTTP_401_UNAUTHORIZED, content='Authorization failed.')
 
     event_type = request['event']
@@ -718,7 +716,7 @@ async def handle_zoom_response(request: Request, credentials: HTTPBasicCredentia
             res = await event_url_validation(payload)
             return JSONResponse(content=res)
 
-        if event_type == 'interactive_message_actions':
+        elif event_type == 'interactive_message_actions':
             if 'actionItem' in payload:
                 action = payload['actionItem']['value']
             elif 'selectedItems' in payload:
@@ -734,15 +732,15 @@ async def handle_zoom_response(request: Request, credentials: HTTPBasicCredentia
             if entitlement_reply:
                 await process_entitlement_reply(entitlement_reply, account_id, robot_jid, to_jid, user_name, action)
                 demisto.updateModuleHealth("")
-            demisto.debug(f"{action} was clicked  on message {message_id}")
+            demisto.debug(f"Action {action} was clicked on message id {message_id}")
             return Response(status_code=status.HTTP_200_OK)
-        if event_type == "chat_message.sent" and MIRRORING_ENABLED:
+        elif event_type == "chat_message.sent" and MIRRORING_ENABLED:
             await handle_mirroring(payload)
             return Response(status_code=status.HTTP_200_OK)
         else:
             return Response(status_code=status.HTTP_400_BAD_REQUEST)
     except Exception as e:
-        await handle_listen_error(f'Error occurred while handling a response from Zoom: {e}')
+        await handle_listen_error(f'An error occurred while handling a response from Zoom: {e}')
 
 
 def test_module(client: Client):

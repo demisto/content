@@ -21,6 +21,7 @@ This integration was integrated and tested with version 2.0.0 of Zoom
     | `Bot Client ID (OAuth)`| Zoom Bot app client ID. | False|
     | `Bot Client Secret (OAuth)`|  Zoom Bot app secret ID. | False|
     | `Secret Token`| For mirroring, see [Configuring Secret Token](#secret-token). |False|
+    | `Verification Token`| For verify the mirror in. |False|
     | `Mirroring` | Enable Incident Mirroring. See [how to configure the app](#secret-token). | False |
 
 
@@ -33,8 +34,7 @@ This integration was integrated and tested with version 2.0.0 of Zoom
 In the Server Configuration section, verify that the value for the instance.execute.external.`INTEGRATION-INSTANCE-NAME` key is set to true. If this key does not exist:
 1. Click **+ Add Server Configuration**.
 2. Add **instance.execute.external.`INTEGRATION-INSTANCE-NAME` ** and set the value to **true**. See the following reference article for further information.
-   - For Cortex XSOAR 6.x: `<CORTEX-XSOAR-URL>/instance/execute/<INTEGRATION-INSTANCE-NAME>`. For example, `https://my.demisto.live/instance/execute/zoom`. Note that the string `instance` does not refer to the name of your XSOAR instance, but rather is part of the URL.
-   - For Cortex XSOAR 8: `<ext-<CORTEX-XSOAR-URL>/xsoar/instance/execute/<INTEGRATION-INSTANCE-NAME>`. For example, https://ext-dev-demisto.live/xsoar/instance/execute/zoom. Note that the string `instance` does not refer to the name of your XSOAR instance, but rather is part of the URL.
+   - **For Cortex XSOAR 6.x**: `<CORTEX-XSOAR-URL>/instance/execute/<INTEGRATION-INSTANCE-NAME>`. For example, `https://my.demisto.live/instance/execute/zoom`. Note that the string `instance` does not refer to the name of your XSOAR instance, but rather is part of the URL.
 
 
 ## Create Zoom ChatBOT app
@@ -50,7 +50,7 @@ Enter your Cortex XSOAR server URL in all Redirect URLS.
 1. Click **Feature**> **Team Chat**.
 In the Team Chat Subscription section under BOT endpoint URL add:
    - For Cortex XSOAR 6.x: `<CORTEX-XSOAR-URL>/instance/execute/<INTEGRATION-INSTANCE-NAME>`. For example, `https://my.demisto.live/instance/execute/zoom`. Note that the string `instance` does not refer to the name of your Cortex XSOAR instance, but rather is part of the URL.
-   - For Cortex XSOAR 8: `<ext-<CORTEX-XSOAR-URL>/xsoar/instance/execute/<INTEGRATION-INSTANCE-NAME>`. For example, https://ext-dev-demisto.live/xsoar/instance/execute/zoom. Note that the string `instance` does not refer to the name of your Cortex XSOAR instance, but rather is part of the URL.
+   - For Cortex XSOAR 8 you need to run using engine: `https://<Engine Url>:<port>`. For example, https://my-engine-url:7001. 
 
 ![enter image description here](doc_files/bot_endpoint_url.gif)
 
@@ -69,15 +69,20 @@ In the Team Chat Subscription section under BOT endpoint URL add:
  1. If mirroring is enabled in the integration configuration:
     <a name="secret-token"></a>
       1. Copy the **secret token** from the "Feature" page under the "Token" section and add it
-    to the system configuration.
+    to the instance configuration.
     ![enter image description here](doc_files/zoom-token.png)
 
       2. Configure Event Subscriptions. 
          1. In the "Feature" page
    under the "General Features" section, enable "Event Subscriptions".
-      2. Click **+Add New Event Subscription**.
-      3. Enter the following information:
+      3. Click **+Add New Event Subscription**.
+      4. Enter the following information:
          - Subscription name: Enter a name for this Event Subscription (e.g., "Send Message Sent").
+         - Authentication Header Option - 
+             1. **Default Header Provided by Zoom option**- This option allows you to use a verification token provided by Zoom. Copy the **verification token** from the "Feature" page under the "Token" section and add it to the instance configuration.(can only use in XSOAR 6.x)
+              ![enter image description here](doc_files/verification.png)
+              2. **Basic Authentication Option (must in XSOAR8)** you can use Basic Authentication by providing your Zoom Client ID (OAuth) and Secret ID (OAuth) as configured in the instance configuration. (you most use this option in XSOAR8)
+              ![enter image description here](doc_files/authentication_header.png)
          - Event notification endpoint URL: Enter the Cortex XSOAR URL of your server (`CORTEX-XSOAR-URL`/instance/execute/`INTEGRATION-INSTANCE-NAME`) where you want to receive event notifications. This URL should handle incoming event data from Zoom. Make sure it's publicly accessible.
          - Validate the URL: Just after setting up/configuration of the Cortex XSOAR side you can validate the URL.
          - Add Events: Click **+Add Events**. Under Event types, select **Chat Message** and then select **Chat message sent**.
