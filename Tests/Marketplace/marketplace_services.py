@@ -1102,7 +1102,7 @@ class Pack:
             if not os.path.exists(pack_index_metadata_path):
                 logging.info(f"{self._pack_name} pack was not found in index, skipping detection of modified pack.")
                 task_status = True
-                return None
+                return task_status, modified_rn_files_paths
 
             with open(pack_index_metadata_path) as metadata_file:
                 downloaded_metadata = json.load(metadata_file)
