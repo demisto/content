@@ -3,7 +3,7 @@ from CommonServerPython import *  # noqa: F401
 
 import urllib3
 import requests
-from typing import Any
+from typing import Any, Dict
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -26,7 +26,7 @@ class Client(BaseClient):
     For this  implementation, no special attributes defined
     """
 
-    def threatzone_add(self, param: dict) -> dict[str, Any]:
+    def threatzone_add(self, param: dict) -> Dict[str, Any]:
         """Sends the sample to ThreatZone url using the '/public-api/scan/' API endpoint
 
         :return: dict containing the sample uuid as returned from the API
@@ -54,11 +54,11 @@ class Client(BaseClient):
 
         )
 
-    def threatzone_get(self, param: dict) -> dict[str, Any]:
+    def threatzone_get(self, param: dict) -> Dict[str, Any]:
         """Gets the sample scan result from ThreatZone using the '/public-api/get/submission/' API endpoint
 
         :return: dict containing the sample scan results as returned from the API
-        :rtype: ``dict[str, Any]``
+        :rtype: ``Dict[str, Any]``
         """
         return self._http_request(
             method='GET',
@@ -195,24 +195,23 @@ def generate_dbotscore(indicator, report, type=None):
     :param indicator: The value of the indicator
 
     :type report: ``dict``
-    :param report: The readable report dict 
+    :param report: The readable report dict
 
     :return: A DBotScore object.
     :rtype: dict
     """
     def _type_selector(_type):
-        try:
-            types = {
-                "ip": DBotScoreType.IP,
-                "file": DBotScoreType.FILE,
-                "domain": DBotScoreType.DOMAIN,
-                "url": DBotScoreType.URL,
-                "email": DBotScoreType.EMAIL,
-                "custom": DBotScoreType.CUSTOM,
-            }
-            return types[_type]
-        except:
-            return DBotScoreType.CUSTOM
+        types = {
+            "ip": DBotScoreType.IP,
+            "file": DBotScoreType.FILE,
+            "domain": DBotScoreType.DOMAIN,
+            "url": DBotScoreType.URL,
+            "email": DBotScoreType.EMAIL,
+            "custom": DBotScoreType.CUSTOM,
+        }
+        if not _type:
+            return types["custom"]
+        return types[_type]
 
     return Common.DBotScore(
         indicator=indicator,
@@ -230,7 +229,7 @@ def generate_indicator(indicator, report, type=None):
     :param indicator: The value of the indicator
 
     :type report: ``dict``
-    :param report: The readable report dict 
+    :param report: The readable report dict
 
     :return: A Indicator object.
     :rtype: dict
@@ -248,7 +247,7 @@ def generate_indicator(indicator, report, type=None):
         return Common.EMAIL(address=indicator, dbot_score=dbot_score)
 
 
-def threatzone_get_result(client: Client, args: dict[str, Any]) -> CommandResults:
+def threatzone_get_result(client: Client, args: Dict[str, Any]) -> CommandResults:
     """Retrive the sample scan result from ThreatZone.
         :param - uuid: For filtering with status
         :type uuid: ``str``
@@ -276,8 +275,11 @@ def threatzone_get_result(client: Client, args: dict[str, Any]) -> CommandResult
         3: "Malicious"
     }
 
-    def create_res(readable_dict, output):
-        readable_output = tableToMarkdown('Submission Result', readable_dict)
+    def create_res(readable_dict, output, exception=None):
+        if not exception:
+            readable_output = tableToMarkdown('Submission Result', readable_dict)
+        else:
+            readable_output = tableToMarkdown('Submission Result', {"Exception": str(exception)})
         return [
             CommandResults(
                 readable_output=readable_output,
@@ -306,7 +308,7 @@ def threatzone_get_result(client: Client, args: dict[str, Any]) -> CommandResult
 
         submission_uuid = result['uuid']
         if status == 0:
-            return_error(
+            raise DemistoException(
                 f"Reason: {stats[status]}\nUUID: {submission_uuid}\nSuggestion: Re-analyze submission or contact us."
             )
 
@@ -348,9 +350,9 @@ def threatzone_get_result(client: Client, args: dict[str, Any]) -> CommandResult
             res = create_res(readable_dict, output)
             # res.append(f_res)
 
-    except:
+    except Exception as e:
         output = {'ThreatZone.Result(val.Job_ID == obj.Job_ID)': {'REPORT': result}}
-        res = create_res(result, output)
+        res = create_res(result, output, exception=e)
     return res
 
 
@@ -364,11 +366,11 @@ def threatzone_check_limits(client: Client) -> CommandResults:
     )
 
 
-def threatzone_sandbox_upload_sample(client: Client, args: dict[str, Any]) -> CommandResults:
+def threatzone_sandbox_upload_sample(client: Client, args: Dict[str, Any]) -> CommandResults:
     """Uploads the sample to the ThreatZone sandbox to analyse with required or optional selections."""
     availability = client.threatzone_check_limits("sandbox")
     if not availability["avaliable"]:
-        return_error(
+        raise DemistoException(
             f"Reason: {availability['Reason']}\nSuggestion: {availability['Suggestion']}\nLimits: {availability['Limits']}")
 
     ispublic = args.get('isPublic')
@@ -417,11 +419,11 @@ def threatzone_sandbox_upload_sample(client: Client, args: dict[str, Any]) -> Co
     )
 
 
-def threatzone_static_upload_sample(client: Client, args: dict[str, Any]) -> CommandResults:
+def threatzone_static_upload_sample(client: Client, args: Dict[str, Any]) -> CommandResults:
     """Uploads the sample to the ThreatZone static engine to analyse with required or optional selections."""
     availability = client.threatzone_check_limits("static")
     if not availability["avaliable"]:
-        return_error(f"Reason: {availability['Reason']}\nSuggestion: {availability['Suggestion']}")
+        raise DemistoException(f"Reason: {availability['Reason']}\nSuggestion: {availability['Suggestion']}")
 
     file_id = args.get('entry_id')
     file_obj = demisto.getFilePath(file_id)
@@ -453,11 +455,11 @@ def threatzone_static_upload_sample(client: Client, args: dict[str, Any]) -> Com
     )
 
 
-def threatzone_cdr_upload_sample(client: Client, args: dict[str, Any]) -> CommandResults:
+def threatzone_cdr_upload_sample(client: Client, args: Dict[str, Any]) -> CommandResults:
     """Uploads the sample to the ThreatZone to analyse with required or optional selections."""
     availability = client.threatzone_check_limits("cdr")
     if not availability["avaliable"]:
-        return_error(f"Reason: {availability['Reason']}\nSuggestion: {availability['Suggestion']}")
+        raise DemistoException(f"Reason: {availability['Reason']}\nSuggestion: {availability['Suggestion']}")
 
     file_id = args.get('entry_id')
     file_obj = demisto.getFilePath(file_id)
