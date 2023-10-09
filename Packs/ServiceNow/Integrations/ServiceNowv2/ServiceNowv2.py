@@ -648,9 +648,10 @@ class Client(BaseClient):
             header (dict): requests headers. Default is None.
             sc_api: Whether to send the request to the Service Catalog API
             cr_api: Whether to send the request to the Change Request REST API
+            custom_api: the custom api root to use
 
         Returns:
-            Resposne object or Exception
+            Response object or Exception
         """
         return self.send_request(path, method, body, headers=headers, sc_api=sc_api, cr_api=cr_api, custom_api=custom_api)
 
@@ -669,6 +670,7 @@ class Client(BaseClient):
             sc_api: Whether to send the request to the Service Catalog API
             cr_api: Whether to send the request to the Change Request REST API
             get_attachments: if to get attachments or not.
+            custom_api: the custom api root to use
 
         Returns:
             response from API
