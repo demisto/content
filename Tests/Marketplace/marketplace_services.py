@@ -1141,7 +1141,6 @@ class Pack:
                 )
                 # Filter modifications in release notes config JSON file - they will be handled later on.
                 modified_rn_files_paths = [path_ for path_ in modified_rn_files_paths if path_.endswith('.md')]
-            return None
         except Exception:
             logging.exception(f"Failed in detecting modified files of {self._pack_name} pack")
         return task_status, modified_rn_files_paths
