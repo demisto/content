@@ -3211,21 +3211,21 @@ def filter_general_fields(alert: dict, filter_fields: bool = True) -> dict:
     """
 
     if filter_fields:
-        updated_alert = {k: v for k, v in alert.items() if k in ALERT_GENERAL_FIELDS}
+        result = {k: v for k, v in alert.items() if k in ALERT_GENERAL_FIELDS}
     else:
-        updated_alert = alert
+        result = alert
 
     if not (event := alert.get('raw_abioc', {}).get('event', {})):
         return_warning('No XDR cloud analytics event.')
-        return updated_alert
+        return result
 
     if filter_fields:
         updated_event = {k: v for k, v in event.items() if k in ALERT_EVENT_GENERAL_FIELDS}
     else:
         updated_event = event
 
-    updated_alert['event'] = updated_event
-    return updated_alert
+    result['event'] = updated_event
+    return result
 
 
 def filter_vendor_fields(alert: dict):
@@ -3257,7 +3257,11 @@ def get_original_alerts_command(client: CoreClient, args: Dict) -> CommandResult
     raw_response = client.get_original_alerts(alert_id_list)
     reply = copy.deepcopy(raw_response)
     alerts = reply.get('alerts', [])
+    processed_alerts = []
     filtered_alerts = []
+
+    filter_fields_argument = argToBoolean(args.get('filter_alert_fields', True))  # default, for BC, is True.
+
     for alert in alerts:
         # decode raw_response
         try:
@@ -3269,21 +3273,24 @@ def get_original_alerts_command(client: CoreClient, args: Dict) -> CommandResult
             demisto.debug("encountered the following while decoding dictionary values, skipping")
             demisto.debug(e)
             continue
-        # remove original_alert_json field and add its content to alert.
+
+        # Remove original_alert_json field and add its content to the alert body.
         alert.update(alert.pop('original_alert_json', {}))
 
-        filter_fields = argToBoolean(args.get('filter_alert_fields', True))
+        # Process the alert (with without filetring fields)
+        processed_alerts.append(filter_general_fields(alert, filter_fields=False))
 
-        alert_result = filter_general_fields(alert, filter_fields)
-        if filter_fields and 'event' in alert_result:
-            filter_vendor_fields(alert_result)
+        # Create a filtered version (used either for output when filter_fields is False, or for readable output)
+        filtered_alert = filter_general_fields(alert, filter_fields=True)
+        filter_vendor_fields(filtered_alert)  # changes in-place
 
-        filtered_alerts.append(alert_result)
+        filtered_alerts.append(filtered_alert)
 
     return CommandResults(
         outputs_prefix=f'{args.get("integration_context_brand", "CoreApiModule")}.OriginalAlert',
         outputs_key_field='internal_id',
-        outputs=filtered_alerts,
+        outputs=filtered_alerts if filter_fields_argument else processed_alerts,
+        readable_output=tableToMarkdown("Alerts", t=filtered_alerts),  # Filtered are always used for readable output
         raw_response=raw_response,
     )
 
