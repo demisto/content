@@ -1,6 +1,10 @@
 ![image](https://user-images.githubusercontent.com/49071222/72906531-0e452a00-3d3b-11ea-8703-8b97ddf30be0.png)
 
+<~XSIAM>
 
+</~XSIAM>
+
+<~XSOAR>
 ## Overview
 
 This integration lets you import **Palo Alto Networks - Prisma Cloud Compute** alerts into Demisto
@@ -68,3 +72,4 @@ At this point, you can add tasks that extend the playbook to check and respond t
 If any alerts are missing in Demisto, check the status of the integration:
 
 ![image](https://raw.githubusercontent.com/demisto/content/f808c78aa6c94a09450879c8702a1b7f023f1d4b/Packs/PrismaCloudCompute/doc_files/prisma_instance.png)
+</~XSOAR>

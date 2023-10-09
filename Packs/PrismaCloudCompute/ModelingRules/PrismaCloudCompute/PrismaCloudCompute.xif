@@ -1,0 +1,27 @@
+[MODEL: dataset = prisma_cloud_compute_raw]
+alter
+	lowercase_tags = lowercase(tags),
+	lowercase_osDistro = lowercase(osDistro),
+	lowercase_provider = lowercase(provider)
+| alter
+	xdm.source.host.fqdn = fqdn,
+	xdm.source.host.hostname = host,
+	xdm.network.rule = rule,
+	xdm.event.tags = if(lowercase_tags ~= "auth", XDM_CONST.EVENT_TAG_AUTHENTICATION, lowercase_tags ~= "vpn", XDM_CONST.EVENT_TAG_VPN, lowercase_tags ~= "network", XDM_CONST.EVENT_TAG_NETWORK, lowercase_tags = null, null, to_string(lowercase_tags)),
+	xdm.event.type = type,
+	xdm.source.agent.identifier = image,
+	xdm.alert.subcategory = labels,
+	xdm.source.location.region = region,
+	xdm.event.description = message,
+	xdm.source.application.name = runtime,
+	xdm.alert.category = category,
+	xdm.target.resource.name = function,
+	xdm.source.host.os_family = if(lowercase_osDistro ~= "win", XDM_CONST.EVENT_TAG_WINDOWS, lowercase_osDistro ~= "mac", XDM_CONST.EVENT_TAG_MACOS, lowercase_osDistro ~= "linux", XDM_CONST.EVENT_TAG_LINUX, lowercase_osDistro ~= "android", XDM_CONST.EVENT_TAG_ANDROID, lowercase_osDistro ~= "ios", XDM_CONST.EVENT_TAG_IOS, lowercase_osDistro ~= "ubuntu", XDM_CONST.EVENT_TAG_UBUNTU, lowercase_osDistro ~= "debian", XDM_CONST.EVENT_TAG_DEBIAN, lowercase_osDistro ~= "fedora", XDM_CONST.EVENT_TAG_FEDORA, lowercase_osDistro ~= "centos", XDM_CONST.EVENT_TAG_CENTOS, lowercase_osDistro ~= "chromeos", XDM_CONST.EVENT_TAG_CHROMEOS, lowercase_osDistro ~= "solaris", XDM_CONST.EVENT_TAG_SOLARIS, lowercase_osDistro ~= "scada", XDM_CONST.EVENT_TAG_SCADA, lowercase_osDistro = null, null, to_string(lowercase_osDistro)),
+	xdm.source.cloud.provider = if(lowercase_provider ~= "aws|amazon", XDM_CONST.CLOUD_PROVIDER_AWS, lowercase_provider ~= "gcp|google", XDM_CONST.CLOUD_PROVIDER_GCP, lowercase_provider ~= "azure|microsoft", XDM_CONST.CLOUD_PROVIDER_AZURE, lowercase_provider ~= "baba|alibaba", XDM_CONST.CLOUD_PROVIDER_ALIBABA, lowercase_provider = null, null, to_string(lowercase_provider)),
+	xdm.source.cloud.project = accountID,
+	xdm.source.process.container_id = container,
+	xdm.source.host.os = osRelease,
+	xdm.source.host.device_category = collections,
+	//xdm.alert.risks = vulnerabilities,
+	xdm.source.process.command_line = if(command = null, regextract(message, "command:\s+(.*)"), command),
+	xdm.source.process.name = startupProcess;  
