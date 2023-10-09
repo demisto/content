@@ -836,12 +836,13 @@ class TestHappyPath:
         assert command_result.raw_response == MOCKED_WATCHLISTS['value'][0]
         assert expected_watchlist == command_result.outputs[0]
 
-    @pytest.mark.parametrize(argnames='deletion_command, args', argvalues=[
-        (delete_incident_command, {'incident_id': TEST_INCIDENT_ID}),
-        (delete_watchlist_command, {'watchlist_alias': TEST_WATCHLIST_ALIAS}),
-        (delete_watchlist_item_command, {'watchlist_item_id': TEST_ITEM_ID, 'watchlist_alias': TEST_WATCHLIST_ALIAS})
+    @pytest.mark.parametrize(argnames='deletion_command, args, item_id', argvalues=[
+        (delete_incident_command, {'incident_id': TEST_INCIDENT_ID}, TEST_INCIDENT_ID),
+        (delete_watchlist_command, {'watchlist_alias': TEST_WATCHLIST_ALIAS}, TEST_WATCHLIST_ALIAS),
+        (delete_watchlist_item_command, {'watchlist_item_id': TEST_ITEM_ID,
+         'watchlist_alias': TEST_WATCHLIST_ALIAS}, TEST_ITEM_ID)
     ])
-    def test_generic_delete_items(self, deletion_command, args, mocker):
+    def test_generic_delete_items(self, deletion_command, args, mocker, item_id):
         """
         Given:
             - Item for deletion is exist
@@ -862,7 +863,6 @@ class TestHappyPath:
         readable_output = command_result.readable_output
 
         # validate
-        item_id = args.popitem()[1]
         assert f'{item_id} was deleted successfully.' in readable_output
 
     def test_list_watchlist_items(self, mocker):
@@ -916,7 +916,7 @@ class TestHappyPath:
         command_result = list_watchlist_items_command(client=client, args=args)
 
         # validate
-        assert client.http_request.call_args[0][1] == f'watchlists/{TEST_WATCHLIST_ALIAS}/watchlistItems/test_watchlist_id_1'
+        assert client.http_request.call_args[0][1] == f'watchlists/{TEST_WATCHLIST_ALIAS}/watchlistItems/test_watchlist_item_id_1'
         assert f'| {TEST_ITEM_ID} | name: test1<br>IP: 1.1.1.1 |' in command_result.readable_output
         assert command_result.raw_response == mocked_item
         assert command_result.outputs[0] == expected_item
