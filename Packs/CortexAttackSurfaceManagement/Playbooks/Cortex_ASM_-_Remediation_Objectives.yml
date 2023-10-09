@@ -67,7 +67,7 @@ tasks:
       {
         "position": {
           "x": 750,
-          "y": 350
+          "y": 500
         }
       }
     note: false
@@ -95,7 +95,7 @@ tasks:
       {
         "position": {
           "x": 550,
-          "y": 680
+          "y": 830
         }
       }
     note: false
@@ -161,7 +161,7 @@ tasks:
       {
         "position": {
           "x": -50,
-          "y": 340
+          "y": 500
         }
       }
     note: false
@@ -227,7 +227,7 @@ tasks:
       {
         "position": {
           "x": 1150,
-          "y": 350
+          "y": 500
         }
       }
     note: false
@@ -298,7 +298,20 @@ tasks:
             args:
               prefix:
                 value:
-                  simple: ' will block all internet traffic to this service and remediation-allow-port-'
+                  simple: '-port-'
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: VPCNetwork
+                iscontext: true
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: ' will block all internet traffic to this service and remediation-allow-'
               suffix:
                 value:
                   simple: ' which will apply these new firewall rules and restrict public internet access.'
@@ -313,7 +326,20 @@ tasks:
             args:
               prefix:
                 value:
-                  simple: 'In this case, automated remediation will create two new firewall rules: rule remediation-block-port-'
+                  simple: -port-
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: VPCNetwork
+                iscontext: true
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'In this case, automated remediation will create two new firewall rules: rule remediation-block-'
               suffix: {}
     separatecontext: false
     continueonerrortype: ""
@@ -321,7 +347,7 @@ tasks:
       {
         "position": {
           "x": 350,
-          "y": 350
+          "y": 500
         }
       }
     note: false
@@ -500,7 +526,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "12"
+      - '29'
     scriptarguments:
       key:
         simple: PortAndProtocol
@@ -597,10 +623,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: 8f67b79e-432e-4b3a-8342-8d70a3da06e4
+    taskid: 23838c64-715e-4ee5-8cec-af2d4d52d016
     type: regular
     task:
-      id: 8f67b79e-432e-4b3a-8342-8d70a3da06e4
+      id: 23838c64-715e-4ee5-8cec-af2d4d52d016
       version: -1
       name: Set temp context
       description: Set a value in context under the key you entered.
@@ -626,7 +652,7 @@ tasks:
       {
         "position": {
           "x": 1570,
-          "y": 315
+          "y": 340
         }
       }
     note: false
@@ -638,10 +664,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: eb00076c-f148-4edb-8977-f5a5aec32244
+    taskid: 5481df1b-4758-4baa-8b94-e31167987ba9
     type: regular
     task:
-      id: eb00076c-f148-4edb-8977-f5a5aec32244
+      id: 5481df1b-4758-4baa-8b94-e31167987ba9
       version: -1
       name: Set remediation objectives grid field
       description: |-
@@ -706,7 +732,7 @@ tasks:
       {
         "position": {
           "x": 1570,
-          "y": 475
+          "y": 500
         }
       }
     note: false
@@ -718,10 +744,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: d32f297f-771c-4db2-8fd5-8d5bd37161fc
+    taskid: a5467183-28c5-4f7a-83cb-a7787443aa6a
     type: regular
     task:
-      id: d32f297f-771c-4db2-8fd5-8d5bd37161fc
+      id: a5467183-28c5-4f7a-83cb-a7787443aa6a
       version: -1
       name: Set temp context
       description: Set a value in context under the key you entered.
@@ -771,12 +797,77 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  '29':
+    id: '29'
+    taskid: db0fcab3-0426-4065-83f7-1131fbd3dfbd
+    type: regular
+    task:
+      id: db0fcab3-0426-4065-83f7-1131fbd3dfbd
+      version: -1
+      name: Set VPCNetwork temporary context
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '12'
+    scriptarguments:
+      key:
+        simple: VPCNetwork
+      value:
+        complex:
+          root: alert.asmsystemids
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: alert.asmsystemids.type
+                iscontext: true
+              right:
+                value:
+                  simple: ASSET-VIRTUAL-NET
+          accessor: id
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: networks/
+          - operator: LastArrayElement
+          - operator: substring
+            args:
+              from:
+                value:
+                  simple: '0'
+              to:
+                value:
+                  simple: '29'
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 350,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
-    "linkLabelsPosition": {},
+    "linkLabelsPosition": {
+      "14_4_AWS": 0.52
+    },
     "paper": {
       "dimensions": {
-        "height": 925,
+        "height": 1075,
         "width": 2000,
         "x": -50,
         "y": -180
