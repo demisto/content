@@ -9,7 +9,7 @@ alter  // extract message header fields
     syslog_hostname = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\s*\w+\s+\S+\s+(\S+)"), 0),
     meta_sequence_id = arrayindex(regextract(_raw_log, "sequenceId=\"(\d+)"), 0), 
     site_id = arrayindex(regextract(_raw_log, "(\d+)\:\d+\:\d+\:"), 0),
-    msg_payload =arrayindex(regextract(_raw_log, "\d+\:\d+\:\d+\:(.+)"), 0)
+    msg_payload = arrayindex(regextract(_raw_log, "\d+\:\d+\:\d+\:(.+)"), 0)
 | alter // extract message payload fields 
     event_type = arrayindex(regextract(msg_payload, "event\=([^;]+)"), 0), // The name of the event that occurred.
     site = arrayindex(regextract(msg_payload, "site\=(\S[^;]+)"), 0), // The hostname for which the BeyondTrust software was built.
@@ -17,8 +17,8 @@ alter  // extract message header fields
     who = arrayindex(regextract(msg_payload, "who\=(\S[^;]+)"), 0), // The username associated with this event.
     who_ip = arrayindex(regextract(msg_payload, "who_ip\=(\S[^;]+)"), 0) // The IP address of the system that caused the event.
 | alter // old/new nomenclature fields extractions: https://www.beyondtrust.com/docs/privileged-remote-access/how-to/integrations/syslog/oldnew-nomenclature.htm
-    properties_old_state = arraystring(regextract(_raw_log, "(old_\S[^;]+)"), ";"), // snapshot of current resource state before change
-    properties_new_state = arraystring(regextract(_raw_log, "(new_\S[^;]+)"), ";") // current state of modified resource properties 
+    properties_old_state = arraystring(regextract(msg_payload, "(old_\S[^;]+)"), ";"), // snapshot of current resource state before change
+    properties_new_state = arraystring(regextract(msg_payload, "(new_\S[^;]+)"), ";") // current state of modified resource properties 
 | alter // additional proccessing 
     authentication_method = arrayindex(regextract(who, "\susing\s+(\S+)"), 0),
     source_ipv4 = if(who_ip ~= "(?:\d{1,3}\.){3}\d{1,3}", who_ip),
@@ -77,6 +77,7 @@ alter  event_type = arrayindex(regextract(_raw_log, "event\=([^;]+)"), 0)
 alter  event_type = arrayindex(regextract(_raw_log, "event\=([^;]+)"), 0)
 | filter event_type in("account_added", "account_changed", "accounts_changed", "account_removed", "account_group_added", "account_group_changed", "account_group_removed", "account_user_added", "account_user_removed")
 | call beyondtrust_pra_common_fields_modeling
+| alter msg_payload = arrayindex(regextract(_raw_log, "\d+\:\d+\:\d+\:(.+)"), 0)
 | alter // Account Fields: https://www.beyondtrust.com/docs/privileged-remote-access/how-to/integrations/syslog/fields/account.htm
     vault_account_name = arrayindex(regextract(msg_payload, "name\=(\S[^;]+)"), 0), // The name of the vault account.
     vault_account_username = arrayindex(regextract(msg_payload, "username\=(\S[^;]+)"), 0), // The username of the vault account.
@@ -106,7 +107,7 @@ alter  event_type = arrayindex(regextract(_raw_log, "event\=([^;]+)"), 0)
 alter  event_type = arrayindex(regextract(_raw_log, "event\=([^;]+)"), 0)
 | filter event_type in("support_session_report_generated", "support_session_detail_generated", "support_session_summary_report_generated", "team_activity_report_generated")
 | call beyondtrust_pra_common_fields_modeling
-| alter msg_payload =arrayindex(regextract(_raw_log, "\d+\:\d+\:\d+\:(.+)"), 0)
+| alter msg_payload = arrayindex(regextract(_raw_log, "\d+\:\d+\:\d+\:(.+)"), 0)
 | alter 
     computer_name = arrayindex(regextract(msg_payload, "computer_name\=(\S[^;]+)"), 0), // The computer name filter used in the query, if specified.
     lsid = arrayindex(regextract(msg_payload, "lsid\=(\S[^;]+)"), 0), // The unique session identifier used to query for a detailed session report, if specified.
@@ -165,6 +166,7 @@ alter  event_type = arrayindex(regextract(_raw_log, "event\=([^;]+)"), 0)
 alter  event_type = arrayindex(regextract(_raw_log, "event\=([^;]+)"), 0)
 | filter event_type in("api_account_added", "api_account_changed", "api_account_removed")
 | call beyondtrust_pra_common_fields_modeling
+| alter msg_payload = arrayindex(regextract(_raw_log, "\d+\:\d+\:\d+\:(.+)"), 0)
 | alter 
     api_ip_addresses = arrayindex(regextract(msg_payload, "ip_addresses\=(\S[^;]+)"), 0), // Comma-delimited list of network address prefixes from which this account can authenticate.
     api_account_name = arrayindex(regextract(msg_payload, "name\=(\S[^;]+)"), 0), // The name of the API account.
@@ -187,12 +189,43 @@ alter  event_type = arrayindex(regextract(_raw_log, "event\=([^;]+)"), 0)
     xdm.target.user.is_disabled = is_api_account_disabled,
     xdm.target.user.groups = if(api_ecp_group != null, arraycreate(api_ecp_group));
 
+/* Canned Script Events: 
+    These mappings apply to the following events: "canned_script_category_added", "canned_script_category_removed", "canned_script_added", "canned_script_changed", "canned_script_removed", "canned_script_file_added", "canned_script_file_removed", "canned_script_team_added", "canned_script_team_removed", "canned_scripts_category_added", "canned_scripts_category_removed", "canned_scripts_file_added", "canned_scripts_file_removed"
+    https://www.beyondtrust.com/docs/privileged-remote-access/how-to/integrations/syslog/fields/canned-script-category-fields.htm
+    https://www.beyondtrust.com/docs/privileged-remote-access/how-to/integrations/syslog/fields/canned-script-fields.htm
+    https://www.beyondtrust.com/docs/privileged-remote-access/how-to/integrations/syslog/fields/canned-script-file-fields.htm
+    https://www.beyondtrust.com/docs/privileged-remote-access/how-to/integrations/syslog/fields/canned-script-team-fields.htm
+    https://www.beyondtrust.com/docs/privileged-remote-access/how-to/integrations/syslog/fields/canned-scripts-category-fields.htm
+    https://www.beyondtrust.com/docs/privileged-remote-access/how-to/integrations/syslog/fields/canned-scripts-file-fields.htm */
+alter  event_type = arrayindex(regextract(_raw_log, "event\=([^;]+)"), 0)
+| filter event_type in("canned_script_category_added", "canned_script_category_removed", "canned_script_added", "canned_script_changed", "canned_script_removed", "canned_script_file_added", "canned_script_file_removed", "canned_script_team_added", "canned_script_team_removed", "canned_scripts_category_added", "canned_scripts_category_removed", "canned_scripts_file_added", "canned_scripts_file_removed")
+| call beyondtrust_pra_common_fields_modeling
+| alter msg_payload = arrayindex(regextract(_raw_log, "\d+\:\d+\:\d+\:(.+)"), 0)
+| alter 
+    canned_script_id1 = arrayindex(regextract(msg_payload, "canned_script\:id\=(\S[^;]+)"), 0),
+    canned_script_id2 = arrayindex(regextract(msg_payload, "id\=(\S[^;]+)"), 0),
+    canned_script_name1 = arrayindex(regextract(msg_payload, "canned_script\:name\=(\S[^;]+)"), 0),
+    canned_script_name2 = arrayindex(regextract(msg_payload, "name\=(\S[^;]+)"), 0),
+    canned_script_commands = arrayindex(regextract(msg_payload, "commands\=(\S[^;]+)"), 0),
+    canned_script_filename = arrayindex(regextract(msg_payload, "filename\=(\S[^;]+)"), 0),
+    canned_script_team_id = arrayindex(regextract(msg_payload, "team\:id\=(\S[^;]+)"), 0),
+    canned_script_team_name = arrayindex(regextract(msg_payload, "team\:name\=(\S[^;]+)"), 0),
+    canned_script_category = arrayindex(regextract(msg_payload, "category\=(\S[^;]+)"), 0)
+| alter 
+    xdm.target.process.command_line = canned_script_commands,
+    xdm.target.file.filename = canned_script_filename, 
+    xdm.target.resource.id = coalesce(canned_script_id1, canned_script_id2),
+    xdm.target.resource.name = coalesce(canned_script_name1, canned_script_name2),
+    xdm.target.resource.type = canned_script_category,
+    xdm.target.user.groups = if(canned_script_team_id != null or canned_script_team_name != null, arrayconcat(arraycreate(canned_script_team_id), arraycreate(canned_script_team_name)));
+
 /* Account Jump Item Association Events Fields: 
     These fields apply to the following events: account_jump_item_association_added, account_jump_item_association_removed. 
     https://www.beyondtrust.com/docs/privileged-remote-access/how-to/integrations/syslog/fields/account-jump-item-association.htm */
 alter  event_type = arrayindex(regextract(_raw_log, "event\=([^;]+)"), 0)
 | filter event_type in("account_jump_item", "account_jump_item_association_removed")
 | call beyondtrust_pra_common_fields_modeling
+| alter msg_payload = arrayindex(regextract(_raw_log, "\d+\:\d+\:\d+\:(.+)"), 0)
 | alter // account_jump_item", "account_jump_item_association_removed"
     account_group_id = arrayindex(regextract(msg_payload, "account_group_id\=(\S[^;]+)"), 0), // The unique identifier of the account group.
     account_id = arrayindex(regextract(msg_payload, "account_id\=(\S[^;]+)"), 0), // The unique identifier of the account.
@@ -206,5 +239,5 @@ alter  event_type = arrayindex(regextract(_raw_log, "event\=([^;]+)"), 0)
 /* General Fallback Mapping: 
     This filter applies to all other events which weren't mapped explicitly by any filter. */
 alter  event_type = arrayindex(regextract(_raw_log, "event\=([^;]+)"), 0)
-| filter event_type not in("login", "logout", "change_display_name", "change_password", "change_username", "account_added", "account_changed", "accounts_changed", "account_removed", "account_group_added", "account_group_changed", "account_group_removed", "account_user_added", "account_user_removed", "support_session_report_generated", "support_session_detail_generated", "support_session_summary_report_generated", "team_activity_report_generated", "custom_session_policy_added", "custom_session_policy_changed", "custom_session_policy_removed", "account_jump_item", "account_jump_item_association_removed", "api_account_added", "api_account_changed", "api_account_removed")
+| filter event_type not in("login", "logout", "change_display_name", "change_password", "change_username", "account_added", "account_changed", "accounts_changed", "account_removed", "account_group_added", "account_group_changed", "account_group_removed", "account_user_added", "account_user_removed", "support_session_report_generated", "support_session_detail_generated", "support_session_summary_report_generated", "team_activity_report_generated", "custom_session_policy_added", "custom_session_policy_changed", "custom_session_policy_removed", "account_jump_item", "account_jump_item_association_removed", "api_account_added", "api_account_changed", "api_account_removed", "canned_script_category_added", "canned_script_category_removed", "canned_script_added", "canned_script_changed", "canned_script_removed", "canned_script_file_added", "canned_script_file_removed", "canned_script_team_added", "canned_script_team_removed", "canned_scripts_category_added", "canned_scripts_category_removed", "canned_scripts_file_added", "canned_scripts_file_removed")
 | call beyondtrust_pra_common_fields_modeling;
