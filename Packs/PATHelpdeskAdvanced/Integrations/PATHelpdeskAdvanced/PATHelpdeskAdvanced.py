@@ -901,13 +901,15 @@ def list_ticket_sources_command(client: Client, args: dict) -> CommandResults:
 
 
 def get_ticket_history_command(client: Client, args: dict) -> CommandResults:
-    response = client.get_ticket_history(ticket_id := args["ticket_id"])
-    response = convert_response_dates(response)
+    raw_response = client.get_ticket_history(ticket_id := args["ticket_id"])
+
+    response = convert_response_dates(raw_response)
+    response = [value | {TICKET_ID.hda_name: ticket_id} for value in response]
     return CommandResults(
         outputs=response,
-        outputs_prefix=f"{VENDOR}.TicketHistory.{ticket_id}",
+        outputs_prefix=f"{VENDOR}.TicketHistory",
         outputs_key_field=HISTORY_ID.hda_name,
-        raw_response=response,
+        raw_response=raw_response,
         readable_output=pat_table_to_markdown(
             title=f"Ticket History: {ticket_id}",
             output=response,

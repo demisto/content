@@ -540,6 +540,9 @@ script:
       description: The ID of the ticket to change status for.
       required: true
     outputs:
+    - contextPath: HelpdeskAdvanced.TicketHistory.TicketID
+      description: The ticket ID associated with the history entry.
+      type: string
     - contextPath: HelpdeskAdvanced.TicketHistory.AccountID
       description: The account ID of the ticket.
       type: string

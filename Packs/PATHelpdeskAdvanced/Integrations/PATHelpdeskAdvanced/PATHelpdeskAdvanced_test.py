@@ -172,15 +172,14 @@ class TestCommands:
         mocked_client.get_ticket_history.return_value = history
 
         result = get_ticket_history_command(mocked_client, {"ticket_id": TICKET_ID})
-        assert result.outputs_prefix == f"HelpdeskAdvanced.TicketHistory.{TICKET_ID}"
-        assert result.outputs == history
+        assert result.outputs_prefix == "HelpdeskAdvanced.TicketHistory"
+        assert result.outputs == [value | {"TicketID": TICKET_ID} for value in history]
         assert result.raw_response == history
         assert result.readable_output == (
-            "### Ticket History: dummy_ticket_id\n"
-            "|Aut Email Counter|Data|Full Name|History ID|Operation Description|Operation Type ID|Update Date|User ID|Username|\n"
-            "|---|---|---|---|---|---|---|---|---|\n|  |"
-            " ***Comment***: testing<br>***From***: Solved<br>***FromID***: S6<br>***To***:"
-            " In Progress<br>***ToID***: S2 | John Doe |  | Status change |  | 2023-10-04T07:45:35Z | S00000C | username |\n"
+            "### Ticket History: dummy_ticket_id\n|Aut Email Counter|Data|Full Name|History ID|Operation Description|"
+            "Operation Type ID|Update Date|User ID|Username|Ticket ID|\n|---|---|---|---|---|---|---|---|---|---|\n|"
+            "  | ***Comment***: testing<br>***From***: Solved<br>***FromID***: S6<br>***To***: In Progress<br>***ToID***:"
+            " S2 | John Doe |  | Status change |  | 2023-10-04T07:45:35Z | S00000C | username | dummy_ticket_id |\n"
         )
 
     @classmethod
