@@ -207,7 +207,14 @@ class Helper:
                 + "}"
             )
         elif operator == "EQUALS":
-            _value = f'"{value}"' if type(value) == str else value
+            _value = ""
+            if type(value) == str:
+                _value = f'"{value}"'
+            elif type(value) == bool:
+                _c = str(value)
+                _value = f"{_c[0:1].lower()}{_c[1:]}"
+            else:
+                _value = value
             return (
                 '{keyExpression: {key: "'
                 + key
@@ -267,13 +274,15 @@ class Client(BaseClient):
         self.app_url = ""
         self.ignore_status_code_tuples = []
         self.environments = None
+        self.integration_context: dict = {}
+        self.fetch_unique_incidents: bool = True
         self.__mandatory_domain_event_field_list = ["actorCountry", "actorIpAddress", "apiId", "environment", "eventDescription",
                                                     "id", "ipCategories", "name", "securityScoreCategory", "spanId",
-                                                    "statusCode", "timestamp", "traceId"]
+                                                    "statusCode", "timestamp", "traceId", "serviceName", "anomalousAttribute"]
         self.__allowed_optional_domain_event_field_list = ["actorDevice", "actorEntityId", "actorId", "actorScoreCategory",
-                                                           "actorSession", "anomalousAttribute", "apiName", "apiUri",
+                                                           "actorSession", "apiName", "apiUri",
                                                            "category", "ipAbuseVelocity", "ipReputationLevel",
-                                                           "securityEventType", "securityScore", "serviceId", "serviceName",
+                                                           "securityEventType", "securityScore", "serviceId",
                                                            "actorScore", "threatCategory", "type"]
         self.__allowed_optional_api_atrributes = [
             "isExternal", "isAuthenticated", "riskScore", "riskScoreCategory", "isLearnt"
@@ -404,6 +413,9 @@ class Client(BaseClient):
     def set_domain_event_field_list(self, field_list):
         self.domain_event_field_list = self.__process_domain_event_field_list(field_list)
 
+    def set_fetch_unique_incidents(self, fetch_unique_incidents):
+        self.fetch_unique_incidents = fetch_unique_incidents
+
     def set_optional_api_attributes(self, field_list):
         if len(field_list) == 0:
             field_list = []
@@ -415,37 +427,46 @@ class Client(BaseClient):
         if len(self.optional_api_attributes) > 0:
             self.__query_api_attributes = True
 
-    def graphql_query(self, query, params={}, verify=False):
-        demisto.debug("Entered from graphql_query")
-        demisto.debug("Running request...")
+    def graphql_query(self, query, params={}, verify=False, additional_logging=""):
+        demisto.info(f"graphql_query: Entered into graphql_query {additional_logging}")
+        demisto.info(f"graphql_query: Running request...{additional_logging}")
         response = requests.post(
             self.url,
             json={"query": query, "variables": params},
             headers=self.headers,
             verify=verify,
         )
-        demisto.debug("Completed request...")
+        demisto.info(f"graphql_query: Completed request...{additional_logging}")
 
         if (
             response is not None
             and response.status_code != 200
             and response.text is not None
         ):
-            msg = f"Error occurred: {response.text} | Status Code: {(response.status_code)}"
+            msg = (f"Error occurred: {response.text} | Status Code: {(response.status_code)} | "
+                   + f"additional_logging: {additional_logging}")
             demisto.error(msg)
             raise Exception(msg)
 
+        demisto.info(f"graphql_query: Completed checking request for non 200 errors...{additional_logging}")
+
         is_error, error = self.errors_in_response(response)
+        demisto.info(f"graphql_query: Completed errors_in_response...{additional_logging}")
         if is_error:
+            demisto.info(f"graphql_query: printing error...{additional_logging}")
             demisto.error(error)
             raise Exception(error)
 
+        demisto.info(f"graphql_query: Completed checking request for error objects...{additional_logging}")
+
         if response is not None and response.text is not None:
             response_obj = json.loads(response.text)
-            demisto.debug("Returning from graphql_query")
+            demisto.info(f"Returning from graphql_query {additional_logging}")
             return response_obj
 
-        raise Exception(f"Something went wrong: {json.dumps(response, indent=2)}")
+        demisto.info(f"graphql_query: Did not return the results so now throw exception...{additional_logging}")
+
+        raise Exception(f"Something went wrong: {json.dumps(response, indent=2)} {additional_logging}")
 
     def errors_in_response(self, response):
         if response is not None and response.status_code == 200:
@@ -457,6 +478,7 @@ class Client(BaseClient):
         return True, json.dumps(response, indent=2)
 
     def get_span_for_trace_id(self, starttime, endtime, traceid=None, spanid=None):
+        demisto.info(f"get_span_for_trace_id: Starting span query for traceid {traceid} and spanid {spanid}")
         if traceid is None or len(traceid) < 1:
             msg = "traceid cannot be None."
             demisto.error(msg)
@@ -467,8 +489,9 @@ class Client(BaseClient):
         span_id_clause = None
         if spanid is not None:
             span_id_clause = Helper.construct_key_expression("id", spanid)
+        # is_anomalous_clause = Helper.construct_key_expression("isAnomalous", True, operator="EQUALS")
         filter_by_clause = Helper.construct_filterby_expression(
-            trace_id_clause, span_id_clause
+            trace_id_clause, span_id_clause  # , is_anomalous_clause
         )
         query = Template(get_spans_for_trace_id).substitute(
             starttime=Helper.start_datetime_to_string(starttime),
@@ -476,8 +499,11 @@ class Client(BaseClient):
             limit=self.limit,
             filter_by_clause=filter_by_clause,
         )
-        demisto.debug(f"Span query: {query}")
-        return self.graphql_query(query)
+        demisto.info(f"get_span_for_trace_id: Span query: {query}")
+        demisto.info(f"get_span_for_trace_id: starting graphql_query for traceid {traceid} and spanid {spanid}")
+        ret = self.graphql_query(query, additional_logging=f"traceid = {traceid}")
+        demisto.info(f"get_span_for_trace_id: completed graphql_query for traceid {traceid} and spanid {spanid}")
+        return ret
 
     def get_threat_events_query(
         self,
@@ -560,6 +586,8 @@ class Client(BaseClient):
         )
 
     def get_api_endpoint_details(self, api_id_list, starttime, endtime):
+        demisto.info(f"API ID is {api_id_list}")
+        demisto.info("Starting get_api_endpoint_details.")
         if len(api_id_list) == 0:
             return []
         query = self.get_api_endpoint_details_query(api_id_list, starttime, endtime)
@@ -570,6 +598,8 @@ class Client(BaseClient):
             demisto.error(msg)
             raise Exception(msg)
 
+        demisto.info("Ending get_api_endpoint_details.")
+
         return result["data"]["entities"]["results"]
 
     def get_threat_events(
@@ -577,6 +607,7 @@ class Client(BaseClient):
         starttime,
         endtime=datetime.now(),
     ):
+
         query = self.get_threat_events_query(starttime, endtime)
         demisto.debug(f"Query is: {query}")
         result = self.graphql_query(query)
@@ -631,7 +662,7 @@ class Client(BaseClient):
                     traceid=trace_id,
                     spanid=span_id,
                 )
-                demisto.info("Submitted job successfully.")
+                demisto.info(f"Submitted job successfully for traceid {trace_id} spanid {span_id}")
                 future_list.append((domain_event, future))
                 demisto.info("Completed thread for span retrieval")
 
@@ -649,7 +680,9 @@ class Client(BaseClient):
         api_endpoint_details = None
 
         for domain_event, future in future_list:
+            demisto.info("Waiting for the future object...")
             trace_results = future.result()
+            demisto.info("Done waiting for the future object...")
             domain_event["type"] = "Exploit"
             if (
                 domain_event["name"] is not None

@@ -1,5 +1,4 @@
 #!/usr/bin/env python -W ignore::DeprecationWarning
-
 sample_span_result = """{
   "data": {
     "spans": {
@@ -631,6 +630,7 @@ def test_fetch_incidents_public_api_type(mocker):
     client.set_ip_abuse_velocity_list(["CRITICAL", "HIGH", "MEDIUM", "LOW"])
     client.set_optional_api_attributes(["isExternal", "isAuthenticated", "riskScore", "riskScoreCategory", "isLearnt"])
     client.set_limit(100)
+    # client.__commit_integration_context__()
 
     mocked_post = mocker.patch("requests.post")
     mocked_post.side_effect = public_api_type_response_handler
@@ -657,6 +657,7 @@ def test_fetch_incidents_private_api_type(mocker):
     client.set_ip_abuse_velocity_list(["CRITICAL", "HIGH", "MEDIUM", "LOW"])
     client.set_optional_api_attributes(["isExternal", "isAuthenticated", "riskScore", "riskScoreCategory", "isLearnt"])
     client.set_limit(100)
+    # client.__commit_integration_context__()
 
     mocked_post = mocker.patch("requests.post")
     mocked_post.side_effect = private_api_type_response_handler
@@ -685,6 +686,7 @@ def test_fetch_incidents_last_fetch_not_none(mocker):
     client.set_ip_reputation_level_list(["CRITICAL", "HIGH", "MEDIUM", "LOW"])
     client.set_ip_abuse_velocity_list(["CRITICAL", "HIGH", "MEDIUM", "LOW"])
     client.set_limit(100)
+    # client.__commit_integration_context__()
 
     mocked_post = mocker.patch("requests.post")
     mocked_post.side_effect = response_handler
@@ -802,6 +804,7 @@ def test_construct_key_expression_equals_int():
 
 
 def test_construct_key_expression_unknown_op():
+
     from Traceable import Helper
 
     encountered_exception = False
@@ -924,35 +927,35 @@ def test_get_threat_events_query(capfd):
     import urllib3
 
     output_query = (
-        '{\n  explore(\n    scope: "DOMAIN_EVENT"\n    limit: 100\n    between: {\n      startTime: "2023-06-20T15:34:5'
-        + '6.000Z"\n      endTime: "2023-06-26T15:34:53.999Z"\n    }\n    offset: 0\n    filterBy: [{keyExpression: {ke'
-        + 'y: "securityScoreCategory"}, operator: IN, value: ["CRITICAL","HIGH","MEDIUM","LOW"], type: ATTRIBUTE},{keyE'
-        + 'xpression: {key: "ipReputationLevel"}, operator: IN, value: ["CRITICAL","HIGH","MEDIUM","LOW","UNKNOWN"], ty'
-        + 'pe: ATTRIBUTE},{keyExpression: {key: "ipCategories"}, operator: IN, value: ["IP_LOCATION_TYPE_UNSPECIFIED","'
-        + 'IP_LOCATION_TYPE_ANONYMOUS_VPN","IP_LOCATION_TYPE_HOSTING_PROVIDER","IP_LOCATION_TYPE_PUBLIC_PROXY","IP_LOCA'
-        + 'TION_TYPE_TOR_EXIT_NODE","IP_LOCATION_TYPE_BOT"], type: ATTRIBUTE},{keyExpression: {key: "ipAbuseVelocity"},'
-        + ' operator: IN, value: ["CRITICAL","HIGH","MEDIUM","LOW","IP_ABUSE_VELOCITY_UNSPECIFIED"], type: ATTRIBUTE}]'
-        + '\n    orderBy: [\n      { keyExpression: { key: "timestamp" } }\n    ]\n  ) {\n    results {\n        actorC'
-        + 'ountry: selection(expression: {key: "actorCountry"}) { value }\nactorIpAddress: selection(expression: {key: '
-        + '"actorIpAddress"}) { value }\napiId: selection(expression: {key: "apiId"}) { value }\nenvironment: selection'
-        + '(expression: {key: "environment"}) { value }\neventDescription: selection(expression: {key: "eventDescriptio'
-        + 'n"}) { value }\nid: selection(expression: {key: "id"}) { value }\nipCategories: selection(expression: {key: '
-        + '"ipCategories"}) { value }\nname: selection(expression: {key: "name"}) { value }\nsecurityScoreCategory: sel'
-        + 'ection(expression: {key: "securityScoreCategory"}) { value }\nspanId: selection(expression: {key: "spanId"})'
-        + ' { value }\nstatusCode: selection(expression: {key: "statusCode"}) { value }\ntimestamp: selection(expressio'
-        + 'n: {key: "timestamp"}) { value }\ntraceId: selection(expression: {key: "traceId"}) { value }\nactorDevice: s'
-        + 'election(expression: {key: "actorDevice"}) { value }\nactorEntityId: selection(expression: {key: "actorEntit'
-        + 'yId"}) { value }\nactorId: selection(expression: {key: "actorId"}) { value }\nactorScoreCategory: selection('
-        + 'expression: {key: "actorScoreCategory"}) { value }\nactorSession: selection(expression: {key: "actorSession"'
-        + '}) { value }\nanomalousAttribute: selection(expression: {key: "anomalousAttribute"}) { value }\napiName: sel'
-        + 'ection(expression: {key: "apiName"}) { value }\napiUri: selection(expression: {key: "apiUri"}) { value }\nca'
-        + 'tegory: selection(expression: {key: "category"}) { value }\nipAbuseVelocity: selection(expression: {key: "ip'
-        + 'AbuseVelocity"}) { value }\nipReputationLevel: selection(expression: {key: "ipReputationLevel"}) { value }\n'
-        + 'securityEventType: selection(expression: {key: "securityEventType"}) { value }\nsecurityScore: selection(exp'
-        + 'ression: {key: "securityScore"}) { value }\nserviceId: selection(expression: {key: "serviceId"}) { value }\n'
-        + 'serviceName: selection(expression: {key: "serviceName"}) { value }\nactorScore: selection(expression: {key: '
-        + '"actorScore"}) { value }\nthreatCategory: selection(expression: {key: "threatCategory"}) { value }\ntype: se'
-        + 'lection(expression: {key: "type"}) { value }\n\n    }\n  }\n}\n'
+        '{\n  explore(\n    scope: "DOMAIN_EVENT"\n    limit: 100\n    between: {\n      startTime: "2023-06-20T15:34:'
+        + '56.000Z"\n      endTime: "2023-06-26T15:34:53.999Z"\n    }\n    offset: 0\n    filterBy: [{keyExpression: {'
+        + 'key: "securityScoreCategory"}, operator: IN, value: ["CRITICAL","HIGH","MEDIUM","LOW"], type: ATTRIBUTE},{k'
+        + 'eyExpression: {key: "ipReputationLevel"}, operator: IN, value: ["CRITICAL","HIGH","MEDIUM","LOW","UNKNOWN"]'
+        + ', type: ATTRIBUTE},{keyExpression: {key: "ipCategories"}, operator: IN, value: ["IP_LOCATION_TYPE_UNSPECIFI'
+        + 'ED","IP_LOCATION_TYPE_ANONYMOUS_VPN","IP_LOCATION_TYPE_HOSTING_PROVIDER","IP_LOCATION_TYPE_PUBLIC_PROXY","I'
+        + 'P_LOCATION_TYPE_TOR_EXIT_NODE","IP_LOCATION_TYPE_BOT"], type: ATTRIBUTE},{keyExpression: {key: "ipAbuseVelo'
+        + 'city"}, operator: IN, value: ["CRITICAL","HIGH","MEDIUM","LOW","IP_ABUSE_VELOCITY_UNSPECIFIED"], type: ATTR'
+        + 'IBUTE}]\n    orderBy: [\n      { keyExpression: { key: "timestamp" } }\n    ]\n  ) {\n    results {\n      '
+        + '  actorCountry: selection(expression: {key: "actorCountry"}) { value }\nactorIpAddress: selection(expressio'
+        + 'n: {key: "actorIpAddress"}) { value }\napiId: selection(expression: {key: "apiId"}) { value }\nenvironment:'
+        + ' selection(expression: {key: "environment"}) { value }\neventDescription: selection(expression: {key: "even'
+        + 'tDescription"}) { value }\nid: selection(expression: {key: "id"}) { value }\nipCategories: selection(expres'
+        + 'sion: {key: "ipCategories"}) { value }\nname: selection(expression: {key: "name"}) { value }\nsecurityScore'
+        + 'Category: selection(expression: {key: "securityScoreCategory"}) { value }\nspanId: selection(expression: {k'
+        + 'ey: "spanId"}) { value }\nstatusCode: selection(expression: {key: "statusCode"}) { value }\ntimestamp: sele'
+        + 'ction(expression: {key: "timestamp"}) { value }\ntraceId: selection(expression: {key: "traceId"}) { value }'
+        + '\nserviceName: selection(expression: {key: "serviceName"}) { value }\nanomalousAttribute: selection(express'
+        + 'ion: {key: "anomalousAttribute"}) { value }\nactorDevice: selection(expression: {key: "actorDevice"}) { val'
+        + 'ue }\nactorEntityId: selection(expression: {key: "actorEntityId"}) { value }\nactorId: selection(expression'
+        + ': {key: "actorId"}) { value }\nactorScoreCategory: selection(expression: {key: "actorScoreCategory"}) { val'
+        + 'ue }\nactorSession: selection(expression: {key: "actorSession"}) { value }\napiName: selection(expression: '
+        + '{key: "apiName"}) { value }\napiUri: selection(expression: {key: "apiUri"}) { value }\ncategory: selection('
+        + 'expression: {key: "category"}) { value }\nipAbuseVelocity: selection(expression: {key: "ipAbuseVelocity"}) '
+        + '{ value }\nipReputationLevel: selection(expression: {key: "ipReputationLevel"}) { value }\nsecurityEventTyp'
+        + 'e: selection(expression: {key: "securityEventType"}) { value }\nsecurityScore: selection(expression: {key: '
+        + '"securityScore"}) { value }\nserviceId: selection(expression: {key: "serviceId"}) { value }\nactorScore: se'
+        + 'lection(expression: {key: "actorScore"}) { value }\nthreatCategory: selection(expression: {key: "threatCate'
+        + 'gory"}) { value }\ntype: selection(expression: {key: "type"}) { value }\n\n    }\n  }\n}\n'
     )
 
     starttime = datetime.strptime("2023-06-20T15:34:56Z", DATE_FORMAT)
@@ -984,6 +987,7 @@ def test_get_threat_events_query(capfd):
         "apiUri", "category", "ipAbuseVelocity", "ipReputationLevel", "securityEventType", "securityScore", "serviceId",
         "serviceName", "actorScore", "threatCategory", "type", "nonexistent"])
     client.set_limit(100)
+    # client.__commit_integration_context__()
 
     query = client.get_threat_events_query(starttime, endtime)
     assert query == output_query
@@ -996,24 +1000,26 @@ def test_get_threat_events_query_no_optional_fields(capfd):
     import urllib3
 
     output_query = (
-        '{\n  explore(\n    scope: "DOMAIN_EVENT"\n    limit: 100\n    between: {\n      startTime: "2023-06-20T15:34:5'
-        + '6.000Z"\n      endTime: "2023-06-26T15:34:53.999Z"\n    }\n    offset: 0\n    filterBy: [{keyExpression: {ke'
-        + 'y: "securityScoreCategory"}, operator: IN, value: ["CRITICAL","HIGH","MEDIUM","LOW"], type: ATTRIBUTE},{keyE'
-        + 'xpression: {key: "ipReputationLevel"}, operator: IN, value: ["CRITICAL","HIGH","MEDIUM","LOW","UNKNOWN"], ty'
-        + 'pe: ATTRIBUTE},{keyExpression: {key: "ipCategories"}, operator: IN, value: ["IP_LOCATION_TYPE_UNSPECIFIED","'
-        + 'IP_LOCATION_TYPE_ANONYMOUS_VPN","IP_LOCATION_TYPE_HOSTING_PROVIDER","IP_LOCATION_TYPE_PUBLIC_PROXY","IP_LOCA'
-        + 'TION_TYPE_TOR_EXIT_NODE","IP_LOCATION_TYPE_BOT"], type: ATTRIBUTE},{keyExpression: {key: "ipAbuseVelocity"},'
-        + ' operator: IN, value: ["CRITICAL","HIGH","MEDIUM","LOW","IP_ABUSE_VELOCITY_UNSPECIFIED"], type: ATTRIBUTE}]'
-        + '\n    orderBy: [\n      { keyExpression: { key: "timestamp" } }\n    ]\n  ) {\n    results {\n        actorC'
-        + 'ountry: selection(expression: {key: "actorCountry"}) { value }\nactorIpAddress: selection(expression: {key: '
-        + '"actorIpAddress"}) { value }\napiId: selection(expression: {key: "apiId"}) { value }\nenvironment: selection'
-        + '(expression: {key: "environment"}) { value }\neventDescription: selection(expression: {key: "eventDescriptio'
-        + 'n"}) { value }\nid: selection(expression: {key: "id"}) { value }\nipCategories: selection(expression: {key: '
-        + '"ipCategories"}) { value }\nname: selection(expression: {key: "name"}) { value }\nsecurityScoreCategory: sel'
-        + 'ection(expression: {key: "securityScoreCategory"}) { value }\nspanId: selection(expression: {key: "spanId"})'
-        + ' { value }\nstatusCode: selection(expression: {key: "statusCode"}) { value }\ntimestamp: selection(expressio'
-        + 'n: {key: "timestamp"}) { value }\ntraceId: selection(expression: {key: "traceId"}) { value }\n\n    }\n  }\n'
-        + '}\n'
+        '{\n  explore(\n    scope: "DOMAIN_EVENT"\n    limit: 100\n    between: {\n      startTime: "2023-06-20T15:34:'
+        + '56.000Z"\n      endTime: "2023-06-26T15:34:53.999Z"\n    }\n    offset: 0\n    filterBy: [{keyExpression: {'
+        + 'key: "securityScoreCategory"}, operator: IN, value: ["CRITICAL","HIGH","MEDIUM","LOW"], type: ATTRIBUTE},{k'
+        + 'eyExpression: {key: "ipReputationLevel"}, operator: IN, value: ["CRITICAL","HIGH","MEDIUM","LOW","UNKNOWN"]'
+        + ', type: ATTRIBUTE},{keyExpression: {key: "ipCategories"}, operator: IN, value: ["IP_LOCATION_TYPE_UNSPECIFI'
+        + 'ED","IP_LOCATION_TYPE_ANONYMOUS_VPN","IP_LOCATION_TYPE_HOSTING_PROVIDER","IP_LOCATION_TYPE_PUBLIC_PROXY","I'
+        + 'P_LOCATION_TYPE_TOR_EXIT_NODE","IP_LOCATION_TYPE_BOT"], type: ATTRIBUTE},{keyExpression: {key: "ipAbuseVelo'
+        + 'city"}, operator: IN, value: ["CRITICAL","HIGH","MEDIUM","LOW","IP_ABUSE_VELOCITY_UNSPECIFIED"], type: ATTR'
+        + 'IBUTE}]\n    orderBy: [\n      { keyExpression: { key: "timestamp" } }\n    ]\n  ) {\n    results {\n      '
+        + '  actorCountry: selection(expression: {key: "actorCountry"}) { value }\nactorIpAddress: selection(expressio'
+        + 'n: {key: "actorIpAddress"}) { value }\napiId: selection(expression: {key: "apiId"}) { value }\nenvironment:'
+        + ' selection(expression: {key: "environment"}) { value }\neventDescription: selection(expression: {key: "even'
+        + 'tDescription"}) { value }\nid: selection(expression: {key: "id"}) { value }\nipCategories: selection(expres'
+        + 'sion: {key: "ipCategories"}) { value }\nname: selection(expression: {key: "name"}) { value }\nsecurityScore'
+        + 'Category: selection(expression: {key: "securityScoreCategory"}) { value }\nspanId: selection(expression: {k'
+        + 'ey: "spanId"}) { value }\nstatusCode: selection(expression: {key: "statusCode"}) { value }\ntimestamp: sele'
+        + 'ction(expression: {key: "timestamp"}) { value }\ntraceId: selection(expression: {key: "traceId"}) { value }'
+        + '\nserviceName: selection(expression: {key: "serviceName"}) { value }\nanomalousAttribute: selection(express'
+        + 'ion: {key: "anomalousAttribute"}) { value }\n\n    }\n  }\n}\n'
+
     )
 
     starttime = datetime.strptime("2023-06-20T15:34:56Z", DATE_FORMAT)
@@ -1041,6 +1047,7 @@ def test_get_threat_events_query_no_optional_fields(capfd):
         ]
     )
     client.set_limit(100)
+    # client.__commit_integration_context__()
 
     query = client.get_threat_events_query(starttime, endtime)
     assert query == output_query
@@ -1088,7 +1095,7 @@ def test_graphql_query_non_200(mocker, caplog, capfd):
         client.graphql_query("query")
     except Exception as e:
         encountered_exception = True
-        assert str(e) == "Error occurred: error | Status Code: 400"
+        assert str(e) == "Error occurred: error | Status Code: 400 | additional_logging: "
     assert encountered_exception
     caplog.clear()
     capfd.readouterr()
@@ -1286,9 +1293,9 @@ def test_process_domain_field_list():
         "serviceName", "actorScore", "threatCategory"])
     assert len(client.domain_event_field_list) == 30
     client.set_domain_event_field_list([])
-    assert len(client.domain_event_field_list) == 13
+    assert len(client.domain_event_field_list) == 15
     client.set_domain_event_field_list(None)
-    assert len(client.domain_event_field_list) == 13
+    assert len(client.domain_event_field_list) == 15
 
 
 def test_construct_field_selection_expression():
@@ -1300,27 +1307,28 @@ def test_construct_field_selection_expression():
         "apiUri", "category", "ipAbuseVelocity", "ipReputationLevel", "securityEventType", "securityScore", "serviceId",
         "serviceName", "actorScore", "threatCategory", "type", "nonexistent"])
     expression_string = client.get_domain_event_query_fields()
-    expected_output = 'actorCountry: selection(expression: {key: "actorCountry"}) { value }\nactorIpAddress: ' \
-        + 'selection(expression: {key: "actorIpAddress"}) { value }\napiId: selection(expression: {key: "apiId"}) ' \
-        + '{ value }\nenvironment: selection(expression: {key: "environment"}) { value }\neventDescription: selection' \
-        + '(expression: {key: "eventDescription"}) { value }\nid: selection(expression: {key: "id"}) { value }\n' \
-        + 'ipCategories: selection(expression: {key: "ipCategories"}) { value }\nname: selection(expression: {key: ' \
-        + '"name"}) { value }\nsecurityScoreCategory: selection(expression: {key: "securityScoreCategory"}) { value }\n' \
-        + 'spanId: selection(expression: {key: "spanId"}) { value }\nstatusCode: selection(expression: {key: ' \
-        + '"statusCode"}) { value }\ntimestamp: selection(expression: {key: "timestamp"}) { value }\ntraceId: '\
-        + 'selection(expression: {key: "traceId"}) { value }\nactorDevice: selection(expression: {key: "actorDevice'\
-        + '"}) { value }\nactorEntityId: selection(expression: {key: "actorEntityId"}) { value }\nactorId: selection(' \
-        + 'expression: {key: "actorId"}) { value }\nactorScoreCategory: selection(expression: {key: "actorScoreCategory' \
-        + '"}) { value }\nactorSession: selection(expression: {key: "actorSession"}) { value }\nanomalousAttribute: ' \
-        + 'selection(expression: {key: "anomalousAttribute"}) { value }\napiName: selection(expression: {key: "apiName' \
-        + '"}) { value }\napiUri: selection(expression: {key: "apiUri"}) { value }\ncategory: selection(expression: ' \
-        + '{key: "category"}) { value }\nipAbuseVelocity: selection(expression: {key: "ipAbuseVelocity"}) { ' \
-        + 'value }\nipReputationLevel: selection(expression: {key: "ipReputationLevel"}) { value }\nsecurityEventType' \
-        + ': selection(expression: {key: "securityEventType"}) { value }\nsecurityScore: selection(expression: ' \
-        + '{key: "securityScore"}) { value }\nserviceId: selection(expression: {key: "serviceId"}) { value }\n' \
-        + 'serviceName: selection(expression: {key: "serviceName"}) { value }\nactorScore: selection(expression: ' \
-        + '{key: "actorScore"}) { value }\nthreatCategory: selection(expression: {key: "threatCategory"}) { value ' \
-        + '}\ntype: selection(expression: {key: "type"}) { value }\n'
+    expected_output = (
+        'actorCountry: selection(expression: {key: "actorCountry"}) { value }\nactorIpAddress: selection(expression: {'
+        + 'key: "actorIpAddress"}) { value }\napiId: selection(expression: {key: "apiId"}) { value }\nenvironment: sel'
+        + 'ection(expression: {key: "environment"}) { value }\neventDescription: selection(expression: {key: "eventDes'
+        + 'cription"}) { value }\nid: selection(expression: {key: "id"}) { value }\nipCategories: selection(expression'
+        + ': {key: "ipCategories"}) { value }\nname: selection(expression: {key: "name"}) { value }\nsecurityScoreCate'
+        + 'gory: selection(expression: {key: "securityScoreCategory"}) { value }\nspanId: selection(expression: {key: '
+        + '"spanId"}) { value }\nstatusCode: selection(expression: {key: "statusCode"}) { value }\ntimestamp: selectio'
+        + 'n(expression: {key: "timestamp"}) { value }\ntraceId: selection(expression: {key: "traceId"}) { value }\nse'
+        + 'rviceName: selection(expression: {key: "serviceName"}) { value }\nanomalousAttribute: selection(expression:'
+        + ' {key: "anomalousAttribute"}) { value }\nactorDevice: selection(expression: {key: "actorDevice"}) { value }'
+        + '\nactorEntityId: selection(expression: {key: "actorEntityId"}) { value }\nactorId: selection(expression: {k'
+        + 'ey: "actorId"}) { value }\nactorScoreCategory: selection(expression: {key: "actorScoreCategory"}) { value }'
+        + '\nactorSession: selection(expression: {key: "actorSession"}) { value }\napiName: selection(expression: {key'
+        + ': "apiName"}) { value }\napiUri: selection(expression: {key: "apiUri"}) { value }\ncategory: selection(expr'
+        + 'ession: {key: "category"}) { value }\nipAbuseVelocity: selection(expression: {key: "ipAbuseVelocity"}) { va'
+        + 'lue }\nipReputationLevel: selection(expression: {key: "ipReputationLevel"}) { value }\nsecurityEventType: s'
+        + 'election(expression: {key: "securityEventType"}) { value }\nsecurityScore: selection(expression: {key: "sec'
+        + 'urityScore"}) { value }\nserviceId: selection(expression: {key: "serviceId"}) { value }\nactorScore: select'
+        + 'ion(expression: {key: "actorScore"}) { value }\nthreatCategory: selection(expression: {key: "threatCategory'
+        + '"}) { value }\ntype: selection(expression: {key: "type"}) { value }\n'
+    )
     assert expression_string == expected_output
 
 
@@ -1366,6 +1374,7 @@ def test_fetch_incidents_no_api_attributes_selection(mocker):
     client.set_ip_reputation_level_list(["CRITICAL", "HIGH", "MEDIUM", "LOW"])
     client.set_ip_abuse_velocity_list(["CRITICAL", "HIGH", "MEDIUM", "LOW"])
     client.set_limit(100)
+    # client.__commit_integration_context__()
 
     mocked_post = mocker.patch("requests.post")
     mocked_post.side_effect = private_api_type_response_handler
@@ -1411,6 +1420,7 @@ def test_set_app_url(mocker):
     client.set_ip_reputation_level_list(["CRITICAL", "HIGH", "MEDIUM", "LOW"])
     client.set_ip_abuse_velocity_list(["CRITICAL", "HIGH", "MEDIUM", "LOW"])
     client.set_limit(100)
+    # client.__commit_integration_context__()
 
     mocked_post = mocker.patch("requests.post")
     mocked_post.side_effect = private_api_type_response_handler
@@ -1422,5 +1432,86 @@ def test_set_app_url(mocker):
 
     client = Client(base_url="https://mock.url", verify=False, headers=headers)
     client.set_app_url(None)
+    # client.__commit_integration_context__()
     next_run, incidents = fetch_incidents(client, {"last_fetch": None}, "3 days")
     assert "eventUrl" not in incidents[0]
+
+
+def test_instance_cache(mocker):
+    from Traceable import Client, fetch_incidents
+    headers = {}
+    headers["Content-Type"] = "application/json"
+    headers["Accept"] = "application/json"
+
+    client = Client(base_url="https://mock.url", verify=False, headers=headers)
+    client.set_app_url(None)
+    assert client.app_url == ""
+
+    client.set_app_url("")
+    assert client.app_url == ""
+
+    client.set_app_url("https://mock.url")
+    assert client.app_url == "https://mock.url"
+
+    client.set_security_score_category_list(["CRITICAL", "HIGH", "MEDIUM", "LOW"])
+    client.set_ip_reputation_level_list(["CRITICAL", "HIGH", "MEDIUM", "LOW"])
+    client.set_ip_abuse_velocity_list(["CRITICAL", "HIGH", "MEDIUM", "LOW"])
+    client.set_limit(100)
+    # client.__commit_integration_context__()
+
+    mocked_post = mocker.patch("requests.post")
+    mocked_post.side_effect = private_api_type_response_handler
+    next_run, incidents = fetch_incidents(client, {"last_fetch": None}, "3 days")
+    assert len(incidents) == 1
+
+    client = Client(base_url="https://mock.url", verify=False, headers=headers)
+    client.set_app_url("https://mock.url")
+    next_run, incidents = fetch_incidents(client, {"last_fetch": None}, "3 days")
+    assert len(incidents) == 0
+
+
+def test_boolean_construct_key_expression():
+    from Traceable import Helper
+    result = Helper.construct_key_expression("key", True, operator="EQUALS")
+    expected = '{keyExpression: {key: "key"}, operator: EQUALS, value: true, type: ATTRIBUTE}'
+    assert result == expected
+
+    passed = False
+    try:
+        result = Helper.construct_key_expression("key", True)
+    except Exception as e:
+        assert str(e) == "Operator IN not valid for value type bool"
+        passed = True
+    assert passed
+
+
+def test_fetch_incidents_live(capfd):
+    from Traceable import Client, fetch_incidents
+    import urllib3
+
+    urllib3.disable_warnings()
+    headers = {}
+    headers["Content-Type"] = "application/json"
+    headers["Accept"] = "application/json"
+    headers["authorization"] = "ZDQyOTFkNWMtMDY2ZS00MjFjLTk0ZjYtMmU0M2YwMGU3MDcz"
+
+    client = Client(base_url="https://api.eu.traceable.ai", verify=False, headers=headers)
+    client.set_security_score_category_list(["CRITICAL", "HIGH", "MEDIUM", "LOW"])
+    client.set_ip_reputation_level_list(["CRITICAL", "HIGH", "MEDIUM", "LOW"])
+    client.set_ip_abuse_velocity_list(["CRITICAL", "HIGH", "MEDIUM", "LOW"])
+    client.set_domain_event_field_list(["actorDevice", "actorEntityId", "actorId", "actorScoreCategory",
+                                        "actorSession", "apiName", "apiUri",
+                                        "category", "ipAbuseVelocity", "ipReputationLevel",
+                                        "securityEventType", "securityScore", "serviceId",
+                                        "actorScore", "threatCategory", "type"])
+    client.set_optional_api_attributes([
+        "isExternal", "isAuthenticated", "riskScore", "riskScoreCategory", "isLearnt"
+    ])
+    client.set_ignore_status_codes("400-499")
+    client.set_app_url("https://app.eu.traceable.ai")
+    client.set_span_fetch_threadpool(10)
+    client.set_limit(100)
+
+    next_run, incidents = fetch_incidents(client, {"last_fetch": None}, "1 days")
+    assert len(incidents) >= 0
+    capfd.readouterr()
