@@ -589,6 +589,7 @@ Get ticket history.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
+| HelpdeskAdvanced.TicketHistory.TicketID | string | The ticket ID associated with the history entry. | 
 | HelpdeskAdvanced.TicketHistory.AccountID | string | The account ID of the ticket. | 
 | HelpdeskAdvanced.TicketHistory.Attachments | string | List of attachments for the ticket. | 
 | HelpdeskAdvanced.TicketHistory.AutEmailCounter | string | The AUT email counter. | 
@@ -647,9 +648,9 @@ Get ticket history.
 #### Human Readable Output
 
 >### Ticket History: 1111111C
->|Update Date|Operation Type ID|Operation Description|Full Name|
+>|Update Date|Ticket ID|Operation Type ID|Operation Description|Full Name|
 >|---|---|---|---|
->| 2023-10-04T07:45:35Z |  | Status change | John Doe |
+>| 2023-10-04T07:45:35Z | 1111111C |  | Status change | John Doe |
 
 
 ### hda-list-users
