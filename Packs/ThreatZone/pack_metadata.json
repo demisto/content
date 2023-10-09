@@ -1,6 +1,6 @@
 {
-    "name": "MalwationThreatZone",
-    "description": "Malwation ThreatZone malware analysis sandboxing",
+    "name": "ThreatZone",
+    "description": "ThreatZone malware analysis sandboxing",
     "support": "partner",
     "currentVersion": "1.0.0",
     "author": "Malwation",

@@ -2,7 +2,7 @@ commonfields:
   id: ThreatZone
   version: -1
 name: ThreatZone
-display: Malwation ThreatZone
+display: ThreatZone
 category: Forensics & Malware Analysis
 description: ThreatZone malware analysis sandboxing.
 configuration:
