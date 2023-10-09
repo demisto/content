@@ -276,6 +276,14 @@ def test_taxii20_get_server_info(mocker, taxii2_server_v20):
 
 
 def test_taxii20_get_server_info_demisto_version(mocker, taxii2_server_v20):
+    """
+        Given
+            TAXII Server v2.0, Integration context.
+        When
+            Calling get-server-info command
+        Then
+            Validate that the correct default URL is returned
+    """
     from TAXII2Server import get_server_info_command
     integration_context = {}
     integration_context['server_info'] = {'api_roots': ["https://www.example.com/path/to/resource?query=parameter"],
