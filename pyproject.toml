@@ -526,11 +526,11 @@ markers = [
     "get_cases_end_date",
     "get_cases_combined",
 ]
-filterwarnings =
+filterwarnings = [
     ignore::DeprecationWarning
     ignore::RemovedInMarshmallow4Warning
     ignore::PytestUnknownMarkWarning
-
+]
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
