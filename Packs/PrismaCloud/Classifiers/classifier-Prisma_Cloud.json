@@ -85,7 +85,7 @@
         "AWS IAM password policy does not expire in 90 days": "AWS IAM Policy Misconfiguration",
         "GCP Kubernetes Engine Clusters have Legacy Authorization enabled": "GCP Kubernetes Engine Misconfiguration",
         "Azure SQL Database with Auditing Retention less than 90 days": "Azure SQL Misconfiguration",
-        "AWS IAM password policy does not have a symbol": "AWS IAM Policy Misconfiguration",
+        "AWS IAM password policy does not have a symbol": "AWS IAM Policy Misconfiguration"
     },
     "transformer": {
         "simple": "policy.name"
