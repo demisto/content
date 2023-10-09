@@ -176,7 +176,7 @@ tasks:
     task:
       id: 7399f201-7b0b-4685-8fcf-96060318f157
       version: -1
-      name: Is it blocked?
+      name: Is the command execution was blocked?
       description: Check if the command execution was blocked.
       type: condition
       iscommand: false
@@ -235,7 +235,7 @@ tasks:
     task:
       id: 9dd61261-5d13-4cac-8811-b438fdcf9635
       version: -1
-      name: Should auto terminate process?
+      name: Should automatically terminate process?
       description: Check if auto remediation is set to True.
       type: condition
       iscommand: false
@@ -838,11 +838,12 @@ tasks:
           - - operator: containsGeneral
               left:
                 value:
-                  simple: incident.xdralerts.name
+                  simple: incident.xdralerts.alert_id
                 iscontext: true
               right:
                 value:
-                  simple: Remote PsExec-like LOLBIN command execution from an unsigned non-standard PsExec service
+                  simple: inputs.alerts_ids
+                iscontext: true
               ignorecase: true
           accessor: os_actor_process_os_pid
           transformers:
@@ -864,11 +865,12 @@ tasks:
           - - operator: containsGeneral
               left:
                 value:
-                  simple: incident.xdralerts.name
+                  simple: incident.xdralerts.alert_id
                 iscontext: true
               right:
                 value:
-                  simple: Remote PsExec-like LOLBIN command execution from an unsigned non-standard PsExec service
+                  simple: inputs.alerts_ids
+                iscontext: true
               ignorecase: true
           accessor: endpoint_id
     separatecontext: false
