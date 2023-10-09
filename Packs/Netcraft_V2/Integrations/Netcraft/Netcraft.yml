@@ -194,14 +194,14 @@ script:
         ID. When using this argument we recommend that you also set the "sort" argument
         to Id to ensure that no results are missed.
       name: id_after
-    - description: |-
+    - description: |
         Filter to takedowns that were submitted on or after the date/time
         provided. Values should be supplied as "YYYY-MM-DD HH:MM:SS" in UTC format. If no time
         information is provided, the system will default to YYYY-MM-DD 00:00:00. Relative
         date/time formats are also supported, for example "5 days ago"",\_and "monday
         this week".
       name: date_from
-    - description: |-
+    - description: |
         Filter to takedowns that were submitted on or before the date/time
         provided. Values should be supplied as "YYYY-MM-DD HH:MM:SS" in UTC format. If no time
         information is provided, the system will default to "YYYY-MM-DD 00:00:00". Relative
@@ -475,7 +475,7 @@ script:
         When returning multiple URLs, the list will be sorted by the time the screenshot was requested, with the earliest first.
       type: String
     - contextPath: Netcraft.Takedown.status_change_uptime
-      description: |-
+      description: |
         The total duration (hh:mm:ss) that the attack was available for after authorization, as determined by the takedown status changes.
         i.e. the total amount of time since authorization that an attack was not in the resolved or resolved (monitoring)  state.'.
       type: String
@@ -509,17 +509,17 @@ script:
       description: The WHOIS data for the takedown.
       type: String
     - contextPath: Netcraft.Takedown.authorization_source
-      description: |-
+      description: |
         The source of authorization for the takedown. will be blank if the takedown has not been authorized.  customer
         Possible values: "customer" "netcraft".
       type: String
     - contextPath: Netcraft.Takedown.escalation_source
-      description: |-
+      description: |
         The source of escalation for the takedown. Will be blank if the takedown has not been escalated.
         Possible values: "customer" "netcraft".
       type: String
     - contextPath: Netcraft.Takedown.restart_date
-      description: |-
+      description: |
         The latest date and time, in UTC format, that the takedown was restarted, i.e., went from the "resolved (monitoring)" status to a contacted status.
         Will be empty if the takedown had never been restarted.
       type: String

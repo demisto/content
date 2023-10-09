@@ -267,6 +267,16 @@ def read_base64encoded_file(filepath: str) -> str:
         return base64.b64encode(f.read()).decode('ascii')
 
 
+def get_file_path(entry_id: str) -> dict:
+    '''
+    Wrapper for demisto.getFilePath function, raises a more informative error when the file is not found
+    '''
+    try:
+        return demisto.getFilePath(entry_id)
+    except ValueError:
+        raise DemistoException(f'Could not find file: {entry_id!r}')
+
+
 def paginate_with_token(
     client_func: Callable[[dict], dict],
     api_params: dict[str, Any],
@@ -368,7 +378,7 @@ def paginate_with_page_num_and_size(
         pages_key_path (Iterable | None): The keys used to extract the "pages" returned by the API.
                                           i.e. If the API returns a JSON in the format: {'data': {'pages': [1,2,3,4,5]}},
                                           then pages_key_path=('data', 'pages'). The key path MUST point to a list.
-        api_limit (int, optional): The maximum amount of data returned by the API on a sngle call. Defaults to 1000.
+        api_limit (int, optional): The maximum amount of data returned by the API on a single call. Defaults to 1000.
         api_page_num_key (str, optional): The key used by the API as a page number/index. Defaults to 'page'.
         api_page_size_key (str, optional): The key used by the API as a page size. Defaults to 'count'.
 
@@ -468,11 +478,7 @@ def attack_report_command(args: dict, client: Client) -> CommandResults:
 
     def args_to_api_body_and_file(args: dict) -> tuple[dict, dict | None]:
         if entry_id := args.get('entry_id'):
-            try:
-                file_contents = demisto.getFilePath(entry_id)
-                file = {'evidence': open(file_contents['path'], 'rb')}
-            except ValueError:
-                raise DemistoException(f'Could not find file: {entry_id!r}')
+            file = {'evidence': open(get_file_path(entry_id)['path'], 'rb')}
         else:
             file = None
 
@@ -879,26 +885,22 @@ def file_report_submit_command(args: dict, client: Client) -> CommandResults:
         content = args.pop('file_content', None)
         name = args.pop('file_name', None)
         entry_ids = argToList(args.pop('entry_id', None))
-        files = []
+
         if content and name:
-            files.append(
+            files = [
                 {
                     'content': content,
                     'filename': name,
                 }
-            )
+            ]
         elif entry_ids:
-            try:
-                for entry_id in entry_ids:
-                    file = demisto.getFilePath(entry_id)
-                    files.append(
-                        {
-                            'content': read_base64encoded_file(file['path']),
-                            'filename': file['name'],
-                        }
-                    )
-            except ValueError:
-                raise DemistoException(f'Could not find file: {entry_id!r}')
+            files = [
+                {
+                    'content': read_base64encoded_file(file['path']),
+                    'filename': file['name'],
+                }
+                for file in map(get_file_path, entry_ids)
+            ]
         else:
             raise DemistoException('A file must be provided. Use file_content and file_name OR entry_id')
 
