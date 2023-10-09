@@ -1,13 +1,13 @@
 {
     "CONTRIBUTION_REVIEWERS": [
-        "MichaelYochpaz",
-        "RosenbergYehuda",
-        "ostolero"
+        "MosheEichler",
+        "sapirshuker",
+        "ilappe"
     ],
-    "CONTRIBUTION_TL": "RotemAmit",
+    "CONTRIBUTION_TL": "omerKarkKatz",
     "CONTRIBUTION_SECURITY_REVIEWER": "melamedbn",
     "ON_CALL_DEVS": [
-        "epintzov",
+        "tkatzir",
         "mlainer"
     ],
     "DOC_REVIEWER": "ShirleyDenkberg"

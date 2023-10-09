@@ -684,9 +684,10 @@ def get_similar_incidents_by_indicators(args: Dict):
 
 
 def get_data_from_indicators_automation(res, TAG_SCRIPT_INDICATORS_VALUE):
-    for entry in res:
-        if entry and entry.get('Tags') and TAG_SCRIPT_INDICATORS_VALUE in entry.get('Tags'):
-            return entry['Contents']
+    if res is not None:
+        for entry in res:
+            if entry and entry.get('Tags') and TAG_SCRIPT_INDICATORS_VALUE in entry.get('Tags'):
+                return entry['Contents']
     return None
 
 

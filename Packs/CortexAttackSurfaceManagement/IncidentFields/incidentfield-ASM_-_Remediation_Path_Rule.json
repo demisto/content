@@ -15,7 +15,8 @@
             "script": "",
             "selectValues": null,
             "type": "shortText",
-            "width": 150
+            "width": 150,
+            "_comment": "Mandatory: Name of the matching Remediation Path Rule."
         },
         {
             "displayName": "Description",
@@ -28,7 +29,8 @@
             "script": "",
             "selectValues": null,
             "type": "shortText",
-            "width": 150
+            "width": 150,
+            "_comment": "Mandatory: Description of the matching rule."
         },
         {
             "displayName": "Action",
@@ -41,7 +43,8 @@
             "script": "",
             "selectValues": null,
             "type": "shortText",
-            "width": 150
+            "width": 150,
+            "_comment": "Mandatory: Action of the matching rule."
         },
         {
             "displayName": "Created_by",
@@ -54,7 +57,8 @@
             "script": "",
             "selectValues": null,
             "type": "shortText",
-            "width": 150
+            "width": 150,
+            "_comment": "Mandatory: The user that created the rule."
         },
         {
             "displayName": "Criteria",
@@ -67,7 +71,8 @@
             "script": "",
             "selectValues": null,
             "type": "shortText",
-            "width": 150
+            "width": 150,
+            "_comment": "Mandatory: The criteria of the rule."
         }
     ],
     "content": true,

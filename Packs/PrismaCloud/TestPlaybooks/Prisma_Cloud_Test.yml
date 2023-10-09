@@ -713,7 +713,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "24"
+      - "36"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -737,84 +737,6 @@ tasks:
         "position": {
           "x": 1770,
           "y": 900
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "24":
-    id: "24"
-    taskid: 0919d52b-ec3a-4f97-8a7b-1cddb6a4aa68
-    type: regular
-    task:
-      id: 0919d52b-ec3a-4f97-8a7b-1cddb6a4aa68
-      version: -1
-      name: prisma-cloud-network-search
-      description: 'Search networks inventory on the Prisma Cloud platform using RQL language. Use this command for all queries that start with "networks". When no absolute time nor relative time arguments are provided, default time range is all times. In order to limit the results returning, use "limit search records to" at the end of the RQL query, followed by a value from one of these options: 1, 10, 100, 1000, and 10,000.'
-      script: '|||prisma-cloud-network-search'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "25"
-    scriptarguments:
-      query:
-        simple: network from vpc.flow_record where bytes > 100000 limit search records to 1000
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1770,
-          "y": 1075
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "25":
-    id: "25"
-    taskid: db080dc5-185b-4c7c-879a-34023bff57f3
-    type: condition
-    task:
-      id: db080dc5-185b-4c7c-879a-34023bff57f3
-      version: -1
-      name: Verify Outputs
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "36"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: PrismaCloud.Network.Node.[0].id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: PrismaCloud.Network.Connection
-            iscontext: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1770,
-          "y": 1250
         }
       }
     note: false
@@ -1232,7 +1154,7 @@ tasks:
       {
         "position": {
           "x": 1770,
-          "y": 1425
+          "y": 1075
         }
       }
     note: false
@@ -1286,7 +1208,7 @@ tasks:
       {
         "position": {
           "x": 1770,
-          "y": 1600
+          "y": 1250
         }
       }
     note: false

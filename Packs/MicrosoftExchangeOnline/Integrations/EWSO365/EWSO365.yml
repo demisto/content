@@ -469,7 +469,7 @@ script:
       description: Out-of-office mailbox.
       type: Unknown
   - arguments:
-    - description: A comma-separated list of message IDs. Run the py-ews-delete-items command to retrieve the message IDs
+    - description: A comma-separated list of message IDs. Run the py-ews-delete-items command to retrieve the message IDs.
       name: message-ids
       required: true
     - defaultValue: Inbox
@@ -521,7 +521,7 @@ script:
       - 'no'
     - description: If empty, will use the default mailbox. If you specify a different mailbox, you might need impersonation rights to the mailbox.
       name: target-mailbox
-    description: 'Marks an item as junk. This is commonly used to block an email address. For more information, see the Microsoft documentation: https://msdn.microsoft.com/en-us/library/office/dn481311(v=exchg.150).aspx'
+    description: 'Marks an item as junk. This is commonly used to block an email address. For more information, see the Microsoft documentation: https://msdn.microsoft.com/en-us/library/office/dn481311(v=exchg.150).aspx.'
     name: ews-mark-item-as-junk
   - arguments:
     - description: The mailbox on which to apply the command.
@@ -851,7 +851,7 @@ script:
       description: The SSDeep hash of the file.
       type: String
     - contextPath: File.EntryID
-      description: EntryID of the file
+      description: EntryID of the file.
       type: String
     - contextPath: File.Info
       description: Information about the file.
@@ -885,7 +885,7 @@ script:
     - description: A comma-separated list of War Room entry IDs that contain the files to attach to the email.
       isArray: true
       name: attachIDs
-    - description: A comma-separated list to rename file names of corresponding attachment IDs. For example, rename the first two files - attachNames=file_name1,file_name2. rename first and third file - attachNames=file_name1,,file_name3)
+    - description: A comma-separated list to rename file names of corresponding attachment IDs. For example, rename the first two files - attachNames=file_name1,file_name2. rename first and third file - attachNames=file_name1,,file_name3).
       isArray: true
       name: attachNames
     - description: A comma-separated list of CIDs to embed attachments inside the email itself.
@@ -914,7 +914,7 @@ script:
       name: replyTo
     - auto: PREDEFINED
       defaultValue: Normal
-      description: Sets the importance/Priority of the email. Default value is Normal
+      description: Sets the importance/Priority of the email. Default value is Normal.
       name: importance
       predefined:
       - High
@@ -941,7 +941,7 @@ script:
     - name: htmlBody
       description: HTML formatted content (body) of the email to be sent. This argument overrides the "body" argument.
     - name: renderBody
-      description: 'Indicates whether to render the email body'
+      description: 'Indicates whether to render the email body.'
       auto: PREDEFINED
       predefined:
       - 'true'
@@ -959,7 +959,7 @@ script:
   - description: Run this command if for some reason you need to rerun the authentication process.
     name: ews-auth-reset
     arguments: []
-  dockerimage: demisto/py3ews:1.0.0.72375
+  dockerimage: demisto/py3ews:1.0.0.75373
   isfetch: true
   script: ''
   subtype: python3

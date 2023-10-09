@@ -6394,7 +6394,29 @@ script:
       required: true
     description: Creates associations between threat model entities on the ThreatStream platform.
     name: threatstream-add-threat-model-association
-  dockerimage: demisto/py3-tools:1.0.0.73055
+  - arguments:
+    - description: A comma-separated list of unique IDs of the indicator to which you are adding tags (execute the command threatstream-get-indicators to get the list of indicators).
+      name: indicator_ids
+      required: true
+      isArray: true
+    - description: A comma-separated list of values of the tags you want to add.
+      name: tags
+      required: true
+      isArray: true
+    description: Add tags to the indicators.
+    name: threatstream-add-indicator-tag
+  - arguments:
+    - description: A comma-separated list of unique IDs of the indicator to which you are removing tags (execute the command threatstream-get-indicators to get the list of indicators).
+      name: indicator_ids
+      required: true
+      isArray: true
+    - description: A comma-separated list of values of the tags you want to remove.
+      name: tags
+      required: true
+      isArray: true
+    description: Remove tags from the indicators.
+    name: threatstream-remove-indicator-tag
+  dockerimage: demisto/py3-tools:1.0.0.75615
   runonce: false
   script: '-'
   subtype: python3
