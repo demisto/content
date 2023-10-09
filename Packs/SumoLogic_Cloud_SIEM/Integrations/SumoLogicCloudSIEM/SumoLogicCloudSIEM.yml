@@ -4,7 +4,7 @@ commonfields:
 name: SumoLogicSEC
 display: Sumo Logic Cloud SIEM
 category: Analytics & SIEM
-description: Freeing the analyst with autonomous decisions
+description: Freeing the analyst with autonomous decisions.
 configuration:
 - display: Sumo Logic API Endpoint
   name: api_endpoint
