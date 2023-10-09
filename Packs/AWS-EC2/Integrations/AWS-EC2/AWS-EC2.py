@@ -1172,7 +1172,7 @@ def run_instances_command(args, aws_client):
     if args.get('keyName') is not None:
         kwargs.update({'KeyName': args.get('keyName')})
     if args.get('ebsOptimized') is not None:
-        kwargs.update({'EbsOptimized': args.get('ebsOptimized')})
+        kwargs.update({'EbsOptimized': args.get('ebsOptimized') == 'True'})
     if args.get('disableApiTermination') is not None:
         kwargs.update({'DisableApiTermination': args.get('disableApiTermination') == 'True'})
     if args.get('deviceName') is not None:
@@ -2049,8 +2049,8 @@ def create_fleet_command(args, aws_client):
         SpotOptions.update({
             'InstancePoolsToUseCount': args.get('InstancePoolsToUseCount')
         })
-    if args.get('SingleInstanceType') is not None:
-        SpotOptions.update({'SingleInstanceType': args.get('SingleInstanceType') == 'True'})
+    if args.get('SpotSingleInstanceType') is not None:
+        SpotOptions.update({'SpotSingleInstanceType': args.get('SpotSingleInstanceType') == 'True'})
     if args.get('SingleAvailabilityZone') is not None:
         SpotOptions.update({
             'SingleAvailabilityZone': args.get('SingleAvailabilityZone') == 'True'
@@ -2453,7 +2453,7 @@ def create_launch_template_command(args, aws_client):
     if args.get('KernelId') is not None:
         LaunchTemplateData.update({'KernelId': args.get('KernelId')})
     if args.get('EbsOptimized') is not None:
-        LaunchTemplateData.update({'EbsOptimized': args.get('EbsOptimized')})
+        LaunchTemplateData.update({'EbsOptimized': args.get('EbsOptimized') == 'True'})
 
     if args.get('iamInstanceProfileArn') is not None and args.get('iamInstanceProfileName') is not None:
         LaunchTemplateData.update({
@@ -2491,7 +2491,7 @@ def create_launch_template_command(args, aws_client):
     if args.get('AssociatePublicIpAddress') is not None:
         NetworkInterfaces.update({'AssociatePublicIpAddress': argToBoolean(args.get('AssociatePublicIpAddress'))})
     if args.get('NetworkInterfacesDeleteOnTermination') is not None:
-        NetworkInterfaces.update({'DeleteOnTermination': args.get('NetworkInterfacesDeleteOnTermination')})
+        NetworkInterfaces.update({'DeleteOnTermination': args.get('NetworkInterfacesDeleteOnTermination') == 'True'})
     if args.get('NetworkInterfacesDescription') is not None:
         NetworkInterfaces.update({'Description': args.get('NetworkInterfacesDescription')})
     if args.get('NetworkInterfacesDeviceIndex') is not None:
@@ -2520,7 +2520,7 @@ def create_launch_template_command(args, aws_client):
     if args.get('KeyName') is not None:
         LaunchTemplateData.update({'KeyName': args.get('KeyName')})
     if args.get('Monitoring') is not None:
-        LaunchTemplateData.update({'Monitoring': {'Enabled': args.get('Monitoring')}})
+        LaunchTemplateData.update({'Monitoring': {'Enabled': args.get('Monitoring') == 'True'}})
     if args.get('AvailabilityZone') is not None:
         LaunchTemplateData.update({
             'Placement': {
@@ -2554,7 +2554,7 @@ def create_launch_template_command(args, aws_client):
     if args.get('RamDiskId') is not None:
         LaunchTemplateData.update({'RamDiskId': args.get('RamDiskId')})
     if args.get('DisableApiTermination') is not None:
-        LaunchTemplateData.update({'DisableApiTermination': args.get('DisableApiTermination')})
+        LaunchTemplateData.update({'DisableApiTermination': args.get('DisableApiTermination') == 'True'})
     if args.get('InstanceInitiatedShutdownBehavior') is not None:
         LaunchTemplateData.update(
             {'InstanceInitiatedShutdownBehavior': args.get('InstanceInitiatedShutdownBehavior')})
@@ -3199,9 +3199,6 @@ def main():
 
         elif command == 'aws-ec2-modify-image-attribute':
             modify_image_attribute_command(args, aws_client)
-
-        elif command == 'aws-ec2-modify-network-interface-attribute':
-            modify_network_interface_attribute_command(args, aws_client)
 
         elif command == 'aws-ec2-modify-instance-attribute':
             modify_instance_attribute_command(args, aws_client)

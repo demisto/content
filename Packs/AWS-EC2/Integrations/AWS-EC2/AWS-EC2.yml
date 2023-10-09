@@ -1321,8 +1321,10 @@ script:
   - arguments:
     - description: The IDs of one or more resources to tag. For example, ami-1a2b3c4d.
       name: resources
+      required: true
     - description: One or more tags.
       name: tags
+      required: true
     - description: The AWS Region, if not specified the default region will be used.
       name: region
     - description: The Amazon Resource Name (ARN) of the role to assume.
@@ -3492,22 +3494,22 @@ script:
     description: Deletes a launch template. Deleting a launch template deletes all of its versions.
     name: aws-ec2-delete-launch-template
     outputs:
-    - contextPath: AWS.EC2.DeletedLaunchTemplates.LaunchTemplate.LaunchTemplateId
+    - contextPath: AWS.EC2.DeletedLaunchTemplates.LaunchTemplateId
       description: The ID of the launch template.
       type: String
-    - contextPath: AWS.EC2.DeletedLaunchTemplates.LaunchTemplate.LaunchTemplateName
+    - contextPath: AWS.EC2.DeletedLaunchTemplates.LaunchTemplateName
       description: The name of the launch template.
       type: String
-    - contextPath: AWS.EC2.DeletedLaunchTemplates.LaunchTemplate.CreateTime
+    - contextPath: AWS.EC2.DeletedLaunchTemplates.CreateTime
       description: The time launch template was created.
       type: Date
-    - contextPath: AWS.EC2.DeletedLaunchTemplates.LaunchTemplate.CreatedBy
+    - contextPath: AWS.EC2.DeletedLaunchTemplates.CreatedBy
       description: The principal that created the launch template.
       type: String
-    - contextPath: AWS.EC2.DeletedLaunchTemplates.LaunchTemplate.DefaultVersionNumber
+    - contextPath: AWS.EC2.DeletedLaunchTemplates.DefaultVersionNumber
       description: The version number of the default version of the launch template.
       type: Number
-    - contextPath: AWS.EC2.DeletedLaunchTemplates.LaunchTemplate.LatestVersionNumber
+    - contextPath: AWS.EC2.DeletedLaunchTemplates.LatestVersionNumber
       description: The version number of the latest version of the launch template.
       type: Number
   - arguments:
