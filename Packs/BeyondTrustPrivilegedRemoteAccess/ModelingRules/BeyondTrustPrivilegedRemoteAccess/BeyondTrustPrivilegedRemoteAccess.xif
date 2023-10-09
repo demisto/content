@@ -1,182 +1,210 @@
-    [RULE: beyondtrust_pra_common_fields_modeling]
-    /* BeyondTrust PRA (Priviliged Remote Access) Base Modeling. 
-        The mappings in this rule apply to all BeyondTrust PRA event types.
-        Message format documented at: 
-        https://www.beyondtrust.com/docs/privileged-remote-access/how-to/integrations/syslog/message-format.htm 
-    */
-    alter  // extract message header fields 
-        syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\s*\w+"), 0)), 
-        syslog_hostname = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\s*\w+\s+\S+\s+(\S+)"), 0),
-        meta_sequence_id = arrayindex(regextract(_raw_log, "sequenceId=\"(\d+)"), 0), 
-        site_id = arrayindex(regextract(_raw_log, "(\d+)\:\d+\:\d+\:"), 0),
-        msg_payload =arrayindex(regextract(_raw_log, "\d+\:\d+\:\d+\:(.+)"), 0)
-    | alter // extract message payload fields 
-        event_type = arrayindex(regextract(msg_payload, "event\=([^;]+)"), 0), // The name of the event that occurred.
-        site = arrayindex(regextract(msg_payload, "site\=(\S[^;]+)"), 0), // The hostname for which the BeyondTrust software was built.
-        syslog_facility = floor(divide(syslog_priority, 8)), 
-        who = arrayindex(regextract(msg_payload, "who\=(\S[^;]+)"), 0), // The username associated with this event.
-        who_ip = arrayindex(regextract(msg_payload, "who_ip\=(\S[^;]+)"), 0) // The IP address of the system that caused the event.
-    | alter // old/new nomenclature fields extractions: https://www.beyondtrust.com/docs/privileged-remote-access/how-to/integrations/syslog/oldnew-nomenclature.htm
-        properties_old_state = arraystring(regextract(_raw_log, "(old_\S[^;]+)"), ";"), // snapshot of current resource state before change
-        properties_new_state = arraystring(regextract(_raw_log, "(new_\S[^;]+)"), ";") // current state of modified resource properties 
-    | alter // additional proccessing 
-        authentication_method = arrayindex(regextract(who, "\susing\s+(\S+)"), 0),
-        source_ipv4 = if(who_ip ~= "(?:\d{1,3}\.){3}\d{1,3}", who_ip),
-        source_ipv6 = if(who_ip ~= "(?:[a-fA-F\d]{0,4}\:){7}[\wa-fA-F]{0,4}", who_ip),
-        syslog_severity = to_string(subtract(syslog_priority, multiply(syslog_facility, 8))),
-        user_name = arrayindex(regextract(who, "\(([^\)]+)"), 0),
-        user_first_name = arrayindex(regextract(who, "((?:\S+\.\s+){0,1}\S+)"), 0),
-        user_last_name = trim(arrayindex(regextract(who, "(?:\S+\.\s+){0,1}\S+\s(.+)\("), 0))
-    | alter // xdm mapping 
-        xdm.alert.severity = syslog_severity,
-        xdm.auth.auth_method = authentication_method, 
-        xdm.auth.privilege_level = if(user_name = "admin", XDM_CONST.PRIVILEGE_LEVEL_ADMIN),
-        xdm.source.user.first_name = user_first_name,
-        xdm.source.user.last_name = user_last_name, 
-        xdm.source.user.username = user_name, 
-        xdm.event.id = meta_sequence_id,
-        xdm.event.log_level = if(syslog_severity = "0", XDM_CONST.LOG_LEVEL_EMERGENCY, syslog_severity = "1", XDM_CONST.LOG_LEVEL_ALERT, syslog_severity = "2", XDM_CONST.LOG_LEVEL_CRITICAL, syslog_severity = "3", XDM_CONST.LOG_LEVEL_ERROR, syslog_severity = "4", XDM_CONST.LOG_LEVEL_WARNING, syslog_severity = "5", XDM_CONST.LOG_LEVEL_NOTICE, syslog_severity = "6", XDM_CONST.LOG_LEVEL_INFORMATIONAL, syslog_severity = "7", XDM_CONST.LOG_LEVEL_DEBUG, syslog_severity),
-        xdm.event.original_event_type = event_type, 
-        xdm.observer.name = syslog_hostname, 
-        xdm.observer.unique_identifier = site_id,
-        xdm.source.ipv4 = source_ipv4,
-        xdm.source.ipv6 = source_ipv6,
-        xdm.target.domain = site,
-        xdm.target.resource.value = properties_new_state, 
-        xdm.target.resource_before.value = properties_old_state;
+[RULE: beyondtrust_pra_common_fields_modeling]
+/* BeyondTrust PRA (Priviliged Remote Access) Generic Base Modeling. 
+    The mappings in this rule apply to all BeyondTrust PRA event types.
+    Message format documented at: 
+    https://www.beyondtrust.com/docs/privileged-remote-access/how-to/integrations/syslog/message-format.htm 
+*/
+alter  // extract message header fields 
+    syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\s*\w+"), 0)), 
+    syslog_hostname = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\s*\w+\s+\S+\s+(\S+)"), 0),
+    meta_sequence_id = arrayindex(regextract(_raw_log, "sequenceId=\"(\d+)"), 0), 
+    site_id = arrayindex(regextract(_raw_log, "(\d+)\:\d+\:\d+\:"), 0),
+    msg_payload =arrayindex(regextract(_raw_log, "\d+\:\d+\:\d+\:(.+)"), 0)
+| alter // extract message payload fields 
+    event_type = arrayindex(regextract(msg_payload, "event\=([^;]+)"), 0), // The name of the event that occurred.
+    site = arrayindex(regextract(msg_payload, "site\=(\S[^;]+)"), 0), // The hostname for which the BeyondTrust software was built.
+    syslog_facility = floor(divide(syslog_priority, 8)), 
+    who = arrayindex(regextract(msg_payload, "who\=(\S[^;]+)"), 0), // The username associated with this event.
+    who_ip = arrayindex(regextract(msg_payload, "who_ip\=(\S[^;]+)"), 0) // The IP address of the system that caused the event.
+| alter // old/new nomenclature fields extractions: https://www.beyondtrust.com/docs/privileged-remote-access/how-to/integrations/syslog/oldnew-nomenclature.htm
+    properties_old_state = arraystring(regextract(_raw_log, "(old_\S[^;]+)"), ";"), // snapshot of current resource state before change
+    properties_new_state = arraystring(regextract(_raw_log, "(new_\S[^;]+)"), ";") // current state of modified resource properties 
+| alter // additional proccessing 
+    authentication_method = arrayindex(regextract(who, "\susing\s+(\S+)"), 0),
+    source_ipv4 = if(who_ip ~= "(?:\d{1,3}\.){3}\d{1,3}", who_ip),
+    source_ipv6 = if(who_ip ~= "(?:[a-fA-F\d]{0,4}\:){7}[\wa-fA-F]{0,4}", who_ip),
+    syslog_severity = to_string(subtract(syslog_priority, multiply(syslog_facility, 8))),
+    user_name = arrayindex(regextract(who, "\(([^\)]+)"), 0),
+    user_first_name = arrayindex(regextract(who, "((?:\S+\.\s+){0,1}\S+)"), 0),
+    user_last_name = trim(arrayindex(regextract(who, "(?:\S+\.\s+){0,1}\S+\s(.+)\("), 0))
+| alter // xdm mapping 
+    xdm.alert.severity = syslog_severity,
+    xdm.auth.auth_method = authentication_method, 
+    xdm.auth.privilege_level = if(user_name = "admin", XDM_CONST.PRIVILEGE_LEVEL_ADMIN),
+    xdm.source.user.first_name = user_first_name,
+    xdm.source.user.last_name = user_last_name, 
+    xdm.source.user.username = user_name, 
+    xdm.event.id = meta_sequence_id,
+    xdm.event.log_level = if(syslog_severity = "0", XDM_CONST.LOG_LEVEL_EMERGENCY, syslog_severity = "1", XDM_CONST.LOG_LEVEL_ALERT, syslog_severity = "2", XDM_CONST.LOG_LEVEL_CRITICAL, syslog_severity = "3", XDM_CONST.LOG_LEVEL_ERROR, syslog_severity = "4", XDM_CONST.LOG_LEVEL_WARNING, syslog_severity = "5", XDM_CONST.LOG_LEVEL_NOTICE, syslog_severity = "6", XDM_CONST.LOG_LEVEL_INFORMATIONAL, syslog_severity = "7", XDM_CONST.LOG_LEVEL_DEBUG, syslog_severity),
+    xdm.event.original_event_type = event_type, 
+    xdm.observer.name = syslog_hostname, 
+    xdm.observer.unique_identifier = site_id,
+    xdm.source.ipv4 = source_ipv4,
+    xdm.source.ipv6 = source_ipv6,
+    xdm.target.domain = site,
+    xdm.target.resource.value = properties_new_state, 
+    xdm.target.resource_before.value = properties_old_state;
 
 
-    [MODEL: dataset = beyondtrust_pra_raw]
-    /* Event Specific Modeling. 
-       The mapping following mappings applied to specific event types, according to the condinial filters. 
-       The various fields for each event are described at: 
-       https://www.beyondtrust.com/docs/privileged-remote-access/how-to/integrations/syslog/fields/index.htm */
-  
-    /* Login, Logout & User Properties Modifications Events Fields:
-        These mappings appliy to the following event types: "login", "logout", "change_display_name", "change_password", "change_username". 
-        https://www.beyondtrust.com/docs/privileged-remote-access/how-to/integrations/syslog/fields/login-fields.htm
-        https://www.beyondtrust.com/docs/privileged-remote-access/how-to/integrations/syslog/fields/change-display-name.htm
-        https://www.beyondtrust.com/docs/privileged-remote-access/how-to/integrations/syslog/fields/change-password-fields.htm
-        https://www.beyondtrust.com/docs/privileged-remote-access/how-to/integrations/syslog/fields/change-username-fields.htm  */
-    alter  event_type = arrayindex(regextract(_raw_log, "event\=([^;]+)"), 0)
-    | filter event_type in("login", "logout", "change_display_name", "change_password", "change_username")
-    | call beyondtrust_pra_common_fields_modeling
-    | alter 
-        reason = arrayindex(regextract(_raw_log, "reason\=(\S[^;]+)"), 0), // Indicates the reason for failure if status=failed.
-        status = arrayindex(regextract(_raw_log, "status\=(\S[^;]+)"), 0), // Whether the login/change attempt succeeded or failed.
-        target_interface = arrayindex(regextract(_raw_log, "target\=(\S[^;]+)"), 0) // The authentication area from which the password change attempt was made (web/api, web/appliance, web/login)
-    | alter
-        xdm.source.user.is_disabled = if(reason ~= "account disabled|account expired", to_boolean("TRUE")),
-        xdm.source.user.is_password_expired = if(reason ~= "change password", to_boolean("TRUE")),
-        xdm.event.outcome = if(status = "success", XDM_CONST.OUTCOME_SUCCESS, status = "failure", XDM_CONST.OUTCOME_FAILED),
-        xdm.event.outcome_reason = reason, 
-        xdm.logon.type = target_interface;
+[MODEL: dataset = beyondtrust_pra_raw]
+/* Event Specific Modeling. 
+    The following mappings apply to specific event types, according to the conditional filters applied. 
+    The various fields for each event are described at: 
+    https://www.beyondtrust.com/docs/privileged-remote-access/how-to/integrations/syslog/fields/index.htm */
 
-    /* Account Modification, Group Modification & Group Membership Events Fields:
-       These mappings apply to the following event types: "account_added", "account_changed", "accounts_changed", "account_removed", "account_group_added", "account_group_changed", "account_group_removed", "account_user_added", "account_user_removed */
-    alter  event_type = arrayindex(regextract(_raw_log, "event\=([^;]+)"), 0)
-    | filter event_type in("account_added", "account_changed", "accounts_changed", "account_removed", "account_group_added", "account_group_changed", "account_group_removed", "account_user_added", "account_user_removed")
-    | call beyondtrust_pra_common_fields_modeling
-    | alter // Account Fields: https://www.beyondtrust.com/docs/privileged-remote-access/how-to/integrations/syslog/fields/account.htm
-        vault_account_name = arrayindex(regextract(msg_payload, "name\=(\S[^;]+)"), 0), // The name of the vault account.
-        vault_account_username = arrayindex(regextract(msg_payload, "username\=(\S[^;]+)"), 0), // The username of the vault account.
-        account_group_id1 = arrayindex(regextract(msg_payload, "group\=(\S[^;]+)"), 0) // 	The unique identifier of the account group.
-    | alter // Account Group Fields: https://www.beyondtrust.com/docs/privileged-remote-access/how-to/integrations/syslog/fields/account-group.htm
-        account_group_id2 = arrayindex(regextract(msg_payload, "id\=(\w[^;]+)"), 0), // The unique identifier of the account group.
-        account_group_name = arrayindex(regextract(msg_payload, "name\=(\S[^;]+)"), 0) // The name of the account group.
-    | alter // Account Group Membership Fields: https://www.beyondtrust.com/docs/privileged-remote-access/how-to/integrations/syslog/fields/account-group-membership.htm
-        accounts_id = arrayindex(regextract(msg_payload, "accounts_id\=(\S[^;]+)"), 0), // The unique identifier of the vault accounts.
-        new_account_group_id = arrayindex(regextract(msg_payload, "new_group\=(\S[^;]+)"), 0) // The unique identifier of the target account group.
-    | alter // Account User Fields: https://www.beyondtrust.com/docs/privileged-remote-access/how-to/integrations/syslog/fields/account-user.htm
-        vault_account_id = arrayindex(regextract(msg_payload, "account\:id\=(\S[^;]+)"), 0), // The unique identifier of the vault account.
-        vault_account_associated_role = arrayindex(regextract(msg_payload, "role\=(\S[^;]+)"), 0), // The role associated with the vault account. The two possible options are Inject and Inject and Checkout.
-        vault_account_associated_user_id = arrayindex(regextract(msg_payload, "user\:id\=(\S[^;]+)"), 0) // The unique identifier of the user associated with this vault account.
-    | alter target_group = coalesce(account_group_name, new_account_group_id, account_group_id1, account_group_id2, vault_account_associated_role)
-    | alter 
-        xdm.target.resource.name = vault_account_name, 
-        xdm.target.resource.type = if(vault_account_name != null, "vault account name"),
-        xdm.target.user.identifier = coalesce(accounts_id, vault_account_id, vault_account_associated_user_id),
-        xdm.target.user.username = coalesce(vault_account_username, vault_account_name),
-        xdm.target.user.groups = if(target_group != null, arraycreate(target_group));
-        
-    /* Report Events Fields: 
-        These fields apply to the following event types: 
-        support_session_report_generated, support_session_detail_generated, support_session_summary_report_generated, and team_activity_report_generated events. 
-        Full documentation: https://www.beyondtrust.com/docs/privileged-remote-access/how-to/integrations/syslog/fields/report-fields.htm */
-    alter  event_type = arrayindex(regextract(_raw_log, "event\=([^;]+)"), 0)
-    | filter event_type in("support_session_report_generated", "support_session_detail_generated", "support_session_summary_report_generated", "team_activity_report_generated")
-    | call beyondtrust_pra_common_fields_modeling
-    | alter msg_payload =arrayindex(regextract(_raw_log, "\d+\:\d+\:\d+\:(.+)"), 0)
-    | alter 
-        computer_name = arrayindex(regextract(msg_payload, "computer_name\=(\S[^;]+)"), 0), // The computer name filter used in the query, if specified.
-        lsid = arrayindex(regextract(msg_payload, "lsid\=(\S[^;]+)"), 0), // The unique session identifier used to query for a detailed session report, if specified.
-        lsids = arrayindex(regextract(msg_payload, "lsids\=(\S[^;]+)"), 0), // A comma-separated list of unique session identifiers used to query for multiple detailed session reports, if specified.
-        start_timestamp = arrayindex(regextract(msg_payload, "start_timestamp\=(\S[^;]+)"), 0), // The exact timestamp of the first date to be included in the report, if any date filters were used.
-        end_timestamp = arrayindex(regextract(msg_payload, "end_timestamp\=(\S[^;]+)"), 0), // The exact timestamp of the last date to be included in the report, if date filters were specified.
-        private_ip = arrayindex(regextract(msg_payload, "private_ip\=(\S[^;]+)"), 0), // The private IP address filter used in the query, if specified.
-        public_ip = arrayindex(regextract(msg_payload, "public_ip\=(\S[^;]+)"), 0), // The public IP address filter used in the query, if specified.
-        rep_id = arrayindex(regextract(msg_payload, "rep_id\=([^;]+)"), 0), // The user filter value, if specified. The value is either a unique user identifier, the string any, or the string none.
-        rep_name = arrayindex(regextract(msg_payload, "rep_name\=(\S[^;]+)"), 0) // The display name of the representative specified by rep_id, when applicable.
-    | alter 
-        private_ipv4 = if(private_ip ~= "(?:\d{1,3}\.){3}\d{1,3}", private_ip),
-        private_ipv6 = if(private_ip ~= "(?:[a-fA-F\d]{0,4}\:){7}[\wa-fA-F]{0,4}", private_ip),
-        public_ipv4 = if(public_ip ~= "(?:\d{1,3}\.){3}\d{1,3}", public_ip),
-        public_ipv6 = if(public_ip ~= "(?:[a-fA-F\d]{0,4}\:){7}[\wa-fA-F]{0,4}", public_ip),
-        start = to_integer(start_timestamp),
-        end = to_integer(end_timestamp),
-        filtered_user = coalesce(arrayindex(regextract(rep_id, "\(([^\)]+)"), 0), arrayindex(regextract(rep_name, "\(([^\)]+)"), 0))
-    | alter 
-        xdm.event.duration = to_integer(multiply(subtract(end, start), 1000)),
-        xdm.network.session_id = coalesce(lsids, lsid),
-        xdm.target.host.hostname = computer_name, 
-        xdm.target.ipv4 = coalesce(public_ipv4, private_ipv4),
-        xdm.target.ipv6 = coalesce(public_ipv6, private_ipv6),
-        xdm.target.host.ipv4_addresses = if(private_ipv4 != null and public_ipv4 != null, arrayconcat(arraycreate(private_ipv4), arraycreate(public_ipv4)), private_ipv4 != null, arraycreate(private_ipv4), public_ipv4 !=  null, arraycreate(public_ipv4)),
-        xdm.target.host.ipv6_addresses = if(private_ipv6 != null and public_ipv6 != null, arrayconcat(arraycreate(private_ipv6), arraycreate(public_ipv6)), private_ipv6 != null, arraycreate(private_ipv6), public_ipv6 !=  null, arraycreate(public_ipv6)),
-        xdm.target.resource.id = rep_id, 
-        xdm.target.resource.name = rep_name,
-        xdm.target.resource.type = if(rep_id != null, "rep id display name"), 
-        xdm.target.user.username = filtered_user; 
+/* Login, Logout & User Properties Modifications Events:
+    These mappings appliy to the following event types: "login", "logout", "change_display_name", "change_password", "change_username". 
+    https://www.beyondtrust.com/docs/privileged-remote-access/how-to/integrations/syslog/fields/login-fields.htm
+    https://www.beyondtrust.com/docs/privileged-remote-access/how-to/integrations/syslog/fields/change-display-name.htm
+    https://www.beyondtrust.com/docs/privileged-remote-access/how-to/integrations/syslog/fields/change-password-fields.htm
+    https://www.beyondtrust.com/docs/privileged-remote-access/how-to/integrations/syslog/fields/change-username-fields.htm  */
+alter  event_type = arrayindex(regextract(_raw_log, "event\=([^;]+)"), 0)
+| filter event_type in("login", "logout", "change_display_name", "change_password", "change_username")
+| call beyondtrust_pra_common_fields_modeling
+| alter 
+    reason = arrayindex(regextract(_raw_log, "reason\=(\S[^;]+)"), 0), // Indicates the reason for failure if status=failed.
+    status = arrayindex(regextract(_raw_log, "status\=(\S[^;]+)"), 0), // Whether the login/change attempt succeeded or failed.
+    target_interface = arrayindex(regextract(_raw_log, "target\=(\S[^;]+)"), 0) // The authentication area from which the password change attempt was made (web/api, web/appliance, web/login)
+| alter
+    xdm.source.user.is_disabled = if(reason ~= "account disabled|account expired", to_boolean("TRUE")),
+    xdm.source.user.is_password_expired = if(reason ~= "change password", to_boolean("TRUE")),
+    xdm.event.outcome = if(status = "success", XDM_CONST.OUTCOME_SUCCESS, status = "failure", XDM_CONST.OUTCOME_FAILED),
+    xdm.event.outcome_reason = reason, 
+    xdm.logon.type = target_interface;
 
-    /* Custom Session Policy Events Fields: 
-       These fields apply to the following events: custom_session_policy_added, custom_session_policy_changed, and custom_session_policy_removed. 
-       Custom session policy events also include the Support Permissions Fields. 
-       https://www.beyondtrust.com/docs/privileged-remote-access/how-to/integrations/syslog/fields/custom-session-policy-fields.htm */
-    alter  event_type = arrayindex(regextract(_raw_log, "event\=([^;]+)"), 0)
-    | filter event_type in("custom_session_policy_added", "custom_session_policy_changed", "custom_session_policy_removed")
-    | call beyondtrust_pra_common_fields_modeling
-    | alter 
-        object_description = arrayindex(regextract(_raw_log, "description\=(\S[^;]+)"), 0), // The description of the object to which this custom session policy is applied in the form of object(type):name. The object may be one of users or policies. A users object is followed by @ and the ID of its security provider. The type is either attended or unattended. The name is the name of the object.
-        custom_session_policy_id = arrayindex(regextract(_raw_log, "id\=(\w[^;]+)"), 0),  // The unique identifier of this custom session policy.
-        custom_session_policy_name = arrayindex(regextract(_raw_log, "name\=(\S[^;]+)"), 0), // The name of this custom session policy. This name is assigned by the B Series Appliance and cannot be modified.
-        custom_session_policy_code_name = arrayindex(regextract(_raw_log, "code_name\=(\S[^;]+)"), 0) // The code name of this custom session policy.
-    | alter 
-        user_object = arrayindex(regextract(object_description, "([^\@]+)\@"), 0)
-    | alter 
-        xdm.network.rule = custom_session_policy_code_name, 
-        xdm.target.resource.id = custom_session_policy_id, 
-        xdm.target.resource.name = custom_session_policy_name,
-        xdm.target.resource.type = if(custom_session_policy_id != null, "custom session policy"),
-        xdm.target.user.username = user_object; 
+/* Account Modification, Group Modification & Group Membership Events Fields:
+    These mappings apply to the following event types: "account_added", "account_changed", "accounts_changed", "account_removed", "account_group_added", "account_group_changed", "account_group_removed", "account_user_added", "account_user_removed */
+alter  event_type = arrayindex(regextract(_raw_log, "event\=([^;]+)"), 0)
+| filter event_type in("account_added", "account_changed", "accounts_changed", "account_removed", "account_group_added", "account_group_changed", "account_group_removed", "account_user_added", "account_user_removed")
+| call beyondtrust_pra_common_fields_modeling
+| alter // Account Fields: https://www.beyondtrust.com/docs/privileged-remote-access/how-to/integrations/syslog/fields/account.htm
+    vault_account_name = arrayindex(regextract(msg_payload, "name\=(\S[^;]+)"), 0), // The name of the vault account.
+    vault_account_username = arrayindex(regextract(msg_payload, "username\=(\S[^;]+)"), 0), // The username of the vault account.
+    account_group_id1 = arrayindex(regextract(msg_payload, "group\=(\S[^;]+)"), 0) // 	The unique identifier of the account group.
+| alter // Account Group Fields: https://www.beyondtrust.com/docs/privileged-remote-access/how-to/integrations/syslog/fields/account-group.htm
+    account_group_id2 = arrayindex(regextract(msg_payload, "id\=(\w[^;]+)"), 0), // The unique identifier of the account group.
+    account_group_name = arrayindex(regextract(msg_payload, "name\=(\S[^;]+)"), 0) // The name of the account group.
+| alter // Account Group Membership Fields: https://www.beyondtrust.com/docs/privileged-remote-access/how-to/integrations/syslog/fields/account-group-membership.htm
+    accounts_id = arrayindex(regextract(msg_payload, "accounts_id\=(\S[^;]+)"), 0), // The unique identifier of the vault accounts.
+    new_account_group_id = arrayindex(regextract(msg_payload, "new_group\=(\S[^;]+)"), 0) // The unique identifier of the target account group.
+| alter // Account User Fields: https://www.beyondtrust.com/docs/privileged-remote-access/how-to/integrations/syslog/fields/account-user.htm
+    vault_account_id = arrayindex(regextract(msg_payload, "account\:id\=(\S[^;]+)"), 0), // The unique identifier of the vault account.
+    vault_account_associated_role = arrayindex(regextract(msg_payload, "role\=(\S[^;]+)"), 0), // The role associated with the vault account. The two possible options are Inject and Inject and Checkout.
+    vault_account_associated_user_id = arrayindex(regextract(msg_payload, "user\:id\=(\S[^;]+)"), 0) // The unique identifier of the user associated with this vault account.
+| alter target_group = coalesce(account_group_name, new_account_group_id, account_group_id1, account_group_id2, vault_account_associated_role)
+| alter 
+    xdm.target.resource.name = vault_account_name, 
+    xdm.target.resource.type = if(vault_account_name != null, "vault account name"),
+    xdm.target.user.identifier = coalesce(accounts_id, vault_account_id, vault_account_associated_user_id),
+    xdm.target.user.username = coalesce(vault_account_username, vault_account_name),
+    xdm.target.user.groups = if(target_group != null, arraycreate(target_group));
+    
+/* Report Events: 
+    These fields apply to the following event types: 
+    support_session_report_generated, support_session_detail_generated, support_session_summary_report_generated, and team_activity_report_generated events. 
+    Full documentation: https://www.beyondtrust.com/docs/privileged-remote-access/how-to/integrations/syslog/fields/report-fields.htm */
+alter  event_type = arrayindex(regextract(_raw_log, "event\=([^;]+)"), 0)
+| filter event_type in("support_session_report_generated", "support_session_detail_generated", "support_session_summary_report_generated", "team_activity_report_generated")
+| call beyondtrust_pra_common_fields_modeling
+| alter msg_payload =arrayindex(regextract(_raw_log, "\d+\:\d+\:\d+\:(.+)"), 0)
+| alter 
+    computer_name = arrayindex(regextract(msg_payload, "computer_name\=(\S[^;]+)"), 0), // The computer name filter used in the query, if specified.
+    lsid = arrayindex(regextract(msg_payload, "lsid\=(\S[^;]+)"), 0), // The unique session identifier used to query for a detailed session report, if specified.
+    lsids = arrayindex(regextract(msg_payload, "lsids\=(\S[^;]+)"), 0), // A comma-separated list of unique session identifiers used to query for multiple detailed session reports, if specified.
+    start_timestamp = arrayindex(regextract(msg_payload, "start_timestamp\=(\S[^;]+)"), 0), // The exact timestamp of the first date to be included in the report, if any date filters were used.
+    end_timestamp = arrayindex(regextract(msg_payload, "end_timestamp\=(\S[^;]+)"), 0), // The exact timestamp of the last date to be included in the report, if date filters were specified.
+    private_ip = arrayindex(regextract(msg_payload, "private_ip\=(\S[^;]+)"), 0), // The private IP address filter used in the query, if specified.
+    public_ip = arrayindex(regextract(msg_payload, "public_ip\=(\S[^;]+)"), 0), // The public IP address filter used in the query, if specified.
+    rep_id = arrayindex(regextract(msg_payload, "rep_id\=([^;]+)"), 0), // The user filter value, if specified. The value is either a unique user identifier, the string any, or the string none.
+    rep_name = arrayindex(regextract(msg_payload, "rep_name\=(\S[^;]+)"), 0) // The display name of the representative specified by rep_id, when applicable.
+| alter 
+    private_ipv4 = if(private_ip ~= "(?:\d{1,3}\.){3}\d{1,3}", private_ip),
+    private_ipv6 = if(private_ip ~= "(?:[a-fA-F\d]{0,4}\:){7}[\wa-fA-F]{0,4}", private_ip),
+    public_ipv4 = if(public_ip ~= "(?:\d{1,3}\.){3}\d{1,3}", public_ip),
+    public_ipv6 = if(public_ip ~= "(?:[a-fA-F\d]{0,4}\:){7}[\wa-fA-F]{0,4}", public_ip),
+    start = to_integer(start_timestamp),
+    end = to_integer(end_timestamp),
+    filtered_user = coalesce(arrayindex(regextract(rep_id, "\(([^\)]+)"), 0), arrayindex(regextract(rep_name, "\(([^\)]+)"), 0))
+| alter 
+    xdm.event.duration = to_integer(multiply(subtract(end, start), 1000)),
+    xdm.network.session_id = coalesce(lsids, lsid),
+    xdm.target.host.hostname = computer_name, 
+    xdm.target.ipv4 = coalesce(public_ipv4, private_ipv4),
+    xdm.target.ipv6 = coalesce(public_ipv6, private_ipv6),
+    xdm.target.host.ipv4_addresses = if(private_ipv4 != null and public_ipv4 != null, arrayconcat(arraycreate(private_ipv4), arraycreate(public_ipv4)), private_ipv4 != null, arraycreate(private_ipv4), public_ipv4 !=  null, arraycreate(public_ipv4)),
+    xdm.target.host.ipv6_addresses = if(private_ipv6 != null and public_ipv6 != null, arrayconcat(arraycreate(private_ipv6), arraycreate(public_ipv6)), private_ipv6 != null, arraycreate(private_ipv6), public_ipv6 !=  null, arraycreate(public_ipv6)),
+    xdm.target.resource.id = rep_id, 
+    xdm.target.resource.name = rep_name,
+    xdm.target.resource.type = if(rep_id != null, "rep id display name"), 
+    xdm.target.user.username = filtered_user; 
 
-    /* Account Jump Item Association Events Fields: 
-        These fields apply to the following events: account_jump_item_association_added, account_jump_item_association_removed. 
-        https://www.beyondtrust.com/docs/privileged-remote-access/how-to/integrations/syslog/fields/account-jump-item-association.htm */
-    alter  event_type = arrayindex(regextract(_raw_log, "event\=([^;]+)"), 0)
-    | filter event_type in("account_jump_item", "account_jump_item_association_removed")
-    | call beyondtrust_pra_common_fields_modeling
-    | alter // account_jump_item", "account_jump_item_association_removed"
-        account_group_id = arrayindex(regextract(msg_payload, "account_group_id\=(\S[^;]+)"), 0), // The unique identifier of the account group.
-        account_id = arrayindex(regextract(msg_payload, "account_id\=(\S[^;]+)"), 0), // The unique identifier of the account.
-        jump_item_association_id = arrayindex(regextract(msg_payload, "id\=(\w[^;]+)"), 0) // The unique identifier of the association.
-    | alter 
-        xdm.target.user.groups = if(account_group_id != null, arraycreate(account_group_id)),
-        xdm.target.user.identifier = account_id,
-        xdm.target.resource.id = jump_item_association_id, 
-        xdm.target.resource.type = if(jump_item_association_id != null, "jump item association");
+/* Custom Session Policy Events: 
+    These fields apply to the following events: custom_session_policy_added, custom_session_policy_changed, and custom_session_policy_removed. 
+    Custom session policy events also include the Support Permissions Fields. 
+    https://www.beyondtrust.com/docs/privileged-remote-access/how-to/integrations/syslog/fields/custom-session-policy-fields.htm */
+alter  event_type = arrayindex(regextract(_raw_log, "event\=([^;]+)"), 0)
+| filter event_type in("custom_session_policy_added", "custom_session_policy_changed", "custom_session_policy_removed")
+| call beyondtrust_pra_common_fields_modeling
+| alter 
+    object_description = arrayindex(regextract(_raw_log, "description\=(\S[^;]+)"), 0), // The description of the object to which this custom session policy is applied in the form of object(type):name. The object may be one of users or policies. A users object is followed by @ and the ID of its security provider. The type is either attended or unattended. The name is the name of the object.
+    custom_session_policy_id = arrayindex(regextract(_raw_log, "id\=(\w[^;]+)"), 0),  // The unique identifier of this custom session policy.
+    custom_session_policy_name = arrayindex(regextract(_raw_log, "name\=(\S[^;]+)"), 0), // The name of this custom session policy. This name is assigned by the B Series Appliance and cannot be modified.
+    custom_session_policy_code_name = arrayindex(regextract(_raw_log, "code_name\=(\S[^;]+)"), 0) // The code name of this custom session policy.
+| alter 
+    user_object = arrayindex(regextract(object_description, "([^\@]+)\@"), 0)
+| alter 
+    xdm.network.rule = custom_session_policy_code_name, 
+    xdm.target.resource.id = custom_session_policy_id, 
+    xdm.target.resource.name = custom_session_policy_name,
+    xdm.target.resource.type = if(custom_session_policy_id != null, "custom session policy"),
+    xdm.target.user.username = user_object; 
 
-    /* General Fallback Mapping: 
-       This filter applies to all other events which weren't mapped explicitly by any filter. */
-    alter  event_type = arrayindex(regextract(_raw_log, "event\=([^;]+)"), 0)
-    | filter event_type not in("login", "logout", "change_display_name", "change_password", "change_username", "account_added", "account_changed", "accounts_changed", "account_removed", "account_group_added", "account_group_changed", "account_group_removed", "account_user_added", "account_user_removed", "support_session_report_generated", "support_session_detail_generated", "support_session_summary_report_generated", "team_activity_report_generated", "custom_session_policy_added", "custom_session_policy_changed", "custom_session_policy_removed", "account_jump_item", "account_jump_item_association_removed")
-    | call beyondtrust_pra_common_fields_modeling;
+/* API Account Events: 
+    These mappings apply to the following events: api_account_added, api_account_changed & api_account_removed. 
+    https://www.beyondtrust.com/docs/privileged-remote-access/how-to/integrations/syslog/fields/api-account-fields.htm */
+alter  event_type = arrayindex(regextract(_raw_log, "event\=([^;]+)"), 0)
+| filter event_type in("api_account_added", "api_account_changed", "api_account_removed")
+| call beyondtrust_pra_common_fields_modeling
+| alter 
+    api_ip_addresses = arrayindex(regextract(msg_payload, "ip_addresses\=(\S[^;]+)"), 0), // Comma-delimited list of network address prefixes from which this account can authenticate.
+    api_account_name = arrayindex(regextract(msg_payload, "name\=(\S[^;]+)"), 0), // The name of the API account.
+    api_account_id = arrayindex(regextract(msg_payload, "id\=(\w[^;]+)"), 0), // The unique identifier of the API account.
+    api_ecp_group = arrayindex(regextract(msg_payload, "ecm_group\=(\S[^;]+)"), 0), // The ID of the ECM (Endpoint Credentials Manager) Group that the account belongs to.
+    is_enabled =  arrayindex(regextract(msg_payload, "enabled\=(0|1)"), 0)  // 1: This API account is enabled, 0: This API account is disable
+| alter 
+    is_api_account_disabled = if(is_enabled = "0", to_boolean("TRUE"), is_enabled = "1", to_boolean("FALSE")),
+    permitted_ip_addresses = arraymap(regextract(api_ip_addresses, "([^,]+)"), trim("@element"))
+| alter
+    permitted_ipv4_addresses = arrayfilter(permitted_ip_addresses, "@element" ~= "\."),
+    permitted_ipv6_addresses = arrayfilter(permitted_ip_addresses, "@element" ~= ":")
+| alter
+    xdm.target.host.ipv4_addresses = permitted_ipv4_addresses,
+    xdm.target.host.ipv6_addresses = permitted_ipv6_addresses,
+    xdm.target.subnet = api_ip_addresses,
+    xdm.target.user.username = api_account_name, 
+    xdm.target.user.identifier = api_account_id, 
+    xdm.target.user.user_type = XDM_CONST.USER_TYPE_SERVICE_ACCOUNT, 
+    xdm.target.user.is_disabled = is_api_account_disabled,
+    xdm.target.user.groups = if(api_ecp_group != null, arraycreate(api_ecp_group));
+
+/* Account Jump Item Association Events Fields: 
+    These fields apply to the following events: account_jump_item_association_added, account_jump_item_association_removed. 
+    https://www.beyondtrust.com/docs/privileged-remote-access/how-to/integrations/syslog/fields/account-jump-item-association.htm */
+alter  event_type = arrayindex(regextract(_raw_log, "event\=([^;]+)"), 0)
+| filter event_type in("account_jump_item", "account_jump_item_association_removed")
+| call beyondtrust_pra_common_fields_modeling
+| alter // account_jump_item", "account_jump_item_association_removed"
+    account_group_id = arrayindex(regextract(msg_payload, "account_group_id\=(\S[^;]+)"), 0), // The unique identifier of the account group.
+    account_id = arrayindex(regextract(msg_payload, "account_id\=(\S[^;]+)"), 0), // The unique identifier of the account.
+    jump_item_association_id = arrayindex(regextract(msg_payload, "id\=(\w[^;]+)"), 0) // The unique identifier of the association.
+| alter 
+    xdm.target.user.groups = if(account_group_id != null, arraycreate(account_group_id)),
+    xdm.target.user.identifier = account_id,
+    xdm.target.resource.id = jump_item_association_id, 
+    xdm.target.resource.type = if(jump_item_association_id != null, "jump item association");
+
+/* General Fallback Mapping: 
+    This filter applies to all other events which weren't mapped explicitly by any filter. */
+alter  event_type = arrayindex(regextract(_raw_log, "event\=([^;]+)"), 0)
+| filter event_type not in("login", "logout", "change_display_name", "change_password", "change_username", "account_added", "account_changed", "accounts_changed", "account_removed", "account_group_added", "account_group_changed", "account_group_removed", "account_user_added", "account_user_removed", "support_session_report_generated", "support_session_detail_generated", "support_session_summary_report_generated", "team_activity_report_generated", "custom_session_policy_added", "custom_session_policy_changed", "custom_session_policy_removed", "account_jump_item", "account_jump_item_association_removed", "api_account_added", "api_account_changed", "api_account_removed")
+| call beyondtrust_pra_common_fields_modeling;
