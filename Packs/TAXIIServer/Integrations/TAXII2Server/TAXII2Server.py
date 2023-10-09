@@ -1262,7 +1262,7 @@ def test_module(params: dict) -> str:
 
 
 def edit_server_info(server_info: dict) -> dict:
-    """Edit the server info dictionary if the server version > 8.0.0
+    """Edits the server info dictionary if the server version >= 8.0.0
 
     Args:
         server_info (dict): The server info
