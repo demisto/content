@@ -158,14 +158,6 @@
             ]
         },
         {
-            "id":"FindEmailCampaign",
-            "reason":"Issue: CIAC-7837",
-            "ignored_native_images":[
-                "native:8.4",
-                "native:8.3"
-            ]
-        },
-        {
             "id":"RegexExtractAll",
             "reason":"Issue: CIAC-6005",
             "ignored_native_images":[
