@@ -348,7 +348,7 @@ def threatzone_get_result(client: Client, args: dict[str, Any]) -> CommandResult
             res = create_res(readable_dict, output)
             # res.append(f_res)
 
-    except Exception as e:
+    except:
         output = {'ThreatZone.Result(val.Job_ID == obj.Job_ID)': {'REPORT': result}}
         res = create_res(result, output)
     return res
