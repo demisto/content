@@ -45,10 +45,9 @@ _MODULES_LINE_MAPPING = {
 
 XSIAM_EVENT_CHUNK_SIZE = 2 ** 20  # 1 Mib
 XSIAM_EVENT_CHUNK_SIZE_LIMIT = 9 * (10 ** 6)  # 9 MB
-ASSETS = "aasets"
+ASSETS = "assets"
 EVENTS = "events"
-ASSETS_SNAPSHOTS = "assets_snapshots"
-DATA_TYPES = [EVENTS, ASSETS, ASSETS_SNAPSHOTS]
+DATA_TYPES = [EVENTS, ASSETS]
 
 
 def register_module_line(module_name, start_end, line, wrapper=0):
@@ -11313,12 +11312,12 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
     instance_name = calling_context.get('IntegrationInstance', '')
     collector_name = calling_context.get('IntegrationBrand', '')
     if data_type not in DATA_TYPES:
-        demisto.debug(f"data type must be one of these three values: {DATA_TYPES}")
+        demisto.debug(f"data type must be one of these values: {DATA_TYPES}")
         return
 
     if not data:
         demisto.debug(f'send_data_to_xsiam function received no {data_type}, skipping the API call to send {data_type} to XSIAM')
-        demisto.updateModuleHealth({f'{data_type}Pulled': data_size})   # todo: validate the status with assets_snapshots
+        demisto.updateModuleHealth({f'{data_type}Pulled': data_size})
         return
 
     # only in case we have data to send to XSIAM we continue with this flow.
@@ -11347,11 +11346,11 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
         'collector-name': collector_name,
         'instance-name': instance_name,
         'final-reporting-device': url,
-        'collector_type': 'events' if data_type == 'events' else 'assets'   # todo: if type is snapshot also treat it as asset?
+        'collector_type': ASSETS if data_type == ASSETS else EVENTS
     }
-    if data_type == "assets_snapshots":
-        headers['snapshot_id'] = generated_uuid # todo: generate id, how?
-        headers['snapshots_count'] = snapshots_count # todo: provide
+    if data_type == ASSETS:
+        headers['snapshot_id'] = str(round(time.time() * 1000))
+        headers['assets_count'] = len(data) if isinstance(data, list) else 1
 
     header_msg = f'Error sending new {data_type} into XSIAM.\n'
 
@@ -11393,10 +11392,8 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
                                     error_msg=header_msg, headers=headers,
                                     num_of_attempts=num_of_attempts, xsiam_url=xsiam_url,
                                     zipped_data=zipped_data, is_json_response=True)
-    if data_type == 'events':
-        demisto.updateModuleHealth({'eventsPulled': data_size})
-    else:
-        demisto.updateModuleHealth({'assetsPulled': data_size}) # todo: what if snapshot?
+
+    demisto.updateModuleHealth({f'{data_type}Pulled': data_size})
 
 ###########################################
 #     DO NOT ADD LINES AFTER THIS ONE     #
