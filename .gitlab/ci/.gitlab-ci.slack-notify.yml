@@ -23,6 +23,17 @@ slack-notify:
   stage: notify
   extends: .default-job-settings
   script:
+    - export ARTIFACTS_FOLDER="${CI_PROJECT_DIR}/artifacts"
+    - export PIPELINE_JOBS_FOLDER="${CI_PROJECT_DIR}/pipeline_jobs_folder"
+    - export ARTIFACTS_FOLDER_XSOAR="${CI_PROJECT_DIR}/artifacts/xsoar"
+    - export ARTIFACTS_FOLDER_MPV2="${CI_PROJECT_DIR}/artifacts/marketplacev2"
+    - export ARTIFACTS_FOLDER_XPANSE="${CI_PROJECT_DIR}/artifacts/xpanse"
+    - export ARTIFACTS_FOLDER_XSOAR_SAAS="${CI_PROJECT_DIR}/artifacts/xsoar_saas"
+    - export BASH_ENV="${CI_PROJECT_DIR}/artifacts/bash_env"
+    - export PYTHONPATH="${CI_PROJECT_DIR}"
+    - export PIP_CACHE_DIR="$CI_PROJECT_DIR/.cache/pip"
+    - export ENV_RESULTS_PATH="${CI_PROJECT_DIR}/artifacts/env_results.json"
+    - export DEMISTO_SDK_LOG_FILE_PATH="${ARTIFACTS_FOLDER}/logs/demisto_sdk_debug.log"
     - python3 ./Tests/scripts/gitlab_slack_notifier.py -p "$PIPELINE_TO_QUERY" -s "$SLACK_TOKEN" -c "$GITLAB_STATUS_TOKEN" -ch "$SLACK_CHANNEL" -tw "$WORKFLOW"
   retry:
     max: 2
