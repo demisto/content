@@ -292,6 +292,30 @@ class Client(BaseClient):
         self.__query_api_attributes = False
         super().__init__(base_url, verify, proxy, ok_codes, headers, auth, timeout)
 
+    def __init_integration_context__(self):
+        self.integration_context = get_integration_context()
+
+    def set_integration_context_key_value(self, key, value):
+        self.__init_integration_context__()
+        self.integration_context[key] = value
+        self.__commit_integration_context__()
+
+    def get_integration_context_key_value(self, key):
+        self.__init_integration_context__()
+        return_value = None
+        if key in self.integration_context:
+            return_value = self.integration_context[key]
+        return return_value
+
+    def delete_integration_context_key_value(self, key):
+        self.__init_integration_context__()
+        if key in self.integration_context:
+            self.integration_context.pop(key)
+        self.__commit_integration_context__()
+
+    def __commit_integration_context__(self):
+        set_integration_context(self.integration_context)
+
     def set_security_score_category_list(self, securityScoreCategoryList):
         self.securityScoreCategoryList = securityScoreCategoryList
 
@@ -647,13 +671,18 @@ class Client(BaseClient):
                 trace_id = domain_event["traceId"]["value"]
                 span_id = domain_event["spanId"]["value"]
                 if (
-                    domain_event["apiId"] is not None
+                    "apiId" in domain_event
+                    and domain_event["apiId"] is not None
+                    and domain_event["apiId"] != "null"
+                    and domain_event["apiId"] != ""
+                    and "value" in domain_event["apiId"]
                     and domain_event["apiId"]["value"] is not None
                     and domain_event["apiId"]["value"] != "null"
+                    and domain_event["apiId"]["value"] != ""
                 ):
                     api_id_list.append(domain_event["apiId"]["value"])
 
-                demisto.info("Forking thread for span retrieval")
+                demisto.info(f"Forking thread for span retrieval traceid {trace_id} spanid {span_id}")
 
                 future = executor.submit(
                     self.get_span_for_trace_id,
@@ -682,8 +711,45 @@ class Client(BaseClient):
         for domain_event, future in future_list:
             demisto.info("Waiting for the future object...")
             trace_results = future.result()
+            span_id = ""
+            if Helper.is_error(trace_results, "data", "spans", "results"):
+                msg = f"Error Object: {json.dumps(result)}. Couldn't get the Span."
+                demisto.info(msg)
+            else:
+                demisto.info(f"Found Span with id: {span_id}. Adding to Event with id {domain_event['id']['value']}.")
+                if len(trace_results["data"]["spans"]["results"]) > 0:
+                    domain_event["spans"] = trace_results["data"]["spans"]["results"][0]
+                    span_id = trace_results["data"]["spans"]["results"][0]["id"]
+                else:
+                    demisto.info("Didn't find any spans. Span array length:"
+                                 + f" {len(trace_results['data']['spans']['results'])}."
+                                 + f" Span Object: {json.dumps(trace_results['data']['spans']['results'])}")
             demisto.info("Done waiting for the future object...")
             domain_event["type"] = "Exploit"
+            if (
+                domain_event["environment"] is not None
+                and domain_event["environment"]["value"] is not None
+            ):
+                domain_event["environment"] = domain_event["environment"]["value"]
+            if (
+                domain_event["serviceName"] is not None
+                and domain_event["serviceName"]["value"] is not None
+            ):
+                domain_event["serviceName"] = domain_event["serviceName"]["value"]
+            if (
+                domain_event["apiId"] is not None
+                and domain_event["apiId"]["value"] is not None
+            ):
+                domain_event["apiId"] = domain_event["apiId"]["value"]
+            else:
+                domain_event["apiId"] = None
+            if (
+                domain_event["anomalousAttribute"] is not None
+                and domain_event["anomalousAttribute"]["value"] is not None
+            ):
+                domain_event["anomalousAttribute"] = domain_event["anomalousAttribute"]["value"]
+            else:
+                domain_event["anomalousAttribute"] = None
             if (
                 domain_event["name"] is not None
                 and domain_event["name"]["value"] is not None
@@ -734,20 +800,19 @@ class Client(BaseClient):
                 self.__query_api_attributes
                 and "isExternal" in self.optional_api_attributes
                 and "apiId" in domain_event
-                and "value" in domain_event["apiId"]
-                and domain_event["apiId"]["value"] is not None
-                and domain_event["apiId"]["value"] != "null"
-                and domain_event["apiId"]["value"] in api_endpoint_details_map
-                and api_endpoint_details_map[domain_event["apiId"]["value"]] is not None
-                and "isExternal" in api_endpoint_details_map[domain_event["apiId"]["value"]]
-                and api_endpoint_details_map[domain_event["apiId"]["value"]][
+                and domain_event["apiId"] is not None
+                and domain_event["apiId"] != "null"
+                and domain_event["apiId"] in api_endpoint_details_map
+                and api_endpoint_details_map[domain_event["apiId"]] is not None
+                and "isExternal" in api_endpoint_details_map[domain_event["apiId"]]
+                and api_endpoint_details_map[domain_event["apiId"]][
                     "isExternal"
                 ] is not None
-                and api_endpoint_details_map[domain_event["apiId"]["value"]][
+                and api_endpoint_details_map[domain_event["apiId"]][
                     "isExternal"
                 ] != "null"
             ):
-                if api_endpoint_details_map[domain_event["apiId"]["value"]][
+                if api_endpoint_details_map[domain_event["apiId"]][
                     "isExternal"
                 ]:
                     domain_event["apiType"] = "External"
@@ -757,59 +822,56 @@ class Client(BaseClient):
                 self.__query_api_attributes
                 and "isAuthenticated" in self.optional_api_attributes
                 and "apiId" in domain_event
-                and "value" in domain_event["apiId"]
-                and domain_event["apiId"]["value"] is not None
-                and domain_event["apiId"]["value"] != "null"
-                and domain_event["apiId"]["value"] in api_endpoint_details_map
-                and api_endpoint_details_map[domain_event["apiId"]["value"]] is not None
-                and "isAuthenticated" in api_endpoint_details_map[domain_event["apiId"]["value"]]
-                and api_endpoint_details_map[domain_event["apiId"]["value"]][
+                and domain_event["apiId"] is not None
+                and domain_event["apiId"] != "null"
+                and domain_event["apiId"] in api_endpoint_details_map
+                and api_endpoint_details_map[domain_event["apiId"]] is not None
+                and "isAuthenticated" in api_endpoint_details_map[domain_event["apiId"]]
+                and api_endpoint_details_map[domain_event["apiId"]][
                     "isAuthenticated"
                 ] is not None
-                and api_endpoint_details_map[domain_event["apiId"]["value"]][
+                and api_endpoint_details_map[domain_event["apiId"]][
                     "isAuthenticated"
                 ]
                 != "null"
             ):
-                domain_event["apiIsAuthenticated"] = api_endpoint_details_map[domain_event["apiId"]["value"]]["isAuthenticated"]
+                domain_event["apiIsAuthenticated"] = api_endpoint_details_map[domain_event["apiId"]]["isAuthenticated"]
             if (
                 self.__query_api_attributes
                 and "riskScore" in self.optional_api_attributes
                 and "apiId" in domain_event
-                and "value" in domain_event["apiId"]
-                and domain_event["apiId"]["value"] is not None
-                and domain_event["apiId"]["value"] != "null"
-                and domain_event["apiId"]["value"] in api_endpoint_details_map
-                and api_endpoint_details_map[domain_event["apiId"]["value"]] is not None
-                and "riskScore" in api_endpoint_details_map[domain_event["apiId"]["value"]]
-                and api_endpoint_details_map[domain_event["apiId"]["value"]][
+                and domain_event["apiId"] is not None
+                and domain_event["apiId"] != "null"
+                and domain_event["apiId"] in api_endpoint_details_map
+                and api_endpoint_details_map[domain_event["apiId"]] is not None
+                and "riskScore" in api_endpoint_details_map[domain_event["apiId"]]
+                and api_endpoint_details_map[domain_event["apiId"]][
                     "riskScore"
                 ] is not None
-                and api_endpoint_details_map[domain_event["apiId"]["value"]][
+                and api_endpoint_details_map[domain_event["apiId"]][
                     "riskScore"
                 ]
                 != "null"
             ):
-                domain_event["apiRiskScore"] = api_endpoint_details_map[domain_event["apiId"]["value"]]["riskScore"]
+                domain_event["apiRiskScore"] = api_endpoint_details_map[domain_event["apiId"]]["riskScore"]
             if (
                 self.__query_api_attributes
                 and "riskScoreCategory" in self.optional_api_attributes
                 and "apiId" in domain_event
-                and "value" in domain_event["apiId"]
-                and domain_event["apiId"]["value"] is not None
-                and domain_event["apiId"]["value"] != "null"
-                and domain_event["apiId"]["value"] in api_endpoint_details_map
-                and api_endpoint_details_map[domain_event["apiId"]["value"]] is not None
-                and "riskScoreCategory" in api_endpoint_details_map[domain_event["apiId"]["value"]]
-                and api_endpoint_details_map[domain_event["apiId"]["value"]][
+                and domain_event["apiId"] is not None
+                and domain_event["apiId"] != "null"
+                and domain_event["apiId"] in api_endpoint_details_map
+                and api_endpoint_details_map[domain_event["apiId"]] is not None
+                and "riskScoreCategory" in api_endpoint_details_map[domain_event["apiId"]]
+                and api_endpoint_details_map[domain_event["apiId"]][
                     "riskScoreCategory"
                 ] is not None
-                and api_endpoint_details_map[domain_event["apiId"]["value"]][
+                and api_endpoint_details_map[domain_event["apiId"]][
                     "riskScoreCategory"
                 ]
                 != "null"
             ):
-                domain_event["apiRiskScoreCategory"] = api_endpoint_details_map[domain_event["apiId"]["value"]][
+                domain_event["apiRiskScoreCategory"] = api_endpoint_details_map[domain_event["apiId"]][
                     "riskScoreCategory"
                 ]
 
@@ -817,21 +879,20 @@ class Client(BaseClient):
                 self.__query_api_attributes
                 and "isLearnt" in self.optional_api_attributes
                 and "apiId" in domain_event
-                and "value" in domain_event["apiId"]
-                and domain_event["apiId"]["value"] is not None
-                and domain_event["apiId"]["value"] != "null"
-                and domain_event["apiId"]["value"] in api_endpoint_details_map
-                and api_endpoint_details_map[domain_event["apiId"]["value"]] is not None
-                and "isLearnt" in api_endpoint_details_map[domain_event["apiId"]["value"]]
-                and api_endpoint_details_map[domain_event["apiId"]["value"]][
+                and domain_event["apiId"] is not None
+                and domain_event["apiId"] != "null"
+                and domain_event["apiId"] in api_endpoint_details_map
+                and api_endpoint_details_map[domain_event["apiId"]] is not None
+                and "isLearnt" in api_endpoint_details_map[domain_event["apiId"]]
+                and api_endpoint_details_map[domain_event["apiId"]][
                     "isLearnt"
                 ] is not None
-                and api_endpoint_details_map[domain_event["apiId"]["value"]][
+                and api_endpoint_details_map[domain_event["apiId"]][
                     "isLearnt"
                 ]
                 != "null"
             ):
-                domain_event["apiIsLearnt"] = api_endpoint_details_map[domain_event["apiId"]["value"]][
+                domain_event["apiIsLearnt"] = api_endpoint_details_map[domain_event["apiId"]][
                     "isLearnt"
                 ]
 
@@ -842,25 +903,14 @@ class Client(BaseClient):
                 domain_event["apiType"] = "Unknown"
 
             if ("id" in domain_event and "value" in domain_event["id"] and self.app_url != ""
-                    and "environment" in domain_event and "value" in domain_event["environment"]):
+                    and "environment" in domain_event and domain_event["environment"] is not None
+                    and domain_event["environment"] != ""):
                 domain_event["eventUrl"] = (
                     f"{self.app_url}/security-event/"
                     + domain_event["id"]["value"]
                     + "?time=90d&env="
-                    + parse.quote(domain_event["environment"]["value"])
+                    + parse.quote(domain_event["environment"])
                 )
-
-            if Helper.is_error(trace_results, "data", "spans", "results"):
-                msg = f"Error Object: {json.dumps(result)}. Couldn't get the Span."
-                demisto.info(msg)
-            else:
-                demisto.info(f"Found Span with id: {span_id}. Adding to Event with id {domain_event['id']['value']}.")
-                if len(trace_results["data"]["spans"]["results"]) > 0:
-                    domain_event["spans"] = trace_results["data"]["spans"]["results"][0]
-                else:
-                    demisto.info("Didn't find any spans. Span array length:"
-                                 + f" {len(trace_results['data']['spans']['results'])}."
-                                 + f" Span Object: {json.dumps(trace_results['data']['spans']['results'])}")
 
             events.append(domain_event)
             if first:
@@ -920,27 +970,41 @@ def fetch_incidents(client: Client, last_run, first_fetch_time):
     if len(items) > 0:
         demisto.debug(f"First Incident: {json.dumps(items[0], indent=3)}")
     for item in items:
+        context_value = None
+        context_key = ""
+        if client.fetch_unique_incidents:
+            context_key = (f"{item['environment']}_{item['serviceName']}_{item['name']}_{item['apiId']}_"
+                           + f"{item['anomalousAttribute']}")
+            context_value = client.get_integration_context_key_value(context_key)
         incident_created_time: datetime = datetime.fromtimestamp(
             item["timestamp"]["value"] / 1000
         )
-        incident = {
-            "name": item["name"],
-            "displayname": item["displayname"],
-            "country": item["country"],
-            "sourceip": item["sourceip"],
-            "riskscore": item["riskscore"],
-            "ipAddressType": item["ipAddressType"],
-            "severity": XSOAR_SEVERITY_BY_TRACEABLE_SEVERITY.get(
-                item["severity"], IncidentSeverity.UNKNOWN
-            ),
-            "rawJSON": json.dumps(item),
-        }
-        if ("eventUrl" in item
-                and item["eventUrl"] is not None
-                and item["eventUrl"] != ""):
-            incident["eventUrl"] = item["eventUrl"]
+        if context_value is None:
+            demisto.info(f"Context key {context_key} not found in instance cache. Creating a new incident.")
+            incident = {
+                "name": item["name"],
+                "displayname": item["displayname"],
+                "country": item["country"],
+                "sourceip": item["sourceip"],
+                "riskscore": item["riskscore"],
+                "ipAddressType": item["ipAddressType"],
+                "severity": XSOAR_SEVERITY_BY_TRACEABLE_SEVERITY.get(
+                    item["severity"], IncidentSeverity.UNKNOWN
+                ),
+                "rawJSON": json.dumps(item),
+            }
+            if ("eventUrl" in item
+                    and item["eventUrl"] is not None
+                    and item["eventUrl"] != ""):
+                incident["eventUrl"] = item["eventUrl"]
 
-        incidents.append(incident)
+            incidents.append(incident)
+            if context_key != "":
+                demisto.info(f"Adding Context key {context_key} to the instance cache.")
+                client.set_integration_context_key_value(context_key, "present")
+        else:
+            demisto.info(
+                f"Found existing context record with key {context_key} and value {context_value}. Will not create new incident.")
 
         # Update last run and add incident if the incident is newer than last fetch
         if incident_created_time.replace(
@@ -949,7 +1013,19 @@ def fetch_incidents(client: Client, last_run, first_fetch_time):
             latest_created_time = incident_created_time
 
     next_run = {"last_fetch": latest_created_time.strftime(DATE_FORMAT)}
+    demisto.info("Done processing all incidents.")
     return next_run, incidents
+
+
+def update_incident_cache(incident, client):
+
+    # traceable_fields = incident["labels"]
+    '''
+    context_key = (f"{item['environment']}_{item['serviceName']}_{item['name']}_{item['apiId']}_"
+                           + f"{item['anomalousAttribute']}")
+    '''
+    demisto.info("update_incident_cache called.")
+    # pass
 
 
 """ MAIN FUNCTION """
@@ -980,7 +1056,7 @@ def main() -> None:
         ignoreStatusCodes = demisto.params().get("ignoreStatusCodes", "")
         optionalDomainEventFieldList = demisto.params().get("optionalDomainEventFieldList")
         optionalAPIAttributes = demisto.params().get("optionalAPIAttributes")
-        demisto.params().get("optionalAPIAttributes")
+        fetch_unique_incidents = demisto.params().get("isFetchUniqueIncidents")
 
         _env = demisto.params().get("environment")
 
@@ -1005,6 +1081,7 @@ def main() -> None:
         client.set_ignore_status_codes(ignoreStatusCodes)
         client.set_domain_event_field_list(optionalDomainEventFieldList)
         client.set_optional_api_attributes(optionalAPIAttributes)
+        client.set_fetch_unique_incidents(fetch_unique_incidents)
         client.set_limit(limit)
 
         if demisto.command() == "test-module":
@@ -1018,10 +1095,12 @@ def main() -> None:
                 last_run=demisto.getLastRun(),
                 first_fetch_time=first_fetch_time,
             )
-
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
-
+        elif demisto.command() == 'update_incident_cache':
+            incident = json.loads(demisto.args().get('incident'))
+            demisto.info(f"incident id is {incident['id']}.")
+            update_incident_cache(incident, client)
     except Exception as e:
         return_error(
             f"Failed to execute {demisto.command()} command.\nError:\n{str(e)}"

@@ -1,0 +1,19 @@
+comment: This script updates the Traceable integration instance cache when an incident is closed.
+commonfields:
+  id: TraceableUpdateCacheTrigger
+  version: -1
+name: TraceableUpdateCacheTrigger
+script: '-'
+type: python
+tags:
+- field-change-triggered
+enabled: true
+subtype: python3
+dependson:
+  must:
+  - Traceable|||update_incident_cache
+runonce: false
+dockerimage: demisto/python3:3.10.13.75921
+fromversion: 6.9.0
+tests:
+- No tests (auto formatted)
