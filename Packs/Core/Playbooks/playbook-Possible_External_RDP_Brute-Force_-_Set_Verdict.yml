@@ -1,30 +1,9 @@
 id: Possible External RDP Brute-Force - Set Verdict
-version: 8
+version: -1
 contentitemexportablefields:
-  contentitemfields:
-    packID: Core
-    packName: Core - Investigation and Response
-    itemVersion: 2.0.17
-    fromServerVersion: 6.8.0
-    toServerVersion: ""
-    definitionid: ""
-    prevname: ""
-vcShouldKeepItemLegacyProdMachine: false
+  contentitemfields: {}
 name: Possible External RDP Brute-Force - Set Verdict
-description: "This playbook creating an array called \"Suspicious Elements\", which
-  is used to count potential security threats. The following elements can be added
-  to the array:\n\n- \"IP Reputation\" - DBot Score is 2-3 \n- \"Source geolocation\"
-  - RDP Connection made from rare geo-location \n-  Related to campaign - IP address
-  is related to campaign, based on TIM module\n-  Hunting results - the hunt for indicators
-  related to the source IP and the related campaign returned results\n-  XDR Alert
-  search - XDR Alerts that related to the same username and endpoint, and to the MITRE
-  tactics that comes after \"Credential Access\", were found.\n- Risky User - one
-  or more risky users are involved in the incident, as identified by the Cortex Core
-  - IR integration's ITDR module.\n- Risky Host - one or more risky hosts are involved
-  in the incident, as identified by the Cortex Core - IR integration's ITDR module.\n\nThe
-  array will then be outputted and its size will be compared to a final threshold.
-  If the size is greater than or equal to the threshold, the investigation's final
-  verdict will be deemed a \"True Positive.\""
+description: "This playbook creating an array called \"Suspicious Elements\", which is used to count potential security threats. The following elements can be added to the array:\n\n- \"IP Reputation\" - DBot Score is 2-3 \n- \"Source geolocation\" - RDP Connection made from rare geo-location \n-  Related to campaign - IP address is related to campaign, based on TIM module\n-  Hunting results - the hunt for indicators related to the source IP and the related campaign returned results\n-  XDR Alert search - XDR Alerts that related to the same username and endpoint, and to the MITRE tactics that comes after \"Credential Access\", were found.\n- Risky User - one or more risky users are involved in the incident, as identified by the Cortex Core - IR integration's ITDR module.\n- Risky Host - one or more risky hosts are involved in the incident, as identified by the Cortex Core - IR integration's ITDR module.\n\nThe array will then be outputted and its size will be compared to a final threshold. If the size is greater than or equal to the threshold, the investigation's final verdict will be deemed a \"True Positive.\""
 starttaskid: "0"
 tasks:
   "0":
@@ -37,6 +16,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "3"
@@ -427,6 +407,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -689,7 +670,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-system: true
 view: |-
   {
     "linkLabelsPosition": {
@@ -711,29 +691,27 @@ inputs:
   value: {}
   required: false
   description: Number of XDR alerts that are related to the same user or endpoint.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: RelatedCampaign
   value: {}
   required: false
   description: Campaign related to the external IP.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: HuntResults
   value: {}
   required: false
-  description: Determine whether hunting results exist. The input value should be
-    true or false.
-  playbookInputQuery: null
+  description: Determine whether hunting results exist. The input value should be true or false.
+  playbookInputQuery:
 - key: UnusualGeoLocation
   value: {}
   required: false
-  description: ' determine whether the RDP connection has made RDP Connection made
-    from rare geo-location. the input value should be true or false.'
-  playbookInputQuery: null
+  description: ' determine whether the RDP connection has made RDP Connection made from rare geo-location. the input value should be true or false.'
+  playbookInputQuery:
 - key: IpReputation
   value: {}
   required: false
   description: The external IP reputation.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: RiskyUser
   value:
     complex:
@@ -760,7 +738,7 @@ inputs:
       accessor: id
   required: false
   description: Usernames of users that were found as risky by Cortex Core IR.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: RiskyHost
   value:
     complex:
@@ -787,8 +765,13 @@ inputs:
       accessor: id
   required: false
   description: Hostnames that were found as risky by Cortex Core IR.
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs:
 - contextPath: Suspicious_Elements
   description: Array that contains all the suspicious elements.
   type: unknown
+tests:
+- No tests (auto formatted)
+marketplaces: ["marketplacev2"]
+fromversion: 6.8.0
+system: true
