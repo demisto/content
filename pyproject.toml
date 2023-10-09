@@ -515,21 +515,10 @@ max_line_length = 130
 junit_family = "xunit1"
 
 [tool.pytest.ini_options]
-markers = [
-    "helper",
-    "commands",
-    "fetch",
-    "client",
-    "get_cases",
-    "get_cases_limit",
-    "get_cases_begin_date",
-    "get_cases_end_date",
-    "get_cases_combined",
-]
 filterwarnings = [
-    ignore::DeprecationWarning
-    ignore::RemovedInMarshmallow4Warning
-    ignore::PytestUnknownMarkWarning
+    "ignore::DeprecationWarning",
+    "ignore::RemovedInMarshmallow4Warning",
+    "ignore::PytestUnknownMarkWarning",
 ]
 [build-system]
 requires = ["poetry-core>=1.0.0"]
