@@ -163,7 +163,7 @@ def encode_file_name(file_name):
 def translate_score(score: int,) -> int:
     """Translate ThreatZone threat level to DBot score enum."""
     if score == 0:
-        return Common.DBotScore.UNKNOWN
+        return Common.DBotScore.NONE
     elif score == 1:
         return Common.DBotScore.GOOD
     elif score == 2:
