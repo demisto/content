@@ -1093,7 +1093,7 @@ class Pack:
             bool: whether pack was modified and override will be required.
         """
         task_status = False
-        modified_rn_files_paths = []
+        modified_rn_files_paths: list = []
         pack_was_modified = False
 
         try:
