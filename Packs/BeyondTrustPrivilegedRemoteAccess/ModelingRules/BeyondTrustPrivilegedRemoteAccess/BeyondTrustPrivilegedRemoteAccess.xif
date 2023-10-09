@@ -82,7 +82,7 @@
         vault_account_username = arrayindex(regextract(msg_payload, "username\=(\S[^;]+)"), 0), // The username of the vault account.
         account_group_id1 = arrayindex(regextract(msg_payload, "group\=(\S[^;]+)"), 0) // 	The unique identifier of the account group.
     | alter // Account Group Fields: https://www.beyondtrust.com/docs/privileged-remote-access/how-to/integrations/syslog/fields/account-group.htm
-        account_group_id2 = arrayindex(regextract(msg_payload, "id\=(\S[^;]+)"), 0), // The unique identifier of the account group.
+        account_group_id2 = arrayindex(regextract(msg_payload, "id\=(\w[^;]+)"), 0), // The unique identifier of the account group.
         account_group_name = arrayindex(regextract(msg_payload, "name\=(\S[^;]+)"), 0) // The name of the account group.
     | alter // Account Group Membership Fields: https://www.beyondtrust.com/docs/privileged-remote-access/how-to/integrations/syslog/fields/account-group-membership.htm
         accounts_id = arrayindex(regextract(msg_payload, "accounts_id\=(\S[^;]+)"), 0), // The unique identifier of the vault accounts.
@@ -147,7 +147,7 @@
     | call beyondtrust_pra_common_fields_modeling
     | alter 
         object_description = arrayindex(regextract(_raw_log, "description\=(\S[^;]+)"), 0), // The description of the object to which this custom session policy is applied in the form of object(type):name. The object may be one of users or policies. A users object is followed by @ and the ID of its security provider. The type is either attended or unattended. The name is the name of the object.
-        custom_session_policy_id = arrayindex(regextract(_raw_log, "id\=(\S[^;]+)"), 0),  // The unique identifier of this custom session policy.
+        custom_session_policy_id = arrayindex(regextract(_raw_log, "id\=(\w[^;]+)"), 0),  // The unique identifier of this custom session policy.
         custom_session_policy_name = arrayindex(regextract(_raw_log, "name\=(\S[^;]+)"), 0), // The name of this custom session policy. This name is assigned by the B Series Appliance and cannot be modified.
         custom_session_policy_code_name = arrayindex(regextract(_raw_log, "code_name\=(\S[^;]+)"), 0) // The code name of this custom session policy.
     | alter 
@@ -168,7 +168,7 @@
     | alter // account_jump_item", "account_jump_item_association_removed"
         account_group_id = arrayindex(regextract(msg_payload, "account_group_id\=(\S[^;]+)"), 0), // The unique identifier of the account group.
         account_id = arrayindex(regextract(msg_payload, "account_id\=(\S[^;]+)"), 0), // The unique identifier of the account.
-        jump_item_association_id = arrayindex(regextract(msg_payload, "id\=(\S[^;]+)"), 0) // The unique identifier of the association.
+        jump_item_association_id = arrayindex(regextract(msg_payload, "id\=(\w[^;]+)"), 0) // The unique identifier of the association.
     | alter 
         xdm.target.user.groups = if(account_group_id != null, arraycreate(account_group_id)),
         xdm.target.user.identifier = account_id,
