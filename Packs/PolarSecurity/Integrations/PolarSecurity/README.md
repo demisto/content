@@ -79,7 +79,6 @@ List observed data stores
 | PolarSecurity.DataStores.Stores.classificationStatus | string | One of "CLASSIFIED" "UNCLASSIFIED" "IN_PROGRESS" | 
 | PolarSecurity.DataStores.Stores.vpcId | string | ID of the VPC | 
 | PolarSecurity.DataStores.Stores.isBackedUp | boolean | Backup status | 
-| PolarSecurity.DataStores.Stores.managed | boolean |  | 
 | PolarSecurity.DataStores.Stores.stats | unknown | Array of statistics | 
 
 ### polar-data-stores-summary
@@ -168,7 +167,6 @@ Get a specific data store by its ID. Doesn't return anything above and beyond th
 | PolarSecurity.DataStores.Stores.dataStoreUrl | string | Public URL to access store | 
 | PolarSecurity.DataStores.Stores.classificationStatus | string | One of "CLASSIFIED" "UNCLASSIFIED" "IN_PROGRESS" | 
 | PolarSecurity.DataStores.Stores.stats | unknown | Array of statistics | 
-| PolarSecurity.DataStores.Stores.managed | boolean |  | 
 | PolarSecurity.DataStores.Stores.cloudTags | unknown | Array of tags assigned to store | 
 | PolarSecurity.DataStores.Stores.cloudAccountDetails.cloudAccountId | string | ID of account that owns the store | 
 | PolarSecurity.DataStores.Stores.cloudAccountDetails.cloudAccountName | string | Name  of account that owns the store | 
