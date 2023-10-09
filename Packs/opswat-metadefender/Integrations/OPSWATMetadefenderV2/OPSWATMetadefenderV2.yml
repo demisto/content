@@ -54,31 +54,39 @@ script:
     arguments:
     - name: fileId
       required: true
-      default: true
-      description: Entry id of a file
+      description: Entry id of a file in Demisto.
+    - name: scanRule
+      description: Name of the Rule to use for scanning.
     outputs:
     - contextPath: OPSWAT.FileName
-      description: OPSWAT file name to scan
+      description: OPSWAT file name to scan.
       type: string
     - contextPath: OPSWAT.ScanId
-      description: OPSWAT scan id of the scan
+      description: OPSWAT scan id of the scan.
       type: string
-    description: Scan file in OPSWAT
+    description: Scan file in OPSWAT.
   - name: opswat-hash
     arguments:
     - name: hash
       required: true
       default: true
-      description: File hash (Can be any hash type)
-    description: Check file hash on OPSWAT
+      description: File hash (Can be any hash type).
+    description: Check file hash on OPSWAT.
   - name: opswat-scan-result
     arguments:
     - name: id
       required: true
       default: true
-      description: OPSWAT scan id
-    description: Get OPSWAT result
-  dockerimage: demisto/python3:3.10.12.67728
+      description: OPSWAT scan id.
+    description: Get OPSWAT result.
+  - name: opswat-sanitization-result
+    arguments:
+    - name: id
+      required: true
+      default: true
+      description: OPSWAT scan id.
+    description: Get OPSWAT sanitization result (Requires CDR feature).
+  dockerimage: demisto/python3:3.10.13.75921
   subtype: python3
 tests:
 - No tests - no instance

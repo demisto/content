@@ -8,9 +8,6 @@ import math
 import dateparser
 from datetime import timezone
 
-# disable insecure warnings
-requests.packages.urllib3.disable_warnings()
-
 
 ''' GLOBAL VARS '''
 BASE_URL = "https://console.infinipoint.io"

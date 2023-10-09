@@ -7,24 +7,29 @@ Calculate and assign the incident severity based on the highest returned severit
 - Microsoft Headers
 
 ## Dependencies
+
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
+
+* Calculate Severity By Email Authenticity
 * Calculate Severity - Critical Assets v2
 * Calculate Severity By Highest DBotScore
-* Calculate Severity By Email Authenticity
 
 ### Integrations
+
 This playbook does not use any integrations.
 
 ### Scripts
+
 * Set
-* SetAndHandleEmpty
 
 ### Commands
+
 * setIncident
 
 ## Playbook Inputs
+
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
@@ -36,9 +41,10 @@ This playbook does not use any integrations.
 | Account | User accounts to check against the critical lists. | Account | Optional |
 | Endpoint | Endpoints to check against the CriticalEndpoints list. | Endpoint | Optional |
 | EmailAuthenticityCheck | Indicates the email authenticity resulting from the EmailAuthenticityCheck script. Possible values are: Pass, Fail, Suspicious, and Undetermined. | Email.AuthenticityCheck | Optional |
-| MicrosoftHeadersSeverityCheck | The value is set by the "Process Microsoft's Anti-Spam Headers" Playbook, which calculates the severity after processing the PCL, BCL and PCL values inside Microsoft's headers. | ${MicrosoftHeadersSeverityCheck} | Optional |
+| MicrosoftHeadersSeverityCheck | The value is set by the "Process Microsoft's Anti-Spam Headers" Playbook, which calculates the severity after processing the PCL, BCL and PCL values inside Microsoft's headers. | ${Email.MicrosoftHeadersSeverityCheck} | Optional |
 
 ## Playbook Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |
@@ -50,5 +56,7 @@ This playbook does not use any integrations.
 | CriticalAssets.CriticalUserGroups | Critical user-groups involved in the incident. | unknown |
 
 ## Playbook Image
+
 ---
+
 ![Calculate Severity - Generic v2](../doc_files/Calculate_Severity_-_Generic_v2.png)

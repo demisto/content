@@ -575,7 +575,6 @@ GET_LIST_ACCOUNT_ACTIVITIES_CONTEXT = {
             "Alert": False,
             "ClientID": "PVWA",
             "Date": 1594838456,
-            "Date": 1594838456,
             "MoreInfo": "",
             "Reason": "",
             "User": "Administrator"
