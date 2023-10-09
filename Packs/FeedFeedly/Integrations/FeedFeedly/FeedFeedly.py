@@ -211,14 +211,6 @@ class STIX2Parser:
         return publications
 
     @staticmethod
-    def change_attack_pattern_to_stix_attack_pattern(indicator: dict[str, Any]):
-        indicator["indicator_type"] = f'STIX {indicator["indicator_type"]}'
-        indicator["customFields"]["stixkillchainphases"] = indicator["customFields"].pop("killchainphases", None)
-        indicator["customFields"]["stixdescription"] = indicator["customFields"].pop("description", None)
-
-        return indicator
-
-    @staticmethod
     def get_ioc_type(indicator: str, id_to_object: dict[str, dict[str, Any]]) -> str:
         """
         Get IOC type by extracting it from the pattern field.
@@ -687,7 +679,7 @@ class STIX2Parser:
         """
         a_value_to_relationship: dict[str, Any] = {}
         for relationships_object in relationships_lst:
-            relationship_type = relationships_object.get("relationship_type")
+            relationship_type: str = relationships_object.get("relationship_type", "")
             if not EntityRelationship.RelationshipsTypes.is_valid_type(relationship_type):
                 if relationship_type == "indicates":
                     relationship_type = "indicated-by"
@@ -921,7 +913,7 @@ class STIX2Parser:
                 indicator["relationships"] = relationships
 
 
-def test_module(client: Client, params: dict) -> str:
+def test_module(client: Client, params: dict) -> str:  # pragma: no cover
     """Builds the iterator to check that the feed is accessible.
     Args:
         client: Client object.
@@ -938,7 +930,9 @@ def test_module(client: Client, params: dict) -> str:
         return str(e)
 
 
-def get_indicators_command(client: Client, params: dict[str, str], args: dict[str, str]) -> CommandResults:
+def get_indicators_command(
+    client: Client, params: dict[str, str], args: dict[str, str]
+) -> CommandResults:  # pragma: no cover
     """Wrapper for retrieving indicators from the feed to the war-room.
     Args:
         client: Client object with request
