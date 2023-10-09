@@ -44,6 +44,7 @@ def create_xsoar_incident(certificate: dict, domain: str, current_time: datetime
         current_time (datetime): The time the match occurred at
         result (dict): A dictionary containing details about the match like similarity score and matched asset.
     """
+    demisto.info(f'Creating a new suspicious domain incident for {domain}')
 
     incident = {
         "name": f"Suspicious Domain Discovered - {domain}",
@@ -67,6 +68,9 @@ def create_xsoar_certificate_indicator(certificate: dict):
         certificate (dict): An X.509 certificate object from CertStream
     """
     certificate_data = certificate["data"]["leaf_cert"]
+
+    demisto.info(f'Creating an X.509 indicator {certificate_data["fingerprint"]}')
+
     demisto.createIndicators([{
         "type": "X.509 Certificate",
         "value": certificate_data["fingerprint"],
@@ -123,6 +127,7 @@ def check_homographs(domain: str, user_homographs: dict, levenshtein_distance_th
         bool: Returns True if any word in the domain matches a homograph, False otherwise
     """
     words = domain.split(".")[:-1]  # All words in the domain without the TLD
+
     for word in words:
         for asset, homographs in user_homographs.items():
             for homograph in homographs:
@@ -131,6 +136,7 @@ def check_homographs(domain: str, user_homographs: dict, levenshtein_distance_th
                     return True, {"similarity": similarity,
                                   "homograph": homograph,
                                   "asset": asset}
+
     return False, {"similarity": similarity,
                    "homograph": homograph,
                    "asset": asset}
@@ -153,7 +159,7 @@ def fetch_certificates(message: dict, context: dict) -> None:
             for domain in all_domains:
                 # Check for homographs
                 is_suspicious_domain, result = check_homographs(domain, context["homographs"],
-                                                                    context["levenshtein_distance_threshold"])
+                                                                context["levenshtein_distance_threshold"])
                 if is_suspicious_domain:
                     now = datetime.now()
                     demisto.info(f"Potential homograph match found for domain: {domain}")
@@ -172,6 +178,7 @@ def get_homographs_list(list_name: str) -> dict:
     """
     try:
         lists = json.loads(demisto.internalHttpRequest("GET", "/lists/").get("body", {}))
+        demisto.info('Fetching homographs list from XSOAR ({word_list_name})')
 
     except Exception as e:
         demisto.error(f"{e}")
@@ -184,7 +191,7 @@ def get_homographs_list(list_name: str) -> dict:
             return json.loads(user_list["data"])
 
     demisto.error("List of words not found")
-    raise IOError
+    raise OSError
 
 
 def levenshtein_distance(original_string: str, reference_string: str) -> float:
@@ -240,14 +247,15 @@ def long_running_execution_command(host: str, word_list_name: str, list_update_i
         try:
             now = datetime.now()
             if now - c._context["fetch_time"] >= timedelta(minutes=list_update_interval):
+                demisto.info('Updating homographs list "{word_list_name}"')
                 c._context["fetch_time"] = now
                 c._context["homographs"] = get_homographs_list(word_list_name)
 
             c.run_forever(ping_interval=15)
             time.sleep(5)
+
         except Exception as e:
             demisto.error(e)
-
 
 
 def test_module(host: str, word_list_name: str):
@@ -268,7 +276,7 @@ def test_module(host: str, word_list_name: str):
 
     try:
         try:
-            homographs = get_homographs_list(word_list_name)
+            get_homographs_list(word_list_name)
 
         except Exception:
             demisto.error(f'Words list {word_list_name} not found')
@@ -282,6 +290,7 @@ def test_module(host: str, word_list_name: str):
 
     except Exception as e:
         demisto.error(e)
+
 
 def main():  # pragma: no cover
     command = demisto.command()
