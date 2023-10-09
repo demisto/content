@@ -1,0 +1,229 @@
+category: Forensics & Malware Analysis
+commonfields:
+  id: MalwationAIMA
+  version: -1
+configuration:
+- defaultvalue: https://aima.malwation.com
+  display: Server URL (e.g. https://aima.malwation.com)
+  name: url
+  required: true
+  type: 0
+- display: AIMA API Key
+  name: apikey
+  required: true
+  type: 4
+- defaultvalue: 'false'
+  display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+- defaultvalue: 'false'
+  display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+- additionalinfo: It is additional for MALWATION Content Analysis Platform.
+  display: CAP API Key
+  name: cap_apikey
+  type: 4
+  required: false
+description: Deprecated. Use ThreatZone instead.
+display: Malwation AIMA (Deprecated)
+name: MalwationAIMA
+script:
+  commands:
+  - arguments:
+    - auto: PREDEFINED
+      defaultValue: win7x64
+      description: Choose what environment you want to run your submission.
+      name: environment
+      predefined:
+      - win7x64
+      - win10x64
+      required: true
+      deprecated: true
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Privacy of the submission.
+      name: isPublic
+      predefined:
+      - 'true'
+      - 'false'
+      required: true
+    - description: Entry ID of the file to submit.
+      name: entry_id
+      predefined:
+      - ''
+      required: true
+    - auto: PREDEFINED
+      defaultValue: '1'
+      description: Duration of the submission analysis.
+      name: timeout
+      predefined:
+      - '1'
+      - '2'
+      - '5'
+      - '8'
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Enable human simulation.
+      name: mouse_simulation
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Malware Config Extractor.
+      name: config_extractor
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Https inspection to read encrypted traffic.
+      name: https_inspection
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: If you want to access MemProcFS Module enable this metafield.
+      name: full_memory_dump
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Enable Internet Connection.
+      name: enable_net
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      defaultValue: desktop
+      description: The working path of the submission.
+      name: work_path
+      predefined:
+      - desktop
+      - appdata
+      - windows
+      - temp
+    - description: Password of the zip file. Do not use if archive has no password.
+      name: zip_pass
+    - description: 'Name of the sample in the zip file. '
+      name: file_from_zip
+    description: Submits a sample to AIMA for analysis.
+    name: aima-upload-sample
+    outputs:
+    - contextPath: AIMA.Analysis.UUID
+      description: UUID of sample.
+      type: String
+    - contextPath: AIMA.Analysis.URL
+      description: URL of analysis of sample.
+      type: String
+  - arguments:
+    - description: UUID of the submission.
+      name: uuid
+      required: true
+    description: Retrive the analysis result from AIMA Sandbox.
+    name: aima-get-result
+    outputs:
+    - contextPath: AIMA.Result.STATUS
+      description: The status of the submission scanning process.
+      type: String
+    - contextPath: AIMA.Result.LEVEL
+      description: Threat Level of the scanned file. (malicious, suspicious or informative).
+      type: String
+    - contextPath: AIMA.Result.URL
+      description: The result page url of the submission.
+      type: String
+    - contextPath: AIMA.Result.MD5
+      description: The md5 hash of the submission.
+      type: String
+    - contextPath: AIMA.Result.INFO
+      description: Contains the file name, scan process status and public status.
+      type: String
+    - contextPath: AIMA.Result.SHA1
+      description: The sha1 hash of the submission.
+      type: String
+    - contextPath: AIMA.Result.SHA256
+      description: The sha256 hash of the submission.
+      type: String
+    - contextPath: AIMA.Result.ID
+      description: The ID of the submission.
+      type: String
+    deprecated: true
+  - arguments:
+    - description: The entry id of the file.
+      name: entry_id
+      required: true
+    description: Submits sample to Malwation CAP for static analysis.
+    name: aima-cap-static-upload-sample
+    outputs:
+    - contextPath: CAP.Static.UUID
+      description: The uuid value of the submission.
+      type: String
+    deprecated: true
+  - arguments:
+    - description: The Entry id of the file.
+      name: entry_id
+      required: true
+    description: Submits sample to Malwation CAP for mav analysis.
+    name: aima-cap-mav-upload-sample
+    outputs:
+    - contextPath: CAP.Mav.UUID
+      description: The uuid value of the submission.
+      type: String
+    deprecated: true
+  - arguments:
+    - description: The uuid of the file.
+      name: uuid
+      required: true
+    description: Retrive static analysis result from Malwation CAP.
+    name: aima-cap-static-get-submission
+    outputs:
+    - contextPath: CAP.Static.SCORE
+      description: Thread level of the scanned file. (malicious, suspicious or informative).
+      type: String
+    - contextPath: CAP.Static.WEIGHT
+      description: The weight score of detection.
+      type: Number
+    - contextPath: CAP.Static.STATUS
+      description: The status of the submission scanning process.
+      type: String
+    - contextPath: CAP.Static.YARA
+      description: The matched yara rules with sample.
+      type: String
+    - contextPath: CAP.Static.ENTROPY
+      description: The entropy value of sample.
+      type: Number
+    deprecated: true
+  - arguments:
+    - description: The uuid value of submission.
+      name: uuid
+      required: true
+    description: Retrive mav analysis result from Malwation CAP.
+    name: aima-cap-mav-get-submission
+    outputs:
+    - contextPath: CAP.Mav.COUNT
+      description: The count of the detection by engines.
+      type: Number
+    - contextPath: CAP.Mav.SCORE
+      description: Threat Level of the scanned file (malicious, suspicious or informative).
+      type: String
+    - contextPath: CAP.Mav.DETECTIONS
+      description: The results of detections by engines.
+      type: Number
+    - contextPath: CAP.Mav.STATUS
+      description: The status of the submission scanning process.
+      type: String
+    deprecated: true
+  dockerimage: demisto/python3:3.10.13.73190
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0
+deprecated: true

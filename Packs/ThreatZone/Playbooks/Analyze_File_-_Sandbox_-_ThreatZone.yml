@@ -1,20 +1,12 @@
-id: 855a078d-7bfa-40a2-83c4-7b5eb0ab75dd
-version: 1
+id: Analyze File - Sandbox - ThreatZone
+version: -1
 contentitemexportablefields:
-  contentitemfields:
-    packID: ""
-    packName: ThreatZone
-    itemVersion: 1.0.0
-    fromServerVersion: 5.0.0
-    toServerVersion: ""
-    definitionid: ""
-    prevname: ""
-vcShouldKeepItemLegacyProdMachine: false
+  contentitemfields: {}
 name: Analyze File - Sandbox - ThreatZone
 description: |-
-  analyzes one  file using the ThreatZone sandbox integration.
+  Analyzes one file using the ThreatZone sandbox integration.
   Returns relevant reports to the War Room and file reputations to the context data.
-  Dynamic Scan Extensions: exe, docx, dochtml, docm, doc, rtf, ps1, bat, cmd, xlw, xltx, xltm, xls, xlsx, odc, csv, xlshtml
+  Dynamic Scan Extensions: exe, docx, dochtml, docm, doc, rtf, ps1, bat, cmd, xlw, xltx, xltm, xls, xlsx, odc, csv, xlshtml.
 starttaskid: "0"
 tasks:
   "0":
@@ -332,20 +324,19 @@ inputs:
       root: File
   required: false
   description: File object of the file to analyze. The File is taken from the context.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: Interval
   value:
     simple: "1"
   required: false
   description: Duration for executing the pooling (in minutes)
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: Timeout
   value:
     simple: "15"
   required: false
-  description: The duration after which to stop pooling and to resume the playbook
-    (in minutes)
-  playbookInputQuery: null
+  description: The duration after which to stop pooling and to resume the playbook (in minutes)
+  playbookInputQuery:
 outputs:
 - contextPath: ThreatZone.Result.STATUS
   description: The status of the submission scanning process.
@@ -377,4 +368,6 @@ outputs:
 - contextPath: ThreatZone.Result.SANITIZED
   description: The url of the sanitized file.
   type: String
-sourceplaybookid: analyze File - Sandbox - ThreatZone
+tests:
+- No tests (auto formatted)
+fromversion: 6.9.0

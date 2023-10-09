@@ -1,18 +1,10 @@
-id: 3847056a-3983-4c84-8e4c-ed7c47efb9cc
-version: 1
+id: Analyze File - Static Scan - ThreatZone
+version: -1
 contentitemexportablefields:
-  contentitemfields:
-    packID: ""
-    packName: ThreatZone
-    itemVersion: 1.0.0
-    fromServerVersion: 5.0.0
-    toServerVersion: ""
-    definitionid: ""
-    prevname: ""
-vcShouldKeepItemLegacyProdMachine: false
+  contentitemfields: {}
 name: Analyze File - Static Scan - ThreatZone
 description: |-
-  analyzes one  file using the ThreatZone static scan integration.
+  Analyzes one file using the ThreatZone static scan integration.
   Returns relevant reports to the War Room and file reputations to the context data.
   All file types are supported.
 starttaskid: "0"
@@ -332,20 +324,19 @@ inputs:
       root: File
   required: false
   description: File object of the file to analyze. The File is taken from the context.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: Interval
   value:
     simple: "1"
   required: false
   description: Duration for executing the pooling (in minutes)
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: Timeout
   value:
     simple: "15"
   required: false
-  description: The duration after which to stop pooling and to resume the playbook
-    (in minutes)
-  playbookInputQuery: null
+  description: The duration after which to stop pooling and to resume the playbook (in minutes)
+  playbookInputQuery:
 outputs:
 - contextPath: ThreatZone.Result.STATUS
   description: The status of the submission scanning process.
@@ -377,4 +368,6 @@ outputs:
 - contextPath: ThreatZone.Result.SANITIZED
   description: The url of the sanitized file.
   type: String
-sourceplaybookid: analyze File - Sandbox - ThreatZone
+tests:
+- No tests (auto formatted)
+fromversion: 6.9.0

@@ -1,20 +1,12 @@
-id: 3adbab96-107c-4523-8060-20286a368ded
-version: 1
+id: Sanitize File - CDR - ThreatZone
+version: -1
 contentitemexportablefields:
-  contentitemfields:
-    packID: ""
-    packName: ThreatZone
-    itemVersion: 1.0.0
-    fromServerVersion: 5.0.0
-    toServerVersion: ""
-    definitionid: ""
-    prevname: ""
-vcShouldKeepItemLegacyProdMachine: false
+  contentitemfields: {}
 name: Sanitize File - CDR - ThreatZone
 description: |-
-  sanitize one file using the ThreatZone CDR integration.
+  Sanitize one file using the ThreatZone CDR integration.
   Returns relevant reports to the War Room and file reputations to the context data.
-  CDR Scan Extensions: doc, docm, docx, dotm, ppt, pptm, pptx, xls, xlsm, pdf, odc, odt, ott, odp, otp, ods, ots, rtf, tiff, jpeg, png, gif, bmp, webp, jpx, svg, zip, xml, ics, html, lnk, xlsx
+  CDR Scan Extensions: doc, docm, docx, dotm, ppt, pptm, pptx, xls, xlsm, pdf, odc, odt, ott, odp, otp, ods, ots, rtf, tiff, jpeg, png, gif, bmp, webp, jpx, svg, zip, xml, ics, html, lnk, xlsx.
 starttaskid: "0"
 tasks:
   "0":
@@ -332,20 +324,19 @@ inputs:
       root: File
   required: false
   description: File object of the file to analyze. The File is taken from the context.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: Interval
   value:
     simple: "1"
   required: false
   description: Duration for executing the pooling (in minutes)
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: Timeout
   value:
     simple: "15"
   required: false
-  description: The duration after which to stop pooling and to resume the playbook
-    (in minutes)
-  playbookInputQuery: null
+  description: The duration after which to stop pooling and to resume the playbook (in minutes)
+  playbookInputQuery:
 outputs:
 - contextPath: ThreatZone.Result.STATUS
   description: The status of the submission scanning process.
@@ -377,4 +368,6 @@ outputs:
 - contextPath: ThreatZone.Result.SANITIZED
   description: The url of the sanitized file.
   type: String
-sourceplaybookid: analyze File - Sandbox - ThreatZone
+tests:
+- No tests (auto formatted)
+fromversion: 6.9.0

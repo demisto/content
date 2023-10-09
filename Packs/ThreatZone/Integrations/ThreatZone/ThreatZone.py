@@ -159,6 +159,7 @@ def encode_file_name(file_name):
     """
     return file_name.encode('ascii', 'ignore')
 
+
 def translate_score(score: int,) -> int:
     """Translate ThreatZone threat level to DBot score enum."""
     if score == 0:
@@ -169,6 +170,7 @@ def translate_score(score: int,) -> int:
         return Common.DBotScore.SUSPICIOUS
     else:
         return Common.DBotScore.BAD
+
 
 def get_reputation_reliability(reliability):
     if reliability == "A+ - 3rd party enrichment":
@@ -186,6 +188,7 @@ def get_reputation_reliability(reliability):
     if reliability == "F - Reliability cannot be judged":
         return DBotScoreReliability.F
 
+
 def generate_dbotscore(indicator, report, type=None):
     """Creates DBotScore object based on the content of 'indicator' argument
     :type indicator: ``str``
@@ -199,7 +202,7 @@ def generate_dbotscore(indicator, report, type=None):
     """
     def _type_selector(_type):
         try:
-            types =  {
+            types = {
                 "ip": DBotScoreType.IP,
                 "file": DBotScoreType.FILE,
                 "domain": DBotScoreType.DOMAIN,
@@ -212,16 +215,17 @@ def generate_dbotscore(indicator, report, type=None):
             return DBotScoreType.CUSTOM
 
     return Common.DBotScore(
-        indicator = indicator,
-        indicator_type = _type_selector(type),
-        integration_name= 'ThreatZone',
-        score= translate_score(report.get('THREAT_LEVEL')),
+        indicator=indicator,
+        indicator_type=_type_selector(type),
+        integration_name='ThreatZone',
+        score=translate_score(report.get('THREAT_LEVEL')),
         reliability=get_reputation_reliability(demisto.params().get('integrationReliability'))
     )
 
+
 def generate_indicator(indicator, report, type=None):
     """Creates Indicator object based on the content of 'indicator' argument
-    
+
     :type indicator: ``str``
     :param indicator: The value of the indicator
 
@@ -279,7 +283,7 @@ def threatzone_get_result(client: Client, args: dict[str, Any]) -> CommandResult
                 readable_output=readable_output,
                 outputs_key_field='results',
                 outputs=output,
-                indicator= generate_indicator(readable_dict["SHA256"], readable_dict, "file")
+                indicator=generate_indicator(readable_dict["SHA256"], readable_dict, "file")
             )
         ]
     try:
@@ -303,7 +307,7 @@ def threatzone_get_result(client: Client, args: dict[str, Any]) -> CommandResult
         submission_uuid = result['uuid']
         if status == 0:
             return_error(
-            f"Reason: {stats[status]}\nUUID: {submission_uuid}\nSuggestion: Re-analyze submission or contact us."
+                f"Reason: {stats[status]}\nUUID: {submission_uuid}\nSuggestion: Re-analyze submission or contact us."
             )
 
         result_url = f"https://app.threat.zone/submission/{submission_uuid}"
@@ -319,7 +323,7 @@ def threatzone_get_result(client: Client, args: dict[str, Any]) -> CommandResult
             'SCAN_URL': result_url,
             'UUID': submission_uuid
         }
-        
+
         output = {
             'ThreatZone.Result(val.Job_ID == obj.Job_ID)': {
                 'STATUS': status,
