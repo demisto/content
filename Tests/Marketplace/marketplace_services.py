@@ -1144,8 +1144,7 @@ class Pack:
             return None
         except Exception:
             logging.exception(f"Failed in detecting modified files of {self._pack_name} pack")
-        finally:
-            return task_status, modified_rn_files_paths
+        return task_status, modified_rn_files_paths
 
     def filter_modified_files_by_id_set(self, id_set: dict, modified_rn_files_paths: list, marketplace):
         """
