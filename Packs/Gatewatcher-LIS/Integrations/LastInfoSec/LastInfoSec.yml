@@ -20,7 +20,15 @@ configuration:
   display: Integration Reliability
   additionalinfo: Reliability of the source providing the intelligence data
   required: false
-  type: 0
+  type: 15
+  options:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
 description: This integration allow to interact with the Gatewatcher LastInfoSec product via API.
 display: LastInfoSec
 name: LastInfoSec

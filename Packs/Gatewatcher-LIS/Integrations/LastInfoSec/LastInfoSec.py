@@ -589,7 +589,7 @@ def main() -> None:
     token = params.get("token")
     check_cert = params.get("check_cert", False)
     proxy = params.get("proxy", False)
-    reliability = params.get('integrationReliability')
+    reliability = params.get('integrationReliability', 'C - Fairly reliable')
     reliability = reliability if reliability else DBotScoreReliability.B
 
     if DBotScoreReliability.is_valid_type(reliability):
