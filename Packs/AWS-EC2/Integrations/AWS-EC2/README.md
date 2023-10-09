@@ -2954,12 +2954,12 @@ Deletes a launch template. Deleting a launch template deletes all of its version
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AWS.EC2.DeletedLaunchTemplates.LaunchTemplate.LaunchTemplateId | String | The ID of the launch template. | 
-| AWS.EC2.DeletedLaunchTemplates.LaunchTemplate.LaunchTemplateName | String | The name of the launch template. | 
-| AWS.EC2.DeletedLaunchTemplates.LaunchTemplate.CreateTime | Date | The time launch template was created. | 
-| AWS.EC2.DeletedLaunchTemplates.LaunchTemplate.CreatedBy | String | The principal that created the launch template. | 
-| AWS.EC2.DeletedLaunchTemplates.LaunchTemplate.DefaultVersionNumber | Number | The version number of the default version of the launch template. | 
-| AWS.EC2.DeletedLaunchTemplates.LaunchTemplate.LatestVersionNumber | Number | The version number of the latest version of the launch template. | 
+| AWS.EC2.DeletedLaunchTemplates.LaunchTemplateId | String | The ID of the launch template. | 
+| AWS.EC2.DeletedLaunchTemplates.LaunchTemplateName | String | The name of the launch template. | 
+| AWS.EC2.DeletedLaunchTemplates.CreateTime | Date | The time launch template was created. | 
+| AWS.EC2.DeletedLaunchTemplates.CreatedBy | String | The principal that created the launch template. | 
+| AWS.EC2.DeletedLaunchTemplates.DefaultVersionNumber | Number | The version number of the default version of the launch template. | 
+| AWS.EC2.DeletedLaunchTemplates.LatestVersionNumber | Number | The version number of the latest version of the launch template. | 
 
 
 ### aws-ec2-modify-image-attribute
