@@ -760,7 +760,8 @@ class TestClient:
     def test_non_json_response(cls, requests_mock):
         client = cls.logged_in_client(requests_mock)
         requests_mock.post(
-            "https://example.com/WSC/Projection?entity=UserGroup&columnExpressions=%5B%27ID%27%2C+%27Description%27%2C+%27ObjectTypeID"
+            "https://example.com/WSC/Projection?entity=UserGroup&columnExpressions=%5B%27ID%27"
+            "%2C+%27Description%27%2C+%27ObjectTypeID"
             "%27%5D&columnNames=%5B%27ID%27%2C+%27Description%27%2C+%27ObjectTypeID%27%5D&start=0&limit=1",
             text="surprise",
         )
