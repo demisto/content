@@ -69,6 +69,23 @@ def incident_priority_to_dbot_score(score: float) -> int:
     return 0
 
 
+def normalize_properties_to_dict(properties: str | dict) -> dict:
+    if not properties:
+        return {}
+    if isinstance(properties, dict):
+        demisto.debug('Properties is already a dict')
+        return properties
+    elif isinstance(properties, str):
+        demisto.debug('Properties is a string, parsing to dict')
+        try:
+            properties_dict: dict = json.loads(properties.replace("'", '"'))
+            return properties_dict
+        except json.decoder.JSONDecodeError:
+            raise ValueError("Properties are not valid JSON")
+    else:
+        raise ValueError("Properties must be a JSON string or dictionary")
+
+
 def filter_by_score(events_data: list, score: int) -> list:
     if score == 0:
         return events_data
@@ -361,7 +378,7 @@ class Client(BaseClient):
                     safe_name: str,
                     password: str,
                     secret_type: str,
-                    properties: str,
+                    properties: dict,
                     automatic_management_enabled: str,
                     manual_management_reason: str,
                     remote_machines: str,
@@ -1018,6 +1035,9 @@ def add_account_command(
     :param access_restricted_to_remote_machines: Whether or not to restrict access only to specified remote machines.
     :return: CommandResults
     """
+    demisto.debug(f'Creating account {properties}')
+    properties = normalize_properties_to_dict(properties)
+    demisto.debug(f"type of properties is {type(properties)}")
     response = client.add_account(account_name, address, username, platform_id, safe_name, password, secret_type,
                                   properties, automatic_management_enabled, manual_management_reason, remote_machines,
                                   access_restricted_to_remote_machines)
