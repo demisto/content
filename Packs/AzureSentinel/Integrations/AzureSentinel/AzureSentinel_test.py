@@ -404,12 +404,12 @@ MOCKED_THREAT_INDICATOR_OUTPUT = {
                         "patternTypeValues": [
                             {
                                 "valueType": "url",
-                                "value": "‘twitter.com’"
+                                "value": "‘twitter.com’"  # noqa: RUF001
                             }
                         ]
                     }
                 ],
-                "pattern": "[url:value = ‘twitter.com’]",
+                "pattern": "[url:value = ‘twitter.com’]",  # noqa: RUF001
                 "patternType": "twitter.com",
                 "validFrom": "2021-11-17T08:20:15.111Z"
             }
@@ -531,12 +531,12 @@ MOCKED_ORIGINAL_THREAT_INDICATOR_OUTPUT = {
                 "patternTypeValues": [
                     {
                         "valueType": "url",
-                        "value": "‘twitter.com’"
+                        "value": "‘twitter.com’"  # noqa: RUF001
                     }
                 ]
             }
         ],
-        "pattern": "[url:value = ‘twitter.com’]",
+        "pattern": "[url:value = ‘twitter.com’]",  # noqa: RUF001
         "patternType": "twitter.com",
         "validFrom": "0001-01-01T00:00:00"
     }
@@ -863,7 +863,7 @@ class TestHappyPath:
 
         # validate
         item_id = args.popitem()[1]
-        f'{item_id} was deleted successfully.' in readable_output
+        assert f'{item_id} was deleted successfully.' in readable_output
 
     def test_list_watchlist_items(self, mocker):
         """
@@ -916,7 +916,7 @@ class TestHappyPath:
         command_result = list_watchlist_items_command(client=client, args=args)
 
         # validate
-        client.http_request.call_args[0][1] == f'watchlists/{TEST_WATCHLIST_ALIAS}/watchlistItems/test_watchlist_id_1'
+        assert client.http_request.call_args[0][1] == f'watchlists/{TEST_WATCHLIST_ALIAS}/watchlistItems/test_watchlist_id_1'
         assert f'| {TEST_ITEM_ID} | name: test1<br>IP: 1.1.1.1 |' in command_result.readable_output
         assert command_result.raw_response == mocked_item
         assert command_result.outputs[0] == expected_item
