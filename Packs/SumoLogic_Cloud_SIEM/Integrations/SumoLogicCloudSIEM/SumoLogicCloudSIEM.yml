@@ -331,7 +331,7 @@ script:
       - Last 24 hours
       description: When the insight was created. Defaults to 'All time' if no time arguments are specified.
     - name: status
-      description: 'Comma separated list of values from the options: new,inprogress,closed'.
+      description: 'Comma separated list of values from the options: new,inprogress,closed.'
     - name: asignee
       description: User assigned to Insights.
     - name: offset
