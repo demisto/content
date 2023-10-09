@@ -2093,7 +2093,6 @@ inputs:
   playbookInputQuery:
 outputs: []
 tests:
-- Test XDR Playbook general commands
 - Test XDR Playbook
 fromversion: 6.5.0
 contentitemexportablefields:
