@@ -162,14 +162,22 @@ configuration:
   section: Collect
   advanced: true
   required: false
-- additionalinfo: Relevant only if fetch incidents is active.
+- additionalinfo: Select this checkbox to retrieve the body of an email in HTML format. If this checkbox is not selected, a psuedo-text representation of HTML emails will be returned and some functionality in other packs (e.g., email previews in the Email Communication pack) may not provide their full capabilities.
   defaultvalue: 'false'
-  display: Mark fetched emails as read
+  display: Fetch emails in HTML format
+  name: fetch_html_formatting
+  type: 8
+  section: Collect
+  advanced: false
+  required: false
+- display: Mark fetched emails as read
   name: mark_fetched_read
+  defaultvalue: 'false'
   type: 8
   section: Collect
   advanced: true
   required: false
+  additionalinfo: Relevant only if fetch incidents is active.
 - display: Incidents Fetch Interval
   name: incidentFetchInterval
   defaultvalue: '1'
@@ -810,7 +818,7 @@ script:
     - contextPath: MSGraphMail.Folders.UnreadItemCount
       description: The number of unread emails in the folder.
       type: number
-  dockerimage: demisto/crypto:1.0.0.74057
+  dockerimage: demisto/crypto:1.0.0.76022
   isfetch: true
   script: ''
   type: python
