@@ -14,8 +14,8 @@ configuration:
   required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 - name: integrationReliability
   display: Integration Reliability
   additionalinfo: Reliability of the source providing the intelligence data
@@ -130,14 +130,13 @@ script:
       description: leaked emails.
       type: String
   - name: gw-lis-is-email-leaked
-    description: Allows you to search if a specific email was leaked in Gatewatcher's CTI database.
-      If the data is found, the email is returned. otherwise, nothing is returned.
+    description: Allows you to search if a specific email was leaked in Gatewatcher's CTI database. If the data is found, the email is returned. otherwise, nothing is returned.
     arguments:
     - name: Email
-      description: email to be searched
+      description: email to be searched.
       required: true
     - name: After
-      description: "Only return a value if the email has leaked after this date (date format: 2023-01-15T10:00:00)"
+      description: "Only return a value if the email has leaked after this date (date format: 2023-01-15T10:00:00)."
       required: false
     outputs:
     - contextPath: LIS.LeakedEmail.GetByEmail
@@ -147,9 +146,10 @@ script:
     description: search IOCs for URLs in Gatewatcher's CTI database.
     arguments:
     - name: url
-      description: list of URLs to search for, (comma separated values)
+      description: list of URLs to search for, (comma separated values).
       required: true
       isArray: true
+      default: true
     outputs:
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.

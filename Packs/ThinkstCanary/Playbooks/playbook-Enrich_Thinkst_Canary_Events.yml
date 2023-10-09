@@ -1,0 +1,92 @@
+id: Enrich ThinkstCanary Events
+version: -1
+name: Enrich ThinkstCanary Events
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: fc1ec5b7-261d-47a3-8b15-651730232085
+    type: start
+    task:
+      id: fc1ec5b7-261d-47a3-8b15-651730232085
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: e874e103-0b1f-42c3-824a-cb851c49b8a2
+    type: regular
+    task:
+      id: e874e103-0b1f-42c3-824a-cb851c49b8a2
+      version: -1
+      name: Enrich Thinkst Canary Events
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      key:
+        simple: CanaryTools.Events
+      value:
+        complex:
+          root: incident
+          accessor: thinkstcanaryevents
+          transformers:
+          - operator: ParseJSON
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 295,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+quiet: true
+tests:
+- No tests (auto formatted)
+fromversion: 6.9.0
+description: Enrich events that are received as part of a ThinkstCanary incident.
