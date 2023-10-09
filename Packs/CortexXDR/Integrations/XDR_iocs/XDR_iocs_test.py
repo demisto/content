@@ -1003,9 +1003,9 @@ def test_parse_xdr_comments(raw_comment: str | list[str], comments_as_tags: bool
     ))
 def test_create_validation_errors_response(validation_errors, expected_str):
     """
-    Given   a custom field name, and comma-separated comments in it
-    When    converting an XSOAR IOC to XDR
-    Then    check the output values
+    Given   validation errors that returned from the server.
+    When    pushing XSOAR IOC to XDR
+    Then    check the parsed error
     """
     from XDR_iocs import create_validation_errors_response
     assert expected_str in create_validation_errors_response(validation_errors)
