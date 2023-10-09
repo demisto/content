@@ -2878,8 +2878,8 @@ Builtin Roles with this permission includes: "Investigator", "Privileged Investi
 ### xdr-list-users
 
 ***
-Retrieve a list of the current users in the environment.
-Required license: Cortex XDR Pro per Endpoint, Cortex XDR Pro, or Cortex XDR Pro per TB.
+Retrieve a list of the current users in the environment.  
+Required license: Cortex XDR Pro per Endpoint, Cortex XDR Pro, or Cortex XDR Pro per GB.
 
 #### Base Command
 
@@ -2948,7 +2948,8 @@ Required license: Cortex XDR Pro per Endpoint, Cortex XDR Pro, or Cortex XDR Pro
 ### xdr-list-risky-users
 
 ***
-Retrieve the risk score of a specific user or list of users with the highest risk score in the environment along with the reason affecting each score.
+Retrieve the risk score of a specific user or list of users with the highest risk score in the environment along with the reason affecting each score.  
+Required license: Cortex XDR Pro per Endpoint, Cortex XDR Pro, or Cortex XDR Pro per GB.
 
 #### Base Command
 
@@ -3001,8 +3002,8 @@ Retrieve the risk score of a specific user or list of users with the highest ris
 ### xdr-list-risky-hosts
 
 ***
-Retrieve the risk score of a specific host or list of hosts with the highest risk score in the environment along with the reason affecting each score.
-Required license: Cortex XDR Pro per Endpoint, Cortex XDR Pro, or Cortex XDR Pro per TB.
+Retrieve the risk score of a specific host or list of hosts with the highest risk score in the environment along with the reason affecting each score.  
+Required license: Cortex XDR Pro per Endpoint, Cortex XDR Pro, or Cortex XDR Pro per GB.
 
 #### Base Command
 
@@ -3055,8 +3056,8 @@ Required license: Cortex XDR Pro per Endpoint, Cortex XDR Pro, or Cortex XDR Pro
 ### xdr-list-user-groups
 
 ***
-Retrieve a list of the current user emails associated with one or more user groups in the environment.
-
+Retrieve a list of the current user emails associated with one or more user groups in the environment.  
+Required license: Cortex XDR Pro per Endpoint, Cortex XDR Pro, or Cortex XDR Pro per GB.
 #### Base Command
 
 `xdr-list-user-groups`
@@ -3111,7 +3112,8 @@ Retrieve a list of the current user emails associated with one or more user grou
 ### xdr-list-roles
 
 ***
-Retrieve information about one or more roles created in the environment.
+Retrieve information about one or more roles created in the environment.  
+Required license: Cortex XDR Pro per Endpoint, Cortex XDR Pro, or Cortex XDR Pro per GB.
 
 #### Base Command
 
@@ -3173,8 +3175,8 @@ Retrieve information about one or more roles created in the environment.
 ### xdr-set-user-role
 
 ***
-Add one or more users to a role.
-Required license: Cortex XDR Pro per Endpoint, Cortex XDR Pro, or Cortex XDR Pro per TB.
+Add one or more users to a role.  
+Required license: Cortex XDR Pro per Endpoint, Cortex XDR Pro, or Cortex XDR Pro per GB.
 
 #### Base Command
 
@@ -3199,8 +3201,8 @@ There is no context output for this command.
 ### xdr-remove-user-role
 
 ***
-Remove one or more users from a role.
-Required license: Cortex XDR Pro per Endpoint, Cortex XDR Pro, or Cortex XDR Pro per TB.
+Remove one or more users from a role.  
+Required license: Cortex XDR Pro per Endpoint, Cortex XDR Pro, or Cortex XDR Pro per GB.
 
 #### Base Command
 

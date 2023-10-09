@@ -1112,7 +1112,8 @@ def fetch_indicators(client: MandiantClient, args: dict = None) -> tuple[List, d
     if not args:
         args = {}
 
-    limit = args.get("limit", client.limit)
+    limit = int(args.get("limit", client.limit))
+
     # Cap maximum number of indicators to 1000
     if limit > 1000:
         limit = 1000
