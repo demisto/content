@@ -1,6 +1,6 @@
 args:
 - description: Splunk notable event id.
-  name: eventid
+  name: event_id
   required: true
 comment: Create Splunk Notable Event Short ID.
 commonfields:

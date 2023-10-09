@@ -4,7 +4,7 @@ import hashlib
 import base64
 
 inc = demisto.incident()
-notable_eventid = demisto.args()['eventid']
+notable_eventid = demisto.args()['event_id']
 
 if notable_eventid:
     notable_eventid = notable_eventid.encode('UTF-8')

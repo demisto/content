@@ -22,7 +22,7 @@ This script uses the following commands and scripts.
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| eventid | Splunk notable event id. |
+| event_id | Splunk notable event id. |
 
 ## Outputs
 
