@@ -37,9 +37,16 @@ def mocked_requests_post(*args, **kwargs):
         return MockResponse(str(e), 404)
 
 
-@pytest.mark.parametrize('file_name, data, expected_md_results', [
-    ('2022年年年年年.docx', '年年年年年', '# OPSWAT-Metadefender\nThe file has been successfully submitted to scan.\nScan id: mock_id\n')
-])
+@pytest.mark.parametrize(
+    "file_name, data, expected_md_results",
+    [
+        (
+            "2022年年年年年.docx",
+            "年年年年年",
+            "# OPSWAT-Metadefender\nThe file has been successfully submitted to scan.\nScan id: mock_id\n",
+        )
+    ],
+)
 def test_scan_file_command(mocker, file_name, data, expected_md_results):
     """
     Given:
@@ -58,7 +65,7 @@ def test_scan_file_command(mocker, file_name, data, expected_md_results):
         mocker.patch.object(demisto, 'getFilePath', return_value={"path": file_path, "name": file_name})
         mocker.patch.object(demisto, 'params', return_value={'url': BASE_URL})
         mocker.patch.object(requests, 'post', side_effect=mocked_requests_post)
-        mocker.patch.object(demisto, 'args', return_value={'fileId': '1191@302'})
+        mocker.patch.object(demisto, 'args', return_value={'fileId': '1191@302', 'scanRule': 'Test'})
         mocker.patch.object(demisto, 'results')
 
         from OPSWATMetadefenderV2 import scan_file_command
@@ -148,3 +155,47 @@ def test_get_hash_info_command(mocker, hash, expected_md_results):
     get_hash_info_command()
     entry = demisto.results.call_args[0][0]
     assert entry.get('HumanReadable') == expected_md_results
+
+
+def test_get_sanitized_file_command(mocker):
+    """
+    Given:
+    - a file id.
+    When:
+    - Running get_sanitized_file_command.
+    Then:
+    - Ensures that sanitized file was created.
+    """
+    mocker.patch.object(demisto, 'args', return_value={'id': '1'})
+    mocker.patch.object(demisto, 'params', return_value={'url': BASE_URL})
+    mocker.patch('OPSWATMetadefenderV2.get_scan_result',
+                 return_value={'process_info': {'post_processing':
+                                                {'converted_destination': 'sanitized.pdf', 'actions_ran': 'Sanitized'}}})
+    mocker.patch('OPSWATMetadefenderV2.get_sanitized_file',
+                 return_value=b'sanitized file content')
+    mocker.patch.object(demisto, 'results')
+    from OPSWATMetadefenderV2 import get_sanitized_file_command
+    get_sanitized_file_command()
+    entry = demisto.results.call_args[0][0]
+    assert entry.get('File') == 'sanitized.pdf'
+
+
+def test_get_sanitized_file_fail_command(mocker):
+    """
+    Given:
+    - a file id.
+    When:
+    - Running get_sanitized_file_command.
+    Then:
+    - Ensures that sanitized file wasn't created and warning was created.
+    """
+    mocker.patch.object(demisto, 'args', return_value={'id': '1'})
+    mocker.patch.object(demisto, 'params', return_value={'url': BASE_URL})
+    mocker.patch('OPSWATMetadefenderV2.get_scan_result', return_value={'process_info': {}})
+    mocker.patch('OPSWATMetadefenderV2.get_sanitized_file',
+                 return_value=b'sanitized file content')
+    mocker.patch.object(demisto, 'results')
+    from OPSWATMetadefenderV2 import get_sanitized_file_command
+    get_sanitized_file_command()
+    entry = demisto.results.call_args[0][0]
+    assert entry == {'Type': 11, 'ContentsFormat': 'text', 'Contents': 'No sanitized file.'}

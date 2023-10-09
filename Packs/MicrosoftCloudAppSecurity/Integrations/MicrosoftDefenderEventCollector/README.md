@@ -29,10 +29,14 @@ Microsoft Defender for Cloud Apps Event Collector integration.
     | US GCC-High   | Microsoft Defender for Cloud Applications for the USA Government Cloud Community High (GCC-High) |
    
 4. Click **Test** to validate the URLs, token, and connection.
+
 ## Commands
+
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### microsoft-defender-cloud-apps-get-events
+
 ***
 Returns a list of alerts.
 
@@ -40,6 +44,7 @@ Returns a list of alerts.
 #### Base Command
 
 `microsoft-defender-cloud-apps-get-events`
+
 #### Input
 
 | **Argument Name** | **Description**                                                                                                    | **Required** |
@@ -48,6 +53,24 @@ Returns a list of alerts.
 | after             | The first fetch time (&lt;number&gt; &lt;time unit&gt;, for example 12 hours, 1 day, 3 months). Default is 3 days. | Optional     | 
 | push_to_xsiam     | Whether to push the fetched event to XSIAM or not. Possible values are: false, true. Default is false.             | Optional     | 
 
+
+#### Context Output
+
+There is no context output for this command.
+
+
+### microsoft-defender-cloud-apps-auth-reset
+
+***
+Run this command if for some reason you need to rerun the authentication process.
+
+#### Base Command
+
+`microsoft-defender-cloud-apps-auth-reset`
+
+#### Input
+
+There are no input arguments for this command.
 
 #### Context Output
 

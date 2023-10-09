@@ -28,7 +28,7 @@ configuration:
   type: 9
   required: true
   section: Connect
-  displaypassword: Password 
+  displaypassword: Password
 - display: NTLM authentication
   name: ntlm
   type: 8
@@ -118,7 +118,7 @@ script:
       required: true
       description: The username (samAccountName) of the user to modify.
     - name: base-dn
-      description: Root (for example, DC=domain,DC=com)
+      description: Root (for example, DC=domain,DC=com).
     description: Expires the password of an Active Directory user.
   - name: ad-create-user
     arguments:
@@ -142,7 +142,7 @@ script:
     - name: title
       description: The user job title.
     - name: custom-attributes
-      description: Sets basic or custom attributes of the user object. For example, custom-attributes="{\"notes\":\"a note about the contact\",\"company\":\"company name\"}"
+      description: Sets basic or custom attributes of the user object. For example, custom-attributes="{\"notes\":\"a note about the contact\",\"company\":\"company name\"}".
     description: Creates an Active Directory user. This command requires a secure connection (SSL,TLS).
   - name: ad-search
     arguments:
@@ -238,7 +238,7 @@ script:
     - name: telephone-number
       description: The contact telephone number.
     - name: custom-attributes
-      description: Sets basic or custom attributes of the contact object. For example, custom-attributes="{\"notes\":\"some note about the contact\",\"company\":\"some company\"}."
+      description: Sets basic or custom attributes of the contact object. For example, custom-attributes="{\"notes\":\"some note about the contact\",\"company\":\"some company\"}".
     - name: title
       description: The contact job title.
     description: Creates an Active Directory contact.
@@ -274,7 +274,7 @@ script:
       predefined:
       - 'true'
       - 'false'
-      description: "If true, the command will enable the user with his restored options"
+      description: "If true, the command will enable the user with his restored options."
     description: Enables a previously disabled Active Directory account.
   - name: ad-unlock-account
     arguments:
@@ -678,7 +678,7 @@ script:
     name: iam-update-user
     outputs:
     - contextPath: IAM.UserProfile
-      description: The user profile
+      description: The user profile.
       type: Unknown
     - contextPath: IAM.Vendor.active
       description: Gives the active status of user. Can be true or false.
@@ -757,8 +757,10 @@ script:
     - contextPath: IAM.Vendor.action
       description: The command name.
       type: String
+    deprecated: false
   - description: Retrieves a User Profile schema which holds all of the user fields in the application. Used for outgoing mapping through the Get Schema option.
     name: get-mapping-fields
+    execution: false
   - arguments:
     - description: The group name of the group to update (sAMAccountName).
       name: groupname
@@ -786,9 +788,10 @@ script:
       description: Value to set "Password Never Expire".
     description: 'Modifies the AD account attribute "Password Never Expire".'
     execution: true
-  dockerimage: demisto/ldap:2.9.1.71992
+  dockerimage: demisto/ldap:2.9.1.75534
   ismappable: true
   isremotesyncout: true
+  runonce: false
 fromversion: 5.0.0
 tests:
 - Active Directory Test

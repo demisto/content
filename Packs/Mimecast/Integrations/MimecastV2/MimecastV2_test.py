@@ -628,3 +628,33 @@ def test_query(mocker):
         " 'emailAddress': 'test3'} | test3_smash |\n"
     )
     assert result["Contents"] == query_data["query_contents"]
+
+
+def test_empty_query(mocker):
+    """
+    Test case for the 'query' function of the MimecastV2 integration, where no args are given.
+
+    GIVEN:
+        - a mocked HTTP request to Mimecast API with query data,
+    WHEN:
+        - 'query' function is called with no queryXml argument,
+    THEN:
+        - Make sure no exception is raised.
+
+    """
+    error = {"field": "query",
+             "code": "err_validation_blank",
+             "message": "This field, if present, cannot be blank or empty",
+             "retryable": False}
+
+    def query_mocked_api(api_endpoint: str, data: list, response_param: str = None, limit: int = 100,
+                         page: int = None,
+                         page_size: int = None, use_headers: bool = False, is_file: bool = False):
+        if not data[0].get('query'):
+            raise Exception(json.dumps(error))
+        else:
+            return [], None
+    mocker.patch.object(MimecastV2, 'request_with_pagination', side_effect=query_mocked_api)
+    results = MimecastV2.query({})
+
+    assert len(results.get('Contents')) == 0

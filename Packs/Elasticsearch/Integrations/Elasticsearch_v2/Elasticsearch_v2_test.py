@@ -1,4 +1,3 @@
-import json
 from datetime import datetime
 from unittest.mock import patch
 import demistomock as demisto
@@ -9,7 +8,6 @@ import requests
 import unittest
 from unittest import mock
 import dateparser
-import arrow
 
 """MOCKED RESPONSES"""
 
@@ -581,6 +579,19 @@ MOC_ES7_SERVER_RESPONSE = {
     }
 }
 
+MOCK_INDEX_RESPONSE = {
+    '_index': 'test-index',
+    '_id': '1',
+    '_version': 1,
+    'result': 'created',
+    '_shards': {
+        'total': 2,
+        'successful': 2,
+        'failed': 0},
+    '_seq_no': 5,
+    '_primary_term': 1
+}
+
 MOCK_PARAMS = [
     {
         'client_type': 'Elasticsearch',
@@ -867,16 +878,19 @@ class TestIncidentLabelMaker(unittest.TestCase):
         assert labels == expected_labels
 
 
-@pytest.mark.parametrize('last_fetch, time_range_start, time_range_end, result',
-                         [('', '1.1.2000 12:00:00Z', '2.1.2000 12:00:00Z',
+@pytest.mark.parametrize('time_method, last_fetch, time_range_start, time_range_end, result',
+                         [('Timestamp-Milliseconds', '', '1.1.2000 12:00:00Z', '2.1.2000 12:00:00Z',
                            {'range': {'time_field': {'gt': 946728000000, 'lt': 949406400000}}}),
-                          (946728000000, '', '2.1.2000 12:00:00Z',
+                          ('Timestamp-Milliseconds', 946728000000, '', '2.1.2000 12:00:00Z',
                            {'range': {'time_field': {'gt': 946728000000, 'lt': 949406400000}}}),
-                          ('', '', '2.1.2000 12:00:00Z',
+                          ('Timestamp-Milliseconds', '', '', '2.1.2000 12:00:00Z',
                            {'range': {'time_field': {'lt': 949406400000}}}),
+                          ('Simple-Date', '2.1.2000 12:00:00.000000', '', '',
+                           {'range': {'time_field': {'gt': '2.1.2000 12:00:00.000000',
+                                                     'format': Elasticsearch_v2.ES_DEFAULT_DATETIME_FORMAT}}}),
                           ])
-def test_get_time_range(last_fetch, time_range_start, time_range_end, result):
-    Elasticsearch_v2.TIME_METHOD = 'Timestamp-Milliseconds'
+def test_get_time_range(time_method, last_fetch, time_range_start, time_range_end, result):
+    Elasticsearch_v2.TIME_METHOD = time_method
     from Elasticsearch_v2 import get_time_range
     assert get_time_range(last_fetch, time_range_start, time_range_end, "time_field") == result
 
@@ -971,80 +985,17 @@ def test_execute_raw_query(mocker):
     assert Elasticsearch_v2.execute_raw_query(es, 'dsadf') == ES_V7_RESPONSE
 
 
-@pytest.mark.parametrize('datetime_format, expected', [
-    ('YYYY-MM-DDTHH:mm:ss.SSSZ', Elasticsearch_v2.DEFAULT_DATETIME_FORMAT),
-    ('yyyy-MM-ddTHH:mm:ss.SSSZ', Elasticsearch_v2.DEFAULT_DATETIME_FORMAT),
-    ('yyyy-MM-DDTHH:mm:ss.SSSZ', Elasticsearch_v2.DEFAULT_DATETIME_FORMAT),
-    ('YYYY-MM-ddTHH:mm:ss.SSSZ', Elasticsearch_v2.DEFAULT_DATETIME_FORMAT),
-    ('yy-MM-DD HH:mm:ss', 'YY-MM-DD HH:mm:ss'),
-    ('YYYY-MM-d HH:mm:ss', 'YYYY-MM-d HH:mm:ss'),
+@pytest.mark.parametrize('date_time, time_method, expected_time', [
+    ('123456', 'Timestamp-Seconds', 123456),
+    ('123456', 'Timestamp-Milliseconds', 123456),
+    (dateparser.parse('July 1, 2023'), 'Simple-Date', '2023-07-01 00:00:00.000000'),
+    (dateparser.parse('2023-07-01 23:24:25.123456'), 'Simple-Date', '2023-07-01 23:24:25.123456'),
 ])
-def test_prepare_datetime_format(datetime_format, expected):
+def test_convert_date_to_timestamp(date_time, time_method, expected_time):
     """
     Given
-      - An ES datetime format
-
-    When
-        - Executing prepare_datetime_format function.
-
-    Then
-        - Make sure that the returned format is as expected.
-        - Make sure that the result of converting a datetime object with Arrow format function using the returned
-        datetime format does not contain any alphabetic character (except `T`).
-    """
-    formatted_datetime = Elasticsearch_v2.prepare_datetime_format(datetime_format)
-    assert formatted_datetime == expected
-    assert not any(c.replace('T', '').isalpha() for c in arrow.get(datetime.now()).format(formatted_datetime))
-
-
-class MockES:
-    class MockIndices:
-        @staticmethod
-        def get_mapping(index):
-            with open('test_data/mapping.json') as f:
-                data = json.load(f)
-            return data['mapping_without_date_time_format'] if index == 'default' else data['mapping_with_date_time_format']
-
-    indices = MockIndices
-
-
-@pytest.mark.parametrize('index, expected_format', [
-    ('default', 'YYYY-MM-DDTHH:mm:ss.SSSZ'),
-    ('custom', 'yyyy-MM-dd HH:mm:ss'),
-])
-def test_get_datetime_field_format_default_format(index, expected_format):
-    """
-    Given
-      - An ES object.
-      - An index name.
-      - A field name.
-
-    When
-        - Executing get_datetime_field_format function.
-
-    Then
-        - Make sure that the returned field format is as expected.
-    """
-    es = MockES
-    assert Elasticsearch_v2.get_datetime_field_format(es, index, 'created_at') == expected_format
-
-
-@pytest.mark.parametrize('date_time, time_method, time_format, expected_time', [
-    ('123456', 'Timestamp-Seconds', '', 123456),
-    ('123456', 'Timestamp-Milliseconds', '', 123456),
-    ('123456', 'Simple-Date', Elasticsearch_v2.DEFAULT_DATETIME_FORMAT, 123456),
-    (dateparser.parse('July 1, 2023'), 'Simple-Date', 'YYYY-MM-DD', '2023-07-01'),
-    (dateparser.parse('July 1, 2023'), 'Simple-Date', Elasticsearch_v2.DEFAULT_DATETIME_FORMAT, '2023-07-01T00:00:00.000+0000'),
-    (dateparser.parse('July 1, 2023'), 'Simple-Date', 'YYYY-MM-DD HH:mm:ss.SSS', '2023-07-01 00:00:00.000'),
-    (dateparser.parse('July 1, 2023'), 'Simple-Date', 'YYYY-MM-DD HH:mm:ss.SSSSSS', '2023-07-01 00:00:00.000000'),
-    (dateparser.parse('July 1, 2023 02:30'), 'Simple-Date', 'YYYY-MM-DD HH:mm:ssZ', '2023-07-01 02:30:00+0000'),
-    (dateparser.parse('July 1, 2023 02:00'), 'Simple-Date', 'YYYY-MM-DD HH:mm:ss.SSSZ', '2023-07-01 02:00:00.000+0000'),
-])
-def test_convert_date_to_timestamp(mocker, date_time, time_method, time_format, expected_time):
-    """
-    Given
-      - A datetime object
-      - An ES datetime format
+      - A python datetime object.
+      - The time_method parameter ('Timestamp-Seconds', 'Timestamp-Milliseconds', 'Simple-Date').
 
     When
         - Executing convert_date_to_timestamp function.
@@ -1052,6 +1003,59 @@ def test_convert_date_to_timestamp(mocker, date_time, time_method, time_format, 
     Then
         - Make sure that the returned datetime is as expected with the correct format.
     """
-    mocker.patch.object(demisto, 'params', return_value={'time_format': time_format})
     Elasticsearch_v2.TIME_METHOD = time_method
-    assert Elasticsearch_v2.convert_date_to_timestamp(date_time, time_format) == expected_time
+    assert Elasticsearch_v2.convert_date_to_timestamp(date_time) == expected_time
+
+
+def test_index_document(mocker):
+    """
+    Given
+      - index name, document in JSON format, id of document
+
+    When
+    - executing index_document function.
+
+    Then
+     - Make sure that the returned function response is as expected with the correct format
+    """
+    import Elasticsearch_v2
+    mocker.patch.object(
+        Elasticsearch_v2.Elasticsearch, 'index', return_value=MOCK_INDEX_RESPONSE
+    )
+    mocker.patch.object(Elasticsearch_v2.Elasticsearch, '__init__', return_value=None)
+    assert Elasticsearch_v2.index_document({'index_name': 'test-index', 'document': '{}', 'id': '1'}, '') == MOCK_INDEX_RESPONSE
+
+
+def test_index_document_command(mocker):
+    """
+    Given
+      - index name, document in JSON format, id of document
+
+    When
+    - executing index_document_command function.
+
+    Then
+     - Make sure that the returned function response is as expected with the correct format
+    """
+    import Elasticsearch_v2
+    mocker.patch.object(
+        Elasticsearch_v2.Elasticsearch, 'index', return_value=MOCK_INDEX_RESPONSE
+    )
+    mocker.patch.object(Elasticsearch_v2.Elasticsearch, '__init__', return_value=None)
+    command_result = Elasticsearch_v2.index_document_command({'index_name': 'test-index', 'document': '{}', 'id': '1'}, '')
+    expected_index_context = {
+        'id': MOCK_INDEX_RESPONSE.get('_id', ''),
+        'index': MOCK_INDEX_RESPONSE.get('_index', ''),
+        'version': MOCK_INDEX_RESPONSE.get('_version', ''),
+        'result': MOCK_INDEX_RESPONSE.get('result', '')
+    }
+    expected_human_readable = "### Indexed document\n" \
+        "|ID|Index name|Version|Result|\n" \
+        "|---|---|---|---|\n" \
+        "| 1 | test-index | 1 | created |\n"
+
+    assert command_result.outputs == expected_index_context
+    assert command_result.readable_output == expected_human_readable
+    assert command_result.outputs_prefix == 'Elasticsearch.Index'
+    assert command_result.raw_response == MOCK_INDEX_RESPONSE
+    assert command_result.outputs_key_field == 'id'
