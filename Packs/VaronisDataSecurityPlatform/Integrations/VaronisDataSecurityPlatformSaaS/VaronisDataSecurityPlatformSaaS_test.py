@@ -2,7 +2,8 @@ import json
 import io
 import demistomock as demisto
 from pytest_mock import MockerFixture
-
+from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
+from CommonServerUserPython import *  # noqa
 from VaronisDataSecurityPlatformSaaS import Client
 
 
@@ -130,13 +131,29 @@ def test_varonis_get_alerted_events_command(mocker: MockerFixture):
 def test_fetch_incidents(mocker: MockerFixture, requests_mock: MockerFixture):
     from VaronisDataSecurityPlatformSaaS import fetch_incidents_command
 
-    fetch_output = util_load_json('test_data/varonis_fetch_incidents_response.json')
+    threat_models = util_load_json('test_data/varonis_get_enum_response.json')
+    threat_model = threat_models[0]["ruleName"]
+    ingest_time = datetime.now() - timedelta(hours=1)
+    alerts = [
+        {
+            "ID": "e74df045-e525-4ec3-b54f-ad46434c5281",
+            "Name": threat_model,
+            "Severity": "High",
+            "EventUTC": "2023-10-07T20:46:00",
+            "IngestTime": ingest_time.isoformat()
+        },
+        {
+            "ID": "29ef57c6-817a-49f5-be34-bdd6c5358379",
+            "Name": threat_model,
+            "Severity": "High",
+            "EventUTC": "2023-10-07T17:43:00",
+            "IngestTime": ingest_time.isoformat()
+        }
+    ]
 
-    requests_mock.get(
-        'https://test.com/api/alert/search/alert'
-        '?ruleName=Suspicious&fromAlertSeqId=150&status=Open&severity=high&severity=medium&descendingOrder=True'
-        '&aggregate=True&offset=0&maxResult=50',
-        json=fetch_output)
+    requests_mock.post(
+        'https://test.com/api/alert/search/alerts',
+        json=alerts)
 
     client = Client(
         base_url='https://test.com',
@@ -147,44 +164,40 @@ def test_fetch_incidents(mocker: MockerFixture, requests_mock: MockerFixture):
     mocker.patch.object(
         client,
         'varonis_get_enum',
-        return_value=util_load_json('test_data/varonis_get_enum_response.json')
+        return_value=threat_models
     )
 
     mocker.patch.object(demisto, 'debug', return_value=None)
 
-    last_run = {
-        'last_fetched_id': 150
-    }
+    last_run = {'last_fetched_id': datetime.now() - timedelta(days=1)}
+    first_fetch_time = datetime.now() - timedelta(weeks=1)
 
     next_run, incidents = fetch_incidents_command(
         client=client,
         max_results=50,
-        alert_status='Open',
-        severity='Medium',
-        threat_model='Suspicious',
+        alert_status=None,
+        severity=None,
+        threat_model=threat_model,
         last_run=last_run,
-        first_fetch_time='3 days'
+        first_fetch_time=first_fetch_time
     )
+    
+    assert next_run == {'last_fetched_ingest_time': (ingest_time + timedelta(minutes=1)).isoformat()}
 
-    expected_outputs = util_load_json('test_data/varonis_fetch_incidents_output.json')
+    for output in alerts:
+        id = output["ID"]
+        output.update({"Url": f"https://test.com/#/app/analytics/entity/Alert/{id}"})
+    
+    expected_incidents = list(map(lambda alert: 
+                                  {
+                                    'name': f'Varonis alert {alert["Name"]}',
+                                    'occurred': f'{alert["EventUTC"]}Z',
+                                    'rawJSON': json.dumps(alert),
+                                    'type': 'Varonis DSP Incident',
+                                    'severity': IncidentSeverity.HIGH,
+                                }, alerts))
 
-    assert next_run == {'last_fetched_id': 152}
-    assert incidents == [
-        {
-            'name': 'Varonis alert DNS CUSTOM - Copy(2)',
-            'occurred': '2022-04-13T10:01:35Z',
-            'rawJSON': json.dumps(expected_outputs[0]),
-            'type': 'Varonis DSP Incident',
-            'severity': 3,
-        },
-        {
-            'name': 'Varonis alert DNS CUSTOM',
-            'occurred': '2022-04-13T10:01:33Z',
-            'rawJSON': json.dumps(expected_outputs[1]),
-            'type': 'Varonis DSP Incident',
-            'severity': 3,
-        }
-    ]
+    assert incidents == expected_incidents
 
 
 def test_enrich_with_url():
@@ -257,36 +270,26 @@ def test_get_excluded_severitires():
     assert get_included_severitires('High') == ['high']
 
 
-def test_varonis_get_auth_url(requests_mock: MockerFixture):
-    client = Client(
-        base_url='https://test.com',
-        verify=False,
-        proxy=False
-    )
-
-    fetch_output = util_load_json('test_data/demisto_auth_configuration_response.json')
-
-    requests_mock.get(
-        'https://test.com/auth/configuration',
-        json=fetch_output)
-
-    assert client.varonis_get_auth_url() == 'https://test.com/DatAdvantage/api/authentication/win'
-
-
 def test_varonis_authenticate(requests_mock: MockerFixture):
+    
     client = Client(
         base_url='https://test.com',
         verify=False,
         proxy=False
     )
 
-    fetch_output = util_load_json('test_data/demisto_auth_response.json')
-    auth_url = 'https://test.com/DatAdvantage/api/authentication/win'
+    # fetch_output = util_load_json('test_data/test_varonis_authenticate/demisto_auth_response.json')
+    fetch_output = {
+        "access_token": "token_here",
+        "token_type": "bearer",
+        "expires_in": 599
+    }
+    auth_url = 'https://test.com/api/authentication/api_keys/token'
 
     requests_mock.post(
         auth_url,
         json=fetch_output)
 
-    client.varonis_authenticate('user', 'password', auth_url)
+    client.varonis_authenticate('mock_api_key')
 
-    assert client._headers['Authorization'] == 'bearer token_here'
+    assert client.headers['authorization'] == 'bearer token_here'
