@@ -162,15 +162,8 @@ def get_current_table(grid_id: str) -> pd.DataFrame:
         DataFrame: Existing grid data.
     """
     custom_fields = demisto.incident().get("CustomFields", {})
-    if grid_id not in custom_fields:
-        raise ValueError(f"The following grid id was not found: {grid_id}. Please make sure you entered the correct "
-                         f"incident type with the \"Machine name\" as it appears in the incident field editor in "
-                         f"Settings->Advanced ->Fields (Incident). Also make sure that this value appears in the "
-                         f"incident Context Data under incident - if not then please consult with support.")
-
     current_table: Optional[List[dict]] = custom_fields.get(grid_id)
-
-    return pd.DataFrame(current_table)
+    return pd.DataFrame(current_table) if current_table else pd.DataFrame()
 
 
 @logger
@@ -351,11 +344,12 @@ def build_grid_command(grid_id: str, context_path: str, keys: List[str], columns
     return filtered_table
 
 
-def main():
+def main():  # pragma: no cover
     args = demisto.args()
     try:
         # Normalize grid id from any form to connected lower words, e.g. my_word/myWord -> myword
         grid_id = normalized_string(args.get('grid_id'))
+
         context_path = args.get('context_path')
         # Build updated table
         table = build_grid_command(grid_id=grid_id,
@@ -373,6 +367,13 @@ def main():
                 grid_id: table,
             },
         })
+        custom_fields = demisto.incident().get("CustomFields", {})
+        if grid_id not in custom_fields:
+            raise ValueError(f"The following grid id was not found: {grid_id}. Please make sure you entered the correct "
+                             f"incident type with the \"Machine name\" as it appears in the incident field editor in "
+                             f"Settings->Advanced ->Fields (Incident). Also make sure that this value appears in the "
+                             f"incident Context Data under incident - if not then please consult with support.")
+
         if is_error(res):
             demisto.error(f'failed to execute "setIncident" with table: {table}')
             return_results(res)
