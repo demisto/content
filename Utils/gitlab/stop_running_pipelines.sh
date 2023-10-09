@@ -4,9 +4,7 @@
 set -e
 
 # set local vars
-CI_SERVER_URL=${CI_SERVER_URL:-https://code.pan.run} # disable-secrets-detection
-CI_PROJECT_ID=${CI_PROJECT_ID:-2596}
-CONTENT_PIPELINES_API_URL=${CI_SERVER_URL}/api/v4/projects/${CI_PROJECT_ID}/pipelines
+CONTENT_PIPELINES_API_URL=https://code.pan.run/api/v4/projects/2596/pipelines # disable-secrets-detection
 
 if [ -z "$1" ]; then
   echo "No commit branch. Aborting."

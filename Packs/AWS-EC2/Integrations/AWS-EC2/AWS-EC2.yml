@@ -104,19 +104,19 @@ configuration:
   section: Connect
   advanced: true
   required: false
-description: Amazon Web Services Elastic Compute Cloud (EC2)
+description: Amazon Web Services Elastic Compute Cloud (EC2).
 display: AWS - EC2
 name: AWS - EC2
 script:
   commands:
   - arguments:
-    - description: One or more filters.See documentation for details & filter options.
+    - description: One or more filters Separated by ';'. See documentation for details & filter options.
       name: filters
     - description: One or more instance IDs. Seprated by comma.
       name: instanceIds
-    - description: The AWS Region, if not specified the default region will be used
+    - description: The AWS Region, if not specified the default region will be used.
       name: region
-    - description: The Amazon Resource Name (ARN) of the role to assume
+    - description: The Amazon Resource Name (ARN) of the role to assume.
       name: roleArn
     - description: An identifier for the assumed role session.
       name: roleSessionName
@@ -372,44 +372,44 @@ script:
       description: The virtualization type of the instance.
       type: string
   - arguments:
-      - description: One or more filters. See AWS documentation for details & filter options.
-        name: filters
-      - description: The IAM instance profile associations.
-        name: associationIds
-      - description: The maximum number of results to return in a single call. Specify a value between 5 and 1000.
-        name: maxResults
-      - description: The token for the next set of results.
-        name: nextToken
-      - description: The AWS region. If not specified, the default region will be used.
-        name: region
-      - description: The Amazon Resource Name (ARN) of the role to assume.
-        name: roleArn
-      - description: An identifier for the assumed role session.
-        name: roleSessionName
-      - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
-        name: roleSessionDuration
+    - description: One or more filters Separated by ';'. See AWS documentation for details & filter options.
+      name: filters
+    - description: The IAM instance profile associations.
+      name: associationIds
+    - description: The maximum number of results to return in a single call. Specify a value between 5 and 1000.
+      name: maxResults
+    - description: The token for the next set of results.
+      name: nextToken
+    - description: The AWS region. If not specified, the default region will be used.
+      name: region
+    - description: The Amazon Resource Name (ARN) of the role to assume.
+      name: roleArn
+    - description: An identifier for the assumed role session.
+      name: roleSessionName
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      name: roleSessionDuration
     description: Describes your IAM instance profile associations.
     name: aws-ec2-describe-iam-instance-profile-associations
     outputs:
-      - contextPath: AWS.EC2.IamInstanceProfileAssociations.IamInstanceProfile.Arn
-        description: The Amazon Resource Name (ARN) of the instance profile.
-        type: string
-      - contextPath: AWS.EC2.IamInstanceProfileAssociations.IamInstanceProfile.Id
-        description: The ID of the instance profile.
-        type: string
-      - contextPath: AWS.EC2.IamInstanceProfileAssociations.State
-        description: The state of the association.
-        type: string
-      - contextPath: AWS.EC2.IamInstanceProfileAssociations.InstanceId
-        description: The ID of the instance.
-        type: string
-      - contextPath: AWS.EC2.IamInstanceProfileAssociations.AssociationId
-        description: The ID of the association.
-        type: string
+    - contextPath: AWS.EC2.IamInstanceProfileAssociations.IamInstanceProfile.Arn
+      description: The Amazon Resource Name (ARN) of the instance profile.
+      type: string
+    - contextPath: AWS.EC2.IamInstanceProfileAssociations.IamInstanceProfile.Id
+      description: The ID of the instance profile.
+      type: string
+    - contextPath: AWS.EC2.IamInstanceProfileAssociations.State
+      description: The state of the association.
+      type: string
+    - contextPath: AWS.EC2.IamInstanceProfileAssociations.InstanceId
+      description: The ID of the instance.
+      type: string
+    - contextPath: AWS.EC2.IamInstanceProfileAssociations.AssociationId
+      description: The ID of the association.
+      type: string
   - arguments:
-    - description: One or more filters.
+    - description: One or more filters Separated by ';'. See AWS documentation for details & filter options.
       name: filters
-    - description: One or more image IDs, Seperated by comma
+    - description: One or more image IDs, Seperated by comma.
       name: imageIds
     - description: Filters the images by the owner. Specify an AWS account ID, self (owner is the sender of the request), or an AWS owner alias (valid values are amazon | aws-marketplace | microsoft ). Omitting this option returns all images for which you have launch permissions, regardless of ownership.
       name: owners
@@ -555,7 +555,7 @@ script:
       description: The name of the region.
       type: string
   - arguments:
-    - description: One or more filters. See documentation for filters list.
+    - description: One or more filters Separated by ';'. See AWS documentation for details & filter options.
       name: filters
     - description: One or more Elastic IP addresses.
       name: publicIps
@@ -606,11 +606,11 @@ script:
       description: The value of the tag.
       type: string
   - arguments:
-    - description: One or more filters. See documentation for filters list.
+    - description: One or more filters Separated by ';'. See AWS documentation for details & filter options.
       name: filters
     - description: Returns the snapshots owned by the specified owner. Multiple owners can be specified.
       name: ownerIds
-    - description: One or more snapshot IDs. Seperated by commas
+    - description: One or more snapshot IDs. Seperated by commas.
       name: snapshotIds
     - description: One or more AWS accounts IDs that can create volumes from the snapshot.
       name: restorableByUserIds
@@ -665,7 +665,7 @@ script:
       description: Value from an Amazon-maintained list of snapshot owners.
       type: string
     - contextPath: AWS.EC2.Snapshots.Region
-      description: The aws region were the snapshot is located
+      description: The aws region were the snapshot is located.
       type: string
     - contextPath: AWS.EC2.Snapshots.Tags.Key
       description: The key of the tag.
@@ -674,7 +674,7 @@ script:
       description: The value of the tag.
       type: string
   - arguments:
-    - description: One or more filters.See documentation for filters list.
+    - description: One or more filters Separated by ';'. See AWS documentation for details & filter options.
       name: Filters
     - description: One or more launch template names. Sepereted by comma.
       name: LaunchTemplateNames
@@ -716,10 +716,10 @@ script:
       description: The value of the tag.
       type: string
     - contextPath: AWS.EC2.LaunchTemplates.Region
-      description: The aws region where the template is located
+      description: The aws region where the template is located.
       type: string
   - arguments:
-    - description: One or more filters. See documentation for filters list.
+    - description: One or more filters Separated by ';'. See AWS documentation for details & filter options.
       name: filters
     - description: One or more key pair names. Sepereted by comma.
       name: keyNames
@@ -741,10 +741,10 @@ script:
       description: The name of the key pair.
       type: Unknown
     - contextPath: AWS.EC2.KeyPairs.Region
-      description: The aws region where the key pair is located
+      description: The aws region where the key pair is located.
       type: Unknown
   - arguments:
-    - description: One or more filters. See documentation for filters list.
+    - description: One or more filters Separated by ';'. See AWS documentation for details & filter options.
       name: filters
     - description: One or more volume IDs. Sepereted by comma.
       name: volumeIds
@@ -811,7 +811,7 @@ script:
       description: Indicates whether the EBS volume is deleted on instance termination.
       type: boolean
   - arguments:
-    - description: One or more filters. See documentation for filters list.
+    - description: One or more filters Separated by ';'. See AWS documentation for details & filter options.
       name: filters
     - description: One or more VPC IDs. Sepereted by comma.
       name: vpcIds
@@ -875,7 +875,7 @@ script:
       description: A message about the status of the CIDR block, if applicable.
       type: string
   - arguments:
-    - description: One or more filters. See documetation for filters list.
+    - description: One or more filters Separated by ';'. See AWS documentation for details & filter options.
       name: filters
     - description: One or more subnet IDs. Sepereted by comma.
       name: subnetIds
@@ -936,7 +936,7 @@ script:
       description: The value of the tag.
       type: string
   - arguments:
-    - description: One or more filters. See documetation for filters list.
+    - description: One or more filters Separated by ';'. See AWS documentation for details & filter options.
       name: filters
     - description: One or more security group IDs. Required for security groups in a nondefault VPC. Sepereted by comma.
       name: groupIds
@@ -1244,7 +1244,7 @@ script:
       description: The ID of the instance.
       type: string
     - contextPath: AWS.EC2.Images.Region
-      description: The aws region where the image is located
+      description: The aws region where the image is located.
       type: string
   - arguments:
     - description: The ID of the AMI.
@@ -1383,7 +1383,7 @@ script:
     - description: One or more instance IDs.
       name: instanceIds
       required: true
-    - description: The AWS Region, if not specified the default region will be used
+    - description: The AWS Region, if not specified the default region will be used.
       name: region
     - description: The Amazon Resource Name (ARN) of the role to assume.
       name: roleArn
@@ -1398,7 +1398,7 @@ script:
     - description: One or more instance IDs.
       name: instanceIds
       required: true
-    - description: The AWS Region, if not specified the default region will be used
+    - description: The AWS Region, if not specified the default region will be used.
       name: region
     - description: The Amazon Resource Name (ARN) of the role to assume.
       name: roleArn
@@ -1436,7 +1436,7 @@ script:
       - gp2
       - sc1
       - st1
-    - description: One or more tags.Example key=Name,value=test;key=Owner,value=Bob
+    - description: One or more tags.Example key=Name,value=test;key=Owner,value=Bob.
       name: tags
     - description: The AWS Region, if not specified the default region will be used.
       name: region
@@ -1916,9 +1916,9 @@ script:
       name: filter
     - description: One or more instance IDs. Sepreted by comma.
       name: instanceIds
-    - description: The amount of time in seconds to wait between attempts. Default 15
+    - description: The amount of time in seconds to wait between attempts. Default 15.
       name: waiterDelay
-    - description: The maximum number of attempts to be made. Default 40
+    - description: The maximum number of attempts to be made. Default 40.
       name: waiterMaxAttempts
     - description: The AWS Region, if not specified the default region will be used.
       name: region
@@ -1935,7 +1935,7 @@ script:
       name: filter
     - description: One or more instance IDs. Seprated by comma.
       name: instanceIds
-    - description: The amount of time in seconds to wait between attempts. Default 15
+    - description: The amount of time in seconds to wait between attempts. Default 15.
       name: waiterDelay
     - description: The maximum number of attempts to be made. Default 40.
       name: waiterMaxAttempts
@@ -1947,16 +1947,16 @@ script:
       name: roleSessionName
     - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       name: roleSessionDuration
-    description: A waiter function that runs every 15  seconds until a successful state is reached
+    description: A waiter function that runs every 15  seconds until a successful state is reached.
     name: aws-ec2-waiter-instance-status-ok
   - arguments:
     - description: One or more filters. See documentation for details & filter options.
       name: filter
     - description: One or more instance IDs. Seprated by comma.
       name: instanceIds
-    - description: The amount of time in seconds to wait between attempts. Default 15
+    - description: The amount of time in seconds to wait between attempts. Default 15.
       name: waiterDelay
-    - description: The maximum number of attempts to be made. Default 40
+    - description: The maximum number of attempts to be made. Default 40.
       name: waiterMaxAttempts
     - description: The AWS Region, if not specified the default region will be used.
       name: region
@@ -1966,16 +1966,16 @@ script:
       name: roleSessionName
     - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       name: roleSessionDuration
-    description: A waiter function that runs every 15  seconds until a successful state is reached
+    description: A waiter function that runs every 15  seconds until a successful state is reached.
     name: aws-ec2-waiter-instance-stopped
   - arguments:
     - description: One or more filters. See documentation for details & filter options.
       name: filter
     - description: One or more instance IDs. Seprated by comma.
       name: instanceIds
-    - description: The amount of time in seconds to wait between attempts. Default 15
+    - description: The amount of time in seconds to wait between attempts. Default 15.
       name: waiterDelay
-    - description: The maximum number of attempts to be made. Default 40
+    - description: The maximum number of attempts to be made. Default 40.
       name: waiterMaxAttempts
     - description: The AWS Region, if not specified the default region will be used.
       name: region
@@ -1985,10 +1985,10 @@ script:
       name: roleSessionName
     - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       name: roleSessionDuration
-    description: A waiter function that runs every 15  seconds until a successful state is reached
+    description: A waiter function that runs every 15  seconds until a successful state is reached.
     name: aws-ec2-waiter-instance-terminated
   - arguments:
-    - description: One or more filters. See documentation for available filters.
+    - description: One or more filters Separated by ';'. See AWS documentation for details & filter options.
       name: filters
     - description: One or more image IDs. Sperated by comma.
       name: imageIds
@@ -1996,9 +1996,9 @@ script:
       name: owners
     - description: Scopes the images by users with explicit launch permissions. Specify an AWS account ID, self (the sender of the request), or all (public AMIs).
       name: executableUsers
-    - description: The amount of time in seconds to wait between attempts. Default 15
+    - description: The amount of time in seconds to wait between attempts. Default 15.
       name: waiterDelay
-    - description: The maximum number of attempts to be made. Default 40
+    - description: The maximum number of attempts to be made. Default 40.
       name: waiterMaxAttempts
     - description: The AWS Region, if not specified the default region will be used.
       name: region
@@ -2008,10 +2008,10 @@ script:
       name: roleSessionName
     - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       name: roleSessionDuration
-    description: A waiter function that waits until image is avilable
+    description: A waiter function that waits until image is avilable.
     name: aws-ec2-waiter-image-available
   - arguments:
-    - description: One or more filters. See documentation for available filters.
+    - description: One or more filters Separated by ';'. See AWS documentation for details & filter options.
       name: filters
     - description: Returns the snapshots owned by the specified owner. Multiple owners can be specified. Sperated by comma.
       name: ownerIds
@@ -2019,9 +2019,9 @@ script:
       name: snapshotIds
     - description: One or more AWS accounts IDs that can create volumes from the snapshot.
       name: restorableByUserIds
-    - description: The amount of time in seconds to wait between attempts. Default 15
+    - description: The amount of time in seconds to wait between attempts. Default 15.
       name: waiterDelay
-    - description: The maximum number of attempts to be made. Default 40
+    - description: The maximum number of attempts to be made. Default 40.
       name: waiterMaxAttempts
     - description: The AWS Region, if not specified the default region will be used.
       name: region
@@ -2031,16 +2031,16 @@ script:
       name: roleSessionName
     - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       name: roleSessionDuration
-    description: A waiter function that waits until the snapshot is complate
+    description: A waiter function that waits until the snapshot is complate.
     name: aws-ec2-waiter-snapshot_completed
   - arguments:
-    - description: One or more filters. See documentation for available filters.
+    - description: One or more filters Separated by ';'. See AWS documentation for details & filter options.
       name: filters
     - description: Filters the images by the owner. Specify an AWS account ID, self (owner is the sender of the request), or an AWS owner alias (valid values are amazon | aws-marketplace | microsoft ). Omitting this option returns all images for which you have launch permissions, regardless of ownership.
       name: owners
     - description: Scopes the images by users with explicit launch permissions. Specify an AWS account ID, self (the sender of the request), or all (public AMIs).
       name: executableUsers
-    - description: The AWS Region, if not specified the default region will be used
+    - description: The AWS Region, if not specified the default region will be used.
       name: region
     - description: The Amazon Resource Name (ARN) of the role to assume.
       name: roleArn
@@ -2048,7 +2048,7 @@ script:
       name: roleSessionName
     - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       name: roleSessionDuration
-    description: Get The latest AMI
+    description: Get The latest AMI.
     name: aws-ec2-get-latest-ami
     outputs:
     - contextPath: AWS.EC2.Images.Architecture
@@ -2115,7 +2115,7 @@ script:
       description: The size of the volume, in GiB.
       type: number
     - contextPath: AWS.EC2.Images.BlockDeviceMappings.Ebs.VolumeType
-      description: The volume type
+      description: The volume type.
       type: string
     - contextPath: AWS.EC2.Images.BlockDeviceMappings.NoDevice
       description: Suppresses the specified device included in the block device mapping of the AMI.
@@ -2242,26 +2242,26 @@ script:
     - description: |-
         A description for the security group rule that references this IPv4 address range.
 
-        Constraints: Up to 255 characters in length. Allowed characters are a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=;{}!$*
+        Constraints: Up to 255 characters in length. Allowed characters are a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=;{}$*!
       name: IpRangesDesc
     - description: The IPv6 CIDR range. You can either specify a CIDR range or a source security group, not both. To specify a single IPv6 address, use the /128 prefix length.
       name: Ipv6RangesCidrIp
     - description: |-
         A description for the security group rule that references this IPv6 address range.
 
-        Constraints: Up to 255 characters in length. Allowed characters are a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=;{}!$*
+        Constraints: Up to 255 characters in length. Allowed characters are a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=;{}$*!
       name: Ipv6RangesDesc
     - description: The ID of the prefix.
       name: PrefixListId
     - description: |-
         A description for the security group rule that references this prefix list ID.
 
-        Constraints: Up to 255 characters in length. Allowed characters are a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=;{}!$*
+        Constraints: Up to 255 characters in length. Allowed characters are a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=;{}$*!
       name: PrefixListIdDesc
     - description: |-
         A description for the security group rule that references this user ID group pair.
 
-        Constraints: Up to 255 characters in length. Allowed characters are a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=;{}!$*
+        Constraints: Up to 255 characters in length. Allowed characters are a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=;{}$*!
       name: UserIdGroupPairsDescription
     - description: The ID of the security group.
       name: UserIdGroupPairsGroupId
@@ -2303,26 +2303,26 @@ script:
     - description: |-
         A description for the security group rule that references this IPv4 address range.
 
-        Constraints: Up to 255 characters in length. Allowed characters are a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=;{}!$*
+        Constraints: Up to 255 characters in length. Allowed characters are a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=;{}$*!
       name: IpRangesDesc
     - description: The IPv6 CIDR range. You can either specify a CIDR range or a source security group, not both. To specify a single IPv6 address, use the /128 prefix length.
       name: Ipv6RangesCidrIp
     - description: |-
         A description for the security group rule that references this IPv6 address range.
 
-        Constraints: Up to 255 characters in length. Allowed characters are a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=;{}!$*
+        Constraints: Up to 255 characters in length. Allowed characters are a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=;{}$*!
       name: Ipv6RangesDesc
     - description: The ID of the prefix.
       name: PrefixListId
     - description: |-
         A description for the security group rule that references this prefix list ID.
 
-        Constraints: Up to 255 characters in length. Allowed characters are a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=;{}!$*
+        Constraints: Up to 255 characters in length. Allowed characters are a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=;{}$*!
       name: PrefixListIdDesc
     - description: |-
         A description for the security group rule that references this user ID group pair.
 
-        Constraints: Up to 255 characters in length. Allowed characters are a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=;{}!$*
+        Constraints: Up to 255 characters in length. Allowed characters are a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=;{}$*!
       name: UserIdGroupPairsDescription
     - description: The ID of the security group.
       name: UserIdGroupPairsGroupId
@@ -2442,7 +2442,7 @@ script:
       description: The Region where the snapshot is located.
       type: string
   - arguments:
-    - description: ne or more filters.
+    - description: One or more filters Separated by ';'. See AWS documentation for details & filter options.
       name: filters
     - description: One or more Reserved Instance IDs. Separated by comma.
       name: reservedInstancesIds
@@ -2671,7 +2671,7 @@ script:
     - description: Changes the instance type to the specified value.
       name: instanceType
     - auto: PREDEFINED
-      description: Specifies whether an instance stops or terminates when you initiate shutdown from the instance (using the operating system command for system shutdown)
+      description: Specifies whether an instance stops or terminates when you initiate shutdown from the instance (using the operating system command for system shutdown).
       name: instanceInitiatedShutdownBehavior
       predefined:
       - Stop
@@ -3033,7 +3033,7 @@ script:
       name: roleSessionName
     - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       name: roleSessionDuration
-    - description: One or more filters.
+    - description: One or more filters Separated by ';'. See AWS documentation for details & filter options.
       name: filters
     - description: The ID of the EC2 Fleets.
       name: FleetIds
@@ -3254,7 +3254,7 @@ script:
       name: roleSessionName
     - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       name: roleSessionDuration
-    - description: A filter name and value pair that is used to return a more specific list of results from a describe operation.
+    - description: One or more filters Separated by ';'. See AWS documentation for details & filter options.
       name: filters
     - description: The ID of the EC2 Fleet.
       name: FleetId
@@ -3597,7 +3597,7 @@ script:
       name: roleSessionName
     - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       name: roleSessionDuration
-    - description: One or more filters.
+    - description: One or more filters Separated by ';'. See AWS documentation for details & filter options.
       name: filters
     - description: One or more internet gateway IDs.
       name: InternetGatewayIds
@@ -3712,17 +3712,17 @@ script:
       name: IpPermissionsIpProtocol
     - description: The IPv4 CIDR range. You can either specify a CIDR range or a source security group, not both. To specify a single IPv4 address, use the /32 prefix length.
       name: IpRangesCidrIp
-    - description: 'A description for the security group rule that references this IPv4 address range.Constraints: Up to 255 characters in length. Allowed characters are a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=;{}!$*'
+    - description: 'A description for the security group rule that references this IPv4 address range.Constraints: Up to 255 characters in length. Allowed characters are a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=;{}$*!'
       name: IpRangesDescription
     - description: The IPv6 CIDR range. You can either specify a CIDR range or a source security group, not both. To specify a single IPv6 address, use the /128 prefix length.
       name: Ipv6RangesCidrIp
-    - description: 'A description for the security group rule that references this IPv6 address range. Constraints: Up to 255 characters in length. Allowed characters are a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=&;{}!$*'
+    - description: 'A description for the security group rule that references this IPv6 address range. Constraints: Up to 255 characters in length. Allowed characters are a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=&;{}!$*.'
       name: Ipv6RangesDescription
     - description: The ID of the prefix.
       name: PrefixListId
-    - description: 'A description for the security group rule that references this prefix list ID. Constraints: Up to 255 characters in length. Allowed characters are a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=;{}!$*'
+    - description: 'A description for the security group rule that references this prefix list ID. Constraints: Up to 255 characters in length. Allowed characters are a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=;{}$*!'
       name: PrefixListIdDescription
-    - description: 'A description for the security group rule that references this user ID group pair. Constraints: Up to 255 characters in length. Allowed characters are a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=;{}!$*'
+    - description: 'A description for the security group rule that references this user ID group pair. Constraints: Up to 255 characters in length. Allowed characters are a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=;{}$*!'
       name: UserIdGroupPairsDescription
     - description: The ID of the security group.
       name: UserIdGroupPairsGroupId
@@ -3766,7 +3766,7 @@ script:
       name: client_token
     - description: Specifies the instance type to be supported by the Dedicated Hosts. If you specify an instance type, the Dedicated Hosts support instances of the specified instance type only. If you want the Dedicated Hosts to support multiple instance types in a specific instance family, omit this parameter and specify InstanceFamily instead. You cannot specify InstanceType and InstanceFamily in the same request.
       name: instance_type
-    - description: Specifies the instance family to be supported by the Dedicated Hosts. If you specify an instance family, the Dedicated Hosts support multiple instance types within that instance family. If you want the Dedicated Hosts to support a specific instance type only, omit this parameter and specify InstanceType instead. You cannot specify InstanceFamily and InstanceType in the same request
+    - description: Specifies the instance family to be supported by the Dedicated Hosts. If you specify an instance family, the Dedicated Hosts support multiple instance types within that instance family. If you want the Dedicated Hosts to support a specific instance type only, omit this parameter and specify InstanceType instead. You cannot specify InstanceFamily and InstanceType in the same request.
       name: instance_family
     - auto: PREDEFINED
       description: Indicates whether to enable or disable host recovery for the Dedicated Host. Host recovery is disabled by default.
@@ -3803,7 +3803,7 @@ script:
       name: roleSessionDuration
     description: Release on demand dedicated host.
     name: aws-ec2-release-hosts
-  dockerimage: demisto/boto3py3:1.0.0.72237
+  dockerimage: demisto/boto3py3:1.0.0.76002
   runonce: false
   script: '-'
   subtype: python3
