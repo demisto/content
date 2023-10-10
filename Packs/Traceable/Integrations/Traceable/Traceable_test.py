@@ -1487,39 +1487,6 @@ def test_boolean_construct_key_expression():
     assert passed
 
 
-def test_fetch_incidents_live(capfd):
-    from Traceable import Client, fetch_incidents
-    import urllib3
-
-    urllib3.disable_warnings()
-    headers = {}
-    headers["Content-Type"] = "application/json"
-    headers["Accept"] = "application/json"
-    headers["authorization"] = "ZDQyOTFkNWMtMDY2ZS00MjFjLTk0ZjYtMmU0M2YwMGU3MDcz"
-
-    client = Client(base_url="https://api.eu.traceable.ai", verify=False, headers=headers)
-    client.set_security_score_category_list(["CRITICAL", "HIGH", "MEDIUM", "LOW"])
-    client.set_ip_reputation_level_list(["CRITICAL", "HIGH", "MEDIUM", "LOW"])
-    client.set_ip_abuse_velocity_list(["CRITICAL", "HIGH", "MEDIUM", "LOW"])
-    client.set_domain_event_field_list(["actorDevice", "actorEntityId", "actorId", "actorScoreCategory",
-                                        "actorSession", "apiName", "apiUri",
-                                        "category", "ipAbuseVelocity", "ipReputationLevel",
-                                        "securityEventType", "securityScore", "serviceId",
-                                        "actorScore", "threatCategory", "type"])
-    client.set_optional_api_attributes([
-        "isExternal", "isAuthenticated", "riskScore", "riskScoreCategory", "isLearnt"
-    ])
-    client.set_ignore_status_codes("400-499")
-    client.set_app_url("https://app.eu.traceable.ai")
-    client.set_span_fetch_threadpool(10)
-    client.set_limit(100)
-    client.set_fetch_unique_incidents(True)
-
-    next_run, incidents = fetch_incidents(client, {"last_fetch": None}, "1 days")
-    assert len(incidents) >= 0
-    capfd.readouterr()
-
-
 def test_list_instance_cache_command():
     from Traceable import list_incident_cache_command, Client, Helper
     import urllib3
