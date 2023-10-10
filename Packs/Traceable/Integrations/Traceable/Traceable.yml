@@ -177,23 +177,23 @@ script:
     arguments: []
     outputs:
     - contextPath: Traceable.Instancecache.id
-      description: Cache entry id
+      description: Cache entry id.
       type: string
     - contextPath: Traceable.Instancecache.expiry
-      description: Cache entry expire date
+      description: Cache entry expire date.
       type: date
   - name: purge_incident_cache
     description: Delete all entries in the incident cache.
     arguments: []
     outputs:
     - contextPath: Traceable.Instancecache.id
-      description: Cache entry id
+      description: Cache entry id.
       type: string
     - contextPath: Traceable.Instancecache.expiry
-      description: Cache entry expire date
+      description: Cache entry expire date.
       type: date
     - contextPath: Traceable.Instancecache.deletion_status
-      description: Cache entry deletion status
+      description: Cache entry deletion status.
       type: string
   type: python
   subtype: python3
