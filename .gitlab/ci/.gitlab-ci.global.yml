@@ -236,7 +236,7 @@
     strategy: depend
     include:
       - local: .gitlab/ci/.gitlab-ci.slack-notify.yml
-  inherit:
+  inherit: # see https://gitlab.com/gitlab-org/gitlab-runner/-/issues/27775
     variables: false
 
 .lock-machine:
