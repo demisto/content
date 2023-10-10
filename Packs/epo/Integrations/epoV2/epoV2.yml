@@ -7,7 +7,7 @@ sectionOrder:
 name: McAfee ePO v2
 display: McAfee ePO v2
 category: Endpoint
-description: McAfee ePolicy Orchestrator
+description: McAfee ePolicy Orchestrator.
 configuration:
 - display: McAfee ePO Server URI
   name: address
@@ -64,7 +64,7 @@ script:
     arguments: []
     outputs:
     - contextPath: McAfee.ePO.epoDAT
-      description: Current installed McAfee DAT file in the ePO repository
+      description: Current installed McAfee DAT file in the ePO repository.
       type: number
     description: Checks the existing DAT file version in the ePO repository.
   - name: epo-command
@@ -501,13 +501,13 @@ script:
       required: true
       description: Name of the table.
     - name: select
-      description: 'The columns to return, in SQUID syntax. Example: "(select EPOEvents.AutoID EPOEvents.DetectedUTC EPOEvents.ReceivedUTC)"'
+      description: 'The columns to return, in SQUID syntax. Example: "(select EPOEvents.AutoID EPOEvents.DetectedUTC EPOEvents.ReceivedUTC)".'
     - name: where
-      description: 'Filter results, in SQUID syntax. Example: "(where ( eq ( OrionTaskLogTask .UserName "ga" )))"'
+      description: 'Filter results, in SQUID syntax. Example: "(where ( eq ( OrionTaskLogTask .UserName "ga" )))".'
     - name: order
-      description: 'Order in which to return the results, in SQUID syntax. Example: "(order (asc OrionTaskLogTask.StartDate) )")'
+      description: 'Order in which to return the results, in SQUID syntax. Example: "(order (asc OrionTaskLogTask.StartDate) )").'
     - name: group
-      description: 'Group the results, in SQUID Syntax. Example: "(group EPOBranchNode.NodeName)"'
+      description: 'Group the results, in SQUID Syntax. Example: "(group EPOBranchNode.NodeName)".'
     - name: joinTables
       description: Perform join, in SQUID syntax.
     - name: query_name
@@ -587,7 +587,7 @@ script:
       - "true"
       - "false"
       description: If true, resets the inheritance for the specified policy on the given group. Default is false.
-    description: Assigns a policy to the specified group or resets the group's inheritance for the specified policy
+    description: Assigns a policy to the specified group or resets the group's inheritance for the specified policy.
   - name: epo-assign-policy-to-system
     arguments:
     - name: names
@@ -682,7 +682,7 @@ script:
     arguments:
     - name: id
       required: true
-      description: The ID of the issue to delete
+      description: The ID of the issue to delete.
     description: Delete an issue.
   - name: epo-create-issue
     arguments:
@@ -815,7 +815,7 @@ script:
     - name: properties
       description: Properties of the issue.
     description: Update an issue.
-  dockerimage: demisto/python3:3.10.13.72123
+  dockerimage: demisto/python3:3.10.13.74666
   runonce: false
   script: '-'
   subtype: python3

@@ -1023,7 +1023,7 @@ def get_new_indicators(
     params = {}
     if indicator_type == "Indicators":
         # for indicator type the earliest time to fetch is 90 days ago
-        earliest_fetch = arg_to_datetime("90 days ago")
+        earliest_fetch = arg_to_datetime("89 days ago")
         assert earliest_fetch is not None
 
         param_start_date: datetime = datetime.fromtimestamp(0)
@@ -1036,7 +1036,6 @@ def get_new_indicators(
         params = {
             "start_epoch": int(param_start_date.timestamp()),
             "limit": limit,
-            "gte_mscore": minimum_mscore,
             "exclude_osint": exclude_osint,
             "last_updated": "asc"
         }  # type:ignore
@@ -1048,8 +1047,20 @@ def get_new_indicators(
         new_indicators_list = list(
             filter(last_updated_filter(start_date), new_indicators_list)  # type: ignore
         )
-
-    return new_indicators_list
+        return new_indicators_list
+    else:
+        updated_indicators = []
+        # For Indicators of Compromise only
+        for indicator in new_indicators_list:
+            # Check if indicator should be added no matter what
+            # E.g. it meets the `param` requirements
+            if indicator["mscore"] >= minimum_mscore:
+                updated_indicators.append(indicator)
+            else:
+                existing_indicators = list(IndicatorsSearcher(value=indicator["value"]))
+                if len(existing_indicators) > 0 and int(existing_indicators[0].get("total", 0)) > 0:
+                    updated_indicators.append(indicator)
+        return updated_indicators
 
 
 def get_indicator_list(
@@ -1101,7 +1112,8 @@ def fetch_indicators(client: MandiantClient, args: dict = None) -> tuple[List, d
     if not args:
         args = {}
 
-    limit = args.get("limit", client.limit)
+    limit = int(args.get("limit", client.limit))
+
     # Cap maximum number of indicators to 1000
     if limit > 1000:
         limit = 1000
