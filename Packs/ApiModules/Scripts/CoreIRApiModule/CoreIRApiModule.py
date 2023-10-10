@@ -3204,7 +3204,7 @@ def filter_general_fields(alert: dict, filter_fields: bool = True) -> dict:
 
     Args:
       alert (dict): The alert to filter
-      filter_fields (bool): Whether to return a subset of the fields. 
+      filter_fields (bool): Whether to return a subset of the fields.
 
     Returns:
       dict: The filtered alert
