@@ -104,6 +104,32 @@ alter  event_type = arrayindex(regextract(_raw_log, "event\=([^;]+)"), 0)
     xdm.target.user.identifier = coalesce(accounts_id, vault_account_id, vault_account_associated_user_id),
     xdm.target.user.username = coalesce(vault_account_username, vault_account_name),
     xdm.target.user.groups = if(target_group != null, arraycreate(target_group));
+
+/* Endpoint Events: 
+    These fields apply to the following event types: endpoint_changed, endpoint_removed.
+    Full documentation: https://www.beyondtrust.com/docs/privileged-remote-access/how-to/integrations/syslog/fields/endpoint.htm */
+alter  event_type = arrayindex(regextract(_raw_log, "event\=([^;]+)"), 0)
+| filter event_type in("endpoint_changed", "endpoint_removed")
+| call beyondtrust_pra_common_fields_modeling
+| alter msg_payload = arrayindex(regextract(_raw_log, "\d+\:\d+\:\d+\:(.+)"), 0)
+| alter 
+    endpoint_hostname = arrayindex(regextract(msg_payload, "hostname\=([^;]+)"), 0), // The hostname of the endpoint.
+    endpoint_fqdn = arrayindex(regextract(msg_payload, "distinguished_name\=([^;]+)"), 0), // The distinguished name of the endpoint.
+    endpoint_unique_id = arrayindex(regextract(msg_payload, "unique_id\=([^;]+)"), 0), // The unique identifier of the endpoint.
+    endpoint_name = arrayindex(regextract(msg_payload, "name\=([^;]+)"), 0), // The name of the endpoint.
+    endpoint_is_domain_controller = arrayindex(regextract(msg_payload, "is_domain_controller\=(0|1)"), 0), //1: The endpoint is a domain controller. 0: The endpoint is not a domain controller.
+    endpoint_os = arrayindex(regextract(msg_payload, "operating_system\=([^;]+)"), 0) // The operating system of the endpoint.
+| alter os = lowercase(endpoint_os)
+| alter 
+    xdm.target.host.hostname = endpoint_hostname, 
+    xdm.target.host.fqdn = endpoint_fqdn, 
+    xdm.target.host.device_id = endpoint_unique_id, 
+    xdm.target.host.device_category = if(endpoint_is_domain_controller = "1", "Domain Controller"),
+    xdm.target.host.os = endpoint_os,
+    xdm.target.host.os_family = if(os contains "windows", XDM_CONST.OS_FAMILY_WINDOWS, os contains "mac", XDM_CONST.OS_FAMILY_MACOS, os contains "linux", XDM_CONST.OS_FAMILY_LINUX, os contains "android", XDM_CONST.OS_FAMILY_ANDROID, os contains "ios", XDM_CONST.OS_FAMILY_IOS, os contains "ubuntu", XDM_CONST.OS_FAMILY_UBUNTU, os contains "debian", XDM_CONST.OS_FAMILY_DEBIAN, os contains "fedora", XDM_CONST.OS_FAMILY_FEDORA, os contains "centos", XDM_CONST.OS_FAMILY_CENTOS, os contains "chrome", XDM_CONST.OS_FAMILY_CHROMEOS, os contains "solaris", XDM_CONST.OS_FAMILY_SOLARIS, os contains "scada", XDM_CONST.OS_FAMILY_SCADA, to_string(endpoint_os)),
+    xdm.target.resource.name = endpoint_name,
+    xdm.target.resource.id = endpoint_unique_id,
+    xdm.target.resource.type = if(endpoint_unique_id != null, "endpoint machine");
     
 /* Report Events: 
     These fields apply to the following event types: 
@@ -293,6 +319,25 @@ alter  event_type = arrayindex(regextract(_raw_log, "event\=([^;]+)"), 0)
     xdm.target.resource.type = if(custom_link_id != null, "custom link URL"),
     xdm.target.url = custom_link_url;
 
+/* Jumpoint User Events : 
+    These mappings apply to the following events: jumpoint_user_added, jumpoint_user_removed. 
+    Docs: https://www.beyondtrust.com/docs/privileged-remote-access/how-to/integrations/syslog/fields/jumpoint-user-fields.htm */
+alter  event_type = arrayindex(regextract(_raw_log, "event\=([^;]+)"), 0)
+| filter event_type in("jumpoint_user_added", "jumpoint_user_removed")
+| call beyondtrust_pra_common_fields_modeling
+| alter msg_payload = arrayindex(regextract(_raw_log, "\d+\:\d+\:\d+\:(.+)"), 0)
+| alter 
+    jumppoint_id = arrayindex(regextract(msg_payload, "jumpoint\:id\=(\w[^;]*)"), 0), // The unique identifier of the Jumpoint to which this user is being added or removed.
+    jumppoint_name = arrayindex(regextract(msg_payload, "jumpoint\:name\=(\S[^;]+)"), 0), // The name of the Jumpoint to which this user is being added or removed.
+    jumppoint_added_user_id = arrayindex(regextract(msg_payload, "user\:id\=(\S[^;]*)"), 0), // The unique identifier of the user being added or removed. 
+    jumppoint_added_username = arrayindex(regextract(msg_payload, "user\:username\=(\S[^;]+)"), 0) // The name of the user being added or removed.
+| alter 
+    xdm.target.resource.id = jumppoint_id, 
+    xdm.target.resource.name = jumppoint_name,
+    xdm.target.resource.type = if(jumppoint_id != null, "jumppoint"),
+    xdm.target.user.identifier = jumppoint_added_user_id,
+    xdm.target.user.username = jumppoint_added_username;
+
 /* Account Jump Item Association Events: 
     These mappings apply to the following events: account_jump_item_association_added, account_jump_item_association_removed. 
     https://www.beyondtrust.com/docs/privileged-remote-access/how-to/integrations/syslog/fields/account-jump-item-association.htm */
@@ -402,5 +447,5 @@ alter  event_type = arrayindex(regextract(_raw_log, "event\=([^;]+)"), 0)
 /* General Fallback Mapping: 
     This filter applies to all other events which weren't mapped explicitly by any filter. */
 alter  event_type = arrayindex(regextract(_raw_log, "event\=([^;]+)"), 0)
-| filter event_type not in("login", "logout", "change_display_name", "change_password", "change_username", "account_added", "account_changed", "accounts_changed", "account_removed", "account_group_added", "account_group_changed", "account_group_removed", "account_user_added", "account_user_removed", "support_session_report_generated", "support_session_detail_generated", "support_session_summary_report_generated", "team_activity_report_generated", "custom_session_policy_added", "custom_session_policy_changed", "custom_session_policy_removed", "account_jump_item", "account_jump_item_association_removed", "api_account_added", "api_account_changed", "api_account_removed", "canned_script_category_added", "canned_script_category_removed", "canned_script_added", "canned_script_changed", "canned_script_removed", "canned_script_file_added", "canned_script_file_removed", "canned_script_team_added", "canned_script_team_removed", "canned_scripts_category_added", "canned_scripts_category_removed", "canned_scripts_file_added", "canned_scripts_file_removed", "certificate_export", "custom_session_attribute_added", "custom_session_attribute_changed", "custom_session_attribute_removed", "custom_special_action_added", "custom_special_action_changed", "custom_special_action_removed", "custom_rep_link_added", "custom_rep_link_changed", "custom_rep_link_removed", "windows_service_removed", "windows_service_changed", "vault_account_password_rotation", "user_session_policy_added", "user_session_policy_removed", "user_added", "user_changed", "user_removed", "support_team_added", "support_team_changed", "support_team_removed", "support_team_member_added", "support_team_member_changed", "support_team_member_changed", "ssh_account_added", "ssh_account_changed", "ssh_account_removed", "shared_jump_group_added", "shared_jump_group_changed", "shared_jump_group_removed")
+| filter event_type not in("login", "logout", "change_display_name", "change_password", "change_username", "account_added", "account_changed", "accounts_changed", "account_removed", "account_group_added", "account_group_changed", "account_group_removed", "account_user_added", "account_user_removed", "support_session_report_generated", "support_session_detail_generated", "support_session_summary_report_generated", "team_activity_report_generated", "custom_session_policy_added", "custom_session_policy_changed", "custom_session_policy_removed", "account_jump_item", "account_jump_item_association_removed", "api_account_added", "api_account_changed", "api_account_removed", "canned_script_category_added", "canned_script_category_removed", "canned_script_added", "canned_script_changed", "canned_script_removed", "canned_script_file_added", "canned_script_file_removed", "canned_script_team_added", "canned_script_team_removed", "canned_scripts_category_added", "canned_scripts_category_removed", "canned_scripts_file_added", "canned_scripts_file_removed", "certificate_export", "custom_session_attribute_added", "custom_session_attribute_changed", "custom_session_attribute_removed", "custom_special_action_added", "custom_special_action_changed", "custom_special_action_removed", "custom_rep_link_added", "custom_rep_link_changed", "custom_rep_link_removed", "windows_service_removed", "windows_service_changed", "vault_account_password_rotation", "user_session_policy_added", "user_session_policy_removed", "user_added", "user_changed", "user_removed", "support_team_added", "support_team_changed", "support_team_removed", "support_team_member_added", "support_team_member_changed", "support_team_member_changed", "ssh_account_added", "ssh_account_changed", "ssh_account_removed", "shared_jump_group_added", "shared_jump_group_changed", "shared_jump_group_removed", "endpoint_changed", "endpoint_removed", "jumpoint_user_added", "jumpoint_user_removed")
 | call beyondtrust_pra_common_fields_modeling;
