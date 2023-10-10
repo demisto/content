@@ -12,7 +12,7 @@ description: |-
   - PingOne
   - Okta
   - AWS IAM
-  - Cortex XDR (account enrichment and reputation)
+  - Cortex XDR / Core (account enrichment and reputation and risk)
 
   Also, the playbook supports the generic command 'iam-get-user' (implemented in IAM integrations. For more information, visit https://xsoar.pan.dev/docs/integrations/iam-integrations.
 starttaskid: "0"
@@ -177,7 +177,7 @@ tasks:
       {
         "position": {
           "x": 230,
-          "y": 565
+          "y": 575
         }
       }
     note: false
@@ -216,7 +216,7 @@ tasks:
       {
         "position": {
           "x": 230,
-          "y": 760
+          "y": 770
         }
       }
     note: false
@@ -348,7 +348,7 @@ tasks:
       {
         "position": {
           "x": -640,
-          "y": 565
+          "y": 575
         }
       }
     note: false
@@ -387,7 +387,7 @@ tasks:
       {
         "position": {
           "x": 650,
-          "y": 565
+          "y": 575
         }
       }
     note: false
@@ -425,7 +425,7 @@ tasks:
       {
         "position": {
           "x": -640,
-          "y": 760
+          "y": 770
         }
       }
     note: false
@@ -463,7 +463,7 @@ tasks:
       {
         "position": {
           "x": 650,
-          "y": 760
+          "y": 770
         }
       }
     note: false
@@ -533,7 +533,7 @@ tasks:
       {
         "position": {
           "x": 1070,
-          "y": 565
+          "y": 575
         }
       }
     note: false
@@ -571,7 +571,7 @@ tasks:
       {
         "position": {
           "x": 1070,
-          "y": 760
+          "y": 770
         }
       }
     note: false
@@ -641,7 +641,7 @@ tasks:
       {
         "position": {
           "x": 1490,
-          "y": 565
+          "y": 575
         }
       }
     note: false
@@ -679,7 +679,7 @@ tasks:
       {
         "position": {
           "x": 1490,
-          "y": 760
+          "y": 770
         }
       }
     note: false
@@ -780,7 +780,7 @@ tasks:
       {
         "position": {
           "x": -200,
-          "y": 565
+          "y": 575
         }
       }
     note: false
@@ -818,7 +818,7 @@ tasks:
       {
         "position": {
           "x": -200,
-          "y": 760
+          "y": 770
         }
       }
     note: false
@@ -862,7 +862,7 @@ tasks:
       {
         "position": {
           "x": 230,
-          "y": 930
+          "y": 940
         }
       }
     note: false
@@ -984,7 +984,7 @@ tasks:
       {
         "position": {
           "x": 1910,
-          "y": 565
+          "y": 575
         }
       }
     note: false
@@ -1022,7 +1022,7 @@ tasks:
       {
         "position": {
           "x": 1910,
-          "y": 760
+          "y": 770
         }
       }
     note: false
@@ -1070,7 +1070,7 @@ tasks:
       {
         "position": {
           "x": 1910,
-          "y": 930
+          "y": 940
         }
       }
     note: false
@@ -1205,7 +1205,7 @@ tasks:
       {
         "position": {
           "x": -1700,
-          "y": 750
+          "y": 760
         }
       }
     note: false
@@ -1272,7 +1272,7 @@ tasks:
       {
         "position": {
           "x": -1290,
-          "y": 750
+          "y": 760
         }
       }
     note: false
@@ -1315,7 +1315,7 @@ tasks:
       {
         "position": {
           "x": -1500,
-          "y": 570
+          "y": 580
         }
       }
     note: false
@@ -1327,12 +1327,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "64":
     id: "64"
-    taskid: 30472917-7825-4a09-89d8-b531bf61958c
+    taskid: f3a3b7c5-ed52-4271-8319-fe557f178170
     type: title
     task:
-      id: 30472917-7825-4a09-89d8-b531bf61958c
+      id: f3a3b7c5-ed52-4271-8319-fe557f178170
       version: -1
-      name: Cortex XDR
+      name: Cortex XDR / Core IR
       type: title
       iscommand: false
       brand: ""
@@ -1340,6 +1340,7 @@ tasks:
     nexttasks:
       '#none#':
       - "65"
+      - "70"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1385,7 +1386,7 @@ tasks:
       {
         "position": {
           "x": 2330,
-          "y": 565
+          "y": 575
         }
       }
     note: false
@@ -1430,7 +1431,7 @@ tasks:
       {
         "position": {
           "x": 2330,
-          "y": 760
+          "y": 770
         }
       }
     note: false
@@ -1605,6 +1606,101 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "70":
+    id: "70"
+    taskid: 72be4e51-cdb7-49a6-888b-e44299db19c7
+    type: condition
+    task:
+      id: 72be4e51-cdb7-49a6-888b-e44299db19c7
+      version: -1
+      name: Is Cortex Core - IR integration enabled?
+      description: Returns 'yes' if the integration brand is available. Otherwise returns 'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "71"
+    scriptarguments:
+      brandname:
+        simple: Cortex Core - IR
+    results:
+    - brandInstances
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2790,
+          "y": 580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "71":
+    id: "71"
+    taskid: b726b45e-3135-4b8e-8051-3b987945e081
+    type: regular
+    task:
+      id: b726b45e-3135-4b8e-8051-3b987945e081
+      version: -1
+      name: Get account risk score
+      description: Retrieve the risk score of a specific user or list of users with the highest risk score in the environment along with the reason affecting each score.
+      script: '|||core-list-risky-users'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      user_id:
+        complex:
+          root: UsernamesWithDomains
+          transformers:
+          - operator: AppendIfNotEmpty
+            args:
+              item:
+                value:
+                  simple: Usernames
+                iscontext: true
+              raw: {}
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2790,
+          "y": 770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - incidentfield: User Risk Level
+      output:
+        complex:
+          root: Core.RiskyUser
+          accessor: risk_level
+    - incidentfield: User Risk Reasons
+      output:
+        complex:
+          root: Core.RiskyUser.reasons
+          accessor: description
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -1617,6 +1713,7 @@ view: |-
       "51_3_#default#": 0.1,
       "56_3_#default#": 0.1,
       "58_3_#default#": 0.1,
+      "65_3_#default#": 0.1,
       "65_66_yes": 0.59,
       "68_3_#default#": 0.11,
       "68_69_yes": 0.11
@@ -1624,7 +1721,7 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 1825,
-        "width": 4410,
+        "width": 4870,
         "x": -1700,
         "y": -200
       }
@@ -2013,14 +2110,36 @@ outputs:
   description: Description of the incident.
   type: string
 - contextPath: PaloAltoNetworksXDR.RiskyUser.reasons.severity
-  description: The severity of the incident
+  description: The severity of the incident.
   type: string
 - contextPath: PaloAltoNetworksXDR.RiskyUser.reasons.status
-  description: The incident status
+  description: The incident status.
   type: string
 - contextPath: PaloAltoNetworksXDR.RiskyUser.reasons.points
   description: The score.
   type: string
+- contextPath: Core.RiskyUser
+  description: The risky user object.
+  type: unknown
+- contextPath: Core.RiskyUser.type
+  description: Form of identification element.
+- contextPath: Core.RiskyUser.id
+  description: Identification value of the type field.
+- contextPath: Core.RiskyUser.score
+  description: The score assigned to the user.
+- contextPath: Core.RiskyUser.reasons
+  description: The reasons for the user risk level.
+  type: unknown
+- contextPath: Core.RiskyUser.reasons.date created
+  description: Date when the incident was created.
+- contextPath: Core.RiskyUser.reasons.description
+  description: Description of the incident.
+- contextPath: Core.RiskyUser.reasons.severity
+  description: The severity of the incident.
+- contextPath: Core.RiskyUser.reasons.status
+  description: The incident status.demist
+- contextPath: Core.RiskyUser.reasons.points
+  description: The score.
 tests:
 - Account Enrichment - Generic v2.1 - Test
 fromversion: 6.5.0
