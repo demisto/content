@@ -617,10 +617,11 @@ Get ticket history.
 {
     "HelpdeskAdvanced": {
         "TicketHistory": {
-            "1111111C": [
+            [
                 {
                 "AccountID": "",
                 "Attachments": null,
+                "TicketID": "1111111C",
                 "AutEmailCounter": 0,
                 "ContactID": "",
                 "Data": {
