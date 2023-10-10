@@ -269,7 +269,7 @@ def test_taxii20_get_server_info(mocker, taxii2_server_v20):
     integration_context['server_info'] = taxii2_server_v20.get_discovery_service(instance_execute=True)
     default_url = integration_context['server_info']['default']
     assert default_url == 'https://demisto/instance/execute/threatintel/'
-    
+
     result = get_server_info_command(integration_context=integration_context)
 
     assert result.outputs == integration_context['server_info']
