@@ -20,7 +20,7 @@ stages:
   - fan-in  # concentrate pipeline artifacts to single job before triggering child slack pipeline
 
 include:
-  - local: .gitlab-ci.variables.yml
+  - local: .gitlab/ci/.gitlab-ci.variables.yml
   - local: .gitlab/ci/.gitlab-ci.global.yml
   - local: .gitlab/ci/.gitlab-ci.on-push.yml
   - local: .gitlab/ci/.gitlab-ci.bucket-upload.yml
