@@ -1472,7 +1472,7 @@ def test_instance_cache(mocker):
     assert len(incidents) == 0
 
 
-def test_boolean_construct_key_expression():
+def test_boolean_construct_key_expression(capfd):
     from Traceable import Helper
     result = Helper.construct_key_expression("key", True, operator="EQUALS")
     expected = '{keyExpression: {key: "key"}, operator: EQUALS, value: true, type: ATTRIBUTE}'
@@ -1485,6 +1485,7 @@ def test_boolean_construct_key_expression():
         assert str(e) == "Value of type bool doesn't allow operator IN"
         passed = True
     assert passed
+    capfd.readouterr()
 
 
 def test_list_instance_cache_command():
