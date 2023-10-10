@@ -538,7 +538,7 @@ xsoar_ng_server_ga:
     GCS_MACHINES_BUCKET: "marketplace-saas-dist-dev/upload-flow/builds-xsoar-ng"
     SERVER_TYPE: "XSIAM"
     MARKETPLACE_NAME: "xsoar_saas"
-    UNREMOVABLE_PACKS: "Base"
+    NON_REMOVABLE_PACKS: "Base"
   needs:
     - job: xsoar-saas-prepare-testing-bucket
       optional: true
