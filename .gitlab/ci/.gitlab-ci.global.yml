@@ -232,6 +232,8 @@
 
 .trigger-slack-notification:
   stage: .post
+  variables:
+    CI_PROJECT_DIR: $CI_PROJECT_DIR
   trigger:
     strategy: depend
     include:
