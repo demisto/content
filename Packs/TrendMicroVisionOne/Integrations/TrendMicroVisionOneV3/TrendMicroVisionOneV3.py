@@ -63,6 +63,7 @@ POLLING = "polling"
 ARGUMENTS = "arguments"
 ACCOUNT_NAME = "account_name"
 INTEGRATION_RELIABILITY = "integrationReliability"
+INCIDENT_SEVERITY = "incidentSeverity"
 EMPTY_STRING = ""
 EMPTY_BYTE = b""
 API_TOKEN = "apikey"
@@ -360,7 +361,7 @@ class Client(BaseClient):
             sha256 = digest.sha256
             md5 = digest.md5
             sha1 = digest.sha1
-            reliability = demisto.params().get("integrationReliability")
+            reliability = demisto.params().get(INTEGRATION_RELIABILITY)
             dbot_score = Common.DBotScore(
                 indicator=sha256,
                 indicator_type=DBotScoreType.FILE,
@@ -467,9 +468,14 @@ class Client(BaseClient):
         formatted_end = str(end[: (start.index("."))]) + str(end[-1])
 
         new_alerts: List[Union[SaeAlert, TiAlert]] = []
+
+        def _filter_alerts(alert: Union[SaeAlert, TiAlert]) -> None:
+            if alert.severity == demisto.params().get(INCIDENT_SEVERITY):
+                new_alerts.append(alert)
+
         try:
             v1_client.consume_alert_list(
-                lambda alert: new_alerts.append(alert),
+                _filter_alerts,
                 start_time=formatted_start,
                 end_time=formatted_end,
             )
