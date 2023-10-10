@@ -15,7 +15,7 @@ alter  // extract message header fields
     site = arrayindex(regextract(msg_payload, "site\=(\S[^;]+)"), 0), // The hostname for which the BeyondTrust software was built.
     syslog_facility = floor(divide(syslog_priority, 8)), 
     who = arrayindex(regextract(msg_payload, "who\=(\S[^;]+)"), 0), // The username associated with this event.
-    who_ip = arrayindex(regextract(msg_payload, "who_ip\=(\S[^;]+)"), 0) // The IP address of the system that caused the event.
+    who_ip = arrayindex(regextract(msg_payload, "who_ip\=\s*(\S+)"), 0) // The IP address of the system that caused the event.
 | alter // old/new nomenclature fields extractions: https://www.beyondtrust.com/docs/privileged-remote-access/how-to/integrations/syslog/oldnew-nomenclature.htm
     properties_old_state = arraystring(regextract(msg_payload, "(old_\S[^;]+)"), ";"), // snapshot of current resource state before change
     properties_new_state = arraystring(regextract(msg_payload, "(new_\S[^;]+)"), ";") // current state of modified resource properties 
@@ -116,12 +116,14 @@ alter  event_type = arrayindex(regextract(_raw_log, "event\=([^;]+)"), 0)
 | alter 
     endpoint_hostname = arrayindex(regextract(msg_payload, "hostname\=([^;]+)"), 0), // The hostname of the endpoint.
     endpoint_fqdn = arrayindex(regextract(msg_payload, "distinguished_name\=([^;]+)"), 0), // The distinguished name of the endpoint.
+    endpoint_domain_id = arrayindex(regextract(msg_payload, "domain_id\=([^;]+)"), 0), // The unique identifier of the Domain to which this endpoint belongs.
     endpoint_unique_id = arrayindex(regextract(msg_payload, "unique_id\=([^;]+)"), 0), // The unique identifier of the endpoint.
     endpoint_name = arrayindex(regextract(msg_payload, "name\=([^;]+)"), 0), // The name of the endpoint.
     endpoint_is_domain_controller = arrayindex(regextract(msg_payload, "is_domain_controller\=(0|1)"), 0), //1: The endpoint is a domain controller. 0: The endpoint is not a domain controller.
     endpoint_os = arrayindex(regextract(msg_payload, "operating_system\=([^;]+)"), 0) // The operating system of the endpoint.
 | alter os = lowercase(endpoint_os)
 | alter 
+    xdm.target.domain = endpoint_domain_id,
     xdm.target.host.hostname = endpoint_hostname, 
     xdm.target.host.fqdn = endpoint_fqdn, 
     xdm.target.host.device_id = endpoint_unique_id, 
@@ -222,7 +224,7 @@ alter  event_type = arrayindex(regextract(_raw_log, "event\=([^;]+)"), 0)
     api_ip_addresses = arrayindex(regextract(msg_payload, "ip_addresses\=(\S[^;]+)"), 0), // Comma-delimited list of network address prefixes from which this account can authenticate.
     api_account_name = arrayindex(regextract(msg_payload, "name\=(\S[^;]+)"), 0), // The name of the API account.
     api_account_id = arrayindex(regextract(msg_payload, "id\=(\w[^;]+)"), 0), // The unique identifier of the API account.
-    api_ecp_group = arrayindex(regextract(msg_payload, "ecm_group\=(\S[^;]+)"), 0), // The ID of the ECM (Endpoint Credentials Manager) Group that the account belongs to.
+    api_ecm_group = arrayindex(regextract(msg_payload, "ecm_group\=(\S[^;]+)"), 0), // The ID of the ECM (Endpoint Credentials Manager) Group that the account belongs to.
     is_enabled =  arrayindex(regextract(msg_payload, "enabled\=(0|1)"), 0)  // 1: This API account is enabled, 0: This API account is disable
 | alter 
     is_api_account_disabled = if(is_enabled = "0", to_boolean("TRUE"), is_enabled = "1", to_boolean("FALSE")),
@@ -238,7 +240,7 @@ alter  event_type = arrayindex(regextract(_raw_log, "event\=([^;]+)"), 0)
     xdm.target.user.identifier = api_account_id, 
     xdm.target.user.user_type = XDM_CONST.USER_TYPE_SERVICE_ACCOUNT, 
     xdm.target.user.is_disabled = is_api_account_disabled,
-    xdm.target.user.groups = if(api_ecp_group != null, arraycreate(api_ecp_group));
+    xdm.target.user.groups = if(api_ecm_group != null, arraycreate(api_ecm_group));
 
 /* Canned Script Events: 
     These mappings apply to the following events: "canned_script_category_added", "canned_script_category_removed", "canned_script_added", "canned_script_changed", "canned_script_removed", "canned_script_file_added", "canned_script_file_removed", "canned_script_team_added", "canned_script_team_removed", "canned_scripts_category_added", "canned_scripts_category_removed", "canned_scripts_file_added", "canned_scripts_file_removed"
@@ -320,24 +322,142 @@ alter  event_type = arrayindex(regextract(_raw_log, "event\=([^;]+)"), 0)
     xdm.target.resource.type = if(custom_link_id != null, "custom link URL"),
     xdm.target.url = custom_link_url;
 
-/* Jumpoint User Events : 
-    These mappings apply to the following events: jumpoint_user_added, jumpoint_user_removed. 
-    Docs: https://www.beyondtrust.com/docs/privileged-remote-access/how-to/integrations/syslog/fields/jumpoint-user-fields.htm */
+/* Discovery Error Events : 
+    These mappings apply to the following events: discovery_error_added, discovery_error_changed, discovery_error_removed. 
+    https://www.beyondtrust.com/docs/privileged-remote-access/how-to/integrations/syslog/fields/discovery-error.htm */
 alter  event_type = arrayindex(regextract(_raw_log, "event\=([^;]+)"), 0)
-| filter event_type in("jumpoint_user_added", "jumpoint_user_removed")
+| filter event_type in("discovery_error_added", "discovery_error_changed", "discovery_error_removed")
 | call beyondtrust_pra_common_fields_modeling
 | alter msg_payload = arrayindex(regextract(_raw_log, "\d+\:\d+\:\d+\:(.+)"), 0)
 | alter 
-    jumppoint_id = arrayindex(regextract(msg_payload, "jumpoint\:id\=(\w[^;]*)"), 0), // The unique identifier of the Jumpoint to which this user is being added or removed.
-    jumppoint_name = arrayindex(regextract(msg_payload, "jumpoint\:name\=(\S[^;]+)"), 0), // The name of the Jumpoint to which this user is being added or removed.
-    jumppoint_added_user_id = arrayindex(regextract(msg_payload, "user\:id\=(\S[^;]*)"), 0), // The unique identifier of the user being added or removed. 
-    jumppoint_added_username = arrayindex(regextract(msg_payload, "user\:username\=(\S[^;]+)"), 0) // The name of the user being added or removed.
+    system_name = arrayindex(regextract(msg_payload, "system_name\=(\w[^;]*)\;"), 0), // The hostname or computer name which this error belongs.
+    discovery_job_id = arrayindex(regextract(msg_payload, "discovery_job_id\=(\S[^;]+)"), 0), // The unique identifier of the Discovery job to which this error belongs.
+    error_type = arrayindex(regextract(msg_payload, "type\=(\d+)"), 0), // The type of error.
+    user_error_description = arrayindex(regextract(msg_payload, "user_error\=(\S[^;]+)"), 0) // The error description.
 | alter 
+    xdm.alert.subcategory = to_string(error_type), 
+    xdm.alert.description = user_error_description,
+    xdm.target.host.hostname = system_name, 
+    xdm.target.resource.id = discovery_job_id, 
+    xdm.target.resource.type = if(discovery_job_id != null, "discovery job");
+
+/* ECM (Endpoint Credential Manager) Group Events : 
+    These mappings apply to the following events: ecm_group_added, ecm_group_changed, ecm_group_removed. 
+    https://www.beyondtrust.com/docs/privileged-remote-access/how-to/integrations/syslog/fields/ecm-group-fields.htm */
+alter  event_type = arrayindex(regextract(_raw_log, "event\=([^;]+)"), 0)
+| filter event_type in("ecm_group_added", "ecm_group_changed", "ecm_group_removed")
+| call beyondtrust_pra_common_fields_modeling
+| alter 
+    ecm_group_id = arrayindex(regextract(_raw_log, "id\=(\w[^;]*)"), 0), // The unique identifier of the ECM Group.
+    ecm_group_name = arrayindex(regextract(_raw_log, "name\=([^;]+)"), 0) //The name of the ECM Group.
+| alter 
+    xdm.target.user.groups = arrayconcat(arraycreate(ecm_group_id), arraycreate(ecm_group_name)),
+    xdm.target.resource.id = ecm_group_id,
+    xdm.target.resource.name = ecm_group_name, 
+    xdm.target.resource.type = if(ecm_group_id != null or ecm_group_name != null, "ecm group");
+
+/* File Store Events : 
+    These mappings apply to the following events: file_removed_from_file_store, file_uploaded_to_file_store. 
+    https://www.beyondtrust.com/docs/privileged-remote-access/how-to/integrations/syslog/fields/file-store-fields.htm */
+alter  event_type = arrayindex(regextract(_raw_log, "event\=([^;]+)"), 0)
+| filter event_type in("file_removed_from_file_store", "file_uploaded_to_file_store")
+| call beyondtrust_pra_common_fields_modeling
+| alter 
+    file_name = arrayindex(regextract(_raw_log, "filename\=([^;]+)"), 0), // The name of the file being uploaded to or removed from the file store.
+    file_size = arrayindex(regextract(_raw_log, "size\*?\=(\d+)"), 0) // The size in bytes of the file being uploaded to the file store.
+| alter 
+    xdm.target.file.filename = file_name, 
+    xdm.target.file.size = to_integer(file_size);
+
+/* Group Policy Events: 
+    These mappings apply to the following events: 
+        group_policy_add_to_jump_group_added, group_policy_add_to_jump_group_removed, group_policy_add_to_jumpoint_added, group_policy_add_to_jumpoint_removed, 
+        group_policy_add_to_support_teams_added, group_policy_add_to_support_teams_removed, group_policy_added, group_policy_changed, group_policy_removed,
+        group_policy_member_added, group_policy_member_removed, group_policy_remove_from_jump_group_added, group_policy_remove_from_jumpoint_added, 
+        group_policy_remove_from_jumpoint_removed, group_policy_remove_from_support_teams_added, group_policy_remove_from_support_teams_removed
+            https://www.beyondtrust.com/docs/privileged-remote-access/how-to/integrations/syslog/fields/group-policy-add-to-jump-group-fields.htm 
+            https://www.beyondtrust.com/docs/privileged-remote-access/how-to/integrations/syslog/fields/group-policy-remove-from-jump-group-fields.htm
+            https://www.beyondtrust.com/docs/privileged-remote-access/how-to/integrations/syslog/fields/group-policy-add-to-jumpoint-fields.htm
+            https://www.beyondtrust.com/docs/privileged-remote-access/how-to/integrations/syslog/fields/group-policy-remove-from-jumpoint-fields.htm
+            https://www.beyondtrust.com/docs/privileged-remote-access/how-to/integrations/syslog/fields/group-policy-add-to-support-teams-fields.htm
+            https://www.beyondtrust.com/docs/privileged-remote-access/how-to/integrations/syslog/fields/group-policy-add-to-support-teams-fields.htm
+            https://www.beyondtrust.com/docs/privileged-remote-access/how-to/integrations/syslog/fields/group-policy-member-fields.htm
+            https://www.beyondtrust.com/docs/privileged-remote-access/how-to/integrations/syslog/fields/group-policy-remove-from-jumpoint-fields.htm
+            https://www.beyondtrust.com/docs/privileged-remote-access/how-to/integrations/syslog/fields/group-policy-remove-from-support-teams-fields.htm
+            */
+alter  event_type = arrayindex(regextract(_raw_log, "event\=([^;]+)"), 0)
+| filter event_type in("group_policy_add_to_jump_group_added", "group_policy_add_to_jump_group_removed", "group_policy_add_to_jumpoint_added", "group_policy_add_to_jumpoint_removed", "group_policy_add_to_support_teams_added", "group_policy_add_to_support_teams_removed", "group_policy_added", "group_policy_changed", "group_policy_removed", "group_policy_member_added", "group_policy_member_removed", "group_policy_remove_from_jump_group_added", "group_policy_remove_from_jump_group_removed", "group_policy_remove_from_jumpoint_added", "group_policy_remove_from_jumpoint_removed", "group_policy_remove_from_support_teams_added", "group_policy_remove_from_support_teams_removed")
+| call beyondtrust_pra_common_fields_modeling
+| alter msg_payload = arrayindex(regextract(_raw_log, "\d+\:\d+\:\d+\:(.+)"), 0)
+| alter // Group Policy Add/Remove to/from Jump Group:
+    group_policy_id1 = arrayindex(regextract(msg_payload, "group_policy\:id\=(\w[^;]*)"), 0), // The unique identifier of this group policy.
+    group_policy_name1 = arrayindex(regextract(msg_payload, "group_policy\:name\=([^;]+)"), 0), // The name of this group policy.
+    jump_group_id = arrayindex(regextract(msg_payload, "jump_group\:id\=(\w[^;]*)"), 0), // The unique identifier of the Jump Group to which members of this group policy should be added.
+    jump_group_name = arrayindex(regextract(msg_payload, "jump_group\:name\=([^;]+)"), 0), // The name of the Jump Group to which members of this group policy should be added.
+    jump_item_role_id = arrayindex(regextract(msg_payload, "jump_item_role\:id\=(\w[^;]*)"), 0), // The unique identifier of the Jump Item Role to assign to members of this group policy specific to this Jump Group.
+    jump_item_role_name = arrayindex(regextract(msg_payload, "jump_item_role\:name\=([^;]+)"), 0), //The name of the Jump Item Role to assign to members of this group policy specific to this Jump Group.
+    jump_policy_id = arrayindex(regextract(msg_payload, "jump_policy\:id\=(\w[^;]*)"), 0), // The unique identifier of the Jump Policy to assign to members of this group policy specific to this Jump Group.
+    jump_policy_name = arrayindex(regextract(msg_payload, "jump_policy\:name\=([^;]+)"), 0) // The name of the Jump Policy to assign to members of this group policy specific to this Jump Group.
+| alter // Group Policy Add/Remove to/from Jumpoint:
+    jumpoint_id = arrayindex(regextract(msg_payload, "jumpoint\:id\=(\w[^;]*)"), 0), // The unique identifier of the Jumpoint to which members of this group policy should be added.
+    jumpoint_name = arrayindex(regextract(msg_payload, "jumpoint\:name\=([^;]+)"), 0) // The name of the Jumpoint to which members of this group policy should be added.
+| alter // Group Policy Add/Remove to/from Support to Teams:
+    role = arrayindex(regextract(msg_payload, "role\=([^;]+)"), 0), // The role assigned to members of this group policy specific to the team (member, lead or manager)
+    support_team_id = arrayindex(regextract(msg_payload, "support_team\:id\=(\w[^;]*)"), 0), // The unique identifier of the team to which members of this group policy should be added.
+    support_team_name = arrayindex(regextract(msg_payload, "support_team\:name\=([^;]+)"), 0) // The name of the team to which members of this group policy should be added.
+| alter // Group Policy:
+    is_account_disabled = arrayindex(regextract(msg_payload, "account\:disabled\=(0|1)"), 0), // 1: The accounts associated with this group policy are disabled. 0: The accounts associated with this group policy are active.
+    is_login_code_enabled = arrayindex(regextract(msg_payload, "login_code\:enabled\=(0|1)"), 0), // 1: Users must enter an emailed login code to log in. 0: Users may log in without an emailed login code.
+    group_policy_id2 = arrayindex(regextract(msg_payload, "id\=(\w[^;]*)"), 0), // The unique identifier of this group policy.
+    group_policy_name2 = arrayindex(regextract(msg_payload, "name\=([^;]+)"), 0), // The name of this group policy.
+    policy_id = arrayindex(regextract(msg_payload, "policy\:id\=([^;]+)"), 0), // The name of this group policy.
+    policy_name = arrayindex(regextract(msg_payload, "policy\:name\=([^;]+)"), 0), // The name of the group policy for which this setting is configured.
+    jumpoints = arrayindex(regextract(msg_payload, "jumpoints\=([^;]+)"), 0) //The group's Jumpoint access in the form of permission:id:name, where permission is one of added, removed, or unknown; id is the unique identifier of the Jumpoint; and name is the name of the Jumpoint.
+| alter // Group Policy Member Fields:
+    security_provider_id = arrayindex(regextract(msg_payload, "provider\:id\=([^;]*)\;"), 0), // The unique identifier of the security provider against which this member authenticates.
+    security_provider_name = arrayindex(regextract(msg_payload, "provider\:name\=([^;]*)\;"), 0), // The name of the security provider against which this member authenticates.
+    user_external_id = arrayindex(regextract(msg_payload, "user\:external_id\=(\w[^;]*)\;"), 0) // The unique identifier of this group policy member.
+| alter // additional proccessing 
+    group_policy_id = coalesce(group_policy_id1, group_policy_id2),
+    group_policy_name = coalesce(group_policy_name1, group_policy_name2),
+    groups_and_roles = arrayfilter(arrayconcat(arraycreate(jump_group_id), arraycreate(jump_group_name), arraycreate(jump_item_role_id), arraycreate(jump_item_role_name), arraycreate(role), arraycreate(support_team_id), arraycreate(support_team_name), arraycreate(jumpoints)), len("@element") > 0)
+| alter 
+    policy = if(policy_id != null, concat(policy_id, "(", policy_name, ")")),
+    group_policy = if(group_policy_id != null, concat(group_policy_id, "(", group_policy_name, ")")),
+    jump_policy = if(jump_policy_id != null, concat(jump_policy_id, "(", jump_policy_name, ")")),
+    security_provider = if(security_provider_id != null, concat(security_provider_id, "(", security_provider_name, ")"))
+| alter 
+    xdm.auth.mfa.provider = security_provider,
+    xdm.auth.is_mfa_needed = if(is_login_code_enabled = "1", to_boolean("TRUE"), is_login_code_enabled = "0",  to_boolean("FALSE")),
+    xdm.network.rule = coalesce(policy, group_policy, jump_policy),
+    xdm.target.resource.id = coalesce(policy_id, group_policy_id, jump_policy_id, jumpoint_id),
+    xdm.target.resource.name = coalesce(policy_name, group_policy_name, jump_policy_name, jumpoint_name),
+    xdm.target.resource.type = if(policy_id != null, "group policy", group_policy_id != null, "group policy", jump_policy_id != null, "jump policy", jumpoint_name != null, "jumppoint"),
+    xdm.target.user.is_disabled = if(is_account_disabled = "1", to_boolean("TRUE"), is_account_disabled = "0",  to_boolean("FALSE")),
+    xdm.target.user.identifier = user_external_id,
+    xdm.target.user.groups = groups_and_roles;
+
+/* Jumpoint User & Domain Events : 
+    These mappings apply to the following events: jumpoint_user_added, jumpoint_user_removed, domain_added, domain_changed, domain_removed  
+    Docs: https://www.beyondtrust.com/docs/privileged-remote-access/how-to/integrations/syslog/fields/jumpoint-user-fields.htm 
+          https://www.beyondtrust.com/docs/privileged-remote-access/how-to/integrations/syslog/fields/domain.htm */
+alter  event_type = arrayindex(regextract(_raw_log, "event\=([^;]+)"), 0)
+| filter event_type in("jumpoint_user_added", "jumpoint_user_removed", "domain_added", "domain_changed", "domain_removed")
+| call beyondtrust_pra_common_fields_modeling
+| alter msg_payload = arrayindex(regextract(_raw_log, "\d+\:\d+\:\d+\:(.+)"), 0)
+| alter 
+    jumppoint_id = arrayindex(regextract(msg_payload, "jumpoint\:id\=(\w[^;]*)"), 0), // The unique identifier of the Jumpoint to which this user/domain is being added or removed.
+    jumppoint_name = arrayindex(regextract(msg_payload, "jumpoint\:name\=(\S[^;]+)"), 0), // The name of the Jumpoint to which this user is being added or removed.
+    jumppoint_associated_user_id = arrayindex(regextract(msg_payload, "user\:id\=(\S[^;]*)"), 0), // The unique identifier of the user being added or removed. 
+    jumppoint_associated_username = arrayindex(regextract(msg_payload, "user\:username\=(\S[^;]+)"), 0), // The name of the user being added or removed.
+    jumppoint_associated_vault_domain_name = arrayindex(regextract(msg_payload, "name\=(\S[^;]+)"), 0) // The name of the vault account domain added, changed or remoed.
+| alter 
+    xdm.target.domain = jumppoint_associated_vault_domain_name,
     xdm.target.resource.id = jumppoint_id, 
     xdm.target.resource.name = jumppoint_name,
     xdm.target.resource.type = if(jumppoint_id != null, "jumppoint"),
-    xdm.target.user.identifier = jumppoint_added_user_id,
-    xdm.target.user.username = jumppoint_added_username;
+    xdm.target.user.identifier = jumppoint_associated_user_id,
+    xdm.target.user.username = jumppoint_associated_username;
 
 /* Account Jump Item Association Events: 
     These mappings apply to the following events: account_jump_item_association_added, account_jump_item_association_removed. 
@@ -448,5 +568,19 @@ alter  event_type = arrayindex(regextract(_raw_log, "event\=([^;]+)"), 0)
 /* General Fallback Mapping: 
     This filter applies to all other events which weren't mapped explicitly by any filter. */
 alter  event_type = arrayindex(regextract(_raw_log, "event\=([^;]+)"), 0)
-| filter event_type not in("login", "logout", "change_display_name", "change_password", "change_username", "account_added", "account_changed", "accounts_changed", "account_removed", "account_group_added", "account_group_changed", "account_group_removed", "account_user_added", "account_user_removed", "support_session_report_generated", "support_session_detail_generated", "support_session_summary_report_generated", "team_activity_report_generated", "custom_session_policy_added", "custom_session_policy_changed", "custom_session_policy_removed", "account_jump_item", "account_jump_item_association_removed", "api_account_added", "api_account_changed", "api_account_removed", "canned_script_category_added", "canned_script_category_removed", "canned_script_added", "canned_script_changed", "canned_script_removed", "canned_script_file_added", "canned_script_file_removed", "canned_script_team_added", "canned_script_team_removed", "canned_scripts_category_added", "canned_scripts_category_removed", "canned_scripts_file_added", "canned_scripts_file_removed", "certificate_export", "custom_session_attribute_added", "custom_session_attribute_changed", "custom_session_attribute_removed", "custom_special_action_added", "custom_special_action_changed", "custom_special_action_removed", "custom_rep_link_added", "custom_rep_link_changed", "custom_rep_link_removed", "windows_service_removed", "windows_service_changed", "vault_account_password_rotation", "user_session_policy_added", "user_session_policy_removed", "user_added", "user_changed", "user_removed", "support_team_added", "support_team_changed", "support_team_removed", "support_team_member_added", "support_team_member_changed", "support_team_member_changed", "ssh_account_added", "ssh_account_changed", "ssh_account_removed", "shared_jump_group_added", "shared_jump_group_changed", "shared_jump_group_removed", "endpoint_changed", "endpoint_removed", "jumpoint_user_added", "jumpoint_user_removed")
-| call beyondtrust_pra_common_fields_modeling;
+| filter event_type not in("login", "logout", "change_display_name", "change_password", "change_username", "account_added", "account_changed", "accounts_changed", "account_removed", "account_group_added", "account_group_changed", "account_group_removed", "account_user_added", "account_user_removed", "support_session_report_generated", "support_session_detail_generated", "support_session_summary_report_generated", "team_activity_report_generated", "custom_session_policy_added", "custom_session_policy_changed", "custom_session_policy_removed", "account_jump_item", "account_jump_item_association_removed", "api_account_added", "api_account_changed", "api_account_removed", "canned_script_category_added", "canned_script_category_removed", "canned_script_added", "canned_script_changed", "canned_script_removed", "canned_script_file_added", "canned_script_file_removed", "canned_script_team_added", "canned_script_team_removed", "canned_scripts_category_added", "canned_scripts_category_removed", "canned_scripts_file_added", "canned_scripts_file_removed", "certificate_export", "custom_session_attribute_added", "custom_session_attribute_changed", "custom_session_attribute_removed", "custom_special_action_added", "custom_special_action_changed", "custom_special_action_removed", "custom_rep_link_added", "custom_rep_link_changed", "custom_rep_link_removed", "windows_service_removed", "windows_service_changed", "vault_account_password_rotation", "user_session_policy_added", "user_session_policy_removed", "user_added", "user_changed", "user_removed", "support_team_added", "support_team_changed", "support_team_removed", "support_team_member_added", "support_team_member_changed", "support_team_member_changed", "ssh_account_added", "ssh_account_changed", "ssh_account_removed", "shared_jump_group_added", "shared_jump_group_changed", "shared_jump_group_removed", "endpoint_changed", "endpoint_removed", "jumpoint_user_added", "jumpoint_user_removed", "domain_added", "domain_changed", "domain_removed", "discovery_error_added", "discovery_error_changed", "discovery_error_removed", "ecm_group_added", "ecm_group_changed", "ecm_group_removed", "file_removed_from_file_store", "file_uploaded_to_file_store", "group_policy_add_to_jump_group_added", "group_policy_add_to_jump_group_removed", "group_policy_add_to_jumpoint_added", "group_policy_add_to_jumpoint_removed", "group_policy_add_to_support_teams_added", "group_policy_add_to_support_teams_removed", "group_policy_added", "group_policy_changed", "group_policy_removed", "group_policy_member_added", "group_policy_member_removed", "group_policy_remove_from_jump_group_added", "group_policy_remove_from_jump_group_removed", "group_policy_remove_from_jumpoint_added", "group_policy_remove_from_jumpoint_removed", "group_policy_remove_from_support_teams_added", "group_policy_remove_from_support_teams_removed")
+| call beyondtrust_pra_common_fields_modeling
+| alter 
+    target_user_id = arrayindex(regextract(_raw_log, "user\:id\=(\w[^;]*)"), 0),
+    target_username = arrayindex(regextract(_raw_log, "username\=([^;]+)"), 0),
+    target_resource_owner = arrayindex(regextract(_raw_log, "credential_owner_id\=([^;]+)"), 0),
+    target_resource_id = arrayindex(regextract(_raw_log, "id\=(\w[^;]*)"), 0),
+    target_resource_name = arrayindex(regextract(_raw_log, "name\=([^;]+)"), 0)
+| alter 
+    xdm.target.resource.id = target_resource_id,
+    xdm.target.resource.name = target_resource_name,
+    xdm.target.resource.parent_id = target_resource_owner,
+    xdm.target.user.identifier = target_user_id,
+    xdm.target.user.username = target_username;
+
+
