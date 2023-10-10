@@ -90,6 +90,14 @@ run-validations:
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
 
 
+# runs in gitlab for the on-push flow, only on nightly build
+pre-commit:
+  extends:
+    - .pre-commit
+  # rules:
+  #   - if: '$NIGHTLY'
+
+
 # runs in gitlab for the on-push flow, on every new commit pushed to the branch.
 validate-content-conf:
   tags:
