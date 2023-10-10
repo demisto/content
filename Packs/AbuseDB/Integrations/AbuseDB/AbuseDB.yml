@@ -58,7 +58,7 @@ configuration:
   defaultvalue: 'false'
   type: 8
   required: false
-  additionalinfo: To reduce the number of lookups made to the VT API, this option can be selected to gracefully skip enrichment of any IP addresses allocated for private networks.
+  additionalinfo: To reduce the number of lookups made to the AbuseIPDB API, this option can be selected to gracefully skip enrichment of any IP addresses allocated for private networks.
 - display: Disregard quota errors
   name: disregard_quota
   type: 8
