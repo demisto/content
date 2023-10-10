@@ -3070,7 +3070,7 @@ script:
       type: String
   dockerimage: demisto/googleapi-python3:1.0.0.75697
   isfetch: true
-  runonce: falseπ
+  runonce: false
   script: "-"
   subtype: python3
   type: python

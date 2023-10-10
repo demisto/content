@@ -1003,3 +1003,35 @@ class TestFilePermissionMethods:
         }
         file_upload_command(gsuite_client, args)
         assert GoogleDrive.assign_params.call_args[1]['parents'] == ['test_parent']
+
+
+import pytest
+from GoogleDrive import GoogleDrive, Client, copy_file_http_request
+
+@pytest.fixture()
+def client():
+    return Client(credentials={}, auth_id='')
+
+def test_copy_file_success(requests_mock, client):
+
+    from GoogleDrive import copy_file_http_request
+
+    file_id = '12345' 
+    copy_title = 'Test File Copy'
+    mock_response = {'id': '67890', 'name': copy_title}
+    requests_mock.post('https://www.googleapis.com/drive/v3/files/12345/copy', json=mock_response)
+
+    response = copy_file_http_request(client, file_id, copy_title)
+
+    assert response == mock_response
+
+def test_copy_file_failure(requests_mock, client):
+
+    file_id = '12345'
+    copy_title = 'Test File Copy'
+    requests_mock.post('https://www.googleapis.com/drive/v3/files/12345/copy', status_code=404)
+
+    with pytest.raises(DemistoException) as e:
+        copy_file_http_request(client, file_id, copy_title)
+
+    assert 'Unable to copy file' in str(e)
