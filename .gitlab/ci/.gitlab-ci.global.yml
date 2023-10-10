@@ -232,12 +232,12 @@
 
 .trigger-slack-notification:
   stage: .post
-  variables:
-    CI_PROJECT_DIR: $CI_PROJECT_DIR
   trigger:
     strategy: depend
     include:
       - local: .gitlab/ci/.gitlab-ci.slack-notify.yml
+  inherit:
+    variables: false
 
 .lock-machine:
   - section_start "Lock Machine" --collapsed
