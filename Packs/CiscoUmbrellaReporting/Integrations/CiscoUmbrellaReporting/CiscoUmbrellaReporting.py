@@ -17,7 +17,6 @@ DEFAULT_FROM_DATE = "-7days"
 DEFAULT_TO_DATE = "now"
 DEFAULT_OFFSET = 0
 INTEGRATION_CONTEXT_NAME = 'UmbrellaReporting'
-TOKEN_ENDPOINT = "https://management.api.umbrella.com/auth/v2/oauth2/token"
 IP_PARAM = 'ip'
 DOMAIN_PARAM = 'domains'
 URL_PARAM = 'urls'
@@ -72,8 +71,7 @@ class Client(BaseClient):
     For this implementation, no special attributes defined
     """
 
-    def __init__(self, base_url: str, organisation_id: str,
-                 secret_key: str, client_key: str,
+    def __init__(self, base_url: str, secret_key: str, client_key: str,
                  verify=None,
                  proxy=None):
         super().__init__(
@@ -81,12 +79,8 @@ class Client(BaseClient):
             verify=verify,
             proxy=proxy
         )
-        self.token_url = TOKEN_ENDPOINT
         self.secret_key = secret_key
         self.client_key = client_key
-        self.organisation_id = organisation_id
-        if not self.organisation_id.isdigit():
-            raise DemistoException("Invalid Input Error: The Organization ID must be a number.")
 
     def get_access_token(self):
         """
@@ -100,7 +94,7 @@ class Client(BaseClient):
 
         token_response = self._http_request(
             method='POST',
-            full_url=self.token_url,
+            full_url=urljoin(self._base_url, '/auth/v2/token'),
             auth=(self.client_key, self.secret_key),
             data=payload,
             error_handler=cisco_umbrella_access_token_error_handler
@@ -134,8 +128,7 @@ class Client(BaseClient):
             Return the raw api response from Cisco Umbrella Reporting API.
         """
         result: Dict = {}
-        url_path = f'{self._base_url}/v2/organizations' \
-                   f'/{self.organisation_id}/{end_point}'
+        url_path = urljoin(self._base_url, f'/reports/v2/{end_point}')
         access_token = self.get_access_token()
         response = self._http_request(
             method='GET',
@@ -1291,7 +1284,6 @@ def main():
     params = demisto.params()
     secret_key = params.get('credentials', {}).get('password')
     client_key = params.get('credentials', {}).get('identifier')
-    organisation_id = params.get('organization_id')
 
     # get the service API url
     base_url = params.get("api_url")
@@ -1304,7 +1296,6 @@ def main():
     try:
         client = Client(
             base_url=base_url,
-            organisation_id=organisation_id,
             secret_key=secret_key,
             client_key=client_key,
             proxy=proxy,
