@@ -1093,7 +1093,7 @@ class Pack:
             bool: whether pack was modified and override will be required.
         """
         task_status = False
-        modified_rn_files_paths = []
+        modified_rn_files_paths: list = []
         pack_was_modified = False
 
         try:
@@ -1102,7 +1102,7 @@ class Pack:
             if not os.path.exists(pack_index_metadata_path):
                 logging.info(f"{self._pack_name} pack was not found in index, skipping detection of modified pack.")
                 task_status = True
-                return None
+                return task_status, modified_rn_files_paths
 
             with open(pack_index_metadata_path) as metadata_file:
                 downloaded_metadata = json.load(metadata_file)
@@ -1141,11 +1141,9 @@ class Pack:
                 )
                 # Filter modifications in release notes config JSON file - they will be handled later on.
                 modified_rn_files_paths = [path_ for path_ in modified_rn_files_paths if path_.endswith('.md')]
-            return None
         except Exception:
             logging.exception(f"Failed in detecting modified files of {self._pack_name} pack")
-        finally:
-            return task_status, modified_rn_files_paths
+        return task_status, modified_rn_files_paths
 
     def filter_modified_files_by_id_set(self, id_set: dict, modified_rn_files_paths: list, marketplace):
         """
@@ -3738,7 +3736,8 @@ class Pack:
                 try:
                     copied_blob = build_bucket.copy_blob(
                         blob=build_bucket_image_blob, destination_bucket=production_bucket,
-                        new_name=os.path.join(storage_base_path, build_bucket_image_path.split("content/")[1])
+                        new_name=os.path.join(os.path.dirname(storage_base_path),
+                                              build_bucket_image_path.split("content/")[-1])
                     )
                     if not copied_blob.exists():
                         logging.error(f"Failed to copy {self._pack_name} dynamic dashboard image: {build_bucket_image_blob.name} "
