@@ -388,8 +388,8 @@ Displays search results from the Endpoint Activity Data source that match the pa
 | end | Timestamp in ISO 8601 format that indicates the end of the data retrieval time range. If no value is specified, end defaults to the time the request is made. | Optional | 
 | top | Number of records displayed on a page. | Optional | 
 | select | List of fields to include in the search results. If no fields are specified, the query returns all supported fields. | Optional | 
+| get_activity_data_count | Should the activity data count be fetched?. | Optional | 
 | query_op | Query Operator. Possible values are: and, or. | Optional | 
-| get_activity_data_count | Should the activity data count be fetched?. Possible values are: true, false. | Optional | 
 
 #### Context Output
 
@@ -458,8 +458,8 @@ Displays search results from the Email Activity Data source that match the param
 | end | Timestamp in ISO 8601 format that indicates the end of the data retrieval time range. If no value is specified, end defaults to the time the request is made. | Optional | 
 | top | Number of records displayed on a page. | Optional | 
 | select | List of fields to include in the search results. If no fields are specified, the query returns all supported fields. | Optional | 
+| get_activity_data_count | Should the activity data count be fetched?. | Optional | 
 | query_op | Query Operator. Possible values are: and, or. | Optional | 
-| get_activity_data_count | Should the activity data count be fetched?. Possible values are: true, false. | Optional | 
 
 #### Context Output
 

@@ -318,19 +318,14 @@ script:
       name: top
     - description: 'List of fields to include in the search results. If no fields are specified, the query returns all supported fields.'
       name: select
+    - description: 'Should the activity data count be fetched?'
+      name: get_activity_data_count
     - description: Query Operator.
       name: query_op
       auto: PREDEFINED
       predefined:
       - and
       - or
-      default: true
-    - description: 'Should the activity data count be fetched?'
-      name: get_activity_data_count
-      auto: PREDEFINED
-      predefined:
-      - "true"
-      - "false"
       default: true
     description: Displays search results from the Endpoint Activity Data source that match the parameters provided.
     name: trendmicro-visionone-get-endpoint-activity-data
@@ -478,19 +473,14 @@ script:
       name: top
     - description: 'List of fields to include in the search results. If no fields are specified, the query returns all supported fields.'
       name: select
+    - description: 'Should the activity data count be fetched?'
+      name: get_activity_data_count
     - description: Query Operator.
       name: query_op
       auto: PREDEFINED
       predefined:
       - and
       - or
-      default: true
-    - description: 'Should the activity data count be fetched?'
-      name: get_activity_data_count
-      auto: PREDEFINED
-      predefined:
-      - "true"
-      - "false"
       default: true
     description: Displays search results from the Email Activity Data source that match the parameters provided.
     name: trendmicro-visionone-get-email-activity-data
