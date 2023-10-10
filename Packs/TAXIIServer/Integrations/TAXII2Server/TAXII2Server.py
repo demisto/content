@@ -1269,7 +1269,7 @@ def edit_server_info(server_info: dict) -> dict:
     """
     if is_demisto_version_ge('8.0.0'):
         altered_api_roots = []
-        for api_root in server_info['api_roots']:
+        for api_root in server_info.get('api_roots', []):
             altered_api_roots.append(alter_url(api_root))
         server_info['api_roots'] = altered_api_roots
         server_info['default'] = alter_url(server_info['default'])
