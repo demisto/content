@@ -36,7 +36,7 @@ The following parameters can be used to select the events that should be importe
 |Incident optional field list|Multi select|No|actorDevice,actorEntityId,actorId,actorScoreCategory,actorSession,anomalousAttribute,apiName,apiUri,category,ipAbuseVelocity,ipReputationLevel,securityEventType,securityScore,serviceId,serviceName,actorScore,threatCategory,type| Optional fields to pull from the Traceable event.|
 |Additional API Attributes|Multi select|No|isExternal,isAuthenticated,riskScore,riskScoreCategory,isLearnt| Additional API attributes to query for the affected API in the incident. |
 |Fetch unique incidents|Boolean|No|true|Only pull an incident the same one has not been raised before.|
-|Time between raising similar incidents (in <number> <timeunit>, e.g., in 12 hours, in 7 days)|Short text|No|in 7 days|Time to wait before raising an incident similar to an existing one (in <number> <timeunit>, e.g., in 12 hours, in 7 days).|
+|Time between raising similar incidents (in `<number>` `<timeunit>`, e.g., `in 12 hours`, `in 7 days`)|Short text|No|in 7 days|Time to wait before raising an incident similar to an existing one (in `<number>` `<timeunit>`, e.g., `in 12 hours`, `in 7 days`).|
 
 ## Incident Types
 The integration generates _Exploit_ type of incidents.
