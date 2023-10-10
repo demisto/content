@@ -2,12 +2,15 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 # type: ignore
-from urllib.parse import urlparse
 import urllib3
+import copy
+
+from urllib.parse import urlparse
 from pymisp import ExpandedPyMISP, PyMISPError, MISPObject, MISPSighting, MISPEvent, MISPAttribute, MISPUser
 from pymisp.tools import GenericObjectGenerator, EMailObject
-import copy
 from pymisp.tools import FileObject
+from base64 import b64decode
+
 logging.getLogger("pymisp").setLevel(logging.CRITICAL)
 
 
@@ -179,7 +182,8 @@ MISP_SEARCH_ARGUMENTS = [
     'page',
     'enforceWarninglist',
     'include_feed_correlations',
-    'eventinfo'
+    'eventinfo',
+    'with_attachments'
 ]
 
 EVENT_FIELDS = [
@@ -884,7 +888,14 @@ def prepare_args_to_search(controller):
         args_to_misp_format['limit'] = '50'
     if 'tags' in args_to_misp_format:
         args_to_misp_format['tags'] = build_misp_complex_filter(args_to_misp_format['tags'])
-    args_to_misp_format['controller'] = controller
+    if 'with_attachments' in args_to_misp_format:
+        if demisto_args.get('with_attachments') == 'true':
+            args_to_misp_format['with_attachments'] = 1
+        else:
+            args_to_misp_format['with_attachments'] = 0
+            args_to_misp_format['controller'] = controller
+    else:
+        args_to_misp_format['controller'] = controller
     demisto.debug(f"[MISP V3]: args for {demisto.command()} command are {args_to_misp_format}")
     return args_to_misp_format
 
@@ -1016,9 +1027,29 @@ def search_attributes(demisto_args: dict) -> CommandResults:
     pagination_args_validation(page, limit)
 
     response = PYMISP.search(**args)
+
     if response:
         response_for_context_list = []
         response_for_context_dict = {}
+
+        if 'with_attachments' in args and args.get('with_attachments') == 1:
+            if isinstance(response, list):
+                for attachment in response:
+                    if 'Event' in attachment:
+                        if 'Object' in attachment.get('Event'):
+                            for objects in attachment.get('Event').get('Object'):
+                                if 'Attribute' in objects:
+                                    for object in objects.get('Attribute'):
+                                        if 'value' in object:
+                                            if args.get('value') == object.get('value'):
+                                                for object in objects.get('Attribute'):
+                                                    if 'data' in object:
+                                                        res = fileResult('misp.zip', b64decode(object.get('data')))
+                                                        demisto.results(res)
+
+                demisto.args()['with_attachments'] = 'false'
+                return search_attributes(demisto_args)
+
         if outputs_should_include_only_values:
             response_for_context_list = build_attributes_search_response_return_only_values(response)
             number_of_results = len(response_for_context_list)
@@ -1036,7 +1067,9 @@ def search_attributes(demisto_args: dict) -> CommandResults:
             md = tableToMarkdown(
                 f"MISP search-attributes returned {len(response_for_context_dict)} attributes\n {pagination_message}",
                 attribute_highlights, removeNull=True)
+
         response_for_context = response_for_context_list or response_for_context_dict
+
         return CommandResults(
             raw_response=response,
             readable_output=md,
@@ -1044,6 +1077,7 @@ def search_attributes(demisto_args: dict) -> CommandResults:
             outputs_prefix="MISP.Attribute",
             outputs_key_field="ID"
         )
+
     else:
         return CommandResults(readable_output=f"No attributes found in MISP for the given filters: {args}")
 

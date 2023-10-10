@@ -2258,6 +2258,12 @@ script:
       predefined:
       - 'true'
       - 'false'
+    - auto: PREDEFINED
+      description: 'Whether to include the file data of the matching attributes. Possible values: "true" and "false". Default is false.'
+      name: with_attachments
+      predefined:
+        - 'true'
+        - 'false'
     - description: If a limit is set, sets the page to be returned. For example, page 3, limit 100 will return records 201->300. Default is 1.
       defaultValue: '1'
       name: page
@@ -2594,7 +2600,7 @@ script:
     - contextPath: MISP.Role.role_name
       description: MISP role name.
       type: string
-  dockerimage: demisto/pymisp2:1.0.0.75377
+  dockerimage: demisto/pymisp2:1.0.0.76097
   runonce: false
   script: ''
   subtype: python3
