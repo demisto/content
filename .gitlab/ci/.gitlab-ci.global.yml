@@ -443,6 +443,7 @@
   stage: unittests-and-validations
   extends:
     - .default-job-settings
+    - .unittests-and-lint-settings
   needs: []
   # rules:
   #   - if: '$NIGHTLY'
