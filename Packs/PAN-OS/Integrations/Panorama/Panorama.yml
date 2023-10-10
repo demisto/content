@@ -3,7 +3,7 @@ sectionorder:
 - Connect
 - Collect
 commonfields:
-  id: Panorama_20230921
+  id: Panorama
   version: -1
 configuration:
 - display: Server URL (e.g., https://192.168.0.1)
