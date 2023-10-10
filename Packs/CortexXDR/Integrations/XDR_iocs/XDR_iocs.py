@@ -6,14 +6,14 @@ import secrets
 import string
 import tempfile
 from datetime import timezone
-from typing import Dict, Optional, List, Sequence, Tuple, Union, Iterable
+from collections.abc import Sequence, Iterable
 from dateparser import parse
 from urllib3 import disable_warnings
 
 
 disable_warnings()
 DEMISTO_TIME_FORMAT: str = '%Y-%m-%dT%H:%M:%SZ'
-xdr_types_to_demisto: Dict = {
+xdr_types_to_demisto: dict = {
     "DOMAIN_NAME": 'Domain',
     "HASH": 'File',
     "IP": 'IP'
@@ -27,16 +27,27 @@ xdr_severity_to_demisto: dict[str, str] = {
     'SEV_090_UNKNOWN': 'UNKNOWN',
 }
 
-xdr_reputation_to_demisto: Dict = {
+xdr_reputation_to_demisto: dict = {
     'GOOD': 1,
     'SUSPICIOUS': 2,
     'BAD': 3
 }
-demisto_score_to_xdr: Dict[int, str] = {
+demisto_score_to_xdr: dict[int, str] = {
     1: 'GOOD',
     2: 'SUSPICIOUS',
     3: 'BAD'
 }
+
+
+def create_validation_errors_response(validation_errors):
+    if not validation_errors:
+        return ''
+    response = 'The following IOCs were not pushed due to following errors:\n'
+    for item in validation_errors:
+        indicator = item.get('indicator')
+        error = item.get('error')
+        response += f'{indicator}: {error}.\n'
+    return response
 
 
 def batch_iocs(generator, batch_size=200):
@@ -61,7 +72,7 @@ class Client:
     comments_as_tags: bool = False
     tag = 'Cortex XDR'
     tlp_color = None
-    error_codes: Dict[int, str] = {
+    error_codes: dict[int, str] = {
         500: 'XDR internal server error.',
         401: 'Unauthorized access. An issue occurred during authentication. '
              'This can indicate an incorrect key, id, or other invalid authentication parameters.',
@@ -77,9 +88,9 @@ class Client:
         self._params = params
         handle_proxy()
 
-    def http_request(self, url_suffix: str, requests_kwargs=None) -> Dict:
+    def http_request(self, url_suffix: str, requests_kwargs=None) -> dict:
         if requests_kwargs is None:
-            requests_kwargs = dict()
+            requests_kwargs = {}
 
         res = requests.post(url=self._base_url + url_suffix,
                             verify=self._verify_cert,
@@ -105,16 +116,16 @@ class Client:
         return get_headers(self._params)
 
 
-def get_headers(params: Dict) -> Dict:
+def get_headers(params: dict) -> dict:
     api_key: str = params.get('apikey_creds', {}).get('password', '') or str(params.get('apikey'))
     api_key_id: str = params.get('apikey_id_creds', {}).get('password', '') or str(params.get('apikey_id'))
     nonce: str = "".join([secrets.choice(string.ascii_letters + string.digits) for _ in range(64)])
     timestamp: str = str(int(datetime.now(timezone.utc).timestamp()) * 1000)
-    auth_key = "%s%s%s" % (api_key, nonce, timestamp)
+    auth_key = f"{api_key}{nonce}{timestamp}"
     auth_key = auth_key.encode("utf-8")
     api_key_hash: str = hashlib.sha256(auth_key).hexdigest()
 
-    headers: Dict = {
+    headers: dict = {
         "x-xdr-timestamp": timestamp,
         "x-xdr-nonce": nonce,
         "x-xdr-auth-id": str(api_key_id),
@@ -125,37 +136,40 @@ def get_headers(params: Dict) -> Dict:
     return headers
 
 
-def get_requests_kwargs(_json=None, file_path: Optional[str] = None) -> Dict:
+def get_requests_kwargs(_json=None, file_path: str | None = None, validate: bool = False) -> dict:
     if _json is not None:
-        return {'data': json.dumps({"request_data": _json})}
+        data = {"request_data": _json}
+        if validate:
+            data['validate'] = True
+        return {'data': json.dumps(data)}
     elif file_path is not None:
         return {'files': [('file', ('iocs.json', open(file_path, 'rb'), 'application/json'))]}
     else:
         return {}
 
 
-def prepare_get_changes(time_stamp: int) -> Tuple[str, Dict]:
+def prepare_get_changes(time_stamp: int) -> tuple[str, dict]:
     url_suffix: str = 'get_changes'
-    _json: Dict = {'last_update_ts': time_stamp}
+    _json: dict = {'last_update_ts': time_stamp}
     return url_suffix, _json
 
 
-def prepare_enable_iocs(iocs: str) -> Tuple[str, List]:
+def prepare_enable_iocs(iocs: str) -> tuple[str, list]:
     url_suffix: str = 'enable_iocs'
-    _json: List = argToList(iocs)
+    _json: list = argToList(iocs)
     return url_suffix, _json
 
 
-def prepare_disable_iocs(iocs: str) -> Tuple[str, List]:
+def prepare_disable_iocs(iocs: str) -> tuple[str, list]:
     url_suffix: str = 'disable_iocs'
-    _json: List = argToList(iocs)
+    _json: list = argToList(iocs)
     return url_suffix, _json
 
 
 def create_file_iocs_to_keep(file_path, batch_size: int = 200):
     with open(file_path, 'w') as _file:
         has_iocs = False
-        for ioc in map(lambda x: x.get('value', ''), get_iocs_generator(size=batch_size)):
+        for ioc in (batch.get('value', '') for batch in get_iocs_generator(size=batch_size)):
             has_iocs = True
             _file.write(ioc + '\n')
 
@@ -175,7 +189,7 @@ def get_iocs_generator(size=200, query=None) -> Iterable:
     query = query or Client.query
     query = f'expirationStatus:active AND ({query})'
     try:
-        for iocs in map(lambda x: x.get('iocs', []), IndicatorsSearcher(size=size, query=query)):
+        for iocs in (batch.get('iocs', []) for batch in IndicatorsSearcher(size=size, query=query)):
             for ioc in iocs:
                 yield ioc
     except StopIteration:
@@ -200,8 +214,8 @@ def demisto_reliability_to_xdr(reliability: str) -> str:
         return 'F'
 
 
-def demisto_vendors_to_xdr(demisto_vendors) -> List[Dict]:
-    xdr_vendors: List[Dict] = []
+def demisto_vendors_to_xdr(demisto_vendors) -> list[dict]:
+    xdr_vendors: list[dict] = []
     for module_id, data in demisto_vendors.items():
         reliability = demisto_reliability_to_xdr(data.get('reliability'))
         reputation = demisto_score_to_xdr.get(data.get('score'), 'UNKNOWN')
@@ -248,10 +262,10 @@ def _parse_demisto_comments(ioc: dict, comment_field_name: str, comments_as_tags
             return [raw_comment]
 
 
-def demisto_ioc_to_xdr(ioc: Dict) -> Dict:
+def demisto_ioc_to_xdr(ioc: dict) -> dict:
     try:
         demisto.debug(f'Raw outgoing IOC: {ioc}')
-        xdr_ioc: Dict = {
+        xdr_ioc: dict = {
             'indicator': ioc['value'],
             'severity': Client.severity,  # default, may be overwritten, see below
             'type': demisto_types_to_xdr(str(ioc['indicator_type'])),
@@ -301,7 +315,7 @@ def sync(client: Client):
     temp_file_path: str = get_temp_file()
     try:
         create_file_sync(temp_file_path)  # can be empty
-        requests_kwargs: Dict = get_requests_kwargs(file_path=temp_file_path)
+        requests_kwargs: dict = get_requests_kwargs(file_path=temp_file_path)
         path: str = 'sync_tim_iocs'
         client.http_request(path, requests_kwargs)
     finally:
@@ -313,12 +327,12 @@ def sync(client: Client):
 
 
 def iocs_to_keep(client: Client):
-    if not datetime.utcnow().hour in range(1, 3):
+    if datetime.utcnow().hour not in range(1, 3):
         raise DemistoException('iocs_to_keep runs only between 01:00 and 03:00.')
     temp_file_path: str = get_temp_file()
     try:
         create_file_iocs_to_keep(temp_file_path)  # can't be empty
-        requests_kwargs: Dict = get_requests_kwargs(file_path=temp_file_path)
+        requests_kwargs: dict = get_requests_kwargs(file_path=temp_file_path)
         path = 'iocs_to_keep'
         client.http_request(path, requests_kwargs)
     finally:
@@ -330,17 +344,17 @@ def create_last_iocs_query(from_date, to_date):
     return f'modified:>={from_date} and modified:<{to_date} and ({Client.query})'
 
 
-def get_last_iocs(batch_size=200) -> List:
+def get_last_iocs(batch_size=200) -> list:
     current_run: str = datetime.utcnow().strftime(DEMISTO_TIME_FORMAT)
-    last_run: Dict = get_integration_context()
+    last_run: dict = get_integration_context()
     query = create_last_iocs_query(from_date=last_run['time'], to_date=current_run)
-    iocs: List = list(get_iocs_generator(query=query, size=batch_size))
+    iocs: list = list(get_iocs_generator(query=query, size=batch_size))
     last_run['time'] = current_run
     set_integration_context(last_run)
     return iocs
 
 
-def get_indicators(indicators: str) -> List:
+def get_indicators(indicators: str) -> list:
     if indicators:
         iocs: list = []
         not_found = []
@@ -360,6 +374,7 @@ def get_indicators(indicators: str) -> List:
 
 def tim_insert_jsons(client: Client):
     indicators = demisto.args().get('indicator', '')
+    validation_errors = []
     if not indicators:
         iocs = get_last_iocs()
     else:
@@ -368,9 +383,13 @@ def tim_insert_jsons(client: Client):
         path = 'tim_insert_jsons/'
         for i, single_batch_iocs in enumerate(batch_iocs(iocs)):
             demisto.debug(f'push batch: {i}')
-            requests_kwargs: Dict = get_requests_kwargs(_json=list(
-                map(demisto_ioc_to_xdr, single_batch_iocs)))
-            client.http_request(url_suffix=path, requests_kwargs=requests_kwargs)
+            requests_kwargs: dict = get_requests_kwargs(_json=list(
+                map(demisto_ioc_to_xdr, single_batch_iocs)), validate=True)
+            response = client.http_request(url_suffix=path, requests_kwargs=requests_kwargs)
+            validation_errors.extend(response.get('reply', {}).get('validation_errors'))
+    if validation_errors:
+        errors = create_validation_errors_response(validation_errors)
+        return_warning(errors)
     return_outputs('push done.')
 
 
@@ -381,12 +400,12 @@ def iocs_command(client: Client):
         path, iocs = prepare_enable_iocs(indicators)
     else:  # command == 'disable'
         path, iocs = prepare_disable_iocs(indicators)
-    requests_kwargs: Dict = get_requests_kwargs(_json=iocs)
+    requests_kwargs: dict = get_requests_kwargs(_json=iocs)
     client.http_request(url_suffix=path, requests_kwargs=requests_kwargs)
     return_outputs(f'indicators {indicators} {command}d.')
 
 
-def xdr_ioc_to_timeline(iocs: List) -> Dict:
+def xdr_ioc_to_timeline(iocs: list) -> dict:
     ioc_time_line = {
         'Value': ','.join(iocs),
         'Message': 'indicator updated in XDR.',
@@ -395,7 +414,7 @@ def xdr_ioc_to_timeline(iocs: List) -> Dict:
     return ioc_time_line
 
 
-def xdr_expiration_to_demisto(expiration) -> Union[str, None]:
+def xdr_expiration_to_demisto(expiration) -> str | None:
     if expiration:
         if expiration == -1:
             return 'Never'
@@ -424,7 +443,7 @@ def list_of_single_to_str(values: Sequence[str]) -> list[str] | str:
     return list(values)
 
 
-def xdr_ioc_to_demisto(ioc: Dict) -> Dict:
+def xdr_ioc_to_demisto(ioc: dict) -> dict:
     demisto.debug(f'Raw incoming IOC: {ioc}')
     indicator = ioc.get('RULE_INDICATOR', '')
     xdr_server_score = int(xdr_reputation_to_demisto.get(ioc.get('REPUTATION'), 0))
@@ -444,7 +463,7 @@ def xdr_ioc_to_demisto(ioc: Dict) -> Dict:
 
     tag_comment_fields = {k: v for k, v in tag_comment_fields.items() if v}  # ommits falsey values
 
-    entry: Dict = {
+    entry: dict = {
         "value": indicator,
         "type": xdr_types_to_demisto.get(ioc.get('IOC_TYPE')),
         "score": score,
@@ -463,11 +482,11 @@ def xdr_ioc_to_demisto(ioc: Dict) -> Dict:
 
 
 def get_changes(client: Client):
-    from_time: Dict = get_integration_context()
+    from_time: dict = get_integration_context()
     if not from_time:
         raise DemistoException('XDR is not synced.')
     path, requests_kwargs = prepare_get_changes(from_time['ts'])
-    requests_kwargs: Dict = get_requests_kwargs(_json=requests_kwargs)
+    requests_kwargs: dict = get_requests_kwargs(_json=requests_kwargs)
     demisto.debug(f'creating http request to {path} with {str(requests_kwargs)}')
     if iocs := client.http_request(url_suffix=path, requests_kwargs=requests_kwargs).get('reply', []):
         from_time['ts'] = iocs[-1].get('RULE_MODIFY_TIME', from_time) + 1
@@ -482,7 +501,7 @@ def get_changes(client: Client):
 def module_test(client: Client):
     ts = int(datetime.now(timezone.utc).timestamp() * 1000) - 1
     path, requests_kwargs = prepare_get_changes(ts)
-    requests_kwargs: Dict = get_requests_kwargs(_json=requests_kwargs)
+    requests_kwargs: dict = get_requests_kwargs(_json=requests_kwargs)
     client.http_request(url_suffix=path, requests_kwargs=requests_kwargs).get('reply', [])
     demisto.results('ok')
 
@@ -541,7 +560,7 @@ def get_indicator_xdr_score(indicator: str, xdr_server: int):
         if ioc:
             ioc = ioc[0]
             score = ioc.get('score', 0)
-            temp: Dict = next(filter(is_xdr_data, ioc.get('moduleToFeedMap', {}).values()), {})
+            temp: dict = next(filter(is_xdr_data, ioc.get('moduleToFeedMap', {}).values()), {})
             xdr_local = temp.get('score', 0)
     if xdr_server != score:
         return xdr_server
@@ -563,7 +582,7 @@ def get_sync_file():
     temp_file_path = get_temp_file()
     try:
         create_file_sync(temp_file_path)
-        with open(temp_file_path, 'r') as _tmpfile:
+        with open(temp_file_path) as _tmpfile:
             return_results(fileResult('xdr-sync-file', _tmpfile.read()))
     finally:
         os.remove(temp_file_path)
@@ -573,7 +592,7 @@ def to_cli_name(field_name: str):
     return field_name.lower().replace(' ', '')
 
 
-def validate_fix_severity_value(severity: str, indicator_value: Optional[str] = None) -> str:
+def validate_fix_severity_value(severity: str, indicator_value: str | None = None) -> str:
     """raises error if the value is invalid, returns the value (fixes informational->info)
 
     Args:
