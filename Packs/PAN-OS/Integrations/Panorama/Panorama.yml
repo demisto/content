@@ -222,7 +222,7 @@ configuration:
   required: false
 description: Manage Palo Alto Networks Firewall and Panorama. Use this pack to manage Prisma Access through Panorama. For more information, see the Panorama documentation.
 display: Palo Alto Networks PAN-OS
-name: Panorama_20230921
+name: Panorama
 script:
   commands:
   - arguments:
