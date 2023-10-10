@@ -289,7 +289,6 @@ alter  event_type = arrayindex(regextract(_raw_log, "event\=([^;]+)"), 0)
     xdm.target.resource.id = custom_link_id, 
     xdm.target.resource.name = custom_link_name,
     xdm.target.resource.type = if(custom_link_id != null, "custom link URL"),
-    xdm.target.resource.value = custom_link_url,
     xdm.target.url = custom_link_url;
 
 /* Account Jump Item Association Events: 
@@ -352,9 +351,54 @@ alter  event_type = arrayindex(regextract(_raw_log, "event\=([^;]+)"), 0)
     xdm.target.user.last_name = arrayindex(user_displayname, 1),
     xdm.target.user.username = username;
 
+/* Shared Jump Group Events: 
+    These mappings apply to the following events: shared_jump_group_added, shared_jump_group_changed & shared_jump_group_removed. 
+    https://www.beyondtrust.com/docs/privileged-remote-access/how-to/integrations/syslog/fields/shared-jump-group-fields.htm */
+alter  event_type = arrayindex(regextract(_raw_log, "event\=([^;]+)"), 0)
+| filter event_type in("shared_jump_group_added", "shared_jump_group_changed", "shared_jump_group_removed")
+| call beyondtrust_pra_common_fields_modeling
+| alter msg_payload = arrayindex(regextract(_raw_log, "\d+\:\d+\:\d+\:(.+)"), 0)
+| alter 
+    jump_group_code_name = arrayindex(regextract(msg_payload, "code_name\=([^;]+)"), 0), // The code name of this Jump Group.
+    jump_group_id = arrayindex(regextract(msg_payload, "id\=(\w[^;]*)"), 0), // The unique identifier of the Jump Group.
+    jump_group_name = arrayindex(regextract(msg_payload, "name\=([^;]+)"), 0), // The name of the Jump Group.
+    assigned_ecm_group = arrayindex(regextract(msg_payload, "ecm_group\=([^;]+)"), 0) // The ID of the ECM Group assigned to the group.
+| alter
+    xdm.target.user.groups = arrayconcat(arraycreate(jump_group_code_name), arraycreate(jump_group_id), arraycreate(jump_group_name), arraycreate(assigned_ecm_group));
+
+/* SSH Account Events: 
+    These mappings apply to the following events: ssh_account_added, ssh_account_changed, ssh_account_removed. 
+    https://www.beyondtrust.com/docs/privileged-remote-access/how-to/integrations/syslog/fields/ssh-account-fields.htm */
+alter  event_type = arrayindex(regextract(_raw_log, "event\=([^;]+)"), 0)
+| filter event_type in("ssh_account_added", "ssh_account_changed", "ssh_account_removed")
+| call beyondtrust_pra_common_fields_modeling
+| alter public_cert_signing_ca = arrayindex(regextract(_raw_log, "public_cert_signing_ca\=([^;]+)"), 0) // The public certificate signing ca.
+| alter xdm.network.tls.client_certificate.issuer = public_cert_signing_ca;
+
+/* Support Team Events: 
+    These mappings apply to the following events: support_team_added, support_team_changed, support_team_removed, support_team_member_added, support_team_member_changed. */
+alter  event_type = arrayindex(regextract(_raw_log, "event\=([^;]+)"), 0)
+| filter event_type in("support_team_added", "support_team_changed", "support_team_removed", "support_team_member_added", "support_team_member_changed", "support_team_member_changed")
+| call beyondtrust_pra_common_fields_modeling
+| alter msg_payload = arrayindex(regextract(_raw_log, "\d+\:\d+\:\d+\:(.+)"), 0)
+| alter // Support Team: https://www.beyondtrust.com/docs/privileged-remote-access/how-to/integrations/syslog/fields/support-team-fields.htm
+    support_team_id1 = arrayindex(regextract(msg_payload, "id\=(\w[^;]*)\;"), 0), // The unique identifier of the team.
+    support_team_name1 = arrayindex(regextract(msg_payload, "name\=(\w[^;]+)"), 0) // The name of the team.
+| alter // Support Team Member: https://www.beyondtrust.com/docs/privileged-remote-access/how-to/integrations/syslog/fields/support-team-member-fields.htm
+    support_team_id2 = arrayindex(regextract(msg_payload, "team\:id\=(\w[^;]*)\;"), 0), //The unique identifier of the team to which this user belongs.
+    support_team_name2 = arrayindex(regextract(msg_payload, "team\:name\=(\w[^;]+)"), 0), // The name of the team to which this user belongs.
+    support_user_id = arrayindex(regextract(msg_payload, "user\:id\=(\w[^;]+)"), 0), // The unique identifier of the user being added to or removed from this team.
+    support_user_name = arrayindex(regextract(msg_payload, "user\:name\=(\w[^;]+)"), 0) // The name of the user being added to or removed from this team.
+| alter 
+    support_team_id = coalesce(support_team_id1, support_team_id2),
+    support_team_name = coalesce(support_team_name1, support_team_name2)
+| alter
+    xdm.target.user.username = support_user_name, 
+    xdm.target.user.identifier = support_user_id, 
+    xdm.target.user.groups = arrayconcat(arraycreate(support_team_id), arraycreate(support_team_name));
+
 /* General Fallback Mapping: 
     This filter applies to all other events which weren't mapped explicitly by any filter. */
 alter  event_type = arrayindex(regextract(_raw_log, "event\=([^;]+)"), 0)
-| filter event_type not in("login", "logout", "change_display_name", "change_password", "change_username", "account_added", "account_changed", "accounts_changed", "account_removed", "account_group_added", "account_group_changed", "account_group_removed", "account_user_added", "account_user_removed", "support_session_report_generated", "support_session_detail_generated", "support_session_summary_report_generated", "team_activity_report_generated", "custom_session_policy_added", "custom_session_policy_changed", "custom_session_policy_removed", "account_jump_item", "account_jump_item_association_removed", "api_account_added", "api_account_changed", "api_account_removed", "canned_script_category_added", "canned_script_category_removed", "canned_script_added", "canned_script_changed", "canned_script_removed", "canned_script_file_added", "canned_script_file_removed", "canned_script_team_added", "canned_script_team_removed", "canned_scripts_category_added", "canned_scripts_category_removed", "canned_scripts_file_added", "canned_scripts_file_removed", "certificate_export", "custom_session_attribute_added", "custom_session_attribute_changed", "custom_session_attribute_removed", "custom_special_action_added", "custom_special_action_changed", "custom_special_action_removed", "custom_rep_link_added", "custom_rep_link_changed", "custom_rep_link_removed", "windows_service_removed", "windows_service_changed", "vault_account_password_rotation", "user_session_policy_added", "user_session_policy_removed", "user_added", "user_changed", "user_removed")
+| filter event_type not in("login", "logout", "change_display_name", "change_password", "change_username", "account_added", "account_changed", "accounts_changed", "account_removed", "account_group_added", "account_group_changed", "account_group_removed", "account_user_added", "account_user_removed", "support_session_report_generated", "support_session_detail_generated", "support_session_summary_report_generated", "team_activity_report_generated", "custom_session_policy_added", "custom_session_policy_changed", "custom_session_policy_removed", "account_jump_item", "account_jump_item_association_removed", "api_account_added", "api_account_changed", "api_account_removed", "canned_script_category_added", "canned_script_category_removed", "canned_script_added", "canned_script_changed", "canned_script_removed", "canned_script_file_added", "canned_script_file_removed", "canned_script_team_added", "canned_script_team_removed", "canned_scripts_category_added", "canned_scripts_category_removed", "canned_scripts_file_added", "canned_scripts_file_removed", "certificate_export", "custom_session_attribute_added", "custom_session_attribute_changed", "custom_session_attribute_removed", "custom_special_action_added", "custom_special_action_changed", "custom_special_action_removed", "custom_rep_link_added", "custom_rep_link_changed", "custom_rep_link_removed", "windows_service_removed", "windows_service_changed", "vault_account_password_rotation", "user_session_policy_added", "user_session_policy_removed", "user_added", "user_changed", "user_removed", "support_team_added", "support_team_changed", "support_team_removed", "support_team_member_added", "support_team_member_changed", "support_team_member_changed", "ssh_account_added", "ssh_account_changed", "ssh_account_removed", "shared_jump_group_added", "shared_jump_group_changed", "shared_jump_group_removed")
 | call beyondtrust_pra_common_fields_modeling;
-
