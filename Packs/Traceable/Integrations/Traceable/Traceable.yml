@@ -35,7 +35,7 @@ configuration:
   type: 0
   required: false
 - name: max_fetch
-  display: Max number of records to fetch per API call to Traceable API Endpoint.
+  display: Max number of records to fetch per API call to Traceable API Endpoint
   required: false
   type: 0
   defaultvalue: '100'
@@ -45,7 +45,7 @@ configuration:
   type: 0
   defaultvalue: '5'
 - name: span_query_batch_size
-  display: Max mumber of spans to query per thread
+  display: Max spans per thread
   required: false
   type: 0
   defaultvalue: '50'
@@ -153,13 +153,13 @@ configuration:
   - isLearnt
   type: 16
   required: false
-- display: Only fetch unique incidents
+- display: Fetch unique incidents
   defaultvalue: "true"
   name: isFetchUniqueIncidents
   type: 8
   required: false
 - name: timegap_between_repeat_incidents
-  display: Time to wait before raising an incident similar to an existing one (in <number> <time unit>, e.g., in 12 hours, in 7 days)
+  display: Time between raising similar incidents (in <number> <time unit>, e.g., in 12 hours, in 7 days)
   required: false
   type: 0
   defaultvalue: 'in 7 days'

@@ -22,8 +22,9 @@ The following parameters can be used to select the events that should be importe
 |Parameter name|Type|Required (Yes/No)|Default Value|Description|
 |------|------|------|------|------|
 |First fetch timestamp|Short text|No|1 days| Duration in the past to query the events, when querying for the first time. |
-|max_fetch|Short text|No|100| Number of records to return from Traceable platform per query. |
-|span_fetch_threadpool|Short text|No|10| Number of threads to use for querying `spans` in parallel. |
+|Max number of records to fetch per API call to Traceable API Endpoint|Short text|No|100| Number of records to return from Traceable platform per query. |
+|Number of span queries to run in parallel|Short text|No|5| Number of threads to use for querying `spans` in parallel. |
+|Max spans per thread|Short text|No|50|Max mumber of spans to query per thread|
 |Comma Separated Environment List To Process|Long text|No|-| Comma separated list of environments to query. |
 |Security Score Category|Multi select|No|CRITICAL, HIGH, MEDIUM| `Security Score Category` of the events to be queried. |
 |Threat Category|Multi select|No|Malicious Activities, API Abuse, Malicious Sources| `Threat Category` of the events to be queried. |
@@ -32,11 +33,21 @@ The following parameters can be used to select the events that should be importe
 |IP Location Type|Multi select|No|-| `IP Location` type of the events to be queried. |
 |Traceable Platform Endpoint URL|Long text|No|https://app.traceable.ai| Base URL of the Traceable platform UI endpoint. |
 |Ignore Status Codes|Long text|No|400-499| Ignore incidents for attacks failing with these status codes. |
-|Incident optional field list|Multi select|No|actorDevice,actorEntityId,actorId,actorScoreCategory,actorSession,anomalousAttribute,apiName,apiUri,category,ipAbuseVelocity,ipReputationLevel,securityEventType,securityScore,serviceId,serviceName,actorScore,threatCategory,type| Optional fields to pull from the Traceable event. |
+|Incident optional field list|Multi select|No|actorDevice,actorEntityId,actorId,actorScoreCategory,actorSession,anomalousAttribute,apiName,apiUri,category,ipAbuseVelocity,ipReputationLevel,securityEventType,securityScore,serviceId,serviceName,actorScore,threatCategory,type| Optional fields to pull from the Traceable event.|
 |Additional API Attributes|Multi select|No|isExternal,isAuthenticated,riskScore,riskScoreCategory,isLearnt| Additional API attributes to query for the affected API in the incident. |
+|Fetch unique incidents|Boolean|No|true|Only pull an incident the same one has not been raised before.|
+|Time between raising similar incidents (in <number> <time unit>, e.g., in 12 hours, in 7 days)|Short text|No|in 7 days|Time to wait before raising an incident similar to an existing one (in <number> <time unit>, e.g., in 12 hours, in 7 days).|
 
 ## Incident Types
 The integration generates _Exploit_ type of incidents.
+
+## Commands
+The Traceable integration pack provides the following commands.
+|Command|Description|
+|------|------|
+|list_incident_cache|List all the entries in the Traceable instance cache|
+|purge_incident_cache|Purge/Delete all the entries i the Traceable instance cache|
+
 
 ## Official Traceable Documentation
 https://docs.traceable.ai/

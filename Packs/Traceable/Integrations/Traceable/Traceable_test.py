@@ -1457,6 +1457,7 @@ def test_instance_cache(mocker):
     client.set_security_score_category_list(["CRITICAL", "HIGH", "MEDIUM", "LOW"])
     client.set_ip_reputation_level_list(["CRITICAL", "HIGH", "MEDIUM", "LOW"])
     client.set_ip_abuse_velocity_list(["CRITICAL", "HIGH", "MEDIUM", "LOW"])
+    client.set_fetch_unique_incidents(True)
     client.set_limit(100)
     client.__commit_integration_context__()
 
@@ -1534,6 +1535,7 @@ def test_list_instance_cache_command():
     client.set_ip_reputation_level_list(["CRITICAL", "HIGH", "MEDIUM", "LOW"])
     client.set_ip_abuse_velocity_list(["CRITICAL", "HIGH", "MEDIUM", "LOW"])
     client.set_limit(100)
+    client.__commit_integration_context__()
     _str = Helper.now_time_to_string()
     client.set_integration_context_key_value("key", _str)
     es = f"[{{\"id\": \"key\", \"expiry\": \"{_str}\"}}]"
@@ -1556,6 +1558,7 @@ def test_purge_incident_cache_command():
     client.set_ip_reputation_level_list(["CRITICAL", "HIGH", "MEDIUM", "LOW"])
     client.set_ip_abuse_velocity_list(["CRITICAL", "HIGH", "MEDIUM", "LOW"])
     client.set_limit(100)
+    client.__commit_integration_context__()
     _str = Helper.now_time_to_string()
     client.set_integration_context_key_value("key", _str)
     es = f"[{{\"id\": \"key\", \"expiry\": \"{_str}\"}}]"

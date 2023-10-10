@@ -1039,7 +1039,7 @@ def fetch_incidents(client: Client, last_run, first_fetch_time):
             context_value = client.get_integration_context_key_value(context_key)
             if context_value is not None:
                 context_entry_date = Helper.string_to_datetime(context_value)
-                if context_entry_date < dateparser.parse(client.timegap_between_repeat_incidents):  # type: ignore
+                if context_entry_date < datetime.utcnow():
                     context_value = None
         incident_created_time: datetime = datetime.fromtimestamp(
             item["timestamp"]["value"] / 1000
