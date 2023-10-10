@@ -57,7 +57,7 @@ def split_rule(rule: dict, port: int, protocol: str) -> list[dict]:
     return (res_list)
 
 
-def sg_fix(sg_info: list, port: int, protocol: str, assume_role: str, instance_to_use: str) -> dict:
+def sg_fix(sg_info: list, port: int, protocol: str, assume_role: str, instance_to_use: str, region: str) -> dict:
     """
     For a SG determine what needs to be recreated.
     Calls split_rule() if there are rules with ranges of ports to be split up
@@ -118,6 +118,8 @@ def sg_fix(sg_info: list, port: int, protocol: str, assume_role: str, instance_t
         cmd_args = {"groupName": new_name, "vpcId": info['VpcId'], "description": description, "using": instance_to_use}
         if assume_role:
             cmd_args.update({'roleArn': assume_role, 'roleSessionName': ROLE_SESSION_NAME})
+        if region:
+            cmd_args.update({'region': region})
         new_sg = demisto.executeCommand("aws-ec2-create-security-group", cmd_args)
         if isError(new_sg):
             raise ValueError('Error on creating new security group')
@@ -126,6 +128,8 @@ def sg_fix(sg_info: list, port: int, protocol: str, assume_role: str, instance_t
         cmd_args = {"groupId": new_id, "IpPermissionsFull": item, "using": instance_to_use}
         if assume_role:
             cmd_args.update({'roleArn': assume_role, 'roleSessionName': ROLE_SESSION_NAME})
+        if region:
+            cmd_args.update({'region': region})
         res = demisto.executeCommand("aws-ec2-authorize-security-group-ingress-rule",
                                      cmd_args)
         if isError(res):
@@ -144,6 +148,8 @@ def sg_fix(sg_info: list, port: int, protocol: str, assume_role: str, instance_t
         cmd_args = {"groupId": new_id, "IpPermissionsFull": e_format, "using": instance_to_use}
         if assume_role:
             cmd_args.update({'roleArn': assume_role, 'roleSessionName': ROLE_SESSION_NAME})
+        if region:
+            cmd_args.update({'region': region})
         res = demisto.executeCommand("aws-ec2-authorize-security-group-egress-rule",
                                      cmd_args)
         # Don't error if the message is that the rule already exists.
@@ -159,6 +165,8 @@ def sg_fix(sg_info: list, port: int, protocol: str, assume_role: str, instance_t
         cmd_args = {"groupId": new_id, "IpPermissionsFull": all_traffic_rule, "using": instance_to_use}
         if assume_role:
             cmd_args.update({'roleArn': assume_role, 'roleSessionName': ROLE_SESSION_NAME})
+        if region:
+            cmd_args.update({'region': region})
         res = demisto.executeCommand("aws-ec2-revoke-security-group-egress-rule",
                                      cmd_args)
         if isError(res):
@@ -166,7 +174,7 @@ def sg_fix(sg_info: list, port: int, protocol: str, assume_role: str, instance_t
     return {'new-sg': new_id}
 
 
-def replace_sgs(replace_list: list, int_sg_mapping: dict, assume_role: str, instance_to_use: str):
+def replace_sgs(replace_list: list, int_sg_mapping: dict, assume_role: str, instance_to_use: str, region: str):
     """
     Replace the actual SGs on the interface
 
@@ -185,13 +193,16 @@ def replace_sgs(replace_list: list, int_sg_mapping: dict, assume_role: str, inst
         cmd_args = {"networkInterfaceId": entry['int'], "groups": formatted_list, "using": instance_to_use}
         if assume_role:
             cmd_args.update({'roleArn': assume_role, 'roleSessionName': ROLE_SESSION_NAME})
+        if region:
+            cmd_args.update({'region': region})
         res = demisto.executeCommand("aws-ec2-modify-network-interface-attribute",
                                      cmd_args)
         if isError(res):
             raise ValueError('Error on replacing security group(s) on network interface')
 
 
-def determine_excessive_access(int_sg_mapping: dict, port: int, protocol: str, assume_role: str, instance_to_use: str) -> list:
+def determine_excessive_access(int_sg_mapping: dict, port: int, protocol: str, assume_role: str, instance_to_use: str,
+                               region: str) -> list:
     """
     Pulls info on each SG and then calls sg_fix() to actually create the new SGs
 
@@ -208,13 +219,15 @@ def determine_excessive_access(int_sg_mapping: dict, port: int, protocol: str, a
     for mapping in int_sg_mapping:
         for sg in int_sg_mapping[mapping]:
             cmd_args = {"groupIds": sg, "using": instance_to_use}
+            if region:
+                cmd_args.update({'region': region})
             if assume_role:
                 cmd_args.update({'roleArn': assume_role, 'roleSessionName': ROLE_SESSION_NAME})
             sg_info = demisto.executeCommand("aws-ec2-describe-security-groups", cmd_args)
             if isError(sg_info):
                 raise ValueError('Error on describing security group')
             elif sg_info:
-                res = sg_fix(sg_info, port, protocol, assume_role, instance_to_use)
+                res = sg_fix(sg_info, port, protocol, assume_role, instance_to_use, region)
                 # Need interface, old sg and new sg.
                 if res.get('new-sg'):
                     res['old-sg'] = sg
@@ -223,7 +236,7 @@ def determine_excessive_access(int_sg_mapping: dict, port: int, protocol: str, a
     return replace_list
 
 
-def instance_info(instance_id: str, public_ip: str, assume_role: str) -> tuple[dict, str]:
+def instance_info(instance_id: str, public_ip: str, assume_role: str, region: str) -> tuple[dict, str]:
     """
     Finds interface with public_ip and from this creates interface ID/SG mapping
 
@@ -235,6 +248,8 @@ def instance_info(instance_id: str, public_ip: str, assume_role: str) -> tuple[d
         tuple[dict, str]: A dictionary mapping interfaces to security groups (dict), and an integration to use (str).
     """
     cmd_args = {"instanceIds": instance_id}
+    if region:
+        cmd_args.update({'region': region})
     if assume_role:
         cmd_args.update({'roleArn': assume_role, 'roleSessionName': ROLE_SESSION_NAME})
     instance_info = demisto.executeCommand("aws-ec2-describe-instances", cmd_args)
@@ -282,17 +297,18 @@ def aws_recreate_sg(args: dict[str, Any]) -> str:
     protocol = args.get('protocol', None)
     public_ip = args.get('public_ip', None)
     assume_role = args.get('assume_role', None)
+    region = args.get('region', None)
 
     if not instance_id or not port or not protocol or not public_ip:
         raise ValueError('instance_id, port, protocol and public_ip all need to be specified')
 
     # Determine interface with public IP and associated SGs.
-    int_sg_mapping, instance_to_use = instance_info(instance_id, public_ip, assume_role)
+    int_sg_mapping, instance_to_use = instance_info(instance_id, public_ip, assume_role, region)
     # Determine what SGs are overpermissive for particular port.
-    replace_list = determine_excessive_access(int_sg_mapping, port, protocol, assume_role, instance_to_use)
+    replace_list = determine_excessive_access(int_sg_mapping, port, protocol, assume_role, instance_to_use, region)
     if len(replace_list) == 0:
         raise ValueError('No security groups were found to need to be replaced')
-    replace_sgs(replace_list, int_sg_mapping, assume_role, instance_to_use)
+    replace_sgs(replace_list, int_sg_mapping, assume_role, instance_to_use, region)
     display_message = f"For interface {replace_list[0]['int']}: \r\n"
     for replace in replace_list:
         display_message += f"replaced SG {replace['old-sg']} with {replace['new-sg']} \r\n"
