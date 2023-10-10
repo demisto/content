@@ -652,9 +652,6 @@ def enable_or_disable_user_account(
     :rtype: ``dict`
     """
     # Required Params
-    # account_identifiers: List[Dict[str, str]] = json.loads(
-    #     args.get("account_identifiers", [{}])
-    # )
     account_identifiers: List[Dict[str, str]] = []
     for account in args["account_identifiers"]:
         account_identifiers.append(account)
@@ -725,9 +722,6 @@ def force_sign_out(client: Client, args: Dict[str, Any]) -> Union[str, CommandRe
     :rtype: ``dict`
     """
     # Required Params
-    # account_identifiers: List[Dict[str, str]] = json.loads(
-    #     args.get(ACCOUNT_IDENTIFIERS, [{}])
-    # )
     account_identifiers: List[Dict[str, str]] = []
     for account in args[ACCOUNT_IDENTIFIERS]:
         account_identifiers.append(account)
@@ -782,9 +776,6 @@ def force_password_reset(
     :rtype: ``dict`
     """
     # Required Params
-    # account_identifiers: List[Dict[str, str]] = json.loads(
-    #     args.get(ACCOUNT_IDENTIFIERS, [{}])
-    # )
     account_identifiers: List[Dict[str, str]] = []
     for account in args[ACCOUNT_IDENTIFIERS]:
         account_identifiers.append(account)
@@ -961,7 +952,7 @@ def get_endpoint_activity_data(
 
 
 def get_endpoint_activity_data_count(
-    v1_client, start, end, query_op, top, select, fields
+    v1_client: pytmv1.Client, start, end, query_op, top, select, fields
 ) -> int:
     """
     Fetches endpoint activity data count.
@@ -1059,7 +1050,7 @@ def get_email_activity_data(
 
 
 def get_email_activity_data_count(
-    v1_client, start, end, query_op, top, select, fields
+    v1_client: pytmv1.Client, start, end, query_op, top, select, fields
 ) -> int:
     """
     Fetches email activity data count.
@@ -1629,7 +1620,6 @@ def add_to_suspicious_list(
     :rtype: ``dict`
     """
     # Required Params
-    # block_objects: List[Dict[str, Any]] = json.loads(args.get(BLOCK_OBJECTS, [{}]))
     block_objects: List[Dict[str, Any]] = []
     for block in args[BLOCK_OBJECTS]:
         block_objects.append(block)
@@ -1693,7 +1683,6 @@ def delete_from_suspicious_list(
     :rtype: ``dict`
     """
     # Required Params
-    # block_objects: List[Dict[str, str]] = json.loads(args.get(BLOCK_OBJECTS, [{}]))
     block_objects: List[Dict[str, str]] = []
     for block in args[BLOCK_OBJECTS]:
         block_objects.append(block)
@@ -1755,7 +1744,6 @@ def get_file_analysis_status(
     """
     # Required Params
     task_id = args.get(TASKID, EMPTY_STRING)
-
     message: Dict[str, Any] = {}
     # Initialize pytmv1 client
     v1_client = _get_client(APP_NAME, client.api_key, client.base_url)
@@ -2302,7 +2290,6 @@ def get_alert_details(
     """
     # Required Params
     workbench_id: str = args.get(WORKBENCH_ID, EMPTY_STRING)
-
     message: Dict[str, Any] = {}
     # Initialize pytmv1 client
     v1_client = _get_client(APP_NAME, client.api_key, client.base_url)
@@ -2343,7 +2330,6 @@ def add_note(client: Client, args: Dict[str, Any]) -> Union[str, CommandResults]
     # Required Params
     workbench_id = args.get(WORKBENCH_ID, EMPTY_STRING)
     content = args.get(CONTENT, EMPTY_STRING)
-
     message: Dict[str, Any] = {}
     # Initialize pytmv1 client
     v1_client = _get_client(APP_NAME, client.api_key, client.base_url)
@@ -2385,7 +2371,6 @@ def update_status(client: Client, args: Dict[str, Any]) -> Union[str, CommandRes
     workbench_id = args.get(WORKBENCH_ID, EMPTY_STRING)
     status = args.get(STATUS, EMPTY_STRING)
     if_match = args.get(IF_MATCH, EMPTY_STRING)
-
     message: Dict[str, Any] = {}
     # Initialize pytmv1 client
     v1_client = _get_client(APP_NAME, client.api_key, client.base_url)

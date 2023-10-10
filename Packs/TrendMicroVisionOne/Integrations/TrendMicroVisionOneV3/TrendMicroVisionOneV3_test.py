@@ -36,7 +36,7 @@ import TrendMicroVisionOneV3
 
 # Provide valid API KEY
 api_key = "test api key"
-proxy = False
+proxy = True
 verify = True
 
 
@@ -50,9 +50,8 @@ def enable_user_account_mock_response(*args, **kwargs):
 def test_enable_user_account(mocker):
     """Test enable user account success response."""
     client = Client("https://tmv1-mock.trendmicro.com", api_key, proxy, verify)
-    mocker.patch.object(
-        TrendMicroVisionOneV3,
-        "enable_or_disable_user_account",
+    mocker.patch(
+        "TrendMicroVisionOneV3.enable_or_disable_user_account",
         enable_user_account_mock_response,
     )
     args = {

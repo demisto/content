@@ -30,3 +30,5 @@
 !trendmicro-visionone-terminate-process endpoint="cb9c8412-1f64-4fa0-a36b-76bf41a07ede" file_sha1="1e97cca0cbefe53860a9bbc9bbbb846e6cdea911"
 !trendmicro-visionone-delete-email-message messageId="<CANUJTKTjto9GAHTr9V=TFqMZhRXqVnMfSqmTdAMyv9PDX3k+vQ0w@mail.gmail.com>" mailBox="kjshdfjksahd@trendenablement.com"
 !trendmicro-visionone-quarantine-email-message messageId="<CANUJTKTjto9GAHTr9V=TFqMZhRXqVnMfSqmTdAMyv9PDX3k+vQ0w@mail.gmail.com>" mailBox="kjshdfjksahd@trendenablement.com"
+!trendmicro-visionone-get-endpoint-activity-data "start": "2022-10-04T08:22:37Z", "end": "2023-10-04T08:22:37Z", "top": 50, "query_op": "or", "select": "dpt,dst,endpointHostName", "get_activity_data_count": "true", "fields": {"dpt": "443", "endpointHostName": "client1"}
+!trendmicro-visionone-get-email-activity-data "start": "2022-10-04T08:22:37Z", "end": "2023-10-04T08:22:37Z", "top": 50, "query_op": "or", "select": "mailFromAddresses,mailToAddresses", "get_activity_data_count": "true", "fields": {"mailToAddresses": "testemail@gmail.com", "mailMsgSubject": "spam"}
