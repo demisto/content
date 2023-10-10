@@ -1623,6 +1623,390 @@ script:
       Shared channels - Message posts, replies, and attachments shared in a shared Teams channel.
     execution: false
     name: msg-purge-ediscovery-data
+  - arguments:
+    - description: The recipient email.
+      isArray: false
+      name: recipient_email
+      required: true
+    - description: expected assessment.
+      isArray: false
+      name: expected_assessment
+      auto: PREDEFINED
+      predefined:
+      - 'block'
+      - 'unblock'
+      required: true
+    - description: category.
+      isArray: false
+      name: category
+      defaultValue: all
+      auto: PREDEFINED
+      predefined:
+      - 'spam'
+      - 'phishing'
+      - 'malware'
+      required: true
+    - description: message user, could be the user's id or the user's email.
+      isArray: false
+      name: message_user
+      required: true
+    - description: message id.
+      isArray: false
+      name: message_id
+      required: true
+    description: Create message assessment request.
+    execution: false
+    name: msg-create-mail-assessment-request
+    polling: true
+    outputs:
+    - contextPath: MSGraphMail.MailAssesment.ID
+      description: 'mail assessment id'
+      type: String
+    - contextPath: MSGraphMail.MailAssesment.CreatedDateTime
+      description: 'mail assessment Created DateTime'
+      type: String
+    - contextPath: MSGraphMail.MailAssesment.ContentType
+      description: 'Content Type'
+      type: String
+    - contextPath: MSGraphMail.MailAssesment.ExpectedAssessment
+      description: 'Expected Assessment'
+      type: String
+    - contextPath: MSGraphMail.MailAssesment.Category
+      description: 'Category'
+      type: String
+    - contextPath: MSGraphMail.MailAssesment.Status
+      description: 'Status'
+      type: String
+    - contextPath: MSGraphMail.MailAssesment.RequestSource
+      description: 'Request Source'
+      type: String
+    - contextPath: MSGraphMail.MailAssesment.RecipientEmail
+      description: 'Recipient Email'
+      type: String
+    - contextPath: MSGraphMail.MailAssesment.DestinationRoutingReason
+      description: 'Destination Routing Reason'
+      type: String
+    - contextPath: MSGraphMail.MailAssesment.MessageID
+      description: 'Message ID'
+      type: String
+    - contextPath: MSGraphMail.MailAssesment.CreatedUserID
+      description: 'Created user id '
+      type: String
+    - contextPath: MSGraphMail.MailAssesment.CreatedUsername
+      description: 'Created user name'
+      type: String
+    - contextPath: MSGraphMail.MailAssesment.ResultType
+      description: 'Result Type'
+      type: String
+    - contextPath: MSGraphMail.MailAssesment.ResultMessage
+      description: 'Result message'
+      type: String
+  - arguments:
+    - description: The recipient email.
+      isArray: false
+      name: recipient_email
+      required: true
+    - description: expected assessment.
+      isArray: false
+      name: expected_assessment
+      defaultValue: all
+      auto: PREDEFINED
+      predefined:
+      - 'block'
+      - 'unblock'
+      required: true
+    - description: category.
+      isArray: false
+      name: category
+      defaultValue: all
+      auto: PREDEFINED
+      predefined:
+      - 'spam'
+      - 'phishing'
+      - 'malware'
+      required: true
+    - description: Base 64 encoded eml file.
+      isArray: false
+      name: content_data
+      required: true
+    - description: Entry ID.
+      isArray: false
+      name: entry_id
+      required: true
+    description: Create email file assessment request.
+    execution: false
+    name: msg-create-email-file-assessment-request
+    polling: true
+    outputs:
+    - contextPath: MSGraphMail.EmailAssesment.ID
+      description: 'mail assessment id'
+      type: String
+    - contextPath: MSGraphMail.EmailAssesment.CreatedDateTime
+      description: 'mail assessment Created DateTime'
+      type: String
+    - contextPath: MSGraphMail.EmailAssesment.ContentType
+      description: 'Content Type'
+      type: String
+    - contextPath: MSGraphMail.EmailAssesment.ExpectedAssessment
+      description: 'Expected Assessment'
+      type: String
+    - contextPath: MSGraphMail.EmailAssesment.Category
+      description: 'Category'
+      type: String
+    - contextPath: MSGraphMail.EmailAssesment.Status
+      description: 'Status'
+      type: String
+    - contextPath: MSGraphMail.EmailAssesment.RequestSource
+      description: 'Request Source'
+      type: String
+    - contextPath: MSGraphMail.EmailAssesment.RecipientEmail
+      description: 'Recipient Email'
+      type: String
+    - contextPath: MSGraphMail.EmailAssesment.DestinationRoutingReason
+      description: 'Destination Routing Reason'
+      type: String
+    - contextPath: MSGraphMail.EmailAssesment.CreatedUserID
+      description: 'Created user id '
+      type: String
+    - contextPath: MSGraphMail.EmailAssesment.CreatedUsername
+      description: 'Created user name'
+      type: String
+    - contextPath: MSGraphMail.EmailAssesment.ResultType
+      description: 'Result Type'
+      type: String
+    - contextPath: MSGraphMail.EmailAssesment.ResultMessage
+      description: 'Result message'
+      type: String
+  - arguments:
+    - description: expected assessment.
+      isArray: false
+      name: expected_assessment
+      defaultValue: all
+      auto: PREDEFINED
+      predefined:
+      - 'block'
+      - 'unblock'
+      required: true
+    - description: category.
+      isArray: false
+      name: category
+      defaultValue: all
+      auto: PREDEFINED
+      predefined:
+      - 'phishing'
+      - 'malware'
+      required: true
+    - description: file name.
+      isArray: false
+      name: file_name
+      required: true
+    - description: Base 64 encoded eml file.
+      isArray: false
+      name: content_data
+      required: true
+    - description: Entry ID.
+      isArray: false
+      name: entry_id
+      required: true
+    description: Create email file assessment request.
+    execution: false
+    name: msg-create-file-assessment-request
+    polling: true
+    outputs:
+    - contextPath: MSGraphMail.FileAssesment.ID
+      description: 'mail assessment id'
+      type: String
+    - contextPath: MSGraphMail.FileAssesment.CreatedDateTime
+      description: 'mail assessment Created DateTime'
+      type: String
+    - contextPath: MSGraphMail.FileAssesment.ContentType
+      description: 'Content Type'
+      type: String
+    - contextPath: MSGraphMail.FileAssesment.ExpectedAssessment
+      description: 'Expected Assessment'
+      type: String
+    - contextPath: MSGraphMail.FileAssesment.Category
+      description: 'Category'
+      type: String
+    - contextPath: MSGraphMail.FileAssesment.Status
+      description: 'Status'
+      type: String
+    - contextPath: MSGraphMail.FileAssesment.RequestSource
+      description: 'Request Source'
+      type: String
+    - contextPath: MSGraphMail.FileAssesment.FileName
+      description: 'File name'
+      type: String
+    - contextPath: MSGraphMail.FileAssesment.CreatedUserID
+      description: 'Created user id '
+      type: String
+    - contextPath: MSGraphMail.FileAssesment.CreatedUsername
+      description: 'Created user name'
+      type: String
+    - contextPath: MSGraphMail.FileAssesment.ResultType
+      description: 'Result Type'
+      type: String
+    - contextPath: MSGraphMail.FileAssesment.ResultMessage
+      description: 'Result message'
+      type: String
+  - arguments:
+    - description: expected assessment.
+      isArray: false
+      name: expected_assessment
+      defaultValue: all
+      auto: PREDEFINED
+      predefined:
+      - 'block'
+      - 'unblock'
+      required: true
+    - description: category.
+      isArray: false
+      name: category
+      defaultValue: all
+      auto: PREDEFINED
+      predefined:
+      - 'phishing'
+      - 'malware'
+      required: true
+    - description: url.
+      isArray: false
+      name: url
+      required: true
+    description: Create url assessment request.
+    execution: false
+    name: msg-create-url-assessment-request
+    polling: true
+    outputs:
+    - contextPath: MSGraphMail.UrlAssesment.ID
+      description: 'mail assessment id'
+      type: String
+    - contextPath: MSGraphMail.UrlAssesment.CreatedDateTime
+      description: 'mail assessment Created DateTime'
+      type: String
+    - contextPath: MSGraphMail.UrlAssesment.ContentType
+      description: 'Content Type'
+      type: String
+    - contextPath: MSGraphMail.UrlAssesment.ExpectedAssessment
+      description: 'Expected Assessment'
+      type: String
+    - contextPath: MSGraphMail.UrlAssesment.Category
+      description: 'Category'
+      type: String
+    - contextPath: MSGraphMail.UrlAssesment.Status
+      description: 'Status'
+      type: String
+    - contextPath: MSGraphMail.UrlAssesment.RequestSource
+      description: 'Request Source'
+      type: String
+    - contextPath: MSGraphMail.UrlAssesment.RecipientEmail
+      description: 'Recipient Email'
+      type: String
+    - contextPath: MSGraphMail.UrlAssesment.DestinationRoutingReason
+      description: 'Destination Routing Reason'
+      type: String
+    - contextPath: MSGraphMail.UrlAssesment.CreatedUserID
+      description: 'Created user id'
+      type: String
+    - contextPath: MSGraphMail.UrlAssesment.CreatedUsername
+      description: 'Created user name'
+      type: String
+    - contextPath: MSGraphMail.UrlAssesment.ResultType
+      description: 'Result Type'
+      type: String
+    - contextPath: MSGraphMail.UrlAssesment.ResultMessage
+      description: 'Result message'
+      type: String
+  - arguments:
+    - description: request id.
+      isArray: false
+      name: request_id
+      required: true
+    - description: filter, Example:category eq 'malware’.
+      isArray: false
+      name: filter
+      required: true
+    - description: order by.
+      isArray: false
+      name: order_by
+      auto: PREDEFINED
+      predefined:
+      - 'id'
+      - 'createdDateTime'
+      - 'ContentType'
+      - 'expectedAssessment'
+      - 'category'
+      - 'status'
+      - 'requestSource'
+      required: true
+    - description: sort order.
+      isArray: false
+      name: sort_order
+      auto: PREDEFINED
+      predefined:
+      - 'asc'
+      - 'desc'
+      required: true
+    - description: limit.
+      isArray: false
+      name: limt
+      required: true
+    - description: next token.
+      isArray: false
+      name: next_token
+      required: true
+    description: Create url assessment request.
+    execution: false
+    name: msg-list-threat-assessment-requests
+    polling: true
+    outputs:
+    - contextPath: MsGraph.AssesmentRequestNextToken.next_token
+      description: 'next token'
+      type: String
+    - contextPath: MSGraphMail.AssesmentRequest.ID
+      description: 'assessment request id'
+      type: String
+    - contextPath: MSGraphMail.AssesmentRequest.CreatedDateTime
+      description: 'assessment request DateTime'
+      type: String
+    - contextPath: MSGraphMail.AssesmentRequest.ContentType
+      description: 'Content Type'
+      type: String
+    - contextPath: MSGraphMail.AssesmentRequest.ExpectedAssessment
+      description: 'Expected Assessment'
+      type: String
+    - contextPath: MSGraphMail.AssesmentRequest.Category
+      description: 'Category'
+      type: String
+    - contextPath: MSGraphMail.AssesmentRequest.Status
+      description: 'Status'
+      type: String
+    - contextPath: MSGraphMail.AssesmentRequest.URL
+      description: 'url'
+      type: String
+    - contextPath: MSGraphMail.AssesmentRequest.RequestSource
+      description: 'Request Source'
+      type: String
+    - contextPath: MSGraphMail.AssesmentRequest.RecipientEmail
+      description: 'Recipient Email'
+      type: String
+    - contextPath: MSGraphMail.AssesmentRequest.FileName
+      description: 'file name'
+      type: String
+    - contextPath: MSGraphMail.AssesmentRequest.DestinationRoutingReason
+      description: 'Destination Routing Reason'
+      type: String
+    - contextPath: MSGraphMail.AssesmentRequest.CreatedUserID
+      description: 'Created user id'
+      type: String
+    - contextPath: MSGraphMail.AssesmentRequest.CreatedUsername
+      description: 'Created user name'
+      type: String
+    - contextPath: MSGraphMail.AssesmentRequest.ResultType
+      description: 'Result Type'
+      type: String
+    - contextPath: MSGraphMail.AssesmentRequest.ResultMessage
+      description: 'Result message'
+      type: String
   dockerimage: demisto/crypto:1.0.0.68914
   isfetch: true
   runonce: false
