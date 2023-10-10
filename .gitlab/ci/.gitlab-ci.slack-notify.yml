@@ -23,7 +23,7 @@ slack-notify:
   stage: notify
   extends: .default-job-settings
   script:
-    - echo "Using ARTIFACTS_FOLDER: $CI_PROJECT_DIR"
+    - echo CI_PROJECT_DIR="$CI_PROJECT_DIR"
     - python3 ./Tests/scripts/gitlab_slack_notifier.py -p "$PIPELINE_TO_QUERY" -s "$SLACK_TOKEN" -c "$GITLAB_STATUS_TOKEN" -ch "$SLACK_CHANNEL" -tw "$WORKFLOW"
   retry:
     max: 2
