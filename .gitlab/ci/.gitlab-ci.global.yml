@@ -449,7 +449,7 @@
   #     when: always
   script:
     - section_start "Run pre-commit"
-    - demisto-sdk pre-commit --all-files --unit-test --mode=nightly
+    - demisto-sdk pre-commit --all-files --unit-test --mode=nightly --verbose --show-diff-on-failure
     - section_end "Run pre-commit"
     - job-done
   allow_failure: true
