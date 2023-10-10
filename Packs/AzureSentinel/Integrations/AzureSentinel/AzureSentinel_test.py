@@ -404,12 +404,12 @@ MOCKED_THREAT_INDICATOR_OUTPUT = {
                         "patternTypeValues": [
                             {
                                 "valueType": "url",
-                                "value": "‘twitter.com’"
+                                "value": "‘twitter.com’"  # noqa: RUF001
                             }
                         ]
                     }
                 ],
-                "pattern": "[url:value = ‘twitter.com’]",
+                "pattern": "[url:value = ‘twitter.com’]",  # noqa: RUF001
                 "patternType": "twitter.com",
                 "validFrom": "2021-11-17T08:20:15.111Z"
             }
@@ -531,12 +531,12 @@ MOCKED_ORIGINAL_THREAT_INDICATOR_OUTPUT = {
                 "patternTypeValues": [
                     {
                         "valueType": "url",
-                        "value": "‘twitter.com’"
+                        "value": "‘twitter.com’"  # noqa: RUF001
                     }
                 ]
             }
         ],
-        "pattern": "[url:value = ‘twitter.com’]",
+        "pattern": "[url:value = ‘twitter.com’]",  # noqa: RUF001
         "patternType": "twitter.com",
         "validFrom": "0001-01-01T00:00:00"
     }
@@ -836,12 +836,13 @@ class TestHappyPath:
         assert command_result.raw_response == MOCKED_WATCHLISTS['value'][0]
         assert expected_watchlist == command_result.outputs[0]
 
-    @pytest.mark.parametrize(argnames='deletion_command, args', argvalues=[
-        (delete_incident_command, {'incident_id': TEST_INCIDENT_ID}),
-        (delete_watchlist_command, {'watchlist_alias': TEST_WATCHLIST_ALIAS}),
-        (delete_watchlist_item_command, {'watchlist_item_id': TEST_ITEM_ID, 'watchlist_alias': TEST_WATCHLIST_ALIAS})
+    @pytest.mark.parametrize(argnames='deletion_command, args, item_id', argvalues=[
+        (delete_incident_command, {'incident_id': TEST_INCIDENT_ID}, TEST_INCIDENT_ID),
+        (delete_watchlist_command, {'watchlist_alias': TEST_WATCHLIST_ALIAS}, TEST_WATCHLIST_ALIAS),
+        (delete_watchlist_item_command, {'watchlist_item_id': TEST_ITEM_ID,
+         'watchlist_alias': TEST_WATCHLIST_ALIAS}, TEST_ITEM_ID)
     ])
-    def test_generic_delete_items(self, deletion_command, args, mocker):
+    def test_generic_delete_items(self, deletion_command, args, mocker, item_id):
         """
         Given:
             - Item for deletion is exist
@@ -862,8 +863,7 @@ class TestHappyPath:
         readable_output = command_result.readable_output
 
         # validate
-        item_id = args.popitem()[1]
-        f'{item_id} was deleted successfully.' in readable_output
+        assert f'{item_id} was deleted successfully.' in readable_output
 
     def test_list_watchlist_items(self, mocker):
         """
@@ -916,7 +916,7 @@ class TestHappyPath:
         command_result = list_watchlist_items_command(client=client, args=args)
 
         # validate
-        client.http_request.call_args[0][1] == f'watchlists/{TEST_WATCHLIST_ALIAS}/watchlistItems/test_watchlist_id_1'
+        assert client.http_request.call_args[0][1] == f'watchlists/{TEST_WATCHLIST_ALIAS}/watchlistItems/test_watchlist_item_id_1'
         assert f'| {TEST_ITEM_ID} | name: test1<br>IP: 1.1.1.1 |' in command_result.readable_output
         assert command_result.raw_response == mocked_item
         assert command_result.outputs[0] == expected_item
@@ -2016,3 +2016,37 @@ def test_update_incident_command_table_to_markdown(mocker):
     result = update_incident_command(client, args)
     expected_output = '### Updated incidents 123 details\n**No entries.**'
     assert result.readable_output.strip() == expected_output
+
+
+def test_update_incident_with_client_changed_etag(mocker):
+    """
+    Given:
+        - An old incident to update with a delta from xsoar.
+        - A newer version is returned from the client.
+
+    When:
+        - Updating the incident.
+
+    Then:
+        - Ensure the most updated etag is sent on update to avoid conflicts.
+    """
+    client = mock_client()
+    old_incident_data_in_xsoar = {
+        'etag': 'tag-version1', 'title': 'Title version 1', 'severity': 1, 'status': 2, 'classification': 'Undetermined'
+    }
+    delta_incident_changes = {
+        'severity': 2
+    }
+
+    # Changed etag and title.
+    newer_incident_from_azure = {
+        'etag': 'tag-version2',
+        'properties': {'title': 'Title version 2', 'severity': 1, 'status': 2, 'classification': 'Undetermined'}
+    }
+
+    # return newer version when requesting incident
+    http_request_mock = mocker.patch.object(client, 'http_request', side_effect=[newer_incident_from_azure, True])
+    update_incident_request(client, 'id-incident-1', old_incident_data_in_xsoar, delta_incident_changes, False)
+
+    assert http_request_mock.call_count == 2
+    assert http_request_mock.call_args[1].get('data', {}).get('etag') == newer_incident_from_azure.get('etag')
