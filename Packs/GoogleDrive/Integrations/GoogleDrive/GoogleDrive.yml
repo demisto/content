@@ -3046,9 +3046,31 @@ script:
     - contextPath: GoogleDrive.Labels.labels.revisionId
       description: 'The revision id of the label.'
       type: String
+  - name: google-drive-file-copy
+    description: Make a copy of a Google Drive file.
+    arguments:
+    - description: The ID of the file to copy.
+      name: file_id
+      required: true
+    - description: The name of the copied file.
+      name: copy_title
+      required: true
+    outputs:
+    - contextPath: GoogleDrive.kind
+      description: The content type of the file.
+      type: String
+    - contextPath: GoogleDrive.id
+      description: The ID of the copied file.
+      type: String  
+    - contextPath: GoogleDrive.name
+      description: The name of the copied file.
+      type: String
+    - contextPath: GoogleDrive.mimeType
+      description: The MIME type of the copied file.
+      type: String
   dockerimage: demisto/googleapi-python3:1.0.0.75697
   isfetch: true
-  runonce: false
+  runonce: falseπ
   script: "-"
   subtype: python3
   type: python

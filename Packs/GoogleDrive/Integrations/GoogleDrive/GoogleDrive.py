@@ -1737,12 +1737,11 @@ def drive_activity_list_command(client: 'GSuiteClient', args: dict[str, str]) ->
     client.set_authorized_http(scopes=COMMAND_SCOPES['DRIVE_ACTIVITY'], subject=user_id)
     response = client.http_request(full_url=URLS['DRIVE_ACTIVITY'], method='POST', body=body)
 
-    outputs_context = []
     readable_output = ''
-
-    for activity in response.get('activities', []):
-        outputs_context.append(prepare_drive_activity_output(activity))
-
+    outputs_context = [
+        prepare_drive_activity_output(activity)
+        for activity in response.get('activities', [])
+    ]
     drive_activity_hr = prepare_drive_activity_human_readable(outputs_context)
 
     outputs: dict = {
@@ -1763,7 +1762,27 @@ def drive_activity_list_command(client: 'GSuiteClient', args: dict[str, str]) ->
 
 
 def file_copy_command(client: 'GSuiteClient', args: dict[str, str]) -> CommandResults:
-    pass
+
+    client.set_authorized_http(scopes=COMMAND_SCOPES['FILES'], subject=client.user_id)  # TEST subject=client.user_id
+    drive_service = discovery.build(serviceName=SERVICE_NAME, version=API_VERSION, http=client.authorized_http)
+
+    file: dict = drive_service.files().copy(
+        fileId=args['file_id'],
+        body={'name': args['copy_title']}
+    ).execute()
+
+    return CommandResults(
+        raw_response=file,
+        outputs_prefix='GoogleDrive',
+        outputs_key_field='id',
+        outputs={
+            k: file.get(k) for k in ('kind', 'id', 'name', 'mimeType')
+        },
+        readable_output=tableToMarkdown(
+            f'New file copied from {args["file_id"]}',
+            file, ['id', 'name'], headerTransform=string_to_table_header
+        ),
+    )
 
 
 def fetch_incidents(client: 'GSuiteClient', last_run: dict, params: dict, is_test: bool = False) -> \
@@ -1834,7 +1853,7 @@ def fetch_incidents(client: 'GSuiteClient', last_run: dict, params: dict, is_tes
 
 def main() -> None:  # pragma: no cover
     """
-         PARSE AND VALIDATE INTEGRATION PARAMS
+    PARSE AND VALIDATE INTEGRATION PARAMS
     """
 
     # Commands dictionary
@@ -1913,7 +1932,7 @@ def main() -> None:  # pragma: no cover
 
     # Log exceptions
     except Exception as e:
-        return_error(f'Error: {str(e)}')
+        return_error(f'Error: {e}')
 
 
 from GSuiteApiModule import *  # noqa: E402
