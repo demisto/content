@@ -466,8 +466,8 @@ class Client(BaseClient):
             self.__query_api_attributes = True
 
     def graphql_query(self, query, params={}, verify=False, additional_logging=""):
-        demisto.info(f"graphql_query: Entered into graphql_query {additional_logging}")
-        demisto.info(f"graphql_query: Running request...{additional_logging}")
+        demisto.debug(f"graphql_query: Entered into graphql_query {additional_logging}")
+        demisto.debug(f"graphql_query: Running request...{additional_logging}")
         response = requests.post(
             self.url,
             json={"query": query, "variables": params},
@@ -486,16 +486,16 @@ class Client(BaseClient):
             demisto.error(msg)
             raise Exception(msg)
 
-        demisto.info(f"graphql_query: Completed checking request for non 200 errors...{additional_logging}")
+        demisto.debug(f"graphql_query: Completed checking request for non 200 errors...{additional_logging}")
 
         is_error, error = self.errors_in_response(response)
-        demisto.info(f"graphql_query: Completed errors_in_response...{additional_logging}")
+        demisto.debug(f"graphql_query: Completed errors_in_response...{additional_logging}")
         if is_error:
-            demisto.info(f"graphql_query: printing error...{additional_logging}")
+            demisto.debug(f"graphql_query: printing error...{additional_logging}")
             demisto.error(error)
             raise Exception(error)
 
-        demisto.info(f"graphql_query: Completed checking request for error objects...{additional_logging}")
+        demisto.debug(f"graphql_query: Completed checking request for error objects...{additional_logging}")
 
         if response is not None and response.text is not None:
             response_obj = json.loads(response.text)
@@ -537,10 +537,10 @@ class Client(BaseClient):
             limit=self.limit,
             filter_by_clause=filter_by_clause,
         )
-        demisto.info(f"get_span_for_trace_id: Span query: {query}")
+        demisto.debug(f"get_span_for_trace_id: Span query: {query}")
         demisto.info(f"get_span_for_trace_id: starting graphql_query for traceid {traceid} and spanid {spanid}")
         ret = self.graphql_query(query, additional_logging=f"traceid = {traceid}")
-        demisto.info(f"get_span_for_trace_id: completed graphql_query for traceid {traceid} and spanid {spanid}")
+        demisto.debug(f"get_span_for_trace_id: completed graphql_query for traceid {traceid} and spanid {spanid}")
         return ret
 
     def get_threat_events_query(
@@ -624,7 +624,7 @@ class Client(BaseClient):
         )
 
     def get_api_endpoint_details(self, api_id_list, starttime, endtime):
-        demisto.info(f"API ID list length is: {len(api_id_list)}")
+        demisto.debug(f"API ID list length is: {len(api_id_list)}")
         demisto.info("Starting get_api_endpoint_details.")
         if len(api_id_list) == 0:
             return []
@@ -636,7 +636,7 @@ class Client(BaseClient):
             demisto.error(msg)
             raise Exception(msg)
 
-        demisto.info("Ending get_api_endpoint_details.")
+        demisto.debug("Ending get_api_endpoint_details.")
 
         return result["data"]["entities"]["results"]
 
@@ -697,7 +697,7 @@ class Client(BaseClient):
                 ):
                     api_id_map[domain_event["apiId"]["value"]] = True
 
-                demisto.info(f"Forking thread for span retrieval traceid {trace_id} spanid {span_id}")
+                demisto.debug(f"Forking thread for span retrieval traceid {trace_id} spanid {span_id}")
 
                 span_id_list.append(span_id)
                 if len(span_id_list) >= self.span_query_batch_size:
@@ -707,7 +707,7 @@ class Client(BaseClient):
                         endtime=endtime,
                         spanid=span_id_list,
                     )
-                    demisto.info(f"Submitted job successfully for spanids {span_id_list}")
+                    demisto.debug(f"Submitted job successfully for spanids {span_id_list}")
                     future_list.append(future)
                     demisto.info("Completed thread for span retrieval")
                     span_id_list = []
@@ -718,11 +718,12 @@ class Client(BaseClient):
                     endtime=endtime,
                     spanid=span_id_list,
                 )
-                demisto.info(f"Submitted job successfully for spanids {span_id_list}")
+                demisto.debug(f"Submitted job successfully for spanids {span_id_list}")
                 future_list.append(future)
                 demisto.info("Completed thread for span retrieval")
                 span_id_list = []
         span_id_map = {}
+        demisto.info("Extracting spans from threads.")
         for future in future_list:
             trace_results = future.result()
             if Helper.is_error(trace_results, "data", "spans", "results"):
@@ -756,7 +757,6 @@ class Client(BaseClient):
         api_endpoint_details = None
 
         for domain_event in results:
-            demisto.info("Waiting for the future object...")
             if (
                 "spanId" in domain_event
                     and "value" in domain_event["spanId"]
@@ -1081,17 +1081,6 @@ def fetch_incidents(client: Client, last_run, first_fetch_time):
     next_run = {"last_fetch": latest_created_time.strftime(DATE_FORMAT)}
     demisto.info("Done processing all incidents.")
     return next_run, incidents
-
-
-def update_incident_cache(incident, client: Client):
-    traceable_fields = incident["labels"]
-    context_key = (f"{traceable_fields['environment']}_{traceable_fields['serviceName']}_"
-                   + f"{traceable_fields['name']}_{traceable_fields['apiId']}_{traceable_fields['anomalousAttribute']}")
-    demisto.info(f"Context key is: '{context_key}'")
-    if client.get_integration_context_key_value(context_key) == "present":
-        demisto.info(f"Deleting context key '{context_key}' from cache.")
-        client.delete_integration_context_key_value(context_key)
-    demisto.info("update_incident_cache call complete.")
 
 
 """ MAIN FUNCTION """
