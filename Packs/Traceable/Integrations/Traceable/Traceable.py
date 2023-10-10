@@ -7,7 +7,7 @@ from CommonServerUserPython import *
 import urllib3
 from urllib import parse
 from string import Template
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from concurrent.futures import ThreadPoolExecutor
 import requests
 from requests.adapters import HTTPAdapter, Retry
@@ -82,9 +82,6 @@ get_spans_for_trace_id = """{
       userIdentifier: attribute(expression: { key: "userIdentifier" })
       sessionId: attribute(expression: { key: "sessionId" })
       ipAddress: attribute(expression: { key: "ipAddress" })
-      userCountry: attribute(expression: { key: "userCountry" })
-      userCity: attribute(expression: { key: "userCity" })
-      userRoles: attribute(expression: { key: "userRoles" })
       statusCode: attribute(expression: { key: "statusCode" })
       errorCount: attribute(expression: { key: "errorCount" })
       duration: attribute(expression: { key: "duration" })
@@ -156,15 +153,19 @@ class Helper:
         return expression_list
 
     @staticmethod
-    def datetime_to_string(d: datetime):
+    def datetime_to_string(d):
         return d.strftime(DATE_FORMAT)
 
     @staticmethod
-    def start_datetime_to_string(d: datetime):
+    def now_time_to_string():
+        return Helper.datetime_to_string(datetime.utcnow())
+
+    @staticmethod
+    def start_datetime_to_string(d):
         return Helper.fix_start_timestamp(Helper.datetime_to_string(d))
 
     @staticmethod
-    def end_datetime_to_string(d: datetime):
+    def end_datetime_to_string(d):
         return Helper.fix_end_timestamp(Helper.datetime_to_string(d))
 
     @staticmethod
@@ -173,20 +174,24 @@ class Helper:
 
     @staticmethod
     def construct_key_expression(key, value, _type="ATTRIBUTE", operator="IN"):
+        if type(value) is bool and operator == "IN":
+            msg = f"Value of type {type(value).__name__} doesn't allow operator {operator}"
+            demisto.error(msg)
+            raise Exception(msg)
         if key is None:
             demisto.info("Key was None. Couldn't create Key Expression.")
             return ""
         if operator == "IN":
             _value = value
             if value is not None:
-                if type(value) == str:
+                if type(value) is str:
                     _value = f'"{value}"'
                 elif isinstance(value, int | float):
                     _value = value
-                elif type(value) == list and len(value) > 0:
-                    if type(value[0]) == str:
+                elif type(value) is list and len(value) > 0:
+                    if type(value[0]) is str:
                         _value = ",".join([f'"{v}"' for v in value])
-                    elif type(value[0]) == int or type(value[0]) == float:
+                    elif type(value[0]) is int or type(value[0]) is float:
                         _value = ",".join([f"{v}" for v in value])
 
             else:
@@ -208,9 +213,9 @@ class Helper:
             )
         elif operator == "EQUALS":
             _value = ""
-            if type(value) == str:
+            if type(value) is str:
                 _value = f'"{value}"'
-            elif type(value) == bool:
+            elif type(value) is bool:
                 _c = str(value)
                 _value = f"{_c[0:1].lower()}{_c[1:]}"
             else:
@@ -261,6 +266,7 @@ class Client(BaseClient):
             headers = {}
 
         headers["Content-Type"] = "application/json"
+        headers["x-traceable-xsoar"] = "traceable-xsoar-integration; version=1.0.4"
         self.headers = headers
         self.url = base_url + "/graphql"
         self.securityScoreCategoryList = None
@@ -276,6 +282,8 @@ class Client(BaseClient):
         self.environments = None
         self.integration_context: dict = {}
         self.fetch_unique_incidents: bool = True
+        self.span_query_batch_size = 50
+        self.timegap_between_repeat_incidents = 'in 7 days'
         self.__mandatory_domain_event_field_list = ["actorCountry", "actorIpAddress", "apiId", "environment", "eventDescription",
                                                     "id", "ipCategories", "name", "securityScoreCategory", "spanId",
                                                     "statusCode", "timestamp", "traceId", "serviceName", "anomalousAttribute"]
@@ -299,6 +307,12 @@ class Client(BaseClient):
         self.__init_integration_context__()
         self.integration_context[key] = value
         self.__commit_integration_context__()
+
+    def set_span_query_batch_size(self, span_query_batch_size=50):
+        self.span_query_batch_size = span_query_batch_size
+
+    def set_timegap_between_repeat_incidents(self, d):
+        self.timegap_between_repeat_incidents = d
 
     def get_integration_context_key_value(self, key):
         self.__init_integration_context__()
@@ -437,7 +451,7 @@ class Client(BaseClient):
     def set_domain_event_field_list(self, field_list):
         self.domain_event_field_list = self.__process_domain_event_field_list(field_list)
 
-    def set_fetch_unique_incidents(self, fetch_unique_incidents):
+    def set_fetch_unique_incidents(self, fetch_unique_incidents: bool):
         self.fetch_unique_incidents = fetch_unique_incidents
 
     def set_optional_api_attributes(self, field_list):
@@ -503,19 +517,19 @@ class Client(BaseClient):
 
     def get_span_for_trace_id(self, starttime, endtime, traceid=None, spanid=None):
         demisto.info(f"get_span_for_trace_id: Starting span query for traceid {traceid} and spanid {spanid}")
-        if traceid is None or len(traceid) < 1:
-            msg = "traceid cannot be None."
-            demisto.error(msg)
-            raise Exception(msg)
+        if (spanid is None or (type(spanid) is list and len(spanid) == 0)):
+            msg = f"spanid cannot be None. Will not query span for the span list: {spanid}"
+            demisto.info(msg)
+            return None
         trace_id_clause = None
         if traceid is not None:
             trace_id_clause = Helper.construct_key_expression("traceId", traceid)
         span_id_clause = None
         if spanid is not None:
             span_id_clause = Helper.construct_key_expression("id", spanid)
-        # is_anomalous_clause = Helper.construct_key_expression("isAnomalous", True, operator="EQUALS")
+        is_anomalous_clause = Helper.construct_key_expression("isAnomalous", True, operator="EQUALS")
         filter_by_clause = Helper.construct_filterby_expression(
-            trace_id_clause, span_id_clause  # , is_anomalous_clause
+            trace_id_clause, span_id_clause, is_anomalous_clause
         )
         query = Template(get_spans_for_trace_id).substitute(
             starttime=Helper.start_datetime_to_string(starttime),
@@ -532,7 +546,7 @@ class Client(BaseClient):
     def get_threat_events_query(
         self,
         starttime,
-        endtime=datetime.now(),
+        endtime=datetime.utcnow(),
     ):
         environment_clause = None
         securityScoreCategory_clause = None
@@ -610,7 +624,7 @@ class Client(BaseClient):
         )
 
     def get_api_endpoint_details(self, api_id_list, starttime, endtime):
-        demisto.info(f"API ID is {api_id_list}")
+        demisto.info(f"API ID list length is: {len(api_id_list)}")
         demisto.info("Starting get_api_endpoint_details.")
         if len(api_id_list) == 0:
             return []
@@ -629,7 +643,7 @@ class Client(BaseClient):
     def get_threat_events(
         self,
         starttime,
-        endtime=datetime.now(),
+        endtime=datetime.utcnow(),
     ):
 
         query = self.get_threat_events_query(starttime, endtime)
@@ -648,8 +662,9 @@ class Client(BaseClient):
         events = []
         first = True
         future_list = []
-        api_id_list = []
+        api_id_map = {}
         with ThreadPoolExecutor(max_workers=self.span_fetch_threadpool) as executor:
+            span_id_list = []
             for domain_event in results:
                 if Helper.is_error(domain_event, "traceId", "value"):
                     demisto.info(
@@ -680,27 +695,59 @@ class Client(BaseClient):
                     and domain_event["apiId"]["value"] != "null"
                     and domain_event["apiId"]["value"] != ""
                 ):
-                    api_id_list.append(domain_event["apiId"]["value"])
+                    api_id_map[domain_event["apiId"]["value"]] = True
 
                 demisto.info(f"Forking thread for span retrieval traceid {trace_id} spanid {span_id}")
 
+                span_id_list.append(span_id)
+                if len(span_id_list) >= self.span_query_batch_size:
+                    future = executor.submit(
+                        self.get_span_for_trace_id,
+                        starttime=starttime,
+                        endtime=endtime,
+                        spanid=span_id_list,
+                    )
+                    demisto.info(f"Submitted job successfully for spanids {span_id_list}")
+                    future_list.append(future)
+                    demisto.info("Completed thread for span retrieval")
+                    span_id_list = []
+            if len(span_id_list) > 0:
                 future = executor.submit(
                     self.get_span_for_trace_id,
                     starttime=starttime,
                     endtime=endtime,
-                    traceid=trace_id,
-                    spanid=span_id,
+                    spanid=span_id_list,
                 )
-                demisto.info(f"Submitted job successfully for traceid {trace_id} spanid {span_id}")
-                future_list.append((domain_event, future))
+                demisto.info(f"Submitted job successfully for spanids {span_id_list}")
+                future_list.append(future)
                 demisto.info("Completed thread for span retrieval")
+                span_id_list = []
+        span_id_map = {}
+        for future in future_list:
+            trace_results = future.result()
+            if Helper.is_error(trace_results, "data", "spans", "results"):
+                msg = f"Error Object: {json.dumps(trace_results)}. Couldn't get the Span."
+                demisto.info(msg)
+            else:
+                if len(trace_results["data"]["spans"]["results"]) > 0:
+                    traces = trace_results["data"]["spans"]["results"]
+                    for trace in traces:
+                        if ("id" in trace
+                            and trace["id"] is not None
+                            and trace["id"] != ""
+                                and trace["id"] not in span_id_map):
+                            span_id_map[trace["id"]] = trace
+                else:
+                    demisto.info("Didn't find any spans. Span array length:"
+                                 + f" {len(trace_results['data']['spans']['results'])}."
+                                 + f" Span Object: {json.dumps(trace_results['data']['spans']['results'])}")
 
         api_endpoint_details = []
         api_endpoint_details_map = {}
 
         if self.__query_api_attributes:
             api_endpoint_details = self.get_api_endpoint_details(
-                api_id_list, starttime, endtime
+                list(api_id_map.keys()), starttime, endtime
             )
             api_endpoint_details_map = {
                 api_endpoint_detail["id"]: api_endpoint_detail
@@ -708,22 +755,16 @@ class Client(BaseClient):
             }
         api_endpoint_details = None
 
-        for domain_event, future in future_list:
+        for domain_event in results:
             demisto.info("Waiting for the future object...")
-            trace_results = future.result()
-            span_id = ""
-            if Helper.is_error(trace_results, "data", "spans", "results"):
-                msg = f"Error Object: {json.dumps(result)}. Couldn't get the Span."
-                demisto.info(msg)
-            else:
-                demisto.info(f"Found Span with id: {span_id}. Adding to Event with id {domain_event['id']['value']}.")
-                if len(trace_results["data"]["spans"]["results"]) > 0:
-                    domain_event["spans"] = trace_results["data"]["spans"]["results"][0]
-                    span_id = trace_results["data"]["spans"]["results"][0]["id"]
-                else:
-                    demisto.info("Didn't find any spans. Span array length:"
-                                 + f" {len(trace_results['data']['spans']['results'])}."
-                                 + f" Span Object: {json.dumps(trace_results['data']['spans']['results'])}")
+            if (
+                "spanId" in domain_event
+                    and "value" in domain_event["spanId"]
+                    and domain_event["spanId"]["value"] is not None
+                    and domain_event["spanId"]["value"] != ""
+                    and domain_event["spanId"]["value"] in span_id_map
+            ):
+                domain_event["spans"] = span_id_map[domain_event["spanId"]["value"]]
             demisto.info("Done waiting for the future object...")
             domain_event["type"] = "Exploit"
             if (
@@ -932,7 +973,7 @@ class Client(BaseClient):
 def test_module(client: Client) -> str:
     message: str = ""
     try:
-        end_time = datetime.now()
+        end_time = datetime.utcnow()
         start_time = end_time - timedelta(days=1)
         query = client.get_threat_events_query(start_time, end_time)
         demisto.debug("Query is: " + query)
@@ -953,6 +994,26 @@ def test_module(client: Client) -> str:
     return message
 
 
+def list_incident_cache_command(client: Client):
+    client.__init_integration_context__()
+    return [{"id": key, "expiry": value} for key, value in client.integration_context.items()]
+
+
+def purge_incident_cache_command(client: Client):
+    client.__init_integration_context__()
+    result = []
+    for key, value in client.integration_context.items():
+
+        result.append({
+            "id": key,
+            "expiry": value,
+            "deletion_status": "deleted"
+        })
+    client.integration_context = {}
+    client.__commit_integration_context__()
+    return result
+
+
 def fetch_incidents(client: Client, last_run, first_fetch_time):
     last_fetch = last_run.get("last_fetch")
 
@@ -965,7 +1026,7 @@ def fetch_incidents(client: Client, last_run, first_fetch_time):
 
     latest_created_time: datetime = _last_fetch
     incidents = []
-    items = client.get_threat_events(_last_fetch, datetime.now())
+    items = client.get_threat_events(_last_fetch, datetime.utcnow())
     demisto.info(f"Retrieved {len(items)} records.")
     if len(items) > 0:
         demisto.debug(f"First Incident: {json.dumps(items[0], indent=3)}")
@@ -976,6 +1037,10 @@ def fetch_incidents(client: Client, last_run, first_fetch_time):
             context_key = (f"{item['environment']}_{item['serviceName']}_{item['name']}_{item['apiId']}_"
                            + f"{item['anomalousAttribute']}")
             context_value = client.get_integration_context_key_value(context_key)
+            if context_value is not None:
+                context_entry_date = Helper.string_to_datetime(context_value)
+                if context_entry_date < dateparser.parse(client.timegap_between_repeat_incidents):  # type: ignore
+                    context_value = None
         incident_created_time: datetime = datetime.fromtimestamp(
             item["timestamp"]["value"] / 1000
         )
@@ -1001,7 +1066,8 @@ def fetch_incidents(client: Client, last_run, first_fetch_time):
             incidents.append(incident)
             if context_key != "":
                 demisto.info(f"Adding Context key {context_key} to the instance cache.")
-                client.set_integration_context_key_value(context_key, "present")
+                client.set_integration_context_key_value(context_key, Helper.datetime_to_string(
+                    dateparser.parse(client.timegap_between_repeat_incidents)))
         else:
             demisto.info(
                 f"Found existing context record with key {context_key} and value {context_value}. Will not create new incident.")
@@ -1017,15 +1083,15 @@ def fetch_incidents(client: Client, last_run, first_fetch_time):
     return next_run, incidents
 
 
-def update_incident_cache(incident, client):
-
-    # traceable_fields = incident["labels"]
-    '''
-    context_key = (f"{item['environment']}_{item['serviceName']}_{item['name']}_{item['apiId']}_"
-                           + f"{item['anomalousAttribute']}")
-    '''
-    demisto.info("update_incident_cache called.")
-    # pass
+def update_incident_cache(incident, client: Client):
+    traceable_fields = incident["labels"]
+    context_key = (f"{traceable_fields['environment']}_{traceable_fields['serviceName']}_"
+                   + f"{traceable_fields['name']}_{traceable_fields['apiId']}_{traceable_fields['anomalousAttribute']}")
+    demisto.info(f"Context key is: '{context_key}'")
+    if client.get_integration_context_key_value(context_key) == "present":
+        demisto.info(f"Deleting context key '{context_key}' from cache.")
+        client.delete_integration_context_key_value(context_key)
+    demisto.info("update_incident_cache call complete.")
 
 
 """ MAIN FUNCTION """
@@ -1057,6 +1123,8 @@ def main() -> None:
         optionalDomainEventFieldList = demisto.params().get("optionalDomainEventFieldList")
         optionalAPIAttributes = demisto.params().get("optionalAPIAttributes")
         fetch_unique_incidents = demisto.params().get("isFetchUniqueIncidents")
+        span_query_batch_size = demisto.params().get("isFetchUniqueIncidents", 50)
+        timegap_between_repeat_incidents = demisto.params().get("timegap_between_repeat_incidents", 'in 7 days')
 
         _env = demisto.params().get("environment")
 
@@ -1082,6 +1150,8 @@ def main() -> None:
         client.set_domain_event_field_list(optionalDomainEventFieldList)
         client.set_optional_api_attributes(optionalAPIAttributes)
         client.set_fetch_unique_incidents(fetch_unique_incidents)
+        client.set_span_query_batch_size(span_query_batch_size)
+        client.set_timegap_between_repeat_incidents(timegap_between_repeat_incidents)
         client.set_limit(limit)
 
         if demisto.command() == "test-module":
@@ -1097,10 +1167,24 @@ def main() -> None:
             )
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
-        elif demisto.command() == 'update_incident_cache':
-            incident = json.loads(demisto.args().get('incident'))
-            demisto.info(f"incident id is {incident['id']}.")
-            update_incident_cache(incident, client)
+        elif demisto.command() == 'list_incident_cache':
+            result = list_incident_cache_command(client)
+            return_results(
+                CommandResults(
+                    outputs_prefix='Traceable.Instancecache',
+                    outputs_key_field='id',
+                    outputs=result
+                )
+            )
+        elif demisto.command() == 'purge_incident_cache':
+            result = purge_incident_cache_command(client)
+            return_results(
+                CommandResults(
+                    outputs_prefix='Traceable.Instancecache',
+                    outputs_key_field='id',
+                    outputs=result
+                )
+            )
     except Exception as e:
         return_error(
             f"Failed to execute {demisto.command()} command.\nError:\n{str(e)}"

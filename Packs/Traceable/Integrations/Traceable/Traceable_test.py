@@ -466,7 +466,7 @@ class Response:
         pass
 
     status_code = 200
-    text = None  # type: str
+    text = ""  # type: str
 
 
 def empty_response_handler(*args, **kwargs):
@@ -630,7 +630,7 @@ def test_fetch_incidents_public_api_type(mocker):
     client.set_ip_abuse_velocity_list(["CRITICAL", "HIGH", "MEDIUM", "LOW"])
     client.set_optional_api_attributes(["isExternal", "isAuthenticated", "riskScore", "riskScoreCategory", "isLearnt"])
     client.set_limit(100)
-    # client.__commit_integration_context__()
+    client.__commit_integration_context__()
 
     mocked_post = mocker.patch("requests.post")
     mocked_post.side_effect = public_api_type_response_handler
@@ -657,7 +657,7 @@ def test_fetch_incidents_private_api_type(mocker):
     client.set_ip_abuse_velocity_list(["CRITICAL", "HIGH", "MEDIUM", "LOW"])
     client.set_optional_api_attributes(["isExternal", "isAuthenticated", "riskScore", "riskScoreCategory", "isLearnt"])
     client.set_limit(100)
-    # client.__commit_integration_context__()
+    client.__commit_integration_context__()
 
     mocked_post = mocker.patch("requests.post")
     mocked_post.side_effect = private_api_type_response_handler
@@ -686,7 +686,7 @@ def test_fetch_incidents_last_fetch_not_none(mocker):
     client.set_ip_reputation_level_list(["CRITICAL", "HIGH", "MEDIUM", "LOW"])
     client.set_ip_abuse_velocity_list(["CRITICAL", "HIGH", "MEDIUM", "LOW"])
     client.set_limit(100)
-    # client.__commit_integration_context__()
+    client.__commit_integration_context__()
 
     mocked_post = mocker.patch("requests.post")
     mocked_post.side_effect = response_handler
@@ -1180,6 +1180,7 @@ def test_fetch_incident_with_private_ipaddress(mocker):
     client.set_ip_abuse_velocity_list(["CRITICAL", "HIGH", "MEDIUM", "LOW"])
     client.set_app_url("https://app.mock.url")
     client.set_limit(100)
+    client.__commit_integration_context__()
 
     mocked_post = mocker.patch("requests.post")
     mocked_post.side_effect = response_handler_private_ip
@@ -1374,7 +1375,7 @@ def test_fetch_incidents_no_api_attributes_selection(mocker):
     client.set_ip_reputation_level_list(["CRITICAL", "HIGH", "MEDIUM", "LOW"])
     client.set_ip_abuse_velocity_list(["CRITICAL", "HIGH", "MEDIUM", "LOW"])
     client.set_limit(100)
-    # client.__commit_integration_context__()
+    client.__commit_integration_context__()
 
     mocked_post = mocker.patch("requests.post")
     mocked_post.side_effect = private_api_type_response_handler
@@ -1420,7 +1421,7 @@ def test_set_app_url(mocker):
     client.set_ip_reputation_level_list(["CRITICAL", "HIGH", "MEDIUM", "LOW"])
     client.set_ip_abuse_velocity_list(["CRITICAL", "HIGH", "MEDIUM", "LOW"])
     client.set_limit(100)
-    # client.__commit_integration_context__()
+    client.__commit_integration_context__()
 
     mocked_post = mocker.patch("requests.post")
     mocked_post.side_effect = private_api_type_response_handler
@@ -1432,7 +1433,7 @@ def test_set_app_url(mocker):
 
     client = Client(base_url="https://mock.url", verify=False, headers=headers)
     client.set_app_url(None)
-    # client.__commit_integration_context__()
+    client.__commit_integration_context__()
     next_run, incidents = fetch_incidents(client, {"last_fetch": None}, "3 days")
     assert "eventUrl" not in incidents[0]
 
@@ -1457,7 +1458,7 @@ def test_instance_cache(mocker):
     client.set_ip_reputation_level_list(["CRITICAL", "HIGH", "MEDIUM", "LOW"])
     client.set_ip_abuse_velocity_list(["CRITICAL", "HIGH", "MEDIUM", "LOW"])
     client.set_limit(100)
-    # client.__commit_integration_context__()
+    client.__commit_integration_context__()
 
     mocked_post = mocker.patch("requests.post")
     mocked_post.side_effect = private_api_type_response_handler
@@ -1478,9 +1479,9 @@ def test_boolean_construct_key_expression():
 
     passed = False
     try:
-        result = Helper.construct_key_expression("key", True)
+        result = Helper.construct_key_expression("key", True, )
     except Exception as e:
-        assert str(e) == "Operator IN not valid for value type bool"
+        assert str(e) == "Value of type bool doesn't allow operator IN"
         passed = True
     assert passed
 
@@ -1511,7 +1512,57 @@ def test_fetch_incidents_live(capfd):
     client.set_app_url("https://app.eu.traceable.ai")
     client.set_span_fetch_threadpool(10)
     client.set_limit(100)
+    client.set_fetch_unique_incidents(True)
 
     next_run, incidents = fetch_incidents(client, {"last_fetch": None}, "1 days")
     assert len(incidents) >= 0
     capfd.readouterr()
+
+
+def test_list_instance_cache_command():
+    from Traceable import list_incident_cache_command, Client, Helper
+    import urllib3
+    import json
+
+    urllib3.disable_warnings()
+    headers = {}
+    headers["Content-Type"] = "application/json"
+    headers["Accept"] = "application/json"
+
+    client = Client(base_url="https://mock.url", verify=False, headers=headers)
+    client.set_security_score_category_list(["CRITICAL", "HIGH", "MEDIUM", "LOW"])
+    client.set_ip_reputation_level_list(["CRITICAL", "HIGH", "MEDIUM", "LOW"])
+    client.set_ip_abuse_velocity_list(["CRITICAL", "HIGH", "MEDIUM", "LOW"])
+    client.set_limit(100)
+    _str = Helper.now_time_to_string()
+    client.set_integration_context_key_value("key", _str)
+    es = f"[{{\"id\": \"key\", \"expiry\": \"{_str}\"}}]"
+    result = list_incident_cache_command(client)
+    assert json.dumps(result) == es
+
+
+def test_purge_incident_cache_command():
+    from Traceable import list_incident_cache_command, purge_incident_cache_command, Client, Helper
+    import urllib3
+    import json
+
+    urllib3.disable_warnings()
+    headers = {}
+    headers["Content-Type"] = "application/json"
+    headers["Accept"] = "application/json"
+
+    client = Client(base_url="https://mock.url", verify=False, headers=headers)
+    client.set_security_score_category_list(["CRITICAL", "HIGH", "MEDIUM", "LOW"])
+    client.set_ip_reputation_level_list(["CRITICAL", "HIGH", "MEDIUM", "LOW"])
+    client.set_ip_abuse_velocity_list(["CRITICAL", "HIGH", "MEDIUM", "LOW"])
+    client.set_limit(100)
+    _str = Helper.now_time_to_string()
+    client.set_integration_context_key_value("key", _str)
+    es = f"[{{\"id\": \"key\", \"expiry\": \"{_str}\"}}]"
+    result = list_incident_cache_command(client)
+    assert json.dumps(result) == es
+    expected = f"[{{\"id\": \"key\", \"expiry\": \"{_str}\", \"deletion_status\": \"deleted\"}}]"
+    result = purge_incident_cache_command(client)
+    assert len(result) > 0
+    assert json.dumps(result) == expected
+    assert len(list(client.integration_context.keys())) == 0
