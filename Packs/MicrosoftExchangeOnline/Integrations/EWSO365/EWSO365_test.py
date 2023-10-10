@@ -550,7 +550,7 @@ def test_parse_incident_from_item(mocker, mime_content, expected_data, expected_
     assert incident["rawJSON"]
     raw_json = json.loads(incident["rawJSON"])
     assert raw_json['attachments'][0]['attachmentSHA256'] == expected_attachmentSHA256
-    mock_file_result.assert_called_once_with("demisto_untitled_attachment.eml", expected_data)
+    mock_file_result.assert_called_once_with("demisto_untitled_attachment", expected_data)
 
 
 def test_parse_incident_from_item_with_attachments():
