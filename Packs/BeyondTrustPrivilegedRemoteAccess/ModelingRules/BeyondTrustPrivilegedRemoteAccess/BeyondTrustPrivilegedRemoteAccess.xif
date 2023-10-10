@@ -39,11 +39,12 @@ alter  // extract message header fields
     xdm.event.log_level = if(syslog_severity = "0", XDM_CONST.LOG_LEVEL_EMERGENCY, syslog_severity = "1", XDM_CONST.LOG_LEVEL_ALERT, syslog_severity = "2", XDM_CONST.LOG_LEVEL_CRITICAL, syslog_severity = "3", XDM_CONST.LOG_LEVEL_ERROR, syslog_severity = "4", XDM_CONST.LOG_LEVEL_WARNING, syslog_severity = "5", XDM_CONST.LOG_LEVEL_NOTICE, syslog_severity = "6", XDM_CONST.LOG_LEVEL_INFORMATIONAL, syslog_severity = "7", XDM_CONST.LOG_LEVEL_DEBUG, syslog_severity),
     xdm.event.original_event_type = event_type, 
     xdm.event.description = event_description,
+    xdm.intermediate.host.hostname = site,
     xdm.observer.name = syslog_hostname, 
     xdm.observer.unique_identifier = site_id,
+    xdm.session_context_id = meta_sequence_id,
     xdm.source.ipv4 = source_ipv4,
     xdm.source.ipv6 = source_ipv6,
-    xdm.target.domain = site,
     xdm.target.resource.value = properties_new_state, 
     xdm.target.resource_before.value = properties_old_state;
 
