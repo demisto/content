@@ -1004,34 +1004,45 @@ class TestFilePermissionMethods:
         file_upload_command(gsuite_client, args)
         assert GoogleDrive.assign_params.call_args[1]['parents'] == ['test_parent']
 
+    def test_file_copy_command(self, mocker, gsuite_client):
+        """
+        Given:
+        - A request to copy a Drive file.
 
-import pytest
-from GoogleDrive import GoogleDrive, Client, copy_file_http_request
+        When:
+        - Calling google-drive-file-copy.
 
-@pytest.fixture()
-def client():
-    return Client(credentials={}, auth_id='')
+        Then:
+        - Copy the Drive file.
+        """
 
-def test_copy_file_success(requests_mock, client):
+        from GoogleDrive import file_copy_command
 
-    from GoogleDrive import copy_file_http_request
+        mocker.patch(
+            'GoogleDrive.copy_file_http_request',
+            return_value={
+                'id': 'test_id',
+                'kind': 'drive#file',
+                'mimeType': 'application/octet-stream',
+                'name': 'TEST COPY',
+                'something_else': 'a thing'
+            }
+        )
 
-    file_id = '12345' 
-    copy_title = 'Test File Copy'
-    mock_response = {'id': '67890', 'name': copy_title}
-    requests_mock.post('https://www.googleapis.com/drive/v3/files/12345/copy', json=mock_response)
+        results = file_copy_command(
+            gsuite_client,
+            args={
+                'file_id': 'test_file_id',
+                'copy_title': 'test_copy_title',
+                'supports_all_drives': 'true',
+                'user_id': 'test_user_id',
+            }
+        )
 
-    response = copy_file_http_request(client, file_id, copy_title)
-
-    assert response == mock_response
-
-def test_copy_file_failure(requests_mock, client):
-
-    file_id = '12345'
-    copy_title = 'Test File Copy'
-    requests_mock.post('https://www.googleapis.com/drive/v3/files/12345/copy', status_code=404)
-
-    with pytest.raises(DemistoException) as e:
-        copy_file_http_request(client, file_id, copy_title)
-
-    assert 'Unable to copy file' in str(e)
+        assert results.outputs == {
+            'id': 'test_id',
+            'kind': 'drive#file',
+            'mimeType': 'application/octet-stream',
+            'name': 'TEST COPY'
+        }
+        assert results.readable_output == '### New file copied from *test_file_id*\n|Id|\n|---|\n| test_id |\n'
