@@ -36,3 +36,5 @@ def test_build_iterator(requests_mock):
     assert expected_ips == ip_indicators
     report = next(indicator for indicator in indicators if indicator["type"] == "Report")
     assert report["fields"]["description"].startswith("Recently, threat actors have")
+
+    assert len(report["relationships"]) == 13

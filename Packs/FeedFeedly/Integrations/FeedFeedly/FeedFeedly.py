@@ -680,7 +680,7 @@ class STIX2Parser:
         a_value_to_relationship: dict[str, Any] = {}
         for relationships_object in relationships_lst:
             relationship_type: str = relationships_object.get("relationship_type", "")
-            if not EntityRelationship.RelationshipsTypes.is_valid_type(relationship_type):
+            if not EntityRelationship.Relationships.is_valid(relationship_type):
                 if relationship_type == "indicates":
                     relationship_type = "indicated-by"
                 else:
