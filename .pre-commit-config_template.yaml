@@ -63,15 +63,15 @@ repos:
   - id: update-additional-dependencies
     args: [--pre_commit_config, .pre-commit-config_template.yaml]
 
-          # enable with --test
-  - id: run-unit-tests
-
   - id: format
           # update docker image to the latest version, assume no
     args: ["-ud", "-n", "--no-validate"]
 
   - id: validate
     args: ["--skip-pack-dependencies"]
+
+          # enable with --test
+  - id: run-unit-tests
 
   - id: secrets
     args: ["--ignore-entropy"]
