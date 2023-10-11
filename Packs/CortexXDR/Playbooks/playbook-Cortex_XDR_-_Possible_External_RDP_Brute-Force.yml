@@ -2966,7 +2966,7 @@ tasks:
       version: -1
       name: Recommend isolation anyway
       description: |+
-        Notice! The playbook input specifies that isolation should not be performed for the endpoint, but XDR's ITDR module considers it risky. Consider isolating it anyway.
+        Notice! The playbook input specifies that isolation should not be performed for the endpoint, but Cortex XDR's ITDR module considers it risky. Consider isolating it anyway.
 
         Host ID: ${PaloAltoNetworksXDR.RiskyHost.id}
         Risk level: ${PaloAltoNetworksXDR.RiskyHost.risk_level}
