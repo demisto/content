@@ -227,7 +227,7 @@ tasks:
       id: ebb3abbe-af39-4634-8b3b-a8a7626d38aa
       version: -1
       name: Set user severity to low
-      description: Sets the severity associated with the XDR users to "Low".
+      description: Sets the severity associated with the Cortex XDR users to "Low".
       scriptName: Set
       type: regular
       iscommand: false
@@ -563,7 +563,7 @@ tasks:
       id: 5b3ed38c-c292-4d01-89a9-d788c8213403
       version: -1
       name: Set host severity to medium
-      description: Sets the severity associated with the XDR hosts to "Medium".
+      description: Sets the severity associated with the Cortex XDR hosts to "Medium".
       scriptName: Set
       type: regular
       iscommand: false
