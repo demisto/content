@@ -44,10 +44,10 @@ configuration:
   required: false
   type: 0
   defaultvalue: '5'
-- name: span_query_batch_size
-  display: Max spans per thread
-  required: false
+- display: "Max spans per thread"
+  name: span_query_batch_size
   type: 0
+  required: false
   defaultvalue: '50'
 - display: "Comma Separated Environment List To Process"
   name: environment
@@ -85,7 +85,6 @@ configuration:
   - UNKNOWN
 - display: "IP Abuse Velocity"
   name: ipAbuseVelocity
-  defaultvalue: CRITICAL,HIGH,MEDIUM
   type: 16
   required: false
   options:
@@ -94,10 +93,11 @@ configuration:
   - MEDIUM
   - LOW
   - UNKNOWN
+  defaultvalue: CRITICAL,HIGH,MEDIUM
 - display: "IP Location Type"
   name: ipCategories
-  type: 16
   required: false
+  type: 16
   options:
   - Anonymous VPN
   - Hosting Provider
@@ -111,10 +111,10 @@ configuration:
   required: false
   type: 0
 - display: Incident type
-  defaultvalue: Exploit
   name: incidentType
-  required: false
+  defaultvalue: Exploit
   type: 13
+  required: false
 - display: Ignore Status Codes
   name: ignoreStatusCodes
   defaultvalue: 400-499
@@ -171,6 +171,9 @@ script:
   isFetchSamples: true
   runonce: false
   script: "-"
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.10.13.75921
   commands:
   - name: list_incident_cache
     description: List the entries present in the Traceable instance cache.
@@ -195,9 +198,6 @@ script:
     - contextPath: Traceable.Instancecache.deletion_status
       description: Cache entry deletion status.
       type: string
-  type: python
-  subtype: python3
-  dockerimage: demisto/python3:3.10.13.75921
 fromversion: 5.5.0
 tests:
 - No tests (auto formatted)
