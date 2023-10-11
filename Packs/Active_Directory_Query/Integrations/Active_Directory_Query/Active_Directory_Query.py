@@ -14,6 +14,8 @@ from ldap3.utils.log import (set_library_log_detail_level, get_library_log_detai
                              set_library_log_hide_sensitive_data, EXTENDED)
 from ldap3.utils.conv import escape_filter_chars
 
+''' GLOBAL VARS '''
+
 CIPHERS_STRING = '@SECLEVEL=1:ECDHE+AESGCM:ECDHE+CHACHA20:DHE+AESGCM:DHE+CHACHA20:ECDH+AESGCM:' \
                  'DH+AESGCM:ECDH+AES:DH+AES:RSA+ANESGCM:RSA+AES:!aNULL:!eNULL:!MD5:!DSS'  # Allowed ciphers for SSL/TLS
 DEFAULT_TIMEOUT = 120  # timeout for ssl/tls socket
@@ -30,8 +32,6 @@ SSL_VERSIONS = {
 }
 # global connection
 connection: Connection | None = None
-
-''' GLOBAL VARS '''
 
 # userAccountControl is a bitmask used to store a number of settings.
 # find more at:
@@ -1769,20 +1769,21 @@ def set_password_not_expire(default_base_dn):
         raise DemistoException(f"Unable to fetch attribute 'userAccountControl' for user {sam_account_name}.")
 
 
-def test_credentials_command(SERVER_IP):
+def test_credentials_command(server_ip, ntlm_connection):
     args = demisto.args()
     username = args.get('username')
-    server = Server(SERVER_IP, get_info='ALL')
-    if connection := create_connection(
-        server=server,
-        server_ip=SERVER_IP,
-        username=username,
-        password=args.get('password'),
-        ntlm_connection=argToBoolean(args.get('ntlm')),
-        auto_bind=True,
-    ):
+    server = Server(server_ip, get_info='ALL')
+    try:
+        connection = create_connection(
+            server=server,
+            server_ip=server_ip,
+            username=username,
+            password=args.get('password'),
+            ntlm_connection=argToBoolean(ntlm_connection),
+            auto_bind=True,
+        )
         connection.unbind()
-    else:
+    except LDAPBindError:
         raise DemistoException(f"Credential test with username {username} was not successful.")
     return CommandResults(
         outputs_prefix='ActiveDirectory.ValidCredentials',
@@ -1806,7 +1807,7 @@ def get_auto_bind_value(secure_connection, unsecure) -> str:
         cleartext connection (unsecure connection - port 389).
 
         If the Client's connection type is Start TLS - the secure level will be upgraded to TLS during the
-        connection bind itself and thus we use the AUTO_BIND_TLS_BEFORE_BIND constant.
+        connection bind itself, and thus we use the AUTO_BIND_TLS_BEFORE_BIND constant.
 
         If the Client's connection type is Start TLS and the 'Trust any certificate' is unchecked -
         For backwards compatibility - we use the AUTO_BIND_TLS_BEFORE_BIND constant as well.
@@ -1835,25 +1836,25 @@ def main():
     command = demisto.command()
     args = demisto.args()
 
-    SERVER_IP = params.get('server_ip')
-    USERNAME = params.get('credentials')['identifier']
-    PASSWORD = params.get('credentials')['password']
-    DEFAULT_BASE_DN = params.get('base_dn')
-    SECURE_CONNECTION = params.get('secure_connection')
-    SSL_VERSION = params.get('ssl_version', 'None')
-    DEFAULT_PAGE_SIZE = int(params.get('page_size'))
-    NTLM_AUTH = params.get('ntlm')
-    UNSECURE = params.get('unsecure', False)
-    PORT = params.get('port')
+    server_ip = params.get('server_ip')
+    username = params.get('credentials')['identifier']
+    password = params.get('credentials')['password']
+    default_base_dn = params.get('base_dn')
+    secure_connection = params.get('secure_connection')
+    ssl_version = params.get('ssl_version', 'None')
+    default_page_size = int(params.get('page_size'))
+    ntlm_auth = params.get('ntlm')
+    insecure = params.get('unsecure', False)
+    port = params.get('port')
 
     disabled_users_group_cn = params.get('group-cn')
     create_if_not_exists = params.get('create-if-not-exists')
     mapper_in = params.get('mapper-in', DEFAULT_INCOMING_MAPPER)
     mapper_out = params.get('mapper-out', DEFAULT_OUTGOING_MAPPER)
 
-    if PORT:
+    if port:
         # port was configured, cast to int
-        PORT = int(PORT)
+        port = int(port)
     last_log_detail_level = None
     try:
         set_library_log_hide_sensitive_data(True)
@@ -1862,30 +1863,30 @@ def main():
             last_log_detail_level = get_library_log_detail_level()
             set_library_log_detail_level(EXTENDED)
 
-        server = initialize_server(SERVER_IP, PORT, SECURE_CONNECTION, UNSECURE, SSL_VERSION)
+        server = initialize_server(server_ip, port, secure_connection, insecure, ssl_version)
 
         global connection
-        auto_bind = get_auto_bind_value(SECURE_CONNECTION, UNSECURE)
+        auto_bind = get_auto_bind_value(secure_connection, insecure)
 
         try:
             # user example: domain\user
             connection = create_connection(
                 server=server,
-                server_ip=SERVER_IP,
-                username=USERNAME,
-                password=PASSWORD,
-                ntlm_connection=NTLM_AUTH,
+                server_ip=server_ip,
+                username=username,
+                password=password,
+                ntlm_connection=ntlm_auth,
                 auto_bind=auto_bind)
         except Exception as e:
             err_msg = str(e)
-            demisto.info(f"Failed connect to: {SERVER_IP}:{PORT}. {type(e)}:{err_msg}\n"
+            demisto.info(f"Failed connect to: {server_ip}:{port}. {type(e)}:{err_msg}\n"
                          f"Trace:\n{traceback.format_exc()}")
             if isinstance(e, LDAPBindError):
                 message = (f'Failed to bind server. Please validate that the credentials are configured correctly.\n'
                            f'Additional details: {err_msg}.\n')
             elif isinstance(e, LDAPSocketOpenError | LDAPSocketReceiveError | LDAPStartTLSError):
                 message = f'Failed to access LDAP server. \n Additional details: {err_msg}.\n'
-                if not UNSECURE and SECURE_CONNECTION in (SSL, START_TLS):
+                if not insecure and secure_connection in (SSL, START_TLS):
                     message += ' Try using: "Trust any certificate" option.\n'
             else:
                 message = ("Failed to access LDAP server. Please validate the server host and port are configured "
@@ -1895,14 +1896,14 @@ def main():
 
         demisto.info(f'Established connection with AD LDAP server.\nLDAP Connection Details: {connection}')
 
-        if not base_dn_verified(DEFAULT_BASE_DN):
+        if not base_dn_verified(default_base_dn):
             message = (f"Failed to verify the base DN configured for the instance.\n"
                        f"Last connection result: {json.dumps(connection.result)}\n"
                        f"Last error from LDAP server: {json.dumps(connection.last_error)}")
             return_error(message)
             return None
 
-        demisto.info(f'Verified base DN "{DEFAULT_BASE_DN}"')
+        demisto.info(f'Verified base DN "{default_base_dn}"')
 
         ''' COMMAND EXECUTION '''
 
@@ -1913,31 +1914,31 @@ def main():
             demisto.results('ok')
 
         elif command == 'ad-search':
-            free_search(DEFAULT_BASE_DN, DEFAULT_PAGE_SIZE)
+            free_search(default_base_dn, default_page_size)
 
         elif command == 'ad-modify-password-never-expire':
-            set_password_not_expire(DEFAULT_BASE_DN)
+            set_password_not_expire(default_base_dn)
 
         elif command == 'ad-expire-password':
-            expire_user_password(DEFAULT_BASE_DN)
+            expire_user_password(default_base_dn)
 
         elif command == 'ad-set-new-password':
-            set_user_password(DEFAULT_BASE_DN, PORT)
+            set_user_password(default_base_dn, port)
 
         elif command == 'ad-unlock-account':
-            unlock_account(DEFAULT_BASE_DN)
+            unlock_account(default_base_dn)
 
         elif command == 'ad-disable-account':
-            disable_user(DEFAULT_BASE_DN, DEFAULT_PAGE_SIZE)
+            disable_user(default_base_dn, default_page_size)
 
         elif command == 'ad-enable-account':
-            enable_user(DEFAULT_BASE_DN, DEFAULT_PAGE_SIZE)
+            enable_user(default_base_dn, default_page_size)
 
         elif command == 'ad-remove-from-group':
-            remove_member_from_group(DEFAULT_BASE_DN)
+            remove_member_from_group(default_base_dn)
 
         elif command == 'ad-add-to-group':
-            add_member_to_group(DEFAULT_BASE_DN)
+            add_member_to_group(default_base_dn)
 
         elif command == 'ad-create-user':
             create_user()
@@ -1946,16 +1947,16 @@ def main():
             delete_user()
 
         elif command == 'ad-update-user':
-            update_user(DEFAULT_BASE_DN)
+            update_user(default_base_dn)
 
         elif command == 'ad-update-group':
-            update_group(DEFAULT_BASE_DN)
+            update_group(default_base_dn)
 
         elif command == 'ad-modify-computer-ou':
-            modify_computer_ou(DEFAULT_BASE_DN)
+            modify_computer_ou(default_base_dn)
 
         elif command == 'ad-modify-user-ou':
-            return_results(modify_user_ou_command(DEFAULT_BASE_DN))
+            return_results(modify_user_ou_command(default_base_dn))
 
         elif command == 'ad-create-contact':
             create_contact()
@@ -1964,13 +1965,13 @@ def main():
             update_contact()
 
         elif command == 'ad-get-user':
-            search_users(DEFAULT_BASE_DN, DEFAULT_PAGE_SIZE)
+            search_users(default_base_dn, default_page_size)
 
         elif command == 'ad-get-computer':
-            search_computers(DEFAULT_BASE_DN, DEFAULT_PAGE_SIZE)
+            search_computers(default_base_dn, default_page_size)
 
         elif command == 'ad-get-group-members':
-            search_group_members(DEFAULT_BASE_DN, DEFAULT_PAGE_SIZE)
+            search_group_members(default_base_dn, default_page_size)
 
         elif command == 'ad-create-group':
             create_group()
@@ -1979,28 +1980,28 @@ def main():
             delete_group()
 
         elif command == 'ad-test-credentials':
-            return return_results(test_credentials_command(SERVER_IP))
+            return return_results(test_credentials_command(server_ip, ntlm_connection=ntlm_auth))
 
         # IAM commands
         elif command == 'iam-get-user':
-            user_profile = get_user_iam(DEFAULT_BASE_DN, args, mapper_in, mapper_out)
+            user_profile = get_user_iam(default_base_dn, args, mapper_in, mapper_out)
             return return_results(user_profile)
 
         elif command == 'iam-create-user':
-            user_profile = create_user_iam(DEFAULT_BASE_DN, args, mapper_out, disabled_users_group_cn)
+            user_profile = create_user_iam(default_base_dn, args, mapper_out, disabled_users_group_cn)
             return return_results(user_profile)
 
         elif command == 'iam-update-user':
-            user_profile = update_user_iam(DEFAULT_BASE_DN, args, create_if_not_exists, mapper_out,
+            user_profile = update_user_iam(default_base_dn, args, create_if_not_exists, mapper_out,
                                            disabled_users_group_cn)
             return return_results(user_profile)
 
         elif command == 'iam-disable-user':
-            user_profile = disable_user_iam(DEFAULT_BASE_DN, disabled_users_group_cn, args, mapper_out)
+            user_profile = disable_user_iam(default_base_dn, disabled_users_group_cn, args, mapper_out)
             return return_results(user_profile)
 
         elif command == 'get-mapping-fields':
-            mapping_fields = get_mapping_fields_command(DEFAULT_BASE_DN)
+            mapping_fields = get_mapping_fields_command(default_base_dn)
             return return_results(mapping_fields)
 
         else:
