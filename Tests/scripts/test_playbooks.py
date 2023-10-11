@@ -13,16 +13,29 @@ from tqdm import tqdm
 from Tests.scripts.jira_issues import generate_ticket_summary, generate_query, JIRA_SERVER_URL, JIRA_API_KEY, JIRA_VERIFY_SSL
 from Tests.scripts.utils import logging_wrapper as logging
 
-
 TOTAL_HEADER = "Total"
 NOT_AVAILABLE = "N/A"
-TEST_SUITE_STATUSES = ["Failures", "Errors", "Skipped", "Total"]
 TEST_SUITE_JIRA_HEADERS = ["Jira Ticket", "Jira Ticket Resolution"]
 TEST_SUITE_BASE_HEADERS = ["Playbook ID"]
 TEST_SUITE_FIXED_HEADERS = TEST_SUITE_BASE_HEADERS + TEST_SUITE_JIRA_HEADERS
 NO_COLOR_ESCAPE_CHAR = "\033[0m"
 RED_COLOR = "\033[91m"
 GREEN_COLOR = "\033[92m"
+
+
+class TestSuiteDataCell:
+    def __init__(self, failures: int = 0, errors: int = 0, skipped: int = 0, tests: int = 0):
+        self.failures = failures
+        self.errors = errors
+        self.skipped = skipped
+        self.tests = tests
+
+    def __add__(self, other):
+        return TestSuiteDataCell(self.failures + other.failures, self.errors + other.errors, self.skipped + other.skipped,
+                                 self.tests + other.tests)
+
+    def __str__(self):
+        return f"{self.skipped}/{self.failures}/{self.errors}/{self.tests}"
 
 
 def calculate_test_playbooks_results(test_playbooks_result_files_list: list[Path]) -> tuple[dict[str, dict[str, Any]], set[str]]:
@@ -63,8 +76,11 @@ def get_jira_tickets_for_playbooks(playbook_ids: list[str],
                                    max_workers: int = 5) -> dict[str, Issue]:
     playbook_ids_to_jira_tickets: dict[str, Issue] = {}
     jira_server = JIRA(JIRA_SERVER_URL, token_auth=JIRA_API_KEY, options={'verify': JIRA_VERIFY_SSL})
+    jira_server_info = jira_server.server_info()
     logging.info(f"Searching for Jira tickets for {len(playbook_ids)} playbooks, using {max_workers} workers,"
-                 f" Jira server information: {jira_server.server_info()}")
+                 f" Jira server information:")
+    for key, value in jira_server_info.items():
+        logging.info(f"\t{key}: {value}")
     with ThreadPoolExecutor(max_workers=max_workers, thread_name_prefix='jira-search') as executor:
         futures = {
             executor.submit(search_ticket_in_jira, jira_server, playbook_id): playbook_id
@@ -112,10 +128,10 @@ def calculate_test_playbooks_results_table(jira_tickets_for_playbooks: dict[str,
     fixed_headers_length = len(headers)
     server_versions_list: list[str] = sorted(server_versions)
     for server_version in server_versions_list:
-        for status in TEST_SUITE_STATUSES:
-            headers.append(f"{status} ({server_version})")
+        headers.append(f"{server_version} (S/F/E/T)")
     tabulate_data = []
-    total_row: list[Any] = ([NOT_AVAILABLE] * fixed_headers_length + [0] * (len(server_versions_list) * len(TEST_SUITE_STATUSES)))
+    total_row: list[Any] = ([NOT_AVAILABLE] * fixed_headers_length + [TestSuiteDataCell()
+                            for _ in range(len(server_versions_list))])
     total_errors = 0
     for playbook_id, playbook_results in tqdm(playbooks_results.items(), desc="Generating test summary", unit="playbook",
                                               leave=True, colour='green', miniters=10, mininterval=5.0):
@@ -139,8 +155,8 @@ def calculate_test_playbooks_results_table(jira_tickets_for_playbooks: dict[str,
             test_suite: TestSuite = playbook_results.get(server_version)
             if test_suite:
                 xml.add_testsuite(test_suite)
-                row.extend(
-                    (
+                row.append(
+                    TestSuiteDataCell(
                         test_suite.failures,
                         test_suite.errors,
                         test_suite.skipped,
@@ -151,7 +167,7 @@ def calculate_test_playbooks_results_table(jira_tickets_for_playbooks: dict[str,
                 if test_suite.skipped and test_suite.failures == 0 and test_suite.errors == 0:
                     skipped_count += 1
             else:
-                row.extend([NOT_AVAILABLE] * len(TEST_SUITE_STATUSES))
+                row.append(NOT_AVAILABLE)
 
         total_errors += errors_count
         # If all the test suites were skipped, don't add the row to the table.
@@ -162,7 +178,7 @@ def calculate_test_playbooks_results_table(jira_tickets_for_playbooks: dict[str,
 
             # Offset the total row by the number of fixed headers
             for i, cell in enumerate(row[fixed_headers_length:], start=fixed_headers_length):
-                if cell != NOT_AVAILABLE:
+                if isinstance(cell, TestSuiteDataCell):
                     total_row[i] += cell
         else:
             logging.debug(f"Skipping playbook {playbook_id} since all the test suites were skipped")

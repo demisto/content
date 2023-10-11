@@ -69,6 +69,20 @@ def old_print_test_summary(artifacts_path: str) -> None:
         sys.exit(1)
 
 
+def filter_skipped_playbooks(playbooks_results):
+    filtered_playbooks_ids = []
+    for playbook_id, playbook_results in playbooks_results.items():
+        skipped_count = 0
+        for test_suite in playbook_results.values():
+            if test_suite.skipped and test_suite.failures == 0 and test_suite.errors == 0:
+                skipped_count += 1
+
+        # If all the test suites were skipped, don't add the row to the table.
+        if skipped_count != len(playbook_results):
+            filtered_playbooks_ids.append(playbook_id)
+    return filtered_playbooks_ids
+
+
 def print_test_summary(artifacts_path: str, without_jira: bool) -> bool:
     test_playbooks_report = Path(artifacts_path) / "test_playbooks_report.xml"
 
@@ -94,8 +108,10 @@ def print_test_summary(artifacts_path: str, without_jira: bool) -> bool:
                      f'Jira project id: {JIRA_PROJECT_ID}\n'
                      f'Jira issue type: {JIRA_ISSUE_TYPE}\n'
                      f'Jira component: {JIRA_COMPONENT}\n')
-        jira_tickets_for_playbooks = get_jira_tickets_for_playbooks(list(playbooks_results.keys()))
-        logging.info(f"Found {len(jira_tickets_for_playbooks)} Jira tickets out of {len(playbooks_results)} playbooks")
+        playbooks_ids = filter_skipped_playbooks(playbooks_results)
+        logging.info(f"Found {len(playbooks_ids)} playbooks out of {len(playbooks_results)} after filtering skipped playbooks")
+        jira_tickets_for_playbooks = get_jira_tickets_for_playbooks(playbooks_ids)
+        logging.info(f"Found {len(jira_tickets_for_playbooks)} Jira tickets out of {len(playbooks_ids)} playbooks")
 
     headers, tabulate_data, xml, total_errors = calculate_test_playbooks_results_table(jira_tickets_for_playbooks,
                                                                                        playbooks_results,

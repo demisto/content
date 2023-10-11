@@ -2,6 +2,7 @@ import argparse
 import logging
 import os
 from datetime import datetime, timedelta
+from pathlib import Path
 
 import gitlab
 from demisto_sdk.commands.coverage_analyze.tools import get_total_coverage
@@ -90,13 +91,12 @@ def get_failed_modeling_rule_name_from_test_suite(test_suite: TestSuite) -> str:
     return f"{properties['modeling_rule_file_name']} ({properties['pack_id']})"
 
 
-def test_modeling_rules_results(artifact_folder, title):
-    failed_test_modeling_rules = get_artifact_data(artifact_folder, 'modeling_rules_results.xml')
-    if not failed_test_modeling_rules:
+def test_modeling_rules_results(artifact_folder: str, title: str):
+    failed_test_modeling_rules = Path(artifact_folder) / 'modeling_rules_results.xml'
+    if not failed_test_modeling_rules.exists():
         return []
-    xml = JUnitXml.fromstring(bytes(failed_test_modeling_rules, 'utf-8'))
+    xml = JUnitXml.fromfile(failed_test_modeling_rules.as_posix())
     content_team_fields = []
-
     failed_test_suites = []
     total_test_suites = 0
     for test_suite in xml.iterchildren(TestSuite):
