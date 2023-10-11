@@ -52,7 +52,7 @@ This playbook does not use any sub-playbooks.
 | clientID | The client ID. |  | Optional |
 | zone | The name of the zone. |  | Optional |
 | serviceAccountEmail | The service account email. |  | Optional |
-| identityType | The type of identity involved. Usually mapped to incident field named 'cloudidentitytype'.<br/>e.g.<br/>USER, SERVICE_ACCOUNT,APPLICATION |  | Optional |
+| identityType | The type of identity involved. Usually mapped to incident field named 'cloudidentitytype'.<br/>e.g.<br/>USER,SERVICE_ACCOUNT,APPLICATION |  | Optional |
 
 ## Playbook Outputs
 
