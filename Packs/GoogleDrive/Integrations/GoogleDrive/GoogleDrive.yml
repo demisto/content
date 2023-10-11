@@ -3055,6 +3055,15 @@ script:
     - description: The name of the copied file.
       name: copy_title
       required: true
+    - name: user_id
+      description: The user's primary email address.
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Whether the requesting application supports both My Drives and shared drives.
+      name: supports_all_drives
+      predefined:
+      - 'true'
+      - 'false'
     outputs:
     - contextPath: GoogleDrive.kind
       description: The content type of the file.

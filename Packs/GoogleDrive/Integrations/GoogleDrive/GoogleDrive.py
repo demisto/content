@@ -1762,14 +1762,18 @@ def drive_activity_list_command(client: 'GSuiteClient', args: dict[str, str]) ->
     )
 
 
-def copy_file_http_request(client: 'GSuiteClient', file_id: str, copy_title: str) -> dict:
+def copy_file_http_request(
+        client: 'GSuiteClient', file_id: str, copy_title: str, supports_all_drives: str, user_id: str = None
+) -> dict:
 
-    client.set_authorized_http(scopes=COMMAND_SCOPES['FILES'], subject=client.user_id)
+    client.set_authorized_http(scopes=COMMAND_SCOPES['FILES'], subject=(user_id or client.user_id))
     drive_service = discovery.build(serviceName=SERVICE_NAME, version=API_VERSION, http=client.authorized_http)
 
     try:
         return drive_service.files().copy(
-            fileId=file_id, body={'name': copy_title}
+            fileId=file_id,
+            supportsAllDrives=argToBoolean(supports_all_drives),
+            body={'name': copy_title},
         ).execute()
     except errors.HttpError as e:
         error_dict = {
