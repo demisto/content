@@ -23,7 +23,7 @@ def parseIds(idsArg):
     return str(idsArg)
 
 
-def should_run_with_guid():
+def should_run_with_guid():  # pragma: no cover
     """
     The function verifies that the server has the right version in order to support
      the stopScheduleEntry command and the add-on of the GUID to the Schedule command.
