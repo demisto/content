@@ -174,4 +174,5 @@ outputs: []
 tests:
 - no tests
 fromversion: 5.0.0
-description: This playbook will block emails at your mail relay integration.
+description: Deprecated. Use 'Block Email - Generic v2' instead. This playbook will block emails at your mail relay integration.
+deprecated: true
