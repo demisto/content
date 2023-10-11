@@ -1728,11 +1728,11 @@ script:
     - description: Base 64 encoded eml file.
       isArray: false
       name: content_data
-      required: true
+      required: false
     - description: Entry ID.
       isArray: false
       name: entry_id
-      required: true
+      required: false
     description: Create email file assessment request.
     execution: false
     name: msg-create-email-file-assessment-request
@@ -1800,15 +1800,15 @@ script:
       isArray: false
       name: file_name
       required: true
-    - description: Base 64 encoded eml file.
+    - description: Base 64 encoded text file.
       isArray: false
       name: content_data
-      required: true
+      required: false
     - description: Entry ID.
       isArray: false
       name: entry_id
-      required: true
-    description: Create email file assessment request.
+      required: false
+    description: Create file assessment request.
     execution: false
     name: msg-create-file-assessment-request
     polling: true
@@ -1920,8 +1920,8 @@ script:
     - description: request id.
       isArray: false
       name: request_id
-      required: true
-    - description: filter, Example:category eq 'malware’.
+      required: false
+    - description: filter, Example:category eq 'malware’ and ContentType eq 'file'. Available Fields are expectedAssessment,ContentType,status,requestSource.
       isArray: false
       name: filter
       required: true
