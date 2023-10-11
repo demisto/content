@@ -45,6 +45,7 @@ ENDPOINT_IDENTIFIERS = "endpoint_identifiers"
 PROCESS_IDENTIFIERS = "process_identifiers"
 COLLECT_FILES = "collect_files"
 BLOCK = "block"
+ANY = "any"
 URL = "url"
 URLS = "urls"
 INTERVAL_IN_SECONDS = "interval_in_seconds"
@@ -470,7 +471,7 @@ class Client(BaseClient):
         new_alerts: List[Union[SaeAlert, TiAlert]] = []
 
         def _filter_alerts(alert: Union[SaeAlert, TiAlert]) -> None:
-            if demisto.params().get(INCIDENT_SEVERITY) == "any":
+            if demisto.params().get(INCIDENT_SEVERITY) == ANY:
                 new_alerts.append(alert)
             elif alert.severity.value == demisto.params().get(INCIDENT_SEVERITY):
                 new_alerts.append(alert)
