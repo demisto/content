@@ -69,7 +69,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | OktaSearch | Whether to search for logs from Okta? Can be False or True. | True | Optional |
 | XDRUsernameField | Cortex XDR User name Field. | actor_effective_username | Optional |
 | AutomaticallyClearSessions | Whether to clear all the user sessions automatically. Can be used in conjunction with the ForceClearSessionsForHighRiskUsers input. | False | Optional |
-| ForceClearSessionsForHighRiskUsers | Whether to clear user sessions regardless of the AutomaticallyClearSessions input for users with High risk.<br/>Users receive their risk level based on Cortex XDR's ITDR module. The risks can be:<br/>- LOW<br/>- MED<br/>- HIGH<br/><br/>Setting this to True will clear the user sessions in Okta if the user has a high risk, automatically. Setting this and the AutomaticallyClearSessions inputs to False, will prompt the analyst to take action manually even if the user has a high risk associated with it. | False | Optional |
+| ForceClearSessionsForHighRiskUsers | Whether to clear user sessions regardless of the AutomaticallyClearSessions input for users with High risk.<br/>Users receive their risk level based on Cortex XDR's ITDR module. The risks can be:<br/>- LOW<br/>- MED<br/>- HIGH<br/><br/>Setting this to True will automatically clear the user sessions in Okta if the user has a high risk. Setting this and the AutomaticallyClearSessions inputs to False, will prompt the analyst to take action manually even if the user has a high risk associated with it. | False | Optional |
 
 ## Playbook Outputs
 
