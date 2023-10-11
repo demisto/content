@@ -25,7 +25,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": -110
+          "y": -90
         }
       }
     note: false
@@ -84,8 +84,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 260
+          "x": 710,
+          "y": 210
         }
       }
     note: false
@@ -116,12 +116,15 @@ tasks:
       domain:
         complex:
           root: inputs.Domain
+      expiration:
+        complex:
+          root: inputs.Expiration
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 450
+          "x": 880,
+          "y": 380
         }
       }
     note: false
@@ -146,7 +149,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 630
+          "y": 550
         }
       }
     note: false
@@ -203,14 +206,16 @@ view: |-
   {
     "linkLabelsPosition": {
       "1_2_yes": 0.53,
-      "4_1_yes": 0.65
+      "1_3_#default#": 0.35,
+      "4_1_yes": 0.65,
+      "4_3_#default#": 0.47
     },
     "paper": {
       "dimensions": {
-        "height": 805,
-        "width": 380,
+        "height": 705,
+        "width": 810,
         "x": 450,
-        "y": -110
+        "y": -90
       }
     }
   }
@@ -224,6 +229,11 @@ inputs:
   value: {}
   required: false
   description: The ID of the block list to block the domain in.
+  playbookInputQuery:
+- key: Expiration
+  value: {}
+  required: false
+  description: 'The UTC expiration date and time of the suspicious object, for example: 2020-01-25T09:00:00Z.'
   playbookInputQuery:
 outputs: []
 tests:
