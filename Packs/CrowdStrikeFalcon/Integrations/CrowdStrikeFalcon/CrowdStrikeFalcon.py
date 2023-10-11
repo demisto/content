@@ -1317,7 +1317,10 @@ def get_fetch_detections(last_created_timestamp=None, filter_arg=None, offset: i
     elif last_updated_timestamp:
         params['filter'] = f"date_updated:>'{last_updated_timestamp}'"
     if filter_arg:
-        params['filter'] = f'{params.get("filter", "")}+{filter_arg}'
+        if "filter" in params:
+            params['filter'] += f"+{filter_arg}"
+        else:
+            params['filter'] = filter_arg
 
     response = http_request('GET', endpoint_url, params)
     demisto.debug(f"CrowdStrikeFalconMsg: Getting detections from {endpoint_url} with {params=}. {response=}")
