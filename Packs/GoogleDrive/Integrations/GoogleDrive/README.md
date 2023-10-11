@@ -1304,3 +1304,50 @@ Modify labels to file.
 | GoogleDrive.Labels.labels.id | String | The label id of the label to set | 
 | GoogleDrive.Labels.labels.kind | String | The type of resource. This is always drive\#label | 
 | GoogleDrive.Labels.labels.revisionId | String | The revision id of the label | 
+
+### google-drive-file-copy
+
+***
+Make a copy of a Google Drive file.
+
+#### Base Command
+
+`google-drive-file-copy`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| file_id | The ID of the file to copy. | Required | 
+| copy_title | The name of the copied file. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GoogleDrive.kind | String | The content type of the file. | 
+| GoogleDrive.id | String | The ID of the copied file. | 
+| GoogleDrive.name | String | The name of the copied file. | 
+| GoogleDrive.mimeType | String | The MIME type of the copied file. | 
+
+#### Command example
+```!google-drive-file-copy file_id="1O8Gx7DslVpbd-HN7lp4MIN1DDakpw-bHVHCwir2wUlo" copy_title="New Copy"```
+#### Context Example
+```json
+{
+    "GoogleDrive": {
+        "id": "1RGYAcDbLOq3J6jt6iy87v_k6eIsOAcvy0ym5x-r5CQY",
+        "kind": "drive#file",
+        "mimeType": "application/vnd.google-apps.spreadsheet",
+        "name": "New Copy"
+    }
+}
+```
+
+#### Human Readable Output
+
+>### New file copied from *1O8Gx7DslVpbd-HN7lp4MIN1DDakpw-bHVHCwir2wUlo*
+>|Id|
+>|---|
+>| 1RGYAcDbLOq3J6jt6iy87v_k6eIsOAcvy0ym5x-r5CQY |
+

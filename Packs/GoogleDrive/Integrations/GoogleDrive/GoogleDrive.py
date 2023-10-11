@@ -1792,7 +1792,7 @@ def file_copy_command(client: 'GSuiteClient', args: dict[str, str]) -> CommandRe
             k: file.get(k) for k in ('kind', 'id', 'name', 'mimeType')
         },
         readable_output=tableToMarkdown(
-            f'New file copied from {args["file_id"]}',
+            f'New file copied from *{args["file_id"]}*',
             {'Id': file.get('id')}
         ),
     )
