@@ -1001,10 +1001,9 @@ def panorama_command(args: dict):
     params = {}
     is_xml = False
     for arg in args.keys():
-        if arg == "is_xml":
-            is_xml = argToBoolean(args[arg])
-        else:
-            params[arg] = args[arg]
+        params[arg] = args[arg]
+    if is_xml := params.get("is_xml"):
+        params["is_xml"] = argToBoolean(is_xml)
     params['key'] = API_KEY
 
     result = http_request(
