@@ -1,5 +1,5 @@
 name: Radware Cloud Services Parsing Rule
-id: Radware_Cloud_ServicesParsingRule
+id: Radware_Cloud_Services_ParsingRule
 fromversion: 8.3.0
 tags: []
 rules: ''
