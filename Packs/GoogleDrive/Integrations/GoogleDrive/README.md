@@ -1320,6 +1320,8 @@ Make a copy of a Google Drive file.
 | --- | --- | --- |
 | file_id | The ID of the file to copy. | Required | 
 | copy_title | The name of the copied file. | Required | 
+| user_id | The user's primary email address. | Optional | 
+| supports_all_drives | Whether the requesting application supports both My Drives and shared drives. Possible values are: true, false. Default is false. | Optional | 
 
 #### Context Output
 
@@ -1336,7 +1338,7 @@ Make a copy of a Google Drive file.
 ```json
 {
     "GoogleDrive": {
-        "id": "1RGYAcDbLOq3J6jt6iy87v_k6eIsOAcvy0ym5x-r5CQY",
+        "id": "1h1SfvpTwAYPnKB7oaf2lP3ztjgc-Wz2FeI1j14zwk3w",
         "kind": "drive#file",
         "mimeType": "application/vnd.google-apps.spreadsheet",
         "name": "New Copy"
@@ -1349,5 +1351,5 @@ Make a copy of a Google Drive file.
 >### New file copied from *1O8Gx7DslVpbd-HN7lp4MIN1DDakpw-bHVHCwir2wUlo*
 >|Id|
 >|---|
->| 1RGYAcDbLOq3J6jt6iy87v_k6eIsOAcvy0ym5x-r5CQY |
+>| 1h1SfvpTwAYPnKB7oaf2lP3ztjgc-Wz2FeI1j14zwk3w |
 
