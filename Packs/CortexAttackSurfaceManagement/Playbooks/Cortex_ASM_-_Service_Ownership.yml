@@ -52,7 +52,8 @@ tasks:
       - "10"
     scriptarguments:
       owners:
-        simple: ${alert.asmserviceownerunrankedraw}
+        complex:
+          root: alert.asmserviceownerunrankedraw
       asmsystemids:
         complex:
           root: alert.asmsystemids
@@ -425,9 +426,11 @@ tasks:
       - "6"
     scriptarguments:
       external_service:
-        simple: ${ASM.ExternalService.externally_detected_providers}
+        complex:
+          root: ASM.ExternalService.externally_detected_providers
       owners:
-        simple: ${alert.asmserviceownerunrankedraw}
+        complex:
+          root: alert.asmserviceownerunrankedraw
     separatecontext: false
     continueonerrortype: ""
     view: |-
