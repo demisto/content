@@ -525,7 +525,7 @@ tasks:
       id: fd33a226-d4bc-4dba-8a2b-5cb4475cd38d
       version: -1
       name: Set host severity to low
-      description: Sets the severity associated with the XDR hosts to "Low".
+      description: Sets the severity associated with the Cortex XDR hosts to "Low".
       scriptName: Set
       type: regular
       iscommand: false
