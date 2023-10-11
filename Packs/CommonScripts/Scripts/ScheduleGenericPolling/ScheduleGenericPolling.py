@@ -52,8 +52,8 @@ def calculate_end_time(timeout):
 
 def is_value_sanitized(value):
     arg_names = ['ids', 'pollingCommand', 'pollingCommandArgName',
-                  'additionalPollingCommandArgNames', 'additionalPollingCommandArgValues',
-                  ]
+                 'additionalPollingCommandArgNames', 'additionalPollingCommandArgValues',
+                 ]
     return all(current_arg_name not in value for current_arg_name in arg_names)
 
 
@@ -87,12 +87,12 @@ def main():
         demisto.results("Warning: no ids matching the dt condition were found.\nVerify that the condition is correct and "
                         "that all ids have finished running.")
 
-    command_string = '''!GenericPollingScheduledTask ids="{3}" pollingCommand="{0}" pollingCommandArgName="{1}"{2} \
-                        pendingIds="{4}" interval="{5}" timeout="{6}" tag="{7}" additionalPollingCommandArgNames="{8}" \
-                        additionalPollingCommandArgValues="{9}"'''.format(ids.replace('"', r'\"'), pollingCommand,
-                                                                          pollingCommandArgName, playbookId,
-                                                                          dt.replace('"', r'\"'), interval, timeout,
-                                                                          tag, args_names, args_values)
+    command_string = '''!GenericPollingScheduledTask ids="{}" pollingCommand="{}" pollingCommandArgName="{}"{} \
+                        pendingIds="{}" interval="{}" timeout="{}" tag="{}" additionalPollingCommandArgNames="{}" \
+                        additionalPollingCommandArgValues="{}"'''.format(ids.replace('"', r'\"'), pollingCommand,
+                                                                         pollingCommandArgName, playbookId,
+                                                                         dt.replace('"', r'\"'), interval, timeout,
+                                                                         tag, args_names, args_values)
     schedule_command_args = {
         'command': command_string,
         'cron': f'*/{interval} * * * *',

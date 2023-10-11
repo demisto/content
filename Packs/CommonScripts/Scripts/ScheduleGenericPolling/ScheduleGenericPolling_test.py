@@ -1,4 +1,3 @@
-# coding=utf-8
 
 import pytest
 from ScheduleGenericPolling import is_value_sanitized
