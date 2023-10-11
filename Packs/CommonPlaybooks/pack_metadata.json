@@ -2,7 +2,11 @@
     "name": "Common Playbooks",
     "description": "Frequently used playbooks pack.",
     "support": "xsoar",
+<<<<<<< HEAD
     "currentVersion": "2.4.4",
+=======
+    "currentVersion": "2.4.6",
+>>>>>>> 161b77e4f0a4e857cedb5d9305bd8e5f5a555057
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

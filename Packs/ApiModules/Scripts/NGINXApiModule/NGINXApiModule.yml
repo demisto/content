@@ -8,7 +8,7 @@ subtype: python3
 tags:
 - infra
 - server
-comment: Common NGINX code that will be appended into each NGINX based integration when it's deployed
+comment: Common NGINX code that will be appended into each NGINX based integration when it's deployed.
 system: true
 scripttarget: 0
 dependson: {}

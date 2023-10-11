@@ -52,8 +52,7 @@ def create_jira_issue(jira_server: JIRA,
     build_id = properties.get("ci_pipeline_id", "")
     description = generate_description(build_id, properties, test_suite)
     summary = f"{properties['pack_id']} - {properties['file_name']} failed nightly"
-    jql_query = (f"project = \"{JIRA_PROJECT_ID}\" AND issuetype = \"{JIRA_ISSUE_TYPE}\" "
-                 f"AND component = \"{JIRA_COMPONENT}\" AND summary ~ \"{summary}\" ORDER BY created DESC")
+    jql_query = generate_query(summary)
     search_issues: ResultList[Issue] = jira_server.search_issues(jql_query, maxResults=1)
     jira_issue, link_to_issue, use_existing_issue = find_existing_jira_ticket(jira_server, now, options, search_issues)
 
@@ -87,6 +86,12 @@ def create_jira_issue(jira_server: JIRA,
                  f"for {test_suite.name} with {test_suite.failures} failures and {test_suite.errors} errors")
 
     return jira_issue
+
+
+def generate_query(summary):
+    jql_query = (f"project = \"{JIRA_PROJECT_ID}\" AND issuetype = \"{JIRA_ISSUE_TYPE}\" "
+                 f"AND component = \"{JIRA_COMPONENT}\" AND summary ~ \"{summary}\" ORDER BY created DESC")
+    return jql_query
 
 
 def find_existing_jira_ticket(jira_server, now, options, search_issues):
@@ -171,6 +176,8 @@ def main():
                 create_jira_issue(jira_server, test_suite, options, now)
             else:
                 logging.debug(f"Skipped creating Jira issue for successful test {test_suite.name}")
+
+        logging.info("Finished creating/updating Jira issues")
 
     except Exception as e:
         logging.exception(f'Failed to create jira issues from JUnit results: {e}')

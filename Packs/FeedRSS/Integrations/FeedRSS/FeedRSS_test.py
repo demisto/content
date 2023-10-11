@@ -66,8 +66,8 @@ def test_get_url_content(mocker):
     type(article_content_res).content = HTML_CONTENT
     mocker.patch.object(Client, '_http_request', return_value=article_content_res)
     assert client.get_url_content('test-link.com') == \
-           "This is a dumped content of the article. Use the link under Publications field to read the full article. " \
-           "\n\n p in div p li inside ul li inside ul Coffee Tea Milk Month Savings January $100 This is h1"
+        "This is a dumped content of the article. Use the link under Publications field to read the full article. " \
+        "\n\n p in div p li inside ul li inside ul Coffee Tea Milk Month Savings January $100 This is h1"
 
 
 @pytest.mark.parametrize("article_content, expected_output", TEST_DATA_MAX_SIZE)

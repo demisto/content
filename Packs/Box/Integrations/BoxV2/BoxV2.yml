@@ -747,7 +747,7 @@ script:
     name: box-remove-file-share-link
     outputs:
     - contextPath: Box.ShareLink.id
-      description: The ID of the item found,
+      description: The ID of the item found,.
       type: String
     - contextPath: Box.ShareLink.etag
       description: The entry tag for the item found.
@@ -2496,7 +2496,7 @@ script:
     - contextPath: Box.Folder.item_status
       description: The status of the parent of the item.
       type: String
-  dockerimage: demisto/pyjwt3:1.0.0.69027
+  dockerimage: demisto/pyjwt3:1.0.0.75440
   isfetch: true
   runonce: false
   script: '-'

@@ -10,7 +10,6 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 
 def arguments_handler():
-
     """ Validates and parses script arguments.
 
      Returns:

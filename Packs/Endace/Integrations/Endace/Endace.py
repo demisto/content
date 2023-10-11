@@ -447,7 +447,6 @@ class EndaceApp(object):
 
     #  search
     def create_search_task(self, args=None):
-
         """ create a search task on Endace Probe
         Args: dict
         Returns:
@@ -518,7 +517,6 @@ class EndaceApp(object):
         return result
 
     def get_search_status(self, args=None):
-
         """ get status of the search task on Endace Probe
            Args: string - Job ID
            Returns:
@@ -666,7 +664,6 @@ class EndaceApp(object):
 
     #  archive
     def create_archive_task(self, args=None):
-
         """ create an archive task on Endace Probe
         Args: dict
         Returns:
@@ -790,7 +787,6 @@ class EndaceApp(object):
         return result
 
     def get_archive_status(self, args=None):
-
         """ get status of the archive task on Endace Probe
            Args: string - Archived File Name
            Returns:
@@ -899,7 +895,6 @@ class EndaceApp(object):
         return result
 
     def delete_archived_file(self, args=None):
-
         """ Delete archived file on Endace Probe
            Args: string - Archived File Name
            Returns:

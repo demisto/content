@@ -32,7 +32,6 @@ from SetRSANetWitnessAlertsMD import json_to_md, read_context_from_rsa_netwitnes
 )
 def test_json_to_md(alerts_fields):
     assert json_to_md(alerts_fields) == (
-        "### RSA Alerts\n"
         "|ID|Title|Type|Risk Score|Created|\n"
         "|---|---|---|---|---|\n"
         "| dummy_id | sk_test300 | Log | 50 | 2023-07-03T11:04:16.408Z |\n"

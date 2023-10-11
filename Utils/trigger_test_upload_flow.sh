@@ -16,6 +16,8 @@ if [ "$#" -lt "1" ]; then
   [-sbp, --storage-base-path] A path to copy from in this current upload, and to be used as a target destination. This path should look like upload-flow/builds/branch_name/build_number/content.
   [-dz, --create_dependencies_zip] Upload packs with dependencies zip
   [-o, --override_all_packs]  Whether to override all packs, and not just modified packs.
+  [-sr, --sdk-ref]            The demisto-sdk repo branch to run this build with.
+
   "
   exit 1
 fi
@@ -28,7 +30,7 @@ _bucket_xsoar_saas="marketplace-saas-dist-dev"
 _bucket_upload="true"
 _slack_channel="dmst-bucket-upload"
 _storage_base_path=""
-
+_sdk_ref=${SDK_REF:-master}
 # Parsing the user inputs.
 
 while [[ "$#" -gt 0 ]]; do
@@ -91,6 +93,10 @@ while [[ "$#" -gt 0 ]]; do
     shift;;
 
   -sbp|--storage-base-path) _storage_base_path="$2"
+    shift
+    shift;;
+
+  -sr|--sdk-ref) _sdk_ref="$2"
     shift
     shift;;
 
@@ -164,4 +170,5 @@ curl --request POST \
   --form "variables[OVERRIDE_ALL_PACKS]=${_override_all_packs}" \
   --form "variables[CREATE_DEPENDENCIES_ZIP]=${_create_dependencies_zip}" \
   --form "variables[OVERRIDE_SDK_REF]=${DEMISTO_SDK_NIGHTLY}" \
+  --form "variables[SDK_REF]=${_sdk_ref}" \
   "$BUILD_TRIGGER_URL"

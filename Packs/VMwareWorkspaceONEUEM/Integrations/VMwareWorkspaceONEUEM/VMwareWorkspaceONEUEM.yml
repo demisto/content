@@ -367,7 +367,7 @@ script:
       description: The enrolled user UUID.
       type: String
     - contextPath: VMwareWorkspaceONEUEM.Device.ManagedBy
-      description: The device is managed by. = ['0', '1', '2', '3', '4', '5', '6', '998', '999']
+      description: The device is managed by. = ['0', '1', '2', '3', '4', '5', '6', '998', '999'].
       type: Number
     - contextPath: VMwareWorkspaceONEUEM.Device.WifiSsid
       description: The Wifi SSID, if available.
@@ -576,7 +576,7 @@ script:
     - contextPath: VMwareWorkspaceONEUEM.OSUpdate.OSUpdateList.Uuid
       description: The universally unique identifier of the OS update.
       type: String
-  dockerimage: demisto/python3:3.10.13.72123
+  dockerimage: demisto/python3:3.10.13.73190
   runonce: false
   script: '-'
   subtype: python3
