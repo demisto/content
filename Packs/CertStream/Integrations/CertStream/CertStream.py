@@ -243,7 +243,7 @@ def get_homographs_list(list_name: str) -> dict:
             continue
 
         else:
-            return user_list["data"]
+            return json.loads(user_list["data"])
 
     demisto.error("List of words not found")
     raise OSError
