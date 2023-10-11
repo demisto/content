@@ -843,7 +843,7 @@ def get_and_dedup_incidents(client: Client, last_fetched_incidents: List[Any],
             if len(new_incidents) >= max_results:
                 break
             incident_id = incident.get("id")
-            incident_creation_time = dateparser.parse(incident.get("created", datetime.now()))
+            incident_creation_time = dateparser.parse(incident.get("created", last_fatched_incident))
             if incident_id not in last_fetched_incidents:
                 # Case 3: The last fetched incident with the different timestamp then the previous incident.
                 if last_fatched_incident and incident_creation_time and last_fatched_incident < incident_creation_time:
