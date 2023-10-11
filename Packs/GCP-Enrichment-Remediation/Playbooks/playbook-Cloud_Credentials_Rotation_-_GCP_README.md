@@ -12,7 +12,7 @@ Admin accounts are crucial:
 
 - **Revoke Access Token**: Revoke any suspicious or unauthorized access tokens.
 
-- **Combo Action**: Both resetting the password and revoking access tokens ensure complete safety.
+- **Combo Action**: Both resetting the password and revoking access tokens to ensure complete safety.
 
 ## Dependencies
 

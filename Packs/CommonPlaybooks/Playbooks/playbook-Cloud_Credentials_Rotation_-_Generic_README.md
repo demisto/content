@@ -1,6 +1,6 @@
 ## **Cloud Credentials Rotation - Generic**
 
-This comprehensive playbook combine the remediation steps from AWS, Azure, and GCP sub-playbooks into a single, cohesive guide. Regardless of which Cloud Service Provider (CSP) you're working with, this playbook will direct you to the relevant steps, ensuring swift and effective response.
+This comprehensive playbook combines the remediation steps from AWS, Azure, and GCP sub-playbooks into a single, cohesive guide. Regardless of which Cloud Service Provider (CSP) you're working with, this playbook will direct you to the relevant steps, ensuring swift and effective response.
 
 The primary objective is to offer an efficient way to address compromised credentials across different cloud platforms. By consolidating the key steps from AWS, Azure, and GCP, it minimizes the time spent searching for platform-specific procedures and accelerates the remediation process, ensuring the highest level of security for your cloud environments.
 
@@ -52,19 +52,19 @@ This playbook does not use any commands.
 | shouldCloneSA | Whether to clone the compromised SA before putting a deny policy to it.<br/>Supports: AWS. |  | Optional |
 | GCP-userID | Identifies the user in the API request. The value can be the user's primary email address, alias email address, or unique user ID. |  | Optional |
 | GCP-clientID | The client ID. |  | Optional |
-| GCP-zone | The name of the zone.<br/>e.g.<br/>us-central1-c<br/>us-central1-b |  | Optional |
+| GCP-zone | The name of the zone.<br/>e.g.,<br/>us-central1-c<br/>us-central1-b |  | Optional |
 | GCP-SAEmail | The service account email. |  | Optional |
 | Azure-AppID | This is the unique application \(client\) ID of the application. |  | Optional |
 | Azure-ObjectID | This is the unique ID of the service principal object associated with the application. |  | Optional |
-| Azure-userID | The user Id or user principal name. |  | Optional |
+| Azure-userID | The user ID or user principal name. |  | Optional |
 | AWS-instanceID | The instance ID. |  | Optional |
 | AWS-userID | The user name. |  | Optional |
-| AWS-accessKeyID | The access key Id. |  | Optional |
+| AWS-accessKeyID | The access key ID. |  | Optional |
 | AWS-newRoleName | The name of the new role to create if the analyst decides to clone the service account. |  | Optional |
 | AWS-newInstanceProfileName | The name of the new instance profile to create if the analyst decides to clone the service account. |  | Optional |
 | AWS-roleNameToRestrict | If provided, the role will be attached with a deny policy without the compute instance analysis flow. |  | Optional |
-| cloudProvider | The CSP that triggered the alert. Usually mapped to incident field named 'cloudprovider'.<br/>e.g.<br/>AWS, AZURE, GCP |  | Optional |
-| identityType | The type of identity involved. Usually mapped to incident field named 'cloudidentitytype'.<br/>e.g.<br/>USER, SERVICE_ACCOUNT,APPLICATION |  | Optional |
+| cloudProvider | The CSP that triggered the alert. Usually mapped to incident field named 'cloudprovider'.<br/>e.g.,<br/>AWS, AZURE, GCP |  | Optional |
+| identityType | The type of identity involved. Usually mapped to incident field named 'cloudidentitytype'.<br/>e.g.,<br/>USER, SERVICE_ACCOUNT,APPLICATION |  | Optional |
 
 ## Playbook Outputs
 
