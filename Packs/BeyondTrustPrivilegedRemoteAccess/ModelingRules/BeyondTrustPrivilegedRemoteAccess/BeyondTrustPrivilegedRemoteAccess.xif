@@ -424,11 +424,12 @@ alter  event_type = arrayindex(regextract(_raw_log, "event\=([^;]+)"), 0)
 alter  event_type = arrayindex(regextract(_raw_log, "event\=([^;]+)"), 0)
 | filter event_type in("login", "logout", "change_display_name", "change_password", "change_username", "vault_account_password_rotation")
 | call beyondtrust_pra_common_fields_modeling
+| alter msg_payload = arrayindex(regextract(_raw_log, "\d+\:\d+\:\d+\:(.+)"), 0)
 | alter 
-    reason = arrayindex(regextract(_raw_log, "reason\=(\S[^;]+)"), 0), // Indicates the reason for failure / action
-    status = arrayindex(regextract(_raw_log, "status\=(\S[^;]+)"), 0), // Whether the login/change/rotation attempt succeeded or failed.
-    target_interface = arrayindex(regextract(_raw_log, "target\=(\S[^;]+)"), 0), // The authentication area from which the activity change attempt was made (web/api, web/appliance, web/login)
-    vault_rotated_account = arrayindex(regextract(_raw_log, "account\=(\S[^;]+)"), 0) // The account username rotated.
+    reason = arrayindex(regextract(msg_payload, "reason\=(\S[^;]+)"), 0), // Indicates the reason for failure / action
+    status = arrayindex(regextract(msg_payload, "status\=(\S[^;]+)"), 0), // Whether the login/change/rotation attempt succeeded or failed.
+    target_interface = arrayindex(regextract(msg_payload, "target\=(\S[^;]+)"), 0), // The authentication area from which the activity change attempt was made (web/api, web/appliance, web/login)
+    vault_rotated_account = arrayindex(regextract(msg_payload, "account\=(\S[^;]+)"), 0) // The account username rotated.
 | alter
     xdm.source.user.is_disabled = if(reason ~= "account disabled|account expired", to_boolean("TRUE")),
     xdm.source.user.is_password_expired = if(reason ~= "change password", to_boolean("TRUE")),
@@ -444,17 +445,18 @@ alter  event_type = arrayindex(regextract(_raw_log, "event\=([^;]+)"), 0)
 alter  event_type = arrayindex(regextract(_raw_log, "event\=([^;]+)"), 0)
 | filter event_type in("network_address_added", "network_address_changed", "network_address_removed", "network_changed")
 | call beyondtrust_pra_common_fields_modeling
+| alter msg_payload = arrayindex(regextract(_raw_log, "\d+\:\d+\:\d+\:(.+)"), 0)
 | alter // Network Address:
-    interface = arrayindex(regextract(_raw_log, "interface=(\S[^;]+)"), 0), // The NIC to use as the interface.
-    ip = arrayindex(regextract(_raw_log, ";ip\=([^;]+)"), 0), // The IP address of the interface.
-    netmask = arrayindex(regextract(_raw_log, "netmask\=([^;]+)"), 0) // The netmask for this IP address.
+    interface = arrayindex(regextract(msg_payload, "interface=(\S[^;]+)"), 0), // The NIC to use as the interface.
+    ip = arrayindex(regextract(msg_payload, ";ip\=([^;]+)"), 0), // The IP address of the interface.
+    netmask = arrayindex(regextract(msg_payload, "netmask\=([^;]+)"), 0) // The netmask for this IP address.
 | alter // Network Fields: 
-    dns_server_ip_addresses = regextract(_raw_log, "dns\:\d=([^;]+)"), // The IP addresses of the DNS servers.
-    gateway_interface = arrayindex(regextract(_raw_log, "gateway\:interface\=([^;]+)"), 0), // The interface to use as the default gateway.
-    gateway_ip = arrayindex(regextract(_raw_log, "gateway\:ip\=([^;]+)"), 0), // The IP address of the default gateway.
-    ntp_server_ip = arrayindex(regextract(_raw_log, "ntp_server\=([^;]+)"), 0), // The IP address of the  NTP server.
-    hostname =  arrayindex(regextract(_raw_log, "hostname\=([^;]+)"), 0), // The hostname of the B Series Appliance.
-    ssl_ciphers = arrayindex(regextract(_raw_log, "ssl\:ciphers\=([^;]+)"), 0) // The set of ciphersuites supported by the B Series Appliance for HTTPS/SSL traffic.
+    dns_server_ip_addresses = regextract(msg_payload, "dns\:\d=([^;]+)"), // The IP addresses of the DNS servers.
+    gateway_interface = arrayindex(regextract(msg_payload, "gateway\:interface\=([^;]+)"), 0), // The interface to use as the default gateway.
+    gateway_ip = arrayindex(regextract(msg_payload, "gateway\:ip\=([^;]+)"), 0), // The IP address of the default gateway.
+    ntp_server_ip = arrayindex(regextract(msg_payload, "ntp_server\=([^;]+)"), 0), // The IP address of the  NTP server.
+    hostname =  arrayindex(regextract(msg_payload, "hostname\=([^;]+)"), 0), // The hostname of the B Series Appliance.
+    ssl_ciphers = arrayindex(regextract(msg_payload, "ssl\:ciphers\=([^;]+)"), 0) // The set of ciphersuites supported by the B Series Appliance for HTTPS/SSL traffic.
 | alter 
     ip_addresses = arrayconcat(dns_server_ip_addresses, arraycreate(ip), arraycreate(gateway_ip), arraycreate(ntp_server_ip)),
     interface = coalesce(interface, gateway_interface),
@@ -640,16 +642,18 @@ alter  event_type = arrayindex(regextract(_raw_log, "event\=([^;]+)"), 0)
 | filter event_type not in("login", "logout", "change_display_name", "change_password", "change_username", "account_added", "account_changed", "accounts_changed", "account_removed", "account_group_added", "account_group_changed", "account_group_removed", "account_user_added", "account_user_removed", "support_session_report_generated", "support_session_detail_generated", "support_session_summary_report_generated", "team_activity_report_generated", "custom_session_policy_added", "custom_session_policy_changed", "custom_session_policy_removed", "account_jump_item", "account_jump_item_association_removed", "api_account_added", "api_account_changed", "api_account_removed", "canned_script_category_added", "canned_script_category_removed", "canned_script_added", "canned_script_changed", "canned_script_removed", "canned_script_file_added", "canned_script_file_removed", "canned_script_team_added", "canned_script_team_removed", "canned_scripts_category_added", "canned_scripts_category_removed", "canned_scripts_file_added", "canned_scripts_file_removed", "certificate_export", "custom_session_attribute_added", "custom_session_attribute_changed", "custom_session_attribute_removed", "custom_special_action_added", "custom_special_action_changed", "custom_special_action_removed", "custom_rep_link_added", "custom_rep_link_changed", "custom_rep_link_removed", "windows_service_removed", "windows_service_changed", "vault_account_password_rotation", "user_session_policy_added", "user_session_policy_removed", "user_added", "user_changed", "user_removed", "support_team_added", "support_team_changed", "support_team_removed", "support_team_member_added", "support_team_member_changed", "support_team_member_changed", "ssh_account_added", "ssh_account_changed", "ssh_account_removed", "shared_jump_group_added", "shared_jump_group_changed", "shared_jump_group_removed", "endpoint_changed", "endpoint_removed", "jumpoint_user_added", "jumpoint_user_removed", "domain_added", "domain_changed", "domain_removed", "discovery_error_added", "discovery_error_changed", "discovery_error_removed", "ecm_group_added", "ecm_group_changed", "ecm_group_removed", "file_removed_from_file_store", "file_uploaded_to_file_store", "group_policy_add_to_jump_group_added", "group_policy_add_to_jump_group_removed", "group_policy_add_to_jumpoint_added", "group_policy_add_to_jumpoint_removed", "group_policy_add_to_support_teams_added", "group_policy_add_to_support_teams_removed", "group_policy_added", "group_policy_changed", "group_policy_removed", "group_policy_member_added", "group_policy_member_removed", "group_policy_remove_from_jump_group_added", "group_policy_remove_from_jump_group_removed", "group_policy_remove_from_jumpoint_added", "group_policy_remove_from_jumpoint_removed", "group_policy_remove_from_support_teams_added", "group_policy_remove_from_support_teams_removed", "management_account_added", "management_account_changed", "management_account_removed", "pending_user_added", "pending_user_changed", "pending_user_removed")
 | call beyondtrust_pra_common_fields_modeling
 | alter 
+    policy_id = arrayindex(regextract(_raw_log, "policy_id\=(\w[^;]*)"), 0),
     target_user_id = arrayindex(regextract(_raw_log, "user\:id\=(\w[^;]*)"), 0),
     target_username = arrayindex(regextract(_raw_log, "username\=([^;]+)"), 0),
+    target_computer_name = target_resource_name = arrayindex(regextract(_raw_log, "computer_name\=([^;]+)"), 0)
     target_resource_owner = arrayindex(regextract(_raw_log, "credential_owner_id\=([^;]+)"), 0),
-    target_resource_id = arrayindex(regextract(_raw_log, "id\=(\w[^;]*)"), 0),
-    target_resource_name = arrayindex(regextract(_raw_log, "name\=([^;]+)"), 0)
+    target_resource_id = arrayindex(regextract(_raw_log, "[;:]id\=(\w[^;]*)"), 0),
+    target_resource_name = arrayindex(regextract(_raw_log, "[:;]name\=([^;]+)"), 0)
 | alter 
+    xdm.network.rule = policy_id,
+    xdm.target.host.hostname = target_computer_name,
     xdm.target.resource.id = target_resource_id,
     xdm.target.resource.name = target_resource_name,
     xdm.target.resource.parent_id = target_resource_owner,
     xdm.target.user.identifier = target_user_id,
     xdm.target.user.username = target_username;
-
-
