@@ -189,7 +189,7 @@ tasks:
       id: 31dbc88b-bf88-4b8d-8ef5-883ec5dad3c8
       version: -1
       name: Set user severity to medium
-      description: Sets the severity associated with the XDR users to "Medium".
+      description: Sets the severity associated with the Cortex XDR users to "Medium".
       scriptName: Set
       type: regular
       iscommand: false
