@@ -1562,6 +1562,7 @@ tasks:
       id: 674bfbfe-f4dd-45d6-81ea-9d6eb134d8e3
       version: -1
       name: IP block executed?
+      description: Checks whether the block IP playbook was executed.
       type: condition
       iscommand: false
       brand: ""
@@ -1608,6 +1609,7 @@ tasks:
       id: 5d209338-a5a6-4760-86d4-5d002d559dfa
       version: -1
       name: User containment executed?
+      description: Checks whether the block account playbook was executed.
       type: condition
       iscommand: false
       brand: ""
@@ -1728,6 +1730,7 @@ tasks:
       id: 0dadf16c-f182-4348-8d29-84f62e8c1433
       version: -1
       name: IP block executed?
+      description: Checks whether the block IP playbook was executed.
       type: condition
       iscommand: false
       brand: ""
@@ -1774,6 +1777,7 @@ tasks:
       id: 96d4ae23-3cec-4de9-8b2a-da2f1ee4bf56
       version: -1
       name: User containment executed?
+      description: Checks whether the block account playbook was executed.
       type: condition
       iscommand: false
       brand: ""
@@ -1890,6 +1894,7 @@ tasks:
       id: eda6f3d3-203c-4d44-8ebf-0d430b9c946b
       version: -1
       name: Early containment enabled?
+      description: Checks whether early containment is enabled in the playbook inputs.
       type: condition
       iscommand: false
       brand: ""
