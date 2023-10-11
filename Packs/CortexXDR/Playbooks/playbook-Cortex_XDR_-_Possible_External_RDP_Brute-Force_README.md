@@ -60,7 +60,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | AutoRemediation | Set this value to "true" to enable auto remediation \(IP Block and User Block\). | false | Optional |
 | FinalThreshold | The threshold number of suspicious elements required to determine a 'True Positive' verdict. | 3 | Optional |
 | CriticalElement | You can select a specific element that, if identified as suspicious, will automatically set the final verdict as true positive. The following options are available:<br/>IP Reputation<br/>Related Campaign<br/>Hunting Results<br/>Related Alerts<br/>Unusual Country<br/>Risky User<br/>Risky Host<br/><br/>NOTE: You can read about the meaning of every element in the playbook description. |  | Optional |
-| UserEngagementThreshold | The threshold number of suspicious elements that will trigger a user engagement. Set 0 to disable user engagement.<br/><br/>NOTICE: If this threshold is equal to or higher than "FinalThreshold", the final verdict will be deemed by the user response and not by the FinalThreshold calculation. | 2 | Optional |
+| UserEngagementThreshold | The threshold number of suspicious elements that will trigger a user engagement. Set to 0 to disable user engagement.<br/><br/>NOTICE: If this threshold is equal to or higher than "FinalThreshold", the final verdict will be deemed by the user response and not by the FinalThreshold calculation. | 2 | Optional |
 | Hostname | RDP connection destination hostname. |  | Optional |
 | EndpointID | RDP connection destination endpoint ID. |  | Optional |
 | Alert_Name | Alert name. |  | Optional |
@@ -68,7 +68,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | Country | Source external IP country. |  | Optional |
 | IsolateEndpoint | Set this value to "true" to enable endpoint isolation in case of a true positive. | false | Optional |
 | SOCEmailAddress | The SOC email address to use for the user engagement section. |  | Optional |
-| EarlyContainment | Set this value to "true" to allow early containment when the IP is known malicious | true | Optional |
+| EarlyContainment | Set this value to "true" to allow early containment when the IP is known to be malicious. | true | Optional |
 
 ## Playbook Outputs
 
