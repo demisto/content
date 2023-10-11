@@ -470,7 +470,9 @@ class Client(BaseClient):
         new_alerts: List[Union[SaeAlert, TiAlert]] = []
 
         def _filter_alerts(alert: Union[SaeAlert, TiAlert]) -> None:
-            if alert.severity == demisto.params().get(INCIDENT_SEVERITY):
+            if demisto.params().get(INCIDENT_SEVERITY) == "any":
+                new_alerts.append(alert)
+            elif alert.severity.value == demisto.params().get(INCIDENT_SEVERITY):
                 new_alerts.append(alert)
 
         try:
@@ -1177,18 +1179,19 @@ def fetch_incidents(client: Client):
 
     incidents: List[Dict[str, Any]] = []
     if alerts:
+        last_event = datetime.strptime(
+            alerts[0].created_date_time, "%Y-%m-%dT%H:%M:%SZ"
+        )
         for record in alerts:
             incident = {
                 "name": record.model,
+                "dbotMirrorId": record.id,
+                "details": record.description if isinstance(record, SaeAlert) else None,
                 "occurred": record.created_date_time,
                 "severity": incident_severity_to_dbot_score(record.severity),
                 "rawJSON": json.dumps(record),
             }
             incidents.append(incident)
-            last_event = datetime.strptime(
-                record["createdDateTime"], "%Y-%m-%dT%H:%M:%SZ"
-            )
-
             next_search = last_event + timedelta(0, 1)
             demisto.setLastRun({"start_time": next_search.isoformat()})
 
