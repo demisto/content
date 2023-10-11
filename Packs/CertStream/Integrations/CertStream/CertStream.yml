@@ -46,7 +46,7 @@ script:
   script: ""
   type: python
   commands: []
-  dockerimage: devdemisto/certstream:1.0.0.75648
+  dockerimage: demisto/websockets:11.0.3.76119
   longRunning: true
   subtype: python3
 marketplaces:
