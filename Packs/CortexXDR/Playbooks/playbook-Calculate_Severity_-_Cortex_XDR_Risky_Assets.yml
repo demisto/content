@@ -601,7 +601,7 @@ tasks:
       id: 2d888db6-9550-4b5d-8ed4-734c37b7a164
       version: -1
       name: Set host severity to high
-      description: Sets the severity associated with the XDR hosts to "High".
+      description: Sets the severity associated with the Cortex XDR hosts to "High".
       scriptName: Set
       type: regular
       iscommand: false
