@@ -2268,6 +2268,9 @@ script:
     - defaultValue: '0'
       description: The page from which to get the indicators.
       name: page
+    - name: task_id
+      description: The ID of the task that is created to add or update the element in the reference set. The task ID can be used to poll the status of the task by using the 'qradar-tasks-get' command.
+
     description: Uploads indicators from Demisto to QRadar.
     hidden: true
     name: qradar-upload-indicators
@@ -2281,6 +2284,7 @@ script:
       name: fields
     - description: 'Range of results to return. e.g.: 0-20.'
       name: range
+      
     description: Get Source IPs.
     name: qradar-ips-source-get
     outputs:
