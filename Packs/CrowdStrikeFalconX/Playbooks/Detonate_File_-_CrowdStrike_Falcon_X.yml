@@ -40,6 +40,7 @@ tasks:
       '#none#':
       - "7"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -50,6 +51,10 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "2":
     id: "2"
     taskid: 334792b6-7e5d-4494-85a1-aa4bc2274105
@@ -72,10 +77,8 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "3"
+      - "17"
     scriptarguments:
-      AdditionalPollingCommandArgNames: {}
-      AdditionalPollingCommandArgValues: {}
       Ids:
         complex:
           root: csfalconx
@@ -93,20 +96,26 @@ tasks:
       dt:
         simple: csfalconx(val.resource.state !== 'success').resource.id
     separatecontext: true
+    continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""
       wait: 1
+      max: 0
     view: |-
       {
         "position": {
-          "x": 500,
-          "y": 1595
+          "x": 870,
+          "y": 1545
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "3":
     id: "3"
     taskid: c7c659db-15a7-4c9b-8f3d-72713eefe5f1
@@ -114,7 +123,7 @@ tasks:
     task:
       id: c7c659db-15a7-4c9b-8f3d-72713eefe5f1
       version: -1
-      name: CrowdStrike Falcon Intelligence Sandbox Get Report
+      name: CrowdStrike Falcon Intelligence Sandbox Get Full Report
       description: Get a full version of a sandbox report.
       script: CrowdStrike Falcon X|||cs-fx-get-full-report
       type: regular
@@ -125,18 +134,25 @@ tasks:
       - "5"
     scriptarguments:
       ids:
-        simple: ${csfalconx.resource.submitted_id}
+        complex:
+          root: csfalconx.resource
+          accessor: submitted_id
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 500,
-          "y": 1770
+          "x": 620,
+          "y": 1880
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "5":
     id: "5"
     taskid: 73843b9d-b556-4e1c-895c-93ae4f6671dc
@@ -150,16 +166,21 @@ tasks:
       iscommand: false
       brand: ""
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 70,
-          "y": 1945
+          "x": 50,
+          "y": 2055
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "7":
     id: "7"
     taskid: ee402758-5d33-4edd-89fb-816dee6233c5
@@ -206,6 +227,7 @@ tasks:
                         simple: active
                 accessor: brand
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -216,6 +238,10 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "8":
     id: "8"
     taskid: 44e9c26f-c38e-4c1c-8b60-80a92220810e
@@ -242,16 +268,21 @@ tasks:
             value:
               simple: csfalconx.resource.submitted_id(val != -1)
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 387.5,
-          "y": 1245
+          "x": 670,
+          "y": 1195
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "10":
     id: "10"
     taskid: dd7a0c59-4cf4-4a46-8316-19dadac61a1b
@@ -309,16 +340,21 @@ tasks:
                 accessor: EntryID
             iscontext: true
           ignorecase: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 275,
-          "y": 720
+          "x": 470,
+          "y": 700
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "11":
     id: "11"
     taskid: e0e4b29f-fe26-47b2-8930-00d6087bdbeb
@@ -336,23 +372,27 @@ tasks:
       '#none#':
       - "10"
     scriptarguments:
-      append: {}
       key:
         simple: File
       value:
         complex:
           root: inputs.File
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 275,
-          "y": 545
+          "x": 470,
+          "y": 540
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "12":
     id: "12"
     taskid: 813639b9-9c78-44dc-8600-afad5cc1c5db
@@ -379,16 +419,21 @@ tasks:
             value:
               simple: inputs.File
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 270,
           "y": 370
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "14":
     id: "14"
     taskid: 33e04243-7824-4475-8ea1-5c2366c22fd6
@@ -416,6 +461,10 @@ tasks:
         simple: "false"
       environment_id:
         simple: ${inputs.EnvironmentID}
+      file:
+        simple: ${inputs.File.EntryID}
+      file_name:
+        simple: ${inputs.File.Name}
       sha256:
         simple: ${csfalconx.resource.sha256}
       submit_name:
@@ -424,22 +473,22 @@ tasks:
         simple: ${inputs.SystemDate}
       system_time:
         simple: ${inputs.SystemTime}
-      file:
-        simple: ${inputs.File.EntryID}
-      file_name:
-        simple: ${inputs.File.Name}
-      is_confidential: {}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 387.5,
-          "y": 895
+          "x": 670,
+          "y": 870
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "15":
     id: "15"
     taskid: 5a968f27-55f8-4761-88d0-a89b4d023bda
@@ -476,16 +525,21 @@ tasks:
       system_time:
         simple: ${inputs.SystemTime}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 387.5,
-          "y": 1070
+          "x": 670,
+          "y": 1030
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "16":
     id: "16"
     taskid: 7f92d8fa-94a2-4957-871a-872d191d80f0
@@ -506,23 +560,117 @@ tasks:
       seconds:
         simple: "10"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 500,
-          "y": 1420
+          "x": 870,
+          "y": 1380
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 4e86bc79-2296-4b51-8198-8c72cd5029ea
+    type: condition
+    task:
+      id: 4e86bc79-2296-4b51-8198-8c72cd5029ea
+      version: -1
+      name: Full Report or Report Summary?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "18"
+      Full:
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: Full
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.FullReport
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 870,
+          "y": 1705
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 26fa1ab8-0cea-48ac-864d-4969b8f5ab35
+    type: regular
+    task:
+      id: 26fa1ab8-0cea-48ac-864d-4969b8f5ab35
+      version: -1
+      name: CrowdStrike Falcon Intelligence Sandbox Get Report Summary
+      description: Gets a short summary version of a sandbox report.
+      script: '|||cs-fx-get-report-summary'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      ids:
+        complex:
+          root: csfalconx.resource
+          accessor: submitted_id
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1110,
+          "y": 1880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
 view: |-
   {
-    "linkLabelsPosition": {},
+    "linkLabelsPosition": {
+      "10_5_#default#": 0.3,
+      "12_5_#default#": 0.1,
+      "7_5_#default#": 0.13,
+      "8_5_#default#": 0.65
+    },
     "paper": {
       "dimensions": {
-        "height": 1960,
-        "width": 830,
+        "height": 2070,
+        "width": 1440,
         "x": 50,
         "y": 50
       }
@@ -535,57 +683,63 @@ inputs:
       root: File
   required: false
   description: The file to detonate. The file is taken from the context.
+  playbookInputQuery:
 - key: Interval
   value:
     simple: "1"
   required: false
   description: Polling frequency - how often the polling command should run (minutes)
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: Timeout
   value:
     simple: "15"
   required: false
   description: How much time to wait before a timeout occurs (minutes)
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: EnvironmentID
   value:
-    simple: "160: Windows 10"
+    simple: '160: Windows 10'
   required: false
   description: Sandbox environment used for analysis.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: ActionScript
   value: {}
   required: false
   description: Runtime script for sandbox analysis.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: CommandLine
   value: {}
   required: false
-  description: 'Command line script passed to the submitted file at runtime. Max length:
-    2048 characters.'
-  playbookInputQuery: null
+  description: 'Command line script passed to the submitted file at runtime. Max length: 2048 characters.'
+  playbookInputQuery:
 - key: DocumentPassword
   value: {}
   required: false
-  description: 'Auto-filled for Adobe or Office files that prompt for a password.
-    Max length: 32 characters.'
-  playbookInputQuery: null
+  description: 'Auto-filled for Adobe or Office files that prompt for a password. Max length: 32 characters.'
+  playbookInputQuery:
 - key: SubmitName
   value: {}
   required: false
-  description: Name of the malware sample that's used for file type detection. and
-    analysis.
-  playbookInputQuery: null
+  description: Name of the malware sample that's used for file type detection. and analysis.
+  playbookInputQuery:
 - key: SystemDate
   value: {}
   required: false
   description: Set a custom date for the sandbox environment in the format yyyy-MM-dd.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: SystemTime
   value: {}
   required: false
   description: Sets a custom time for the sandbox environment in the format HH:mm.
-  playbookInputQuery: null
+  playbookInputQuery:
+- key: FullReport
+  value:
+    simple: "True"
+  required: false
+  description: |-
+    Whether to get a full report or report summary from Falcon X.
+    Set to "False" to get report summary.
+  playbookInputQuery:
 outputs:
     - contextPath: csfalconx.resource.id
       description: Analysis ID.

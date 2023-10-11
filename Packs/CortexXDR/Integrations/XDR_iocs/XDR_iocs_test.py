@@ -94,7 +94,7 @@ class TestHttpRequest:
             client.http_request('suffix', requests_kwargs={})
         assert e.value.message == f'Could not parse json out of {text}'
         assert e.value.res.status_code == 200
-        assert isinstance(e.value.exception, (requests.exceptions.JSONDecodeError, json.decoder.JSONDecodeError))
+        assert isinstance(e.value.exception, requests.exceptions.JSONDecodeError | json.decoder.JSONDecodeError)
 
 
 class TestGetRequestsKwargs:
@@ -190,7 +190,7 @@ class TestCreateFile:
 
     @staticmethod
     def get_file(path):
-        with open(path, 'r') as _file:
+        with open(path) as _file:
             return _file.read()
 
     @staticmethod
@@ -673,10 +673,10 @@ class TestCommands:
         mocker.patch.object(demisto, 'getIntegrationContext', return_value={'ts': 1591142400000})
         mocker.patch.object(demisto, 'createIndicators')
         mocker.patch.object(demisto, 'searchIndicators', return_value={})
-        xdr_res = {'reply': list(map(lambda xdr_ioc: xdr_ioc[0], TestXDRIOCToDemisto.data_test_xdr_ioc_to_demisto))}
+        xdr_res = {'reply': [xdr_ioc[0] for xdr_ioc in TestXDRIOCToDemisto.data_test_xdr_ioc_to_demisto]}
         mocker.patch.object(Client, 'http_request', return_value=xdr_res)
         get_changes(client)
-        xdr_ioc_to_timeline(list(map(lambda x: str(x[0].get('RULE_INDICATOR')), TestXDRIOCToDemisto.data_test_xdr_ioc_to_demisto)))    # noqa: E501
+        xdr_ioc_to_timeline([str(x[0].get('RULE_INDICATOR')) for x in TestXDRIOCToDemisto.data_test_xdr_ioc_to_demisto])    # noqa: E501
 
 
 class TestParams:
@@ -724,7 +724,7 @@ class TestParams:
         Client.tag = demisto.params().get('feedTags', demisto.params().get('tag', Client.tag))
         Client.tlp_color = demisto.params().get('tlp_color')
         client = Client({'url': 'yana'})
-        xdr_res = {'reply': list(map(lambda xdr_ioc: xdr_ioc[0], TestXDRIOCToDemisto.data_test_xdr_ioc_to_demisto))}
+        xdr_res = {'reply': [xdr_ioc[0] for xdr_ioc in TestXDRIOCToDemisto.data_test_xdr_ioc_to_demisto]}
         mocker.patch.object(Client, 'http_request', return_value=xdr_res)
         get_changes(client)
         output = outputs.call_args.args[0]
@@ -986,3 +986,26 @@ def test_parse_xdr_comments(raw_comment: str | list[str], comments_as_tags: bool
     """
     from XDR_iocs import _parse_xdr_comments
     assert _parse_xdr_comments(raw_comment, comments_as_tags) == expected_comment
+
+
+@pytest.mark.parametrize(
+    'validation_errors, expected_str', (
+        ([{'indicator': '1.1.1.1',
+           'error': 'Expiration time 1696323079000 is invalid; expiration date cannot be in the past'},
+          {'indicator': '3.3.3.3',
+           'error': 'Expiration time 1696150302000 is invalid; expiration date cannot be in the past'}],
+         'Expiration time 1696323079000 is invalid; expiration date cannot be in the past'),
+        ([{'indicator': '1.1.1.1',
+           'error': 'Expiration time 1696323079000 is invalid; expiration date cannot be in the past'}],
+         'Expiration time 1696323079000 is invalid; expiration date cannot be in the past'),
+        ([],
+         ''),
+    ))
+def test_create_validation_errors_response(validation_errors, expected_str):
+    """
+    Given   validation errors that returned from the server.
+    When    pushing XSOAR IOC to XDR
+    Then    check the parsed error
+    """
+    from XDR_iocs import create_validation_errors_response
+    assert expected_str in create_validation_errors_response(validation_errors)
