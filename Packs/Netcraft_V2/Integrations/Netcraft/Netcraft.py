@@ -13,13 +13,7 @@ TAKEDOWN_API_LIMIT = 100_000
 SUBMISSION_API_LIMIT = 1000
 MAX_FETCH_DEFAULT = 10
 TAKEDOWN_OK_CODE = 'TD_OK'
-AUTH_HEADERS = {
-    'Authorization': f'Bearer {PARAMS["credentials"]["password"]}'
-}
-SERVICE_TO_URL_MAP = {
-    'takedown': PARAMS['takedown_url'],
-    'submission': PARAMS['submission_url'],
-}
+
 RES_CODE_TO_MESSAGE = {
     TAKEDOWN_OK_CODE: 'The attack was submitted to Netcraft successfully.',
     'TD_EXISTS': 'The attack was not submitted to Netcraft because it already exists in the system.',
@@ -64,7 +58,7 @@ class Client(BaseClient):
         remove_nulls_from_dictionary(params or {})
         remove_nulls_from_dictionary(data or {})
         return self._http_request(
-            method, full_url=urljoin(self._base_url['takedown'], url_suffix),
+            method, full_url=urljoin(self._base_url['takedown_url'], url_suffix),
             params=params, data=data, files=files, resp_type=resp_type,
             ok_codes=ok_codes, **kwargs)
 
@@ -97,7 +91,7 @@ class Client(BaseClient):
         remove_nulls_from_dictionary(params or {})
         remove_nulls_from_dictionary(json_data or {})
         return self._http_request(
-            method, full_url=urljoin(self._base_url['submission'], url_suffix),
+            method, full_url=urljoin(self._base_url['submission_url'], url_suffix),
             params=params, json_data=json_data, files=files, resp_type=resp_type,
             ok_codes=ok_codes, **kwargs)
 
@@ -1076,11 +1070,15 @@ def main() -> None:
     command = demisto.command()
 
     client = Client(
-        base_url=SERVICE_TO_URL_MAP,
+        base_url=sub_dict(
+            PARAMS, 'submission_url', 'takedown_url'
+        ),
+        headers={
+            'Authorization': f'Bearer {PARAMS["credentials"]["password"]}'
+        },
         verify=(not PARAMS['insecure']),
         proxy=PARAMS['proxy'],
         ok_codes=(200,),
-        headers=AUTH_HEADERS,
     )
 
     demisto.debug(f'Command being called is {command}')
