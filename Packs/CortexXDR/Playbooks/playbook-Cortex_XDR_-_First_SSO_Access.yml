@@ -338,7 +338,7 @@ tasks:
         - AWS IAM
         - Cortex XDR (account enrichment and reputation)
 
-        Also, the playbook supports the generic command 'iam-get-user' (implemented in IAM integrations. For more information, visit https://xsoar.pan.dev/docs/integrations/iam-integrations.
+        Also, the playbook supports the generic command 'iam-get-user' (implemented in IAM integrations). For more information, visit https://xsoar.pan.dev/docs/integrations/iam-integrations.
       playbookName: Account Enrichment - Generic v2.1
       type: playbook
       iscommand: false
@@ -2168,7 +2168,7 @@ inputs:
     - MED
     - HIGH
 
-    Setting this to True will clear the user sessions in Okta if the user has a high risk, automatically. Setting this and the AutomaticallyClearSessions inputs to False, will prompt the analyst to take action manually even if the user has a high risk associated with it.
+    Setting this to True will automatically clear the user sessions in Okta if the user has a high risk. Setting this and the AutomaticallyClearSessions inputs to False, will prompt the analyst to take action manually even if the user has a high risk associated with it.
   playbookInputQuery:
 outputs: []
 tests:

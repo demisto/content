@@ -46,7 +46,7 @@ tasks:
       id: 1f26dc0c-e4fd-415a-8276-d017ff8343fe
       version: -1
       name: Is a risky user involved in the incident?
-      description: Checks whether any of the enriched users has a risk score associated to it in XDR.
+      description: Checks whether any of the enriched users has a risk score associated to it in Cortex XDR.
       type: condition
       iscommand: false
       brand: ""
