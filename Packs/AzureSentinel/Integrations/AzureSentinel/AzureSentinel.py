@@ -1,3 +1,4 @@
+from concurrent.futures import ThreadPoolExecutor
 import demistomock as demisto  # noqa
 from CommonServerPython import *  # noqa
 from CommonServerUserPython import *  # noqa
@@ -1204,6 +1205,20 @@ def update_next_link_in_context(result: dict, outputs: dict):
         outputs[f'AzureSentinel.NextLink(val.Description == "{NEXT_LINK_DESCRIPTION}")'] = next_link_item
 
 
+def fetch_incident_additional_info(client: AzureSentinelClient, incident: Dict):
+    additional_fetch = {'Alerts': {'method': 'POST', 'result_key': 'value'},
+                        'Entities': {'method': 'POST', 'result_key': 'entities'},
+                        'Comments': {'method': 'GET', 'result_key': 'value'},
+                        'Relations': {'method': 'GET', 'result_key': 'value'}}
+
+    for additional_info in demisto.params().get('fetch_additional_info', []):
+        info_type = additional_info.lower()
+        method = additional_fetch[additional_info]['method']
+        results_key = additional_fetch[additional_info]['result_key']
+        incident_id = incident.get('ID')
+        incident[info_type] = client.http_request(method, f'incidents/{incident_id}/{info_type}').get(results_key)
+
+
 def fetch_incidents_additional_info(client: AzureSentinelClient, incidents: List | Dict):
     """Fetches additional info of an incidents array or a single incident.
 
@@ -1214,22 +1229,8 @@ def fetch_incidents_additional_info(client: AzureSentinelClient, incidents: List
     Returns:
         None. Updates the incidents array with the additional info.
     """
-    additional_fetch = {'Alerts': {'method': 'POST', 'result_key': 'value'},
-                        'Entities': {'method': 'POST', 'result_key': 'entities'},
-                        'Comments': {'method': 'GET', 'result_key': 'value'},
-                        'Relations': {'method': 'GET', 'result_key': 'value'}}
-
-    if isinstance(incidents, dict):
-        incidents = [incidents]
-
-    for incident in incidents:
-        for additional_info in demisto.params().get('fetch_additional_info', []):
-            info_type = additional_info.lower()
-            method = additional_fetch[additional_info]['method']
-            results_key = additional_fetch[additional_info]['result_key']
-            incident_id = incident.get('ID')
-
-            incident[info_type] = client.http_request(method, f'incidents/{incident_id}/{info_type}').get(results_key)
+    with ThreadPoolExecutor() as pool:
+        pool.map(lambda incident: fetch_incident_additional_info(client, incident), incidents)
 
 
 def fetch_incidents(client: AzureSentinelClient, last_run: dict, first_fetch_time: str, min_severity: int) -> tuple:
@@ -1280,10 +1281,15 @@ def fetch_incidents(client: AzureSentinelClient, last_run: dict, first_fetch_tim
         }
 
     raw_incidents = list_incidents_command(client, command_args, is_fetch_incidents=True).outputs
+    if isinstance(raw_incidents, dict):
+        raw_incidents = [raw_incidents]
+    demisto.debug(f"raw incidents id before dedup: {[incident['ID'] for incident in raw_incidents]}")
+    raw_incidents = list(filter(lambda incident: incident['ID'] not in last_fetch_ids, raw_incidents))
+    demisto.debug(f"raw incidents id after dedup: {[incident['ID'] for incident in raw_incidents]}")
 
     fetch_incidents_additional_info(client, raw_incidents)
 
-    return process_incidents(raw_incidents, last_fetch_ids, min_severity,
+    return process_incidents(raw_incidents, min_severity,
                              latest_created_time, last_incident_number)  # type: ignore[attr-defined]
 
 
@@ -1292,22 +1298,24 @@ def fetch_incidents_command(client, params):
     first_fetch_time = params.get('fetch_time', '3 days').strip()
     min_severity = severity_to_level(params.get('min_severity', 'Informational'))
     # Set and define the fetch incidents command to run after activated via integration settings.
+    last_run = demisto.getLastRun()
+    demisto.debug(f"Current last run is {last_run}")
     next_run, incidents = fetch_incidents(
         client=client,
-        last_run=demisto.getLastRun(),
+        last_run=last_run,
         first_fetch_time=first_fetch_time,
         min_severity=min_severity
     )
+    demisto.debug(f"New last run is {last_run}")
     demisto.setLastRun(next_run)
     demisto.incidents(incidents)
 
 
-def process_incidents(raw_incidents: list, last_fetch_ids: list, min_severity: int, latest_created_time: datetime,
+def process_incidents(raw_incidents: list, min_severity: int, latest_created_time: datetime,
                       last_incident_number):
     """Processing the raw incidents
     Args:
         raw_incidents: The incidents that were fetched from the API.
-        last_fetch_ids: The last fetch ids from the last run.
         last_incident_number: The last incident number that was fetched.
         latest_created_time: The latest created time.
         min_severity: The minimum severity.
@@ -1325,31 +1333,29 @@ def process_incidents(raw_incidents: list, last_fetch_ids: list, min_severity: i
         incident_severity = severity_to_level(incident.get('Severity'))
         demisto.debug(f"{incident.get('ID')=}, {incident_severity=}, {incident.get('IncidentNumber')=}")
 
-        # create incident only for incidents that weren't fetched in the last run and their severity is at least min_severity
-        if incident.get('ID') not in last_fetch_ids:
-            incident_created_time = dateparser.parse(incident.get('CreatedTimeUTC'))
-            current_fetch_ids.append(incident.get('ID'))
-            if incident_severity >= min_severity:
-                add_mirroring_fields(incident)
-                xsoar_incident = {
-                    'name': '[Azure Sentinel] ' + incident.get('Title'),
-                    'occurred': incident.get('CreatedTimeUTC'),
-                    'severity': incident_severity,
-                    'rawJSON': json.dumps(incident)
-                }
-                incidents.append(xsoar_incident)
-            else:
-                demisto.debug(f"drop creation of {incident.get('IncidentNumber')=} "
-                              "due to the {incident_severity=} is lower then {min_severity=}")
+        incident_created_time = dateparser.parse(incident.get('CreatedTimeUTC'))
+        current_fetch_ids.append(incident.get('ID'))
+        if incident_severity >= min_severity:
+            add_mirroring_fields(incident)
+            xsoar_incident = {
+                'name': '[Azure Sentinel] ' + incident.get('Title'),
+                'occurred': incident.get('CreatedTimeUTC'),
+                'severity': incident_severity,
+                'rawJSON': json.dumps(incident)
+            }
+            incidents.append(xsoar_incident)
+        else:
+            demisto.debug(f"drop creation of {incident.get('IncidentNumber')=} "
+                          "due to the {incident_severity=} is lower then {min_severity=}")
 
-            # Update last run to the latest fetch time
-            if incident_created_time is None:
-                raise DemistoException(f"{incident.get('CreatedTimeUTC')=} couldn't be parsed")
+        # Update last run to the latest fetch time
+        if incident_created_time is None:
+            raise DemistoException(f"{incident.get('CreatedTimeUTC')=} couldn't be parsed")
 
-            if incident_created_time > latest_created_time:
-                latest_created_time = incident_created_time
-            if incident.get('IncidentNumber') > last_incident_number:
-                last_incident_number = incident.get('IncidentNumber')
+        if incident_created_time > latest_created_time:
+            latest_created_time = incident_created_time
+        if incident.get('IncidentNumber') > last_incident_number:
+            last_incident_number = incident.get('IncidentNumber')
 
     next_run = {
         'last_fetch_time': latest_created_time.strftime(DATE_FORMAT),
