@@ -34,10 +34,12 @@ script:
   - arguments:
     - description: The maximum number of indicators to return. Default value is 50. Maximum value is 500.
       name: limit
-    - description: 'Score minimum value to filter by. Values range is 1-100. '
+    - description: 'Score minimum value to filter by. Values range is 0-100. '
       name: score_start
-    - description: 'Score maximum value to filter by. Values range is 1-100. '
+    - description: 'Score maximum value to filter by. Values range is 0-100. '
       name: score_end
+    - description: 'A specific score. Values range is 0-100 or Unknown.'
+      name: score
     - auto: PREDEFINED
       defaultValue: ALL
       description: 'The indicator types to fetch. Out-of-the-box indicator types supported in XSOAR are: Account, Domain, Email, File, Host, IP, IPv6, Registry Key, and URL.'

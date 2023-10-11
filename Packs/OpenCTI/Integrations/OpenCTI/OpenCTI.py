@@ -91,7 +91,7 @@ def reset_last_run():
     return CommandResults(readable_output='Fetch history deleted successfully')
 
 
-def get_indicators(client: OpenCTIApiClient, indicator_types: list[str], score: list[str] = None,
+def get_indicators(client: OpenCTIApiClient, indicator_types: list[str], score=None,
                    limit: int | None = 500, last_run_id: str | None = None, search: str = "") -> dict:
     """ Retrieving indicators from the API
 
@@ -138,17 +138,26 @@ def get_indicators_command(client: OpenCTIApiClient, args: dict) -> CommandResul
     limit = arg_to_number(args.get('limit', 50))
     start = arg_to_number(args.get('score_start'))
     end = arg_to_number(args.get('score_end'))  # type:ignore
+    score = args.get('score')
     search = args.get("search", "")
-    score = None
-    if start or end:
-        score = [str(i) for i in range(start, end + 1)]  # type:ignore
+    scores = None
+    if score:
+        if score.lower() == "unknown":
+            scores = [None]
+        elif score.isdigit():
+            scores = [score]
+        else:
+            raise DemistoException("Invalid score was provided.")
+
+    elif start or end:
+        scores = [str(i) for i in range(start, end + 1)]  # type:ignore
 
     raw_response = get_indicators(
         client=client,
         indicator_types=indicator_types,
         limit=limit,
         last_run_id=last_run_id,
-        score=score,
+        score=scores,
         search=search
     )
 
