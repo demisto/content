@@ -3852,7 +3852,7 @@ class TestObjectFunctions:
         # Same as above but include a regex filter
         AddressObject.refreshall = MagicMock(side_effect=[mock_address_objects(), []])
         result = ObjectGetter.get_object_reference(
-            mock_single_device_topology, "AddressObject", object_name="test-address-\d+", use_regex="true"
+            mock_single_device_topology, "AddressObject", object_name="test-address-\\d+", use_regex="true"
         )
         assert "test-address-1" in [x.name for x in result]
         assert "test-address-2" in [x.name for x in result]
@@ -3861,7 +3861,7 @@ class TestObjectFunctions:
         AddressObject.refreshall = MagicMock(side_effect=[mock_address_objects(), []])
         with pytest.raises(DemistoException):
             result = ObjectGetter.get_object_reference(
-                mock_single_device_topology, "AddressObject", object_name="test-address-(\d+", use_regex="true"
+                mock_single_device_topology, "AddressObject", object_name="test-address-(\\d+", use_regex="true"
             )
             assert not result
 

@@ -506,7 +506,7 @@ def test_rate_limit_when_retry_is_false(requests_mock):
         json={'content': "Rate limit reached!"}
     )
 
-    with pytest.raises(DemistoException, match="Error in API call \[429\]"):
+    with pytest.raises(DemistoException, match="Error in API call \\[429\\]"):
         client.http_request(method='GET', url_suffix='test_id')
 
 

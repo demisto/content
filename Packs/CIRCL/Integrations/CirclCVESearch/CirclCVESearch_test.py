@@ -97,7 +97,7 @@ def test_parse_cvss_version(cvss_vector, expected_output):
                          entity_a_type="cve",
                          entity_b='Product',
                          entity_b_type="software").to_context()]),
-    (["cpe:2.3:h:a\:_vendor"],
+    (["cpe:2.3:h:a\\:_vendor"],
      ["A: vendor", "Hardware"],
      [EntityRelationship(name="targets",
                          entity_a='CVE-2022-1111',

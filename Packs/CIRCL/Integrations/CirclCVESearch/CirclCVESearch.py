@@ -176,7 +176,7 @@ def parse_cpe(cpes: list[str], cve_id: str) -> tuple[list[str], list[EntityRelat
     parts = set()
 
     for cpe in cpes:
-        cpe_split = re.split('(?<!\\\):', cpe)
+        cpe_split = re.split('(?<!\\\\):', cpe)
 
         with contextlib.suppress(IndexError):
             if (vendor := cpe_split[3].capitalize().replace("\\", "").replace("_", " ")):

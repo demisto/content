@@ -41,20 +41,20 @@ LIST_RAW = 'Feb 13 09:02:55 1,2020/02/13 09:02:55,001606001116,THREAT,url,' \
 
 RAW_WITH_MESSAGE = '{"@timestamp":"2019-10-15T13:30:08.578-04:00","message":"{"TimeStamp":"2019-10-15 13:30:08",' \
                    '"CATEGORY_1":"CONTACT","ASSOCIATEOID":"G2N2TJETBRAAX68V","HOST":' \
-                   '"step-up-authentication-api.gslb.es.oneadp.com","SCOPE[4]":"PiSvcsProvider\/payroll","SCOPE[19]":' \
-                   '"\/api\/events\/core\/v1\/user-status","CONTEXT":"\/smsstepup","FLOW":"API","X-REAL-IP":' \
+                   '"step-up-authentication-api.gslb.es.oneadp.com","SCOPE[4]":"PiSvcsProvider\\/payroll","SCOPE[19]":' \
+                   '"\\/api\\/events\\/core\\/v1\\/user-status","CONTEXT":"\\/smsstepup","FLOW":"API","X-REAL-IP":' \
                    '"2.2.2.2","PRODUCT_CODE":"WFNPortal","X-FORWARDED-PROTO":"http","ERROR_ID":"4008",' \
-                   '"SCOPE[23]":"\/security\/notification-communication-response-value.accept","REQ_URL":' \
-                   '"http:\/\/step-up-authentication-api.gslb.es.blabla.com\/smsstepup\/events\/core\/v1\/step-up-' \
-                   'user-authorization-request.evaluate","SCOPE[35]":"autopay\/payroll\/v1\/cafeteria-plan-' \
-                   'configurations\/{configurationItemID}","SCOPE_MATCHED":"Y","SCOPE[43]":"communication\/n' \
-                   'otification-message-template.add","SCOPE[11]":"\/ISIJWSUserSecurity","SCOPE[27]":"autopay\/events' \
-                   '\/payroll\/v1\/earning-configuration.add","ORGOID":"G2SY6MR3ATKA232T","SCOPE[8]":"\/' \
-                   'ISIJWSAssociatesService","SCOPE[39]":"autopay\/payroll\/v1\/earning-configurations",' \
+                   '"SCOPE[23]":"\\/security\\/notification-communication-response-value.accept","REQ_URL":' \
+                   '"http:\\/\\/step-up-authentication-api.gslb.es.blabla.com\\/smsstepup\\/events\\/core\\/v1\\/step-up-' \
+                   'user-authorization-request.evaluate","SCOPE[35]":"autopay\\/payroll\\/v1\\/cafeteria-plan-' \
+                   'configurations\\/{configurationItemID}","SCOPE_MATCHED":"Y","SCOPE[43]":"communication\\/n' \
+                   'otification-message-template.add","SCOPE[11]":"\\/ISIJWSUserSecurity","SCOPE[27]":"autopay\\/events' \
+                   '\\/payroll\\/v1\\/earning-configuration.add","ORGOID":"G2SY6MR3ATKA232T","SCOPE[8]":"\\/' \
+                   'ISIJWSAssociatesService","SCOPE[39]":"autopay\\/payroll\\/v1\\/earning-configurations",' \
                    '"SETUP_SELF":"N","SCOPE[47]":"communication\/notification.publish","SCOPE[15]":"' \
-                   '\/OrganizationSoftPurge","X-FORWARDED-HOST":"step-up-authentication-api.gslb.es.blabla.com",' \
+                   '\\/OrganizationSoftPurge","X-FORWARDED-HOST":"step-up-authentication-api.gslb.es.blabla.com",' \
                    '"ADP-MESSAGEID":"a1d57ed2-1fe6-4800-be7a-26cd89bhello","CNAME":"JRJG INC","CONTENT-LENGTH":' \
-                   '"584","SCOPE[31]":"autopay\/events\/payroll\/v1\/earning-configuration.remove","CID":"BSTAR00044"' \
+                   '"584","SCOPE[31]":"autopay\\/events\\/payroll\\/v1\\/earning-configuration.remove","CID":"BSTAR00044"' \
                    ',"ACTOR_UID":"ABinters@BSTAR00044","SECURE_API_MODE":"HTTPS_SECURE","X-REQUEST-ID":' \
                    '"2473a981bef27bc8444e510adc12234a","SCOPE[1]":"AVSSCP\/Docstash\/Download","SCOPE[18]":' \
                    '"\/api\/events\/core\/v1\/product-role.assign","BLOCK_SESSION":"Y","CONSUMER_ID":' \

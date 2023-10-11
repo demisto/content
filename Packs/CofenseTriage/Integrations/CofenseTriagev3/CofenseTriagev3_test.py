@@ -1032,7 +1032,7 @@ def test_cofense_report_image_download_command_when_valid_response_is_returned(m
 
     from CofenseTriagev3 import cofense_report_image_download_command
 
-    mocker_http_request.return_value = b'\u2715'
+    mocker_http_request.return_value = b'\\u2715'
 
     result = cofense_report_image_download_command(client, args={'id': '4'})
     assert result.get('File') == 'Report ID - 4.png'

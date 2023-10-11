@@ -1680,7 +1680,7 @@ def parse_alert_to_incident(alert: Dict, pattern: Pattern) -> Dict:
         indicator = event_values.get(event_indicator, '')
 
     incident_name = u'{event_type_parsed}: {indicator}'.format(
-        event_type_parsed=pattern.sub("\g<1> \g<2>", event_type).title(),
+        event_type_parsed=pattern.sub("\\g<1> \\g<2>", event_type).title(),
         indicator=indicator
     )
 
@@ -2564,7 +2564,7 @@ def get_alert_command(client: Client, args: Dict[str, Any]) -> List[CommandResul
 
     event_type = alert.get('event_type')
     event_type = 'NewEvent' if not event_type else event_type
-    event_type = re.sub("([a-z])([A-Z])", "\g<1> \g<2>", event_type).title()
+    event_type = re.sub("([a-z])([A-Z])", "\\g<1> \\g<2>", event_type).title()
     event_table = tableToMarkdown(
         name=event_type,
         t=alert.get('event_values')

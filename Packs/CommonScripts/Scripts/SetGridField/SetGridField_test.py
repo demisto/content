@@ -95,6 +95,13 @@ def test_build_grid(mocker, keys: list, columns: list, dt_response_json: str, ex
 
 very_long_column_name = 11 * "column_name_OF_LEN_264__"
 
+def test_pan():
+    import pandas as pd
+    df = pd.read_csv('/Users/dfried/Documents/trying2.tsv')
+    assert df is not None
+    
+    
+
 
 @pytest.mark.parametrize(argnames="keys, columns, unpack_nested_elements, dt_response_path, expected_results_path",
                          argvalues=[

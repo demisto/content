@@ -1000,7 +1000,7 @@ class TestUpdateCommands:
         mocker.patch.object(Client, 'http_request', return_value=dict(success=False))
 
         # run & validate
-        msg = "Failed to add \['tag_1'\] to Actor with test_actor_id"
+        msg = "Failed to add \\['tag_1'\\] to Actor with test_actor_id"
         with pytest.raises(DemistoException, match=msg):
             add_tag_to_model(mock_client(), model_id='test_actor_id', model='Actor', tags='tag_1')
 

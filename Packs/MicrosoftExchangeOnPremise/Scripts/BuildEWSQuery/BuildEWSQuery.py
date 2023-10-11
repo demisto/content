@@ -5,7 +5,7 @@ import re
 
 def build_ews_query(demisto_args):
     # Regex for removing forward/replay prefixes
-    p = re.compile('([\[\(] *)?(RE|FWD?) *([-:;)\]][ :;\])-]*|$)|\]+ *$', re.IGNORECASE)
+    p = re.compile('([\\[\\(] *)?(RE|FWD?) *([-:;)\\]][ :;\\])-]*|$)|\\]+ *$', re.IGNORECASE)
 
     args = {}
 
