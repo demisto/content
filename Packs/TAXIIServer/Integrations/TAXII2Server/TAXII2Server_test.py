@@ -283,6 +283,7 @@ def test_taxii20_get_server_info_demisto_version(mocker):
             Calling get-server-info command
         Then
             Validate that the correct default URL is returned
+
     """
     from TAXII2Server import get_server_info_command
     integration_context = {}
