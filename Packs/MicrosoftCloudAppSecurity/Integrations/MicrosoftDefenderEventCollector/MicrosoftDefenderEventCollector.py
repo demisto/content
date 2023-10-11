@@ -1,5 +1,3 @@
-import pytest
-
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 # pylint: disable=no-name-in-module
@@ -354,8 +352,7 @@ class DefenderGetEvents(IntegrationGetEvents):
 ''' COMMAND FUNCTIONS '''
 
 
-@pytest.mark.skip("Not a pytest")
-def test_module(get_events: DefenderGetEvents) -> str:
+def module_test(get_events: DefenderGetEvents) -> str:
     """Tests API connectivity and authentication'
 
     Returning 'ok' indicates that the integration works like it is supposed to.
@@ -402,7 +399,7 @@ def main(command: str, demisto_params: dict):
         get_events = DefenderGetEvents(client=client, options=options)
 
         if command == 'test-module':
-            return_results(test_module(get_events=get_events))
+            return_results(module_test(get_events=get_events))
 
         elif command == 'microsoft-defender-cloud-apps-auth-reset':
             return_results(reset_auth())
