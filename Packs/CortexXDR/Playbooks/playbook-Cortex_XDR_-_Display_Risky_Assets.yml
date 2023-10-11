@@ -242,7 +242,7 @@ tasks:
       id: 15a20427-aac6-42bf-8c14-cfa3514669b3
       version: -1
       name: Is a risky host involved in the incident?
-      description: Checks whether any of the enriched hosts has a risk score associated to it in XDR.
+      description: Checks whether any of the enriched hosts has a risk score associated to it in Cortex XDR.
       type: condition
       iscommand: false
       brand: ""
