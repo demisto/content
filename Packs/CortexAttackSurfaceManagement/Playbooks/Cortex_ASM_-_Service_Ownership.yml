@@ -71,37 +71,6 @@ tasks:
               field:
                 value:
                   simple: id
-          filters:
-          - - operator: containsString
-              left:
-                value:
-                  simple: alert.asmsystemids.Type
-                iscontext: true
-              right:
-                value:
-                  simple: AWS-EC2
-            - operator: containsString
-              left:
-                value:
-                  simple: alert.asmsystemids.Type
-                iscontext: true
-              right:
-                value:
-                  simple: GCP-VMNAME
-            - operator: isEqualString
-              left:
-                value:
-                  simple: alert.asmsystemids.Type
-                iscontext: true
-              right:
-                value:
-                  simple: Azure-Compute-Name
-          transformers:
-          - operator: getField
-            args:
-              field:
-                value:
-                  simple: ID
     separatecontext: false
     continueonerrortype: ""
     view: |-
