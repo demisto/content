@@ -151,7 +151,7 @@ tasks:
       id: ed1d3519-1a67-454b-84d7-ef2f8d3e93cd
       version: -1
       name: Set user severity to high
-      description: Sets the severity associated with the XDR users to "High".
+      description: Sets the severity associated with the Cortex XDR users to "High".
       scriptName: Set
       type: regular
       iscommand: false
