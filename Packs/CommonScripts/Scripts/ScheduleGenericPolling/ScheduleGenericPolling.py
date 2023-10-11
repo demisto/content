@@ -57,7 +57,7 @@ def is_value_sanitized(value):
     return all(current_arg_name not in value for current_arg_name in arg_names)
 
 
-def main():
+def main():  # pragma: no cover
     args = demisto.args()
     ids = parseIds(args.get('ids'))
     if not is_value_sanitized(ids):
