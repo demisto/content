@@ -702,6 +702,16 @@ class STIX2Parser:
             if not (a_value and a_type and b_value and b_type):
                 continue
 
+            if b_type in {ThreatIntel.ObjectsNames.THREAT_ACTOR, ThreatIntel.ObjectsNames.MALWARE}:
+                a_object["customFields"].setdefault("tags", []).append(b_value)
+            elif b_type in {ThreatIntel.ObjectsNames.ATTACK_PATTERN}:
+                mitre_id = next(
+                    ref["external_id"]
+                    for ref in b_object["rawJSON"].get("external_references", [])
+                    if ref.get("source_name") == "mitre-attack"
+                )
+                a_object["customFields"]["tags"].append(mitre_id)
+
             mapping_fields = {
                 "lastseenbysource": relationships_object.get("modified"),
                 "firstseenbysource": relationships_object.get("created"),

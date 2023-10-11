@@ -38,3 +38,9 @@ def test_build_iterator(requests_mock):
     assert report["fields"]["description"].startswith("Recently, threat actors have")
 
     assert len(report["relationships"]) == 13
+
+    feedly_tags = {"Domains", "Feedly AI", "IPs", "TTPs"}
+    threat_tags = {"RMS", "TA505"}
+    ttp_tags = {"T1112", "T1125", "T1132.001", "T1566", "T1566.001"}
+
+    assert set(report["fields"]["tags"]) == feedly_tags | threat_tags | ttp_tags
