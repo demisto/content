@@ -14,4 +14,3 @@ from ScheduleGenericPolling import is_value_sanitized
 def test_is_value_sanitized(value, expected_result):
     result = is_value_sanitized(value)
     assert result == expected_result
-
