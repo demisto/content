@@ -4,7 +4,6 @@ import pytest
 from ScheduleGenericPolling import calculate_end_time, is_value_sanitized, parseIds
 
 
-
 @pytest.mark.parametrize('value, expected_result',
                          [
                              (None, None),
