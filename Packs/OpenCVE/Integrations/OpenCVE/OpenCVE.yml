@@ -39,7 +39,7 @@ script:
   - arguments:
     - description: The maximum number of CVEs to display.
       name: limit
-    - description: Last run
+    - description: Last run.
       name: lastRun
     description: Returns the latest updated CVEs from your reports.
     name: opencve-latest
@@ -112,98 +112,98 @@ script:
     name: opencve-get-my-vendors
     outputs:
     - contextPath: OpenCVE.Vendors
-      description: Vendors
+      description: Vendors.
   - arguments: []
     description: List the products subscriptions of the authenticated user.
     name: opencve-get-my-products
     outputs:
     - contextPath: OpenCVE.Products
-      description: Products
+      description: Products.
   - arguments:
-    - description: Vendor name
+    - description: Vendor name.
       name: vendor_name
       required: true
-    description: Get vendor CVEs
+    description: Get vendor CVEs.
     name: opencve-get-vendor-cves
     outputs:
     - contextPath: vendor_cves
-      description: CVEs for the vendor
+      description: CVEs for the vendor.
   - arguments:
-    - description: Vendor name
+    - description: Vendor name.
       name: vendor_name
       required: true
-    - description: Product name
+    - description: Product name.
       name: product_name
       required: true
-    description: Get product CVEs
+    description: Get product CVEs.
     name: opencve-get-product-cves
     outputs:
     - contextPath: product_cves
-      description: Product CVEs
+      description: Product CVEs.
   - arguments:
-    - description: Report ID
+    - description: Report ID.
       name: report_id
       required: false
-    - description: Specific page to start from
+    - description: Specific page to start from.
       name: page
       required: false
     description: List the reports of the authenticated user or get a specific report.
     name: opencve-get-reports
     outputs:
     - contextPath: reports
-      description: Reports
+      description: Reports.
   - arguments:
-    - description: The report ID
+    - description: The report ID.
       name: report_id
       required: false
-    - description: Specific page to start from
+    - description: Specific page to start from.
       name: page
       required: false
-    - description: The Alert ID
+    - description: The Alert ID.
       name: alert_id
       required: false
     description: List the alerts of a report or get the details of a specific alert.
     name: opencve-get-alerts
     outputs:
     - contextPath: alerts
-      description: The Alerts from the provided Report ID
+      description: The Alerts from the provided Report ID.
   - arguments:
-    - description: Vendor name
+    - description: Vendor name.
       name: vendor_name
       required: true
-    - description: Product name
+    - description: Product name.
       name: product_name
       required: false
-    - description: Filter the search by a keyword
+    - description: Filter the search by a keyword.
       name: search
       required: false
-    - description: Specific page to start from
+    - description: Specific page to start from.
       name: page
       required: false
     description: List the products associated to a vendor or get a specific one.
     name: opencve-get-products
     outputs:
     - contextPath: products
-      description: Products
+      description: Products.
   - arguments:
-    - description: Vendor name
+    - description: Vendor name.
       name: vendor_name
       required: false
-    - description: Filter the search by a keyword
+    - description: Filter the search by a keyword.
       name: search
       required: false
-    - description: Specific page to start from
+    - description: Specific page to start from.
       name: page
       required: false
-    - description: Filter by the first letter
+    - description: Filter by the first letter.
       name: letter
       required: false
     description: List the products associated to a vendor or get a specific product of a vendor by specifying its name.
     name: opencve-get-vendors
     outputs:
     - contextPath: vendors
-      description: Vendors
-  dockerimage: demisto/python3:3.10.12.68714
+      description: Vendors.
+  dockerimage: demisto/python3:3.10.13.75921
   feed: false
   isFetchSamples: true
   runonce: false
