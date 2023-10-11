@@ -135,10 +135,10 @@ class Client(BaseClient):
 
         demisto.debug(f"Fetched {len(objects)} objects from stream {stream_id}")
 
-        if limit:
-            objects = objects[:limit]
-
         indicators = STIX2Parser().parse_stix2_objects(objects)
+
+        if limit:
+            indicators = indicators[:limit]
 
         for indicator in indicators:
             indicator["type"] = indicator.get("indicator_type", "")
