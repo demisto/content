@@ -2,6 +2,7 @@ category: Case Management
 commonfields:
   id: jira-v2
   version: -1
+deprecated: true
 configuration:
 - display: 'Jira URL, for example: https://demisto.atlassian.net/'
   name: url
@@ -116,8 +117,8 @@ configuration:
   name: incidentFetchInterval
   type: 19
   required: false
-description: Use the Jira integration to manage issues, create Cortex XSOAR incidents from Jira projects, and mirror issues to existing issue incidents in Cortex XSOAR.
-display: Atlassian Jira v2
+description: Deprecated. Use the Atlassian Jira v3 integration instead
+display: Atlassian Jira v2 (Deprecated)
 name: jira-v2
 script:
   commands:
@@ -553,7 +554,21 @@ script:
       name: role_name
     description: Adds the user to a project.
     name: jira-add-user-to-project
-  - arguments: []
+  - arguments: 
+    - description: An ID or key for a service project to list all organizations associated with.
+      name: projectKey
+      required: false
+    - description: Start index for the returned objects. 0 by default.
+      name: start
+      required: false
+      defaultValue: "0"
+    - description: Maximum amount of organizations to list. 50 by default.
+      name: limit
+      required: false
+      defaultValue: "50"
+    - description: Account ID of the user, which uniquely identifies the user across all Atlassian products. For example, 5b10ac8d82e05b22cc7d4ef5.
+      name: accountId
+      required: false
     description: Lists all the organizations.
     name: jira-get-organizations
   - arguments:
@@ -585,7 +600,7 @@ script:
     - contextPath: Ticket.Status
       description: The ticket status.
       type: String
-  dockerimage: demisto/oauthlib:1.0.0.63821
+  dockerimage: demisto/oauthlib:1.0.0.72372
   isfetch: true
   ismappable: true
   isremotesyncin: true

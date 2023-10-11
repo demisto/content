@@ -2610,6 +2610,28 @@ class TestCommandResults:
 
         assert results.to_context().get('Note') is True
 
+    def test_empty_readable_outputs(self):
+        """
+        Given:
+        - Outputs as str
+        - outputs_prefix is str
+        - No readable_output
+
+        When:
+        - Returning results
+
+        Then:
+        - Validate generated readable_output
+
+        """
+        from CommonServerPython import CommandResults
+        res = CommandResults(
+            outputs="outputs_test",
+            outputs_prefix="outputs_prefix_test"
+        )
+        context = res.to_context()
+        assert "outputs_test" == context.get('HumanReadable')
+
 
 def test_http_request_ssl_ciphers_insecure():
     if IS_PY3 and PY_VER_MINOR >= 10:

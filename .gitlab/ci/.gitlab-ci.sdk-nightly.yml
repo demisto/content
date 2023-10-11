@@ -65,10 +65,6 @@ demisto_sdk_nightly:check_idset_dependent_commands:
     - demisto-sdk merge-id-sets -i1 $ARTIFACTS_FOLDER/id_set.json -i2 $ARTIFACTS_FOLDER/unified_id_set.json -o $ARTIFACTS_FOLDER/unified_id_set.json
     - echo "successfully merged public and private ID sets"
     - section_end "Merge public and private ID sets"
-    - section_start "Build Content Descriptor" --collapsed
-    - python3 Utils/release_notes_generator.py $CONTENT_VERSION $GIT_SHA1 $CI_BUILD_ID --output $ARTIFACTS_FOLDER/packs-release-notes.md --github-token $GITHUB_TOKEN
-    - cp content-descriptor.json $ARTIFACTS_FOLDER
-    - section_end "Build Content Descriptor"
     - section_start "Common Server Documentation" --collapsed
     - ./Documentation/commonServerDocs.sh
     - section_end "Common Server Documentation"
@@ -111,7 +107,7 @@ demisto-sdk-nightly:mpv2-prepare-testing-bucket:
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_MPV2}"
     MARKETPLACE_VERSION: "marketplacev2"
     MARKETPLACE_BUCKET: "$GCS_MARKET_V2_BUCKET"
-    PRODUCTNAME: "Cortex XSIAM"
+    PRODUCT_NAME: "Cortex XSIAM"
     IFRA_ENV_TYPE: "Server Master"
     KUBERNETES_CPU_REQUEST: 2000m
   cache:
@@ -132,7 +128,7 @@ demisto-sdk-nightly:xpanse-prepare-testing-bucket:
   variables:
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XPANSE}"
     MARKETPLACE_VERSION: "xpanse"
-    PRODUCTNAME: "Cortex XPANSE"
+    PRODUCT_NAME: "Cortex XPANSE"
     MARKETPLACE_BUCKET: "$GCS_MARKET_XPANSE_BUCKET"
     IFRA_ENV_TYPE: "Server Master"
     KUBERNETES_CPU_REQUEST: 2000m
@@ -182,6 +178,7 @@ demisto-sdk-nightly:run-commands-against-instance:
       python3 ./Tests/scripts/wait_until_server_ready.py  -n ${IS_NIGHTLY} --instance-role "${INSTANCE_ROLE}" || EXIT_CODE=$?
     - section_end "Wait Until Server Ready"
     - !reference [.download-demisto-conf]
+    - !reference [.secrets-fetch]
     - |
       export DEMISTO_BASE_URL="https://$(cat $ARTIFACTS_FOLDER/env_results.json | jq -r '.[0].InstanceDNS')"
       echo "Server URL: $DEMISTO_BASE_URL"
@@ -206,7 +203,7 @@ demisto-sdk-nightly:run-commands-against-instance:
     - demisto-sdk validate -i Packs/HelloWorld/
     - section_end "Run Validate"
     - section_start "Run Lint" --collapsed
-    - demisto-sdk lint --console_log_threshold DEBUG -i Packs/HelloWorld/
+    - demisto-sdk lint --console-log-threshold DEBUG -i Packs/HelloWorld/
     - section_end "Run Lint"
     - *change-file-ids
     - *upload-entities-to-cortex-xsoar

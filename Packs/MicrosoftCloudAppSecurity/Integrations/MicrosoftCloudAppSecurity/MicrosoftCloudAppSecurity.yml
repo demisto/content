@@ -139,9 +139,9 @@ display: Microsoft Defender for Cloud Apps
 name: MicrosoftCloudAppSecurity
 script:
   commands:
-  - description: Run this command to start the authorization process and follow the instructions in the command results. (for device-code mode)
+  - description: Run this command to start the authorization process and follow the instructions in the command results. (for device-code mode).
     name: microsoft-cas-auth-start
-  - description: Run this command to complete the authorization process. Should be used after running the microsoft-365-defender-auth-start command. (for device-code mode)
+  - description: Run this command to complete the authorization process. Should be used after running the microsoft-365-defender-auth-start command. (for device-code mode).
     name: microsoft-cas-auth-complete
   - description: Run this command if for some reason you need to rerun the authentication process.
     name: microsoft-cas-auth-reset
@@ -342,7 +342,7 @@ script:
         * Actual severity is lower
         * Other
         * Confirmed with end user
-        * Triggered by test
+        * Triggered by test.
       name: reason
       predefined:
       - Actual severity is lower
@@ -367,7 +367,7 @@ script:
       - 'true'
     - description: The email address of the user.
       name: contactEmail
-    description: An alert on a suspicious but not malicious activity, such as a penetration test or other authorized suspicious action
+    description: An alert on a suspicious but not malicious activity, such as a penetration test or other authorized suspicious action.
     name: microsoft-cas-alert-close-benign
   - arguments:
     - description: |-
@@ -418,7 +418,7 @@ script:
         * Not of interest
         * Too many similar alerts
         * Alert is not accurate
-        * Other
+        * Other.
       name: reason
       predefined:
       - Not of interest
@@ -888,7 +888,7 @@ script:
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.userGroups.usersCount
       description: The number of users in the user group.
       type: Number
-  dockerimage: demisto/crypto:1.0.0.67955
+  dockerimage: demisto/crypto:1.0.0.74057
   isfetch: true
   runonce: false
   script: '-'

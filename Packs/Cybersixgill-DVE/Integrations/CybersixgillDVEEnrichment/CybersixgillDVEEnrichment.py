@@ -9,8 +9,6 @@ import requests
 from sixgill.sixgill_request_classes.sixgill_auth_request import SixgillAuthRequest
 from sixgill.sixgill_enrich_client import SixgillEnrichClient
 
-# Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
 
 """ CONSTANTS """
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"

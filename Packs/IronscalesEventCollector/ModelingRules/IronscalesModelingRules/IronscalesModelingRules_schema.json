@@ -39,6 +39,18 @@
         "name": {
             "type": "string",
             "is_array": false
+        },
+        "email": {
+            "type": "string",
+            "is_array": false
+        },
+        "subject": {
+            "type": "string",
+            "is_array": false
+        },
+        "headers": {
+            "type": "string",
+            "is_array": false
         }
     }
 }

@@ -400,7 +400,7 @@ script:
     - description: End date/time for which to retrieve activity data (in the format MM/dd/yyyy HH:mm:ss).
       name: to
       required: true
-    - description: Free-text query. For example, query="resourcegroupname=WindowsSnare and policyname=Possible Privilege Escalation - Self Escalation"."
+    - description: Free-text query, For example, query="resourcegroupname=WindowsSnare and policyname=Possible Privilege Escalation - Self Escalation".
       name: query
     - description: Paginate next set of results.
       name: query_id
@@ -598,7 +598,7 @@ script:
       description: Query Id for the pagination.
       type: String
   - arguments:
-    - description: ' Start time range for which to return incidents (<number> <time unit>, e.g., 1 hour, 30 minutes)'
+    - description: ' Start time range for which to return incidents (<number> <time unit>, e.g., 1 hour, 30 minutes).'
       name: from
       required: true
     - description: End date/time for which to retrieve incidents (in the format MM/dd/yyyy HH:mm:ss) Default is current time.
@@ -985,7 +985,7 @@ script:
   - arguments:
     - description: |-
         Start time range for which to return threats (Supported formats: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ
-        For example: 01 Jan 2023, 01 Feb 2023 04:45:33, 2023-01-26T14:05:44Z)
+        For example: 01 Jan 2023, 01 Feb 2023 04:45:33, 2023-01-26T14:05:44Z).
       name: date_from
       required: true
     - description: |-
@@ -1157,9 +1157,9 @@ script:
       required: true
     - description: The type of attachment to retrieve. Supported options are csv, pdf, and txt. Comma-separated values are supported.
       name: attachment_type
-    - description: 'Start time for which to retrieve attachments.(Supported formats: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, yyyy-MM-ddTHH:mm:ss.SSSZ. For example: 01 Jan 2023, 01 Feb 2023 04:45:33, 2023-01-26T14:05:44Z, 2023-01-26T14:05:44.000Z)'
+    - description: 'Start time for which to retrieve attachments.(Supported formats: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, yyyy-MM-ddTHH:mm:ss.SSSZ. For example: 01 Jan 2023, 01 Feb 2023 04:45:33, 2023-01-26T14:05:44Z, 2023-01-26T14:05:44.000Z).'
       name: from
-    - description: 'End time for which to retrieve attachments.(Supported formats: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, yyyy-MM-ddTHH:mm:ss.SSSZ. For example: 01 Jan 2023, 01 Feb 2023 04:45:33, 2023-01-26T14:05:44Z, 2023-01-26T14:05:44.000Z)'
+    - description: 'End time for which to retrieve attachments.(Supported formats: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, yyyy-MM-ddTHH:mm:ss.SSSZ. For example: 01 Jan 2023, 01 Feb 2023 04:45:33, 2023-01-26T14:05:44Z, 2023-01-26T14:05:44.000Z).'
       name: to
     description: Retrieves the attachments available on the Securonix platform.
     name: securonix-incident-attachment-get
@@ -1293,7 +1293,7 @@ script:
       name: whitelist_name
       required: true
     - auto: PREDEFINED
-      description: The type of the whitelist to which data is being added. (Supported Values are Global and Attribute.)
+      description: The type of the whitelist to which data is being added. (Supported Values are Global and Attribute.).
       name: whitelist_type
       predefined:
       - Global
@@ -1315,7 +1315,7 @@ script:
 
         This parameter is required if whitelist_type is Global.
       name: entity_id
-    - description: The date when the entity will be removed from the whitelist.(In MM/DD/YYYY format)
+    - description: The date when the entity will be removed from the whitelist.(In MM/DD/YYYY format).
       name: expiry_date
     - description: "The resource name to which the account belongs. \n\nThis parameter is required if whitelist_type is Global and entity_type is Activityaccount."
       name: resource_name
@@ -1341,7 +1341,7 @@ script:
       - Policy
       - ThreatModel
       - Functionality
-    - description: "Name of the violations. (Supported values are Policy names, ThreatModel names, Functionality names)\n\nThis parameter is required if whitelist_type is set to Attribute, and is the same as the whitelist name parameter. "
+    - description: "Name of the violations. (Supported values are Policy names, ThreatModel names, Functionality names)\n\nThis parameter is required if whitelist_type is set to Attribute, and is the same as the whitelist name parameter."
       name: violation_name
     description: Add entity or attribute to the specified whitelist entry.
     name: securonix-whitelist-entry-add
@@ -1380,7 +1380,7 @@ script:
         - employeeId for type User
         - accountname for type ActivityAccount
         - resourcename for type Resources
-        - ipadress for type IpAddress
+        - ipadress for type IpAddress.
       name: entity_id
     - description: |-
         Name of the attribute being removed.
@@ -1390,7 +1390,7 @@ script:
         Example:
         - accountname
         - transactionstring
-        - sourcetype
+        - sourcetype.
       name: attribute_name
     - description: |-
         The value of the attribute being removed.
@@ -1433,7 +1433,7 @@ script:
     - description: |-
         JSON formatted string containing the field names and values in the below format. To specify an expiration date for an entry, add "expiryDate" key (in the format of "MM/DD/YYYY") in the respective JSON object.
 
-        E.g. [{"field1": "Value1", "field2": "Value2"}, {"field1": "Value3", "field2": "Value4"}]
+        E.g. [{"field1": "Value1", "field2": "Value2"}, {"field1": "Value3", "field2": "Value4"}].
       name: json_data
     - description: War room entry of the file. To specify an expiration date for an entry, add "expiryDate" key (in the format of "MM/DD/YYYY") in the respective JSON object.
       name: file_entry_id
@@ -1528,7 +1528,7 @@ script:
       required: true
     description: Deletes the entries from the lookup table.
     name: securonix-lookup-table-entries-delete
-  dockerimage: demisto/python3:3.10.12.68714
+  dockerimage: demisto/python3:3.10.13.72123
   isfetch: true
   runonce: false
   script: '-'

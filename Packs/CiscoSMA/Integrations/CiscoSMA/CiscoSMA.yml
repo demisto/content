@@ -72,6 +72,12 @@ configuration:
   type: 0
   additionalinfo: Recipient filter value to fetch by message field.
   required: false
+- name: timeout
+  display: Timeout
+  type: 0
+  defaultvalue: '60'
+  additionalinfo: HTTP requests timeout in seconds. The default is 60 seconds.
+  required: false
 - name: proxy
   display: Use system proxy settings
   defaultvalue: 'false'
@@ -94,7 +100,7 @@ script:
   script: ''
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.13.72123
+  dockerimage: demisto/python3:3.10.13.74666
   isfetch: true
   commands:
   - name: cisco-sma-spam-quarantine-message-search
@@ -480,12 +486,12 @@ script:
     - name: file_sha_256
       description: |-
         SHA256 must be 64 characters long and can contain only "0-9" and "a-f" symbols.
-        E.g., e0d123e5f316bef78bfdf5a008837577e0d123e5f316bef78bfdf5a008837577
+        E.g., e0d123e5f316bef78bfdf5a008837577e0d123e5f316bef78bfdf5a008837577.
     - name: custom_query
       description: |-
         Custom query for cisco SMA's advanced filters.
         Syntax: <key>=<value>;<key>=<value>;<key>=<value>
-        E.g.,  graymail=True;message_delivered=True
+        E.g.,  graymail=True;message_delivered=True.
     outputs:
     - type: String
       contextPath: CiscoSMA.Message.hostName
@@ -495,7 +501,7 @@ script:
       description: Friendly formatted sender email address.
     - type: String
       contextPath: CiscoSMA.Message.isCompleteData
-      description: Is complete data pulled?
+      description: Is complete data pulled?.
     - type: String
       contextPath: CiscoSMA.Message.messageStatus
       description: Message delivery status.
@@ -588,7 +594,7 @@ script:
       description: Message direction, incoming or outgoing.
     - type: Boolean
       contextPath: CiscoSMA.Message.isCompleteData
-      description: Is complete data pulled?
+      description: Is complete data pulled?.
     - type: String
       contextPath: CiscoSMA.Message.messageStatus
       description: Message delivery status.
@@ -950,7 +956,7 @@ script:
     - name: device_name
       description: The device name.
     - name: order_by
-      description: Specify the attribute by which to order the data in the response. For example, orderBy=total_clean_recipients
+      description: Specify the attribute by which to order the data in the response. For example, orderBy=total_clean_recipients.
     - name: order_dir
       description: The report order direction. Specify sort direction.
       auto: PREDEFINED

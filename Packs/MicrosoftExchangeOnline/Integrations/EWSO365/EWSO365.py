@@ -198,6 +198,7 @@ class EWSClient:
             proxy=proxy,
             self_deployed=self_deployed,
             scope="https://outlook.office.com/.default",
+            command_prefix="ews",
         )
         self.folder_name = folder
         self.is_public_folder = is_public_folder
@@ -2161,12 +2162,13 @@ def parse_incident_from_item(item):     # pragma: no cover
                         # In case the detected encoding fails apply the default encoding
                         demisto.info(f'Could not decode attached email using detected encoding:{encoding}, retrying '
                                      f'using utf-8.\nAttached email:\n{attached_email}')
-                        data = attached_email_bytes.decode('utf-8')
+                        try:
+                            data = attached_email_bytes.decode('utf-8')
+                        except UnicodeDecodeError:
+                            demisto.info('Could not decode attached email using utf-8. returned the content without decoding')
+                            data = attached_email_bytes  # type: ignore
 
-                    file_result = fileResult(
-                        get_attachment_name(attachment.name) + ".eml",
-                        data,
-                    )
+                    file_result = fileResult(get_attachment_name(attachment.name), data)
 
                 if file_result:
                     # check for error
@@ -2178,7 +2180,7 @@ def parse_incident_from_item(item):     # pragma: no cover
                     incident["attachment"].append(
                         {
                             "path": file_result["FileID"],
-                            "name": get_attachment_name(attachment.name) + ".eml",
+                            "name": get_attachment_name(attachment.name),
                         }
                     )
 
@@ -2475,6 +2477,9 @@ def sub_main():     # pragma: no cover
         # special outputs commands
         elif command in special_output_commands:
             demisto.results(special_output_commands[command](client, **args))  # type: ignore[operator]
+
+        elif command == "ews-auth-reset":
+            return_results(reset_auth())
 
         # normal commands
         else:

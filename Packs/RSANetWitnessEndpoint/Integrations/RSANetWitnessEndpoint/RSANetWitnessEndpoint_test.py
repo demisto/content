@@ -48,4 +48,4 @@ def test_parse_error_response(mocker):
                                                          'credentials': {'identifier': '', 'password': ''}})
     from RSANetWitnessEndpoint import parse_error_response
     assert parse_error_response(ResponseMock(JSON_RESP)) == \
-           'Request failed with status code: 404\nReason: 404\n{\'message\': \'test message\'}'
+        'Request failed with status code: 404\nReason: 404\n{\'message\': \'test message\'}'

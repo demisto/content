@@ -19,7 +19,7 @@
     "disabled": false,
     "reputationCalc": 0,
     "onChangeRepAlg": 0,
-    "layout": "CheckPointHEC Security Event Layout",
+    "layout": "CP HEC Security Event Layout",
     "detached": false,
     "extractSettings": {
         "mode": "Specific",

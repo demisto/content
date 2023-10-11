@@ -505,7 +505,7 @@ def main():
                                               managed_identities_client_id=managed_identities_client_id)
         if command == 'msgraph-groups-generate-login-url':
             return_results(generate_login_url(client.ms_client))
-        if command == 'msgraph-groups-auth-reset':
+        elif command == 'msgraph-groups-auth-reset':
             return_results(reset_auth())
         else:
             human_readable, entry_context, raw_response = commands[command](client, demisto.args())  # type: ignore

@@ -63,6 +63,7 @@ def update_finding_id(finding, new_id, updated_at=None):
 
 class MockedBoto3Client:
     """Mocked AWSClient session for easier expectation settings."""
+
     def list_detectors(self, **kwargs):
         pass
 
