@@ -1,0 +1,29 @@
+{
+    "id": "Thinkst Canary Incident",
+    "version": -1,
+    "playbookId": "Enrich ThinkstCanary Events",
+    "vcShouldIgnore": false,
+    "locked": false,
+    "name": "Thinkst Canary Incident",
+    "prevName": "Thinkst Canary Incident",
+    "color": "#F8E7A5",
+    "hours": 0,
+    "days": 0,
+    "weeks": 0,
+    "hoursR": 0,
+    "daysR": 0,
+    "weeksR": 0,
+    "system": false,
+    "readonly": false,
+    "default": false,
+    "autorun": false,
+    "disabled": false,
+    "reputationCalc": 0,
+    "onChangeRepAlg": 0,
+    "detached": false,
+    "extractSettings": {
+        "mode": "Specific",
+        "fieldCliNameToExtractSettings": {}
+    },
+    "fromVersion": "6.9.0"
+}

@@ -2136,7 +2136,6 @@ def fetch_incidents(client: Client, args: dict[str, str]) -> tuple[list, dict]:
 
     incidents: list[dict] = []
     for incident in incidents_filtered:
-        demisto.debug(f'The filtered incident details from the API are: {str(incident)}')
         incident['createdAt'] = datetime.fromtimestamp(
             incident.get('baseFields', {}).get('createdAt') / 1000.0).strftime(DATETIME_FORMAT_MILISECONDS)
         incident = convert_all_unix_keys_to_date(incident)

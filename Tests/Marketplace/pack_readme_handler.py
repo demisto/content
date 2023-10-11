@@ -34,7 +34,7 @@ def download_markdown_images_from_artifacts(
                 image_name = str(markdown_url_data.get("image_name"))
                 relative_image_path = str(markdown_url_data.get("relative_image_path"))
 
-                logging.info(f"image_final_storage_des ={final_dst_image_path}")
+                logging.debug(f"image_final_storage_des ={final_dst_image_path}")
 
                 download_markdown_image_from_url_and_upload_to_gcs(
                     original_markdown_url,
@@ -75,7 +75,7 @@ def download_markdown_image_from_url_and_upload_to_gcs(
     # Open the url image, set stream to True, this will return the stream content.
     original_markdown_url_parsed = urllib.parse.urlparse(original_markdown_url)
     try:
-        logging.info(f"trying to download {original_markdown_url_parsed.geturl()}")
+        logging.debug(f"trying to download {original_markdown_url_parsed.geturl()}")
         r = requests.get(original_markdown_url_parsed.geturl(), stream=True)
 
         # Check if the image was retrieved successfully
@@ -86,7 +86,7 @@ def download_markdown_image_from_url_and_upload_to_gcs(
                 shutil.copyfileobj(r.raw, f)
             # init the blob with the correct path to save the image on gcs
             gcs_storage_path = os.path.join(storage_base_path, relative_image_path)
-            logging.info(f"{gcs_storage_path=}")
+            logging.debug(f"{gcs_storage_path=}")
             markdown_image = storage_bucket.blob(gcs_storage_path)
             # load the file from local memo to the gcs
             with open(image_name, "rb") as image_file:
@@ -139,7 +139,7 @@ def copy_markdown_images(
                 pc_uploaded_markdown_images = images_names_list
 
                 if not pc_uploaded_markdown_images:
-                    logging.info(
+                    logging.debug(
                         f"No added/modified {readme_desc_folder} were detected in {pack_name} pack."
                     )
                     continue
@@ -150,7 +150,7 @@ def copy_markdown_images(
                     continue
 
                 for image_name in pc_uploaded_markdown_images:
-                    logging.info(f"copying image {image_name}")
+                    logging.debug(f"copying image {image_name}")
                     build_bucket_markdown_image_path = os.path.join(
                         build_bucket_base_path,
                         pack_name,
@@ -168,7 +168,7 @@ def copy_markdown_images(
                         )
                         task_status = False
                     else:
-                        logging.info(
+                        logging.debug(
                             f"Copying {pack_name=} {readme_desc_folder} {image_name=}"
                         )
                         try:

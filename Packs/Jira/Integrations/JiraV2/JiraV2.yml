@@ -2,6 +2,7 @@ category: Case Management
 commonfields:
   id: jira-v2
   version: -1
+deprecated: true
 configuration:
 - display: 'Jira URL, for example: https://demisto.atlassian.net/'
   name: url
@@ -116,8 +117,8 @@ configuration:
   name: incidentFetchInterval
   type: 19
   required: false
-description: Use the Jira integration to manage issues, create Cortex XSOAR incidents from Jira projects, and mirror issues to existing issue incidents in Cortex XSOAR.
-display: Atlassian Jira v2
+description: Deprecated. Use the Atlassian Jira v3 integration instead
+display: Atlassian Jira v2 (Deprecated)
 name: jira-v2
 script:
   commands:
