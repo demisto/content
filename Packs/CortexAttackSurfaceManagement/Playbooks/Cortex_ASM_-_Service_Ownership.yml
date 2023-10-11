@@ -60,6 +60,21 @@ tasks:
           - - operator: containsString
               left:
                 value:
+                  simple: alert.asmsystemids.type
+                iscontext: true
+              right:
+                value:
+                  simple: ASSET-NAME
+          transformers:
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: id
+          filters:
+          - - operator: containsString
+              left:
+                value:
                   simple: alert.asmsystemids.Type
                 iscontext: true
               right:
