@@ -37,7 +37,6 @@ from pytmv1 import (
 )
 
 """CONSTANTS"""
-USER_AGENT = "TMV1CortexXSOARApp/1.1"
 VENDOR_NAME = "TrendMicroVisionOneV3"
 ACCOUNT_IDENTIFIERS = "account_identifiers"
 EMAIL_IDENTIFIERS = "email_identifiers"
@@ -52,9 +51,6 @@ INTERVAL_IN_SECONDS = "interval_in_seconds"
 MEDIUM = "medium"
 NAME = "name"
 PATH = "path"
-POST = "post"
-GET = "get"
-PATCH = "patch"
 IF_MATCH = "if_match"
 FALSE = "false"
 TRUE = "true"
