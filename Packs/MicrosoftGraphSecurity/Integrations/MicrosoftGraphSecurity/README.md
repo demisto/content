@@ -11,6 +11,15 @@ Note: eDiscovery commands only support the `Delegated (work or school account)` 
 For more information, see: https://github.com/microsoftgraph/security-api-solutions/issues/56.
 - When using Alerts V2, only the following properties are supported as filters for the *Fetched incidents filter* parameter and *filter* arguments: assignedTo, classification, determination, createdDateTime, lastUpdateDateTime, severity, serviceSource and status. See [Microsoft optional query parameters](https://learn.microsoft.com/en-us/graph/api/security-list-alerts_v2?view=graph-rest-1.0&tabs=http#optional-query-parameters).
 - As of July 2023, Microsoft Graph API does **not support** a solution to search for and delete emails. To do this, refer to the [Security & Compliance](https://xsoar.pan.dev/docs/reference/integrations/security-and-compliance) integration. 
+- When using Threat Assessment, only the following properties are supported as filters for *filter* parameter: expectedAssessment, ContentType ,status and requestSource.
+- For Threat Assessment commands the only authorization that supported is [Authorize on Behalf of a User](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#authorize-on-behalf-of-a-user)
+- When using Threat Assessment, for information protection, The following limits apply to any request on /informationProtection:
+    - For email, the resource is a unique network message ID/recipient pair. For example, submitting an email with the same message ID sent to the same person multiple times in a 15 minutes period will trigger the limit per resource limits listed in the following table. However, you can submit up to 150 unique emails every 15 minutes (tenant limit).
+     
+  | **Operation** | **Limit per tenant** | **Limit per resource (email, URL, file)** |
+    | --- | --- | --- |
+    | POST | 150 requests per 15 minutes and 10000 requests per 24 hours. | 1 request per 15 minutes and 3 requests per 24 hours. |
+
 
 ### Required Permissions
 
@@ -29,6 +38,12 @@ EDiscovery:
 
 1. eDiscovery.Read.All - Delegated (Required for the `list-ediscovery` commands)
 2. eDiscovery.ReadWrite.All - Delegated (Required for the `create/update-ediscovery` commands)
+
+Threat Assessment:
+
+1. Mail.Read.Shared - Delegated
+2. ThreatAssessment.ReadWrite.All - Delegated
+3. User.Read.All - Delegated
 
 ## Configure Microsoft Graph Security on Cortex XSOAR
 

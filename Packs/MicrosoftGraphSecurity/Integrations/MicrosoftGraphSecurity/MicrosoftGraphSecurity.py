@@ -311,14 +311,16 @@ class MsGraphClient:
         url = '/v1.0/informationProtection/threatAssessmentRequests'
         params = {}
         if next_token:
-            return self.ms_client.http_request(method='GET', url_suffix=url, params={'$skipToken': next_token})
+            return self.ms_client.http_request(method='GET', url_suffix=url,
+                                               params={'$skipToken': next_token}, retries=1, status_list_to_retry=[405])
         if filters:
             params['$filter'] = filters
         if order_by:
             params['$orderby'] = order_by
         if limit:
             params['limit'] = limit
-        return self.ms_client.http_request(method='GET', url_suffix=url, params=params)
+        return self.ms_client.http_request(method='GET', url_suffix=url,
+                                           params=params, retries=1, status_list_to_retry=[405])
 
 ''' HELPER FUNCTIONS '''
 
