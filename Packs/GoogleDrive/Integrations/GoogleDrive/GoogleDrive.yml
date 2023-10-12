@@ -112,7 +112,7 @@ script:
       name: name
       required: true
     - auto: PREDEFINED
-      description: 'Whether the shared drive is hidden from the default view. Possible values: "True" and "False".'
+      description: Whether the shared drive is hidden from the default view.
       name: hidden
       predefined:
       - "True"
@@ -141,7 +141,7 @@ script:
       name: name
       required: true
     - auto: PREDEFINED
-      description: 'Whether the shared drive is hidden from the default view. Possible values: "True" and "False".'
+      description: Whether the shared drive is hidden from the default view.
       name: hidden
       predefined:
       - "True"
@@ -177,14 +177,14 @@ script:
       name: drive_id
     - auto: PREDEFINED
       defaultValue: "false"
-      description: 'Whether changes should include the file resource if the file is still accessible by the user at the time of the request, even when a file was removed from the list of changes and there will be no further change entries for this file. Possible values: "true" and "false".'
+      description: Whether changes should include the file resource if the file is still accessible by the user at the time of the request, even when a file was removed from the list of changes and there will be no further change entries for this file.
       name: include_corpus_removals
       predefined:
       - "true"
       - "false"
     - auto: PREDEFINED
       defaultValue: "false"
-      description: 'Whether both My Drive and shared drive items should be included in the results. Possible values: "true" and "false".'
+      description: Whether both My Drive and shared drive items should be included in the results.
       name: include_items_from_all_drives
       predefined:
       - "true"
@@ -193,7 +193,7 @@ script:
       name: include_permissions_for_view
     - auto: PREDEFINED
       defaultValue: "true"
-      description: 'Whether to include changes indicating that items have been removed from the list of changes, for example by deletion or loss of access. Possible values: "true" and "false".'
+      description: Whether to include changes indicating that items have been removed from the list of changes, for example by deletion or loss of access.
       name: include_removed
       predefined:
       - "true"
@@ -203,7 +203,7 @@ script:
       name: page_size
     - auto: PREDEFINED
       defaultValue: "false"
-      description: 'Whether to restrict the results to changes inside the My Drive hierarchy. This omits changes to files such as those in the Application Data folder or shared files which have not been added to My Drive. Possible values: "true" and "false".'
+      description: Whether to restrict the results to changes inside the My Drive hierarchy. This omits changes to files such as those in the Application Data folder or shared files which have not been added to My Drive.
       name: restrict_to_my_drive
       predefined:
       - "true"
@@ -212,7 +212,7 @@ script:
       name: spaces
     - auto: PREDEFINED
       defaultValue: "false"
-      description: 'Whether the requesting application supports both My Drives and shared drives. Possible values: "true" and "false".'
+      description: Whether the requesting application supports both My Drives and shared drives.
       name: supports_all_drives
       predefined:
       - "true"
@@ -1836,7 +1836,7 @@ script:
       description: Query string for searching shared drives.
     - auto: PREDEFINED
       defaultValue: "false"
-      description: 'Whether both My Drive and shared drive items should be included in the results. Possible values: "true" and "false".'
+      description: Whether both My Drive and shared drive items should be included in the results.
       name: include_items_from_all_drives
       predefined:
       - "true"
@@ -1886,7 +1886,7 @@ script:
       description: The user's primary email address.
     - auto: PREDEFINED
       defaultValue: "false"
-      description: 'Whether both My Drive and shared drive items should be included in the results. Possible values: "true" and "false".'
+      description: Whether both My Drive and shared drive items should be included in the results.
       name: include_items_from_all_drives
       predefined:
       - "true"
@@ -2588,7 +2588,7 @@ script:
       description: The user's primary email address.
     - auto: PREDEFINED
       defaultValue: "false"
-      description: 'Whether the requesting application supports both My Drives and shared drives. Possible values: "true" and "false".'
+      description: Whether the requesting application supports both My Drives and shared drives.
       name: supports_all_drives
       predefined:
       - "true"
@@ -2611,7 +2611,7 @@ script:
       description: Page token for shared drives.
     - auto: PREDEFINED
       defaultValue: "false"
-      description: 'Whether the requesting application supports both My Drives and shared drives. Possible values: "true" and "false".'
+      description: Whether the requesting application supports both My Drives and shared drives.
       name: supports_all_drives
       predefined:
       - "true"
@@ -2654,7 +2654,7 @@ script:
       description: The user's primary email address.
     - auto: PREDEFINED
       defaultValue: "false"
-      description: 'Whether a confirmation email will be sent. Possible values: "true" and "false".'
+      description: Whether a confirmation email will be sent.
       name: send_notification_email
       predefined:
       - "true"
@@ -2760,7 +2760,7 @@ script:
       description: The ID of the permission. Can be retrieved using the `google-drive-file-permissions-list` command.
     - auto: PREDEFINED
       defaultValue: "false"
-      description: 'Whether the requesting application supports both My Drives and shared drives. Possible values: "true" and "false".'
+      description: Whether the requesting application supports both My Drives and shared drives.
       name: supports_all_drives
       predefined:
       - "true"
@@ -2780,32 +2780,32 @@ script:
       description: the label id to set for the field.
     - auto: PREDEFINED
       defaultValue: "false"
-      description: 'Whether the requesting application supports both My Drives and shared drives. Possible values: "true" and "false".'
+      description: Whether the requesting application supports both My Drives and shared drives.
       name: remove_label
       predefined:
       - "true"
       - "false"
     outputs:
     - contextPath: GoogleDrive.Labels.kind
-      description: 'The type of resource. This is always drive#modifyLabelsResponse.'
+      description: The type of resource. This is always drive#modifyLabelsResponse.
       type: String
     - contextPath: GoogleDrive.Labels.modifiedLabels.fields.id
-      description: 'The ID of the label field selected.'
+      description: The ID of the label field selected.
       type: String
     - contextPath: GoogleDrive.Labels.modifiedLabels.fields.kind
-      description: 'Kind of resource this is, in this case drive#labelField.'
+      description: Kind of resource this is, in this case drive#labelField.
       type: String
     - contextPath: GoogleDrive.Labels.modifiedLabels.fields.selection
-      description: 'Selected label.'
+      description: Selected label.
       type: String
     - contextPath: GoogleDrive.Labels.modifiedLabels.fields.valueType
-      description: 'The type of data this label is representing.'
+      description: The type of data this label is representing.
       type: String
     - contextPath: GoogleDrive.Labels.modifiedLabels.id
-      description: 'The label id of the label to set.'
+      description: The label id of the label to set.
       type: String
     - contextPath: GoogleDrive.Labels.modifiedLabels.kind
-      description: 'The type of resource. This is always drive#label.'
+      description: The type of resource. This is always drive#label.
       type: String
     - contextPath: GoogleDrive.Labels.modifiedLabels.revisionId
       description: ''
@@ -2817,70 +2817,70 @@ script:
       description: The user's primary email address.
     outputs:
     - contextPath: GoogleDrive.Labels.labels.appliedCapabilities.canApply
-      description: 'Is able to apply this label to files.'
+      description: Is able to apply this label to files.
       type: Boolean
     - contextPath: GoogleDrive.Labels.labels.appliedCapabilities.canRead
-      description: 'Is able to read this label.'
+      description: Is able to read this label.
       type: Boolean
     - contextPath: GoogleDrive.Labels.labels.appliedCapabilities.canRemove
-      description: 'Is able to remove this label from files.'
+      description: Is able to remove this label from files.
       type: Boolean
     - contextPath: GoogleDrive.Labels.labels.appliedLabelPolicy.copyMode
-      description: 'Copy label to all descendants.'
+      description: Copy label to all descendants.
       type: String
     - contextPath: GoogleDrive.Labels.labels.createTime
-      description: 'Time at which this label was created.'
+      description: Time at which this label was created.
       type: Date
     - contextPath: GoogleDrive.Labels.labels.creator.person
-      description: 'The creator of this label.'
+      description: The creator of this label.
       type: String
     - contextPath: GoogleDrive.Labels.labels.customer
-      description: 'The customer that owns this label.'
+      description: The customer that owns this label.
       type: String
     - contextPath: GoogleDrive.Labels.labels.displayHints.priority
-      description: 'Priority of the label.'
+      description: Priority of the label.
       type: String
     - contextPath: GoogleDrive.Labels.labels.displayHints.shownInApply
-      description: 'Whether this label is shown in the "Apply a label" dropdown.'
+      description: Whether this label is shown in the "Apply a label" dropdown.
       type: Boolean
     - contextPath: GoogleDrive.Labels.labels.fields.appliedCapabilities.canRead
-      description: 'Is the field readable.'
+      description: Is the field readable.
       type: Boolean
     - contextPath: GoogleDrive.Labels.labels.fields.appliedCapabilities.canSearch
-      description: 'Is the field searchable.'
+      description: Is the field searchable.
       type: Boolean
     - contextPath: GoogleDrive.Labels.labels.fields.appliedCapabilities.canWrite
-      description: 'Is the field writable.'
+      description: Is the field writable.
       type: Boolean
     - contextPath: GoogleDrive.Labels.labels.fields.creator.person
-      description: 'The creator of this field.'
+      description: The creator of this field.
       type: String
     - contextPath: GoogleDrive.Labels.labels.fields.displayHints.required
-      description: 'Is this field required to be set by the user.'
+      description: Is this field required to be set by the user.
       type: Boolean
     - contextPath: GoogleDrive.Labels.labels.fields.displayHints.shownInApply
-      description: 'Should this field be shown when editing the label.'
+      description: Should this field be shown when editing the label.
       type: Boolean
     - contextPath: GoogleDrive.Labels.labels.fields.id
-      description: 'The ID of the field.'
+      description: The ID of the field.
       type: String
     - contextPath: GoogleDrive.Labels.labels.fields.lifecycle.state
-      description: 'The lifecycle state of this field.'
+      description: The lifecycle state of this field.
       type: String
     - contextPath: GoogleDrive.Labels.labels.fields.properties.displayName
-      description: 'The display name of the property.'
+      description: The display name of the property.
       type: String
     - contextPath: GoogleDrive.Labels.labels.fields.properties.required
-      description: 'Is this property required to be set by the user.'
+      description: Is this property required to be set by the user.
       type: Boolean
     - contextPath: GoogleDrive.Labels.labels.fields.publisher.person
-      description: 'The user who published this field.'
+      description: The user who published this field.
       type: String
     - contextPath: GoogleDrive.Labels.labels.fields.queryKey
-      description: 'The query key for this field.'
+      description: The query key for this field.
       type: String
     - contextPath: GoogleDrive.Labels.labels.fields.schemaCapabilities
-      description: 'Schema capabilities for this field.'
+      description: Schema capabilities for this field.
       type: Unknown
     - contextPath: GoogleDrive.Labels.labels.fields.selectionOptions.choices.appliedCapabilities.canRead
       description: ''
@@ -3020,31 +3020,31 @@ script:
       description: The user's primary email address.
     outputs:
     - contextPath: GoogleDrive.File.File.id
-      description: 'The ID of the file.'
+      description: The ID of the file.
       type: String
     - contextPath: GoogleDrive.Labels.kind
-      description: 'The type of resource. This is always drive#labelList.'
+      description: The type of resource. This is always drive#labelList.
       type: String
     - contextPath: GoogleDrive.Labels.labels.fields.id
-      description: 'The ID of the label field selected.'
+      description: The ID of the label field selected.
       type: String
     - contextPath: GoogleDrive.Labels.labels.fields.kind
-      description: 'The kind of this field. This is always drive#labelField.'
+      description: The kind of this field. This is always drive#labelField.
       type: String
     - contextPath: GoogleDrive.Labels.labels.fields.selection
-      description: 'The label field selected.'
+      description: The label field selected.
       type: String
     - contextPath: GoogleDrive.Labels.labels.fields.valueType
-      description: 'The type of data this label is representing.'
+      description: The type of data this label is representing.
       type: String
     - contextPath: GoogleDrive.Labels.labels.id
-      description: 'The label id of the label to set.'
+      description: The label id of the label to set.
       type: String
     - contextPath: GoogleDrive.Labels.labels.kind
-      description: 'The type of resource. This is always drive#label.'
+      description: The type of resource. This is always drive#label.
       type: String
     - contextPath: GoogleDrive.Labels.labels.revisionId
-      description: 'The revision id of the label.'
+      description: The revision id of the label.
       type: String
   - name: google-drive-file-copy
     description: Make a copy of a Google Drive file.
