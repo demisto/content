@@ -51,7 +51,7 @@ def calculate_end_time(timeout):
 
 
 def is_value_sanitized(value):
-    arg_names = ['ids', 'pollingCommand', 'pollingCommandArgName',
+    arg_names = ['pollingCommand', 'pollingCommandArgName',
                  'additionalPollingCommandArgNames', 'additionalPollingCommandArgValues',
                  ]
     return all(current_arg_name not in value for current_arg_name in arg_names)
