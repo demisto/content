@@ -1,0 +1,67 @@
+[MODEL: dataset = radware_appwall]
+alter // Extract Fields 
+    action = arrayindex(regextract(_raw_log, "action=\"([^\"]+)"), 0), // The action taken on the transaction: Report, Modified, or Block.
+    appPath = arrayindex(regextract(_raw_log, "appPath=\"([^\"]+)"), 0), // The application path in the relevant security policy.
+    awVersion = arrayindex(regextract(_raw_log, "awVersion=\"([^\"]+)"), 0), // WAF security engine version number.
+    destinationIp = arrayindex(regextract(_raw_log, "destinationIp=\"([^\"]+)"), 0), // Network parameters of the destination of the attack. Can be a single IP address or multiple addresses.
+    destinationPort = arrayindex(regextract(_raw_log, "destinationPort=\"(\d+)"), 0), // TCP port number of the Web service to which the user sent the request.
+    devType = arrayindex(regextract(_raw_log, "devType=\"([^\"]+)"), 0), // The device type used by Cloud WAF.
+    directory = arrayindex(regextract(_raw_log, "directory=\"([^\"]+)"), 0), // The HTTP request folder.
+    // enrichmentContainer = arrayindex(regextract(_raw_log, "enrichmentContainer=\"([^\"]+)"), 0),
+    // externalIp = arrayindex(regextract(_raw_log, "externalIp=\"([^\"]+)"), 0),
+    host = arrayindex(regextract(_raw_log, "host=\"([^\"]+)"), 0), // The host header in the HTTP request that triggered the security violation.
+    http_method = arrayindex(regextract(_raw_log, "method=\"([^\"]+)"), 0), // HTTP Method name in the Request.
+    paramName = arrayindex(regextract(_raw_log, "paramName=\"([^\"]+)"), 0), // HTTP parameter name that triggered the security violation.
+    paramType = arrayindex(regextract(_raw_log, "paramType=\"([^\"]+)"), 0), // Type of parameter: Query/Path/Body URL Encoded
+    paramValue = arrayindex(regextract(_raw_log, "paramValue=\"([^\"]+)"), 0), // HTTP parameter value that triggered the security violation.
+    // passive = arrayindex(regextract(_raw_log, "passive=\"([^\"]+)"), 0), // Whether there were any actions applied to the violating request or response, or it is passive- mode detection only.
+    protocol = arrayindex(regextract(_raw_log, "protocol=\"([^\"]+)"), 0), // HTTP or HTTPS.
+    // receivedTimeStamp = arrayindex(regextract(_raw_log, "receivedTimeStamp=\"([^\"]+)"), 0),
+    request = arrayindex(regextract(_raw_log, "request=\"([^\"]+)"), 0), // The actual HTTP/S request as received by Cloud WAF.
+    // role = arrayindex(regextract(_raw_log, "role=\"([^\"]+)"), 0), // Within Cloud WAF, this field should always be Public.
+    ruleId = arrayindex(regextract(_raw_log, "ruleId=\"([^\"]+)"), 0), // In the context of attacks signatures-based security modules, the Rule ID represents the ID of the signature rule ID.
+    // security = arrayindex(regextract(_raw_log, "security=\"([^\"]+)"), 0),
+    severity = arrayindex(regextract(_raw_log, "severity=\"([^\"]+)"), 0), // Security violation severity: Very Low, Low, Medium, High, Critical
+    sourceIp = arrayindex(regextract(_raw_log, "sourceIp=\"([^\"]+)"), 0), // IP address of the user who sent the request.
+    sourcePort = arrayindex(regextract(_raw_log, "sourcePort=\"(\d+)"), 0), // TCP port number of the user connection that sent the request.
+    // targetModule = arrayindex(regextract(_raw_log, "targetModule=\"([^\"]+)"), 0), // The security module that triggered the security event.
+    title = arrayindex(regextract(_raw_log, "title=\"([^\"]+)"), 0), // Event short description.
+    transId = arrayindex(regextract(_raw_log, "transId=\"([^\"]+)"), 0), // HTTP/S unique transaction ID.
+    // tunnel = arrayindex(regextract(_raw_log, "tunnel=\"([^\"]+)"), 0), // The network object name in the configuration.
+    uri = arrayindex(regextract(_raw_log, "uri=\"([^\"]+)"), 0), // User HTTP/S request URI.
+    user = arrayindex(regextract(_raw_log, "user=\"([^\"]+)"), 0), // In the context of Cloud WAF, should always be Public.
+    // vhost = arrayindex(regextract(_raw_log, "vhost=\"([^\"]+)"), 0), // The name of the host in the security policy. In a scenario where there is a group of hosts under the same policy, Vhost contains the group name.
+    violationCategory = arrayindex(regextract(_raw_log, "violationCategory=\"([^\"]+)"), 0), // The category of the security violation
+    violationType = arrayindex(regextract(_raw_log, "violationType=\"([^\"]+)"), 0), // The type of the security violation, for example: SQL Injection, LDAP Injection, Code Injection.
+    webApp = arrayindex(regextract(_raw_log, "webApp=\"([^\"]+)"), 0) // Web application name (in the security policy).
+| alter // Mappings
+    src_ipv4 = if(sourceIp ~= "\.", sourceIp),
+    src_ipv6 = if(sourceIp ~= "\:", sourceIp),
+    destinationIp_v4_addresses = regextract(destinationIp, "((?:\d{1,3}\.){3}\d{1,3})"),
+    destinationIp_v6_addresses = regextract(destinationIp, "((?:[a-fA-F\d]{0,4}\:){7}[\wa-fA-F]{0,4})"),
+    user_agent = arrayindex(regextract(request, "(?i)User-Agent:\s*(.+?)\\n"), 0)
+| alter 
+    xdm.alert.description = violationType,
+    xdm.alert.name = title,
+    xdm.alert.subcategory = violationCategory,
+    xdm.event.id = transId,
+    xdm.network.application_protocol = protocol,
+    xdm.network.http.domain = host,
+    xdm.network.http.method = if(http_method = "ACL", XDM_CONST.HTTP_METHOD_ACL, http_method = "BASELINE_CONTROL", XDM_CONST.HTTP_METHOD_BASELINE_CONTROL, http_method = "BIND", XDM_CONST.HTTP_METHOD_BIND, http_method = "CHECKIN", XDM_CONST.HTTP_METHOD_CHECKIN, http_method = "CHECKOUT", XDM_CONST.HTTP_METHOD_CHECKOUT, http_method = "CONNECT", XDM_CONST.HTTP_METHOD_CONNECT, http_method = "COPY", XDM_CONST.HTTP_METHOD_COPY, http_method = "DELETE", XDM_CONST.HTTP_METHOD_DELETE, http_method = "GET", XDM_CONST.HTTP_METHOD_GET, http_method = "HEAD", XDM_CONST.HTTP_METHOD_HEAD, http_method = "LABEL", XDM_CONST.HTTP_METHOD_LABEL, http_method = "LINK", XDM_CONST.HTTP_METHOD_LINK, http_method = "LOCK", XDM_CONST.HTTP_METHOD_LOCK, http_method = "MERGE", XDM_CONST.HTTP_METHOD_MERGE, http_method = "MKACTIVITY", XDM_CONST.HTTP_METHOD_MKACTIVITY, http_method = "MKCALENDAR", XDM_CONST.HTTP_METHOD_MKCALENDAR, http_method = "MKCOL", XDM_CONST.HTTP_METHOD_MKCOL, http_method = "MKREDIRECTREF", XDM_CONST.HTTP_METHOD_MKREDIRECTREF, http_method = "MKWORKSPACE", XDM_CONST.HTTP_METHOD_MKWORKSPACE, http_method = "MOVE", XDM_CONST.HTTP_METHOD_MOVE, http_method = "OPTIONS", XDM_CONST.HTTP_METHOD_OPTIONS, http_method = "ORDERPATCH", XDM_CONST.HTTP_METHOD_ORDERPATCH, http_method = "PATCH", XDM_CONST.HTTP_METHOD_PATCH, http_method = "POST", XDM_CONST.HTTP_METHOD_POST, http_method = "PRI", XDM_CONST.HTTP_METHOD_PRI, http_method = "PROPFIND", XDM_CONST.HTTP_METHOD_PROPFIND, http_method = "PROPPATCH", XDM_CONST.HTTP_METHOD_PROPPATCH, http_method = "PUT", XDM_CONST.HTTP_METHOD_PUT, http_method = "REBIND", XDM_CONST.HTTP_METHOD_REBIND, http_method = "REPORT", XDM_CONST.HTTP_METHOD_REPORT, http_method = "SEARCH", XDM_CONST.HTTP_METHOD_SEARCH, http_method = "TRACE", XDM_CONST.HTTP_METHOD_TRACE, http_method = "UNBIND", XDM_CONST.HTTP_METHOD_UNBIND, http_method = "UNCHECKOUT", XDM_CONST.HTTP_METHOD_UNCHECKOUT, http_method = "UNLINK", XDM_CONST.HTTP_METHOD_UNLINK, http_method = "UNLOCK", XDM_CONST.HTTP_METHOD_UNLOCK, http_method = "UPDATE", XDM_CONST.HTTP_METHOD_UPDATE, http_method = "UPDATEREDIRECTREF", XDM_CONST.HTTP_METHOD_UPDATEREDIRECTREF, http_method = "VERSION_CONTROL", XDM_CONST.HTTP_METHOD_VERSION_CONTROL, to_string(http_method)),
+    xdm.network.http.url = url,
+    xdm.network.rule = ruleId,
+    xdm.observer.action = action,
+    xdm.observer.type = devType,
+    xdm.observer.version = awVersion,
+    xdm.session_context_id = transId,
+    xdm.source.port = to_integer(sourcePort),
+    xdm.source.user_agent = user_agent,
+    xdm.target.application.name = webApp,
+    xdm.target.file.directory = directory,
+    xdm.target.host.hostname = host,
+    xdm.target.host.ipv4_addresses = destinationIp_v4_addresses,
+    xdm.target.host.ipv6_addresses = destinationIp_v6_addresses,
+    xdm.target.ipv4 = arrayindex(destinationIp_v4_addresses, 0),
+    xdm.target.ipv6 = arrayindex(destinationIp_v6_addresses, 0),
+    xdm.target.port = to_integer(destinationPort),
+    xdm.target.resource.name = appPath;
