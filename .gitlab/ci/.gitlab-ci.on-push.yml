@@ -405,7 +405,6 @@ jobs-done-check-on-push:
   tags:
     - gke
 
-
 slack-notify-nightly-build:
   extends:
     - .trigger-slack-notification
@@ -535,8 +534,8 @@ xsiam_server_ga:
     paths:
       - "${ARTIFACTS_FOLDER_INSTANCE}/modeling_rules_results.xml"
       - "${ARTIFACTS_FOLDER_INSTANCE}/test_playbooks_report.xml"
-      - /builds/xsoar/content/artifacts/*  # restoring the default artifacts path from the job default settings
-      - /builds/xsoar/content/pipeline_jobs_folder/*  # restoring the default artifacts path from the job default settings
+      - ${CI_PROJECT_DIR}/artifacts/*  # restoring the default artifacts path from the job default settings
+      - ${CI_PROJECT_DIR}/pipeline_jobs_folder/*  # restoring the default artifacts path from the job default settings
 
 xsoar_ng_server_ga:
   extends:
@@ -554,16 +553,14 @@ xsoar_ng_server_ga:
     CLOUD_SERVERS_FILE: "xsoar_ng_servers_path"
     CLOUD_API_KEYS: $XSOAR_NG_API_KEYS
     CLOUD_API_TOKENS: $XSIAM_TOKENS
-    GCS_SOURCE_BUCKET: "${GCS_PRODUCTION_BUCKET}"
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR_SAAS}"
     ARTIFACTS_FOLDER_INSTANCE: "${ARTIFACTS_FOLDER_XSOAR_SAAS}/instance_saas"
     ENV_RESULTS_PATH: "${ARTIFACTS_FOLDER_XSOAR}/env_results.json"
-    GCS_MACHINES_BUCKET: "marketplace-dist-dev/upload-flow/builds-xsoar-ng"
-    SERVER_TYPE: "XSOAR SAAS"
-    MARKETPLACE_NAME: "xsoar"
+    GCS_SOURCE_BUCKET: "${GCS_PRODUCTION_XSOAR_SAAS_BUCKET}"
+    GCS_MACHINES_BUCKET: "marketplace-saas-dist-dev/upload-flow/builds-xsoar-ng"
     NON_REMOVABLE_PACKS: "Base"
   needs:
-    - job: xsoar-prepare-testing-bucket
+    - job: xsoar-saas-prepare-testing-bucket
       optional: true
   artifacts:
     when: always
@@ -613,7 +610,7 @@ test-upload-flow:
     -   echo "Sleeping for 10 seconds before retrying"
     -   sleep 10
     - done
-    - echo "Successful triggered test upload - https://code.pan.run/xsoar/content/-/pipelines/$pipeline_id"  # disable-secrets-detection
+    - echo "Successful triggered test upload - ${CI_SERVER_URL}/${CI_PROJECT_NAMESPACE}/content/-/pipelines/$pipeline_id"  # disable-secrets-detection
     - section_end "Trigger Test Upload Flow On Testing Branch"
 
     - section_start "Wait For Upload To Finish"
