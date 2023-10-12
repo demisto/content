@@ -109,30 +109,6 @@ script:
       required: false
       secret: false
     - default: false
-      description: User domain name (cannot be provided without user_name)
-      isArray: false
-      name: user_domain_name
-      required: false
-      secret: false
-    - default: false
-      description: List of users (up to 5)
-      isArray: true
-      name: user_name
-      required: false
-      secret: false
-    - default: false
-      description: List of sam account names (up to 5)
-      isArray: true
-      name: sam_account_name
-      required: false
-      secret: false
-    - default: false
-      description: List of emails (up to 5)
-      isArray: true
-      name: email
-      required: false
-      secret: false
-    - default: false
       description: Number of days you want the search to go back to
       isArray: false
       name: last_days
@@ -338,11 +314,11 @@ script:
     - contextPath: Varonis.Event.ExternalIP
       description: Device external IP
       type: String
-    - contextPath: Varonis.Event.Details.IsBlacklist
+    - contextPath: Varonis.Event.IsBlacklist
       description: Whether any of the geographical locations from which an alerted
         activity originated was on the blacklist at the time the activity occurred
       type: Boolean
-    - contextPath: Varonis.Event.Details.Operation
+    - contextPath: Varonis.Event.Operation
       description: |-
         Type of operation that occurred during the event. Options are:
         - Accessed
@@ -353,70 +329,70 @@ script:
         - Received
         - Requested
       type: String
-    - contextPath: Varonis.Event.ByUser.Name
+    - contextPath: Varonis.Event.ByUserName
       description: Name of the user that triggered the event
       type: String
-    - contextPath: Varonis.Event.ByUser.UserType
+    - contextPath: Varonis.Event.ByUserUserType
       description: Type of account, i.e., user or computer
       type: String
-    - contextPath: Varonis.Event.ByUser.UserAccountType
+    - contextPath: Varonis.Event.ByUserUserAccountType
       description: |-
         Logon name used to support clients and servers running earlier versions of the Windows operating system, such as Windows NT 4.0.
         In the dashboards (other than the Alert dashboard), this is the SAM account name of the user or group
       type: String
-    - contextPath: Varonis.Event.ByUser.Domain
+    - contextPath: Varonis.Event.ByUserDomain
       description: Domain of the user that triggered the event
       type: String
-    - contextPath: Varonis.Event. ByUser.DisabledAccount
+    - contextPath: Varonis.Event.ByUserDisabledAccount
       description: Whether the account is disabled
       type: Boolean
-    - contextPath: Varonis.Event.ByUser.StaleAccount
+    - contextPath: Varonis.Event.ByUserStaleAccount
       description: Whether the account is stale
       type: Boolean
-    - contextPath: Varonis.Event.ByUser.LockoutAccounts
+    - contextPath: Varonis.Event.ByUserLockoutAccounts
       description: Whether the account is lockout
       type: Boolean
     - contextPath: Varonis.Event.SourceIP
       description: Source IP of the device triggered the event
       type: String
-    - contextPath: Varonis.Event. IsMaliciousIP
+    - contextPath: Varonis.Event.IsMaliciousIP
       description: Whether the IP is known to be malicious
       type: Boolean
-    - contextPath: Varonis.Event. IPReputation
+    - contextPath: Varonis.Event.IPReputation
       description: Reputation score of the IP. The score is a numeric value from 1-100
       type: Number
     - contextPath: Varonis.Event.IPThreatType
       description: List of threat types associated with the IP
       type: String
-    - contextPath: Varonis.Event.OnObject.Name
+    - contextPath: Varonis.Event.OnObjectName
       description: Name of object on which the event was performed
       type: String
-    - contextPath: Varonis.Event.OnObject.ObjectType
+    - contextPath: Varonis.Event.ObjectType
       description: Type of object on which the event was performed
       type: String
-    - contextPath: Varonis.Event.OnObject.Platform
+    - contextPath: Varonis.Event.Platform
       description: Type of platform on which the server resides. For example, Windows,
         Exchange, or SharePoint
       type: String
-    - contextPath: Varonis.Event.OnObject.IsSensitive
+    - contextPath: Varonis.Event.IsSensitive
       description: 'Indicates whether the resource on which the event was performed
         is sensitive '
       type: Boolean
-    - contextPath: Varonis.Event.OnObject.FileServerOrDomain
+    - contextPath: Varonis.Event.FileServerOrDomain
       description: File server of object on which the event was performed
       type: String
-    - contextPath: Varonis.Event.OnObject.IsDisabledAccount
+    - contextPath: Varonis.Event.IsDisabledAccount
       description: Whether the account is disabled
       type: Boolean
-    - contextPath: Varonis.Event.OnObject.IsLockOutAccount
+    - contextPath: Varonis.Event.IsLockOutAccount
       description: Whether the account is lockout
       type: Boolean
-    - contextPath: Varonis.Event.OnObject.SAMAccountName
+    - contextPath: Varonis.Event.SAMAccountName
       description: |-
         Logon name used to support clients and servers running earlier versions of the Windows operating system, such as Windows NT 4.0.
         In the dashboards (other than the Alert dashboard), this is the SAM account name of the user or group
       type: String
-    - contextPath: Varonis.Event.OnObject.UserAccountType
+    - contextPath: Varonis.Event.UserAccountType
       description: |-
         Specified type of privileged account. Options are:
         - Service accounts
@@ -424,13 +400,13 @@ script:
         - Executive accounts
         - Test accounts
       type: String
-    - contextPath: Varonis.Event.OnObject.DestinationIP
+    - contextPath: Varonis.Event.DestinationIP
       description: Destination IP address within the organization
       type: String
-    - contextPath: Varonis.Event.OnObject.DestinationDevice
+    - contextPath: Varonis.Event.DestinationDevice
       description: Destination host name for relevant services
       type: String
-    - contextPath: Varonis.Event.OnObject.Path
+    - contextPath: Varonis.Event.Path
       description: Path of asset
       type: String
   dockerimage: demisto/ntlm:1.0.0.31381
