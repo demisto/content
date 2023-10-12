@@ -39,7 +39,6 @@ Get alerts from Varonis DA
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | threat_model_name | List of requested threat models to retrieve. | Optional | 
-| max_results | The max number of alerts to retrieve (up to 50). Default is 50. | Optional | 
 | start_time | Start time of alert range. | Optional | 
 | end_time | End time of alert range. | Optional | 
 | alert_status | List of required alerts status. | Optional | 
@@ -51,7 +50,6 @@ Get alerts from Varonis DA
 | email | List of emails (up to 5). | Optional |
 | last_days | Number of days you want the search to go back to. | Optional |
 | descending_order | Indicates whether alerts should be ordered in newest to oldest order. | Optional |
-| page | Page number. Default is 1. | Optional | 
 
 
 #### Context Output
@@ -82,11 +80,9 @@ Get alerts from Varonis DA
 | Varonis.Alert.Device.Name | String | Name of the device from which the user generated the event | 
 | Varonis.Alert.Device.ContainMaliciousExternalIP | Boolean | Whether the alert contains IPs known to be malicious | 
 | Varonis.Alert.Device.IPThreatTypes | String | Whether the alert contains IPs known to be malicious | 
-| Varonis.Pagination.Page | Number | Current page number requested by user | 
-| Varonis.Pagination.PageSize | Number | Number of records on the page | 
 
 #### Command example
-```!varonis-get-alerts page=1 alert_status=Open max_results=1 start_time=2022-02-16T13:00:00+02:00```
+```!varonis-get-alerts alert_status=New start_time=2022-02-16T13:00:00+02:00```
 #### Context Example
 ```json
 {
@@ -124,11 +120,7 @@ Get alerts from Varonis DA
                 "Time": "2022-02-15T16:02:00",
                 "UserName": ""
             }
-        ],
-        "Pagination": {
-            "Page": 1,
-            "PageSize": 1
-        }
+        ]
     }
 }
 ```
@@ -204,8 +196,6 @@ Get events applied to specific alerts
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | alert_id | List of alert IDs. | Required | 
-| max_results | Maximum number of alerts to retrieve (up to 5k). | Optional | 
-| page | Page number. Default is 1. | Optional | 
 | descending_order | Indicates whether events should be ordered in newest to oldest order. | Optional |
 
 
@@ -245,11 +235,9 @@ Get events applied to specific alerts
 | Varonis.Event.OnObject.DestinationIP | String | Destination IP address within the organization | 
 | Varonis.Event.OnObject.DestinationDevice | String | Destination host name for relevant services | 
 | Varonis.Event.OnObject.Path | String | Path of asset | 
-| Varonis.Pagination.Page | Number | Current page number requested by user | 
-| Varonis.Pagination.PageSize | Number | Number of records on the page | 
 
 #### Command example
-```!varonis-get-alerted-events page=1 alert_id=72D0D925-0937-4111-AB4A-FFFD4A529A3C max_results=1```
+```!varonis-get-alerted-events alert_id=72D0D925-0937-4111-AB4A-FFFD4A529A3C```
 #### Context Example
 ```json
 {
@@ -295,11 +283,7 @@ Get events applied to specific alerts
                 "Type": "Client DNS request",
                 "UTCTime": "2022-03-17T17:52:14Z"
             }
-        ],
-        "Pagination": {
-            "Page": 1,
-            "PageSize": 1
-        }
+        ]
     }
 }
 ```

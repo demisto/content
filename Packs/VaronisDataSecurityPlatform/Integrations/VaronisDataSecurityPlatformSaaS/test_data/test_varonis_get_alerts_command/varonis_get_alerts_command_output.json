@@ -60,9 +60,5 @@
           "IngestTime":"2023-09-07T11:20:00",
           "Url":"https://test.com/#/app/analytics/entity/Alert/7424c79d-9968-40fa-bb6d-4f298f33c2d8"
        }
-    ],
-    "Pagination":{
-       "Page":1,
-       "PageSize":2
-    }
+    ]
  }
