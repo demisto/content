@@ -239,7 +239,7 @@ tasks:
       body:
         simple: |-
           Hello,
-          We wanted to let you know that Cortex Cםרק has flagged a potential issue related to your recent Remote Desktop Protocol (RDP) activity. Specifically, we detected a possible RDP brute force attempt by the user ${inputs.Username} from the remote IP address ${inputs.ExternalIP}.
+          We wanted to let you know that Cortex Core has flagged a potential issue related to your recent Remote Desktop Protocol (RDP) activity. Specifically, we detected a possible RDP brute force attempt by the user ${inputs.Username} from the remote IP address ${inputs.ExternalIP}.
 
           This may happen due to various reasons, one of them being multiple login attempts by the user.
 
