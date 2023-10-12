@@ -1,4 +1,3 @@
-from concurrent.futures import ThreadPoolExecutor
 import demistomock as demisto  # noqa
 from CommonServerPython import *  # noqa
 from CommonServerUserPython import *  # noqa
@@ -1205,20 +1204,6 @@ def update_next_link_in_context(result: dict, outputs: dict):
         outputs[f'AzureSentinel.NextLink(val.Description == "{NEXT_LINK_DESCRIPTION}")'] = next_link_item
 
 
-def fetch_incident_additional_info(client: AzureSentinelClient, incident: Dict):
-    additional_fetch = {'Alerts': {'method': 'POST', 'result_key': 'value'},
-                        'Entities': {'method': 'POST', 'result_key': 'entities'},
-                        'Comments': {'method': 'GET', 'result_key': 'value'},
-                        'Relations': {'method': 'GET', 'result_key': 'value'}}
-
-    for additional_info in demisto.params().get('fetch_additional_info', []):
-        info_type = additional_info.lower()
-        method = additional_fetch[additional_info]['method']
-        results_key = additional_fetch[additional_info]['result_key']
-        incident_id = incident.get('ID')
-        incident[info_type] = client.http_request(method, f'incidents/{incident_id}/{info_type}').get(results_key)
-
-
 def fetch_incidents_additional_info(client: AzureSentinelClient, incidents: List | Dict):
     """Fetches additional info of an incidents array or a single incident.
 
@@ -1229,8 +1214,22 @@ def fetch_incidents_additional_info(client: AzureSentinelClient, incidents: List
     Returns:
         None. Updates the incidents array with the additional info.
     """
-    with ThreadPoolExecutor() as pool:
-        pool.map(lambda incident: fetch_incident_additional_info(client, incident), incidents)
+    additional_fetch = {'Alerts': {'method': 'POST', 'result_key': 'value'},
+                        'Entities': {'method': 'POST', 'result_key': 'entities'},
+                        'Comments': {'method': 'GET', 'result_key': 'value'},
+                        'Relations': {'method': 'GET', 'result_key': 'value'}}
+
+    if isinstance(incidents, dict):
+        incidents = [incidents]
+
+    for incident in incidents:
+        for additional_info in demisto.params().get('fetch_additional_info', []):
+            info_type = additional_info.lower()
+            method = additional_fetch[additional_info]['method']
+            results_key = additional_fetch[additional_info]['result_key']
+            incident_id = incident.get('ID')
+
+            incident[info_type] = client.http_request(method, f'incidents/{incident_id}/{info_type}').get(results_key)
 
 
 def fetch_incidents(client: AzureSentinelClient, last_run: dict, first_fetch_time: str, min_severity: int) -> tuple:
