@@ -2401,7 +2401,7 @@ class TestIncidentFetch:
         from CrowdStrikeFalcon import fetch_incidents
         fetch_incidents()
         assert demisto.setLastRun.mock_calls[0][1][0][1] == {'time': '2020-09-04T09:16:11Z',
-                                                             'limit': 2,
+                                                             'limit': 3,
                                                              'found_incident_ids': {'Incident ID: ldt:1': 1598462533}}
 
     def test_incident_type_in_fetch(self, set_up_mocks, mocker):
