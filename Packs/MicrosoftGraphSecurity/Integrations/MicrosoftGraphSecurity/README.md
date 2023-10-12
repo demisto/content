@@ -1984,6 +1984,82 @@ Create and retrieve a file threat assessment.
 >|---|---|---|---|---|---|---|---|---|---|
 >| 0796306-b456-4605-ff0d-03kgmtfcf876 | "2019-11-27T05:45:14.0962061Z"| file | block| phishing| completed | administrator | test_file.txt |63798129-a62c-4f9e-2c6d-08d772fcfb0e|Phishing attempt.|
 
+### msg-create-url-assessment-request
+
+***
+Create and retrieve url threat assessment.
+
+#### Base Command
+
+`msg-create-url-assessment-request`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| url | The URL. | Required | 
+| expected_assessment | the expected assessment: blocked or unblocked | Required | 
+| category | The category of the threat: phishing, malware or spam. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MSGraphMail.UrlAssessment.ID | String | Request id.
+| MSGraphMail.UrlAssessment.CreatedDateTime | Date | Created data of the threat assessment request. | 
+| MSGraphMail.UrlAssessment.ContentType | String | The content type of threat assessment. | 
+| MSGraphMail.UrlAssessment.ExpectedAssessment | String | The expected assessment from submitter. Possible values are: block, unblock. | 
+| MSGraphMail.UrlAssessment.Category | String | The threat category. Possible values are: spam, phishing, malware. | 
+| MSGraphMail.UrlAssessment.Status | String | The assessment process status. Possible values are: pending, completed. | 
+| MSGraphMail.UrlAssessment.RequestSource | String | The source of threat assessment request. Possible values are: administrator. | 
+| MSGraphMail.UrlAssessment.Url | String | The url. | 
+| MSGraphMail.UrlAssessment.CreatedUserID | String | User id. | 
+| MSGraphMail.UrlAssessment.CreatedUsername | String | Username. | 
+| MSGraphMail.UrlAssessment.ResultType | String | Result of the request. | 
+| MSGraphMail.UrlAssessment.ResultMessage | String | Message of the result. | 
+
+#### Command example
+
+```!msg-create-url-assessment-request url="httpp://support.clean-mx.de/clean-mx/viruses.php" expectedAssessment=block category=malware```
+
+#### Context Example
+
+```json
+{
+
+    "id": "0796306-b456-4605-ff0d-03okmtgcf876",
+    "createdDateTime": "2019-11-27T05:45:14.0962061Z",
+    "contentType": "url",
+    "expectedAssessment": "block",
+    "category": "malware",
+    "status": "completed",
+    "requestSource": "administrator",
+    "url": "httpp://support.clean-mx.de/clean-mx/viruses.php",
+    "createdBy": {
+      "user": {
+        "id": "c52ce8db-3e4b-4181-93c4-7d6b6bffaf60",
+        "displayName": "Ronald Admin"
+      }
+    },
+    "results": [
+        {
+            "id": "63798129-a62c-4f9e-2c6d-08d772fcfb0e",
+            "createdDateTime": "2019-11-27T05:45:16.55Z",
+            "resultType": "checkPolicy",
+            "message": "Malware attempt."
+        }
+    ]
+}
+```
+
+#### Human Readable Output
+
+>### Mail assessment request:
+
+>|ID|Created DateTime|Content Type|Expected Assessment|Category|Status|Request Source|URL|Created User ID|Created Username|
+>|---|---|---|---|---|---|---|---|---|---|
+>| 0796306-b456-4605-ff0d-03okmtgcf876 | "2019-11-27T05:45:14.0962061Z"| url | block| malware| completed | administrator | httpp://support.clean-mx.de/clean-mx/viruses.php |63798129-a62c-4f9e-2c6d-08d772fcfb0e|Malware attempt.|
+
 >### Authorization instructions
 >1. Click on the [login URL]() to sign in and grant Cortex XSOAR permissions for your Azure Service Management.
 You will be automatically redirected to a link with the following structure:
