@@ -1037,8 +1037,7 @@ def search_attributes(demisto_args: dict) -> CommandResults:
                 for attachment in response:
                     for objects in attachment.get('Event', {}).get('Object', []):
                                 for object in objects.get('Attribute', []):
-                                        if 'value' in object:
-                                            if args.get('value') == object.get('value'):
+                                        if args.get('value') == object.get('value'):
                                                 for object in objects.get('Attribute'):
                                                     if 'data' in object:
                                                         res = fileResult('misp.zip', b64decode(object.get('data')))
