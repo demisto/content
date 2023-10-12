@@ -604,6 +604,78 @@ def varonis_update_alert(client: Client, close_reason_id: int, status_id: int, a
     return client.varonis_update_alert_status(query)
 
 
+def convert_incident_alert_to_onprem_format(alert_saas_format):
+    output = {
+        "ID": alert_saas_format.get("ID"),
+        "Name": alert_saas_format.get("Name"),
+        "Time": alert_saas_format.get("Time"),
+        "Severity": alert_saas_format.get("Severity"),
+        "Category": alert_saas_format.get("Category"),
+        "Status": alert_saas_format.get("Status"),
+        "CloseReason": alert_saas_format.get("CloseReason"),
+        "NumOfAlertedEvents": alert_saas_format.get("NumOfAlertedEvents"),
+        "ContainsFlaggedData": False if alert_saas_format.get("ContainsFlaggedData") is None else alert_saas_format.get("ContainsFlaggedData"),
+        "ContainsSensitiveData": False if alert_saas_format.get("ContainsSensitiveData") is None else alert_saas_format.get("ContainsSensitiveData"),
+        "ContainMaliciousExternalIP": False if alert_saas_format.get("ContainMaliciousExternalIP") is None else alert_saas_format.get("ContainMaliciousExternalIP"),
+        "IPThreatTypes": alert_saas_format.get("IPThreatTypes"),
+        "EventUTC": alert_saas_format.get("EventUTC")
+    }
+
+    # todo: fix when it will be converted to array
+    output["Locations"] = []
+    countries = [] if alert_saas_format.get("Country") is None else alert_saas_format.get("Country").split(',')
+    states = [] if alert_saas_format.get("State") is None else alert_saas_format.get("State").split(',')
+    blacklist_locations = [] if alert_saas_format.get("BlacklistLocation") is None else alert_saas_format.get("BlacklistLocation").split(',')
+    abnormal_locations = [] if alert_saas_format.get("AbnormalLocation") is None else alert_saas_format.get("AbnormalLocation").split(',')
+    for i in range(len(countries)):
+        entry = {
+            "Country": "" if len(countries) <= i else countries[i],
+            "State": "" if len(states) <= i else states[i],
+            "BlacklistLocation": "" if len(blacklist_locations) <= i else blacklist_locations[i],
+            "AbnormalLocation": "" if len(abnormal_locations) <= i else abnormal_locations[i]
+        }
+        output["Locations"].append(entry)
+
+    # todo: fix when it will be converted to array
+    output["Sources"] = []
+    platforms = [] if alert_saas_format.get("Platform") is None else alert_saas_format.get("Platform").split(',')
+    abnormal_locations = [] if alert_saas_format.get("FileServerOrDomain") is None else alert_saas_format.get("FileServerOrDomain").split(',')
+    for i in range(len(platforms)):
+        entry = {
+            "Platform": "" if len(platforms) <= i else platforms[i],
+            "FileServerOrDomain": "" if len(abnormal_locations) <= i else abnormal_locations[i]
+        }
+        output["Sources"].append(entry)
+
+    # todo: fix when it will be converted to array
+    output["Devices"] = []
+    device_names = [] if alert_saas_format.get("DeviceName") is None else alert_saas_format.get("DeviceName").split(',')
+    assets = [] if alert_saas_format.get("Asset") is None else alert_saas_format.get("Asset").split(',')
+    for i in range(len(device_names)):
+        entry = {
+            "Name": "" if len(device_names) <= i else device_names[i],
+            "Asset": "" if len(assets) <= i else assets[i]
+        }
+        output["Devices"].append(entry)
+
+    # todo: fix when it will be converted to array
+    output["Users"] = []
+    user_names = [] if alert_saas_format.get("UserName") is None else alert_saas_format["UserName"].split(',')
+    sam_account_names = [] if alert_saas_format.get("SamAccountName") is None else alert_saas_format["SamAccountName"].split(',')
+    privileged_account_types = [] if alert_saas_format.get("PrivilegedAccountType") is None else alert_saas_format["PrivilegedAccountType"].split(',')
+    departments = [] if alert_saas_format.get("Department") is None else alert_saas_format["Department"].split(',')
+    for i in range(len(user_names)):
+        entry = {
+            "Name": "" if len(user_names) <= i else user_names[i],
+            "SamAccountName": "" if len(sam_account_names) <= i else sam_account_names[i],
+            "PrivilegedAccountType": "" if len(privileged_account_types) <= i else privileged_account_types[i],
+            "Department": "" if len(departments) <= i else departments[i]
+        }
+        output["Users"].append(entry)
+        
+    return output
+
+
 ''' COMMAND FUNCTIONS '''
 
 
@@ -720,12 +792,15 @@ def fetch_incidents_command(client: Client, last_run: Dict[str, datetime], first
         name = alert['Name']
         alert_time = alert['EventUTC']
         enrich_with_url(alert, client._base_url, guid)
+        
+        alert_converted = convert_incident_alert_to_onprem_format(alert)
+
         incident = {
             'name': f'Varonis alert {name}',
             'occurred': f'{alert_time}Z',
-            'rawJSON': json.dumps(alert),
+            'rawJSON': json.dumps(alert_converted),
             'type': 'Varonis DSP Incident',
-            'severity': convert_to_demisto_severity(alert['Severity']),
+            'severity': convert_to_demisto_severity(alert_converted['Severity']),
         }
 
         incidents.append(incident)
