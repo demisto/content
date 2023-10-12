@@ -1,9 +1,8 @@
 import traceback
 from contextlib import contextmanager
 
-from websockets.exceptions import InvalidStatus
+from websockets.exceptions import InvalidStatus, ConnectionClosed
 from websockets.sync.client import connect
-from websockets.sync.connection import Connection
 
 from CommonServerPython import *  # noqa: F401
 
@@ -40,25 +39,32 @@ def long_running_execution_command(host: str, fetch_interval: int):
         host (str): The URL for the websocket connection
         fetch_interval (int): The interval in minutes to check for updates to the homographs list
     """
-    with websocket_connections(host) as (message_connection):
-        demisto.info("Connected to websocket")
-        while True:
-            now = datetime.now()
-            context = json.loads(demisto.getIntegrationContext()["context"])
-            last_fetch_time = datetime.strptime(context["fetch_time"], '%Y-%m-%d %H:%M:%S')
-            fetch_interval = context["list_update_interval"]
 
-            if now - last_fetch_time >= timedelta(minutes=fetch_interval):
-                context["homographs"] = get_homographs_list(context["word_list_name"])
-                context["fetch_time"] = now
-                demisto.setIntegrationContext({"context": json.dumps(context)})
+    while True:
+        with websocket_connections(host) as (message_connection):
+            demisto.info("Connected to websocket")
 
-            fetch_certificates(message_connection)
-            # sleep for a bit to not throttle the CPU
-            time.sleep(FETCH_SLEEP)
+            while True:
+                now = datetime.now()
+                context = json.loads(demisto.getIntegrationContext()["context"])
+                last_fetch_time = datetime.strptime(context["fetch_time"], '%Y-%m-%d %H:%M:%S')
+                fetch_interval = context["list_update_interval"]
+
+                if now - last_fetch_time >= timedelta(minutes=fetch_interval):
+                    context["homographs"] = get_homographs_list(context["word_list_name"])
+                    context["fetch_time"] = now
+                    demisto.setIntegrationContext({"context": json.dumps(context)})
+
+                try:
+                    message = message_connection.recv()
+                    fetch_certificates(message)
+
+                except ConnectionClosed:
+                    break
 
 
-def fetch_certificates(connection: Connection):
+
+def fetch_certificates(message: str):
     """ Fetches the certificates data from the CertStream socket
 
     Args:
@@ -66,27 +72,22 @@ def fetch_certificates(connection: Connection):
 
     """
 
-    for index, message in enumerate(connection):
+    message = json.loads(message)
+    data = message["data"]
+    cert = data["leaf_cert"]
+    all_domains = cert["all_domains"]
 
-        if index % 200 == 0:
-            demisto.debug(f"{index} pinging server")
-            connection.ping()
-
-        data = json.loads(message)["data"]
-        cert = data["leaf_cert"]
-        all_domains = cert["all_domains"]
-
-        if len(all_domains) == 0:
-            return  # No domains found in the certificate
-        else:
-            for domain in all_domains:
-                # Check for homographs
-                is_suspicious_domain, result = check_homographs(domain)
-                if is_suspicious_domain:
-                    now = datetime.now()
-                    demisto.info(f"Potential homograph match found for domain: {domain}")
-                    create_xsoar_certificate_indicator(message)
-                    create_xsoar_incident(message, domain, now, result)
+    if len(all_domains) == 0:
+        return  # No domains found in the certificate
+    else:
+        for domain in all_domains:
+            # Check for homographs
+            is_suspicious_domain, result = check_homographs(domain)
+            if is_suspicious_domain:
+                now = datetime.now()
+                demisto.info(f"Potential homograph match found for domain: {domain}")
+                create_xsoar_certificate_indicator(message)
+                create_xsoar_incident(message, domain, now, result)
 
 
 def build_xsoar_grid(data: dict) -> list:
