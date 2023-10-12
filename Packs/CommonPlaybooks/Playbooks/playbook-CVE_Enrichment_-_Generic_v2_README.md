@@ -14,6 +14,8 @@ This playbook does not use any sub-playbooks.
 ### Integrations
 
 * VulnDB
+* CIRCL CVE Search
+* XFE_v2
 
 ### Scripts
 
@@ -21,8 +23,8 @@ This playbook does not use any scripts.
 
 ### Commands
 
-* vulndb-get-vuln-by-cve-id
 * cve
+* vulndb-get-vuln-by-cve-id
 * cve-search
 
 ## Playbook Inputs

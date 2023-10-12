@@ -239,17 +239,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: ac59954c-2ceb-46e7-8777-4836c7c4f2f8
+    taskid: d967878f-480e-4e27-8eb0-a193826cd386
     type: regular
     task:
-      id: ac59954c-2ceb-46e7-8777-4836c7c4f2f8
+      id: d967878f-480e-4e27-8eb0-a193826cd386
       version: -1
       name: Get CVE info from CIRCL CVE Search
       description: Returns CVE information by CVE ID.
-      script: '|||cve'
+      script: 'CIRCL CVE Search|||cve'
       type: regular
       iscommand: true
-      brand: ""
+      brand: CIRCL CVE Search
     nexttasks:
       '#none#':
       - '2'
@@ -276,17 +276,17 @@ tasks:
     isautoswitchedtoquietmode: false
   '7':
     id: '7'
-    taskid: a550af06-a091-4269-8f10-4b470ceb27c2
+    taskid: 4d4c7479-f69e-4d8d-8e9e-d24913c46a48
     type: regular
     task:
-      id: a550af06-a091-4269-8f10-4b470ceb27c2
+      id: 4d4c7479-f69e-4d8d-8e9e-d24913c46a48
       version: -1
       name: Get CVE information from XFE
       description: Search for details about the given CVE.
-      script: '|||cve-search'
+      script: 'XFE_v2|||cve-search'
       type: regular
       iscommand: true
-      brand: ""
+      brand: "XFE_v2"
     nexttasks:
       '#none#':
       - '2'
@@ -345,10 +345,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: b0fe344b-5959-445a-8d84-7115d281072e
+    taskid: fa071711-fc63-4650-86e8-1928ca83bc8c
     type: regular
     task:
-      id: b0fe344b-5959-445a-8d84-7115d281072e
+      id: fa071711-fc63-4650-86e8-1928ca83bc8c
       version: -1
       name: VulnDB - Get vulnerability details by CVE
       description: Returns full details about vulnerabilities, by CVE ID.
