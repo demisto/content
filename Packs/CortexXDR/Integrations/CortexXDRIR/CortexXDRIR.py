@@ -815,12 +815,14 @@ def sort_all_list_incident_fields(incident_data):
     if incident_data.get('file_artifacts', []):
         incident_data['file_artifacts'] = sort_by_key(incident_data.get('file_artifacts', []), main_key='file_name',
                                                       fallback_key='file_sha256')
-        reformat_sublist_fields(incident_data['file_artifacts'])
+        if demisto.params().get('formatSublists')
+            reformat_sublist_fields(incident_data['file_artifacts'])
 
     if incident_data.get('network_artifacts', []):
         incident_data['network_artifacts'] = sort_by_key(incident_data.get('network_artifacts', []),
                                                          main_key='network_domain', fallback_key='network_remote_ip')
-        reformat_sublist_fields(incident_data['network_artifacts'])
+        if demisto.params().get('formatSublists')
+            reformat_sublist_fields(incident_data['network_artifacts'])
 
 
 def sync_incoming_incident_owners(incident_data):
