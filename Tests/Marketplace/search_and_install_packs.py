@@ -791,21 +791,23 @@ def search_and_install_packs_and_their_dependencies(pack_ids: list,
             success &= search_pack_and_its_dependencies(pack_id=pack_id, **kwargs)
 
     else:
-        with ThreadPoolExecutor(max_workers=130) as pool:
-            futures = [
-                pool.submit(
-                    search_pack_and_its_dependencies, pack_id=pack_id, **kwargs
-                )
-                for pack_id in pack_ids
-            ]
-            for future in as_completed(futures):
-                try:
-                    success &= future.result()
-                except Exception:  # noqa E722
-                    logging.exception(
-                        f"An exception occurred while searching for dependencies of pack '{pack_ids[futures.index(future)]}'"
+        for b in batch(list(pack_ids), batch_size=20):
+            logging.info(f'installing packs in batch: {b}')
+            with ThreadPoolExecutor(max_workers=130) as pool:
+                futures = [
+                    pool.submit(
+                        search_pack_and_its_dependencies, pack_id=pack_id, **kwargs
                     )
-                    success = False
+                    for pack_id in pack_ids
+                ]
+                for future in as_completed(futures):
+                    try:
+                        success &= future.result()
+                    except Exception:  # noqa E722
+                        logging.exception(
+                            f"An exception occurred while searching for dependencies of pack '{pack_ids[futures.index(future)]}'"
+                        )
+                        success = False
         batch_packs_install_request_body = [installation_request_body]
 
     for packs_to_install_body in batch_packs_install_request_body:
@@ -813,3 +815,22 @@ def search_and_install_packs_and_their_dependencies(pack_ids: list,
         success &= pack_success
 
     return packs_to_install, success
+
+
+def batch(iterable, batch_size=1):
+    """Gets an iterable and yields slices of it.
+
+    Args:
+        iterable (list): list or other iterable object.
+        batch_size (int): the size of batches to fetch
+
+    Return:
+        (list): Iterable slices of given
+    """
+    current_batch = iterable[:batch_size]
+    not_batched = iterable[batch_size:]
+    while current_batch:
+        yield current_batch
+        current_batch = not_batched[:batch_size]
+        not_batched = not_batched[batch_size:]
+
