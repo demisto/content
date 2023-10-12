@@ -3,7 +3,7 @@ sectionorder:
 - Connect
 - Collect
 commonfields:
-  id: Panorama
+  id: Panorama_copy3
   version: -1
 configuration:
 - display: Server URL (e.g., https://192.168.0.1)
@@ -222,7 +222,7 @@ configuration:
   required: false
 description: Manage Palo Alto Networks Firewall and Panorama. Use this pack to manage Prisma Access through Panorama. For more information, see the Panorama documentation.
 display: Palo Alto Networks PAN-OS
-name: Panorama
+name: Panorama_copy3
 script:
   commands:
   - arguments:
@@ -9348,13 +9348,6 @@ script:
       type: string
   - name: pan-os-export-tech-support-file
     arguments:
-    - name: polling
-      auto: PREDEFINED
-      predefined:
-      - "false"
-      - "true"
-      description: Whether to use polling.
-      defaultValue: "true"
     - name: interval_in_seconds
       description: The polling interval (in seconds).
       defaultValue: "60"

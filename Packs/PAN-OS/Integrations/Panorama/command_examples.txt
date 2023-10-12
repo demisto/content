@@ -144,3 +144,4 @@ not_running_this!panorama-get-ssl-decryption-rules
 !pan-os-create-tag name="testtag" comment="some comment" is_shared=false
 !pan-os-edit-tag name="testtag" new_name="newtesttag" comment="some comment"
 !pan-os-delete-tag name="testtag"
+!pan-os-export-tech-support-file

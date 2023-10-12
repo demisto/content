@@ -894,7 +894,8 @@ def download_tsf(job_id: str):
 @polling_function(
     name=demisto.command(),
     interval=arg_to_number(demisto.args().get('interval_in_seconds', 60)),
-    timeout=arg_to_number(demisto.args().get('timeout', 1200))
+    timeout=arg_to_number(demisto.args().get('timeout', 1200)),
+    requires_polling_arg=False
 )
 def export_tsf_command(args: dict):
     """
@@ -934,7 +935,7 @@ def export_tsf_command(args: dict):
             continue_to_poll=continue_to_poll,
             args_for_next_run={
                 'job_id': job_id,
-                'polling': argToBoolean(args.get('polling')),
+                'polling': True,
                 'interval_in_seconds': arg_to_number(args.get('interval_in_seconds')),
                 'timeout': arg_to_number(args.get('timeout'))
             },
