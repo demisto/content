@@ -18,7 +18,7 @@ alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\
     severity = if(msg_severity = null, to_string(subtract(syslog_priority, multiply(floor(divide(syslog_priority, 8)), 8))), msg_severity ~= "DEBUG|VERBOSE", "7", msg_severity ~= "INFO", "6", msg_severity ~= "NOTICE", "5", msg_severity ~= "WARN", "4", msg_severity ~= "ERROR", "3", msg_severity ~= "CRITICAL", "2", msg_severity ~= "ALERT", "1", msg_severity ~= "EMERGENCY", "0", msg_severity),
     datastore = arrayindex(regextract(event_payload, "datastore=(\S+)"), 0),
     duration_ms = to_integer(coalesce(arrayindex(regextract(event_payload, "took\s+(\d+)\s+millis"), 0),
-                   arrayindex(regextract(event_payload, "Time taken:\s+(\S+)\s+ms"), 0))),
+                   arrayindex(regextract(event_payload, "Time\s+taken:\s+(\d+)\s+ms"), 0))),
     url = arrayindex(regextract(event_payload, "(https:\S+)"), 0)
 | alter 
     port = to_integer(arrayindex(regextract(url, ":(\d+)"), 0))
