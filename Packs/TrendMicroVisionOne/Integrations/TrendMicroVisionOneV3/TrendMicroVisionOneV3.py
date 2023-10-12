@@ -416,20 +416,19 @@ class Client(BaseClient):
     def exception_list_count(self) -> int:
         """
         Gets the count of object present in exception list
-
         :return: number of exception object.
         :rtype: ``int``
         """
         new_exceptions: List[ExceptionObject] = []
         # Initialize pytmv1 client
         v1_client = _get_client(APP_NAME, self.api_key, self.base_url)
-
+        # Make rest call
         try:
             v1_client.consume_exception_list(
                 lambda exception: new_exceptions.append(exception)
             )
         except Exception as err:
-            raise RuntimeError(f"Something went wrong {err}")
+            raise RuntimeError(f"Error while fetching exception list count.\n {err}")
         # Return length of exception list
         return len(new_exceptions)
 
@@ -442,17 +441,27 @@ class Client(BaseClient):
         new_suspicious: List[SuspiciousObject] = []
         # Initialize pytmv1 client
         v1_client = _get_client(APP_NAME, self.api_key, self.base_url)
-
+        # Make rest call
         try:
             v1_client.consume_suspicious_list(
                 lambda suspicious: new_suspicious.append(suspicious)
             )
         except Exception as err:
-            raise RuntimeError(f"Something went wrong {err}")
+            raise RuntimeError(f"Error while fetching suspicious list count.\n {err}")
         # Return length of suspicious list
         return len(new_suspicious)
 
     def get_workbench_histories(self, start, end) -> list:
+        """
+        Fetches incidents based on incident severity per user selection.
+        Args:
+        start (str): Datetime in ISO 8601 format (yyyy-MM-ddThh:mm:ssZ in UTC) that indicates the start of the data retrieval
+                     time range. Oldest available value is "1970-01-01T00:00:00Z"
+        end (str): Datetime in ISO 8601 format (yyyy-MM-ddThh:mm:ssZ in UTC) that indicates the end of the data retrieval
+                   time range. "endDateTime" can not be earlier than "startDateTime".
+        Returns:
+            list: List of incidents fetched
+        """
         # Initialize pytmv1 client
         v1_client = _get_client(APP_NAME, self.api_key, self.base_url)
         if not check_datetime_aware(start):
@@ -470,12 +479,16 @@ class Client(BaseClient):
 
         new_alerts: List[Union[SaeAlert, TiAlert]] = []
 
+        # filter incidents per user preference
         def _filter_alerts(alert: Union[SaeAlert, TiAlert]) -> None:
+            # If incidents of all severities need to be fetched
             if demisto.params().get(INCIDENT_SEVERITY) == ANY:
                 new_alerts.append(alert)
+            # If incidents of selected severity need to be fetched
             elif alert.severity.value == demisto.params().get(INCIDENT_SEVERITY):
                 new_alerts.append(alert)
 
+        # Make rest call
         try:
             v1_client.consume_alert_list(
                 _filter_alerts,
@@ -483,27 +496,26 @@ class Client(BaseClient):
                 end_time=formatted_end,
             )
         except Exception as err:
-            demisto.debug(f"Something went wrong {err}")
+            demisto.debug(f"Error while fetching incidents.\n {err}")
             return []
         return new_alerts
 
 
-def incident_severity_to_dbot_score(severity: str):
+def incident_severity_to_dbot_score(severity: str) -> int:
     """
     Converts an priority string to DBot score representation
     alert severity. Can be one of:
-    Unknown -> 0
-    No Risk -> 1
-        Low or Medium -> 2
-        Critical or High -> 3
-        Args:
-            severity: String representation of severity.
-        Returns:
-            Dbot representation of severity
+    - Unknown -> 0
+    - No Risk -> 1
+    - Low or Medium -> 2
+    - Critical or High -> 3
+    Args:
+        severity: String representation of severity.
+    Returns:
+        Dbot representation of severity
     """
     if not isinstance(severity, str):
         return 0
-
     if severity == "noRisk":
         return 1
     if severity in ["low", "medium"]:
@@ -513,23 +525,24 @@ def incident_severity_to_dbot_score(severity: str):
     return 0
 
 
+# returns initialized pytmv1 client used to make rest calls
 def _get_client(name: str, api_key: str, base_url: str) -> pytmv1.Client:
     return pytmv1.client(name, api_key, base_url)
 
 
-# @staticmethod
+# Checks the api response for error
 def _is_pytmv1_error(result_code: ResultCode) -> bool:
     return result_code == ResultCode.ERROR
 
 
-# @staticmethod
+# Validates object types like ip, url, domain, etc.
 def _get_ot_enum(obj_type: str) -> ObjectType:
     if not obj_type.upper() in ObjectType.__members__:
         raise RuntimeError(f"Please check object type: {obj_type}")
     return ObjectType[obj_type.upper()]
 
 
-# @staticmethod
+# Check whether to implement this or keep status check simple
 def get_task_type(action: str) -> Any:
     task_dict: Dict[Any, List[str]] = {
         AccountTaskResp: [
@@ -544,9 +557,9 @@ def get_task_type(action: str) -> Any:
         TerminateProcessTaskResp: ["terminateProcess"],
     }
 
-    for key, values in task_dict.items():
-        if action in values:
-            return key
+    for task, task_values in task_dict.items():
+        if action in task_values:
+            return task
 
 
 def run_polling_command(
@@ -561,7 +574,7 @@ def run_polling_command(
     :param client: The command that polled for an interval.
 
     :type client: ``Client``
-    :param client: client object to use http_request.
+    :param client: client object used to call respective polling commands.
     """
     ScheduledCommand.raise_error_if_not_supported()
     interval_in_secs = int(args.get(INTERVAL_IN_SECONDS, 30))
@@ -604,7 +617,7 @@ def get_task_status(args: Dict[str, Any], client: Client) -> Union[str, CommandR
     :param client: argument required for polling.
 
     :type client: ``Client``
-    :param client: client object to use http_request.
+    :param client: client object used to initialize pytmv1 client.
     """
     return run_polling_command(args, CHECK_TASK_STATUS_COMMAND, client)
 
@@ -617,16 +630,16 @@ def get_sandbox_submission_status(
     :type args: ``args``
     :param client: argument required for polling.
     :type client: ``Client``
-    :param client: client object to use http_request.
+    :param client: client object used to initialize pytmv1 client.
     """
     return run_polling_command(args, SANDBOX_SUBMISSION_POLLING_COMMAND, client)
 
 
 def test_module(client: Client) -> str:
     """
-    Performs basic get request to get item samples.
+    Performs basic get request to check for connectivity to Trend XDR.
     :type client: ``Client``
-    :param client: client object to use http_request.
+    :param client: client object used to initialize pytmv1 client.
     """
     # Initialize pytmv1 client
     v1_client = _get_client(APP_NAME, client.api_key, client.base_url)
@@ -647,12 +660,11 @@ def enable_or_disable_user_account(
     Supported IAM systems: Azure AD and Active Directory (on-premises).
 
     :type client: ``Client``
-    :param client: client object to use http_request.
+    :param client: client object used to initialize pytmv1 client.
 
     :type command: ``str``
-    :param command: type of command either
-    trendmicro-visionone-enable-user-account or
-    trendmicro-visionone-disable-user-account.
+    :param command: Either trendmicro-visionone-enable-user-account
+    or trendmicro-visionone-disable-user-account.
 
     :type args: ``dict``
     :param args: args object to fetch the argument data.
@@ -722,7 +734,7 @@ def force_sign_out(client: Client, args: Dict[str, Any]) -> Union[str, CommandRe
     Supported IAM systems: Azure AD
 
     :type client: ``Client``
-    :param client: client object to use http_request.
+    :param client: client object used to initialize pytmv1 client.
 
     :type args: ``dict``
     :param args: args object to fetch the argument data.
@@ -775,8 +787,8 @@ def force_password_reset(
     and forces the user to create a new password during the next sign-in attempt.
     Supported IAM systems: Azure AD and Active Directory (on-premises)
 
-    :type v1_client: ``pytmv1.Client``
-    :param v1_client: v1_client to make rest calls.
+    :type client: ``Client``
+    :param client: client object used to initialize pytmv1 client.
 
     :type args: ``dict``
     :param args: args object to fetch the argument data.
@@ -829,7 +841,7 @@ def get_endpoint_info(
     sends the result to demisto war room.
 
     :type client: ``Client``
-    :param client: client object to use http_request.
+    :param client: client object used to initialize pytmv1 client.
 
     :type args: ``dict``
     :param args: args object to fetch the argument data.
@@ -893,7 +905,7 @@ def get_endpoint_activity_data(
     in a paginated list and sends the result to demisto war room.
 
     :type client: ``Client``
-    :param client: client object to use for api_key and base_url.
+    :param client: client object used to initialize pytmv1 client.
 
     :type args: ``dict``
     :param args: args object to fetch the argument data.
@@ -993,7 +1005,7 @@ def get_email_activity_data(
     in a paginated list and sends the result to demisto war room.
 
     :type client: ``Client``
-    :param client: client object to use for api_key and base_url.
+    :param client: client object used to initialize pytmv1 client.
 
     :type args: ``dict``
     :param args: args object to fetch the argument data.
@@ -1091,12 +1103,11 @@ def add_or_remove_from_block_list(
     sends the result to demist war room.
 
     :type client: ``Client``
-    :param client: client object to use http_request.
+    :param client: client object used to initialize pytmv1 client.
 
     :type command: ``str``
-    :param command: type of command either
-    trendmicro-visionone-add-to-block-list or
-    trendmicro-visionone-remove-from-block-list.
+    :param command: Either trendmicro-visionone-add-to-block-list
+    or trendmicro-visionone-remove-from-block-list.
 
     :type args: ``dict``
     :param args: args object to fetch the argument data.
@@ -1164,7 +1175,7 @@ def add_or_remove_from_block_list(
 def fetch_incidents(client: Client):
     """
     This function executes to get all workbench alerts by using
-    startDateTime, endDateTime
+    startDateTime, endDateTime and sends the result to war room.
     """
     end = datetime.now(timezone.utc)
     days = int(demisto.params().get("first_fetch", ""))
@@ -1212,12 +1223,11 @@ def quarantine_or_delete_email_message(
     sends the result to demist war room.
 
     :type client: ``Client``
-    :param client: client object to use http_request.
+    :param client: client object used to initialize pytmv1 client.
 
     :type command: ``str``
-    :param command: type of command either
-    trendmicro-visionone-quarantine-email-message or
-    trendmicro-visionone-delete-email-message
+    :param command: Either trendmicro-visionone-quarantine-email-message
+    or trendmicro-visionone-delete-email-message.
 
     :type args: ``dict``
     :param args: args object to fetch the argument data.
@@ -1308,12 +1318,11 @@ def restore_email_message(
     sends the result to demist war room.
 
     :type client: ``Client``
-    :param client: client object to use http_request.
+    :param client: client object used to initialize pytmv1 client.
 
     :type command: ``str``
-    :param command: type of command either
-    trendmicro-visionone-quarantine-email-message or
-    trendmicro-visionone-delete-email-message
+    :param command: Either trendmicro-visionone-quarantine-email-message
+    or trendmicro-visionone-delete-email-message
 
     :type args: ``dict``
     :param args: args object to fetch the argument data.
@@ -1376,12 +1385,11 @@ def isolate_or_restore_connection(
     sends the result to demist war room.
 
     :type client: ``Client``
-    :param client: client object to use http_request.
+    :param client: client object used to initialize pytmv1 client.
 
     :type command: ``str``
-    :param command: type of command either
-    trendmicro-visionone-isolate-endpoint or
-    trendmicro-visionone-restore-endpoint-connection
+    :param command: Either trendmicro-visionone-isolate-endpoint
+    or trendmicro-visionone-restore-endpoint-connection
 
     :type args: ``dict``
     :param args: args object to fetch the argument data.
@@ -1469,7 +1477,7 @@ def terminate_process(
     sends the result to demist war room.
 
     :type client: ``Client``
-    :param client: client object to use http_request.
+    :param client: client object used to initialize pytmv1 client.
 
     :type args: ``dict``
     :param args: args object to fetch the argument data.
@@ -1535,7 +1543,7 @@ def add_or_delete_from_exception_list(
     sends the result to demist war room.
 
     :type client: ``Client``
-    :param client: client object to use http_request.
+    :param client: client object used to initialize pytmv1 client.
 
     :type command: ``str``
     :param command: type of command either
@@ -1621,7 +1629,7 @@ def add_to_suspicious_list(
     sends the result to demist war room.
 
     :type client: ``Client``
-    :param client: client object to use http_request.
+    :param client: client object used to initialize pytmv1 client.
 
     :type args: ``dict``
     :param args: args object to fetch the argument data.
@@ -1684,7 +1692,7 @@ def delete_from_suspicious_list(
     sends the result to demist war room.
 
     :type client: ``Client``
-    :param client: client object to use http_request.
+    :param client: client object used to initialize pytmv1 client.
 
     :type args: ``dict``
     :param args: args object to fetch the argument data.
@@ -1744,7 +1752,7 @@ def get_file_analysis_status(
     sends the result to demist war room
 
     :type client: ``Client``
-    :param client: client object to use http_request.
+    :param client: client object used to initialize pytmv1 client.
 
     :type args: ``dict``
     :param args: args object to fetch the argument data.
@@ -1784,7 +1792,7 @@ def get_file_analysis_result(
     """
     Get the report of file based on report id and sends the result to demist war room
     :type client: ``Client``
-    :param client: client object to use http_request.
+    :param client: client object used to initialize pytmv1 client.
     :type args: ``dict``
     :param args: args object to fetch the argument data.
     :return: sends data to demisto war room.
@@ -1795,6 +1803,7 @@ def get_file_analysis_result(
     # Optional Params
     poll = args.get(POLL, TRUE)
     poll_time_sec = args.get(POLL_TIME_SEC, 0)
+
     message: Dict[str, Any] = {}
     # Initialize pytmv1 client
     v1_client = _get_client(APP_NAME, client.api_key, client.base_url)
@@ -1860,7 +1869,7 @@ def collect_file(client: Client, args: Dict[str, Any]) -> Union[str, CommandResu
     """
     Collect forensic file and sends the result to demist war room
     :type client: ``Client``
-    :param client: client object to use http_request.
+    :param client: client object used to initialize pytmv1 client.
     :type args: ``dict``
     :param args: args object to fetch the argument data.
     :return: sends data to demisto war room.
@@ -1921,7 +1930,7 @@ def download_information_collected_file(
     Get the analysis report of file based on action id and sends
     the file to demist war room where it can be downloaded.
     :type client: ``Client``
-    :param client: client object to use http_request.
+    :param client: client object used to initialize pytmv1 client.
     :type args: ``dict``
     :param args: args object to fetch the argument data.
     :return: sends data to demisto war room.
@@ -1966,7 +1975,7 @@ def download_analysis_report(
     Get the analysis report of file based on action id and sends
     the file to demist war room where it can be downloaded.
     :type client: ``Client``
-    :param client: client object to use http_request.
+    :param client: client object used to initialize pytmv1 client.
     :type args: ``dict``
     :param args: args object to fetch the argument data.
     :return: sends data to demisto war room.
@@ -2028,7 +2037,7 @@ def download_investigation_package(
     Downloads the Investigation Package of the specified object based on
     submission id and sends the file to demist war room where it can be downloaded.
     :type client: ``Client``
-    :param client: client object to use http_request.
+    :param client: client object used to initialize pytmv1 client.
     :type args: ``dict``
     :param args: args object to fetch the argument data.
     :return: sends data to demisto war room.
@@ -2091,7 +2100,7 @@ def download_suspicious_object_list(
     Downloads the suspicious object list associated to the specified object
     Note: Suspicious Object Lists are only available for objects with a high risk level
     :type client: ``Client``
-    :param client: client object to use http_request.
+    :param client: client object used to initialize pytmv1 client.
     :type args: ``dict``
     :param args: args object to fetch the argument data.
     :return: sends data to demisto war room.
@@ -2135,7 +2144,7 @@ def submit_file_to_sandbox(
     """
     submit file to sandbox and sends the result to demist war room
     :type client: ``Client``
-    :param client: client object to use http_request.
+    :param client: client object used to initialize pytmv1 client.
     :type args: ``dict``
     :param args: args object to fetch the argument data.
     :return: sends data to demisto war room.
@@ -2188,7 +2197,7 @@ def submit_file_entry_to_sandbox(
     """
     submit file entry to sandbox and sends the result to demist war room
     :type client: ``Client``
-    :param client: client object to use http_request.
+    :param client: client object used to initialize pytmv1 client.
     :type args: ``dict``
     :param args: args object to fetch the argument data.
     :return: sends data to demisto war room.
@@ -2250,7 +2259,7 @@ def submit_urls_to_sandbox(
     """
     submit Urls to sandbox and send the result to demist war room
     :type client: ``Client``
-    :param client: client object to use http_request.
+    :param client: client object used to initialize pytmv1 client.
     :type args: ``dict``
     :param args: args object to fetch the argument data.
     :return: sends data to demisto war room.
@@ -2292,7 +2301,7 @@ def get_alert_details(
     """
     Fetch information for a specific alert and display in war room.
     :type client: ``Client``
-    :param client: client object to make rest call
+    :param client: client object used to initialize pytmv1 client.
     :type args: ``dict``
     :param args: args object to fetch the argument data.
     :return: sends data to demisto war room.
@@ -2331,7 +2340,7 @@ def add_note(client: Client, args: Dict[str, Any]) -> Union[str, CommandResults]
     """
     Adds a note to an existing workbench alert
     :type client: ``Client``
-    :param client: client object to use http_request.
+    :param client: client object used to initialize pytmv1 client.
     :type args: ``dict``
     :param args: args object to fetch the argument data.
     :return: sends data to demisto war room.
@@ -2371,7 +2380,7 @@ def update_status(client: Client, args: Dict[str, Any]) -> Union[str, CommandRes
     """
     Updates the status of an existing workbench alert
     :type client: ``Client``
-    :param client: client object to use http_request.
+    :param client: client object used to initialize pytmv1 client.
     :type args: ``dict``
     :param args: args object to fetch the argument data.
     :return: sends data to demisto war room.
