@@ -7,8 +7,8 @@ from CommonServerPython import ScheduledCommand, DemistoException
 
 MOCK_CLIENT = Client(
     {
-        'takedown': 'https://takedown.netcraft.com/',
-        'submission': 'https://report.netcraft.com/',
+        'takedown_url': 'https://takedown.netcraft.com/',
+        'submission_url': 'https://report.netcraft.com/',
     },
     verify=True,
     proxy=True,
