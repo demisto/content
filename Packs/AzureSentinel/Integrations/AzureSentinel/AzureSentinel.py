@@ -40,7 +40,7 @@ COMMENT_HEADERS = ['ID', 'IncidentID', 'Message', 'AuthorName', 'AuthorEmail', '
 ENTITIES_RETENTION_PERIOD_MESSAGE = '\nNotice that in the current Azure Sentinel API version, the retention period ' \
                                     'for GetEntityByID is 30 days.'
 
-DEFAULT_LIMIT = 10
+DEFAULT_LIMIT = 20
 
 DEFAULT_SOURCE = 'Microsoft Sentinel'
 
@@ -799,7 +799,7 @@ def list_incidents_command(client: AzureSentinelClient, args, is_fetch_incidents
         A CommandResult object with the array of incidents as output.
     """
     filter_expression = args.get('filter')
-    limit = None if is_fetch_incidents else min(200, int(args.get('limit')))
+    limit = min(DEFAULT_LIMIT, int(args.get('limit')))
     next_link = args.get('next_link', '')
 
     if next_link:
@@ -1037,7 +1037,7 @@ def delete_incident_command(client, args):
 
 def list_incident_comments_command(client, args):
     inc_id = args.get('incident_id')
-    limit = min(50, int(args.get('limit')))
+    limit = min(DEFAULT_LIMIT, int(args.get('limit')))
     next_link = args.get('next_link', '')
 
     if next_link:
@@ -1246,6 +1246,7 @@ def fetch_incidents(client: AzureSentinelClient, last_run: dict, first_fetch_tim
 
     """
     # Get the last fetch details, if exist
+    limit = demisto.params().get("limit", DEFAULT_LIMIT)
     last_fetch_time = last_run.get('last_fetch_time')
     last_fetch_ids = last_run.get('last_fetch_ids', [])
     last_incident_number = last_run.get('last_incident_number')
@@ -1267,6 +1268,7 @@ def fetch_incidents(client: AzureSentinelClient, last_run: dict, first_fetch_tim
         command_args = {
             'filter': f'properties/createdTimeUtc ge {latest_created_time_str}',
             'orderby': 'properties/createdTimeUtc asc',
+            'limit': limit
         }
 
     else:
@@ -1277,6 +1279,7 @@ def fetch_incidents(client: AzureSentinelClient, last_run: dict, first_fetch_tim
         command_args = {
             'filter': f'properties/incidentNumber gt {last_incident_number}',
             'orderby': 'properties/incidentNumber asc',
+            'limit': limit
         }
 
     raw_incidents = list_incidents_command(client, command_args, is_fetch_incidents=True).outputs
