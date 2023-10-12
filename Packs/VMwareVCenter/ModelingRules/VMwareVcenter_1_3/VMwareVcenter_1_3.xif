@@ -322,7 +322,7 @@ alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\
 | alter 
     user = coalesce(arrayindex(regextract(event_payload, "User (\S+)"), 0), arrayindex(regextract(event_payload, "\[value=([^,]+)"), 0)),
     group = regextract(event_payload, "group (\S+)"),
-    ms = to_integer(coalesce( arrayindex(regextract(event_payload, "ms=(\S+)"), 0), arrayindex(regextract(event_payload, "(\S+)\s+ms"), 0))),
+    ms = to_integer(coalesce( arrayindex(regextract(event_payload, "(?:ms|Ms|MS)(?:\W+|\s+)(\d+)"), 0), arrayindex(regextract(event_payload, "(\S+)\s+ms"), 0))),
     // map the msg severity to RFC 5424 standard values, if the log does not include an explicit severity, extract it from the syslog header priority field   
     severity = if(msg_severity = null, to_string(subtract(syslog_priority, multiply(floor(divide(syslog_priority, 8)), 8))), msg_severity ~= "DEBUG|VERBOSE", "7", msg_severity ~= "INFO", "6", msg_severity ~= "NOTICE", "5", msg_severity ~= "WARN", "4", msg_severity ~= "ERROR", "3", msg_severity ~= "CRITICAL", "2", msg_severity ~= "ALERT", "1", msg_severity ~= "EMERGENCY", "0", msg_severity)
 | alter
