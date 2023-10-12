@@ -1929,22 +1929,23 @@ def fetch_machine_details_command(client: Client, args: dict):
     json_body = {}
     if machine_name:
         json_body = {
-            "filters": [
-                {
-                    "fieldName": "machineName",
-                    "operator": "Equals",
-                    "values": [machine_name]
-                }
-            ]
+           "limit": 1000,
+           "offset":0
         }
     response = client.cybereason_api_call('POST', '/rest/sensors/query', json_body=json_body)
     if dict_safe_get(response, ['sensors']) == []:
         raise DemistoException("Could not find any Sensor ID for the machine" + machine_name)
     else:
-        output = {}
+        output = []
         for single_sensor in response['sensors']:
-            output[single_sensor['machineName']] = single_sensor['sensorId']
-        return CommandResults(readable_output=f"Available Sensor IDs are {output}")
+             if single_sensor['machine_name'] == machine_name:
+                output.append({
+                    "sensorId": single_sensor["sensorId"],
+                    "machineName": single_sensor["machine_name"],
+                    "groupId": single_sensor["groupId"],
+                    "groupName": single_sensor["groupName"]
+                })
+        return CommandResults(readable_output=f"Machine name {output}")
 
 
 def main():
