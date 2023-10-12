@@ -999,11 +999,11 @@ def panorama_command(args: dict):
     Executes a command
     """
     params = {}
-    is_xml = False
+
     for arg in args.keys():
         params[arg] = args[arg]
-    if is_xml := params.get("is_xml"):
-        params["is_xml"] = argToBoolean(is_xml)
+
+    is_xml = argToBoolean(params.get("is_xml", "false"))
     params['key'] = API_KEY
 
     result = http_request(

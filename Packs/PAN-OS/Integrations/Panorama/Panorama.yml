@@ -9371,7 +9371,7 @@ script:
       description: Status of export tech support file job.
     description: Exports a tech support file (TSF).
     polling: true
-  dockerimage: demisto/pan-os-python:1.0.0.73711
+  dockerimage: demisto/pan-os-python:1.0.0.76078
   isfetch: true
   runonce: false
   script: ''
