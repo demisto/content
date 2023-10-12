@@ -790,6 +790,7 @@ script:
       predefined:
       - 'ediscovery'
       - 'alerts'
+      - 'threat assessment'
       - 'all'
     description: Tests connectivity to Microsoft Graph Security.
     execution: false
@@ -1624,7 +1625,7 @@ script:
     execution: false
     name: msg-purge-ediscovery-data
   - arguments:
-    - description: The recipient email.
+    - description: The email of the user who recieved the mail.
       isArray: false
       name: recipient_email
       required: true
@@ -1636,7 +1637,7 @@ script:
       - 'block'
       - 'unblock'
       required: true
-    - description: category.
+    - description: category of threat.
       isArray: false
       name: category
       defaultValue: all
@@ -1654,7 +1655,7 @@ script:
       isArray: false
       name: message_id
       required: true
-    description: Create message assessment request.
+    description: Create and retrieve a mail threat assessment.
     execution: false
     name: msg-create-mail-assessment-request
     polling: true
@@ -1702,7 +1703,7 @@ script:
       description: 'Result message'
       type: String
   - arguments:
-    - description: The recipient email.
+    - description: The email of the user who recieved the mail.
       isArray: false
       name: recipient_email
       required: true

@@ -1721,6 +1721,107 @@ There is no context output for this command.
 
 #### Human Readable Output
 
+
+### msg-create-mail-assessment-request
+
+***
+Create and retrieve a mail threat assessment.
+
+Note:
+Delegated Mail permissions (Mail.Read or Mail.Read.Shared) are required to access the mail received by the user (recipient email and message user), which means that if the authenticated user is different from the user specified in the recipient_email and message_user, then *Read and manage permissions* on behalf of the given user need to be added for the authenticated user via [Microsoft 365 admin center](https://admin.microsoft.com/Adminportal/Home#/users).
+
+- Go to [Microsoft 365 admin center](https://admin.microsoft.com/Adminportal/Home#/users).
+- Choose the user email which will be provided in the command's arguments.
+- Click on *Manage product licenses*.
+- Go to *Mail*.
+- Under *Mailbox permissions*, click on *Read and manage permissions*.
+- click on *Add permissions*.
+- Choose the authenticated user email from the list of given users.
+- Click on *add*.
+
+#### Base Command
+
+`msg-create-mail-assessment-request`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| recipient_email | The email of the user who recieved the mail. | Required | 
+| expected_assessment | the expected assessment: blocked or unblocked | Required | 
+| category | The category of the threat: phishing, malware or spam. | Required | 
+| message_user | Message user, the user's id or the user's email. | Required | 
+| message_id | Message id, Message has to contain 'X-MS-Exchange-Organization-Network-Message-Id' header in the message or the 'X-MS-Office365-Filtering-Correlation-Id' header in quarantined messages. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MSGraphMail.MailAssesment.ID | String | Request id.
+| MSGraphMail.MailAssesment.CreatedDateTime | Date | Created data of the threat assessment request. | 
+| MSGraphMail.MailAssesment.ContentType | String | The content type of threat assessment. | 
+| MSGraphMail.MailAssesment.ExpectedAssessment | String | The expected assessment from submitter. Possible values are: block, unblock. | 
+| MSGraphMail.MailAssesment.Category | String | The threat category. Possible values are: spam, phishing, malware. | 
+| MSGraphMail.MailAssesment.Status | String | The assessment process status. Possible values are: pending, completed. | 
+| MSGraphMail.MailAssesment.RequestSource | String | The source of threat assessment request. Possible values are: administrator. | 
+| MSGraphMail.MailAssesment.RecipientEmail | String | The mail recipient whose policies are used to assess the mail. | 
+| MSGraphMail.MailAssesment.DestinationRoutingReason | String | The reason for mail routed to its destination. Possible values are: none, mailFlowRule, safeSender, blockedSender, advancedSpamFiltering, domainAllowList, domainBlockList, notInAddressBook, firstTimeSender, autoPurgeToInbox, autoPurgeToJunk, autoPurgeToDeleted, outbound, notJunk, junk. | 
+| MSGraphMail.MailAssesment.MessageID | String | Extracted from the message URI which is The resource URI of the mail message for assessment. | 
+| MSGraphMail.MailAssesment.CreatedUserID | String | User id. | 
+| MSGraphMail.MailAssesment.CreatedUsername | String | Username. | 
+| MSGraphMail.MailAssesment.ResultType | String | Result of the request. | 
+| MSGraphMail.MailAssesment.ResultMessage | String | Message of the result. | 
+
+#### Command example
+
+```!msg-create-mail-assessment-request recipient_email="avishai@demistodev.onmicrosoft.com" expectedAssessment=unblock category=spam user_id=3fa9f28b-eb0e-463a-ba7b-8089fe9991e2 user_message=AAMkAGY3OTQyMzMzLWYxNjktNDE0My05NmZhLWQ5MGY1YjIyNzBkNABGAAAAAACYCKjWAnXBTrnhgWJCcLX7BwDrxRwRjq-zTrN6vWSzK4OWAAAAAAEJAADrxRwRjq-zTrN6vWSzK4OWAAY5aBb-AAA=```
+
+#### Context Example
+
+```json
+{
+
+    "id": "11922306-b25b-4605-ff0d-08d772fcf996",
+    "createdDateTime": "2019-11-27T05:45:14.0962061Z",
+    "contentType": "mail",
+    "expectedAssessment": "unblock",
+    "category": "spam",
+    "status": "completed",
+    "requestSource": "administrator",
+    "recipientEmail": "avishai@demistodev.onmicrosoft.com",
+    "destinationRoutingReason": "notJunk",
+    "messageUri": "",
+    "createdBy": {
+      "user": {
+        "id": "c52ce8db-3e4b-4181-93c4-7d6b6bffaf60",
+        "displayName": "Ronald Admin"
+      }
+    },
+    "results": [
+        {
+            "id": "63798129-a62c-4f9e-2c6d-08d772fcfb0e",
+            "createdDateTime": "2019-11-27T05:45:16.55Z",
+            "resultType": "checkPolicy",
+            "message": "No policy was hit."
+        },
+        {
+            "id": "d38c2448-79eb-467e-2495-08d772fdb7d1",
+            "createdDateTime": "2019-11-27T05:50:33.243Z",
+            "resultType": "rescan",
+            "message": "Not Spam"
+        }
+    ]
+}
+```
+
+#### Human Readable Output
+
+>### Mail assessment request:
+
+>|ID|Created DateTime|Content Type|Expected Assessment|Category|Status|Request Source|Recipient Email|Destination Routing Reason|Created User ID|Created Username|
+>|---|---|---|---|---|---|---|---|---|---|---|
+>| 11922306-b25b-4605-ff0d-08d772fcf996 | "2019-11-27T05:45:14.0962061Z"| mail | unblock| spam| completed | administrator | avishai@demistodev.onmicrosoft.com |notJunk|63798129-a62c-4f9e-2c6d-08d772fcfb0e|No policy was hit.|
+
 >### Authorization instructions
 >1. Click on the [login URL]() to sign in and grant Cortex XSOAR permissions for your Azure Service Management.
 You will be automatically redirected to a link with the following structure:

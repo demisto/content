@@ -1270,10 +1270,10 @@ def test_auth_code_command(client: MsGraphClient, args):
     Called to test authorization code flow (since integration context cant be accessed during test_module)
     Calls list cases with no arguments
     """
-
+    # todo: add for threat assessment
     permissions = args.get('permission_type', 'all')
     if permissions == 'all':
-        permissions = "ediscovery, alerts"
+        permissions = "ediscovery, alerts, threat assessment"
     for permission in argToList(permissions):
         try:
             demisto.debug(f'checking permission {permission}')
