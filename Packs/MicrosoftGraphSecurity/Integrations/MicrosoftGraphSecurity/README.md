@@ -1822,6 +1822,87 @@ Delegated Mail permissions (Mail.Read or Mail.Read.Shared) are required to acces
 >|---|---|---|---|---|---|---|---|---|---|---|
 >| 11922306-b25b-4605-ff0d-08d772fcf996 | "2019-11-27T05:45:14.0962061Z"| mail | unblock| spam| completed | administrator | avishai@demistodev.onmicrosoft.com |notJunk|63798129-a62c-4f9e-2c6d-08d772fcfb0e|No policy was hit.|
 
+
+### msg-create-email-file-assessment-request
+
+***
+Create and retrieve a file threat assessment.
+
+#### Base Command
+
+`msg-create-email-file-assessment-request`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| recipient_email | The email of the user who recieved the mail. | Required | 
+| expected_assessment | the expected assessment: blocked or unblocked | Required | 
+| category | The category of the threat: phishing, malware or spam. | Required | 
+| content_data | content of an email file. | Optional | 
+| entry_id | entry id of file uploaded in the war room. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MSGraphMail.EmailAssesment.ID | String | Request id.
+| MSGraphMail.EmailAssesment.CreatedDateTime | Date | Created data of the threat assessment request. | 
+| MSGraphMail.EmailAssesment.ContentType | String | The content type of threat assessment. | 
+| MSGraphMail.EmailAssesment.ExpectedAssessment | String | The expected assessment from submitter. Possible values are: block, unblock. | 
+| MSGraphMail.EmailAssesment.Category | String | The threat category. Possible values are: spam, phishing, malware. | 
+| MSGraphMail.EmailAssesment.Status | String | The assessment process status. Possible values are: pending, completed. | 
+| MSGraphMail.EmailAssesment.RequestSource | String | The source of threat assessment request. Possible values are: administrator. | 
+| MSGraphMail.EmailAssesment.RecipientEmail | String | The mail recipient whose policies are used to assess the mail. | 
+| MSGraphMail.EmailAssesment.DestinationRoutingReason | String | The reason for mail routed to its destination. Possible values are: none, mailFlowRule, safeSender, blockedSender, advancedSpamFiltering, domainAllowList, domainBlockList, notInAddressBook, firstTimeSender, autoPurgeToInbox, autoPurgeToJunk, autoPurgeToDeleted, outbound, notJunk, junk. | 
+| MSGraphMail.EmailAssesment.CreatedUserID | String | User id. | 
+| MSGraphMail.EmailAssesment.CreatedUsername | String | Username. | 
+| MSGraphMail.EmailAssesment.ResultType | String | Result of the request. | 
+| MSGraphMail.EmailAssesment.ResultMessage | String | Message of the result. | 
+
+#### Command example
+
+```!msg-create-email-file-assessment-request recipient_email="avishai@demistodev.onmicrosoft.com" expectedAssessment=unblock category=phishing entry_id=12359704829584```
+
+#### Context Example
+
+```json
+{
+
+    "id": "76598306-b25b-4605-ff0d-03kgmtfcf996",
+    "createdDateTime": "2019-11-27T05:45:14.0962061Z",
+    "contentType": "mail",
+    "expectedAssessment": "unblock",
+    "category": "phishing",
+    "status": "completed",
+    "requestSource": "administrator",
+    "recipientEmail": "avishai@demistodev.onmicrosoft.com",
+    "destinationRoutingReason": "notJunk",
+    "createdBy": {
+      "user": {
+        "id": "c52ce8db-3e4b-4181-93c4-7d6b6bffaf60",
+        "displayName": "Ronald Admin"
+      }
+    },
+    "results": [
+        {
+            "id": "63798129-a62c-4f9e-2c6d-08d772fcfb0e",
+            "createdDateTime": "2019-11-27T05:45:16.55Z",
+            "resultType": "checkPolicy",
+            "message": "Phishing attempt."
+        }
+    ]
+}
+```
+
+#### Human Readable Output
+
+>### Mail assessment request:
+
+>|ID|Created DateTime|Content Type|Expected Assessment|Category|Status|Request Source|Recipient Email|Destination Routing Reason|Created User ID|Created Username|
+>|---|---|---|---|---|---|---|---|---|---|---|
+>| 76598306-b25b-4605-ff0d-03kgmtfcf996 | "2019-11-27T05:45:14.0962061Z"| mail | unblock| phishing| completed | administrator | avishai@demistodev.onmicrosoft.com |notJunk|63798129-a62c-4f9e-2c6d-08d772fcfb0e|Phishing attempt.|
+
 >### Authorization instructions
 >1. Click on the [login URL]() to sign in and grant Cortex XSOAR permissions for your Azure Service Management.
 You will be automatically redirected to a link with the following structure:
