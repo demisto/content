@@ -407,6 +407,7 @@ jobs-done-check-on-push:
     - gke
 
 slack-notify-nightly-build:
+  stage: slack
   extends:
     - .trigger-slack-notification
   rules:
@@ -424,6 +425,7 @@ slack-notify-nightly-build:
 
 
 slack-notify-on-push-build:
+  stage: slack
   extends:
     - .trigger-slack-notification
   rules:
