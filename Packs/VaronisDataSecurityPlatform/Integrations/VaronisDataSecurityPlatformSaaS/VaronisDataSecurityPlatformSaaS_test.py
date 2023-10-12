@@ -187,6 +187,10 @@ def test_fetch_incidents(mocker: MockerFixture, requests_mock: MockerFixture):
     for output in alerts:
         id = output["ID"]
         output.update({"Url": f"https://test.com/#/app/analytics/entity/Alert/{id}"})
+        output.update({"Locations": []})
+        output.update({"Sources": []})
+        output.update({"Devices": []})
+        output.update({"Users": []})
     
     expected_incidents = list(map(lambda alert: 
                                   {
