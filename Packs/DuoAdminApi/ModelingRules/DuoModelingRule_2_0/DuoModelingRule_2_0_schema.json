@@ -16,10 +16,6 @@
       "type": "string",
       "is_array": false
     },
-    "isotimestamp": {
-      "type": "string",
-      "is_array": false
-    },
     "action": {
       "type": "string",
       "is_array": false
@@ -29,10 +25,6 @@
       "is_array": false
     },
     "object": {
-      "type": "string",
-      "is_array": false
-    },
-    "timestamp": {
       "type": "string",
       "is_array": false
     },
