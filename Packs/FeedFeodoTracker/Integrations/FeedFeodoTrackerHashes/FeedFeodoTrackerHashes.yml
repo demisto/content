@@ -91,7 +91,7 @@ script:
       name: limit
     description: Gets the feed indicators.
     name: feodotracker-hashes-get-indicators
-  dockerimage: demisto/python3:3.8.5.10845
+  dockerimage: demisto/python3:3.10.13.74666
   feed: true
   runonce: false
   script: '-'

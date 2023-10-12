@@ -2021,7 +2021,7 @@ script:
     - description: Template name. (Can be found at https://www.misp-project.org/objects.html). For example, 'vehicle'.
       name: template
       required: true
-    - description: 'Attributes. For example, {"description": "Manager Ferrari", "make": "Ferrari", "model": "308 GTS"}'
+    - description: 'Attributes. For example, {"description": "Manager Ferrari", "make": "Ferrari", "model": "308 GTS"}.'
       name: attributes
       required: true
     description: Adds any other object to MISP.
@@ -2070,7 +2070,7 @@ script:
       description: Attribute last changed timestamp.
       type: Date
     - contextPath: MISP.Event.Object.Attribute.Deleted
-      description: Whether the object was deleted?
+      description: Whether the object was deleted?.
       type: Boolean
     - contextPath: MISP.Event.Object.Attribute.ObjectID
       description: ID of the object.
@@ -2465,7 +2465,7 @@ script:
     - description: Event ID to set attributes for.
       name: event_id
       required: true
-    - description: 'Adjust current attributes of an event to match the given attribute data. Has to be json formated list with attributes that should be part of the event. E.g.: [{"type":"domain","value":"target.domain"},{"type":"ip-dst","value":"1.2.3.4"}]'
+    - description: 'Adjust current attributes of an event to match the given attribute data. Has to be json formated list with attributes that should be part of the event. E.g.: [{"type":"domain","value":"target.domain"},{"type":"ip-dst","value":"1.2.3.4"}].'
       name: attribute_data
       required: true
     description: Set event attributes according to the given attributes data.
@@ -2594,7 +2594,7 @@ script:
     - contextPath: MISP.Role.role_name
       description: MISP role name.
       type: string
-  dockerimage: demisto/pymisp2:1.0.0.68977
+  dockerimage: demisto/pymisp2:1.0.0.75377
   runonce: false
   script: ''
   subtype: python3

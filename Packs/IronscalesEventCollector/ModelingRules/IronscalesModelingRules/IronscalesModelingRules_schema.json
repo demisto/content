@@ -26,15 +26,31 @@
         },
         "reports": {
             "type": "string",
-            "is_array": true
+            "is_array": false
         },
         "links": {
             "type": "string",
-            "is_array": true
+            "is_array": false
         },
         "attachments": {
             "type": "string",
-            "is_array": true
+            "is_array": false
+        },
+        "name": {
+            "type": "string",
+            "is_array": false
+        },
+        "email": {
+            "type": "string",
+            "is_array": false
+        },
+        "subject": {
+            "type": "string",
+            "is_array": false
+        },
+        "headers": {
+            "type": "string",
+            "is_array": false
         }
     }
 }

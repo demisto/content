@@ -11,7 +11,7 @@ configuration:
 - display: Private API Key (Optional)
   name: apiKey
   defaultvalue: ""
-  type: 0
+  type: 4
   required: false
 - display: Use system proxy settings
   name: proxy

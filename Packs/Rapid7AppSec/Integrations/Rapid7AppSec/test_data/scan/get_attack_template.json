@@ -1,0 +1,18 @@
+{
+    "false_positive_regex": "string",
+    "name": "string",
+    "system_defined": true,
+    "description": "string",
+    "advanced_attacks_enabled": true,
+    "links": [
+      {
+        "profile": "string",
+        "rel": "string",
+        "name": "string",
+        "href": "string"
+      }
+    ],
+    "id": "1111",
+    "attack_prioritization": "SEQUENTIAL",
+    "browser_encoding_enabled": true
+  }

@@ -99,11 +99,11 @@ script:
       name: resource_group_name
     - description: The location where Azure Security Center stores the data of the subscription. Run the 'azure-sc-list-location' command to get the ascLocation. This command requires the resourceGroupName argument.
       name: asc_location
-    - description: OData filter
+    - description: OData filter.
       name: filter
-    - description: OData select
+    - description: OData select.
       name: select
-    - description: OData expand
+    - description: OData expand.
       name: expand
     - description: The subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions command. If not specified, the default subscription ID is used.
       name: subscription_id
@@ -226,7 +226,7 @@ script:
       description: The alert ID.
       type: string
   - arguments:
-    - description: Resource group name
+    - description: Resource group name.
       name: resource_group_name
       required: true
     - default: true
@@ -389,10 +389,10 @@ script:
     description: The location of the responsible ASC of the specific subscription. For each subscription there is only one responsible location.
     name: azure-sc-list-location
   - name: azure-get-secure-score
-    description: Retrieve the Secure Score for the provided subscription and score name
+    description: Retrieve the Secure Score for the provided subscription and score name.
     arguments:
     - name: secure_score_name
-      description: description
+      description: description.
       defaultValue: ascScore
       predefined:
       - ""
@@ -421,7 +421,7 @@ script:
     execution: false
     name: azure-sc-auth-reset
     arguments: []
-  dockerimage: demisto/crypto:1.0.0.66562
+  dockerimage: demisto/crypto:1.0.0.74979
   runonce: false
   script: '-'
   type: python

@@ -1,15 +1,16 @@
 import argparse
-from datetime import datetime, timedelta
 import logging
 import os
-from typing import Tuple, Optional
+from datetime import datetime, timedelta
+
 import gitlab
+from demisto_sdk.commands.coverage_analyze.tools import get_total_coverage
+from junitparser import TestSuite, JUnitXml
 from slack_sdk import WebClient
 
-from Tests.Marketplace.marketplace_services import get_upload_data
 from Tests.Marketplace.marketplace_constants import BucketUploadFlow
+from Tests.Marketplace.marketplace_services import get_upload_data
 from Tests.scripts.utils.log_util import install_logging
-from demisto_sdk.commands.coverage_analyze.tools import get_total_coverage
 
 DEMISTO_GREY_ICON = 'https://3xqz5p387rui1hjtdv1up7lw-wpengine.netdna-ssl.com/wp-content/' \
                     'uploads/2018/07/Demisto-Icon-Dark.png'
@@ -25,7 +26,17 @@ BUCKET_UPLOAD = 'Upload Packs to Marketplace Storage'
 SDK_NIGHTLY = 'Demisto SDK Nightly'
 PRIVATE_NIGHTLY = 'Private Nightly'
 TEST_NATIVE_CANDIDATE = 'Test Native Candidate'
-WORKFLOW_TYPES = {CONTENT_NIGHTLY, SDK_NIGHTLY, BUCKET_UPLOAD, PRIVATE_NIGHTLY, TEST_NATIVE_CANDIDATE}
+SECURITY_SCANS = 'Security Scans'
+BUILD_MACHINES_CLEANUP = 'Build Machines Cleanup'
+WORKFLOW_TYPES = {
+    CONTENT_NIGHTLY,
+    SDK_NIGHTLY,
+    BUCKET_UPLOAD,
+    PRIVATE_NIGHTLY,
+    TEST_NATIVE_CANDIDATE,
+    SECURITY_SCANS,
+    BUILD_MACHINES_CLEANUP
+}
 SLACK_USERNAME = 'Content GitlabCI'
 
 
@@ -47,7 +58,7 @@ def options_handler():
     return options
 
 
-def get_artifact_data(artifact_folder, artifact_relative_path: str) -> Optional[str]:
+def get_artifact_data(artifact_folder, artifact_relative_path: str) -> str | None:
     """
     Retrieves artifact data according to the artifact relative path from 'ARTIFACTS_FOLDER' given.
     Args:
@@ -62,13 +73,43 @@ def get_artifact_data(artifact_folder, artifact_relative_path: str) -> Optional[
         file_name = os.path.join(artifact_folder, artifact_relative_path)
         if os.path.isfile(file_name):
             logging.info(f'Extracting {artifact_relative_path}')
-            with open(file_name, 'r') as file_data:
+            with open(file_name) as file_data:
                 artifact_data = file_data.read()
         else:
             logging.info(f'Did not find {artifact_relative_path} file')
     except Exception:
         logging.exception(f'Error getting {artifact_relative_path} file')
     return artifact_data
+
+
+def get_failed_modeling_rule_name_from_test_suite(test_suite: TestSuite) -> str:
+
+    properties = {prop.name: prop.value for prop in test_suite.properties()}
+
+    return f"{properties['modeling_rule_file_name']} ({properties['pack_id']})"
+
+
+def test_modeling_rules_results(artifact_folder, title):
+    failed_test_modeling_rules = get_artifact_data(artifact_folder, 'modeling_rules_results.xml')
+    if not failed_test_modeling_rules:
+        return []
+    xml = JUnitXml.fromstring(bytes(failed_test_modeling_rules, 'utf-8'))
+    content_team_fields = []
+
+    failed_test_suites = []
+    total_test_suites = 0
+    for test_suite in xml.iterchildren(TestSuite):
+        total_test_suites += 1
+        if test_suite.failures or test_suite.errors:
+            failed_test_suites.append(get_failed_modeling_rule_name_from_test_suite(test_suite))
+    if failed_test_suites:
+        content_team_fields.append({
+            "title": f"{title} - Failed Tests Modeling rules - ({len(failed_test_suites)}/{total_test_suites})",
+            "value": ' ,'.join(failed_test_suites),
+            "short": False
+        })
+
+    return content_team_fields
 
 
 def test_playbooks_results(artifact_folder, title):
@@ -114,11 +155,13 @@ def unit_tests_results():
     slack_results = []
     if failing_tests:
         failing_test_list = failing_tests.split('\n')
-        slack_results.append({
-            "title": f'{"Failed Unit Tests"} - ({len(failing_test_list)})',
-            "value": ', '.join(failing_test_list),
-            "short": False
-        })
+        slack_results.append(
+            {
+                "title": f'Failed Unit Tests - ({len(failing_test_list)})',
+                "value": ', '.join(failing_test_list),
+                "short": False,
+            }
+        )
     return slack_results
 
 
@@ -134,14 +177,14 @@ def bucket_upload_results(bucket_artifact_folder, should_include_private_packs: 
     if successful_packs:
         steps_fields += [{
             'title': f'Successful {marketplace_name} Packs:',
-            'value': ', '.join(sorted([pack_name for pack_name in {*successful_packs}], key=lambda s: s.lower())),
+            'value': ', '.join(sorted({*successful_packs}, key=lambda s: s.lower())),
             'short': False
         }]
 
     if failed_packs:
         steps_fields += [{
             'title': f'Failed {marketplace_name} Packs:',
-            'value': ', '.join(sorted([pack_name for pack_name in {*failed_packs}], key=lambda s: s.lower())),
+            'value': ', '.join(sorted({*failed_packs}, key=lambda s: s.lower())),
             'short': False
         }]
 
@@ -149,8 +192,7 @@ def bucket_upload_results(bucket_artifact_folder, should_include_private_packs: 
         # No need to indicate the marketplace name as private packs only upload to xsoar marketplace.
         steps_fields += [{
             'title': 'Successful Private Packs:',
-            'value': ', '.join(sorted([pack_name for pack_name in {*successful_private_packs}],
-                                      key=lambda s: s.lower())),
+            'value': ', '.join(sorted({*successful_private_packs}, key=lambda s: s.lower())),
             'short': False
         }]
 
@@ -183,7 +225,7 @@ def construct_slack_msg(triggering_workflow, pipeline_url, pipeline_failed_jobs)
     failed_jobs_or_workflow_title = {job_name.lower() for job_name in failed_jobs_names}
     failed_jobs_or_workflow_title.add(triggering_workflow_lower)
     for means_include_unittests_results in failed_jobs_or_workflow_title:
-        if any({substr in means_include_unittests_results for substr in check_unittests_substrings}):
+        if any(substr in means_include_unittests_results for substr in check_unittests_substrings):
             content_fields += unit_tests_results()
             break
 
@@ -197,6 +239,7 @@ def construct_slack_msg(triggering_workflow, pipeline_url, pipeline_failed_jobs)
     if 'content nightly' in triggering_workflow_lower:
         content_fields += test_playbooks_results(ARTIFACTS_FOLDER_XSOAR, title="XSOAR")
         content_fields += test_playbooks_results(ARTIFACTS_FOLDER_MPV2, title="XSIAM")
+        content_fields += test_modeling_rules_results(ARTIFACTS_FOLDER_MPV2, title="XSIAM")
         content_fields += test_playbooks_results(ARTIFACTS_FOLDER_XPANSE, title="XPANSE")
         coverage_slack_msg = construct_coverage_slack_msg()
         missing_packs = get_artifact_data(ARTIFACTS_FOLDER_XSOAR, 'missing_content_packs_test_conf.txt')
@@ -219,7 +262,7 @@ def construct_slack_msg(triggering_workflow, pipeline_url, pipeline_failed_jobs)
     return slack_msg
 
 
-def collect_pipeline_data(gitlab_client, project_id, pipeline_id) -> Tuple[str, list]:
+def collect_pipeline_data(gitlab_client, project_id, pipeline_id) -> tuple[str, list]:
     project = gitlab_client.projects.get(int(project_id))
     pipeline = project.pipelines.get(int(pipeline_id))
     jobs = pipeline.jobs.list()

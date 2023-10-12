@@ -1,0 +1,61 @@
+[
+    {
+        "blocks": [
+            {
+                "block_id": "fV/Yh",
+                "elements": [
+                    {
+                        "elements": [
+                            {
+                                "text": "There are two types of people in this world, those who can extrapolate from incomplete data...",
+                                "type": "text"
+                            }
+                        ],
+                        "type": "rich_text_section"
+                    }
+                ],
+                "type": "rich_text"
+            }
+        ],
+        "client_msg_id": "69eee5b9-977a-482b-ae29-0cd9962c6948",
+        "team": "T047KKY8H7V",
+        "text": "There are two types of people in this world, those who can extrapolate from incomplete data...",
+        "ts": "1690479909.804939",
+        "type": "message",
+        "user": "U047D5QSZD4"
+    },
+    {
+        "blocks": [
+            {
+                "block_id": "tdXt",
+                "elements": [
+                    {
+                        "elements": [
+                            {
+                                "text": "Give me a fresh dad joke",
+                                "type": "text"
+                            }
+                        ],
+                        "type": "rich_text_section"
+                    }
+                ],
+                "type": "rich_text"
+            }
+        ],
+        "client_msg_id": "3ba949bd-017d-4b93-9b5c-8b0fa406c9c6",
+        "is_locked": false,
+        "latest_reply": "1690479892.219209",
+        "reply_count": 1,
+        "reply_users": [
+            "U047D5QSZD4"
+        ],
+        "reply_users_count": 1,
+        "subscribed": false,
+        "team": "T047KKY8H7V",
+        "text": "Give me a fresh dad joke",
+        "thread_ts": "1690479887.647239",
+        "ts": "1690479887.647239",
+        "type": "message",
+        "user": "U047D5QSZD4"
+    }
+]

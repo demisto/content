@@ -942,7 +942,7 @@ def test_module(client: Client, params: dict) -> str:
     is_fetch = params.get('isFetch')
 
     # if is_fetch = true and custom API key's is no provided
-    if is_fetch and not(client.api_key and client.api_secret_key and client.organization_key):
+    if is_fetch and not (client.api_key and client.api_secret_key and client.organization_key):
         return 'To fetch incidents you must fill the following parameters: ' \
                'Custom API key, Custom API secret key and Organization key'
 

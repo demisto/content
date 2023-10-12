@@ -758,7 +758,7 @@ def setIntegrationContextVersioned(context, version=-1, sync=False):
     Returns:
       None: No data returned
 
-    """
+    """  # noqa: E501
     global integrationContext
     integrationContext = context
 
@@ -1206,7 +1206,7 @@ def searchRelationships(args):
     Retrieves Indicators Relationship data according to given filters.
     Args:
       args (dict): The relationships filter object.
-        Should contain a "filter" item, holding any of the relationship filters, E.g.:
+        A dictionary with the following keys:
         - size (int)
         - relationshipNames (List[str])
         - entities (List[str])
@@ -1224,7 +1224,7 @@ def searchRelationships(args):
 
     Example (partial results):
     ```
-    >>> demisto.searchRelationships({"filter": {"entities": ["8.8.8.8", "google.com"], "size": 2}})
+    >>> demisto.searchRelationships({"entities": ["8.8.8.8", "google.com"], "size": 2})
         {
         "total": 2,
         "data": [
