@@ -17,6 +17,7 @@ CONTENT_ROLES_PATH = Path(os.path.join(CONTENT_ROOT_PATH, ".github", "content_ro
 DOC_REVIEWER_KEY = "DOC_REVIEWER"
 CONTRIBUTION_REVIEWERS_KEY = "CONTRIBUTION_REVIEWERS"
 CONTRIBUTION_SECURITY_REVIEWER_KEY = "CONTRIBUTION_SECURITY_REVIEWER"
+TIM_REVIEWER_KEY = "TIM_REVIEWER"
 
 # override print so we have a timestamp with each print
 org_print = print
@@ -189,6 +190,7 @@ def get_content_reviewers(content_roles: dict[str, Any]) -> tuple[list[str], str
     try:
         contribution_reviewers: list[str] = content_roles[CONTRIBUTION_REVIEWERS_KEY]
         security_reviewer: str = content_roles[CONTRIBUTION_SECURITY_REVIEWER_KEY]
+        tim_reviewer: str = content_roles[TIM_REVIEWER_KEY]
 
         if not isinstance(contribution_reviewers, list):
             print(f"'{CONTRIBUTION_REVIEWERS_KEY}' is not an array. Terminating...")  # noqa: T201
@@ -198,11 +200,15 @@ def get_content_reviewers(content_roles: dict[str, Any]) -> tuple[list[str], str
             print(f"'{CONTRIBUTION_SECURITY_REVIEWER_KEY}' is not a string. Terminating...")  # noqa: T201
             sys.exit(1)
 
+        if not isinstance(tim_reviewer, str) or not tim_reviewer:
+            print(f"'{TIM_REVIEWER_KEY}' is not a string. Terminating...")  # noqa: T201
+            sys.exit(1)
+
         if not contribution_reviewers or not security_reviewer:
             print("No contribution or  reviewers")  # noqa: T201
             sys.exit(1)
 
-        return contribution_reviewers, security_reviewer
+        return contribution_reviewers, security_reviewer, tim_reviewer
     except KeyError as ke:
         print(f"Error parsing reviewers: {str(ke)}.")  # noqa: T201
         sys.exit(1)

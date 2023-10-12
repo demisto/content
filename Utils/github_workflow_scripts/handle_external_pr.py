@@ -180,6 +180,16 @@ def is_requires_security_reviewer(pr_files: list[str]) -> bool:
     return False
 
 
+def is_tim_reviewer_needed(pr_files: list[str], metadata: dict) -> bool:
+    for pr_file in pr_files:
+        if "yml" in pr_file:
+            if "feed: true" in pr_file:
+                return True
+    tags = metadata.get(tags)
+    categories = metadata.get(categories)
+    if "Threat Intelligence Management" in tags or "Data Enrichment & Threat Intelligence" in categories:
+        return True
+
 def main():
     """Handles External PRs (PRs from forks)
 
@@ -250,7 +260,7 @@ def main():
     # Parse PR reviewers from JSON and assign them
     # Exit if JSON doesn't exist or not parsable
     content_roles = load_json(CONTENT_ROLES_PATH)
-    content_reviewers, security_reviewer = get_content_reviewers(content_roles)
+    content_reviewers, security_reviewer, tim_reviewer = get_content_reviewers(content_roles)
 
     print(f"Content Reviewers: {','.join(content_reviewers)}")
     print(f"Security Reviewer: {security_reviewer}")
@@ -264,6 +274,11 @@ def main():
         reviewers.append(security_reviewer)
         pr.add_to_assignees(security_reviewer)
         pr.add_to_labels(SECURITY_LABEL)
+
+    pack_metadata = get_pack_metadata(pr_files[0])
+    if is_tim_reviewer_needed(pr_files, pack_metadata):
+        if support_label in (XSOAR_SUPPORT_LEVEL_LABEL, PARTNER_SUPPORT_LEVEL_LABEL):
+            reviewers.append(tim_reviewer)
 
     pr.create_review_request(reviewers=reviewers)
     print(f'{t.cyan}Assigned and requested review from "{",".join(reviewers)}" to the PR{t.normal}')
@@ -288,6 +303,9 @@ def main():
             f'(https://xsoar.pan.dev/docs/packs/packs-format#contributorsjson).'
     if XSOAR_SUPPORT_LEVEL_LABEL in labels_to_add and ver != '1.0.0':
         pr.create_issue_comment(contributors_body)
+
+
+
 
 
 if __name__ == "__main__":
