@@ -436,7 +436,7 @@ script:
       required: true
       description: Description of the policy change.
     - name: schema_version
-      description: The version of the schema for this content. This value will correspond to the format of the content. Run the symantec-mc-get-policy command to get the schema vesion.
+      description: The version of the schema for this content. This value will correspond to the format of the content. Run the symantec-mc-get-policy command to get the schema version.
     - name: ip
       description: 'CSV list of IP addresses to add, for example: "1.2.3.4, 8.8.8.8".'
       isArray: true
