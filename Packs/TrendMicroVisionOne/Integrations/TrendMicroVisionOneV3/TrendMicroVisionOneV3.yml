@@ -951,14 +951,17 @@ script:
       name: task_id
       required: true
     outputs:
-    - contextPath: VisionOne.Task_Status.task_id
+    - contextPath: VisionOne.Task_Status.id
       description: Task ID of the task queried.
       type: string
     - contextPath: VisionOne.Task_Status.status
       description: Status of the task.
       type: string
     - contextPath: VisionOne.Task_Status.created_date_time
-      description: Date and time when the action was run.
+      description: Timestamp in ISO 8601 format.
+      type: string
+    - contextPath: VisionOne.Task_Status.last_action_date_time
+      description: Timestamp in ISO 8601 format.
       type: string
     - contextPath: VisionOne.Task_Status.action
       description: Action performed.
@@ -968,6 +971,21 @@ script:
       type: string
     - contextPath: VisionOne.Task_Status.account
       description: Account that performed the task.
+      type: string
+    - contextPath: VisionOne.Task_Status.type
+      description: Value type.
+      type: string
+    - contextPath: VisionOne.Task_Status.value
+      description: Value that was submitted.
+      type: string
+    - contextPath: VisionOne.Task_Status.tasks
+      description: Task related information.
+      type: string
+    - contextPath: VisionOne.Task_Status.agent_guid
+      description: Agent guid of the endpoint.
+      type: string
+    - contextPath: VisionOne.Task_Status.endpoint_name
+      description: Endpoint name.
       type: string
     description: Command gives the status of the running task based on the task id.
     name: trendmicro-visionone-check-task-status

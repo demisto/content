@@ -1,4 +1,4 @@
-Trend Micro Vision One is a purpose-built threat defense platform that provides added value and new benefits beyond XDR solutions, allowing you to see more and respond faster. Providing deep and broad extended detection and response (XDR) capabilities that collect and automatically correlate data across multiple security layers—email, endpoints, servers, cloud workloads, and networks—Trend Micro Vision One prevents the majority of attacks with automated protection. V3 version of the app includes everything that the previous app had and adds more capabilities. It leverages V3 of Trend Micro APIs and introduces further ability to manage domain accounts with addition of 4 domain account actions for enabling/disabling user account, forcing sign-out and password resets for compromised accounts. This app is in active development. In this new release 2 actions have been added, one to fetch email activity data with count and another to fetch endpoint activity data with count.
+Trend Micro Vision One is a purpose-built threat defense platform that provides added value and new benefits beyond XDR solutions, allowing you to see more and respond faster. Providing deep and broad extended detection and response (XDR) capabilities that collect and automatically correlate data across multiple security layers—email, endpoints, servers, cloud workloads, and networks—Trend Micro Vision One prevents the majority of attacks with automated protection. V3 version of the app includes everything that the previous app had and adds more capabilities. It leverages V3 of Trend Micro APIs and introduces further ability to manage domain accounts with addition of 4 domain account actions for enabling/disabling user account, forcing sign-out and password resets for compromised accounts. This app is in active development.In this new release 2 actions have been added, one to fetch email activity data with count and another to fetch endpoint activity data with count.
 This integration was integrated and tested with version 3 API of Trend Micro Vision One V3.
 
 ## Configure Trend Micro Vision One V3. on Cortex XSOAR
@@ -7,18 +7,19 @@ This integration was integrated and tested with version 3 API of Trend Micro Vis
 2. Search for Trend Micro Vision One V3..
 3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter**                                   | **Description**                                            | **Required** |
-    | ----------------------------------------------- | ---------------------------------------------------------- | ------------ |
-    | API URL (e.g. <https://api.xdr.trendmicro.com>) | The base url for the Trend Micro Vision One API            | True         |
-    | API Key                                         | The API token to access data                               | True         |
-    | Fetch incidents                                 |                                                            | False        |
-    | Incidents Fetch Interval                        |                                                            | False        |
-    | Incident type                                   |                                                            | False        |
-    | Sync On First Run (days)                        |                                                            | False        |
-    | Max Incidents                                   |                                                            | False        |
-    | Use system proxy settings                       |                                                            | False        |
-    | Trust any certificate (not secure)              |                                                            | False        |
-    | Source Reliability                              | Reliability of the source providing the intelligence data. | False        |
+    | **Parameter**                                 | **Description**                                            | **Required** |
+    | --------------------------------------------- | ---------------------------------------------------------- | ------------ |
+    | API URL (e.g. https://api.xdr.trendmicro.com) | The base url for the Trend Micro Vision One API            | True         |
+    | API Key                                       | The API token to access data                               | True         |
+    | Fetch incidents                               |                                                            | False        |
+    | Incidents Fetch Interval                      |                                                            | False        |
+    | Incident type                                 |                                                            | False        |
+    | Sync On First Run (days)                      |                                                            | False        |
+    | Max Incidents                                 |                                                            | False        |
+    | Use system proxy settings                     |                                                            | False        |
+    | Trust any certificate (not secure)            |                                                            | False        |
+    | Source Reliability                            | Reliability of the source providing the intelligence data. | False        |
+    | Severity                                      | Severity of the incident being fetched.                    | False        |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
@@ -823,14 +824,20 @@ Command gives the status of the running task based on the task id.
 
 #### Context Output
 
-| **Path**                                | **Type** | **Description**                        |
-| --------------------------------------- | -------- | -------------------------------------- |
-| VisionOne.Task_Status.task_id           | string   | Task ID of the task queried.           |
-| VisionOne.Task_Status.status            | string   | Status of the task.                    |
-| VisionOne.Task_Status.created_date_time | string   | Date and time when the action was run. |
-| VisionOne.Task_Status.action            | string   | Action performed.                      |
-| VisionOne.Task_Status.description       | string   | Description of the task.               |
-| VisionOne.Task_Status.account           | string   | Account that performed the task.       |
+| **Path**                                    | **Type** | **Description**                  |
+| ------------------------------------------- | -------- | -------------------------------- |
+| VisionOne.Task_Status.id                    | string   | Task ID of the task queried.     |
+| VisionOne.Task_Status.status                | string   | Status of the task.              |
+| VisionOne.Task_Status.created_date_time     | string   | Timestamp in ISO 8601 format.    |
+| VisionOne.Task_Status.last_action_date_time | string   | Timestamp in ISO 8601 format.    |
+| VisionOne.Task_Status.action                | string   | Action performed.                |
+| VisionOne.Task_Status.description           | string   | Description of the task.         |
+| VisionOne.Task_Status.account               | string   | Account that performed the task. |
+| VisionOne.Task_Status.type                  | string   | Value type.                      |
+| VisionOne.Task_Status.value                 | string   | Value that was submitted.        |
+| VisionOne.Task_Status.tasks                 | string   | Task related information.        |
+| VisionOne.Task_Status.agent_guid            | string   | Agent guid of the endpoint.      |
+| VisionOne.Task_Status.endpoint_name         | string   | Endpoint name.                   |
 
 ### trendmicro-visionone-add-note
 
