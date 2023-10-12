@@ -68,7 +68,7 @@ def fetch_certificates(message: str):
     """ Fetches the certificates data from the CertStream socket
 
     Args:
-        connection (Connection): The connection to the socket, used to iterate over messages
+        message (str): The message received from CertStream
 
     """
 
