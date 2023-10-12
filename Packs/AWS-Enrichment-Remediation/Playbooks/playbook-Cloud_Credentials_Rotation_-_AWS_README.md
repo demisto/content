@@ -24,51 +24,57 @@ This playbook does not use any sub-playbooks.
 
 ### Integrations
 
-* AWS - IAM
+This playbook does not use any integrations.
 
 ### Scripts
 
-* Set
 * GeneratePassword
+* Set
 
 ### Commands
 
-* aws-ec2-describe-instances
-* aws-iam-attach-policy
-* aws-iam-update-login-profile
-* aws-iam-get-role-policy
-* aws-iam-get-policy-version
-* aws-iam-create-instance-profile
 * aws-iam-list-attached-role-policies
-* aws-iam-update-access-key
-* aws-ec2-describe-regions
-* aws-iam-put-role-policy
-* aws-iam-create-role
-* aws-iam-list-policy-versions
-* aws-ec2-describe-iam-instance-profile-associations
-* aws-iam-get-instance-profile
 * aws-iam-list-role-policies
+* aws-iam-get-instance-profile
+* aws-iam-create-instance-profile
+* aws-iam-attach-policy
+* aws-iam-put-role-policy
+* aws-iam-get-role-policy
+* aws-iam-create-role
+* aws-iam-get-policy-version
+* aws-ec2-describe-regions
+* aws-ec2-describe-iam-instance-profile-associations
+* aws-iam-list-policy-versions
+* aws-ec2-describe-instances
+* aws-iam-update-login-profile
+* aws-iam-update-access-key
 
 ## Playbook Inputs
 
 ---
 
-| **Name** | **Description**                                                                                                                                                                                                                                                                                                                                                                                                        | **Default Value** | **Required** |
-| --- |------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| --- | --- |
+| **Name** | **Description** | **Default Value** | **Required** |
+| --- | --- | --- | --- |
 | IAMRemediationType | The response playbook provides the following remediation actions for IAM users:<br/><br/>Reset - By entering "Reset" in the input, the playbook will execute password reset.<br/><br/>Deactivate - By entering "Deactivate" in the input, the playbook will execute access key deactivation.<br/><br/>ALL - By entering "ALL" in the input, the playbook will execute both password reset and access key deactivation. |  | Optional |
-| shouldCloneSA | Whether to clone the compromised SA before putting a deny policy to it.                                                                                                                                                                                                                                                                                                                                                |  | Optional |
-| identityType | The type of identity involved. Usually mapped to the incident field named 'cloudidentitytype'.<br/>e.g.<br/>USER,SERVICE_ACCOUNT,APPLICATION                                                                                                                                                                                                                                                                           |  | Optional |
-| newRoleName | The new role name to assign in the clone service account flow.                                                                                                                                                                                                                                                                                                                                                         |  | Optional |
-| newInstanceProfileName | The new instance profile name to assign in the clone service account flow.                                                                                                                                                                                                                                                                                                                                             |  | Optional |
-| accessKeyID | The access key ID.                                                                                                                                                                                                                                                                                                                                                                                                     |  | Optional |
-| username | The user name.                                                                                                                                                                                                                                                                                                                                                                                                         |  | Optional |
-| instanceID | The instance ID.                                                                                                                                                                                                                                                                                                                                                                                                       |  | Optional |
-| roleNameToRestrict | If provided, the role will be attached with a deny policy without the compute instance analysis flow.                                                                                                                                                                                                                                                                                                                  |  | Optional |
+| shouldCloneSA | Whether to clone the compromised SA before putting a deny policy to it.<br/>True/False |  | Optional |
+| identityType | The type of identity involved. Usually mapped to the incident field named 'cloudidentitytype'.<br/>e.g.<br/>USER,SERVICE_ACCOUNT,APPLICATION |  | Optional |
+| newRoleName | The new role name to assign in the clone service account flow. | tempNewRoleName | Optional |
+| newInstanceProfileName | The new instance profile name to assign in the clone service account flow. | tempNewInstanceProfileName | Optional |
+| accessKeyID | The access key ID. |  | Optional |
+| username | The user name. |  | Optional |
+| instanceID | The instance ID. |  | Optional |
+| roleNameToRestrict | If provided, the role will be attached with a deny policy without the compute instance analysis flow. |  | Optional |
 
 ## Playbook Outputs
 
 ---
-There are no outputs for this playbook.
+
+| **Path** | **Description** | **Type** |
+| --- | --- | --- |
+| AWS.EC2.Instances | AWS EC2 instance information. | unknown |
+| AWS.IAM.InstanceProfiles | AWS IAM instance profile information. | unknown |
+| AWS.IAM.Roles.AttachedPolicies.Policies | A list of managed policy names. | unknown |
+| AWS.IAM.Roles.RoleName.Policies | A list of policy names. | unknown |
 
 ## Playbook Image
 

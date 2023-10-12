@@ -12,7 +12,7 @@ Admin accounts are crucial:
 
 - **Revoke Access Token**: Revoke any suspicious or unauthorized access tokens.
 
-- **Combo Action**: Both resetting the password and revoking access tokens to ensure complete safety.
+- **Combo Action**: Reset the password and revoke access tokens to ensure complete safety.
 
 ## Dependencies
 
@@ -33,13 +33,13 @@ This playbook does not use any sub-playbooks.
 
 ### Commands
 
+* gcp-iam-service-account-key-disable
 * gcp-iam-service-account-keys-get
+* gcp-iam-service-account-key-create
 * gcp-compute-list-instances
 * gcp-iam-service-accounts-get
-* gcp-iam-service-account-key-disable
-* gsuite-token-revoke
 * gsuite-user-update
-* gcp-iam-service-account-key-create
+* gsuite-token-revoke
 
 ## Playbook Inputs
 
@@ -52,12 +52,18 @@ This playbook does not use any sub-playbooks.
 | clientID | The client ID. |  | Optional |
 | zone | The name of the zone. |  | Optional |
 | serviceAccountEmail | The service account email. |  | Optional |
-| identityType | The type of identity involved. Usually mapped to incident field named 'cloudidentitytype'.<br/>e.g.<br/>USER,SERVICE_ACCOUNT,APPLICATION |  | Optional |
+| identityType | The type of identity involved. Usually mapped to the incident field named 'cloudidentitytype'.<br/>e.g.<br/>USER,SERVICE_ACCOUNT,APPLICATION |  | Optional |
+| cloudProject | The relevant project that the alert relates to. |  | Optional |
 
 ## Playbook Outputs
 
 ---
-There are no outputs for this playbook.
+
+| **Path** | **Description** | **Type** |
+| --- | --- | --- |
+| GoogleCloudCompute.Instances | Google Cloud Compute instance information. | unknown |
+| GCPIAM.ServiceAccountKey | The service account keys. | unknown |
+| GCPIAM.ServiceAccount | The service account information. | unknown |
 
 ## Playbook Image
 

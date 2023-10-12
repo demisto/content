@@ -49,10 +49,10 @@ This playbook does not use any commands.
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | RemediationType | The response playbook provides the following remediation actions using AWS, MSGraph Users, GCP and GSuite Admin:<br/><br/>Reset: By entering "Reset" in the input, the playbook will execute password reset.<br/>Supports: AWS, MSGraph Users, GCP and GSuite Admin.<br/><br/>Revoke: By entering "Revoke" in the input, the GCP will revoke the access key, GSuite Admin will revoke the access token and the MSGraph Users will revoke the session.<br/>Supports: GCP, GSuite Admin and MSGraph Users.<br/><br/>Deactivate - By entering "Deactivate" in the input, the playbook will execute access key deactivation.<br/>Supports: AWS.<br/><br/>ALL: By entering "ALL" in the input, the playbook will execute the all remediation actions provided for each CSP. |  | Optional |
-| shouldCloneSA | Whether to clone the compromised SA before putting a deny policy to it.<br/>Supports: AWS. |  | Optional |
+| shouldCloneSA | Whether to clone the compromised SA before putting a deny policy to it.<br/>Supports: AWS.<br/>True/False | True | Optional |
 | GCP-userID | Identifies the user in the API request. The value can be the user's primary email address, alias email address, or unique user ID. |  | Optional |
 | GCP-clientID | The client ID. |  | Optional |
-| GCP-zone | The name of the zone.<br/>e.g.,<br/>us-central1-c<br/>us-central1-b |  | Optional |
+| GCP-zone | The name of the zone.<br/>e.g.<br/>us-central1-c<br/>us-central1-b |  | Optional |
 | GCP-SAEmail | The service account email. |  | Optional |
 | Azure-AppID | This is the unique application \(client\) ID of the application. |  | Optional |
 | Azure-ObjectID | This is the unique ID of the service principal object associated with the application. |  | Optional |
@@ -63,13 +63,25 @@ This playbook does not use any commands.
 | AWS-newRoleName | The name of the new role to create if the analyst decides to clone the service account. |  | Optional |
 | AWS-newInstanceProfileName | The name of the new instance profile to create if the analyst decides to clone the service account. |  | Optional |
 | AWS-roleNameToRestrict | If provided, the role will be attached with a deny policy without the compute instance analysis flow. |  | Optional |
-| cloudProvider | The CSP that triggered the alert. Usually mapped to incident field named 'cloudprovider'.<br/>e.g.,<br/>AWS, AZURE, GCP |  | Optional |
-| identityType | The type of identity involved. Usually mapped to incident field named 'cloudidentitytype'.<br/>e.g.,<br/>USER, SERVICE_ACCOUNT,APPLICATION |  | Optional |
+| cloudProvider | The CSP that triggered the alert. Usually mapped to incident field named 'cloudprovider'.<br/>e.g.<br/>AWS, AZURE, GCP |  | Optional |
+| identityType | The type of identity involved. Usually mapped to incident field named 'cloudidentitytype'.<br/>e.g.<br/>IAM,SERVICE_ACCOUNT,APPLICATION |  | Optional |
+| GCP-cloudProject | The project that the alert was triggered on. |  | Optional |
 
 ## Playbook Outputs
 
 ---
-There are no outputs for this playbook.
+
+| **Path** | **Description** | **Type** |
+| --- | --- | --- |
+| MSGraphUser | The Microsoft Graph Users information. | unknown |
+| MSGraphApplication | The Microsoft Graph Application information. | unknown |
+| GoogleCloudCompute.Instances | Google Cloud Compute instance information. | unknown |
+| GCPIAM.ServiceAccountKey | The service account keys. | unknown |
+| GCPIAM.ServiceAccount | The service account information. | unknown |
+| AWS.EC2.Instances | AWS EC2 instance information. | unknown |
+| AWS.IAM.InstanceProfiles | AWS IAM instance profile information. | unknown |
+| AWS.IAM.Roles.AttachedPolicies.Policies | A list of managed policy names. | unknown |
+| AWS.IAM.Roles.RoleName.Policies | A list of policy names. | unknown |
 
 ## Playbook Image
 

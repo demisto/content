@@ -30,29 +30,33 @@ This playbook does not use any integrations.
 
 ### Commands
 
-* msgraph-apps-service-principal-unlock-configuration
-* msgraph-user-update
 * msgraph-apps-service-principal-lock-configuration
-* msgraph-user-session-revoke
-* msgraph-apps-service-principal-get
+* msgraph-user-update
 * msgraph-apps-service-principal-password-add
+* msgraph-apps-service-principal-get
+* msgraph-user-session-revoke
+* msgraph-apps-service-principal-unlock-configuration
 
 ## Playbook Inputs
 
 ---
 
-| **Name** | **Description**                                                                                                                                                                                                                                                                                                                                                                                        | **Default Value** | **Required** |
-| --- |--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| --- | --- |
+| **Name** | **Description** | **Default Value** | **Required** |
+| --- | --- | --- | --- |
 | IAMRemediationType | The response playbook provides the following remediation actions using MSGraph Users:<br/><br/>Reset: By entering "Reset" in the input, the playbook will execute password reset.<br/><br/>Revoke: By entering "Revoke" in the input, the playbook will revoke the user's session.<br/><br/>ALL: By entering "ALL" in the input, the playbook will execute the reset password and revoke session tasks. |  | Optional |
-| appID | This is the unique application \(client\) ID of the application.                                                                                                                                                                                                                                                                                                                                       |  | Optional |
-| objectID | This is the unique ID of the service principal object associated with the application.                                                                                                                                                                                                                                                                                                                 |  | Optional |
-| userID | The user ID or user principal name.                                                                                                                                                                                                                                                                                                                                                                    |  | Optional |
-| identityType | The type of identity involved. Usually mapped to incident field named 'cloudidentitytype'.<br/>e.g.<br/>USER,SERVICE_ACCOUNT,APPLICATION                                                                                                                                                                                                                                                               |  | Optional |
+| appID | This is the unique application \(client\) ID of the application. |  | Optional |
+| objectID | This is the unique ID of the service principal object associated with the application. |  | Optional |
+| userID | The user ID or user principal name. |  | Optional |
+| identityType | The type of identity involved. Usually mapped to incident field named 'cloudidentitytype'.<br/>e.g.<br/>IAM,APPLICATION |  | Optional |
 
 ## Playbook Outputs
 
 ---
-There are no outputs for this playbook.
+
+| **Path** | **Description** | **Type** |
+| --- | --- | --- |
+| MSGraphUser | The Microsoft Graph Users information. | unknown |
+| MSGraphApplication | The Microsoft Graph Application information. | unknown |
 
 ## Playbook Image
 
