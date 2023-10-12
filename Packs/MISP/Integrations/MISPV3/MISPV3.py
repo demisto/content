@@ -1032,7 +1032,7 @@ def search_attributes(demisto_args: dict) -> CommandResults:
         response_for_context_list = []
         response_for_context_dict = {}
 
-        if 'with_attachments' in args and args.get('with_attachments') == 1:
+        if args.get('with_attachments', 0) == 1:
             if isinstance(response, list):
                 for attachment in response:
                     if 'Event' in attachment:
