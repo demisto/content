@@ -1,5 +1,11 @@
 {
-	"description": "Feedly Report Indicator Layout",
+	"cacheVersn": 0,
+	"close": null,
+	"definitionId": "",
+	"description": "",
+	"detached": false,
+	"details": null,
+	"detailsV2": null,
 	"edit": {
 		"sections": [
 			{
@@ -41,11 +47,11 @@
 				"description": "",
 				"fields": [
 					{
-						"fieldId": "indicator_communitynotes",
+						"fieldId": "indicator_published",
 						"isVisible": true
 					},
 					{
-						"fieldId": "indicator_description",
+						"fieldId": "indicator_modified",
 						"isVisible": true
 					},
 					{
@@ -53,16 +59,16 @@
 						"isVisible": true
 					},
 					{
-						"fieldId": "indicator_tags",
+						"fieldId": "indicator_trafficlightprotocol",
 						"isVisible": true
 					},
 					{
-						"fieldId": "indicator_trafficlightprotocol",
+						"fieldId": "indicator_tags",
 						"isVisible": true
 					}
 				],
 				"isVisible": true,
-				"name": "Custom fields - core",
+				"name": "Report Details",
 				"query": null,
 				"queryType": "",
 				"readOnly": false,
@@ -72,16 +78,12 @@
 				"description": "",
 				"fields": [
 					{
-						"fieldId": "indicator_publications",
-						"isVisible": true
-					},
-					{
-						"fieldId": "indicator_published",
+						"fieldId": "indicator_description",
 						"isVisible": true
 					}
 				],
 				"isVisible": true,
-				"name": "Custom fields - unique",
+				"name": "Report",
 				"query": null,
 				"queryType": "",
 				"readOnly": false,
@@ -89,31 +91,100 @@
 			}
 		]
 	},
-	"fromServerVersion": "6.10.0",
+	"fromServerVersion": "",
 	"group": "indicator",
-	"id": "FeedlyReport",
+	"id": "bb6da6ca-cff7-42dd-856c-e51d51f2025a",
 	"indicatorsDetails": {
 		"TypeName": "",
 		"tabs": [
 			{
-				"hidden": false,
-				"id": "vug7e0qild",
-				"name": "Summary",
+				"id": "default-main",
+				"name": "Info",
 				"sections": [
+					{
+						"h": 6,
+						"i": "default-main-bb6da6ca-cff7-42dd-856c-e51d51f2025a-default-main-bb6da6ca-cff7-42dd-856c-e51d51f2025a-default-main-relationshipsTable",
+						"maxH": null,
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Relationships",
+						"static": false,
+						"type": "relationshipsTable",
+						"w": 1,
+						"x": 2,
+						"y": 2
+					},
+					{
+						"displayType": "ROW",
+						"h": 4,
+						"i": "default-main-bb6da6ca-cff7-42dd-856c-e51d51f2025a-default-main-bb6da6ca-cff7-42dd-856c-e51d51f2025a-default-main-indicatorTimeline",
+						"maxH": null,
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Timeline",
+						"static": false,
+						"type": "indicatorTimeline",
+						"w": 1,
+						"x": 2,
+						"y": 11
+					},
+					{
+						"h": 3,
+						"i": "default-main-bb6da6ca-cff7-42dd-856c-e51d51f2025a-default-main-bb6da6ca-cff7-42dd-856c-e51d51f2025a-default-main-comments",
+						"maxH": null,
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Comments",
+						"static": false,
+						"type": "comments",
+						"w": 1,
+						"x": 2,
+						"y": 8
+					},
+					{
+						"displayType": "ROW",
+						"h": 12,
+						"hideItemTitleOnlyOne": true,
+						"hideName": true,
+						"i": "default-main-bb6da6ca-cff7-42dd-856c-e51d51f2025a-default-main-bb6da6ca-cff7-42dd-856c-e51d51f2025a-default-main-5da57350-68fe-11ee-8ff4-09f497dbe082",
+						"items": [
+							{
+								"dropEffect": "move",
+								"endCol": 4,
+								"fieldId": "description",
+								"height": 44,
+								"id": "969827c0-68fe-11ee-8ff4-09f497dbe082",
+								"index": 0,
+								"listId": "default-main-5da57350-68fe-11ee-8ff4-09f497dbe082",
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxH": null,
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Description",
+						"static": false,
+						"w": 2,
+						"x": 0,
+						"y": 0
+					},
 					{
 						"displayType": "ROW",
 						"h": 2,
 						"hideName": false,
-						"i": "vug7e0qild-ceba8ff0-b30a-11eb-941c-e725acf1fbbc",
+						"i": "default-main-bb6da6ca-cff7-42dd-856c-e51d51f2025a-default-main-bb6da6ca-cff7-42dd-856c-e51d51f2025a-default-main-6c41fd70-68fe-11ee-8ff4-09f497dbe082",
 						"items": [
 							{
-								"dropEffect": "move",
 								"endCol": 2,
 								"fieldId": "published",
 								"height": 22,
-								"id": "d9ab2910-b30a-11eb-941c-e725acf1fbbc",
+								"id": "dda787f0-68fe-11ee-8ff4-09f497dbe082",
 								"index": 0,
-								"listId": "vug7e0qild-ceba8ff0-b30a-11eb-941c-e725acf1fbbc",
 								"sectionItemType": "field",
 								"startCol": 0
 							},
@@ -122,20 +193,18 @@
 								"endCol": 2,
 								"fieldId": "modified",
 								"height": 22,
-								"id": "dcbf9500-b30a-11eb-941c-e725acf1fbbc",
+								"id": "e16ef030-68fe-11ee-8ff4-09f497dbe082",
 								"index": 1,
-								"listId": "vug7e0qild-ceba8ff0-b30a-11eb-941c-e725acf1fbbc",
+								"listId": "default-main-bb6da6ca-cff7-42dd-856c-e51d51f2025a-default-main-6c41fd70-68fe-11ee-8ff4-09f497dbe082",
 								"sectionItemType": "field",
 								"startCol": 0
 							},
 							{
-								"dropEffect": "move",
 								"endCol": 2,
 								"fieldId": "stixid",
 								"height": 22,
-								"id": "d500b3d0-b30a-11eb-941c-e725acf1fbbc",
+								"id": "91958060-68fe-11ee-8ff4-09f497dbe082",
 								"index": 2,
-								"listId": "vug7e0qild-ceba8ff0-b30a-11eb-941c-e725acf1fbbc",
 								"sectionItemType": "field",
 								"startCol": 0
 							},
@@ -143,7 +212,7 @@
 								"endCol": 2,
 								"fieldId": "trafficlightprotocol",
 								"height": 22,
-								"id": "f47fc070-b30a-11eb-941c-e725acf1fbbc",
+								"id": "e7848e30-68fe-11ee-8ff4-09f497dbe082",
 								"index": 3,
 								"sectionItemType": "field",
 								"startCol": 0
@@ -152,7 +221,7 @@
 								"endCol": 2,
 								"fieldId": "tags",
 								"height": 22,
-								"id": "f2b8bc10-b30a-11eb-941c-e725acf1fbbc",
+								"id": "f3e2e820-68fe-11ee-8ff4-09f497dbe082",
 								"index": 4,
 								"sectionItemType": "field",
 								"startCol": 0
@@ -166,9 +235,9 @@
 								"endCol": 1,
 								"fieldId": "",
 								"height": 44,
-								"id": "62bd3650-b313-11eb-941c-e725acf1fbbc",
+								"id": "fa5d8980-68fe-11ee-8ff4-09f497dbe082",
 								"index": 5,
-								"name": "Add tags",
+								"name": "Add tag",
 								"scriptId": "Builtin|||appendIndicatorField",
 								"sectionItemType": "button",
 								"startCol": 0
@@ -183,76 +252,23 @@
 								"endCol": 2,
 								"fieldId": "",
 								"height": 44,
-								"id": "65ff41f0-b313-11eb-941c-e725acf1fbbc",
+								"id": "fd307fa0-68fe-11ee-8ff4-09f497dbe082",
 								"index": 5,
-								"listId": "vug7e0qild-e3ab20a0-b30a-11eb-941c-e725acf1fbbc",
-								"name": "Remove tags",
+								"listId": "default-main-bb6da6ca-cff7-42dd-856c-e51d51f2025a-default-main-6c41fd70-68fe-11ee-8ff4-09f497dbe082",
+								"name": "Remove tag",
 								"scriptId": "Builtin|||removeIndicatorField",
 								"sectionItemType": "button",
 								"startCol": 1
 							}
 						],
+						"maxH": null,
 						"maxW": 3,
 						"minH": 1,
 						"moved": false,
 						"name": "Report Details",
 						"static": false,
-						"w": 2,
-						"x": 1,
-						"y": 0
-					},
-					{
-						"displayType": "ROW",
-						"h": 9,
-						"hideItemTitleOnlyOne": true,
-						"hideName": false,
-						"i": "vug7e0qild-ea684940-b30a-11eb-941c-e725acf1fbbc",
-						"items": [
-							{
-								"endCol": 2,
-								"fieldId": "description",
-								"height": 106,
-								"id": "f8aaa570-b30a-11eb-941c-e725acf1fbbc",
-								"index": 0,
-								"sectionItemType": "field",
-								"startCol": 0
-							}
-						],
-						"maxW": 3,
-						"minH": 1,
-						"moved": false,
-						"name": "Report Description",
-						"static": false,
-						"w": 2,
-						"x": 1,
-						"y": 2
-					},
-					{
-						"h": 8,
-						"i": "vug7e0qild-00d25a90-b30b-11eb-941c-e725acf1fbbc",
-						"items": [],
-						"maxW": 3,
-						"minH": 1,
-						"moved": false,
-						"name": "Relationships",
-						"static": false,
-						"type": "relationshipsTable",
 						"w": 1,
-						"x": 0,
-						"y": 3
-					},
-					{
-						"h": 3,
-						"i": "vug7e0qild-3c670a10-b30b-11eb-941c-e725acf1fbbc",
-						"items": [],
-						"maxW": 3,
-						"minH": 1,
-						"moved": false,
-						"name": "Comments",
-						"static": false,
-						"type": "comments",
-						"w": 1,
-						"x": 0,
+						"x": 2,
 						"y": 0
 					}
 				],
@@ -264,80 +280,52 @@
 		"TypeName": "",
 		"tabs": [
 			{
-				"hidden": false,
-				"id": "tpxxoxdvo8",
+				"id": "indicator-quick-view-info",
 				"name": "Info",
 				"sections": [
 					{
 						"displayType": "ROW",
 						"h": 2,
-						"hideName": false,
-						"i": "tpxxoxdvo8-59db5290-b30b-11eb-941c-e725acf1fbbc",
+						"hideItemTitleOnlyOne": true,
+						"i": "indicator-quick-view-info-tags-section",
 						"items": [
 							{
 								"endCol": 2,
-								"fieldId": "timestamp",
+								"fieldId": "published",
 								"height": 22,
-								"id": "9e943d00-8a4e-11ec-a1ef-6369524b39c7",
+								"id": "22d78450-6900-11ee-8ff4-09f497dbe082",
 								"index": 0,
 								"sectionItemType": "field",
 								"startCol": 0
 							},
 							{
-								"dropEffect": "move",
 								"endCol": 2,
 								"fieldId": "modified",
 								"height": 22,
-								"id": "8717fb00-b30b-11eb-941c-e725acf1fbbc",
+								"id": "261a5340-6900-11ee-8ff4-09f497dbe082",
 								"index": 1,
-								"listId": "tpxxoxdvo8-59db5290-b30b-11eb-941c-e725acf1fbbc",
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "stixid",
-								"height": 22,
-								"id": "802e9240-b30b-11eb-941c-e725acf1fbbc",
-								"index": 2,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "reporttype",
-								"height": 22,
-								"id": "819c5310-b30b-11eb-941c-e725acf1fbbc",
-								"index": 3,
 								"sectionItemType": "field",
 								"startCol": 0
 							},
 							{
 								"dropEffect": "move",
 								"endCol": 2,
-								"fieldId": "published",
+								"fieldId": "stixid",
 								"height": 22,
-								"id": "8491ec60-b30b-11eb-941c-e725acf1fbbc",
-								"index": 4,
-								"listId": "tpxxoxdvo8-59db5290-b30b-11eb-941c-e725acf1fbbc",
+								"id": "2dfd1020-6900-11ee-8ff4-09f497dbe082",
+								"index": 2,
+								"listId": "indicator-quick-view-info-tags-section",
 								"sectionItemType": "field",
 								"startCol": 0
 							},
 							{
-								"endCol": 2,
-								"fieldId": "downloadurl",
-								"height": 22,
-								"id": "b5116120-8a4e-11ec-a1ef-6369524b39c7",
-								"index": 5,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
+								"dropEffect": "move",
 								"endCol": 2,
 								"fieldId": "trafficlightprotocol",
 								"height": 22,
-								"id": "920fe720-b30b-11eb-941c-e725acf1fbbc",
-								"index": 6,
+								"id": "29da1a60-6900-11ee-8ff4-09f497dbe082",
+								"index": 3,
+								"listId": "indicator-quick-view-info-tags-section",
 								"sectionItemType": "field",
 								"startCol": 0
 							},
@@ -345,8 +333,8 @@
 								"endCol": 2,
 								"fieldId": "tags",
 								"height": 22,
-								"id": "90370870-b30b-11eb-941c-e725acf1fbbc",
-								"index": 7,
+								"id": "indicator-quick-view-info-tags-field",
+								"index": 4,
 								"sectionItemType": "field",
 								"startCol": 0
 							}
@@ -354,24 +342,36 @@
 						"maxW": 3,
 						"minH": 1,
 						"moved": false,
-						"name": "Report Details",
+						"name": "Tags",
 						"static": false,
 						"w": 1,
 						"x": 0,
-						"y": 2
+						"y": 0
+					},
+					{
+						"h": 2,
+						"i": "indicator-quick-view-info-comments",
+						"maxW": 3,
+						"moved": false,
+						"name": "Comments",
+						"static": false,
+						"type": "comments",
+						"w": 1,
+						"x": 0,
+						"y": 9
 					},
 					{
 						"displayType": "ROW",
-						"h": 2,
+						"h": 4,
 						"hideItemTitleOnlyOne": true,
-						"hideName": false,
-						"i": "tpxxoxdvo8-61b1b360-b30b-11eb-941c-e725acf1fbbc",
+						"hideName": true,
+						"i": "indicator-quick-view-info-1685d490-6900-11ee-8ff4-09f497dbe082",
 						"items": [
 							{
 								"endCol": 2,
 								"fieldId": "description",
-								"height": 22,
-								"id": "8e005250-b30b-11eb-941c-e725acf1fbbc",
+								"height": 106,
+								"id": "1a365970-6900-11ee-8ff4-09f497dbe082",
 								"index": 0,
 								"sectionItemType": "field",
 								"startCol": 0
@@ -380,51 +380,15 @@
 						"maxW": 3,
 						"minH": 1,
 						"moved": false,
-						"name": "Report Description",
+						"name": "Report",
 						"static": false,
 						"w": 1,
 						"x": 0,
-						"y": 0
+						"y": 2
 					},
 					{
-						"h": 2,
-						"i": "tpxxoxdvo8-72910190-b30b-11eb-941c-e725acf1fbbc",
-						"items": [],
-						"maxW": 3,
-						"minH": 1,
-						"moved": false,
-						"name": "Comments",
-						"static": false,
-						"type": "comments",
-						"w": 1,
-						"x": 0,
-						"y": 6
-					},
-					{
-						"h": 2,
-						"i": "tpxxoxdvo8-77f21ca0-b30b-11eb-941c-e725acf1fbbc",
-						"items": [],
-						"maxW": 3,
-						"minH": 1,
-						"moved": false,
-						"name": "Related Incidents",
-						"static": false,
-						"type": "relatedIncidents",
-						"w": 1,
-						"x": 0,
-						"y": 4
-					}
-				],
-				"type": "custom"
-			},
-			{
-				"hidden": false,
-				"id": "se889tdxik",
-				"name": "Relationships",
-				"sections": [
-					{
-						"h": 8,
-						"i": "se889tdxik-09585430-979f-11eb-a8d1-098e2c945225",
+						"h": 3,
+						"i": "indicator-quick-view-info-36a7ff00-6900-11ee-8ff4-09f497dbe082",
 						"items": [],
 						"maxW": 3,
 						"minH": 1,
@@ -434,14 +398,25 @@
 						"type": "relationshipsTable",
 						"w": 1,
 						"x": 0,
-						"y": 0
+						"y": 6
 					}
 				],
 				"type": "custom"
 			}
 		]
 	},
-	"name": "FeedlyReport",
+	"itemVersion": "",
+	"locked": false,
+	"mobile": null,
+	"name": "Feedly Report",
+	"packID": "",
+	"packName": "",
+	"propagationLabels": [
+		"all"
+	],
+	"quickView": null,
+	"quickViewV2": null,
 	"system": false,
+	"toServerVersion": "",
 	"version": -1
 }

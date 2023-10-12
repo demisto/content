@@ -4,8 +4,8 @@
     "modified": "2023-10-12T11:51:59.482903828Z",
     "shouldCommit": false,
     "regex": "",
-    "details": "FeedlyReport",
-    "prevDetails": "FeedlyReport",
+    "details": "Feedly Report",
+    "prevDetails": "Feedly Report",
     "system": false,
     "locked": false,
     "disabled": false,
@@ -13,6 +13,6 @@
     "updateAfter": 0,
     "mergeContext": false,
     "expiration": 0,
-    "layout": "FeedlyReport",
+    "layout": "Feedly Report",
     "fromVersion": "6.0.0"
 }

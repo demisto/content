@@ -1,4 +1,5 @@
 import copy
+from contextlib import suppress
 from urllib.parse import parse_qs
 
 from CommonServerPython import *  # noqa: F401
@@ -65,7 +66,7 @@ STIX_2_TYPES_TO_CORTEX_TYPES = {
     "attack-pattern": ThreatIntel.ObjectsNames.ATTACK_PATTERN,
     "malware": ThreatIntel.ObjectsNames.MALWARE,
     "tool": ThreatIntel.ObjectsNames.TOOL,
-    "report": "FeedlyReport",
+    "report": "Feedly Report",
     "threat-actor": ThreatIntel.ObjectsNames.THREAT_ACTOR,
     "course-of-action": ThreatIntel.ObjectsNames.COURSE_OF_ACTION,
     "campaign": ThreatIntel.ObjectsNames.CAMPAIGN,
@@ -314,7 +315,7 @@ class STIX2Parser:
             )
 
         report = {
-            "indicator_type": "FeedlyReport",
+            "indicator_type": "Feedly Report",
             "value": report_obj.get("name"),
             "score": ThreatIntel.ObjectsScore.REPORT,
             "rawJSON": report_obj,
@@ -684,12 +685,13 @@ class STIX2Parser:
             if b_type in {ThreatIntel.ObjectsNames.THREAT_ACTOR, ThreatIntel.ObjectsNames.MALWARE}:
                 a_object["customFields"].setdefault("tags", []).append(b_value)
             elif b_type in {ThreatIntel.ObjectsNames.ATTACK_PATTERN}:
-                mitre_id = next(
-                    ref["external_id"]
-                    for ref in b_object["rawJSON"].get("external_references", [])
-                    if ref.get("source_name") == "mitre-attack"
-                )
-                a_object["customFields"]["tags"].append(mitre_id)
+                with suppress(StopIteration):
+                    mitre_id = next(
+                        ref["external_id"]
+                        for ref in b_object["rawJSON"].get("external_references", [])
+                        if ref.get("source_name") == "mitre-attack"
+                    )
+                    a_object["customFields"]["tags"].append(mitre_id)
 
             mapping_fields = {
                 "lastseenbysource": relationships_object.get("modified"),
@@ -761,7 +763,6 @@ class STIX2Parser:
                     if obj.get("type") == "extension-definition":
                         continue
                     self.id_to_object[obj.get("id")] = obj
-                    print(obj.get("type"))
                     if obj.get("type") == "report":
                         result, relationships = self.parse_report(obj)
                         relationships_list.extend(relationships)
