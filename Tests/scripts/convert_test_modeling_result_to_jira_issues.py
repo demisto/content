@@ -9,7 +9,8 @@ from jira.client import JIRA
 from junitparser import TestSuite, JUnitXml
 
 from Tests.scripts.jira_issues import GITLAB_PROJECT_ID, GITLAB_SERVER_URL, JIRA_SERVER_URL, JIRA_VERIFY_SSL, JIRA_API_KEY, \
-    JIRA_PROJECT_ID, JIRA_ISSUE_TYPE, JIRA_COMPONENT, JIRA_ISSUE_UNRESOLVED_TRANSITION_NAME, JIRA_LABELS, create_jira_issue
+    JIRA_PROJECT_ID, JIRA_ISSUE_TYPE, JIRA_COMPONENT, JIRA_ISSUE_UNRESOLVED_TRANSITION_NAME, JIRA_LABELS, create_jira_issue, \
+    jira_server_information
 from Tests.scripts.utils import logging_wrapper as logging
 from Tests.scripts.utils.log_util import install_logging
 
@@ -49,7 +50,7 @@ def main():
                      f'Max days to reopen: {options.max_days_to_reopen}\n')
 
         jira_server = JIRA(JIRA_SERVER_URL, token_auth=JIRA_API_KEY, options={'verify': JIRA_VERIFY_SSL})
-
+        jira_server_information(jira_server)
         xml = JUnitXml.fromfile(options.junit_path)
         for test_suite in xml.iterchildren(TestSuite):
             if test_suite.failures or test_suite.errors:

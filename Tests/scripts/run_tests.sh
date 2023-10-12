@@ -47,7 +47,7 @@ echo "Running server tests on Instance role:${INSTANCE_ROLE}, nightly:${IS_NIGHT
 echo "${INSTANCE_ROLE}" > "${ARTIFACTS_FOLDER_INSTANCE}/instance_role.txt"
 
 if DEMISTO_SDK_SKIP_VERSION_CHECK=True demisto-sdk test-content --help 2>&1 | grep -q 'artifacts_path'; then
-  TEST_PLAYBOOKS_RESULTS_ARG=(--artifacts_path="${ARTIFACTS_FOLDER_INSTANCE}")
+  TEST_PLAYBOOKS_RESULTS_ARG=(--artifacts_path="${ARTIFACTS_FOLDER_INSTANCE}" --product-type="${PRODUCT_TYPE}")
   echo "Test Playbooks - Results will be saved to artifacts folder:${ARTIFACTS_FOLDER_INSTANCE}"
 echo "${TEST_PLAYBOOKS_RESULTS_FILE_NAME}" >> "${ARTIFACTS_FOLDER_INSTANCE}/has_test_playbooks_result_files_list.txt"
 else

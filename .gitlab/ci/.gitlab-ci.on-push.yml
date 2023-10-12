@@ -252,6 +252,7 @@ xpanse-prepare-testing-bucket:
     ARTIFACTS_FOLDER_INSTANCE: "${ARTIFACTS_FOLDER_XSOAR}/instance_${INSTANCE_ROLE}"
     ENV_RESULTS_PATH: "${ARTIFACTS_FOLDER_XSOAR}/env_results.json"
     SERVER_TYPE: "XSOAR"
+    PRODUCT_TYPE: "XSOAR"
   stage: run-instances
   needs:
     - job: xsoar-prepare-testing-bucket
@@ -264,7 +265,7 @@ xpanse-prepare-testing-bucket:
     - section_end "Create Artifacts instance directory"
     - section_start "Check if should run Server Master"
     - |
-      echo "Instance role:${INSTANCE_ROLE}"
+      echo "Instance role:${INSTANCE_ROLE} Product type:${PRODUCT_TYPE}"
       if [ -n "${NIGHTLY}" ] && [ "${INSTANCE_ROLE}" != "Server Master" ]; then
         echo "Not running the instance flow, not a Server Master instance and we are in a nightly build."
         job-done
@@ -418,6 +419,24 @@ slack-notify-nightly-build:
     # Passes the environment variable from the parent pipeline to the child which can be useful for cases
     # when triggering pipeline with alternate env variable value passed in the API call
     SLACK_CHANNEL: $SLACK_CHANNEL
+    SLACK_ALLOW_FAILURE: 'false'
+    SLACK_JOB: 'true'
+
+
+slack-notify-on-push-build:
+  extends:
+    - .trigger-slack-notification
+  rules:
+    - !reference [.filter-non-nightly-docker-updates-rule, rules]
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
+  variables:
+    PIPELINE_TO_QUERY: $CI_PIPELINE_ID
+    WORKFLOW: 'Content PR'
+    JOB_NAME: 'jobs-done-check-on-push'
+    # Passes the environment variable from the parent pipeline to the child which can be useful for cases
+    # when triggering pipeline with alternate env variable value passed in the API call
+    SLACK_CHANNEL: "${SLACK_CHANNEL_PRIVATE}${GITLAB_USER_ID}"
+    SLACK_ALLOW_FAILURE: 'true'
     SLACK_JOB: 'true'
 
 
@@ -484,6 +503,7 @@ slack-notify-nightly-build:
 #      when: always
 #  variables:
 #    INSTANCE_ROLE: "XSIAM Master"
+#    PRODUCT_TYPE: "XSIAM"
 #    GCS_QUEUE_FILE: "queue-master"
 #    TEST_MACHINES_LIST: "test-machines-master"
 
@@ -504,6 +524,7 @@ xsiam_server_ga:
     CLOUD_MACHINES_TYPE: "build"
     CLOUD_MACHINES_COUNT: 1
     INSTANCE_ROLE: "XSIAM"
+    PRODUCT_TYPE: "XSIAM"
     GCS_QUEUE_FILE: "queue-ga"
     GCS_LOCKS_PATH: "content-locks/locks-xsiam-ga"
     CLOUD_SERVERS_FILE: "xsiam_servers_path"
@@ -548,6 +569,7 @@ xsoar_ng_server_ga:
     CLOUD_MACHINES_TYPE: "build"
     CLOUD_MACHINES_COUNT: 1
     INSTANCE_ROLE: "XSOAR SAAS"
+    PRODUCT_TYPE: "XSOAR"
     GCS_QUEUE_FILE: "queue-ga"
     GCS_LOCKS_PATH: "content-locks/locks-xsoar-ng"
     CLOUD_SERVERS_FILE: "xsoar_ng_servers_path"
@@ -631,7 +653,7 @@ test-upload-flow:
     - .default-job-settings
   script:
     - EXIT_CODE=0
-    - ./Tests/scripts/convert_test_playbook_result_to_jira_issues.sh || EXIT_CODE=$?
+    - ./Tests/scripts/test_playbooks_report.sh || EXIT_CODE=$?
     - job-done
     - exit "${EXIT_CODE}"
   artifacts:
@@ -647,6 +669,8 @@ test-upload-flow:
 
 tests_xsoar_server-test_playbooks_results:
   variables:
+    SERVER_TYPE: "XSOAR"
+    PRODUCT_TYPE: "XSOAR"
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
     JIRA_ISSUE_TYPE: "XSOAR Dev Bug"
     JIRA_COMPONENT: "Test Failure"
@@ -662,6 +686,7 @@ tests_xsoar_server-test_playbooks_results:
 xsiam_server_ga-test_playbooks_results:
   variables:
     SERVER_TYPE: "XSIAM"
+    PRODUCT_TYPE: "XSIAM"
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_MPV2}"
     JIRA_ISSUE_TYPE: "XSOAR Dev Bug"
     JIRA_COMPONENT: "Test Failure"

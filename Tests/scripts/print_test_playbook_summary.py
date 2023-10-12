@@ -5,10 +5,12 @@ import traceback
 from pathlib import Path
 
 import urllib3
+from jira import JIRA
 from junitparser import JUnitXml
 from tabulate import tabulate
 
-from Tests.scripts.jira_issues import JIRA_SERVER_URL, JIRA_VERIFY_SSL, JIRA_PROJECT_ID, JIRA_ISSUE_TYPE, JIRA_COMPONENT
+from Tests.scripts.jira_issues import JIRA_SERVER_URL, JIRA_VERIFY_SSL, JIRA_PROJECT_ID, JIRA_ISSUE_TYPE, JIRA_COMPONENT, \
+    JIRA_API_KEY, jira_server_information
 from Tests.scripts.test_playbooks import calculate_test_playbooks_results, get_jira_tickets_for_playbooks, \
     calculate_test_playbooks_results_table, get_test_playbook_results_files
 from Tests.scripts.utils import logging_wrapper as logging
@@ -40,8 +42,9 @@ def old_print_test_summary(artifacts_path: str) -> None:
     """
     Takes the information stored in the files and prints it in a human-readable way.
     """
-    failed_tests_path = Path(artifacts_path) / "failed_tests.txt"
-    succeeded_tests_path = Path(artifacts_path) / "succeeded_tests.txt"
+    instance_path = Path(artifacts_path) / "instance_Server Master"
+    failed_tests_path = instance_path / "failed_tests.txt"
+    succeeded_tests_path = instance_path / "succeeded_tests.txt"
     succeeded_playbooks = read_file_contents(succeeded_tests_path.as_posix())
     failed_playbooks = read_file_contents(failed_tests_path.as_posix())
 
@@ -108,9 +111,12 @@ def print_test_summary(artifacts_path: str, without_jira: bool) -> bool:
                      f'Jira project id: {JIRA_PROJECT_ID}\n'
                      f'Jira issue type: {JIRA_ISSUE_TYPE}\n'
                      f'Jira component: {JIRA_COMPONENT}\n')
+        jira_server = JIRA(JIRA_SERVER_URL, token_auth=JIRA_API_KEY, options={'verify': JIRA_VERIFY_SSL})
+        jira_server_information(jira_server)
+
         playbooks_ids = filter_skipped_playbooks(playbooks_results)
         logging.info(f"Found {len(playbooks_ids)} playbooks out of {len(playbooks_results)} after filtering skipped playbooks")
-        jira_tickets_for_playbooks = get_jira_tickets_for_playbooks(playbooks_ids)
+        jira_tickets_for_playbooks = get_jira_tickets_for_playbooks(jira_server, playbooks_ids)
         logging.info(f"Found {len(jira_tickets_for_playbooks)} Jira tickets out of {len(playbooks_ids)} playbooks")
 
     headers, tabulate_data, xml, total_errors = calculate_test_playbooks_results_table(jira_tickets_for_playbooks,

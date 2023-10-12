@@ -3,7 +3,6 @@ from CommonServerPython import *  # noqa: F401
 # pylint: disable=no-name-in-module
 # pylint: disable=no-self-argument
 import copy
-
 from CommonServerUserPython import *  # noqa
 
 from abc import ABC

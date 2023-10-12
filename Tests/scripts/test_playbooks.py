@@ -10,7 +10,7 @@ from jira.client import ResultList
 from junitparser import JUnitXml, TestSuite
 from tqdm import tqdm
 
-from Tests.scripts.jira_issues import generate_ticket_summary, generate_query, JIRA_SERVER_URL, JIRA_API_KEY, JIRA_VERIFY_SSL
+from Tests.scripts.jira_issues import generate_ticket_summary, generate_query
 from Tests.scripts.utils import logging_wrapper as logging
 
 TOTAL_HEADER = "Total"
@@ -18,6 +18,7 @@ NOT_AVAILABLE = "N/A"
 TEST_SUITE_JIRA_HEADERS = ["Jira Ticket", "Jira Ticket Resolution"]
 TEST_SUITE_BASE_HEADERS = ["Playbook ID"]
 TEST_SUITE_FIXED_HEADERS = TEST_SUITE_BASE_HEADERS + TEST_SUITE_JIRA_HEADERS
+TEST_SUITE_DATA_CELL_HEADER = "S/F/E/T"
 NO_COLOR_ESCAPE_CHAR = "\033[0m"
 RED_COLOR = "\033[91m"
 GREEN_COLOR = "\033[92m"
@@ -72,15 +73,11 @@ def search_ticket_in_jira(jira_server: JIRA, playbook_id: str) -> Issue | None:
     return None
 
 
-def get_jira_tickets_for_playbooks(playbook_ids: list[str],
+def get_jira_tickets_for_playbooks(jira_server: JIRA,
+                                   playbook_ids: list[str],
                                    max_workers: int = 5) -> dict[str, Issue]:
     playbook_ids_to_jira_tickets: dict[str, Issue] = {}
-    jira_server = JIRA(JIRA_SERVER_URL, token_auth=JIRA_API_KEY, options={'verify': JIRA_VERIFY_SSL})
-    jira_server_info = jira_server.server_info()
-    logging.info(f"Searching for Jira tickets for {len(playbook_ids)} playbooks, using {max_workers} workers,"
-                 f" Jira server information:")
-    for key, value in jira_server_info.items():
-        logging.info(f"\t{key}: {value}")
+    logging.info(f"Searching for Jira tickets for {len(playbook_ids)} playbooks, using {max_workers} workers")
     with ThreadPoolExecutor(max_workers=max_workers, thread_name_prefix='jira-search') as executor:
         futures = {
             executor.submit(search_ticket_in_jira, jira_server, playbook_id): playbook_id
@@ -128,7 +125,7 @@ def calculate_test_playbooks_results_table(jira_tickets_for_playbooks: dict[str,
     fixed_headers_length = len(headers)
     server_versions_list: list[str] = sorted(server_versions)
     for server_version in server_versions_list:
-        headers.append(f"{server_version} (S/F/E/T)")
+        headers.append(f"{server_version} ({TEST_SUITE_DATA_CELL_HEADER})")
     tabulate_data = []
     total_row: list[Any] = ([NOT_AVAILABLE] * fixed_headers_length + [TestSuiteDataCell()
                             for _ in range(len(server_versions_list))])
@@ -191,11 +188,18 @@ def calculate_test_playbooks_results_table(jira_tickets_for_playbooks: dict[str,
 
 def get_test_playbook_results_files(artifacts_path: str) -> list[Path]:
     test_playbooks_result_files_list: list[Path] = []
+    for directory in get_instance_directories(artifacts_path):
+        logging.info(f"Found instance directory: {directory}")
+        has_test_playbooks_result_files_list = Path(artifacts_path) / directory / "has_test_playbooks_result_files_list.txt"
+        if has_test_playbooks_result_files_list.exists():
+            logging.info(f"Found test playbook result files list file: {has_test_playbooks_result_files_list}")
+            test_playbooks_result_files_list.append(Path(artifacts_path) / directory / "test_playbooks_report.xml")
+    return test_playbooks_result_files_list
+
+
+def get_instance_directories(artifacts_path: str) -> list[Path]:
+    test_playbooks_result_files_list: list[Path] = []
     for directory in Path(artifacts_path).iterdir():
         if directory.is_dir() and directory.name.startswith("instance_"):
-            logging.info(f"Found instance directory: {directory}")
-            has_test_playbooks_result_files_list = Path(artifacts_path) / directory / "has_test_playbooks_result_files_list.txt"
-            if has_test_playbooks_result_files_list.exists():
-                logging.info(f"Found test playbook result files list file: {has_test_playbooks_result_files_list}")
-                test_playbooks_result_files_list.append(Path(artifacts_path) / directory / "test_playbooks_report.xml")
+            test_playbooks_result_files_list.append(directory)
     return test_playbooks_result_files_list

@@ -168,6 +168,7 @@ demisto-sdk-nightly:run-commands-against-instance:
     DOCKER_DRIVER: overlay2
     DOCKER_TLS_CERTDIR: ""
     INSTANCE_ROLE: "Server Master"
+    PRODUCT_TYPE: "XSOAR"
   needs: ["demisto-sdk-nightly:xsoar-prepare-testing-bucket"]
   stage: run-instances
   script:
@@ -226,6 +227,7 @@ demisto-sdk-nightly:run-end-to-end-tests:
     DOCKER_DRIVER: overlay2
     DOCKER_TLS_CERTDIR: ""
     INSTANCE_ROLE: "Server Master"
+    PRODUCT_TYPE: "XSOAR"
   needs: ["demisto-sdk-nightly:xsoar-prepare-testing-bucket"]
   stage: run-instances
   script:

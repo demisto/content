@@ -16,9 +16,10 @@ from tabulate import tabulate
 
 from Tests.scripts.jira_issues import JIRA_SERVER_URL, JIRA_VERIFY_SSL, JIRA_API_KEY, \
     JIRA_PROJECT_ID, JIRA_ISSUE_TYPE, JIRA_COMPONENT, JIRA_ISSUE_UNRESOLVED_TRANSITION_NAME, JIRA_LABELS, \
-    find_existing_jira_ticket, JIRA_ADDITIONAL_FIELDS, generate_ticket_summary, generate_build_markdown_link
+    find_existing_jira_ticket, JIRA_ADDITIONAL_FIELDS, generate_ticket_summary, generate_build_markdown_link, \
+    jira_server_information
 from Tests.scripts.test_playbooks import get_test_playbook_results_files, calculate_test_playbooks_results, \
-    get_jira_tickets_for_playbooks, calculate_test_playbooks_results_table, get_all_failed_playbooks
+    get_jira_tickets_for_playbooks, calculate_test_playbooks_results_table, get_all_failed_playbooks, TEST_SUITE_DATA_CELL_HEADER
 from Tests.scripts.utils import logging_wrapper as logging
 from Tests.scripts.utils.log_util import install_logging
 
@@ -30,6 +31,7 @@ JIRA_MAX_TEST_PLAYBOOKS_FAILURES_TO_HANDLE_DEFAULT = 20
 JIRA_MAX_TEST_PLAYBOOKS_FAILURES_TO_HANDLE = (os.environ.get("JIRA_MAX_TEST_PLAYBOOKS_FAILURES_TO_HANDLE",
                                                              JIRA_MAX_TEST_PLAYBOOKS_FAILURES_TO_HANDLE_DEFAULT)
                                               or JIRA_MAX_TEST_PLAYBOOKS_FAILURES_TO_HANDLE_DEFAULT)
+JIRA_TICKET_HEADERS = ["Platform", TEST_SUITE_DATA_CELL_HEADER]
 
 
 def options_handler() -> argparse.Namespace:
@@ -48,7 +50,7 @@ def options_handler() -> argparse.Namespace:
 def generate_description(playbook_id: str, build_number: str, junit_file_name: str, table_data: Any, failed: bool) -> str:
     build_markdown_link = generate_build_markdown_link(build_number)
     transposed = pd.DataFrame(table_data, index=None).transpose().to_numpy()
-    table = tabulate(transposed, tablefmt="jira", stralign="left", numalign="center")
+    table = tabulate(transposed, headers=JIRA_TICKET_HEADERS, tablefmt="jira", stralign="left", numalign="center")
     msg = "failed" if failed else "succeeded"
     description = f"""
         *{playbook_id}* {msg} in {build_markdown_link}
@@ -126,7 +128,7 @@ def main():
                      f'Build number: {options.build_number}\n')
 
         jira_server = JIRA(JIRA_SERVER_URL, token_auth=JIRA_API_KEY, options={'verify': JIRA_VERIFY_SSL})
-
+        jira_server_information(jira_server)
         # iterate over the artifacts path and find all the test playbook result files
         test_playbooks_result_files_list = get_test_playbook_results_files(options.artifacts_path)
 
@@ -139,7 +141,7 @@ def main():
 
         playbooks_results, server_versions = calculate_test_playbooks_results(test_playbooks_result_files_list)
 
-        jira_tickets_for_playbooks = get_jira_tickets_for_playbooks(list(playbooks_results.keys()))
+        jira_tickets_for_playbooks = get_jira_tickets_for_playbooks(jira_server, list(playbooks_results.keys()))
         logging.info(f"Found {len(jira_tickets_for_playbooks)} Jira tickets out of {len(playbooks_results)} playbooks")
 
         # Search if we have too many test playbooks that failed beyond the max allowed limit to open, if so we print the

@@ -142,6 +142,7 @@ xpanse-prepare-testing-bucket-upload-flow:
     INSTANCE_CREATED: "true"
     SSH_TUNNEL_TIMEOUT: 10
     TIME_TO_LIVE: ""
+    PRODUCT_TYPE: "XSOAR"
   extends:
     - .bucket-upload-rule
     - .default-job-settings
@@ -276,6 +277,7 @@ install-packs-in-server-master:
 #  extends: .install-mpv2-packs-on-xsiam-instances
 #  variables:
 #    INSTANCE_ROLE: "XSIAM"
+#    PRODUCT_TYPE: "XSIAM"
 #    GCS_QUEUE_FILE: "queue-master"
 #    TEST_MACHINES_LIST: "test-machines-master"
 
@@ -283,6 +285,7 @@ install-packs-in-xsiam-ga:
   extends: .install-mpv2-packs-on-xsiam-instances
   variables:
     INSTANCE_ROLE: "XSIAM"
+    PRODUCT_TYPE: "XSIAM"
     GCS_QUEUE_FILE: "queue-ga"
     GCS_SOURCE_BUCKET: "$GCS_PRODUCTION_V2_BUCKET"
     GCS_MACHINES_BUCKET: "marketplace-v2-dist-dev/upload-flow/builds-xsiam"
@@ -307,6 +310,7 @@ upload-packs-to-marketplace:
     MARKETPLACE_VERSION: "xsoar"
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
     ENV_RESULTS_PATH: "${ARTIFACTS_FOLDER_XSOAR}/env_results.json"
+    PRODUCT_TYPE: "XSOAR"
     INSTANCE_ROLE: "Server Master"
     INSTANCE_CREATED: "true"
     SSH_TUNNEL_TIMEOUT: 10
@@ -389,6 +393,7 @@ upload-packs-to-marketplace-v2:
     MARKETPLACE_VERSION: "marketplacev2"
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_MPV2}"
     INSTANCE_ROLE: "Server Master"
+    PRODUCT_TYPE: "XSIAM"
     INSTANCE_CREATED: "true"
     SSH_TUNNEL_TIMEOUT: 10
     TIME_TO_LIVE: ""
@@ -459,6 +464,7 @@ upload-packs-to-xpanse-marketplace:
     MARKETPLACE_VERSION: "xpanse"
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XPANSE}"
     INSTANCE_ROLE: "Server Master"
+    PRODUCT_TYPE: "XPANSE"
     INSTANCE_CREATED: "true"
     SSH_TUNNEL_TIMEOUT: 10
     TIME_TO_LIVE: ""
@@ -530,6 +536,7 @@ upload-packs-to-xsoar-saas-marketplace:
     MARKETPLACE_VERSION: "xsoar_saas"
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR_SAAS}"
     INSTANCE_ROLE: "Server Master"
+    PRODUCT_TYPE: "XSOAR"
     INSTANCE_CREATED: "true"
     SSH_TUNNEL_TIMEOUT: 10
     TIME_TO_LIVE: ""

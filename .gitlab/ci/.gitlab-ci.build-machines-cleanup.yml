@@ -32,6 +32,7 @@ build-machines-cleanup:
     CLOUD_MACHINES_COUNT: "all"
     GCS_LOCKS_PATH: "content-locks/locks-xsiam-ga-nightly"
     INSTANCE_ROLE: "XSIAM"
+    PRODUCT_TYPE: "XSIAM"
     GCS_QUEUE_FILE: "queue-ga"
     CLOUD_SERVERS_FILE: "xsiam_servers_path"
     CLOUD_API_KEYS: $XSIAM_API_KEYS

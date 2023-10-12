@@ -2,7 +2,6 @@ import json
 import os
 from datetime import datetime, timedelta
 from tempfile import NamedTemporaryFile
-from typing import Optional
 
 from jira import JIRA, Issue
 from jira.client import ResultList
@@ -87,7 +86,7 @@ def generate_query(summary: str) -> str:
 def find_existing_jira_ticket(jira_server: JIRA,
                               now: datetime,
                               max_days_to_reopen: int,
-                              jira_issue: Optional[Issue]) -> tuple[Issue | None, Issue | None, bool]:
+                              jira_issue: Issue | None) -> tuple[Issue | None, Issue | None, bool]:
     link_to_issue = None
     jira_issue_to_use = None
     if use_existing_issue := (jira_issue is not None):
@@ -147,3 +146,10 @@ def generate_description(build_id: str, properties: dict[str, str], test_suite: 
         {table}
         """
     return description
+
+
+def jira_server_information(jira_server: JIRA):
+    jira_server_info = jira_server.server_info()
+    logging.info("Jira server information:")
+    for key, value in jira_server_info.items():
+        logging.info(f"\t{key}: {value}")
