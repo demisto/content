@@ -1924,8 +1924,7 @@ Error: $($_.Exception.Message)")
                 ReturnError $_.Exception.Message
             }
         }
-
-    }}
+    }
 
 # Execute Main when not in Tests
 if ($MyInvocation.ScriptName -notlike "*.tests.ps1" -AND -NOT $Test) {
