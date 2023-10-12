@@ -269,6 +269,7 @@
 
 .cloud-machine-information:
   - section_start "Cloud Machine information"
+  - echo "TEST_XDR_ENV = ${TEST_XDR_ENV}"
   - ./Tests/scripts/print_cloud_machine_details.sh
   - section_end "Cloud Machine information"
 
