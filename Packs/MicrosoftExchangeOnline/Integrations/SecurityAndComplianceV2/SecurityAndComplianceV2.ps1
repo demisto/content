@@ -1793,132 +1793,139 @@ function Main {
     $command_arguments = $Demisto.Args()
     $integration_params = $Demisto.Params()
 
-    try {
-        $Demisto.Debug("Command being called is $Command")
+    if ($integration_params.insecure -eq $true)
+    {
+        # Bypass SSL verification if insecure is true
+        [System.Net.ServicePointManager]::ServerCertificateValidationCallback = {$true}
+    }
 
-        # Creating Compliance and search client
-        $oauth2_client = [OAuth2DeviceCodeClient]::CreateClientFromIntegrationContext($insecure, $false)
+        try {
+            $Demisto.Debug("Command being called is $Command")
 
-        # Executing oauth2 commands
-        switch ($command) {
-            "$script:COMMAND_PREFIX-auth-start" {
-                ($human_readable, $entry_context, $raw_response) = StartAuthCommand $oauth2_client
-            }
-            "$script:COMMAND_PREFIX-auth-complete" {
-                ($human_readable, $entry_context, $raw_response) = CompleteAuthCommand $oauth2_client
-            }
-        }
+            # Creating Compliance and search client
+            $oauth2_client = [OAuth2DeviceCodeClient]::CreateClientFromIntegrationContext($insecure, $false)
 
-        # Refreshing tokens if expired
-        if ($command -ne "$script:COMMAND_PREFIX-auth-start")
-        {
-            $oauth2_client.RefreshTokenIfExpired()
-        }
+            # Executing oauth2 commands
+            switch ($command) {
+                "$script:COMMAND_PREFIX-auth-start" {
+                    ($human_readable, $entry_context, $raw_response) = StartAuthCommand $oauth2_client
+                }
+                "$script:COMMAND_PREFIX-auth-complete" {
+                    ($human_readable, $entry_context, $raw_response) = CompleteAuthCommand $oauth2_client
+                }
+            }
 
-        $cs_client = [SecurityAndComplianceClient]::new(
-            $oauth2_client.access_token,
-            $integration_params.delegated_auth.identifier,
-            $integration_params.tenant_id,
-            $integration_params.connection_uri,
-            $integration_params.azure_ad_authorized_endpoint_uri_base
-        )
+            # Refreshing tokens if expired
+            if ($command -ne "$script:COMMAND_PREFIX-auth-start")
+            {
+                $oauth2_client.RefreshTokenIfExpired()
+            }
 
-        # Executing command
-        switch ($command) {
-            "test-module" {
-                ($human_readable, $entry_context, $raw_response) = TestModuleCommand
-            }
-            "$script:COMMAND_PREFIX-auth-test" {
-                ($human_readable, $entry_context, $raw_response) = TestAuthCommand $oauth2_client $cs_client
-            }
-            "$script:COMMAND_PREFIX-new-search" {
-                ($human_readable, $entry_context, $raw_response) = NewSearchCommand $cs_client $command_arguments
-            }
-            "$script:COMMAND_PREFIX-set-search" {
-                ($human_readable, $entry_context, $raw_response) = SetSearchCommand $cs_client $command_arguments
-            }
-            "$script:COMMAND_PREFIX-remove-search" {
-                ($human_readable, $entry_context, $raw_response) = RemoveSearchCommand $cs_client $command_arguments
-            }
-            "$script:COMMAND_PREFIX-list-search" {
-                ($human_readable, $entry_context, $raw_response) = ListSearchCommand $cs_client $command_arguments
-            }
-            "$script:COMMAND_PREFIX-get-search" {
-                ($human_readable, $entry_context, $raw_response, $file_entry) = GetSearchCommand $cs_client $command_arguments
-            }
-            "$script:COMMAND_PREFIX-start-search" {
-                ($human_readable, $entry_context, $raw_response) = StartSearchCommand $cs_client $command_arguments
-            }
-            "$script:COMMAND_PREFIX-stop-search" {
-                ($human_readable, $entry_context, $raw_response) = StopSearchCommand $cs_client $command_arguments
-            }
-            "$script:COMMAND_PREFIX-new-search-action" {
-                ($human_readable, $entry_context, $raw_response) = NewSearchActionCommand $cs_client $command_arguments
-            }
-            "$script:COMMAND_PREFIX-remove-search-action" {
-                ($human_readable, $entry_context, $raw_response) = RemoveSearchActionCommand $cs_client $command_arguments
-            }
-            "$script:COMMAND_PREFIX-list-search-action" {
-                ($human_readable, $entry_context, $raw_response) = ListSearchActionsCommand $cs_client $command_arguments
-            }
-            "$script:COMMAND_PREFIX-get-search-action" {
-                ($human_readable, $entry_context, $raw_response, $file_entry) = GetSearchActionCommand $cs_client $command_arguments
-            }
-            "$script:COMMAND_PREFIX-compliance-case-create" {
-                ($human_readable, $entry_context, $raw_response, $file_entry) = ComplianceCaseCreateCommand $cs_client $command_arguments
-            }
-            "$script:COMMAND_PREFIX-compliance-case-list" {
-                ($human_readable, $entry_context, $raw_response, $file_entry) = ComplianceCaseListCommand $cs_client $command_arguments
-            }
-            "$script:COMMAND_PREFIX-compliance-case-delete" {
-                ($human_readable, $entry_context, $raw_response, $file_entry) = ComplianceCaseDeleteCommand $cs_client $command_arguments
-            }
-            "$script:COMMAND_PREFIX-case-hold-policy-create" {
-                ($human_readable, $entry_context, $raw_response, $file_entry) = CaseHoldPolicyCreateCommand $cs_client $command_arguments
-            }
-            "$script:COMMAND_PREFIX-case-hold-policy-get" {
-                ($human_readable, $entry_context, $raw_response, $file_entry) = CaseHoldPolicyGetCommand $cs_client $command_arguments
-            }
-            "$script:COMMAND_PREFIX-case-hold-policy-delete" {
-                ($human_readable, $entry_context, $raw_response, $file_entry) = CaseHoldPolicyDeleteCommand $cs_client $command_arguments
-            }
-            "$script:COMMAND_PREFIX-case-hold-rule-create" {
-                ($human_readable, $entry_context, $raw_response, $file_entry) = CaseHoldRuleCreateCommand $cs_client $command_arguments
-            }
-            "$script:COMMAND_PREFIX-case-hold-rule-list" {
-                ($human_readable, $entry_context, $raw_response, $file_entry) = CaseHoldRuleListCommand $cs_client $command_arguments
-            }
-            "$script:COMMAND_PREFIX-case-hold-rule-delete" {
-                ($human_readable, $entry_context, $raw_response, $file_entry) = CaseHoldRuleDeleteCommand $cs_client $command_arguments
-            }
-        }
+            $cs_client = [SecurityAndComplianceClient]::new(
+                    $oauth2_client.access_token,
+                    $integration_params.delegated_auth.identifier,
+                    $integration_params.tenant_id,
+                    $integration_params.connection_uri,
+                    $integration_params.azure_ad_authorized_endpoint_uri_base
+            )
 
-        # Updating integration context if access token changed
-        UpdateIntegrationContext $oauth2_client
+            # Executing command
+            switch ($command) {
+                "test-module" {
+                    ($human_readable, $entry_context, $raw_response) = TestModuleCommand
+                }
+                "$script:COMMAND_PREFIX-auth-test" {
+                    ($human_readable, $entry_context, $raw_response) = TestAuthCommand $oauth2_client $cs_client
+                }
+                "$script:COMMAND_PREFIX-new-search" {
+                    ($human_readable, $entry_context, $raw_response) = NewSearchCommand $cs_client $command_arguments
+                }
+                "$script:COMMAND_PREFIX-set-search" {
+                    ($human_readable, $entry_context, $raw_response) = SetSearchCommand $cs_client $command_arguments
+                }
+                "$script:COMMAND_PREFIX-remove-search" {
+                    ($human_readable, $entry_context, $raw_response) = RemoveSearchCommand $cs_client $command_arguments
+                }
+                "$script:COMMAND_PREFIX-list-search" {
+                    ($human_readable, $entry_context, $raw_response) = ListSearchCommand $cs_client $command_arguments
+                }
+                "$script:COMMAND_PREFIX-get-search" {
+                    ($human_readable, $entry_context, $raw_response, $file_entry) = GetSearchCommand $cs_client $command_arguments
+                }
+                "$script:COMMAND_PREFIX-start-search" {
+                    ($human_readable, $entry_context, $raw_response) = StartSearchCommand $cs_client $command_arguments
+                }
+                "$script:COMMAND_PREFIX-stop-search" {
+                    ($human_readable, $entry_context, $raw_response) = StopSearchCommand $cs_client $command_arguments
+                }
+                "$script:COMMAND_PREFIX-new-search-action" {
+                    ($human_readable, $entry_context, $raw_response) = NewSearchActionCommand $cs_client $command_arguments
+                }
+                "$script:COMMAND_PREFIX-remove-search-action" {
+                    ($human_readable, $entry_context, $raw_response) = RemoveSearchActionCommand $cs_client $command_arguments
+                }
+                "$script:COMMAND_PREFIX-list-search-action" {
+                    ($human_readable, $entry_context, $raw_response) = ListSearchActionsCommand $cs_client $command_arguments
+                }
+                "$script:COMMAND_PREFIX-get-search-action" {
+                    ($human_readable, $entry_context, $raw_response, $file_entry) = GetSearchActionCommand $cs_client $command_arguments
+                }
+                "$script:COMMAND_PREFIX-compliance-case-create" {
+                    ($human_readable, $entry_context, $raw_response, $file_entry) = ComplianceCaseCreateCommand $cs_client $command_arguments
+                }
+                "$script:COMMAND_PREFIX-compliance-case-list" {
+                    ($human_readable, $entry_context, $raw_response, $file_entry) = ComplianceCaseListCommand $cs_client $command_arguments
+                }
+                "$script:COMMAND_PREFIX-compliance-case-delete" {
+                    ($human_readable, $entry_context, $raw_response, $file_entry) = ComplianceCaseDeleteCommand $cs_client $command_arguments
+                }
+                "$script:COMMAND_PREFIX-case-hold-policy-create" {
+                    ($human_readable, $entry_context, $raw_response, $file_entry) = CaseHoldPolicyCreateCommand $cs_client $command_arguments
+                }
+                "$script:COMMAND_PREFIX-case-hold-policy-get" {
+                    ($human_readable, $entry_context, $raw_response, $file_entry) = CaseHoldPolicyGetCommand $cs_client $command_arguments
+                }
+                "$script:COMMAND_PREFIX-case-hold-policy-delete" {
+                    ($human_readable, $entry_context, $raw_response, $file_entry) = CaseHoldPolicyDeleteCommand $cs_client $command_arguments
+                }
+                "$script:COMMAND_PREFIX-case-hold-rule-create" {
+                    ($human_readable, $entry_context, $raw_response, $file_entry) = CaseHoldRuleCreateCommand $cs_client $command_arguments
+                }
+                "$script:COMMAND_PREFIX-case-hold-rule-list" {
+                    ($human_readable, $entry_context, $raw_response, $file_entry) = CaseHoldRuleListCommand $cs_client $command_arguments
+                }
+                "$script:COMMAND_PREFIX-case-hold-rule-delete" {
+                    ($human_readable, $entry_context, $raw_response, $file_entry) = CaseHoldRuleDeleteCommand $cs_client $command_arguments
+                }
+            }
 
-        # Return results to Demisto Server
-        ReturnOutputs $human_readable $entry_context $raw_response | Out-Null
-        if ($file_entry) {
-            $Demisto.results($file_entry)
-        }
-    } catch {
-        $Demisto.debug("Integration: $script:INTEGRATION_NAME
+            # Updating integration context if access token changed
+            UpdateIntegrationContext $oauth2_client
+
+            # Return results to Demisto Server
+            ReturnOutputs $human_readable $entry_context $raw_response | Out-Null
+            if ($file_entry) {
+                $Demisto.results($file_entry)
+            }
+        } catch {
+            $Demisto.debug("Integration: $script:INTEGRATION_NAME
 Command: $command
 Arguments: $($command_arguments | ConvertTo-Json)
 Error: $($_.Exception.Message)")
-        if ($_.Exception.Message -like "*Unable to open a web page using xdg-open*" ) {
-           Write-Host "It looks like the access token has expired. Please run the command !$script:COMMAND_PREFIX-auth-start, before running this command."
-        } elseif ($command -ne "test-module") {
-            ReturnError "Error:
+            if ($_.Exception.Message -like "*Unable to open a web page using xdg-open*" ) {
+                Write-Host "It looks like the access token has expired. Please run the command !$script:COMMAND_PREFIX-auth-start, before running this command."
+            } elseif ($command -ne "test-module") {
+                ReturnError "Error:
             Integration: $script:INTEGRATION_NAME
             Command: $command
             Arguments: $($command_arguments | ConvertTo-Json)
             Error: $($_.Exception)" | Out-Null
-        } else {
-            ReturnError $_.Exception.Message
+            } else {
+                ReturnError $_.Exception.Message
+            }
         }
-    }
-}
+
+    }}
 
 # Execute Main when not in Tests
 if ($MyInvocation.ScriptName -notlike "*.tests.ps1" -AND -NOT $Test) {
