@@ -314,8 +314,18 @@ class Client(BaseClient):
         # Check if error response is returned
         if _is_pytmv1_error(resp.result_code):
             return_error(message=f"{unwrap(resp.error).message}", error=str(resp.error))
+        # Get the task action type that will be used to
+        # fetch task class which is used in get_task_result
+        action = unwrap(resp.response).action
+        # Make rest call using task class to get final result
+        task_resp = v1_client.get_task_result(
+            class_=_get_task_type(action),
+            task_id=task_id,
+            poll=poll,
+            poll_time_sec=poll_time_sec,
+        )
         # Assign values on a successful call
-        message = unwrap(resp.response).dict()
+        message = unwrap(task_resp.response).dict()
         return CommandResults(
             readable_output=tableToMarkdown(
                 table_name[CHECK_TASK_STATUS_COMMAND],
@@ -468,12 +478,14 @@ class Client(BaseClient):
             start = start.astimezone()
         if not check_datetime_aware(end):
             end = end.astimezone()
+        # Date time format before formatting -> 2020-06-15T10:00:00.000Z
         start = start.astimezone(timezone.utc)
         end = end.astimezone(timezone.utc)
         start = start.isoformat(timespec="milliseconds").replace("+00:00", "Z")
         end = end.isoformat(timespec="milliseconds").replace("+00:00", "Z")
-        # Format start and end to remove decimal values so that the request call
-        # doesn't fail due to incorrect time format for seconds.
+        # Format start and end to remove decimal values so that the request
+        # call doesn't fail due to incorrect time format for seconds.
+        # Date time format after formatting -> 2020-06-15T10:00:00Z
         formatted_start = str(start[: (start.index("."))]) + str(start[-1])
         formatted_end = str(end[: (start.index("."))]) + str(end[-1])
 
@@ -542,8 +554,8 @@ def _get_ot_enum(obj_type: str) -> ObjectType:
     return ObjectType[obj_type.upper()]
 
 
-# Check whether to implement this or keep status check simple
-def get_task_type(action: str) -> Any:
+# Use response action type and return task class associated
+def _get_task_type(action: str) -> Any:
     task_dict: Dict[Any, List[str]] = {
         AccountTaskResp: [
             "enableAccount",
@@ -1185,12 +1197,14 @@ def fetch_incidents(client: Client):
         start = datetime.fromisoformat(last_run.get("start_time", ""))
     else:
         start = end + timedelta(days=-days)
-
-    alerts: List[Any] = []
-    alerts.extend(client.get_workbench_histories(start, end))
-
+    # Fetch alerts
+    alerts: List[Any] = client.get_workbench_histories(start, end)
+    # List to store incidents that will be sent to the UI
     incidents: List[Dict[str, Any]] = []
     if alerts:
+        # Alerts are fetched per created_date_time in descending order
+        # Set the last_event to the created_date_time for the first alert
+        # in alert list to get the latest created_date_time
         last_event = datetime.strptime(
             alerts[0].created_date_time, "%Y-%m-%dT%H:%M:%SZ"
         )
@@ -1207,11 +1221,7 @@ def fetch_incidents(client: Client):
             next_search = last_event + timedelta(0, 1)
             demisto.setLastRun({"start_time": next_search.isoformat()})
 
-    if incidents:
-        demisto.incidents(incidents)
-    else:
-        demisto.incidents([])
-
+    demisto.incidents(incidents)
     return incidents
 
 
