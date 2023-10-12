@@ -36,7 +36,7 @@ PACK_PATH_VERSION_REGEX = re.compile(fr'^{GCPConfig.PRODUCTION_STORAGE_BASE_PATH
 WLM_TASK_FAILED_ERROR_CODE = 101704
 
 GITLAB_SESSION = Session()
-CONTENT_PROJECT_ID = "2596"
+CONTENT_PROJECT_ID = os.getenv('CI_PROJECT_ID', '2596')  # the default is the id of the content repo in code.pan.run
 PACKS_DIR = "Packs"
 PACK_METADATA_FILE = Pack.USER_METADATA
 GITLAB_PACK_METADATA_URL = f'{{gitlab_url}}/api/v4/projects/{CONTENT_PROJECT_ID}/repository/files/{PACKS_DIR}%2F{{pack_id}}%2F{PACK_METADATA_FILE}'  # noqa: E501
@@ -791,21 +791,23 @@ def search_and_install_packs_and_their_dependencies(pack_ids: list,
             success &= search_pack_and_its_dependencies(pack_id=pack_id, **kwargs)
 
     else:
-        with ThreadPoolExecutor(max_workers=130) as pool:
-            futures = [
-                pool.submit(
-                    search_pack_and_its_dependencies, pack_id=pack_id, **kwargs
-                )
-                for pack_id in pack_ids
-            ]
-            for future in as_completed(futures):
-                try:
-                    success &= future.result()
-                except Exception:  # noqa E722
-                    logging.exception(
-                        f"An exception occurred while searching for dependencies of pack '{pack_ids[futures.index(future)]}'"
+        for b in batch(list(pack_ids), batch_size=20):
+            logging.info(f'installing packs in batch: {b}')
+            with ThreadPoolExecutor(max_workers=130) as pool:
+                futures = [
+                    pool.submit(
+                        search_pack_and_its_dependencies, pack_id=pack_id, **kwargs
                     )
-                    success = False
+                    for pack_id in pack_ids
+                ]
+                for future in as_completed(futures):
+                    try:
+                        success &= future.result()
+                    except Exception:  # noqa E722
+                        logging.exception(
+                            f"An exception occurred while searching for dependencies of pack '{pack_ids[futures.index(future)]}'"
+                        )
+                        success = False
         batch_packs_install_request_body = [installation_request_body]
 
     for packs_to_install_body in batch_packs_install_request_body:
@@ -813,3 +815,22 @@ def search_and_install_packs_and_their_dependencies(pack_ids: list,
         success &= pack_success
 
     return packs_to_install, success
+
+
+def batch(iterable, batch_size=1):
+    """Gets an iterable and yields slices of it.
+
+    Args:
+        iterable (list): list or other iterable object.
+        batch_size (int): the size of batches to fetch
+
+    Return:
+        (list): Iterable slices of given
+    """
+    current_batch = iterable[:batch_size]
+    not_batched = iterable[batch_size:]
+    while current_batch:
+        yield current_batch
+        current_batch = not_batched[:batch_size]
+        not_batched = not_batched[batch_size:]
+
