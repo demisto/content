@@ -1,17 +1,14 @@
 ## Palo Alto Networks Cortex XDR - IR
-[Cortex XDR](https://www.paloaltonetworks.com/cortex/cortex-xdr) is the world's first detection and response app that natively integrates network, endpoint, and cloud data to stop sophisticated attacks.
+[Cortex XDR](https://www.paloaltonetworks.com/cortex/cortex-xdr) is the world's first detection and response app that natively integrates network, endpoint, and cloud data to stop sophisticated attacks.  
+However, this integration intent to simulate Cortex XDR incidents for a dedicated pupose of traninig. The fetched alerts 
 
-### Generate an API Key and API Key ID
-1. In your Cortex XDR platform, go to **Settings**.
-2. Click the **+New Key** button in the top right corner.
-3. Generate a key of type **Advanced**.
-4. Copy and paste the key.
-5. From the ID column, copy the Key ID.
+### How to Enable the integration
+1. No credentials are needed to enable the integration.
+2. Check that the integration is set to `Fetch Incidents`.
+3. Check that the mapper and classifier are both ended with the suffix of `CTF`.
+4. Click on "save and exist" - no additional changes are needed. 
 
-### URL
-1. In your Cortex XDR platform, go to **Settings** > **Configurations** > **Integrations** > **API Keys**.
-2. Click the **Copy URL** button in the top right corner.
-
+#### Note:
+Keep in mind that all the required configuration for the CTF challenge can be found in the "Prepare your CTF" playbook.
 
 ---
-[View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/cortex-xdr---ir)

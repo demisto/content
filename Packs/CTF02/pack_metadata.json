@@ -1,5 +1,5 @@
 {
-    "name": "CTF 02",
+    "name": "Capture The Flag - 02",
     "description": "XSOAR's Capture the flag (CTF)",
     "support": "xsoar",
     "currentVersion": "1.0.0",
