@@ -1757,20 +1757,20 @@ Delegated Mail permissions (Mail.Read or Mail.Read.Shared) are required to acces
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MSGraphMail.MailAssesment.ID | String | Request id.
-| MSGraphMail.MailAssesment.CreatedDateTime | Date | Created data of the threat assessment request. | 
-| MSGraphMail.MailAssesment.ContentType | String | The content type of threat assessment. | 
-| MSGraphMail.MailAssesment.ExpectedAssessment | String | The expected assessment from submitter. Possible values are: block, unblock. | 
-| MSGraphMail.MailAssesment.Category | String | The threat category. Possible values are: spam, phishing, malware. | 
-| MSGraphMail.MailAssesment.Status | String | The assessment process status. Possible values are: pending, completed. | 
-| MSGraphMail.MailAssesment.RequestSource | String | The source of threat assessment request. Possible values are: administrator. | 
-| MSGraphMail.MailAssesment.RecipientEmail | String | The mail recipient whose policies are used to assess the mail. | 
-| MSGraphMail.MailAssesment.DestinationRoutingReason | String | The reason for mail routed to its destination. Possible values are: none, mailFlowRule, safeSender, blockedSender, advancedSpamFiltering, domainAllowList, domainBlockList, notInAddressBook, firstTimeSender, autoPurgeToInbox, autoPurgeToJunk, autoPurgeToDeleted, outbound, notJunk, junk. | 
-| MSGraphMail.MailAssesment.MessageID | String | Extracted from the message URI which is The resource URI of the mail message for assessment. | 
-| MSGraphMail.MailAssesment.CreatedUserID | String | User id. | 
-| MSGraphMail.MailAssesment.CreatedUsername | String | Username. | 
-| MSGraphMail.MailAssesment.ResultType | String | Result of the request. | 
-| MSGraphMail.MailAssesment.ResultMessage | String | Message of the result. | 
+| MSGraphMail.MailAssessment.ID | String | Request id.
+| MSGraphMail.MailAssessment.CreatedDateTime | Date | Created data of the threat assessment request. | 
+| MSGraphMail.MailAssessment.ContentType | String | The content type of threat assessment. | 
+| MSGraphMail.MailAssessment.ExpectedAssessment | String | The expected assessment from submitter. Possible values are: block, unblock. | 
+| MSGraphMail.MailAssessment.Category | String | The threat category. Possible values are: spam, phishing, malware. | 
+| MSGraphMail.MailAssessment.Status | String | The assessment process status. Possible values are: pending, completed. | 
+| MSGraphMail.MailAssessment.RequestSource | String | The source of threat assessment request. Possible values are: administrator. | 
+| MSGraphMail.MailAssessment.RecipientEmail | String | The mail recipient whose policies are used to assess the mail. | 
+| MSGraphMail.MailAssessment.DestinationRoutingReason | String | The reason for mail routed to its destination. Possible values are: none, mailFlowRule, safeSender, blockedSender, advancedSpamFiltering, domainAllowList, domainBlockList, notInAddressBook, firstTimeSender, autoPurgeToInbox, autoPurgeToJunk, autoPurgeToDeleted, outbound, notJunk, junk. | 
+| MSGraphMail.MailAssessment.MessageID | String | Extracted from the message URI which is The resource URI of the mail message for assessment. | 
+| MSGraphMail.MailAssessment.CreatedUserID | String | User id. | 
+| MSGraphMail.MailAssessment.CreatedUsername | String | Username. | 
+| MSGraphMail.MailAssessment.ResultType | String | Result of the request. | 
+| MSGraphMail.MailAssessment.ResultMessage | String | Message of the result. | 
 
 #### Command example
 
@@ -1826,7 +1826,9 @@ Delegated Mail permissions (Mail.Read or Mail.Read.Shared) are required to acces
 ### msg-create-email-file-assessment-request
 
 ***
-Create and retrieve a file threat assessment.
+Create and retrieve an email file threat assessment.
+
+Note: File has to contain X-MS-Exchange-Organization-Network-Message-Id header in the message or in the X-MS-Office365-Filtering-Correlation-Id header in quarantined messages.
 
 #### Base Command
 
@@ -1846,19 +1848,19 @@ Create and retrieve a file threat assessment.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MSGraphMail.EmailAssesment.ID | String | Request id.
-| MSGraphMail.EmailAssesment.CreatedDateTime | Date | Created data of the threat assessment request. | 
-| MSGraphMail.EmailAssesment.ContentType | String | The content type of threat assessment. | 
-| MSGraphMail.EmailAssesment.ExpectedAssessment | String | The expected assessment from submitter. Possible values are: block, unblock. | 
-| MSGraphMail.EmailAssesment.Category | String | The threat category. Possible values are: spam, phishing, malware. | 
-| MSGraphMail.EmailAssesment.Status | String | The assessment process status. Possible values are: pending, completed. | 
-| MSGraphMail.EmailAssesment.RequestSource | String | The source of threat assessment request. Possible values are: administrator. | 
-| MSGraphMail.EmailAssesment.RecipientEmail | String | The mail recipient whose policies are used to assess the mail. | 
-| MSGraphMail.EmailAssesment.DestinationRoutingReason | String | The reason for mail routed to its destination. Possible values are: none, mailFlowRule, safeSender, blockedSender, advancedSpamFiltering, domainAllowList, domainBlockList, notInAddressBook, firstTimeSender, autoPurgeToInbox, autoPurgeToJunk, autoPurgeToDeleted, outbound, notJunk, junk. | 
-| MSGraphMail.EmailAssesment.CreatedUserID | String | User id. | 
-| MSGraphMail.EmailAssesment.CreatedUsername | String | Username. | 
-| MSGraphMail.EmailAssesment.ResultType | String | Result of the request. | 
-| MSGraphMail.EmailAssesment.ResultMessage | String | Message of the result. | 
+| MSGraphMail.EmailAssessment.ID | String | Request id.
+| MSGraphMail.EmailAssessment.CreatedDateTime | Date | Created data of the threat assessment request. | 
+| MSGraphMail.EmailAssessment.ContentType | String | The content type of threat assessment. | 
+| MSGraphMail.EmailAssessment.ExpectedAssessment | String | The expected assessment from submitter. Possible values are: block, unblock. | 
+| MSGraphMail.EmailAssessment.Category | String | The threat category. Possible values are: spam, phishing, malware. | 
+| MSGraphMail.EmailAssessment.Status | String | The assessment process status. Possible values are: pending, completed. | 
+| MSGraphMail.EmailAssessment.RequestSource | String | The source of threat assessment request. Possible values are: administrator. | 
+| MSGraphMail.EmailAssessment.RecipientEmail | String | The mail recipient whose policies are used to assess the mail. | 
+| MSGraphMail.EmailAssessment.DestinationRoutingReason | String | The reason for mail routed to its destination. Possible values are: none, mailFlowRule, safeSender, blockedSender, advancedSpamFiltering, domainAllowList, domainBlockList, notInAddressBook, firstTimeSender, autoPurgeToInbox, autoPurgeToJunk, autoPurgeToDeleted, outbound, notJunk, junk. | 
+| MSGraphMail.EmailAssessment.CreatedUserID | String | User id. | 
+| MSGraphMail.EmailAssessment.CreatedUsername | String | Username. | 
+| MSGraphMail.EmailAssessment.ResultType | String | Result of the request. | 
+| MSGraphMail.EmailAssessment.ResultMessage | String | Message of the result. | 
 
 #### Command example
 
@@ -1902,6 +1904,85 @@ Create and retrieve a file threat assessment.
 >|ID|Created DateTime|Content Type|Expected Assessment|Category|Status|Request Source|Recipient Email|Destination Routing Reason|Created User ID|Created Username|
 >|---|---|---|---|---|---|---|---|---|---|---|
 >| 76598306-b25b-4605-ff0d-03kgmtfcf996 | "2019-11-27T05:45:14.0962061Z"| mail | unblock| phishing| completed | administrator | avishai@demistodev.onmicrosoft.com |notJunk|63798129-a62c-4f9e-2c6d-08d772fcfb0e|Phishing attempt.|
+
+
+### msg-create-file-assessment-request
+
+***
+Create and retrieve a file threat assessment.
+
+#### Base Command
+
+`msg-create-file-assessment-request`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| file_name | The file name. | Required | 
+| expected_assessment | the expected assessment: blocked or unblocked | Required | 
+| category | The category of the threat: phishing, malware or spam. | Required | 
+| content_data | content of an email file. | Optional | 
+| entry_id | entry id of file uploaded in the war room. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MSGraphMail.FileAssessment.ID | String | Request id.
+| MSGraphMail.FileAssessment.CreatedDateTime | Date | Created data of the threat assessment request. | 
+| MSGraphMail.FileAssessment.ContentType | String | The content type of threat assessment. | 
+| MSGraphMail.FileAssessment.ExpectedAssessment | String | The expected assessment from submitter. Possible values are: block, unblock. | 
+| MSGraphMail.FileAssessment.Category | String | The threat category. Possible values are: phishing, malware. | 
+| MSGraphMail.FileAssessment.Status | String | The assessment process status. Possible values are: pending, completed. | 
+| MSGraphMail.FileAssessment.RequestSource | String | The source of threat assessment request. Possible values are: administrator. | 
+| MSGraphMail.FileAssessment.FileName | String | The file name. | 
+| MSGraphMail.FileAssessment.CreatedUserID | String | User id. | 
+| MSGraphMail.FileAssessment.CreatedUsername | String | Username. | 
+| MSGraphMail.FileAssessment.ResultType | String | Result of the request. | 
+| MSGraphMail.FileAssessment.ResultMessage | String | Message of the result. | 
+
+#### Command example
+
+```!msg-create-file-assessment-request file_name="test_file.txt" expectedAssessment=block category=phishing entry_id=1235970482958bkf4```
+
+#### Context Example
+
+```json
+{
+
+    "id": "0796306-b456-4605-ff0d-03kgmtfcf876",
+    "createdDateTime": "2019-11-27T05:45:14.0962061Z",
+    "contentType": "file",
+    "expectedAssessment": "block",
+    "category": "phishing",
+    "status": "completed",
+    "requestSource": "administrator",
+    "fileName": "test_file.txt",
+    "createdBy": {
+      "user": {
+        "id": "c52ce8db-3e4b-4181-93c4-7d6b6bffaf60",
+        "displayName": "Ronald Admin"
+      }
+    },
+    "results": [
+        {
+            "id": "63798129-a62c-4f9e-2c6d-08d772fcfb0e",
+            "createdDateTime": "2019-11-27T05:45:16.55Z",
+            "resultType": "checkPolicy",
+            "message": "Phishing attempt."
+        }
+    ]
+}
+```
+
+#### Human Readable Output
+
+>### Mail assessment request:
+
+>|ID|Created DateTime|Content Type|Expected Assessment|Category|Status|Request Source|File Name|Created User ID|Created Username|
+>|---|---|---|---|---|---|---|---|---|---|
+>| 0796306-b456-4605-ff0d-03kgmtfcf876 | "2019-11-27T05:45:14.0962061Z"| file | block| phishing| completed | administrator | test_file.txt |63798129-a62c-4f9e-2c6d-08d772fcfb0e|Phishing attempt.|
 
 >### Authorization instructions
 >1. Click on the [login URL]() to sign in and grant Cortex XSOAR permissions for your Azure Service Management.

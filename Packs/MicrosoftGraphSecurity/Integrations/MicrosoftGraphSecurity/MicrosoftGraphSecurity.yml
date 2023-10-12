@@ -1660,46 +1660,46 @@ script:
     name: msg-create-mail-assessment-request
     polling: true
     outputs:
-    - contextPath: MSGraphMail.MailAssesment.ID
+    - contextPath: MSGraphMail.MailAssessment.ID
       description: 'mail assessment id'
       type: String
-    - contextPath: MSGraphMail.MailAssesment.CreatedDateTime
+    - contextPath: MSGraphMail.MailAssessment.CreatedDateTime
       description: 'mail assessment Created DateTime'
       type: String
-    - contextPath: MSGraphMail.MailAssesment.ContentType
+    - contextPath: MSGraphMail.MailAssessment.ContentType
       description: 'Content Type'
       type: String
-    - contextPath: MSGraphMail.MailAssesment.ExpectedAssessment
+    - contextPath: MSGraphMail.MailAssessment.ExpectedAssessment
       description: 'Expected Assessment'
       type: String
-    - contextPath: MSGraphMail.MailAssesment.Category
+    - contextPath: MSGraphMail.MailAssessment.Category
       description: 'Category'
       type: String
-    - contextPath: MSGraphMail.MailAssesment.Status
+    - contextPath: MSGraphMail.MailAssessment.Status
       description: 'Status'
       type: String
-    - contextPath: MSGraphMail.MailAssesment.RequestSource
+    - contextPath: MSGraphMail.MailAssessment.RequestSource
       description: 'Request Source'
       type: String
-    - contextPath: MSGraphMail.MailAssesment.RecipientEmail
+    - contextPath: MSGraphMail.MailAssessment.RecipientEmail
       description: 'Recipient Email'
       type: String
-    - contextPath: MSGraphMail.MailAssesment.DestinationRoutingReason
+    - contextPath: MSGraphMail.MailAssessment.DestinationRoutingReason
       description: 'Destination Routing Reason'
       type: String
-    - contextPath: MSGraphMail.MailAssesment.MessageID
+    - contextPath: MSGraphMail.MailAssessment.MessageID
       description: 'Message ID'
       type: String
-    - contextPath: MSGraphMail.MailAssesment.CreatedUserID
+    - contextPath: MSGraphMail.MailAssessment.CreatedUserID
       description: 'Created user id '
       type: String
-    - contextPath: MSGraphMail.MailAssesment.CreatedUsername
+    - contextPath: MSGraphMail.MailAssessment.CreatedUsername
       description: 'Created user name'
       type: String
-    - contextPath: MSGraphMail.MailAssesment.ResultType
+    - contextPath: MSGraphMail.MailAssessment.ResultType
       description: 'Result Type'
       type: String
-    - contextPath: MSGraphMail.MailAssesment.ResultMessage
+    - contextPath: MSGraphMail.MailAssessment.ResultMessage
       description: 'Result message'
       type: String
   - arguments:
@@ -1739,43 +1739,43 @@ script:
     name: msg-create-email-file-assessment-request
     polling: true
     outputs:
-    - contextPath: MSGraphMail.EmailAssesment.ID
+    - contextPath: MSGraphMail.EmailAssessment.ID
       description: 'mail assessment id'
       type: String
-    - contextPath: MSGraphMail.EmailAssesment.CreatedDateTime
+    - contextPath: MSGraphMail.EmailAssessment.CreatedDateTime
       description: 'mail assessment Created DateTime'
       type: String
-    - contextPath: MSGraphMail.EmailAssesment.ContentType
+    - contextPath: MSGraphMail.EmailAssessment.ContentType
       description: 'Content Type'
       type: String
-    - contextPath: MSGraphMail.EmailAssesment.ExpectedAssessment
+    - contextPath: MSGraphMail.EmailAssessment.ExpectedAssessment
       description: 'Expected Assessment'
       type: String
-    - contextPath: MSGraphMail.EmailAssesment.Category
+    - contextPath: MSGraphMail.EmailAssessment.Category
       description: 'Category'
       type: String
-    - contextPath: MSGraphMail.EmailAssesment.Status
+    - contextPath: MSGraphMail.EmailAssessment.Status
       description: 'Status'
       type: String
-    - contextPath: MSGraphMail.EmailAssesment.RequestSource
+    - contextPath: MSGraphMail.EmailAssessment.RequestSource
       description: 'Request Source'
       type: String
-    - contextPath: MSGraphMail.EmailAssesment.RecipientEmail
+    - contextPath: MSGraphMail.EmailAssessment.RecipientEmail
       description: 'Recipient Email'
       type: String
-    - contextPath: MSGraphMail.EmailAssesment.DestinationRoutingReason
+    - contextPath: MSGraphMail.EmailAssessment.DestinationRoutingReason
       description: 'Destination Routing Reason'
       type: String
-    - contextPath: MSGraphMail.EmailAssesment.CreatedUserID
+    - contextPath: MSGraphMail.EmailAssessment.CreatedUserID
       description: 'Created user id '
       type: String
-    - contextPath: MSGraphMail.EmailAssesment.CreatedUsername
+    - contextPath: MSGraphMail.EmailAssessment.CreatedUsername
       description: 'Created user name'
       type: String
-    - contextPath: MSGraphMail.EmailAssesment.ResultType
+    - contextPath: MSGraphMail.EmailAssessment.ResultType
       description: 'Result Type'
       type: String
-    - contextPath: MSGraphMail.EmailAssesment.ResultMessage
+    - contextPath: MSGraphMail.EmailAssessment.ResultMessage
       description: 'Result message'
       type: String
   - arguments:
@@ -1814,40 +1814,40 @@ script:
     name: msg-create-file-assessment-request
     polling: true
     outputs:
-    - contextPath: MSGraphMail.FileAssesment.ID
+    - contextPath: MSGraphMail.FileAssessment.ID
       description: 'mail assessment id'
       type: String
-    - contextPath: MSGraphMail.FileAssesment.CreatedDateTime
+    - contextPath: MSGraphMail.FileAssessment.CreatedDateTime
       description: 'mail assessment Created DateTime'
       type: String
-    - contextPath: MSGraphMail.FileAssesment.ContentType
+    - contextPath: MSGraphMail.FileAssessment.ContentType
       description: 'Content Type'
       type: String
-    - contextPath: MSGraphMail.FileAssesment.ExpectedAssessment
+    - contextPath: MSGraphMail.FileAssessment.ExpectedAssessment
       description: 'Expected Assessment'
       type: String
-    - contextPath: MSGraphMail.FileAssesment.Category
+    - contextPath: MSGraphMail.FileAssessment.Category
       description: 'Category'
       type: String
-    - contextPath: MSGraphMail.FileAssesment.Status
+    - contextPath: MSGraphMail.FileAssessment.Status
       description: 'Status'
       type: String
-    - contextPath: MSGraphMail.FileAssesment.RequestSource
+    - contextPath: MSGraphMail.FileAssessment.RequestSource
       description: 'Request Source'
       type: String
-    - contextPath: MSGraphMail.FileAssesment.FileName
+    - contextPath: MSGraphMail.FileAssessment.FileName
       description: 'File name'
       type: String
-    - contextPath: MSGraphMail.FileAssesment.CreatedUserID
+    - contextPath: MSGraphMail.FileAssessment.CreatedUserID
       description: 'Created user id '
       type: String
-    - contextPath: MSGraphMail.FileAssesment.CreatedUsername
+    - contextPath: MSGraphMail.FileAssessment.CreatedUsername
       description: 'Created user name'
       type: String
-    - contextPath: MSGraphMail.FileAssesment.ResultType
+    - contextPath: MSGraphMail.FileAssessment.ResultType
       description: 'Result Type'
       type: String
-    - contextPath: MSGraphMail.FileAssesment.ResultMessage
+    - contextPath: MSGraphMail.FileAssessment.ResultMessage
       description: 'Result message'
       type: String
   - arguments:
@@ -1878,43 +1878,43 @@ script:
     name: msg-create-url-assessment-request
     polling: true
     outputs:
-    - contextPath: MSGraphMail.UrlAssesment.ID
+    - contextPath: MSGraphMail.UrlAssessment.ID
       description: 'mail assessment id'
       type: String
-    - contextPath: MSGraphMail.UrlAssesment.CreatedDateTime
+    - contextPath: MSGraphMail.UrlAssessment.CreatedDateTime
       description: 'mail assessment Created DateTime'
       type: String
-    - contextPath: MSGraphMail.UrlAssesment.ContentType
+    - contextPath: MSGraphMail.UrlAssessment.ContentType
       description: 'Content Type'
       type: String
-    - contextPath: MSGraphMail.UrlAssesment.ExpectedAssessment
+    - contextPath: MSGraphMail.UrlAssessment.ExpectedAssessment
       description: 'Expected Assessment'
       type: String
-    - contextPath: MSGraphMail.UrlAssesment.Category
+    - contextPath: MSGraphMail.UrlAssessment.Category
       description: 'Category'
       type: String
-    - contextPath: MSGraphMail.UrlAssesment.Status
+    - contextPath: MSGraphMail.UrlAssessment.Status
       description: 'Status'
       type: String
-    - contextPath: MSGraphMail.UrlAssesment.RequestSource
+    - contextPath: MSGraphMail.UrlAssessment.RequestSource
       description: 'Request Source'
       type: String
-    - contextPath: MSGraphMail.UrlAssesment.RecipientEmail
+    - contextPath: MSGraphMail.UrlAssessment.RecipientEmail
       description: 'Recipient Email'
       type: String
-    - contextPath: MSGraphMail.UrlAssesment.DestinationRoutingReason
+    - contextPath: MSGraphMail.UrlAssessment.DestinationRoutingReason
       description: 'Destination Routing Reason'
       type: String
-    - contextPath: MSGraphMail.UrlAssesment.CreatedUserID
+    - contextPath: MSGraphMail.UrlAssessment.CreatedUserID
       description: 'Created user id'
       type: String
-    - contextPath: MSGraphMail.UrlAssesment.CreatedUsername
+    - contextPath: MSGraphMail.UrlAssessment.CreatedUsername
       description: 'Created user name'
       type: String
-    - contextPath: MSGraphMail.UrlAssesment.ResultType
+    - contextPath: MSGraphMail.UrlAssessment.ResultType
       description: 'Result Type'
       type: String
-    - contextPath: MSGraphMail.UrlAssesment.ResultMessage
+    - contextPath: MSGraphMail.UrlAssessment.ResultMessage
       description: 'Result message'
       type: String
   - arguments:
