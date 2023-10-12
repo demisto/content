@@ -11,10 +11,9 @@ def unlock_pdf(args: dict):
     try:
         with Pdf.open(origin_path, password=str(args.get("password"))) as unlocked_pdf:
             unlocked_pdf.save(output_name)
+        return_results(file_result_existing_file(output_name))
     except PasswordError:
         return_error("Incorrect password. Please provide the correct password.")
-
-    return_results(file_result_existing_file(output_name))
 
 
 def main():
