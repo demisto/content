@@ -351,7 +351,7 @@ class StixDecode(object):
                                 r.update(pprops)
                                 observable_result.append(r)
                 except Exception as e:
-                    demisto.error(f"Decode Error for {str(o)} with message {str(e)}")
+                    demisto.error(f"Error for {str(o)} with message {str(e)}")
 
         # extract the Indicator info
         if indicators := package.find_all('Indicator'):
