@@ -536,6 +536,7 @@ def detection_to_incident(detection):
     incident = {
         'name': 'Detection ID: ' + str(detection.get('detection_id')),
         'occurred': str(detection.get('first_behavior')),
+        'created': str(detection.get('created_timestamp')),
         'rawJSON': json.dumps(detection),
         'severity': severity_string_to_int(detection.get('max_severity_displayname'))
     }
@@ -1296,7 +1297,7 @@ def get_detections(last_behavior_time=None, behavior_id=None, filter_arg=None):
 
 
 def get_fetch_detections(last_created_timestamp=None, filter_arg=None, offset: int = 0, last_updated_timestamp=None,
-                         has_limit=True, limit: int = INCIDENTS_PER_FETCH, start_key: str = "first_behavior"):
+                         has_limit=True, limit: int = INCIDENTS_PER_FETCH):
     """ Sends detection request, based on the created_timestamp field. Used for fetch-incidents
     Args:
         last_created_timestamp: last created timestamp of the results will be greater than this value.
@@ -1312,15 +1313,12 @@ def get_fetch_detections(last_created_timestamp=None, filter_arg=None, offset: i
     if has_limit:
         params['limit'] = limit
 
+    if filter_arg:
+        params['filter'] = filter_arg
     elif last_created_timestamp:
-        params['filter'] = f"{start_key}:>'{last_created_timestamp}'"
+        params['filter'] = f"created_timestamp:>'{last_created_timestamp}'"
     elif last_updated_timestamp:
         params['filter'] = f"date_updated:>'{last_updated_timestamp}'"
-    if filter_arg:
-        if "filter" in params:
-            params['filter'] += f"+{filter_arg}"
-        else:
-            params['filter'] = filter_arg
 
     response = http_request('GET', endpoint_url, params)
     demisto.debug(f"CrowdStrikeFalconMsg: Getting detections from {endpoint_url} with {params=}. {response=}")
@@ -2533,6 +2531,7 @@ def sort_summaries_by_date_key(full_incidents: list[dict], key_field: str) -> li
     full_incidents.sort(key=lambda x: dateparser.parse(x[key_field]) or datetime.now())
     return full_incidents
 
+
 def fetch_incidents():
     incidents: list = []
     detections: list = []
@@ -2563,23 +2562,19 @@ def fetch_incidents():
         fetch_limit = current_fetch_info_detections.get('limit') or INCIDENTS_PER_FETCH
         incident_type = 'detection'
         fetch_query = demisto.params().get('fetch_query')
-        detections_ids_by_behavior = demisto.get(get_fetch_detections(filter_arg=fetch_query,
-                                                                      last_created_timestamp=start_fetch_time,
-                                                                      limit=fetch_limit,
-                                                                      start_key="first_behavior"),
-                                                 'resources')
-        detection_ids_by_created = demisto.get(get_fetch_detections(filter_arg=fetch_query,
-                                                                    last_created_timestamp=start_fetch_time,
-                                                                    limit=fetch_limit,
-                                                                    start_key="created_timestamp"),
-                                               'resources')
-        detections_ids = list(set(detections_ids_by_behavior + detection_ids_by_created))
+        if fetch_query:
+            fetch_query = f"created_timestamp:>'{start_fetch_time}'+{fetch_query}"
+            detections_ids = demisto.get(get_fetch_detections(filter_arg=fetch_query, limit=fetch_limit), 'resources')
+        else:
+            detections_ids = demisto.get(get_fetch_detections(last_created_timestamp=start_fetch_time, limit=fetch_limit),
+                                         'resources')
+
         raw_res = get_detections_entities(detections_ids)
 
         if raw_res is not None and "resources" in raw_res:
             full_detections = demisto.get(raw_res, "resources")
             sorted_detections = sort_summaries_by_date_key(full_incidents=full_detections,
-                                                           key_field="first_behavior",
+                                                           key_field="created_timestamp",
                                                            )
 
             for detection in sorted_detections:
@@ -2600,11 +2595,16 @@ def fetch_incidents():
             if occurred:
                 detection["occurred"] = occurred.strftime(DATE_FORMAT)
                 demisto.debug(f"CrowdStrikeFalconMsg: Detection {detection['name']} occurred at {detection['occurred']}")
+            created = dateparser.parse(detection["created"])
+            if created:
+                detection["created"] = created.strftime(DATE_FORMAT)
+                demisto.debug(f"CrowdStrikeFalconMsg: Detection {detection['name']} created at {detection['created']}")
+
         updated_last_run = update_last_run_object(last_run=current_fetch_info_detections, incidents=detections,
                                                   fetch_limit=INCIDENTS_PER_FETCH,
                                                   start_fetch_time=start_fetch_time, end_fetch_time=end_fetch_time,
                                                   look_back=look_back,
-                                                  created_time_field='occurred', id_field='name', date_format=DATE_FORMAT)
+                                                  created_time_field='created', id_field='name', date_format=DATE_FORMAT)
         demisto.debug(f"updated last run is {updated_last_run}")
         current_fetch_info_detections = updated_last_run
 
@@ -2631,8 +2631,8 @@ def fetch_incidents():
             if raw_res is not None and "resources" in raw_res:
                 full_incidents = demisto.get(raw_res, "resources")
                 sorted_incidents = sort_summaries_by_ids_order(ids_order=incidents_ids,
-                                        full_incidents=full_incidents,
-                                        id_field='incident_id')
+                                                               full_incidents=full_incidents,
+                                                               id_field='incident_id')
                 for incident in sorted_incidents:
                     incident['incident_type'] = incident_type
                     incident_to_context = incident_to_incident_context(incident)
@@ -2669,8 +2669,8 @@ def fetch_incidents():
             if "resources" in raw_res:
                 full_detections = demisto.get(raw_res, "resources")
                 sorted_detections = sort_summaries_by_ids_order(ids_order=idp_detections_ids,
-                                                               full_incidents=full_detections,
-                                                               id_field='composite_id')
+                                                                full_incidents=full_detections,
+                                                                id_field='composite_id')
                 for idp_detection in sorted_detections:
                     idp_detection['incident_type'] = IDP_DETECTION
                     idp_detection_to_context = idp_detection_to_incident_context(idp_detection)
