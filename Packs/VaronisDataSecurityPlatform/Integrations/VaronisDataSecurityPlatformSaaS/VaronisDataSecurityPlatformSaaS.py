@@ -18,7 +18,6 @@ requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 
 MAX_USERS_TO_SEARCH = 5
 NON_EXISTENT_SID = -1000
-MAX_INCIDENTS_TO_FETCH = 50
 THREAT_MODEL_ENUM_ID = 5821
 ALERT_STATUSES = {'new': 1, 'under investigation': 2, 'closed': 3, 'action required': 4, 'auto-resolved': 5}
 ALERT_SEVERITIES = ['high', 'medium', 'low']
@@ -80,8 +79,8 @@ class Client(BaseClient):
                            end_time: Optional[datetime], ingest_time_from: Optional[datetime],
                            ingest_time_to: Optional[datetime], device_names: Optional[List[str]], last_days: Optional[int],
                            sid_ids: Optional[List[int]], from_alert_id: Optional[int], alert_statuses: Optional[List[str]],
-                           alert_severities: Optional[List[str]], aggregate: bool, count: int,
-                           page: int, descending_order: bool) -> List[Dict[str, Any]]:
+                           alert_severities: Optional[List[str]], aggregate: bool,
+                           descending_order: bool) -> List[Dict[str, Any]]:
         """Get alerts
 
         :type ruleIds: ``Optional[List[str]]``
@@ -125,9 +124,6 @@ class Client(BaseClient):
 
         :type count: ``int``
         :param count: Alerts count
-
-        :type page: ``int``
-        :param page: Page number
 
         :type descendingOrder: ``bool``
         :param descendingOrder: Indicates whether alerts should be ordered in newest to oldest order
@@ -191,9 +187,7 @@ class Client(BaseClient):
         # if from_alert_id is not None:
         #     data['FromAlertSeqId'] = from_alert_id
         # data['Aggregate'] = aggregate
-        # data['Offset'] = (page - 1) * count
-        # data['MaxResult'] = count
-
+        
         dataJSON = json.dumps(data)
         return self._http_request(
             'POST',
@@ -204,7 +198,6 @@ class Client(BaseClient):
 
 
     def varonis_get_alerted_events(self, alertIds: List[str], start_time: Optional[datetime], end_time: Optional[datetime],
-                                   count: int, page: int,
                                    descending_order: bool) -> List[Dict[str, Any]]:
         """Get alerted events
 
@@ -219,9 +212,6 @@ class Client(BaseClient):
 
         :type count: ``int``
         :param count: Alerted events count
-
-        :type page: ``int``
-        :param page: Page number
 
         :type descendingOrder: ``bool``
         :param descendingOrder: Indicates whether events should be ordered in newest to oldest order
@@ -249,10 +239,6 @@ class Client(BaseClient):
         if descending_order:
             data['DescendingOrder'] = descending_order
         
-        # TODO: next parametes are not supported by API
-        # data['Offset'] = (page - 1) * count
-        # data['MaxResult'] = count
-         
         dataJSON = json.dumps(data)
         return self._http_request(
             'POST',
@@ -417,27 +403,6 @@ def strEqual(text1: str, text2: str) -> bool:
         return False
 
     return text1.casefold() == text2.casefold()
-
-
-def enrich_with_pagination(output: Dict[str, Any], page: int, page_size: int) -> Dict[str, Any]:
-    """Enriches command output with pagination info
-
-    :type output: ``Dict[str, Any]``
-    :param output: Command output
-
-    :type page: ``int``
-    :param page: Page number
-
-    :type page_size: ``int``
-    :param page_size: Amount of elements on the page
-
-    :return: Enriched command output
-    :rtype: ``Dict[str, Any]``
-    """
-    output['Pagination'] = dict()
-    output['Pagination']['Page'] = page
-    output['Pagination']['PageSize'] = page_size
-    return output
 
 
 def enrich_with_url(output: Dict[str, Any], baseUrl: str, id: str) -> Dict[str, Any]:
@@ -691,7 +656,7 @@ def test_module_command(client: Client) -> str:
     return message
 
 
-def fetch_incidents_command(client: Client, last_run: Dict[str, datetime], first_fetch_time: Optional[datetime], max_results: int,
+def fetch_incidents_command(client: Client, last_run: Dict[str, datetime], first_fetch_time: Optional[datetime],
                             alert_status: Optional[str], threat_model: Optional[str], severity: Optional[str]
                             ) -> Tuple[Dict[str, Optional[datetime]], List[dict]]:
     """This function retrieves new alerts every interval (default is 1 minute).
@@ -707,9 +672,6 @@ def fetch_incidents_command(client: Client, last_run: Dict[str, datetime], first
     :param first_fetch_time:
         If last_run is None (first time we are fetching), it contains
         the datetime on when to start fetching incidents
-
-    :type max_results: ``int``
-    :param max_results: Maximum numbers of incidents per fetch
 
     :type alert_status: ``Optional[str]``
     :param alert_status: status of the alert to search for. Options are 'New', 'Under investigation', 'Action Required', 'Auto-Resolved' or 'Closed' 
@@ -731,9 +693,6 @@ def fetch_incidents_command(client: Client, last_run: Dict[str, datetime], first
     threat_model_names = argToList(threat_model)
     if threat_model_names and len(threat_model_names) > 0:
         validate_threat_models(client, threat_model_names)
-
-    if max_results > MAX_INCIDENTS_TO_FETCH:
-        raise ValueError(f'{max_results} is too big number to fetch. Max incidents to fetch is {MAX_INCIDENTS_TO_FETCH}')
 
     incidents: List[Dict[str, Any]] = []
     
@@ -760,7 +719,7 @@ def fetch_incidents_command(client: Client, last_run: Dict[str, datetime], first
                                         ingest_time_from=last_fetched_ingest_time,
                                         ingest_time_to=ingest_time_to,
                                         alert_statuses=statuses, alert_severities=severities, aggregate=True,
-                                        count=max_results, page=1, descending_order=True)
+                                        descending_order=True)
 
     demisto.debug(f'varonis_get_alerts returned: {len(alerts)} alerts')
 
@@ -807,8 +766,6 @@ def varonis_get_alerts_command(client: Client, args: Dict[str, Any]) -> CommandR
     :param args:
         all command arguments, usually passed from ``demisto.args()``.
         ``args['threat_model_name']`` List of requested threat models to retrieve
-        ``args['page']`` Page number (default 1)
-        ``args['max_results']`` The max number of alerts to retrieve (up to 50)
         ``args['ingest_time_from']`` Start ingest time of the range of alerts
         ``args['ingest_time_to']`` End ingest time of the range of alerts
         ``args['start_time']`` Start time of the range of alerts
@@ -830,7 +787,6 @@ def varonis_get_alerts_command(client: Client, args: Dict[str, Any]) -> CommandR
     """
     threat_model_names = args.get('threat_model_name', None)
     alert_ids = args.get('alert_ids', None)
-    max_results = args.get('max_results', None)
     start_time = args.get('start_time', None)
     end_time = args.get('end_time', None)
     ingest_time_from = args.get('ingest_time_from', None)
@@ -838,7 +794,6 @@ def varonis_get_alerts_command(client: Client, args: Dict[str, Any]) -> CommandR
     alert_statuses = args.get('alert_status', None)
     alert_severities = args.get('alert_severity', None)
     device_names = args.get('device_name', None)
-    page = args.get('page', '1')
     user_domain_name = args.get('user_domain_name', None)
     user_names = args.get('user_name', None)
     sam_account_names = args.get('sam_account_name', None)
@@ -875,11 +830,7 @@ def varonis_get_alerts_command(client: Client, args: Dict[str, Any]) -> CommandR
     alert_severities = try_convert(alert_severities, lambda x: argToList(x))
     device_names = try_convert(device_names, lambda x: argToList(x))
     threat_model_names = try_convert(threat_model_names, lambda x: argToList(x))
-    max_results = try_convert(
-        max_results,
-        lambda x: int(x),
-        ValueError(f'max_results should be integer, but it is {max_results}.')
-    )
+    
     start_time = try_convert(
         start_time,
         lambda x: datetime.fromisoformat(x),
@@ -903,12 +854,6 @@ def varonis_get_alerts_command(client: Client, args: Dict[str, Any]) -> CommandR
     )
 
     alert_statuses = try_convert(alert_statuses, lambda x: argToList(x))
-    page = try_convert(
-        page,
-        lambda x: int(x),
-        ValueError(f'page should be integer, but it is {page}.')
-    )
-
     sid_ids = get_sids_by_email(client, emails) + get_sids_by_sam(client, sam_account_names) + \
         get_sids_by_user_name(client, user_names, user_domain_name)
 
@@ -925,14 +870,12 @@ def varonis_get_alerts_command(client: Client, args: Dict[str, Any]) -> CommandR
     ruleIds = get_rule_ids(client, threat_model_names)
     
     alerts = client.varonis_get_alerts(ruleIds, alert_ids, start_time, end_time, ingest_time_from, ingest_time_to, device_names,
-                                       last_days, sid_ids, None, alert_statuses, alert_severities, False, max_results,
-                                       page, descending_order)
+                                       last_days, sid_ids, None, alert_statuses, alert_severities, False,
+                                       descending_order)
     outputs = dict()
     outputs['Alert'] = alerts
 
-    page_size = len(alerts)
     if outputs:
-        outputs = enrich_with_pagination(outputs, page, page_size)
         for alert in alerts:
             enrich_with_url(alert, client._base_url, alert['ID'])
 
@@ -959,8 +902,6 @@ def varonis_get_alerted_events_command(client: Client, args: Dict[str, Any]) -> 
         ``args['alert_id']`` List of alert ids
         ``args['start_time']`` Start time of the range of events
         ``args['end_time']`` End time of the range of events
-        ``args['page']`` Page number (default 1)
-        ``args['max_results']`` The max number of events to retrieve (up to 5k)
         ``args['descending_order']`` Indicates whether events should be ordered in newest to oldest order
 
     :return:
@@ -971,8 +912,6 @@ def varonis_get_alerted_events_command(client: Client, args: Dict[str, Any]) -> 
     alertIds = args.get('alert_id', None)
     start_time = args.get('start_time', None)
     end_time = args.get('end_time', None)
-    page = args.get('page', '1')
-    max_results = args.get('max_results', '100')
     descending_order = args.get('descending_order', True)
 
     alertIds = try_convert(alertIds, lambda x: argToList(x))
@@ -986,25 +925,11 @@ def varonis_get_alerted_events_command(client: Client, args: Dict[str, Any]) -> 
         lambda x: datetime.fromisoformat(x),
         ValueError(f'end_time should be in iso format, but it is {start_time}.')
     )
-    max_results = try_convert(
-        max_results,
-        lambda x: int(x),
-        ValueError(f'max_results should be integer, but it is {max_results}.')
-    )
-    page = try_convert(
-        page,
-        lambda x: int(x),
-        ValueError(f'page should be integer, but it is {page}.')
-    )
-
+    
     events = client.varonis_get_alerted_events(alertIds=alertIds, start_time=start_time, end_time=end_time,
-                                               count=max_results, page=page, descending_order=descending_order)
-    page_size = len(events)
+                                               descending_order=descending_order)
     outputs = dict()
     outputs['Event'] = events
-
-    if outputs:
-        outputs = enrich_with_pagination(outputs, page, page_size)
 
     readable_output = tableToMarkdown('Varonis Alerted Events', events)
 
@@ -1109,8 +1034,6 @@ def main() -> None:
             pass
         elif command == 'varonis-get-alerts':
             args['threat_model_name'] = ["Deletion: Multiple directory service objects"]  # List of requested threat models
-            args['page'] = '1'  # Page number (default 1)
-            args['max_results'] = '50'  # The max number of alerts to retrieve (up to 50)
             args['ingest_time_from'] = None  # Start ingest time of the range of alerts
             args['ingest_time_to'] = None  # End ingest time of the range of alerts
             args['start_time'] = None  # Start time of the range of alerts
@@ -1129,8 +1052,6 @@ def main() -> None:
             args['alert_id'] = None  # List of alert ids
             args['start_time'] = None  # Start time of the range of events
             args['end_time'] = None  # End time of the range of events
-            args['page'] = '1'  # Page number (default 1)
-            args['max_results'] = '50'  # The max number of events to retrieve (up to 5k)
             args['descending_order'] = None  # Indicates whether events should be ordered in newest to oldest order
 
         elif command == 'varonis-update-alert-status':
@@ -1189,14 +1110,6 @@ def main() -> None:
             threat_model = params.get('threat_model', None)
             severity = params.get('severity', None)
 
-            max_results = arg_to_number(
-                arg=params.get('max_fetch'),
-                arg_name='max_fetch',
-                required=False
-            )
-            if not max_results or max_results > MAX_INCIDENTS_TO_FETCH:
-                max_results = MAX_INCIDENTS_TO_FETCH
-
             first_fetch_time = arg_to_datetime(
                 arg=params.get('first_fetch', '1 week'),
                 arg_name='First fetch time',
@@ -1208,8 +1121,7 @@ def main() -> None:
                                                             first_fetch_time=first_fetch_time,
                                                             alert_status=alert_status, 
                                                             threat_model=threat_model,
-                                                            severity=severity,
-                                                            max_results=max_results)
+                                                            severity=severity)
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
 

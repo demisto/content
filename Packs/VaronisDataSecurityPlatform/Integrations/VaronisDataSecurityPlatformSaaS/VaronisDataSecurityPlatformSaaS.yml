@@ -86,13 +86,6 @@ script:
       required: false
       secret: false
     - default: false
-      defaultValue: '50'
-      description: The max number of alerts to retrieve (up to 50)
-      isArray: false
-      name: max_results
-      required: false
-      secret: false
-    - default: false
       description: Start time of alert range
       isArray: false
       name: start_time
@@ -156,13 +149,6 @@ script:
       description: Indicates whether alerts should be ordered in newest to oldest order
       isArray: false
       name: descending_order
-      required: false
-      secret: false
-    - default: true
-      defaultValue: '1'
-      description: Page number
-      isArray: false
-      name: page
       required: false
       secret: false
     deprecated: false
@@ -268,12 +254,6 @@ script:
     - contextPath: Varonis.Alert.Device.IPThreatTypes
       description: Whether the alert contains IPs known to be malicious
       type: String
-    - contextPath: Varonis.Pagination.Page
-      description: Current page number requested by user
-      type: Number
-    - contextPath: Varonis.Pagination.PageSize
-      description: Number of records on the page
-      type: Number
   - arguments:
     - default: false
       description: Requested alerts
@@ -328,19 +308,6 @@ script:
       isArray: true
       name: alert_id
       required: true
-      secret: false
-    - default: false
-      description: Maximum number of alerts to retrieve (up to 5k)
-      isArray: false
-      name: max_results
-      required: false
-      secret: false
-    - default: true
-      defaultValue: '1'
-      description: Page number
-      isArray: false
-      name: page
-      required: false
       secret: false
     - default: false
       description: Indicates whether events should be ordered in newest to oldest order
@@ -473,12 +440,6 @@ script:
     - contextPath: Varonis.Event.OnObject.Path
       description: Path of asset
       type: String
-    - contextPath: Varonis.Pagination.Page
-      description: Current page number requested by user
-      type: Number
-    - contextPath: Varonis.Pagination.PageSize
-      description: Number of records on the page
-      type: Number
   dockerimage: demisto/ntlm:1.0.0.31381
   feed: false
   isfetch: true

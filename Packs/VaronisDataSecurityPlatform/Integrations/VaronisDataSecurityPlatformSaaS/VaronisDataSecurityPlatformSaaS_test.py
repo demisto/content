@@ -174,7 +174,6 @@ def test_fetch_incidents(mocker: MockerFixture, requests_mock: MockerFixture):
 
     next_run, incidents = fetch_incidents_command(
         client=client,
-        max_results=50,
         alert_status=None,
         severity=None,
         threat_model=threat_model,
