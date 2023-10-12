@@ -18,7 +18,7 @@ configuration:
   section: Connect
   required: false
 - display: Remove formatted incident sublist fields.
-  name: formatSublists
+  name: dontFormatSublists
   additionalinfo: (Unchecked for backwards compatibility, recommended to check.)
   defaultvalue: 'false'
   type: 8
