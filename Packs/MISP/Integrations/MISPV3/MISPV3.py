@@ -1036,8 +1036,7 @@ def search_attributes(demisto_args: dict) -> CommandResults:
             if isinstance(response, list):
                 for attachment in response:
                     for objects in attachment.get('Event', {}).get('Object', []):
-                                if 'Attribute' in objects:
-                                    for object in objects.get('Attribute'):
+                                for object in objects.get('Attribute', []):
                                         if 'value' in object:
                                             if args.get('value') == object.get('value'):
                                                 for object in objects.get('Attribute'):
