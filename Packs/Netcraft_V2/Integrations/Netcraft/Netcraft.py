@@ -1070,12 +1070,8 @@ def main() -> None:
     command = demisto.command()
 
     client = Client(
-        base_url=sub_dict(
-            PARAMS, 'submission_url', 'takedown_url'
-        ),
-        headers={
-            'Authorization': f'Bearer {PARAMS["credentials"]["password"]}'
-        },
+        base_url=sub_dict(PARAMS, 'submission_url', 'takedown_url'),
+        headers={'Authorization': f'Bearer {PARAMS["credentials"]["password"]}'},
         verify=(not PARAMS['insecure']),
         proxy=PARAMS['proxy'],
         ok_codes=(200,),
