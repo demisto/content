@@ -22,6 +22,12 @@ configuration:
   advanced: true
   additionalinfo: When selecting the Custom option, the Server URL parameter must be filled. More information about National clouds can be found here - https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#using-national-cloud
   required: false
+- defaultvalue: '10'
+  display: Maximum number of incidents per fetch
+  name: limit
+  type: 0
+  section: Collect
+  required: false
 - name: creds_tenant_id
   type: 9
   displaypassword: Tenant ID

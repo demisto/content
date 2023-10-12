@@ -40,7 +40,7 @@ COMMENT_HEADERS = ['ID', 'IncidentID', 'Message', 'AuthorName', 'AuthorEmail', '
 ENTITIES_RETENTION_PERIOD_MESSAGE = '\nNotice that in the current Azure Sentinel API version, the retention period ' \
                                     'for GetEntityByID is 30 days.'
 
-DEFAULT_LIMIT = 50
+DEFAULT_LIMIT = 10
 
 DEFAULT_SOURCE = 'Microsoft Sentinel'
 
