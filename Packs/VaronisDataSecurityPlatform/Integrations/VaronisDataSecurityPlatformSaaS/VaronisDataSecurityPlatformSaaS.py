@@ -605,21 +605,7 @@ def varonis_update_alert(client: Client, close_reason_id: int, status_id: int, a
 
 
 def convert_incident_alert_to_onprem_format(alert_saas_format):
-    output = {
-        "ID": alert_saas_format.get("ID"),
-        "Name": alert_saas_format.get("Name"),
-        "Time": alert_saas_format.get("Time"),
-        "Severity": alert_saas_format.get("Severity"),
-        "Category": alert_saas_format.get("Category"),
-        "Status": alert_saas_format.get("Status"),
-        "CloseReason": alert_saas_format.get("CloseReason"),
-        "NumOfAlertedEvents": alert_saas_format.get("NumOfAlertedEvents"),
-        "ContainsFlaggedData": False if alert_saas_format.get("ContainsFlaggedData") is None else alert_saas_format.get("ContainsFlaggedData"),
-        "ContainsSensitiveData": False if alert_saas_format.get("ContainsSensitiveData") is None else alert_saas_format.get("ContainsSensitiveData"),
-        "ContainMaliciousExternalIP": False if alert_saas_format.get("ContainMaliciousExternalIP") is None else alert_saas_format.get("ContainMaliciousExternalIP"),
-        "IPThreatTypes": alert_saas_format.get("IPThreatTypes"),
-        "EventUTC": alert_saas_format.get("EventUTC")
-    }
+    output = alert_saas_format
 
     # todo: fix when it will be converted to array
     output["Locations"] = []
@@ -965,7 +951,7 @@ def varonis_get_alerted_events_command(client: Client, args: Dict[str, Any]) -> 
     """Get alerted events from Varonis DA
 
     :type client: ``Client``
-    :param client: Http client
+    :param client: Http client 
 
     :type args: ``Dict[str, Any]``
     :param args:
