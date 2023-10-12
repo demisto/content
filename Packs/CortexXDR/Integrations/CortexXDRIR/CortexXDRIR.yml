@@ -17,9 +17,9 @@ configuration:
   type: 13
   section: Connect
   required: false
-- display: Remove formatted incident sublist fields.
+- display: Remove formatted incident fields.
   name: dontFormatSublists
-  additionalinfo: (Unchecked for backwards compatibility, recommended to check.)
+  additionalinfo: (Unchecked for backwards compatibility, recommended to check. This will remove duplicated incident fields (like client_id, clientid.)
   defaultvalue: 'false'
   type: 8
   section: Collect
