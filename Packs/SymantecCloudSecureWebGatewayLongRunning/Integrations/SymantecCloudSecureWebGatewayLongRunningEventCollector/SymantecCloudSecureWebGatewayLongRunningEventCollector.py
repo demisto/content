@@ -8,6 +8,8 @@ from zipfile import ZipFile, BadZipFile
 from io import BytesIO
 import gzip
 import pytz
+from pathlib import Path
+import tempfile
 
 disable_warnings()
 
@@ -40,10 +42,18 @@ class Client(BaseClient):
             url_suffix="/reportpod/logs/sync",
             params=params,
             resp_type="response",
+            stream=True,
         )
 
 
 """ HELPER FUNCTIONS """
+
+
+def write_to_file_system(client: Client, params: dict) -> Path:
+    with client.get_logs(params) as res, tempfile.NamedTemporaryFile(mode="wb", delete=False) as tmp_file:
+        for chunk in res.iter_content(chunk_size=(200 * (10 ** 6))):
+            tmp_file.write(chunk)
+    return Path(tmp_file.name)
 
 
 def get_current_time_as_timestamp() -> int:
@@ -96,6 +106,27 @@ def get_start_and_ent_date(
     return start_date, end_date
 
 
+def get_status_and_token_from_file_system(file_path: Path) -> tuple[str, str]:
+    file_size = get_file_size(file_path)
+    read_size = 2000
+
+    if file_size < read_size:
+        read_size = file_size
+
+    with file_path.open("rb") as tmp_file:
+        tmp_file.seek(file_size - read_size)
+        end_file = tmp_file.read()
+
+    status = ""
+    token = ""
+    if status_match := REGEX_FOR_STATUS.search(str(end_file)):
+        status = status_match.groupdict().get("status", "")
+    if token_match := REGEX_FOR_TOKEN.search(str(end_file)):
+        token = token_match.groupdict().get("token", "")
+    # demisto.debug(f"the content of the file: {str(end_file)}")
+    return status, token
+
+
 def get_status_and_token_from_res(response: Response) -> tuple[str, str]:
     """
     extract the status and token from the response by regex
@@ -116,7 +147,12 @@ def get_status_and_token_from_res(response: Response) -> tuple[str, str]:
     return status, token
 
 
-def extract_logs_from_response(response: Response) -> list[bytes]:
+def get_file_size(file_path: Path) -> int:
+    """Get size of file in bytes"""
+    return file_path.stat().st_size
+
+
+def extract_logs_from_response(file_path: Path) -> list[bytes]:
     """
     - Extracts the data from the zip file returned from the API
       and then extracts the events from the gzip files into a list of events as bytes
@@ -129,44 +165,53 @@ def extract_logs_from_response(response: Response) -> list[bytes]:
         list[bytes]: list of events as bytes
     """
     logs: list[bytes] = []
-    demisto.debug(f"size of the zip file: {len(response.content) / (1024 ** 2):.2f} MB")
-    # try:
-    #     # extract the ZIP file
-    #     with ZipFile(BytesIO(response.content)) as outer_zip:
-    #         # iterate all gzip files
-    #         for file in outer_zip.infolist():
-    #             # check if the file is gzip
-    #             if file.filename.lower().endswith(".gz"):
-    #                 try:
-    #                     with outer_zip.open(file) as nested_zip_file, gzip.open(
-    #                         nested_zip_file, "rb"
-    #                     ) as f:
-    #                         logs.extend(f.readlines())
-    #                 except Exception as e:
-    #                     demisto.debug(
-    #                         f"Crashed at the open the internal file {file.filename} file, Error: {e}"
-    #                     )
-    #             else:  # the file is not gzip
-    #                 demisto.debug(
-    #                     f"The {file.filename} file is not of gzip type"
-    #                 )
-    # except BadZipFile as e:
-    #     try:
-    #         # checks whether no events returned
-    #         if response.content.decode().startswith("X-sync"):
-    #             demisto.debug("No events returned from the api")
-    #         else:
-    #             demisto.debug(
-    #                 f"The external file type is not of type ZIP, Error: {e},"
-    #                 "the response.content is {}".format(response.content)
-    #             )
-    #     except Exception:
-    #         demisto.debug(
-    #             f"The external file type is not of type ZIP, Error: {e},"
-    #             "the response.content is {}".format(response.content)
-    #         )
-    # except Exception as e:
-    #     raise ValueError(f"There is no specific error for the crash, Error: {e}")
+    demisto.debug(f"The file path: {file_path.name}")
+    # with file_path.open("rb") as f:
+    #     f.seek(0)
+    #     data = f.read()
+    # demisto.debug("test test test")
+    # demisto.debug(f"the content of the file: {data.decode()}")
+    # demisto.debug(f"size of the zip file: {len(response.content) / (1024 ** 2):.2f} MB")
+    try:
+        # extract the ZIP file
+        with ZipFile(file_path, "r") as outer_zip:
+            # iterate all gzip files
+            for file in outer_zip.infolist():
+                # check if the file is gzip
+                if file.filename.lower().endswith(".gz"):
+                    try:
+                        with outer_zip.open(file) as nested_zip_file, gzip.open(
+                            nested_zip_file, "rb"
+                        ) as f:
+                            demisto.debug("test test test")
+                            logs.extend(f.readlines())
+                    except Exception as e:
+                        demisto.debug(
+                            f"Crashed at the open the internal file {file.filename} file, Error: {e}"
+                        )
+                else:  # the file is not gzip
+                    demisto.debug(
+                        f"The {file.filename} file is not of gzip type"
+                    )
+    except BadZipFile as e:
+        # try:
+        #     # checks whether no events returned
+        #     if response.content.decode().startswith("X-sync"):
+        #         demisto.debug("No events returned from the api")
+        #     else:
+        #         demisto.debug(
+        #             f"The external file type is not of type ZIP, Error: {e},"
+        #             # "the response.content is {}".format(response.content)
+        #         )
+        # except Exception:
+        #     demisto.debug(
+        #         f"The external file type is not of type ZIP, Error: {e},"
+        #         # "the response.content is {}".format(response.content)
+        #     )
+        demisto.debug(f"The external file type is not of type ZIP, Error: {e}")
+        raise ValueError(f"The external file type is not of type ZIP, Error: {e}")
+    except Exception as e:
+        raise ValueError(f"There is no specific error for the crash, Error: {e}")
     return logs
 
 
@@ -274,7 +319,7 @@ def get_events_command(
     while status != "done":
         try:
             demisto.debug("start fetching events - API")
-            res = client.get_logs(params=params)
+            res = write_to_file_system(client, params)
             demisto.debug("end fetching events - API")
         except DemistoException as e:
             try:
@@ -293,8 +338,12 @@ def get_events_command(
             except Exception as err:
                 demisto.debug(f"Some ERROR: {e=} after the error: {err}")
                 raise e
-
-        status, params["token"] = get_status_and_token_from_res(res)
+        except Exception as err:
+            demisto.debug(f"Some ERROR: {err}")
+            raise err
+        file_size = get_file_size(res)
+        demisto.debug(f"size of the file system: {file_size / (1024 ** 2):.2f} MB")
+        status, params["token"] = get_status_and_token_from_file_system(res)
         demisto.debug(f"The status is {status}")
 
         if status == "abort":
@@ -317,47 +366,48 @@ def get_events_command(
             )
             continue
         logs.extend(extract_logs_from_response(res))
+        res.unlink()
 
-    # (
-    #     # events,
-    #     _,
-    #     time_of_last_fetched_event,
-    #     _
-    #     # events_suspected_duplicates,
-    # ) = organize_of_events(
-    #     logs,
-    #     token_expired,
-    #     last_run_model.time_of_last_fetched_event or "",
-    #     last_run_model.events_suspected_duplicates or [],
-    # )
+    (
+        # events,
+        _,
+        time_of_last_fetched_event,
+        _
+        # events_suspected_duplicates,
+    ) = organize_of_events(
+        logs,
+        token_expired,
+        last_run_model.time_of_last_fetched_event or "",
+        last_run_model.events_suspected_duplicates or [],
+    )
 
-    # demisto.debug(f"{time_of_last_fetched_event=}")
-    # if time_of_last_fetched_event:
-    #     start_date_for_next_fetch = date_to_timestamp(
-    #         date_str_or_dt=time_of_last_fetched_event, date_format="%Y-%m-%d %H:%M:%S"
-    #     )
-    # else:
-    #     start_date_for_next_fetch = start_date
+    demisto.debug(f"{time_of_last_fetched_event=}")
+    if time_of_last_fetched_event:
+        start_date_for_next_fetch = date_to_timestamp(
+            date_str_or_dt=time_of_last_fetched_event, date_format="%Y-%m-%d %H:%M:%S"
+        )
+    else:
+        start_date_for_next_fetch = start_date
 
-    # new_last_run_model = LastRun(
-    #     start_date=str(start_date_for_next_fetch),
-    #     token=str(params["token"]),
-    #     time_of_last_fetched_event=time_of_last_fetched_event,
-    #     events_suspected_duplicates=None,  # events_suspected_duplicates,
-    #     last_fetch=int(get_current_time_as_timestamp() / 1000)
-    # )
+    new_last_run_model = LastRun(
+        start_date=str(start_date_for_next_fetch),
+        token=str(params["token"]),
+        time_of_last_fetched_event=time_of_last_fetched_event,
+        events_suspected_duplicates=None,  # events_suspected_duplicates,
+        # last_fetch=int(get_current_time_as_timestamp() / 1000)
+    )
 
     # demisto.debug(
     #     f"End fetch from {start_date} to {end_date} with {len(events)} events,"
     #     f"{time_of_last_fetched_event=} and {events_suspected_duplicates=}"
     # )
-    # return events, new_last_run_model
+    return [], new_last_run_model
     # return [], LastRun(
     #     start_date=str(start_date),
     #     token=str(params["token"]),
     #     last_fetch=int(get_current_time_as_timestamp() / 1000),
     # )
-    return [], LastRun(start_date=str(start_date), token=str(params["token"]))
+    # return [], LastRun(start_date=str(start_date), token=str(params["token"]))
 
 
 def test_module(client: Client):
