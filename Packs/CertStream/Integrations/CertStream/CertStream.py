@@ -66,7 +66,12 @@ def fetch_certificates(connection: Connection):
 
     """
 
-    for message in connection:
+    for index, message in enumerate(connection):
+
+        if index % 200 == 0:
+            demisto.debug(f"{index} pinging server")
+            connection.ping()
+
         data = json.loads(message)["data"]
         cert = data["leaf_cert"]
         all_domains = cert["all_domains"]
