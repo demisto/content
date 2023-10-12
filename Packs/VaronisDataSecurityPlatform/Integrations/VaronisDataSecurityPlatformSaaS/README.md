@@ -69,17 +69,17 @@ Get alerts from Varonis DA
 | Varonis.Alert.AbnormalLocation | Boolean | Whether any of the geographical locations from which an alerted activity originated is new or abnormal to the organization, the user and peers, or only the user | 
 | Varonis.Alert.NumOfAlertedEvents | Number | Number of events with alerts | 
 | Varonis.Alert.UserName | String | Name of the users triggered alerts | 
-| Varonis.Alert.By.SamAccountName | String | Logon name used to support clients and servers running earlier versions of Windows operating system, such as Windows NT 4.0. In the dashboards \(other than the Alert dashboard\), this is the SAM account name of the user or group | 
-| Varonis.Alert.By.PrivilegedAccountType | String | Privileged account. Options are:<br/>- Service accounts<br/>- Admin accounts<br/>- Executive accounts | 
-| Varonis.Alert.By.Department | String | User`s department | 
-| Varonis.Alert.On.ContainsFlaggedData | Boolean | Whether the data affected by the alerted events has global flags | 
-| Varonis.Alert.On.ContainsSensitiveData | Boolean | Filters according to whether the resource on which the event was performed is sensitive \(including subfolders\) | 
-| Varonis.Alert.On.Platform | String | Type of platform on which the server resides. For example, Windows, Exchange, or SharePoint | 
-| Varonis.Alert.On.Asset | String | Path of the alerted asset | 
-| Varonis.Alert.On.FileServerOrDomain | String | Associated file server/domain | 
-| Varonis.Alert.Device.Name | String | Name of the device from which the user generated the event | 
-| Varonis.Alert.Device.ContainMaliciousExternalIP | Boolean | Whether the alert contains IPs known to be malicious | 
-| Varonis.Alert.Device.IPThreatTypes | String | Whether the alert contains IPs known to be malicious | 
+| Varonis.Alert.SamAccountName | String | Logon name used to support clients and servers running earlier versions of Windows operating system, such as Windows NT 4.0. In the dashboards \(other than the Alert dashboard\), this is the SAM account name of the user or group | 
+| Varonis.Alert.PrivilegedAccountType | String | Privileged account. Options are:<br/>- Service accounts<br/>- Admin accounts<br/>- Executive accounts | 
+| Varonis.Alert.Department | String | User`s department | 
+| Varonis.Alert.ContainsFlaggedData | Boolean | Whether the data affected by the alerted events has global flags | 
+| Varonis.Alert.ContainsSensitiveData | Boolean | Filters according to whether the resource on which the event was performed is sensitive \(including subfolders\) | 
+| Varonis.Alert.Platform | String | Type of platform on which the server resides. For example, Windows, Exchange, or SharePoint | 
+| Varonis.Alert.Asset | String | Path of the alerted asset | 
+| Varonis.Alert.FileServerOrDomain | String | Associated file server/domain | 
+| Varonis.Alert.DeviceName | String | Name of the device from which the user generated the event | 
+| Varonis.Alert.ContainMaliciousExternalIP | Boolean | Whether the alert contains IPs known to be malicious | 
+| Varonis.Alert.IPThreatTypes | String | Whether the alert contains IPs known to be malicious | 
 
 #### Command example
 ```!varonis-get-alerts alert_status=New start_time=2022-02-16T13:00:00+02:00```

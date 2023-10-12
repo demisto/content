@@ -32,13 +32,6 @@ configuration:
   name: insecure
   required: false
   type: 8
-- defaultvalue: '50'
-  display: Maximum number of incidents per fetch
-  additionalinfo: Maximum value is 50
-  hidden: false
-  name: max_fetch
-  required: false
-  type: 0
 - defaultvalue: 1 week
   display: First fetch time
   hidden: false
@@ -213,45 +206,45 @@ script:
     - contextPath: Varonis.Alert.UserName
       description: Name of the users triggered alerts
       type: String
-    - contextPath: Varonis.Alert.By.SamAccountName
+    - contextPath: Varonis.Alert.SamAccountName
       description: |-
         Logon name used to support clients and servers running earlier versions of Windows operating system, such as Windows NT 4.0.
         In the dashboards (other than the Alert dashboard), this is the SAM account name of the user or group
       type: String
-    - contextPath: Varonis.Alert.By.PrivilegedAccountType
+    - contextPath: Varonis.Alert.PrivilegedAccountType
       description: |-
         Privileged account. Options are:
         - Service accounts
         - Admin accounts
         - Executive accounts
       type: String
-    - contextPath: Varonis.Alert.By.Department
+    - contextPath: Varonis.Alert.Department
       description: User`s department
       type: String
-    - contextPath: Varonis.Alert.On.ContainsFlaggedData
+    - contextPath: Varonis.Alert.ContainsFlaggedData
       description: Whether the data affected by the alerted events has global flags
       type: Boolean
-    - contextPath: Varonis.Alert.On.ContainsSensitiveData
+    - contextPath: Varonis.Alert.ContainsSensitiveData
       description: Filters according to whether the resource on which the event was
         performed is sensitive (including subfolders)
       type: Boolean
-    - contextPath: Varonis.Alert.On.Platform
+    - contextPath: Varonis.Alert.Platform
       description: Type of platform on which the server resides. For example, Windows,
         Exchange, or SharePoint
       type: String
-    - contextPath: Varonis.Alert.On.Asset
+    - contextPath: Varonis.Alert.Asset
       description: Path of the alerted asset
       type: String
-    - contextPath: Varonis.Alert.On.FileServerOrDomain
+    - contextPath: Varonis.Alert.FileServerOrDomain
       description: Associated file server/domain
       type: String
-    - contextPath: Varonis.Alert.Device.Name
+    - contextPath: Varonis.Alert.DeviceName
       description: Name of the device from which the user generated the event
       type: String
-    - contextPath: Varonis.Alert.Device.ContainMaliciousExternalIP
+    - contextPath: Varonis.Alert.ContainMaliciousExternalIP
       description: Whether the alert contains IPs known to be malicious
       type: Boolean
-    - contextPath: Varonis.Alert.Device.IPThreatTypes
+    - contextPath: Varonis.Alert.IPThreatTypes
       description: Whether the alert contains IPs known to be malicious
       type: String
   - arguments:
