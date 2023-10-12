@@ -154,6 +154,7 @@ class Client(BaseClient):
                     error_msg = 'Authentication failed, verify the credentials are correct.'
                 raise ValueError(
                     f'Failed to process the API response. {str(error_msg)} {str(error_content)} - {str(e)}')
+        return None
 
     def error_handler(self, res: requests.Response):
         # Handle error responses gracefully
@@ -409,6 +410,7 @@ def query_connections_command(client: Client, args: dict):
             outputs_prefix='Cybereason.Connection',
             outputs_key_field='Name',
             outputs=context)
+    return None
 
 
 def query_connections(client: Client, machine: str, ip: str, filter_input: str) -> dict:
@@ -551,7 +553,7 @@ def poll_malops(client: Client, start_time):
 
 def get_non_edr_malop_data(client, start_time):
     malop_data = poll_malops(client, start_time)
-    non_edr_malop_data = list()
+    non_edr_malop_data = []
     for malops in malop_data['malops']:
         if not malops.get('edr'):
             non_edr_malop_data.append(malops)
@@ -666,7 +668,7 @@ def malop_processes_command(client: Client, args: dict):
             raise DemistoException("dateTime could not be parsed. Please enter a valid time parameter.")
         date_time_parser = date_time_parser.timestamp()
         milliseconds = int(date_time_parser * 1000)
-        filter_input = [{"facetName": "creationTime", "filterType": "GreaterThan", "values": [milliseconds], "isResult":True}]
+        filter_input = [{"facetName": "creationTime", "filterType": "GreaterThan", "values": [milliseconds], "isResult": True}]
 
     if isinstance(malop_guids, str):
         malop_guids = malop_guids.split(',')
@@ -909,6 +911,7 @@ def kill_process_command(client: Client, args: dict):
                 action_status, ['Remediation status'])} \n Reason: {dict_safe_get(
                     action_status, ['Reason'])} \n Remediation ID: {dict_safe_get(action_status, ['Remediation ID'])}'''
             raise DemistoException(failure_response)
+        return None
     else:
         raise DemistoException('Machine must be connected to Cybereason in order to perform this action.')
 
@@ -933,6 +936,7 @@ def quarantine_file_command(client: Client, args: dict):
                 action_status, ['Remediation status'])} \n Reason: {dict_safe_get(
                     action_status, ['Reason'])} \n Remediation ID: {dict_safe_get(action_status, ['Remediation ID'])}'''
             raise DemistoException(failure_response)
+        return None
     else:
         raise DemistoException('Machine must be connected to Cybereason in order to perform this action.')
 
@@ -957,6 +961,7 @@ def unquarantine_file_command(client: Client, args: dict):
                 action_status, ['Remediation status'])} \n Reason: {dict_safe_get(
                     action_status, ['Reason'])} \n Remediation ID: {dict_safe_get(action_status, ['Remediation ID'])}'''
             raise DemistoException(failure_response)
+        return None
     else:
         raise DemistoException('Machine must be connected to Cybereason in order to perform this action.')
 
@@ -981,6 +986,7 @@ def block_file_command(client: Client, args: dict):
                 action_status, ['Remediation status'])} \n Reason: {dict_safe_get(
                     action_status, ['Reason'])} \n Remediation ID: {dict_safe_get(action_status, ['Remediation ID'])}'''
             raise DemistoException(failure_response)
+        return None
     else:
         raise DemistoException('Machine must be connected to Cybereason in order to perform this action.')
 
@@ -1005,6 +1011,7 @@ def delete_registry_key_command(client: Client, args: dict):
                 action_status, ['Remediation status'])} \n Reason: {dict_safe_get(
                     action_status, ['Reason'])} \n Remediation ID: {dict_safe_get(action_status, ['Remediation ID'])}'''
             raise DemistoException(failure_response)
+        return None
     else:
         raise DemistoException('Machine must be connected to Cybereason in order to perform this action.')
 
@@ -1029,6 +1036,7 @@ def kill_prevent_unsuspend_command(client: Client, args: dict):
                 action_status, ['Remediation status'])} \n" Reason: {dict_safe_get(
                     action_status, ['Reason'])} \n Remediation ID: {dict_safe_get(action_status, ['Remediation ID'])}'''
             raise DemistoException(failure_response)
+        return None
     else:
         raise DemistoException('Machine must be connected to Cybereason in order to perform this action.')
 
@@ -1053,6 +1061,7 @@ def unsuspend_process_command(client: Client, args: dict):
                 action_status, ['Remediation status'])} \n Reason: {dict_safe_get(
                     action_status, ['Reason'])} \n Remediation ID: {dict_safe_get(action_status, ['Remediation ID'])}'''
             raise DemistoException(failure_response)
+        return None
     else:
         raise DemistoException('Machine must be connected to Cybereason in order to perform this action.')
 
@@ -1177,7 +1186,7 @@ def query_file_command(client: Client, args: dict) -> Any:
 
                 is_signed = None
                 if 'isSigned' in simple_values:
-                    is_signed = True if dict_safe_get(simple_values, ['isSigned', 'values', 0]) == 'true' else False
+                    is_signed = dict_safe_get(simple_values, ['isSigned', 'values', 0]) == 'true'
 
                 cybereason_outputs.append({
                     'Name': file_name,
@@ -1206,6 +1215,7 @@ def query_file_command(client: Client, args: dict) -> Any:
                 outputs=cybereason_outputs)
         else:
             raise DemistoException('No results found.')
+    return None
 
 
 def query_file(client: Client, filters: list) -> dict:
@@ -1296,6 +1306,7 @@ def query_domain_command(client: Client, args: dict) -> Any:
                 outputs=cybereason_outputs)
         else:
             raise DemistoException('No results found.')
+    return None
 
 
 def query_domain(client: Client, filters: list) -> dict:
@@ -1337,7 +1348,7 @@ def query_user_command(client: Client, args: dict):
                 element_values = dict_safe_get(user, ['elementValues'], default_return_value={}, return_type=dict)
 
                 domain = dict_safe_get(simple_values, ['domain', 'values', 0])
-                local_system = True if dict_safe_get(simple_values, ['isLocalSystem', 'values', 0]) == 'true' else False
+                local_system = dict_safe_get(simple_values, ['isLocalSystem', 'values', 0]) == 'true'
                 machine = dict_safe_get(element_values, ['ownerMachine', 'elementValues', 0, 'name'])
                 organization = dict_safe_get(element_values, ['ownerOrganization', 'elementValues', 0, 'name'])
 
@@ -1357,6 +1368,7 @@ def query_user_command(client: Client, args: dict):
                 outputs=cybereason_outputs)
         else:
             raise DemistoException('No results found.')
+    return None
 
 
 def query_user(client: Client, filters: list) -> dict:
@@ -1620,8 +1632,8 @@ def fetch_malop_processes(client: Client, malop_id: str) -> list:
             {
                 "requestedType": "MalopProcess",
                 "filters": [],
-                "guidList":[malop_id],
-                "connectionFeature":{
+                "guidList": [malop_id],
+                "connectionFeature": {
                     "elementInstanceType": "MalopProcess",
                     "featureName": "suspects"
                 }
@@ -1629,7 +1641,7 @@ def fetch_malop_processes(client: Client, malop_id: str) -> list:
             {
                 "requestedType": "Process",
                 "filters": [],
-                "isResult":True
+                "isResult": True
             }
         ],
         "totalResultLimit": 1000,
@@ -1693,10 +1705,10 @@ def fetch_imagefile_guids(client: Client, processes: list) -> dict:
             "integrity", "isHidden", "logonSession", "remoteSession", "isWhiteListClassification", "matchedWhiteListRuleIds"]
     }
     response = client.cybereason_api_call('POST', '/rest/visualsearch/query/simple', json_body=json_body)
-    img_file_guids = dict()
+    img_file_guids = {}
     result = response['data']['resultIdToElementDataMap']
     try:
-        for process, details in list(result.items()):
+        for _process, details in list(result.items()):
             image_files = ('' if details['elementValues']['imageFile']['elementValues'] is None else details[
                 'elementValues']['imageFile']['elementValues'])
             for image_file in image_files:
@@ -1710,13 +1722,14 @@ def start_fetchfile_command(client: Client, args: dict):
     malop_id = str(args.get('malopGUID'))
     user_name = str(args.get('userName'))
     response = get_file_guids(client, malop_id)
-    for filename, file_guid in list(response.items()):
+    for _filename, file_guid in list(response.items()):
         api_response = start_fetchfile(client, file_guid, user_name)
         try:
             if api_response['status'] == "SUCCESS":
                 return CommandResults(readable_output="Successfully started fetching file for the given malop")
         except Exception:
             raise Exception("Failed to start fetch file process")
+    return None
 
 
 def start_fetchfile(client: Client, element_id: str, user_name: str) -> dict:
@@ -1819,6 +1832,7 @@ def malware_query_command(client: Client, args: dict):
         if limit_range > 0:
             filter_response = malware_query_filter(client, needs_attention, malware_type, malware_status, time_stamp, limit_range)
             return CommandResults(raw_response=filter_response)
+        return None
     else:
         raise DemistoException("Limit cannot be zero or a negative number.")
 
@@ -1888,6 +1902,29 @@ def fetch_scan_status_command(client: Client, args: dict):
 
 
 def get_sensor_id_command(client: Client, args: dict):
+    machine_name = str(args.get('machineName'))
+    json_body = {}
+    if machine_name:
+        json_body = {
+            "filters": [
+                {
+                    "fieldName": "machineName",
+                    "operator": "Equals",
+                    "values": [machine_name]
+                }
+            ]
+        }
+    response = client.cybereason_api_call('POST', '/rest/sensors/query', json_body=json_body)
+    if dict_safe_get(response, ['sensors']) == []:
+        raise DemistoException("Could not find any Sensor ID for the machine" + machine_name)
+    else:
+        output = {}
+        for single_sensor in response['sensors']:
+            output[single_sensor['machineName']] = single_sensor['sensorId']
+        return CommandResults(readable_output=f"Available Sensor IDs are {output}")
+
+
+def fetch_machine_details_command(client: Client, args: dict):
     machine_name = str(args.get('machineName'))
     json_body = {}
     if machine_name:
@@ -2040,6 +2077,9 @@ def main():
 
         elif demisto.command() == 'cybereason-get-sensor-id':
             return_results(get_sensor_id_command(client, args))
+
+        elif demisto.command() == 'cybereason-fetch-machine-details':
+            return_results(fetch_machine_details_command(client, args))
 
         else:
             raise NotImplementedError(f'Command {demisto.command()} is not implemented.')
