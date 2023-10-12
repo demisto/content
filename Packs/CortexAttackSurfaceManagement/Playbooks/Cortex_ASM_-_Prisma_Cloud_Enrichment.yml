@@ -1,5 +1,7 @@
 id: Cortex ASM - Prisma Cloud Enrichment
 version: -1
+contentitemexportablefields:
+  contentitemfields: {}
 name: Cortex ASM - Prisma Cloud Enrichment
 description: Given the IP address this playbook enriches information from Prisma Cloud.
 starttaskid: "0"
@@ -355,8 +357,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 980,
-          "y": 1210
+          "x": 970,
+          "y": 1390
         }
       }
     note: false
@@ -395,7 +397,7 @@ tasks:
       {
         "position": {
           "x": 500,
-          "y": 1390
+          "y": 1530
         }
       }
     note: false
@@ -423,7 +425,7 @@ tasks:
       {
         "position": {
           "x": 500,
-          "y": 2040
+          "y": 2200
         }
       }
     note: false
@@ -468,7 +470,7 @@ tasks:
       {
         "position": {
           "x": 290,
-          "y": 1840
+          "y": 2000
         }
       }
     note: false
@@ -511,7 +513,7 @@ tasks:
       {
         "position": {
           "x": 500,
-          "y": 1610
+          "y": 1780
         }
       }
     note: false
@@ -556,7 +558,7 @@ tasks:
       {
         "position": {
           "x": 710,
-          "y": 1840
+          "y": 2000
         }
       }
     note: false
@@ -586,7 +588,7 @@ tasks:
       Azure:
       - "9"
       GCP:
-      - "17"
+      - "18"
     separatecontext: false
     conditions:
     - label: AWS
@@ -676,7 +678,7 @@ tasks:
       {
         "position": {
           "x": 1380,
-          "y": 1210
+          "y": 1390
         }
       }
     note: false
@@ -722,8 +724,53 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1790,
-          "y": 1210
+          "x": 1810,
+          "y": 1400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 25fb1d61-58d0-4aef-85db-8cd927573a66
+    type: condition
+    task:
+      id: 25fb1d61-58d0-4aef-85db-8cd927573a66
+      version: -1
+      name: Are there any Network tags?
+      description: Checks if there are network tags items.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "13"
+      "yes":
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: PrismaCloud.Config.data.tags
+                accessor: items
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1810,
+          "y": 1250
         }
       }
     note: false
@@ -742,8 +789,8 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 1945,
-        "width": 2200,
+        "height": 2105,
+        "width": 2220,
         "x": -30,
         "y": 160
       }
@@ -759,11 +806,12 @@ inputs:
   description: IP address of service.
   playbookInputQuery:
 - key: cloudProvider
-  value: {}
+  value:
+    simple: GCP
   required: false
   description: Cloud service provider.
   playbookInputQuery:
 outputs: []
-fromversion: 6.8.0
 tests:
 - No tests (auto formatted)
+fromversion: 6.8.0

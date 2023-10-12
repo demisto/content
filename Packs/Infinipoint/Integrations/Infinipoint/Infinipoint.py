@@ -1,5 +1,5 @@
 from CommonServerPython import *
-from typing import Any, Dict, List, Optional, cast
+from typing import Any, cast
 
 
 ''' IMPORTS '''
@@ -7,6 +7,10 @@ import jwt
 import math
 import dateparser
 from datetime import timezone
+
+# disable insecure warnings
+import urllib3
+urllib3.disable_warnings()
 
 
 ''' GLOBAL VARS '''
@@ -178,8 +182,8 @@ COMMANDS_CONFIG = {
 
 class Client(BaseClient):
 
-    def call_command(self, url_suffix: str, args: Dict[str, Any], pagination=True, page_index=0, method='POST') \
-            -> Dict[str, Any]:
+    def call_command(self, url_suffix: str, args: dict[str, Any], pagination=True, page_index=0, method='POST') \
+            -> dict[str, Any]:
         """
         function to send a request to Infinipoint's API.
         """
@@ -210,7 +214,7 @@ class Client(BaseClient):
                     'rules': rules
                 }
             }
-            results: List[Dict[str, Any]] = []
+            results: list[dict[str, Any]] = []
             res = self.call_command(route, query, method=method)
             results = results + res['items']
 
@@ -240,7 +244,7 @@ def get_auth_headers(access_key, private_key):
         return_error(f"Error while signing JWT token - check your private/access keys!\nError message:\n{e}")
 
 
-def arg_to_timestamp(arg: Any, arg_name: str, required: bool = False) -> Optional[int]:
+def arg_to_timestamp(arg: Any, arg_name: str, required: bool = False) -> int | None:
 
     if arg is None:
         if required is True:
@@ -259,13 +263,13 @@ def arg_to_timestamp(arg: Any, arg_name: str, required: bool = False) -> Optiona
 
         return int(date.timestamp())
 
-    if isinstance(arg, (int, float)):
+    if isinstance(arg, int | float):
         # Convert to int if the input is a float
         return int(arg)
     raise ValueError(f'Invalid date: "{arg_name}"')
 
 
-def arg_to_int(arg: Any, arg_name: str, required: bool = False) -> Optional[int]:
+def arg_to_int(arg: Any, arg_name: str, required: bool = False) -> int | None:
 
     if arg is None:
         if required is True:
@@ -280,7 +284,7 @@ def arg_to_int(arg: Any, arg_name: str, required: bool = False) -> Optional[int]
     raise ValueError(f'Invalid number: "{arg_name}"')
 
 
-def fetch_incidents(client, last_run: Dict[str, int], first_fetch_time: Optional[int]):
+def fetch_incidents(client, last_run: dict[str, int], first_fetch_time: int | None):
     max_results = arg_to_int(
         arg=demisto.params().get('max_fetch'),
         arg_name='max_fetch',
@@ -299,7 +303,7 @@ def fetch_incidents(client, last_run: Dict[str, int], first_fetch_time: Optional
         last_fetch = int(last_fetch)
 
     latest_created_time = cast(int, last_fetch)
-    incidents: List[Dict[str, Any]] = []
+    incidents: list[dict[str, Any]] = []
 
     args = {
         'limit': max_results,
@@ -398,9 +402,10 @@ def infinipoint_command(client: Client, args=None, optional_args=None, paginatio
                               outputs_key_field=optional_args['outputs_key_field'],
                               outputs=res,
                               indicator=cve)
+    return None
 
 
-def run_queries_command(client: Client, args: Dict, optional_args=None):
+def run_queries_command(client: Client, args: dict, optional_args=None):
     target = args.get('target')
     node = {'id': args.get('id')}
     if target:
@@ -412,6 +417,7 @@ def run_queries_command(client: Client, args: Dict, optional_args=None):
             outputs_key_field=optional_args['outputs_key_field'],
             outputs=res)
         return command_results
+    return None
 
 
 ''' EXECUTION '''
