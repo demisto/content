@@ -2060,6 +2060,110 @@ Create and retrieve url threat assessment.
 >|---|---|---|---|---|---|---|---|---|---|
 >| 0796306-b456-4605-ff0d-03okmtgcf876 | "2019-11-27T05:45:14.0962061Z"| url | block| malware| completed | administrator | httpp://support.clean-mx.de/clean-mx/viruses.php |63798129-a62c-4f9e-2c6d-08d772fcfb0e|Malware attempt.|
 
+
+### msg-list-threat-assessment-requests
+
+***
+Create and retrieve threat assessment requests.
+
+#### Base Command
+
+`msg-list-threat-assessment-requests`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| request_id | The request id. | Optional | 
+| filter | Available fields for filter  are:expectedAssessment,ContentType,status,requestSource. Example:category eq 'malware’| Optional | 
+| order_by | Drop -down: id, createdDateTime, ContentType, expectedAssessment, category, status, requestSource, category | Optional | 
+| sort_order | desc or asc. | Optional |
+| limit | Default is 50. | Optional |
+| next_token | the retrieved token from first run when there's more data to retrieve. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MSGraphMail.AssessmentRequest.ID | String | Request id.
+| MSGraphMail.AssessmentRequest.CreatedDateTime | Date | Created data of the threat assessment request. | 
+| MSGraphMail.AssessmentRequest.ContentType | String | The content type of threat assessment. | 
+| MSGraphMail.AssessmentRequest.ExpectedAssessment | String | The expected assessment from submitter. Possible values are: block, unblock. | 
+| MSGraphMail.AssessmentRequest.Category | String | The threat category. Possible values are: spam, phishing, malware. | 
+| MSGraphMail.AssessmentRequest.Status | String | The assessment process status. Possible values are: pending, completed. | 
+| MSGraphMail.AssessmentRequest.RequestSource | String | The source of threat assessment request. Possible values are: administrator. | 
+| MSGraphMail.AssessmentRequest.DestinationRoutingReason | String | The destination Routing Reason. |
+| MSGraphMail.AssessmentRequest.RecipientEmail | String | The recipient email. |
+| MSGraphMail.AssessmentRequest.Url | String | The url. |
+| MSGraphMail.AssessmentRequest.FileName | String | The file name. |
+| MSGraphMail.AssessmentRequest.CreatedUserID | String | User id. | 
+| MSGraphMail.AssessmentRequest.CreatedUsername | String | Username. | 
+| MSGraphMail.AssessmentRequest.ResultType | String | Result of the request. | 
+| MSGraphMail.AssessmentRequest.ResultMessage | String | Message of the result. | 
+|MsGraph.AssesmentRequestNextToken |String |the next token from the previous run.|
+
+#### Command example
+
+```!msg-list-threat-assessment-requests```
+
+#### Context Example
+
+```json
+{
+  "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#informationProtection/threatAssessmentRequests",
+  "@odata.nextLink": "https://graph.microsoft.com/v1.0/informationProtection/threatAssessmentRequests?$skiptoken=eyJQYWdlQ29va2llIjoiPHJvdyBpZF9JZGVudGl0",
+  "value": [
+    {
+      "@odata.type": "#microsoft.graph.mailAssessmentRequest",
+      "id": "49c5ef5b-1f65-444a-e6b9-08d772ea2059",
+      "createdDateTime": "2019-11-27T03:30:18.6890937Z",
+      "contentType": "mail",
+      "expectedAssessment": "block",
+      "category": "spam",
+      "status": "pending",
+      "requestSource": "administrator",
+      "recipientEmail": "avishaibrandies@microsoft.com",
+      "destinationRoutingReason": "notJunk",
+      "messageUri": "https://graph.microsoft.com/v1.0/users/c52ce8db-3e4b-4181-93c4-7d6b6bffaf60/messages/AAMkADU3MWUxOTU0LWNlOTEt=",
+      "createdBy": {
+        "user": {
+          "id": "c52ce8db-3e4b-4181-93c4-7d6b6bffaf60",
+          "displayName": "Ronald Admin"
+        }
+      }
+    },
+    {
+      "@odata.type": "#microsoft.graph.emailFileAssessmentRequest",
+      "id": "ab2ad9b3-2213-4091-ae0c-08d76ddbcacf",
+      "createdDateTime": "2019-11-20T17:05:06.4088076Z",
+      "contentType": "mail",
+      "expectedAssessment": "block",
+      "category": "malware",
+      "status": "completed",
+      "requestSource": "administrator",
+      "recipientEmail": "tifc@a830edad9050849EQTPWBJZXODQ.onmicrosoft.com",
+      "destinationRoutingReason": "notJunk",
+      "contentData": "",
+      "createdBy": {
+        "user": {
+          "id": "c52ce8db-3e4b-4181-93c4-7d6b6bffaf60",
+          "displayName": "Ronald Admin"
+        }
+      }
+    }
+  ]
+}
+```
+
+#### Human Readable Output
+>###Next Token is: eyJQYWdlQ29va2llIjoiPHJvdyBpZF9JZGVudGl
+>### Mail assessment request:
+
+>|ID|Created DateTime|Content Type|Expected Assessment|Category|Status|Request Source|Recipient Email|Created User ID|Created Username|destinationRoutingReason|
+>|---|---|---|---|---|---|---|---|---|---|---|
+>| 49c5ef5b-1f65-444a-e6b9-08d772ea2059 | "2019-11-27T03:30:18.6890937Z"| mail | block| spam| pending| administrator | avishaibrandies@microsoft.com |63798129-a62c-4f9e-2c6d-08d772fcfb0e|spam attempt.|notJunk|
+>| ab2ad9b3-2213-4091-ae0c-08d76ddbcacf | 2019-11-20T17:05:06.4088076Z| mail | block| malware| pending| administrator | avishaibrandies@microsoft.com |63798129-a62c-4f9e-2c6d-08d772fcfb0e|Malware attempt.|notJunk|
+
 >### Authorization instructions
 >1. Click on the [login URL]() to sign in and grant Cortex XSOAR permissions for your Azure Service Management.
 You will be automatically redirected to a link with the following structure:
