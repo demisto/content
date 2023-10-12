@@ -1,7 +1,6 @@
 commonfields:
   id: Symantec Management Center
   version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: Symantec Management Center
 display: Symantec Management Center
 category: Network Security
@@ -527,4 +526,3 @@ script:
   dockerimage: demisto/python3:3.10.13.72123
   runonce: false
   subtype: python3
-sourcemoduleid: Symantec Management Center
