@@ -1,4 +1,5 @@
 import json
+from pprint import pprint
 
 from FeedFeedly import Client
 
@@ -34,7 +35,9 @@ def test_build_iterator(requests_mock):
     indicators = client.fetch_indicators_from_stream("tag/enterpriseName/category/uuid", 0)
     ip_indicators = {indicator["value"] for indicator in indicators if indicator["type"] == "IP"}
     assert expected_ips == ip_indicators
-    report = next(indicator for indicator in indicators if indicator["type"] == "Report")
+
+    report = next(indicator for indicator in indicators if indicator["type"] == "FeedlyReport")
+    pprint(report)
     assert report["fields"]["description"].startswith("Recently, threat actors have")
 
     assert len(report["relationships"]) == 13

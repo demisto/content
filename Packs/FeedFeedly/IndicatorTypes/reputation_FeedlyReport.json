@@ -1,0 +1,18 @@
+{
+    "id": "Feedly Report",
+    "version": -1,
+    "modified": "2023-10-12T11:51:59.482903828Z",
+    "shouldCommit": false,
+    "regex": "",
+    "details": "FeedlyReport",
+    "prevDetails": "FeedlyReport",
+    "system": false,
+    "locked": false,
+    "disabled": false,
+    "file": false,
+    "updateAfter": 0,
+    "mergeContext": false,
+    "expiration": 0,
+    "layout": "FeedlyReport",
+    "fromVersion": "6.0.0"
+}

@@ -65,7 +65,7 @@ STIX_2_TYPES_TO_CORTEX_TYPES = {
     "attack-pattern": ThreatIntel.ObjectsNames.ATTACK_PATTERN,
     "malware": ThreatIntel.ObjectsNames.MALWARE,
     "tool": ThreatIntel.ObjectsNames.TOOL,
-    "report": ThreatIntel.ObjectsNames.REPORT,
+    "report": "FeedlyReport",
     "threat-actor": ThreatIntel.ObjectsNames.THREAT_ACTOR,
     "course-of-action": ThreatIntel.ObjectsNames.COURSE_OF_ACTION,
     "campaign": ThreatIntel.ObjectsNames.CAMPAIGN,
@@ -211,27 +211,6 @@ class STIX2Parser:
         return publications
 
     @staticmethod
-    def get_ioc_type(indicator: str, id_to_object: dict[str, dict[str, Any]]) -> str:
-        """
-        Get IOC type by extracting it from the pattern field.
-
-        Args:
-            indicator: the indicator to get information on.
-            id_to_object: a dict in the form of - id: stix_object.
-
-        Returns:
-            str. the IOC type.
-        """
-        ioc_type = ""
-        indicator_obj = id_to_object.get(indicator, {})
-        pattern = indicator_obj.get("pattern", "")
-        for stix_type in STIX_2_TYPES_TO_CORTEX_TYPES:
-            if pattern.startswith(f"[{stix_type}"):
-                ioc_type = STIX_2_TYPES_TO_CORTEX_TYPES.get(stix_type)  # type: ignore
-                break
-        return ioc_type
-
-    @staticmethod
     def change_ip_to_cidr(indicators):
         """
         Iterates over indicators list and changes IP to CIDR type if needed.
@@ -335,7 +314,7 @@ class STIX2Parser:
             )
 
         report = {
-            "indicator_type": ThreatIntel.ObjectsNames.REPORT,
+            "indicator_type": "FeedlyReport",
             "value": report_obj.get("name"),
             "score": ThreatIntel.ObjectsScore.REPORT,
             "rawJSON": report_obj,
@@ -782,6 +761,7 @@ class STIX2Parser:
                     if obj.get("type") == "extension-definition":
                         continue
                     self.id_to_object[obj.get("id")] = obj
+                    print(obj.get("type"))
                     if obj.get("type") == "report":
                         result, relationships = self.parse_report(obj)
                         relationships_list.extend(relationships)
