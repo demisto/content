@@ -593,18 +593,7 @@ def update_incident_command(client, args):
 
 
 def check_if_incident_was_modified_in_xdr(incident_id, last_mirrored_in_time_timestamp, last_modified_incidents_dict):
-    if incident_id in last_modified_incidents_dict:  # search the incident in the dict of modified incidents
-        incident_modification_time_in_xdr = int(str(last_modified_incidents_dict[incident_id]))
-
-        demisto.debug(f"XDR incident {incident_id}\n"
-                      f"modified time:         {incident_modification_time_in_xdr}\n"
-                      f"last mirrored in time: {last_mirrored_in_time_timestamp}")
-
-        if incident_modification_time_in_xdr > last_mirrored_in_time_timestamp:  # need to update this incident
-            demisto.info(f"Incident '{incident_id}' was modified. performing extra-data request.")
-            return True
-    # the incident was not modified
-    return False
+    return True
 
 
 def get_last_mirrored_in_time(args):
@@ -809,7 +798,8 @@ def sort_all_list_incident_fields(incident_data):
 
     if incident_data.get('alerts', []):
         incident_data['alerts'] = sort_by_key(incident_data.get('alerts', []), main_key='alert_id', fallback_key='name')
-        reformat_sublist_fields(incident_data['alerts'])
+        if demisto.params().get('formatSublists'):
+            reformat_sublist_fields(incident_data['alerts'])
 
     if incident_data.get('file_artifacts', []):
         incident_data['file_artifacts'] = sort_by_key(incident_data.get('file_artifacts', []), main_key='file_name',
@@ -1036,7 +1026,7 @@ def fetch_incidents(client, first_fetch_time, integration_instance, last_run: di
                                                       starred_incidents_fetch_window=starred_incidents_fetch_window)
             raw_incidents = sorted(raw_incidents, key=lambda inc: inc['creation_time'])
         else:
-            raw_incidents = client.get_incidents(gte_creation_time_milliseconds=last_fetch, limit=max_fetch,
+            raw_incidents = client.get_incidents(gte_creation_time_milliseconds=last_fetch, limit=100,
                                                  sort_by_creation_time='asc', starred=starred,
                                                  starred_incidents_fetch_window=starred_incidents_fetch_window)
 

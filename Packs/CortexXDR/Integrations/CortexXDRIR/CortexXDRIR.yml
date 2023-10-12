@@ -17,6 +17,13 @@ configuration:
   type: 13
   section: Connect
   required: false
+- display: Remove formatted incident sublist fields.
+  name: formatSublists
+  additionalinfo: (Unchecked for backwards compatibility, recommended to check.)
+  defaultvalue: 'false'
+  type: 8
+  section: Collect
+  required: false
 - defaultvalue: None
   display: Incident Mirroring Direction
   name: mirror_direction
