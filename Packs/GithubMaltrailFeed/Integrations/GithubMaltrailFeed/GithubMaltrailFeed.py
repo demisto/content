@@ -83,7 +83,7 @@ def fetch_indicators(client: Client, url: str, params: dict=None):
                     if line.startswith('http://'):
                         line = line.removeprefix('http://')
                     elif line.startswith('https://'):
-                        line = line.strip('https://')
+                        line = line.removeprefix('https://')
                     else:
                         line = line.split(':')[0]
                     type_ = "IP"
