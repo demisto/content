@@ -2912,7 +2912,7 @@ def generic_api_call_command(client: Client, args: dict) -> Union[str, CommandRe
     method = str(args.get("method"))
     path = str(args.get("path"))
     headers = json.loads(str(args.get("headers", {})))
-    custom_api = args.get('custom_api_root', '')
+    custom_api = args.get('custom_api', '')
     try:
         body: dict = json.loads(str(args.get("body", {})))
     except ValueError:
