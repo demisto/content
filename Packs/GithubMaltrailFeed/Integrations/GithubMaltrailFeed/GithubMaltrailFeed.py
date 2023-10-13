@@ -67,8 +67,6 @@ def fetch_indicators(client: Client, url: str, params: dict=None):
     response = client.http_request(url)
     indicator_list = []
     demisto.debug('Fetch of indicators started ###')
-    # demisto.debug(client.getclienturl() + url)
-    # demisto.debug(str(response))
 
     if response.ok:
         content = response.json()["content"]
