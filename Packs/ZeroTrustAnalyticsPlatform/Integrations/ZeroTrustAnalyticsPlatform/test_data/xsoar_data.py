@@ -27,6 +27,7 @@ def event_response():
         },
     ]
 
+
 def alert_response():
     return [
         {
@@ -100,6 +101,7 @@ def comment_response():
         },
     ]
 
+
 def user_response():
     return {
         "id": 1,
@@ -108,12 +110,14 @@ def user_response():
         "organization": {"id": 1, "name": "dummy_org", "psa_id": "dummy_id"},
     }
 
+
 def trigger_event_kv():
     return {
         "auto_run": "False",
         "event_name": "threat_quarantined",
         "event_timestamp": "2021-05-11T20:11:30.728667",
     }
+
 
 def comment_entries():
     return [

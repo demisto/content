@@ -1,7 +1,7 @@
 import functools
 
 import pytest
-from cbc_sdk.live_response_api import *
+from cbc_sdk.live_response_api import LiveResponseMemdump, LiveResponseSessionManager
 from CarbonBlackLiveResponseCloud import *
 import demistomock as demisto
 

@@ -77,10 +77,24 @@ configuration:
   type: 0
   section: Collect
   advanced: true
-- defaultvalue: 'true'
-  display: Fetch incidents
+- display: IOM fetch query
+  name: iom_fetch_query
+  type: 0
+  section: Collect
+  required: false
+  advanced: true
+  additionalinfo: "Use the Falcon Query Language. For more information, refer to the integration docs."
+- display: IOA fetch query
+  name: ioa_fetch_query
+  type: 0
+  section: Collect
+  required: false
+  advanced: true
+  additionalinfo: "In the format: cloud_provider=aws&aws_account_id=1234. The query must have the argument 'cloud_provider' configured. For more information, refer to the integration docs."
+- display: Fetch incidents
   name: isFetch
   type: 8
+  defaultvalue: 'true'
   section: Collect
   required: false
 - display: Incident type
@@ -91,6 +105,8 @@ configuration:
 - display: Mirroring Direction
   name: mirror_direction
   type: 15
+  section: Collect
+  required: false
   additionalinfo: 'Choose the direction to mirror the detection: Incoming (from CrowdStrike Falcon to Cortex XSOAR), Outgoing (from Cortex XSOAR to CrowdStrike Falcon), or Incoming and Outgoing (to/from CrowdStrike Falcon and Cortex XSOAR).'
   defaultvalue: None
   options:
@@ -98,8 +114,6 @@ configuration:
   - Incoming
   - Outgoing
   - Incoming And Outgoing
-  section: Collect
-  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -114,32 +128,34 @@ configuration:
   required: false
 - additionalinfo: When selected, closes the CrowdStrike Falcon incident or detection, which is mirrored in the Cortex XSOAR incident.
   defaultvalue: 'false'
-  display: Close Mirrored XSOAR Incident
+  display: 'Close Mirrored XSOAR Incident'
   name: close_incident
   type: 8
   section: Collect
   advanced: true
   required: false
 - defaultvalue: 'false'
-  display: Close Mirrored CrowdStrike Falcon Incident or Detection
+  display: 'Close Mirrored CrowdStrike Falcon Incident or Detection'
   name: close_in_cs_falcon
   type: 8
-  additionalinfo: When selected, closes the Cortex XSOAR incident, which is mirrored in the CrowdStrike Falcon incident or detection, according to the types that were chosen to be fetched and mirrored.
   section: Collect
   advanced: true
   required: false
+  additionalinfo: When selected, closes the Cortex XSOAR incident, which is mirrored in the CrowdStrike Falcon incident or detection, according to the types that were chosen to be fetched and mirrored.
 - additionalinfo: Choose what to fetch - incidents, detections, IDP detections. You can choose any combination.
   defaultvalue: 'Endpoint Detection'
   display: 'Fetch types'
   name: fetch_incidents_or_detections
   type: 16
+  section: Collect
+  advanced: true
+  required: false
   options:
   - IDP Detection
   - Endpoint Incident
   - Endpoint Detection
-  section: Collect
-  advanced: true
-  required: false
+  - Indicator of Misconfiguration
+  - Indicator of Attack
 - defaultvalue: '1'
   display: 'Incidents Fetch Interval'
   name: incidentFetchInterval
@@ -1408,6 +1424,8 @@ script:
     - description: List of tags to apply to the indicator.
       isArray: true
       name: tags
+    - description: Name of the file for file indicators. Applies to hashes only. A common filename, or a filename in your environment. Filenames can be helpful for identifying hashes or filtering IOCs.
+      name: file_name
     description: Uploads an indicator for CrowdStrike to monitor.
     name: cs-falcon-upload-custom-ioc
     outputs:
@@ -1453,6 +1471,9 @@ script:
     - contextPath: CrowdStrike.IOC.Platforms
       description: The platforms of the IOC.
       type: Unknown
+    - contextPath: CrowdStrike.IOC.Filename
+      description: Name of the file for file indicators. Applies to hashes only. A common filename, or a filename in your environment. Filenames can be helpful for identifying hashes or filtering IOCs.
+      type: string
   - arguments:
     - description: The ID of the IOC to update. Can be retrieved by running the cs-falcon-search-custom-iocs command.
       name: ioc_id
@@ -1488,6 +1509,8 @@ script:
       name: source
     - description: A meaningful description of the indicator. Limited to 200 characters.
       name: description
+    - description: Name of the file for file indicators. Applies to hashes only. A common filename, or a filename in your environment. Filenames can be helpful for identifying hashes or filtering IOCs.
+      name: file_name
     description: Updates an indicator for CrowdStrike to monitor.
     name: cs-falcon-update-custom-ioc
     outputs:
@@ -1527,6 +1550,10 @@ script:
     - contextPath: CrowdStrike.IOC.ModifiedBy
       description: The identity of the user/process who last updated the IOC.
       type: string
+    - contextPath: CrowdStrike.IOC.Filename
+      description: Name of the file for file indicators. Applies to hashes only. A common filename, or a filename in your environment. Filenames can be helpful for identifying hashes or filtering IOCs.
+      type: string
+
   - arguments:
     - description: The ID of the IOC to delete. Can be retrieved by running the cs-falcon-search-custom-iocs command.
       name: ioc_id
@@ -4375,7 +4402,301 @@ script:
     - contextPath: CrowdStrike.IDPEntity.EmailAddresses
       description: The identity entity email address.
       type: String
-  dockerimage: demisto/py3-tools:1.0.0.73055
+  - arguments:
+    - description: Comma-separated list of policy IDs to look for.
+      name: policy_ids
+      isArray: true
+      required: true
+    description: Given a CSV list of policy IDs, returns detailed policy information.
+    name: cs-falcon-cspm-list-policy-details
+    outputs:
+    - contextPath: CrowdStrike.CSPMPolicy.ID
+      description: The policy ID.
+      type: Integer
+    - contextPath: CrowdStrike.CSPMPolicy.CreatedAt
+      description: The creation date.
+      type: Date
+    - contextPath: CrowdStrike.CSPMPolicy.UpdatedAt
+      description: The update date.
+      type: Date
+    - contextPath: CrowdStrike.CSPMPolicy.DeletedAt
+      description: The deletion date.
+      type: Date
+    - contextPath: CrowdStrike.CSPMPolicy.description
+      description: The policy description.
+      type: String
+    - contextPath: CrowdStrike.CSPMPolicy.policy_statement
+      description: The policy statement.
+      type: String
+    - contextPath: CrowdStrike.CSPMPolicy.policy_remediation
+      description: The policy remediation.
+      type: String
+    - contextPath: CrowdStrike.CSPMPolicy.cloud_service_subtype
+      description: The cloud service subtype.
+      type: String
+    - contextPath: CrowdStrike.CSPMPolicy.cloud_document
+      description: The cloud document.
+      type: String
+    - contextPath: CrowdStrike.CSPMPolicy.mitre_attack_cloud_matrix
+      description: URL to the MITRE attack tactics.
+      type: String
+    - contextPath: CrowdStrike.CSPMPolicy.mitre_attack_cloud_subtype
+      description: URL to the MITRE attack techniques.
+      type: String
+    - contextPath: CrowdStrike.CSPMPolicy.alert_logic
+      description: The alert logic.
+      type: String
+    - contextPath: CrowdStrike.CSPMPolicy.api_command
+      description: The API command.
+      type: String
+    - contextPath: CrowdStrike.CSPMPolicy.cli_command
+      description: The CLI command.
+      type: String
+    - contextPath: CrowdStrike.CSPMPolicy.cloud_platform_type
+      description: The cloud platform type.
+      type: String
+    - contextPath: CrowdStrike.CSPMPolicy.cloud_service_type
+      description: The cloud service type.
+      type: String
+    - contextPath: CrowdStrike.CSPMPolicy.default_severity
+      description: The default severity.
+      type: String
+    - contextPath: CrowdStrike.CSPMPolicy.cis_benchmark_ids
+      description: The CIS benchmark IDs.
+      type: Array
+    - contextPath: CrowdStrike.CSPMPolicy.nist_benchmark_ids
+      description: The NIST benchmark IDs.
+      type: Array
+    - contextPath: CrowdStrike.CSPMPolicy.pci_benchmark_ids
+      description: The pci benchmark IDs.
+      type: Array
+    - contextPath: CrowdStrike.CSPMPolicy.policy_type
+      description: The policy type.
+      type: String
+    - contextPath: CrowdStrike.CSPMPolicy.tactic_url
+      description: The tactic URL.
+      type: String
+    - contextPath: CrowdStrike.CSPMPolicy.technique_url
+      description: The technique URL.
+      type: String
+    - contextPath: CrowdStrike.CSPMPolicy.tactic
+      description: The tactic used.
+      type: String
+    - contextPath: CrowdStrike.CSPMPolicy.technique
+      description: The technique used.
+      type: String
+    - contextPath: CrowdStrike.CSPMPolicy.tactic_id
+      description: The tactic ID.
+      type: String
+    - contextPath: CrowdStrike.CSPMPolicy.technique_id
+      description: The technique ID.
+      type: String
+    - contextPath: CrowdStrike.CSPMPolicy.attack_types
+      description: The attack types.
+      type: Array
+    - contextPath: CrowdStrike.CSPMPolicy.asset_type_id
+      description: The asset type ID.
+      type: Integer
+    - contextPath: CrowdStrike.CSPMPolicy.cloud_asset_type
+      description: The cloud asset type.
+      type: String
+    - contextPath: CrowdStrike.CSPMPolicy.is_remediable
+      description: Whether the policy is remediable or not..
+      type: Boolean
+    - contextPath: CrowdStrike.CSPMPolicy.is_enabled
+      description: Whether the policy is enabled or not.
+      type: Boolean
+    - contextPath: CrowdStrike.CSPMPolicy.account_scope
+      description: The account scope.
+      type: String
+  - arguments:
+    - description: The policy ID to look for its settings.
+      name: policy_id
+    - description: The cloud provider.
+      name: cloud_platform
+      defaultValue: 'aws'
+      predefined:
+      - 'aws'
+      - 'gcp'
+      - 'azure'
+      auto: PREDEFINED
+    - description: Service type to filter by.
+      name: service
+    - description: The maximum number of entities to list.
+      name: limit
+      defaultValue: 50
+    description: Returns information about current policy settings.
+    name: cs-falcon-cspm-list-service-policy-settings
+    outputs:
+    - contextPath: CrowdStrike.CSPMPolicySetting.is_remediable
+      description: Whether the policy setting is remediable or not.
+      type: Boolean
+    - contextPath: CrowdStrike.CSPMPolicySetting.created_at
+      description: The creation date.
+      type: String
+    - contextPath: CrowdStrike.CSPMPolicySetting.updated_at
+      description: The update date.
+      type: String
+    - contextPath: CrowdStrike.CSPMPolicySetting.policy_id
+      description: The policy ID.
+      type: Integer
+    - contextPath: CrowdStrike.CSPMPolicySetting.name
+      description: The policy setting name.
+      type: String
+    - contextPath: CrowdStrike.CSPMPolicySetting.policy_type
+      description: The policy type.
+      type: String
+    - contextPath: CrowdStrike.CSPMPolicySetting.cloud_service_subtype
+      description: The cloud service subtype.
+      type: String
+    - contextPath: CrowdStrike.CSPMPolicySetting.cloud_service
+      description: The cloud service.
+      type: String
+    - contextPath: CrowdStrike.CSPMPolicySetting.cloud_service_friendly
+      description: The cloud friendly service.
+      type: String
+    - contextPath: CrowdStrike.CSPMPolicySetting.cloud_asset_type
+      description: The cloud asset type.
+      type: String
+    - contextPath: CrowdStrike.CSPMPolicySetting.cloud_asset_type_id
+      description: The cloud asset type ID.
+      type: Integer
+    - contextPath: CrowdStrike.CSPMPolicySetting.cloud_provider
+      description: The cloud provider.
+      type: String
+    - contextPath: CrowdStrike.CSPMPolicySetting.default_severity
+      description: The default severity.
+      type: String
+    - contextPath: CrowdStrike.CSPMPolicySetting.policy_timestamp
+      description: The policy timestamp.
+      type: Date
+    - contextPath: CrowdStrike.CSPMPolicySetting.policy_settings
+      description: An array that holds policy settings.
+      type: Array
+    - contextPath: CrowdStrike.CSPMPolicySetting.policy_settings.account_id
+      description: The account ID correlated to the policy.
+      type: String
+    - contextPath: CrowdStrike.CSPMPolicySetting.policy_settings.regions
+      description: The regions in which the policy is configured at.
+      type: Array
+    - contextPath: CrowdStrike.CSPMPolicySetting.policy_settings.severity
+      description: The severity of the policy.
+      type: String
+    - contextPath: CrowdStrike.CSPMPolicySetting.policy_settings.enabled
+      description: Whether the policy settings are enabled or not.
+      type: Boolean
+    - contextPath: CrowdStrike.CSPMPolicySetting.policy_settings.tag_excluded
+      description: Whether the tag is excluded or not.
+      type: Boolean
+    - contextPath: CrowdStrike.CSPMPolicySetting.cis_benchmark
+      description: An array of CIS benchmark details.
+      type: Array
+    - contextPath: CrowdStrike.CSPMPolicySetting.cis_benchmark.id
+      description: The CIS benchmark ID.
+      type: Integer
+    - contextPath: CrowdStrike.CSPMPolicySetting.cis_benchmark.benchmark_short
+      description: The CIS benchmark shortname.
+      type: String
+    - contextPath: CrowdStrike.CSPMPolicySetting.cis_benchmark.recommendation_number
+      description: The CIS benchmark recommendation number.
+      type: String
+    - contextPath: CrowdStrike.CSPMPolicySetting.pci_benchmark
+      description: An array of PCI benchmark details.
+      type: Array
+    - contextPath: CrowdStrike.CSPMPolicySetting.pci_benchmark.id
+      description: The PCI benchmark ID.
+      type: Integer
+    - contextPath: CrowdStrike.CSPMPolicySetting.pci_benchmark.benchmark_short
+      description: The PCI benchmark shortname.
+      type: String
+    - contextPath: CrowdStrike.CSPMPolicySetting.pci_benchmark.recommendation_number
+      description: The PCI benchmark recommendation number.
+      type: String
+    - contextPath: CrowdStrike.CSPMPolicySetting.nist_benchmark
+      description: An array of NIST benchmark details.
+      type: Array
+    - contextPath: CrowdStrike.CSPMPolicySetting.nist_benchmark.id
+      description: The NIST benchmark ID.
+      type: Integer
+    - contextPath: CrowdStrike.CSPMPolicySetting.nist_benchmark.benchmark_short
+      description: The NIST benchmark shortname.
+      type: String
+    - contextPath: CrowdStrike.CSPMPolicySetting.nist_benchmark.recommendation_number
+      description: The NIST benchmark recommendation number.
+      type: String
+    - contextPath: CrowdStrike.CSPMPolicySetting.attack_types
+      description: The attack types.
+      type: Array
+  - arguments:
+    - description: Policy ID to be updated.
+      name: policy_id
+      required: true
+    - description: Cloud Account ID to impact.
+      name: account_id
+    - description: Flag indicating if this policy is enabled.
+      name: enabled
+      defaultValue: 'true'
+      predefined:
+      - 'false'
+      - 'true'
+      auto: PREDEFINED
+    - description: List of regions where this policy is enforced.
+      name: regions
+      isArray: true
+    - description: Policy severity value.
+      name: severity
+      predefined:
+      - 'critical'
+      - 'high'
+      - 'medium'
+      - 'informational'
+      auto: PREDEFINED
+    - description: Tag exclusion flag.
+      name: tag_excluded
+      predefined:
+      - 'false'
+      - 'true'
+      auto: PREDEFINED
+    description: Updates a policy setting - can be used to override policy severity or to disable a policy entirely.
+    name: cs-falcon-cspm-update-policy_settings
+  - arguments:
+    - description: IDs of the alerts to update.
+      name: ids
+      isArray: true
+      required: true
+    - description: Assign the specified detections to a user based on their username.
+      name: assign_to_name
+    - description: Assign the specified detections to a user based on their UUID.
+      name: assign_to_uuid
+    - description: Appends a new comment to any existing comments for the specified detections.
+      name: append_comment
+    - description: Add a tag to the specified detections.
+      name: add_tag
+    - description: Remove a tag from the specified detections.
+      name: remove_tag
+    - description: Update status of the alert to the specified value.
+      name: update_status
+      predefined:
+      - 'new'
+      - 'in_progress'
+      - 'closed'
+      - 'reopened'
+      auto: PREDEFINED
+    - description: Whether to unassign any assigned users to the specified detections.
+      name: unassign
+      predefined:
+      - 'false'
+      - 'true'
+      auto: PREDEFINED
+    - description: If true, displays the detection in the UI.
+      name: show_in_ui
+      predefined:
+      - 'false'
+      - 'true'
+      auto: PREDEFINED
+    description: Perform actions on alerts.
+    name: cs-falcon-resolve-identity-detection
+  dockerimage: demisto/py3-tools:1.0.0.76090
   isfetch: true
   ismappable: true
   isremotesyncin: true
