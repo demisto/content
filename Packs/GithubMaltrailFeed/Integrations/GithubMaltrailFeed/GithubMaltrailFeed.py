@@ -63,7 +63,7 @@ class Client(BaseClient):
 def fetch_indicators(client: Client, url: str, params: dict=None):
     if params:
         feed_tags = argToList(params.get('feedTags', []))
-        tlp_color = params.get('tlp_color', None)
+        tlp_color = params.get('tlp_color')
     response = client.http_request(url)
     indicator_list = []
     demisto.debug('Fetch of indicators started ###')
