@@ -140,7 +140,8 @@ class Client(BaseClient):
 
         return response
 
-    def list_asset_internet_exposure_request(self, search_params: list[dict], search_from: int = 0, search_to: int = DEFAULT_SEARCH_LIMIT) -> dict[str, Any]:
+    def list_asset_internet_exposure_request(self, search_params: list[dict], search_from: int = 0,
+                                             search_to: int = DEFAULT_SEARCH_LIMIT) -> dict[str, Any]:
         """Get a list of all your internet exposure assets using the '/assets/get_assets_internet_exposure/' endpoint.
 
         Args:
@@ -586,8 +587,13 @@ def list_asset_internet_exposure_command(client: Client, args: dict[str, Any]) -
         search_params.append({"field": "type", "operator": "in", "value": [asm_type]})
     if has_active_external_services:
         search_params.append({"field": "has_active_external_services", "operator": "in", "value": [has_active_external_services]})
+    if search_from:
+        search_from = int(search_from)
+    if search_to:
+        search_to = int(search_to)
 
-    response = client.list_asset_internet_exposure_request(search_params=search_params, search_to=search_to, search_from=search_from)
+    response = client.list_asset_internet_exposure_request(
+        search_params=search_params, search_to=search_to, search_from=search_from)
     formatted_response = response.get('reply', {}).get('assets_internet_exposure')
     parsed = format_asm_id(formatted_response)
     markdown = tableToMarkdown('Asset Internet Exposures', parsed, removeNull=True,
@@ -928,6 +934,7 @@ def list_incidents_command(client: Client, args: dict[str, Any]) -> CommandResul
 
     return command_results
 
+
 def get_incident_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     asm-get-incident command: Returns a single incident
@@ -1127,7 +1134,7 @@ def ip_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
         ))
 
         ip_data_list.append({
-            k: formatted_response.get(k) for k in formatted_response.keys() if k in ASSET_HEADER_HEADER_LIST
+            k: formatted_response.get(k) for k in formatted_response if k in ASSET_HEADER_HEADER_LIST
         })
 
     readable_output = tableToMarkdown(
@@ -1139,6 +1146,7 @@ def ip_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
         outputs=ip_data_list if len(ip_data_list) > 0 else None,
     ))
     return command_results
+
 
 def domain_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
     """
@@ -1194,7 +1202,7 @@ def domain_command(client: Client, args: dict[str, Any]) -> list[CommandResults]
         ))
 
         domain_data_list.append({
-            k: formatted_response.get(k) for k in formatted_response.keys() if k in ASSET_HEADER_HEADER_LIST
+            k: formatted_response.get(k) for k in formatted_response if k in ASSET_HEADER_HEADER_LIST
         })
 
     readable_output = tableToMarkdown(
