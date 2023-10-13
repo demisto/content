@@ -69,7 +69,7 @@ DOMAIN_HEADERS = [
 
 USER_HEADERS = ['Username', 'Domain', 'LastMachineLoggedInTo', 'Organization', 'LocalSystem']
 
-SENSOR_HEADER = ['Sensor ID', 'Machine Name', 'Group ID', 'Group Name']
+SENSOR_HEADERS = ['MachineID', 'MachineName', 'GroupID', 'GroupName']
 
 CONNECTION_INFO = [
     {'field': 'elementDisplayName', 'header': 'Name', 'type': 'simple'},
@@ -1931,8 +1931,8 @@ def fetch_machine_details_command(client: Client, args: dict):
     json_body = {}
     if machine_name:
         json_body = {
-           "limit": 1000,
-           "offset":0
+            "limit": 1000,
+            "offset": 0
         }
     response = client.cybereason_api_call('POST', '/rest/sensors/query', json_body=json_body)
     if dict_safe_get(response, ['sensors']) == []:
@@ -1940,18 +1940,20 @@ def fetch_machine_details_command(client: Client, args: dict):
     else:
         outputs = []
         for single_sensor in response['sensors']:
-             if single_sensor['machine_name'] == machine_name:
+            if single_sensor['machineName'] == machine_name:
                 outputs.append({
-                    "sensorId": single_sensor["sensorId"],
-                    "machineName": single_sensor["machine_name"],
-                    "groupId": single_sensor["groupId"],
-                    "groupName": single_sensor["groupName"]
+                    "MachineID": single_sensor["sensorId"],
+                    "MachineName": single_sensor["machineName"],
+                    "GroupID": single_sensor["groupId"],
+                    "GroupName": single_sensor["groupName"]
                 })
         # return CommandResults(readable_output=f"Machine name {output}")
+        empty_output_message = 'No Machine Details found for the given Machine Name'
         return CommandResults(
-            readable_output=tableToMarkdown('Sensor Details', outputs, headers=SENSOR_HEADER) if outputs else 'No machine details found for given machine name',
+            readable_output=tableToMarkdown(
+                'Machine Details', outputs, headers=SENSOR_HEADERS) if outputs else empty_output_message,
             outputs_prefix='Cybereason.Sensors',
-            outputs_key_field='sensorId',
+            outputs_key_field='MachineID',
             outputs=outputs)
 
 

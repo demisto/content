@@ -990,3 +990,28 @@ def test_get_machine_guid(mocker):
     mocker.patch("Cybereason.Client.cybereason_api_call", return_value=raw_response)
     command_output = get_machine_guid(client, "test_machine")
     assert command_output == "-1826875736.1198775089551518743"
+
+
+def test_start_host_scan_command(mocker):
+    from Cybereason import start_host_scan_command, Client
+    HEADERS = {'Content-Type': 'application/json', 'Connection': 'close'}
+    client = Client(
+        base_url="https://integration.cybereason.net:8443",
+        verify=False,
+        headers=HEADERS,
+        proxy=True)
+    args = {
+        "sensorID": "5e778834ef:PYLUMCLIENT_INTEGRATION_EC2AMAZ",
+        "scanType": "FULL"}
+
+    test_reponse = MockResponse({"key1": "val1"}, 204)
+    mocker.patch('Cybereason.Client.cybereason_api_call', return_value=test_reponse)
+    command_output = start_host_scan_command(client, args)
+    assert command_output.readable_output == ('Given Sensor ID/ID\'s [\'5e778834ef:PYLUMCLIENT_INTEGRATION_EC2AMAZ\'] is/are '
+                                              'not available for scanning.')
+
+    test_reponse = MockResponse({"key1": "val1"}, 404)
+    mocker.patch('Cybereason.Client.cybereason_api_call', return_value=test_reponse)
+    with pytest.raises(Exception) as exc_info:
+        command_output = start_host_scan_command(client, args)
+    assert exc_info.match(r"Your request failed")
