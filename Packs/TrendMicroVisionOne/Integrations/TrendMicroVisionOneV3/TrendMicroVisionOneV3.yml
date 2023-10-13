@@ -1051,7 +1051,7 @@ script:
       type: string
     description: Updates the status of a workbench alert.
     name: trendmicro-visionone-update-status
-  dockerimage: devtesting/pytmv1-061:1.0.0.1696892580
+  dockerimage: devdemisto/pytmv1-061:1.0.0.77283
   isFetchSamples: true
   isfetch: true
   script: ''
