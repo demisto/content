@@ -141,7 +141,6 @@ def fetch_indicators_command(client: Client, args: dict, params: dict=None):
 
     #First Fetch
     if not integration_context:
-        # page_num = 0
         time_of_first_fetch = date_to_timestamp(datetime.now(), DATE_FORMAT)
         # demisto.debug(f'### Time from first fetch {time_of_first_fetch}')
         set_integration_context({'time_of_last_fetch': time_of_first_fetch})
