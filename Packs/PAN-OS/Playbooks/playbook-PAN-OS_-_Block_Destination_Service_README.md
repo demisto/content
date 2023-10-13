@@ -43,7 +43,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | WhereRule | Where to move the rule. If you specify "before" or "after", you need to supply the "dst" argument. \(Default is: 'top'\) | top | Optional |
 | SourceZone | A comma-separated list of source zones. |  | Optional |
 | DestinationZone | A comma-separated list of destination zones. |  | Optional |
-| SecondaryDeviceGroup | In that case that the rule, address and service are created in the "Shared" location, we need to know what device-groups we can push to because it isn't possible to push to the "Shared" location. |  | Optional |
+| SecondaryDeviceGroup | If the rule, address and service are created in the "Shared" location, we need to know what device groups we can push to because it isn't possible to push to the "Shared" location. |  | Optional |
 
 ## Playbook Outputs
 
