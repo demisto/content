@@ -373,38 +373,33 @@ jobs-done-check-nightly:
   rules:
     - if: '$NIGHTLY'
       when: always
+  variables:
+    WORKFLOW: 'Content Nightly'
 
 jobs-done-check-on-push:
   extends:
     - .push-rule
     - .jobs-done-check
-  needs:
-    - job: run-unittests-and-lint
-      optional: true
-    - job: trigger-private-build
-      optional: true
-    - job: validate-content-conf
-      optional: true
-    - job: mpv2-prepare-testing-bucket
-      optional: true
-    - job: xpanse-prepare-testing-bucket
-      optional: true
-    - job: xsoar-prepare-testing-bucket
-      optional: true
-    - job: xsoar-saas-prepare-testing-bucket
-      optional: true
-    - job: xsiam_server_ga
-      optional: true
-    - job: tests_xsoar_server
-      optional: true
-    - job: xsoar_ng_server_ga
-      optional: true
-    - job: tests_xsoar_server-test_playbooks_results
-      optional: true
-    - job: xsiam_server_ga-test_playbooks_results
-      optional: true
+  dependencies:
+    - run-unittests-and-lint
+    - run-validations
+    - stop-running-pipelines
+    - test-upload-flow
+    - trigger-private-build
+    - validate-content-conf
+    - mpv2-prepare-testing-bucket
+    - xpanse-prepare-testing-bucket
+    - xsoar-prepare-testing-bucket
+    - xsoar-saas-prepare-testing-bucket
+    - xsiam_server_ga
+    - tests_xsoar_server
+    - xsoar_ng_server_ga
+    - tests_xsoar_server-test_playbooks_results
+    - xsiam_server_ga-test_playbooks_results
   tags:
     - gke
+  variables:
+    WORKFLOW: 'Content PR'
 
 slack-notify-nightly-build:
   extends:

@@ -14,38 +14,19 @@ from slack_sdk import WebClient
 
 from Tests.Marketplace.marketplace_constants import BucketUploadFlow
 from Tests.Marketplace.marketplace_services import get_upload_data
+from Tests.scripts.common import CONTENT_NIGHTLY, CONTENT_PR, TEST_NATIVE_CANDIDATE, WORKFLOW_TYPES
 from Tests.scripts.github_client import GithubPullRequest
 from Tests.scripts.test_playbooks import get_instance_directories
 from Tests.scripts.utils.log_util import install_logging
 
-DEMISTO_GREY_ICON = 'https://3xqz5p387rui1hjtdv1up7lw-wpengine.netdna-ssl.com/wp-content/' \
-                    'uploads/2018/07/Demisto-Icon-Dark.png'
-ROOT_ARTIFACTS_FOLDER = os.getenv('ARTIFACTS_FOLDER', './artifacts')
-ARTIFACTS_FOLDER_XSOAR = os.getenv('ARTIFACTS_FOLDER_XSOAR', './artifacts/xsoar')
-ARTIFACTS_FOLDER_MPV2 = os.getenv('ARTIFACTS_FOLDER_MPV2', './artifacts/marketplacev2')
-ARTIFACTS_FOLDER_MPV2_INSTANCE = os.getenv('ARTIFACTS_FOLDER_INSTANCE', './artifacts/marketplacev2/instance_xsiam')
-CONTENT_CHANNEL = 'dmst-build-test'
-ARTIFACTS_FOLDER_XPANSE = os.getenv('ARTIFACTS_FOLDER_XPANSE', './artifacts/xpanse')
-GITLAB_PROJECT_ID = os.getenv('CI_PROJECT_ID') or 2596  # the default is the id of the content repo in code.pan.run
+ROOT_ARTIFACTS_FOLDER = Path(os.getenv('ARTIFACTS_FOLDER', './artifacts'))
+ARTIFACTS_FOLDER_XSOAR = Path(os.getenv('ARTIFACTS_FOLDER_XSOAR', './artifacts/xsoar'))
+ARTIFACTS_FOLDER_MPV2 = Path(os.getenv('ARTIFACTS_FOLDER_MPV2', './artifacts/marketplacev2'))
+ARTIFACTS_FOLDER_MPV2_INSTANCE = Path(os.getenv('ARTIFACTS_FOLDER_INSTANCE', './artifacts/marketplacev2/instance_xsiam'))
+ARTIFACTS_FOLDER_XPANSE = Path(os.getenv('ARTIFACTS_FOLDER_XPANSE', './artifacts/xpanse'))
 GITLAB_SERVER_URL = os.getenv('CI_SERVER_URL', 'https://code.pan.run')  # disable-secrets-detection
-CONTENT_NIGHTLY = 'Content Nightly'
-CONTENT_PR = 'Content PR'
-BUCKET_UPLOAD = 'Upload Packs to Marketplace Storage'
-SDK_NIGHTLY = 'Demisto SDK Nightly'
-PRIVATE_NIGHTLY = 'Private Nightly'
-TEST_NATIVE_CANDIDATE = 'Test Native Candidate'
-SECURITY_SCANS = 'Security Scans'
-BUILD_MACHINES_CLEANUP = 'Build Machines Cleanup'
-WORKFLOW_TYPES = {
-    CONTENT_NIGHTLY,
-    CONTENT_PR,
-    SDK_NIGHTLY,
-    BUCKET_UPLOAD,
-    PRIVATE_NIGHTLY,
-    TEST_NATIVE_CANDIDATE,
-    SECURITY_SCANS,
-    BUILD_MACHINES_CLEANUP
-}
+GITLAB_PROJECT_ID = os.getenv('CI_PROJECT_ID') or 2596  # the default is the id of the content repo in code.pan.run
+CONTENT_CHANNEL = 'dmst-build-test'
 SLACK_USERNAME = 'Content GitlabCI'
 GITHUB_TOKEN = os.getenv('GITHUB_TOKEN', '')
 CI_COMMIT_BRANCH = os.getenv('CI_COMMIT_BRANCH', '')
@@ -74,7 +55,7 @@ def options_handler() -> argparse.Namespace:
     return parser.parse_args()
 
 
-def get_artifact_data(artifact_folder: str, artifact_relative_path: str) -> str | None:
+def get_artifact_data(artifact_folder: Path, artifact_relative_path: str) -> str | None:
     """
     Retrieves artifact data according to the artifact relative path from 'ARTIFACTS_FOLDER' given.
     Args:
@@ -86,7 +67,7 @@ def get_artifact_data(artifact_folder: str, artifact_relative_path: str) -> str 
     """
     artifact_data = None
     try:
-        file_name = os.path.join(artifact_folder, artifact_relative_path)
+        file_name = artifact_folder / artifact_relative_path
         if os.path.isfile(file_name):
             logging.info(f'Extracting {artifact_relative_path}')
             with open(file_name) as file_data:
@@ -105,8 +86,8 @@ def get_failed_modeling_rule_name_from_test_suite(test_suite: TestSuite) -> str:
     return f"{properties['modeling_rule_file_name']} ({properties['pack_id']})"
 
 
-def test_modeling_rules_results(artifact_folder: str, title: str) -> list[dict[str, Any]]:
-    failed_test_modeling_rules = Path(artifact_folder) / 'modeling_rules_results.xml'
+def test_modeling_rules_results(artifact_folder: Path, title: str) -> list[dict[str, Any]]:
+    failed_test_modeling_rules = artifact_folder / 'modeling_rules_results.xml'
     if not failed_test_modeling_rules.exists():
         return []
     xml = JUnitXml.fromfile(failed_test_modeling_rules.as_posix())
@@ -162,18 +143,18 @@ def test_playbooks_results_to_slack_msg(failed_tests: list[str],
     return content_team_fields
 
 
-def test_playbooks_results(artifact_folder: str, title: str) -> list[dict[str, Any]]:
+def test_playbooks_results(artifact_folder: Path, title: str) -> list[dict[str, Any]]:
 
     instance_directories = get_instance_directories(artifact_folder)
     content_team_fields = []
     for instance_directory in instance_directories:
-        failed_tests_data = get_artifact_data(instance_directory.as_posix(), 'failed_tests.txt')
+        failed_tests_data = get_artifact_data(instance_directory, 'failed_tests.txt')
         failed_tests = failed_tests_data.split('\n') if failed_tests_data else []
 
-        skipped_tests_data = get_artifact_data(instance_directory.as_posix(), 'skipped_tests.txt')
+        skipped_tests_data = get_artifact_data(instance_directory, 'skipped_tests.txt')
         skipped_tests = skipped_tests_data.split('\n') if skipped_tests_data else []
 
-        skipped_integrations_data = get_artifact_data(instance_directory.as_posix(), 'skipped_integrations.txt')
+        skipped_integrations_data = get_artifact_data(instance_directory, 'skipped_integrations.txt')
         skipped_integrations = skipped_integrations_data.split('\n') if skipped_integrations_data else []
 
         content_team_fields += test_playbooks_results_to_slack_msg(failed_tests, skipped_integrations, skipped_tests, title)
@@ -203,9 +184,9 @@ def unit_tests_results() -> list[dict[str, Any]]:
     return slack_results
 
 
-def bucket_upload_results(bucket_artifact_folder: str, should_include_private_packs: bool) -> list[dict[str, Any]]:
+def bucket_upload_results(bucket_artifact_folder: Path, should_include_private_packs: bool) -> list[dict[str, Any]]:
     steps_fields = []
-    pack_results_path = os.path.join(bucket_artifact_folder, BucketUploadFlow.PACKS_RESULTS_FILE_FOR_SLACK)
+    pack_results_path = bucket_artifact_folder / BucketUploadFlow.PACKS_RESULTS_FILE_FOR_SLACK
     marketplace_name = os.path.basename(bucket_artifact_folder).upper()
 
     logging.info(f'retrieving upload data from "{pack_results_path}"')
@@ -298,7 +279,7 @@ def construct_slack_msg(triggering_workflow: str,
     return slack_msg
 
 
-def missing_content_packs_test_conf(artifact_folder: str) -> list[dict[str, Any]]:
+def missing_content_packs_test_conf(artifact_folder: Path) -> list[dict[str, Any]]:
     missing_packs = get_artifact_data(artifact_folder, 'missing_content_packs_test_conf.txt')
     content_fields = []
     if missing_packs:
@@ -330,7 +311,7 @@ def collect_pipeline_data(gitlab_client: gitlab.Gitlab,
 
 
 def construct_coverage_slack_msg() -> list[dict[str, Any]]:
-    coverage_today = get_total_coverage(filename=os.path.join(ROOT_ARTIFACTS_FOLDER, 'coverage_report/coverage-min.json'))
+    coverage_today = get_total_coverage(filename=(ROOT_ARTIFACTS_FOLDER / 'coverage_report/coverage-min.json').as_posix())
     yesterday = datetime.now() - timedelta(days=1)
     coverage_yesterday = get_total_coverage(date=yesterday)
     color = 'good' if coverage_today >= coverage_yesterday else 'danger'

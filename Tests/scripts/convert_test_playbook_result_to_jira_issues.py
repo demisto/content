@@ -4,6 +4,7 @@ import re
 import sys
 import traceback
 from datetime import datetime, timezone
+from pathlib import Path
 from tempfile import NamedTemporaryFile
 from typing import Any
 
@@ -130,7 +131,7 @@ def main():
         jira_server = JIRA(JIRA_SERVER_URL, token_auth=JIRA_API_KEY, options={'verify': JIRA_VERIFY_SSL})
         jira_server_information(jira_server)
         # iterate over the artifacts path and find all the test playbook result files
-        test_playbooks_result_files_list = get_test_playbook_results_files(options.artifacts_path)
+        test_playbooks_result_files_list = get_test_playbook_results_files(Path(options.artifacts_path))
 
         if not test_playbooks_result_files_list:
             # Write an empty report file to avoid failing the build artifacts collection.

@@ -1,0 +1,18 @@
+CONTENT_NIGHTLY = 'Content Nightly'
+CONTENT_PR = 'Content PR'
+BUCKET_UPLOAD = 'Upload Packs to Marketplace Storage'
+SDK_NIGHTLY = 'Demisto SDK Nightly'
+PRIVATE_NIGHTLY = 'Private Nightly'
+TEST_NATIVE_CANDIDATE = 'Test Native Candidate'
+SECURITY_SCANS = 'Security Scans'
+BUILD_MACHINES_CLEANUP = 'Build Machines Cleanup'
+WORKFLOW_TYPES = {
+    CONTENT_NIGHTLY,
+    CONTENT_PR,
+    SDK_NIGHTLY,
+    BUCKET_UPLOAD,
+    PRIVATE_NIGHTLY,
+    TEST_NATIVE_CANDIDATE,
+    SECURITY_SCANS,
+    BUILD_MACHINES_CLEANUP
+}

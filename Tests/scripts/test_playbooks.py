@@ -186,7 +186,7 @@ def calculate_test_playbooks_results_table(jira_tickets_for_playbooks: dict[str,
     return headers, tabulate_data, xml, total_errors
 
 
-def get_test_playbook_results_files(artifacts_path: str) -> list[Path]:
+def get_test_playbook_results_files(artifacts_path: Path) -> list[Path]:
     test_playbooks_result_files_list: list[Path] = []
     for directory in get_instance_directories(artifacts_path):
         logging.info(f"Found instance directory: {directory}")
@@ -197,9 +197,9 @@ def get_test_playbook_results_files(artifacts_path: str) -> list[Path]:
     return test_playbooks_result_files_list
 
 
-def get_instance_directories(artifacts_path: str) -> list[Path]:
+def get_instance_directories(artifacts_path: Path) -> list[Path]:
     test_playbooks_result_files_list: list[Path] = []
-    for directory in Path(artifacts_path).iterdir():
+    for directory in artifacts_path.iterdir():
         if directory.is_dir() and directory.name.startswith("instance_"):
             test_playbooks_result_files_list.append(directory)
     return test_playbooks_result_files_list

@@ -86,8 +86,8 @@ def filter_skipped_playbooks(playbooks_results):
     return filtered_playbooks_ids
 
 
-def print_test_summary(artifacts_path: str, without_jira: bool) -> bool:
-    test_playbooks_report = Path(artifacts_path) / "test_playbooks_report.xml"
+def print_test_summary(artifacts_path: Path, without_jira: bool) -> bool:
+    test_playbooks_report = artifacts_path / "test_playbooks_report.xml"
 
     # iterate over the artifacts path and find all the test playbook result files
     test_playbooks_result_files_list = get_test_playbook_results_files(artifacts_path)
