@@ -1815,10 +1815,10 @@ def test_get_ticket_attachment_entries_with_oauth_token(mocker):
          RESPONSE_GENERIC_TICKET),
         (generic_api_call_command,
          {"method": "GET",
-          "path": "table/sn_si_incident?sysparam_limit=1&sysparam_query=active=true^ORDERBYDESCnumber",
+          "path": "/table/sn_si_incident?sysparam_limit=1&sysparam_query=active=true^ORDERBYDESCnumber",
           "body": {},
           "headers": {},
-          "custom_api_root": "/api/custom/"
+          "custom_api": "/api/custom"
           },
          RESPONSE_GENERIC_TICKET)
     ])

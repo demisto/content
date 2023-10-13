@@ -679,10 +679,10 @@ class Client(BaseClient):
         params = params if params is not None else {}
 
         if custom_api:
+            if not custom_api.startswith("/"):
+                return_error("Argument custom_api must start with a leading forward slash '/'")
             server_url = demisto.params().get('url')
-            api = '/' + custom_api.strip(' /') + '/'
-            path = path.strip(' /')
-            url = f'{get_server_url(server_url)}{api}{path}'
+            url = f'{get_server_url(server_url)}{custom_api}{path}'
         elif sc_api:
             url = f'{self._sc_server_url}{path}'
         elif cr_api:
