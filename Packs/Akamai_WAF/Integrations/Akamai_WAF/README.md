@@ -11,9 +11,12 @@ This is the modified version where a new command "akamai-update-network-list-ele
     | **Parameter** | **Required** |
     | --- | --- |
     | Server URL (e.g., https://example.net) | True |
-    | Client token | True |
-    | Access token | True |
-    | Client secret | True |
+    | Client token | False |
+    | Access token | False |
+    | Client secret | False |
+    | Client token | False |
+    | Access token | False |
+    | Client secret | False |
     | Trust any certificate (not secure) | False |
     | Use system proxy settings | False |
 
@@ -300,7 +303,7 @@ Create a new enrollment.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| country | The country code (two letter format) for the country where your organization is located.. Default is US. | Required | 
+| country | The country code (two letter format) for the country where your organization is located. Default is US. | Required | 
 | company | Company. | Required | 
 | organizational_unit | Organizational unit. | Required | 
 | city | The city of the admin contact. | Required | 
@@ -333,6 +336,7 @@ Create a new enrollment.
 | network_configuration_quic_enabled | Set to true to enable QUIC protocol. Default is True. | Optional | 
 | network_configuration_secure_network | Set the type of deployment network you want to use. Default is enhanced-tls. | Optional | 
 | network_configuration_sni_only | SNI settings for your enrollment. Set to true to enable SNI-only for the enrollment. Default is True. | Optional | 
+| sans | Multiple sans adding into the Common name. | Optional | 
 
 #### Context Output
 
@@ -445,6 +449,7 @@ Update the certs and trust chains.
 | allowed_input_type_param | Allowed input type parameter. Default is third-party-cert-and-trust-chain. | Optional | 
 | certificate | The updated certificate. | Optional | 
 | trust_chain | The updated trust chain. | Optional | 
+| key_algorithm | RSA or ECDSA. Possible values are: RSA, ECDSA. | Optional | 
 
 #### Context Output
 
@@ -548,7 +553,7 @@ Get a specific GTM domain.
 #### Context Output
 
 | **Path** | **Type** | **Description** |
-| --- | --- | --- |
+| --- | --- | --- | 
 | Akamai.Domain | unknown | Domain. | 
 
 ### akamai-create-datacenter
@@ -1392,7 +1397,7 @@ There is no context output for this command.
 ### akamai-list-papi-property-by-hostname
 
 ***
-Lists active property hostnames for all properties available in an account.
+Lists active property hostnames for all properties available in an account. 
 
 #### Base Command
 
@@ -1405,14 +1410,11 @@ Lists active property hostnames for all properties available in an account.
 | hostname | Filter the results by cnameFrom. Supports wildcard matches with *. | Required | 
 | network | Network of activated hostnames, either STAGING or PRODUCTION. Or leave it BLANK. Possible values are: STAGING, PRODUCTION. | Optional | 
 | contract_id | Unique identifier for the contract. contract_id and groupd_id need to be presented at the same time. | Optional | 
-| group_id | Unique identifier for the group. Both contract_id and group_id need to be defined. | Optional | 
+| group_id | Unique identifier for the group. contract_id and groupd_id need to be presented at the same time. | Optional | 
 
 #### Context Output
 
 There is no context output for this command.
-
-
-
 ### akamai-list-siteshield-map
 
 ***
@@ -1424,36 +1426,133 @@ Returns a list of all Site Shield maps that belong to your account.
 
 #### Input
 
-There is no input for this command.
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
 
 #### Context Output
-`{
-  "Akamai.SiteShieldMaps": [
-    {
-      "acknowledgeRequiredBy": 168321944560,
-      "acknowledged": false,
-      "acknowledgedBy": "example@fisglobal.com",
-      "acknowledgedOn": 1676034518000,
-      "contacts": [
-        "example@fisglobal.com",
-        "example@akamai.com"
-      ],
-      "currentCidrs": [
-        "ip1",
-        "ip2"
-      ],
-      "id": 1910627,
-      "latestTicketId": 22728,
-      "mapAlias": "Americas Secure Map",
-      "mcmMapRuleId": 14002,
-      "proposedCidrs": [
-        "ip3",
-      ],
-      "ruleName": "s1702.akamaiedge.net",
-      "service": "S",
-      "shared": false,
-      "sureRouteName": "example.akamai.com",
-      "type": "Production"
-    }
-}`
 
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Akamai.SiteShieldMaps | List | Akamai SiteShield Maps | 
+
+### akamai-get-cps-enrollment-deployment
+
+***
+Returns the certification/Enarollment deployment status for specific a environtment: production or staging.
+
+#### Base Command
+
+`akamai-get-cps-enrollment-deployment`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| enrollment_id | Unique Identifier of the Enrollment on which to perform the desired operation. And it can be retrived via list_enrollments_command. | Required | 
+| environment | Environment where the certificate is deployed: production or staging. Possible values are: production, staging. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Akamai.Cps.Enrollments.Deployment | Dictionary | Akamai Cps Enrollments Deployment | 
+
+### akamai-list-cidr-blocks
+
+***
+List all CIDR blocks for all services you are subscribed to. To see additional CIDR blocks, subscribe yourself to more services and run this operation again.
+
+#### Base Command
+
+`akamai-list-cidr-blocks`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| last_action | Whether a CIDR block was added, updated, or removed from service. You can use this parameter as a sorting mechanism and return only CIDR blocks with a change status of add, update, or delete. Note that a status of delete means the CIDR block is no longer in service, and you can remove it from your firewall rules. Possible values are: all, add, delete, update. | Optional | 
+| effective_date_gt | The ISO 8601 date the CIDR block starts serving traffic to your origin. Ensure your firewall rules are updated to allow this traffic to pass through before the effective date. Expected format MM-DD-YYYY or YYYY-MM-DD. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Akamai.CidrBlocks | List | A List of CIDR Blocks | 
+
+### akamai-update-cps-enrollment
+
+***
+Updates an enrollment with changes. Response type will vary depending on the type and impact of change. For example, changing SANs list may return HTTP 202 Accepted since the operation require a new certificate and network deployment operations, and thus cannot be completed without a change. On the contrary, for example a Technical Contact name change may return HTTP 200 OK assuming there are no active change and when the operation does not require a new certificate. Reference: https://techdocs.akamai.com/cps/reference/put-enrollment  NOTES: Depending on the type of the modification, additional steps might be required to complete the update. These additional steps could be carrying out a "renew" change by resubmitting the CSR, acknowleging the warnings raised then waiting for the certificate to be deployed into PRODUCTION. However these additional steps are not included in this command. User needs to conduct those steps once the update command is completed.
+
+#### Base Command
+
+`akamai-update-cps-enrollment`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| enrollment_id | Enrollment on which to perform the desired operation. And it can be retrived via list_enrollments_command. | Required | 
+| updates | the modification(s) to the enrollment in the dict format. The possible modifications are: ra, validationType, certificateType, networkConfiguration, changeManagement, csr, org, adminContact, techContact, thirdParty, enableMultiStackedCertificates. | Required | 
+| enrollment | Enrollment info in dict format. If provided, the script will not make another API call to get the enrollmont info.             if not, another API call will be issued to retrieve the Enrollment info. | Optional | 
+| allow_cancel_pending_changes | All pending changes to be cancelled when updating an enrollment. Possible values are: true, false. Default is true. | Optional | 
+| allow_staging_bypass | Bypass staging and push meta_data updates directly to production network. Current change will also be updated with the same changes. Possible values are: true, false. Default is true. | Optional | 
+| deploy_not_after | Don't deploy after this date (UTC). Sample: 2021-01-31T00:00:00.000Z. | Optional | 
+| deploy_not_before | Don't deploy before this date (UTC). Sample: 2021-01-31T00:00:00.000Z. | Optional | 
+| force_renewal | Force certificate renewal for Enrollment. Possible values are: true, false. Default is false. | Optional | 
+| renewal_date_check_override | CPS will automatically start a Change to renew certificates in time before they expire. Possible values are: true, false. Default is true. | Optional | 
+| allow_missing_certificate_addition | Applicable for Third Party Dual Stack Enrollments, allows to update missing certificate. Option supported from v10. Possible values are: true, false. Default is false. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Akamai.Enrollment.Changes | Dictionary | Akamai Enrollment Changes | 
+
+### akamai-update-cps-enrollment-schedule
+
+***
+Updates the current deployment schedule.
+
+#### Base Command
+
+`akamai-update-cps-enrollment-schedule`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| enrollment_path | Enrollment path found in the pending change location field. | Optional | 
+| enrollment_id | Enrollment ID on which to perform the desired operation. And it can be retrived via list_enrollments_command. | Optional | 
+| change_id | Chnage ID on which to perform the desired operation. And it can be retrived via list_enrollments_command. | Optional | 
+| deploy_not_after | The time after when the change will no longer be in effect.             This value is an ISO-8601 timestamp. (UTC)             Sample: 2021-01-31T00:00:00.000Z. | Optional | 
+| deploy_not_before | The time that you want change to take effect. If you do not set this, the change occurs immediately,             although most changes take some time to take effect even when they are immediately effective.             This value is an ISO-8601 timestamp. (UTC)             Sample: 2021-01-31T00:00:00.000Z. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Akamai.Enrollment.Changes | Dictionary | Akamai Enrollment Changes | 
+
+### akamai-get-cps-change-status
+
+***
+Gets the status of a pending change.
+
+#### Base Command
+
+`akamai-get-cps-change-status`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| enrollment_path |  Enrollment path found in the pending change location field. | Optional | 
+| enrollment_id | The enrollment ID on which to perform the desired operation. And it can be retrived via list_enrollments_command. | Optional | 
+| change_id | The change for this enrollment on which to perform the desired operation.  And it can be retrived via list_enrollments_command. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Akamai.Enrollments.Change.Status | Dictionary | Akamai Enrollments Change Status | 
