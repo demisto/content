@@ -149,7 +149,6 @@ def fetch_indicators_command(client: Client, args: dict, params: dict=None):
     else:
         # page_num = integration_context.get('page_num', 0)
         time_from_last_update = integration_context.get('time_of_last_fetch')
-        # demisto.debug(f'### Time from last update {time_from_last_update}')
         now = date_to_timestamp(datetime.now(), DATE_FORMAT)
         last_commit_date = get_last_commit_date(client)
         # demisto.debug(f'### Last Commit Date: {last_commit_date}')
