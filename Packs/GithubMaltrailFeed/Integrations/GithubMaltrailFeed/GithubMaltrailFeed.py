@@ -196,7 +196,6 @@ def main():
     try:
         client = Client(params)
         if command == 'fetch-indicators':
-            # demisto.debug(f'Fetching Incidents!@#')
             indicators = fetch_indicators_command(client, args, params)
             for b in batch(indicators, batch_size=2000):
                 demisto.createIndicators(b)
