@@ -35,7 +35,7 @@ class Client(BaseClient):
         try:
             res.raise_for_status()
         except Exception:
-            LOG(f'Github Maltrail Feed - exception in request: {res.status_code!r} {res.content!r}')
+            demisto.info(f'Github Maltrail Feed - exception in request: {res.status_code!r} {res.content!r}')
             raise
         return res.text
 
