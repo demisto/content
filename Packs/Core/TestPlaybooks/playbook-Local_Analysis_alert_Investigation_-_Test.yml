@@ -766,7 +766,7 @@ tasks:
               rhsB: {}
               then:
                 value:
-                  simple: ${alert= '(filesha256:"' + val.filesha256 + '" or hostip:"' + val.hostip + '") ' + 'and sourceBrand:"' + val.sourceBrand + '" and name:"' + val.name + '"'}
+                  simple: ${alert= '(filesha256:"' + val.filesha256 + '" or hostip:"' + '") ' + 'and sourceBrand:"' + val.sourceBrand + '" and name:"' + val.name + '"'}
       SHA256:
         complex:
           root: alert
