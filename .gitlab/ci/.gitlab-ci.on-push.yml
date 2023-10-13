@@ -570,6 +570,7 @@ xsoar_ng_server_ga:
     CLOUD_MACHINES_COUNT: 1
     INSTANCE_ROLE: "XSOAR SAAS"
     PRODUCT_TYPE: "XSOAR"
+    SERVER_TYPE: "XSOAR"
     GCS_QUEUE_FILE: "queue-ga"
     GCS_LOCKS_PATH: "content-locks/locks-xsoar-ng"
     CLOUD_SERVERS_FILE: "xsoar_ng_servers_path"
