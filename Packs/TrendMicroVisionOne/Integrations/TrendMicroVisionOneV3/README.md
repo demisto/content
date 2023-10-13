@@ -265,11 +265,12 @@ Adds domain, ip, url, file_sha1, file_sha256, sender_mail_address to the Excepti
 
 #### Context Output
 
-| **Path**                             | **Type** | **Description**                                             |
-| ------------------------------------ | -------- | ----------------------------------------------------------- |
-| VisionOne.Exception_List.status      | number   | Status of adding item\(s\) to exception list.               |
-| VisionOne.Exception_List.task_id     | string   | Task ID generated after adding item\(s\) to exception list. |
-| VisionOne.Exception_List.total_items | number   | Count of total items present in exception list.             |
+| **Path**                                        | **Type** | **Description**                                             |
+| ----------------------------------------------- | -------- | ----------------------------------------------------------- |
+| VisionOne.Exception_List.message                | string   | Success or fail response message.                           |
+| VisionOne.Exception_List.multi_response.status  | number   | Status of adding item\(s\) to exception list.               |
+| VisionOne.Exception_List.multi_response.task_id | string   | Task ID generated after adding item\(s\) to exception list. |
+| VisionOne.Exception_List.total_items            | number   | Count of total items present in exception list.             |
 
 ### trendmicro-visionone-delete-objects-from-exception-list
 
@@ -288,11 +289,12 @@ Deletes domain, ip, url, file_sha1, file_sha256, sender_mail_address from the Ex
 
 #### Context Output
 
-| **Path**                             | **Type** | **Description**                                                 |
-| ------------------------------------ | -------- | --------------------------------------------------------------- |
-| VisionOne.Exception_List.status      | number   | status code of response.                                        |
-| VisionOne.Exception_List.task_id     | string   | Task ID generated after removing item\(s\) from exception list. |
-| VisionOne.Exception_List.total_items | number   | count of item present in exception list.                        |
+| **Path**                                        | **Type** | **Description**                                                 |
+| ----------------------------------------------- | -------- | --------------------------------------------------------------- |
+| VisionOne.Exception_List.message                | string   | Success or fail response message.                               |
+| VisionOne.Exception_List.multi_response.status  | number   | status code of response.                                        |
+| VisionOne.Exception_List.multi_response.task_id | string   | Task ID generated after removing item\(s\) from exception list. |
+| VisionOne.Exception_List.total_items            | number   | count of item present in exception list.                        |
 
 ### trendmicro-visionone-add-objects-to-suspicious-list
 
@@ -311,11 +313,12 @@ Adds domain, ip, url, file_sha1, file_sha256, sender_mail_address to the Suspici
 
 #### Context Output
 
-| **Path**                              | **Type** | **Description**                                              |
-| ------------------------------------- | -------- | ------------------------------------------------------------ |
-| VisionOne.Suspicious_List.status      | number   | Status of request to add item\(s\) to suspicious list.       |
-| VisionOne.Suspicious_List.task_id     | string   | Task ID generated after adding item\(s\) to suspicious list. |
-| VisionOne.Suspicious_List.total_items | number   | Count of total items present in suspicious object list.      |
+| **Path**                                         | **Type** | **Description**                                              |
+| ------------------------------------------------ | -------- | ------------------------------------------------------------ |
+| VisionOne.Suspicious_List.message                | string   | Success or fail response message.                            |
+| VisionOne.Suspicious_List.multi_response.status  | number   | Status of request to add item\(s\) to suspicious list.       |
+| VisionOne.Suspicious_List.multi_response.task_id | string   | Task ID generated after adding item\(s\) to suspicious list. |
+| VisionOne.Suspicious_List.total_items            | number   | Count of total items present in suspicious object list.      |
 
 ### trendmicro-visionone-delete-objects-from-suspicious-list
 
@@ -334,11 +337,12 @@ Deletes domain, ip, url, file_sha1, file_sha256, sender_mail_address from the Su
 
 #### Context Output
 
-| **Path**                              | **Type** | **Description**                                                         |
-| ------------------------------------- | -------- | ----------------------------------------------------------------------- |
-| VisionOne.Suspicious_List.status      | number   | Status of request to remove item\(s\) from suspicious object list.      |
-| VisionOne.Suspicious_List.task_id     | string   | Task ID generated after removing item\(s\) from suspicious object list. |
-| VisionOne.Suspicious_List.total_items | number   | Count of total items present in suspicious object list.                 |
+| **Path**                                         | **Type** | **Description**                                                         |
+| ------------------------------------------------ | -------- | ----------------------------------------------------------------------- |
+| VisionOne.Suspicious_List.message                | string   | Success or fail response message.                                       |
+| VisionOne.Suspicious_List.multi_response.status  | number   | Status of request to remove item\(s\) from suspicious object list.      |
+| VisionOne.Suspicious_List.multi_response.task_id | string   | Task ID generated after removing item\(s\) from suspicious object list. |
+| VisionOne.Suspicious_List.total_items            | number   | Count of total items present in suspicious object list.                 |
 
 ### trendmicro-visionone-get-endpoint-info
 

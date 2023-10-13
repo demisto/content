@@ -218,10 +218,13 @@ script:
     description: Adds domain, ip, url, file_sha1, file_sha256, sender_mail_address to the Exception List and prevents these objects from being added to the Suspicious Object List.
     name: trendmicro-visionone-add-objects-to-exception-list
     outputs:
-    - contextPath: VisionOne.Exception_List.status
+    - contextPath: VisionOne.Exception_List.message
+      description: Success or fail response message.
+      type: string
+    - contextPath: VisionOne.Exception_List.multi_response.status
       description: Status of adding item(s) to exception list.
       type: number
-    - contextPath: VisionOne.Exception_List.task_id
+    - contextPath: VisionOne.Exception_List.multi_response.task_id
       description: Task ID generated after adding item(s) to exception list.
       type: string
     - contextPath: VisionOne.Exception_List.total_items
@@ -234,10 +237,13 @@ script:
     description: Deletes domain, ip, url, file_sha1, file_sha256, sender_mail_address from the Exception List.
     name: trendmicro-visionone-delete-objects-from-exception-list
     outputs:
-    - contextPath: VisionOne.Exception_List.status
+    - contextPath: VisionOne.Exception_List.message
+      description: Success or fail response message.
+      type: string
+    - contextPath: VisionOne.Exception_List.multi_response.status
       description: status code of response.
       type: number
-    - contextPath: VisionOne.Exception_List.task_id
+    - contextPath: VisionOne.Exception_List.multi_response.task_id
       description: Task ID generated after removing item(s) from exception list.
       type: string
     - contextPath: VisionOne.Exception_List.total_items
@@ -250,10 +256,13 @@ script:
     description: Adds domain, ip, url, file_sha1, file_sha256, sender_mail_address to the Suspicious Object List.
     name: trendmicro-visionone-add-objects-to-suspicious-list
     outputs:
-    - contextPath: VisionOne.Suspicious_List.status
+    - contextPath: VisionOne.Suspicious_List.message
+      description: Success or fail response message.
+      type: string
+    - contextPath: VisionOne.Suspicious_List.multi_response.status
       description: Status of request to add item(s) to suspicious list.
       type: number
-    - contextPath: VisionOne.Suspicious_List.task_id
+    - contextPath: VisionOne.Suspicious_List.multi_response.task_id
       description: Task ID generated after adding item(s) to suspicious list.
       type: string
     - contextPath: VisionOne.Suspicious_List.total_items
@@ -266,10 +275,13 @@ script:
     description: Deletes domain, ip, url, file_sha1, file_sha256, sender_mail_address from the Suspicious Object List.
     name: trendmicro-visionone-delete-objects-from-suspicious-list
     outputs:
-    - contextPath: VisionOne.Suspicious_List.status
+    - contextPath: VisionOne.Suspicious_List.message
+      description: Success or fail response message.
+      type: string
+    - contextPath: VisionOne.Suspicious_List.multi_response.status
       description: Status of request to remove item(s) from suspicious object list.
       type: number
-    - contextPath: VisionOne.Suspicious_List.task_id
+    - contextPath: VisionOne.Suspicious_List.multi_response.task_id
       description: Task ID generated after removing item(s) from suspicious object list.
       type: string
     - contextPath: VisionOne.Suspicious_List.total_items
@@ -1039,7 +1051,7 @@ script:
       type: string
     description: Updates the status of a workbench alert.
     name: trendmicro-visionone-update-status
-  dockerimage: pytmv1-061:1.0.0.1696892580
+  dockerimage: devtesting/pytmv1-061:1.0.0.1696892580
   isFetchSamples: true
   isfetch: true
   script: ''

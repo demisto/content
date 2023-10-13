@@ -321,7 +321,7 @@ class Client(BaseClient):
             poll_time_sec=poll_time_sec,
         )
         # Assign values on a successful call
-        message = unwrap(task_resp.response).dict()
+        message = task_resp.response.__dict__
         return CommandResults(
             readable_output=tableToMarkdown(
                 table_name[CHECK_TASK_STATUS_COMMAND],
