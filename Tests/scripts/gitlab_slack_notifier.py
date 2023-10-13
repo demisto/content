@@ -14,6 +14,7 @@ from slack_sdk import WebClient
 
 from Tests.Marketplace.marketplace_constants import BucketUploadFlow
 from Tests.Marketplace.marketplace_services import get_upload_data
+from Tests.scripts.github_client import GithubPullRequest
 from Tests.scripts.test_playbooks import get_instance_directories
 from Tests.scripts.utils.log_util import install_logging
 
@@ -46,9 +47,13 @@ WORKFLOW_TYPES = {
     BUILD_MACHINES_CLEANUP
 }
 SLACK_USERNAME = 'Content GitlabCI'
+GITHUB_TOKEN = os.getenv('GITHUB_TOKEN', '')
+CI_COMMIT_BRANCH = os.getenv('CI_COMMIT_BRANCH', '')
+CI_COMMIT_SHA = os.getenv('CI_COMMIT_SHA', '')
+DEFAULT_BRANCH = 'master'
 
 
-def options_handler():
+def options_handler() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description='Parser for slack_notifier args')
     parser.add_argument('-u', '--url', help='The gitlab server url', default=GITLAB_SERVER_URL)
     parser.add_argument('-p', '--pipeline_id', help='The pipeline id to check the status of', required=True)
@@ -63,12 +68,13 @@ def options_handler():
         choices=WORKFLOW_TYPES)
     parser.add_argument('-a', '--allow-failure',
                         help="Allow posting message to fail in case the channel doesn't exist", required=True)
-    options = parser.parse_args()
+    parser.add_argument('--github-token', required=False, help='A GitHub API token', default=GITHUB_TOKEN)
+    parser.add_argument('--current-sha', required=False, help='Current branch commit SHA', default=CI_COMMIT_SHA)
+    parser.add_argument('--current-branch', required=False, help='Current branch name', default=CI_COMMIT_BRANCH)
+    return parser.parse_args()
 
-    return options
 
-
-def get_artifact_data(artifact_folder, artifact_relative_path: str) -> str | None:
+def get_artifact_data(artifact_folder: str, artifact_relative_path: str) -> str | None:
     """
     Retrieves artifact data according to the artifact relative path from 'ARTIFACTS_FOLDER' given.
     Args:
@@ -99,7 +105,7 @@ def get_failed_modeling_rule_name_from_test_suite(test_suite: TestSuite) -> str:
     return f"{properties['modeling_rule_file_name']} ({properties['pack_id']})"
 
 
-def test_modeling_rules_results(artifact_folder: str, title: str):
+def test_modeling_rules_results(artifact_folder: str, title: str) -> list[dict[str, Any]]:
     failed_test_modeling_rules = Path(artifact_folder) / 'modeling_rules_results.xml'
     if not failed_test_modeling_rules.exists():
         return []
@@ -127,24 +133,10 @@ def test_modeling_rules_results(artifact_folder: str, title: str):
     return content_team_fields
 
 
-def test_playbooks_results(artifact_folder: str, title: str) -> list[dict[str, Any]]:
-    # results, success = new_test_playbooks_results(artifact_folder, title)
-    # if success:
-    #     return results
-    return old_test_playbooks_results(artifact_folder, title)
-
-
-def new_test_playbooks_results(artifact_folder: str, title: str) -> tuple[list[dict[str, Any]], bool]:
-    failed_tests = []
-    skipped_tests = []
-    skipped_integrations = []
-
-    content_team_fields = test_playbooks_results_to_slack_msg(failed_tests, skipped_integrations, skipped_tests, title)
-
-    return content_team_fields, True
-
-
-def test_playbooks_results_to_slack_msg(failed_tests, skipped_integrations, skipped_tests, title):
+def test_playbooks_results_to_slack_msg(failed_tests: list[str],
+                                        skipped_integrations: list[str],
+                                        skipped_tests: list[str],
+                                        title: str) -> list[dict[str, Any]]:
     content_team_fields = []
     if failed_tests:
         field_failed_tests = {
@@ -170,7 +162,7 @@ def test_playbooks_results_to_slack_msg(failed_tests, skipped_integrations, skip
     return content_team_fields
 
 
-def old_test_playbooks_results(artifact_folder: str, title: str) -> list[dict[str, Any]]:
+def test_playbooks_results(artifact_folder: str, title: str) -> list[dict[str, Any]]:
 
     instance_directories = get_instance_directories(artifact_folder)
     content_team_fields = []
@@ -185,10 +177,18 @@ def old_test_playbooks_results(artifact_folder: str, title: str) -> list[dict[st
         skipped_integrations = skipped_integrations_data.split('\n') if skipped_integrations_data else []
 
         content_team_fields += test_playbooks_results_to_slack_msg(failed_tests, skipped_integrations, skipped_tests, title)
+
+    if not content_team_fields:
+        content_team_fields.append({
+            "title": f"{title} - All Tests Playbooks Passed",
+            "value": '',
+            "short": False
+        })
+
     return content_team_fields
 
 
-def unit_tests_results():
+def unit_tests_results() -> list[dict[str, Any]]:
     failing_tests = get_artifact_data(ROOT_ARTIFACTS_FOLDER, 'failed_lint_report.txt')
     slack_results = []
     if failing_tests:
@@ -203,7 +203,7 @@ def unit_tests_results():
     return slack_results
 
 
-def bucket_upload_results(bucket_artifact_folder, should_include_private_packs: bool):
+def bucket_upload_results(bucket_artifact_folder: str, should_include_private_packs: bool) -> list[dict[str, Any]]:
     steps_fields = []
     pack_results_path = os.path.join(bucket_artifact_folder, BucketUploadFlow.PACKS_RESULTS_FILE_FOR_SLACK)
     marketplace_name = os.path.basename(bucket_artifact_folder).upper()
@@ -237,7 +237,10 @@ def bucket_upload_results(bucket_artifact_folder, should_include_private_packs: 
     return steps_fields
 
 
-def construct_slack_msg(triggering_workflow, pipeline_url, pipeline_failed_jobs) -> list:
+def construct_slack_msg(triggering_workflow: str,
+                        pipeline_url: str,
+                        pipeline_failed_jobs: list,
+                        pull_request: GithubPullRequest | None) -> list[dict[str, Any]]:
     # report failing jobs
     content_fields = []
     failed_jobs_names = {job.name for job in pipeline_failed_jobs}
@@ -273,11 +276,17 @@ def construct_slack_msg(triggering_workflow, pipeline_url, pipeline_failed_jobs)
         content_fields += missing_content_packs_test_conf(ARTIFACTS_FOLDER_XSOAR)
         coverage_slack_msg += construct_coverage_slack_msg()
 
+    title = triggering_workflow
+    if pull_request:
+        pr_number = pull_request.data.get('number')
+        pr_title = pull_request.data.get('title')
+        title += f' (PR#{pr_number} - {pr_title})'
+
     if pipeline_failed_jobs:
-        title = f'{triggering_workflow} - Failure'
+        title += ' - Failure'
         color = 'danger'
     else:
-        title = f'{triggering_workflow} - Success'
+        title += ' - Success'
         color = 'good'
     slack_msg = [{
         'fallback': title,
@@ -289,7 +298,7 @@ def construct_slack_msg(triggering_workflow, pipeline_url, pipeline_failed_jobs)
     return slack_msg
 
 
-def missing_content_packs_test_conf(artifact_folder: str):
+def missing_content_packs_test_conf(artifact_folder: str) -> list[dict[str, Any]]:
     missing_packs = get_artifact_data(artifact_folder, 'missing_content_packs_test_conf.txt')
     content_fields = []
     if missing_packs:
@@ -302,7 +311,9 @@ def missing_content_packs_test_conf(artifact_folder: str):
     return content_fields
 
 
-def collect_pipeline_data(gitlab_client, project_id, pipeline_id) -> tuple[str, list]:
+def collect_pipeline_data(gitlab_client: gitlab.Gitlab,
+                          project_id: str,
+                          pipeline_id: str) -> tuple[str, list]:
     project = gitlab_client.projects.get(int(project_id))
     pipeline = project.pipelines.get(int(pipeline_id))
     jobs = pipeline.jobs.list()
@@ -318,7 +329,7 @@ def collect_pipeline_data(gitlab_client, project_id, pipeline_id) -> tuple[str, 
     return pipeline.web_url, failed_jobs
 
 
-def construct_coverage_slack_msg():
+def construct_coverage_slack_msg() -> list[dict[str, Any]]:
     coverage_today = get_total_coverage(filename=os.path.join(ROOT_ARTIFACTS_FOLDER, 'coverage_report/coverage-min.json'))
     yesterday = datetime.now() - timedelta(days=1)
     coverage_yesterday = get_total_coverage(date=yesterday)
@@ -341,20 +352,38 @@ def main():
     project_id = options.gitlab_project_id
     pipeline_id = options.pipeline_id
     triggering_workflow = options.triggering_workflow  # ci workflow type that is triggering the slack notifier
-    slack_channel = options.slack_channel.lower()
+    computed_slack_channel = options.slack_channel.lower()
     gitlab_client = gitlab.Gitlab(server_url, private_token=ci_token)
-    pipeline_url, pipeline_failed_jobs = collect_pipeline_data(gitlab_client, project_id, pipeline_id)
-    slack_msg_data = construct_slack_msg(triggering_workflow, pipeline_url, pipeline_failed_jobs)
     slack_client = WebClient(token=slack_token)
+
+    if options.current_branch != DEFAULT_BRANCH:
+        pull_request = GithubPullRequest(
+            options.github_token,
+            sha1=options.current_sha,
+            branch=options.current_branch,
+            fail_on_error=True,
+            verify=False,
+        )
+        author = pull_request.data.get('user', {}).get('login')
+        computed_slack_channel = f"{computed_slack_channel}{author}"
+        logging.info(f"Sending slack message to channel {computed_slack_channel} for "
+                     f"Author:{author} of PR#{pull_request.data.get('number')}")
+    else:
+        pull_request = None
+        logging.info("Not a pull request build, skipping PR comment")
+
+    pipeline_url, pipeline_failed_jobs = collect_pipeline_data(gitlab_client, project_id, pipeline_id)
+    slack_msg_data = construct_slack_msg(triggering_workflow, pipeline_url, pipeline_failed_jobs, pull_request)
+
     try:
         slack_client.chat_postMessage(
-            channel=slack_channel, attachments=slack_msg_data, username=SLACK_USERNAME
+            channel=computed_slack_channel, attachments=slack_msg_data, username=SLACK_USERNAME
         )
     except Exception:
         if strtobool(options.allow_failure):
-            logging.warning(f'Failed to send slack message to channel {slack_channel}')
+            logging.warning(f'Failed to send slack message to channel {computed_slack_channel}')
         else:
-            logging.exception(f'Failed to send slack message to channel {slack_channel}')
+            logging.exception(f'Failed to send slack message to channel {computed_slack_channel}')
             sys.exit(1)
 
 
