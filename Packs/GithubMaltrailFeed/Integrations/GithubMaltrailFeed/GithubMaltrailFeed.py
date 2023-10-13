@@ -151,7 +151,6 @@ def fetch_indicators_command(client: Client, args: dict, params: dict=None):
         time_from_last_update = integration_context.get('time_of_last_fetch')
         # demisto.debug(f'### Time from last update {time_from_last_update}')
         now = date_to_timestamp(datetime.now(), DATE_FORMAT)
-        # demisto.debug(f'### Time now {now}')
         last_commit_date = get_last_commit_date(client)
         # demisto.debug(f'### Last Commit Date: {last_commit_date}')
         if last_commit_date > time_from_last_update:
