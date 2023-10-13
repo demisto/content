@@ -69,6 +69,8 @@ DOMAIN_HEADERS = [
 
 USER_HEADERS = ['Username', 'Domain', 'LastMachineLoggedInTo', 'Organization', 'LocalSystem']
 
+SENSOR_HEADER = ['Sensor ID', 'Machine Name', 'Group ID', 'Group Name']
+
 CONNECTION_INFO = [
     {'field': 'elementDisplayName', 'header': 'Name', 'type': 'simple'},
     {'field': 'direction', 'header': 'Direction', 'type': 'simple'},
@@ -1936,16 +1938,21 @@ def fetch_machine_details_command(client: Client, args: dict):
     if dict_safe_get(response, ['sensors']) == []:
         raise DemistoException("Could not find any Sensor ID for the machine" + machine_name)
     else:
-        output = []
+        outputs = []
         for single_sensor in response['sensors']:
              if single_sensor['machine_name'] == machine_name:
-                output.append({
+                outputs.append({
                     "sensorId": single_sensor["sensorId"],
                     "machineName": single_sensor["machine_name"],
                     "groupId": single_sensor["groupId"],
                     "groupName": single_sensor["groupName"]
                 })
-        return CommandResults(readable_output=f"Machine name {output}")
+        # return CommandResults(readable_output=f"Machine name {output}")
+        return CommandResults(
+            readable_output=tableToMarkdown('Sensor Details', outputs, headers=SENSOR_HEADER) if outputs else 'No machine details found for given machine name',
+            outputs_prefix='Cybereason.Sensors',
+            outputs_key_field='sensorId',
+            outputs=outputs)
 
 
 def main():
