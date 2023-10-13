@@ -217,7 +217,7 @@ xsoar-prepare-testing-bucket:
 
 xsoar-saas-prepare-testing-bucket:
   variables:
-    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR_SAAS}"
+    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
     MARKETPLACE_VERSION: "xsoar_saas"
     MARKETPLACE_BUCKET: "$GCS_MARKET_XSOAR_SAAS_BUCKET"
   extends:
@@ -577,8 +577,8 @@ xsoar_ng_server_ga:
     CLOUD_SERVERS_FILE: "xsoar_ng_servers_path"
     CLOUD_API_KEYS: $XSOAR_NG_API_KEYS
     CLOUD_API_TOKENS: $XSIAM_TOKENS
-    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR_SAAS}"
-    ARTIFACTS_FOLDER_INSTANCE: "${ARTIFACTS_FOLDER_XSOAR_SAAS}/instance_saas"
+    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
+    ARTIFACTS_FOLDER_INSTANCE: "${ARTIFACTS_FOLDER_XSOAR}/instance_saas"
     ENV_RESULTS_PATH: "${ARTIFACTS_FOLDER_XSOAR}/env_results.json"
     GCS_SOURCE_BUCKET: "${GCS_PRODUCTION_XSOAR_SAAS_BUCKET}"
     GCS_MACHINES_BUCKET: "marketplace-saas-dist-dev/upload-flow/builds-xsoar-ng"

@@ -13,10 +13,9 @@ variables:
   DEMISTO_README_VALIDATION: "true"
   ARTIFACTS_FOLDER: "${CI_PROJECT_DIR}/artifacts"
   PIPELINE_JOBS_FOLDER: "${CI_PROJECT_DIR}/pipeline_jobs_folder"
-  ARTIFACTS_FOLDER_XSOAR: "${CI_PROJECT_DIR}/artifacts/xsoar"
+  ARTIFACTS_FOLDER_XSOAR: "${CI_PROJECT_DIR}/artifacts/xsoar"  # Used for both XSOAR on-prem and XSOAR SaaS
   ARTIFACTS_FOLDER_MPV2: "${CI_PROJECT_DIR}/artifacts/marketplacev2"
   ARTIFACTS_FOLDER_XPANSE: "${CI_PROJECT_DIR}/artifacts/xpanse"
-  ARTIFACTS_FOLDER_XSOAR_SAAS: "${CI_PROJECT_DIR}/artifacts/xsoar_saas"
   JIRA_ISSUE_UNRESOLVED_TRANSITION_NAME: "Backlog"
   JIRA_PROJECT_ID: "CIAC"
   JIRA_SERVER_URL: "https://jira-hq-gcp.paloaltonetworks.local"  # Using internal GCP proxy url to access Jira.
