@@ -377,6 +377,7 @@ jobs-done-check-nightly:
     WORKFLOW: 'Content Nightly'
 
 jobs-done-check-on-push:
+  when: always
   extends:
     - .push-rule
     - .jobs-done-check
@@ -417,13 +418,11 @@ slack-notify-nightly-build:
     SLACK_ALLOW_FAILURE: 'false'
     SLACK_JOB: 'true'
 
-
 slack-notify-on-push-build:
+  when: always
   extends:
+    - .push-rule
     - .trigger-slack-notification
-  rules:
-    - !reference [.filter-non-nightly-docker-updates-rule, rules]
-    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
   variables:
     PIPELINE_TO_QUERY: $CI_PIPELINE_ID
     WORKFLOW: 'Content PR'
@@ -433,7 +432,6 @@ slack-notify-on-push-build:
     SLACK_CHANNEL: $SLACK_CHANNEL_PRIVATE
     SLACK_ALLOW_FAILURE: 'true'
     SLACK_JOB: 'true'
-
 
 .test_content_on_cloud_server_instances_base:
   tags:
