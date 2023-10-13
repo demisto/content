@@ -112,7 +112,6 @@ def get_last_commit_date(client):
     response = client.http_request(api_url)
     last_commit_date = None
     if response.ok:
-        # demisto.debug("/commits API endpoint response OK")
         commits = []
         page = 1
         while response.ok and page < 100:
