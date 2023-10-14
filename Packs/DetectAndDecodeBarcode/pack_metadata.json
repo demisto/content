@@ -7,10 +7,15 @@
     "url": "https://live.paloaltonetworks.com/t5/cortex-xsoar-discussions/bd-p/Cortex_XSOAR_Discussions",
     "email": "",
     "categories": [
-        "Email",
         "Utilities"
     ],
     "tags": [
+        "Email"
+    ],
+    "useCases": [
+        "Phishing"
+    ],
+    "keywords": [
         "2D",
         "barcode",
         "email",
@@ -18,8 +23,6 @@
         "QR",
         "QR code"
     ],
-    "useCases": ["Phishing"],
-    "keywords": [],
     "marketplaces": [
         "xsoar",
         "marketplacev2"
