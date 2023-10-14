@@ -1,5 +1,4 @@
 import argparse
-import os
 import sys
 import traceback
 from pathlib import Path
@@ -26,11 +25,11 @@ def options_handler():
     return parser.parse_args()
 
 
-def read_file_contents(file_path: str) -> list | None:
+def read_file_contents(file_path: Path) -> list | None:
     """
         Returns the file contents as a list of lines if the file exists, else returns None.
     """
-    if os.path.isfile(file_path):
+    if file_path.exists():
         with open(file_path) as file:
             return file.read().splitlines()
     else:
@@ -38,15 +37,15 @@ def read_file_contents(file_path: str) -> list | None:
     return None
 
 
-def old_print_test_summary(artifacts_path: str) -> None:
+def old_print_test_summary(artifacts_path: Path) -> None:
     """
     Takes the information stored in the files and prints it in a human-readable way.
     """
     instance_path = Path(artifacts_path) / "instance_Server Master"
     failed_tests_path = instance_path / "failed_tests.txt"
     succeeded_tests_path = instance_path / "succeeded_tests.txt"
-    succeeded_playbooks = read_file_contents(succeeded_tests_path.as_posix())
-    failed_playbooks = read_file_contents(failed_tests_path.as_posix())
+    succeeded_playbooks = read_file_contents(succeeded_tests_path)
+    failed_playbooks = read_file_contents(failed_tests_path)
 
     # if one of the files isn't existing, we want to fail.
     if succeeded_playbooks is None or failed_playbooks is None:
@@ -134,9 +133,10 @@ def main():
     try:
         install_logging('print_test_playbook_summary.log', logger=logging)
         options = options_handler()
-        logging.info(f"Printing test playbook summary - artifacts path: {options.artifacts_path}")
-        if not print_test_summary(artifacts_path=options.artifacts_path, without_jira=options.without_jira):
-            old_print_test_summary(artifacts_path=options.artifacts_path)
+        artifacts_path = Path(options.artifacts_path)
+        logging.info(f"Printing test playbook summary - artifacts path: {artifacts_path}")
+        if not print_test_summary(artifacts_path, options.without_jira):
+            old_print_test_summary(artifacts_path)
         logging.info("Finished printing test summary")
     except Exception as e:
         logging.error(f'Failed to get the test playbook summary: {e}')

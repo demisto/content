@@ -79,7 +79,6 @@ stop-running-pipelines:
     - Utils/gitlab/stop_running_pipelines.sh $CI_COMMIT_BRANCH $CI_PIPELINE_ID
     - section_end "Stop running pipelines on current branch"
 
-
 # runs in gitlab for the on-push flow (except for contributors)
 run-unittests-and-lint:
   extends:
@@ -98,7 +97,6 @@ run-unittests-and-lint:
     - if: '$DEMISTO_SDK_NIGHTLY != "true"'
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
 
-
 # runs in gitlab for the on-push flow (except for contributors)
 run-validations:
   extends:
@@ -106,7 +104,6 @@ run-validations:
   rules:
     - if: '$NIGHTLY'
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
-
 
 # runs in gitlab for the on-push flow, on every new commit pushed to the branch.
 validate-content-conf:
@@ -362,7 +359,7 @@ fan-in-nightly:
     - if: '$NIGHTLY'
       when: always
   script:
-    - echo "fan in"
+    - echo "fan in nightly"
 
 jobs-done-check-nightly:
   extends:
@@ -376,12 +373,21 @@ jobs-done-check-nightly:
   variables:
     WORKFLOW: 'Content Nightly'
 
+fan-in-on-push:
+  stage: fan-in
+  extends:
+    - .push-rule
+  tags:
+    - gke
+  script:
+    - echo "fan in on push"
+
 jobs-done-check-on-push:
   when: always
   extends:
     - .push-rule
     - .jobs-done-check
-  dependencies:
+  needs:
     - run-unittests-and-lint
     - run-validations
     - stop-running-pipelines
@@ -426,7 +432,7 @@ slack-notify-on-push-build:
   variables:
     PIPELINE_TO_QUERY: $CI_PIPELINE_ID
     WORKFLOW: 'Content PR'
-    JOB_NAME: 'jobs-done-check-on-push'
+    JOB_NAME: 'fan-in-on-push'
     # Passes the environment variable from the parent pipeline to the child which can be useful for cases
     # when triggering pipeline with alternate env variable value passed in the API call
     SLACK_CHANNEL: $SLACK_CHANNEL_PRIVATE
@@ -499,7 +505,6 @@ slack-notify-on-push-build:
 #    PRODUCT_TYPE: "XSIAM"
 #    GCS_QUEUE_FILE: "queue-master"
 #    TEST_MACHINES_LIST: "test-machines-master"
-
 
 xsiam_server_ga:
   extends:
