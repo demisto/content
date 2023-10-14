@@ -19,7 +19,8 @@ class Client(BaseClient):
         ''' Makes a POST request /api/public/acquisitions/acquire endpoint to verify acquire evidence
 
         :param hostname str: endpoint hostname to start acquisition.
-        :param profile str: predefined 5 acquisiton profile name.
+        :param profile str: get the profile string makes a query, and uses profile_id for mapping correct profile.
+
         :param case_id str: The Case ID to associate with in AIR Server.
         :param organization_id int: Organizsation ID of the endpoint.
 
@@ -98,7 +99,7 @@ def air_acquire_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     hostname = args.get('hostname', '')
     profile = args.get('profile', '')
     case_id = args.get('case_id', '')
-    organization_id = args.get('organization_id', '')
+    organization_id = int(args.get('organization_id', ''))
 
     result: Dict[str, Any] = client.air_acquire(hostname, profile, case_id, organization_id)
     readable_output = tableToMarkdown('Binalyze AIR Isolate Results', result,
@@ -123,7 +124,7 @@ def air_isolate_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     ''' Command handler isolate '''
 
     hostname = args.get('hostname', '')
-    organization_id = args.get('organization_id', '')
+    organization_id = int(args.get('organization_id', ''))
     isolation = args.get('isolation', '')
 
     result: Dict[str, Any] = client.air_isolate(hostname, organization_id, isolation)

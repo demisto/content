@@ -15,7 +15,9 @@ You can use the integration in Automation, Playbooks, or Playground.
 **Acquisition**
 - !air-acquire *hostname*=\<HOSTNAMEofENDPOINT\> *profile*=\<DEFINED PROFILE\> *caseid*=\<The Case ID\>
 
-**Defined Profiles:**
+*You can use custom acquisition profiles you created in the AIR.*
+
+**Pre-defined Profiles:**
 - browsing-history
 - compromise-assessment
 - event-logs

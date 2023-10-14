@@ -91,7 +91,7 @@ script:
       description: Acquisition unique task ID.
       type: string
     - contextPath: BinalyzeAIR.Acquire.result.name
-      description: Acquisiton task name.
+      description: Acquisition task name.
       type: string
     - contextPath: BinalyzeAIR.Acquire.result.organizationId
       description: Organization Id of endpoint.
