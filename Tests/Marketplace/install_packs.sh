@@ -53,11 +53,13 @@ if [[ "${SERVER_TYPE}" == "XSIAM" ]] || [[ "${SERVER_TYPE}" == "XSOAR SAAS" ]]; 
   else
     exit_on_error 1 "No machines were chosen"
   fi
-else
+elif [[ "${SERVER_TYPE}" == "XSOAR" ]]; then
   # Running on XSOAR instance roles
   python3 ./Tests/Marketplace/configure_and_install_packs.py -s "${SECRET_CONF_PATH}" --ami_env "${INSTANCE_ROLE}" --branch "$CI_COMMIT_BRANCH" --build_number "${CI_PIPELINE_ID}" --service_account "${GCS_MARKET_KEY}" -e "${EXTRACT_FOLDER}" --pack_ids_to_install "${ARTIFACTS_FOLDER}/content_packs_to_install.txt"
   exit_on_error "$?" "Finished configure_and_install_packs script"
 
   echo "Finished configure_and_install_packs successfully"
   exit 0
+else
+  exit_on_error 1 "Unknown server type: ${SERVER_TYPE}"
 fi

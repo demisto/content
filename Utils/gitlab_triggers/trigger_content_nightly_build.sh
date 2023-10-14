@@ -16,7 +16,7 @@ if [ "$#" -lt "1" ]; then
   [-ch, --slack-channel]                    A Slack channel to send notifications to. Default is dmst-build-test.
   [-s, --sdk-ref]                           The sdk ref to use. Default is the latest nightly.
   [-tmr, --test-modeling-rule-jira-tickets] Whether to enable test modeling rule jira tickets creation.
-  [-tpr, --test-playbook-jira-tickets]      Whether to enable test playbook jira tickets creation.
+  [-tpr, --test-playbooks-jira-tickets]     Whether to enable test playbooks jira tickets creation.
   "
   echo "Get the trigger token from here https://vault.paloaltonetworks.local/home#R2VuZXJpY1NlY3JldERldGFpbHM6RGF0YVZhdWx0OmIyMzJiNDU0LWEzOWMtNGY5YS1hMTY1LTQ4YjRlYzM1OTUxMzpSZWNvcmRJbmRleDowOklzVHJ1bmNhdGVk" # disable-secrets-detection
   exit 1
@@ -50,7 +50,7 @@ while [[ "$#" -gt 0 ]]; do
 
   -tmr|--test-modeling-rule-jira-tickets) TEST_MODELING_RULE_JIRA_TICKETS="true"
     shift;;
-  -tpr|--test-playbook-jira-tickets) TEST_PLAYBOOKS_JIRA_TICKETS="true"
+  -tpr|--test-playbooks-jira-tickets) TEST_PLAYBOOKS_JIRA_TICKETS="true"
     shift;;
 
   *)    # unknown option.

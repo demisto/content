@@ -22,7 +22,7 @@ if [[ "${SERVER_TYPE}" == "XSIAM" ]]; then
     exit "${exit_code}"
   fi
 else
-  echo "Not running end to end tests on ${INSTANCE_ROLE}, exiting..."
+  echo "Not running end-to-end tests on Server Type:${SERVER_TYPE}, exiting..."
   exit 0
 fi
 

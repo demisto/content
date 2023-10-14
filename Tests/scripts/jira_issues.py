@@ -1,6 +1,7 @@
 import json
 import os
 from datetime import datetime, timedelta
+from distutils.util import strtobool
 from tempfile import NamedTemporaryFile
 
 from jira import JIRA, Issue
@@ -13,7 +14,7 @@ from Tests.scripts.utils import logging_wrapper as logging
 GITLAB_PROJECT_ID = os.getenv('CI_PROJECT_ID')
 GITLAB_SERVER_URL = os.getenv('CI_SERVER_URL')
 JIRA_SERVER_URL = os.environ["JIRA_SERVER_URL"]
-JIRA_VERIFY_SSL = "true" in os.environ.get("JIRA_VERIFY_SSL", "True").lower()
+JIRA_VERIFY_SSL = strtobool(os.environ.get("JIRA_VERIFY_SSL", "true"))
 JIRA_API_KEY = os.environ["JIRA_API_KEY"]
 JIRA_PROJECT_ID = os.environ["JIRA_PROJECT_ID"]
 JIRA_ISSUE_TYPE = os.environ["JIRA_ISSUE_TYPE"]
@@ -22,8 +23,8 @@ JIRA_ISSUE_UNRESOLVED_TRANSITION_NAME = os.environ["JIRA_ISSUE_UNRESOLVED_TRANSI
 JIRA_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S.%f%z"
 # Jira additional fields are a json string that will be parsed into a dictionary containing the name of the field
 # as the key and the value as a dictionary containing the value of the field.
-# Jira label are a json string that will be parsed into a list of labels.
 JIRA_ADDITIONAL_FIELDS = json.loads(os.environ.get("JIRA_ADDITIONAL_FIELDS", "{}"))
+# Jira label are a json string that will be parsed into a list of labels.
 JIRA_LABELS = json.loads(os.environ.get("JIRA_LABELS", "[]"))
 
 

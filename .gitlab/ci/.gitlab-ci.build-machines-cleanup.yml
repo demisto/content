@@ -56,6 +56,9 @@ fan-in-build-machines-cleanup:
     - echo "fan in"
 
 slack-notify-build-machines-cleanup:
+  extends:
+    - .trigger-slack-notification
+    - .build-machines-cleanup-rule-always
   variables:
     PIPELINE_TO_QUERY: $CI_PIPELINE_ID
     WORKFLOW: 'Build Machines Cleanup'
@@ -64,7 +67,13 @@ slack-notify-build-machines-cleanup:
     # when triggering pipeline with alternate env variable value passed in the API call
     SLACK_CHANNEL: $SLACK_CHANNEL
     SLACK_JOB: 'true'
-  extends:
-    - .trigger-slack-notification
-    - .build-machines-cleanup-rule-always
-
+    SLACK_ALLOW_FAILURE: 'false'
+    CI_PROJECT_ID: $CI_PROJECT_ID
+    CI_SERVER_URL: $CI_SERVER_URL
+    JIRA_SERVER_URL: $JIRA_SERVER_URL
+    JIRA_VERIFY_SSL: $JIRA_VERIFY_SSL
+    JIRA_API_KEY: $JIRA_API_KEY
+    JIRA_PROJECT_ID: $JIRA_PROJECT_ID
+    JIRA_ISSUE_TYPE: $JIRA_ISSUE_TYPE
+    JIRA_COMPONENT: $JIRA_COMPONENT
+    JIRA_ISSUE_UNRESOLVED_TRANSITION_NAME: $JIRA_ISSUE_UNRESOLVED_TRANSITION_NAME

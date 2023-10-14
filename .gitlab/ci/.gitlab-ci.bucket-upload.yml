@@ -138,13 +138,14 @@ xpanse-prepare-testing-bucket-upload-flow:
       - ${CI_PROJECT_DIR}/pipeline_jobs_folder/*
     when: always
   variables:
+    PRODUCT_TYPE: "XSOAR"
+    SERVER_TYPE: "XSOAR"
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
     ARTIFACTS_FOLDER_INSTANCE: "${ARTIFACTS_FOLDER_XSOAR}/instance_${INSTANCE_ROLE}"
     ENV_RESULTS_PATH: "${ARTIFACTS_FOLDER_XSOAR}/env_results.json"
     INSTANCE_CREATED: "true"
     SSH_TUNNEL_TIMEOUT: 10
     TIME_TO_LIVE: ""
-    PRODUCT_TYPE: "XSOAR"
   extends:
     - .bucket-upload-rule
     - .default-job-settings
@@ -280,6 +281,7 @@ install-packs-in-server-master:
 #  variables:
 #    INSTANCE_ROLE: "XSIAM"
 #    PRODUCT_TYPE: "XSIAM"
+#    SERVER_TYPE: "XSIAM"
 #    GCS_QUEUE_FILE: "queue-master"
 #    TEST_MACHINES_LIST: "test-machines-master"
 
@@ -288,6 +290,7 @@ install-packs-in-xsiam-ga:
   variables:
     INSTANCE_ROLE: "XSIAM"
     PRODUCT_TYPE: "XSIAM"
+    SERVER_TYPE: "XSIAM"
     GCS_QUEUE_FILE: "queue-ga"
     GCS_SOURCE_BUCKET: "$GCS_PRODUCTION_V2_BUCKET"
     GCS_MACHINES_BUCKET: "marketplace-v2-dist-dev/upload-flow/builds-xsiam"
@@ -313,6 +316,7 @@ upload-packs-to-marketplace:
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
     ENV_RESULTS_PATH: "${ARTIFACTS_FOLDER_XSOAR}/env_results.json"
     PRODUCT_TYPE: "XSOAR"
+    SERVER_TYPE: "XSOAR"
     INSTANCE_ROLE: "Server Master"
     INSTANCE_CREATED: "true"
     SSH_TUNNEL_TIMEOUT: 10
@@ -396,6 +400,7 @@ upload-packs-to-marketplace-v2:
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_MPV2}"
     INSTANCE_ROLE: "Server Master"
     PRODUCT_TYPE: "XSIAM"
+    SERVER_TYPE: "XSIAM"
     INSTANCE_CREATED: "true"
     SSH_TUNNEL_TIMEOUT: 10
     TIME_TO_LIVE: ""
@@ -467,6 +472,7 @@ upload-packs-to-xpanse-marketplace:
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XPANSE}"
     INSTANCE_ROLE: "Server Master"
     PRODUCT_TYPE: "XPANSE"
+    SERVER_TYPE: "XPANSE"
     INSTANCE_CREATED: "true"
     SSH_TUNNEL_TIMEOUT: 10
     TIME_TO_LIVE: ""
@@ -539,6 +545,7 @@ upload-packs-to-xsoar-saas-marketplace:
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
     INSTANCE_ROLE: "Server Master"
     PRODUCT_TYPE: "XSOAR"
+    SERVER_TYPE: "XSOAR SAAS"
     INSTANCE_CREATED: "true"
     SSH_TUNNEL_TIMEOUT: 10
     TIME_TO_LIVE: ""
@@ -665,6 +672,9 @@ fan-in-bucket-upload:
 
 
 slack-notify-bucket-upload:
+  extends:
+    - .trigger-slack-notification
+    - .bucket-upload-rule-always
   variables:
     PIPELINE_TO_QUERY: $CI_PIPELINE_ID
     WORKFLOW: 'Upload Packs to Marketplace Storage'
@@ -673,10 +683,16 @@ slack-notify-bucket-upload:
     # when triggering pipeline with alternate env variable value passed in the API call
     SLACK_CHANNEL: $SLACK_CHANNEL
     SLACK_JOB: 'true'
-  extends:
-    - .trigger-slack-notification
-    - .bucket-upload-rule-always
-
+    SLACK_ALLOW_FAILURE: 'false'
+    CI_PROJECT_ID: $CI_PROJECT_ID
+    CI_SERVER_URL: $CI_SERVER_URL
+    JIRA_SERVER_URL: $JIRA_SERVER_URL
+    JIRA_VERIFY_SSL: $JIRA_VERIFY_SSL
+    JIRA_API_KEY: $JIRA_API_KEY
+    JIRA_PROJECT_ID: $JIRA_PROJECT_ID
+    JIRA_ISSUE_TYPE: $JIRA_ISSUE_TYPE
+    JIRA_COMPONENT: $JIRA_COMPONENT
+    JIRA_ISSUE_UNRESOLVED_TRANSITION_NAME: $JIRA_ISSUE_UNRESOLVED_TRANSITION_NAME
 
 upload-id-set-bucket:
   tags:
