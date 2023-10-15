@@ -181,12 +181,16 @@ def is_requires_security_reviewer(pr_files: list[str]) -> bool:
 
 
 def is_tim_reviewer_needed(pr_files: list[str], metadata: dict) -> bool:
+    print("is tim reviewer needed function start")
     for pr_file in pr_files:
         if "yml" in pr_file:
             if "feed: true" in pr_file:
                 return True
+    print ("feed is not true")
     tags = metadata.get(tags)
+    print(f'tags are: {tags}')
     categories = metadata.get(categories)
+    print(f'categories are: {categories}')
     if "Threat Intelligence Management" in tags or "Data Enrichment & Threat Intelligence" in categories:
         return True
 
@@ -275,10 +279,13 @@ def main():
         pr.add_to_assignees(security_reviewer)
         pr.add_to_labels(SECURITY_LABEL)
 
+    print("start of tim reveiwer addon")
     pack_metadata = get_pack_metadata(pr_files[0])
+    print(f'the pack metadata is: {pack_metadata}')
     if is_tim_reviewer_needed(pr_files, pack_metadata):
         if support_label in (XSOAR_SUPPORT_LEVEL_LABEL, PARTNER_SUPPORT_LEVEL_LABEL):
             reviewers.append(tim_reviewer)
+            pr.add_to_labels("TIM Review")
 
     pr.create_review_request(reviewers=reviewers)
     print(f'{t.cyan}Assigned and requested review from "{",".join(reviewers)}" to the PR{t.normal}')
