@@ -104,7 +104,7 @@ def air_acquire_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     case_id = args.get('case_id', '')
     organization_id = arg_to_number(args.get('organization_id', ''))
 
-    result: Dict[str, Any] = client.air_acquire(hostname, profile, case_id, organization_id)
+    result: Dict[Any, Any] = client.air_acquire(hostname, profile, case_id, organization_id)
     readable_output = tableToMarkdown('Binalyze AIR Isolate Results', result,
                                       headers=('success', 'result', 'statusCode', 'errors'),
                                       headerTransform=string_to_table_header)
@@ -130,7 +130,7 @@ def air_isolate_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     organization_id = arg_to_number(args.get('organization_id', ''))
     isolation = args.get('isolation', '')
 
-    result: Dict[str, Any] = client.air_isolate(hostname, organization_id, isolation)
+    result: Dict[Any, Any] = client.air_isolate(hostname, organization_id, isolation)
     readable_output = tableToMarkdown('Binalyze AIR Isolate Results', result,
                                       headers=('success', 'result', 'statusCode', 'errors'),
                                       headerTransform=string_to_table_header)
