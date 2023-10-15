@@ -4,7 +4,7 @@ commonfields:
 name: Zabbix
 display: Zabbix
 category: Utilities
-description: Allow integration with Zabbix api
+description: Allow integration with Zabbix api.
 configuration:
 - display: Url
   name: url
@@ -26,17 +26,17 @@ script:
       auto: PREDEFINED
       predefined:
       - host.get
-      description: Method to call on Zabbix API
+      description: Method to call on Zabbix API.
     - name: params
-      description: JSON with params to send with call
+      description: JSON with params to send with call.
     outputs:
     - contextPath: Zabbix.Execute
-      description: result
+      description: result.
       type: Unknown
-    description: Execute command on Zabbix API
+    description: Execute command on Zabbix API.
   - name: test-module
     arguments: []
-    description: Test if module is working
+    description: Test if module is working.
   - name: zabbix-hostgroup-get
     arguments:
     - name: params_graphids
@@ -79,18 +79,18 @@ script:
       description: Return only host groups that contain hosts with triggers.
     outputs:
     - contextPath: Zabbix.Hostgroup.groupid
-      description: ID of the host group
+      description: ID of the host group.
       type: string
     - contextPath: Zabbix.Hostgroup.name
-      description: Name of the host group
+      description: Name of the host group.
       type: string
     - contextPath: Zabbix.Hostgroup.flags
-      description: Origin of the host group
+      description: Origin of the host group.
       type: number
     - contextPath: Zabbix.Hostgroup.internal
       description: Whether the group is used internally by the system.
       type: number
-    description: Get host groups
+    description: Get host groups.
   - name: zabbix-host-get
     arguments:
     - name: params_groupids
@@ -258,7 +258,7 @@ script:
     - contextPath: Zabbix.Host.tls_psk
       description: The preshared key, at least 32 hex digits. Required if either tls_connect or tls_accept has PSK enabled.
       type: string
-    description: Get hosts
+    description: Get hosts.
   - name: zabbix-trigger-get
     arguments:
     - name: params_triggerids
@@ -367,7 +367,7 @@ script:
     - contextPath: Zabbix.Trigger.manual_close
       description: Allow manual close.
       type: number
-    description: Get triggers
+    description: Get triggers.
   - name: zabbix-event-get
     arguments:
     - name: params_eventids
@@ -387,7 +387,7 @@ script:
     - name: params_acknowledged
       description: If set to true return only acknowledged events.
     - name: params_suppressed
-      description: true - return only suppressed events;
+      description: true - return only suppressed events;.
     - name: params_severities
       description: Return only events with given event severities. Applies only if object is trigger.
     - name: params_evaltype
@@ -440,7 +440,7 @@ script:
       description: Event current severity.
       type: number
     - contextPath: Zabbix.Event.r_eventid
-      description: Recovery event ID
+      description: Recovery event ID.
       type: string
     - contextPath: Zabbix.Event.c_eventid
       description: ID of the event that was used to override (close) current event under global correlation rule. See correlationid to identify exact correlation rule.
@@ -454,10 +454,12 @@ script:
     - contextPath: Zabbix.Event.suppressed
       description: Whether the event is suppressed.
       type: number
-    description: Get events
-  dockerimage: demisto/py3-tools:1.0.0.68086
+    description: Get events.
+  dockerimage: demisto/py3-tools:1.0.0.77054
   runonce: false
   script: '-'
   type: python
   subtype: python3
 fromversion: 5.0.0
+tests:
+- No tests (auto formatted)
