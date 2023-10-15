@@ -269,7 +269,7 @@
 
 .cloud-machine-information:
   - section_start "Cloud Machine information"
-  - echo "TEST_XDR_ENV = ${TEST_XDR_ENV}, CLOUD_MACHINES_TYPE=${CLOUD_MACHINES_TYPE}, GCS_LOCKS_PATH=${GCS_LOCKS_PATH}"
+  - echo "TEST_XDR_ENV = ${TEST_XDR_ENV}, CLOUD_MACHINES_TYPE=${CLOUD_MACHINES_TYPE}, GCS_LOCKS_PATH=${GCS_LOCKS_PATH}, BUCKET_UPLOAD=${BUCKET_UPLOAD}"
   - ./Tests/scripts/print_cloud_machine_details.sh
   - section_end "Cloud Machine information"
 

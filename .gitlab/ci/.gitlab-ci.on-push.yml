@@ -403,12 +403,6 @@ slack-notify-nightly-build:
   extends:
     - .default-job-settings
     - .push-rule
-  rules:
-    - if: '$TEST_XDR_ENV'
-      when: always
-      variables:
-        CLOUD_MACHINES_TYPE: "testing"
-        GCS_LOCKS_PATH: "content-locks/locks-xsiam-ga-testing"
   variables:
     EXTRACT_PRIVATE_TESTDATA: "true"
   stage: run-instances
@@ -534,7 +528,7 @@ xsoar_ng_server_ga:
     - !reference [.filter-non-nightly-docker-updates-rule, rules]
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
       when: always
-    - if: '$TEST_XDR_ENV && $BUCKET_UPLOAD != "true"'
+    - if: '$TEST_XDR_ENV && $BUCKET_UPLOAD == "null"'
       when: always
       variables:
         CLOUD_MACHINES_TYPE: "testing"
