@@ -37,7 +37,7 @@ alter
 	xdm.source.cloud.project = accountID,
 	xdm.source.process.container_id = container,
 	xdm.source.host.os = coalesce(osRelease, check_fullos_1, check_fullos_2),
-	xdm.source.host.device_category = collections,
+	xdm.source.host.device_category = to_string(collections),
 	//xdm.alert.risks = vulnerabilities,
 	xdm.source.process.command_line = if(command = null, arraystring(regextract(message, "command:\s+(.*)"), ""), command),
 	xdm.source.process.name = if(startupProcess = "#startupProcess", null, startupProcess),
