@@ -1477,7 +1477,7 @@ script:
     - contextPath: Akamai.Enrollments.Change.Status
       description: Akamai Enrollments Change Status
       type: Dictionary
-  dockerimage: demisto/akamai:1.0.0.73558
+  dockerimage: demisto/auth-utils:1.0.0.76157
   script: ''
   subtype: python3
   type: python
