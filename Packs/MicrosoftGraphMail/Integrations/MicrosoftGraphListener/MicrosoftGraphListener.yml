@@ -825,7 +825,7 @@ script:
     - defaultValue: '20'
       description: The maximum number of mail folder lists to return. 
       name: limit
-    - description: flag for rate limit retry.
+    - description: Flag for the rate limit retry.
       name: ran_once_flag
     description: Returns the folder list under the specified folder.
     name: msgraph-mail-list-child-folders
