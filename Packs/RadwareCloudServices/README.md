@@ -7,7 +7,7 @@
 
 **On AWS**
 
-Sign in to your AWS account and create a dedicated Amazon S3 bucket, which collects the generic logs that you want capture.
+Sign in to your AWS account and create a dedicated Amazon S3 bucket, which collects the generic logs that you want to capture.
 
 Follow these [docs](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Administrator-Guide/Ingest-Generic-Logs-from-Amazon-S3) for further instructions on how to create a S3 bucket.
 
