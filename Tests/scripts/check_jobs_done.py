@@ -4,7 +4,6 @@ from pathlib import Path
 
 from Tests.scripts.common import WORKFLOW_TYPES, CONTENT_NIGHTLY, BUCKET_UPLOAD, CONTENT_PR, SDK_NIGHTLY
 from Tests.scripts.utils import logging_wrapper as logging
-from Tests.scripts.utils.log_util import install_logging
 
 CONTENT_NIGHTLY_JOBS = [
     'run-unittests-and-lint: [native:dev,from-yml]',
@@ -96,7 +95,6 @@ def parse_args():
 
 
 def main():
-    install_logging('check_jobs_done.log', logger=logging)
     args = parse_args()
 
     base_path = Path(args.job_done_files)

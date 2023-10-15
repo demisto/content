@@ -59,12 +59,10 @@ slack-notify-build-machines-cleanup:
   extends:
     - .trigger-slack-notification
     - .build-machines-cleanup-rule-always
-  variables:
+  variables:  # Passes the environment variable from the parent pipeline to the child which can be useful for cases when triggering pipeline with alternate env variable value passed in the API call.
     PIPELINE_TO_QUERY: $CI_PIPELINE_ID
     WORKFLOW: 'Build Machines Cleanup'
     JOB_NAME: 'fan-in-build-machines-cleanup'
-    # Passes the environment variable from the parent pipeline to the child which can be useful for cases
-    # when triggering pipeline with alternate env variable value passed in the API call
     SLACK_CHANNEL: $SLACK_CHANNEL
     SLACK_JOB: 'true'
     SLACK_ALLOW_FAILURE: 'false'

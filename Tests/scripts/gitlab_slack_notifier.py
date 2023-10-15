@@ -255,7 +255,9 @@ def construct_slack_msg(triggering_workflow: str,
         content_fields += test_playbooks_results(ARTIFACTS_FOLDER_MPV2, title="XSIAM")
         content_fields += test_modeling_rules_results(ARTIFACTS_FOLDER_MPV2, title="XSIAM")
         content_fields += missing_content_packs_test_conf(ARTIFACTS_FOLDER_XSOAR)
-        coverage_slack_msg += construct_coverage_slack_msg()
+        # The coverage Slack message is only relevant for nightly and not for PRs.
+        if not pull_request:
+            coverage_slack_msg += construct_coverage_slack_msg()
 
     title = triggering_workflow
     if pull_request:
@@ -311,7 +313,7 @@ def collect_pipeline_data(gitlab_client: gitlab.Gitlab,
 
 
 def construct_coverage_slack_msg() -> list[dict[str, Any]]:
-    coverage_today = get_total_coverage(filename=(ROOT_ARTIFACTS_FOLDER / 'coverage_report/coverage-min.json').as_posix())
+    coverage_today = get_total_coverage(filename=(ROOT_ARTIFACTS_FOLDER / "coverage_report" / "coverage-min.json").as_posix())
     yesterday = datetime.now() - timedelta(days=1)
     coverage_yesterday = get_total_coverage(date=yesterday)
     color = 'good' if coverage_today >= coverage_yesterday else 'danger'
@@ -327,16 +329,19 @@ def construct_coverage_slack_msg() -> list[dict[str, Any]]:
 def main():
     install_logging('Slack_Notifier.log')
     options = options_handler()
-    server_url = options.url
-    slack_token = options.slack_token
-    ci_token = options.ci_token
-    project_id = options.gitlab_project_id
-    pipeline_id = options.pipeline_id
     triggering_workflow = options.triggering_workflow  # ci workflow type that is triggering the slack notifier
+    pipeline_id = options.pipeline_id
+    project_id = options.gitlab_project_id
+    server_url = options.url
+    ci_token = options.ci_token
     computed_slack_channel = options.slack_channel.lower()
     gitlab_client = gitlab.Gitlab(server_url, private_token=ci_token)
+    slack_token = options.slack_token
     slack_client = WebClient(token=slack_token)
 
+    logging.info(f'Sending Slack message for pipeline {pipeline_id} in project {project_id} on server {server_url} '
+                 f'triggering workflow:{triggering_workflow} allowing failure:{options.allow_failure} '
+                 f'slack channel:{computed_slack_channel}')
     if options.current_branch != DEFAULT_BRANCH:
         pull_request = GithubPullRequest(
             options.github_token,
@@ -360,9 +365,10 @@ def main():
         slack_client.chat_postMessage(
             channel=computed_slack_channel, attachments=slack_msg_data, username=SLACK_USERNAME
         )
+        logging.info(f'Successfully sent slack message to channel {computed_slack_channel}')
     except Exception:
         if strtobool(options.allow_failure):
-            logging.warning(f'Failed to send slack message to channel {computed_slack_channel}')
+            logging.warning(f'Failed to send slack message to channel {computed_slack_channel} not failing build')
         else:
             logging.exception(f'Failed to send slack message to channel {computed_slack_channel}')
             sys.exit(1)

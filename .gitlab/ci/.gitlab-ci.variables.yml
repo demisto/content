@@ -10,7 +10,6 @@ variables:
   GCS_MARKET_V2_BUCKET_DEV: "marketplace-v2-dist-dev"
   STORAGE_BASE_PATH: ""
   SLACK_CHANNEL: "dmst-build-test"
-  SLACK_CHANNEL_PRIVATE: "#dmst-build-private-"
   DEMISTO_README_VALIDATION: "true"
   ARTIFACTS_FOLDER: "${CI_PROJECT_DIR}/artifacts"
   PIPELINE_JOBS_FOLDER: "${CI_PROJECT_DIR}/pipeline_jobs_folder"
