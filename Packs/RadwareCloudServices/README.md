@@ -13,7 +13,7 @@ See this[doc](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSI
 
 **On Radware Cloud Services**
 
-1. Contact the Radware Support team in order to enable Access Logs.
+1. Contact the Radware Support team in order to enable Access logs.
 2. Navigate to **Account Settings** and fill the below attributes:
    - Bucket Name
    - Region
