@@ -3054,7 +3054,6 @@ script:
       required: true
     - description: The name of the copied file.
       name: copy_title
-      required: true
     - name: user_id
       description: The user's primary email address.
     - auto: PREDEFINED
@@ -3065,16 +3064,16 @@ script:
       - 'true'
       - 'false'
     outputs:
-    - contextPath: GoogleDrive.kind
+    - contextPath: GoogleDrive.File.File.kind
       description: The content type of the file.
       type: String
-    - contextPath: GoogleDrive.id
+    - contextPath: GoogleDrive.File.File.id
       description: The ID of the copied file.
       type: String
-    - contextPath: GoogleDrive.name
+    - contextPath: GoogleDrive.File.File.name
       description: The name of the copied file.
       type: String
-    - contextPath: GoogleDrive.mimeType
+    - contextPath: GoogleDrive.File.File.mimeType
       description: The MIME type of the copied file.
       type: String
   dockerimage: demisto/googleapi-python3:1.0.0.77375

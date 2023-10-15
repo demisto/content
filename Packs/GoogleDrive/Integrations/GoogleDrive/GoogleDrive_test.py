@@ -1045,7 +1045,7 @@ class TestFilePermissionMethods:
             'name': 'TEST COPY'
         }
         assert results.readable_output == (
-            '### New file copied from *test_file_id*\n'
+            '### File copied successfully.\n'
             '|Id|Kind|Mimetype|Name|\n'
             '|---|---|---|---|\n'
             '| test_id | drive#file | application/octet-stream | TEST COPY |\n'

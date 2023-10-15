@@ -1763,7 +1763,7 @@ def drive_activity_list_command(client: 'GSuiteClient', args: dict[str, str]) ->
 
 
 def copy_file_http_request(
-        client: 'GSuiteClient', file_id: str, copy_title: str, supports_all_drives: str, user_id: str = None
+        client: 'GSuiteClient', file_id: str, supports_all_drives: str, copy_title: str = None, user_id: str = None
 ) -> dict:
 
     client.set_authorized_http(scopes=COMMAND_SCOPES['FILES'], subject=(user_id or client.user_id))
@@ -1773,7 +1773,7 @@ def copy_file_http_request(
         return drive_service.files().copy(
             fileId=file_id,
             supportsAllDrives=argToBoolean(supports_all_drives),
-            body={'name': copy_title},
+            body={'name': copy_title} if copy_title else None,
         ).execute()
     except errors.HttpError as e:
         error_dict = {
@@ -1789,12 +1789,12 @@ def file_copy_command(client: 'GSuiteClient', args: dict[str, str]) -> CommandRe
     file = copy_file_http_request(client, **args)
 
     return CommandResults(
-        outputs_prefix='GoogleDrive',
+        outputs_prefix='GoogleDrive.File.File',
         outputs_key_field='id',
         outputs=file,
         readable_output=tableToMarkdown(
-            f'New file copied from *{args["file_id"]}*',
-            file, headerTransform=string_to_table_header
+            'File copied successfully.', file,
+            headerTransform=string_to_table_header
         ),
     )
 
