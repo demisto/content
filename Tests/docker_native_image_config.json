@@ -204,7 +204,7 @@
                 "native:dev",
                 "native:candidate"
             ]
-        },
+        }
     ],
     "flags_versions_mapping":{
         "native:dev":"native:dev",
