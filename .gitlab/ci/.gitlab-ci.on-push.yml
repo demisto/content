@@ -528,7 +528,7 @@ xsoar_ng_server_ga:
     - !reference [.filter-non-nightly-docker-updates-rule, rules]
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
       when: always
-    - if: '$TEST_XDR_ENV && $BUCKET_UPLOAD == "null"'
+    - if: $TEST_XDR_ENV && $BUCKET_UPLOAD == null
       when: always
       variables:
         CLOUD_MACHINES_TYPE: "testing"
