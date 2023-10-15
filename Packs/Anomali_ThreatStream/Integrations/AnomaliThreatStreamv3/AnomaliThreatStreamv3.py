@@ -178,7 +178,7 @@ INTELLIGENCE_TYPE_TO_CONTEXT = {'actor': 'Actor',
 
 
 class Client(BaseClient):
-    def __init__(self, base_url, user_name, api_key, verify, proxy, reliability, should_create_relationships):
+    def __init__(self, base_url, user_name, api_key, verify, proxy, reliability, should_create_relationships, remote_api):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy, ok_codes=(200, 201, 202))
         self.reliability = reliability
         self.should_create_relationships = should_create_relationships
@@ -186,6 +186,7 @@ class Client(BaseClient):
             'username': user_name,
             'api_key': api_key
         }
+        self.remote_api = remote_api
 
     def http_request(self, method,
                      url_suffix, params=None,
@@ -1737,11 +1738,12 @@ def create_element_list(arguments_dict: dict) -> tuple[list, list]:
 def get_intelligence_information(client: Client, indicator, ioc_type, intelligence_type):
 
     value = indicator.get('value')
-    remote_api = argToBoolean(demisto.params().get('remote_api'))
     url = f"v1/{intelligence_type}/associated_with_intelligence/"
     params = {'value': value}
-    if remote_api:
+
+    if client.remote_api:
         params['remote_api'] = 'true'
+
     intelligences = client.http_request('GET', url, params=params).get('objects', [])
     relationships: List[EntityRelationship] = []
     entity_b_type = INTELLIGENCE_TYPE_TO_ENTITY_TYPE[intelligence_type]
@@ -2603,6 +2605,7 @@ def main():
     api_key = params.get('credentials', {}).get('password')
     server_url = params.get('url', '').strip('/')
     reliability = params.get('integrationReliability', DBotScoreReliability.B)
+
     if DBotScoreReliability.is_valid_type(reliability):
         reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
     else:
@@ -2670,6 +2673,7 @@ def main():
             proxy=params.get('proxy', False),
             reliability=reliability,
             should_create_relationships=params.get('create_relationships', True),
+            remote_api=argToBoolean(params.get("remote_api", "false"))
         )
         args = prepare_args(demisto.args(), command, params)
         if command == 'test-module':

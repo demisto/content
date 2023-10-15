@@ -18,12 +18,13 @@ If you are upgrading from a previous version of this integration, see [Breaking 
     | IP threshold |  | False |
     | Domain threshold |  | False |
     | File threshold |  | False |
-    | Email threshold |  | False |
+    | Email threshold | Email indicators with confidence value above this threshold are considered malicious. | False |
     | Include inactive results | Whether to include inactive indicators in reputation commands. | False |
     | Source Reliability | Reliability of the source providing the intelligence data. | True |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
     | Create relationships | Create relationships between indicators as part of enrichment. | False |
+    | Remote API | Gather additional information about the threat model from remote APIs. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 

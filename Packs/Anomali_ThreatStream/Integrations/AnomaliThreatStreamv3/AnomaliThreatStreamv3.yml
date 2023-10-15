@@ -1,4 +1,7 @@
 category: Data Enrichment & Threat Intelligence
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: Anomali ThreatStream v3
   version: -1
@@ -90,7 +93,8 @@ configuration:
   section: Collect
   advanced: true
   required: false
-- additionalinfo: Gather additional details about the threat model association.
+  defaultclassifier: 'null'
+- additionalinfo: Gather additional information about the threat model from remote APIs.
   defaultvalue: 'false'
   display: Remote API
   name: remote_api
@@ -2488,7 +2492,6 @@ script:
       - medium
       - high
       - very-high
-      auto: PREDEFINED
     - description: 'A comma-separated list of tags applied to the imported observables. For example, tag1,tag2. Note: In cases where tags are specified at both the global and per observable level, tags specified per observable overwrite global tags.'
       name: tags
     - description: A comma-separated list of trusted circle IDs with which threat data should be shared.
@@ -3142,7 +3145,8 @@ script:
       isArray: true
       name: url
       required: true
-    - description: If confidence is greater than the threshold the URL is considered malicious, otherwise it is considered good. This argument overrides the default URL threshold defined as a parameter.
+    - auto: PREDEFINED
+      description: If confidence is greater than the threshold the URL is considered malicious, otherwise it is considered good. This argument overrides the default URL threshold defined as a parameter.
       name: threshold
     - auto: PREDEFINED
       description: Whether to include results with an inactive status.
@@ -6420,7 +6424,7 @@ script:
     name: threatstream-remove-indicator-tag
   dockerimage: demisto/py3-tools:1.0.0.77054
   runonce: false
-  script: ''
+  script: '-'
   subtype: python3
   type: python
 tests:
