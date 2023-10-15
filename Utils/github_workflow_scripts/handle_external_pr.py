@@ -187,9 +187,9 @@ def is_tim_reviewer_needed(pr_files: list[str], metadata: dict) -> bool:
             if "feed: true" in pr_file:
                 return True
     print ("feed is not true")
-    tags = metadata.get(tags)
+    tags = metadata.get("tags")
     print(f'tags are: {tags}')
-    categories = metadata.get(categories)
+    categories = metadata.get("categories")
     print(f'categories are: {categories}')
     if "Threat Intelligence Management" in tags or "Data Enrichment & Threat Intelligence" in categories:
         return True
