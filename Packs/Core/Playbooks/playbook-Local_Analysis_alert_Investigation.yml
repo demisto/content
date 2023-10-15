@@ -2188,10 +2188,10 @@ inputs:
               simple: lhsB!=rhsB
           conditionInBetween:
             value:
-              simple: or
+              simple: and
           else:
             value:
-              simple: ${alert= '(initiatorsha256:"' + "" + '" or hostip:"' + "" + '") ' + 'and sourceBrand:"' + val.sourceBrand + '" and name:"' + val.name + '"'}
+              simple: ${alert= '(initiatorsha256:"" or hostip:"") ' + 'and sourceBrand:"' + val.sourceBrand + '" and name:"' + val.name + '"'}
           equals: {}
           lhs:
             value:
