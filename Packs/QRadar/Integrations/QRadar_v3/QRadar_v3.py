@@ -4279,7 +4279,6 @@ def main() -> None:  # pragma: no cover
         ]:
             return_results(qradar_domains_list_command(client, args))
 
-
         elif command in ['qradar-indicators-upload', 'qradar-upload-indicators']:
             return_results(qradar_indicators_upload_command(args, client, params))
 
