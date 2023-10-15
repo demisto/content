@@ -17,8 +17,8 @@ JIRA_SERVER_URL = os.environ["JIRA_SERVER_URL"]
 JIRA_VERIFY_SSL = strtobool(os.environ.get("JIRA_VERIFY_SSL", "true"))
 JIRA_API_KEY = os.environ["JIRA_API_KEY"]
 JIRA_PROJECT_ID = os.environ["JIRA_PROJECT_ID"]
-JIRA_ISSUE_TYPE = os.environ["JIRA_ISSUE_TYPE"]
-JIRA_COMPONENT = os.environ["JIRA_COMPONENT"]
+JIRA_ISSUE_TYPE = os.environ.get("JIRA_ISSUE_TYPE", "")  # Default to empty string if not set
+JIRA_COMPONENT = os.environ.get("JIRA_COMPONENT", "")  # Default to empty string if not set
 JIRA_ISSUE_UNRESOLVED_TRANSITION_NAME = os.environ["JIRA_ISSUE_UNRESOLVED_TRANSITION_NAME"]
 JIRA_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S.%f%z"
 # Jira additional fields are a json string that will be parsed into a dictionary containing the name of the field

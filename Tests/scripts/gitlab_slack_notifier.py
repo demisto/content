@@ -119,34 +119,19 @@ def test_playbooks_results_to_slack_msg(instance_role: str,
                                         skipped_integrations: list[str],
                                         skipped_tests: list[str],
                                         title: str) -> list[dict[str, Any]]:
-    content_team_fields = []
     if failed_tests:
-        content_team_fields.append({
-            "title": f"{title} ({instance_role}) - Failed Tests - ({len(failed_tests)})",
+        return [{
+            "title": f"{title} ({instance_role}) - Test Playbooks Failed ({len(failed_tests)}) Skipped - {len(skipped_tests)}, "
+                     f"Skipped Integrations - {len(skipped_integrations)}",
             "value": ', '.join(failed_tests),
             "short": False
-        })
-    else:
-        content_team_fields.append({
-            "title": f"{title} ({instance_role}) - All Tests Playbooks Passed",
-            "value": '',
-            "short": False
-        })
-
-    if skipped_tests:
-        content_team_fields.append({
-            "title": f"{title} ({instance_role}) - Skipped Tests - ({len(skipped_tests)})",
-            "value": '',
-            "short": True
-        })
-    if skipped_integrations:
-        content_team_fields.append({
-            "title": f"{title} ({instance_role}) - Skipped Integrations - ({len(skipped_integrations)})",
-            "value": '',
-            "short": True
-        })
-
-    return content_team_fields
+        }]
+    return [{
+        "title": f"{title} ({instance_role}) - All Tests Playbooks Passed (Skipped - {len(skipped_tests)}, "
+                 f"Skipped Integrations - {len(skipped_integrations)})",
+        "value": '',
+        "short": False
+    }]
 
 
 def test_playbooks_results(artifact_folder: Path, title: str) -> list[dict[str, Any]]:
@@ -248,21 +233,22 @@ def construct_slack_msg(triggering_workflow: str,
         content_fields += bucket_upload_results(ARTIFACTS_FOLDER_XPANSE, False)
 
     # report failing test-playbooks and test modeling rules.
-    coverage_slack_msg = []
     if triggering_workflow in {CONTENT_NIGHTLY, CONTENT_PR}:
         content_fields += test_playbooks_results(ARTIFACTS_FOLDER_XSOAR, title="XSOAR")
         content_fields += test_playbooks_results(ARTIFACTS_FOLDER_MPV2, title="XSIAM")
         content_fields += test_modeling_rules_results(ARTIFACTS_FOLDER_MPV2, title="XSIAM")
         content_fields += missing_content_packs_test_conf(ARTIFACTS_FOLDER_XSOAR)
-        # The coverage Slack message is only relevant for nightly and not for PRs.
-        if not pull_request:
-            coverage_slack_msg += construct_coverage_slack_msg()
 
+    coverage_slack_msg = []
     title = triggering_workflow
-    if pull_request:
-        pr_number = pull_request.data.get('number')
-        pr_title = pull_request.data.get('title')
-        title += f' (PR#{pr_number} - {pr_title})'
+    if triggering_workflow == CONTENT_PR:
+        if pull_request:
+            pr_number = pull_request.data.get('number')
+            pr_title = pull_request.data.get('title')
+            title += f' (PR#{pr_number} - {pr_title})'
+        else:
+            # The coverage Slack message is only relevant for nightly and not for PRs.
+            coverage_slack_msg += construct_coverage_slack_msg()
 
     if pipeline_failed_jobs:
         title += ' - Failure'
