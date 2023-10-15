@@ -584,7 +584,7 @@ Returns the folder list under the specified folder.
 | --- | --- | --- |
 | parent_folder_id | The ID of the parent folder. | Required | 
 | limit | The maximum number of mail folder lists to return. Default is 20. Default is 20. | Optional | 
-| ran_once_flag | flag for rate limit retry. | Optional | 
+| ran_once_flag | Flag for the rate limit retry. | Optional | 
 
 #### Context Output
 
