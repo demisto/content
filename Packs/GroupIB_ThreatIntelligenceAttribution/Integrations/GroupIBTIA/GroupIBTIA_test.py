@@ -101,7 +101,7 @@ COLLECTION_NAMES = ['compromised/card', 'osi/git_repository', 'osi/public_leak',
 
 @pytest.fixture(scope='function', params=COLLECTION_NAMES, ids=COLLECTION_NAMES)
 def session_fixture(request):
-    """ 
+    """
     Given:
       - A list of collection names from the integration
 
@@ -117,7 +117,7 @@ def session_fixture(request):
 def test_transform_function_on_dict():
     """
     Given:
-      - A dictionary input to transform 
+      - A dictionary input to transform
 
     When:
       - Calling transform_function() on the input
@@ -134,7 +134,7 @@ def test_transform_function_on_dict():
 def test_transform_function_on_list():
     """
     Given:
-      - A list input to transform 
+      - A list input to transform
 
     When:
       - Calling transform_function() on the input
@@ -151,7 +151,7 @@ def test_transform_function_on_list():
 def test_transform_function_on_primitive():
     """
     Given:
-      - A primitive input to transform 
+      - A primitive input to transform
 
     When:
       - Calling transform_function() on the input
@@ -168,7 +168,7 @@ def test_transform_function_on_primitive():
 def test_transform_function_returns_tuple():
     """
     Given:
-      - A tuple input to transform 
+      - A tuple input to transform
 
     When:
       - Calling transform_function() on the input
@@ -189,11 +189,11 @@ def test_fetch_incidents(mocker, session_fixture):
     - last_run dict, first_fetch_time str, etc.
 
     When:
-    - Calling fetch_incidents_command() 
+    - Calling fetch_incidents_command()
 
     Then:
     - next_run and incidents have expected types
-    - Number of incidents matches mock response  
+    - Number of incidents matches mock response
     """
     collection_name, client = session_fixture
     mocker.patch.object(client, 'create_poll_generator', return_value=[RAW_JSON[collection_name]])
@@ -202,7 +202,7 @@ def test_fetch_incidents(mocker, session_fixture):
                                                   first_fetch_time="3 days",
                                                   incident_collections=[],
                                                   requests_count=3)
-    assert next_run != None
+    assert not next_run
     assert isinstance(incidents, list)
 
 
@@ -263,7 +263,7 @@ def test_find_element_by_key_nested_dict():
 
 
 def test_find_element_by_key_list():
-    """  
+    """
     Given:
       - A list input
 
@@ -289,7 +289,7 @@ def test_find_element_by_key_missing():
     When:
       - Calling find_element_by_key() with a missing key
 
-    Then:  
+    Then:
       - None is returned as expected
     """
     from GroupIBTIA import find_element_by_key
