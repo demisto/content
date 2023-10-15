@@ -166,12 +166,6 @@ def extract_logs_from_response(file_path: Path) -> list[bytes]:
     """
     logs: list[bytes] = []
     demisto.debug(f"The file path: {file_path.name}")
-    # with file_path.open("rb") as f:
-    #     f.seek(0)
-    #     data = f.read()
-    # demisto.debug("test test test")
-    # demisto.debug(f"the content of the file: {data.decode()}")
-    # demisto.debug(f"size of the zip file: {len(response.content) / (1024 ** 2):.2f} MB")
     try:
         # extract the ZIP file
         with ZipFile(file_path, "r") as outer_zip:
@@ -257,9 +251,9 @@ def organize_of_events(
     time_of_last_fetched_event: str,
     events_suspected_duplicates: list[str],
 ) -> tuple[list[str], str, list[str]]:
-    # events: list[str] = []
+    events: list[str] = []
     max_time = time_of_last_fetched_event
-    # max_values = events_suspected_duplicates
+    max_values = events_suspected_duplicates
 
     demisto.debug(f"The len of the events before filter {len(logs)}")
     for log in logs:
@@ -267,24 +261,24 @@ def organize_of_events(
         if event.startswith("#"):
             continue
         parts = event.split(" ")
-        # id_ = parts[-1]
+        id_ = parts[-1]
         cur_time = f"{parts[1]} {parts[2]}"
 
-        # if token_expired and (
-        #     is_duplicate(
-        #         id_,
-        #         cur_time,
-        #         time_of_last_fetched_event,
-        #         events_suspected_duplicates,
-        #     )
-        # ):
-        #     continue
+        if token_expired and (
+            is_duplicate(
+                id_,
+                cur_time,
+                time_of_last_fetched_event,
+                events_suspected_duplicates,
+            )
+        ):
+            continue
         if cur_time > max_time:
             max_time = cur_time
-            # max_values = [id_]
-        # elif cur_time == max_time:
-        #     max_values.append(id_)
-        # events.append(event)
+            max_values = [id_]
+        elif cur_time == max_time:
+            max_values.append(id_)
+        events.append(event)
 
     # demisto.debug(f"The len of the events after filter {len(events)}")
     return [], max_time, []
@@ -369,11 +363,9 @@ def get_events_command(
         res.unlink()
 
     (
-        # events,
-        _,
+        events,
         time_of_last_fetched_event,
-        _
-        # events_suspected_duplicates,
+        events_suspected_duplicates,
     ) = organize_of_events(
         logs,
         token_expired,
@@ -393,7 +385,7 @@ def get_events_command(
         start_date=str(start_date_for_next_fetch),
         token=str(params["token"]),
         time_of_last_fetched_event=time_of_last_fetched_event,
-        events_suspected_duplicates=None,  # events_suspected_duplicates,
+        events_suspected_duplicates=events_suspected_duplicates,
         # last_fetch=int(get_current_time_as_timestamp() / 1000)
     )
 
