@@ -2581,7 +2581,7 @@ def fetch_incidents():
                 detection['incident_type'] = incident_type
                 demisto.debug(
                     f"CrowdStrikeFalconMsg: Detection {detection['detection_id']} "
-                    f"was fetched which was created in {detection['first_behavior']}")
+                    f"was fetched which was created in {detection['created_timestamp']}")
                 incident = detection_to_incident(detection)
 
                 detections.append(incident)
