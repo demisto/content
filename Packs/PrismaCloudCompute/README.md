@@ -26,9 +26,9 @@ The URL format for the tenant is ```https://api-<tenant name>.xdr.us.paloaltonet
    * In Cortex XSIAM, once alerts start to come in, a green check mark appears underneath the Prisma Cloud Compute Collector configuration with the amount of data received.
 7. After Cortex XSIAM begins receiving data from Prisma Cloud Compute, you can use XQL Search to search for specific data using the ```prisma_cloud_compute_raw``` dataset.
 
-
 **Pay Attention**:
 Timestamp parsing support is available for the **time** field in ```%h %d, %Y %H:%M:%S UTC``` format (E.g ```Oct 14, 2023 09:16:04 UTC```)
+
 
 </~XSIAM>
 
