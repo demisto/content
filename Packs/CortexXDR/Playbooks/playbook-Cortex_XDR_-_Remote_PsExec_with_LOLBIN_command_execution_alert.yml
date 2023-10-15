@@ -235,7 +235,7 @@ tasks:
     task:
       id: 9dd61261-5d13-4cac-8811-b438fdcf9635
       version: -1
-      name: Should automatically terminate process?
+      name: Should automatically terminate the process?
       description: Check if auto remediation is set to True.
       type: condition
       iscommand: false
@@ -338,7 +338,7 @@ tasks:
       - "16"
     scriptarguments:
       severity:
-        simple: Critical
+        simple: High
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -369,7 +369,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "17"
+      - "28"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -377,52 +377,6 @@ tasks:
         "position": {
           "x": 900,
           "y": 1380
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "17":
-    id: "17"
-    taskid: 3cd266b3-ea5c-4fe0-8795-04dbefc0eb4d
-    type: condition
-    task:
-      id: 3cd266b3-ea5c-4fe0-8795-04dbefc0eb4d
-      version: -1
-      name: Should auto block indicators?
-      description: Check if auto remediation is enabled.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "36"
-      "yes":
-      - "28"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: inputs.AutoRemediation
-            iscontext: true
-          right:
-            value:
-              simple: "true"
-          ignorecase: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 900,
-          "y": 1520
         }
       }
     note: false
@@ -450,7 +404,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 1860
+          "y": 1690
         }
       }
     note: false
@@ -520,7 +474,8 @@ tasks:
       - "22"
     scriptarguments:
       AutoBlockIndicators:
-        simple: "True"
+        complex:
+          root: inputs.AutoRemediation
       AutoCommit:
         simple: "No"
       CustomBlockRule:
@@ -582,7 +537,8 @@ tasks:
           transformers:
           - operator: uniq
       UserVerification:
-        simple: "True"
+        complex:
+          root: inputs.AutoRemediation
       Username:
         complex:
           root: DBotScore
@@ -615,8 +571,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 680,
-          "y": 1690
+          "x": 900,
+          "y": 1520
         }
       }
     note: false
@@ -880,42 +836,6 @@ tasks:
         "position": {
           "x": 770,
           "y": 60
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "36":
-    id: "36"
-    taskid: 818dbfd1-a0db-4d54-8042-1dbb9e2811e8
-    type: regular
-    task:
-      id: 818dbfd1-a0db-4d54-8042-1dbb9e2811e8
-      version: -1
-      name: Waiting for manual remediation
-      description: |
-        Containment and Eradication:
-
-        1. Identify all affected systems and user accounts that were involved in the incident.
-        2. Disable or suspend compromised accounts and reset passwords where necessary.
-        3. Thoroughly investigate the extent of the compromise across the network.
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "22"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1110,
-          "y": 1690
         }
       }
     note: false
