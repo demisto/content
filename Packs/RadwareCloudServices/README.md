@@ -20,7 +20,8 @@ See this[doc](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSI
    - Access Key
    - Secret Key
    - Prefix (optional)
-3. Select the application to which to export all Access logs   (go to the Advanced Tab and enable Access log).
+3. Click the **Advanced** tab and enable **Access log**.
+4. Select the application to which to export all Access logs.
 
 For more information refer to the official Radware [documentation](https://support.radware.com/).
 
