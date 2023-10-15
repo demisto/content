@@ -28,6 +28,9 @@ class Client(BaseClient):
         :return JSON response from /api/app/info endpoint
         :rtype Dict[str, Any]
         '''
+        profile_id = self._http_request(
+            method='GET',
+            url_suffix=f'/api/public/acquisitions/profiles?filter[name]={profile}&filter[organizationIds]={organization_id}')['result']['entities'][0]['_id']
 
         payload: Dict[str, Any] = {
             "caseId": case_id,
@@ -38,7 +41,7 @@ class Client(BaseClient):
             "taskConfig": {
                 "choice": "use-policy"
             },
-            "acquisitionProfileId": profile,
+            "acquisitionProfileId": profile_id,
             "filter": {
                 "name": hostname,
                 "organizationIds": [organization_id]
@@ -99,7 +102,7 @@ def air_acquire_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     hostname = args.get('hostname', '')
     profile = args.get('profile', '')
     case_id = args.get('case_id', '')
-    organization_id = int(args.get('organization_id', ''))
+    organization_id = arg_to_number(args.get('organization_id', ''))
 
     result: Dict[str, Any] = client.air_acquire(hostname, profile, case_id, organization_id)
     readable_output = tableToMarkdown('Binalyze AIR Isolate Results', result,
@@ -124,7 +127,7 @@ def air_isolate_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     ''' Command handler isolate '''
 
     hostname = args.get('hostname', '')
-    organization_id = int(args.get('organization_id', ''))
+    organization_id = arg_to_number(args.get('organization_id', ''))
     isolation = args.get('isolation', '')
 
     result: Dict[str, Any] = client.air_isolate(hostname, organization_id, isolation)
