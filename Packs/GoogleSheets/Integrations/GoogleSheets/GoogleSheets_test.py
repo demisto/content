@@ -52,7 +52,7 @@ def test_make_markdown_matrix():
 
 
 def test_make_markdown_matrix_with_none_value():
-    '''
+    """
     Given:
          - The sheet with values of none after they have been processed
 
@@ -61,10 +61,17 @@ def test_make_markdown_matrix_with_none_value():
 
     Then:
         - return a Markdown table with the headers of the sheets and the data inside them
-    '''
-    path = Path("test_data/helper_functions/test_make_markdown_matrix")
-    result = (path / "result_with_none_value.md").read_text()
-    assert GoogleSheets.make_markdown_matrix(util_load_json(path / 'sheets_with_none_value.json')) == result
+    """
+    assert (
+        GoogleSheets.make_markdown_matrix(
+            util_load_json(
+                "test_data/helper_functions/test_make_markdown_matrix/sheets_with_none_value.json"
+            )
+        )
+        == Path(
+            "test_data/helper_functions/test_make_markdown_matrix/result_with_none_value.md"
+        ).read_text()
+    )
 
 
 def test_prepare_result_with_echo(mocker):
