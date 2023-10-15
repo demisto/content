@@ -420,7 +420,7 @@ slack-notify-nightly-build:
       fi
     - cp "$ARTIFACTS_FOLDER/filter_file.txt" "./artifacts/filter_file.txt"
     - section_end "Are there tests to run?"
-    - echo "TEST_XDR_ENV = $TEST_XDR_ENV, BUCKET_UPLOAD = $BUCKET_UPLOAD, $BUCKET_UPLOAD == null"
+
     - !reference [.lock-machine]
     - !reference [.uninstall-packs-and-reset-bucket-cloud]
 
@@ -470,6 +470,11 @@ xsiam_server_ga:
     - .test_content_on_cloud_server_instances_base
   rules:
     - !reference [.filter-non-nightly-docker-updates-rule, rules]
+    - if: $TEST_XDR_ENV && $BUCKET_UPLOAD == null
+      when: always
+      variables:
+        CLOUD_MACHINES_TYPE: "testing"
+        GCS_LOCKS_PATH: "content-locks/locks-xsiam-ga-testing"
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
     - if: '$NIGHTLY'
       when: always
@@ -477,11 +482,6 @@ xsiam_server_ga:
         CLOUD_MACHINES_TYPE: "nightly"
         CLOUD_MACHINES_COUNT: 1
         GCS_LOCKS_PATH: "content-locks/locks-xsiam-ga-nightly"
-    - if: '$MICHAL'
-      when: always
-      variables:
-        CLOUD_MACHINES_TYPE: "testing"
-        GCS_LOCKS_PATH: "content-locks/locks-xsiam-ga-testing"
   variables:
     CLOUD_MACHINES_TYPE: "build"
     CLOUD_MACHINES_COUNT: 1
@@ -526,13 +526,13 @@ xsoar_ng_server_ga:
     - .test_content_on_cloud_server_instances_base
   rules:
     - !reference [.filter-non-nightly-docker-updates-rule, rules]
-    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
-      when: always
-    - if: '$MICHAL'
+    - if: $TEST_XDR_ENV && $BUCKET_UPLOAD == null
       when: always
       variables:
         CLOUD_MACHINES_TYPE: "testing"
         GCS_LOCKS_PATH: "content-locks/locks-xsoar-ng-testing"
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
+      when: always
   variables:
     CLOUD_MACHINES_TYPE: "build"
     CLOUD_MACHINES_COUNT: 1
