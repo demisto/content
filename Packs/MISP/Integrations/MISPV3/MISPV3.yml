@@ -18,7 +18,7 @@ configuration:
   defaultvalue: "true"
   type: 8
   required: false
-  additionalinfo: This is to enable checking of the boolean flag to_ids. The flag
+  additionalinfo: This is to enable checking the boolean flag to_ids. The flag
     allows you to indicate if an attribute should be actionable or not.
 - display: ORG names to use for reputation checks
   name: allowed_orgs
