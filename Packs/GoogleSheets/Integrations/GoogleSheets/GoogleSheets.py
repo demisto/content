@@ -205,7 +205,10 @@ def make_markdown_matrix(sheets: list) -> str:
                 markdown += '|'
                 values = row.get('values')
                 for value in values:
-                    markdown += value + ' |'
+                    if not value:
+                        markdown += "" + ' |'
+                    else:
+                        markdown += value + ' |'
                 markdown += '\n'
     return markdown
 
