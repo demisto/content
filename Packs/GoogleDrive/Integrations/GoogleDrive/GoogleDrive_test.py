@@ -1051,7 +1051,7 @@ class TestFilePermissionMethods:
             '| test_id | drive#file | application/octet-stream | TEST COPY |\n'
         )
 
-    def test_file_copy_command(self, mocker, gsuite_client):
+    def test_file_copy_command_error(self, mocker, gsuite_client):
         """
         Given:
         - A request to copy a Drive file with an error.
