@@ -4,8 +4,6 @@ import json
 from CommonServerPython import *
 from typing import Dict, Any
 
-MOCK_URL = 'https://nonexistent-domain.com'
-
 
 def util_load_json(path):
     with io.open(path, mode='r', encoding='utf-8') as f:
@@ -81,7 +79,7 @@ def test_air_acquire_command(requests_mock: Any) -> None:
 
     args: Dict[str, Any] = {
         'hostname': 'endpointhostname',
-        'profile': 'quick',
+        'profile': "profile_name",
         'case_id': 'case_id will be here',
         'organization_id': 0
     }
@@ -95,11 +93,14 @@ def test_air_acquire_command(requests_mock: Any) -> None:
     mock_response = util_load_json('test_data/test_acquire_success.json')
 
     client: Client = Client(
-        base_url=MOCK_URL,
+        base_url='https://nonexistent-domain.com',
         verify=False,
         headers=headers
     )
-
+    mock_get_response = util_load_json('test_data/profile_id.json')
+    requests_mock.get('https://nonexistent-domain.com/api/public/acquisitions/profiles?'
+                      'filter[name]=profile_name&filter[organizationIds]=0',
+                      json=mock_get_response)
     requests_mock.post('https://nonexistent-domain.com/api/public/acquisitions/acquire', json=mock_response)
 
     mocked_command_result: CommandResults = air_acquire_command(client, args)
@@ -133,7 +134,7 @@ def test_air_isolate_command(requests_mock: Any) -> None:
     mock_response = util_load_json('test_data/test_isolate_success.json')
 
     client: Client = Client(
-        base_url=MOCK_URL,
+        base_url='https://nonexistent-domain.com',
         verify=False,
         headers=headers
     )
