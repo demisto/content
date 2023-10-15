@@ -4,7 +4,7 @@ commonfields:
 name: HashiCorp Vault
 display: HashiCorp Vault
 category: Authentication & Identity Management
-description: Manage Secrets and Protect Sensitive Data through HashiCorp Vault
+description: Manage Secrets and Protect Sensitive Data through HashiCorp Vault.
 configuration:
 - display: HashiCorp server URL (e.g., https://192.168.0.1:8200)
   name: server
@@ -221,14 +221,14 @@ script:
       description: Specifies if the secrets engine is a local mount only. Local mounts are not replicated, nor (if a secondary) removed by replication. Supported only in Vault Enterprise.
     - name: seal_wrap
       description: Enable seal wrapping for the mount. Supported only in Vault Enterprise.
-    description: Enables a new secrets engine at the specified path
+    description: Enables a new secrets engine at the specified path.
   - name: hashicorp-list-policies
     arguments: []
     outputs:
     - contextPath: HashiCorp.Policy.Name
       description: Policy name.
       type: string
-    description: Lists all configured policies
+    description: Lists all configured policies.
   - name: hashicorp-get-policy
     arguments:
     - name: name
@@ -243,7 +243,7 @@ script:
       type: string
     - contextPath: HashiCorp.Policy.Rule.Capabilities
       description: Policy rule capabilities.
-    description: Get information for a policy
+    description: Get information for a policy.
   - name: hashicorp-seal-vault
     arguments: []
     description: If you suspect your data has been compromised, you can seal your vault to prevent access to your secrets.
@@ -338,7 +338,7 @@ script:
       description: Authentication lease duration in seconds, 0 if indefinitely.
       type: number
     description: Creates a new authentication token.
-  dockerimage: demisto/hashicorp:1.0.0.72874
+  dockerimage: demisto/vendors-sdk:1.0.0.74116
 tests:
 - hashicorp_test
 fromversion: 5.0.0

@@ -71,6 +71,8 @@ run-unittests-and-lint:
       when: never
     - if: '$SECURITY_SCANS == "true"'
       when: never
+    - if: '$BUILD_MACHINES_CLEANUP == "true"'
+      when: never
     - if: '$FORCE_BUCKET_UPLOAD == "true"'
       when: never
     - if: '$DEMISTO_TEST_NATIVE_CANDIDATE == "true"'
@@ -120,6 +122,7 @@ validate-content-conf:
   script:
     - !reference [.download-demisto-conf]
     - !reference [.create-release-notes-and-common-docs]
+    - !reference [.secrets-fetch]
     - section_start "Create or update content graph" --collapsed
 
     - echo "Updating the content graph"
@@ -152,7 +155,7 @@ validate-content-conf:
       then
         echo "Replace Cortex XSOAR for non-xsoar build."
         pushd "$ARTIFACTS_FOLDER"
-        find content_packs -type f -not \( -path "*/ReleaseNotes/*" \) -exec sed -i -e 's/Cortex XSOAR/'"$PRODUCTNAME"'/gI' {} \;
+        find content_packs -type f -not \( -path "*/ReleaseNotes/*" \) -exec sed -i -e 's/Cortex XSOAR/'"$PRODUCT_NAME"'/gI' {} \;
         pushd content_packs; zip -r ../content_packs.zip * 1> /dev/null; popd
         rm -rf content_packs
         popd
@@ -207,7 +210,7 @@ mpv2-prepare-testing-bucket:
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_MPV2}"
     MARKETPLACE_VERSION: "marketplacev2"
     MARKETPLACE_BUCKET: "$GCS_MARKET_V2_BUCKET"
-    PRODUCTNAME: "Cortex XSIAM"
+    PRODUCT_NAME: "Cortex XSIAM"
   extends:
     - .generic-prepare-testing-bucket
 
@@ -215,7 +218,7 @@ xpanse-prepare-testing-bucket:
   variables:
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XPANSE}"
     MARKETPLACE_VERSION: "xpanse"
-    PRODUCTNAME: "Cortex XPANSE"
+    PRODUCT_NAME: "Cortex XPANSE"
     MARKETPLACE_BUCKET: "$GCS_MARKET_XPANSE_BUCKET"
   extends:
     - .generic-prepare-testing-bucket
@@ -246,6 +249,7 @@ xpanse-prepare-testing-bucket:
       fi
     - section_end "Check if should run Server Master"
     - !reference [.download-demisto-conf]
+    - !reference [.secrets-fetch]
     - export TEMP=$(cat $ARTIFACTS_FOLDER/filter_envs.json | jq ".\"$INSTANCE_ROLE\"")
     # If instance was not created
     - |
@@ -268,7 +272,7 @@ xpanse-prepare-testing-bucket:
 
     - section_end "Copy env results to artifacts folder"
     - section_start "Install Packs and run Test-Module"
-    - ./Tests/scripts/install_content_and_test_integrations.sh "$INSTANCE_ROLE" "$SERVER_TYPE"|| EXIT_CODE=$?
+    - ./Tests/scripts/install_content_and_test_integrations.sh "$INSTANCE_ROLE" "$SERVER_TYPE" || EXIT_CODE=$?
     - cp -f $ARTIFACTS_FOLDER/conf.json Tests/conf.json
     - section_end "Install Packs and run Test-Module"
     - section_start "Wait Until Server Ready"
@@ -291,15 +295,22 @@ xpanse-prepare-testing-bucket:
         cp ./Tests/test_playbooks_report.json $ARTIFACTS_FOLDER/test_playbooks_report.json
       fi
     - section_end "Run Tests"
-    - section_start "Destroy Instances"
-    - |
-      if [ -z "${TIME_TO_LIVE}" -a "$CI_PIPELINE_SOURCE" = "contrib" ]; then
-        TIME_TO_LIVE=300
-      fi
-      python3 ./Tests/scripts/destroy_instances.py --artifacts-dir $ARTIFACTS_FOLDER --env-file $ARTIFACTS_FOLDER/env_results.json --instance-role "$INSTANCE_ROLE" || EXIT_CODE=$?
-    - section_end "Destroy Instances"
     - job-done
     - exit $EXIT_CODE
+  after_script:
+    - !reference [.default-after-script]
+    - !reference [.install_ssh_keys]
+    - !reference [.ssh-config-setup]
+    - section_start "Destroy Instances"
+    - python3 ./Tests/scripts/destroy_instances.py --artifacts-dir $ARTIFACTS_FOLDER --env-file $ARTIFACTS_FOLDER/env_results.json --instance-role "$INSTANCE_ROLE"
+    - if [ $? -ne 0 ]; then
+    - python3 ./Tests/scripts/destroy_instances.py --artifacts-dir $ARTIFACTS_FOLDER --env-file $ARTIFACTS_FOLDER/env_results.json --instance-role "$INSTANCE_ROLE"
+    - destroy_instances_exit_code=$?
+    - |
+      if [ ${destroy_instances_exit_code} -ne 0 ]; then
+        echo "Failed to destroy instances, exit code: ${destroy_instances_exit_code}"
+      fi
+    - section_end "Destroy Instances"
 
 tests_xsoar_server:
   extends:
@@ -315,10 +326,10 @@ tests_xsoar_server:
   parallel:
     matrix:
       - INSTANCE_ROLE:
-        - "Server 6.8"
         - "Server 6.9"
         - "Server 6.10"
         - "Server 6.11"
+        - "Server 6.12"
         - "Server Master"
 
 fan-in-nightly:
@@ -364,9 +375,10 @@ jobs-done-check-on-push:
       optional: true
     - job: tests_xsoar_server
       optional: true
+    - job: xsoar_ng_server_ga
+      optional: true
   tags:
     - gke
-
 
 slack-notify-nightly-build:
   extends:
@@ -397,6 +409,7 @@ slack-notify-nightly-build:
   script:
     - EXIT_CODE=0
     - !reference [.download-demisto-conf]
+    - !reference [.secrets-fetch]
     - section_start "Are there tests to run?" --collapsed
     - |
       if ! [[ -s $ARTIFACTS_FOLDER/content_packs_to_install.txt || -s $ARTIFACTS_FOLDER/filter_file.txt ]]; then
@@ -405,21 +418,11 @@ slack-notify-nightly-build:
         job-done
         exit $EXIT_CODE
       fi
+    - cp "$ARTIFACTS_FOLDER/filter_file.txt" "./artifacts/filter_file.txt"
     - section_end "Are there tests to run?"
 
-    - section_start "Lock Machine" --collapsed
-    - cp "$ARTIFACTS_FOLDER/filter_file.txt" "./artifacts/filter_file.txt"
-    - echo "Authenticating GCP"
-    - gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" > $ARTIFACTS_FOLDER/logs/gauth.out 2>$ARTIFACTS_FOLDER/logs/gauth.err
-    - echo "Auth done successfully"
-    - ./Tests/scripts/wait_in_line_for_cloud_env.sh "$CLOUD_MACHINES_TYPE"
-    - source CloudEnvVariables
-    - echo "CLOUD chosen_machine_id is $CLOUD_CHOSEN_MACHINE_ID"
-    - section_end "Lock Machine"
-
-    - section_start "Clean Machine" --collapsed
-    - ./Tests/scripts/uninstall_packs_and_reset_bucket_cloud.sh || EXIT_CODE=$?
-    - section_end "Clean Machine"
+    - !reference [.lock-machine]
+    - !reference [.uninstall-packs-and-reset-bucket-cloud]
 
     - section_start "Install Packs and run Test-Module"
     - ./Tests/scripts/install_content_and_test_integrations.sh "$INSTANCE_ROLE" "$SERVER_TYPE" || EXIT_CODE=$?
@@ -442,22 +445,12 @@ slack-notify-nightly-build:
     - ./Tests/scripts/test_modeling_rules.sh || EXIT_CODE=$?
     - section_end "Test Modeling Rules"
 
-    - section_start "Cloud Machine information"
-    - ./Tests/scripts/print_cloud_machine_details.sh
-    - section_end "Cloud Machine information"
-
-    - section_start "After script" --collapsed
-    - |
-      if ! [ -z "$CLOUD_CHOSEN_MACHINE_ID" ]
-      then
-        echo "Job finished, removing lock file"
-        gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" > $ARTIFACTS_FOLDER/logs/gauth.out 2>$ARTIFACTS_FOLDER/logs/gauth.err
-        gsutil rm "gs://xsoar-ci-artifacts/$GCS_LOCKS_PATH/machines_locks/*-lock-$CI_JOB_ID"
-        echo "Finished removing lock file"
-      fi
-    - section_end "After script"
+    - !reference [.cloud-machine-information]
     - job-done
     - exit $EXIT_CODE
+  after_script:
+    - source .gitlab/helper_functions.sh
+    - !reference [.unlock-machine]
 
 #xsiam_server_dev:
 #  extends:
@@ -482,9 +475,11 @@ xsiam_server_ga:
       when: always
       variables:
         CLOUD_MACHINES_TYPE: "nightly"
+        CLOUD_MACHINES_COUNT: 1
         GCS_LOCKS_PATH: "content-locks/locks-xsiam-ga-nightly"
   variables:
     CLOUD_MACHINES_TYPE: "build"
+    CLOUD_MACHINES_COUNT: 1
     INSTANCE_ROLE: "XSIAM"
     GCS_QUEUE_FILE: "queue-ga"
     GCS_LOCKS_PATH: "content-locks/locks-xsiam-ga"
@@ -497,7 +492,7 @@ xsiam_server_ga:
     GCS_MACHINES_BUCKET: "marketplace-v2-dist-dev/upload-flow/builds-xsiam"
     SERVER_TYPE: "XSIAM"
     MARKETPLACE_NAME: "marketplacev2"
-    UNREMOVABLE_PACKS: "Base"
+    NON_REMOVABLE_PACKS: "Base"
     JIRA_COMPONENT: "Test Modeling Failure"
     JIRA_ISSUE_TYPE: "XSOAR Dev Bug"
     JIRA_ISSUE_UNRESOLVED_TRANSITION_NAME: "Backlog"
@@ -518,8 +513,8 @@ xsiam_server_ga:
         - ${ARTIFACTS_FOLDER}/modeling_rules_results.xml
     paths:
       - ${ARTIFACTS_FOLDER}/modeling_rules_results.xml
-      - /builds/xsoar/content/artifacts/*  # restoring the default artifacts path from the job default settings
-      - /builds/xsoar/content/pipeline_jobs_folder/*  # restoring the default artifacts path from the job default settings
+      - ${CI_PROJECT_DIR}/artifacts/*  # restoring the default artifacts path from the job default settings
+      - ${CI_PROJECT_DIR}/pipeline_jobs_folder/*  # restoring the default artifacts path from the job default settings
 
 xsoar_ng_server_ga:
   extends:
@@ -530,20 +525,21 @@ xsoar_ng_server_ga:
       when: always
   variables:
     CLOUD_MACHINES_TYPE: "build"
+    CLOUD_MACHINES_COUNT: 1
     INSTANCE_ROLE: "XSIAM"
     GCS_QUEUE_FILE: "queue-ga"
     GCS_LOCKS_PATH: "content-locks/locks-xsoar-ng"
     CLOUD_SERVERS_FILE: "xsoar_ng_servers_path"
     CLOUD_API_KEYS: $XSOAR_NG_API_KEYS
-    GCS_SOURCE_BUCKET: "${GCS_PRODUCTION_BUCKET}"
-    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
-    ENV_RESULTS_PATH: "${ARTIFACTS_FOLDER_XSOAR}/env_results.json"
-    GCS_MACHINES_BUCKET: "marketplace-dist-dev/upload-flow/builds-xsoar-ng"
+    GCS_SOURCE_BUCKET: "${GCS_PRODUCTION_XSOAR_SAAS_BUCKET}"
+    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR_SAAS}"
+    ENV_RESULTS_PATH: "${ARTIFACTS_FOLDER_XSOAR_SAAS}/env_results.json"
+    GCS_MACHINES_BUCKET: "marketplace-saas-dist-dev/upload-flow/builds-xsoar-ng"
     SERVER_TYPE: "XSIAM"
-    MARKETPLACE_NAME: "xsoar"
-    UNREMOVABLE_PACKS: "Base"
+    MARKETPLACE_NAME: "xsoar_saas"
+    NON_REMOVABLE_PACKS: "Base"
   needs:
-    - job: xsoar-prepare-testing-bucket
+    - job: xsoar-saas-prepare-testing-bucket
       optional: true
 
 
@@ -584,7 +580,7 @@ test-upload-flow:
     -   echo "Sleeping for 10 seconds before retrying"
     -   sleep 10
     - done
-    - echo "Successful triggered test upload - https://code.pan.run/xsoar/content/-/pipelines/$pipeline_id"  # disable-secrets-detection
+    - echo "Successful triggered test upload - ${CI_SERVER_URL}/${CI_PROJECT_NAMESPACE}/content/-/pipelines/$pipeline_id"  # disable-secrets-detection
     - section_end "Trigger Test Upload Flow On Testing Branch"
 
     - section_start "Wait For Upload To Finish"
@@ -603,7 +599,7 @@ test-upload-flow:
   extends:
     - .default-job-settings
   script:
-    - python3 ./Tests/Marketplace/print_testplaybook_summary.py --failed_tests_path $ARTIFACTS_FOLDER/failed_tests.txt --succeeded_tests_path $ARTIFACTS_FOLDER/succeeded_tests.txt
+    - python3 ./Tests/Marketplace/print_test_playbook_summary.py --failed_tests_path $ARTIFACTS_FOLDER/failed_tests.txt --succeeded_tests_path $ARTIFACTS_FOLDER/succeeded_tests.txt
 
 
 merge-dev-secrets:
@@ -622,7 +618,7 @@ merge-dev-secrets:
     - ./Tests/scripts/download_conf_repos.sh 2>&1 | tee --append "${ARTIFACTS_FOLDER}/logs/download_conf_repos.log"
     - section_end "Download content-test-conf and infra"
     - section_start "Merging and deleting dev secrets" --collapsed
-    - python3 ./Tests/scripts/merge_and_delete_dev_secrets.py -sa "$GSM_SERVICE_ACCOUNT" -gpidd "$GSM_PROJECT_ID_DEV" -gpidp "$GSM_PROJECT_ID" >> $ARTIFACTS_FOLDER/logs/merge_secrets.log
+    - python3 ./Tests/scripts/merge_and_delete_dev_secrets.py -sa "$GSM_SERVICE_ACCOUNT" --gsm_project_id_dev "$GSM_PROJECT_ID_DEV" --gsm_project_id_prod "$GSM_PROJECT_ID" >> $ARTIFACTS_FOLDER/logs/merge_secrets.log
     - section_end "Merging and deleting dev secrets"
   allow_failure: true
 

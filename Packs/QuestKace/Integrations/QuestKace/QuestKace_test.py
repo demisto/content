@@ -6,12 +6,12 @@ from QuestKace import Client, get_machines_list_command, \
     parse_response, fetch_incidents, create_body_from_args, shaping_by_fields, convert_specific_keys, \
     delete_ticket_command, demisto, get_fields_by_queue, shaping_fetch
 
-from test_module.RawData import MACHINES_LIST_COMMAND_RESPONSE, \
+from test_data.RawData import MACHINES_LIST_COMMAND_RESPONSE, \
     ASSETS_LIST_COMMAND_RESPONSE, QUEUES_LIST_COMMAND_RESPONSE, \
     TICKETS_LIST_COMMAND_RESPONSE, LIST_BEFORE_PARSE, FIRST_FETCH_INCIDENTS_RAW_RESPONSE, \
     SECOND_FETCH_INCIDENTS_RAW_RESPONSE, NO_RESULTS_FETCH_INCIDENTS_RAW_RESPONSE, DEMISTO_DT_RESPONSE, FIELDS_RESPONSE
 
-from test_module.ExpectedResult import MACHINES_LIST_COMMAND_EXPECTED, \
+from test_data.ExpectedResult import MACHINES_LIST_COMMAND_EXPECTED, \
     ASSETS_LIST_COMMAND_EXPECTED, QUEUES_LIST_COMMAND_EXPECTED, \
     TICKETS_LIST_COMMAND_EXPECTED, LIST_EXPECTED_AFTER_PARSE, DELETE_COMMAND_RESPONSE, FIELDS_EXPECTED
 

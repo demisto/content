@@ -300,6 +300,7 @@ def alert_data_to_xsoar_format(alert_data):
         'ID': properties.get('systemAlertId'),
         'Kind': alert_data.get('kind'),
         'Tactic': properties.get('tactics'),
+        'Technique': properties.get('additionalData', {}).get('MitreTechniques'),
         'DisplayName': properties.get('alertDisplayName'),
         'Description': properties.get('description'),
         'ConfidenceLevel': properties.get('confidenceLevel'),
@@ -699,7 +700,7 @@ def update_incident_request(client: AzureSentinelClient, incident_id: str, data:
         }
     remove_nulls_from_dictionary(properties)
     data = {
-        'etag': delta.get('etag') or data.get('etag'),
+        'etag': fetched_incident_data.get('etag') or delta.get('etag') or data.get('etag'),
         'properties': properties
     }
     demisto.debug(f'Updating incident with remote ID {incident_id} with data: {data}')
