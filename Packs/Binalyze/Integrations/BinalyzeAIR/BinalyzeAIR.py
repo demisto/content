@@ -4,8 +4,6 @@ from typing import Dict, Any
 
 import urllib3
 
-urllib3.disable_warnings()
-
 
 class Client(BaseClient):
 
@@ -15,7 +13,23 @@ class Client(BaseClient):
             url_suffix='/api/public/endpoints?filter[organizationIds]=0'
         )
 
-    def air_acquire(self, hostname: str, profile: str, case_id: str, organization_id: int) -> Dict[str, str]:
+    def get_profile_id(self, profile: str, organization_id: int) -> Dict[Any, str]:
+        '''Gets the profile ID based on the profile name and organization ID by making a GET request to the
+        '/api/public/acquisitions/profiles' endpoint.
+        Args:
+        profile (str): The name of the profile to query.
+        organization_id (int): The organization ID associated with the profile.
+        Returns:
+        str: The profile ID obtained from the API response.
+        Raises:
+        DemistoException: If there is an error making the HTTP request or processing the API response.
+        '''
+        return self._http_request(
+            method='GET',
+            url_suffix=f'/api/public/acquisitions/profiles?filter[name]='
+                       f'{profile}&filter[organizationIds]={organization_id}')['result']['entities'][0]['_id']
+
+    def air_acquire(self, hostname: str, profile: str, case_id: str, organization_id: int) -> Dict[Any, str]:
         ''' Makes a POST request /api/public/acquisitions/acquire endpoint to verify acquire evidence
 
         :param hostname str: endpoint hostname to start acquisition.
@@ -28,9 +42,6 @@ class Client(BaseClient):
         :return JSON response from /api/app/info endpoint
         :rtype Dict[str, Any]
         '''
-        profile_id = self._http_request(
-            method='GET',
-            url_suffix=f'/api/public/acquisitions/profiles?filter[name]={profile}&filter[organizationIds]={organization_id}')['result']['entities'][0]['_id']
 
         payload: Dict[str, Any] = {
             "caseId": case_id,
@@ -41,10 +52,10 @@ class Client(BaseClient):
             "taskConfig": {
                 "choice": "use-policy"
             },
-            "acquisitionProfileId": profile_id,
+            "acquisitionProfileId": self.get_profile_id(profile, organization_id),
             "filter": {
                 "name": hostname,
-                "organizationIds": [organization_id]
+                "organizationIds": [arg_to_number(organization_id)]
             }
         }
         return self._http_request(
@@ -53,7 +64,7 @@ class Client(BaseClient):
             json_data=payload
         )
 
-    def air_isolate(self, hostname: str, organization_id: int, isolation: str) -> Dict[str, str]:
+    def air_isolate(self, hostname: str, organization_id: int, isolation: str) -> Dict[Any, str]:
         ''' Makes a POST request /api/public/acquisitions/acquire endpoint to verify acquire evidence
         :param hostname str: endpoint hostname to start acquisition.
         :param isolation str: To isolate enable, to disable isolate use disable
@@ -68,7 +79,7 @@ class Client(BaseClient):
             "enabled": True,
             "filter": {
                 "name": hostname,
-                "organizationIds": [organization_id]
+                "organizationIds": [arg_to_number(organization_id)]
             }
         }
 
@@ -102,7 +113,7 @@ def air_acquire_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     hostname = args.get('hostname', '')
     profile = args.get('profile', '')
     case_id = args.get('case_id', '')
-    organization_id = arg_to_number(args.get('organization_id', ''))
+    organization_id = args.get('organization_id', '')
 
     result: Dict[Any, Any] = client.air_acquire(hostname, profile, case_id, organization_id)
     readable_output = tableToMarkdown('Binalyze AIR Isolate Results', result,
@@ -127,7 +138,7 @@ def air_isolate_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     ''' Command handler isolate '''
 
     hostname = args.get('hostname', '')
-    organization_id = arg_to_number(args.get('organization_id', ''))
+    organization_id = args.get('organization_id', '')
     isolation = args.get('isolation', '')
 
     result: Dict[Any, Any] = client.air_isolate(hostname, organization_id, isolation)
@@ -165,6 +176,7 @@ def main() -> None:  # pragma: no cover
         'Accept-Charset': 'UTF-8'
     }
     try:
+        urllib3.disable_warnings()
         demisto.debug(f'Command being called is {demisto.command()}')
         client: Client = Client(
             base_url=base_url,
