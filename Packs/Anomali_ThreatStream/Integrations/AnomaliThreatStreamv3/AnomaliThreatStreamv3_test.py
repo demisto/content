@@ -43,7 +43,8 @@ def mock_client():
         proxy=False,
         should_create_relationships=True,
         verify=False,
-        reliability='B - Usually reliable'
+        reliability='B - Usually reliable',
+        remote_api=False,
     )
 
 
@@ -225,7 +226,9 @@ class TestReputationCommands:
                         proxy=False,
                         should_create_relationships=should_create_relationships,
                         verify=False,
-                        reliability='B - Usually reliable')
+                        reliability='B - Usually reliable',
+                        remote_api=False,
+                        )
 
         # run
         intelligence_relationships, _ = get_intelligence(client, INDICATOR[0], FeedIndicatorType.URL)
@@ -1037,6 +1040,7 @@ class TestGetIndicators:
             proxy=False,
             reliability='B - Usually reliable',
             should_create_relationships=False,
+            remote_api=False,
         )
 
         results = get_indicators(client, limit='7000')
@@ -1070,6 +1074,7 @@ class TestGetIndicators:
             proxy=False,
             reliability='B - Usually reliable',
             should_create_relationships=False,
+            remote_api=False,
         )
 
         results = get_indicators(client, limit='7000')
