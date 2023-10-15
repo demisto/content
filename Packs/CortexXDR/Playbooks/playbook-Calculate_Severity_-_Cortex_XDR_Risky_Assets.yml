@@ -1,0 +1,676 @@
+id: Calculate Severity - Cortex XDR Risky Assets
+version: -1
+name: Calculate Severity - Cortex XDR Risky Assets
+description: Calculates a severity for the incident based on the involvement of risky users or risky hosts in the incident, as determined by the Cortex XDR ITDR module.
+tags:
+- XDR
+- ITDR
+- Severity
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 8d8663fb-4ab5-4361-81d5-dc1b7ab9892d
+    type: start
+    task:
+      id: 8d8663fb-4ab5-4361-81d5-dc1b7ab9892d
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "11"
+      - "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: f0e37a36-7a05-4657-8ff1-fe267d847e96
+    type: title
+    task:
+      id: f0e37a36-7a05-4657-8ff1-fe267d847e96
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 720afdc3-e823-421a-8762-960d88a19fc7
+    type: condition
+    task:
+      id: 720afdc3-e823-421a-8762-960d88a19fc7
+      version: -1
+      name: Is there a risky user?
+      description: Checks if there is a risky user, as outputted by the "xdr-list-risky-users" command.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "13"
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.XDRRiskyUsers
+                accessor: risk_level
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1150,
+          "y": 190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: a61889bf-859c-4033-8776-67b032d62d19
+    type: title
+    task:
+      id: a61889bf-859c-4033-8776-67b032d62d19
+      version: -1
+      name: No Risky Hosts
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1100,
+          "y": 630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: ed1d3519-1a67-454b-84d7-ef2f8d3e93cd
+    type: regular
+    task:
+      id: ed1d3519-1a67-454b-84d7-ef2f8d3e93cd
+      version: -1
+      name: Set user severity to high
+      description: Sets the severity associated with the Cortex XDR users to "High".
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      key:
+        simple: Severities.XDRUserSeverity
+      value:
+        simple: High
+    reputationcalc: 1
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1570,
+          "y": 615
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 31dbc88b-bf88-4b8d-8ef5-883ec5dad3c8
+    type: regular
+    task:
+      id: 31dbc88b-bf88-4b8d-8ef5-883ec5dad3c8
+      version: -1
+      name: Set user severity to medium
+      description: Sets the severity associated with the Cortex XDR users to "Medium".
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      key:
+        simple: Severities.XDRUserSeverity
+      value:
+        simple: Medium
+    reputationcalc: 1
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1150,
+          "y": 615
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: ebb3abbe-af39-4634-8b3b-a8a7626d38aa
+    type: regular
+    task:
+      id: ebb3abbe-af39-4634-8b3b-a8a7626d38aa
+      version: -1
+      name: Set user severity to low
+      description: Sets the severity associated with the Cortex XDR users to "Low".
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      key:
+        simple: Severities.XDRUserSeverity
+      value:
+        simple: Low
+    reputationcalc: 1
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 740,
+          "y": 615
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: c664dcd0-2767-4a2a-87df-78f20e41bc19
+    type: condition
+    task:
+      id: c664dcd0-2767-4a2a-87df-78f20e41bc19
+      version: -1
+      name: Is there a risky host?
+      description: Checks if there is a risky host, as outputted by the "xdr-list-risky-hosts" command.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.XDRRiskyHosts
+                accessor: risk_level
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -210,
+          "y": 190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 123cb178-a4d8-4bbf-8b37-e4fc5cdf9106
+    type: condition
+    task:
+      id: 123cb178-a4d8-4bbf-8b37-e4fc5cdf9106
+      version: -1
+      name: What is the highest risk level associated with the users?
+      description: Checks which user has the highest risk level, and sets a severity output accordingly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      High:
+      - "6"
+      Low:
+      - "8"
+      Medium:
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: High
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.XDRRiskyUsers
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: inputs.XDRRiskyUsers.risk_level
+                      iscontext: true
+                    right:
+                      value:
+                        simple: HIGH
+                    ignorecase: true
+            iscontext: true
+          right:
+            value: {}
+    - label: Medium
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.XDRRiskyUsers
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: inputs.XDRRiskyUsers.risk_level
+                      iscontext: true
+                    right:
+                      value:
+                        simple: MED
+                    ignorecase: true
+            iscontext: true
+    - label: Low
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.XDRRiskyUsers
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: inputs.XDRRiskyUsers.risk_level
+                      iscontext: true
+                    right:
+                      value:
+                        simple: LOW
+                    ignorecase: true
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1150,
+          "y": 405
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: fdcaa56e-e26c-41e4-82ba-5f160af496df
+    type: title
+    task:
+      id: fdcaa56e-e26c-41e4-82ba-5f160af496df
+      version: -1
+      name: No Risky Users
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2000,
+          "y": 630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 2130a3eb-dea1-467b-8334-bc6ab3b3a496
+    type: condition
+    task:
+      id: 2130a3eb-dea1-467b-8334-bc6ab3b3a496
+      version: -1
+      name: What is the highest risk level associated with the hosts?
+      description: Checks which host has the highest risk level, and sets a severity output accordingly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      High:
+      - "17"
+      Low:
+      - "15"
+      Medium:
+      - "16"
+    separatecontext: false
+    conditions:
+    - label: High
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.XDRRiskyHosts
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: inputs.XDRRiskyHosts.risk_level
+                      iscontext: true
+                    right:
+                      value:
+                        simple: HIGH
+                    ignorecase: true
+            iscontext: true
+          right:
+            value: {}
+    - label: Medium
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.XDRRiskyHosts
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: inputs.XDRRiskyHosts.risk_level
+                      iscontext: true
+                    right:
+                      value:
+                        simple: MED
+                    ignorecase: true
+            iscontext: true
+    - label: Low
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.XDRRiskyHosts
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: inputs.XDRRiskyHosts.risk_level
+                      iscontext: true
+                    right:
+                      value:
+                        simple: LOW
+                    ignorecase: true
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -210,
+          "y": 405
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: fd33a226-d4bc-4dba-8a2b-5cb4475cd38d
+    type: regular
+    task:
+      id: fd33a226-d4bc-4dba-8a2b-5cb4475cd38d
+      version: -1
+      name: Set host severity to low
+      description: Sets the severity associated with the Cortex XDR hosts to "Low".
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      key:
+        simple: Severities.XDRHostSeverity
+      value:
+        simple: Low
+    reputationcalc: 1
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 210,
+          "y": 615
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 5b3ed38c-c292-4d01-89a9-d788c8213403
+    type: regular
+    task:
+      id: 5b3ed38c-c292-4d01-89a9-d788c8213403
+      version: -1
+      name: Set host severity to medium
+      description: Sets the severity associated with the Cortex XDR hosts to "Medium".
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      key:
+        simple: Severities.XDRHostSeverity
+      value:
+        simple: Medium
+    reputationcalc: 1
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -210,
+          "y": 615
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 2d888db6-9550-4b5d-8ed4-734c37b7a164
+    type: regular
+    task:
+      id: 2d888db6-9550-4b5d-8ed4-734c37b7a164
+      version: -1
+      name: Set host severity to high
+      description: Sets the severity associated with the Cortex XDR hosts to "High".
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      key:
+        simple: Severities.XDRHostSeverity
+      value:
+        simple: High
+    reputationcalc: 1
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -640,
+          "y": 615
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 835,
+        "width": 3480,
+        "x": -1100,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: XDRRiskyUsers
+  value:
+    complex:
+      root: PaloAltoNetworksXDR
+      accessor: RiskyUser
+      transformers:
+      - operator: uniq
+  required: false
+  description: An object of risky users and their corresponding scores, as outputted by the "xdr-list-risky-users" command.
+  playbookInputQuery:
+- key: XDRRiskyHosts
+  value:
+    complex:
+      root: PaloAltoNetworksXDR
+      accessor: RiskyHost
+      transformers:
+      - operator: uniq
+  required: false
+  description: An object of risky hosts and their corresponding scores, as outputted by the "xdr-list-risky-hosts" command.
+  playbookInputQuery:
+outputs:
+- contextPath: Severities.XDRUserSeverity
+  description: The severity evaluated by the highest risk level associated with the Cortex XDR user. Can be Low, Medium or High.
+  type: unknown
+- contextPath: Severities.XDRHostSeverity
+  description: The severity evaluated by the highest risk level associated with the Cortex XDR host. Can be Low, Medium or High.
+  type: unknown
+tests:
+- no tests
+fromversion: 6.5.0
