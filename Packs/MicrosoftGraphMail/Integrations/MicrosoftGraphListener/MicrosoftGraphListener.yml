@@ -823,7 +823,7 @@ script:
       name: parent_folder_id
       required: true
     - defaultValue: '20'
-      description: The maximum number of mail folder lists to return. Default is 20.
+      description: The maximum number of mail folder lists to return. 
       name: limit
     - description: flag for rate limit retry.
       name: ran_once_flag
