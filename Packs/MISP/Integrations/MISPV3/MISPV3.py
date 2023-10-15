@@ -704,12 +704,12 @@ def get_indicator_results(value, dbot_type, malicious_tag_ids, suspicious_tag_id
         # to_ids flag represents whether the attribute is meant to be actionable
         # Actionable defined attributes can be used in automated processes as a pattern for detection
         misp_response = PYMISP.search(value=value, controller='attributes', include_context=True,
-                                  include_correlations=True, include_event_tags=True, enforce_warninglist=True,
-                                  include_decay_score=True, includeSightings=True, to_ids=TO_IDS, org=ALLOWED_ORGS)
+                                      include_correlations=True, include_event_tags=True, enforce_warninglist=True,
+                                      include_decay_score=True, includeSightings=True, to_ids=TO_IDS, org=ALLOWED_ORGS)
     else:
         misp_response = PYMISP.search(value=value, controller='attributes', include_context=True,
-                                  include_correlations=True, include_event_tags=True, enforce_warninglist=True,
-                                  include_decay_score=True, includeSightings=True, org=ALLOWED_ORGS)
+                                      include_correlations=True, include_event_tags=True, enforce_warninglist=True,
+                                      include_decay_score=True, includeSightings=True, org=ALLOWED_ORGS)
 
     indicator_type = INDICATOR_TYPE_TO_DBOT_SCORE[dbot_type]
     is_indicator_found = misp_response and misp_response.get('Attribute')
