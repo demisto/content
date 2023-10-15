@@ -11,7 +11,7 @@ A step-by-step configuration process is available at Cortex XSIAM Administrator 
 4. Save & Generate Token. The token is displayed in a blue box, which is blurred in the image below.
    * Click the Copy icon next to the Username and Password, and record them in a safe place, as you will need to provide them when you configure the Prisma Cloud Compute Collector for alerts integration. If you forget to record the key and close the window, you will need to generate a new key and repeat this process. When you are finished, click **Done** to close the window.
 5. Copy api url.
-   * In the Data Sources page for the Prisma Cloud Compute Collector that you created, select Copy api url, and record it somewhere safe. You will need to provide this API URL when you set the Incoming Webhook URL as part of the configuration in Prisma Cloud Compute.
+   * In the Data Sources page for the Prisma Cloud Compute Collector that you created, click **Copy api url**, and record it somewhere safe. You will need to provide this API URL when you set the Incoming Webhook URL as part of the configuration in Prisma Cloud Compute.
 
 **Note**:
 The URL format for the tenant is ```https://api-<tenant name>.xdr.us.paloaltonetworks.com/logs/v1/prisma```.
