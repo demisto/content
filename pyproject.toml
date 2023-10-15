@@ -514,12 +514,6 @@ max_line_length = 130
 [tool.pytest]
 junit_family = "xunit1"
 
-[tool.pytest.ini_options]
-filterwarnings = [
-    "ignore::DeprecationWarning",
-    "ignore::RemovedInMarshmallow4Warning",
-    "ignore::PytestUnknownMarkWarning",
-]
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
