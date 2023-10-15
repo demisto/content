@@ -93,13 +93,13 @@ configuration:
   section: Collect
   advanced: true
   required: false
-  defaultclassifier: 'null'
 - additionalinfo: Gather additional information about the threat model from remote APIs.
   defaultvalue: 'false'
   display: Remote API
   name: remote_api
   required: false
   type: 8
+defaultclassifier: 'null'
 description: Use Anomali ThreatStream to query and submit threats.
 display: Anomali ThreatStream v3
 name: Anomali ThreatStream v3
