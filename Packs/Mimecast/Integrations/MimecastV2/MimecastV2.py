@@ -719,7 +719,12 @@ DEFAULT_QUERY_KEYS = frozenset(('subject', 'displayfrom', 'displayto', 'received
 
 
 def query(args: dict):
-    query_xml = args.get('queryXml') or ''
+
+    if args.get('queryXml'):
+        query_xml = args.get('queryXml', '')
+    else:
+        query_xml = parse_query_args(args)
+
     additional_keys = sorted(set(parse_queried_fields(query_xml)).difference(DEFAULT_QUERY_KEYS))  # non-default keys in query)
     headers = ['Subject', 'Display From', 'Display To', 'Received Date', 'Size', 'Attachment Count', 'Status',
                'ID'] + additional_keys

@@ -610,7 +610,7 @@ script:
     description: Delete an attachment from a service record.
     name: sysaid-service-record-delete-file
   - arguments:
-    - description: The service record ID
+    - description: The service record ID.
       name: id
       required: true
     - description: List of fields to return, comma separated. If sent together with view parameter, returns both view’s fields and the requested fields.
@@ -638,19 +638,19 @@ script:
       contextPath: SysAid.ServiceRecord.notes
       description: 'The notes of the service record.'
   - arguments:
-    - description: The service record ID
+    - description: The service record ID.
       name: id
       required: true
-    - description: The note to be added to the Service Record
+    - description: The note to be added to the Service Record.
       name: note
       required: true
-    description: Add a note to a Service Record
+    description: Add a note to a Service Record.
     name: sysaid-service-record-add-note
   isfetch: true
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.13.72123
+  dockerimage: demisto/python3:3.10.13.73190
 fromversion: 6.0.0
 defaultclassifier: SysAid Classifier
 defaultmapperin: SysAid Mapper

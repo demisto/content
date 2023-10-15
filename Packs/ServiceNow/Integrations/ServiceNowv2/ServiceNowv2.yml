@@ -254,7 +254,7 @@ script:
       name: number
     - auto: PREDEFINED
       defaultValue: 'false'
-      description: If "true" will retrieve ticket attachments. Default is "false".
+      description: If "true" will retrieve ticket attachments.Note this option will always use the v1 API version, as it is not supported in v2. Default is "false".
       name: get_attachments
       predefined:
       - 'true'
@@ -397,7 +397,7 @@ script:
       name: caller_id
     - description: Category of the ticket.
       name: category
-    - description: UID Format
+    - description: UID Format.
       name: caused_by
     - auto: PREDEFINED
       description: Ticket's close code. Can be "Solved (Work Around)", "Solved (Permanently)", "Solved Remotely (Work Around)", "Solved Remotely (Permanently)", "Not Solved (Not Reproducible)", "Not Solved (Too Costly)", or "Closed/Resolved by Caller".
@@ -460,11 +460,11 @@ script:
       - '0'
     - description: Order number.
       name: order
-    - description: UID Format
+    - description: UID Format.
       name: parent
-    - description: UID Format
+    - description: UID Format.
       name: parent_incident
-    - description: UID Format
+    - description: UID Format.
       name: problem_id
     - description: The number of users included in this ticket.
       name: reassignment_count
@@ -474,7 +474,7 @@ script:
       name: resolved_at
     - description: ID of the user that resolved the ticket.
       name: resolved_by
-    - description: UID
+    - description: UID.
       name: rfc
     - description: 'SLA due date/time, in the format: YYYY-MM-DD HH:MM:SS.'
       name: sla_due
@@ -488,9 +488,9 @@ script:
       name: user_input
     - description: A list of watched tickets.
       name: watch_list
-    - description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - description: 'Format: YYYY-MM-DD HH:MM:SS.'
       name: work_end
-    - description: Format journal list
+    - description: Format journal list.
       name: work_notes
     - description: List work notes UIDs.
       name: work_notes_list
@@ -523,7 +523,7 @@ script:
       - normal
       - standard
       - emergency
-    - description: 'State of the ticket, for example: "Closed" or "7" or "7 - Closed"'
+    - description: 'State of the ticket, for example: "Closed" or "7" or "7 - Closed".'
       name: state
     - description: ' Date/time the ticket was opened, in the format: YYYY-MM-DD HH:MM:SS.'
       name: opened_at
@@ -531,7 +531,7 @@ script:
       name: caller
     - description: Ticket approval.
       name: approval
-    - description: 'Additional fields in the format: fieldname1=value;fieldname2=value;'
+    - description: 'Additional fields in the format: fieldname1=value;fieldname2=value;.'
       name: additional_fields
     - auto: PREDEFINED
       defaultValue: 'false'
@@ -735,13 +735,13 @@ script:
       name: resolved_at
     - description: Resolved by (UID format).
       name: resolved_by
-    - description: UID
+    - description: UID.
       name: rfc
     - description: 'SLA due date/time, in the format: YYYY-MM-DD HH:MM:SS.'
       name: sla_due
     - description: Ticket subcategory.
       name: subcategory
-    - description: Last updated by
+    - description: Last updated by.
       name: sys_updated_by
     - description: Date/time the system was last updated.
       name: sys_updated_on
@@ -749,7 +749,7 @@ script:
       name: user_input
     - description: A list of watched tickets.
       name: watch_list
-    - description: 'Format: YYYY-MM-DD HH:MM:SS'
+    - description: 'Format: YYYY-MM-DD HH:MM:SS.'
       name: work_end
     - description: Format journal list.
       name: work_notes
@@ -791,7 +791,7 @@ script:
       name: caller
     - description: Ticket approval.
       name: approval
-    - description: 'Additional fields in the format: fieldname1=value;fieldname2=value;'
+    - description: 'Additional fields in the format: fieldname1=value;fieldname2=value;.'
       name: additional_fields
     - auto: PREDEFINED
       defaultValue: 'false'
@@ -818,7 +818,7 @@ script:
     description: Updates the specified ticket.
     name: servicenow-update-ticket
   - arguments:
-    - description: Ticket System ID
+    - description: Ticket System ID.
       name: id
       required: true
     - auto: PREDEFINED
@@ -858,7 +858,7 @@ script:
     - description: Additional fields to present in the War Room entry and incident context. Can be nested (in the form of field1.field2).
       isArray: true
       name: additional_fields
-    - description: 'System parameters in the format: fieldname1=value;fieldname2=value. For example: "sysparm_display_value=true;sysparm_exclude_reference_link=True"'
+    - description: 'System parameters in the format: fieldname1=value;fieldname2=value. For example: "sysparm_display_value=true;sysparm_exclude_reference_link=True".'
       name: system_params
     description: Retrieves ticket information according to the supplied query.
     name: servicenow-query-tickets
@@ -1013,7 +1013,7 @@ script:
       description: A time-stamp field that indicates when a record was created.
       type: date
   - arguments:
-    - description: The name of the table to query
+    - description: The name of the table to query.
       name: table_name
       required: true
     - defaultValue: '10'
@@ -1027,7 +1027,7 @@ script:
     - defaultValue: '0'
       description: Starting record index from which to begin retrieving records.
       name: offset
-    - description: 'System parameters in the format: fieldname1=value;fieldname2=value. For example: "sysparm_display_value=true&sysparm_exclude_reference_link=True"'
+    - description: 'System parameters in the format: fieldname1=value;fieldname2=value. For example: "sysparm_display_value=true&sysparm_exclude_reference_link=True".'
       name: system_params
     description: Queries the specified table in ServiceNow.
     name: servicenow-query-table
@@ -1135,7 +1135,7 @@ script:
     description: Deletes a record in the specified ServiceNow table.
     name: servicenow-delete-record
   - arguments:
-    - description: Table name
+    - description: Table name.
       name: table_name
       required: true
     description: Lists API fields for the specified ServiceNow table.
@@ -1452,7 +1452,7 @@ script:
       description: Unique ID of the work item assigned to the queue.
       type: String
     - contextPath: ServiceNow.WorkItem.DocumentTable
-      description: Name of the table associated with the document
+      description: Name of the table associated with the document.
       type: String
     - contextPath: ServiceNow.WorkItem.DocumentID
       description: Unique ID of the document to be routed to the queue.
@@ -1541,28 +1541,28 @@ script:
       description: ServiceNow ticket close code.
       type: Unknown
   - arguments:
-    - description: ID of the change request
+    - description: ID of the change request.
       name: id
       required: true
-    description: gets the tasks associated to change request
+    description: gets the tasks associated to change request.
     name: servicenow-get-tasks-for-co
     outputs:
     - contextPath: ServiceNow.Tasks.ID
-      description: Task ID
+      description: Task ID.
       type: String
     - contextPath: ServiceNow.Tasks.Description
-      description: Description of task
+      description: Description of task.
       type: Unknown
     - contextPath: ServiceNow.Tasks.Name
-      description: Name of task
+      description: Name of task.
       type: Unknown
     - contextPath: ServiceNow.Tasks.State
-      description: state of task
+      description: state of task.
       type: Unknown
   - arguments:
     - auto: PREDEFINED
       defaultValue: '0'
-      description: action to be performed on path
+      description: action to be performed on path.
       isArray: true
       name: method
       predefined:
@@ -1571,34 +1571,34 @@ script:
       - PATCH
       - DELETE
       required: true
-    - description: the API path starting with forward slash (/)
+    - description: the API path starting with forward slash (/).
       name: path
       required: true
-    - description: data to send in body, can be json
+    - description: data to send in body, can be json.
       name: body
-    - description: json of headers to add
+    - description: json of headers to add.
       name: headers
     - auto: PREDEFINED
       defaultValue: 'false'
-      description: Service Catalog Call
+      description: Service Catalog Call.
       name: sc_api
       predefined:
       - 'true'
       - 'false'
     - auto: PREDEFINED
       defaultValue: 'false'
-      description: Change Request Call
+      description: Change Request Call.
       name: cr_api
       predefined:
       - 'true'
       - 'false'
-    description: Generic call to ServiceNow api
+    description: Generic call to ServiceNow api.
     name: servicenow-generic-api-call
     outputs:
     - contextPath: ServiceNow.Generic.Response
-      description: Generic response to servicenow api
+      description: Generic response to servicenow api.
       type: string
-  dockerimage: demisto/python3:3.10.12.68714
+  dockerimage: demisto/python3:3.10.13.74666
   isfetch: true
   ismappable: true
   isremotesyncin: true

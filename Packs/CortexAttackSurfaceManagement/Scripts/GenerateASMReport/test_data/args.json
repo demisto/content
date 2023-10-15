@@ -83,11 +83,12 @@
       "link": "https://fake.service-now.com/api/now/table/core_company/9asdfasdfasdfasdf5dbe",
       "type": "SNOW-CMDB-COMPANY"
     },
-    { "id": "vpc-asdfasdfaf", "link": "n/a", "type": "AWS-VPC" },
-    { "id": "sg-0asdfasdfadf", "link": "n/a", "type": "AWS-SG" },
-    { "id": "subnet-0asdfasdfasdf7", "link": "n/a", "type": "AWS-NET" },
-    { "id": "eni-0asdfasdfadf", "link": "n/a", "type": "AWS-NIC" },
-    { "id": "i-0dasdfasdfasdfaf", "link": "n/a", "type": "AWS-EC2" }
+    { "id": "vpc-asdfasdfaf", "link": "n/a", "type": "ASSET-VIRTUAL-NET" },
+    { "id": "sg-0asdfasdfadf", "link": "n/a", "type": "ASSET-SG" },
+    { "id": "subnet-0asdfasdfasdf7", "link": "n/a", "type": "ASSET-SUBNET-NAME" },
+    { "id": "eni-0asdfasdfadf", "link": "n/a", "type": "ASSET-NIC" },
+    { "id": "i-0dasdfasdfasdfaf", "link": "n/a", "type": "ASSET-ID" },
+    { "id": "AWS EC2", "link": "n/a", "type": "ASSET-TYPE" }
   ],
   "asm_tags": [
     {

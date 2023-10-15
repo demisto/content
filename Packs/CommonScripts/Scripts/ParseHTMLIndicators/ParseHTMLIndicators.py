@@ -13,7 +13,7 @@ def strip_html_tags(page):
     # Strip irrelevant tags
     for data in soup(['style', 'script', 'header', 'head', 'footer', 'aside', 'a']):
         data.decompose()
-    return(' '.join(soup.stripped_strings))
+    return (' '.join(soup.stripped_strings))
 
 
 def validate_domains(domains, unescape_domain, TLD_exclusion):
@@ -27,7 +27,7 @@ def validate_domains(domains, unescape_domain, TLD_exclusion):
         for tld in TLD_exclusion:
             if indicator.endswith(tld):
                 bad_domain_TLD.add(indicator)
-    return(bad_domain_TLD)
+    return (bad_domain_TLD)
 
 
 def main():

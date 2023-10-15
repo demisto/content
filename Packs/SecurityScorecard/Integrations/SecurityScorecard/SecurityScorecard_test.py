@@ -55,7 +55,6 @@ FROZEN_DATE = "2021-10-09T22:38:02.560Z"
     ]
 )
 def test_get_last_run(last_run, first_fetch):
-
     """
     Given:
         - The last run time of the fetch mechanism
@@ -100,7 +99,6 @@ incidents_to_import_test_inputs = [
 
 @pytest.mark.parametrize('alerts', incidents_to_import_test_inputs)
 def test_incidents_to_import(alerts: list):
-
     """
     Given:
         - List of alerts
@@ -144,7 +142,6 @@ client = SecurityScorecardClient(
 
 @pytest.mark.parametrize("args", [({}), ({"limit": "1"}), ({"limit": "60"})])
 def test_portfolios_list(mocker, args):
-
     """
     Given:
         - A limit
@@ -218,7 +215,6 @@ companies_list_test_inputs = [
 
 @pytest.mark.parametrize("args", companies_list_test_inputs)
 def test_portfolio_list_companies(mocker, args: Dict[str, Any]):
-
     """
     Given:
         - A portfolio ID
@@ -256,7 +252,6 @@ def test_portfolio_list_companies(mocker, args: Dict[str, Any]):
 
 
 def test_portfolio_list_companies_portfolio_not_found(mocker):
-
     """
     Given:
         - A portfolio ID
@@ -293,7 +288,6 @@ company_score_test_input = [
 
 @pytest.mark.parametrize("args", company_score_test_input)
 def test_get_company_score(mocker, args):
-
     """
     Given:
         - A domain
@@ -352,7 +346,6 @@ factor_score_test_inputs = [
 
 @pytest.mark.parametrize("args", factor_score_test_inputs)
 def test_get_company_factor_score(mocker, args):
-
     """
     Given:
         - A domain
@@ -391,7 +384,6 @@ company_historical_scores_test_inputs = [
 
 @pytest.mark.parametrize("args", company_historical_scores_test_inputs)
 def test_get_company_historical_scores(mocker, args):
-
     """
     Given:
         - A domain
@@ -438,7 +430,6 @@ company_historical_factor_scores_test_inputs = [
 
 @pytest.mark.parametrize("args", company_historical_factor_scores_test_inputs)
 def test_get_company_historical_factor_scores(mocker, args):
-
     """
     Given:
         - A domain
@@ -589,7 +580,6 @@ services_test_input = (
 
 @pytest.mark.parametrize("args", services_test_input)
 def test_get_domain_services(mocker, args):
-
     """
     Given:
         - A domain

@@ -4,3 +4,5 @@ ignore=IM111
 [file:Forcepoint.yml]
 ignore=MR108
 
+[known_words]
+NGFW

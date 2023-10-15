@@ -1,5 +1,7 @@
 import demisto_client
 import pytest
+
+from Tests.Marketplace.common import generic_request_with_retries
 import Tests.Marketplace.search_and_uninstall_pack as script
 from demisto_client.demisto_api.rest import ApiException
 from urllib3.exceptions import HTTPError
@@ -34,7 +36,7 @@ MOCK_PACKS_INSTALLATED_RESULT = """[
 MOCK_PACKS_ID_TO_UNINSTALL = ['HelloWorld', 'TestPack', 'Base']
 
 
-def mocked_generic_request_func(self, path: str, method, body=None, accept=None, _request_timeout=None):
+def mocked_generic_request_func(self, path: str, method, body=None, response_type=None, accept=None, _request_timeout=None):
     if path == '/contentpacks/marketplace/Base':
         return MOCK_BASE_SEARCH_RESULTS, 200, None
     elif path == '/contentpacks/metadata/installed':
@@ -153,16 +155,16 @@ def test_generic_retries_request(mocker, path, ret_value, num_of_retries):
         return True, 'success'
 
     success_handler_method = success_handler if ret_value else None
-    res, _ = script.generic_request_with_retries(client,
-                                                 retries_message='test',
-                                                 exception_message='test',
-                                                 prior_message='test',
-                                                 path=path,
-                                                 method='GET',
-                                                 request_timeout=0,
-                                                 sleep_interval=0,
-                                                 attempts_count=3,
-                                                 success_handler=success_handler_method)
+    res, _ = generic_request_with_retries(client,
+                                          retries_message='test',
+                                          exception_message='test',
+                                          prior_message='test',
+                                          path=path,
+                                          method='GET',
+                                          request_timeout=0,
+                                          sleep_interval=0,
+                                          attempts_count=3,
+                                          success_handler=success_handler_method)
 
     assert res == ret_value
     assert request_method.call_count == num_of_retries

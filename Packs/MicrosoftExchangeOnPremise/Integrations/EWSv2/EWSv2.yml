@@ -15,6 +15,7 @@ configuration:
   name: defaultTargetMailbox
   required: true
   type: 0
+  additionalinfo: Mailbox to run commands on and to fetch incidents from.
   section: Collect
 - defaultvalue: Inbox
   display: Name of the folder from which to fetch incidents (supports Exchange Folder ID and sub-folders e.g. Inbox/Phishing)
@@ -121,7 +122,7 @@ configuration:
   section: Connect
   advanced: true
   required: false
-description: Exchange Web Services and Office 365 (mail)
+description: Exchange Web Services and Office 365 (mail).
 display: EWS v2
 name: EWS v2
 script:
@@ -463,7 +464,7 @@ script:
       description: Out-of-office mailbox.
       type: Unknown
   - arguments:
-    - description: A CSV list of message IDs. Run the py-ews-delete-items command to retrieve the message IDs
+    - description: A CSV list of message IDs. Run the py-ews-delete-items command to retrieve the message IDs.
       name: message-ids
       required: true
     - defaultValue: Inbox
@@ -515,7 +516,7 @@ script:
       - 'no'
     - description: If empty, will use the default mailbox. If you specify a different mailbox, you might need impersonation rights to the mailbox.
       name: target-mailbox
-    description: 'Marks an item as junk. This is commonly used to block an email address. For more information, see the Microsoft documentation: https://msdn.microsoft.com/en-us/library/office/dn481311(v=exchg.150).aspx'
+    description: 'Marks an item as junk. This is commonly used to block an email address. For more information, see the Microsoft documentation: https://msdn.microsoft.com/en-us/library/office/dn481311(v=exchg.150).aspx.'
     name: ews-mark-item-as-junk
   - arguments:
     - description: The mailbox on which to apply the command.
@@ -539,7 +540,7 @@ script:
       description: Number of items in folder.
       type: Unknown
     - contextPath: EWS.Folders.unreadCount
-      description: Number of unread items in folder
+      description: Number of unread items in folder.
       type: number
     - contextPath: EWS.Folders.changeKey
       description: Folder change key.
@@ -932,7 +933,7 @@ script:
       description: The SSDeep hash of the file.
       type: String
     - contextPath: File.EntryID
-      description: EntryID of the file
+      description: EntryID of the file.
       type: String
     - contextPath: File.Info
       description: Information about the file.
@@ -974,7 +975,7 @@ script:
       isArray: true
     - name: raw_message
       description: Raw email message from MimeContent type.
-    - description: The email address from which to reply.
+    - description: The email address from which to send mail.
       name: from
     description: Sends an email using EWS.
     name: send-mail
@@ -996,7 +997,7 @@ script:
     - name: htmlBody
       description: HTML formatted content (body) of the email to be sent. This argument overrides the "body" argument.
     - name: renderBody
-      description: Indicates whether to render the email body
+      description: Indicates whether to render the email body.
       auto: PREDEFINED
       predefined:
       - 'true'
@@ -1010,6 +1011,8 @@ script:
     - name: attachCIDs
       description: A CSV list of CIDs to embed attachments within the email itself.
       isArray: true
+    - description: The email address from which to reply.
+      name: from
     description: Replies to an email using EWS.
     name: reply-mail
   dockerimage: demisto/py-ews:5.0.2.68133

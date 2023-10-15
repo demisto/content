@@ -1,6 +1,7 @@
 import os
 from pathlib import Path
-from typing import Any, Callable, Iterable, Optional
+from typing import Any
+from collections.abc import Callable, Iterable
 
 import pytest
 from demisto_sdk.commands.common.constants import MarketplaceVersions
@@ -25,7 +26,7 @@ Test Collection Unit-Test cases
 - `A` has a single pack with an integration and two test playbooks.
 - `B` has a single pack, with only test playbooks. (they should be collected)
 - `C` has a pack supported by both marketplaces, and one only for marketplacev2 and one only for XSOAR.
-- `D` has a single pack & test-playbook with from_version == to_version == 6.5, for testing the version range.
+- `D` has a single pack & test-playbook with from_version == to_version == 6.9, for testing the version range.
 - `E` has a single pack with a script tested using myTestPlaybook, and a Playbook used in myOtherTestPlaybook.
 - `F` has a single pack with a script set up as `no tests`, and a conf where myTestPlaybook is set as the script's test.
 - `G` has objects that trigger collection of the pack (without tests).
@@ -87,6 +88,7 @@ class MockerCases:
     empty = CollectTestsMocker(TEST_DATA / 'empty')
     empty_xsiam = CollectTestsMocker(TEST_DATA / 'empty_xsiam')
     A_xsoar = CollectTestsMocker(TEST_DATA / 'A_xsoar')
+    A_xsoar_saas = CollectTestsMocker(TEST_DATA / 'A_xsoar_saas')
     A_xsiam = CollectTestsMocker(TEST_DATA / 'A_xsiam')
     B_xsoar = CollectTestsMocker(TEST_DATA / 'B_xsoar')
     B_xsiam = CollectTestsMocker(TEST_DATA / 'B_xsiam')
@@ -115,6 +117,7 @@ class MockerCases:
     MR1 = CollectTestsMocker(TEST_DATA / 'MR1')
     RN_CONFIG = CollectTestsMocker(TEST_DATA / 'release_notes_config')
     PR1 = CollectTestsMocker(TEST_DATA / 'PR1')
+    Xsoar_marketplaces = CollectTestsMocker(TEST_DATA / 'Xsoar_marketplaces')
 
 
 ALWAYS_INSTALLED_PACKS = ('Base', 'DeveloperTools')
@@ -122,8 +125,8 @@ ALWAYS_INSTALLED_PACKS = ('Base', 'DeveloperTools')
 
 def _test(monkeypatch, case_mocker: CollectTestsMocker, collector_class: Callable,
           expected_tests: Iterable[str], expected_packs: Iterable[str], expected_packs_to_upload: Iterable[str],
-          expected_machines: Optional[Iterable[Machine]],
-          expected_modeling_rules_to_test: Optional[Iterable[str | Path]],
+          expected_machines: Iterable[Machine] | None,
+          expected_modeling_rules_to_test: Iterable[str | Path] | None,
           collector_class_args: tuple[Any, ...] = ()):
     """
     Instantiates the given collector class, calls collect with run_nightly and asserts
@@ -157,12 +160,12 @@ def _test(monkeypatch, case_mocker: CollectTestsMocker, collector_class: Callabl
         if collected.modeling_rules_to_test:
             description += f'modeling rules: {collected.modeling_rules_to_test}'
 
-        assert False, description
+        raise AssertionError(description)
 
     if collected is None:
         err_msg = (f'should have collected something: {expected_tests=}, {expected_packs=},'
                    f' {expected_machines=}, {expected_modeling_rules_to_test=}')
-        assert False, err_msg
+        raise AssertionError(err_msg)
 
     if expected_tests is not None:
         assert collected.tests == set(expected_tests)
@@ -192,67 +195,89 @@ NIGHTLY_EXPECTED_TESTS = {'myTestPlaybook', 'myOtherTestPlaybook'}
 NIGHTLY_EXPECTED_TESTS_XSIAM = NIGHTLY_EXPECTED_TESTS | {'Sanity Test - Playbook with Unmockable Whois Integration'}
 
 NIGHTLY_TESTS: tuple = (
-    (MockerCases.A_xsoar, XSOARNightlyTestCollector, NIGHTLY_EXPECTED_TESTS, ('myXSOAROnlyPack',), None, None),
-    (MockerCases.B_xsoar, XSOARNightlyTestCollector, NIGHTLY_EXPECTED_TESTS, ('myXSOAROnlyPack',), None, None),
+    (MockerCases.A_xsoar, XSOARNightlyTestCollector, NIGHTLY_EXPECTED_TESTS, ('myXSOAROnlyPack',), None, None, ()),
+
+    (MockerCases.A_xsoar, XSOARNightlyTestCollector, NIGHTLY_EXPECTED_TESTS, ('myXSOAROnlyPack',),
+     None, None, (MarketplaceVersions.XSOAR_SAAS,)),
+
+    (MockerCases.B_xsoar, XSOARNightlyTestCollector, NIGHTLY_EXPECTED_TESTS, ('myXSOAROnlyPack',), None, None, ()),
+
+    (MockerCases.B_xsoar, XSOARNightlyTestCollector, NIGHTLY_EXPECTED_TESTS, ('myXSOAROnlyPack',),
+     None, None, (MarketplaceVersions.XSOAR_SAAS,)),
+
     (MockerCases.A_xsiam, XSIAMNightlyTestCollector, NIGHTLY_EXPECTED_TESTS_XSIAM,
-     ('myXSIAMOnlyPack', 'Whois', 'CoreAlertFields'), None, None),
+     ('myXSIAMOnlyPack', 'Whois', 'CoreAlertFields'), None, None, ()),
+
     (MockerCases.B_xsiam, XSIAMNightlyTestCollector, NIGHTLY_EXPECTED_TESTS_XSIAM,
-     ('myXSIAMOnlyPack', 'Whois', 'CoreAlertFields'), None, None),
+     ('myXSIAMOnlyPack', 'Whois', 'CoreAlertFields'), None, None, ()),
 
     (MockerCases.C, XSOARNightlyTestCollector,
      {'myXSOAROnlyTestPlaybook', 'myTestPlaybook', 'Sanity Test - Playbook with Unmockable Whois Integration'},
-     {'bothMarketplacesPack', 'bothMarketplacesPackOnlyXSIAMIntegration', 'myXSOAROnlyPack', 'Whois'}, None, None),
+     {'bothMarketplacesPack', 'bothMarketplacesPackOnlyXSIAMIntegration', 'myXSOAROnlyPack', 'Whois'}, None, None, ()),
+
+    (MockerCases.C, XSOARNightlyTestCollector,
+     {'myXSOAROnlyTestPlaybook', 'myTestPlaybook', 'Sanity Test - Playbook with Unmockable Whois Integration'},
+     {'bothMarketplacesPack', 'bothMarketplacesPackOnlyXSIAMIntegration', 'myXSOAROnlyPack', 'Whois'},
+     None, None, (MarketplaceVersions.XSOAR_SAAS,)),
 
     (MockerCases.C, XSIAMNightlyTestCollector,
      {'myXSIAMOnlyTestPlaybook', 'Sanity Test - Playbook with Unmockable Whois Integration'},
-     {'myXSIAMOnlyPack', 'bothMarketplacesPackOnlyXSIAMIntegration', 'Whois', 'CoreAlertFields'}, None, None),
+     {'myXSIAMOnlyPack', 'bothMarketplacesPackOnlyXSIAMIntegration', 'Whois', 'CoreAlertFields'}, None, None, ()),
 
     (MockerCases.D, XSOARNightlyTestCollector, {'myTestPlaybook'}, {'myPack'},
-     (Machine.V6_8, Machine.MASTER), None),
+     (Machine.V6_9, Machine.MASTER), None, ()),
 
     (MockerCases.E, XSOARNightlyTestCollector,
      {'myTestPlaybook', 'myOtherTestPlaybook', 'Sanity Test - Playbook with Unmockable Whois Integration'},
-     {'myPack', 'Whois'}, None, None),
+     {'myPack', 'Whois'}, None, None, ()),
 
     (MockerCases.E, XSIAMNightlyTestCollector,
      {'Sanity Test - Playbook with Unmockable Whois Integration'},
      ALWAYS_INSTALLED_PACKS_MARKETPLACE_V2 + ('Whois',),
-     None, None),
+     None, None, ()),
 
     (MockerCases.F, XSOARNightlyTestCollector, {'myTestPlaybook', 'myOtherTestPlaybook'}, {'myPack'},
-     None, None),
+     None, None, ()),
 
-    (MockerCases.I_xsoar, XSOARNightlyTestCollector, {'myTestPlaybook'}, {'myXSOAROnlyPack'}, None, None),
+    (MockerCases.I_xsoar, XSOARNightlyTestCollector, {'myTestPlaybook'}, {'myXSOAROnlyPack'}, None, None, ()),
 
     # cases where nightly_packs doesn't hold all packs
     (MockerCases.limited_nightly_packs, XSOARNightlyTestCollector, {'myTestPlaybook'}, {'myPack', 'myOtherPack'},
-     None, None),
+     None, None, ()),
 
-    (MockerCases.non_api_test, XSOARNightlyTestCollector, {'myTestPlaybook'}, {'myPack'}, None, None),
+    (MockerCases.non_api_test, XSOARNightlyTestCollector, {'myTestPlaybook'}, {'myPack'}, None, None, ()),
 
     (MockerCases.script_non_api_test, XSOARNightlyTestCollector, {'myTestPlaybook'}, {'myPack', 'myOtherPack'},
-     None, None),
+     None, None, ()),
 
-    (MockerCases.skipped_nightly_test, XSOARNightlyTestCollector, {}, {'myPack'}, None, None),
+    (MockerCases.skipped_nightly_test, XSOARNightlyTestCollector, {}, {'myPack'}, None, None, ()),
 
     # modeling rule testdata file exists, expect modeling rule to be collected
     (MockerCases.MR1, XSIAMNightlyTestCollector, (), ('MyXSIAMPack', 'CoreAlertFields'), None,
-     (Path('MyXSIAMPack/ModelingRules/HarryRule'),)),
+     (Path('MyXSIAMPack/ModelingRules/HarryRule'),), ()),
 
     # only parsing rule component exists, expect the pack to be collected for installation
     (MockerCases.PR1, XSIAMNightlyTestCollector, (), ('MyXSIAMPack', 'CoreAlertFields'), None,
-     None),
+     None, ()),
+
+    # collect xsoar_saas only tests.
+    (MockerCases.A_xsoar_saas, XSOARNightlyTestCollector, NIGHTLY_EXPECTED_TESTS, ('myXSOARSaaSOnlyPack',),
+     None, None, (MarketplaceVersions.XSOAR_SAAS,)),
+
+    # Validate that when collecting test for xsoar_saas xsoarNightly does not collect xsoar_saas only packs.
+    (MockerCases.A_xsoar_saas, XSOARNightlyTestCollector, {}, (), None, None, ())
 )
 
 
 @pytest.mark.parametrize(
     'case_mocker,collector_class,expected_tests,'
-    'expected_packs,expected_machines,expected_modeling_rules_to_test', NIGHTLY_TESTS
+    'expected_packs,expected_machines,expected_modeling_rules_to_test,collector_class_args', NIGHTLY_TESTS
 )
 def test_nightly(monkeypatch, case_mocker: CollectTestsMocker, collector_class: Callable, expected_tests: set[str],
                  expected_packs: tuple[str],
-                 expected_machines: Optional[tuple[Machine]],
-                 expected_modeling_rules_to_test: Optional[Iterable[str | Path]]):
+                 expected_machines: tuple[Machine] | None,
+                 expected_modeling_rules_to_test: Iterable[str | Path] | None,
+                 collector_class_args: tuple[Any, ...]):
     """
     given:  a content folder
     when:   collecting tests with a NightlyTestCollector
@@ -261,11 +286,13 @@ def test_nightly(monkeypatch, case_mocker: CollectTestsMocker, collector_class: 
     _test(monkeypatch, case_mocker=case_mocker, collector_class=collector_class,
           expected_tests=expected_tests, expected_packs=expected_packs, expected_packs_to_upload={},
           expected_machines=expected_machines,
-          expected_modeling_rules_to_test=expected_modeling_rules_to_test)
+          expected_modeling_rules_to_test=expected_modeling_rules_to_test,
+          collector_class_args=collector_class_args)
 
 
 XSOAR_BRANCH_ARGS = ('master', MarketplaceVersions.XSOAR, None)
 XSIAM_BRANCH_ARGS = ('master', MarketplaceVersions.MarketplaceV2, None)
+XSOAR_SAAS_BRANCH_ARGS = ('master', MarketplaceVersions.XSOAR_SAAS, None)
 
 
 @pytest.mark.parametrize(
@@ -308,7 +335,7 @@ XSIAM_BRANCH_ARGS = ('master', MarketplaceVersions.MarketplaceV2, None)
          ('myXSOAROnlyPack',)),
 
         # (8) Case D: playbook changes, expect it and its pack to be collected
-        (MockerCases.D, ('myTestPlaybook',), ('myPack',), (Machine.V6_8, Machine.MASTER,), None, XSOAR_BRANCH_ARGS,
+        (MockerCases.D, ('myTestPlaybook',), ('myPack',), (Machine.V6_9, Machine.MASTER,), None, XSOAR_BRANCH_ARGS,
          ('Packs/myPack/TestPlaybooks/myTestPlaybook.yml',), (), ('myPack',)),
 
         # (9) Case D: playbook changes, expect it and its pack to be collected
@@ -443,20 +470,43 @@ XSIAM_BRANCH_ARGS = ('master', MarketplaceVersions.MarketplaceV2, None)
         # (37) see PR1 definition at the top of this file - only parsing rules yml file was changed
         (MockerCases.PR1, (), ('MyXSIAMPack', 'CoreAlertFields',), None, None, XSIAM_BRANCH_ARGS,
          ('Packs/MyXSIAMPack/ParsingRules/MyParsingRules/MyParsingRules.yml',), (), ('MyXSIAMPack',)),
+
+        # (38) Case A_xsoar_saas, yml file changes, expect the test playbook testing the integration to be collected
+        (MockerCases.A_xsoar_saas, ('myOtherTestPlaybook',), ('myXSOARSaaSOnlyPack',), None, None, XSOAR_SAAS_BRANCH_ARGS,
+            ('Packs/myXSOARSaaSOnlyPack/Integrations/myIntegration/myIntegration.yml',), (), ('myXSOARSaaSOnlyPack',)),
+
+        # (39) Case A, yml file changes, expect the test playbook testing the integration to be collected
+        (MockerCases.A_xsoar, ('myOtherTestPlaybook',), ('myXSOAROnlyPack',), None, None, XSOAR_SAAS_BRANCH_ARGS,
+            ('Packs/myXSOAROnlyPack/Integrations/myIntegration/myIntegration.yml',), (), ('myXSOAROnlyPack',)),
+
+        # (40) All kind of xsoar packs changed, running with xsoar_saas collector validate that only relevant packs are collected
+        (MockerCases.Xsoar_marketplaces, None, ('OnlyXsoarSaaS', 'BothXsoar',), None, None, XSOAR_SAAS_BRANCH_ARGS,
+            ('Packs/OnlyXsoarSaaS/Integrations/myOnlyXsoarSaaSIntegration/myOnlyXsoarSaaSIntegration.yml',
+             'Packs/BothXsoar/Integrations/myBothXsoarIntegration/myBothXsoarIntegration.yml',
+             'Packs/OnlyXsoarOnPrem/Integrations/myOnlyXsoarOnPremIntegration/myOnlyXsoarOnPremIntegration.yml'), (),
+         ('OnlyXsoarSaaS', 'BothXsoar',)),
+
+        # (41) All kind of xsoar packs changed, running with xsoar collector validate that only relevant packs are collected
+        (MockerCases.Xsoar_marketplaces, None, ('OnlyXsoarOnPrem', 'BothXsoar',), None, None, XSOAR_BRANCH_ARGS,
+            ('Packs/OnlyXsoarSaaS/Integrations/myOnlyXsoarSaaSIntegration/myOnlyXsoarSaaSIntegration.yml',
+             'Packs/BothXsoar/Integrations/myBothXsoarIntegration/myBothXsoarIntegration.yml',
+             'Packs/OnlyXsoarOnPrem/Integrations/myOnlyXsoarOnPremIntegration/myOnlyXsoarOnPremIntegration.yml'), (),
+         ('OnlyXsoarOnPrem', 'BothXsoar',))
+
     )
 )
 def test_branch(
         monkeypatch,
         mocker,
         case_mocker,
-        expected_tests: Optional[set[str]],
-        expected_packs: Optional[tuple[str, ...]],
-        expected_machines: Optional[tuple[Machine, ...]],
-        expected_modeling_rules_to_test: Optional[Iterable[str | Path]],
+        expected_tests: set[str] | None,
+        expected_packs: tuple[str, ...] | None,
+        expected_machines: tuple[Machine, ...] | None,
+        expected_modeling_rules_to_test: Iterable[str | Path] | None,
         collector_class_args: tuple[str, ...],
         mocked_changed_files: tuple[str, ...],
         mocked_packs_files_were_moved_from: tuple[str, ...],
-        expected_packs_to_upload: Optional[tuple[str, ...]],
+        expected_packs_to_upload: tuple[str, ...] | None,
 ):
     mocker.patch.object(BranchTestCollector, '_get_git_diff',
                         return_value=FilesToCollect(mocked_changed_files, mocked_packs_files_were_moved_from))
@@ -632,7 +682,7 @@ def test_number_of_file_types():
 
         - Removed type:    Decrease the number here.
     """
-    assert len(FileType) == 76
+    assert len(FileType) == 77
 
 
 @pytest.mark.parametrize(
@@ -650,14 +700,14 @@ def test_number_of_file_types():
              'myXSIAMOnlyPack', 'CoreAlertFields', 'bothMarketplacesPack',
              'bothMarketplacesPackOnlyXSIAMIntegration', 'Whois')),
     ), ids=('install_and_upload_all_xsoar', 'install_and_upload_all_xsiam'))
-def test_upload_all_packs(monkeypatch, case_mocker, expected_tests: Optional[set[str]],
-                          expected_packs: Optional[tuple[str, ...]],
-                          expected_machines: Optional[tuple[Machine, ...]],
-                          expected_modeling_rules_to_test: Optional[Iterable[str | Path]],
+def test_upload_all_packs(monkeypatch, case_mocker, expected_tests: set[str] | None,
+                          expected_packs: tuple[str, ...] | None,
+                          expected_machines: tuple[Machine, ...] | None,
+                          expected_modeling_rules_to_test: Iterable[str | Path] | None,
                           collector_class_args: tuple[str, ...],
                           mocked_changed_files: tuple[str, ...],
                           mocked_packs_files_were_moved_from: tuple[str, ...],
-                          expected_packs_to_upload: Optional[tuple[str, ...]],
+                          expected_packs_to_upload: tuple[str, ...] | None,
                           ):
     """
     given:  The override_all_packs flag.
@@ -668,4 +718,26 @@ def test_upload_all_packs(monkeypatch, case_mocker, expected_tests: Optional[set
           expected_tests=expected_tests, expected_packs=expected_packs,
           expected_packs_to_upload=expected_packs_to_upload,
           expected_machines=expected_machines, expected_modeling_rules_to_test=expected_modeling_rules_to_test,
-          collector_class_args=collector_class_args)
+          collector_class_args=collector_class_args)    # type: ignore
+
+
+@pytest.mark.parametrize('marketplaces, expected_results',
+                         [(['xsoar'], {MarketplaceVersions.XSOAR,
+                                       MarketplaceVersions.XSOAR_SAAS}),
+                          (['xsoar_saas'], {MarketplaceVersions.XSOAR_SAAS}),
+                          (['xsoar_on_prem'], {MarketplaceVersions.XSOAR_ON_PREM, MarketplaceVersions.XSOAR}),
+                          (['marketplacev2', 'xsoar'], {MarketplaceVersions.XSOAR,
+                           MarketplaceVersions.XSOAR_SAAS, MarketplaceVersions.MarketplaceV2})])
+def test_handle_xsoar_marketplces(marketplaces, expected_results):
+    from Tests.scripts.collect_tests.utils import DictBased
+    metadata_dict = {'marketplaces': marketplaces}
+    dict_based_obj = DictBased(metadata_dict)
+    assert dict_based_obj.marketplaces
+    assert set(dict_based_obj.marketplaces) == expected_results
+
+
+def test_handle_xsoar_marketplces_none():
+    from Tests.scripts.collect_tests.utils import DictBased
+    metadata_dict: dict = {'marketplaces': []}
+    dict_based_obj = DictBased(metadata_dict)
+    assert dict_based_obj.marketplaces is None

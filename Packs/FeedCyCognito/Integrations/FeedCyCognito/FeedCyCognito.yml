@@ -186,7 +186,7 @@ script:
       description: |-
         The type of asset to be retrieved.
 
-        Supported values: 'ip', 'domain', 'cert', 'webapp', 'iprange'
+        Supported values: 'ip', 'domain', 'cert', 'webapp', 'iprange'.
       name: asset_type
       predefined:
       - ip
@@ -199,7 +199,7 @@ script:
       description: |-
         The number of results to retrieve.
 
-        Maximum value is '1000'
+        Maximum value is '1000'.
       name: count
     - defaultValue: '0'
       description: Sets the starting index for the returned results. By specifying offset, you retrieve a subset of records starting with the offset value.
@@ -216,7 +216,7 @@ script:
       description: |-
         Specifies whether to sort the results in either ascending or descending order.
 
-        Supported values: 'asc', 'desc'
+        Supported values: 'asc', 'desc'.
       name: sort_order
       predefined:
       - asc
@@ -226,21 +226,21 @@ script:
 
         Supported formats: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ
 
-        For example: 01 Mar 2021, 01 Feb 2021 04:45:33, 2022-04-17T14:05:44Z
+        For example: 01 Mar 2021, 01 Feb 2021 04:45:33, 2022-04-17T14:05:44Z.
       name: first_seen
     - description: |-
         The date and time at which CyCognito most recently attributed the asset to the organization.
 
         Supported formats: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ
 
-        For example: 01 Mar 2021, 01 Feb 2021 04:45:33, 2022-04-17T14:05:44Z
+        For example: 01 Mar 2021, 01 Feb 2021 04:45:33, 2022-04-17T14:05:44Z.
       name: last_seen
     - description: Retrieves the assets attributed to a specific organization, subsidiary, or assignee. Supports comma-separated values.
       name: organizations
     - description: |-
         Filters the assets according to their hosting type. Supports comma-separated values.
 
-        Supported values: 'owned', 'cloud', 'undetermined'
+        Supported values: 'owned', 'cloud', 'undetermined'.
       name: hosting_type
     - description: |-
         Filters the assets according to security rating. Supports comma-separated values.
@@ -252,12 +252,12 @@ script:
         B = Strong
         C = Less vulnerable
         D = Vulnerable
-        F = Highly vulnerable
+        F = Highly vulnerable.
       name: security_grade
     - description: |-
         Filters the assets according to their status. Supports comma-separated values.
 
-        Supported values: 'changed', 'new', 'normal'
+        Supported values: 'changed', 'new', 'normal'.
       name: status
     - description: |-
         The geographical locations in which the asset is found. Supported values contain the three-letter ISO country code for the respective countries--e.g., IND, USA.
@@ -268,7 +268,7 @@ script:
       name: tags
     description: Fetches a given limit of indicators from the CyCognito platform and displays them in human-readable format in the war room.
     name: cycognito-get-indicators
-  dockerimage: demisto/pycountry:1.0.0.68979
+  dockerimage: demisto/pycountry:1.0.0.75004
   feed: true
   runonce: false
   script: '-'

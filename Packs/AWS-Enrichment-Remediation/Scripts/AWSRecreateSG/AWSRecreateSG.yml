@@ -15,6 +15,30 @@ args:
 - description: Public IP address of the EC2 instance.
   name: public_ip
   required: true
+- description: Name of an AWS role to assume (should be the same for all organizations).
+  name: assume_role
+- description: Region where EC2 instance is present.
+  name: region
+  auto: PREDEFINED
+  predefined:
+  - us-east-1
+  - us-east-2
+  - us-west-1
+  - us-west-2
+  - ca-central-1
+  - eu-west-1
+  - eu-central-1
+  - eu-west-2
+  - ap-northeast-1
+  - ap-northeast-2
+  - ap-southeast-1
+  - ap-southeast-2
+  - ap-south-1
+  - sa-east-1
+  - eu-north-1
+  - eu-west-3
+  - us-gov-east-1
+  - us-gov-west-1
 comment: Automation to determine which interface on an EC2 instance has an over-permissive security group, determine which security groups have over-permissive rules, and replace them with a copy of the security group that has only the over-permissive portion removed.  Over-permissive is defined as sensitive ports (SSH, RDP, etc) being exposed to the internet via IPv4.
 commonfields:
   id: AWSRecreateSG
@@ -27,7 +51,7 @@ dependson:
   - AWS - EC2|||aws-ec2-authorize-security-group-egress-rule
   - AWS - EC2|||aws-ec2-revoke-security-group-ingress-rule
   - AWS - EC2|||aws-ec2-revoke-security-group-egress-rule
-dockerimage: demisto/python3:3.10.10.49934
+dockerimage: demisto/python3:3.10.13.75921
 enabled: true
 name: AWSRecreateSG
 runas: DBotWeakRole
@@ -39,3 +63,5 @@ type: python
 fromversion: 6.5.0
 tests:
 - No tests (auto formatted)
+engineinfo: {}
+runonce: false

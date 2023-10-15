@@ -5,7 +5,7 @@ name: StixCreator
 script: ''
 type: python
 tags: []
-comment: Gets a list of indicators from the indicators argument, and generates a JSON file in STIX 2.0 format.
+comment: Gets a list of indicators from the indicators argument, and generates a JSON file in STIX 2.1 format.
 enabled: true
 args:
 - name: indicators
@@ -32,13 +32,13 @@ outputs:
   description: ' The type and value of indicators, for example: URL, IPv4, domain,email, and so on. '
   type: string
 - contextPath: StixExportedIndicators.score
-  description: The STIX impact score ("High", "Medium", "None", or "Not Specified")
+  description: The STIX impact score ("High", "Medium", "None", or "Not Specified").
   type: string
 - contextPath: StixExportedIndicators.modified
   description: The date/time that the indicator was last seen.
   type: date
 scripttarget: 0
-dockerimage: demisto/py3-tools:1.0.0.58222
+dockerimage: demisto/py3-tools:1.0.0.74403
 subtype: python3
 runas: DBotWeakRole
 tests:

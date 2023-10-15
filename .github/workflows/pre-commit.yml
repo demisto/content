@@ -13,7 +13,7 @@ jobs:
       uses: Gr1N/setup-poetry@v8
 
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         fetch-depth: 0
 
@@ -36,7 +36,7 @@ jobs:
     - name: run pre-commit
       run: |
         source .venv/bin/activate
-        npm install
+        npm install --no-fund --no-audit
         demisto-sdk pre-commit -g --unit-test --validate --no-secrets --show-diff-on-failure --verbose
 
     - name: Publish Test Report

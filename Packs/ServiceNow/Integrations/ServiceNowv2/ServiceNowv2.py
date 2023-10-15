@@ -82,6 +82,7 @@ TICKET_TYPE_TO_CLOSED_STATE = {INCIDENT: '7',
                                'change_request': '3',
                                'sc_task': '3',
                                'sc_request': '3',
+                               'sc_req_item': '3',
                                SIR_INCIDENT: '3'}
 
 
@@ -656,7 +657,7 @@ class Client(BaseClient):
 
     def send_request(self, path: str, method: str = 'GET', body: dict | None = None, params: dict | None = None,
                      headers: dict | None = None, file=None, sc_api: bool = False, cr_api: bool = False,
-                     no_record_found_res: dict = {'result': []}):
+                     get_attachments: bool = False, no_record_found_res: dict = {'result': []}):
         """Generic request to ServiceNow.
 
         Args:
@@ -668,6 +669,7 @@ class Client(BaseClient):
             file: request  file
             sc_api: Whether to send the request to the Service Catalog API
             cr_api: Whether to send the request to the Change Request REST API
+            get_attachments: if to get attachments or not.
 
         Returns:
             response from API
@@ -687,6 +689,10 @@ class Client(BaseClient):
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
             }
+        # The attachments table does not support v2 api version
+        if get_attachments:
+            url = url.replace('/v2', '/v1')
+
         max_retries = 3
         num_of_tries = 0
         while num_of_tries < max_retries:
@@ -831,7 +837,7 @@ class Client(BaseClient):
         query = f'table_sys_id={ticket_id}'
         if sys_created_on:
             query += f'^sys_created_on>{sys_created_on}'
-        return self.send_request('attachment', 'GET', params={'sysparm_query': query})
+        return self.send_request('attachment', 'GET', params={'sysparm_query': query}, get_attachments=True)
 
     def get_ticket_attachment_entries(self, ticket_id: str, sys_created_on: Optional[str] = None) -> list:
         """Get ticket attachments, including file attachments
@@ -2468,7 +2474,7 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) 
                     tags = argToList(tags)
 
             entries.append({
-                'Type': note.get('type'),
+                'Type': note.get('type', 1),
                 'Category': note.get('category'),
                 'Contents': f"Type: {note.get('element')}\nCreated By: {note.get('sys_created_by')}\n"
                             f"Created On: {note.get('sys_created_on')}\n{note.get('value')}",
@@ -2489,7 +2495,7 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) 
         if (ticket_state and ticket_state in server_close_custom_state) \
             or (ticket.get('closed_at') and close_incident == 'closed') \
                 or (ticket.get('resolved_at') and close_incident == 'resolved'):
-            demisto.debug(f'SNOW ticket changed state- should be closed in XSOAR: {ticket}')
+            demisto.debug(f'SNOW ticket changed state - should be closed in XSOAR: {ticket}')
             entries.append({
                 'Type': EntryType.NOTE,
                 'Contents': {
@@ -2580,8 +2586,13 @@ def update_remote_system_command(client: Client, args: Dict[str, Any], params: D
                 demisto.debug(f'Closing by custom state = {close_custom_state}')
                 is_custom_close = True
                 parsed_args.data['state'] = close_custom_state
+
         fields = get_ticket_fields(parsed_args.data, ticket_type=ticket_type)
         if closure_case:
+            # Convert the closing state to the right one if the ticket type is not incident in order to close the
+            # ticket/incident via XSOAR
+            if ticket_type in {'sc_task', 'sc_req_item', SIR_INCIDENT} and not is_custom_close:
+                fields['state'] = TICKET_TYPE_TO_CLOSED_STATE[ticket_type]
             fields = {key: val for key, val in fields.items() if key != 'closed_at' and key != 'resolved_at'}
 
         demisto.debug(f'Sending update request to server {ticket_type}, {ticket_id}, {fields}')
