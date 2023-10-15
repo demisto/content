@@ -1,7 +1,7 @@
 id: Cortex XDR - Possible External RDP Brute-Force
 version: -1
 name: Cortex XDR - Possible External RDP Brute-Force
-description: "This playbook investigates a “Possible External RDP Brute Force” XDR Alert by gathering user, IP, and hostname information, and investigating if the following suspicious elements exists:\n\n- \"IP Reputation\" - Dbot Score is 2-3 \n- \"Source geolocation\" - RDP Connection made from rare geo-location \n-  Related to campaign - IP address is related to campaign, based on TIM module\n-  Hunting results - the hunt for indicators related to the source IP and the related campaign returned results\n-  XDR Alert search - XDR Alerts that related to the same username and endpoint, and to the MITRE tactics that comes after \"Credential Access\", were found.\n\nSet verdict method:\n* Critical Element - The \"Critical Element\" input allows you to select a specific element that, if identified as suspicious,  the investigation's final verdict will be deemed a \"True Positive\".\n\n* Final Verdict -  Each suspicious element is being added to an array called \"Suspicious Elements\", which is used to count potential security threats. The array size will be compared to a final threshold. If the size is greater than or equal to the threshold, the investigation's final verdict will be deemed a \"True Positive\".\n\n* User Engagement - The \"UserEngagementThreshold\" input allows you to set the number of suspicious elements that trigger user engagement. When this threshold is met, an email will be sent to the user and their manager asking for authorization of RDP activity. If the RDP activity is not authorized by the user, the investigation's final verdict will be deemed a \"True Positive\".\n"
+description: "This playbook investigates a “Possible External RDP Brute Force” XDR Alert by gathering user, IP, and hostname information, and investigating if the following suspicious elements exists:\n\n- \"IP Reputation\" - Dbot Score is 2-3 \n- \"Source geolocation\" - RDP Connection made from rare geo-location \n-  Related to campaign - IP address is related to campaign, based on TIM module\n-  Hunting results - the hunt for indicators related to the source IP and the related campaign returned results\n-  XDR Alert search - XDR Alerts that related to the same username and endpoint, and to the MITRE tactics that comes after \"Credential Access\", were found.\n- Risky User - The user that was identified in the attack was given a medium or high score by XDR's ITDR module.\n- Risky Host - The destination host that was identified in the attack was given a medium or high score by XDR's ITDR module.\n\nSet verdict method:\n* Critical Element - The \"Critical Element\" input allows you to select a specific element that, if identified as suspicious,  the investigation's final verdict will be deemed a \"True Positive\".\n\n* Final Verdict -  Each suspicious element is being added to an array called \"Suspicious Elements\", which is used to count potential security threats. The array size will be compared to a final threshold. If the size is greater than or equal to the threshold, the investigation's final verdict will be deemed a \"True Positive\".\n\n* User Engagement - The \"UserEngagementThreshold\" input allows you to set the number of suspicious elements that trigger user engagement. When this threshold is met, an email will be sent to the user and their manager asking for authorization of RDP activity. If the RDP activity is not authorized by the user, the investigation's final verdict will be deemed a \"True Positive\".\n"
 starttaskid: "0"
 tasks:
   "0":
@@ -50,6 +50,7 @@ tasks:
       '#none#':
       - "3"
       - "33"
+      - "155"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -70,10 +71,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 36090104-40be-4b18-80e7-7628d06fa2c9
+    taskid: 3744688c-5987-4596-8d82-421cf1075421
     type: playbook
     task:
-      id: 36090104-40be-4b18-80e7-7628d06fa2c9
+      id: 3744688c-5987-4596-8d82-421cf1075421
       version: -1
       name: Account Enrichment - Generic v2.1
       description: |-
@@ -85,6 +86,7 @@ tasks:
         - PingOne
         - Okta
         - AWS IAM
+        - Cortex XDR (account enrichment and reputation)
 
         Also, the playbook supports the generic command 'iam-get-user' (implemented in IAM integrations. For more information, visit https://xsoar.pan.dev/docs/integrations/iam-integrations.
       playbookName: Account Enrichment - Generic v2.1
@@ -119,6 +121,12 @@ tasks:
               fields:
                 value:
                   simple: "2"
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: inputs.Username
+                iscontext: true
     separatecontext: true
     continueonerrortype: ""
     loop:
@@ -160,8 +168,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 2410
+          "x": 715,
+          "y": 2790
         }
       }
     note: false
@@ -247,8 +255,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 2865
+          "x": 715,
+          "y": 3245
         }
       }
     note: false
@@ -260,10 +268,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: e7ef23b2-5071-400e-82e8-90ceb59af047
+    taskid: 315de189-4712-4537-8331-748a9cb38520
     type: collection
     task:
-      id: e7ef23b2-5071-400e-82e8-90ceb59af047
+      id: 315de189-4712-4537-8331-748a9cb38520
       version: -1
       name: User Communication
       description: Ask the user via email if the RDP connection is authorized activity.
@@ -278,8 +286,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1155,
-          "y": 3040
+          "x": 1175,
+          "y": 3420
         }
       }
     note: false
@@ -308,7 +316,10 @@ tasks:
       body:
         simple: |-
           Hello,
-          Cortex XDR has detected a possible RDP Brute force attempt by the user ${inputs.Username} from the remote IP address ${inputs.ExternalIP}.
+          We wanted to let you know that Cortex XDR has flagged a potential issue related to your recent Remote Desktop Protocol (RDP) activity. Specifically, we detected a possible RDP brute force attempt by the user ${inputs.Username} from the remote IP address ${inputs.ExternalIP}.
+
+          This may happen due to various reasons, one of them being multiple login attempts by the user.
+
           Was this action performed by you and can be considered as authorized?
       methods:
       - email
@@ -386,8 +397,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 3390
+          "x": 715,
+          "y": 3770
         }
       }
     note: false
@@ -417,8 +428,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 160,
-          "y": 3600
+          "x": 180,
+          "y": 3980
         }
       }
     note: false
@@ -450,8 +461,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1155,
-          "y": 3600
+          "x": 1175,
+          "y": 3980
         }
       }
     note: false
@@ -486,8 +497,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -180,
-          "y": 5650
+          "x": 310,
+          "y": 6430
         }
       }
     note: false
@@ -514,8 +525,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 5970
+          "x": 1175,
+          "y": 6790
         }
       }
     note: false
@@ -655,8 +666,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1155,
-          "y": 3390
+          "x": 1175,
+          "y": 3770
         }
       }
     note: false
@@ -717,8 +728,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 1750
+          "x": 715,
+          "y": 2130
         }
       }
     note: false
@@ -770,8 +781,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 430,
-          "y": 1920
+          "x": 450,
+          "y": 2300
         }
       }
     note: false
@@ -823,8 +834,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 2700
+          "x": 715,
+          "y": 3080
         }
       }
     note: false
@@ -854,8 +865,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 1620
+          "x": 715,
+          "y": 2000
         }
       }
     note: false
@@ -879,17 +890,17 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "93"
-      - "94"
       - "110"
       - "116"
+      - "93"
+      - "94"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 685,
-          "y": 1300
+          "y": 1680
         }
       }
     note: false
@@ -901,10 +912,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "73":
     id: "73"
-    taskid: 98bca17a-cf76-456d-8d3e-016d974cbbc4
+    taskid: 46822941-ba45-4cc2-8914-ff084ec71d96
     type: condition
     task:
-      id: 98bca17a-cf76-456d-8d3e-016d974cbbc4
+      id: 46822941-ba45-4cc2-8914-ff084ec71d96
       version: -1
       name: Is the IP malicious?
       description: Check if the IP DbotScore is malicious.
@@ -920,16 +931,32 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: greaterThanOrEqual
+      - - operator: isNotEmpty
           left:
             value:
               complex:
                 root: DBotScore
-                accessor: Score
+                filters:
+                - - operator: greaterThanOrEqual
+                    left:
+                      value:
+                        simple: DBotScore.Score
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "3"
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: DBotScore.Type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: ip
+                    ignorecase: true
             iscontext: true
           right:
-            value:
-              simple: "3"
+            value: {}
     continueonerrortype: ""
     view: |-
       {
@@ -965,8 +992,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 230,
-          "y": 510
+          "x": 240,
+          "y": 640
         }
       }
     note: false
@@ -1024,8 +1051,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 160,
-          "y": 3900
+          "x": 180,
+          "y": 4280
         }
       }
     note: false
@@ -1055,8 +1082,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 230,
-          "y": 1160
+          "x": 250,
+          "y": 1470
         }
       }
     note: false
@@ -1088,8 +1115,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 160,
-          "y": 4710
+          "x": 350,
+          "y": 5120
         }
       }
     note: false
@@ -1113,7 +1140,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "136"
+      - "156"
       "Yes":
       - "102"
     separatecontext: false
@@ -1134,8 +1161,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 160,
-          "y": 4840
+          "x": 350,
+          "y": 5250
         }
       }
     note: false
@@ -1216,8 +1243,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 470,
-          "y": 1440
+          "x": 490,
+          "y": 1820
         }
       }
     note: false
@@ -1289,8 +1316,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1440
+          "x": 70,
+          "y": 1820
         }
       }
     note: false
@@ -1326,8 +1353,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 160,
-          "y": 3740
+          "x": 180,
+          "y": 4120
         }
       }
     note: false
@@ -1363,8 +1390,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1155,
-          "y": 3740
+          "x": 1175,
+          "y": 4120
         }
       }
     note: false
@@ -1407,8 +1434,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -60,
-          "y": 5010
+          "x": 100,
+          "y": 5780
         }
       }
     note: false
@@ -1438,8 +1465,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 160,
-          "y": 5825
+          "x": 650,
+          "y": 6605
         }
       }
     note: false
@@ -1543,8 +1570,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1330,
-          "y": 1440
+          "x": 1350,
+          "y": 1820
         }
       }
     note: false
@@ -1556,13 +1583,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "111":
     id: "111"
-    taskid: 807a9914-b953-4fcb-80a2-c073a311a22a
+    taskid: 070cf325-c3c1-4315-83e4-a124573437fa
     type: playbook
     task:
-      id: 807a9914-b953-4fcb-80a2-c073a311a22a
+      id: 070cf325-c3c1-4315-83e4-a124573437fa
       version: -1
       name: Cortex XDR - Possible External RDP Brute-Force - Set Verdict
-      description: "This playbook creating an array called \"Suspicious Elements\", which is used to count potential security threats. The following elements can be added to the array:\n\n- \"IP Reputation\" - Dbot Score is 2-3 \n- \"Source geolocation\" - Connection from unusual country \n-  Related to campaign - IP address related to campaign, based on TIM module\n-  Hunting results - hunt for indicators related to the source IP and the related campaign returned results\n-  XDR Alert search -XDR Alerts related to the same username and endpoint, and to the MITRE tactics that comes after \"Credential Access\"\n\nThe array will then be outputted and its size will be compared to a final threshold. If the size is greater than or equal to the threshold, the investigation's final verdict will be deemed a \"True Positive.\""
+      description: "This playbook creating an array called \"Suspicious Elements\", which is used to count potential security threats. The following elements can be added to the array:\n\n- \"IP Reputation\" - Dbot Score is 2-3 \n- \"Source geolocation\" - RDP Connection made from rare geo-location \n-  Related to campaign - IP address is related to campaign, based on TIM module\n-  Hunting results - the hunt for indicators related to the source IP and the related campaign returned results\n-  XDR Alert search - XDR Alerts that related to the same username and endpoint, and to the MITRE tactics that comes after \"Credential Access\", were found.\n\nThe array will then be outputted and its size will be compared to a final threshold. If the size is greater than or equal to the threshold, the investigation's final verdict will be deemed a \"True Positive.\""
       playbookName: Cortex XDR - Possible External RDP Brute-Force - Set Verdict
       type: playbook
       iscommand: false
@@ -1598,6 +1625,56 @@ tasks:
       UnusualGeoLocation:
         complex:
           root: PermanentCountry
+      XDRRiskyHost:
+        complex:
+          root: PaloAltoNetworksXDR.RiskyHost
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: PaloAltoNetworksXDR.RiskyHost.risk_level
+                iscontext: true
+              right:
+                value:
+                  simple: MED
+              ignorecase: true
+            - operator: isEqualString
+              left:
+                value:
+                  simple: PaloAltoNetworksXDR.RiskyHost.risk_level
+                iscontext: true
+              right:
+                value:
+                  simple: HIGH
+              ignorecase: true
+          accessor: id
+          transformers:
+          - operator: uniq
+      XDRRiskyUser:
+        complex:
+          root: PaloAltoNetworksXDR.RiskyUser
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: PaloAltoNetworksXDR.RiskyUser.risk_level
+                iscontext: true
+              right:
+                value:
+                  simple: MED
+              ignorecase: true
+            - operator: isEqualString
+              left:
+                value:
+                  simple: PaloAltoNetworksXDR.RiskyUser.risk_level
+                iscontext: true
+              right:
+                value:
+                  simple: HIGH
+              ignorecase: true
+          accessor: id
+          transformers:
+          - operator: uniq
     separatecontext: true
     continueonerrortype: ""
     loop:
@@ -1608,8 +1685,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 2540
+          "x": 715,
+          "y": 2920
         }
       }
     note: false
@@ -1670,8 +1747,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 430,
-          "y": 2080
+          "x": 450,
+          "y": 2460
         }
       }
     note: false
@@ -1707,8 +1784,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 430,
-          "y": 2240
+          "x": 450,
+          "y": 2620
         }
       }
     note: false
@@ -1774,8 +1851,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 895,
-          "y": 1440
+          "x": 915,
+          "y": 1820
         }
       }
     note: false
@@ -1805,8 +1882,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -350,
-          "y": 4080
+          "x": -330,
+          "y": 4460
         }
       }
     note: false
@@ -1818,10 +1895,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "136":
     id: "136"
-    taskid: 02f8ed1f-e54f-4cf4-8c5e-d37bf3bdb7f1
+    taskid: 50eab414-ad80-4a41-8fde-44ec91e080c6
     type: title
     task:
-      id: 02f8ed1f-e54f-4cf4-8c5e-d37bf3bdb7f1
+      id: 50eab414-ad80-4a41-8fde-44ec91e080c6
       version: -1
       name: Account Password Expire
       type: title
@@ -1836,8 +1913,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 160,
-          "y": 5350
+          "x": 650,
+          "y": 6130
         }
       }
     note: false
@@ -1875,8 +1952,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 160,
-          "y": 5480
+          "x": 650,
+          "y": 6260
         }
       }
     note: false
@@ -1910,8 +1987,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -60,
-          "y": 5170
+          "x": 100,
+          "y": 5960
         }
       }
     note: false
@@ -1947,8 +2024,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1155,
-          "y": 3210
+          "x": 1175,
+          "y": 3590
         }
       }
     note: false
@@ -2078,8 +2155,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 230,
-          "y": 650
+          "x": 240,
+          "y": 780
         }
       }
     note: false
@@ -2149,8 +2226,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -350,
-          "y": 4210
+          "x": -330,
+          "y": 4590
         }
       }
     note: false
@@ -2168,10 +2245,10 @@ tasks:
       id: dcd1d3e7-e9d4-4fe6-8bc3-4b34cade926d
       version: -1
       name: IP block executed?
+      description: ''
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#default#':
       - "82"
@@ -2196,8 +2273,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 10,
-          "y": 820
+          "x": 20,
+          "y": 950
         }
       }
     note: false
@@ -2215,10 +2292,10 @@ tasks:
       id: 6663c63c-2385-4491-8c16-c824eff03d1d
       version: -1
       name: User containment executed?
+      description: ''
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#default#':
       - "82"
@@ -2243,8 +2320,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 820
+          "x": 460,
+          "y": 950
         }
       }
     note: false
@@ -2278,8 +2355,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 980
+          "x": 460,
+          "y": 1110
         }
       }
     note: false
@@ -2313,8 +2390,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 10,
-          "y": 990
+          "x": 20,
+          "y": 1120
         }
       }
     note: false
@@ -2332,10 +2409,10 @@ tasks:
       id: eab0c096-8fcf-4b32-8f4c-a481621a23df
       version: -1
       name: IP block executed?
+      description: ''
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#default#':
       - "86"
@@ -2360,8 +2437,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -140,
-          "y": 4380
+          "x": -120,
+          "y": 4760
         }
       }
     note: false
@@ -2379,10 +2456,10 @@ tasks:
       id: 445ebaa4-d11c-4b27-8e85-f4fbee601ecf
       version: -1
       name: User containment executed?
+      description: ''
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#default#':
       - "86"
@@ -2407,8 +2484,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -550,
-          "y": 4380
+          "x": -530,
+          "y": 4760
         }
       }
     note: false
@@ -2442,8 +2519,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -140,
-          "y": 4540
+          "x": -120,
+          "y": 4920
         }
       }
     note: false
@@ -2477,8 +2554,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -550,
-          "y": 4540
+          "x": -530,
+          "y": 4920
         }
       }
     note: false
@@ -2496,10 +2573,10 @@ tasks:
       id: 67cc761d-26b2-438a-8bed-cfc1a6bfcec8
       version: -1
       name: Check IP Reputation
+      description: ''
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       0 or 1:
       - "151"
@@ -2700,10 +2777,10 @@ tasks:
       id: 4567bca9-5d88-4092-8ed0-a56ca2170cdc
       version: -1
       name: Early containment enabled?
+      description: ''
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#default#':
       - "72"
@@ -2727,8 +2804,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 230,
-          "y": 330
+          "x": 240,
+          "y": 400
         }
       }
     note: false
@@ -2771,6 +2848,154 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "155":
+    id: "155"
+    taskid: 37f5a28b-762b-4957-8865-cd83c24cb339
+    type: playbook
+    task:
+      id: 37f5a28b-762b-4957-8865-cd83c24cb339
+      version: -1
+      name: Endpoint Enrichment - Generic v2.1
+      description: |-
+        Enrich an endpoint by hostname using one or more integrations.
+        Supported integrations:
+        - Active Directory Query v2
+        - McAfee ePO v2
+        - VMware Carbon Black EDR v2
+        - Cylance Protect v2
+        - CrowdStrike Falcon
+        - ExtraHop Reveal(x)
+        - Cortex XDR (endpoint enrichment and reputation)
+        - Endpoint reputation using !endpoint command
+      playbookName: Endpoint Enrichment - Generic v2.1
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "154"
+    scriptarguments:
+      Hostname:
+        complex:
+          root: inputs.Hostname
+          transformers:
+          - operator: uniq
+      UseReputationCommand:
+        simple: "False"
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 260,
+          "y": -470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "156":
+    id: "156"
+    taskid: 2b9d34d6-408e-4a2b-8685-a2e2c6925b71
+    type: condition
+    task:
+      id: 2b9d34d6-408e-4a2b-8685-a2e2c6925b71
+      version: -1
+      name: Is the endpoint at high risk?
+      description: Checks if the endpoint has a high risk associated to it by Cortex XDR.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "136"
+      "yes":
+      - "158"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PaloAltoNetworksXDR.RiskyHost
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: PaloAltoNetworksXDR.RiskyHost.risk_level
+                      iscontext: true
+                    right:
+                      value:
+                        simple: HIGH
+                    ignorecase: true
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 650,
+          "y": 5430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "158":
+    id: "158"
+    taskid: 57208414-9901-4eca-8860-98c2325f8d64
+    type: condition
+    task:
+      id: 57208414-9901-4eca-8860-98c2325f8d64
+      version: -1
+      name: Recommend isolation anyway
+      description: |+
+        Notice! The playbook input specifies that isolation should not be performed for the endpoint, but Cortex XDR's ITDR module considers it risky. Consider isolating it anyway.
+
+        Host ID: ${PaloAltoNetworksXDR.RiskyHost.id}
+        Risk level: ${PaloAltoNetworksXDR.RiskyHost.risk_level}
+        Reasons: ${PaloAltoNetworksXDR.RiskyHost.reasons}
+
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      Do Not Isolate:
+      - "136"
+      Isolate:
+      - "102"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 420,
+          "y": 5600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 system: true
 view: |-
   {
@@ -2778,10 +3003,14 @@ view: |-
       "112_113_yes": 0.31,
       "112_6_#default#": 0.37,
       "11_20_no": 0.18,
-      "143_82_#default#": 0.83,
+      "142_82_#default#": 0.28,
+      "143_82_#default#": 0.35,
       "146_86_#default#": 0.52,
-      "147_86_#default#": 0.71,
+      "147_86_#default#": 0.22,
       "153_72_#default#": 0.29,
+      "156_136_#default#": 0.19,
+      "156_158_yes": 0.48,
+      "158_136_Do Not Isolate": 0.18,
       "20_21_yes": 0.4,
       "20_22_#default#": 0.34,
       "35_21_#default#": 0.1,
@@ -2789,13 +3018,14 @@ view: |-
       "53_6_#default#": 0.11,
       "56_11_#default#": 0.42,
       "56_21_yes": 0.21,
-      "73_72_#default#": 0.14
+      "73_72_#default#": 0.14,
+      "79_86_yes": 0.21
     },
     "paper": {
       "dimensions": {
-        "height": 6785,
-        "width": 2420,
-        "x": -550,
+        "height": 7605,
+        "width": 2400,
+        "x": -530,
         "y": -750
       }
     }
@@ -2833,6 +3063,8 @@ inputs:
     Hunting Results
     Related Alerts
     Unusual Country
+    Risky User
+    Risky Host
 
     NOTE: You can read about the meaning of every element in the playbook description.
   playbookInputQuery:
@@ -2889,5 +3121,7 @@ inputs:
   playbookInputQuery:
 outputs: []
 tests:
-- No tests (auto formatted)
+- no tests
 fromversion: 6.8.0
+contentitemexportablefields:
+  contentitemfields: {}

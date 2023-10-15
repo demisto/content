@@ -355,7 +355,31 @@ script:
     - contextPath: Elasticsearch.Search.Size
       description: The maximum number of scores that a search can return.
       type: Number
-  dockerimage: demisto/py3-tools:1.0.0.72621
+  - name: es-index
+    arguments:
+    - name: index_name
+      required: true
+      description: The name of the index to ingest into.
+    - name: document
+      required: true
+      description: The document object (JSON format) to be indexed. See Elasticsearch documentation (https://www.elastic.co/guide/en/elasticsearch/client/python-api/current/examples.html#ex-index) for further information about indexing documents. 
+    - name: id
+      description: The ID of the indexed document (will be generated if empty).
+    outputs:
+    - contextPath: Elasticsearch.Index.id
+      description: The ID of the indexed document.
+      type: string
+    - contextPath: Elasticsearch.Index.index
+      description: The name of the index which the document was ingested to.
+      type: string
+    - contextPath: Elasticsearch.Index.version
+      description: The version number of the indexed document.
+      type: number
+    - contextPath: Elasticsearch.Index.result
+      description: The result of the index operation.
+      type: string
+    description: Indexes a document into an Elasticsearch index.
+  dockerimage: demisto/py3-tools:1.0.0.76737
   isfetch: true
   runonce: false
   script: '-'
