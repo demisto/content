@@ -9,21 +9,27 @@ This playbook creating an array called "Suspicious Elements", which is used to c
 The array will then be outputted and its size will be compared to a final threshold. If the size is greater than or equal to the threshold, the investigation's final verdict will be deemed a "True Positive."
 
 ## Dependencies
+
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
+
 This playbook does not use any sub-playbooks.
 
 ### Integrations
+
 This playbook does not use any integrations.
 
 ### Scripts
+
 * Set
 
 ### Commands
+
 This playbook does not use any commands.
 
 ## Playbook Inputs
+
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
@@ -33,8 +39,11 @@ This playbook does not use any commands.
 | HuntResults | Determine whether hunting results exist. The input value should be true or false. |  | Optional |
 | UnusualGeoLocation |  determine whether the RDP connection has made RDP Connection made from rare geo-location. the input value should be true or false. |  | Optional |
 | IpReputation | The external IP reputation. |  | Optional |
+| XDRRiskyUser | Usernames of users that were found as risky by Cortex XDR. | PaloAltoNetworksXDR.RiskyUser.id | Optional |
+| XDRRiskyHost | Hostnames that were found as risky by Cortex XDR. | PaloAltoNetworksXDR.RiskyHost.id | Optional |
 
 ## Playbook Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |
@@ -42,5 +51,7 @@ This playbook does not use any commands.
 | Suspicious_Elements | Array that contains all the suspicious elements. | unknown |
 
 ## Playbook Image
+
 ---
+
 ![Cortex XDR - Possible External RDP Brute-Force - Set Verdict](../doc_files/Cortex_XDR_-_Possible_External_RDP_Brute-Force_-_Set_Verdict.png)
