@@ -103,7 +103,7 @@ configuration:
   additionalinfo: "The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time."
   type: 0
   required: false
-description: Amazon Web Services IAM Access Analyzer
+description: Amazon Web Services IAM Access Analyzer.
 display: AWS - AccessAnalyzer
 name: AWS - AccessAnalyzer
 script:
@@ -179,7 +179,7 @@ script:
       - AWS::S3::Bucket # disable-secrets-detection
       - AWS::SQS::Queue # disable-secrets-detection
     - auto: PREDEFINED
-      description: Filter findings by status
+      description: Filter findings by status.
       name: status
       predefined:
       - ACTIVE
@@ -301,7 +301,7 @@ script:
       name: roleSessionDuration
     description: Updates findings with the new values provided in the request.
     name: aws-access-analyzer-update-findings
-  dockerimage: demisto/boto3py3:1.0.0.71685
+  dockerimage: demisto/boto3py3:1.0.0.77408
   isfetch: true
   runonce: false
   script: '-'
