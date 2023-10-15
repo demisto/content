@@ -93,7 +93,7 @@ configuration:
   section: Connect
   advanced: true
   required: false
-description: Amazon Web Services Identity and Access Management (IAM)
+description: Amazon Web Services Identity and Access Management (IAM).
 display: AWS - Identity and Access Management
 name: AWS - IAM
 script:
@@ -273,7 +273,7 @@ script:
       name: roleSessionName
     - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       name: roleSessionDuration
-    description: Lists all the IAM groups in the AWS account
+    description: Lists all the IAM groups in the AWS account.
     name: aws-iam-list-groups
     outputs:
     - contextPath: AWS.IAM.Groups.GroupName
@@ -308,7 +308,7 @@ script:
       description: The friendly name that identifies the group.
       type: string
     - contextPath: AWS.IAM.Users.Groups.GroupId
-      description: The stable and unique string identifying the group
+      description: The stable and unique string identifying the group.
       type: string
     - contextPath: AWS.IAM.Users.Groups.Arn
       description: The Amazon Resource Name (ARN) specifying the group.
@@ -463,7 +463,7 @@ script:
       name: roleSessionName
     - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       name: roleSessionDuration
-    description: Lists all IAM roles
+    description: Lists all IAM roles.
     name: aws-iam-list-roles
     outputs:
     - contextPath: AWS.IAM.Roles.RoleName
@@ -492,7 +492,7 @@ script:
       type: number
   - arguments:
     - auto: PREDEFINED
-      description: The Type of IAM Entity
+      description: The Type of IAM Entity.
       name: type
       predefined:
       - User
@@ -507,7 +507,7 @@ script:
     name: aws-iam-attach-policy
   - arguments:
     - auto: PREDEFINED
-      description: IAM Entity Type
+      description: IAM Entity Type.
       name: type
       predefined:
       - User
@@ -1213,7 +1213,7 @@ script:
     description: Deletes the specified AWS account alias.
     execution: true
     name: aws-iam-delete-account-alias
-  - description: Get AWS account's password policy
+  - description: Get AWS account's password policy.
     name: aws-iam-get-account-password-policy
     outputs:
     - contextPath: AWS.IAM.PasswordPolicy
@@ -1268,7 +1268,7 @@ script:
       predefined:
       - 'True'
       - 'False'
-    description: Create/update password policy
+    description: Create/update password policy.
     execution: true
     name: aws-iam-update-account-password-policy
   - arguments:
@@ -1361,7 +1361,7 @@ script:
       description: The name (friendly name, not ARN) of the user to list attached policies for.
       type: String
     - contextPath: AWS.IAM.AttachedUserPolicies.PolicyName
-      description: The name of the attached policy
+      description: The name of the attached policy.
       type: String
     - contextPath: AWS.IAM.AttachedUserPolicies.PolicyArn
       description: The Amazon Resource Name (ARN) of the attached policy.
@@ -1389,7 +1389,7 @@ script:
       description: The name (friendly name, not ARN) of the group to list attached policies for.
       type: String
     - contextPath: AWS.IAM.AttachedGroupPolicies.PolicyName
-      description: The name of the attached policy
+      description: The name of the attached policy.
       type: String
     - contextPath: AWS.IAM.AttachedGroupPolicies.PolicyArn
       description: The Amazon Resource Name (ARN) of the attached policy.
@@ -1401,7 +1401,7 @@ script:
     - description: The name (friendly name, not ARN) of the user to list attached policies for.
       name: userName
       required: true
-    description: Retrieves the user login profile information for AWS management consle
+    description: Retrieves the user login profile information for AWS management consle.
     name: aws-iam-get-user-login-profile
     outputs:
     - contextPath: AWS.IAM.Users.LoginProfile.CreateDate
@@ -1450,7 +1450,7 @@ script:
     - description: The name of the IAM role to which you want to add tags.
       name: roleName
       required: true
-    - description: A comma-separated list of Key:Value tag objects. I.e., Key1:Value1,Key2:Value2
+    - description: A comma-separated list of Key:Value tag objects. I.e., Key1:Value1,Key2:Value2.
       isArray: true
       name: tags
       required: true
@@ -1460,7 +1460,7 @@ script:
     - description: The name of the IAM user to which you want to add tags.
       name: userName
       required: true
-    - description: A comma-separated list of Key:Value tag objects. I.e., Key1:Value1,Key2:Value2
+    - description: A comma-separated list of Key:Value tag objects. I.e., Key1:Value1,Key2:Value2.
       isArray: true
       name: tags
       required: true
@@ -1536,7 +1536,7 @@ script:
     - contextPath: AWS.IAM.Roles.AttachedPolicies.Query.Marker
       description: When IsTruncated is true, this element is present and contains the value to use for the Marker parameter in a subsequent pagination request.
       type: string
-  dockerimage: demisto/boto3py3:1.0.0.72740
+  dockerimage: demisto/boto3py3:1.0.0.77408
   runonce: false
   script: '-'
   subtype: python3
