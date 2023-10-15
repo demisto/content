@@ -7,7 +7,7 @@ A step-by-step configuration process is available at Cortex XSIAM Administrator 
 ## Configuration on XSIAM
 1. Click **Settings** > **Data Sources**.
 2. In the Prisma Cloud Compute Collector configuration, click **Add Instance** to begin a new alerts integration.
-3. Specify the Name for the Prisma Cloud Compute Collector displayed in Cortex XSIAM.
+3. Specify the name for the Prisma Cloud Compute Collector displayed in Cortex XSIAM.
 4. Save & Generate Token. The token is displayed in a blue box, which is blurred in the image below.
    * Click the Copy icon next to the Username and Password, and record them in a safe place, as you will need to provide them when you configure the Prisma Cloud Compute Collector for alerts integration. If you forget to record the key and close the window, you will need to generate a new key and repeat this process. When you are finished, click Done to close the window.
 5. Copy api url.
